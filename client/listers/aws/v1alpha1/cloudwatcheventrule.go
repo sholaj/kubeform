@@ -29,8 +29,8 @@ import (
 type CloudwatchEventRuleLister interface {
 	// List lists all CloudwatchEventRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CloudwatchEventRule, err error)
-	// Get retrieves the CloudwatchEventRule from the index for a given name.
-	Get(name string) (*v1alpha1.CloudwatchEventRule, error)
+	// CloudwatchEventRules returns an object that can list and get CloudwatchEventRules.
+	CloudwatchEventRules(namespace string) CloudwatchEventRuleNamespaceLister
 	CloudwatchEventRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cloudwatchEventRuleLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the CloudwatchEventRule from the index for a given name.
-func (s *cloudwatchEventRuleLister) Get(name string) (*v1alpha1.CloudwatchEventRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CloudwatchEventRules returns an object that can list and get CloudwatchEventRules.
+func (s *cloudwatchEventRuleLister) CloudwatchEventRules(namespace string) CloudwatchEventRuleNamespaceLister {
+	return cloudwatchEventRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CloudwatchEventRuleNamespaceLister helps list and get CloudwatchEventRules.
+type CloudwatchEventRuleNamespaceLister interface {
+	// List lists all CloudwatchEventRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CloudwatchEventRule, err error)
+	// Get retrieves the CloudwatchEventRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CloudwatchEventRule, error)
+	CloudwatchEventRuleNamespaceListerExpansion
+}
+
+// cloudwatchEventRuleNamespaceLister implements the CloudwatchEventRuleNamespaceLister
+// interface.
+type cloudwatchEventRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CloudwatchEventRules in the indexer for a given namespace.
+func (s cloudwatchEventRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CloudwatchEventRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CloudwatchEventRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the CloudwatchEventRule from the indexer for a given namespace and name.
+func (s cloudwatchEventRuleNamespaceLister) Get(name string) (*v1alpha1.CloudwatchEventRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

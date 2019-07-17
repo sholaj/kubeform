@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,12 +19,13 @@ type ApiManagementCertificate struct {
 }
 
 type ApiManagementCertificateSpec struct {
-	ApiManagementName string `json:"api_management_name"`
-	Data              string `json:"data"`
-	Name              string `json:"name"`
+	ApiManagementName string `json:"apiManagementName" tf:"api_management_name"`
+	Data              string `json:"data" tf:"data"`
+	Name              string `json:"name" tf:"name"`
 	// +optional
-	Password          string `json:"password,omitempty"`
-	ResourceGroupName string `json:"resource_group_name"`
+	Password          string                    `json:"password,omitempty" tf:"password,omitempty"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ApiManagementCertificateStatus struct {
@@ -32,7 +33,9 @@ type ApiManagementCertificateStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

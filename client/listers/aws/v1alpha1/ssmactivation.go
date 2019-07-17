@@ -29,8 +29,8 @@ import (
 type SsmActivationLister interface {
 	// List lists all SsmActivations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SsmActivation, err error)
-	// Get retrieves the SsmActivation from the index for a given name.
-	Get(name string) (*v1alpha1.SsmActivation, error)
+	// SsmActivations returns an object that can list and get SsmActivations.
+	SsmActivations(namespace string) SsmActivationNamespaceLister
 	SsmActivationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ssmActivationLister) List(selector labels.Selector) (ret []*v1alpha1.Ss
 	return ret, err
 }
 
-// Get retrieves the SsmActivation from the index for a given name.
-func (s *ssmActivationLister) Get(name string) (*v1alpha1.SsmActivation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SsmActivations returns an object that can list and get SsmActivations.
+func (s *ssmActivationLister) SsmActivations(namespace string) SsmActivationNamespaceLister {
+	return ssmActivationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SsmActivationNamespaceLister helps list and get SsmActivations.
+type SsmActivationNamespaceLister interface {
+	// List lists all SsmActivations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SsmActivation, err error)
+	// Get retrieves the SsmActivation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SsmActivation, error)
+	SsmActivationNamespaceListerExpansion
+}
+
+// ssmActivationNamespaceLister implements the SsmActivationNamespaceLister
+// interface.
+type ssmActivationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SsmActivations in the indexer for a given namespace.
+func (s ssmActivationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SsmActivation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SsmActivation))
+	})
+	return ret, err
+}
+
+// Get retrieves the SsmActivation from the indexer for a given namespace and name.
+func (s ssmActivationNamespaceLister) Get(name string) (*v1alpha1.SsmActivation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

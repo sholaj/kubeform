@@ -29,8 +29,8 @@ import (
 type AutomationScheduleLister interface {
 	// List lists all AutomationSchedules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AutomationSchedule, err error)
-	// Get retrieves the AutomationSchedule from the index for a given name.
-	Get(name string) (*v1alpha1.AutomationSchedule, error)
+	// AutomationSchedules returns an object that can list and get AutomationSchedules.
+	AutomationSchedules(namespace string) AutomationScheduleNamespaceLister
 	AutomationScheduleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *automationScheduleLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the AutomationSchedule from the index for a given name.
-func (s *automationScheduleLister) Get(name string) (*v1alpha1.AutomationSchedule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AutomationSchedules returns an object that can list and get AutomationSchedules.
+func (s *automationScheduleLister) AutomationSchedules(namespace string) AutomationScheduleNamespaceLister {
+	return automationScheduleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AutomationScheduleNamespaceLister helps list and get AutomationSchedules.
+type AutomationScheduleNamespaceLister interface {
+	// List lists all AutomationSchedules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AutomationSchedule, err error)
+	// Get retrieves the AutomationSchedule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AutomationSchedule, error)
+	AutomationScheduleNamespaceListerExpansion
+}
+
+// automationScheduleNamespaceLister implements the AutomationScheduleNamespaceLister
+// interface.
+type automationScheduleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AutomationSchedules in the indexer for a given namespace.
+func (s automationScheduleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AutomationSchedule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AutomationSchedule))
+	})
+	return ret, err
+}
+
+// Get retrieves the AutomationSchedule from the indexer for a given namespace and name.
+func (s automationScheduleNamespaceLister) Get(name string) (*v1alpha1.AutomationSchedule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

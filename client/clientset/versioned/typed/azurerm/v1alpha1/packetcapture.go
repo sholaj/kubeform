@@ -32,7 +32,7 @@ import (
 // PacketCapturesGetter has a method to return a PacketCaptureInterface.
 // A group's client should implement this interface.
 type PacketCapturesGetter interface {
-	PacketCaptures() PacketCaptureInterface
+	PacketCaptures(namespace string) PacketCaptureInterface
 }
 
 // PacketCaptureInterface has methods to work with PacketCapture resources.
@@ -52,12 +52,14 @@ type PacketCaptureInterface interface {
 // packetCaptures implements PacketCaptureInterface
 type packetCaptures struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPacketCaptures returns a PacketCaptures
-func newPacketCaptures(c *AzurermV1alpha1Client) *packetCaptures {
+func newPacketCaptures(c *AzurermV1alpha1Client, namespace string) *packetCaptures {
 	return &packetCaptures{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPacketCaptures(c *AzurermV1alpha1Client) *packetCaptures {
 func (c *packetCaptures) Get(name string, options v1.GetOptions) (result *v1alpha1.PacketCapture, err error) {
 	result = &v1alpha1.PacketCapture{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("packetcaptures").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *packetCaptures) List(opts v1.ListOptions) (result *v1alpha1.PacketCaptu
 	}
 	result = &v1alpha1.PacketCaptureList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("packetcaptures").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *packetCaptures) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("packetcaptures").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *packetCaptures) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *packetCaptures) Create(packetCapture *v1alpha1.PacketCapture) (result *v1alpha1.PacketCapture, err error) {
 	result = &v1alpha1.PacketCapture{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("packetcaptures").
 		Body(packetCapture).
 		Do().
@@ -118,6 +124,7 @@ func (c *packetCaptures) Create(packetCapture *v1alpha1.PacketCapture) (result *
 func (c *packetCaptures) Update(packetCapture *v1alpha1.PacketCapture) (result *v1alpha1.PacketCapture, err error) {
 	result = &v1alpha1.PacketCapture{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("packetcaptures").
 		Name(packetCapture.Name).
 		Body(packetCapture).
@@ -132,6 +139,7 @@ func (c *packetCaptures) Update(packetCapture *v1alpha1.PacketCapture) (result *
 func (c *packetCaptures) UpdateStatus(packetCapture *v1alpha1.PacketCapture) (result *v1alpha1.PacketCapture, err error) {
 	result = &v1alpha1.PacketCapture{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("packetcaptures").
 		Name(packetCapture.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *packetCaptures) UpdateStatus(packetCapture *v1alpha1.PacketCapture) (re
 // Delete takes name of the packetCapture and deletes it. Returns an error if one occurs.
 func (c *packetCaptures) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("packetcaptures").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *packetCaptures) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("packetcaptures").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *packetCaptures) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *packetCaptures) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PacketCapture, err error) {
 	result = &v1alpha1.PacketCapture{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("packetcaptures").
 		SubResource(subresources...).
 		Name(name).

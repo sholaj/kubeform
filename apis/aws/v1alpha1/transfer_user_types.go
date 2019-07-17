@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,14 +20,15 @@ type TransferUser struct {
 
 type TransferUserSpec struct {
 	// +optional
-	HomeDirectory string `json:"home_directory,omitempty"`
+	HomeDirectory string `json:"homeDirectory,omitempty" tf:"home_directory,omitempty"`
 	// +optional
-	Policy   string `json:"policy,omitempty"`
-	Role     string `json:"role"`
-	ServerId string `json:"server_id"`
+	Policy   string `json:"policy,omitempty" tf:"policy,omitempty"`
+	Role     string `json:"role" tf:"role"`
+	ServerID string `json:"serverID" tf:"server_id"`
 	// +optional
-	Tags     map[string]string `json:"tags,omitempty"`
-	UserName string            `json:"user_name"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	UserName    string                    `json:"userName" tf:"user_name"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type TransferUserStatus struct {
@@ -35,7 +36,9 @@ type TransferUserStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

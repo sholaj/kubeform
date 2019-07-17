@@ -29,8 +29,8 @@ import (
 type IamInstanceProfileLister interface {
 	// List lists all IamInstanceProfiles in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IamInstanceProfile, err error)
-	// Get retrieves the IamInstanceProfile from the index for a given name.
-	Get(name string) (*v1alpha1.IamInstanceProfile, error)
+	// IamInstanceProfiles returns an object that can list and get IamInstanceProfiles.
+	IamInstanceProfiles(namespace string) IamInstanceProfileNamespaceLister
 	IamInstanceProfileListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iamInstanceProfileLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the IamInstanceProfile from the index for a given name.
-func (s *iamInstanceProfileLister) Get(name string) (*v1alpha1.IamInstanceProfile, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IamInstanceProfiles returns an object that can list and get IamInstanceProfiles.
+func (s *iamInstanceProfileLister) IamInstanceProfiles(namespace string) IamInstanceProfileNamespaceLister {
+	return iamInstanceProfileNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IamInstanceProfileNamespaceLister helps list and get IamInstanceProfiles.
+type IamInstanceProfileNamespaceLister interface {
+	// List lists all IamInstanceProfiles in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IamInstanceProfile, err error)
+	// Get retrieves the IamInstanceProfile from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IamInstanceProfile, error)
+	IamInstanceProfileNamespaceListerExpansion
+}
+
+// iamInstanceProfileNamespaceLister implements the IamInstanceProfileNamespaceLister
+// interface.
+type iamInstanceProfileNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IamInstanceProfiles in the indexer for a given namespace.
+func (s iamInstanceProfileNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IamInstanceProfile, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IamInstanceProfile))
+	})
+	return ret, err
+}
+
+// Get retrieves the IamInstanceProfile from the indexer for a given namespace and name.
+func (s iamInstanceProfileNamespaceLister) Get(name string) (*v1alpha1.IamInstanceProfile, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

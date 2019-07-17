@@ -32,7 +32,7 @@ import (
 // PinpointEventStreamsGetter has a method to return a PinpointEventStreamInterface.
 // A group's client should implement this interface.
 type PinpointEventStreamsGetter interface {
-	PinpointEventStreams() PinpointEventStreamInterface
+	PinpointEventStreams(namespace string) PinpointEventStreamInterface
 }
 
 // PinpointEventStreamInterface has methods to work with PinpointEventStream resources.
@@ -52,12 +52,14 @@ type PinpointEventStreamInterface interface {
 // pinpointEventStreams implements PinpointEventStreamInterface
 type pinpointEventStreams struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPinpointEventStreams returns a PinpointEventStreams
-func newPinpointEventStreams(c *AwsV1alpha1Client) *pinpointEventStreams {
+func newPinpointEventStreams(c *AwsV1alpha1Client, namespace string) *pinpointEventStreams {
 	return &pinpointEventStreams{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPinpointEventStreams(c *AwsV1alpha1Client) *pinpointEventStreams {
 func (c *pinpointEventStreams) Get(name string, options v1.GetOptions) (result *v1alpha1.PinpointEventStream, err error) {
 	result = &v1alpha1.PinpointEventStream{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointeventstreams").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *pinpointEventStreams) List(opts v1.ListOptions) (result *v1alpha1.Pinpo
 	}
 	result = &v1alpha1.PinpointEventStreamList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointeventstreams").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *pinpointEventStreams) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointeventstreams").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *pinpointEventStreams) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *pinpointEventStreams) Create(pinpointEventStream *v1alpha1.PinpointEventStream) (result *v1alpha1.PinpointEventStream, err error) {
 	result = &v1alpha1.PinpointEventStream{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("pinpointeventstreams").
 		Body(pinpointEventStream).
 		Do().
@@ -118,6 +124,7 @@ func (c *pinpointEventStreams) Create(pinpointEventStream *v1alpha1.PinpointEven
 func (c *pinpointEventStreams) Update(pinpointEventStream *v1alpha1.PinpointEventStream) (result *v1alpha1.PinpointEventStream, err error) {
 	result = &v1alpha1.PinpointEventStream{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pinpointeventstreams").
 		Name(pinpointEventStream.Name).
 		Body(pinpointEventStream).
@@ -132,6 +139,7 @@ func (c *pinpointEventStreams) Update(pinpointEventStream *v1alpha1.PinpointEven
 func (c *pinpointEventStreams) UpdateStatus(pinpointEventStream *v1alpha1.PinpointEventStream) (result *v1alpha1.PinpointEventStream, err error) {
 	result = &v1alpha1.PinpointEventStream{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pinpointeventstreams").
 		Name(pinpointEventStream.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *pinpointEventStreams) UpdateStatus(pinpointEventStream *v1alpha1.Pinpoi
 // Delete takes name of the pinpointEventStream and deletes it. Returns an error if one occurs.
 func (c *pinpointEventStreams) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pinpointeventstreams").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *pinpointEventStreams) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pinpointeventstreams").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *pinpointEventStreams) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *pinpointEventStreams) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PinpointEventStream, err error) {
 	result = &v1alpha1.PinpointEventStream{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("pinpointeventstreams").
 		SubResource(subresources...).
 		Name(name).

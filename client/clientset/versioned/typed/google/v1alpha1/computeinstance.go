@@ -32,7 +32,7 @@ import (
 // ComputeInstancesGetter has a method to return a ComputeInstanceInterface.
 // A group's client should implement this interface.
 type ComputeInstancesGetter interface {
-	ComputeInstances() ComputeInstanceInterface
+	ComputeInstances(namespace string) ComputeInstanceInterface
 }
 
 // ComputeInstanceInterface has methods to work with ComputeInstance resources.
@@ -52,12 +52,14 @@ type ComputeInstanceInterface interface {
 // computeInstances implements ComputeInstanceInterface
 type computeInstances struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeInstances returns a ComputeInstances
-func newComputeInstances(c *GoogleV1alpha1Client) *computeInstances {
+func newComputeInstances(c *GoogleV1alpha1Client, namespace string) *computeInstances {
 	return &computeInstances{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeInstances(c *GoogleV1alpha1Client) *computeInstances {
 func (c *computeInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeInstance, err error) {
 	result = &v1alpha1.ComputeInstance{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeinstances").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeInstances) List(opts v1.ListOptions) (result *v1alpha1.ComputeIn
 	}
 	result = &v1alpha1.ComputeInstanceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computeinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *computeInstances) Create(computeInstance *v1alpha1.ComputeInstance) (result *v1alpha1.ComputeInstance, err error) {
 	result = &v1alpha1.ComputeInstance{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computeinstances").
 		Body(computeInstance).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeInstances) Create(computeInstance *v1alpha1.ComputeInstance) (re
 func (c *computeInstances) Update(computeInstance *v1alpha1.ComputeInstance) (result *v1alpha1.ComputeInstance, err error) {
 	result = &v1alpha1.ComputeInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeinstances").
 		Name(computeInstance.Name).
 		Body(computeInstance).
@@ -132,6 +139,7 @@ func (c *computeInstances) Update(computeInstance *v1alpha1.ComputeInstance) (re
 func (c *computeInstances) UpdateStatus(computeInstance *v1alpha1.ComputeInstance) (result *v1alpha1.ComputeInstance, err error) {
 	result = &v1alpha1.ComputeInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeinstances").
 		Name(computeInstance.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeInstances) UpdateStatus(computeInstance *v1alpha1.ComputeInstanc
 // Delete takes name of the computeInstance and deletes it. Returns an error if one occurs.
 func (c *computeInstances) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeinstances").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeInstances) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeinstances").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeInstances) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *computeInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeInstance, err error) {
 	result = &v1alpha1.ComputeInstance{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computeinstances").
 		SubResource(subresources...).
 		Name(name).

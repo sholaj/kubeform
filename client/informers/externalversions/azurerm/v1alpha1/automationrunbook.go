@@ -41,32 +41,33 @@ type AutomationRunbookInformer interface {
 type automationRunbookInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewAutomationRunbookInformer constructs a new informer for AutomationRunbook type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAutomationRunbookInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAutomationRunbookInformer(client, resyncPeriod, indexers, nil)
+func NewAutomationRunbookInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAutomationRunbookInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredAutomationRunbookInformer constructs a new informer for AutomationRunbook type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAutomationRunbookInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAutomationRunbookInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().AutomationRunbooks().List(options)
+				return client.AzurermV1alpha1().AutomationRunbooks(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().AutomationRunbooks().Watch(options)
+				return client.AzurermV1alpha1().AutomationRunbooks(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.AutomationRunbook{},
@@ -76,7 +77,7 @@ func NewFilteredAutomationRunbookInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *automationRunbookInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAutomationRunbookInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredAutomationRunbookInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *automationRunbookInformer) Informer() cache.SharedIndexInformer {

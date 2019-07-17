@@ -29,8 +29,8 @@ import (
 type StorageDefaultObjectAccessControlLister interface {
 	// List lists all StorageDefaultObjectAccessControls in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StorageDefaultObjectAccessControl, err error)
-	// Get retrieves the StorageDefaultObjectAccessControl from the index for a given name.
-	Get(name string) (*v1alpha1.StorageDefaultObjectAccessControl, error)
+	// StorageDefaultObjectAccessControls returns an object that can list and get StorageDefaultObjectAccessControls.
+	StorageDefaultObjectAccessControls(namespace string) StorageDefaultObjectAccessControlNamespaceLister
 	StorageDefaultObjectAccessControlListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *storageDefaultObjectAccessControlLister) List(selector labels.Selector)
 	return ret, err
 }
 
-// Get retrieves the StorageDefaultObjectAccessControl from the index for a given name.
-func (s *storageDefaultObjectAccessControlLister) Get(name string) (*v1alpha1.StorageDefaultObjectAccessControl, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StorageDefaultObjectAccessControls returns an object that can list and get StorageDefaultObjectAccessControls.
+func (s *storageDefaultObjectAccessControlLister) StorageDefaultObjectAccessControls(namespace string) StorageDefaultObjectAccessControlNamespaceLister {
+	return storageDefaultObjectAccessControlNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StorageDefaultObjectAccessControlNamespaceLister helps list and get StorageDefaultObjectAccessControls.
+type StorageDefaultObjectAccessControlNamespaceLister interface {
+	// List lists all StorageDefaultObjectAccessControls in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StorageDefaultObjectAccessControl, err error)
+	// Get retrieves the StorageDefaultObjectAccessControl from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StorageDefaultObjectAccessControl, error)
+	StorageDefaultObjectAccessControlNamespaceListerExpansion
+}
+
+// storageDefaultObjectAccessControlNamespaceLister implements the StorageDefaultObjectAccessControlNamespaceLister
+// interface.
+type storageDefaultObjectAccessControlNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StorageDefaultObjectAccessControls in the indexer for a given namespace.
+func (s storageDefaultObjectAccessControlNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StorageDefaultObjectAccessControl, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StorageDefaultObjectAccessControl))
+	})
+	return ret, err
+}
+
+// Get retrieves the StorageDefaultObjectAccessControl from the indexer for a given namespace and name.
+func (s storageDefaultObjectAccessControlNamespaceLister) Get(name string) (*v1alpha1.StorageDefaultObjectAccessControl, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

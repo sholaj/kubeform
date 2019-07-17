@@ -1,54 +1,57 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type ApiGatewayRestApi struct {
+type ApiGatewayRestAPI struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              ApiGatewayRestApiSpec   `json:"spec,omitempty"`
-	Status            ApiGatewayRestApiStatus `json:"status,omitempty"`
+	Spec              ApiGatewayRestAPISpec   `json:"spec,omitempty"`
+	Status            ApiGatewayRestAPIStatus `json:"status,omitempty"`
 }
 
-type ApiGatewayRestApiSpec struct {
+type ApiGatewayRestAPISpec struct {
 	// +optional
-	ApiKeySource string `json:"api_key_source,omitempty"`
+	ApiKeySource string `json:"apiKeySource,omitempty" tf:"api_key_source,omitempty"`
 	// +optional
-	BinaryMediaTypes []string `json:"binary_media_types,omitempty"`
+	BinaryMediaTypes []string `json:"binaryMediaTypes,omitempty" tf:"binary_media_types,omitempty"`
 	// +optional
-	Body string `json:"body,omitempty"`
+	Body string `json:"body,omitempty" tf:"body,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	MinimumCompressionSize int    `json:"minimum_compression_size,omitempty"`
-	Name                   string `json:"name"`
+	MinimumCompressionSize int    `json:"minimumCompressionSize,omitempty" tf:"minimum_compression_size,omitempty"`
+	Name                   string `json:"name" tf:"name"`
 	// +optional
-	Policy string `json:"policy,omitempty"`
+	Policy      string                    `json:"policy,omitempty" tf:"policy,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
-type ApiGatewayRestApiStatus struct {
+type ApiGatewayRestAPIStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// ApiGatewayRestApiList is a list of ApiGatewayRestApis
-type ApiGatewayRestApiList struct {
+// ApiGatewayRestAPIList is a list of ApiGatewayRestAPIs
+type ApiGatewayRestAPIList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of ApiGatewayRestApi CRD objects
-	Items []ApiGatewayRestApi `json:"items,omitempty"`
+	// Items is a list of ApiGatewayRestAPI CRD objects
+	Items []ApiGatewayRestAPI `json:"items,omitempty"`
 }

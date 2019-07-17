@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// WafregionalWebAclAssociationInformer provides access to a shared informer and lister for
-// WafregionalWebAclAssociations.
-type WafregionalWebAclAssociationInformer interface {
+// WafregionalWebACLAssociationInformer provides access to a shared informer and lister for
+// WafregionalWebACLAssociations.
+type WafregionalWebACLAssociationInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.WafregionalWebAclAssociationLister
+	Lister() v1alpha1.WafregionalWebACLAssociationLister
 }
 
-type wafregionalWebAclAssociationInformer struct {
+type wafregionalWebACLAssociationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewWafregionalWebAclAssociationInformer constructs a new informer for WafregionalWebAclAssociation type.
+// NewWafregionalWebACLAssociationInformer constructs a new informer for WafregionalWebACLAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewWafregionalWebAclAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredWafregionalWebAclAssociationInformer(client, resyncPeriod, indexers, nil)
+func NewWafregionalWebACLAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredWafregionalWebACLAssociationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredWafregionalWebAclAssociationInformer constructs a new informer for WafregionalWebAclAssociation type.
+// NewFilteredWafregionalWebACLAssociationInformer constructs a new informer for WafregionalWebACLAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredWafregionalWebAclAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredWafregionalWebACLAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafregionalWebAclAssociations().List(options)
+				return client.AwsV1alpha1().WafregionalWebACLAssociations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafregionalWebAclAssociations().Watch(options)
+				return client.AwsV1alpha1().WafregionalWebACLAssociations(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.WafregionalWebAclAssociation{},
+		&awsv1alpha1.WafregionalWebACLAssociation{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *wafregionalWebAclAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredWafregionalWebAclAssociationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *wafregionalWebACLAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredWafregionalWebACLAssociationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *wafregionalWebAclAssociationInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.WafregionalWebAclAssociation{}, f.defaultInformer)
+func (f *wafregionalWebACLAssociationInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.WafregionalWebACLAssociation{}, f.defaultInformer)
 }
 
-func (f *wafregionalWebAclAssociationInformer) Lister() v1alpha1.WafregionalWebAclAssociationLister {
-	return v1alpha1.NewWafregionalWebAclAssociationLister(f.Informer().GetIndexer())
+func (f *wafregionalWebACLAssociationInformer) Lister() v1alpha1.WafregionalWebACLAssociationLister {
+	return v1alpha1.NewWafregionalWebACLAssociationLister(f.Informer().GetIndexer())
 }

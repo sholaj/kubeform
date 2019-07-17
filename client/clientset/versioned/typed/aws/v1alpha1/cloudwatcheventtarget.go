@@ -32,7 +32,7 @@ import (
 // CloudwatchEventTargetsGetter has a method to return a CloudwatchEventTargetInterface.
 // A group's client should implement this interface.
 type CloudwatchEventTargetsGetter interface {
-	CloudwatchEventTargets() CloudwatchEventTargetInterface
+	CloudwatchEventTargets(namespace string) CloudwatchEventTargetInterface
 }
 
 // CloudwatchEventTargetInterface has methods to work with CloudwatchEventTarget resources.
@@ -52,12 +52,14 @@ type CloudwatchEventTargetInterface interface {
 // cloudwatchEventTargets implements CloudwatchEventTargetInterface
 type cloudwatchEventTargets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCloudwatchEventTargets returns a CloudwatchEventTargets
-func newCloudwatchEventTargets(c *AwsV1alpha1Client) *cloudwatchEventTargets {
+func newCloudwatchEventTargets(c *AwsV1alpha1Client, namespace string) *cloudwatchEventTargets {
 	return &cloudwatchEventTargets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCloudwatchEventTargets(c *AwsV1alpha1Client) *cloudwatchEventTargets {
 func (c *cloudwatchEventTargets) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudwatchEventTarget, err error) {
 	result = &v1alpha1.CloudwatchEventTarget{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatcheventtargets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cloudwatchEventTargets) List(opts v1.ListOptions) (result *v1alpha1.Clo
 	}
 	result = &v1alpha1.CloudwatchEventTargetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatcheventtargets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cloudwatchEventTargets) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatcheventtargets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cloudwatchEventTargets) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *cloudwatchEventTargets) Create(cloudwatchEventTarget *v1alpha1.CloudwatchEventTarget) (result *v1alpha1.CloudwatchEventTarget, err error) {
 	result = &v1alpha1.CloudwatchEventTarget{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cloudwatcheventtargets").
 		Body(cloudwatchEventTarget).
 		Do().
@@ -118,6 +124,7 @@ func (c *cloudwatchEventTargets) Create(cloudwatchEventTarget *v1alpha1.Cloudwat
 func (c *cloudwatchEventTargets) Update(cloudwatchEventTarget *v1alpha1.CloudwatchEventTarget) (result *v1alpha1.CloudwatchEventTarget, err error) {
 	result = &v1alpha1.CloudwatchEventTarget{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudwatcheventtargets").
 		Name(cloudwatchEventTarget.Name).
 		Body(cloudwatchEventTarget).
@@ -132,6 +139,7 @@ func (c *cloudwatchEventTargets) Update(cloudwatchEventTarget *v1alpha1.Cloudwat
 func (c *cloudwatchEventTargets) UpdateStatus(cloudwatchEventTarget *v1alpha1.CloudwatchEventTarget) (result *v1alpha1.CloudwatchEventTarget, err error) {
 	result = &v1alpha1.CloudwatchEventTarget{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudwatcheventtargets").
 		Name(cloudwatchEventTarget.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cloudwatchEventTargets) UpdateStatus(cloudwatchEventTarget *v1alpha1.Cl
 // Delete takes name of the cloudwatchEventTarget and deletes it. Returns an error if one occurs.
 func (c *cloudwatchEventTargets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudwatcheventtargets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cloudwatchEventTargets) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudwatcheventtargets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cloudwatchEventTargets) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *cloudwatchEventTargets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudwatchEventTarget, err error) {
 	result = &v1alpha1.CloudwatchEventTarget{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cloudwatcheventtargets").
 		SubResource(subresources...).
 		Name(name).

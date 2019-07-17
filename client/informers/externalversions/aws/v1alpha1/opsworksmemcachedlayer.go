@@ -41,32 +41,33 @@ type OpsworksMemcachedLayerInformer interface {
 type opsworksMemcachedLayerInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewOpsworksMemcachedLayerInformer constructs a new informer for OpsworksMemcachedLayer type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewOpsworksMemcachedLayerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredOpsworksMemcachedLayerInformer(client, resyncPeriod, indexers, nil)
+func NewOpsworksMemcachedLayerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredOpsworksMemcachedLayerInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredOpsworksMemcachedLayerInformer constructs a new informer for OpsworksMemcachedLayer type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredOpsworksMemcachedLayerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredOpsworksMemcachedLayerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().OpsworksMemcachedLayers().List(options)
+				return client.AwsV1alpha1().OpsworksMemcachedLayers(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().OpsworksMemcachedLayers().Watch(options)
+				return client.AwsV1alpha1().OpsworksMemcachedLayers(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.OpsworksMemcachedLayer{},
@@ -76,7 +77,7 @@ func NewFilteredOpsworksMemcachedLayerInformer(client versioned.Interface, resyn
 }
 
 func (f *opsworksMemcachedLayerInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredOpsworksMemcachedLayerInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredOpsworksMemcachedLayerInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *opsworksMemcachedLayerInformer) Informer() cache.SharedIndexInformer {

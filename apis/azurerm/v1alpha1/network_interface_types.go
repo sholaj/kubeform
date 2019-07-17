@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,29 +19,30 @@ type NetworkInterface struct {
 }
 
 type NetworkInterfaceSpecIpConfiguration struct {
-	Name string `json:"name"`
+	Name string `json:"name" tf:"name"`
 	// +optional
-	PrivateIpAddress           string `json:"private_ip_address,omitempty"`
-	PrivateIpAddressAllocation string `json:"private_ip_address_allocation"`
+	PrivateIPAddress           string `json:"privateIPAddress,omitempty" tf:"private_ip_address,omitempty"`
+	PrivateIPAddressAllocation string `json:"privateIPAddressAllocation" tf:"private_ip_address_allocation"`
 	// +optional
-	PrivateIpAddressVersion string `json:"private_ip_address_version,omitempty"`
+	PrivateIPAddressVersion string `json:"privateIPAddressVersion,omitempty" tf:"private_ip_address_version,omitempty"`
 	// +optional
-	PublicIpAddressId string `json:"public_ip_address_id,omitempty"`
+	PublicIPAddressID string `json:"publicIPAddressID,omitempty" tf:"public_ip_address_id,omitempty"`
 	// +optional
-	SubnetId string `json:"subnet_id,omitempty"`
+	SubnetID string `json:"subnetID,omitempty" tf:"subnet_id,omitempty"`
 }
 
 type NetworkInterfaceSpec struct {
 	// +optional
-	EnableAcceleratedNetworking bool `json:"enable_accelerated_networking,omitempty"`
+	EnableAcceleratedNetworking bool `json:"enableAcceleratedNetworking,omitempty" tf:"enable_accelerated_networking,omitempty"`
 	// +optional
-	EnableIpForwarding bool                   `json:"enable_ip_forwarding,omitempty"`
-	IpConfiguration    []NetworkInterfaceSpec `json:"ip_configuration"`
-	Location           string                 `json:"location"`
-	Name               string                 `json:"name"`
+	EnableIPForwarding bool                                  `json:"enableIPForwarding,omitempty" tf:"enable_ip_forwarding,omitempty"`
+	IpConfiguration    []NetworkInterfaceSpecIpConfiguration `json:"ipConfiguration" tf:"ip_configuration"`
+	Location           string                                `json:"location" tf:"location"`
+	Name               string                                `json:"name" tf:"name"`
 	// +optional
-	NetworkSecurityGroupId string `json:"network_security_group_id,omitempty"`
-	ResourceGroupName      string `json:"resource_group_name"`
+	NetworkSecurityGroupID string                    `json:"networkSecurityGroupID,omitempty" tf:"network_security_group_id,omitempty"`
+	ResourceGroupName      string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ProviderRef            core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type NetworkInterfaceStatus struct {
@@ -49,7 +50,9 @@ type NetworkInterfaceStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

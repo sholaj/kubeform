@@ -29,8 +29,8 @@ import (
 type VirtualNetworkPeeringLister interface {
 	// List lists all VirtualNetworkPeerings in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.VirtualNetworkPeering, err error)
-	// Get retrieves the VirtualNetworkPeering from the index for a given name.
-	Get(name string) (*v1alpha1.VirtualNetworkPeering, error)
+	// VirtualNetworkPeerings returns an object that can list and get VirtualNetworkPeerings.
+	VirtualNetworkPeerings(namespace string) VirtualNetworkPeeringNamespaceLister
 	VirtualNetworkPeeringListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *virtualNetworkPeeringLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the VirtualNetworkPeering from the index for a given name.
-func (s *virtualNetworkPeeringLister) Get(name string) (*v1alpha1.VirtualNetworkPeering, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VirtualNetworkPeerings returns an object that can list and get VirtualNetworkPeerings.
+func (s *virtualNetworkPeeringLister) VirtualNetworkPeerings(namespace string) VirtualNetworkPeeringNamespaceLister {
+	return virtualNetworkPeeringNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VirtualNetworkPeeringNamespaceLister helps list and get VirtualNetworkPeerings.
+type VirtualNetworkPeeringNamespaceLister interface {
+	// List lists all VirtualNetworkPeerings in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VirtualNetworkPeering, err error)
+	// Get retrieves the VirtualNetworkPeering from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VirtualNetworkPeering, error)
+	VirtualNetworkPeeringNamespaceListerExpansion
+}
+
+// virtualNetworkPeeringNamespaceLister implements the VirtualNetworkPeeringNamespaceLister
+// interface.
+type virtualNetworkPeeringNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VirtualNetworkPeerings in the indexer for a given namespace.
+func (s virtualNetworkPeeringNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VirtualNetworkPeering, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VirtualNetworkPeering))
+	})
+	return ret, err
+}
+
+// Get retrieves the VirtualNetworkPeering from the indexer for a given namespace and name.
+func (s virtualNetworkPeeringNamespaceLister) Get(name string) (*v1alpha1.VirtualNetworkPeering, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

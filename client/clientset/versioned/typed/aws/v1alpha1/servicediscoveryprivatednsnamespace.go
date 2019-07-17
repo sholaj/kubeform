@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// ServiceDiscoveryPrivateDnsNamespacesGetter has a method to return a ServiceDiscoveryPrivateDnsNamespaceInterface.
+// ServiceDiscoveryPrivateDNSNamespacesGetter has a method to return a ServiceDiscoveryPrivateDNSNamespaceInterface.
 // A group's client should implement this interface.
-type ServiceDiscoveryPrivateDnsNamespacesGetter interface {
-	ServiceDiscoveryPrivateDnsNamespaces() ServiceDiscoveryPrivateDnsNamespaceInterface
+type ServiceDiscoveryPrivateDNSNamespacesGetter interface {
+	ServiceDiscoveryPrivateDNSNamespaces(namespace string) ServiceDiscoveryPrivateDNSNamespaceInterface
 }
 
-// ServiceDiscoveryPrivateDnsNamespaceInterface has methods to work with ServiceDiscoveryPrivateDnsNamespace resources.
-type ServiceDiscoveryPrivateDnsNamespaceInterface interface {
-	Create(*v1alpha1.ServiceDiscoveryPrivateDnsNamespace) (*v1alpha1.ServiceDiscoveryPrivateDnsNamespace, error)
-	Update(*v1alpha1.ServiceDiscoveryPrivateDnsNamespace) (*v1alpha1.ServiceDiscoveryPrivateDnsNamespace, error)
-	UpdateStatus(*v1alpha1.ServiceDiscoveryPrivateDnsNamespace) (*v1alpha1.ServiceDiscoveryPrivateDnsNamespace, error)
+// ServiceDiscoveryPrivateDNSNamespaceInterface has methods to work with ServiceDiscoveryPrivateDNSNamespace resources.
+type ServiceDiscoveryPrivateDNSNamespaceInterface interface {
+	Create(*v1alpha1.ServiceDiscoveryPrivateDNSNamespace) (*v1alpha1.ServiceDiscoveryPrivateDNSNamespace, error)
+	Update(*v1alpha1.ServiceDiscoveryPrivateDNSNamespace) (*v1alpha1.ServiceDiscoveryPrivateDNSNamespace, error)
+	UpdateStatus(*v1alpha1.ServiceDiscoveryPrivateDNSNamespace) (*v1alpha1.ServiceDiscoveryPrivateDNSNamespace, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.ServiceDiscoveryPrivateDnsNamespace, error)
-	List(opts v1.ListOptions) (*v1alpha1.ServiceDiscoveryPrivateDnsNamespaceList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.ServiceDiscoveryPrivateDNSNamespace, error)
+	List(opts v1.ListOptions) (*v1alpha1.ServiceDiscoveryPrivateDNSNamespaceList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceDiscoveryPrivateDnsNamespace, err error)
-	ServiceDiscoveryPrivateDnsNamespaceExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceDiscoveryPrivateDNSNamespace, err error)
+	ServiceDiscoveryPrivateDNSNamespaceExpansion
 }
 
-// serviceDiscoveryPrivateDnsNamespaces implements ServiceDiscoveryPrivateDnsNamespaceInterface
-type serviceDiscoveryPrivateDnsNamespaces struct {
+// serviceDiscoveryPrivateDNSNamespaces implements ServiceDiscoveryPrivateDNSNamespaceInterface
+type serviceDiscoveryPrivateDNSNamespaces struct {
 	client rest.Interface
+	ns     string
 }
 
-// newServiceDiscoveryPrivateDnsNamespaces returns a ServiceDiscoveryPrivateDnsNamespaces
-func newServiceDiscoveryPrivateDnsNamespaces(c *AwsV1alpha1Client) *serviceDiscoveryPrivateDnsNamespaces {
-	return &serviceDiscoveryPrivateDnsNamespaces{
+// newServiceDiscoveryPrivateDNSNamespaces returns a ServiceDiscoveryPrivateDNSNamespaces
+func newServiceDiscoveryPrivateDNSNamespaces(c *AwsV1alpha1Client, namespace string) *serviceDiscoveryPrivateDNSNamespaces {
+	return &serviceDiscoveryPrivateDNSNamespaces{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the serviceDiscoveryPrivateDnsNamespace, and returns the corresponding serviceDiscoveryPrivateDnsNamespace object, and an error if there is any.
-func (c *serviceDiscoveryPrivateDnsNamespaces) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceDiscoveryPrivateDnsNamespace, err error) {
-	result = &v1alpha1.ServiceDiscoveryPrivateDnsNamespace{}
+// Get takes name of the serviceDiscoveryPrivateDNSNamespace, and returns the corresponding serviceDiscoveryPrivateDNSNamespace object, and an error if there is any.
+func (c *serviceDiscoveryPrivateDNSNamespaces) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceDiscoveryPrivateDNSNamespace, err error) {
+	result = &v1alpha1.ServiceDiscoveryPrivateDNSNamespace{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicediscoveryprivatednsnamespaces").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *serviceDiscoveryPrivateDnsNamespaces) Get(name string, options v1.GetOp
 	return
 }
 
-// List takes label and field selectors, and returns the list of ServiceDiscoveryPrivateDnsNamespaces that match those selectors.
-func (c *serviceDiscoveryPrivateDnsNamespaces) List(opts v1.ListOptions) (result *v1alpha1.ServiceDiscoveryPrivateDnsNamespaceList, err error) {
+// List takes label and field selectors, and returns the list of ServiceDiscoveryPrivateDNSNamespaces that match those selectors.
+func (c *serviceDiscoveryPrivateDNSNamespaces) List(opts v1.ListOptions) (result *v1alpha1.ServiceDiscoveryPrivateDNSNamespaceList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.ServiceDiscoveryPrivateDnsNamespaceList{}
+	result = &v1alpha1.ServiceDiscoveryPrivateDNSNamespaceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicediscoveryprivatednsnamespaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *serviceDiscoveryPrivateDnsNamespaces) List(opts v1.ListOptions) (result
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested serviceDiscoveryPrivateDnsNamespaces.
-func (c *serviceDiscoveryPrivateDnsNamespaces) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested serviceDiscoveryPrivateDNSNamespaces.
+func (c *serviceDiscoveryPrivateDNSNamespaces) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("servicediscoveryprivatednsnamespaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a serviceDiscoveryPrivateDnsNamespace and creates it.  Returns the server's representation of the serviceDiscoveryPrivateDnsNamespace, and an error, if there is any.
-func (c *serviceDiscoveryPrivateDnsNamespaces) Create(serviceDiscoveryPrivateDnsNamespace *v1alpha1.ServiceDiscoveryPrivateDnsNamespace) (result *v1alpha1.ServiceDiscoveryPrivateDnsNamespace, err error) {
-	result = &v1alpha1.ServiceDiscoveryPrivateDnsNamespace{}
+// Create takes the representation of a serviceDiscoveryPrivateDNSNamespace and creates it.  Returns the server's representation of the serviceDiscoveryPrivateDNSNamespace, and an error, if there is any.
+func (c *serviceDiscoveryPrivateDNSNamespaces) Create(serviceDiscoveryPrivateDNSNamespace *v1alpha1.ServiceDiscoveryPrivateDNSNamespace) (result *v1alpha1.ServiceDiscoveryPrivateDNSNamespace, err error) {
+	result = &v1alpha1.ServiceDiscoveryPrivateDNSNamespace{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("servicediscoveryprivatednsnamespaces").
-		Body(serviceDiscoveryPrivateDnsNamespace).
+		Body(serviceDiscoveryPrivateDNSNamespace).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a serviceDiscoveryPrivateDnsNamespace and updates it. Returns the server's representation of the serviceDiscoveryPrivateDnsNamespace, and an error, if there is any.
-func (c *serviceDiscoveryPrivateDnsNamespaces) Update(serviceDiscoveryPrivateDnsNamespace *v1alpha1.ServiceDiscoveryPrivateDnsNamespace) (result *v1alpha1.ServiceDiscoveryPrivateDnsNamespace, err error) {
-	result = &v1alpha1.ServiceDiscoveryPrivateDnsNamespace{}
+// Update takes the representation of a serviceDiscoveryPrivateDNSNamespace and updates it. Returns the server's representation of the serviceDiscoveryPrivateDNSNamespace, and an error, if there is any.
+func (c *serviceDiscoveryPrivateDNSNamespaces) Update(serviceDiscoveryPrivateDNSNamespace *v1alpha1.ServiceDiscoveryPrivateDNSNamespace) (result *v1alpha1.ServiceDiscoveryPrivateDNSNamespace, err error) {
+	result = &v1alpha1.ServiceDiscoveryPrivateDNSNamespace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicediscoveryprivatednsnamespaces").
-		Name(serviceDiscoveryPrivateDnsNamespace.Name).
-		Body(serviceDiscoveryPrivateDnsNamespace).
+		Name(serviceDiscoveryPrivateDNSNamespace.Name).
+		Body(serviceDiscoveryPrivateDNSNamespace).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *serviceDiscoveryPrivateDnsNamespaces) Update(serviceDiscoveryPrivateDns
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *serviceDiscoveryPrivateDnsNamespaces) UpdateStatus(serviceDiscoveryPrivateDnsNamespace *v1alpha1.ServiceDiscoveryPrivateDnsNamespace) (result *v1alpha1.ServiceDiscoveryPrivateDnsNamespace, err error) {
-	result = &v1alpha1.ServiceDiscoveryPrivateDnsNamespace{}
+func (c *serviceDiscoveryPrivateDNSNamespaces) UpdateStatus(serviceDiscoveryPrivateDNSNamespace *v1alpha1.ServiceDiscoveryPrivateDNSNamespace) (result *v1alpha1.ServiceDiscoveryPrivateDNSNamespace, err error) {
+	result = &v1alpha1.ServiceDiscoveryPrivateDNSNamespace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicediscoveryprivatednsnamespaces").
-		Name(serviceDiscoveryPrivateDnsNamespace.Name).
+		Name(serviceDiscoveryPrivateDNSNamespace.Name).
 		SubResource("status").
-		Body(serviceDiscoveryPrivateDnsNamespace).
+		Body(serviceDiscoveryPrivateDNSNamespace).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the serviceDiscoveryPrivateDnsNamespace and deletes it. Returns an error if one occurs.
-func (c *serviceDiscoveryPrivateDnsNamespaces) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the serviceDiscoveryPrivateDNSNamespace and deletes it. Returns an error if one occurs.
+func (c *serviceDiscoveryPrivateDNSNamespaces) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicediscoveryprivatednsnamespaces").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *serviceDiscoveryPrivateDnsNamespaces) Delete(name string, options *v1.D
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *serviceDiscoveryPrivateDnsNamespaces) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *serviceDiscoveryPrivateDNSNamespaces) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicediscoveryprivatednsnamespaces").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *serviceDiscoveryPrivateDnsNamespaces) DeleteCollection(options *v1.Dele
 		Error()
 }
 
-// Patch applies the patch and returns the patched serviceDiscoveryPrivateDnsNamespace.
-func (c *serviceDiscoveryPrivateDnsNamespaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceDiscoveryPrivateDnsNamespace, err error) {
-	result = &v1alpha1.ServiceDiscoveryPrivateDnsNamespace{}
+// Patch applies the patch and returns the patched serviceDiscoveryPrivateDNSNamespace.
+func (c *serviceDiscoveryPrivateDNSNamespaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceDiscoveryPrivateDNSNamespace, err error) {
+	result = &v1alpha1.ServiceDiscoveryPrivateDNSNamespace{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("servicediscoveryprivatednsnamespaces").
 		SubResource(subresources...).
 		Name(name).

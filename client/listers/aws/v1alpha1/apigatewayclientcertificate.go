@@ -29,8 +29,8 @@ import (
 type ApiGatewayClientCertificateLister interface {
 	// List lists all ApiGatewayClientCertificates in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayClientCertificate, err error)
-	// Get retrieves the ApiGatewayClientCertificate from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayClientCertificate, error)
+	// ApiGatewayClientCertificates returns an object that can list and get ApiGatewayClientCertificates.
+	ApiGatewayClientCertificates(namespace string) ApiGatewayClientCertificateNamespaceLister
 	ApiGatewayClientCertificateListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiGatewayClientCertificateLister) List(selector labels.Selector) (ret 
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayClientCertificate from the index for a given name.
-func (s *apiGatewayClientCertificateLister) Get(name string) (*v1alpha1.ApiGatewayClientCertificate, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayClientCertificates returns an object that can list and get ApiGatewayClientCertificates.
+func (s *apiGatewayClientCertificateLister) ApiGatewayClientCertificates(namespace string) ApiGatewayClientCertificateNamespaceLister {
+	return apiGatewayClientCertificateNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayClientCertificateNamespaceLister helps list and get ApiGatewayClientCertificates.
+type ApiGatewayClientCertificateNamespaceLister interface {
+	// List lists all ApiGatewayClientCertificates in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayClientCertificate, err error)
+	// Get retrieves the ApiGatewayClientCertificate from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayClientCertificate, error)
+	ApiGatewayClientCertificateNamespaceListerExpansion
+}
+
+// apiGatewayClientCertificateNamespaceLister implements the ApiGatewayClientCertificateNamespaceLister
+// interface.
+type apiGatewayClientCertificateNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayClientCertificates in the indexer for a given namespace.
+func (s apiGatewayClientCertificateNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayClientCertificate, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayClientCertificate))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayClientCertificate from the indexer for a given namespace and name.
+func (s apiGatewayClientCertificateNamespaceLister) Get(name string) (*v1alpha1.ApiGatewayClientCertificate, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

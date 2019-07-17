@@ -29,8 +29,8 @@ import (
 type PostgresqlDatabaseLister interface {
 	// List lists all PostgresqlDatabases in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.PostgresqlDatabase, err error)
-	// Get retrieves the PostgresqlDatabase from the index for a given name.
-	Get(name string) (*v1alpha1.PostgresqlDatabase, error)
+	// PostgresqlDatabases returns an object that can list and get PostgresqlDatabases.
+	PostgresqlDatabases(namespace string) PostgresqlDatabaseNamespaceLister
 	PostgresqlDatabaseListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *postgresqlDatabaseLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the PostgresqlDatabase from the index for a given name.
-func (s *postgresqlDatabaseLister) Get(name string) (*v1alpha1.PostgresqlDatabase, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// PostgresqlDatabases returns an object that can list and get PostgresqlDatabases.
+func (s *postgresqlDatabaseLister) PostgresqlDatabases(namespace string) PostgresqlDatabaseNamespaceLister {
+	return postgresqlDatabaseNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// PostgresqlDatabaseNamespaceLister helps list and get PostgresqlDatabases.
+type PostgresqlDatabaseNamespaceLister interface {
+	// List lists all PostgresqlDatabases in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.PostgresqlDatabase, err error)
+	// Get retrieves the PostgresqlDatabase from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.PostgresqlDatabase, error)
+	PostgresqlDatabaseNamespaceListerExpansion
+}
+
+// postgresqlDatabaseNamespaceLister implements the PostgresqlDatabaseNamespaceLister
+// interface.
+type postgresqlDatabaseNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all PostgresqlDatabases in the indexer for a given namespace.
+func (s postgresqlDatabaseNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.PostgresqlDatabase, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.PostgresqlDatabase))
+	})
+	return ret, err
+}
+
+// Get retrieves the PostgresqlDatabase from the indexer for a given namespace and name.
+func (s postgresqlDatabaseNamespaceLister) Get(name string) (*v1alpha1.PostgresqlDatabase, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type Route53ResolverRuleLister interface {
 	// List lists all Route53ResolverRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Route53ResolverRule, err error)
-	// Get retrieves the Route53ResolverRule from the index for a given name.
-	Get(name string) (*v1alpha1.Route53ResolverRule, error)
+	// Route53ResolverRules returns an object that can list and get Route53ResolverRules.
+	Route53ResolverRules(namespace string) Route53ResolverRuleNamespaceLister
 	Route53ResolverRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *route53ResolverRuleLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the Route53ResolverRule from the index for a given name.
-func (s *route53ResolverRuleLister) Get(name string) (*v1alpha1.Route53ResolverRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Route53ResolverRules returns an object that can list and get Route53ResolverRules.
+func (s *route53ResolverRuleLister) Route53ResolverRules(namespace string) Route53ResolverRuleNamespaceLister {
+	return route53ResolverRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// Route53ResolverRuleNamespaceLister helps list and get Route53ResolverRules.
+type Route53ResolverRuleNamespaceLister interface {
+	// List lists all Route53ResolverRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Route53ResolverRule, err error)
+	// Get retrieves the Route53ResolverRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Route53ResolverRule, error)
+	Route53ResolverRuleNamespaceListerExpansion
+}
+
+// route53ResolverRuleNamespaceLister implements the Route53ResolverRuleNamespaceLister
+// interface.
+type route53ResolverRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Route53ResolverRules in the indexer for a given namespace.
+func (s route53ResolverRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Route53ResolverRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Route53ResolverRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the Route53ResolverRule from the indexer for a given namespace and name.
+func (s route53ResolverRuleNamespaceLister) Get(name string) (*v1alpha1.Route53ResolverRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

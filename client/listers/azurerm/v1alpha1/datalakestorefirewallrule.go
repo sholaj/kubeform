@@ -29,8 +29,8 @@ import (
 type DataLakeStoreFirewallRuleLister interface {
 	// List lists all DataLakeStoreFirewallRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DataLakeStoreFirewallRule, err error)
-	// Get retrieves the DataLakeStoreFirewallRule from the index for a given name.
-	Get(name string) (*v1alpha1.DataLakeStoreFirewallRule, error)
+	// DataLakeStoreFirewallRules returns an object that can list and get DataLakeStoreFirewallRules.
+	DataLakeStoreFirewallRules(namespace string) DataLakeStoreFirewallRuleNamespaceLister
 	DataLakeStoreFirewallRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dataLakeStoreFirewallRuleLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the DataLakeStoreFirewallRule from the index for a given name.
-func (s *dataLakeStoreFirewallRuleLister) Get(name string) (*v1alpha1.DataLakeStoreFirewallRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DataLakeStoreFirewallRules returns an object that can list and get DataLakeStoreFirewallRules.
+func (s *dataLakeStoreFirewallRuleLister) DataLakeStoreFirewallRules(namespace string) DataLakeStoreFirewallRuleNamespaceLister {
+	return dataLakeStoreFirewallRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DataLakeStoreFirewallRuleNamespaceLister helps list and get DataLakeStoreFirewallRules.
+type DataLakeStoreFirewallRuleNamespaceLister interface {
+	// List lists all DataLakeStoreFirewallRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DataLakeStoreFirewallRule, err error)
+	// Get retrieves the DataLakeStoreFirewallRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DataLakeStoreFirewallRule, error)
+	DataLakeStoreFirewallRuleNamespaceListerExpansion
+}
+
+// dataLakeStoreFirewallRuleNamespaceLister implements the DataLakeStoreFirewallRuleNamespaceLister
+// interface.
+type dataLakeStoreFirewallRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DataLakeStoreFirewallRules in the indexer for a given namespace.
+func (s dataLakeStoreFirewallRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DataLakeStoreFirewallRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DataLakeStoreFirewallRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the DataLakeStoreFirewallRule from the indexer for a given namespace and name.
+func (s dataLakeStoreFirewallRuleNamespaceLister) Get(name string) (*v1alpha1.DataLakeStoreFirewallRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // AthenaDatabasesGetter has a method to return a AthenaDatabaseInterface.
 // A group's client should implement this interface.
 type AthenaDatabasesGetter interface {
-	AthenaDatabases() AthenaDatabaseInterface
+	AthenaDatabases(namespace string) AthenaDatabaseInterface
 }
 
 // AthenaDatabaseInterface has methods to work with AthenaDatabase resources.
@@ -52,12 +52,14 @@ type AthenaDatabaseInterface interface {
 // athenaDatabases implements AthenaDatabaseInterface
 type athenaDatabases struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAthenaDatabases returns a AthenaDatabases
-func newAthenaDatabases(c *AwsV1alpha1Client) *athenaDatabases {
+func newAthenaDatabases(c *AwsV1alpha1Client, namespace string) *athenaDatabases {
 	return &athenaDatabases{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAthenaDatabases(c *AwsV1alpha1Client) *athenaDatabases {
 func (c *athenaDatabases) Get(name string, options v1.GetOptions) (result *v1alpha1.AthenaDatabase, err error) {
 	result = &v1alpha1.AthenaDatabase{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("athenadatabases").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *athenaDatabases) List(opts v1.ListOptions) (result *v1alpha1.AthenaData
 	}
 	result = &v1alpha1.AthenaDatabaseList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("athenadatabases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *athenaDatabases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("athenadatabases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *athenaDatabases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *athenaDatabases) Create(athenaDatabase *v1alpha1.AthenaDatabase) (result *v1alpha1.AthenaDatabase, err error) {
 	result = &v1alpha1.AthenaDatabase{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("athenadatabases").
 		Body(athenaDatabase).
 		Do().
@@ -118,6 +124,7 @@ func (c *athenaDatabases) Create(athenaDatabase *v1alpha1.AthenaDatabase) (resul
 func (c *athenaDatabases) Update(athenaDatabase *v1alpha1.AthenaDatabase) (result *v1alpha1.AthenaDatabase, err error) {
 	result = &v1alpha1.AthenaDatabase{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("athenadatabases").
 		Name(athenaDatabase.Name).
 		Body(athenaDatabase).
@@ -132,6 +139,7 @@ func (c *athenaDatabases) Update(athenaDatabase *v1alpha1.AthenaDatabase) (resul
 func (c *athenaDatabases) UpdateStatus(athenaDatabase *v1alpha1.AthenaDatabase) (result *v1alpha1.AthenaDatabase, err error) {
 	result = &v1alpha1.AthenaDatabase{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("athenadatabases").
 		Name(athenaDatabase.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *athenaDatabases) UpdateStatus(athenaDatabase *v1alpha1.AthenaDatabase) 
 // Delete takes name of the athenaDatabase and deletes it. Returns an error if one occurs.
 func (c *athenaDatabases) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("athenadatabases").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *athenaDatabases) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("athenadatabases").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *athenaDatabases) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *athenaDatabases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AthenaDatabase, err error) {
 	result = &v1alpha1.AthenaDatabase{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("athenadatabases").
 		SubResource(subresources...).
 		Name(name).

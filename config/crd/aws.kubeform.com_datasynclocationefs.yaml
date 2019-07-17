@@ -397,12 +397,33 @@ spec:
           type: object
         spec:
           properties:
-            ec2_config:
-              items: {}
+            ec2Config:
+              items:
+                properties:
+                  securityGroupArns:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                  subnetArn:
+                    type: string
+                required:
+                - securityGroupArns
+                - subnetArn
+                type: object
               maxItems: 1
               type: array
-            efs_file_system_arn:
+            efsFileSystemArn:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             subdirectory:
               type: string
             tags:
@@ -410,8 +431,9 @@ spec:
                 type: string
               type: object
           required:
-          - ec2_config
-          - efs_file_system_arn
+          - ec2Config
+          - efsFileSystemArn
+          - providerRef
           type: object
         status:
           properties:
@@ -422,6 +444,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -31,6 +31,7 @@ import (
 // FakeConfigConfigurationAggregators implements ConfigConfigurationAggregatorInterface
 type FakeConfigConfigurationAggregators struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var configconfigurationaggregatorsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "configconfigurationaggregators"}
@@ -40,7 +41,8 @@ var configconfigurationaggregatorsKind = schema.GroupVersionKind{Group: "aws.kub
 // Get takes name of the configConfigurationAggregator, and returns the corresponding configConfigurationAggregator object, and an error if there is any.
 func (c *FakeConfigConfigurationAggregators) Get(name string, options v1.GetOptions) (result *v1alpha1.ConfigConfigurationAggregator, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(configconfigurationaggregatorsResource, name), &v1alpha1.ConfigConfigurationAggregator{})
+		Invokes(testing.NewGetAction(configconfigurationaggregatorsResource, c.ns, name), &v1alpha1.ConfigConfigurationAggregator{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeConfigConfigurationAggregators) Get(name string, options v1.GetOpti
 // List takes label and field selectors, and returns the list of ConfigConfigurationAggregators that match those selectors.
 func (c *FakeConfigConfigurationAggregators) List(opts v1.ListOptions) (result *v1alpha1.ConfigConfigurationAggregatorList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(configconfigurationaggregatorsResource, configconfigurationaggregatorsKind, opts), &v1alpha1.ConfigConfigurationAggregatorList{})
+		Invokes(testing.NewListAction(configconfigurationaggregatorsResource, configconfigurationaggregatorsKind, c.ns, opts), &v1alpha1.ConfigConfigurationAggregatorList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeConfigConfigurationAggregators) List(opts v1.ListOptions) (result *
 // Watch returns a watch.Interface that watches the requested configConfigurationAggregators.
 func (c *FakeConfigConfigurationAggregators) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(configconfigurationaggregatorsResource, opts))
+		InvokesWatch(testing.NewWatchAction(configconfigurationaggregatorsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a configConfigurationAggregator and creates it.  Returns the server's representation of the configConfigurationAggregator, and an error, if there is any.
 func (c *FakeConfigConfigurationAggregators) Create(configConfigurationAggregator *v1alpha1.ConfigConfigurationAggregator) (result *v1alpha1.ConfigConfigurationAggregator, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(configconfigurationaggregatorsResource, configConfigurationAggregator), &v1alpha1.ConfigConfigurationAggregator{})
+		Invokes(testing.NewCreateAction(configconfigurationaggregatorsResource, c.ns, configConfigurationAggregator), &v1alpha1.ConfigConfigurationAggregator{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeConfigConfigurationAggregators) Create(configConfigurationAggregato
 // Update takes the representation of a configConfigurationAggregator and updates it. Returns the server's representation of the configConfigurationAggregator, and an error, if there is any.
 func (c *FakeConfigConfigurationAggregators) Update(configConfigurationAggregator *v1alpha1.ConfigConfigurationAggregator) (result *v1alpha1.ConfigConfigurationAggregator, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(configconfigurationaggregatorsResource, configConfigurationAggregator), &v1alpha1.ConfigConfigurationAggregator{})
+		Invokes(testing.NewUpdateAction(configconfigurationaggregatorsResource, c.ns, configConfigurationAggregator), &v1alpha1.ConfigConfigurationAggregator{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeConfigConfigurationAggregators) Update(configConfigurationAggregato
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeConfigConfigurationAggregators) UpdateStatus(configConfigurationAggregator *v1alpha1.ConfigConfigurationAggregator) (*v1alpha1.ConfigConfigurationAggregator, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(configconfigurationaggregatorsResource, "status", configConfigurationAggregator), &v1alpha1.ConfigConfigurationAggregator{})
+		Invokes(testing.NewUpdateSubresourceAction(configconfigurationaggregatorsResource, "status", c.ns, configConfigurationAggregator), &v1alpha1.ConfigConfigurationAggregator{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeConfigConfigurationAggregators) UpdateStatus(configConfigurationAgg
 // Delete takes name of the configConfigurationAggregator and deletes it. Returns an error if one occurs.
 func (c *FakeConfigConfigurationAggregators) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(configconfigurationaggregatorsResource, name), &v1alpha1.ConfigConfigurationAggregator{})
+		Invokes(testing.NewDeleteAction(configconfigurationaggregatorsResource, c.ns, name), &v1alpha1.ConfigConfigurationAggregator{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeConfigConfigurationAggregators) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(configconfigurationaggregatorsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(configconfigurationaggregatorsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ConfigConfigurationAggregatorList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeConfigConfigurationAggregators) DeleteCollection(options *v1.Delete
 // Patch applies the patch and returns the patched configConfigurationAggregator.
 func (c *FakeConfigConfigurationAggregators) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ConfigConfigurationAggregator, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(configconfigurationaggregatorsResource, name, pt, data, subresources...), &v1alpha1.ConfigConfigurationAggregator{})
+		Invokes(testing.NewPatchSubresourceAction(configconfigurationaggregatorsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ConfigConfigurationAggregator{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// VpcDhcpOptionsAssociationsGetter has a method to return a VpcDhcpOptionsAssociationInterface.
+// VpcDHCPOptionsAssociationsGetter has a method to return a VpcDHCPOptionsAssociationInterface.
 // A group's client should implement this interface.
-type VpcDhcpOptionsAssociationsGetter interface {
-	VpcDhcpOptionsAssociations() VpcDhcpOptionsAssociationInterface
+type VpcDHCPOptionsAssociationsGetter interface {
+	VpcDHCPOptionsAssociations(namespace string) VpcDHCPOptionsAssociationInterface
 }
 
-// VpcDhcpOptionsAssociationInterface has methods to work with VpcDhcpOptionsAssociation resources.
-type VpcDhcpOptionsAssociationInterface interface {
-	Create(*v1alpha1.VpcDhcpOptionsAssociation) (*v1alpha1.VpcDhcpOptionsAssociation, error)
-	Update(*v1alpha1.VpcDhcpOptionsAssociation) (*v1alpha1.VpcDhcpOptionsAssociation, error)
-	UpdateStatus(*v1alpha1.VpcDhcpOptionsAssociation) (*v1alpha1.VpcDhcpOptionsAssociation, error)
+// VpcDHCPOptionsAssociationInterface has methods to work with VpcDHCPOptionsAssociation resources.
+type VpcDHCPOptionsAssociationInterface interface {
+	Create(*v1alpha1.VpcDHCPOptionsAssociation) (*v1alpha1.VpcDHCPOptionsAssociation, error)
+	Update(*v1alpha1.VpcDHCPOptionsAssociation) (*v1alpha1.VpcDHCPOptionsAssociation, error)
+	UpdateStatus(*v1alpha1.VpcDHCPOptionsAssociation) (*v1alpha1.VpcDHCPOptionsAssociation, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.VpcDhcpOptionsAssociation, error)
-	List(opts v1.ListOptions) (*v1alpha1.VpcDhcpOptionsAssociationList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.VpcDHCPOptionsAssociation, error)
+	List(opts v1.ListOptions) (*v1alpha1.VpcDHCPOptionsAssociationList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcDhcpOptionsAssociation, err error)
-	VpcDhcpOptionsAssociationExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcDHCPOptionsAssociation, err error)
+	VpcDHCPOptionsAssociationExpansion
 }
 
-// vpcDhcpOptionsAssociations implements VpcDhcpOptionsAssociationInterface
-type vpcDhcpOptionsAssociations struct {
+// vpcDHCPOptionsAssociations implements VpcDHCPOptionsAssociationInterface
+type vpcDHCPOptionsAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
-// newVpcDhcpOptionsAssociations returns a VpcDhcpOptionsAssociations
-func newVpcDhcpOptionsAssociations(c *AwsV1alpha1Client) *vpcDhcpOptionsAssociations {
-	return &vpcDhcpOptionsAssociations{
+// newVpcDHCPOptionsAssociations returns a VpcDHCPOptionsAssociations
+func newVpcDHCPOptionsAssociations(c *AwsV1alpha1Client, namespace string) *vpcDHCPOptionsAssociations {
+	return &vpcDHCPOptionsAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the vpcDhcpOptionsAssociation, and returns the corresponding vpcDhcpOptionsAssociation object, and an error if there is any.
-func (c *vpcDhcpOptionsAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcDhcpOptionsAssociation, err error) {
-	result = &v1alpha1.VpcDhcpOptionsAssociation{}
+// Get takes name of the vpcDHCPOptionsAssociation, and returns the corresponding vpcDHCPOptionsAssociation object, and an error if there is any.
+func (c *vpcDHCPOptionsAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcDHCPOptionsAssociation, err error) {
+	result = &v1alpha1.VpcDHCPOptionsAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcdhcpoptionsassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *vpcDhcpOptionsAssociations) Get(name string, options v1.GetOptions) (re
 	return
 }
 
-// List takes label and field selectors, and returns the list of VpcDhcpOptionsAssociations that match those selectors.
-func (c *vpcDhcpOptionsAssociations) List(opts v1.ListOptions) (result *v1alpha1.VpcDhcpOptionsAssociationList, err error) {
+// List takes label and field selectors, and returns the list of VpcDHCPOptionsAssociations that match those selectors.
+func (c *vpcDHCPOptionsAssociations) List(opts v1.ListOptions) (result *v1alpha1.VpcDHCPOptionsAssociationList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.VpcDhcpOptionsAssociationList{}
+	result = &v1alpha1.VpcDHCPOptionsAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcdhcpoptionsassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *vpcDhcpOptionsAssociations) List(opts v1.ListOptions) (result *v1alpha1
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested vpcDhcpOptionsAssociations.
-func (c *vpcDhcpOptionsAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested vpcDHCPOptionsAssociations.
+func (c *vpcDHCPOptionsAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcdhcpoptionsassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a vpcDhcpOptionsAssociation and creates it.  Returns the server's representation of the vpcDhcpOptionsAssociation, and an error, if there is any.
-func (c *vpcDhcpOptionsAssociations) Create(vpcDhcpOptionsAssociation *v1alpha1.VpcDhcpOptionsAssociation) (result *v1alpha1.VpcDhcpOptionsAssociation, err error) {
-	result = &v1alpha1.VpcDhcpOptionsAssociation{}
+// Create takes the representation of a vpcDHCPOptionsAssociation and creates it.  Returns the server's representation of the vpcDHCPOptionsAssociation, and an error, if there is any.
+func (c *vpcDHCPOptionsAssociations) Create(vpcDHCPOptionsAssociation *v1alpha1.VpcDHCPOptionsAssociation) (result *v1alpha1.VpcDHCPOptionsAssociation, err error) {
+	result = &v1alpha1.VpcDHCPOptionsAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("vpcdhcpoptionsassociations").
-		Body(vpcDhcpOptionsAssociation).
+		Body(vpcDHCPOptionsAssociation).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a vpcDhcpOptionsAssociation and updates it. Returns the server's representation of the vpcDhcpOptionsAssociation, and an error, if there is any.
-func (c *vpcDhcpOptionsAssociations) Update(vpcDhcpOptionsAssociation *v1alpha1.VpcDhcpOptionsAssociation) (result *v1alpha1.VpcDhcpOptionsAssociation, err error) {
-	result = &v1alpha1.VpcDhcpOptionsAssociation{}
+// Update takes the representation of a vpcDHCPOptionsAssociation and updates it. Returns the server's representation of the vpcDHCPOptionsAssociation, and an error, if there is any.
+func (c *vpcDHCPOptionsAssociations) Update(vpcDHCPOptionsAssociation *v1alpha1.VpcDHCPOptionsAssociation) (result *v1alpha1.VpcDHCPOptionsAssociation, err error) {
+	result = &v1alpha1.VpcDHCPOptionsAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcdhcpoptionsassociations").
-		Name(vpcDhcpOptionsAssociation.Name).
-		Body(vpcDhcpOptionsAssociation).
+		Name(vpcDHCPOptionsAssociation.Name).
+		Body(vpcDHCPOptionsAssociation).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *vpcDhcpOptionsAssociations) Update(vpcDhcpOptionsAssociation *v1alpha1.
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *vpcDhcpOptionsAssociations) UpdateStatus(vpcDhcpOptionsAssociation *v1alpha1.VpcDhcpOptionsAssociation) (result *v1alpha1.VpcDhcpOptionsAssociation, err error) {
-	result = &v1alpha1.VpcDhcpOptionsAssociation{}
+func (c *vpcDHCPOptionsAssociations) UpdateStatus(vpcDHCPOptionsAssociation *v1alpha1.VpcDHCPOptionsAssociation) (result *v1alpha1.VpcDHCPOptionsAssociation, err error) {
+	result = &v1alpha1.VpcDHCPOptionsAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcdhcpoptionsassociations").
-		Name(vpcDhcpOptionsAssociation.Name).
+		Name(vpcDHCPOptionsAssociation.Name).
 		SubResource("status").
-		Body(vpcDhcpOptionsAssociation).
+		Body(vpcDHCPOptionsAssociation).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the vpcDhcpOptionsAssociation and deletes it. Returns an error if one occurs.
-func (c *vpcDhcpOptionsAssociations) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the vpcDHCPOptionsAssociation and deletes it. Returns an error if one occurs.
+func (c *vpcDHCPOptionsAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcdhcpoptionsassociations").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *vpcDhcpOptionsAssociations) Delete(name string, options *v1.DeleteOptio
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *vpcDhcpOptionsAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *vpcDHCPOptionsAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcdhcpoptionsassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *vpcDhcpOptionsAssociations) DeleteCollection(options *v1.DeleteOptions,
 		Error()
 }
 
-// Patch applies the patch and returns the patched vpcDhcpOptionsAssociation.
-func (c *vpcDhcpOptionsAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcDhcpOptionsAssociation, err error) {
-	result = &v1alpha1.VpcDhcpOptionsAssociation{}
+// Patch applies the patch and returns the patched vpcDHCPOptionsAssociation.
+func (c *vpcDHCPOptionsAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcDHCPOptionsAssociation, err error) {
+	result = &v1alpha1.VpcDHCPOptionsAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("vpcdhcpoptionsassociations").
 		SubResource(subresources...).
 		Name(name).

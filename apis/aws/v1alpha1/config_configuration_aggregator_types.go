@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,31 +20,32 @@ type ConfigConfigurationAggregator struct {
 
 type ConfigConfigurationAggregatorSpecAccountAggregationSource struct {
 	// +kubebuilder:validation:MinItems=1
-	AccountIds []string `json:"account_ids"`
+	AccountIDS []string `json:"accountIDS" tf:"account_ids"`
 	// +optional
-	AllRegions bool `json:"all_regions,omitempty"`
+	AllRegions bool `json:"allRegions,omitempty" tf:"all_regions,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MinItems=1
-	Regions []string `json:"regions,omitempty"`
+	Regions []string `json:"regions,omitempty" tf:"regions,omitempty"`
 }
 
 type ConfigConfigurationAggregatorSpecOrganizationAggregationSource struct {
 	// +optional
-	AllRegions bool `json:"all_regions,omitempty"`
+	AllRegions bool `json:"allRegions,omitempty" tf:"all_regions,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MinItems=1
-	Regions []string `json:"regions,omitempty"`
-	RoleArn string   `json:"role_arn"`
+	Regions []string `json:"regions,omitempty" tf:"regions,omitempty"`
+	RoleArn string   `json:"roleArn" tf:"role_arn"`
 }
 
 type ConfigConfigurationAggregatorSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	AccountAggregationSource *[]ConfigConfigurationAggregatorSpec `json:"account_aggregation_source,omitempty"`
-	Name                     string                               `json:"name"`
+	AccountAggregationSource []ConfigConfigurationAggregatorSpecAccountAggregationSource `json:"accountAggregationSource,omitempty" tf:"account_aggregation_source,omitempty"`
+	Name                     string                                                      `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	OrganizationAggregationSource *[]ConfigConfigurationAggregatorSpec `json:"organization_aggregation_source,omitempty"`
+	OrganizationAggregationSource []ConfigConfigurationAggregatorSpecOrganizationAggregationSource `json:"organizationAggregationSource,omitempty" tf:"organization_aggregation_source,omitempty"`
+	ProviderRef                   core.LocalObjectReference                                        `json:"providerRef" tf:"-"`
 }
 
 type ConfigConfigurationAggregatorStatus struct {
@@ -52,7 +53,9 @@ type ConfigConfigurationAggregatorStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -31,6 +31,7 @@ import (
 // FakeSesDomainIdentityVerifications implements SesDomainIdentityVerificationInterface
 type FakeSesDomainIdentityVerifications struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var sesdomainidentityverificationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "sesdomainidentityverifications"}
@@ -40,7 +41,8 @@ var sesdomainidentityverificationsKind = schema.GroupVersionKind{Group: "aws.kub
 // Get takes name of the sesDomainIdentityVerification, and returns the corresponding sesDomainIdentityVerification object, and an error if there is any.
 func (c *FakeSesDomainIdentityVerifications) Get(name string, options v1.GetOptions) (result *v1alpha1.SesDomainIdentityVerification, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sesdomainidentityverificationsResource, name), &v1alpha1.SesDomainIdentityVerification{})
+		Invokes(testing.NewGetAction(sesdomainidentityverificationsResource, c.ns, name), &v1alpha1.SesDomainIdentityVerification{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSesDomainIdentityVerifications) Get(name string, options v1.GetOpti
 // List takes label and field selectors, and returns the list of SesDomainIdentityVerifications that match those selectors.
 func (c *FakeSesDomainIdentityVerifications) List(opts v1.ListOptions) (result *v1alpha1.SesDomainIdentityVerificationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sesdomainidentityverificationsResource, sesdomainidentityverificationsKind, opts), &v1alpha1.SesDomainIdentityVerificationList{})
+		Invokes(testing.NewListAction(sesdomainidentityverificationsResource, sesdomainidentityverificationsKind, c.ns, opts), &v1alpha1.SesDomainIdentityVerificationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSesDomainIdentityVerifications) List(opts v1.ListOptions) (result *
 // Watch returns a watch.Interface that watches the requested sesDomainIdentityVerifications.
 func (c *FakeSesDomainIdentityVerifications) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sesdomainidentityverificationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(sesdomainidentityverificationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sesDomainIdentityVerification and creates it.  Returns the server's representation of the sesDomainIdentityVerification, and an error, if there is any.
 func (c *FakeSesDomainIdentityVerifications) Create(sesDomainIdentityVerification *v1alpha1.SesDomainIdentityVerification) (result *v1alpha1.SesDomainIdentityVerification, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sesdomainidentityverificationsResource, sesDomainIdentityVerification), &v1alpha1.SesDomainIdentityVerification{})
+		Invokes(testing.NewCreateAction(sesdomainidentityverificationsResource, c.ns, sesDomainIdentityVerification), &v1alpha1.SesDomainIdentityVerification{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSesDomainIdentityVerifications) Create(sesDomainIdentityVerificatio
 // Update takes the representation of a sesDomainIdentityVerification and updates it. Returns the server's representation of the sesDomainIdentityVerification, and an error, if there is any.
 func (c *FakeSesDomainIdentityVerifications) Update(sesDomainIdentityVerification *v1alpha1.SesDomainIdentityVerification) (result *v1alpha1.SesDomainIdentityVerification, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sesdomainidentityverificationsResource, sesDomainIdentityVerification), &v1alpha1.SesDomainIdentityVerification{})
+		Invokes(testing.NewUpdateAction(sesdomainidentityverificationsResource, c.ns, sesDomainIdentityVerification), &v1alpha1.SesDomainIdentityVerification{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSesDomainIdentityVerifications) Update(sesDomainIdentityVerificatio
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSesDomainIdentityVerifications) UpdateStatus(sesDomainIdentityVerification *v1alpha1.SesDomainIdentityVerification) (*v1alpha1.SesDomainIdentityVerification, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sesdomainidentityverificationsResource, "status", sesDomainIdentityVerification), &v1alpha1.SesDomainIdentityVerification{})
+		Invokes(testing.NewUpdateSubresourceAction(sesdomainidentityverificationsResource, "status", c.ns, sesDomainIdentityVerification), &v1alpha1.SesDomainIdentityVerification{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSesDomainIdentityVerifications) UpdateStatus(sesDomainIdentityVerif
 // Delete takes name of the sesDomainIdentityVerification and deletes it. Returns an error if one occurs.
 func (c *FakeSesDomainIdentityVerifications) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sesdomainidentityverificationsResource, name), &v1alpha1.SesDomainIdentityVerification{})
+		Invokes(testing.NewDeleteAction(sesdomainidentityverificationsResource, c.ns, name), &v1alpha1.SesDomainIdentityVerification{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSesDomainIdentityVerifications) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sesdomainidentityverificationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sesdomainidentityverificationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SesDomainIdentityVerificationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSesDomainIdentityVerifications) DeleteCollection(options *v1.Delete
 // Patch applies the patch and returns the patched sesDomainIdentityVerification.
 func (c *FakeSesDomainIdentityVerifications) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesDomainIdentityVerification, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sesdomainidentityverificationsResource, name, pt, data, subresources...), &v1alpha1.SesDomainIdentityVerification{})
+		Invokes(testing.NewPatchSubresourceAction(sesdomainidentityverificationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SesDomainIdentityVerification{})
+
 	if obj == nil {
 		return nil, err
 	}

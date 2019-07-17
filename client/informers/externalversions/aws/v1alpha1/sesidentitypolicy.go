@@ -41,32 +41,33 @@ type SesIdentityPolicyInformer interface {
 type sesIdentityPolicyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSesIdentityPolicyInformer constructs a new informer for SesIdentityPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSesIdentityPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSesIdentityPolicyInformer(client, resyncPeriod, indexers, nil)
+func NewSesIdentityPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSesIdentityPolicyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSesIdentityPolicyInformer constructs a new informer for SesIdentityPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSesIdentityPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSesIdentityPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SesIdentityPolicies().List(options)
+				return client.AwsV1alpha1().SesIdentityPolicies(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SesIdentityPolicies().Watch(options)
+				return client.AwsV1alpha1().SesIdentityPolicies(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.SesIdentityPolicy{},
@@ -76,7 +77,7 @@ func NewFilteredSesIdentityPolicyInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *sesIdentityPolicyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSesIdentityPolicyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSesIdentityPolicyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *sesIdentityPolicyInformer) Informer() cache.SharedIndexInformer {

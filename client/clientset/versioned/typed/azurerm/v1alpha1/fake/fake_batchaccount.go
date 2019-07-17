@@ -31,6 +31,7 @@ import (
 // FakeBatchAccounts implements BatchAccountInterface
 type FakeBatchAccounts struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var batchaccountsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "batchaccounts"}
@@ -40,7 +41,8 @@ var batchaccountsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", V
 // Get takes name of the batchAccount, and returns the corresponding batchAccount object, and an error if there is any.
 func (c *FakeBatchAccounts) Get(name string, options v1.GetOptions) (result *v1alpha1.BatchAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(batchaccountsResource, name), &v1alpha1.BatchAccount{})
+		Invokes(testing.NewGetAction(batchaccountsResource, c.ns, name), &v1alpha1.BatchAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeBatchAccounts) Get(name string, options v1.GetOptions) (result *v1a
 // List takes label and field selectors, and returns the list of BatchAccounts that match those selectors.
 func (c *FakeBatchAccounts) List(opts v1.ListOptions) (result *v1alpha1.BatchAccountList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(batchaccountsResource, batchaccountsKind, opts), &v1alpha1.BatchAccountList{})
+		Invokes(testing.NewListAction(batchaccountsResource, batchaccountsKind, c.ns, opts), &v1alpha1.BatchAccountList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeBatchAccounts) List(opts v1.ListOptions) (result *v1alpha1.BatchAcc
 // Watch returns a watch.Interface that watches the requested batchAccounts.
 func (c *FakeBatchAccounts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(batchaccountsResource, opts))
+		InvokesWatch(testing.NewWatchAction(batchaccountsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a batchAccount and creates it.  Returns the server's representation of the batchAccount, and an error, if there is any.
 func (c *FakeBatchAccounts) Create(batchAccount *v1alpha1.BatchAccount) (result *v1alpha1.BatchAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(batchaccountsResource, batchAccount), &v1alpha1.BatchAccount{})
+		Invokes(testing.NewCreateAction(batchaccountsResource, c.ns, batchAccount), &v1alpha1.BatchAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeBatchAccounts) Create(batchAccount *v1alpha1.BatchAccount) (result 
 // Update takes the representation of a batchAccount and updates it. Returns the server's representation of the batchAccount, and an error, if there is any.
 func (c *FakeBatchAccounts) Update(batchAccount *v1alpha1.BatchAccount) (result *v1alpha1.BatchAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(batchaccountsResource, batchAccount), &v1alpha1.BatchAccount{})
+		Invokes(testing.NewUpdateAction(batchaccountsResource, c.ns, batchAccount), &v1alpha1.BatchAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeBatchAccounts) Update(batchAccount *v1alpha1.BatchAccount) (result 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeBatchAccounts) UpdateStatus(batchAccount *v1alpha1.BatchAccount) (*v1alpha1.BatchAccount, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(batchaccountsResource, "status", batchAccount), &v1alpha1.BatchAccount{})
+		Invokes(testing.NewUpdateSubresourceAction(batchaccountsResource, "status", c.ns, batchAccount), &v1alpha1.BatchAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeBatchAccounts) UpdateStatus(batchAccount *v1alpha1.BatchAccount) (*
 // Delete takes name of the batchAccount and deletes it. Returns an error if one occurs.
 func (c *FakeBatchAccounts) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(batchaccountsResource, name), &v1alpha1.BatchAccount{})
+		Invokes(testing.NewDeleteAction(batchaccountsResource, c.ns, name), &v1alpha1.BatchAccount{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeBatchAccounts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(batchaccountsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(batchaccountsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.BatchAccountList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeBatchAccounts) DeleteCollection(options *v1.DeleteOptions, listOpti
 // Patch applies the patch and returns the patched batchAccount.
 func (c *FakeBatchAccounts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BatchAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(batchaccountsResource, name, pt, data, subresources...), &v1alpha1.BatchAccount{})
+		Invokes(testing.NewPatchSubresourceAction(batchaccountsResource, c.ns, name, pt, data, subresources...), &v1alpha1.BatchAccount{})
+
 	if obj == nil {
 		return nil, err
 	}

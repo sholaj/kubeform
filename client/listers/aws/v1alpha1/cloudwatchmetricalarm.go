@@ -29,8 +29,8 @@ import (
 type CloudwatchMetricAlarmLister interface {
 	// List lists all CloudwatchMetricAlarms in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CloudwatchMetricAlarm, err error)
-	// Get retrieves the CloudwatchMetricAlarm from the index for a given name.
-	Get(name string) (*v1alpha1.CloudwatchMetricAlarm, error)
+	// CloudwatchMetricAlarms returns an object that can list and get CloudwatchMetricAlarms.
+	CloudwatchMetricAlarms(namespace string) CloudwatchMetricAlarmNamespaceLister
 	CloudwatchMetricAlarmListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cloudwatchMetricAlarmLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the CloudwatchMetricAlarm from the index for a given name.
-func (s *cloudwatchMetricAlarmLister) Get(name string) (*v1alpha1.CloudwatchMetricAlarm, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CloudwatchMetricAlarms returns an object that can list and get CloudwatchMetricAlarms.
+func (s *cloudwatchMetricAlarmLister) CloudwatchMetricAlarms(namespace string) CloudwatchMetricAlarmNamespaceLister {
+	return cloudwatchMetricAlarmNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CloudwatchMetricAlarmNamespaceLister helps list and get CloudwatchMetricAlarms.
+type CloudwatchMetricAlarmNamespaceLister interface {
+	// List lists all CloudwatchMetricAlarms in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CloudwatchMetricAlarm, err error)
+	// Get retrieves the CloudwatchMetricAlarm from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CloudwatchMetricAlarm, error)
+	CloudwatchMetricAlarmNamespaceListerExpansion
+}
+
+// cloudwatchMetricAlarmNamespaceLister implements the CloudwatchMetricAlarmNamespaceLister
+// interface.
+type cloudwatchMetricAlarmNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CloudwatchMetricAlarms in the indexer for a given namespace.
+func (s cloudwatchMetricAlarmNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CloudwatchMetricAlarm, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CloudwatchMetricAlarm))
+	})
+	return ret, err
+}
+
+// Get retrieves the CloudwatchMetricAlarm from the indexer for a given namespace and name.
+func (s cloudwatchMetricAlarmNamespaceLister) Get(name string) (*v1alpha1.CloudwatchMetricAlarm, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

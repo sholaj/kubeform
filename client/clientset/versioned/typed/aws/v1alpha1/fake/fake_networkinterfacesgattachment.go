@@ -31,6 +31,7 @@ import (
 // FakeNetworkInterfaceSgAttachments implements NetworkInterfaceSgAttachmentInterface
 type FakeNetworkInterfaceSgAttachments struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var networkinterfacesgattachmentsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "networkinterfacesgattachments"}
@@ -40,7 +41,8 @@ var networkinterfacesgattachmentsKind = schema.GroupVersionKind{Group: "aws.kube
 // Get takes name of the networkInterfaceSgAttachment, and returns the corresponding networkInterfaceSgAttachment object, and an error if there is any.
 func (c *FakeNetworkInterfaceSgAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkInterfaceSgAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(networkinterfacesgattachmentsResource, name), &v1alpha1.NetworkInterfaceSgAttachment{})
+		Invokes(testing.NewGetAction(networkinterfacesgattachmentsResource, c.ns, name), &v1alpha1.NetworkInterfaceSgAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeNetworkInterfaceSgAttachments) Get(name string, options v1.GetOptio
 // List takes label and field selectors, and returns the list of NetworkInterfaceSgAttachments that match those selectors.
 func (c *FakeNetworkInterfaceSgAttachments) List(opts v1.ListOptions) (result *v1alpha1.NetworkInterfaceSgAttachmentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(networkinterfacesgattachmentsResource, networkinterfacesgattachmentsKind, opts), &v1alpha1.NetworkInterfaceSgAttachmentList{})
+		Invokes(testing.NewListAction(networkinterfacesgattachmentsResource, networkinterfacesgattachmentsKind, c.ns, opts), &v1alpha1.NetworkInterfaceSgAttachmentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeNetworkInterfaceSgAttachments) List(opts v1.ListOptions) (result *v
 // Watch returns a watch.Interface that watches the requested networkInterfaceSgAttachments.
 func (c *FakeNetworkInterfaceSgAttachments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(networkinterfacesgattachmentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(networkinterfacesgattachmentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a networkInterfaceSgAttachment and creates it.  Returns the server's representation of the networkInterfaceSgAttachment, and an error, if there is any.
 func (c *FakeNetworkInterfaceSgAttachments) Create(networkInterfaceSgAttachment *v1alpha1.NetworkInterfaceSgAttachment) (result *v1alpha1.NetworkInterfaceSgAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(networkinterfacesgattachmentsResource, networkInterfaceSgAttachment), &v1alpha1.NetworkInterfaceSgAttachment{})
+		Invokes(testing.NewCreateAction(networkinterfacesgattachmentsResource, c.ns, networkInterfaceSgAttachment), &v1alpha1.NetworkInterfaceSgAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeNetworkInterfaceSgAttachments) Create(networkInterfaceSgAttachment 
 // Update takes the representation of a networkInterfaceSgAttachment and updates it. Returns the server's representation of the networkInterfaceSgAttachment, and an error, if there is any.
 func (c *FakeNetworkInterfaceSgAttachments) Update(networkInterfaceSgAttachment *v1alpha1.NetworkInterfaceSgAttachment) (result *v1alpha1.NetworkInterfaceSgAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(networkinterfacesgattachmentsResource, networkInterfaceSgAttachment), &v1alpha1.NetworkInterfaceSgAttachment{})
+		Invokes(testing.NewUpdateAction(networkinterfacesgattachmentsResource, c.ns, networkInterfaceSgAttachment), &v1alpha1.NetworkInterfaceSgAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeNetworkInterfaceSgAttachments) Update(networkInterfaceSgAttachment 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNetworkInterfaceSgAttachments) UpdateStatus(networkInterfaceSgAttachment *v1alpha1.NetworkInterfaceSgAttachment) (*v1alpha1.NetworkInterfaceSgAttachment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(networkinterfacesgattachmentsResource, "status", networkInterfaceSgAttachment), &v1alpha1.NetworkInterfaceSgAttachment{})
+		Invokes(testing.NewUpdateSubresourceAction(networkinterfacesgattachmentsResource, "status", c.ns, networkInterfaceSgAttachment), &v1alpha1.NetworkInterfaceSgAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeNetworkInterfaceSgAttachments) UpdateStatus(networkInterfaceSgAttac
 // Delete takes name of the networkInterfaceSgAttachment and deletes it. Returns an error if one occurs.
 func (c *FakeNetworkInterfaceSgAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(networkinterfacesgattachmentsResource, name), &v1alpha1.NetworkInterfaceSgAttachment{})
+		Invokes(testing.NewDeleteAction(networkinterfacesgattachmentsResource, c.ns, name), &v1alpha1.NetworkInterfaceSgAttachment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNetworkInterfaceSgAttachments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(networkinterfacesgattachmentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(networkinterfacesgattachmentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NetworkInterfaceSgAttachmentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeNetworkInterfaceSgAttachments) DeleteCollection(options *v1.DeleteO
 // Patch applies the patch and returns the patched networkInterfaceSgAttachment.
 func (c *FakeNetworkInterfaceSgAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkInterfaceSgAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(networkinterfacesgattachmentsResource, name, pt, data, subresources...), &v1alpha1.NetworkInterfaceSgAttachment{})
+		Invokes(testing.NewPatchSubresourceAction(networkinterfacesgattachmentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.NetworkInterfaceSgAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}

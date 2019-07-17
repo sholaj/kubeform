@@ -397,29 +397,81 @@ spec:
           type: object
         spec:
           properties:
-            eventhub_authorization_rule_id:
+            eventhubAuthorizationRuleID:
               type: string
-            eventhub_name:
+            eventhubName:
               type: string
             log:
-              items: {}
+              items:
+                properties:
+                  category:
+                    type: string
+                  enabled:
+                    type: boolean
+                  retentionPolicy:
+                    items:
+                      properties:
+                        days:
+                          type: integer
+                        enabled:
+                          type: boolean
+                      required:
+                      - enabled
+                      type: object
+                    maxItems: 1
+                    type: array
+                required:
+                - category
+                - retentionPolicy
+                type: object
               type: array
               uniqueItems: true
-            log_analytics_workspace_id:
+            logAnalyticsWorkspaceID:
               type: string
             metric:
-              items: {}
+              items:
+                properties:
+                  category:
+                    type: string
+                  enabled:
+                    type: boolean
+                  retentionPolicy:
+                    items:
+                      properties:
+                        days:
+                          type: integer
+                        enabled:
+                          type: boolean
+                      required:
+                      - enabled
+                      type: object
+                    maxItems: 1
+                    type: array
+                required:
+                - category
+                - retentionPolicy
+                type: object
               type: array
               uniqueItems: true
             name:
               type: string
-            storage_account_id:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            storageAccountID:
               type: string
-            target_resource_id:
+            targetResourceID:
               type: string
           required:
           - name
-          - target_resource_id
+          - providerRef
+          - targetResourceID
           type: object
         status:
           properties:
@@ -430,6 +482,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -31,6 +31,7 @@ import (
 // FakeDataLakeAnalyticsFirewallRules implements DataLakeAnalyticsFirewallRuleInterface
 type FakeDataLakeAnalyticsFirewallRules struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var datalakeanalyticsfirewallrulesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "datalakeanalyticsfirewallrules"}
@@ -40,7 +41,8 @@ var datalakeanalyticsfirewallrulesKind = schema.GroupVersionKind{Group: "azurerm
 // Get takes name of the dataLakeAnalyticsFirewallRule, and returns the corresponding dataLakeAnalyticsFirewallRule object, and an error if there is any.
 func (c *FakeDataLakeAnalyticsFirewallRules) Get(name string, options v1.GetOptions) (result *v1alpha1.DataLakeAnalyticsFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(datalakeanalyticsfirewallrulesResource, name), &v1alpha1.DataLakeAnalyticsFirewallRule{})
+		Invokes(testing.NewGetAction(datalakeanalyticsfirewallrulesResource, c.ns, name), &v1alpha1.DataLakeAnalyticsFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDataLakeAnalyticsFirewallRules) Get(name string, options v1.GetOpti
 // List takes label and field selectors, and returns the list of DataLakeAnalyticsFirewallRules that match those selectors.
 func (c *FakeDataLakeAnalyticsFirewallRules) List(opts v1.ListOptions) (result *v1alpha1.DataLakeAnalyticsFirewallRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(datalakeanalyticsfirewallrulesResource, datalakeanalyticsfirewallrulesKind, opts), &v1alpha1.DataLakeAnalyticsFirewallRuleList{})
+		Invokes(testing.NewListAction(datalakeanalyticsfirewallrulesResource, datalakeanalyticsfirewallrulesKind, c.ns, opts), &v1alpha1.DataLakeAnalyticsFirewallRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDataLakeAnalyticsFirewallRules) List(opts v1.ListOptions) (result *
 // Watch returns a watch.Interface that watches the requested dataLakeAnalyticsFirewallRules.
 func (c *FakeDataLakeAnalyticsFirewallRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(datalakeanalyticsfirewallrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(datalakeanalyticsfirewallrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dataLakeAnalyticsFirewallRule and creates it.  Returns the server's representation of the dataLakeAnalyticsFirewallRule, and an error, if there is any.
 func (c *FakeDataLakeAnalyticsFirewallRules) Create(dataLakeAnalyticsFirewallRule *v1alpha1.DataLakeAnalyticsFirewallRule) (result *v1alpha1.DataLakeAnalyticsFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(datalakeanalyticsfirewallrulesResource, dataLakeAnalyticsFirewallRule), &v1alpha1.DataLakeAnalyticsFirewallRule{})
+		Invokes(testing.NewCreateAction(datalakeanalyticsfirewallrulesResource, c.ns, dataLakeAnalyticsFirewallRule), &v1alpha1.DataLakeAnalyticsFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDataLakeAnalyticsFirewallRules) Create(dataLakeAnalyticsFirewallRul
 // Update takes the representation of a dataLakeAnalyticsFirewallRule and updates it. Returns the server's representation of the dataLakeAnalyticsFirewallRule, and an error, if there is any.
 func (c *FakeDataLakeAnalyticsFirewallRules) Update(dataLakeAnalyticsFirewallRule *v1alpha1.DataLakeAnalyticsFirewallRule) (result *v1alpha1.DataLakeAnalyticsFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(datalakeanalyticsfirewallrulesResource, dataLakeAnalyticsFirewallRule), &v1alpha1.DataLakeAnalyticsFirewallRule{})
+		Invokes(testing.NewUpdateAction(datalakeanalyticsfirewallrulesResource, c.ns, dataLakeAnalyticsFirewallRule), &v1alpha1.DataLakeAnalyticsFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDataLakeAnalyticsFirewallRules) Update(dataLakeAnalyticsFirewallRul
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDataLakeAnalyticsFirewallRules) UpdateStatus(dataLakeAnalyticsFirewallRule *v1alpha1.DataLakeAnalyticsFirewallRule) (*v1alpha1.DataLakeAnalyticsFirewallRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(datalakeanalyticsfirewallrulesResource, "status", dataLakeAnalyticsFirewallRule), &v1alpha1.DataLakeAnalyticsFirewallRule{})
+		Invokes(testing.NewUpdateSubresourceAction(datalakeanalyticsfirewallrulesResource, "status", c.ns, dataLakeAnalyticsFirewallRule), &v1alpha1.DataLakeAnalyticsFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDataLakeAnalyticsFirewallRules) UpdateStatus(dataLakeAnalyticsFirew
 // Delete takes name of the dataLakeAnalyticsFirewallRule and deletes it. Returns an error if one occurs.
 func (c *FakeDataLakeAnalyticsFirewallRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(datalakeanalyticsfirewallrulesResource, name), &v1alpha1.DataLakeAnalyticsFirewallRule{})
+		Invokes(testing.NewDeleteAction(datalakeanalyticsfirewallrulesResource, c.ns, name), &v1alpha1.DataLakeAnalyticsFirewallRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDataLakeAnalyticsFirewallRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(datalakeanalyticsfirewallrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(datalakeanalyticsfirewallrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DataLakeAnalyticsFirewallRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDataLakeAnalyticsFirewallRules) DeleteCollection(options *v1.Delete
 // Patch applies the patch and returns the patched dataLakeAnalyticsFirewallRule.
 func (c *FakeDataLakeAnalyticsFirewallRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataLakeAnalyticsFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(datalakeanalyticsfirewallrulesResource, name, pt, data, subresources...), &v1alpha1.DataLakeAnalyticsFirewallRule{})
+		Invokes(testing.NewPatchSubresourceAction(datalakeanalyticsfirewallrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.DataLakeAnalyticsFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}

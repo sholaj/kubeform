@@ -32,7 +32,7 @@ import (
 // LbListenerCertificatesGetter has a method to return a LbListenerCertificateInterface.
 // A group's client should implement this interface.
 type LbListenerCertificatesGetter interface {
-	LbListenerCertificates() LbListenerCertificateInterface
+	LbListenerCertificates(namespace string) LbListenerCertificateInterface
 }
 
 // LbListenerCertificateInterface has methods to work with LbListenerCertificate resources.
@@ -52,12 +52,14 @@ type LbListenerCertificateInterface interface {
 // lbListenerCertificates implements LbListenerCertificateInterface
 type lbListenerCertificates struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLbListenerCertificates returns a LbListenerCertificates
-func newLbListenerCertificates(c *AwsV1alpha1Client) *lbListenerCertificates {
+func newLbListenerCertificates(c *AwsV1alpha1Client, namespace string) *lbListenerCertificates {
 	return &lbListenerCertificates{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLbListenerCertificates(c *AwsV1alpha1Client) *lbListenerCertificates {
 func (c *lbListenerCertificates) Get(name string, options v1.GetOptions) (result *v1alpha1.LbListenerCertificate, err error) {
 	result = &v1alpha1.LbListenerCertificate{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lblistenercertificates").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lbListenerCertificates) List(opts v1.ListOptions) (result *v1alpha1.LbL
 	}
 	result = &v1alpha1.LbListenerCertificateList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lblistenercertificates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lbListenerCertificates) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lblistenercertificates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lbListenerCertificates) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *lbListenerCertificates) Create(lbListenerCertificate *v1alpha1.LbListenerCertificate) (result *v1alpha1.LbListenerCertificate, err error) {
 	result = &v1alpha1.LbListenerCertificate{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lblistenercertificates").
 		Body(lbListenerCertificate).
 		Do().
@@ -118,6 +124,7 @@ func (c *lbListenerCertificates) Create(lbListenerCertificate *v1alpha1.LbListen
 func (c *lbListenerCertificates) Update(lbListenerCertificate *v1alpha1.LbListenerCertificate) (result *v1alpha1.LbListenerCertificate, err error) {
 	result = &v1alpha1.LbListenerCertificate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lblistenercertificates").
 		Name(lbListenerCertificate.Name).
 		Body(lbListenerCertificate).
@@ -132,6 +139,7 @@ func (c *lbListenerCertificates) Update(lbListenerCertificate *v1alpha1.LbListen
 func (c *lbListenerCertificates) UpdateStatus(lbListenerCertificate *v1alpha1.LbListenerCertificate) (result *v1alpha1.LbListenerCertificate, err error) {
 	result = &v1alpha1.LbListenerCertificate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lblistenercertificates").
 		Name(lbListenerCertificate.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lbListenerCertificates) UpdateStatus(lbListenerCertificate *v1alpha1.Lb
 // Delete takes name of the lbListenerCertificate and deletes it. Returns an error if one occurs.
 func (c *lbListenerCertificates) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lblistenercertificates").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lbListenerCertificates) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lblistenercertificates").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lbListenerCertificates) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *lbListenerCertificates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbListenerCertificate, err error) {
 	result = &v1alpha1.LbListenerCertificate{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lblistenercertificates").
 		SubResource(subresources...).
 		Name(name).

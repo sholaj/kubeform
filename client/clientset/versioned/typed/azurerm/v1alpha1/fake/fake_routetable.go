@@ -31,6 +31,7 @@ import (
 // FakeRouteTables implements RouteTableInterface
 type FakeRouteTables struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var routetablesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "routetables"}
@@ -40,7 +41,8 @@ var routetablesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Ver
 // Get takes name of the routeTable, and returns the corresponding routeTable object, and an error if there is any.
 func (c *FakeRouteTables) Get(name string, options v1.GetOptions) (result *v1alpha1.RouteTable, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(routetablesResource, name), &v1alpha1.RouteTable{})
+		Invokes(testing.NewGetAction(routetablesResource, c.ns, name), &v1alpha1.RouteTable{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRouteTables) Get(name string, options v1.GetOptions) (result *v1alp
 // List takes label and field selectors, and returns the list of RouteTables that match those selectors.
 func (c *FakeRouteTables) List(opts v1.ListOptions) (result *v1alpha1.RouteTableList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(routetablesResource, routetablesKind, opts), &v1alpha1.RouteTableList{})
+		Invokes(testing.NewListAction(routetablesResource, routetablesKind, c.ns, opts), &v1alpha1.RouteTableList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRouteTables) List(opts v1.ListOptions) (result *v1alpha1.RouteTable
 // Watch returns a watch.Interface that watches the requested routeTables.
 func (c *FakeRouteTables) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(routetablesResource, opts))
+		InvokesWatch(testing.NewWatchAction(routetablesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a routeTable and creates it.  Returns the server's representation of the routeTable, and an error, if there is any.
 func (c *FakeRouteTables) Create(routeTable *v1alpha1.RouteTable) (result *v1alpha1.RouteTable, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(routetablesResource, routeTable), &v1alpha1.RouteTable{})
+		Invokes(testing.NewCreateAction(routetablesResource, c.ns, routeTable), &v1alpha1.RouteTable{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRouteTables) Create(routeTable *v1alpha1.RouteTable) (result *v1alp
 // Update takes the representation of a routeTable and updates it. Returns the server's representation of the routeTable, and an error, if there is any.
 func (c *FakeRouteTables) Update(routeTable *v1alpha1.RouteTable) (result *v1alpha1.RouteTable, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(routetablesResource, routeTable), &v1alpha1.RouteTable{})
+		Invokes(testing.NewUpdateAction(routetablesResource, c.ns, routeTable), &v1alpha1.RouteTable{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRouteTables) Update(routeTable *v1alpha1.RouteTable) (result *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRouteTables) UpdateStatus(routeTable *v1alpha1.RouteTable) (*v1alpha1.RouteTable, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(routetablesResource, "status", routeTable), &v1alpha1.RouteTable{})
+		Invokes(testing.NewUpdateSubresourceAction(routetablesResource, "status", c.ns, routeTable), &v1alpha1.RouteTable{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRouteTables) UpdateStatus(routeTable *v1alpha1.RouteTable) (*v1alph
 // Delete takes name of the routeTable and deletes it. Returns an error if one occurs.
 func (c *FakeRouteTables) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(routetablesResource, name), &v1alpha1.RouteTable{})
+		Invokes(testing.NewDeleteAction(routetablesResource, c.ns, name), &v1alpha1.RouteTable{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRouteTables) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(routetablesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(routetablesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.RouteTableList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRouteTables) DeleteCollection(options *v1.DeleteOptions, listOption
 // Patch applies the patch and returns the patched routeTable.
 func (c *FakeRouteTables) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RouteTable, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(routetablesResource, name, pt, data, subresources...), &v1alpha1.RouteTable{})
+		Invokes(testing.NewPatchSubresourceAction(routetablesResource, c.ns, name, pt, data, subresources...), &v1alpha1.RouteTable{})
+
 	if obj == nil {
 		return nil, err
 	}

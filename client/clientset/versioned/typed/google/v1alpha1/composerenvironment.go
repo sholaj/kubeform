@@ -32,7 +32,7 @@ import (
 // ComposerEnvironmentsGetter has a method to return a ComposerEnvironmentInterface.
 // A group's client should implement this interface.
 type ComposerEnvironmentsGetter interface {
-	ComposerEnvironments() ComposerEnvironmentInterface
+	ComposerEnvironments(namespace string) ComposerEnvironmentInterface
 }
 
 // ComposerEnvironmentInterface has methods to work with ComposerEnvironment resources.
@@ -52,12 +52,14 @@ type ComposerEnvironmentInterface interface {
 // composerEnvironments implements ComposerEnvironmentInterface
 type composerEnvironments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComposerEnvironments returns a ComposerEnvironments
-func newComposerEnvironments(c *GoogleV1alpha1Client) *composerEnvironments {
+func newComposerEnvironments(c *GoogleV1alpha1Client, namespace string) *composerEnvironments {
 	return &composerEnvironments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComposerEnvironments(c *GoogleV1alpha1Client) *composerEnvironments {
 func (c *composerEnvironments) Get(name string, options v1.GetOptions) (result *v1alpha1.ComposerEnvironment, err error) {
 	result = &v1alpha1.ComposerEnvironment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("composerenvironments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *composerEnvironments) List(opts v1.ListOptions) (result *v1alpha1.Compo
 	}
 	result = &v1alpha1.ComposerEnvironmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("composerenvironments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *composerEnvironments) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("composerenvironments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *composerEnvironments) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *composerEnvironments) Create(composerEnvironment *v1alpha1.ComposerEnvironment) (result *v1alpha1.ComposerEnvironment, err error) {
 	result = &v1alpha1.ComposerEnvironment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("composerenvironments").
 		Body(composerEnvironment).
 		Do().
@@ -118,6 +124,7 @@ func (c *composerEnvironments) Create(composerEnvironment *v1alpha1.ComposerEnvi
 func (c *composerEnvironments) Update(composerEnvironment *v1alpha1.ComposerEnvironment) (result *v1alpha1.ComposerEnvironment, err error) {
 	result = &v1alpha1.ComposerEnvironment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("composerenvironments").
 		Name(composerEnvironment.Name).
 		Body(composerEnvironment).
@@ -132,6 +139,7 @@ func (c *composerEnvironments) Update(composerEnvironment *v1alpha1.ComposerEnvi
 func (c *composerEnvironments) UpdateStatus(composerEnvironment *v1alpha1.ComposerEnvironment) (result *v1alpha1.ComposerEnvironment, err error) {
 	result = &v1alpha1.ComposerEnvironment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("composerenvironments").
 		Name(composerEnvironment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *composerEnvironments) UpdateStatus(composerEnvironment *v1alpha1.Compos
 // Delete takes name of the composerEnvironment and deletes it. Returns an error if one occurs.
 func (c *composerEnvironments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("composerenvironments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *composerEnvironments) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("composerenvironments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *composerEnvironments) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *composerEnvironments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComposerEnvironment, err error) {
 	result = &v1alpha1.ComposerEnvironment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("composerenvironments").
 		SubResource(subresources...).
 		Name(name).

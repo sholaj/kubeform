@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,48 +19,49 @@ type OpsworksApplication struct {
 }
 
 type OpsworksApplicationSpecEnvironment struct {
-	Key string `json:"key"`
+	Key string `json:"key" tf:"key"`
 	// +optional
-	Secure bool   `json:"secure,omitempty"`
-	Value  string `json:"value"`
+	Secure bool   `json:"secure,omitempty" tf:"secure,omitempty"`
+	Value  string `json:"value" tf:"value"`
 }
 
 type OpsworksApplicationSpecSslConfiguration struct {
-	Certificate string `json:"certificate"`
+	Certificate string `json:"certificate" tf:"certificate"`
 	// +optional
-	Chain      string `json:"chain,omitempty"`
-	PrivateKey string `json:"private_key"`
+	Chain      string `json:"chain,omitempty" tf:"chain,omitempty"`
+	PrivateKey string `json:"privateKey" tf:"private_key"`
 }
 
 type OpsworksApplicationSpec struct {
 	// +optional
-	AutoBundleOnDeploy string `json:"auto_bundle_on_deploy,omitempty"`
+	AutoBundleOnDeploy string `json:"autoBundleOnDeploy,omitempty" tf:"auto_bundle_on_deploy,omitempty"`
 	// +optional
-	AwsFlowRubySettings string `json:"aws_flow_ruby_settings,omitempty"`
+	AwsFlowRubySettings string `json:"awsFlowRubySettings,omitempty" tf:"aws_flow_ruby_settings,omitempty"`
 	// +optional
-	DataSourceArn string `json:"data_source_arn,omitempty"`
+	DataSourceArn string `json:"dataSourceArn,omitempty" tf:"data_source_arn,omitempty"`
 	// +optional
-	DataSourceDatabaseName string `json:"data_source_database_name,omitempty"`
+	DataSourceDatabaseName string `json:"dataSourceDatabaseName,omitempty" tf:"data_source_database_name,omitempty"`
 	// +optional
-	DataSourceType string `json:"data_source_type,omitempty"`
+	DataSourceType string `json:"dataSourceType,omitempty" tf:"data_source_type,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	DocumentRoot string `json:"document_root,omitempty"`
+	DocumentRoot string `json:"documentRoot,omitempty" tf:"document_root,omitempty"`
 	// +optional
-	Domains []string `json:"domains,omitempty"`
+	Domains []string `json:"domains,omitempty" tf:"domains,omitempty"`
 	// +optional
-	EnableSsl bool `json:"enable_ssl,omitempty"`
+	EnableSsl bool `json:"enableSsl,omitempty" tf:"enable_ssl,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Environment *[]OpsworksApplicationSpec `json:"environment,omitempty"`
-	Name        string                     `json:"name"`
+	Environment []OpsworksApplicationSpecEnvironment `json:"environment,omitempty" tf:"environment,omitempty"`
+	Name        string                               `json:"name" tf:"name"`
 	// +optional
-	RailsEnv string `json:"rails_env,omitempty"`
+	RailsEnv string `json:"railsEnv,omitempty" tf:"rails_env,omitempty"`
 	// +optional
-	SslConfiguration *[]OpsworksApplicationSpec `json:"ssl_configuration,omitempty"`
-	StackId          string                     `json:"stack_id"`
-	Type             string                     `json:"type"`
+	SslConfiguration []OpsworksApplicationSpecSslConfiguration `json:"sslConfiguration,omitempty" tf:"ssl_configuration,omitempty"`
+	StackID          string                                    `json:"stackID" tf:"stack_id"`
+	Type             string                                    `json:"type" tf:"type"`
+	ProviderRef      core.LocalObjectReference                 `json:"providerRef" tf:"-"`
 }
 
 type OpsworksApplicationStatus struct {
@@ -68,7 +69,9 @@ type OpsworksApplicationStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

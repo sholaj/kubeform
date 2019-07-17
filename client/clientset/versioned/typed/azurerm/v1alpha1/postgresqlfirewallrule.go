@@ -32,7 +32,7 @@ import (
 // PostgresqlFirewallRulesGetter has a method to return a PostgresqlFirewallRuleInterface.
 // A group's client should implement this interface.
 type PostgresqlFirewallRulesGetter interface {
-	PostgresqlFirewallRules() PostgresqlFirewallRuleInterface
+	PostgresqlFirewallRules(namespace string) PostgresqlFirewallRuleInterface
 }
 
 // PostgresqlFirewallRuleInterface has methods to work with PostgresqlFirewallRule resources.
@@ -52,12 +52,14 @@ type PostgresqlFirewallRuleInterface interface {
 // postgresqlFirewallRules implements PostgresqlFirewallRuleInterface
 type postgresqlFirewallRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPostgresqlFirewallRules returns a PostgresqlFirewallRules
-func newPostgresqlFirewallRules(c *AzurermV1alpha1Client) *postgresqlFirewallRules {
+func newPostgresqlFirewallRules(c *AzurermV1alpha1Client, namespace string) *postgresqlFirewallRules {
 	return &postgresqlFirewallRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPostgresqlFirewallRules(c *AzurermV1alpha1Client) *postgresqlFirewallRul
 func (c *postgresqlFirewallRules) Get(name string, options v1.GetOptions) (result *v1alpha1.PostgresqlFirewallRule, err error) {
 	result = &v1alpha1.PostgresqlFirewallRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("postgresqlfirewallrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *postgresqlFirewallRules) List(opts v1.ListOptions) (result *v1alpha1.Po
 	}
 	result = &v1alpha1.PostgresqlFirewallRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("postgresqlfirewallrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *postgresqlFirewallRules) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("postgresqlfirewallrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *postgresqlFirewallRules) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *postgresqlFirewallRules) Create(postgresqlFirewallRule *v1alpha1.PostgresqlFirewallRule) (result *v1alpha1.PostgresqlFirewallRule, err error) {
 	result = &v1alpha1.PostgresqlFirewallRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("postgresqlfirewallrules").
 		Body(postgresqlFirewallRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *postgresqlFirewallRules) Create(postgresqlFirewallRule *v1alpha1.Postgr
 func (c *postgresqlFirewallRules) Update(postgresqlFirewallRule *v1alpha1.PostgresqlFirewallRule) (result *v1alpha1.PostgresqlFirewallRule, err error) {
 	result = &v1alpha1.PostgresqlFirewallRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("postgresqlfirewallrules").
 		Name(postgresqlFirewallRule.Name).
 		Body(postgresqlFirewallRule).
@@ -132,6 +139,7 @@ func (c *postgresqlFirewallRules) Update(postgresqlFirewallRule *v1alpha1.Postgr
 func (c *postgresqlFirewallRules) UpdateStatus(postgresqlFirewallRule *v1alpha1.PostgresqlFirewallRule) (result *v1alpha1.PostgresqlFirewallRule, err error) {
 	result = &v1alpha1.PostgresqlFirewallRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("postgresqlfirewallrules").
 		Name(postgresqlFirewallRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *postgresqlFirewallRules) UpdateStatus(postgresqlFirewallRule *v1alpha1.
 // Delete takes name of the postgresqlFirewallRule and deletes it. Returns an error if one occurs.
 func (c *postgresqlFirewallRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("postgresqlfirewallrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *postgresqlFirewallRules) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("postgresqlfirewallrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *postgresqlFirewallRules) DeleteCollection(options *v1.DeleteOptions, li
 func (c *postgresqlFirewallRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PostgresqlFirewallRule, err error) {
 	result = &v1alpha1.PostgresqlFirewallRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("postgresqlfirewallrules").
 		SubResource(subresources...).
 		Name(name).

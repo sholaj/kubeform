@@ -31,6 +31,7 @@ import (
 // FakeEcsClusters implements EcsClusterInterface
 type FakeEcsClusters struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ecsclustersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ecsclusters"}
@@ -40,7 +41,8 @@ var ecsclustersKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version
 // Get takes name of the ecsCluster, and returns the corresponding ecsCluster object, and an error if there is any.
 func (c *FakeEcsClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.EcsCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ecsclustersResource, name), &v1alpha1.EcsCluster{})
+		Invokes(testing.NewGetAction(ecsclustersResource, c.ns, name), &v1alpha1.EcsCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEcsClusters) Get(name string, options v1.GetOptions) (result *v1alp
 // List takes label and field selectors, and returns the list of EcsClusters that match those selectors.
 func (c *FakeEcsClusters) List(opts v1.ListOptions) (result *v1alpha1.EcsClusterList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ecsclustersResource, ecsclustersKind, opts), &v1alpha1.EcsClusterList{})
+		Invokes(testing.NewListAction(ecsclustersResource, ecsclustersKind, c.ns, opts), &v1alpha1.EcsClusterList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEcsClusters) List(opts v1.ListOptions) (result *v1alpha1.EcsCluster
 // Watch returns a watch.Interface that watches the requested ecsClusters.
 func (c *FakeEcsClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ecsclustersResource, opts))
+		InvokesWatch(testing.NewWatchAction(ecsclustersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ecsCluster and creates it.  Returns the server's representation of the ecsCluster, and an error, if there is any.
 func (c *FakeEcsClusters) Create(ecsCluster *v1alpha1.EcsCluster) (result *v1alpha1.EcsCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ecsclustersResource, ecsCluster), &v1alpha1.EcsCluster{})
+		Invokes(testing.NewCreateAction(ecsclustersResource, c.ns, ecsCluster), &v1alpha1.EcsCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEcsClusters) Create(ecsCluster *v1alpha1.EcsCluster) (result *v1alp
 // Update takes the representation of a ecsCluster and updates it. Returns the server's representation of the ecsCluster, and an error, if there is any.
 func (c *FakeEcsClusters) Update(ecsCluster *v1alpha1.EcsCluster) (result *v1alpha1.EcsCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ecsclustersResource, ecsCluster), &v1alpha1.EcsCluster{})
+		Invokes(testing.NewUpdateAction(ecsclustersResource, c.ns, ecsCluster), &v1alpha1.EcsCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEcsClusters) Update(ecsCluster *v1alpha1.EcsCluster) (result *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEcsClusters) UpdateStatus(ecsCluster *v1alpha1.EcsCluster) (*v1alpha1.EcsCluster, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ecsclustersResource, "status", ecsCluster), &v1alpha1.EcsCluster{})
+		Invokes(testing.NewUpdateSubresourceAction(ecsclustersResource, "status", c.ns, ecsCluster), &v1alpha1.EcsCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEcsClusters) UpdateStatus(ecsCluster *v1alpha1.EcsCluster) (*v1alph
 // Delete takes name of the ecsCluster and deletes it. Returns an error if one occurs.
 func (c *FakeEcsClusters) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ecsclustersResource, name), &v1alpha1.EcsCluster{})
+		Invokes(testing.NewDeleteAction(ecsclustersResource, c.ns, name), &v1alpha1.EcsCluster{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEcsClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ecsclustersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ecsclustersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.EcsClusterList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEcsClusters) DeleteCollection(options *v1.DeleteOptions, listOption
 // Patch applies the patch and returns the patched ecsCluster.
 func (c *FakeEcsClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EcsCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ecsclustersResource, name, pt, data, subresources...), &v1alpha1.EcsCluster{})
+		Invokes(testing.NewPatchSubresourceAction(ecsclustersResource, c.ns, name, pt, data, subresources...), &v1alpha1.EcsCluster{})
+
 	if obj == nil {
 		return nil, err
 	}

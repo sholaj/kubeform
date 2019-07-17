@@ -31,6 +31,7 @@ import (
 // FakeComputeFirewalls implements ComputeFirewallInterface
 type FakeComputeFirewalls struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computefirewallsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computefirewalls"}
@@ -40,7 +41,8 @@ var computefirewallsKind = schema.GroupVersionKind{Group: "google.kubeform.com",
 // Get takes name of the computeFirewall, and returns the corresponding computeFirewall object, and an error if there is any.
 func (c *FakeComputeFirewalls) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeFirewall, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computefirewallsResource, name), &v1alpha1.ComputeFirewall{})
+		Invokes(testing.NewGetAction(computefirewallsResource, c.ns, name), &v1alpha1.ComputeFirewall{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeFirewalls) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of ComputeFirewalls that match those selectors.
 func (c *FakeComputeFirewalls) List(opts v1.ListOptions) (result *v1alpha1.ComputeFirewallList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computefirewallsResource, computefirewallsKind, opts), &v1alpha1.ComputeFirewallList{})
+		Invokes(testing.NewListAction(computefirewallsResource, computefirewallsKind, c.ns, opts), &v1alpha1.ComputeFirewallList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeFirewalls) List(opts v1.ListOptions) (result *v1alpha1.Compu
 // Watch returns a watch.Interface that watches the requested computeFirewalls.
 func (c *FakeComputeFirewalls) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computefirewallsResource, opts))
+		InvokesWatch(testing.NewWatchAction(computefirewallsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeFirewall and creates it.  Returns the server's representation of the computeFirewall, and an error, if there is any.
 func (c *FakeComputeFirewalls) Create(computeFirewall *v1alpha1.ComputeFirewall) (result *v1alpha1.ComputeFirewall, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computefirewallsResource, computeFirewall), &v1alpha1.ComputeFirewall{})
+		Invokes(testing.NewCreateAction(computefirewallsResource, c.ns, computeFirewall), &v1alpha1.ComputeFirewall{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeFirewalls) Create(computeFirewall *v1alpha1.ComputeFirewall)
 // Update takes the representation of a computeFirewall and updates it. Returns the server's representation of the computeFirewall, and an error, if there is any.
 func (c *FakeComputeFirewalls) Update(computeFirewall *v1alpha1.ComputeFirewall) (result *v1alpha1.ComputeFirewall, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computefirewallsResource, computeFirewall), &v1alpha1.ComputeFirewall{})
+		Invokes(testing.NewUpdateAction(computefirewallsResource, c.ns, computeFirewall), &v1alpha1.ComputeFirewall{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeFirewalls) Update(computeFirewall *v1alpha1.ComputeFirewall)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeFirewalls) UpdateStatus(computeFirewall *v1alpha1.ComputeFirewall) (*v1alpha1.ComputeFirewall, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computefirewallsResource, "status", computeFirewall), &v1alpha1.ComputeFirewall{})
+		Invokes(testing.NewUpdateSubresourceAction(computefirewallsResource, "status", c.ns, computeFirewall), &v1alpha1.ComputeFirewall{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeFirewalls) UpdateStatus(computeFirewall *v1alpha1.ComputeFir
 // Delete takes name of the computeFirewall and deletes it. Returns an error if one occurs.
 func (c *FakeComputeFirewalls) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computefirewallsResource, name), &v1alpha1.ComputeFirewall{})
+		Invokes(testing.NewDeleteAction(computefirewallsResource, c.ns, name), &v1alpha1.ComputeFirewall{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeFirewalls) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computefirewallsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computefirewallsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeFirewallList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeFirewalls) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched computeFirewall.
 func (c *FakeComputeFirewalls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeFirewall, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computefirewallsResource, name, pt, data, subresources...), &v1alpha1.ComputeFirewall{})
+		Invokes(testing.NewPatchSubresourceAction(computefirewallsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeFirewall{})
+
 	if obj == nil {
 		return nil, err
 	}

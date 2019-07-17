@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/google/v1alpha1"
 )
 
-// ComputeVpnGatewayLister helps list ComputeVpnGateways.
-type ComputeVpnGatewayLister interface {
-	// List lists all ComputeVpnGateways in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.ComputeVpnGateway, err error)
-	// Get retrieves the ComputeVpnGateway from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeVpnGateway, error)
-	ComputeVpnGatewayListerExpansion
+// ComputeVPNGatewayLister helps list ComputeVPNGateways.
+type ComputeVPNGatewayLister interface {
+	// List lists all ComputeVPNGateways in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeVPNGateway, err error)
+	// ComputeVPNGateways returns an object that can list and get ComputeVPNGateways.
+	ComputeVPNGateways(namespace string) ComputeVPNGatewayNamespaceLister
+	ComputeVPNGatewayListerExpansion
 }
 
-// computeVpnGatewayLister implements the ComputeVpnGatewayLister interface.
-type computeVpnGatewayLister struct {
+// computeVPNGatewayLister implements the ComputeVPNGatewayLister interface.
+type computeVPNGatewayLister struct {
 	indexer cache.Indexer
 }
 
-// NewComputeVpnGatewayLister returns a new ComputeVpnGatewayLister.
-func NewComputeVpnGatewayLister(indexer cache.Indexer) ComputeVpnGatewayLister {
-	return &computeVpnGatewayLister{indexer: indexer}
+// NewComputeVPNGatewayLister returns a new ComputeVPNGatewayLister.
+func NewComputeVPNGatewayLister(indexer cache.Indexer) ComputeVPNGatewayLister {
+	return &computeVPNGatewayLister{indexer: indexer}
 }
 
-// List lists all ComputeVpnGateways in the indexer.
-func (s *computeVpnGatewayLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeVpnGateway, err error) {
+// List lists all ComputeVPNGateways in the indexer.
+func (s *computeVPNGatewayLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeVPNGateway, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ComputeVpnGateway))
+		ret = append(ret, m.(*v1alpha1.ComputeVPNGateway))
 	})
 	return ret, err
 }
 
-// Get retrieves the ComputeVpnGateway from the index for a given name.
-func (s *computeVpnGatewayLister) Get(name string) (*v1alpha1.ComputeVpnGateway, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeVPNGateways returns an object that can list and get ComputeVPNGateways.
+func (s *computeVPNGatewayLister) ComputeVPNGateways(namespace string) ComputeVPNGatewayNamespaceLister {
+	return computeVPNGatewayNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeVPNGatewayNamespaceLister helps list and get ComputeVPNGateways.
+type ComputeVPNGatewayNamespaceLister interface {
+	// List lists all ComputeVPNGateways in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeVPNGateway, err error)
+	// Get retrieves the ComputeVPNGateway from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeVPNGateway, error)
+	ComputeVPNGatewayNamespaceListerExpansion
+}
+
+// computeVPNGatewayNamespaceLister implements the ComputeVPNGatewayNamespaceLister
+// interface.
+type computeVPNGatewayNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeVPNGateways in the indexer for a given namespace.
+func (s computeVPNGatewayNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeVPNGateway, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeVPNGateway))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeVPNGateway from the indexer for a given namespace and name.
+func (s computeVPNGatewayNamespaceLister) Get(name string) (*v1alpha1.ComputeVPNGateway, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("computevpngateway"), name)
 	}
-	return obj.(*v1alpha1.ComputeVpnGateway), nil
+	return obj.(*v1alpha1.ComputeVPNGateway), nil
 }

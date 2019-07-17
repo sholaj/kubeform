@@ -29,8 +29,8 @@ import (
 type LicensemanagerLicenseConfigurationLister interface {
 	// List lists all LicensemanagerLicenseConfigurations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LicensemanagerLicenseConfiguration, err error)
-	// Get retrieves the LicensemanagerLicenseConfiguration from the index for a given name.
-	Get(name string) (*v1alpha1.LicensemanagerLicenseConfiguration, error)
+	// LicensemanagerLicenseConfigurations returns an object that can list and get LicensemanagerLicenseConfigurations.
+	LicensemanagerLicenseConfigurations(namespace string) LicensemanagerLicenseConfigurationNamespaceLister
 	LicensemanagerLicenseConfigurationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *licensemanagerLicenseConfigurationLister) List(selector labels.Selector
 	return ret, err
 }
 
-// Get retrieves the LicensemanagerLicenseConfiguration from the index for a given name.
-func (s *licensemanagerLicenseConfigurationLister) Get(name string) (*v1alpha1.LicensemanagerLicenseConfiguration, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LicensemanagerLicenseConfigurations returns an object that can list and get LicensemanagerLicenseConfigurations.
+func (s *licensemanagerLicenseConfigurationLister) LicensemanagerLicenseConfigurations(namespace string) LicensemanagerLicenseConfigurationNamespaceLister {
+	return licensemanagerLicenseConfigurationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LicensemanagerLicenseConfigurationNamespaceLister helps list and get LicensemanagerLicenseConfigurations.
+type LicensemanagerLicenseConfigurationNamespaceLister interface {
+	// List lists all LicensemanagerLicenseConfigurations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LicensemanagerLicenseConfiguration, err error)
+	// Get retrieves the LicensemanagerLicenseConfiguration from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LicensemanagerLicenseConfiguration, error)
+	LicensemanagerLicenseConfigurationNamespaceListerExpansion
+}
+
+// licensemanagerLicenseConfigurationNamespaceLister implements the LicensemanagerLicenseConfigurationNamespaceLister
+// interface.
+type licensemanagerLicenseConfigurationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LicensemanagerLicenseConfigurations in the indexer for a given namespace.
+func (s licensemanagerLicenseConfigurationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LicensemanagerLicenseConfiguration, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LicensemanagerLicenseConfiguration))
+	})
+	return ret, err
+}
+
+// Get retrieves the LicensemanagerLicenseConfiguration from the indexer for a given namespace and name.
+func (s licensemanagerLicenseConfigurationNamespaceLister) Get(name string) (*v1alpha1.LicensemanagerLicenseConfiguration, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

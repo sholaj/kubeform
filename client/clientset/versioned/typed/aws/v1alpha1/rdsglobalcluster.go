@@ -32,7 +32,7 @@ import (
 // RdsGlobalClustersGetter has a method to return a RdsGlobalClusterInterface.
 // A group's client should implement this interface.
 type RdsGlobalClustersGetter interface {
-	RdsGlobalClusters() RdsGlobalClusterInterface
+	RdsGlobalClusters(namespace string) RdsGlobalClusterInterface
 }
 
 // RdsGlobalClusterInterface has methods to work with RdsGlobalCluster resources.
@@ -52,12 +52,14 @@ type RdsGlobalClusterInterface interface {
 // rdsGlobalClusters implements RdsGlobalClusterInterface
 type rdsGlobalClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRdsGlobalClusters returns a RdsGlobalClusters
-func newRdsGlobalClusters(c *AwsV1alpha1Client) *rdsGlobalClusters {
+func newRdsGlobalClusters(c *AwsV1alpha1Client, namespace string) *rdsGlobalClusters {
 	return &rdsGlobalClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRdsGlobalClusters(c *AwsV1alpha1Client) *rdsGlobalClusters {
 func (c *rdsGlobalClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.RdsGlobalCluster, err error) {
 	result = &v1alpha1.RdsGlobalCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("rdsglobalclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *rdsGlobalClusters) List(opts v1.ListOptions) (result *v1alpha1.RdsGloba
 	}
 	result = &v1alpha1.RdsGlobalClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("rdsglobalclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *rdsGlobalClusters) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("rdsglobalclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *rdsGlobalClusters) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *rdsGlobalClusters) Create(rdsGlobalCluster *v1alpha1.RdsGlobalCluster) (result *v1alpha1.RdsGlobalCluster, err error) {
 	result = &v1alpha1.RdsGlobalCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("rdsglobalclusters").
 		Body(rdsGlobalCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *rdsGlobalClusters) Create(rdsGlobalCluster *v1alpha1.RdsGlobalCluster) 
 func (c *rdsGlobalClusters) Update(rdsGlobalCluster *v1alpha1.RdsGlobalCluster) (result *v1alpha1.RdsGlobalCluster, err error) {
 	result = &v1alpha1.RdsGlobalCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("rdsglobalclusters").
 		Name(rdsGlobalCluster.Name).
 		Body(rdsGlobalCluster).
@@ -132,6 +139,7 @@ func (c *rdsGlobalClusters) Update(rdsGlobalCluster *v1alpha1.RdsGlobalCluster) 
 func (c *rdsGlobalClusters) UpdateStatus(rdsGlobalCluster *v1alpha1.RdsGlobalCluster) (result *v1alpha1.RdsGlobalCluster, err error) {
 	result = &v1alpha1.RdsGlobalCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("rdsglobalclusters").
 		Name(rdsGlobalCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *rdsGlobalClusters) UpdateStatus(rdsGlobalCluster *v1alpha1.RdsGlobalClu
 // Delete takes name of the rdsGlobalCluster and deletes it. Returns an error if one occurs.
 func (c *rdsGlobalClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("rdsglobalclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *rdsGlobalClusters) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("rdsglobalclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *rdsGlobalClusters) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *rdsGlobalClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RdsGlobalCluster, err error) {
 	result = &v1alpha1.RdsGlobalCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("rdsglobalclusters").
 		SubResource(subresources...).
 		Name(name).

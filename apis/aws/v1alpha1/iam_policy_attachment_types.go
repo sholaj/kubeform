@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -21,15 +21,16 @@ type IamPolicyAttachment struct {
 type IamPolicyAttachmentSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Groups    []string `json:"groups,omitempty"`
-	Name      string   `json:"name"`
-	PolicyArn string   `json:"policy_arn"`
+	Groups    []string `json:"groups,omitempty" tf:"groups,omitempty"`
+	Name      string   `json:"name" tf:"name"`
+	PolicyArn string   `json:"policyArn" tf:"policy_arn"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Roles []string `json:"roles,omitempty"`
+	Roles []string `json:"roles,omitempty" tf:"roles,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Users []string `json:"users,omitempty"`
+	Users       []string                  `json:"users,omitempty" tf:"users,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type IamPolicyAttachmentStatus struct {
@@ -37,7 +38,9 @@ type IamPolicyAttachmentStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

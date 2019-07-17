@@ -32,7 +32,7 @@ import (
 // FilestoreInstancesGetter has a method to return a FilestoreInstanceInterface.
 // A group's client should implement this interface.
 type FilestoreInstancesGetter interface {
-	FilestoreInstances() FilestoreInstanceInterface
+	FilestoreInstances(namespace string) FilestoreInstanceInterface
 }
 
 // FilestoreInstanceInterface has methods to work with FilestoreInstance resources.
@@ -52,12 +52,14 @@ type FilestoreInstanceInterface interface {
 // filestoreInstances implements FilestoreInstanceInterface
 type filestoreInstances struct {
 	client rest.Interface
+	ns     string
 }
 
 // newFilestoreInstances returns a FilestoreInstances
-func newFilestoreInstances(c *GoogleV1alpha1Client) *filestoreInstances {
+func newFilestoreInstances(c *GoogleV1alpha1Client, namespace string) *filestoreInstances {
 	return &filestoreInstances{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newFilestoreInstances(c *GoogleV1alpha1Client) *filestoreInstances {
 func (c *filestoreInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.FilestoreInstance, err error) {
 	result = &v1alpha1.FilestoreInstance{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("filestoreinstances").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *filestoreInstances) List(opts v1.ListOptions) (result *v1alpha1.Filesto
 	}
 	result = &v1alpha1.FilestoreInstanceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("filestoreinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *filestoreInstances) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("filestoreinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *filestoreInstances) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *filestoreInstances) Create(filestoreInstance *v1alpha1.FilestoreInstance) (result *v1alpha1.FilestoreInstance, err error) {
 	result = &v1alpha1.FilestoreInstance{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("filestoreinstances").
 		Body(filestoreInstance).
 		Do().
@@ -118,6 +124,7 @@ func (c *filestoreInstances) Create(filestoreInstance *v1alpha1.FilestoreInstanc
 func (c *filestoreInstances) Update(filestoreInstance *v1alpha1.FilestoreInstance) (result *v1alpha1.FilestoreInstance, err error) {
 	result = &v1alpha1.FilestoreInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("filestoreinstances").
 		Name(filestoreInstance.Name).
 		Body(filestoreInstance).
@@ -132,6 +139,7 @@ func (c *filestoreInstances) Update(filestoreInstance *v1alpha1.FilestoreInstanc
 func (c *filestoreInstances) UpdateStatus(filestoreInstance *v1alpha1.FilestoreInstance) (result *v1alpha1.FilestoreInstance, err error) {
 	result = &v1alpha1.FilestoreInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("filestoreinstances").
 		Name(filestoreInstance.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *filestoreInstances) UpdateStatus(filestoreInstance *v1alpha1.FilestoreI
 // Delete takes name of the filestoreInstance and deletes it. Returns an error if one occurs.
 func (c *filestoreInstances) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("filestoreinstances").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *filestoreInstances) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("filestoreinstances").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *filestoreInstances) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *filestoreInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FilestoreInstance, err error) {
 	result = &v1alpha1.FilestoreInstance{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("filestoreinstances").
 		SubResource(subresources...).
 		Name(name).

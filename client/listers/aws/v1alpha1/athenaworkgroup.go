@@ -29,8 +29,8 @@ import (
 type AthenaWorkgroupLister interface {
 	// List lists all AthenaWorkgroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AthenaWorkgroup, err error)
-	// Get retrieves the AthenaWorkgroup from the index for a given name.
-	Get(name string) (*v1alpha1.AthenaWorkgroup, error)
+	// AthenaWorkgroups returns an object that can list and get AthenaWorkgroups.
+	AthenaWorkgroups(namespace string) AthenaWorkgroupNamespaceLister
 	AthenaWorkgroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *athenaWorkgroupLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the AthenaWorkgroup from the index for a given name.
-func (s *athenaWorkgroupLister) Get(name string) (*v1alpha1.AthenaWorkgroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AthenaWorkgroups returns an object that can list and get AthenaWorkgroups.
+func (s *athenaWorkgroupLister) AthenaWorkgroups(namespace string) AthenaWorkgroupNamespaceLister {
+	return athenaWorkgroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AthenaWorkgroupNamespaceLister helps list and get AthenaWorkgroups.
+type AthenaWorkgroupNamespaceLister interface {
+	// List lists all AthenaWorkgroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AthenaWorkgroup, err error)
+	// Get retrieves the AthenaWorkgroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AthenaWorkgroup, error)
+	AthenaWorkgroupNamespaceListerExpansion
+}
+
+// athenaWorkgroupNamespaceLister implements the AthenaWorkgroupNamespaceLister
+// interface.
+type athenaWorkgroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AthenaWorkgroups in the indexer for a given namespace.
+func (s athenaWorkgroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AthenaWorkgroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AthenaWorkgroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the AthenaWorkgroup from the indexer for a given namespace and name.
+func (s athenaWorkgroupNamespaceLister) Get(name string) (*v1alpha1.AthenaWorkgroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

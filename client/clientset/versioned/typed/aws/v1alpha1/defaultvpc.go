@@ -32,7 +32,7 @@ import (
 // DefaultVpcsGetter has a method to return a DefaultVpcInterface.
 // A group's client should implement this interface.
 type DefaultVpcsGetter interface {
-	DefaultVpcs() DefaultVpcInterface
+	DefaultVpcs(namespace string) DefaultVpcInterface
 }
 
 // DefaultVpcInterface has methods to work with DefaultVpc resources.
@@ -52,12 +52,14 @@ type DefaultVpcInterface interface {
 // defaultVpcs implements DefaultVpcInterface
 type defaultVpcs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDefaultVpcs returns a DefaultVpcs
-func newDefaultVpcs(c *AwsV1alpha1Client) *defaultVpcs {
+func newDefaultVpcs(c *AwsV1alpha1Client, namespace string) *defaultVpcs {
 	return &defaultVpcs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDefaultVpcs(c *AwsV1alpha1Client) *defaultVpcs {
 func (c *defaultVpcs) Get(name string, options v1.GetOptions) (result *v1alpha1.DefaultVpc, err error) {
 	result = &v1alpha1.DefaultVpc{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("defaultvpcs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *defaultVpcs) List(opts v1.ListOptions) (result *v1alpha1.DefaultVpcList
 	}
 	result = &v1alpha1.DefaultVpcList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("defaultvpcs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *defaultVpcs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("defaultvpcs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *defaultVpcs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *defaultVpcs) Create(defaultVpc *v1alpha1.DefaultVpc) (result *v1alpha1.DefaultVpc, err error) {
 	result = &v1alpha1.DefaultVpc{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("defaultvpcs").
 		Body(defaultVpc).
 		Do().
@@ -118,6 +124,7 @@ func (c *defaultVpcs) Create(defaultVpc *v1alpha1.DefaultVpc) (result *v1alpha1.
 func (c *defaultVpcs) Update(defaultVpc *v1alpha1.DefaultVpc) (result *v1alpha1.DefaultVpc, err error) {
 	result = &v1alpha1.DefaultVpc{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("defaultvpcs").
 		Name(defaultVpc.Name).
 		Body(defaultVpc).
@@ -132,6 +139,7 @@ func (c *defaultVpcs) Update(defaultVpc *v1alpha1.DefaultVpc) (result *v1alpha1.
 func (c *defaultVpcs) UpdateStatus(defaultVpc *v1alpha1.DefaultVpc) (result *v1alpha1.DefaultVpc, err error) {
 	result = &v1alpha1.DefaultVpc{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("defaultvpcs").
 		Name(defaultVpc.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *defaultVpcs) UpdateStatus(defaultVpc *v1alpha1.DefaultVpc) (result *v1a
 // Delete takes name of the defaultVpc and deletes it. Returns an error if one occurs.
 func (c *defaultVpcs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("defaultvpcs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *defaultVpcs) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("defaultvpcs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *defaultVpcs) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *defaultVpcs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DefaultVpc, err error) {
 	result = &v1alpha1.DefaultVpc{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("defaultvpcs").
 		SubResource(subresources...).
 		Name(name).

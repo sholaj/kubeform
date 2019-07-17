@@ -29,8 +29,8 @@ import (
 type LambdaLayerVersionLister interface {
 	// List lists all LambdaLayerVersions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LambdaLayerVersion, err error)
-	// Get retrieves the LambdaLayerVersion from the index for a given name.
-	Get(name string) (*v1alpha1.LambdaLayerVersion, error)
+	// LambdaLayerVersions returns an object that can list and get LambdaLayerVersions.
+	LambdaLayerVersions(namespace string) LambdaLayerVersionNamespaceLister
 	LambdaLayerVersionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *lambdaLayerVersionLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the LambdaLayerVersion from the index for a given name.
-func (s *lambdaLayerVersionLister) Get(name string) (*v1alpha1.LambdaLayerVersion, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LambdaLayerVersions returns an object that can list and get LambdaLayerVersions.
+func (s *lambdaLayerVersionLister) LambdaLayerVersions(namespace string) LambdaLayerVersionNamespaceLister {
+	return lambdaLayerVersionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LambdaLayerVersionNamespaceLister helps list and get LambdaLayerVersions.
+type LambdaLayerVersionNamespaceLister interface {
+	// List lists all LambdaLayerVersions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LambdaLayerVersion, err error)
+	// Get retrieves the LambdaLayerVersion from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LambdaLayerVersion, error)
+	LambdaLayerVersionNamespaceListerExpansion
+}
+
+// lambdaLayerVersionNamespaceLister implements the LambdaLayerVersionNamespaceLister
+// interface.
+type lambdaLayerVersionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LambdaLayerVersions in the indexer for a given namespace.
+func (s lambdaLayerVersionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LambdaLayerVersion, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LambdaLayerVersion))
+	})
+	return ret, err
+}
+
+// Get retrieves the LambdaLayerVersion from the indexer for a given namespace and name.
+func (s lambdaLayerVersionNamespaceLister) Get(name string) (*v1alpha1.LambdaLayerVersion, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

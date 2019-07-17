@@ -32,7 +32,7 @@ import (
 // IotRoleAliasesGetter has a method to return a IotRoleAliasInterface.
 // A group's client should implement this interface.
 type IotRoleAliasesGetter interface {
-	IotRoleAliases() IotRoleAliasInterface
+	IotRoleAliases(namespace string) IotRoleAliasInterface
 }
 
 // IotRoleAliasInterface has methods to work with IotRoleAlias resources.
@@ -52,12 +52,14 @@ type IotRoleAliasInterface interface {
 // iotRoleAliases implements IotRoleAliasInterface
 type iotRoleAliases struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIotRoleAliases returns a IotRoleAliases
-func newIotRoleAliases(c *AwsV1alpha1Client) *iotRoleAliases {
+func newIotRoleAliases(c *AwsV1alpha1Client, namespace string) *iotRoleAliases {
 	return &iotRoleAliases{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIotRoleAliases(c *AwsV1alpha1Client) *iotRoleAliases {
 func (c *iotRoleAliases) Get(name string, options v1.GetOptions) (result *v1alpha1.IotRoleAlias, err error) {
 	result = &v1alpha1.IotRoleAlias{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iotrolealiases").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iotRoleAliases) List(opts v1.ListOptions) (result *v1alpha1.IotRoleAlia
 	}
 	result = &v1alpha1.IotRoleAliasList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iotrolealiases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iotRoleAliases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iotrolealiases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iotRoleAliases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *iotRoleAliases) Create(iotRoleAlias *v1alpha1.IotRoleAlias) (result *v1alpha1.IotRoleAlias, err error) {
 	result = &v1alpha1.IotRoleAlias{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iotrolealiases").
 		Body(iotRoleAlias).
 		Do().
@@ -118,6 +124,7 @@ func (c *iotRoleAliases) Create(iotRoleAlias *v1alpha1.IotRoleAlias) (result *v1
 func (c *iotRoleAliases) Update(iotRoleAlias *v1alpha1.IotRoleAlias) (result *v1alpha1.IotRoleAlias, err error) {
 	result = &v1alpha1.IotRoleAlias{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iotrolealiases").
 		Name(iotRoleAlias.Name).
 		Body(iotRoleAlias).
@@ -132,6 +139,7 @@ func (c *iotRoleAliases) Update(iotRoleAlias *v1alpha1.IotRoleAlias) (result *v1
 func (c *iotRoleAliases) UpdateStatus(iotRoleAlias *v1alpha1.IotRoleAlias) (result *v1alpha1.IotRoleAlias, err error) {
 	result = &v1alpha1.IotRoleAlias{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iotrolealiases").
 		Name(iotRoleAlias.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iotRoleAliases) UpdateStatus(iotRoleAlias *v1alpha1.IotRoleAlias) (resu
 // Delete takes name of the iotRoleAlias and deletes it. Returns an error if one occurs.
 func (c *iotRoleAliases) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iotrolealiases").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iotRoleAliases) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iotrolealiases").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iotRoleAliases) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *iotRoleAliases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IotRoleAlias, err error) {
 	result = &v1alpha1.IotRoleAlias{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iotrolealiases").
 		SubResource(subresources...).
 		Name(name).

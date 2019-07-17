@@ -29,8 +29,8 @@ import (
 type NodebalancerNodeLister interface {
 	// List lists all NodebalancerNodes in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NodebalancerNode, err error)
-	// Get retrieves the NodebalancerNode from the index for a given name.
-	Get(name string) (*v1alpha1.NodebalancerNode, error)
+	// NodebalancerNodes returns an object that can list and get NodebalancerNodes.
+	NodebalancerNodes(namespace string) NodebalancerNodeNamespaceLister
 	NodebalancerNodeListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *nodebalancerNodeLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the NodebalancerNode from the index for a given name.
-func (s *nodebalancerNodeLister) Get(name string) (*v1alpha1.NodebalancerNode, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NodebalancerNodes returns an object that can list and get NodebalancerNodes.
+func (s *nodebalancerNodeLister) NodebalancerNodes(namespace string) NodebalancerNodeNamespaceLister {
+	return nodebalancerNodeNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NodebalancerNodeNamespaceLister helps list and get NodebalancerNodes.
+type NodebalancerNodeNamespaceLister interface {
+	// List lists all NodebalancerNodes in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NodebalancerNode, err error)
+	// Get retrieves the NodebalancerNode from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NodebalancerNode, error)
+	NodebalancerNodeNamespaceListerExpansion
+}
+
+// nodebalancerNodeNamespaceLister implements the NodebalancerNodeNamespaceLister
+// interface.
+type nodebalancerNodeNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NodebalancerNodes in the indexer for a given namespace.
+func (s nodebalancerNodeNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NodebalancerNode, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NodebalancerNode))
+	})
+	return ret, err
+}
+
+// Get retrieves the NodebalancerNode from the indexer for a given namespace and name.
+func (s nodebalancerNodeNamespaceLister) Get(name string) (*v1alpha1.NodebalancerNode, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

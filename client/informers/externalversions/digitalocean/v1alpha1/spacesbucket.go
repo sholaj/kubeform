@@ -41,32 +41,33 @@ type SpacesBucketInformer interface {
 type spacesBucketInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSpacesBucketInformer constructs a new informer for SpacesBucket type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSpacesBucketInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSpacesBucketInformer(client, resyncPeriod, indexers, nil)
+func NewSpacesBucketInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSpacesBucketInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSpacesBucketInformer constructs a new informer for SpacesBucket type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSpacesBucketInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSpacesBucketInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.DigitaloceanV1alpha1().SpacesBuckets().List(options)
+				return client.DigitaloceanV1alpha1().SpacesBuckets(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.DigitaloceanV1alpha1().SpacesBuckets().Watch(options)
+				return client.DigitaloceanV1alpha1().SpacesBuckets(namespace).Watch(options)
 			},
 		},
 		&digitaloceanv1alpha1.SpacesBucket{},
@@ -76,7 +77,7 @@ func NewFilteredSpacesBucketInformer(client versioned.Interface, resyncPeriod ti
 }
 
 func (f *spacesBucketInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSpacesBucketInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSpacesBucketInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *spacesBucketInformer) Informer() cache.SharedIndexInformer {

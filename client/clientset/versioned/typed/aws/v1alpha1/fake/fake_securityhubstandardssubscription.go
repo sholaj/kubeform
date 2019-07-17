@@ -31,6 +31,7 @@ import (
 // FakeSecurityhubStandardsSubscriptions implements SecurityhubStandardsSubscriptionInterface
 type FakeSecurityhubStandardsSubscriptions struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var securityhubstandardssubscriptionsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "securityhubstandardssubscriptions"}
@@ -40,7 +41,8 @@ var securityhubstandardssubscriptionsKind = schema.GroupVersionKind{Group: "aws.
 // Get takes name of the securityhubStandardsSubscription, and returns the corresponding securityhubStandardsSubscription object, and an error if there is any.
 func (c *FakeSecurityhubStandardsSubscriptions) Get(name string, options v1.GetOptions) (result *v1alpha1.SecurityhubStandardsSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(securityhubstandardssubscriptionsResource, name), &v1alpha1.SecurityhubStandardsSubscription{})
+		Invokes(testing.NewGetAction(securityhubstandardssubscriptionsResource, c.ns, name), &v1alpha1.SecurityhubStandardsSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSecurityhubStandardsSubscriptions) Get(name string, options v1.GetO
 // List takes label and field selectors, and returns the list of SecurityhubStandardsSubscriptions that match those selectors.
 func (c *FakeSecurityhubStandardsSubscriptions) List(opts v1.ListOptions) (result *v1alpha1.SecurityhubStandardsSubscriptionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(securityhubstandardssubscriptionsResource, securityhubstandardssubscriptionsKind, opts), &v1alpha1.SecurityhubStandardsSubscriptionList{})
+		Invokes(testing.NewListAction(securityhubstandardssubscriptionsResource, securityhubstandardssubscriptionsKind, c.ns, opts), &v1alpha1.SecurityhubStandardsSubscriptionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSecurityhubStandardsSubscriptions) List(opts v1.ListOptions) (resul
 // Watch returns a watch.Interface that watches the requested securityhubStandardsSubscriptions.
 func (c *FakeSecurityhubStandardsSubscriptions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(securityhubstandardssubscriptionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(securityhubstandardssubscriptionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a securityhubStandardsSubscription and creates it.  Returns the server's representation of the securityhubStandardsSubscription, and an error, if there is any.
 func (c *FakeSecurityhubStandardsSubscriptions) Create(securityhubStandardsSubscription *v1alpha1.SecurityhubStandardsSubscription) (result *v1alpha1.SecurityhubStandardsSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(securityhubstandardssubscriptionsResource, securityhubStandardsSubscription), &v1alpha1.SecurityhubStandardsSubscription{})
+		Invokes(testing.NewCreateAction(securityhubstandardssubscriptionsResource, c.ns, securityhubStandardsSubscription), &v1alpha1.SecurityhubStandardsSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSecurityhubStandardsSubscriptions) Create(securityhubStandardsSubsc
 // Update takes the representation of a securityhubStandardsSubscription and updates it. Returns the server's representation of the securityhubStandardsSubscription, and an error, if there is any.
 func (c *FakeSecurityhubStandardsSubscriptions) Update(securityhubStandardsSubscription *v1alpha1.SecurityhubStandardsSubscription) (result *v1alpha1.SecurityhubStandardsSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(securityhubstandardssubscriptionsResource, securityhubStandardsSubscription), &v1alpha1.SecurityhubStandardsSubscription{})
+		Invokes(testing.NewUpdateAction(securityhubstandardssubscriptionsResource, c.ns, securityhubStandardsSubscription), &v1alpha1.SecurityhubStandardsSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSecurityhubStandardsSubscriptions) Update(securityhubStandardsSubsc
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSecurityhubStandardsSubscriptions) UpdateStatus(securityhubStandardsSubscription *v1alpha1.SecurityhubStandardsSubscription) (*v1alpha1.SecurityhubStandardsSubscription, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(securityhubstandardssubscriptionsResource, "status", securityhubStandardsSubscription), &v1alpha1.SecurityhubStandardsSubscription{})
+		Invokes(testing.NewUpdateSubresourceAction(securityhubstandardssubscriptionsResource, "status", c.ns, securityhubStandardsSubscription), &v1alpha1.SecurityhubStandardsSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSecurityhubStandardsSubscriptions) UpdateStatus(securityhubStandard
 // Delete takes name of the securityhubStandardsSubscription and deletes it. Returns an error if one occurs.
 func (c *FakeSecurityhubStandardsSubscriptions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(securityhubstandardssubscriptionsResource, name), &v1alpha1.SecurityhubStandardsSubscription{})
+		Invokes(testing.NewDeleteAction(securityhubstandardssubscriptionsResource, c.ns, name), &v1alpha1.SecurityhubStandardsSubscription{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSecurityhubStandardsSubscriptions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(securityhubstandardssubscriptionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(securityhubstandardssubscriptionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SecurityhubStandardsSubscriptionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSecurityhubStandardsSubscriptions) DeleteCollection(options *v1.Del
 // Patch applies the patch and returns the patched securityhubStandardsSubscription.
 func (c *FakeSecurityhubStandardsSubscriptions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SecurityhubStandardsSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(securityhubstandardssubscriptionsResource, name, pt, data, subresources...), &v1alpha1.SecurityhubStandardsSubscription{})
+		Invokes(testing.NewPatchSubresourceAction(securityhubstandardssubscriptionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SecurityhubStandardsSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}

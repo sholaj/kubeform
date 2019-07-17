@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,13 +20,14 @@ type ComputeRouterPeer struct {
 
 type ComputeRouterPeerSpec struct {
 	// +optional
-	AdvertisedRoutePriority int    `json:"advertised_route_priority,omitempty"`
-	Interface               string `json:"interface"`
-	Name                    string `json:"name"`
-	PeerAsn                 int    `json:"peer_asn"`
+	AdvertisedRoutePriority int    `json:"advertisedRoutePriority,omitempty" tf:"advertised_route_priority,omitempty"`
+	Interface               string `json:"interface" tf:"interface"`
+	Name                    string `json:"name" tf:"name"`
+	PeerAsn                 int    `json:"peerAsn" tf:"peer_asn"`
 	// +optional
-	PeerIpAddress string `json:"peer_ip_address,omitempty"`
-	Router        string `json:"router"`
+	PeerIPAddress string                    `json:"peerIPAddress,omitempty" tf:"peer_ip_address,omitempty"`
+	Router        string                    `json:"router" tf:"router"`
+	ProviderRef   core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ComputeRouterPeerStatus struct {
@@ -34,7 +35,9 @@ type ComputeRouterPeerStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// ServiceDiscoveryPublicDnsNamespacesGetter has a method to return a ServiceDiscoveryPublicDnsNamespaceInterface.
+// ServiceDiscoveryPublicDNSNamespacesGetter has a method to return a ServiceDiscoveryPublicDNSNamespaceInterface.
 // A group's client should implement this interface.
-type ServiceDiscoveryPublicDnsNamespacesGetter interface {
-	ServiceDiscoveryPublicDnsNamespaces() ServiceDiscoveryPublicDnsNamespaceInterface
+type ServiceDiscoveryPublicDNSNamespacesGetter interface {
+	ServiceDiscoveryPublicDNSNamespaces(namespace string) ServiceDiscoveryPublicDNSNamespaceInterface
 }
 
-// ServiceDiscoveryPublicDnsNamespaceInterface has methods to work with ServiceDiscoveryPublicDnsNamespace resources.
-type ServiceDiscoveryPublicDnsNamespaceInterface interface {
-	Create(*v1alpha1.ServiceDiscoveryPublicDnsNamespace) (*v1alpha1.ServiceDiscoveryPublicDnsNamespace, error)
-	Update(*v1alpha1.ServiceDiscoveryPublicDnsNamespace) (*v1alpha1.ServiceDiscoveryPublicDnsNamespace, error)
-	UpdateStatus(*v1alpha1.ServiceDiscoveryPublicDnsNamespace) (*v1alpha1.ServiceDiscoveryPublicDnsNamespace, error)
+// ServiceDiscoveryPublicDNSNamespaceInterface has methods to work with ServiceDiscoveryPublicDNSNamespace resources.
+type ServiceDiscoveryPublicDNSNamespaceInterface interface {
+	Create(*v1alpha1.ServiceDiscoveryPublicDNSNamespace) (*v1alpha1.ServiceDiscoveryPublicDNSNamespace, error)
+	Update(*v1alpha1.ServiceDiscoveryPublicDNSNamespace) (*v1alpha1.ServiceDiscoveryPublicDNSNamespace, error)
+	UpdateStatus(*v1alpha1.ServiceDiscoveryPublicDNSNamespace) (*v1alpha1.ServiceDiscoveryPublicDNSNamespace, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.ServiceDiscoveryPublicDnsNamespace, error)
-	List(opts v1.ListOptions) (*v1alpha1.ServiceDiscoveryPublicDnsNamespaceList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.ServiceDiscoveryPublicDNSNamespace, error)
+	List(opts v1.ListOptions) (*v1alpha1.ServiceDiscoveryPublicDNSNamespaceList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceDiscoveryPublicDnsNamespace, err error)
-	ServiceDiscoveryPublicDnsNamespaceExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceDiscoveryPublicDNSNamespace, err error)
+	ServiceDiscoveryPublicDNSNamespaceExpansion
 }
 
-// serviceDiscoveryPublicDnsNamespaces implements ServiceDiscoveryPublicDnsNamespaceInterface
-type serviceDiscoveryPublicDnsNamespaces struct {
+// serviceDiscoveryPublicDNSNamespaces implements ServiceDiscoveryPublicDNSNamespaceInterface
+type serviceDiscoveryPublicDNSNamespaces struct {
 	client rest.Interface
+	ns     string
 }
 
-// newServiceDiscoveryPublicDnsNamespaces returns a ServiceDiscoveryPublicDnsNamespaces
-func newServiceDiscoveryPublicDnsNamespaces(c *AwsV1alpha1Client) *serviceDiscoveryPublicDnsNamespaces {
-	return &serviceDiscoveryPublicDnsNamespaces{
+// newServiceDiscoveryPublicDNSNamespaces returns a ServiceDiscoveryPublicDNSNamespaces
+func newServiceDiscoveryPublicDNSNamespaces(c *AwsV1alpha1Client, namespace string) *serviceDiscoveryPublicDNSNamespaces {
+	return &serviceDiscoveryPublicDNSNamespaces{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the serviceDiscoveryPublicDnsNamespace, and returns the corresponding serviceDiscoveryPublicDnsNamespace object, and an error if there is any.
-func (c *serviceDiscoveryPublicDnsNamespaces) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceDiscoveryPublicDnsNamespace, err error) {
-	result = &v1alpha1.ServiceDiscoveryPublicDnsNamespace{}
+// Get takes name of the serviceDiscoveryPublicDNSNamespace, and returns the corresponding serviceDiscoveryPublicDNSNamespace object, and an error if there is any.
+func (c *serviceDiscoveryPublicDNSNamespaces) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceDiscoveryPublicDNSNamespace, err error) {
+	result = &v1alpha1.ServiceDiscoveryPublicDNSNamespace{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicediscoverypublicdnsnamespaces").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *serviceDiscoveryPublicDnsNamespaces) Get(name string, options v1.GetOpt
 	return
 }
 
-// List takes label and field selectors, and returns the list of ServiceDiscoveryPublicDnsNamespaces that match those selectors.
-func (c *serviceDiscoveryPublicDnsNamespaces) List(opts v1.ListOptions) (result *v1alpha1.ServiceDiscoveryPublicDnsNamespaceList, err error) {
+// List takes label and field selectors, and returns the list of ServiceDiscoveryPublicDNSNamespaces that match those selectors.
+func (c *serviceDiscoveryPublicDNSNamespaces) List(opts v1.ListOptions) (result *v1alpha1.ServiceDiscoveryPublicDNSNamespaceList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.ServiceDiscoveryPublicDnsNamespaceList{}
+	result = &v1alpha1.ServiceDiscoveryPublicDNSNamespaceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicediscoverypublicdnsnamespaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *serviceDiscoveryPublicDnsNamespaces) List(opts v1.ListOptions) (result 
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested serviceDiscoveryPublicDnsNamespaces.
-func (c *serviceDiscoveryPublicDnsNamespaces) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested serviceDiscoveryPublicDNSNamespaces.
+func (c *serviceDiscoveryPublicDNSNamespaces) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("servicediscoverypublicdnsnamespaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a serviceDiscoveryPublicDnsNamespace and creates it.  Returns the server's representation of the serviceDiscoveryPublicDnsNamespace, and an error, if there is any.
-func (c *serviceDiscoveryPublicDnsNamespaces) Create(serviceDiscoveryPublicDnsNamespace *v1alpha1.ServiceDiscoveryPublicDnsNamespace) (result *v1alpha1.ServiceDiscoveryPublicDnsNamespace, err error) {
-	result = &v1alpha1.ServiceDiscoveryPublicDnsNamespace{}
+// Create takes the representation of a serviceDiscoveryPublicDNSNamespace and creates it.  Returns the server's representation of the serviceDiscoveryPublicDNSNamespace, and an error, if there is any.
+func (c *serviceDiscoveryPublicDNSNamespaces) Create(serviceDiscoveryPublicDNSNamespace *v1alpha1.ServiceDiscoveryPublicDNSNamespace) (result *v1alpha1.ServiceDiscoveryPublicDNSNamespace, err error) {
+	result = &v1alpha1.ServiceDiscoveryPublicDNSNamespace{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("servicediscoverypublicdnsnamespaces").
-		Body(serviceDiscoveryPublicDnsNamespace).
+		Body(serviceDiscoveryPublicDNSNamespace).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a serviceDiscoveryPublicDnsNamespace and updates it. Returns the server's representation of the serviceDiscoveryPublicDnsNamespace, and an error, if there is any.
-func (c *serviceDiscoveryPublicDnsNamespaces) Update(serviceDiscoveryPublicDnsNamespace *v1alpha1.ServiceDiscoveryPublicDnsNamespace) (result *v1alpha1.ServiceDiscoveryPublicDnsNamespace, err error) {
-	result = &v1alpha1.ServiceDiscoveryPublicDnsNamespace{}
+// Update takes the representation of a serviceDiscoveryPublicDNSNamespace and updates it. Returns the server's representation of the serviceDiscoveryPublicDNSNamespace, and an error, if there is any.
+func (c *serviceDiscoveryPublicDNSNamespaces) Update(serviceDiscoveryPublicDNSNamespace *v1alpha1.ServiceDiscoveryPublicDNSNamespace) (result *v1alpha1.ServiceDiscoveryPublicDNSNamespace, err error) {
+	result = &v1alpha1.ServiceDiscoveryPublicDNSNamespace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicediscoverypublicdnsnamespaces").
-		Name(serviceDiscoveryPublicDnsNamespace.Name).
-		Body(serviceDiscoveryPublicDnsNamespace).
+		Name(serviceDiscoveryPublicDNSNamespace.Name).
+		Body(serviceDiscoveryPublicDNSNamespace).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *serviceDiscoveryPublicDnsNamespaces) Update(serviceDiscoveryPublicDnsNa
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *serviceDiscoveryPublicDnsNamespaces) UpdateStatus(serviceDiscoveryPublicDnsNamespace *v1alpha1.ServiceDiscoveryPublicDnsNamespace) (result *v1alpha1.ServiceDiscoveryPublicDnsNamespace, err error) {
-	result = &v1alpha1.ServiceDiscoveryPublicDnsNamespace{}
+func (c *serviceDiscoveryPublicDNSNamespaces) UpdateStatus(serviceDiscoveryPublicDNSNamespace *v1alpha1.ServiceDiscoveryPublicDNSNamespace) (result *v1alpha1.ServiceDiscoveryPublicDNSNamespace, err error) {
+	result = &v1alpha1.ServiceDiscoveryPublicDNSNamespace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicediscoverypublicdnsnamespaces").
-		Name(serviceDiscoveryPublicDnsNamespace.Name).
+		Name(serviceDiscoveryPublicDNSNamespace.Name).
 		SubResource("status").
-		Body(serviceDiscoveryPublicDnsNamespace).
+		Body(serviceDiscoveryPublicDNSNamespace).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the serviceDiscoveryPublicDnsNamespace and deletes it. Returns an error if one occurs.
-func (c *serviceDiscoveryPublicDnsNamespaces) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the serviceDiscoveryPublicDNSNamespace and deletes it. Returns an error if one occurs.
+func (c *serviceDiscoveryPublicDNSNamespaces) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicediscoverypublicdnsnamespaces").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *serviceDiscoveryPublicDnsNamespaces) Delete(name string, options *v1.De
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *serviceDiscoveryPublicDnsNamespaces) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *serviceDiscoveryPublicDNSNamespaces) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicediscoverypublicdnsnamespaces").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *serviceDiscoveryPublicDnsNamespaces) DeleteCollection(options *v1.Delet
 		Error()
 }
 
-// Patch applies the patch and returns the patched serviceDiscoveryPublicDnsNamespace.
-func (c *serviceDiscoveryPublicDnsNamespaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceDiscoveryPublicDnsNamespace, err error) {
-	result = &v1alpha1.ServiceDiscoveryPublicDnsNamespace{}
+// Patch applies the patch and returns the patched serviceDiscoveryPublicDNSNamespace.
+func (c *serviceDiscoveryPublicDNSNamespaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceDiscoveryPublicDNSNamespace, err error) {
+	result = &v1alpha1.ServiceDiscoveryPublicDNSNamespace{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("servicediscoverypublicdnsnamespaces").
 		SubResource(subresources...).
 		Name(name).

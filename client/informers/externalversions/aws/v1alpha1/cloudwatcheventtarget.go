@@ -41,32 +41,33 @@ type CloudwatchEventTargetInformer interface {
 type cloudwatchEventTargetInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewCloudwatchEventTargetInformer constructs a new informer for CloudwatchEventTarget type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCloudwatchEventTargetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCloudwatchEventTargetInformer(client, resyncPeriod, indexers, nil)
+func NewCloudwatchEventTargetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCloudwatchEventTargetInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredCloudwatchEventTargetInformer constructs a new informer for CloudwatchEventTarget type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCloudwatchEventTargetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCloudwatchEventTargetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CloudwatchEventTargets().List(options)
+				return client.AwsV1alpha1().CloudwatchEventTargets(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CloudwatchEventTargets().Watch(options)
+				return client.AwsV1alpha1().CloudwatchEventTargets(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.CloudwatchEventTarget{},
@@ -76,7 +77,7 @@ func NewFilteredCloudwatchEventTargetInformer(client versioned.Interface, resync
 }
 
 func (f *cloudwatchEventTargetInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCloudwatchEventTargetInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredCloudwatchEventTargetInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *cloudwatchEventTargetInformer) Informer() cache.SharedIndexInformer {

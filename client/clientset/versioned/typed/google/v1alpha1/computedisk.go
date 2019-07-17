@@ -32,7 +32,7 @@ import (
 // ComputeDisksGetter has a method to return a ComputeDiskInterface.
 // A group's client should implement this interface.
 type ComputeDisksGetter interface {
-	ComputeDisks() ComputeDiskInterface
+	ComputeDisks(namespace string) ComputeDiskInterface
 }
 
 // ComputeDiskInterface has methods to work with ComputeDisk resources.
@@ -52,12 +52,14 @@ type ComputeDiskInterface interface {
 // computeDisks implements ComputeDiskInterface
 type computeDisks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeDisks returns a ComputeDisks
-func newComputeDisks(c *GoogleV1alpha1Client) *computeDisks {
+func newComputeDisks(c *GoogleV1alpha1Client, namespace string) *computeDisks {
 	return &computeDisks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeDisks(c *GoogleV1alpha1Client) *computeDisks {
 func (c *computeDisks) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeDisk, err error) {
 	result = &v1alpha1.ComputeDisk{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computedisks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeDisks) List(opts v1.ListOptions) (result *v1alpha1.ComputeDiskLi
 	}
 	result = &v1alpha1.ComputeDiskList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computedisks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeDisks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computedisks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeDisks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *computeDisks) Create(computeDisk *v1alpha1.ComputeDisk) (result *v1alpha1.ComputeDisk, err error) {
 	result = &v1alpha1.ComputeDisk{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computedisks").
 		Body(computeDisk).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeDisks) Create(computeDisk *v1alpha1.ComputeDisk) (result *v1alph
 func (c *computeDisks) Update(computeDisk *v1alpha1.ComputeDisk) (result *v1alpha1.ComputeDisk, err error) {
 	result = &v1alpha1.ComputeDisk{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computedisks").
 		Name(computeDisk.Name).
 		Body(computeDisk).
@@ -132,6 +139,7 @@ func (c *computeDisks) Update(computeDisk *v1alpha1.ComputeDisk) (result *v1alph
 func (c *computeDisks) UpdateStatus(computeDisk *v1alpha1.ComputeDisk) (result *v1alpha1.ComputeDisk, err error) {
 	result = &v1alpha1.ComputeDisk{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computedisks").
 		Name(computeDisk.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeDisks) UpdateStatus(computeDisk *v1alpha1.ComputeDisk) (result *
 // Delete takes name of the computeDisk and deletes it. Returns an error if one occurs.
 func (c *computeDisks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computedisks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeDisks) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computedisks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeDisks) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *computeDisks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeDisk, err error) {
 	result = &v1alpha1.ComputeDisk{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computedisks").
 		SubResource(subresources...).
 		Name(name).

@@ -31,6 +31,7 @@ import (
 // FakeNetworkSecurityRules implements NetworkSecurityRuleInterface
 type FakeNetworkSecurityRules struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var networksecurityrulesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "networksecurityrules"}
@@ -40,7 +41,8 @@ var networksecurityrulesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.
 // Get takes name of the networkSecurityRule, and returns the corresponding networkSecurityRule object, and an error if there is any.
 func (c *FakeNetworkSecurityRules) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkSecurityRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(networksecurityrulesResource, name), &v1alpha1.NetworkSecurityRule{})
+		Invokes(testing.NewGetAction(networksecurityrulesResource, c.ns, name), &v1alpha1.NetworkSecurityRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeNetworkSecurityRules) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of NetworkSecurityRules that match those selectors.
 func (c *FakeNetworkSecurityRules) List(opts v1.ListOptions) (result *v1alpha1.NetworkSecurityRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(networksecurityrulesResource, networksecurityrulesKind, opts), &v1alpha1.NetworkSecurityRuleList{})
+		Invokes(testing.NewListAction(networksecurityrulesResource, networksecurityrulesKind, c.ns, opts), &v1alpha1.NetworkSecurityRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeNetworkSecurityRules) List(opts v1.ListOptions) (result *v1alpha1.N
 // Watch returns a watch.Interface that watches the requested networkSecurityRules.
 func (c *FakeNetworkSecurityRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(networksecurityrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(networksecurityrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a networkSecurityRule and creates it.  Returns the server's representation of the networkSecurityRule, and an error, if there is any.
 func (c *FakeNetworkSecurityRules) Create(networkSecurityRule *v1alpha1.NetworkSecurityRule) (result *v1alpha1.NetworkSecurityRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(networksecurityrulesResource, networkSecurityRule), &v1alpha1.NetworkSecurityRule{})
+		Invokes(testing.NewCreateAction(networksecurityrulesResource, c.ns, networkSecurityRule), &v1alpha1.NetworkSecurityRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeNetworkSecurityRules) Create(networkSecurityRule *v1alpha1.NetworkS
 // Update takes the representation of a networkSecurityRule and updates it. Returns the server's representation of the networkSecurityRule, and an error, if there is any.
 func (c *FakeNetworkSecurityRules) Update(networkSecurityRule *v1alpha1.NetworkSecurityRule) (result *v1alpha1.NetworkSecurityRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(networksecurityrulesResource, networkSecurityRule), &v1alpha1.NetworkSecurityRule{})
+		Invokes(testing.NewUpdateAction(networksecurityrulesResource, c.ns, networkSecurityRule), &v1alpha1.NetworkSecurityRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeNetworkSecurityRules) Update(networkSecurityRule *v1alpha1.NetworkS
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNetworkSecurityRules) UpdateStatus(networkSecurityRule *v1alpha1.NetworkSecurityRule) (*v1alpha1.NetworkSecurityRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(networksecurityrulesResource, "status", networkSecurityRule), &v1alpha1.NetworkSecurityRule{})
+		Invokes(testing.NewUpdateSubresourceAction(networksecurityrulesResource, "status", c.ns, networkSecurityRule), &v1alpha1.NetworkSecurityRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeNetworkSecurityRules) UpdateStatus(networkSecurityRule *v1alpha1.Ne
 // Delete takes name of the networkSecurityRule and deletes it. Returns an error if one occurs.
 func (c *FakeNetworkSecurityRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(networksecurityrulesResource, name), &v1alpha1.NetworkSecurityRule{})
+		Invokes(testing.NewDeleteAction(networksecurityrulesResource, c.ns, name), &v1alpha1.NetworkSecurityRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNetworkSecurityRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(networksecurityrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(networksecurityrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NetworkSecurityRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeNetworkSecurityRules) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched networkSecurityRule.
 func (c *FakeNetworkSecurityRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkSecurityRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(networksecurityrulesResource, name, pt, data, subresources...), &v1alpha1.NetworkSecurityRule{})
+		Invokes(testing.NewPatchSubresourceAction(networksecurityrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.NetworkSecurityRule{})
+
 	if obj == nil {
 		return nil, err
 	}

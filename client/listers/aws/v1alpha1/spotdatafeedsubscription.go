@@ -29,8 +29,8 @@ import (
 type SpotDatafeedSubscriptionLister interface {
 	// List lists all SpotDatafeedSubscriptions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SpotDatafeedSubscription, err error)
-	// Get retrieves the SpotDatafeedSubscription from the index for a given name.
-	Get(name string) (*v1alpha1.SpotDatafeedSubscription, error)
+	// SpotDatafeedSubscriptions returns an object that can list and get SpotDatafeedSubscriptions.
+	SpotDatafeedSubscriptions(namespace string) SpotDatafeedSubscriptionNamespaceLister
 	SpotDatafeedSubscriptionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *spotDatafeedSubscriptionLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the SpotDatafeedSubscription from the index for a given name.
-func (s *spotDatafeedSubscriptionLister) Get(name string) (*v1alpha1.SpotDatafeedSubscription, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SpotDatafeedSubscriptions returns an object that can list and get SpotDatafeedSubscriptions.
+func (s *spotDatafeedSubscriptionLister) SpotDatafeedSubscriptions(namespace string) SpotDatafeedSubscriptionNamespaceLister {
+	return spotDatafeedSubscriptionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SpotDatafeedSubscriptionNamespaceLister helps list and get SpotDatafeedSubscriptions.
+type SpotDatafeedSubscriptionNamespaceLister interface {
+	// List lists all SpotDatafeedSubscriptions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SpotDatafeedSubscription, err error)
+	// Get retrieves the SpotDatafeedSubscription from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SpotDatafeedSubscription, error)
+	SpotDatafeedSubscriptionNamespaceListerExpansion
+}
+
+// spotDatafeedSubscriptionNamespaceLister implements the SpotDatafeedSubscriptionNamespaceLister
+// interface.
+type spotDatafeedSubscriptionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SpotDatafeedSubscriptions in the indexer for a given namespace.
+func (s spotDatafeedSubscriptionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SpotDatafeedSubscription, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SpotDatafeedSubscription))
+	})
+	return ret, err
+}
+
+// Get retrieves the SpotDatafeedSubscription from the indexer for a given namespace and name.
+func (s spotDatafeedSubscriptionNamespaceLister) Get(name string) (*v1alpha1.SpotDatafeedSubscription, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

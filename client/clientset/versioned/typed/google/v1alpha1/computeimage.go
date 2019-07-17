@@ -32,7 +32,7 @@ import (
 // ComputeImagesGetter has a method to return a ComputeImageInterface.
 // A group's client should implement this interface.
 type ComputeImagesGetter interface {
-	ComputeImages() ComputeImageInterface
+	ComputeImages(namespace string) ComputeImageInterface
 }
 
 // ComputeImageInterface has methods to work with ComputeImage resources.
@@ -52,12 +52,14 @@ type ComputeImageInterface interface {
 // computeImages implements ComputeImageInterface
 type computeImages struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeImages returns a ComputeImages
-func newComputeImages(c *GoogleV1alpha1Client) *computeImages {
+func newComputeImages(c *GoogleV1alpha1Client, namespace string) *computeImages {
 	return &computeImages{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeImages(c *GoogleV1alpha1Client) *computeImages {
 func (c *computeImages) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeImage, err error) {
 	result = &v1alpha1.ComputeImage{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeimages").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeImages) List(opts v1.ListOptions) (result *v1alpha1.ComputeImage
 	}
 	result = &v1alpha1.ComputeImageList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeimages").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeImages) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computeimages").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeImages) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *computeImages) Create(computeImage *v1alpha1.ComputeImage) (result *v1alpha1.ComputeImage, err error) {
 	result = &v1alpha1.ComputeImage{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computeimages").
 		Body(computeImage).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeImages) Create(computeImage *v1alpha1.ComputeImage) (result *v1a
 func (c *computeImages) Update(computeImage *v1alpha1.ComputeImage) (result *v1alpha1.ComputeImage, err error) {
 	result = &v1alpha1.ComputeImage{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeimages").
 		Name(computeImage.Name).
 		Body(computeImage).
@@ -132,6 +139,7 @@ func (c *computeImages) Update(computeImage *v1alpha1.ComputeImage) (result *v1a
 func (c *computeImages) UpdateStatus(computeImage *v1alpha1.ComputeImage) (result *v1alpha1.ComputeImage, err error) {
 	result = &v1alpha1.ComputeImage{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeimages").
 		Name(computeImage.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeImages) UpdateStatus(computeImage *v1alpha1.ComputeImage) (resul
 // Delete takes name of the computeImage and deletes it. Returns an error if one occurs.
 func (c *computeImages) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeimages").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeImages) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeimages").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeImages) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *computeImages) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeImage, err error) {
 	result = &v1alpha1.ComputeImage{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computeimages").
 		SubResource(subresources...).
 		Name(name).

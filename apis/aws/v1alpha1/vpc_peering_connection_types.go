@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,11 +20,12 @@ type VpcPeeringConnection struct {
 
 type VpcPeeringConnectionSpec struct {
 	// +optional
-	AutoAccept bool   `json:"auto_accept,omitempty"`
-	PeerVpcId  string `json:"peer_vpc_id"`
+	AutoAccept bool   `json:"autoAccept,omitempty" tf:"auto_accept,omitempty"`
+	PeerVpcID  string `json:"peerVpcID" tf:"peer_vpc_id"`
 	// +optional
-	Tags  map[string]string `json:"tags,omitempty"`
-	VpcId string            `json:"vpc_id"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	VpcID       string                    `json:"vpcID" tf:"vpc_id"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type VpcPeeringConnectionStatus struct {
@@ -32,7 +33,9 @@ type VpcPeeringConnectionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

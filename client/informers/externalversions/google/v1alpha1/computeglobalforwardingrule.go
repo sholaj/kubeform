@@ -41,32 +41,33 @@ type ComputeGlobalForwardingRuleInformer interface {
 type computeGlobalForwardingRuleInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewComputeGlobalForwardingRuleInformer constructs a new informer for ComputeGlobalForwardingRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewComputeGlobalForwardingRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredComputeGlobalForwardingRuleInformer(client, resyncPeriod, indexers, nil)
+func NewComputeGlobalForwardingRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredComputeGlobalForwardingRuleInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredComputeGlobalForwardingRuleInformer constructs a new informer for ComputeGlobalForwardingRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredComputeGlobalForwardingRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredComputeGlobalForwardingRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeGlobalForwardingRules().List(options)
+				return client.GoogleV1alpha1().ComputeGlobalForwardingRules(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeGlobalForwardingRules().Watch(options)
+				return client.GoogleV1alpha1().ComputeGlobalForwardingRules(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.ComputeGlobalForwardingRule{},
@@ -76,7 +77,7 @@ func NewFilteredComputeGlobalForwardingRuleInformer(client versioned.Interface, 
 }
 
 func (f *computeGlobalForwardingRuleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredComputeGlobalForwardingRuleInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredComputeGlobalForwardingRuleInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *computeGlobalForwardingRuleInformer) Informer() cache.SharedIndexInformer {

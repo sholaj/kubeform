@@ -41,32 +41,33 @@ type PubsubTopicIamPolicyInformer interface {
 type pubsubTopicIamPolicyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewPubsubTopicIamPolicyInformer constructs a new informer for PubsubTopicIamPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewPubsubTopicIamPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredPubsubTopicIamPolicyInformer(client, resyncPeriod, indexers, nil)
+func NewPubsubTopicIamPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredPubsubTopicIamPolicyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredPubsubTopicIamPolicyInformer constructs a new informer for PubsubTopicIamPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredPubsubTopicIamPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredPubsubTopicIamPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().PubsubTopicIamPolicies().List(options)
+				return client.GoogleV1alpha1().PubsubTopicIamPolicies(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().PubsubTopicIamPolicies().Watch(options)
+				return client.GoogleV1alpha1().PubsubTopicIamPolicies(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.PubsubTopicIamPolicy{},
@@ -76,7 +77,7 @@ func NewFilteredPubsubTopicIamPolicyInformer(client versioned.Interface, resyncP
 }
 
 func (f *pubsubTopicIamPolicyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredPubsubTopicIamPolicyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredPubsubTopicIamPolicyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *pubsubTopicIamPolicyInformer) Informer() cache.SharedIndexInformer {

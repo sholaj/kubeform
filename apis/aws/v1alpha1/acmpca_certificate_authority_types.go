@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,70 +20,71 @@ type AcmpcaCertificateAuthority struct {
 
 type AcmpcaCertificateAuthoritySpecCertificateAuthorityConfigurationSubject struct {
 	// +optional
-	CommonName string `json:"common_name,omitempty"`
+	CommonName string `json:"commonName,omitempty" tf:"common_name,omitempty"`
 	// +optional
-	Country string `json:"country,omitempty"`
+	Country string `json:"country,omitempty" tf:"country,omitempty"`
 	// +optional
-	DistinguishedNameQualifier string `json:"distinguished_name_qualifier,omitempty"`
+	DistinguishedNameQualifier string `json:"distinguishedNameQualifier,omitempty" tf:"distinguished_name_qualifier,omitempty"`
 	// +optional
-	GenerationQualifier string `json:"generation_qualifier,omitempty"`
+	GenerationQualifier string `json:"generationQualifier,omitempty" tf:"generation_qualifier,omitempty"`
 	// +optional
-	GivenName string `json:"given_name,omitempty"`
+	GivenName string `json:"givenName,omitempty" tf:"given_name,omitempty"`
 	// +optional
-	Initials string `json:"initials,omitempty"`
+	Initials string `json:"initials,omitempty" tf:"initials,omitempty"`
 	// +optional
-	Locality string `json:"locality,omitempty"`
+	Locality string `json:"locality,omitempty" tf:"locality,omitempty"`
 	// +optional
-	Organization string `json:"organization,omitempty"`
+	Organization string `json:"organization,omitempty" tf:"organization,omitempty"`
 	// +optional
-	OrganizationalUnit string `json:"organizational_unit,omitempty"`
+	OrganizationalUnit string `json:"organizationalUnit,omitempty" tf:"organizational_unit,omitempty"`
 	// +optional
-	Pseudonym string `json:"pseudonym,omitempty"`
+	Pseudonym string `json:"pseudonym,omitempty" tf:"pseudonym,omitempty"`
 	// +optional
-	State string `json:"state,omitempty"`
+	State string `json:"state,omitempty" tf:"state,omitempty"`
 	// +optional
-	Surname string `json:"surname,omitempty"`
+	Surname string `json:"surname,omitempty" tf:"surname,omitempty"`
 	// +optional
-	Title string `json:"title,omitempty"`
+	Title string `json:"title,omitempty" tf:"title,omitempty"`
 }
 
 type AcmpcaCertificateAuthoritySpecCertificateAuthorityConfiguration struct {
-	KeyAlgorithm     string `json:"key_algorithm"`
-	SigningAlgorithm string `json:"signing_algorithm"`
+	KeyAlgorithm     string `json:"keyAlgorithm" tf:"key_algorithm"`
+	SigningAlgorithm string `json:"signingAlgorithm" tf:"signing_algorithm"`
 	// +kubebuilder:validation:MaxItems=1
-	Subject []AcmpcaCertificateAuthoritySpecCertificateAuthorityConfiguration `json:"subject"`
+	Subject []AcmpcaCertificateAuthoritySpecCertificateAuthorityConfigurationSubject `json:"subject" tf:"subject"`
 }
 
 type AcmpcaCertificateAuthoritySpecRevocationConfigurationCrlConfiguration struct {
 	// +optional
-	CustomCname string `json:"custom_cname,omitempty"`
+	CustomCname string `json:"customCname,omitempty" tf:"custom_cname,omitempty"`
 	// +optional
-	Enabled          bool `json:"enabled,omitempty"`
-	ExpirationInDays int  `json:"expiration_in_days"`
+	Enabled          bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
+	ExpirationInDays int  `json:"expirationInDays" tf:"expiration_in_days"`
 	// +optional
-	S3BucketName string `json:"s3_bucket_name,omitempty"`
+	S3BucketName string `json:"s3BucketName,omitempty" tf:"s3_bucket_name,omitempty"`
 }
 
 type AcmpcaCertificateAuthoritySpecRevocationConfiguration struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	CrlConfiguration *[]AcmpcaCertificateAuthoritySpecRevocationConfiguration `json:"crl_configuration,omitempty"`
+	CrlConfiguration []AcmpcaCertificateAuthoritySpecRevocationConfigurationCrlConfiguration `json:"crlConfiguration,omitempty" tf:"crl_configuration,omitempty"`
 }
 
 type AcmpcaCertificateAuthoritySpec struct {
 	// +kubebuilder:validation:MaxItems=1
-	CertificateAuthorityConfiguration []AcmpcaCertificateAuthoritySpec `json:"certificate_authority_configuration"`
+	CertificateAuthorityConfiguration []AcmpcaCertificateAuthoritySpecCertificateAuthorityConfiguration `json:"certificateAuthorityConfiguration" tf:"certificate_authority_configuration"`
 	// +optional
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
 	// +optional
-	PermanentDeletionTimeInDays int `json:"permanent_deletion_time_in_days,omitempty"`
+	PermanentDeletionTimeInDays int `json:"permanentDeletionTimeInDays,omitempty" tf:"permanent_deletion_time_in_days,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	RevocationConfiguration *[]AcmpcaCertificateAuthoritySpec `json:"revocation_configuration,omitempty"`
+	RevocationConfiguration []AcmpcaCertificateAuthoritySpecRevocationConfiguration `json:"revocationConfiguration,omitempty" tf:"revocation_configuration,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	Type string `json:"type,omitempty"`
+	Type        string                    `json:"type,omitempty" tf:"type,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type AcmpcaCertificateAuthorityStatus struct {
@@ -91,7 +92,9 @@ type AcmpcaCertificateAuthorityStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

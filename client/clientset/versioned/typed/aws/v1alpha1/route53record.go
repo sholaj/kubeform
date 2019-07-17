@@ -32,7 +32,7 @@ import (
 // Route53RecordsGetter has a method to return a Route53RecordInterface.
 // A group's client should implement this interface.
 type Route53RecordsGetter interface {
-	Route53Records() Route53RecordInterface
+	Route53Records(namespace string) Route53RecordInterface
 }
 
 // Route53RecordInterface has methods to work with Route53Record resources.
@@ -52,12 +52,14 @@ type Route53RecordInterface interface {
 // route53Records implements Route53RecordInterface
 type route53Records struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRoute53Records returns a Route53Records
-func newRoute53Records(c *AwsV1alpha1Client) *route53Records {
+func newRoute53Records(c *AwsV1alpha1Client, namespace string) *route53Records {
 	return &route53Records{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRoute53Records(c *AwsV1alpha1Client) *route53Records {
 func (c *route53Records) Get(name string, options v1.GetOptions) (result *v1alpha1.Route53Record, err error) {
 	result = &v1alpha1.Route53Record{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("route53records").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *route53Records) List(opts v1.ListOptions) (result *v1alpha1.Route53Reco
 	}
 	result = &v1alpha1.Route53RecordList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("route53records").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *route53Records) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("route53records").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *route53Records) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *route53Records) Create(route53Record *v1alpha1.Route53Record) (result *v1alpha1.Route53Record, err error) {
 	result = &v1alpha1.Route53Record{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("route53records").
 		Body(route53Record).
 		Do().
@@ -118,6 +124,7 @@ func (c *route53Records) Create(route53Record *v1alpha1.Route53Record) (result *
 func (c *route53Records) Update(route53Record *v1alpha1.Route53Record) (result *v1alpha1.Route53Record, err error) {
 	result = &v1alpha1.Route53Record{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("route53records").
 		Name(route53Record.Name).
 		Body(route53Record).
@@ -132,6 +139,7 @@ func (c *route53Records) Update(route53Record *v1alpha1.Route53Record) (result *
 func (c *route53Records) UpdateStatus(route53Record *v1alpha1.Route53Record) (result *v1alpha1.Route53Record, err error) {
 	result = &v1alpha1.Route53Record{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("route53records").
 		Name(route53Record.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *route53Records) UpdateStatus(route53Record *v1alpha1.Route53Record) (re
 // Delete takes name of the route53Record and deletes it. Returns an error if one occurs.
 func (c *route53Records) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("route53records").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *route53Records) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("route53records").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *route53Records) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *route53Records) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Route53Record, err error) {
 	result = &v1alpha1.Route53Record{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("route53records").
 		SubResource(subresources...).
 		Name(name).

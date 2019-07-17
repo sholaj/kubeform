@@ -31,6 +31,7 @@ import (
 // FakeCognitiveAccounts implements CognitiveAccountInterface
 type FakeCognitiveAccounts struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var cognitiveaccountsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "cognitiveaccounts"}
@@ -40,7 +41,8 @@ var cognitiveaccountsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com
 // Get takes name of the cognitiveAccount, and returns the corresponding cognitiveAccount object, and an error if there is any.
 func (c *FakeCognitiveAccounts) Get(name string, options v1.GetOptions) (result *v1alpha1.CognitiveAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cognitiveaccountsResource, name), &v1alpha1.CognitiveAccount{})
+		Invokes(testing.NewGetAction(cognitiveaccountsResource, c.ns, name), &v1alpha1.CognitiveAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCognitiveAccounts) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of CognitiveAccounts that match those selectors.
 func (c *FakeCognitiveAccounts) List(opts v1.ListOptions) (result *v1alpha1.CognitiveAccountList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cognitiveaccountsResource, cognitiveaccountsKind, opts), &v1alpha1.CognitiveAccountList{})
+		Invokes(testing.NewListAction(cognitiveaccountsResource, cognitiveaccountsKind, c.ns, opts), &v1alpha1.CognitiveAccountList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCognitiveAccounts) List(opts v1.ListOptions) (result *v1alpha1.Cogn
 // Watch returns a watch.Interface that watches the requested cognitiveAccounts.
 func (c *FakeCognitiveAccounts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cognitiveaccountsResource, opts))
+		InvokesWatch(testing.NewWatchAction(cognitiveaccountsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cognitiveAccount and creates it.  Returns the server's representation of the cognitiveAccount, and an error, if there is any.
 func (c *FakeCognitiveAccounts) Create(cognitiveAccount *v1alpha1.CognitiveAccount) (result *v1alpha1.CognitiveAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cognitiveaccountsResource, cognitiveAccount), &v1alpha1.CognitiveAccount{})
+		Invokes(testing.NewCreateAction(cognitiveaccountsResource, c.ns, cognitiveAccount), &v1alpha1.CognitiveAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCognitiveAccounts) Create(cognitiveAccount *v1alpha1.CognitiveAccou
 // Update takes the representation of a cognitiveAccount and updates it. Returns the server's representation of the cognitiveAccount, and an error, if there is any.
 func (c *FakeCognitiveAccounts) Update(cognitiveAccount *v1alpha1.CognitiveAccount) (result *v1alpha1.CognitiveAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cognitiveaccountsResource, cognitiveAccount), &v1alpha1.CognitiveAccount{})
+		Invokes(testing.NewUpdateAction(cognitiveaccountsResource, c.ns, cognitiveAccount), &v1alpha1.CognitiveAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCognitiveAccounts) Update(cognitiveAccount *v1alpha1.CognitiveAccou
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCognitiveAccounts) UpdateStatus(cognitiveAccount *v1alpha1.CognitiveAccount) (*v1alpha1.CognitiveAccount, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cognitiveaccountsResource, "status", cognitiveAccount), &v1alpha1.CognitiveAccount{})
+		Invokes(testing.NewUpdateSubresourceAction(cognitiveaccountsResource, "status", c.ns, cognitiveAccount), &v1alpha1.CognitiveAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCognitiveAccounts) UpdateStatus(cognitiveAccount *v1alpha1.Cognitiv
 // Delete takes name of the cognitiveAccount and deletes it. Returns an error if one occurs.
 func (c *FakeCognitiveAccounts) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cognitiveaccountsResource, name), &v1alpha1.CognitiveAccount{})
+		Invokes(testing.NewDeleteAction(cognitiveaccountsResource, c.ns, name), &v1alpha1.CognitiveAccount{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCognitiveAccounts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cognitiveaccountsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cognitiveaccountsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CognitiveAccountList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCognitiveAccounts) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched cognitiveAccount.
 func (c *FakeCognitiveAccounts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CognitiveAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cognitiveaccountsResource, name, pt, data, subresources...), &v1alpha1.CognitiveAccount{})
+		Invokes(testing.NewPatchSubresourceAction(cognitiveaccountsResource, c.ns, name, pt, data, subresources...), &v1alpha1.CognitiveAccount{})
+
 	if obj == nil {
 		return nil, err
 	}

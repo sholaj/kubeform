@@ -29,8 +29,8 @@ import (
 type WafregionalByteMatchSetLister interface {
 	// List lists all WafregionalByteMatchSets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.WafregionalByteMatchSet, err error)
-	// Get retrieves the WafregionalByteMatchSet from the index for a given name.
-	Get(name string) (*v1alpha1.WafregionalByteMatchSet, error)
+	// WafregionalByteMatchSets returns an object that can list and get WafregionalByteMatchSets.
+	WafregionalByteMatchSets(namespace string) WafregionalByteMatchSetNamespaceLister
 	WafregionalByteMatchSetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *wafregionalByteMatchSetLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the WafregionalByteMatchSet from the index for a given name.
-func (s *wafregionalByteMatchSetLister) Get(name string) (*v1alpha1.WafregionalByteMatchSet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafregionalByteMatchSets returns an object that can list and get WafregionalByteMatchSets.
+func (s *wafregionalByteMatchSetLister) WafregionalByteMatchSets(namespace string) WafregionalByteMatchSetNamespaceLister {
+	return wafregionalByteMatchSetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafregionalByteMatchSetNamespaceLister helps list and get WafregionalByteMatchSets.
+type WafregionalByteMatchSetNamespaceLister interface {
+	// List lists all WafregionalByteMatchSets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafregionalByteMatchSet, err error)
+	// Get retrieves the WafregionalByteMatchSet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafregionalByteMatchSet, error)
+	WafregionalByteMatchSetNamespaceListerExpansion
+}
+
+// wafregionalByteMatchSetNamespaceLister implements the WafregionalByteMatchSetNamespaceLister
+// interface.
+type wafregionalByteMatchSetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafregionalByteMatchSets in the indexer for a given namespace.
+func (s wafregionalByteMatchSetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafregionalByteMatchSet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafregionalByteMatchSet))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafregionalByteMatchSet from the indexer for a given namespace and name.
+func (s wafregionalByteMatchSetNamespaceLister) Get(name string) (*v1alpha1.WafregionalByteMatchSet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -41,32 +41,33 @@ type GlueSecurityConfigurationInformer interface {
 type glueSecurityConfigurationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewGlueSecurityConfigurationInformer constructs a new informer for GlueSecurityConfiguration type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewGlueSecurityConfigurationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredGlueSecurityConfigurationInformer(client, resyncPeriod, indexers, nil)
+func NewGlueSecurityConfigurationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredGlueSecurityConfigurationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredGlueSecurityConfigurationInformer constructs a new informer for GlueSecurityConfiguration type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredGlueSecurityConfigurationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredGlueSecurityConfigurationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().GlueSecurityConfigurations().List(options)
+				return client.AwsV1alpha1().GlueSecurityConfigurations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().GlueSecurityConfigurations().Watch(options)
+				return client.AwsV1alpha1().GlueSecurityConfigurations(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.GlueSecurityConfiguration{},
@@ -76,7 +77,7 @@ func NewFilteredGlueSecurityConfigurationInformer(client versioned.Interface, re
 }
 
 func (f *glueSecurityConfigurationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredGlueSecurityConfigurationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredGlueSecurityConfigurationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *glueSecurityConfigurationInformer) Informer() cache.SharedIndexInformer {

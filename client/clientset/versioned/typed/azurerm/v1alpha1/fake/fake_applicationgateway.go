@@ -31,6 +31,7 @@ import (
 // FakeApplicationGateways implements ApplicationGatewayInterface
 type FakeApplicationGateways struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var applicationgatewaysResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "applicationgateways"}
@@ -40,7 +41,8 @@ var applicationgatewaysKind = schema.GroupVersionKind{Group: "azurerm.kubeform.c
 // Get takes name of the applicationGateway, and returns the corresponding applicationGateway object, and an error if there is any.
 func (c *FakeApplicationGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.ApplicationGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(applicationgatewaysResource, name), &v1alpha1.ApplicationGateway{})
+		Invokes(testing.NewGetAction(applicationgatewaysResource, c.ns, name), &v1alpha1.ApplicationGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApplicationGateways) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of ApplicationGateways that match those selectors.
 func (c *FakeApplicationGateways) List(opts v1.ListOptions) (result *v1alpha1.ApplicationGatewayList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(applicationgatewaysResource, applicationgatewaysKind, opts), &v1alpha1.ApplicationGatewayList{})
+		Invokes(testing.NewListAction(applicationgatewaysResource, applicationgatewaysKind, c.ns, opts), &v1alpha1.ApplicationGatewayList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApplicationGateways) List(opts v1.ListOptions) (result *v1alpha1.Ap
 // Watch returns a watch.Interface that watches the requested applicationGateways.
 func (c *FakeApplicationGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(applicationgatewaysResource, opts))
+		InvokesWatch(testing.NewWatchAction(applicationgatewaysResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a applicationGateway and creates it.  Returns the server's representation of the applicationGateway, and an error, if there is any.
 func (c *FakeApplicationGateways) Create(applicationGateway *v1alpha1.ApplicationGateway) (result *v1alpha1.ApplicationGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(applicationgatewaysResource, applicationGateway), &v1alpha1.ApplicationGateway{})
+		Invokes(testing.NewCreateAction(applicationgatewaysResource, c.ns, applicationGateway), &v1alpha1.ApplicationGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApplicationGateways) Create(applicationGateway *v1alpha1.Applicatio
 // Update takes the representation of a applicationGateway and updates it. Returns the server's representation of the applicationGateway, and an error, if there is any.
 func (c *FakeApplicationGateways) Update(applicationGateway *v1alpha1.ApplicationGateway) (result *v1alpha1.ApplicationGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(applicationgatewaysResource, applicationGateway), &v1alpha1.ApplicationGateway{})
+		Invokes(testing.NewUpdateAction(applicationgatewaysResource, c.ns, applicationGateway), &v1alpha1.ApplicationGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApplicationGateways) Update(applicationGateway *v1alpha1.Applicatio
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApplicationGateways) UpdateStatus(applicationGateway *v1alpha1.ApplicationGateway) (*v1alpha1.ApplicationGateway, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(applicationgatewaysResource, "status", applicationGateway), &v1alpha1.ApplicationGateway{})
+		Invokes(testing.NewUpdateSubresourceAction(applicationgatewaysResource, "status", c.ns, applicationGateway), &v1alpha1.ApplicationGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApplicationGateways) UpdateStatus(applicationGateway *v1alpha1.Appl
 // Delete takes name of the applicationGateway and deletes it. Returns an error if one occurs.
 func (c *FakeApplicationGateways) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(applicationgatewaysResource, name), &v1alpha1.ApplicationGateway{})
+		Invokes(testing.NewDeleteAction(applicationgatewaysResource, c.ns, name), &v1alpha1.ApplicationGateway{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApplicationGateways) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(applicationgatewaysResource, listOptions)
+	action := testing.NewDeleteCollectionAction(applicationgatewaysResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApplicationGatewayList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApplicationGateways) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched applicationGateway.
 func (c *FakeApplicationGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApplicationGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(applicationgatewaysResource, name, pt, data, subresources...), &v1alpha1.ApplicationGateway{})
+		Invokes(testing.NewPatchSubresourceAction(applicationgatewaysResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApplicationGateway{})
+
 	if obj == nil {
 		return nil, err
 	}

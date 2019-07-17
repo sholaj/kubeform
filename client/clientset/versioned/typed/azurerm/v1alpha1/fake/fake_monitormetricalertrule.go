@@ -31,6 +31,7 @@ import (
 // FakeMonitorMetricAlertrules implements MonitorMetricAlertruleInterface
 type FakeMonitorMetricAlertrules struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var monitormetricalertrulesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "monitormetricalertrules"}
@@ -40,7 +41,8 @@ var monitormetricalertrulesKind = schema.GroupVersionKind{Group: "azurerm.kubefo
 // Get takes name of the monitorMetricAlertrule, and returns the corresponding monitorMetricAlertrule object, and an error if there is any.
 func (c *FakeMonitorMetricAlertrules) Get(name string, options v1.GetOptions) (result *v1alpha1.MonitorMetricAlertrule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(monitormetricalertrulesResource, name), &v1alpha1.MonitorMetricAlertrule{})
+		Invokes(testing.NewGetAction(monitormetricalertrulesResource, c.ns, name), &v1alpha1.MonitorMetricAlertrule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMonitorMetricAlertrules) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of MonitorMetricAlertrules that match those selectors.
 func (c *FakeMonitorMetricAlertrules) List(opts v1.ListOptions) (result *v1alpha1.MonitorMetricAlertruleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(monitormetricalertrulesResource, monitormetricalertrulesKind, opts), &v1alpha1.MonitorMetricAlertruleList{})
+		Invokes(testing.NewListAction(monitormetricalertrulesResource, monitormetricalertrulesKind, c.ns, opts), &v1alpha1.MonitorMetricAlertruleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMonitorMetricAlertrules) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested monitorMetricAlertrules.
 func (c *FakeMonitorMetricAlertrules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(monitormetricalertrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(monitormetricalertrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a monitorMetricAlertrule and creates it.  Returns the server's representation of the monitorMetricAlertrule, and an error, if there is any.
 func (c *FakeMonitorMetricAlertrules) Create(monitorMetricAlertrule *v1alpha1.MonitorMetricAlertrule) (result *v1alpha1.MonitorMetricAlertrule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(monitormetricalertrulesResource, monitorMetricAlertrule), &v1alpha1.MonitorMetricAlertrule{})
+		Invokes(testing.NewCreateAction(monitormetricalertrulesResource, c.ns, monitorMetricAlertrule), &v1alpha1.MonitorMetricAlertrule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMonitorMetricAlertrules) Create(monitorMetricAlertrule *v1alpha1.Mo
 // Update takes the representation of a monitorMetricAlertrule and updates it. Returns the server's representation of the monitorMetricAlertrule, and an error, if there is any.
 func (c *FakeMonitorMetricAlertrules) Update(monitorMetricAlertrule *v1alpha1.MonitorMetricAlertrule) (result *v1alpha1.MonitorMetricAlertrule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(monitormetricalertrulesResource, monitorMetricAlertrule), &v1alpha1.MonitorMetricAlertrule{})
+		Invokes(testing.NewUpdateAction(monitormetricalertrulesResource, c.ns, monitorMetricAlertrule), &v1alpha1.MonitorMetricAlertrule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMonitorMetricAlertrules) Update(monitorMetricAlertrule *v1alpha1.Mo
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMonitorMetricAlertrules) UpdateStatus(monitorMetricAlertrule *v1alpha1.MonitorMetricAlertrule) (*v1alpha1.MonitorMetricAlertrule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(monitormetricalertrulesResource, "status", monitorMetricAlertrule), &v1alpha1.MonitorMetricAlertrule{})
+		Invokes(testing.NewUpdateSubresourceAction(monitormetricalertrulesResource, "status", c.ns, monitorMetricAlertrule), &v1alpha1.MonitorMetricAlertrule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMonitorMetricAlertrules) UpdateStatus(monitorMetricAlertrule *v1alp
 // Delete takes name of the monitorMetricAlertrule and deletes it. Returns an error if one occurs.
 func (c *FakeMonitorMetricAlertrules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(monitormetricalertrulesResource, name), &v1alpha1.MonitorMetricAlertrule{})
+		Invokes(testing.NewDeleteAction(monitormetricalertrulesResource, c.ns, name), &v1alpha1.MonitorMetricAlertrule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMonitorMetricAlertrules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(monitormetricalertrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(monitormetricalertrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MonitorMetricAlertruleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMonitorMetricAlertrules) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched monitorMetricAlertrule.
 func (c *FakeMonitorMetricAlertrules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MonitorMetricAlertrule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(monitormetricalertrulesResource, name, pt, data, subresources...), &v1alpha1.MonitorMetricAlertrule{})
+		Invokes(testing.NewPatchSubresourceAction(monitormetricalertrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.MonitorMetricAlertrule{})
+
 	if obj == nil {
 		return nil, err
 	}

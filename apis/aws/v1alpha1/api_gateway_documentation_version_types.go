@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,9 +20,10 @@ type ApiGatewayDocumentationVersion struct {
 
 type ApiGatewayDocumentationVersionSpec struct {
 	// +optional
-	Description string `json:"description,omitempty"`
-	RestApiId   string `json:"rest_api_id"`
-	Version     string `json:"version"`
+	Description string                    `json:"description,omitempty" tf:"description,omitempty"`
+	RestAPIID   string                    `json:"restAPIID" tf:"rest_api_id"`
+	Version     string                    `json:"version" tf:"version"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ApiGatewayDocumentationVersionStatus struct {
@@ -30,7 +31,9 @@ type ApiGatewayDocumentationVersionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

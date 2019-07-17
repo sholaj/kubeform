@@ -29,8 +29,8 @@ import (
 type Route53DelegationSetLister interface {
 	// List lists all Route53DelegationSets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Route53DelegationSet, err error)
-	// Get retrieves the Route53DelegationSet from the index for a given name.
-	Get(name string) (*v1alpha1.Route53DelegationSet, error)
+	// Route53DelegationSets returns an object that can list and get Route53DelegationSets.
+	Route53DelegationSets(namespace string) Route53DelegationSetNamespaceLister
 	Route53DelegationSetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *route53DelegationSetLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the Route53DelegationSet from the index for a given name.
-func (s *route53DelegationSetLister) Get(name string) (*v1alpha1.Route53DelegationSet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Route53DelegationSets returns an object that can list and get Route53DelegationSets.
+func (s *route53DelegationSetLister) Route53DelegationSets(namespace string) Route53DelegationSetNamespaceLister {
+	return route53DelegationSetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// Route53DelegationSetNamespaceLister helps list and get Route53DelegationSets.
+type Route53DelegationSetNamespaceLister interface {
+	// List lists all Route53DelegationSets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Route53DelegationSet, err error)
+	// Get retrieves the Route53DelegationSet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Route53DelegationSet, error)
+	Route53DelegationSetNamespaceListerExpansion
+}
+
+// route53DelegationSetNamespaceLister implements the Route53DelegationSetNamespaceLister
+// interface.
+type route53DelegationSetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Route53DelegationSets in the indexer for a given namespace.
+func (s route53DelegationSetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Route53DelegationSet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Route53DelegationSet))
+	})
+	return ret, err
+}
+
+// Get retrieves the Route53DelegationSet from the indexer for a given namespace and name.
+func (s route53DelegationSetNamespaceLister) Get(name string) (*v1alpha1.Route53DelegationSet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

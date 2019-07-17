@@ -29,8 +29,8 @@ import (
 type DmsEndpointLister interface {
 	// List lists all DmsEndpoints in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DmsEndpoint, err error)
-	// Get retrieves the DmsEndpoint from the index for a given name.
-	Get(name string) (*v1alpha1.DmsEndpoint, error)
+	// DmsEndpoints returns an object that can list and get DmsEndpoints.
+	DmsEndpoints(namespace string) DmsEndpointNamespaceLister
 	DmsEndpointListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dmsEndpointLister) List(selector labels.Selector) (ret []*v1alpha1.DmsE
 	return ret, err
 }
 
-// Get retrieves the DmsEndpoint from the index for a given name.
-func (s *dmsEndpointLister) Get(name string) (*v1alpha1.DmsEndpoint, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DmsEndpoints returns an object that can list and get DmsEndpoints.
+func (s *dmsEndpointLister) DmsEndpoints(namespace string) DmsEndpointNamespaceLister {
+	return dmsEndpointNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DmsEndpointNamespaceLister helps list and get DmsEndpoints.
+type DmsEndpointNamespaceLister interface {
+	// List lists all DmsEndpoints in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DmsEndpoint, err error)
+	// Get retrieves the DmsEndpoint from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DmsEndpoint, error)
+	DmsEndpointNamespaceListerExpansion
+}
+
+// dmsEndpointNamespaceLister implements the DmsEndpointNamespaceLister
+// interface.
+type dmsEndpointNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DmsEndpoints in the indexer for a given namespace.
+func (s dmsEndpointNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DmsEndpoint, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DmsEndpoint))
+	})
+	return ret, err
+}
+
+// Get retrieves the DmsEndpoint from the indexer for a given namespace and name.
+func (s dmsEndpointNamespaceLister) Get(name string) (*v1alpha1.DmsEndpoint, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type LoggingBillingAccountSinkLister interface {
 	// List lists all LoggingBillingAccountSinks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LoggingBillingAccountSink, err error)
-	// Get retrieves the LoggingBillingAccountSink from the index for a given name.
-	Get(name string) (*v1alpha1.LoggingBillingAccountSink, error)
+	// LoggingBillingAccountSinks returns an object that can list and get LoggingBillingAccountSinks.
+	LoggingBillingAccountSinks(namespace string) LoggingBillingAccountSinkNamespaceLister
 	LoggingBillingAccountSinkListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *loggingBillingAccountSinkLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the LoggingBillingAccountSink from the index for a given name.
-func (s *loggingBillingAccountSinkLister) Get(name string) (*v1alpha1.LoggingBillingAccountSink, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LoggingBillingAccountSinks returns an object that can list and get LoggingBillingAccountSinks.
+func (s *loggingBillingAccountSinkLister) LoggingBillingAccountSinks(namespace string) LoggingBillingAccountSinkNamespaceLister {
+	return loggingBillingAccountSinkNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LoggingBillingAccountSinkNamespaceLister helps list and get LoggingBillingAccountSinks.
+type LoggingBillingAccountSinkNamespaceLister interface {
+	// List lists all LoggingBillingAccountSinks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LoggingBillingAccountSink, err error)
+	// Get retrieves the LoggingBillingAccountSink from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LoggingBillingAccountSink, error)
+	LoggingBillingAccountSinkNamespaceListerExpansion
+}
+
+// loggingBillingAccountSinkNamespaceLister implements the LoggingBillingAccountSinkNamespaceLister
+// interface.
+type loggingBillingAccountSinkNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LoggingBillingAccountSinks in the indexer for a given namespace.
+func (s loggingBillingAccountSinkNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LoggingBillingAccountSink, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LoggingBillingAccountSink))
+	})
+	return ret, err
+}
+
+// Get retrieves the LoggingBillingAccountSink from the indexer for a given namespace and name.
+func (s loggingBillingAccountSinkNamespaceLister) Get(name string) (*v1alpha1.LoggingBillingAccountSink, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

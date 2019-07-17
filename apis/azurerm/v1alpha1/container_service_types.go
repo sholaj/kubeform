@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,59 +20,60 @@ type ContainerService struct {
 
 type ContainerServiceSpecAgentPoolProfile struct {
 	// +optional
-	Count     int    `json:"count,omitempty"`
-	DnsPrefix string `json:"dns_prefix"`
-	Name      string `json:"name"`
-	VmSize    string `json:"vm_size"`
+	Count     int    `json:"count,omitempty" tf:"count,omitempty"`
+	DnsPrefix string `json:"dnsPrefix" tf:"dns_prefix"`
+	Name      string `json:"name" tf:"name"`
+	VmSize    string `json:"vmSize" tf:"vm_size"`
 }
 
 type ContainerServiceSpecDiagnosticsProfile struct {
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" tf:"enabled"`
 }
 
 type ContainerServiceSpecLinuxProfileSshKey struct {
-	KeyData string `json:"key_data"`
+	KeyData string `json:"keyData" tf:"key_data"`
 }
 
 type ContainerServiceSpecLinuxProfile struct {
-	AdminUsername string `json:"admin_username"`
+	AdminUsername string `json:"adminUsername" tf:"admin_username"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	SshKey []ContainerServiceSpecLinuxProfile `json:"ssh_key"`
+	SshKey []ContainerServiceSpecLinuxProfileSshKey `json:"sshKey" tf:"ssh_key"`
 }
 
 type ContainerServiceSpecMasterProfile struct {
 	// +optional
-	Count     int    `json:"count,omitempty"`
-	DnsPrefix string `json:"dns_prefix"`
+	Count     int    `json:"count,omitempty" tf:"count,omitempty"`
+	DnsPrefix string `json:"dnsPrefix" tf:"dns_prefix"`
 }
 
 type ContainerServiceSpecServicePrincipal struct {
-	ClientId     string `json:"client_id"`
-	ClientSecret string `json:"client_secret"`
+	ClientID     string `json:"clientID" tf:"client_id"`
+	ClientSecret string `json:"clientSecret" tf:"client_secret"`
 }
 
 type ContainerServiceSpec struct {
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	AgentPoolProfile []ContainerServiceSpec `json:"agent_pool_profile"`
+	AgentPoolProfile []ContainerServiceSpecAgentPoolProfile `json:"agentPoolProfile" tf:"agent_pool_profile"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	DiagnosticsProfile []ContainerServiceSpec `json:"diagnostics_profile"`
+	DiagnosticsProfile []ContainerServiceSpecDiagnosticsProfile `json:"diagnosticsProfile" tf:"diagnostics_profile"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	LinuxProfile []ContainerServiceSpec `json:"linux_profile"`
-	Location     string                 `json:"location"`
+	LinuxProfile []ContainerServiceSpecLinuxProfile `json:"linuxProfile" tf:"linux_profile"`
+	Location     string                             `json:"location" tf:"location"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	MasterProfile         []ContainerServiceSpec `json:"master_profile"`
-	Name                  string                 `json:"name"`
-	OrchestrationPlatform string                 `json:"orchestration_platform"`
-	ResourceGroupName     string                 `json:"resource_group_name"`
+	MasterProfile         []ContainerServiceSpecMasterProfile `json:"masterProfile" tf:"master_profile"`
+	Name                  string                              `json:"name" tf:"name"`
+	OrchestrationPlatform string                              `json:"orchestrationPlatform" tf:"orchestration_platform"`
+	ResourceGroupName     string                              `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	ServicePrincipal *[]ContainerServiceSpec `json:"service_principal,omitempty"`
+	ServicePrincipal []ContainerServiceSpecServicePrincipal `json:"servicePrincipal,omitempty" tf:"service_principal,omitempty"`
+	ProviderRef      core.LocalObjectReference              `json:"providerRef" tf:"-"`
 }
 
 type ContainerServiceStatus struct {
@@ -80,7 +81,9 @@ type ContainerServiceStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

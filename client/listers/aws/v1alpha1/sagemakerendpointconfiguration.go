@@ -29,8 +29,8 @@ import (
 type SagemakerEndpointConfigurationLister interface {
 	// List lists all SagemakerEndpointConfigurations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SagemakerEndpointConfiguration, err error)
-	// Get retrieves the SagemakerEndpointConfiguration from the index for a given name.
-	Get(name string) (*v1alpha1.SagemakerEndpointConfiguration, error)
+	// SagemakerEndpointConfigurations returns an object that can list and get SagemakerEndpointConfigurations.
+	SagemakerEndpointConfigurations(namespace string) SagemakerEndpointConfigurationNamespaceLister
 	SagemakerEndpointConfigurationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sagemakerEndpointConfigurationLister) List(selector labels.Selector) (r
 	return ret, err
 }
 
-// Get retrieves the SagemakerEndpointConfiguration from the index for a given name.
-func (s *sagemakerEndpointConfigurationLister) Get(name string) (*v1alpha1.SagemakerEndpointConfiguration, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SagemakerEndpointConfigurations returns an object that can list and get SagemakerEndpointConfigurations.
+func (s *sagemakerEndpointConfigurationLister) SagemakerEndpointConfigurations(namespace string) SagemakerEndpointConfigurationNamespaceLister {
+	return sagemakerEndpointConfigurationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SagemakerEndpointConfigurationNamespaceLister helps list and get SagemakerEndpointConfigurations.
+type SagemakerEndpointConfigurationNamespaceLister interface {
+	// List lists all SagemakerEndpointConfigurations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SagemakerEndpointConfiguration, err error)
+	// Get retrieves the SagemakerEndpointConfiguration from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SagemakerEndpointConfiguration, error)
+	SagemakerEndpointConfigurationNamespaceListerExpansion
+}
+
+// sagemakerEndpointConfigurationNamespaceLister implements the SagemakerEndpointConfigurationNamespaceLister
+// interface.
+type sagemakerEndpointConfigurationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SagemakerEndpointConfigurations in the indexer for a given namespace.
+func (s sagemakerEndpointConfigurationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SagemakerEndpointConfiguration, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SagemakerEndpointConfiguration))
+	})
+	return ret, err
+}
+
+// Get retrieves the SagemakerEndpointConfiguration from the indexer for a given namespace and name.
+func (s sagemakerEndpointConfigurationNamespaceLister) Get(name string) (*v1alpha1.SagemakerEndpointConfiguration, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

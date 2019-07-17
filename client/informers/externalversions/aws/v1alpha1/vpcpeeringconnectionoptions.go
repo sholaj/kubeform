@@ -41,32 +41,33 @@ type VpcPeeringConnectionOptionsInformer interface {
 type vpcPeeringConnectionOptionsInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewVpcPeeringConnectionOptionsInformer constructs a new informer for VpcPeeringConnectionOptions type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewVpcPeeringConnectionOptionsInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredVpcPeeringConnectionOptionsInformer(client, resyncPeriod, indexers, nil)
+func NewVpcPeeringConnectionOptionsInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredVpcPeeringConnectionOptionsInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredVpcPeeringConnectionOptionsInformer constructs a new informer for VpcPeeringConnectionOptions type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredVpcPeeringConnectionOptionsInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredVpcPeeringConnectionOptionsInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().VpcPeeringConnectionOptionses().List(options)
+				return client.AwsV1alpha1().VpcPeeringConnectionOptionses(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().VpcPeeringConnectionOptionses().Watch(options)
+				return client.AwsV1alpha1().VpcPeeringConnectionOptionses(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.VpcPeeringConnectionOptions{},
@@ -76,7 +77,7 @@ func NewFilteredVpcPeeringConnectionOptionsInformer(client versioned.Interface, 
 }
 
 func (f *vpcPeeringConnectionOptionsInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredVpcPeeringConnectionOptionsInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredVpcPeeringConnectionOptionsInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *vpcPeeringConnectionOptionsInformer) Informer() cache.SharedIndexInformer {

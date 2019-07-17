@@ -29,8 +29,8 @@ import (
 type PostgresqlVirtualNetworkRuleLister interface {
 	// List lists all PostgresqlVirtualNetworkRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.PostgresqlVirtualNetworkRule, err error)
-	// Get retrieves the PostgresqlVirtualNetworkRule from the index for a given name.
-	Get(name string) (*v1alpha1.PostgresqlVirtualNetworkRule, error)
+	// PostgresqlVirtualNetworkRules returns an object that can list and get PostgresqlVirtualNetworkRules.
+	PostgresqlVirtualNetworkRules(namespace string) PostgresqlVirtualNetworkRuleNamespaceLister
 	PostgresqlVirtualNetworkRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *postgresqlVirtualNetworkRuleLister) List(selector labels.Selector) (ret
 	return ret, err
 }
 
-// Get retrieves the PostgresqlVirtualNetworkRule from the index for a given name.
-func (s *postgresqlVirtualNetworkRuleLister) Get(name string) (*v1alpha1.PostgresqlVirtualNetworkRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// PostgresqlVirtualNetworkRules returns an object that can list and get PostgresqlVirtualNetworkRules.
+func (s *postgresqlVirtualNetworkRuleLister) PostgresqlVirtualNetworkRules(namespace string) PostgresqlVirtualNetworkRuleNamespaceLister {
+	return postgresqlVirtualNetworkRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// PostgresqlVirtualNetworkRuleNamespaceLister helps list and get PostgresqlVirtualNetworkRules.
+type PostgresqlVirtualNetworkRuleNamespaceLister interface {
+	// List lists all PostgresqlVirtualNetworkRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.PostgresqlVirtualNetworkRule, err error)
+	// Get retrieves the PostgresqlVirtualNetworkRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.PostgresqlVirtualNetworkRule, error)
+	PostgresqlVirtualNetworkRuleNamespaceListerExpansion
+}
+
+// postgresqlVirtualNetworkRuleNamespaceLister implements the PostgresqlVirtualNetworkRuleNamespaceLister
+// interface.
+type postgresqlVirtualNetworkRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all PostgresqlVirtualNetworkRules in the indexer for a given namespace.
+func (s postgresqlVirtualNetworkRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.PostgresqlVirtualNetworkRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.PostgresqlVirtualNetworkRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the PostgresqlVirtualNetworkRule from the indexer for a given namespace and name.
+func (s postgresqlVirtualNetworkRuleNamespaceLister) Get(name string) (*v1alpha1.PostgresqlVirtualNetworkRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

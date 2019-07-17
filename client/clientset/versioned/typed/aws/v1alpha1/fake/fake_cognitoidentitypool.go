@@ -31,6 +31,7 @@ import (
 // FakeCognitoIdentityPools implements CognitoIdentityPoolInterface
 type FakeCognitoIdentityPools struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var cognitoidentitypoolsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "cognitoidentitypools"}
@@ -40,7 +41,8 @@ var cognitoidentitypoolsKind = schema.GroupVersionKind{Group: "aws.kubeform.com"
 // Get takes name of the cognitoIdentityPool, and returns the corresponding cognitoIdentityPool object, and an error if there is any.
 func (c *FakeCognitoIdentityPools) Get(name string, options v1.GetOptions) (result *v1alpha1.CognitoIdentityPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cognitoidentitypoolsResource, name), &v1alpha1.CognitoIdentityPool{})
+		Invokes(testing.NewGetAction(cognitoidentitypoolsResource, c.ns, name), &v1alpha1.CognitoIdentityPool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCognitoIdentityPools) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of CognitoIdentityPools that match those selectors.
 func (c *FakeCognitoIdentityPools) List(opts v1.ListOptions) (result *v1alpha1.CognitoIdentityPoolList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cognitoidentitypoolsResource, cognitoidentitypoolsKind, opts), &v1alpha1.CognitoIdentityPoolList{})
+		Invokes(testing.NewListAction(cognitoidentitypoolsResource, cognitoidentitypoolsKind, c.ns, opts), &v1alpha1.CognitoIdentityPoolList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCognitoIdentityPools) List(opts v1.ListOptions) (result *v1alpha1.C
 // Watch returns a watch.Interface that watches the requested cognitoIdentityPools.
 func (c *FakeCognitoIdentityPools) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cognitoidentitypoolsResource, opts))
+		InvokesWatch(testing.NewWatchAction(cognitoidentitypoolsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cognitoIdentityPool and creates it.  Returns the server's representation of the cognitoIdentityPool, and an error, if there is any.
 func (c *FakeCognitoIdentityPools) Create(cognitoIdentityPool *v1alpha1.CognitoIdentityPool) (result *v1alpha1.CognitoIdentityPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cognitoidentitypoolsResource, cognitoIdentityPool), &v1alpha1.CognitoIdentityPool{})
+		Invokes(testing.NewCreateAction(cognitoidentitypoolsResource, c.ns, cognitoIdentityPool), &v1alpha1.CognitoIdentityPool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCognitoIdentityPools) Create(cognitoIdentityPool *v1alpha1.CognitoI
 // Update takes the representation of a cognitoIdentityPool and updates it. Returns the server's representation of the cognitoIdentityPool, and an error, if there is any.
 func (c *FakeCognitoIdentityPools) Update(cognitoIdentityPool *v1alpha1.CognitoIdentityPool) (result *v1alpha1.CognitoIdentityPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cognitoidentitypoolsResource, cognitoIdentityPool), &v1alpha1.CognitoIdentityPool{})
+		Invokes(testing.NewUpdateAction(cognitoidentitypoolsResource, c.ns, cognitoIdentityPool), &v1alpha1.CognitoIdentityPool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCognitoIdentityPools) Update(cognitoIdentityPool *v1alpha1.CognitoI
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCognitoIdentityPools) UpdateStatus(cognitoIdentityPool *v1alpha1.CognitoIdentityPool) (*v1alpha1.CognitoIdentityPool, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cognitoidentitypoolsResource, "status", cognitoIdentityPool), &v1alpha1.CognitoIdentityPool{})
+		Invokes(testing.NewUpdateSubresourceAction(cognitoidentitypoolsResource, "status", c.ns, cognitoIdentityPool), &v1alpha1.CognitoIdentityPool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCognitoIdentityPools) UpdateStatus(cognitoIdentityPool *v1alpha1.Co
 // Delete takes name of the cognitoIdentityPool and deletes it. Returns an error if one occurs.
 func (c *FakeCognitoIdentityPools) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cognitoidentitypoolsResource, name), &v1alpha1.CognitoIdentityPool{})
+		Invokes(testing.NewDeleteAction(cognitoidentitypoolsResource, c.ns, name), &v1alpha1.CognitoIdentityPool{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCognitoIdentityPools) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cognitoidentitypoolsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cognitoidentitypoolsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CognitoIdentityPoolList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCognitoIdentityPools) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched cognitoIdentityPool.
 func (c *FakeCognitoIdentityPools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CognitoIdentityPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cognitoidentitypoolsResource, name, pt, data, subresources...), &v1alpha1.CognitoIdentityPool{})
+		Invokes(testing.NewPatchSubresourceAction(cognitoidentitypoolsResource, c.ns, name, pt, data, subresources...), &v1alpha1.CognitoIdentityPool{})
+
 	if obj == nil {
 		return nil, err
 	}

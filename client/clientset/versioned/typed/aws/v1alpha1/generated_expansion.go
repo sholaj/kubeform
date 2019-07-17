@@ -44,9 +44,9 @@ type AmiFromInstanceExpansion interface{}
 
 type AmiLaunchPermissionExpansion interface{}
 
-type ApiGatewayAccountExpansion interface{}
+type ApiGatewayAPIKeyExpansion interface{}
 
-type ApiGatewayApiKeyExpansion interface{}
+type ApiGatewayAccountExpansion interface{}
 
 type ApiGatewayAuthorizerExpansion interface{}
 
@@ -80,7 +80,7 @@ type ApiGatewayRequestValidatorExpansion interface{}
 
 type ApiGatewayResourceExpansion interface{}
 
-type ApiGatewayRestApiExpansion interface{}
+type ApiGatewayRestAPIExpansion interface{}
 
 type ApiGatewayStageExpansion interface{}
 
@@ -108,13 +108,13 @@ type AppmeshVirtualRouterExpansion interface{}
 
 type AppmeshVirtualServiceExpansion interface{}
 
-type AppsyncApiKeyExpansion interface{}
+type AppsyncAPIKeyExpansion interface{}
 
 type AppsyncDatasourceExpansion interface{}
 
 type AppsyncFunctionExpansion interface{}
 
-type AppsyncGraphqlApiExpansion interface{}
+type AppsyncGraphqlAPIExpansion interface{}
 
 type AppsyncResolverExpansion interface{}
 
@@ -280,7 +280,7 @@ type DbSnapshotExpansion interface{}
 
 type DbSubnetGroupExpansion interface{}
 
-type DefaultNetworkAclExpansion interface{}
+type DefaultNetworkACLExpansion interface{}
 
 type DefaultRouteTableExpansion interface{}
 
@@ -290,7 +290,7 @@ type DefaultSubnetExpansion interface{}
 
 type DefaultVpcExpansion interface{}
 
-type DefaultVpcDhcpOptionsExpansion interface{}
+type DefaultVpcDHCPOptionsExpansion interface{}
 
 type DevicefarmProjectExpansion interface{}
 
@@ -322,7 +322,7 @@ type DocdbClusterSnapshotExpansion interface{}
 
 type DocdbSubnetGroupExpansion interface{}
 
-type DxBgpPeerExpansion interface{}
+type DxBGPPeerExpansion interface{}
 
 type DxConnectionExpansion interface{}
 
@@ -366,9 +366,9 @@ type EbsVolumeExpansion interface{}
 
 type Ec2CapacityReservationExpansion interface{}
 
-type Ec2ClientVpnEndpointExpansion interface{}
+type Ec2ClientVPNEndpointExpansion interface{}
 
-type Ec2ClientVpnNetworkAssociationExpansion interface{}
+type Ec2ClientVPNNetworkAssociationExpansion interface{}
 
 type Ec2FleetExpansion interface{}
 
@@ -536,7 +536,7 @@ type IamUserPolicyExpansion interface{}
 
 type IamUserPolicyAttachmentExpansion interface{}
 
-type IamUserSshKeyExpansion interface{}
+type IamUserSSHKeyExpansion interface{}
 
 type InspectorAssessmentTargetExpansion interface{}
 
@@ -622,9 +622,9 @@ type LightsailInstanceExpansion interface{}
 
 type LightsailKeyPairExpansion interface{}
 
-type LightsailStaticIpExpansion interface{}
+type LightsailStaticIPExpansion interface{}
 
-type LightsailStaticIpAttachmentExpansion interface{}
+type LightsailStaticIPAttachmentExpansion interface{}
 
 type LoadBalancerBackendServerPolicyExpansion interface{}
 
@@ -668,9 +668,9 @@ type NeptuneParameterGroupExpansion interface{}
 
 type NeptuneSubnetGroupExpansion interface{}
 
-type NetworkAclExpansion interface{}
+type NetworkACLExpansion interface{}
 
-type NetworkAclRuleExpansion interface{}
+type NetworkACLRuleExpansion interface{}
 
 type NetworkInterfaceExpansion interface{}
 
@@ -840,11 +840,11 @@ type SecurityhubProductSubscriptionExpansion interface{}
 
 type SecurityhubStandardsSubscriptionExpansion interface{}
 
-type ServiceDiscoveryHttpNamespaceExpansion interface{}
+type ServiceDiscoveryHTTPNamespaceExpansion interface{}
 
-type ServiceDiscoveryPrivateDnsNamespaceExpansion interface{}
+type ServiceDiscoveryPrivateDNSNamespaceExpansion interface{}
 
-type ServiceDiscoveryPublicDnsNamespaceExpansion interface{}
+type ServiceDiscoveryPublicDNSNamespaceExpansion interface{}
 
 type ServiceDiscoveryServiceExpansion interface{}
 
@@ -946,9 +946,9 @@ type SubnetExpansion interface{}
 
 type SwfDomainExpansion interface{}
 
-type TransferServerExpansion interface{}
+type TransferSSHKeyExpansion interface{}
 
-type TransferSshKeyExpansion interface{}
+type TransferServerExpansion interface{}
 
 type TransferUserExpansion interface{}
 
@@ -956,9 +956,9 @@ type VolumeAttachmentExpansion interface{}
 
 type VpcExpansion interface{}
 
-type VpcDhcpOptionsExpansion interface{}
+type VpcDHCPOptionsExpansion interface{}
 
-type VpcDhcpOptionsAssociationExpansion interface{}
+type VpcDHCPOptionsAssociationExpansion interface{}
 
 type VpcEndpointExpansion interface{}
 
@@ -972,7 +972,7 @@ type VpcEndpointServiceAllowedPrincipalExpansion interface{}
 
 type VpcEndpointSubnetAssociationExpansion interface{}
 
-type VpcIpv4CidrBlockAssociationExpansion interface{}
+type VpcIpv4CIDRBlockAssociationExpansion interface{}
 
 type VpcPeeringConnectionExpansion interface{}
 
@@ -1006,11 +1006,11 @@ type WafRuleExpansion interface{}
 
 type WafRuleGroupExpansion interface{}
 
+type WafSQLInjectionMatchSetExpansion interface{}
+
 type WafSizeConstraintSetExpansion interface{}
 
-type WafSqlInjectionMatchSetExpansion interface{}
-
-type WafWebAclExpansion interface{}
+type WafWebACLExpansion interface{}
 
 type WafXssMatchSetExpansion interface{}
 
@@ -1030,13 +1030,13 @@ type WafregionalRuleExpansion interface{}
 
 type WafregionalRuleGroupExpansion interface{}
 
+type WafregionalSQLInjectionMatchSetExpansion interface{}
+
 type WafregionalSizeConstraintSetExpansion interface{}
 
-type WafregionalSqlInjectionMatchSetExpansion interface{}
+type WafregionalWebACLExpansion interface{}
 
-type WafregionalWebAclExpansion interface{}
-
-type WafregionalWebAclAssociationExpansion interface{}
+type WafregionalWebACLAssociationExpansion interface{}
 
 type WafregionalXssMatchSetExpansion interface{}
 

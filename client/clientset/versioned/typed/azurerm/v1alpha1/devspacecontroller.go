@@ -32,7 +32,7 @@ import (
 // DevspaceControllersGetter has a method to return a DevspaceControllerInterface.
 // A group's client should implement this interface.
 type DevspaceControllersGetter interface {
-	DevspaceControllers() DevspaceControllerInterface
+	DevspaceControllers(namespace string) DevspaceControllerInterface
 }
 
 // DevspaceControllerInterface has methods to work with DevspaceController resources.
@@ -52,12 +52,14 @@ type DevspaceControllerInterface interface {
 // devspaceControllers implements DevspaceControllerInterface
 type devspaceControllers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDevspaceControllers returns a DevspaceControllers
-func newDevspaceControllers(c *AzurermV1alpha1Client) *devspaceControllers {
+func newDevspaceControllers(c *AzurermV1alpha1Client, namespace string) *devspaceControllers {
 	return &devspaceControllers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDevspaceControllers(c *AzurermV1alpha1Client) *devspaceControllers {
 func (c *devspaceControllers) Get(name string, options v1.GetOptions) (result *v1alpha1.DevspaceController, err error) {
 	result = &v1alpha1.DevspaceController{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("devspacecontrollers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *devspaceControllers) List(opts v1.ListOptions) (result *v1alpha1.Devspa
 	}
 	result = &v1alpha1.DevspaceControllerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("devspacecontrollers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *devspaceControllers) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("devspacecontrollers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *devspaceControllers) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *devspaceControllers) Create(devspaceController *v1alpha1.DevspaceController) (result *v1alpha1.DevspaceController, err error) {
 	result = &v1alpha1.DevspaceController{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("devspacecontrollers").
 		Body(devspaceController).
 		Do().
@@ -118,6 +124,7 @@ func (c *devspaceControllers) Create(devspaceController *v1alpha1.DevspaceContro
 func (c *devspaceControllers) Update(devspaceController *v1alpha1.DevspaceController) (result *v1alpha1.DevspaceController, err error) {
 	result = &v1alpha1.DevspaceController{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("devspacecontrollers").
 		Name(devspaceController.Name).
 		Body(devspaceController).
@@ -132,6 +139,7 @@ func (c *devspaceControllers) Update(devspaceController *v1alpha1.DevspaceContro
 func (c *devspaceControllers) UpdateStatus(devspaceController *v1alpha1.DevspaceController) (result *v1alpha1.DevspaceController, err error) {
 	result = &v1alpha1.DevspaceController{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("devspacecontrollers").
 		Name(devspaceController.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *devspaceControllers) UpdateStatus(devspaceController *v1alpha1.Devspace
 // Delete takes name of the devspaceController and deletes it. Returns an error if one occurs.
 func (c *devspaceControllers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("devspacecontrollers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *devspaceControllers) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("devspacecontrollers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *devspaceControllers) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *devspaceControllers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DevspaceController, err error) {
 	result = &v1alpha1.DevspaceController{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("devspacecontrollers").
 		SubResource(subresources...).
 		Name(name).

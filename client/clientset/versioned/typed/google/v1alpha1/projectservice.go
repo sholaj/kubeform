@@ -32,7 +32,7 @@ import (
 // ProjectServicesGetter has a method to return a ProjectServiceInterface.
 // A group's client should implement this interface.
 type ProjectServicesGetter interface {
-	ProjectServices() ProjectServiceInterface
+	ProjectServices(namespace string) ProjectServiceInterface
 }
 
 // ProjectServiceInterface has methods to work with ProjectService resources.
@@ -52,12 +52,14 @@ type ProjectServiceInterface interface {
 // projectServices implements ProjectServiceInterface
 type projectServices struct {
 	client rest.Interface
+	ns     string
 }
 
 // newProjectServices returns a ProjectServices
-func newProjectServices(c *GoogleV1alpha1Client) *projectServices {
+func newProjectServices(c *GoogleV1alpha1Client, namespace string) *projectServices {
 	return &projectServices{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newProjectServices(c *GoogleV1alpha1Client) *projectServices {
 func (c *projectServices) Get(name string, options v1.GetOptions) (result *v1alpha1.ProjectService, err error) {
 	result = &v1alpha1.ProjectService{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("projectservices").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *projectServices) List(opts v1.ListOptions) (result *v1alpha1.ProjectSer
 	}
 	result = &v1alpha1.ProjectServiceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("projectservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *projectServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("projectservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *projectServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *projectServices) Create(projectService *v1alpha1.ProjectService) (result *v1alpha1.ProjectService, err error) {
 	result = &v1alpha1.ProjectService{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("projectservices").
 		Body(projectService).
 		Do().
@@ -118,6 +124,7 @@ func (c *projectServices) Create(projectService *v1alpha1.ProjectService) (resul
 func (c *projectServices) Update(projectService *v1alpha1.ProjectService) (result *v1alpha1.ProjectService, err error) {
 	result = &v1alpha1.ProjectService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("projectservices").
 		Name(projectService.Name).
 		Body(projectService).
@@ -132,6 +139,7 @@ func (c *projectServices) Update(projectService *v1alpha1.ProjectService) (resul
 func (c *projectServices) UpdateStatus(projectService *v1alpha1.ProjectService) (result *v1alpha1.ProjectService, err error) {
 	result = &v1alpha1.ProjectService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("projectservices").
 		Name(projectService.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *projectServices) UpdateStatus(projectService *v1alpha1.ProjectService) 
 // Delete takes name of the projectService and deletes it. Returns an error if one occurs.
 func (c *projectServices) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("projectservices").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *projectServices) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("projectservices").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *projectServices) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *projectServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ProjectService, err error) {
 	result = &v1alpha1.ProjectService{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("projectservices").
 		SubResource(subresources...).
 		Name(name).

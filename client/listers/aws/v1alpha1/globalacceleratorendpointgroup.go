@@ -29,8 +29,8 @@ import (
 type GlobalacceleratorEndpointGroupLister interface {
 	// List lists all GlobalacceleratorEndpointGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GlobalacceleratorEndpointGroup, err error)
-	// Get retrieves the GlobalacceleratorEndpointGroup from the index for a given name.
-	Get(name string) (*v1alpha1.GlobalacceleratorEndpointGroup, error)
+	// GlobalacceleratorEndpointGroups returns an object that can list and get GlobalacceleratorEndpointGroups.
+	GlobalacceleratorEndpointGroups(namespace string) GlobalacceleratorEndpointGroupNamespaceLister
 	GlobalacceleratorEndpointGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *globalacceleratorEndpointGroupLister) List(selector labels.Selector) (r
 	return ret, err
 }
 
-// Get retrieves the GlobalacceleratorEndpointGroup from the index for a given name.
-func (s *globalacceleratorEndpointGroupLister) Get(name string) (*v1alpha1.GlobalacceleratorEndpointGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GlobalacceleratorEndpointGroups returns an object that can list and get GlobalacceleratorEndpointGroups.
+func (s *globalacceleratorEndpointGroupLister) GlobalacceleratorEndpointGroups(namespace string) GlobalacceleratorEndpointGroupNamespaceLister {
+	return globalacceleratorEndpointGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GlobalacceleratorEndpointGroupNamespaceLister helps list and get GlobalacceleratorEndpointGroups.
+type GlobalacceleratorEndpointGroupNamespaceLister interface {
+	// List lists all GlobalacceleratorEndpointGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GlobalacceleratorEndpointGroup, err error)
+	// Get retrieves the GlobalacceleratorEndpointGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GlobalacceleratorEndpointGroup, error)
+	GlobalacceleratorEndpointGroupNamespaceListerExpansion
+}
+
+// globalacceleratorEndpointGroupNamespaceLister implements the GlobalacceleratorEndpointGroupNamespaceLister
+// interface.
+type globalacceleratorEndpointGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GlobalacceleratorEndpointGroups in the indexer for a given namespace.
+func (s globalacceleratorEndpointGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GlobalacceleratorEndpointGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GlobalacceleratorEndpointGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the GlobalacceleratorEndpointGroup from the indexer for a given namespace and name.
+func (s globalacceleratorEndpointGroupNamespaceLister) Get(name string) (*v1alpha1.GlobalacceleratorEndpointGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

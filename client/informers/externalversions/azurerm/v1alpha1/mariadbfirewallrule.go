@@ -41,32 +41,33 @@ type MariadbFirewallRuleInformer interface {
 type mariadbFirewallRuleInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewMariadbFirewallRuleInformer constructs a new informer for MariadbFirewallRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewMariadbFirewallRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredMariadbFirewallRuleInformer(client, resyncPeriod, indexers, nil)
+func NewMariadbFirewallRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredMariadbFirewallRuleInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredMariadbFirewallRuleInformer constructs a new informer for MariadbFirewallRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredMariadbFirewallRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredMariadbFirewallRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().MariadbFirewallRules().List(options)
+				return client.AzurermV1alpha1().MariadbFirewallRules(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().MariadbFirewallRules().Watch(options)
+				return client.AzurermV1alpha1().MariadbFirewallRules(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.MariadbFirewallRule{},
@@ -76,7 +77,7 @@ func NewFilteredMariadbFirewallRuleInformer(client versioned.Interface, resyncPe
 }
 
 func (f *mariadbFirewallRuleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredMariadbFirewallRuleInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredMariadbFirewallRuleInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *mariadbFirewallRuleInformer) Informer() cache.SharedIndexInformer {

@@ -31,6 +31,7 @@ import (
 // FakeIamPolicyAttachments implements IamPolicyAttachmentInterface
 type FakeIamPolicyAttachments struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var iampolicyattachmentsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "iampolicyattachments"}
@@ -40,7 +41,8 @@ var iampolicyattachmentsKind = schema.GroupVersionKind{Group: "aws.kubeform.com"
 // Get takes name of the iamPolicyAttachment, and returns the corresponding iamPolicyAttachment object, and an error if there is any.
 func (c *FakeIamPolicyAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.IamPolicyAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iampolicyattachmentsResource, name), &v1alpha1.IamPolicyAttachment{})
+		Invokes(testing.NewGetAction(iampolicyattachmentsResource, c.ns, name), &v1alpha1.IamPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIamPolicyAttachments) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of IamPolicyAttachments that match those selectors.
 func (c *FakeIamPolicyAttachments) List(opts v1.ListOptions) (result *v1alpha1.IamPolicyAttachmentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iampolicyattachmentsResource, iampolicyattachmentsKind, opts), &v1alpha1.IamPolicyAttachmentList{})
+		Invokes(testing.NewListAction(iampolicyattachmentsResource, iampolicyattachmentsKind, c.ns, opts), &v1alpha1.IamPolicyAttachmentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIamPolicyAttachments) List(opts v1.ListOptions) (result *v1alpha1.I
 // Watch returns a watch.Interface that watches the requested iamPolicyAttachments.
 func (c *FakeIamPolicyAttachments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iampolicyattachmentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(iampolicyattachmentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iamPolicyAttachment and creates it.  Returns the server's representation of the iamPolicyAttachment, and an error, if there is any.
 func (c *FakeIamPolicyAttachments) Create(iamPolicyAttachment *v1alpha1.IamPolicyAttachment) (result *v1alpha1.IamPolicyAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iampolicyattachmentsResource, iamPolicyAttachment), &v1alpha1.IamPolicyAttachment{})
+		Invokes(testing.NewCreateAction(iampolicyattachmentsResource, c.ns, iamPolicyAttachment), &v1alpha1.IamPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIamPolicyAttachments) Create(iamPolicyAttachment *v1alpha1.IamPolic
 // Update takes the representation of a iamPolicyAttachment and updates it. Returns the server's representation of the iamPolicyAttachment, and an error, if there is any.
 func (c *FakeIamPolicyAttachments) Update(iamPolicyAttachment *v1alpha1.IamPolicyAttachment) (result *v1alpha1.IamPolicyAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iampolicyattachmentsResource, iamPolicyAttachment), &v1alpha1.IamPolicyAttachment{})
+		Invokes(testing.NewUpdateAction(iampolicyattachmentsResource, c.ns, iamPolicyAttachment), &v1alpha1.IamPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIamPolicyAttachments) Update(iamPolicyAttachment *v1alpha1.IamPolic
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIamPolicyAttachments) UpdateStatus(iamPolicyAttachment *v1alpha1.IamPolicyAttachment) (*v1alpha1.IamPolicyAttachment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iampolicyattachmentsResource, "status", iamPolicyAttachment), &v1alpha1.IamPolicyAttachment{})
+		Invokes(testing.NewUpdateSubresourceAction(iampolicyattachmentsResource, "status", c.ns, iamPolicyAttachment), &v1alpha1.IamPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIamPolicyAttachments) UpdateStatus(iamPolicyAttachment *v1alpha1.Ia
 // Delete takes name of the iamPolicyAttachment and deletes it. Returns an error if one occurs.
 func (c *FakeIamPolicyAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iampolicyattachmentsResource, name), &v1alpha1.IamPolicyAttachment{})
+		Invokes(testing.NewDeleteAction(iampolicyattachmentsResource, c.ns, name), &v1alpha1.IamPolicyAttachment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIamPolicyAttachments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iampolicyattachmentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iampolicyattachmentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IamPolicyAttachmentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIamPolicyAttachments) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched iamPolicyAttachment.
 func (c *FakeIamPolicyAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamPolicyAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iampolicyattachmentsResource, name, pt, data, subresources...), &v1alpha1.IamPolicyAttachment{})
+		Invokes(testing.NewPatchSubresourceAction(iampolicyattachmentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.IamPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}

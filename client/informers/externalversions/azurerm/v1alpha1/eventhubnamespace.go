@@ -41,32 +41,33 @@ type EventhubNamespaceInformer interface {
 type eventhubNamespaceInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewEventhubNamespaceInformer constructs a new informer for EventhubNamespace type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewEventhubNamespaceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredEventhubNamespaceInformer(client, resyncPeriod, indexers, nil)
+func NewEventhubNamespaceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredEventhubNamespaceInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredEventhubNamespaceInformer constructs a new informer for EventhubNamespace type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredEventhubNamespaceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredEventhubNamespaceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().EventhubNamespaces().List(options)
+				return client.AzurermV1alpha1().EventhubNamespaces(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().EventhubNamespaces().Watch(options)
+				return client.AzurermV1alpha1().EventhubNamespaces(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.EventhubNamespace{},
@@ -76,7 +77,7 @@ func NewFilteredEventhubNamespaceInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *eventhubNamespaceInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredEventhubNamespaceInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredEventhubNamespaceInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *eventhubNamespaceInformer) Informer() cache.SharedIndexInformer {

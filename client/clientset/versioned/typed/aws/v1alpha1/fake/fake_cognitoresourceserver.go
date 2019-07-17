@@ -31,6 +31,7 @@ import (
 // FakeCognitoResourceServers implements CognitoResourceServerInterface
 type FakeCognitoResourceServers struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var cognitoresourceserversResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "cognitoresourceservers"}
@@ -40,7 +41,8 @@ var cognitoresourceserversKind = schema.GroupVersionKind{Group: "aws.kubeform.co
 // Get takes name of the cognitoResourceServer, and returns the corresponding cognitoResourceServer object, and an error if there is any.
 func (c *FakeCognitoResourceServers) Get(name string, options v1.GetOptions) (result *v1alpha1.CognitoResourceServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cognitoresourceserversResource, name), &v1alpha1.CognitoResourceServer{})
+		Invokes(testing.NewGetAction(cognitoresourceserversResource, c.ns, name), &v1alpha1.CognitoResourceServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCognitoResourceServers) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of CognitoResourceServers that match those selectors.
 func (c *FakeCognitoResourceServers) List(opts v1.ListOptions) (result *v1alpha1.CognitoResourceServerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cognitoresourceserversResource, cognitoresourceserversKind, opts), &v1alpha1.CognitoResourceServerList{})
+		Invokes(testing.NewListAction(cognitoresourceserversResource, cognitoresourceserversKind, c.ns, opts), &v1alpha1.CognitoResourceServerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCognitoResourceServers) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested cognitoResourceServers.
 func (c *FakeCognitoResourceServers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cognitoresourceserversResource, opts))
+		InvokesWatch(testing.NewWatchAction(cognitoresourceserversResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cognitoResourceServer and creates it.  Returns the server's representation of the cognitoResourceServer, and an error, if there is any.
 func (c *FakeCognitoResourceServers) Create(cognitoResourceServer *v1alpha1.CognitoResourceServer) (result *v1alpha1.CognitoResourceServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cognitoresourceserversResource, cognitoResourceServer), &v1alpha1.CognitoResourceServer{})
+		Invokes(testing.NewCreateAction(cognitoresourceserversResource, c.ns, cognitoResourceServer), &v1alpha1.CognitoResourceServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCognitoResourceServers) Create(cognitoResourceServer *v1alpha1.Cogn
 // Update takes the representation of a cognitoResourceServer and updates it. Returns the server's representation of the cognitoResourceServer, and an error, if there is any.
 func (c *FakeCognitoResourceServers) Update(cognitoResourceServer *v1alpha1.CognitoResourceServer) (result *v1alpha1.CognitoResourceServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cognitoresourceserversResource, cognitoResourceServer), &v1alpha1.CognitoResourceServer{})
+		Invokes(testing.NewUpdateAction(cognitoresourceserversResource, c.ns, cognitoResourceServer), &v1alpha1.CognitoResourceServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCognitoResourceServers) Update(cognitoResourceServer *v1alpha1.Cogn
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCognitoResourceServers) UpdateStatus(cognitoResourceServer *v1alpha1.CognitoResourceServer) (*v1alpha1.CognitoResourceServer, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cognitoresourceserversResource, "status", cognitoResourceServer), &v1alpha1.CognitoResourceServer{})
+		Invokes(testing.NewUpdateSubresourceAction(cognitoresourceserversResource, "status", c.ns, cognitoResourceServer), &v1alpha1.CognitoResourceServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCognitoResourceServers) UpdateStatus(cognitoResourceServer *v1alpha
 // Delete takes name of the cognitoResourceServer and deletes it. Returns an error if one occurs.
 func (c *FakeCognitoResourceServers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cognitoresourceserversResource, name), &v1alpha1.CognitoResourceServer{})
+		Invokes(testing.NewDeleteAction(cognitoresourceserversResource, c.ns, name), &v1alpha1.CognitoResourceServer{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCognitoResourceServers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cognitoresourceserversResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cognitoresourceserversResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CognitoResourceServerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCognitoResourceServers) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched cognitoResourceServer.
 func (c *FakeCognitoResourceServers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CognitoResourceServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cognitoresourceserversResource, name, pt, data, subresources...), &v1alpha1.CognitoResourceServer{})
+		Invokes(testing.NewPatchSubresourceAction(cognitoresourceserversResource, c.ns, name, pt, data, subresources...), &v1alpha1.CognitoResourceServer{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -397,38 +397,81 @@ spec:
           type: object
         spec:
           properties:
-            additional_location:
-              items: {}
+            additionalLocation:
+              items:
+                properties:
+                  location:
+                    type: string
+                required:
+                - location
+                type: object
               maxItems: 1
               type: array
             certificate:
-              items: {}
+              items:
+                properties:
+                  certificatePassword:
+                    type: string
+                  encodedCertificate:
+                    type: string
+                  storeName:
+                    type: string
+                required:
+                - certificatePassword
+                - encodedCertificate
+                - storeName
+                type: object
               maxItems: 10
               type: array
             identity:
-              items: {}
+              items:
+                properties:
+                  type:
+                    type: string
+                required:
+                - type
+                type: object
               maxItems: 1
               type: array
             location:
               type: string
             name:
               type: string
-            publisher_email:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            publisherEmail:
               type: string
-            publisher_name:
+            publisherName:
               type: string
-            resource_group_name:
+            resourceGroupName:
               type: string
             sku:
-              items: {}
+              items:
+                properties:
+                  capacity:
+                    type: integer
+                  name:
+                    type: string
+                required:
+                - capacity
+                - name
+                type: object
               maxItems: 1
               type: array
           required:
           - location
           - name
-          - publisher_email
-          - publisher_name
-          - resource_group_name
+          - providerRef
+          - publisherEmail
+          - publisherName
+          - resourceGroupName
           - sku
           type: object
         status:
@@ -440,6 +483,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

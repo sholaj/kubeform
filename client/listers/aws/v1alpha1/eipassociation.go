@@ -29,8 +29,8 @@ import (
 type EipAssociationLister interface {
 	// List lists all EipAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EipAssociation, err error)
-	// Get retrieves the EipAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.EipAssociation, error)
+	// EipAssociations returns an object that can list and get EipAssociations.
+	EipAssociations(namespace string) EipAssociationNamespaceLister
 	EipAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *eipAssociationLister) List(selector labels.Selector) (ret []*v1alpha1.E
 	return ret, err
 }
 
-// Get retrieves the EipAssociation from the index for a given name.
-func (s *eipAssociationLister) Get(name string) (*v1alpha1.EipAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EipAssociations returns an object that can list and get EipAssociations.
+func (s *eipAssociationLister) EipAssociations(namespace string) EipAssociationNamespaceLister {
+	return eipAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EipAssociationNamespaceLister helps list and get EipAssociations.
+type EipAssociationNamespaceLister interface {
+	// List lists all EipAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EipAssociation, err error)
+	// Get retrieves the EipAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EipAssociation, error)
+	EipAssociationNamespaceListerExpansion
+}
+
+// eipAssociationNamespaceLister implements the EipAssociationNamespaceLister
+// interface.
+type eipAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EipAssociations in the indexer for a given namespace.
+func (s eipAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EipAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EipAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the EipAssociation from the indexer for a given namespace and name.
+func (s eipAssociationNamespaceLister) Get(name string) (*v1alpha1.EipAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

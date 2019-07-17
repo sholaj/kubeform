@@ -41,32 +41,33 @@ type LogAnalyticsSolutionInformer interface {
 type logAnalyticsSolutionInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewLogAnalyticsSolutionInformer constructs a new informer for LogAnalyticsSolution type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLogAnalyticsSolutionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLogAnalyticsSolutionInformer(client, resyncPeriod, indexers, nil)
+func NewLogAnalyticsSolutionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLogAnalyticsSolutionInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredLogAnalyticsSolutionInformer constructs a new informer for LogAnalyticsSolution type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLogAnalyticsSolutionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLogAnalyticsSolutionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().LogAnalyticsSolutions().List(options)
+				return client.AzurermV1alpha1().LogAnalyticsSolutions(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().LogAnalyticsSolutions().Watch(options)
+				return client.AzurermV1alpha1().LogAnalyticsSolutions(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.LogAnalyticsSolution{},
@@ -76,7 +77,7 @@ func NewFilteredLogAnalyticsSolutionInformer(client versioned.Interface, resyncP
 }
 
 func (f *logAnalyticsSolutionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLogAnalyticsSolutionInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredLogAnalyticsSolutionInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *logAnalyticsSolutionInformer) Informer() cache.SharedIndexInformer {

@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// FloatingIpsGetter has a method to return a FloatingIpInterface.
+// FloatingIPsGetter has a method to return a FloatingIPInterface.
 // A group's client should implement this interface.
-type FloatingIpsGetter interface {
-	FloatingIps() FloatingIpInterface
+type FloatingIPsGetter interface {
+	FloatingIPs(namespace string) FloatingIPInterface
 }
 
-// FloatingIpInterface has methods to work with FloatingIp resources.
-type FloatingIpInterface interface {
-	Create(*v1alpha1.FloatingIp) (*v1alpha1.FloatingIp, error)
-	Update(*v1alpha1.FloatingIp) (*v1alpha1.FloatingIp, error)
-	UpdateStatus(*v1alpha1.FloatingIp) (*v1alpha1.FloatingIp, error)
+// FloatingIPInterface has methods to work with FloatingIP resources.
+type FloatingIPInterface interface {
+	Create(*v1alpha1.FloatingIP) (*v1alpha1.FloatingIP, error)
+	Update(*v1alpha1.FloatingIP) (*v1alpha1.FloatingIP, error)
+	UpdateStatus(*v1alpha1.FloatingIP) (*v1alpha1.FloatingIP, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.FloatingIp, error)
-	List(opts v1.ListOptions) (*v1alpha1.FloatingIpList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.FloatingIP, error)
+	List(opts v1.ListOptions) (*v1alpha1.FloatingIPList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FloatingIp, err error)
-	FloatingIpExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FloatingIP, err error)
+	FloatingIPExpansion
 }
 
-// floatingIps implements FloatingIpInterface
-type floatingIps struct {
+// floatingIPs implements FloatingIPInterface
+type floatingIPs struct {
 	client rest.Interface
+	ns     string
 }
 
-// newFloatingIps returns a FloatingIps
-func newFloatingIps(c *DigitaloceanV1alpha1Client) *floatingIps {
-	return &floatingIps{
+// newFloatingIPs returns a FloatingIPs
+func newFloatingIPs(c *DigitaloceanV1alpha1Client, namespace string) *floatingIPs {
+	return &floatingIPs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the floatingIp, and returns the corresponding floatingIp object, and an error if there is any.
-func (c *floatingIps) Get(name string, options v1.GetOptions) (result *v1alpha1.FloatingIp, err error) {
-	result = &v1alpha1.FloatingIp{}
+// Get takes name of the floatingIP, and returns the corresponding floatingIP object, and an error if there is any.
+func (c *floatingIPs) Get(name string, options v1.GetOptions) (result *v1alpha1.FloatingIP, err error) {
+	result = &v1alpha1.FloatingIP{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("floatingips").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *floatingIps) Get(name string, options v1.GetOptions) (result *v1alpha1.
 	return
 }
 
-// List takes label and field selectors, and returns the list of FloatingIps that match those selectors.
-func (c *floatingIps) List(opts v1.ListOptions) (result *v1alpha1.FloatingIpList, err error) {
+// List takes label and field selectors, and returns the list of FloatingIPs that match those selectors.
+func (c *floatingIPs) List(opts v1.ListOptions) (result *v1alpha1.FloatingIPList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.FloatingIpList{}
+	result = &v1alpha1.FloatingIPList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("floatingips").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *floatingIps) List(opts v1.ListOptions) (result *v1alpha1.FloatingIpList
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested floatingIps.
-func (c *floatingIps) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested floatingIPs.
+func (c *floatingIPs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("floatingips").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a floatingIp and creates it.  Returns the server's representation of the floatingIp, and an error, if there is any.
-func (c *floatingIps) Create(floatingIp *v1alpha1.FloatingIp) (result *v1alpha1.FloatingIp, err error) {
-	result = &v1alpha1.FloatingIp{}
+// Create takes the representation of a floatingIP and creates it.  Returns the server's representation of the floatingIP, and an error, if there is any.
+func (c *floatingIPs) Create(floatingIP *v1alpha1.FloatingIP) (result *v1alpha1.FloatingIP, err error) {
+	result = &v1alpha1.FloatingIP{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("floatingips").
-		Body(floatingIp).
+		Body(floatingIP).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a floatingIp and updates it. Returns the server's representation of the floatingIp, and an error, if there is any.
-func (c *floatingIps) Update(floatingIp *v1alpha1.FloatingIp) (result *v1alpha1.FloatingIp, err error) {
-	result = &v1alpha1.FloatingIp{}
+// Update takes the representation of a floatingIP and updates it. Returns the server's representation of the floatingIP, and an error, if there is any.
+func (c *floatingIPs) Update(floatingIP *v1alpha1.FloatingIP) (result *v1alpha1.FloatingIP, err error) {
+	result = &v1alpha1.FloatingIP{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("floatingips").
-		Name(floatingIp.Name).
-		Body(floatingIp).
+		Name(floatingIP.Name).
+		Body(floatingIP).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *floatingIps) Update(floatingIp *v1alpha1.FloatingIp) (result *v1alpha1.
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *floatingIps) UpdateStatus(floatingIp *v1alpha1.FloatingIp) (result *v1alpha1.FloatingIp, err error) {
-	result = &v1alpha1.FloatingIp{}
+func (c *floatingIPs) UpdateStatus(floatingIP *v1alpha1.FloatingIP) (result *v1alpha1.FloatingIP, err error) {
+	result = &v1alpha1.FloatingIP{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("floatingips").
-		Name(floatingIp.Name).
+		Name(floatingIP.Name).
 		SubResource("status").
-		Body(floatingIp).
+		Body(floatingIP).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the floatingIp and deletes it. Returns an error if one occurs.
-func (c *floatingIps) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the floatingIP and deletes it. Returns an error if one occurs.
+func (c *floatingIPs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("floatingips").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *floatingIps) Delete(name string, options *v1.DeleteOptions) error {
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *floatingIps) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *floatingIPs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("floatingips").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *floatingIps) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		Error()
 }
 
-// Patch applies the patch and returns the patched floatingIp.
-func (c *floatingIps) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FloatingIp, err error) {
-	result = &v1alpha1.FloatingIp{}
+// Patch applies the patch and returns the patched floatingIP.
+func (c *floatingIPs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FloatingIP, err error) {
+	result = &v1alpha1.FloatingIP{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("floatingips").
 		SubResource(subresources...).
 		Name(name).

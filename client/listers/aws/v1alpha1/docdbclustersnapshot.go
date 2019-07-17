@@ -29,8 +29,8 @@ import (
 type DocdbClusterSnapshotLister interface {
 	// List lists all DocdbClusterSnapshots in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DocdbClusterSnapshot, err error)
-	// Get retrieves the DocdbClusterSnapshot from the index for a given name.
-	Get(name string) (*v1alpha1.DocdbClusterSnapshot, error)
+	// DocdbClusterSnapshots returns an object that can list and get DocdbClusterSnapshots.
+	DocdbClusterSnapshots(namespace string) DocdbClusterSnapshotNamespaceLister
 	DocdbClusterSnapshotListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *docdbClusterSnapshotLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the DocdbClusterSnapshot from the index for a given name.
-func (s *docdbClusterSnapshotLister) Get(name string) (*v1alpha1.DocdbClusterSnapshot, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DocdbClusterSnapshots returns an object that can list and get DocdbClusterSnapshots.
+func (s *docdbClusterSnapshotLister) DocdbClusterSnapshots(namespace string) DocdbClusterSnapshotNamespaceLister {
+	return docdbClusterSnapshotNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DocdbClusterSnapshotNamespaceLister helps list and get DocdbClusterSnapshots.
+type DocdbClusterSnapshotNamespaceLister interface {
+	// List lists all DocdbClusterSnapshots in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DocdbClusterSnapshot, err error)
+	// Get retrieves the DocdbClusterSnapshot from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DocdbClusterSnapshot, error)
+	DocdbClusterSnapshotNamespaceListerExpansion
+}
+
+// docdbClusterSnapshotNamespaceLister implements the DocdbClusterSnapshotNamespaceLister
+// interface.
+type docdbClusterSnapshotNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DocdbClusterSnapshots in the indexer for a given namespace.
+func (s docdbClusterSnapshotNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DocdbClusterSnapshot, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DocdbClusterSnapshot))
+	})
+	return ret, err
+}
+
+// Get retrieves the DocdbClusterSnapshot from the indexer for a given namespace and name.
+func (s docdbClusterSnapshotNamespaceLister) Get(name string) (*v1alpha1.DocdbClusterSnapshot, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

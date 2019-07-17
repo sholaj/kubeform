@@ -31,6 +31,7 @@ import (
 // FakeComputeInterconnectAttachments implements ComputeInterconnectAttachmentInterface
 type FakeComputeInterconnectAttachments struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computeinterconnectattachmentsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computeinterconnectattachments"}
@@ -40,7 +41,8 @@ var computeinterconnectattachmentsKind = schema.GroupVersionKind{Group: "google.
 // Get takes name of the computeInterconnectAttachment, and returns the corresponding computeInterconnectAttachment object, and an error if there is any.
 func (c *FakeComputeInterconnectAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeInterconnectAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computeinterconnectattachmentsResource, name), &v1alpha1.ComputeInterconnectAttachment{})
+		Invokes(testing.NewGetAction(computeinterconnectattachmentsResource, c.ns, name), &v1alpha1.ComputeInterconnectAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeInterconnectAttachments) Get(name string, options v1.GetOpti
 // List takes label and field selectors, and returns the list of ComputeInterconnectAttachments that match those selectors.
 func (c *FakeComputeInterconnectAttachments) List(opts v1.ListOptions) (result *v1alpha1.ComputeInterconnectAttachmentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computeinterconnectattachmentsResource, computeinterconnectattachmentsKind, opts), &v1alpha1.ComputeInterconnectAttachmentList{})
+		Invokes(testing.NewListAction(computeinterconnectattachmentsResource, computeinterconnectattachmentsKind, c.ns, opts), &v1alpha1.ComputeInterconnectAttachmentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeInterconnectAttachments) List(opts v1.ListOptions) (result *
 // Watch returns a watch.Interface that watches the requested computeInterconnectAttachments.
 func (c *FakeComputeInterconnectAttachments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computeinterconnectattachmentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(computeinterconnectattachmentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeInterconnectAttachment and creates it.  Returns the server's representation of the computeInterconnectAttachment, and an error, if there is any.
 func (c *FakeComputeInterconnectAttachments) Create(computeInterconnectAttachment *v1alpha1.ComputeInterconnectAttachment) (result *v1alpha1.ComputeInterconnectAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computeinterconnectattachmentsResource, computeInterconnectAttachment), &v1alpha1.ComputeInterconnectAttachment{})
+		Invokes(testing.NewCreateAction(computeinterconnectattachmentsResource, c.ns, computeInterconnectAttachment), &v1alpha1.ComputeInterconnectAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeInterconnectAttachments) Create(computeInterconnectAttachmen
 // Update takes the representation of a computeInterconnectAttachment and updates it. Returns the server's representation of the computeInterconnectAttachment, and an error, if there is any.
 func (c *FakeComputeInterconnectAttachments) Update(computeInterconnectAttachment *v1alpha1.ComputeInterconnectAttachment) (result *v1alpha1.ComputeInterconnectAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computeinterconnectattachmentsResource, computeInterconnectAttachment), &v1alpha1.ComputeInterconnectAttachment{})
+		Invokes(testing.NewUpdateAction(computeinterconnectattachmentsResource, c.ns, computeInterconnectAttachment), &v1alpha1.ComputeInterconnectAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeInterconnectAttachments) Update(computeInterconnectAttachmen
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeInterconnectAttachments) UpdateStatus(computeInterconnectAttachment *v1alpha1.ComputeInterconnectAttachment) (*v1alpha1.ComputeInterconnectAttachment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computeinterconnectattachmentsResource, "status", computeInterconnectAttachment), &v1alpha1.ComputeInterconnectAttachment{})
+		Invokes(testing.NewUpdateSubresourceAction(computeinterconnectattachmentsResource, "status", c.ns, computeInterconnectAttachment), &v1alpha1.ComputeInterconnectAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeInterconnectAttachments) UpdateStatus(computeInterconnectAtt
 // Delete takes name of the computeInterconnectAttachment and deletes it. Returns an error if one occurs.
 func (c *FakeComputeInterconnectAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computeinterconnectattachmentsResource, name), &v1alpha1.ComputeInterconnectAttachment{})
+		Invokes(testing.NewDeleteAction(computeinterconnectattachmentsResource, c.ns, name), &v1alpha1.ComputeInterconnectAttachment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeInterconnectAttachments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computeinterconnectattachmentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computeinterconnectattachmentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeInterconnectAttachmentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeInterconnectAttachments) DeleteCollection(options *v1.Delete
 // Patch applies the patch and returns the patched computeInterconnectAttachment.
 func (c *FakeComputeInterconnectAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeInterconnectAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computeinterconnectattachmentsResource, name, pt, data, subresources...), &v1alpha1.ComputeInterconnectAttachment{})
+		Invokes(testing.NewPatchSubresourceAction(computeinterconnectattachmentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeInterconnectAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type SfnActivityLister interface {
 	// List lists all SfnActivities in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SfnActivity, err error)
-	// Get retrieves the SfnActivity from the index for a given name.
-	Get(name string) (*v1alpha1.SfnActivity, error)
+	// SfnActivities returns an object that can list and get SfnActivities.
+	SfnActivities(namespace string) SfnActivityNamespaceLister
 	SfnActivityListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sfnActivityLister) List(selector labels.Selector) (ret []*v1alpha1.SfnA
 	return ret, err
 }
 
-// Get retrieves the SfnActivity from the index for a given name.
-func (s *sfnActivityLister) Get(name string) (*v1alpha1.SfnActivity, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SfnActivities returns an object that can list and get SfnActivities.
+func (s *sfnActivityLister) SfnActivities(namespace string) SfnActivityNamespaceLister {
+	return sfnActivityNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SfnActivityNamespaceLister helps list and get SfnActivities.
+type SfnActivityNamespaceLister interface {
+	// List lists all SfnActivities in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SfnActivity, err error)
+	// Get retrieves the SfnActivity from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SfnActivity, error)
+	SfnActivityNamespaceListerExpansion
+}
+
+// sfnActivityNamespaceLister implements the SfnActivityNamespaceLister
+// interface.
+type sfnActivityNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SfnActivities in the indexer for a given namespace.
+func (s sfnActivityNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SfnActivity, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SfnActivity))
+	})
+	return ret, err
+}
+
+// Get retrieves the SfnActivity from the indexer for a given namespace and name.
+func (s sfnActivityNamespaceLister) Get(name string) (*v1alpha1.SfnActivity, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

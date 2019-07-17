@@ -32,7 +32,7 @@ import (
 // SqlUsersGetter has a method to return a SqlUserInterface.
 // A group's client should implement this interface.
 type SqlUsersGetter interface {
-	SqlUsers() SqlUserInterface
+	SqlUsers(namespace string) SqlUserInterface
 }
 
 // SqlUserInterface has methods to work with SqlUser resources.
@@ -52,12 +52,14 @@ type SqlUserInterface interface {
 // sqlUsers implements SqlUserInterface
 type sqlUsers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSqlUsers returns a SqlUsers
-func newSqlUsers(c *GoogleV1alpha1Client) *sqlUsers {
+func newSqlUsers(c *GoogleV1alpha1Client, namespace string) *sqlUsers {
 	return &sqlUsers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSqlUsers(c *GoogleV1alpha1Client) *sqlUsers {
 func (c *sqlUsers) Get(name string, options v1.GetOptions) (result *v1alpha1.SqlUser, err error) {
 	result = &v1alpha1.SqlUser{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlusers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sqlUsers) List(opts v1.ListOptions) (result *v1alpha1.SqlUserList, err 
 	}
 	result = &v1alpha1.SqlUserList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlusers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sqlUsers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlusers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sqlUsers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *sqlUsers) Create(sqlUser *v1alpha1.SqlUser) (result *v1alpha1.SqlUser, err error) {
 	result = &v1alpha1.SqlUser{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sqlusers").
 		Body(sqlUser).
 		Do().
@@ -118,6 +124,7 @@ func (c *sqlUsers) Create(sqlUser *v1alpha1.SqlUser) (result *v1alpha1.SqlUser, 
 func (c *sqlUsers) Update(sqlUser *v1alpha1.SqlUser) (result *v1alpha1.SqlUser, err error) {
 	result = &v1alpha1.SqlUser{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqlusers").
 		Name(sqlUser.Name).
 		Body(sqlUser).
@@ -132,6 +139,7 @@ func (c *sqlUsers) Update(sqlUser *v1alpha1.SqlUser) (result *v1alpha1.SqlUser, 
 func (c *sqlUsers) UpdateStatus(sqlUser *v1alpha1.SqlUser) (result *v1alpha1.SqlUser, err error) {
 	result = &v1alpha1.SqlUser{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqlusers").
 		Name(sqlUser.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sqlUsers) UpdateStatus(sqlUser *v1alpha1.SqlUser) (result *v1alpha1.Sql
 // Delete takes name of the sqlUser and deletes it. Returns an error if one occurs.
 func (c *sqlUsers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqlusers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sqlUsers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqlusers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sqlUsers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 func (c *sqlUsers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SqlUser, err error) {
 	result = &v1alpha1.SqlUser{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sqlusers").
 		SubResource(subresources...).
 		Name(name).

@@ -3,12 +3,12 @@ package v1alpha1
 import (
 	"encoding/json"
 
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -22,20 +22,21 @@ type SagemakerEndpointConfiguration struct {
 
 type SagemakerEndpointConfigurationSpecProductionVariants struct {
 	// +optional
-	AcceleratorType      string `json:"accelerator_type,omitempty"`
-	InitialInstanceCount int    `json:"initial_instance_count"`
+	AcceleratorType      string `json:"acceleratorType,omitempty" tf:"accelerator_type,omitempty"`
+	InitialInstanceCount int    `json:"initialInstanceCount" tf:"initial_instance_count"`
 	// +optional
-	InitialVariantWeight json.Number `json:"initial_variant_weight,omitempty"`
-	InstanceType         string      `json:"instance_type"`
-	ModelName            string      `json:"model_name"`
+	InitialVariantWeight json.Number `json:"initialVariantWeight,omitempty" tf:"initial_variant_weight,omitempty"`
+	InstanceType         string      `json:"instanceType" tf:"instance_type"`
+	ModelName            string      `json:"modelName" tf:"model_name"`
 }
 
 type SagemakerEndpointConfigurationSpec struct {
 	// +optional
-	KmsKeyArn          string                               `json:"kms_key_arn,omitempty"`
-	ProductionVariants []SagemakerEndpointConfigurationSpec `json:"production_variants"`
+	KmsKeyArn          string                                                 `json:"kmsKeyArn,omitempty" tf:"kms_key_arn,omitempty"`
+	ProductionVariants []SagemakerEndpointConfigurationSpecProductionVariants `json:"productionVariants" tf:"production_variants"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SagemakerEndpointConfigurationStatus struct {
@@ -43,7 +44,9 @@ type SagemakerEndpointConfigurationStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

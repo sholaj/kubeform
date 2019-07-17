@@ -41,32 +41,33 @@ type ComputeTargetPoolInformer interface {
 type computeTargetPoolInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewComputeTargetPoolInformer constructs a new informer for ComputeTargetPool type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewComputeTargetPoolInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredComputeTargetPoolInformer(client, resyncPeriod, indexers, nil)
+func NewComputeTargetPoolInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredComputeTargetPoolInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredComputeTargetPoolInformer constructs a new informer for ComputeTargetPool type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredComputeTargetPoolInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredComputeTargetPoolInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeTargetPools().List(options)
+				return client.GoogleV1alpha1().ComputeTargetPools(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeTargetPools().Watch(options)
+				return client.GoogleV1alpha1().ComputeTargetPools(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.ComputeTargetPool{},
@@ -76,7 +77,7 @@ func NewFilteredComputeTargetPoolInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *computeTargetPoolInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredComputeTargetPoolInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredComputeTargetPoolInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *computeTargetPoolInformer) Informer() cache.SharedIndexInformer {

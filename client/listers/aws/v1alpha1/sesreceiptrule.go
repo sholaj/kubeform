@@ -29,8 +29,8 @@ import (
 type SesReceiptRuleLister interface {
 	// List lists all SesReceiptRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SesReceiptRule, err error)
-	// Get retrieves the SesReceiptRule from the index for a given name.
-	Get(name string) (*v1alpha1.SesReceiptRule, error)
+	// SesReceiptRules returns an object that can list and get SesReceiptRules.
+	SesReceiptRules(namespace string) SesReceiptRuleNamespaceLister
 	SesReceiptRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sesReceiptRuleLister) List(selector labels.Selector) (ret []*v1alpha1.S
 	return ret, err
 }
 
-// Get retrieves the SesReceiptRule from the index for a given name.
-func (s *sesReceiptRuleLister) Get(name string) (*v1alpha1.SesReceiptRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SesReceiptRules returns an object that can list and get SesReceiptRules.
+func (s *sesReceiptRuleLister) SesReceiptRules(namespace string) SesReceiptRuleNamespaceLister {
+	return sesReceiptRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SesReceiptRuleNamespaceLister helps list and get SesReceiptRules.
+type SesReceiptRuleNamespaceLister interface {
+	// List lists all SesReceiptRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SesReceiptRule, err error)
+	// Get retrieves the SesReceiptRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SesReceiptRule, error)
+	SesReceiptRuleNamespaceListerExpansion
+}
+
+// sesReceiptRuleNamespaceLister implements the SesReceiptRuleNamespaceLister
+// interface.
+type sesReceiptRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SesReceiptRules in the indexer for a given namespace.
+func (s sesReceiptRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SesReceiptRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SesReceiptRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the SesReceiptRule from the indexer for a given namespace and name.
+func (s sesReceiptRuleNamespaceLister) Get(name string) (*v1alpha1.SesReceiptRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

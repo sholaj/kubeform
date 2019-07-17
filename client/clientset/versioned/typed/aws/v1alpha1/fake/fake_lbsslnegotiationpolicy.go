@@ -31,6 +31,7 @@ import (
 // FakeLbSslNegotiationPolicies implements LbSslNegotiationPolicyInterface
 type FakeLbSslNegotiationPolicies struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var lbsslnegotiationpoliciesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "lbsslnegotiationpolicies"}
@@ -40,7 +41,8 @@ var lbsslnegotiationpoliciesKind = schema.GroupVersionKind{Group: "aws.kubeform.
 // Get takes name of the lbSslNegotiationPolicy, and returns the corresponding lbSslNegotiationPolicy object, and an error if there is any.
 func (c *FakeLbSslNegotiationPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.LbSslNegotiationPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(lbsslnegotiationpoliciesResource, name), &v1alpha1.LbSslNegotiationPolicy{})
+		Invokes(testing.NewGetAction(lbsslnegotiationpoliciesResource, c.ns, name), &v1alpha1.LbSslNegotiationPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLbSslNegotiationPolicies) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of LbSslNegotiationPolicies that match those selectors.
 func (c *FakeLbSslNegotiationPolicies) List(opts v1.ListOptions) (result *v1alpha1.LbSslNegotiationPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(lbsslnegotiationpoliciesResource, lbsslnegotiationpoliciesKind, opts), &v1alpha1.LbSslNegotiationPolicyList{})
+		Invokes(testing.NewListAction(lbsslnegotiationpoliciesResource, lbsslnegotiationpoliciesKind, c.ns, opts), &v1alpha1.LbSslNegotiationPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLbSslNegotiationPolicies) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested lbSslNegotiationPolicies.
 func (c *FakeLbSslNegotiationPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(lbsslnegotiationpoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(lbsslnegotiationpoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a lbSslNegotiationPolicy and creates it.  Returns the server's representation of the lbSslNegotiationPolicy, and an error, if there is any.
 func (c *FakeLbSslNegotiationPolicies) Create(lbSslNegotiationPolicy *v1alpha1.LbSslNegotiationPolicy) (result *v1alpha1.LbSslNegotiationPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(lbsslnegotiationpoliciesResource, lbSslNegotiationPolicy), &v1alpha1.LbSslNegotiationPolicy{})
+		Invokes(testing.NewCreateAction(lbsslnegotiationpoliciesResource, c.ns, lbSslNegotiationPolicy), &v1alpha1.LbSslNegotiationPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLbSslNegotiationPolicies) Create(lbSslNegotiationPolicy *v1alpha1.L
 // Update takes the representation of a lbSslNegotiationPolicy and updates it. Returns the server's representation of the lbSslNegotiationPolicy, and an error, if there is any.
 func (c *FakeLbSslNegotiationPolicies) Update(lbSslNegotiationPolicy *v1alpha1.LbSslNegotiationPolicy) (result *v1alpha1.LbSslNegotiationPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(lbsslnegotiationpoliciesResource, lbSslNegotiationPolicy), &v1alpha1.LbSslNegotiationPolicy{})
+		Invokes(testing.NewUpdateAction(lbsslnegotiationpoliciesResource, c.ns, lbSslNegotiationPolicy), &v1alpha1.LbSslNegotiationPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLbSslNegotiationPolicies) Update(lbSslNegotiationPolicy *v1alpha1.L
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLbSslNegotiationPolicies) UpdateStatus(lbSslNegotiationPolicy *v1alpha1.LbSslNegotiationPolicy) (*v1alpha1.LbSslNegotiationPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(lbsslnegotiationpoliciesResource, "status", lbSslNegotiationPolicy), &v1alpha1.LbSslNegotiationPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(lbsslnegotiationpoliciesResource, "status", c.ns, lbSslNegotiationPolicy), &v1alpha1.LbSslNegotiationPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLbSslNegotiationPolicies) UpdateStatus(lbSslNegotiationPolicy *v1al
 // Delete takes name of the lbSslNegotiationPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeLbSslNegotiationPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(lbsslnegotiationpoliciesResource, name), &v1alpha1.LbSslNegotiationPolicy{})
+		Invokes(testing.NewDeleteAction(lbsslnegotiationpoliciesResource, c.ns, name), &v1alpha1.LbSslNegotiationPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLbSslNegotiationPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(lbsslnegotiationpoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(lbsslnegotiationpoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LbSslNegotiationPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLbSslNegotiationPolicies) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched lbSslNegotiationPolicy.
 func (c *FakeLbSslNegotiationPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbSslNegotiationPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(lbsslnegotiationpoliciesResource, name, pt, data, subresources...), &v1alpha1.LbSslNegotiationPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(lbsslnegotiationpoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.LbSslNegotiationPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

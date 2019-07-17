@@ -29,8 +29,8 @@ import (
 type ServicebusTopicAuthorizationRuleLister interface {
 	// List lists all ServicebusTopicAuthorizationRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ServicebusTopicAuthorizationRule, err error)
-	// Get retrieves the ServicebusTopicAuthorizationRule from the index for a given name.
-	Get(name string) (*v1alpha1.ServicebusTopicAuthorizationRule, error)
+	// ServicebusTopicAuthorizationRules returns an object that can list and get ServicebusTopicAuthorizationRules.
+	ServicebusTopicAuthorizationRules(namespace string) ServicebusTopicAuthorizationRuleNamespaceLister
 	ServicebusTopicAuthorizationRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *servicebusTopicAuthorizationRuleLister) List(selector labels.Selector) 
 	return ret, err
 }
 
-// Get retrieves the ServicebusTopicAuthorizationRule from the index for a given name.
-func (s *servicebusTopicAuthorizationRuleLister) Get(name string) (*v1alpha1.ServicebusTopicAuthorizationRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ServicebusTopicAuthorizationRules returns an object that can list and get ServicebusTopicAuthorizationRules.
+func (s *servicebusTopicAuthorizationRuleLister) ServicebusTopicAuthorizationRules(namespace string) ServicebusTopicAuthorizationRuleNamespaceLister {
+	return servicebusTopicAuthorizationRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ServicebusTopicAuthorizationRuleNamespaceLister helps list and get ServicebusTopicAuthorizationRules.
+type ServicebusTopicAuthorizationRuleNamespaceLister interface {
+	// List lists all ServicebusTopicAuthorizationRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ServicebusTopicAuthorizationRule, err error)
+	// Get retrieves the ServicebusTopicAuthorizationRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ServicebusTopicAuthorizationRule, error)
+	ServicebusTopicAuthorizationRuleNamespaceListerExpansion
+}
+
+// servicebusTopicAuthorizationRuleNamespaceLister implements the ServicebusTopicAuthorizationRuleNamespaceLister
+// interface.
+type servicebusTopicAuthorizationRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ServicebusTopicAuthorizationRules in the indexer for a given namespace.
+func (s servicebusTopicAuthorizationRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServicebusTopicAuthorizationRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ServicebusTopicAuthorizationRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the ServicebusTopicAuthorizationRule from the indexer for a given namespace and name.
+func (s servicebusTopicAuthorizationRuleNamespaceLister) Get(name string) (*v1alpha1.ServicebusTopicAuthorizationRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

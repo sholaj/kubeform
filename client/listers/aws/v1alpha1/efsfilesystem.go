@@ -29,8 +29,8 @@ import (
 type EfsFileSystemLister interface {
 	// List lists all EfsFileSystems in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EfsFileSystem, err error)
-	// Get retrieves the EfsFileSystem from the index for a given name.
-	Get(name string) (*v1alpha1.EfsFileSystem, error)
+	// EfsFileSystems returns an object that can list and get EfsFileSystems.
+	EfsFileSystems(namespace string) EfsFileSystemNamespaceLister
 	EfsFileSystemListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *efsFileSystemLister) List(selector labels.Selector) (ret []*v1alpha1.Ef
 	return ret, err
 }
 
-// Get retrieves the EfsFileSystem from the index for a given name.
-func (s *efsFileSystemLister) Get(name string) (*v1alpha1.EfsFileSystem, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EfsFileSystems returns an object that can list and get EfsFileSystems.
+func (s *efsFileSystemLister) EfsFileSystems(namespace string) EfsFileSystemNamespaceLister {
+	return efsFileSystemNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EfsFileSystemNamespaceLister helps list and get EfsFileSystems.
+type EfsFileSystemNamespaceLister interface {
+	// List lists all EfsFileSystems in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EfsFileSystem, err error)
+	// Get retrieves the EfsFileSystem from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EfsFileSystem, error)
+	EfsFileSystemNamespaceListerExpansion
+}
+
+// efsFileSystemNamespaceLister implements the EfsFileSystemNamespaceLister
+// interface.
+type efsFileSystemNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EfsFileSystems in the indexer for a given namespace.
+func (s efsFileSystemNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EfsFileSystem, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EfsFileSystem))
+	})
+	return ret, err
+}
+
+// Get retrieves the EfsFileSystem from the indexer for a given namespace and name.
+func (s efsFileSystemNamespaceLister) Get(name string) (*v1alpha1.EfsFileSystem, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

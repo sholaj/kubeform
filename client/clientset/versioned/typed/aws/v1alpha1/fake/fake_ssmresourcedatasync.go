@@ -31,6 +31,7 @@ import (
 // FakeSsmResourceDataSyncs implements SsmResourceDataSyncInterface
 type FakeSsmResourceDataSyncs struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ssmresourcedatasyncsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ssmresourcedatasyncs"}
@@ -40,7 +41,8 @@ var ssmresourcedatasyncsKind = schema.GroupVersionKind{Group: "aws.kubeform.com"
 // Get takes name of the ssmResourceDataSync, and returns the corresponding ssmResourceDataSync object, and an error if there is any.
 func (c *FakeSsmResourceDataSyncs) Get(name string, options v1.GetOptions) (result *v1alpha1.SsmResourceDataSync, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ssmresourcedatasyncsResource, name), &v1alpha1.SsmResourceDataSync{})
+		Invokes(testing.NewGetAction(ssmresourcedatasyncsResource, c.ns, name), &v1alpha1.SsmResourceDataSync{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSsmResourceDataSyncs) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of SsmResourceDataSyncs that match those selectors.
 func (c *FakeSsmResourceDataSyncs) List(opts v1.ListOptions) (result *v1alpha1.SsmResourceDataSyncList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ssmresourcedatasyncsResource, ssmresourcedatasyncsKind, opts), &v1alpha1.SsmResourceDataSyncList{})
+		Invokes(testing.NewListAction(ssmresourcedatasyncsResource, ssmresourcedatasyncsKind, c.ns, opts), &v1alpha1.SsmResourceDataSyncList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSsmResourceDataSyncs) List(opts v1.ListOptions) (result *v1alpha1.S
 // Watch returns a watch.Interface that watches the requested ssmResourceDataSyncs.
 func (c *FakeSsmResourceDataSyncs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ssmresourcedatasyncsResource, opts))
+		InvokesWatch(testing.NewWatchAction(ssmresourcedatasyncsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ssmResourceDataSync and creates it.  Returns the server's representation of the ssmResourceDataSync, and an error, if there is any.
 func (c *FakeSsmResourceDataSyncs) Create(ssmResourceDataSync *v1alpha1.SsmResourceDataSync) (result *v1alpha1.SsmResourceDataSync, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ssmresourcedatasyncsResource, ssmResourceDataSync), &v1alpha1.SsmResourceDataSync{})
+		Invokes(testing.NewCreateAction(ssmresourcedatasyncsResource, c.ns, ssmResourceDataSync), &v1alpha1.SsmResourceDataSync{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSsmResourceDataSyncs) Create(ssmResourceDataSync *v1alpha1.SsmResou
 // Update takes the representation of a ssmResourceDataSync and updates it. Returns the server's representation of the ssmResourceDataSync, and an error, if there is any.
 func (c *FakeSsmResourceDataSyncs) Update(ssmResourceDataSync *v1alpha1.SsmResourceDataSync) (result *v1alpha1.SsmResourceDataSync, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ssmresourcedatasyncsResource, ssmResourceDataSync), &v1alpha1.SsmResourceDataSync{})
+		Invokes(testing.NewUpdateAction(ssmresourcedatasyncsResource, c.ns, ssmResourceDataSync), &v1alpha1.SsmResourceDataSync{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSsmResourceDataSyncs) Update(ssmResourceDataSync *v1alpha1.SsmResou
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSsmResourceDataSyncs) UpdateStatus(ssmResourceDataSync *v1alpha1.SsmResourceDataSync) (*v1alpha1.SsmResourceDataSync, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ssmresourcedatasyncsResource, "status", ssmResourceDataSync), &v1alpha1.SsmResourceDataSync{})
+		Invokes(testing.NewUpdateSubresourceAction(ssmresourcedatasyncsResource, "status", c.ns, ssmResourceDataSync), &v1alpha1.SsmResourceDataSync{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSsmResourceDataSyncs) UpdateStatus(ssmResourceDataSync *v1alpha1.Ss
 // Delete takes name of the ssmResourceDataSync and deletes it. Returns an error if one occurs.
 func (c *FakeSsmResourceDataSyncs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ssmresourcedatasyncsResource, name), &v1alpha1.SsmResourceDataSync{})
+		Invokes(testing.NewDeleteAction(ssmresourcedatasyncsResource, c.ns, name), &v1alpha1.SsmResourceDataSync{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSsmResourceDataSyncs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ssmresourcedatasyncsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ssmresourcedatasyncsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SsmResourceDataSyncList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSsmResourceDataSyncs) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched ssmResourceDataSync.
 func (c *FakeSsmResourceDataSyncs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SsmResourceDataSync, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ssmresourcedatasyncsResource, name, pt, data, subresources...), &v1alpha1.SsmResourceDataSync{})
+		Invokes(testing.NewPatchSubresourceAction(ssmresourcedatasyncsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SsmResourceDataSync{})
+
 	if obj == nil {
 		return nil, err
 	}

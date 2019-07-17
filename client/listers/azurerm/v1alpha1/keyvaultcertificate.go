@@ -29,8 +29,8 @@ import (
 type KeyVaultCertificateLister interface {
 	// List lists all KeyVaultCertificates in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KeyVaultCertificate, err error)
-	// Get retrieves the KeyVaultCertificate from the index for a given name.
-	Get(name string) (*v1alpha1.KeyVaultCertificate, error)
+	// KeyVaultCertificates returns an object that can list and get KeyVaultCertificates.
+	KeyVaultCertificates(namespace string) KeyVaultCertificateNamespaceLister
 	KeyVaultCertificateListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *keyVaultCertificateLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the KeyVaultCertificate from the index for a given name.
-func (s *keyVaultCertificateLister) Get(name string) (*v1alpha1.KeyVaultCertificate, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KeyVaultCertificates returns an object that can list and get KeyVaultCertificates.
+func (s *keyVaultCertificateLister) KeyVaultCertificates(namespace string) KeyVaultCertificateNamespaceLister {
+	return keyVaultCertificateNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KeyVaultCertificateNamespaceLister helps list and get KeyVaultCertificates.
+type KeyVaultCertificateNamespaceLister interface {
+	// List lists all KeyVaultCertificates in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KeyVaultCertificate, err error)
+	// Get retrieves the KeyVaultCertificate from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KeyVaultCertificate, error)
+	KeyVaultCertificateNamespaceListerExpansion
+}
+
+// keyVaultCertificateNamespaceLister implements the KeyVaultCertificateNamespaceLister
+// interface.
+type keyVaultCertificateNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KeyVaultCertificates in the indexer for a given namespace.
+func (s keyVaultCertificateNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KeyVaultCertificate, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KeyVaultCertificate))
+	})
+	return ret, err
+}
+
+// Get retrieves the KeyVaultCertificate from the indexer for a given namespace and name.
+func (s keyVaultCertificateNamespaceLister) Get(name string) (*v1alpha1.KeyVaultCertificate, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

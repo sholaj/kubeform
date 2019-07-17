@@ -29,8 +29,8 @@ import (
 type CloudwatchLogStreamLister interface {
 	// List lists all CloudwatchLogStreams in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CloudwatchLogStream, err error)
-	// Get retrieves the CloudwatchLogStream from the index for a given name.
-	Get(name string) (*v1alpha1.CloudwatchLogStream, error)
+	// CloudwatchLogStreams returns an object that can list and get CloudwatchLogStreams.
+	CloudwatchLogStreams(namespace string) CloudwatchLogStreamNamespaceLister
 	CloudwatchLogStreamListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cloudwatchLogStreamLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the CloudwatchLogStream from the index for a given name.
-func (s *cloudwatchLogStreamLister) Get(name string) (*v1alpha1.CloudwatchLogStream, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CloudwatchLogStreams returns an object that can list and get CloudwatchLogStreams.
+func (s *cloudwatchLogStreamLister) CloudwatchLogStreams(namespace string) CloudwatchLogStreamNamespaceLister {
+	return cloudwatchLogStreamNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CloudwatchLogStreamNamespaceLister helps list and get CloudwatchLogStreams.
+type CloudwatchLogStreamNamespaceLister interface {
+	// List lists all CloudwatchLogStreams in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CloudwatchLogStream, err error)
+	// Get retrieves the CloudwatchLogStream from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CloudwatchLogStream, error)
+	CloudwatchLogStreamNamespaceListerExpansion
+}
+
+// cloudwatchLogStreamNamespaceLister implements the CloudwatchLogStreamNamespaceLister
+// interface.
+type cloudwatchLogStreamNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CloudwatchLogStreams in the indexer for a given namespace.
+func (s cloudwatchLogStreamNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CloudwatchLogStream, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CloudwatchLogStream))
+	})
+	return ret, err
+}
+
+// Get retrieves the CloudwatchLogStream from the indexer for a given namespace and name.
+func (s cloudwatchLogStreamNamespaceLister) Get(name string) (*v1alpha1.CloudwatchLogStream, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

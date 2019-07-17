@@ -29,8 +29,8 @@ import (
 type SubnetRouteTableAssociationLister interface {
 	// List lists all SubnetRouteTableAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SubnetRouteTableAssociation, err error)
-	// Get retrieves the SubnetRouteTableAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.SubnetRouteTableAssociation, error)
+	// SubnetRouteTableAssociations returns an object that can list and get SubnetRouteTableAssociations.
+	SubnetRouteTableAssociations(namespace string) SubnetRouteTableAssociationNamespaceLister
 	SubnetRouteTableAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *subnetRouteTableAssociationLister) List(selector labels.Selector) (ret 
 	return ret, err
 }
 
-// Get retrieves the SubnetRouteTableAssociation from the index for a given name.
-func (s *subnetRouteTableAssociationLister) Get(name string) (*v1alpha1.SubnetRouteTableAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SubnetRouteTableAssociations returns an object that can list and get SubnetRouteTableAssociations.
+func (s *subnetRouteTableAssociationLister) SubnetRouteTableAssociations(namespace string) SubnetRouteTableAssociationNamespaceLister {
+	return subnetRouteTableAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SubnetRouteTableAssociationNamespaceLister helps list and get SubnetRouteTableAssociations.
+type SubnetRouteTableAssociationNamespaceLister interface {
+	// List lists all SubnetRouteTableAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SubnetRouteTableAssociation, err error)
+	// Get retrieves the SubnetRouteTableAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SubnetRouteTableAssociation, error)
+	SubnetRouteTableAssociationNamespaceListerExpansion
+}
+
+// subnetRouteTableAssociationNamespaceLister implements the SubnetRouteTableAssociationNamespaceLister
+// interface.
+type subnetRouteTableAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SubnetRouteTableAssociations in the indexer for a given namespace.
+func (s subnetRouteTableAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SubnetRouteTableAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SubnetRouteTableAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the SubnetRouteTableAssociation from the indexer for a given namespace and name.
+func (s subnetRouteTableAssociationNamespaceLister) Get(name string) (*v1alpha1.SubnetRouteTableAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type ConfigConfigurationAggregatorLister interface {
 	// List lists all ConfigConfigurationAggregators in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ConfigConfigurationAggregator, err error)
-	// Get retrieves the ConfigConfigurationAggregator from the index for a given name.
-	Get(name string) (*v1alpha1.ConfigConfigurationAggregator, error)
+	// ConfigConfigurationAggregators returns an object that can list and get ConfigConfigurationAggregators.
+	ConfigConfigurationAggregators(namespace string) ConfigConfigurationAggregatorNamespaceLister
 	ConfigConfigurationAggregatorListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *configConfigurationAggregatorLister) List(selector labels.Selector) (re
 	return ret, err
 }
 
-// Get retrieves the ConfigConfigurationAggregator from the index for a given name.
-func (s *configConfigurationAggregatorLister) Get(name string) (*v1alpha1.ConfigConfigurationAggregator, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ConfigConfigurationAggregators returns an object that can list and get ConfigConfigurationAggregators.
+func (s *configConfigurationAggregatorLister) ConfigConfigurationAggregators(namespace string) ConfigConfigurationAggregatorNamespaceLister {
+	return configConfigurationAggregatorNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ConfigConfigurationAggregatorNamespaceLister helps list and get ConfigConfigurationAggregators.
+type ConfigConfigurationAggregatorNamespaceLister interface {
+	// List lists all ConfigConfigurationAggregators in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ConfigConfigurationAggregator, err error)
+	// Get retrieves the ConfigConfigurationAggregator from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ConfigConfigurationAggregator, error)
+	ConfigConfigurationAggregatorNamespaceListerExpansion
+}
+
+// configConfigurationAggregatorNamespaceLister implements the ConfigConfigurationAggregatorNamespaceLister
+// interface.
+type configConfigurationAggregatorNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ConfigConfigurationAggregators in the indexer for a given namespace.
+func (s configConfigurationAggregatorNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ConfigConfigurationAggregator, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ConfigConfigurationAggregator))
+	})
+	return ret, err
+}
+
+// Get retrieves the ConfigConfigurationAggregator from the indexer for a given namespace and name.
+func (s configConfigurationAggregatorNamespaceLister) Get(name string) (*v1alpha1.ConfigConfigurationAggregator, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

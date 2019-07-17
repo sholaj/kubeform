@@ -29,8 +29,8 @@ import (
 type VpnGatewayLister interface {
 	// List lists all VpnGateways in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.VpnGateway, err error)
-	// Get retrieves the VpnGateway from the index for a given name.
-	Get(name string) (*v1alpha1.VpnGateway, error)
+	// VpnGateways returns an object that can list and get VpnGateways.
+	VpnGateways(namespace string) VpnGatewayNamespaceLister
 	VpnGatewayListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *vpnGatewayLister) List(selector labels.Selector) (ret []*v1alpha1.VpnGa
 	return ret, err
 }
 
-// Get retrieves the VpnGateway from the index for a given name.
-func (s *vpnGatewayLister) Get(name string) (*v1alpha1.VpnGateway, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VpnGateways returns an object that can list and get VpnGateways.
+func (s *vpnGatewayLister) VpnGateways(namespace string) VpnGatewayNamespaceLister {
+	return vpnGatewayNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VpnGatewayNamespaceLister helps list and get VpnGateways.
+type VpnGatewayNamespaceLister interface {
+	// List lists all VpnGateways in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VpnGateway, err error)
+	// Get retrieves the VpnGateway from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VpnGateway, error)
+	VpnGatewayNamespaceListerExpansion
+}
+
+// vpnGatewayNamespaceLister implements the VpnGatewayNamespaceLister
+// interface.
+type vpnGatewayNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VpnGateways in the indexer for a given namespace.
+func (s vpnGatewayNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VpnGateway, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VpnGateway))
+	})
+	return ret, err
+}
+
+// Get retrieves the VpnGateway from the indexer for a given namespace and name.
+func (s vpnGatewayNamespaceLister) Get(name string) (*v1alpha1.VpnGateway, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

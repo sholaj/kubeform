@@ -1,94 +1,97 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type WafregionalWebAcl struct {
+type WafregionalWebACL struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              WafregionalWebAclSpec   `json:"spec,omitempty"`
-	Status            WafregionalWebAclStatus `json:"status,omitempty"`
+	Spec              WafregionalWebACLSpec   `json:"spec,omitempty"`
+	Status            WafregionalWebACLStatus `json:"status,omitempty"`
 }
 
-type WafregionalWebAclSpecDefaultAction struct {
-	Type string `json:"type"`
+type WafregionalWebACLSpecDefaultAction struct {
+	Type string `json:"type" tf:"type"`
 }
 
-type WafregionalWebAclSpecLoggingConfigurationRedactedFieldsFieldToMatch struct {
+type WafregionalWebACLSpecLoggingConfigurationRedactedFieldsFieldToMatch struct {
 	// +optional
-	Data string `json:"data,omitempty"`
-	Type string `json:"type"`
+	Data string `json:"data,omitempty" tf:"data,omitempty"`
+	Type string `json:"type" tf:"type"`
 }
 
-type WafregionalWebAclSpecLoggingConfigurationRedactedFields struct {
+type WafregionalWebACLSpecLoggingConfigurationRedactedFields struct {
 	// +kubebuilder:validation:UniqueItems=true
-	FieldToMatch []WafregionalWebAclSpecLoggingConfigurationRedactedFields `json:"field_to_match"`
+	FieldToMatch []WafregionalWebACLSpecLoggingConfigurationRedactedFieldsFieldToMatch `json:"fieldToMatch" tf:"field_to_match"`
 }
 
-type WafregionalWebAclSpecLoggingConfiguration struct {
-	LogDestination string `json:"log_destination"`
+type WafregionalWebACLSpecLoggingConfiguration struct {
+	LogDestination string `json:"logDestination" tf:"log_destination"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	RedactedFields *[]WafregionalWebAclSpecLoggingConfiguration `json:"redacted_fields,omitempty"`
+	RedactedFields []WafregionalWebACLSpecLoggingConfigurationRedactedFields `json:"redactedFields,omitempty" tf:"redacted_fields,omitempty"`
 }
 
-type WafregionalWebAclSpecRuleAction struct {
-	Type string `json:"type"`
+type WafregionalWebACLSpecRuleAction struct {
+	Type string `json:"type" tf:"type"`
 }
 
-type WafregionalWebAclSpecRuleOverrideAction struct {
-	Type string `json:"type"`
+type WafregionalWebACLSpecRuleOverrideAction struct {
+	Type string `json:"type" tf:"type"`
 }
 
-type WafregionalWebAclSpecRule struct {
+type WafregionalWebACLSpecRule struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Action *[]WafregionalWebAclSpecRule `json:"action,omitempty"`
+	Action []WafregionalWebACLSpecRuleAction `json:"action,omitempty" tf:"action,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	OverrideAction *[]WafregionalWebAclSpecRule `json:"override_action,omitempty"`
-	Priority       int                          `json:"priority"`
-	RuleId         string                       `json:"rule_id"`
+	OverrideAction []WafregionalWebACLSpecRuleOverrideAction `json:"overrideAction,omitempty" tf:"override_action,omitempty"`
+	Priority       int                                       `json:"priority" tf:"priority"`
+	RuleID         string                                    `json:"ruleID" tf:"rule_id"`
 	// +optional
-	Type string `json:"type,omitempty"`
+	Type string `json:"type,omitempty" tf:"type,omitempty"`
 }
 
-type WafregionalWebAclSpec struct {
+type WafregionalWebACLSpec struct {
 	// +kubebuilder:validation:MaxItems=1
-	DefaultAction []WafregionalWebAclSpec `json:"default_action"`
+	DefaultAction []WafregionalWebACLSpecDefaultAction `json:"defaultAction" tf:"default_action"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	LoggingConfiguration *[]WafregionalWebAclSpec `json:"logging_configuration,omitempty"`
-	MetricName           string                   `json:"metric_name"`
-	Name                 string                   `json:"name"`
+	LoggingConfiguration []WafregionalWebACLSpecLoggingConfiguration `json:"loggingConfiguration,omitempty" tf:"logging_configuration,omitempty"`
+	MetricName           string                                      `json:"metricName" tf:"metric_name"`
+	Name                 string                                      `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Rule *[]WafregionalWebAclSpec `json:"rule,omitempty"`
+	Rule        []WafregionalWebACLSpecRule `json:"rule,omitempty" tf:"rule,omitempty"`
+	ProviderRef core.LocalObjectReference   `json:"providerRef" tf:"-"`
 }
 
-type WafregionalWebAclStatus struct {
+type WafregionalWebACLStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// WafregionalWebAclList is a list of WafregionalWebAcls
-type WafregionalWebAclList struct {
+// WafregionalWebACLList is a list of WafregionalWebACLs
+type WafregionalWebACLList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of WafregionalWebAcl CRD objects
-	Items []WafregionalWebAcl `json:"items,omitempty"`
+	// Items is a list of WafregionalWebACL CRD objects
+	Items []WafregionalWebACL `json:"items,omitempty"`
 }

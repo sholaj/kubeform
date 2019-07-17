@@ -32,7 +32,7 @@ import (
 // AthenaWorkgroupsGetter has a method to return a AthenaWorkgroupInterface.
 // A group's client should implement this interface.
 type AthenaWorkgroupsGetter interface {
-	AthenaWorkgroups() AthenaWorkgroupInterface
+	AthenaWorkgroups(namespace string) AthenaWorkgroupInterface
 }
 
 // AthenaWorkgroupInterface has methods to work with AthenaWorkgroup resources.
@@ -52,12 +52,14 @@ type AthenaWorkgroupInterface interface {
 // athenaWorkgroups implements AthenaWorkgroupInterface
 type athenaWorkgroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAthenaWorkgroups returns a AthenaWorkgroups
-func newAthenaWorkgroups(c *AwsV1alpha1Client) *athenaWorkgroups {
+func newAthenaWorkgroups(c *AwsV1alpha1Client, namespace string) *athenaWorkgroups {
 	return &athenaWorkgroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAthenaWorkgroups(c *AwsV1alpha1Client) *athenaWorkgroups {
 func (c *athenaWorkgroups) Get(name string, options v1.GetOptions) (result *v1alpha1.AthenaWorkgroup, err error) {
 	result = &v1alpha1.AthenaWorkgroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("athenaworkgroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *athenaWorkgroups) List(opts v1.ListOptions) (result *v1alpha1.AthenaWor
 	}
 	result = &v1alpha1.AthenaWorkgroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("athenaworkgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *athenaWorkgroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("athenaworkgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *athenaWorkgroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *athenaWorkgroups) Create(athenaWorkgroup *v1alpha1.AthenaWorkgroup) (result *v1alpha1.AthenaWorkgroup, err error) {
 	result = &v1alpha1.AthenaWorkgroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("athenaworkgroups").
 		Body(athenaWorkgroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *athenaWorkgroups) Create(athenaWorkgroup *v1alpha1.AthenaWorkgroup) (re
 func (c *athenaWorkgroups) Update(athenaWorkgroup *v1alpha1.AthenaWorkgroup) (result *v1alpha1.AthenaWorkgroup, err error) {
 	result = &v1alpha1.AthenaWorkgroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("athenaworkgroups").
 		Name(athenaWorkgroup.Name).
 		Body(athenaWorkgroup).
@@ -132,6 +139,7 @@ func (c *athenaWorkgroups) Update(athenaWorkgroup *v1alpha1.AthenaWorkgroup) (re
 func (c *athenaWorkgroups) UpdateStatus(athenaWorkgroup *v1alpha1.AthenaWorkgroup) (result *v1alpha1.AthenaWorkgroup, err error) {
 	result = &v1alpha1.AthenaWorkgroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("athenaworkgroups").
 		Name(athenaWorkgroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *athenaWorkgroups) UpdateStatus(athenaWorkgroup *v1alpha1.AthenaWorkgrou
 // Delete takes name of the athenaWorkgroup and deletes it. Returns an error if one occurs.
 func (c *athenaWorkgroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("athenaworkgroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *athenaWorkgroups) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("athenaworkgroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *athenaWorkgroups) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *athenaWorkgroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AthenaWorkgroup, err error) {
 	result = &v1alpha1.AthenaWorkgroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("athenaworkgroups").
 		SubResource(subresources...).
 		Name(name).

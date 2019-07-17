@@ -32,7 +32,7 @@ import (
 // LbOutboundRulesGetter has a method to return a LbOutboundRuleInterface.
 // A group's client should implement this interface.
 type LbOutboundRulesGetter interface {
-	LbOutboundRules() LbOutboundRuleInterface
+	LbOutboundRules(namespace string) LbOutboundRuleInterface
 }
 
 // LbOutboundRuleInterface has methods to work with LbOutboundRule resources.
@@ -52,12 +52,14 @@ type LbOutboundRuleInterface interface {
 // lbOutboundRules implements LbOutboundRuleInterface
 type lbOutboundRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLbOutboundRules returns a LbOutboundRules
-func newLbOutboundRules(c *AzurermV1alpha1Client) *lbOutboundRules {
+func newLbOutboundRules(c *AzurermV1alpha1Client, namespace string) *lbOutboundRules {
 	return &lbOutboundRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLbOutboundRules(c *AzurermV1alpha1Client) *lbOutboundRules {
 func (c *lbOutboundRules) Get(name string, options v1.GetOptions) (result *v1alpha1.LbOutboundRule, err error) {
 	result = &v1alpha1.LbOutboundRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lboutboundrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lbOutboundRules) List(opts v1.ListOptions) (result *v1alpha1.LbOutbound
 	}
 	result = &v1alpha1.LbOutboundRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lboutboundrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lbOutboundRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lboutboundrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lbOutboundRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *lbOutboundRules) Create(lbOutboundRule *v1alpha1.LbOutboundRule) (result *v1alpha1.LbOutboundRule, err error) {
 	result = &v1alpha1.LbOutboundRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lboutboundrules").
 		Body(lbOutboundRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *lbOutboundRules) Create(lbOutboundRule *v1alpha1.LbOutboundRule) (resul
 func (c *lbOutboundRules) Update(lbOutboundRule *v1alpha1.LbOutboundRule) (result *v1alpha1.LbOutboundRule, err error) {
 	result = &v1alpha1.LbOutboundRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lboutboundrules").
 		Name(lbOutboundRule.Name).
 		Body(lbOutboundRule).
@@ -132,6 +139,7 @@ func (c *lbOutboundRules) Update(lbOutboundRule *v1alpha1.LbOutboundRule) (resul
 func (c *lbOutboundRules) UpdateStatus(lbOutboundRule *v1alpha1.LbOutboundRule) (result *v1alpha1.LbOutboundRule, err error) {
 	result = &v1alpha1.LbOutboundRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lboutboundrules").
 		Name(lbOutboundRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lbOutboundRules) UpdateStatus(lbOutboundRule *v1alpha1.LbOutboundRule) 
 // Delete takes name of the lbOutboundRule and deletes it. Returns an error if one occurs.
 func (c *lbOutboundRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lboutboundrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lbOutboundRules) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lboutboundrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lbOutboundRules) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *lbOutboundRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbOutboundRule, err error) {
 	result = &v1alpha1.LbOutboundRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lboutboundrules").
 		SubResource(subresources...).
 		Name(name).

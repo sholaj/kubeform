@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// LbNatPoolsGetter has a method to return a LbNatPoolInterface.
+// LbNATPoolsGetter has a method to return a LbNATPoolInterface.
 // A group's client should implement this interface.
-type LbNatPoolsGetter interface {
-	LbNatPools() LbNatPoolInterface
+type LbNATPoolsGetter interface {
+	LbNATPools(namespace string) LbNATPoolInterface
 }
 
-// LbNatPoolInterface has methods to work with LbNatPool resources.
-type LbNatPoolInterface interface {
-	Create(*v1alpha1.LbNatPool) (*v1alpha1.LbNatPool, error)
-	Update(*v1alpha1.LbNatPool) (*v1alpha1.LbNatPool, error)
-	UpdateStatus(*v1alpha1.LbNatPool) (*v1alpha1.LbNatPool, error)
+// LbNATPoolInterface has methods to work with LbNATPool resources.
+type LbNATPoolInterface interface {
+	Create(*v1alpha1.LbNATPool) (*v1alpha1.LbNATPool, error)
+	Update(*v1alpha1.LbNATPool) (*v1alpha1.LbNATPool, error)
+	UpdateStatus(*v1alpha1.LbNATPool) (*v1alpha1.LbNATPool, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.LbNatPool, error)
-	List(opts v1.ListOptions) (*v1alpha1.LbNatPoolList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.LbNATPool, error)
+	List(opts v1.ListOptions) (*v1alpha1.LbNATPoolList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbNatPool, err error)
-	LbNatPoolExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbNATPool, err error)
+	LbNATPoolExpansion
 }
 
-// lbNatPools implements LbNatPoolInterface
-type lbNatPools struct {
+// lbNATPools implements LbNATPoolInterface
+type lbNATPools struct {
 	client rest.Interface
+	ns     string
 }
 
-// newLbNatPools returns a LbNatPools
-func newLbNatPools(c *AzurermV1alpha1Client) *lbNatPools {
-	return &lbNatPools{
+// newLbNATPools returns a LbNATPools
+func newLbNATPools(c *AzurermV1alpha1Client, namespace string) *lbNATPools {
+	return &lbNATPools{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the lbNatPool, and returns the corresponding lbNatPool object, and an error if there is any.
-func (c *lbNatPools) Get(name string, options v1.GetOptions) (result *v1alpha1.LbNatPool, err error) {
-	result = &v1alpha1.LbNatPool{}
+// Get takes name of the lbNATPool, and returns the corresponding lbNATPool object, and an error if there is any.
+func (c *lbNATPools) Get(name string, options v1.GetOptions) (result *v1alpha1.LbNATPool, err error) {
+	result = &v1alpha1.LbNATPool{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lbnatpools").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *lbNatPools) Get(name string, options v1.GetOptions) (result *v1alpha1.L
 	return
 }
 
-// List takes label and field selectors, and returns the list of LbNatPools that match those selectors.
-func (c *lbNatPools) List(opts v1.ListOptions) (result *v1alpha1.LbNatPoolList, err error) {
+// List takes label and field selectors, and returns the list of LbNATPools that match those selectors.
+func (c *lbNATPools) List(opts v1.ListOptions) (result *v1alpha1.LbNATPoolList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.LbNatPoolList{}
+	result = &v1alpha1.LbNATPoolList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lbnatpools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *lbNatPools) List(opts v1.ListOptions) (result *v1alpha1.LbNatPoolList, 
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested lbNatPools.
-func (c *lbNatPools) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested lbNATPools.
+func (c *lbNATPools) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lbnatpools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a lbNatPool and creates it.  Returns the server's representation of the lbNatPool, and an error, if there is any.
-func (c *lbNatPools) Create(lbNatPool *v1alpha1.LbNatPool) (result *v1alpha1.LbNatPool, err error) {
-	result = &v1alpha1.LbNatPool{}
+// Create takes the representation of a lbNATPool and creates it.  Returns the server's representation of the lbNATPool, and an error, if there is any.
+func (c *lbNATPools) Create(lbNATPool *v1alpha1.LbNATPool) (result *v1alpha1.LbNATPool, err error) {
+	result = &v1alpha1.LbNATPool{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lbnatpools").
-		Body(lbNatPool).
+		Body(lbNATPool).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a lbNatPool and updates it. Returns the server's representation of the lbNatPool, and an error, if there is any.
-func (c *lbNatPools) Update(lbNatPool *v1alpha1.LbNatPool) (result *v1alpha1.LbNatPool, err error) {
-	result = &v1alpha1.LbNatPool{}
+// Update takes the representation of a lbNATPool and updates it. Returns the server's representation of the lbNATPool, and an error, if there is any.
+func (c *lbNATPools) Update(lbNATPool *v1alpha1.LbNATPool) (result *v1alpha1.LbNATPool, err error) {
+	result = &v1alpha1.LbNATPool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lbnatpools").
-		Name(lbNatPool.Name).
-		Body(lbNatPool).
+		Name(lbNATPool.Name).
+		Body(lbNATPool).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *lbNatPools) Update(lbNatPool *v1alpha1.LbNatPool) (result *v1alpha1.LbN
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *lbNatPools) UpdateStatus(lbNatPool *v1alpha1.LbNatPool) (result *v1alpha1.LbNatPool, err error) {
-	result = &v1alpha1.LbNatPool{}
+func (c *lbNATPools) UpdateStatus(lbNATPool *v1alpha1.LbNATPool) (result *v1alpha1.LbNATPool, err error) {
+	result = &v1alpha1.LbNATPool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lbnatpools").
-		Name(lbNatPool.Name).
+		Name(lbNATPool.Name).
 		SubResource("status").
-		Body(lbNatPool).
+		Body(lbNATPool).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the lbNatPool and deletes it. Returns an error if one occurs.
-func (c *lbNatPools) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the lbNATPool and deletes it. Returns an error if one occurs.
+func (c *lbNATPools) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lbnatpools").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *lbNatPools) Delete(name string, options *v1.DeleteOptions) error {
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *lbNatPools) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *lbNATPools) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lbnatpools").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *lbNatPools) DeleteCollection(options *v1.DeleteOptions, listOptions v1.
 		Error()
 }
 
-// Patch applies the patch and returns the patched lbNatPool.
-func (c *lbNatPools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbNatPool, err error) {
-	result = &v1alpha1.LbNatPool{}
+// Patch applies the patch and returns the patched lbNATPool.
+func (c *lbNATPools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbNATPool, err error) {
+	result = &v1alpha1.LbNATPool{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lbnatpools").
 		SubResource(subresources...).
 		Name(name).

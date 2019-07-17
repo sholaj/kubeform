@@ -29,8 +29,8 @@ import (
 type SchedulerJobCollectionLister interface {
 	// List lists all SchedulerJobCollections in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SchedulerJobCollection, err error)
-	// Get retrieves the SchedulerJobCollection from the index for a given name.
-	Get(name string) (*v1alpha1.SchedulerJobCollection, error)
+	// SchedulerJobCollections returns an object that can list and get SchedulerJobCollections.
+	SchedulerJobCollections(namespace string) SchedulerJobCollectionNamespaceLister
 	SchedulerJobCollectionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *schedulerJobCollectionLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the SchedulerJobCollection from the index for a given name.
-func (s *schedulerJobCollectionLister) Get(name string) (*v1alpha1.SchedulerJobCollection, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SchedulerJobCollections returns an object that can list and get SchedulerJobCollections.
+func (s *schedulerJobCollectionLister) SchedulerJobCollections(namespace string) SchedulerJobCollectionNamespaceLister {
+	return schedulerJobCollectionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SchedulerJobCollectionNamespaceLister helps list and get SchedulerJobCollections.
+type SchedulerJobCollectionNamespaceLister interface {
+	// List lists all SchedulerJobCollections in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SchedulerJobCollection, err error)
+	// Get retrieves the SchedulerJobCollection from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SchedulerJobCollection, error)
+	SchedulerJobCollectionNamespaceListerExpansion
+}
+
+// schedulerJobCollectionNamespaceLister implements the SchedulerJobCollectionNamespaceLister
+// interface.
+type schedulerJobCollectionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SchedulerJobCollections in the indexer for a given namespace.
+func (s schedulerJobCollectionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SchedulerJobCollection, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SchedulerJobCollection))
+	})
+	return ret, err
+}
+
+// Get retrieves the SchedulerJobCollection from the indexer for a given namespace and name.
+func (s schedulerJobCollectionNamespaceLister) Get(name string) (*v1alpha1.SchedulerJobCollection, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

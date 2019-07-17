@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/azurerm/v1alpha1"
 )
 
-// DataFactoryLinkedServiceSqlServerInformer provides access to a shared informer and lister for
-// DataFactoryLinkedServiceSqlServers.
-type DataFactoryLinkedServiceSqlServerInformer interface {
+// DataFactoryLinkedServiceSQLServerInformer provides access to a shared informer and lister for
+// DataFactoryLinkedServiceSQLServers.
+type DataFactoryLinkedServiceSQLServerInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.DataFactoryLinkedServiceSqlServerLister
+	Lister() v1alpha1.DataFactoryLinkedServiceSQLServerLister
 }
 
-type dataFactoryLinkedServiceSqlServerInformer struct {
+type dataFactoryLinkedServiceSQLServerInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewDataFactoryLinkedServiceSqlServerInformer constructs a new informer for DataFactoryLinkedServiceSqlServer type.
+// NewDataFactoryLinkedServiceSQLServerInformer constructs a new informer for DataFactoryLinkedServiceSQLServer type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDataFactoryLinkedServiceSqlServerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDataFactoryLinkedServiceSqlServerInformer(client, resyncPeriod, indexers, nil)
+func NewDataFactoryLinkedServiceSQLServerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDataFactoryLinkedServiceSQLServerInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredDataFactoryLinkedServiceSqlServerInformer constructs a new informer for DataFactoryLinkedServiceSqlServer type.
+// NewFilteredDataFactoryLinkedServiceSQLServerInformer constructs a new informer for DataFactoryLinkedServiceSQLServer type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDataFactoryLinkedServiceSqlServerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDataFactoryLinkedServiceSQLServerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DataFactoryLinkedServiceSqlServers().List(options)
+				return client.AzurermV1alpha1().DataFactoryLinkedServiceSQLServers(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DataFactoryLinkedServiceSqlServers().Watch(options)
+				return client.AzurermV1alpha1().DataFactoryLinkedServiceSQLServers(namespace).Watch(options)
 			},
 		},
-		&azurermv1alpha1.DataFactoryLinkedServiceSqlServer{},
+		&azurermv1alpha1.DataFactoryLinkedServiceSQLServer{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *dataFactoryLinkedServiceSqlServerInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDataFactoryLinkedServiceSqlServerInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *dataFactoryLinkedServiceSQLServerInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredDataFactoryLinkedServiceSQLServerInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *dataFactoryLinkedServiceSqlServerInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&azurermv1alpha1.DataFactoryLinkedServiceSqlServer{}, f.defaultInformer)
+func (f *dataFactoryLinkedServiceSQLServerInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&azurermv1alpha1.DataFactoryLinkedServiceSQLServer{}, f.defaultInformer)
 }
 
-func (f *dataFactoryLinkedServiceSqlServerInformer) Lister() v1alpha1.DataFactoryLinkedServiceSqlServerLister {
-	return v1alpha1.NewDataFactoryLinkedServiceSqlServerLister(f.Informer().GetIndexer())
+func (f *dataFactoryLinkedServiceSQLServerInformer) Lister() v1alpha1.DataFactoryLinkedServiceSQLServerLister {
+	return v1alpha1.NewDataFactoryLinkedServiceSQLServerLister(f.Informer().GetIndexer())
 }

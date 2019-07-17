@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,32 +19,33 @@ type DataFactory struct {
 }
 
 type DataFactorySpecGithubConfiguration struct {
-	AccountName    string `json:"account_name"`
-	BranchName     string `json:"branch_name"`
-	GitUrl         string `json:"git_url"`
-	RepositoryName string `json:"repository_name"`
-	RootFolder     string `json:"root_folder"`
+	AccountName    string `json:"accountName" tf:"account_name"`
+	BranchName     string `json:"branchName" tf:"branch_name"`
+	GitURL         string `json:"gitURL" tf:"git_url"`
+	RepositoryName string `json:"repositoryName" tf:"repository_name"`
+	RootFolder     string `json:"rootFolder" tf:"root_folder"`
 }
 
 type DataFactorySpecVstsConfiguration struct {
-	AccountName    string `json:"account_name"`
-	BranchName     string `json:"branch_name"`
-	ProjectName    string `json:"project_name"`
-	RepositoryName string `json:"repository_name"`
-	RootFolder     string `json:"root_folder"`
-	TenantId       string `json:"tenant_id"`
+	AccountName    string `json:"accountName" tf:"account_name"`
+	BranchName     string `json:"branchName" tf:"branch_name"`
+	ProjectName    string `json:"projectName" tf:"project_name"`
+	RepositoryName string `json:"repositoryName" tf:"repository_name"`
+	RootFolder     string `json:"rootFolder" tf:"root_folder"`
+	TenantID       string `json:"tenantID" tf:"tenant_id"`
 }
 
 type DataFactorySpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	GithubConfiguration *[]DataFactorySpec `json:"github_configuration,omitempty"`
-	Location            string             `json:"location"`
-	Name                string             `json:"name"`
-	ResourceGroupName   string             `json:"resource_group_name"`
+	GithubConfiguration []DataFactorySpecGithubConfiguration `json:"githubConfiguration,omitempty" tf:"github_configuration,omitempty"`
+	Location            string                               `json:"location" tf:"location"`
+	Name                string                               `json:"name" tf:"name"`
+	ResourceGroupName   string                               `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	VstsConfiguration *[]DataFactorySpec `json:"vsts_configuration,omitempty"`
+	VstsConfiguration []DataFactorySpecVstsConfiguration `json:"vstsConfiguration,omitempty" tf:"vsts_configuration,omitempty"`
+	ProviderRef       core.LocalObjectReference          `json:"providerRef" tf:"-"`
 }
 
 type DataFactoryStatus struct {
@@ -52,7 +53,9 @@ type DataFactoryStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

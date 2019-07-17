@@ -29,8 +29,8 @@ import (
 type LbListenerLister interface {
 	// List lists all LbListeners in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LbListener, err error)
-	// Get retrieves the LbListener from the index for a given name.
-	Get(name string) (*v1alpha1.LbListener, error)
+	// LbListeners returns an object that can list and get LbListeners.
+	LbListeners(namespace string) LbListenerNamespaceLister
 	LbListenerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *lbListenerLister) List(selector labels.Selector) (ret []*v1alpha1.LbLis
 	return ret, err
 }
 
-// Get retrieves the LbListener from the index for a given name.
-func (s *lbListenerLister) Get(name string) (*v1alpha1.LbListener, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LbListeners returns an object that can list and get LbListeners.
+func (s *lbListenerLister) LbListeners(namespace string) LbListenerNamespaceLister {
+	return lbListenerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LbListenerNamespaceLister helps list and get LbListeners.
+type LbListenerNamespaceLister interface {
+	// List lists all LbListeners in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LbListener, err error)
+	// Get retrieves the LbListener from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LbListener, error)
+	LbListenerNamespaceListerExpansion
+}
+
+// lbListenerNamespaceLister implements the LbListenerNamespaceLister
+// interface.
+type lbListenerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LbListeners in the indexer for a given namespace.
+func (s lbListenerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LbListener, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LbListener))
+	})
+	return ret, err
+}
+
+// Get retrieves the LbListener from the indexer for a given namespace and name.
+func (s lbListenerNamespaceLister) Get(name string) (*v1alpha1.LbListener, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

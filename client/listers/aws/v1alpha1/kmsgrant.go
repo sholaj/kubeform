@@ -29,8 +29,8 @@ import (
 type KmsGrantLister interface {
 	// List lists all KmsGrants in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KmsGrant, err error)
-	// Get retrieves the KmsGrant from the index for a given name.
-	Get(name string) (*v1alpha1.KmsGrant, error)
+	// KmsGrants returns an object that can list and get KmsGrants.
+	KmsGrants(namespace string) KmsGrantNamespaceLister
 	KmsGrantListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *kmsGrantLister) List(selector labels.Selector) (ret []*v1alpha1.KmsGran
 	return ret, err
 }
 
-// Get retrieves the KmsGrant from the index for a given name.
-func (s *kmsGrantLister) Get(name string) (*v1alpha1.KmsGrant, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KmsGrants returns an object that can list and get KmsGrants.
+func (s *kmsGrantLister) KmsGrants(namespace string) KmsGrantNamespaceLister {
+	return kmsGrantNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KmsGrantNamespaceLister helps list and get KmsGrants.
+type KmsGrantNamespaceLister interface {
+	// List lists all KmsGrants in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KmsGrant, err error)
+	// Get retrieves the KmsGrant from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KmsGrant, error)
+	KmsGrantNamespaceListerExpansion
+}
+
+// kmsGrantNamespaceLister implements the KmsGrantNamespaceLister
+// interface.
+type kmsGrantNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KmsGrants in the indexer for a given namespace.
+func (s kmsGrantNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KmsGrant, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KmsGrant))
+	})
+	return ret, err
+}
+
+// Get retrieves the KmsGrant from the indexer for a given namespace and name.
+func (s kmsGrantNamespaceLister) Get(name string) (*v1alpha1.KmsGrant, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

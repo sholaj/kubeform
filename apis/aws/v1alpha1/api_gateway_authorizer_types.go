@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,22 +20,23 @@ type ApiGatewayAuthorizer struct {
 
 type ApiGatewayAuthorizerSpec struct {
 	// +optional
-	AuthorizerCredentials string `json:"authorizer_credentials,omitempty"`
+	AuthorizerCredentials string `json:"authorizerCredentials,omitempty" tf:"authorizer_credentials,omitempty"`
 	// +optional
-	AuthorizerResultTtlInSeconds int `json:"authorizer_result_ttl_in_seconds,omitempty"`
+	AuthorizerResultTtlInSeconds int `json:"authorizerResultTtlInSeconds,omitempty" tf:"authorizer_result_ttl_in_seconds,omitempty"`
 	// +optional
-	AuthorizerUri string `json:"authorizer_uri,omitempty"`
+	AuthorizerURI string `json:"authorizerURI,omitempty" tf:"authorizer_uri,omitempty"`
 	// +optional
-	IdentitySource string `json:"identity_source,omitempty"`
+	IdentitySource string `json:"identitySource,omitempty" tf:"identity_source,omitempty"`
 	// +optional
-	IdentityValidationExpression string `json:"identity_validation_expression,omitempty"`
-	Name                         string `json:"name"`
+	IdentityValidationExpression string `json:"identityValidationExpression,omitempty" tf:"identity_validation_expression,omitempty"`
+	Name                         string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	ProviderArns []string `json:"provider_arns,omitempty"`
-	RestApiId    string   `json:"rest_api_id"`
+	ProviderArns []string `json:"providerArns,omitempty" tf:"provider_arns,omitempty"`
+	RestAPIID    string   `json:"restAPIID" tf:"rest_api_id"`
 	// +optional
-	Type string `json:"type,omitempty"`
+	Type        string                    `json:"type,omitempty" tf:"type,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ApiGatewayAuthorizerStatus struct {
@@ -43,7 +44,9 @@ type ApiGatewayAuthorizerStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -31,6 +31,7 @@ import (
 // FakeAthenaNamedQueries implements AthenaNamedQueryInterface
 type FakeAthenaNamedQueries struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var athenanamedqueriesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "athenanamedqueries"}
@@ -40,7 +41,8 @@ var athenanamedqueriesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", 
 // Get takes name of the athenaNamedQuery, and returns the corresponding athenaNamedQuery object, and an error if there is any.
 func (c *FakeAthenaNamedQueries) Get(name string, options v1.GetOptions) (result *v1alpha1.AthenaNamedQuery, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(athenanamedqueriesResource, name), &v1alpha1.AthenaNamedQuery{})
+		Invokes(testing.NewGetAction(athenanamedqueriesResource, c.ns, name), &v1alpha1.AthenaNamedQuery{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAthenaNamedQueries) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of AthenaNamedQueries that match those selectors.
 func (c *FakeAthenaNamedQueries) List(opts v1.ListOptions) (result *v1alpha1.AthenaNamedQueryList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(athenanamedqueriesResource, athenanamedqueriesKind, opts), &v1alpha1.AthenaNamedQueryList{})
+		Invokes(testing.NewListAction(athenanamedqueriesResource, athenanamedqueriesKind, c.ns, opts), &v1alpha1.AthenaNamedQueryList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAthenaNamedQueries) List(opts v1.ListOptions) (result *v1alpha1.Ath
 // Watch returns a watch.Interface that watches the requested athenaNamedQueries.
 func (c *FakeAthenaNamedQueries) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(athenanamedqueriesResource, opts))
+		InvokesWatch(testing.NewWatchAction(athenanamedqueriesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a athenaNamedQuery and creates it.  Returns the server's representation of the athenaNamedQuery, and an error, if there is any.
 func (c *FakeAthenaNamedQueries) Create(athenaNamedQuery *v1alpha1.AthenaNamedQuery) (result *v1alpha1.AthenaNamedQuery, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(athenanamedqueriesResource, athenaNamedQuery), &v1alpha1.AthenaNamedQuery{})
+		Invokes(testing.NewCreateAction(athenanamedqueriesResource, c.ns, athenaNamedQuery), &v1alpha1.AthenaNamedQuery{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAthenaNamedQueries) Create(athenaNamedQuery *v1alpha1.AthenaNamedQu
 // Update takes the representation of a athenaNamedQuery and updates it. Returns the server's representation of the athenaNamedQuery, and an error, if there is any.
 func (c *FakeAthenaNamedQueries) Update(athenaNamedQuery *v1alpha1.AthenaNamedQuery) (result *v1alpha1.AthenaNamedQuery, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(athenanamedqueriesResource, athenaNamedQuery), &v1alpha1.AthenaNamedQuery{})
+		Invokes(testing.NewUpdateAction(athenanamedqueriesResource, c.ns, athenaNamedQuery), &v1alpha1.AthenaNamedQuery{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAthenaNamedQueries) Update(athenaNamedQuery *v1alpha1.AthenaNamedQu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAthenaNamedQueries) UpdateStatus(athenaNamedQuery *v1alpha1.AthenaNamedQuery) (*v1alpha1.AthenaNamedQuery, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(athenanamedqueriesResource, "status", athenaNamedQuery), &v1alpha1.AthenaNamedQuery{})
+		Invokes(testing.NewUpdateSubresourceAction(athenanamedqueriesResource, "status", c.ns, athenaNamedQuery), &v1alpha1.AthenaNamedQuery{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAthenaNamedQueries) UpdateStatus(athenaNamedQuery *v1alpha1.AthenaN
 // Delete takes name of the athenaNamedQuery and deletes it. Returns an error if one occurs.
 func (c *FakeAthenaNamedQueries) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(athenanamedqueriesResource, name), &v1alpha1.AthenaNamedQuery{})
+		Invokes(testing.NewDeleteAction(athenanamedqueriesResource, c.ns, name), &v1alpha1.AthenaNamedQuery{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAthenaNamedQueries) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(athenanamedqueriesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(athenanamedqueriesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AthenaNamedQueryList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAthenaNamedQueries) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched athenaNamedQuery.
 func (c *FakeAthenaNamedQueries) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AthenaNamedQuery, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(athenanamedqueriesResource, name, pt, data, subresources...), &v1alpha1.AthenaNamedQuery{})
+		Invokes(testing.NewPatchSubresourceAction(athenanamedqueriesResource, c.ns, name, pt, data, subresources...), &v1alpha1.AthenaNamedQuery{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeAcmpcaCertificateAuthorities implements AcmpcaCertificateAuthorityInterface
 type FakeAcmpcaCertificateAuthorities struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var acmpcacertificateauthoritiesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "acmpcacertificateauthorities"}
@@ -40,7 +41,8 @@ var acmpcacertificateauthoritiesKind = schema.GroupVersionKind{Group: "aws.kubef
 // Get takes name of the acmpcaCertificateAuthority, and returns the corresponding acmpcaCertificateAuthority object, and an error if there is any.
 func (c *FakeAcmpcaCertificateAuthorities) Get(name string, options v1.GetOptions) (result *v1alpha1.AcmpcaCertificateAuthority, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(acmpcacertificateauthoritiesResource, name), &v1alpha1.AcmpcaCertificateAuthority{})
+		Invokes(testing.NewGetAction(acmpcacertificateauthoritiesResource, c.ns, name), &v1alpha1.AcmpcaCertificateAuthority{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAcmpcaCertificateAuthorities) Get(name string, options v1.GetOption
 // List takes label and field selectors, and returns the list of AcmpcaCertificateAuthorities that match those selectors.
 func (c *FakeAcmpcaCertificateAuthorities) List(opts v1.ListOptions) (result *v1alpha1.AcmpcaCertificateAuthorityList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(acmpcacertificateauthoritiesResource, acmpcacertificateauthoritiesKind, opts), &v1alpha1.AcmpcaCertificateAuthorityList{})
+		Invokes(testing.NewListAction(acmpcacertificateauthoritiesResource, acmpcacertificateauthoritiesKind, c.ns, opts), &v1alpha1.AcmpcaCertificateAuthorityList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAcmpcaCertificateAuthorities) List(opts v1.ListOptions) (result *v1
 // Watch returns a watch.Interface that watches the requested acmpcaCertificateAuthorities.
 func (c *FakeAcmpcaCertificateAuthorities) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(acmpcacertificateauthoritiesResource, opts))
+		InvokesWatch(testing.NewWatchAction(acmpcacertificateauthoritiesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a acmpcaCertificateAuthority and creates it.  Returns the server's representation of the acmpcaCertificateAuthority, and an error, if there is any.
 func (c *FakeAcmpcaCertificateAuthorities) Create(acmpcaCertificateAuthority *v1alpha1.AcmpcaCertificateAuthority) (result *v1alpha1.AcmpcaCertificateAuthority, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(acmpcacertificateauthoritiesResource, acmpcaCertificateAuthority), &v1alpha1.AcmpcaCertificateAuthority{})
+		Invokes(testing.NewCreateAction(acmpcacertificateauthoritiesResource, c.ns, acmpcaCertificateAuthority), &v1alpha1.AcmpcaCertificateAuthority{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAcmpcaCertificateAuthorities) Create(acmpcaCertificateAuthority *v1
 // Update takes the representation of a acmpcaCertificateAuthority and updates it. Returns the server's representation of the acmpcaCertificateAuthority, and an error, if there is any.
 func (c *FakeAcmpcaCertificateAuthorities) Update(acmpcaCertificateAuthority *v1alpha1.AcmpcaCertificateAuthority) (result *v1alpha1.AcmpcaCertificateAuthority, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(acmpcacertificateauthoritiesResource, acmpcaCertificateAuthority), &v1alpha1.AcmpcaCertificateAuthority{})
+		Invokes(testing.NewUpdateAction(acmpcacertificateauthoritiesResource, c.ns, acmpcaCertificateAuthority), &v1alpha1.AcmpcaCertificateAuthority{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAcmpcaCertificateAuthorities) Update(acmpcaCertificateAuthority *v1
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAcmpcaCertificateAuthorities) UpdateStatus(acmpcaCertificateAuthority *v1alpha1.AcmpcaCertificateAuthority) (*v1alpha1.AcmpcaCertificateAuthority, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(acmpcacertificateauthoritiesResource, "status", acmpcaCertificateAuthority), &v1alpha1.AcmpcaCertificateAuthority{})
+		Invokes(testing.NewUpdateSubresourceAction(acmpcacertificateauthoritiesResource, "status", c.ns, acmpcaCertificateAuthority), &v1alpha1.AcmpcaCertificateAuthority{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAcmpcaCertificateAuthorities) UpdateStatus(acmpcaCertificateAuthori
 // Delete takes name of the acmpcaCertificateAuthority and deletes it. Returns an error if one occurs.
 func (c *FakeAcmpcaCertificateAuthorities) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(acmpcacertificateauthoritiesResource, name), &v1alpha1.AcmpcaCertificateAuthority{})
+		Invokes(testing.NewDeleteAction(acmpcacertificateauthoritiesResource, c.ns, name), &v1alpha1.AcmpcaCertificateAuthority{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAcmpcaCertificateAuthorities) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(acmpcacertificateauthoritiesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(acmpcacertificateauthoritiesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AcmpcaCertificateAuthorityList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAcmpcaCertificateAuthorities) DeleteCollection(options *v1.DeleteOp
 // Patch applies the patch and returns the patched acmpcaCertificateAuthority.
 func (c *FakeAcmpcaCertificateAuthorities) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AcmpcaCertificateAuthority, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(acmpcacertificateauthoritiesResource, name, pt, data, subresources...), &v1alpha1.AcmpcaCertificateAuthority{})
+		Invokes(testing.NewPatchSubresourceAction(acmpcacertificateauthoritiesResource, c.ns, name, pt, data, subresources...), &v1alpha1.AcmpcaCertificateAuthority{})
+
 	if obj == nil {
 		return nil, err
 	}

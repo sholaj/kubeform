@@ -41,32 +41,33 @@ type SpannerInstanceIamBindingInformer interface {
 type spannerInstanceIamBindingInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSpannerInstanceIamBindingInformer constructs a new informer for SpannerInstanceIamBinding type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSpannerInstanceIamBindingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSpannerInstanceIamBindingInformer(client, resyncPeriod, indexers, nil)
+func NewSpannerInstanceIamBindingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSpannerInstanceIamBindingInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSpannerInstanceIamBindingInformer constructs a new informer for SpannerInstanceIamBinding type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSpannerInstanceIamBindingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSpannerInstanceIamBindingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().SpannerInstanceIamBindings().List(options)
+				return client.GoogleV1alpha1().SpannerInstanceIamBindings(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().SpannerInstanceIamBindings().Watch(options)
+				return client.GoogleV1alpha1().SpannerInstanceIamBindings(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.SpannerInstanceIamBinding{},
@@ -76,7 +77,7 @@ func NewFilteredSpannerInstanceIamBindingInformer(client versioned.Interface, re
 }
 
 func (f *spannerInstanceIamBindingInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSpannerInstanceIamBindingInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSpannerInstanceIamBindingInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *spannerInstanceIamBindingInformer) Informer() cache.SharedIndexInformer {

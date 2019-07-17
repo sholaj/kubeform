@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,12 +19,13 @@ type PinpointEmailChannel struct {
 }
 
 type PinpointEmailChannelSpec struct {
-	ApplicationId string `json:"application_id"`
+	ApplicationID string `json:"applicationID" tf:"application_id"`
 	// +optional
-	Enabled     bool   `json:"enabled,omitempty"`
-	FromAddress string `json:"from_address"`
-	Identity    string `json:"identity"`
-	RoleArn     string `json:"role_arn"`
+	Enabled     bool                      `json:"enabled,omitempty" tf:"enabled,omitempty"`
+	FromAddress string                    `json:"fromAddress" tf:"from_address"`
+	Identity    string                    `json:"identity" tf:"identity"`
+	RoleArn     string                    `json:"roleArn" tf:"role_arn"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type PinpointEmailChannelStatus struct {
@@ -32,7 +33,9 @@ type PinpointEmailChannelStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

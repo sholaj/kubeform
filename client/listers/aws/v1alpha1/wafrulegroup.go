@@ -29,8 +29,8 @@ import (
 type WafRuleGroupLister interface {
 	// List lists all WafRuleGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.WafRuleGroup, err error)
-	// Get retrieves the WafRuleGroup from the index for a given name.
-	Get(name string) (*v1alpha1.WafRuleGroup, error)
+	// WafRuleGroups returns an object that can list and get WafRuleGroups.
+	WafRuleGroups(namespace string) WafRuleGroupNamespaceLister
 	WafRuleGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *wafRuleGroupLister) List(selector labels.Selector) (ret []*v1alpha1.Waf
 	return ret, err
 }
 
-// Get retrieves the WafRuleGroup from the index for a given name.
-func (s *wafRuleGroupLister) Get(name string) (*v1alpha1.WafRuleGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafRuleGroups returns an object that can list and get WafRuleGroups.
+func (s *wafRuleGroupLister) WafRuleGroups(namespace string) WafRuleGroupNamespaceLister {
+	return wafRuleGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafRuleGroupNamespaceLister helps list and get WafRuleGroups.
+type WafRuleGroupNamespaceLister interface {
+	// List lists all WafRuleGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafRuleGroup, err error)
+	// Get retrieves the WafRuleGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafRuleGroup, error)
+	WafRuleGroupNamespaceListerExpansion
+}
+
+// wafRuleGroupNamespaceLister implements the WafRuleGroupNamespaceLister
+// interface.
+type wafRuleGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafRuleGroups in the indexer for a given namespace.
+func (s wafRuleGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafRuleGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafRuleGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafRuleGroup from the indexer for a given namespace and name.
+func (s wafRuleGroupNamespaceLister) Get(name string) (*v1alpha1.WafRuleGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

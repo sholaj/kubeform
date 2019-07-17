@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,20 +19,21 @@ type LogAnalyticsSolution struct {
 }
 
 type LogAnalyticsSolutionSpecPlan struct {
-	Product string `json:"product"`
+	Product string `json:"product" tf:"product"`
 	// +optional
-	PromotionCode string `json:"promotion_code,omitempty"`
-	Publisher     string `json:"publisher"`
+	PromotionCode string `json:"promotionCode,omitempty" tf:"promotion_code,omitempty"`
+	Publisher     string `json:"publisher" tf:"publisher"`
 }
 
 type LogAnalyticsSolutionSpec struct {
-	Location string `json:"location"`
+	Location string `json:"location" tf:"location"`
 	// +kubebuilder:validation:MaxItems=1
-	Plan                []LogAnalyticsSolutionSpec `json:"plan"`
-	ResourceGroupName   string                     `json:"resource_group_name"`
-	SolutionName        string                     `json:"solution_name"`
-	WorkspaceName       string                     `json:"workspace_name"`
-	WorkspaceResourceId string                     `json:"workspace_resource_id"`
+	Plan                []LogAnalyticsSolutionSpecPlan `json:"plan" tf:"plan"`
+	ResourceGroupName   string                         `json:"resourceGroupName" tf:"resource_group_name"`
+	SolutionName        string                         `json:"solutionName" tf:"solution_name"`
+	WorkspaceName       string                         `json:"workspaceName" tf:"workspace_name"`
+	WorkspaceResourceID string                         `json:"workspaceResourceID" tf:"workspace_resource_id"`
+	ProviderRef         core.LocalObjectReference      `json:"providerRef" tf:"-"`
 }
 
 type LogAnalyticsSolutionStatus struct {
@@ -40,7 +41,9 @@ type LogAnalyticsSolutionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

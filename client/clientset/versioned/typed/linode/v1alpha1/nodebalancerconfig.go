@@ -32,7 +32,7 @@ import (
 // NodebalancerConfigsGetter has a method to return a NodebalancerConfigInterface.
 // A group's client should implement this interface.
 type NodebalancerConfigsGetter interface {
-	NodebalancerConfigs() NodebalancerConfigInterface
+	NodebalancerConfigs(namespace string) NodebalancerConfigInterface
 }
 
 // NodebalancerConfigInterface has methods to work with NodebalancerConfig resources.
@@ -52,12 +52,14 @@ type NodebalancerConfigInterface interface {
 // nodebalancerConfigs implements NodebalancerConfigInterface
 type nodebalancerConfigs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNodebalancerConfigs returns a NodebalancerConfigs
-func newNodebalancerConfigs(c *LinodeV1alpha1Client) *nodebalancerConfigs {
+func newNodebalancerConfigs(c *LinodeV1alpha1Client, namespace string) *nodebalancerConfigs {
 	return &nodebalancerConfigs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNodebalancerConfigs(c *LinodeV1alpha1Client) *nodebalancerConfigs {
 func (c *nodebalancerConfigs) Get(name string, options v1.GetOptions) (result *v1alpha1.NodebalancerConfig, err error) {
 	result = &v1alpha1.NodebalancerConfig{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("nodebalancerconfigs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *nodebalancerConfigs) List(opts v1.ListOptions) (result *v1alpha1.Nodeba
 	}
 	result = &v1alpha1.NodebalancerConfigList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("nodebalancerconfigs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *nodebalancerConfigs) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("nodebalancerconfigs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *nodebalancerConfigs) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *nodebalancerConfigs) Create(nodebalancerConfig *v1alpha1.NodebalancerConfig) (result *v1alpha1.NodebalancerConfig, err error) {
 	result = &v1alpha1.NodebalancerConfig{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("nodebalancerconfigs").
 		Body(nodebalancerConfig).
 		Do().
@@ -118,6 +124,7 @@ func (c *nodebalancerConfigs) Create(nodebalancerConfig *v1alpha1.NodebalancerCo
 func (c *nodebalancerConfigs) Update(nodebalancerConfig *v1alpha1.NodebalancerConfig) (result *v1alpha1.NodebalancerConfig, err error) {
 	result = &v1alpha1.NodebalancerConfig{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("nodebalancerconfigs").
 		Name(nodebalancerConfig.Name).
 		Body(nodebalancerConfig).
@@ -132,6 +139,7 @@ func (c *nodebalancerConfigs) Update(nodebalancerConfig *v1alpha1.NodebalancerCo
 func (c *nodebalancerConfigs) UpdateStatus(nodebalancerConfig *v1alpha1.NodebalancerConfig) (result *v1alpha1.NodebalancerConfig, err error) {
 	result = &v1alpha1.NodebalancerConfig{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("nodebalancerconfigs").
 		Name(nodebalancerConfig.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *nodebalancerConfigs) UpdateStatus(nodebalancerConfig *v1alpha1.Nodebala
 // Delete takes name of the nodebalancerConfig and deletes it. Returns an error if one occurs.
 func (c *nodebalancerConfigs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("nodebalancerconfigs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *nodebalancerConfigs) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("nodebalancerconfigs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *nodebalancerConfigs) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *nodebalancerConfigs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NodebalancerConfig, err error) {
 	result = &v1alpha1.NodebalancerConfig{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("nodebalancerconfigs").
 		SubResource(subresources...).
 		Name(name).

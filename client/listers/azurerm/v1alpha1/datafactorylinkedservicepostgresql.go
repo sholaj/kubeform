@@ -29,8 +29,8 @@ import (
 type DataFactoryLinkedServicePostgresqlLister interface {
 	// List lists all DataFactoryLinkedServicePostgresqls in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DataFactoryLinkedServicePostgresql, err error)
-	// Get retrieves the DataFactoryLinkedServicePostgresql from the index for a given name.
-	Get(name string) (*v1alpha1.DataFactoryLinkedServicePostgresql, error)
+	// DataFactoryLinkedServicePostgresqls returns an object that can list and get DataFactoryLinkedServicePostgresqls.
+	DataFactoryLinkedServicePostgresqls(namespace string) DataFactoryLinkedServicePostgresqlNamespaceLister
 	DataFactoryLinkedServicePostgresqlListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dataFactoryLinkedServicePostgresqlLister) List(selector labels.Selector
 	return ret, err
 }
 
-// Get retrieves the DataFactoryLinkedServicePostgresql from the index for a given name.
-func (s *dataFactoryLinkedServicePostgresqlLister) Get(name string) (*v1alpha1.DataFactoryLinkedServicePostgresql, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DataFactoryLinkedServicePostgresqls returns an object that can list and get DataFactoryLinkedServicePostgresqls.
+func (s *dataFactoryLinkedServicePostgresqlLister) DataFactoryLinkedServicePostgresqls(namespace string) DataFactoryLinkedServicePostgresqlNamespaceLister {
+	return dataFactoryLinkedServicePostgresqlNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DataFactoryLinkedServicePostgresqlNamespaceLister helps list and get DataFactoryLinkedServicePostgresqls.
+type DataFactoryLinkedServicePostgresqlNamespaceLister interface {
+	// List lists all DataFactoryLinkedServicePostgresqls in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DataFactoryLinkedServicePostgresql, err error)
+	// Get retrieves the DataFactoryLinkedServicePostgresql from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DataFactoryLinkedServicePostgresql, error)
+	DataFactoryLinkedServicePostgresqlNamespaceListerExpansion
+}
+
+// dataFactoryLinkedServicePostgresqlNamespaceLister implements the DataFactoryLinkedServicePostgresqlNamespaceLister
+// interface.
+type dataFactoryLinkedServicePostgresqlNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DataFactoryLinkedServicePostgresqls in the indexer for a given namespace.
+func (s dataFactoryLinkedServicePostgresqlNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DataFactoryLinkedServicePostgresql, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DataFactoryLinkedServicePostgresql))
+	})
+	return ret, err
+}
+
+// Get retrieves the DataFactoryLinkedServicePostgresql from the indexer for a given namespace and name.
+func (s dataFactoryLinkedServicePostgresqlNamespaceLister) Get(name string) (*v1alpha1.DataFactoryLinkedServicePostgresql, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -41,32 +41,33 @@ type PinpointApnsChannelInformer interface {
 type pinpointApnsChannelInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewPinpointApnsChannelInformer constructs a new informer for PinpointApnsChannel type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewPinpointApnsChannelInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredPinpointApnsChannelInformer(client, resyncPeriod, indexers, nil)
+func NewPinpointApnsChannelInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredPinpointApnsChannelInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredPinpointApnsChannelInformer constructs a new informer for PinpointApnsChannel type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredPinpointApnsChannelInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredPinpointApnsChannelInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().PinpointApnsChannels().List(options)
+				return client.AwsV1alpha1().PinpointApnsChannels(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().PinpointApnsChannels().Watch(options)
+				return client.AwsV1alpha1().PinpointApnsChannels(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.PinpointApnsChannel{},
@@ -76,7 +77,7 @@ func NewFilteredPinpointApnsChannelInformer(client versioned.Interface, resyncPe
 }
 
 func (f *pinpointApnsChannelInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredPinpointApnsChannelInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredPinpointApnsChannelInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *pinpointApnsChannelInformer) Informer() cache.SharedIndexInformer {

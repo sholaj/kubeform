@@ -32,7 +32,7 @@ import (
 // MediaPackageChannelsGetter has a method to return a MediaPackageChannelInterface.
 // A group's client should implement this interface.
 type MediaPackageChannelsGetter interface {
-	MediaPackageChannels() MediaPackageChannelInterface
+	MediaPackageChannels(namespace string) MediaPackageChannelInterface
 }
 
 // MediaPackageChannelInterface has methods to work with MediaPackageChannel resources.
@@ -52,12 +52,14 @@ type MediaPackageChannelInterface interface {
 // mediaPackageChannels implements MediaPackageChannelInterface
 type mediaPackageChannels struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMediaPackageChannels returns a MediaPackageChannels
-func newMediaPackageChannels(c *AwsV1alpha1Client) *mediaPackageChannels {
+func newMediaPackageChannels(c *AwsV1alpha1Client, namespace string) *mediaPackageChannels {
 	return &mediaPackageChannels{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMediaPackageChannels(c *AwsV1alpha1Client) *mediaPackageChannels {
 func (c *mediaPackageChannels) Get(name string, options v1.GetOptions) (result *v1alpha1.MediaPackageChannel, err error) {
 	result = &v1alpha1.MediaPackageChannel{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mediapackagechannels").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *mediaPackageChannels) List(opts v1.ListOptions) (result *v1alpha1.Media
 	}
 	result = &v1alpha1.MediaPackageChannelList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mediapackagechannels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *mediaPackageChannels) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("mediapackagechannels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *mediaPackageChannels) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *mediaPackageChannels) Create(mediaPackageChannel *v1alpha1.MediaPackageChannel) (result *v1alpha1.MediaPackageChannel, err error) {
 	result = &v1alpha1.MediaPackageChannel{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("mediapackagechannels").
 		Body(mediaPackageChannel).
 		Do().
@@ -118,6 +124,7 @@ func (c *mediaPackageChannels) Create(mediaPackageChannel *v1alpha1.MediaPackage
 func (c *mediaPackageChannels) Update(mediaPackageChannel *v1alpha1.MediaPackageChannel) (result *v1alpha1.MediaPackageChannel, err error) {
 	result = &v1alpha1.MediaPackageChannel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mediapackagechannels").
 		Name(mediaPackageChannel.Name).
 		Body(mediaPackageChannel).
@@ -132,6 +139,7 @@ func (c *mediaPackageChannels) Update(mediaPackageChannel *v1alpha1.MediaPackage
 func (c *mediaPackageChannels) UpdateStatus(mediaPackageChannel *v1alpha1.MediaPackageChannel) (result *v1alpha1.MediaPackageChannel, err error) {
 	result = &v1alpha1.MediaPackageChannel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mediapackagechannels").
 		Name(mediaPackageChannel.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *mediaPackageChannels) UpdateStatus(mediaPackageChannel *v1alpha1.MediaP
 // Delete takes name of the mediaPackageChannel and deletes it. Returns an error if one occurs.
 func (c *mediaPackageChannels) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mediapackagechannels").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *mediaPackageChannels) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mediapackagechannels").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *mediaPackageChannels) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *mediaPackageChannels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MediaPackageChannel, err error) {
 	result = &v1alpha1.MediaPackageChannel{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("mediapackagechannels").
 		SubResource(subresources...).
 		Name(name).

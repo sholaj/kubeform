@@ -32,7 +32,7 @@ import (
 // GuarddutyInviteAcceptersGetter has a method to return a GuarddutyInviteAccepterInterface.
 // A group's client should implement this interface.
 type GuarddutyInviteAcceptersGetter interface {
-	GuarddutyInviteAccepters() GuarddutyInviteAccepterInterface
+	GuarddutyInviteAccepters(namespace string) GuarddutyInviteAccepterInterface
 }
 
 // GuarddutyInviteAccepterInterface has methods to work with GuarddutyInviteAccepter resources.
@@ -52,12 +52,14 @@ type GuarddutyInviteAccepterInterface interface {
 // guarddutyInviteAccepters implements GuarddutyInviteAccepterInterface
 type guarddutyInviteAccepters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newGuarddutyInviteAccepters returns a GuarddutyInviteAccepters
-func newGuarddutyInviteAccepters(c *AwsV1alpha1Client) *guarddutyInviteAccepters {
+func newGuarddutyInviteAccepters(c *AwsV1alpha1Client, namespace string) *guarddutyInviteAccepters {
 	return &guarddutyInviteAccepters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newGuarddutyInviteAccepters(c *AwsV1alpha1Client) *guarddutyInviteAccepters
 func (c *guarddutyInviteAccepters) Get(name string, options v1.GetOptions) (result *v1alpha1.GuarddutyInviteAccepter, err error) {
 	result = &v1alpha1.GuarddutyInviteAccepter{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("guarddutyinviteaccepters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *guarddutyInviteAccepters) List(opts v1.ListOptions) (result *v1alpha1.G
 	}
 	result = &v1alpha1.GuarddutyInviteAccepterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("guarddutyinviteaccepters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *guarddutyInviteAccepters) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("guarddutyinviteaccepters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *guarddutyInviteAccepters) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *guarddutyInviteAccepters) Create(guarddutyInviteAccepter *v1alpha1.GuarddutyInviteAccepter) (result *v1alpha1.GuarddutyInviteAccepter, err error) {
 	result = &v1alpha1.GuarddutyInviteAccepter{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("guarddutyinviteaccepters").
 		Body(guarddutyInviteAccepter).
 		Do().
@@ -118,6 +124,7 @@ func (c *guarddutyInviteAccepters) Create(guarddutyInviteAccepter *v1alpha1.Guar
 func (c *guarddutyInviteAccepters) Update(guarddutyInviteAccepter *v1alpha1.GuarddutyInviteAccepter) (result *v1alpha1.GuarddutyInviteAccepter, err error) {
 	result = &v1alpha1.GuarddutyInviteAccepter{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("guarddutyinviteaccepters").
 		Name(guarddutyInviteAccepter.Name).
 		Body(guarddutyInviteAccepter).
@@ -132,6 +139,7 @@ func (c *guarddutyInviteAccepters) Update(guarddutyInviteAccepter *v1alpha1.Guar
 func (c *guarddutyInviteAccepters) UpdateStatus(guarddutyInviteAccepter *v1alpha1.GuarddutyInviteAccepter) (result *v1alpha1.GuarddutyInviteAccepter, err error) {
 	result = &v1alpha1.GuarddutyInviteAccepter{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("guarddutyinviteaccepters").
 		Name(guarddutyInviteAccepter.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *guarddutyInviteAccepters) UpdateStatus(guarddutyInviteAccepter *v1alpha
 // Delete takes name of the guarddutyInviteAccepter and deletes it. Returns an error if one occurs.
 func (c *guarddutyInviteAccepters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("guarddutyinviteaccepters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *guarddutyInviteAccepters) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("guarddutyinviteaccepters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *guarddutyInviteAccepters) DeleteCollection(options *v1.DeleteOptions, l
 func (c *guarddutyInviteAccepters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GuarddutyInviteAccepter, err error) {
 	result = &v1alpha1.GuarddutyInviteAccepter{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("guarddutyinviteaccepters").
 		SubResource(subresources...).
 		Name(name).

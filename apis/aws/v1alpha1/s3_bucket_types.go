@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,121 +20,121 @@ type S3Bucket struct {
 
 type S3BucketSpecCorsRule struct {
 	// +optional
-	AllowedHeaders []string `json:"allowed_headers,omitempty"`
-	AllowedMethods []string `json:"allowed_methods"`
-	AllowedOrigins []string `json:"allowed_origins"`
+	AllowedHeaders []string `json:"allowedHeaders,omitempty" tf:"allowed_headers,omitempty"`
+	AllowedMethods []string `json:"allowedMethods" tf:"allowed_methods"`
+	AllowedOrigins []string `json:"allowedOrigins" tf:"allowed_origins"`
 	// +optional
-	ExposeHeaders []string `json:"expose_headers,omitempty"`
+	ExposeHeaders []string `json:"exposeHeaders,omitempty" tf:"expose_headers,omitempty"`
 	// +optional
-	MaxAgeSeconds int `json:"max_age_seconds,omitempty"`
+	MaxAgeSeconds int `json:"maxAgeSeconds,omitempty" tf:"max_age_seconds,omitempty"`
 }
 
 type S3BucketSpecLifecycleRuleExpiration struct {
 	// +optional
-	Date string `json:"date,omitempty"`
+	Date string `json:"date,omitempty" tf:"date,omitempty"`
 	// +optional
-	Days int `json:"days,omitempty"`
+	Days int `json:"days,omitempty" tf:"days,omitempty"`
 	// +optional
-	ExpiredObjectDeleteMarker bool `json:"expired_object_delete_marker,omitempty"`
+	ExpiredObjectDeleteMarker bool `json:"expiredObjectDeleteMarker,omitempty" tf:"expired_object_delete_marker,omitempty"`
 }
 
 type S3BucketSpecLifecycleRuleNoncurrentVersionExpiration struct {
 	// +optional
-	Days int `json:"days,omitempty"`
+	Days int `json:"days,omitempty" tf:"days,omitempty"`
 }
 
 type S3BucketSpecLifecycleRuleNoncurrentVersionTransition struct {
 	// +optional
-	Days         int    `json:"days,omitempty"`
-	StorageClass string `json:"storage_class"`
+	Days         int    `json:"days,omitempty" tf:"days,omitempty"`
+	StorageClass string `json:"storageClass" tf:"storage_class"`
 }
 
 type S3BucketSpecLifecycleRuleTransition struct {
 	// +optional
-	Date string `json:"date,omitempty"`
+	Date string `json:"date,omitempty" tf:"date,omitempty"`
 	// +optional
-	Days         int    `json:"days,omitempty"`
-	StorageClass string `json:"storage_class"`
+	Days         int    `json:"days,omitempty" tf:"days,omitempty"`
+	StorageClass string `json:"storageClass" tf:"storage_class"`
 }
 
 type S3BucketSpecLifecycleRule struct {
 	// +optional
-	AbortIncompleteMultipartUploadDays int  `json:"abort_incomplete_multipart_upload_days,omitempty"`
-	Enabled                            bool `json:"enabled"`
+	AbortIncompleteMultipartUploadDays int  `json:"abortIncompleteMultipartUploadDays,omitempty" tf:"abort_incomplete_multipart_upload_days,omitempty"`
+	Enabled                            bool `json:"enabled" tf:"enabled"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	Expiration *[]S3BucketSpecLifecycleRule `json:"expiration,omitempty"`
+	Expiration []S3BucketSpecLifecycleRuleExpiration `json:"expiration,omitempty" tf:"expiration,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	NoncurrentVersionExpiration *[]S3BucketSpecLifecycleRule `json:"noncurrent_version_expiration,omitempty"`
+	NoncurrentVersionExpiration []S3BucketSpecLifecycleRuleNoncurrentVersionExpiration `json:"noncurrentVersionExpiration,omitempty" tf:"noncurrent_version_expiration,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	NoncurrentVersionTransition *[]S3BucketSpecLifecycleRule `json:"noncurrent_version_transition,omitempty"`
+	NoncurrentVersionTransition []S3BucketSpecLifecycleRuleNoncurrentVersionTransition `json:"noncurrentVersionTransition,omitempty" tf:"noncurrent_version_transition,omitempty"`
 	// +optional
-	Prefix string `json:"prefix,omitempty"`
+	Prefix string `json:"prefix,omitempty" tf:"prefix,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Transition *[]S3BucketSpecLifecycleRule `json:"transition,omitempty"`
+	Transition []S3BucketSpecLifecycleRuleTransition `json:"transition,omitempty" tf:"transition,omitempty"`
 }
 
 type S3BucketSpecLogging struct {
-	TargetBucket string `json:"target_bucket"`
+	TargetBucket string `json:"targetBucket" tf:"target_bucket"`
 	// +optional
-	TargetPrefix string `json:"target_prefix,omitempty"`
+	TargetPrefix string `json:"targetPrefix,omitempty" tf:"target_prefix,omitempty"`
 }
 
 type S3BucketSpecObjectLockConfigurationRuleDefaultRetention struct {
 	// +optional
-	Days int    `json:"days,omitempty"`
-	Mode string `json:"mode"`
+	Days int    `json:"days,omitempty" tf:"days,omitempty"`
+	Mode string `json:"mode" tf:"mode"`
 	// +optional
-	Years int `json:"years,omitempty"`
+	Years int `json:"years,omitempty" tf:"years,omitempty"`
 }
 
 type S3BucketSpecObjectLockConfigurationRule struct {
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	DefaultRetention []S3BucketSpecObjectLockConfigurationRule `json:"default_retention"`
+	DefaultRetention []S3BucketSpecObjectLockConfigurationRuleDefaultRetention `json:"defaultRetention" tf:"default_retention"`
 }
 
 type S3BucketSpecObjectLockConfiguration struct {
-	ObjectLockEnabled string `json:"object_lock_enabled"`
+	ObjectLockEnabled string `json:"objectLockEnabled" tf:"object_lock_enabled"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Rule *[]S3BucketSpecObjectLockConfiguration `json:"rule,omitempty"`
+	Rule []S3BucketSpecObjectLockConfigurationRule `json:"rule,omitempty" tf:"rule,omitempty"`
 }
 
 type S3BucketSpecReplicationConfigurationRulesDestinationAccessControlTranslation struct {
-	Owner string `json:"owner"`
+	Owner string `json:"owner" tf:"owner"`
 }
 
 type S3BucketSpecReplicationConfigurationRulesDestination struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	AccessControlTranslation *[]S3BucketSpecReplicationConfigurationRulesDestination `json:"access_control_translation,omitempty"`
+	AccessControlTranslation []S3BucketSpecReplicationConfigurationRulesDestinationAccessControlTranslation `json:"accessControlTranslation,omitempty" tf:"access_control_translation,omitempty"`
 	// +optional
-	AccountId string `json:"account_id,omitempty"`
-	Bucket    string `json:"bucket"`
+	AccountID string `json:"accountID,omitempty" tf:"account_id,omitempty"`
+	Bucket    string `json:"bucket" tf:"bucket"`
 	// +optional
-	ReplicaKmsKeyId string `json:"replica_kms_key_id,omitempty"`
+	ReplicaKmsKeyID string `json:"replicaKmsKeyID,omitempty" tf:"replica_kms_key_id,omitempty"`
 	// +optional
-	StorageClass string `json:"storage_class,omitempty"`
+	StorageClass string `json:"storageClass,omitempty" tf:"storage_class,omitempty"`
 }
 
 type S3BucketSpecReplicationConfigurationRulesFilter struct {
 	// +optional
-	Prefix string `json:"prefix,omitempty"`
+	Prefix string `json:"prefix,omitempty" tf:"prefix,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 }
 
 type S3BucketSpecReplicationConfigurationRulesSourceSelectionCriteriaSseKmsEncryptedObjects struct {
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" tf:"enabled"`
 }
 
 type S3BucketSpecReplicationConfigurationRulesSourceSelectionCriteria struct {
@@ -142,95 +142,96 @@ type S3BucketSpecReplicationConfigurationRulesSourceSelectionCriteria struct {
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	SseKmsEncryptedObjects *[]S3BucketSpecReplicationConfigurationRulesSourceSelectionCriteria `json:"sse_kms_encrypted_objects,omitempty"`
+	SseKmsEncryptedObjects []S3BucketSpecReplicationConfigurationRulesSourceSelectionCriteriaSseKmsEncryptedObjects `json:"sseKmsEncryptedObjects,omitempty" tf:"sse_kms_encrypted_objects,omitempty"`
 }
 
 type S3BucketSpecReplicationConfigurationRules struct {
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	Destination []S3BucketSpecReplicationConfigurationRules `json:"destination"`
+	Destination []S3BucketSpecReplicationConfigurationRulesDestination `json:"destination" tf:"destination"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	Filter *[]S3BucketSpecReplicationConfigurationRules `json:"filter,omitempty"`
+	Filter []S3BucketSpecReplicationConfigurationRulesFilter `json:"filter,omitempty" tf:"filter,omitempty"`
 	// +optional
-	Id string `json:"id,omitempty"`
+	ID string `json:"ID,omitempty" tf:"id,omitempty"`
 	// +optional
-	Prefix string `json:"prefix,omitempty"`
+	Prefix string `json:"prefix,omitempty" tf:"prefix,omitempty"`
 	// +optional
-	Priority int `json:"priority,omitempty"`
+	Priority int `json:"priority,omitempty" tf:"priority,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	SourceSelectionCriteria *[]S3BucketSpecReplicationConfigurationRules `json:"source_selection_criteria,omitempty"`
-	Status                  string                                       `json:"status"`
+	SourceSelectionCriteria []S3BucketSpecReplicationConfigurationRulesSourceSelectionCriteria `json:"sourceSelectionCriteria,omitempty" tf:"source_selection_criteria,omitempty"`
+	Status                  string                                                             `json:"status" tf:"status"`
 }
 
 type S3BucketSpecReplicationConfiguration struct {
-	Role string `json:"role"`
+	Role string `json:"role" tf:"role"`
 	// +kubebuilder:validation:UniqueItems=true
-	Rules []S3BucketSpecReplicationConfiguration `json:"rules"`
+	Rules []S3BucketSpecReplicationConfigurationRules `json:"rules" tf:"rules"`
 }
 
 type S3BucketSpecServerSideEncryptionConfigurationRuleApplyServerSideEncryptionByDefault struct {
 	// +optional
-	KmsMasterKeyId string `json:"kms_master_key_id,omitempty"`
-	SseAlgorithm   string `json:"sse_algorithm"`
+	KmsMasterKeyID string `json:"kmsMasterKeyID,omitempty" tf:"kms_master_key_id,omitempty"`
+	SseAlgorithm   string `json:"sseAlgorithm" tf:"sse_algorithm"`
 }
 
 type S3BucketSpecServerSideEncryptionConfigurationRule struct {
 	// +kubebuilder:validation:MaxItems=1
-	ApplyServerSideEncryptionByDefault []S3BucketSpecServerSideEncryptionConfigurationRule `json:"apply_server_side_encryption_by_default"`
+	ApplyServerSideEncryptionByDefault []S3BucketSpecServerSideEncryptionConfigurationRuleApplyServerSideEncryptionByDefault `json:"applyServerSideEncryptionByDefault" tf:"apply_server_side_encryption_by_default"`
 }
 
 type S3BucketSpecServerSideEncryptionConfiguration struct {
 	// +kubebuilder:validation:MaxItems=1
-	Rule []S3BucketSpecServerSideEncryptionConfiguration `json:"rule"`
+	Rule []S3BucketSpecServerSideEncryptionConfigurationRule `json:"rule" tf:"rule"`
 }
 
 type S3BucketSpecWebsite struct {
 	// +optional
-	ErrorDocument string `json:"error_document,omitempty"`
+	ErrorDocument string `json:"errorDocument,omitempty" tf:"error_document,omitempty"`
 	// +optional
-	IndexDocument string `json:"index_document,omitempty"`
+	IndexDocument string `json:"indexDocument,omitempty" tf:"index_document,omitempty"`
 	// +optional
-	RedirectAllRequestsTo string `json:"redirect_all_requests_to,omitempty"`
+	RedirectAllRequestsTo string `json:"redirectAllRequestsTo,omitempty" tf:"redirect_all_requests_to,omitempty"`
 	// +optional
-	RoutingRules string `json:"routing_rules,omitempty"`
+	RoutingRules string `json:"routingRules,omitempty" tf:"routing_rules,omitempty"`
 }
 
 type S3BucketSpec struct {
 	// +optional
-	Acl string `json:"acl,omitempty"`
+	Acl string `json:"acl,omitempty" tf:"acl,omitempty"`
 	// +optional
-	BucketPrefix string `json:"bucket_prefix,omitempty"`
+	BucketPrefix string `json:"bucketPrefix,omitempty" tf:"bucket_prefix,omitempty"`
 	// +optional
-	CorsRule *[]S3BucketSpec `json:"cors_rule,omitempty"`
+	CorsRule []S3BucketSpecCorsRule `json:"corsRule,omitempty" tf:"cors_rule,omitempty"`
 	// +optional
-	ForceDestroy bool `json:"force_destroy,omitempty"`
+	ForceDestroy bool `json:"forceDestroy,omitempty" tf:"force_destroy,omitempty"`
 	// +optional
-	LifecycleRule *[]S3BucketSpec `json:"lifecycle_rule,omitempty"`
+	LifecycleRule []S3BucketSpecLifecycleRule `json:"lifecycleRule,omitempty" tf:"lifecycle_rule,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Logging *[]S3BucketSpec `json:"logging,omitempty"`
+	Logging []S3BucketSpecLogging `json:"logging,omitempty" tf:"logging,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ObjectLockConfiguration *[]S3BucketSpec `json:"object_lock_configuration,omitempty"`
+	ObjectLockConfiguration []S3BucketSpecObjectLockConfiguration `json:"objectLockConfiguration,omitempty" tf:"object_lock_configuration,omitempty"`
 	// +optional
-	Policy string `json:"policy,omitempty"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	ReplicationConfiguration *[]S3BucketSpec `json:"replication_configuration,omitempty"`
+	Policy string `json:"policy,omitempty" tf:"policy,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ServerSideEncryptionConfiguration *[]S3BucketSpec `json:"server_side_encryption_configuration,omitempty"`
-	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	ReplicationConfiguration []S3BucketSpecReplicationConfiguration `json:"replicationConfiguration,omitempty" tf:"replication_configuration,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Website *[]S3BucketSpec `json:"website,omitempty"`
+	ServerSideEncryptionConfiguration []S3BucketSpecServerSideEncryptionConfiguration `json:"serverSideEncryptionConfiguration,omitempty" tf:"server_side_encryption_configuration,omitempty"`
+	// +optional
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
+	// +optional
+	// +kubebuilder:validation:MaxItems=1
+	Website     []S3BucketSpecWebsite     `json:"website,omitempty" tf:"website,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type S3BucketStatus struct {
@@ -238,7 +239,9 @@ type S3BucketStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

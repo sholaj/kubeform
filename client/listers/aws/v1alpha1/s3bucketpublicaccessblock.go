@@ -29,8 +29,8 @@ import (
 type S3BucketPublicAccessBlockLister interface {
 	// List lists all S3BucketPublicAccessBlocks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.S3BucketPublicAccessBlock, err error)
-	// Get retrieves the S3BucketPublicAccessBlock from the index for a given name.
-	Get(name string) (*v1alpha1.S3BucketPublicAccessBlock, error)
+	// S3BucketPublicAccessBlocks returns an object that can list and get S3BucketPublicAccessBlocks.
+	S3BucketPublicAccessBlocks(namespace string) S3BucketPublicAccessBlockNamespaceLister
 	S3BucketPublicAccessBlockListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *s3BucketPublicAccessBlockLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the S3BucketPublicAccessBlock from the index for a given name.
-func (s *s3BucketPublicAccessBlockLister) Get(name string) (*v1alpha1.S3BucketPublicAccessBlock, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// S3BucketPublicAccessBlocks returns an object that can list and get S3BucketPublicAccessBlocks.
+func (s *s3BucketPublicAccessBlockLister) S3BucketPublicAccessBlocks(namespace string) S3BucketPublicAccessBlockNamespaceLister {
+	return s3BucketPublicAccessBlockNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// S3BucketPublicAccessBlockNamespaceLister helps list and get S3BucketPublicAccessBlocks.
+type S3BucketPublicAccessBlockNamespaceLister interface {
+	// List lists all S3BucketPublicAccessBlocks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.S3BucketPublicAccessBlock, err error)
+	// Get retrieves the S3BucketPublicAccessBlock from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.S3BucketPublicAccessBlock, error)
+	S3BucketPublicAccessBlockNamespaceListerExpansion
+}
+
+// s3BucketPublicAccessBlockNamespaceLister implements the S3BucketPublicAccessBlockNamespaceLister
+// interface.
+type s3BucketPublicAccessBlockNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all S3BucketPublicAccessBlocks in the indexer for a given namespace.
+func (s s3BucketPublicAccessBlockNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.S3BucketPublicAccessBlock, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.S3BucketPublicAccessBlock))
+	})
+	return ret, err
+}
+
+// Get retrieves the S3BucketPublicAccessBlock from the indexer for a given namespace and name.
+func (s s3BucketPublicAccessBlockNamespaceLister) Get(name string) (*v1alpha1.S3BucketPublicAccessBlock, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

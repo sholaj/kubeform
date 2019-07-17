@@ -32,7 +32,7 @@ import (
 // SqsQueuePoliciesGetter has a method to return a SqsQueuePolicyInterface.
 // A group's client should implement this interface.
 type SqsQueuePoliciesGetter interface {
-	SqsQueuePolicies() SqsQueuePolicyInterface
+	SqsQueuePolicies(namespace string) SqsQueuePolicyInterface
 }
 
 // SqsQueuePolicyInterface has methods to work with SqsQueuePolicy resources.
@@ -52,12 +52,14 @@ type SqsQueuePolicyInterface interface {
 // sqsQueuePolicies implements SqsQueuePolicyInterface
 type sqsQueuePolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSqsQueuePolicies returns a SqsQueuePolicies
-func newSqsQueuePolicies(c *AwsV1alpha1Client) *sqsQueuePolicies {
+func newSqsQueuePolicies(c *AwsV1alpha1Client, namespace string) *sqsQueuePolicies {
 	return &sqsQueuePolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSqsQueuePolicies(c *AwsV1alpha1Client) *sqsQueuePolicies {
 func (c *sqsQueuePolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.SqsQueuePolicy, err error) {
 	result = &v1alpha1.SqsQueuePolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqsqueuepolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sqsQueuePolicies) List(opts v1.ListOptions) (result *v1alpha1.SqsQueueP
 	}
 	result = &v1alpha1.SqsQueuePolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqsqueuepolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sqsQueuePolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sqsqueuepolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sqsQueuePolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *sqsQueuePolicies) Create(sqsQueuePolicy *v1alpha1.SqsQueuePolicy) (result *v1alpha1.SqsQueuePolicy, err error) {
 	result = &v1alpha1.SqsQueuePolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sqsqueuepolicies").
 		Body(sqsQueuePolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *sqsQueuePolicies) Create(sqsQueuePolicy *v1alpha1.SqsQueuePolicy) (resu
 func (c *sqsQueuePolicies) Update(sqsQueuePolicy *v1alpha1.SqsQueuePolicy) (result *v1alpha1.SqsQueuePolicy, err error) {
 	result = &v1alpha1.SqsQueuePolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqsqueuepolicies").
 		Name(sqsQueuePolicy.Name).
 		Body(sqsQueuePolicy).
@@ -132,6 +139,7 @@ func (c *sqsQueuePolicies) Update(sqsQueuePolicy *v1alpha1.SqsQueuePolicy) (resu
 func (c *sqsQueuePolicies) UpdateStatus(sqsQueuePolicy *v1alpha1.SqsQueuePolicy) (result *v1alpha1.SqsQueuePolicy, err error) {
 	result = &v1alpha1.SqsQueuePolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqsqueuepolicies").
 		Name(sqsQueuePolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sqsQueuePolicies) UpdateStatus(sqsQueuePolicy *v1alpha1.SqsQueuePolicy)
 // Delete takes name of the sqsQueuePolicy and deletes it. Returns an error if one occurs.
 func (c *sqsQueuePolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqsqueuepolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sqsQueuePolicies) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqsqueuepolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sqsQueuePolicies) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *sqsQueuePolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SqsQueuePolicy, err error) {
 	result = &v1alpha1.SqsQueuePolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sqsqueuepolicies").
 		SubResource(subresources...).
 		Name(name).

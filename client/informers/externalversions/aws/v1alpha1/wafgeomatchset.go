@@ -41,32 +41,33 @@ type WafGeoMatchSetInformer interface {
 type wafGeoMatchSetInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewWafGeoMatchSetInformer constructs a new informer for WafGeoMatchSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewWafGeoMatchSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredWafGeoMatchSetInformer(client, resyncPeriod, indexers, nil)
+func NewWafGeoMatchSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredWafGeoMatchSetInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredWafGeoMatchSetInformer constructs a new informer for WafGeoMatchSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredWafGeoMatchSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredWafGeoMatchSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafGeoMatchSets().List(options)
+				return client.AwsV1alpha1().WafGeoMatchSets(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafGeoMatchSets().Watch(options)
+				return client.AwsV1alpha1().WafGeoMatchSets(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.WafGeoMatchSet{},
@@ -76,7 +77,7 @@ func NewFilteredWafGeoMatchSetInformer(client versioned.Interface, resyncPeriod 
 }
 
 func (f *wafGeoMatchSetInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredWafGeoMatchSetInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredWafGeoMatchSetInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *wafGeoMatchSetInformer) Informer() cache.SharedIndexInformer {

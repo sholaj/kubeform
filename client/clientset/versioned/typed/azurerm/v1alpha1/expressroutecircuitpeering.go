@@ -32,7 +32,7 @@ import (
 // ExpressRouteCircuitPeeringsGetter has a method to return a ExpressRouteCircuitPeeringInterface.
 // A group's client should implement this interface.
 type ExpressRouteCircuitPeeringsGetter interface {
-	ExpressRouteCircuitPeerings() ExpressRouteCircuitPeeringInterface
+	ExpressRouteCircuitPeerings(namespace string) ExpressRouteCircuitPeeringInterface
 }
 
 // ExpressRouteCircuitPeeringInterface has methods to work with ExpressRouteCircuitPeering resources.
@@ -52,12 +52,14 @@ type ExpressRouteCircuitPeeringInterface interface {
 // expressRouteCircuitPeerings implements ExpressRouteCircuitPeeringInterface
 type expressRouteCircuitPeerings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newExpressRouteCircuitPeerings returns a ExpressRouteCircuitPeerings
-func newExpressRouteCircuitPeerings(c *AzurermV1alpha1Client) *expressRouteCircuitPeerings {
+func newExpressRouteCircuitPeerings(c *AzurermV1alpha1Client, namespace string) *expressRouteCircuitPeerings {
 	return &expressRouteCircuitPeerings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newExpressRouteCircuitPeerings(c *AzurermV1alpha1Client) *expressRouteCircu
 func (c *expressRouteCircuitPeerings) Get(name string, options v1.GetOptions) (result *v1alpha1.ExpressRouteCircuitPeering, err error) {
 	result = &v1alpha1.ExpressRouteCircuitPeering{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("expressroutecircuitpeerings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *expressRouteCircuitPeerings) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.ExpressRouteCircuitPeeringList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("expressroutecircuitpeerings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *expressRouteCircuitPeerings) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("expressroutecircuitpeerings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *expressRouteCircuitPeerings) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *expressRouteCircuitPeerings) Create(expressRouteCircuitPeering *v1alpha1.ExpressRouteCircuitPeering) (result *v1alpha1.ExpressRouteCircuitPeering, err error) {
 	result = &v1alpha1.ExpressRouteCircuitPeering{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("expressroutecircuitpeerings").
 		Body(expressRouteCircuitPeering).
 		Do().
@@ -118,6 +124,7 @@ func (c *expressRouteCircuitPeerings) Create(expressRouteCircuitPeering *v1alpha
 func (c *expressRouteCircuitPeerings) Update(expressRouteCircuitPeering *v1alpha1.ExpressRouteCircuitPeering) (result *v1alpha1.ExpressRouteCircuitPeering, err error) {
 	result = &v1alpha1.ExpressRouteCircuitPeering{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("expressroutecircuitpeerings").
 		Name(expressRouteCircuitPeering.Name).
 		Body(expressRouteCircuitPeering).
@@ -132,6 +139,7 @@ func (c *expressRouteCircuitPeerings) Update(expressRouteCircuitPeering *v1alpha
 func (c *expressRouteCircuitPeerings) UpdateStatus(expressRouteCircuitPeering *v1alpha1.ExpressRouteCircuitPeering) (result *v1alpha1.ExpressRouteCircuitPeering, err error) {
 	result = &v1alpha1.ExpressRouteCircuitPeering{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("expressroutecircuitpeerings").
 		Name(expressRouteCircuitPeering.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *expressRouteCircuitPeerings) UpdateStatus(expressRouteCircuitPeering *v
 // Delete takes name of the expressRouteCircuitPeering and deletes it. Returns an error if one occurs.
 func (c *expressRouteCircuitPeerings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("expressroutecircuitpeerings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *expressRouteCircuitPeerings) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("expressroutecircuitpeerings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *expressRouteCircuitPeerings) DeleteCollection(options *v1.DeleteOptions
 func (c *expressRouteCircuitPeerings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ExpressRouteCircuitPeering, err error) {
 	result = &v1alpha1.ExpressRouteCircuitPeering{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("expressroutecircuitpeerings").
 		SubResource(subresources...).
 		Name(name).

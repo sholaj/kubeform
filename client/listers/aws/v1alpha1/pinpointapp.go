@@ -29,8 +29,8 @@ import (
 type PinpointAppLister interface {
 	// List lists all PinpointApps in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.PinpointApp, err error)
-	// Get retrieves the PinpointApp from the index for a given name.
-	Get(name string) (*v1alpha1.PinpointApp, error)
+	// PinpointApps returns an object that can list and get PinpointApps.
+	PinpointApps(namespace string) PinpointAppNamespaceLister
 	PinpointAppListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *pinpointAppLister) List(selector labels.Selector) (ret []*v1alpha1.Pinp
 	return ret, err
 }
 
-// Get retrieves the PinpointApp from the index for a given name.
-func (s *pinpointAppLister) Get(name string) (*v1alpha1.PinpointApp, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// PinpointApps returns an object that can list and get PinpointApps.
+func (s *pinpointAppLister) PinpointApps(namespace string) PinpointAppNamespaceLister {
+	return pinpointAppNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// PinpointAppNamespaceLister helps list and get PinpointApps.
+type PinpointAppNamespaceLister interface {
+	// List lists all PinpointApps in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.PinpointApp, err error)
+	// Get retrieves the PinpointApp from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.PinpointApp, error)
+	PinpointAppNamespaceListerExpansion
+}
+
+// pinpointAppNamespaceLister implements the PinpointAppNamespaceLister
+// interface.
+type pinpointAppNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all PinpointApps in the indexer for a given namespace.
+func (s pinpointAppNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.PinpointApp, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.PinpointApp))
+	})
+	return ret, err
+}
+
+// Get retrieves the PinpointApp from the indexer for a given namespace and name.
+func (s pinpointAppNamespaceLister) Get(name string) (*v1alpha1.PinpointApp, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

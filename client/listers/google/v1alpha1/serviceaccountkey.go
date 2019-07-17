@@ -29,8 +29,8 @@ import (
 type ServiceAccountKeyLister interface {
 	// List lists all ServiceAccountKeys in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ServiceAccountKey, err error)
-	// Get retrieves the ServiceAccountKey from the index for a given name.
-	Get(name string) (*v1alpha1.ServiceAccountKey, error)
+	// ServiceAccountKeys returns an object that can list and get ServiceAccountKeys.
+	ServiceAccountKeys(namespace string) ServiceAccountKeyNamespaceLister
 	ServiceAccountKeyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *serviceAccountKeyLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the ServiceAccountKey from the index for a given name.
-func (s *serviceAccountKeyLister) Get(name string) (*v1alpha1.ServiceAccountKey, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ServiceAccountKeys returns an object that can list and get ServiceAccountKeys.
+func (s *serviceAccountKeyLister) ServiceAccountKeys(namespace string) ServiceAccountKeyNamespaceLister {
+	return serviceAccountKeyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ServiceAccountKeyNamespaceLister helps list and get ServiceAccountKeys.
+type ServiceAccountKeyNamespaceLister interface {
+	// List lists all ServiceAccountKeys in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ServiceAccountKey, err error)
+	// Get retrieves the ServiceAccountKey from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ServiceAccountKey, error)
+	ServiceAccountKeyNamespaceListerExpansion
+}
+
+// serviceAccountKeyNamespaceLister implements the ServiceAccountKeyNamespaceLister
+// interface.
+type serviceAccountKeyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ServiceAccountKeys in the indexer for a given namespace.
+func (s serviceAccountKeyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServiceAccountKey, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ServiceAccountKey))
+	})
+	return ret, err
+}
+
+// Get retrieves the ServiceAccountKey from the indexer for a given namespace and name.
+func (s serviceAccountKeyNamespaceLister) Get(name string) (*v1alpha1.ServiceAccountKey, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

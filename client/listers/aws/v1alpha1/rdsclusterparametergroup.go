@@ -29,8 +29,8 @@ import (
 type RdsClusterParameterGroupLister interface {
 	// List lists all RdsClusterParameterGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RdsClusterParameterGroup, err error)
-	// Get retrieves the RdsClusterParameterGroup from the index for a given name.
-	Get(name string) (*v1alpha1.RdsClusterParameterGroup, error)
+	// RdsClusterParameterGroups returns an object that can list and get RdsClusterParameterGroups.
+	RdsClusterParameterGroups(namespace string) RdsClusterParameterGroupNamespaceLister
 	RdsClusterParameterGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *rdsClusterParameterGroupLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the RdsClusterParameterGroup from the index for a given name.
-func (s *rdsClusterParameterGroupLister) Get(name string) (*v1alpha1.RdsClusterParameterGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RdsClusterParameterGroups returns an object that can list and get RdsClusterParameterGroups.
+func (s *rdsClusterParameterGroupLister) RdsClusterParameterGroups(namespace string) RdsClusterParameterGroupNamespaceLister {
+	return rdsClusterParameterGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RdsClusterParameterGroupNamespaceLister helps list and get RdsClusterParameterGroups.
+type RdsClusterParameterGroupNamespaceLister interface {
+	// List lists all RdsClusterParameterGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RdsClusterParameterGroup, err error)
+	// Get retrieves the RdsClusterParameterGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RdsClusterParameterGroup, error)
+	RdsClusterParameterGroupNamespaceListerExpansion
+}
+
+// rdsClusterParameterGroupNamespaceLister implements the RdsClusterParameterGroupNamespaceLister
+// interface.
+type rdsClusterParameterGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RdsClusterParameterGroups in the indexer for a given namespace.
+func (s rdsClusterParameterGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RdsClusterParameterGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RdsClusterParameterGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the RdsClusterParameterGroup from the indexer for a given namespace and name.
+func (s rdsClusterParameterGroupNamespaceLister) Get(name string) (*v1alpha1.RdsClusterParameterGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

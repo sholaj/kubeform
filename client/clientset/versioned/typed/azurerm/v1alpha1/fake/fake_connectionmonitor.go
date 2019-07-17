@@ -31,6 +31,7 @@ import (
 // FakeConnectionMonitors implements ConnectionMonitorInterface
 type FakeConnectionMonitors struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var connectionmonitorsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "connectionmonitors"}
@@ -40,7 +41,8 @@ var connectionmonitorsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.co
 // Get takes name of the connectionMonitor, and returns the corresponding connectionMonitor object, and an error if there is any.
 func (c *FakeConnectionMonitors) Get(name string, options v1.GetOptions) (result *v1alpha1.ConnectionMonitor, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(connectionmonitorsResource, name), &v1alpha1.ConnectionMonitor{})
+		Invokes(testing.NewGetAction(connectionmonitorsResource, c.ns, name), &v1alpha1.ConnectionMonitor{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeConnectionMonitors) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of ConnectionMonitors that match those selectors.
 func (c *FakeConnectionMonitors) List(opts v1.ListOptions) (result *v1alpha1.ConnectionMonitorList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(connectionmonitorsResource, connectionmonitorsKind, opts), &v1alpha1.ConnectionMonitorList{})
+		Invokes(testing.NewListAction(connectionmonitorsResource, connectionmonitorsKind, c.ns, opts), &v1alpha1.ConnectionMonitorList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeConnectionMonitors) List(opts v1.ListOptions) (result *v1alpha1.Con
 // Watch returns a watch.Interface that watches the requested connectionMonitors.
 func (c *FakeConnectionMonitors) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(connectionmonitorsResource, opts))
+		InvokesWatch(testing.NewWatchAction(connectionmonitorsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a connectionMonitor and creates it.  Returns the server's representation of the connectionMonitor, and an error, if there is any.
 func (c *FakeConnectionMonitors) Create(connectionMonitor *v1alpha1.ConnectionMonitor) (result *v1alpha1.ConnectionMonitor, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(connectionmonitorsResource, connectionMonitor), &v1alpha1.ConnectionMonitor{})
+		Invokes(testing.NewCreateAction(connectionmonitorsResource, c.ns, connectionMonitor), &v1alpha1.ConnectionMonitor{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeConnectionMonitors) Create(connectionMonitor *v1alpha1.ConnectionMo
 // Update takes the representation of a connectionMonitor and updates it. Returns the server's representation of the connectionMonitor, and an error, if there is any.
 func (c *FakeConnectionMonitors) Update(connectionMonitor *v1alpha1.ConnectionMonitor) (result *v1alpha1.ConnectionMonitor, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(connectionmonitorsResource, connectionMonitor), &v1alpha1.ConnectionMonitor{})
+		Invokes(testing.NewUpdateAction(connectionmonitorsResource, c.ns, connectionMonitor), &v1alpha1.ConnectionMonitor{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeConnectionMonitors) Update(connectionMonitor *v1alpha1.ConnectionMo
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeConnectionMonitors) UpdateStatus(connectionMonitor *v1alpha1.ConnectionMonitor) (*v1alpha1.ConnectionMonitor, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(connectionmonitorsResource, "status", connectionMonitor), &v1alpha1.ConnectionMonitor{})
+		Invokes(testing.NewUpdateSubresourceAction(connectionmonitorsResource, "status", c.ns, connectionMonitor), &v1alpha1.ConnectionMonitor{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeConnectionMonitors) UpdateStatus(connectionMonitor *v1alpha1.Connec
 // Delete takes name of the connectionMonitor and deletes it. Returns an error if one occurs.
 func (c *FakeConnectionMonitors) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(connectionmonitorsResource, name), &v1alpha1.ConnectionMonitor{})
+		Invokes(testing.NewDeleteAction(connectionmonitorsResource, c.ns, name), &v1alpha1.ConnectionMonitor{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeConnectionMonitors) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(connectionmonitorsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(connectionmonitorsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ConnectionMonitorList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeConnectionMonitors) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched connectionMonitor.
 func (c *FakeConnectionMonitors) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ConnectionMonitor, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(connectionmonitorsResource, name, pt, data, subresources...), &v1alpha1.ConnectionMonitor{})
+		Invokes(testing.NewPatchSubresourceAction(connectionmonitorsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ConnectionMonitor{})
+
 	if obj == nil {
 		return nil, err
 	}

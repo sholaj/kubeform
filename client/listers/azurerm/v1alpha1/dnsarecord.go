@@ -29,8 +29,8 @@ import (
 type DnsARecordLister interface {
 	// List lists all DnsARecords in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DnsARecord, err error)
-	// Get retrieves the DnsARecord from the index for a given name.
-	Get(name string) (*v1alpha1.DnsARecord, error)
+	// DnsARecords returns an object that can list and get DnsARecords.
+	DnsARecords(namespace string) DnsARecordNamespaceLister
 	DnsARecordListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dnsARecordLister) List(selector labels.Selector) (ret []*v1alpha1.DnsAR
 	return ret, err
 }
 
-// Get retrieves the DnsARecord from the index for a given name.
-func (s *dnsARecordLister) Get(name string) (*v1alpha1.DnsARecord, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DnsARecords returns an object that can list and get DnsARecords.
+func (s *dnsARecordLister) DnsARecords(namespace string) DnsARecordNamespaceLister {
+	return dnsARecordNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DnsARecordNamespaceLister helps list and get DnsARecords.
+type DnsARecordNamespaceLister interface {
+	// List lists all DnsARecords in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DnsARecord, err error)
+	// Get retrieves the DnsARecord from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DnsARecord, error)
+	DnsARecordNamespaceListerExpansion
+}
+
+// dnsARecordNamespaceLister implements the DnsARecordNamespaceLister
+// interface.
+type dnsARecordNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DnsARecords in the indexer for a given namespace.
+func (s dnsARecordNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DnsARecord, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DnsARecord))
+	})
+	return ret, err
+}
+
+// Get retrieves the DnsARecord from the indexer for a given namespace and name.
+func (s dnsARecordNamespaceLister) Get(name string) (*v1alpha1.DnsARecord, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

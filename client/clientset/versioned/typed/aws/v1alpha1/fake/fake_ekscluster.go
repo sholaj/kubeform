@@ -31,6 +31,7 @@ import (
 // FakeEksClusters implements EksClusterInterface
 type FakeEksClusters struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var eksclustersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "eksclusters"}
@@ -40,7 +41,8 @@ var eksclustersKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version
 // Get takes name of the eksCluster, and returns the corresponding eksCluster object, and an error if there is any.
 func (c *FakeEksClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.EksCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(eksclustersResource, name), &v1alpha1.EksCluster{})
+		Invokes(testing.NewGetAction(eksclustersResource, c.ns, name), &v1alpha1.EksCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEksClusters) Get(name string, options v1.GetOptions) (result *v1alp
 // List takes label and field selectors, and returns the list of EksClusters that match those selectors.
 func (c *FakeEksClusters) List(opts v1.ListOptions) (result *v1alpha1.EksClusterList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(eksclustersResource, eksclustersKind, opts), &v1alpha1.EksClusterList{})
+		Invokes(testing.NewListAction(eksclustersResource, eksclustersKind, c.ns, opts), &v1alpha1.EksClusterList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEksClusters) List(opts v1.ListOptions) (result *v1alpha1.EksCluster
 // Watch returns a watch.Interface that watches the requested eksClusters.
 func (c *FakeEksClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(eksclustersResource, opts))
+		InvokesWatch(testing.NewWatchAction(eksclustersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a eksCluster and creates it.  Returns the server's representation of the eksCluster, and an error, if there is any.
 func (c *FakeEksClusters) Create(eksCluster *v1alpha1.EksCluster) (result *v1alpha1.EksCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(eksclustersResource, eksCluster), &v1alpha1.EksCluster{})
+		Invokes(testing.NewCreateAction(eksclustersResource, c.ns, eksCluster), &v1alpha1.EksCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEksClusters) Create(eksCluster *v1alpha1.EksCluster) (result *v1alp
 // Update takes the representation of a eksCluster and updates it. Returns the server's representation of the eksCluster, and an error, if there is any.
 func (c *FakeEksClusters) Update(eksCluster *v1alpha1.EksCluster) (result *v1alpha1.EksCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(eksclustersResource, eksCluster), &v1alpha1.EksCluster{})
+		Invokes(testing.NewUpdateAction(eksclustersResource, c.ns, eksCluster), &v1alpha1.EksCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEksClusters) Update(eksCluster *v1alpha1.EksCluster) (result *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEksClusters) UpdateStatus(eksCluster *v1alpha1.EksCluster) (*v1alpha1.EksCluster, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(eksclustersResource, "status", eksCluster), &v1alpha1.EksCluster{})
+		Invokes(testing.NewUpdateSubresourceAction(eksclustersResource, "status", c.ns, eksCluster), &v1alpha1.EksCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEksClusters) UpdateStatus(eksCluster *v1alpha1.EksCluster) (*v1alph
 // Delete takes name of the eksCluster and deletes it. Returns an error if one occurs.
 func (c *FakeEksClusters) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(eksclustersResource, name), &v1alpha1.EksCluster{})
+		Invokes(testing.NewDeleteAction(eksclustersResource, c.ns, name), &v1alpha1.EksCluster{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEksClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(eksclustersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(eksclustersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.EksClusterList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEksClusters) DeleteCollection(options *v1.DeleteOptions, listOption
 // Patch applies the patch and returns the patched eksCluster.
 func (c *FakeEksClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EksCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(eksclustersResource, name, pt, data, subresources...), &v1alpha1.EksCluster{})
+		Invokes(testing.NewPatchSubresourceAction(eksclustersResource, c.ns, name, pt, data, subresources...), &v1alpha1.EksCluster{})
+
 	if obj == nil {
 		return nil, err
 	}

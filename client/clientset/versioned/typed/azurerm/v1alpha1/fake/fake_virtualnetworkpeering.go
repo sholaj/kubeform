@@ -31,6 +31,7 @@ import (
 // FakeVirtualNetworkPeerings implements VirtualNetworkPeeringInterface
 type FakeVirtualNetworkPeerings struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var virtualnetworkpeeringsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "virtualnetworkpeerings"}
@@ -40,7 +41,8 @@ var virtualnetworkpeeringsKind = schema.GroupVersionKind{Group: "azurerm.kubefor
 // Get takes name of the virtualNetworkPeering, and returns the corresponding virtualNetworkPeering object, and an error if there is any.
 func (c *FakeVirtualNetworkPeerings) Get(name string, options v1.GetOptions) (result *v1alpha1.VirtualNetworkPeering, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(virtualnetworkpeeringsResource, name), &v1alpha1.VirtualNetworkPeering{})
+		Invokes(testing.NewGetAction(virtualnetworkpeeringsResource, c.ns, name), &v1alpha1.VirtualNetworkPeering{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeVirtualNetworkPeerings) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of VirtualNetworkPeerings that match those selectors.
 func (c *FakeVirtualNetworkPeerings) List(opts v1.ListOptions) (result *v1alpha1.VirtualNetworkPeeringList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(virtualnetworkpeeringsResource, virtualnetworkpeeringsKind, opts), &v1alpha1.VirtualNetworkPeeringList{})
+		Invokes(testing.NewListAction(virtualnetworkpeeringsResource, virtualnetworkpeeringsKind, c.ns, opts), &v1alpha1.VirtualNetworkPeeringList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeVirtualNetworkPeerings) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested virtualNetworkPeerings.
 func (c *FakeVirtualNetworkPeerings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(virtualnetworkpeeringsResource, opts))
+		InvokesWatch(testing.NewWatchAction(virtualnetworkpeeringsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a virtualNetworkPeering and creates it.  Returns the server's representation of the virtualNetworkPeering, and an error, if there is any.
 func (c *FakeVirtualNetworkPeerings) Create(virtualNetworkPeering *v1alpha1.VirtualNetworkPeering) (result *v1alpha1.VirtualNetworkPeering, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(virtualnetworkpeeringsResource, virtualNetworkPeering), &v1alpha1.VirtualNetworkPeering{})
+		Invokes(testing.NewCreateAction(virtualnetworkpeeringsResource, c.ns, virtualNetworkPeering), &v1alpha1.VirtualNetworkPeering{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeVirtualNetworkPeerings) Create(virtualNetworkPeering *v1alpha1.Virt
 // Update takes the representation of a virtualNetworkPeering and updates it. Returns the server's representation of the virtualNetworkPeering, and an error, if there is any.
 func (c *FakeVirtualNetworkPeerings) Update(virtualNetworkPeering *v1alpha1.VirtualNetworkPeering) (result *v1alpha1.VirtualNetworkPeering, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(virtualnetworkpeeringsResource, virtualNetworkPeering), &v1alpha1.VirtualNetworkPeering{})
+		Invokes(testing.NewUpdateAction(virtualnetworkpeeringsResource, c.ns, virtualNetworkPeering), &v1alpha1.VirtualNetworkPeering{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeVirtualNetworkPeerings) Update(virtualNetworkPeering *v1alpha1.Virt
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeVirtualNetworkPeerings) UpdateStatus(virtualNetworkPeering *v1alpha1.VirtualNetworkPeering) (*v1alpha1.VirtualNetworkPeering, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(virtualnetworkpeeringsResource, "status", virtualNetworkPeering), &v1alpha1.VirtualNetworkPeering{})
+		Invokes(testing.NewUpdateSubresourceAction(virtualnetworkpeeringsResource, "status", c.ns, virtualNetworkPeering), &v1alpha1.VirtualNetworkPeering{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeVirtualNetworkPeerings) UpdateStatus(virtualNetworkPeering *v1alpha
 // Delete takes name of the virtualNetworkPeering and deletes it. Returns an error if one occurs.
 func (c *FakeVirtualNetworkPeerings) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(virtualnetworkpeeringsResource, name), &v1alpha1.VirtualNetworkPeering{})
+		Invokes(testing.NewDeleteAction(virtualnetworkpeeringsResource, c.ns, name), &v1alpha1.VirtualNetworkPeering{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeVirtualNetworkPeerings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(virtualnetworkpeeringsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(virtualnetworkpeeringsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.VirtualNetworkPeeringList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeVirtualNetworkPeerings) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched virtualNetworkPeering.
 func (c *FakeVirtualNetworkPeerings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VirtualNetworkPeering, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(virtualnetworkpeeringsResource, name, pt, data, subresources...), &v1alpha1.VirtualNetworkPeering{})
+		Invokes(testing.NewPatchSubresourceAction(virtualnetworkpeeringsResource, c.ns, name, pt, data, subresources...), &v1alpha1.VirtualNetworkPeering{})
+
 	if obj == nil {
 		return nil, err
 	}

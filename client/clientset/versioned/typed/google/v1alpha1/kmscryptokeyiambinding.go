@@ -32,7 +32,7 @@ import (
 // KmsCryptoKeyIamBindingsGetter has a method to return a KmsCryptoKeyIamBindingInterface.
 // A group's client should implement this interface.
 type KmsCryptoKeyIamBindingsGetter interface {
-	KmsCryptoKeyIamBindings() KmsCryptoKeyIamBindingInterface
+	KmsCryptoKeyIamBindings(namespace string) KmsCryptoKeyIamBindingInterface
 }
 
 // KmsCryptoKeyIamBindingInterface has methods to work with KmsCryptoKeyIamBinding resources.
@@ -52,12 +52,14 @@ type KmsCryptoKeyIamBindingInterface interface {
 // kmsCryptoKeyIamBindings implements KmsCryptoKeyIamBindingInterface
 type kmsCryptoKeyIamBindings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKmsCryptoKeyIamBindings returns a KmsCryptoKeyIamBindings
-func newKmsCryptoKeyIamBindings(c *GoogleV1alpha1Client) *kmsCryptoKeyIamBindings {
+func newKmsCryptoKeyIamBindings(c *GoogleV1alpha1Client, namespace string) *kmsCryptoKeyIamBindings {
 	return &kmsCryptoKeyIamBindings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKmsCryptoKeyIamBindings(c *GoogleV1alpha1Client) *kmsCryptoKeyIamBinding
 func (c *kmsCryptoKeyIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.KmsCryptoKeyIamBinding, err error) {
 	result = &v1alpha1.KmsCryptoKeyIamBinding{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmscryptokeyiambindings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *kmsCryptoKeyIamBindings) List(opts v1.ListOptions) (result *v1alpha1.Km
 	}
 	result = &v1alpha1.KmsCryptoKeyIamBindingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmscryptokeyiambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *kmsCryptoKeyIamBindings) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("kmscryptokeyiambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *kmsCryptoKeyIamBindings) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *kmsCryptoKeyIamBindings) Create(kmsCryptoKeyIamBinding *v1alpha1.KmsCryptoKeyIamBinding) (result *v1alpha1.KmsCryptoKeyIamBinding, err error) {
 	result = &v1alpha1.KmsCryptoKeyIamBinding{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("kmscryptokeyiambindings").
 		Body(kmsCryptoKeyIamBinding).
 		Do().
@@ -118,6 +124,7 @@ func (c *kmsCryptoKeyIamBindings) Create(kmsCryptoKeyIamBinding *v1alpha1.KmsCry
 func (c *kmsCryptoKeyIamBindings) Update(kmsCryptoKeyIamBinding *v1alpha1.KmsCryptoKeyIamBinding) (result *v1alpha1.KmsCryptoKeyIamBinding, err error) {
 	result = &v1alpha1.KmsCryptoKeyIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmscryptokeyiambindings").
 		Name(kmsCryptoKeyIamBinding.Name).
 		Body(kmsCryptoKeyIamBinding).
@@ -132,6 +139,7 @@ func (c *kmsCryptoKeyIamBindings) Update(kmsCryptoKeyIamBinding *v1alpha1.KmsCry
 func (c *kmsCryptoKeyIamBindings) UpdateStatus(kmsCryptoKeyIamBinding *v1alpha1.KmsCryptoKeyIamBinding) (result *v1alpha1.KmsCryptoKeyIamBinding, err error) {
 	result = &v1alpha1.KmsCryptoKeyIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmscryptokeyiambindings").
 		Name(kmsCryptoKeyIamBinding.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *kmsCryptoKeyIamBindings) UpdateStatus(kmsCryptoKeyIamBinding *v1alpha1.
 // Delete takes name of the kmsCryptoKeyIamBinding and deletes it. Returns an error if one occurs.
 func (c *kmsCryptoKeyIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmscryptokeyiambindings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *kmsCryptoKeyIamBindings) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmscryptokeyiambindings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *kmsCryptoKeyIamBindings) DeleteCollection(options *v1.DeleteOptions, li
 func (c *kmsCryptoKeyIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KmsCryptoKeyIamBinding, err error) {
 	result = &v1alpha1.KmsCryptoKeyIamBinding{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("kmscryptokeyiambindings").
 		SubResource(subresources...).
 		Name(name).

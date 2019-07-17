@@ -32,7 +32,7 @@ import (
 // WafregionalSizeConstraintSetsGetter has a method to return a WafregionalSizeConstraintSetInterface.
 // A group's client should implement this interface.
 type WafregionalSizeConstraintSetsGetter interface {
-	WafregionalSizeConstraintSets() WafregionalSizeConstraintSetInterface
+	WafregionalSizeConstraintSets(namespace string) WafregionalSizeConstraintSetInterface
 }
 
 // WafregionalSizeConstraintSetInterface has methods to work with WafregionalSizeConstraintSet resources.
@@ -52,12 +52,14 @@ type WafregionalSizeConstraintSetInterface interface {
 // wafregionalSizeConstraintSets implements WafregionalSizeConstraintSetInterface
 type wafregionalSizeConstraintSets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWafregionalSizeConstraintSets returns a WafregionalSizeConstraintSets
-func newWafregionalSizeConstraintSets(c *AwsV1alpha1Client) *wafregionalSizeConstraintSets {
+func newWafregionalSizeConstraintSets(c *AwsV1alpha1Client, namespace string) *wafregionalSizeConstraintSets {
 	return &wafregionalSizeConstraintSets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWafregionalSizeConstraintSets(c *AwsV1alpha1Client) *wafregionalSizeCons
 func (c *wafregionalSizeConstraintSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalSizeConstraintSet, err error) {
 	result = &v1alpha1.WafregionalSizeConstraintSet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalsizeconstraintsets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *wafregionalSizeConstraintSets) List(opts v1.ListOptions) (result *v1alp
 	}
 	result = &v1alpha1.WafregionalSizeConstraintSetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalsizeconstraintsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *wafregionalSizeConstraintSets) Watch(opts v1.ListOptions) (watch.Interf
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalsizeconstraintsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *wafregionalSizeConstraintSets) Watch(opts v1.ListOptions) (watch.Interf
 func (c *wafregionalSizeConstraintSets) Create(wafregionalSizeConstraintSet *v1alpha1.WafregionalSizeConstraintSet) (result *v1alpha1.WafregionalSizeConstraintSet, err error) {
 	result = &v1alpha1.WafregionalSizeConstraintSet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafregionalsizeconstraintsets").
 		Body(wafregionalSizeConstraintSet).
 		Do().
@@ -118,6 +124,7 @@ func (c *wafregionalSizeConstraintSets) Create(wafregionalSizeConstraintSet *v1a
 func (c *wafregionalSizeConstraintSets) Update(wafregionalSizeConstraintSet *v1alpha1.WafregionalSizeConstraintSet) (result *v1alpha1.WafregionalSizeConstraintSet, err error) {
 	result = &v1alpha1.WafregionalSizeConstraintSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregionalsizeconstraintsets").
 		Name(wafregionalSizeConstraintSet.Name).
 		Body(wafregionalSizeConstraintSet).
@@ -132,6 +139,7 @@ func (c *wafregionalSizeConstraintSets) Update(wafregionalSizeConstraintSet *v1a
 func (c *wafregionalSizeConstraintSets) UpdateStatus(wafregionalSizeConstraintSet *v1alpha1.WafregionalSizeConstraintSet) (result *v1alpha1.WafregionalSizeConstraintSet, err error) {
 	result = &v1alpha1.WafregionalSizeConstraintSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregionalsizeconstraintsets").
 		Name(wafregionalSizeConstraintSet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *wafregionalSizeConstraintSets) UpdateStatus(wafregionalSizeConstraintSe
 // Delete takes name of the wafregionalSizeConstraintSet and deletes it. Returns an error if one occurs.
 func (c *wafregionalSizeConstraintSets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregionalsizeconstraintsets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *wafregionalSizeConstraintSets) DeleteCollection(options *v1.DeleteOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregionalsizeconstraintsets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *wafregionalSizeConstraintSets) DeleteCollection(options *v1.DeleteOptio
 func (c *wafregionalSizeConstraintSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalSizeConstraintSet, err error) {
 	result = &v1alpha1.WafregionalSizeConstraintSet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafregionalsizeconstraintsets").
 		SubResource(subresources...).
 		Name(name).

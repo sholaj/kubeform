@@ -29,8 +29,8 @@ import (
 type MediaPackageChannelLister interface {
 	// List lists all MediaPackageChannels in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MediaPackageChannel, err error)
-	// Get retrieves the MediaPackageChannel from the index for a given name.
-	Get(name string) (*v1alpha1.MediaPackageChannel, error)
+	// MediaPackageChannels returns an object that can list and get MediaPackageChannels.
+	MediaPackageChannels(namespace string) MediaPackageChannelNamespaceLister
 	MediaPackageChannelListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *mediaPackageChannelLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the MediaPackageChannel from the index for a given name.
-func (s *mediaPackageChannelLister) Get(name string) (*v1alpha1.MediaPackageChannel, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MediaPackageChannels returns an object that can list and get MediaPackageChannels.
+func (s *mediaPackageChannelLister) MediaPackageChannels(namespace string) MediaPackageChannelNamespaceLister {
+	return mediaPackageChannelNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MediaPackageChannelNamespaceLister helps list and get MediaPackageChannels.
+type MediaPackageChannelNamespaceLister interface {
+	// List lists all MediaPackageChannels in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MediaPackageChannel, err error)
+	// Get retrieves the MediaPackageChannel from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MediaPackageChannel, error)
+	MediaPackageChannelNamespaceListerExpansion
+}
+
+// mediaPackageChannelNamespaceLister implements the MediaPackageChannelNamespaceLister
+// interface.
+type mediaPackageChannelNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MediaPackageChannels in the indexer for a given namespace.
+func (s mediaPackageChannelNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MediaPackageChannel, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MediaPackageChannel))
+	})
+	return ret, err
+}
+
+// Get retrieves the MediaPackageChannel from the indexer for a given namespace and name.
+func (s mediaPackageChannelNamespaceLister) Get(name string) (*v1alpha1.MediaPackageChannel, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

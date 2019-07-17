@@ -29,8 +29,8 @@ import (
 type ServicebusNamespaceAuthorizationRuleLister interface {
 	// List lists all ServicebusNamespaceAuthorizationRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ServicebusNamespaceAuthorizationRule, err error)
-	// Get retrieves the ServicebusNamespaceAuthorizationRule from the index for a given name.
-	Get(name string) (*v1alpha1.ServicebusNamespaceAuthorizationRule, error)
+	// ServicebusNamespaceAuthorizationRules returns an object that can list and get ServicebusNamespaceAuthorizationRules.
+	ServicebusNamespaceAuthorizationRules(namespace string) ServicebusNamespaceAuthorizationRuleNamespaceLister
 	ServicebusNamespaceAuthorizationRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *servicebusNamespaceAuthorizationRuleLister) List(selector labels.Select
 	return ret, err
 }
 
-// Get retrieves the ServicebusNamespaceAuthorizationRule from the index for a given name.
-func (s *servicebusNamespaceAuthorizationRuleLister) Get(name string) (*v1alpha1.ServicebusNamespaceAuthorizationRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ServicebusNamespaceAuthorizationRules returns an object that can list and get ServicebusNamespaceAuthorizationRules.
+func (s *servicebusNamespaceAuthorizationRuleLister) ServicebusNamespaceAuthorizationRules(namespace string) ServicebusNamespaceAuthorizationRuleNamespaceLister {
+	return servicebusNamespaceAuthorizationRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ServicebusNamespaceAuthorizationRuleNamespaceLister helps list and get ServicebusNamespaceAuthorizationRules.
+type ServicebusNamespaceAuthorizationRuleNamespaceLister interface {
+	// List lists all ServicebusNamespaceAuthorizationRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ServicebusNamespaceAuthorizationRule, err error)
+	// Get retrieves the ServicebusNamespaceAuthorizationRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ServicebusNamespaceAuthorizationRule, error)
+	ServicebusNamespaceAuthorizationRuleNamespaceListerExpansion
+}
+
+// servicebusNamespaceAuthorizationRuleNamespaceLister implements the ServicebusNamespaceAuthorizationRuleNamespaceLister
+// interface.
+type servicebusNamespaceAuthorizationRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ServicebusNamespaceAuthorizationRules in the indexer for a given namespace.
+func (s servicebusNamespaceAuthorizationRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServicebusNamespaceAuthorizationRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ServicebusNamespaceAuthorizationRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the ServicebusNamespaceAuthorizationRule from the indexer for a given namespace and name.
+func (s servicebusNamespaceAuthorizationRuleNamespaceLister) Get(name string) (*v1alpha1.ServicebusNamespaceAuthorizationRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

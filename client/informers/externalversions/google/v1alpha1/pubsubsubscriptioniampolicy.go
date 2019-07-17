@@ -41,32 +41,33 @@ type PubsubSubscriptionIamPolicyInformer interface {
 type pubsubSubscriptionIamPolicyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewPubsubSubscriptionIamPolicyInformer constructs a new informer for PubsubSubscriptionIamPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewPubsubSubscriptionIamPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredPubsubSubscriptionIamPolicyInformer(client, resyncPeriod, indexers, nil)
+func NewPubsubSubscriptionIamPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredPubsubSubscriptionIamPolicyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredPubsubSubscriptionIamPolicyInformer constructs a new informer for PubsubSubscriptionIamPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredPubsubSubscriptionIamPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredPubsubSubscriptionIamPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().PubsubSubscriptionIamPolicies().List(options)
+				return client.GoogleV1alpha1().PubsubSubscriptionIamPolicies(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().PubsubSubscriptionIamPolicies().Watch(options)
+				return client.GoogleV1alpha1().PubsubSubscriptionIamPolicies(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.PubsubSubscriptionIamPolicy{},
@@ -76,7 +77,7 @@ func NewFilteredPubsubSubscriptionIamPolicyInformer(client versioned.Interface, 
 }
 
 func (f *pubsubSubscriptionIamPolicyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredPubsubSubscriptionIamPolicyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredPubsubSubscriptionIamPolicyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *pubsubSubscriptionIamPolicyInformer) Informer() cache.SharedIndexInformer {

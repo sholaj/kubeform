@@ -31,6 +31,7 @@ import (
 // FakeAppEngineApplications implements AppEngineApplicationInterface
 type FakeAppEngineApplications struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var appengineapplicationsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "appengineapplications"}
@@ -40,7 +41,8 @@ var appengineapplicationsKind = schema.GroupVersionKind{Group: "google.kubeform.
 // Get takes name of the appEngineApplication, and returns the corresponding appEngineApplication object, and an error if there is any.
 func (c *FakeAppEngineApplications) Get(name string, options v1.GetOptions) (result *v1alpha1.AppEngineApplication, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(appengineapplicationsResource, name), &v1alpha1.AppEngineApplication{})
+		Invokes(testing.NewGetAction(appengineapplicationsResource, c.ns, name), &v1alpha1.AppEngineApplication{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAppEngineApplications) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of AppEngineApplications that match those selectors.
 func (c *FakeAppEngineApplications) List(opts v1.ListOptions) (result *v1alpha1.AppEngineApplicationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(appengineapplicationsResource, appengineapplicationsKind, opts), &v1alpha1.AppEngineApplicationList{})
+		Invokes(testing.NewListAction(appengineapplicationsResource, appengineapplicationsKind, c.ns, opts), &v1alpha1.AppEngineApplicationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAppEngineApplications) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested appEngineApplications.
 func (c *FakeAppEngineApplications) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(appengineapplicationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(appengineapplicationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a appEngineApplication and creates it.  Returns the server's representation of the appEngineApplication, and an error, if there is any.
 func (c *FakeAppEngineApplications) Create(appEngineApplication *v1alpha1.AppEngineApplication) (result *v1alpha1.AppEngineApplication, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(appengineapplicationsResource, appEngineApplication), &v1alpha1.AppEngineApplication{})
+		Invokes(testing.NewCreateAction(appengineapplicationsResource, c.ns, appEngineApplication), &v1alpha1.AppEngineApplication{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAppEngineApplications) Create(appEngineApplication *v1alpha1.AppEng
 // Update takes the representation of a appEngineApplication and updates it. Returns the server's representation of the appEngineApplication, and an error, if there is any.
 func (c *FakeAppEngineApplications) Update(appEngineApplication *v1alpha1.AppEngineApplication) (result *v1alpha1.AppEngineApplication, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(appengineapplicationsResource, appEngineApplication), &v1alpha1.AppEngineApplication{})
+		Invokes(testing.NewUpdateAction(appengineapplicationsResource, c.ns, appEngineApplication), &v1alpha1.AppEngineApplication{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAppEngineApplications) Update(appEngineApplication *v1alpha1.AppEng
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAppEngineApplications) UpdateStatus(appEngineApplication *v1alpha1.AppEngineApplication) (*v1alpha1.AppEngineApplication, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(appengineapplicationsResource, "status", appEngineApplication), &v1alpha1.AppEngineApplication{})
+		Invokes(testing.NewUpdateSubresourceAction(appengineapplicationsResource, "status", c.ns, appEngineApplication), &v1alpha1.AppEngineApplication{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAppEngineApplications) UpdateStatus(appEngineApplication *v1alpha1.
 // Delete takes name of the appEngineApplication and deletes it. Returns an error if one occurs.
 func (c *FakeAppEngineApplications) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(appengineapplicationsResource, name), &v1alpha1.AppEngineApplication{})
+		Invokes(testing.NewDeleteAction(appengineapplicationsResource, c.ns, name), &v1alpha1.AppEngineApplication{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAppEngineApplications) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(appengineapplicationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(appengineapplicationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AppEngineApplicationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAppEngineApplications) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched appEngineApplication.
 func (c *FakeAppEngineApplications) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppEngineApplication, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(appengineapplicationsResource, name, pt, data, subresources...), &v1alpha1.AppEngineApplication{})
+		Invokes(testing.NewPatchSubresourceAction(appengineapplicationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.AppEngineApplication{})
+
 	if obj == nil {
 		return nil, err
 	}

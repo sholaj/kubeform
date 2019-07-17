@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,26 +20,27 @@ type ServicebusTopic struct {
 
 type ServicebusTopicSpec struct {
 	// +optional
-	EnableBatchedOperations bool `json:"enable_batched_operations,omitempty"`
+	EnableBatchedOperations bool `json:"enableBatchedOperations,omitempty" tf:"enable_batched_operations,omitempty"`
 	// +optional
-	EnableExpress bool `json:"enable_express,omitempty"`
-	// +optional
-	// Deprecated
-	EnableFilteringMessagesBeforePublishing bool `json:"enable_filtering_messages_before_publishing,omitempty"`
-	// +optional
-	EnablePartitioning bool `json:"enable_partitioning,omitempty"`
+	EnableExpress bool `json:"enableExpress,omitempty" tf:"enable_express,omitempty"`
 	// +optional
 	// Deprecated
-	Location      string `json:"location,omitempty"`
-	Name          string `json:"name"`
-	NamespaceName string `json:"namespace_name"`
+	EnableFilteringMessagesBeforePublishing bool `json:"enableFilteringMessagesBeforePublishing,omitempty" tf:"enable_filtering_messages_before_publishing,omitempty"`
 	// +optional
-	RequiresDuplicateDetection bool   `json:"requires_duplicate_detection,omitempty"`
-	ResourceGroupName          string `json:"resource_group_name"`
+	EnablePartitioning bool `json:"enablePartitioning,omitempty" tf:"enable_partitioning,omitempty"`
 	// +optional
-	Status string `json:"status,omitempty"`
+	// Deprecated
+	Location      string `json:"location,omitempty" tf:"location,omitempty"`
+	Name          string `json:"name" tf:"name"`
+	NamespaceName string `json:"namespaceName" tf:"namespace_name"`
 	// +optional
-	SupportOrdering bool `json:"support_ordering,omitempty"`
+	RequiresDuplicateDetection bool   `json:"requiresDuplicateDetection,omitempty" tf:"requires_duplicate_detection,omitempty"`
+	ResourceGroupName          string `json:"resourceGroupName" tf:"resource_group_name"`
+	// +optional
+	Status string `json:"status,omitempty" tf:"status,omitempty"`
+	// +optional
+	SupportOrdering bool                      `json:"supportOrdering,omitempty" tf:"support_ordering,omitempty"`
+	ProviderRef     core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ServicebusTopicStatus struct {
@@ -47,7 +48,9 @@ type ServicebusTopicStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

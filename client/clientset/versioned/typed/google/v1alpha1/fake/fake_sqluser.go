@@ -31,6 +31,7 @@ import (
 // FakeSqlUsers implements SqlUserInterface
 type FakeSqlUsers struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var sqlusersResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "sqlusers"}
@@ -40,7 +41,8 @@ var sqlusersKind = schema.GroupVersionKind{Group: "google.kubeform.com", Version
 // Get takes name of the sqlUser, and returns the corresponding sqlUser object, and an error if there is any.
 func (c *FakeSqlUsers) Get(name string, options v1.GetOptions) (result *v1alpha1.SqlUser, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sqlusersResource, name), &v1alpha1.SqlUser{})
+		Invokes(testing.NewGetAction(sqlusersResource, c.ns, name), &v1alpha1.SqlUser{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSqlUsers) Get(name string, options v1.GetOptions) (result *v1alpha1
 // List takes label and field selectors, and returns the list of SqlUsers that match those selectors.
 func (c *FakeSqlUsers) List(opts v1.ListOptions) (result *v1alpha1.SqlUserList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sqlusersResource, sqlusersKind, opts), &v1alpha1.SqlUserList{})
+		Invokes(testing.NewListAction(sqlusersResource, sqlusersKind, c.ns, opts), &v1alpha1.SqlUserList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSqlUsers) List(opts v1.ListOptions) (result *v1alpha1.SqlUserList, 
 // Watch returns a watch.Interface that watches the requested sqlUsers.
 func (c *FakeSqlUsers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sqlusersResource, opts))
+		InvokesWatch(testing.NewWatchAction(sqlusersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sqlUser and creates it.  Returns the server's representation of the sqlUser, and an error, if there is any.
 func (c *FakeSqlUsers) Create(sqlUser *v1alpha1.SqlUser) (result *v1alpha1.SqlUser, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sqlusersResource, sqlUser), &v1alpha1.SqlUser{})
+		Invokes(testing.NewCreateAction(sqlusersResource, c.ns, sqlUser), &v1alpha1.SqlUser{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSqlUsers) Create(sqlUser *v1alpha1.SqlUser) (result *v1alpha1.SqlUs
 // Update takes the representation of a sqlUser and updates it. Returns the server's representation of the sqlUser, and an error, if there is any.
 func (c *FakeSqlUsers) Update(sqlUser *v1alpha1.SqlUser) (result *v1alpha1.SqlUser, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sqlusersResource, sqlUser), &v1alpha1.SqlUser{})
+		Invokes(testing.NewUpdateAction(sqlusersResource, c.ns, sqlUser), &v1alpha1.SqlUser{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSqlUsers) Update(sqlUser *v1alpha1.SqlUser) (result *v1alpha1.SqlUs
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSqlUsers) UpdateStatus(sqlUser *v1alpha1.SqlUser) (*v1alpha1.SqlUser, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sqlusersResource, "status", sqlUser), &v1alpha1.SqlUser{})
+		Invokes(testing.NewUpdateSubresourceAction(sqlusersResource, "status", c.ns, sqlUser), &v1alpha1.SqlUser{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSqlUsers) UpdateStatus(sqlUser *v1alpha1.SqlUser) (*v1alpha1.SqlUse
 // Delete takes name of the sqlUser and deletes it. Returns an error if one occurs.
 func (c *FakeSqlUsers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sqlusersResource, name), &v1alpha1.SqlUser{})
+		Invokes(testing.NewDeleteAction(sqlusersResource, c.ns, name), &v1alpha1.SqlUser{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSqlUsers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sqlusersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sqlusersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SqlUserList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSqlUsers) DeleteCollection(options *v1.DeleteOptions, listOptions v
 // Patch applies the patch and returns the patched sqlUser.
 func (c *FakeSqlUsers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SqlUser, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sqlusersResource, name, pt, data, subresources...), &v1alpha1.SqlUser{})
+		Invokes(testing.NewPatchSubresourceAction(sqlusersResource, c.ns, name, pt, data, subresources...), &v1alpha1.SqlUser{})
+
 	if obj == nil {
 		return nil, err
 	}

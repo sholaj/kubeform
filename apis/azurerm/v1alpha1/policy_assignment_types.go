@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,18 +20,19 @@ type PolicyAssignment struct {
 
 type PolicyAssignmentSpec struct {
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	DisplayName string `json:"display_name,omitempty"`
+	DisplayName string `json:"displayName,omitempty" tf:"display_name,omitempty"`
 	// +optional
-	Location string `json:"location,omitempty"`
-	Name     string `json:"name"`
+	Location string `json:"location,omitempty" tf:"location,omitempty"`
+	Name     string `json:"name" tf:"name"`
 	// +optional
-	NotScopes []string `json:"not_scopes,omitempty"`
+	NotScopes []string `json:"notScopes,omitempty" tf:"not_scopes,omitempty"`
 	// +optional
-	Parameters         string `json:"parameters,omitempty"`
-	PolicyDefinitionId string `json:"policy_definition_id"`
-	Scope              string `json:"scope"`
+	Parameters         string                    `json:"parameters,omitempty" tf:"parameters,omitempty"`
+	PolicyDefinitionID string                    `json:"policyDefinitionID" tf:"policy_definition_id"`
+	Scope              string                    `json:"scope" tf:"scope"`
+	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type PolicyAssignmentStatus struct {
@@ -39,7 +40,9 @@ type PolicyAssignmentStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

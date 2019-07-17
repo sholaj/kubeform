@@ -31,6 +31,7 @@ import (
 // FakeGlacierVaultLocks implements GlacierVaultLockInterface
 type FakeGlacierVaultLocks struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var glaciervaultlocksResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "glaciervaultlocks"}
@@ -40,7 +41,8 @@ var glaciervaultlocksKind = schema.GroupVersionKind{Group: "aws.kubeform.com", V
 // Get takes name of the glacierVaultLock, and returns the corresponding glacierVaultLock object, and an error if there is any.
 func (c *FakeGlacierVaultLocks) Get(name string, options v1.GetOptions) (result *v1alpha1.GlacierVaultLock, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(glaciervaultlocksResource, name), &v1alpha1.GlacierVaultLock{})
+		Invokes(testing.NewGetAction(glaciervaultlocksResource, c.ns, name), &v1alpha1.GlacierVaultLock{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeGlacierVaultLocks) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of GlacierVaultLocks that match those selectors.
 func (c *FakeGlacierVaultLocks) List(opts v1.ListOptions) (result *v1alpha1.GlacierVaultLockList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(glaciervaultlocksResource, glaciervaultlocksKind, opts), &v1alpha1.GlacierVaultLockList{})
+		Invokes(testing.NewListAction(glaciervaultlocksResource, glaciervaultlocksKind, c.ns, opts), &v1alpha1.GlacierVaultLockList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeGlacierVaultLocks) List(opts v1.ListOptions) (result *v1alpha1.Glac
 // Watch returns a watch.Interface that watches the requested glacierVaultLocks.
 func (c *FakeGlacierVaultLocks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(glaciervaultlocksResource, opts))
+		InvokesWatch(testing.NewWatchAction(glaciervaultlocksResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a glacierVaultLock and creates it.  Returns the server's representation of the glacierVaultLock, and an error, if there is any.
 func (c *FakeGlacierVaultLocks) Create(glacierVaultLock *v1alpha1.GlacierVaultLock) (result *v1alpha1.GlacierVaultLock, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(glaciervaultlocksResource, glacierVaultLock), &v1alpha1.GlacierVaultLock{})
+		Invokes(testing.NewCreateAction(glaciervaultlocksResource, c.ns, glacierVaultLock), &v1alpha1.GlacierVaultLock{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeGlacierVaultLocks) Create(glacierVaultLock *v1alpha1.GlacierVaultLo
 // Update takes the representation of a glacierVaultLock and updates it. Returns the server's representation of the glacierVaultLock, and an error, if there is any.
 func (c *FakeGlacierVaultLocks) Update(glacierVaultLock *v1alpha1.GlacierVaultLock) (result *v1alpha1.GlacierVaultLock, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(glaciervaultlocksResource, glacierVaultLock), &v1alpha1.GlacierVaultLock{})
+		Invokes(testing.NewUpdateAction(glaciervaultlocksResource, c.ns, glacierVaultLock), &v1alpha1.GlacierVaultLock{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeGlacierVaultLocks) Update(glacierVaultLock *v1alpha1.GlacierVaultLo
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeGlacierVaultLocks) UpdateStatus(glacierVaultLock *v1alpha1.GlacierVaultLock) (*v1alpha1.GlacierVaultLock, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(glaciervaultlocksResource, "status", glacierVaultLock), &v1alpha1.GlacierVaultLock{})
+		Invokes(testing.NewUpdateSubresourceAction(glaciervaultlocksResource, "status", c.ns, glacierVaultLock), &v1alpha1.GlacierVaultLock{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeGlacierVaultLocks) UpdateStatus(glacierVaultLock *v1alpha1.GlacierV
 // Delete takes name of the glacierVaultLock and deletes it. Returns an error if one occurs.
 func (c *FakeGlacierVaultLocks) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(glaciervaultlocksResource, name), &v1alpha1.GlacierVaultLock{})
+		Invokes(testing.NewDeleteAction(glaciervaultlocksResource, c.ns, name), &v1alpha1.GlacierVaultLock{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeGlacierVaultLocks) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(glaciervaultlocksResource, listOptions)
+	action := testing.NewDeleteCollectionAction(glaciervaultlocksResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.GlacierVaultLockList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeGlacierVaultLocks) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched glacierVaultLock.
 func (c *FakeGlacierVaultLocks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GlacierVaultLock, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(glaciervaultlocksResource, name, pt, data, subresources...), &v1alpha1.GlacierVaultLock{})
+		Invokes(testing.NewPatchSubresourceAction(glaciervaultlocksResource, c.ns, name, pt, data, subresources...), &v1alpha1.GlacierVaultLock{})
+
 	if obj == nil {
 		return nil, err
 	}

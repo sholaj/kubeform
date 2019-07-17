@@ -32,7 +32,7 @@ import (
 // HdinsightKafkaClustersGetter has a method to return a HdinsightKafkaClusterInterface.
 // A group's client should implement this interface.
 type HdinsightKafkaClustersGetter interface {
-	HdinsightKafkaClusters() HdinsightKafkaClusterInterface
+	HdinsightKafkaClusters(namespace string) HdinsightKafkaClusterInterface
 }
 
 // HdinsightKafkaClusterInterface has methods to work with HdinsightKafkaCluster resources.
@@ -52,12 +52,14 @@ type HdinsightKafkaClusterInterface interface {
 // hdinsightKafkaClusters implements HdinsightKafkaClusterInterface
 type hdinsightKafkaClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newHdinsightKafkaClusters returns a HdinsightKafkaClusters
-func newHdinsightKafkaClusters(c *AzurermV1alpha1Client) *hdinsightKafkaClusters {
+func newHdinsightKafkaClusters(c *AzurermV1alpha1Client, namespace string) *hdinsightKafkaClusters {
 	return &hdinsightKafkaClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newHdinsightKafkaClusters(c *AzurermV1alpha1Client) *hdinsightKafkaClusters
 func (c *hdinsightKafkaClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.HdinsightKafkaCluster, err error) {
 	result = &v1alpha1.HdinsightKafkaCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("hdinsightkafkaclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *hdinsightKafkaClusters) List(opts v1.ListOptions) (result *v1alpha1.Hdi
 	}
 	result = &v1alpha1.HdinsightKafkaClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("hdinsightkafkaclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *hdinsightKafkaClusters) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("hdinsightkafkaclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *hdinsightKafkaClusters) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *hdinsightKafkaClusters) Create(hdinsightKafkaCluster *v1alpha1.HdinsightKafkaCluster) (result *v1alpha1.HdinsightKafkaCluster, err error) {
 	result = &v1alpha1.HdinsightKafkaCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("hdinsightkafkaclusters").
 		Body(hdinsightKafkaCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *hdinsightKafkaClusters) Create(hdinsightKafkaCluster *v1alpha1.Hdinsigh
 func (c *hdinsightKafkaClusters) Update(hdinsightKafkaCluster *v1alpha1.HdinsightKafkaCluster) (result *v1alpha1.HdinsightKafkaCluster, err error) {
 	result = &v1alpha1.HdinsightKafkaCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("hdinsightkafkaclusters").
 		Name(hdinsightKafkaCluster.Name).
 		Body(hdinsightKafkaCluster).
@@ -132,6 +139,7 @@ func (c *hdinsightKafkaClusters) Update(hdinsightKafkaCluster *v1alpha1.Hdinsigh
 func (c *hdinsightKafkaClusters) UpdateStatus(hdinsightKafkaCluster *v1alpha1.HdinsightKafkaCluster) (result *v1alpha1.HdinsightKafkaCluster, err error) {
 	result = &v1alpha1.HdinsightKafkaCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("hdinsightkafkaclusters").
 		Name(hdinsightKafkaCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *hdinsightKafkaClusters) UpdateStatus(hdinsightKafkaCluster *v1alpha1.Hd
 // Delete takes name of the hdinsightKafkaCluster and deletes it. Returns an error if one occurs.
 func (c *hdinsightKafkaClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("hdinsightkafkaclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *hdinsightKafkaClusters) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("hdinsightkafkaclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *hdinsightKafkaClusters) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *hdinsightKafkaClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.HdinsightKafkaCluster, err error) {
 	result = &v1alpha1.HdinsightKafkaCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("hdinsightkafkaclusters").
 		SubResource(subresources...).
 		Name(name).

@@ -31,6 +31,7 @@ import (
 // FakeFirewallApplicationRuleCollections implements FirewallApplicationRuleCollectionInterface
 type FakeFirewallApplicationRuleCollections struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var firewallapplicationrulecollectionsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "firewallapplicationrulecollections"}
@@ -40,7 +41,8 @@ var firewallapplicationrulecollectionsKind = schema.GroupVersionKind{Group: "azu
 // Get takes name of the firewallApplicationRuleCollection, and returns the corresponding firewallApplicationRuleCollection object, and an error if there is any.
 func (c *FakeFirewallApplicationRuleCollections) Get(name string, options v1.GetOptions) (result *v1alpha1.FirewallApplicationRuleCollection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(firewallapplicationrulecollectionsResource, name), &v1alpha1.FirewallApplicationRuleCollection{})
+		Invokes(testing.NewGetAction(firewallapplicationrulecollectionsResource, c.ns, name), &v1alpha1.FirewallApplicationRuleCollection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeFirewallApplicationRuleCollections) Get(name string, options v1.Get
 // List takes label and field selectors, and returns the list of FirewallApplicationRuleCollections that match those selectors.
 func (c *FakeFirewallApplicationRuleCollections) List(opts v1.ListOptions) (result *v1alpha1.FirewallApplicationRuleCollectionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(firewallapplicationrulecollectionsResource, firewallapplicationrulecollectionsKind, opts), &v1alpha1.FirewallApplicationRuleCollectionList{})
+		Invokes(testing.NewListAction(firewallapplicationrulecollectionsResource, firewallapplicationrulecollectionsKind, c.ns, opts), &v1alpha1.FirewallApplicationRuleCollectionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeFirewallApplicationRuleCollections) List(opts v1.ListOptions) (resu
 // Watch returns a watch.Interface that watches the requested firewallApplicationRuleCollections.
 func (c *FakeFirewallApplicationRuleCollections) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(firewallapplicationrulecollectionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(firewallapplicationrulecollectionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a firewallApplicationRuleCollection and creates it.  Returns the server's representation of the firewallApplicationRuleCollection, and an error, if there is any.
 func (c *FakeFirewallApplicationRuleCollections) Create(firewallApplicationRuleCollection *v1alpha1.FirewallApplicationRuleCollection) (result *v1alpha1.FirewallApplicationRuleCollection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(firewallapplicationrulecollectionsResource, firewallApplicationRuleCollection), &v1alpha1.FirewallApplicationRuleCollection{})
+		Invokes(testing.NewCreateAction(firewallapplicationrulecollectionsResource, c.ns, firewallApplicationRuleCollection), &v1alpha1.FirewallApplicationRuleCollection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeFirewallApplicationRuleCollections) Create(firewallApplicationRuleC
 // Update takes the representation of a firewallApplicationRuleCollection and updates it. Returns the server's representation of the firewallApplicationRuleCollection, and an error, if there is any.
 func (c *FakeFirewallApplicationRuleCollections) Update(firewallApplicationRuleCollection *v1alpha1.FirewallApplicationRuleCollection) (result *v1alpha1.FirewallApplicationRuleCollection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(firewallapplicationrulecollectionsResource, firewallApplicationRuleCollection), &v1alpha1.FirewallApplicationRuleCollection{})
+		Invokes(testing.NewUpdateAction(firewallapplicationrulecollectionsResource, c.ns, firewallApplicationRuleCollection), &v1alpha1.FirewallApplicationRuleCollection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeFirewallApplicationRuleCollections) Update(firewallApplicationRuleC
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeFirewallApplicationRuleCollections) UpdateStatus(firewallApplicationRuleCollection *v1alpha1.FirewallApplicationRuleCollection) (*v1alpha1.FirewallApplicationRuleCollection, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(firewallapplicationrulecollectionsResource, "status", firewallApplicationRuleCollection), &v1alpha1.FirewallApplicationRuleCollection{})
+		Invokes(testing.NewUpdateSubresourceAction(firewallapplicationrulecollectionsResource, "status", c.ns, firewallApplicationRuleCollection), &v1alpha1.FirewallApplicationRuleCollection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeFirewallApplicationRuleCollections) UpdateStatus(firewallApplicatio
 // Delete takes name of the firewallApplicationRuleCollection and deletes it. Returns an error if one occurs.
 func (c *FakeFirewallApplicationRuleCollections) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(firewallapplicationrulecollectionsResource, name), &v1alpha1.FirewallApplicationRuleCollection{})
+		Invokes(testing.NewDeleteAction(firewallapplicationrulecollectionsResource, c.ns, name), &v1alpha1.FirewallApplicationRuleCollection{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeFirewallApplicationRuleCollections) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(firewallapplicationrulecollectionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(firewallapplicationrulecollectionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.FirewallApplicationRuleCollectionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeFirewallApplicationRuleCollections) DeleteCollection(options *v1.De
 // Patch applies the patch and returns the patched firewallApplicationRuleCollection.
 func (c *FakeFirewallApplicationRuleCollections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FirewallApplicationRuleCollection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(firewallapplicationrulecollectionsResource, name, pt, data, subresources...), &v1alpha1.FirewallApplicationRuleCollection{})
+		Invokes(testing.NewPatchSubresourceAction(firewallapplicationrulecollectionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.FirewallApplicationRuleCollection{})
+
 	if obj == nil {
 		return nil, err
 	}

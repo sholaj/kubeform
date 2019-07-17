@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// AppsyncGraphqlApisGetter has a method to return a AppsyncGraphqlApiInterface.
+// AppsyncGraphqlAPIsGetter has a method to return a AppsyncGraphqlAPIInterface.
 // A group's client should implement this interface.
-type AppsyncGraphqlApisGetter interface {
-	AppsyncGraphqlApis() AppsyncGraphqlApiInterface
+type AppsyncGraphqlAPIsGetter interface {
+	AppsyncGraphqlAPIs(namespace string) AppsyncGraphqlAPIInterface
 }
 
-// AppsyncGraphqlApiInterface has methods to work with AppsyncGraphqlApi resources.
-type AppsyncGraphqlApiInterface interface {
-	Create(*v1alpha1.AppsyncGraphqlApi) (*v1alpha1.AppsyncGraphqlApi, error)
-	Update(*v1alpha1.AppsyncGraphqlApi) (*v1alpha1.AppsyncGraphqlApi, error)
-	UpdateStatus(*v1alpha1.AppsyncGraphqlApi) (*v1alpha1.AppsyncGraphqlApi, error)
+// AppsyncGraphqlAPIInterface has methods to work with AppsyncGraphqlAPI resources.
+type AppsyncGraphqlAPIInterface interface {
+	Create(*v1alpha1.AppsyncGraphqlAPI) (*v1alpha1.AppsyncGraphqlAPI, error)
+	Update(*v1alpha1.AppsyncGraphqlAPI) (*v1alpha1.AppsyncGraphqlAPI, error)
+	UpdateStatus(*v1alpha1.AppsyncGraphqlAPI) (*v1alpha1.AppsyncGraphqlAPI, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.AppsyncGraphqlApi, error)
-	List(opts v1.ListOptions) (*v1alpha1.AppsyncGraphqlApiList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.AppsyncGraphqlAPI, error)
+	List(opts v1.ListOptions) (*v1alpha1.AppsyncGraphqlAPIList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppsyncGraphqlApi, err error)
-	AppsyncGraphqlApiExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppsyncGraphqlAPI, err error)
+	AppsyncGraphqlAPIExpansion
 }
 
-// appsyncGraphqlApis implements AppsyncGraphqlApiInterface
-type appsyncGraphqlApis struct {
+// appsyncGraphqlAPIs implements AppsyncGraphqlAPIInterface
+type appsyncGraphqlAPIs struct {
 	client rest.Interface
+	ns     string
 }
 
-// newAppsyncGraphqlApis returns a AppsyncGraphqlApis
-func newAppsyncGraphqlApis(c *AwsV1alpha1Client) *appsyncGraphqlApis {
-	return &appsyncGraphqlApis{
+// newAppsyncGraphqlAPIs returns a AppsyncGraphqlAPIs
+func newAppsyncGraphqlAPIs(c *AwsV1alpha1Client, namespace string) *appsyncGraphqlAPIs {
+	return &appsyncGraphqlAPIs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the appsyncGraphqlApi, and returns the corresponding appsyncGraphqlApi object, and an error if there is any.
-func (c *appsyncGraphqlApis) Get(name string, options v1.GetOptions) (result *v1alpha1.AppsyncGraphqlApi, err error) {
-	result = &v1alpha1.AppsyncGraphqlApi{}
+// Get takes name of the appsyncGraphqlAPI, and returns the corresponding appsyncGraphqlAPI object, and an error if there is any.
+func (c *appsyncGraphqlAPIs) Get(name string, options v1.GetOptions) (result *v1alpha1.AppsyncGraphqlAPI, err error) {
+	result = &v1alpha1.AppsyncGraphqlAPI{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appsyncgraphqlapis").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *appsyncGraphqlApis) Get(name string, options v1.GetOptions) (result *v1
 	return
 }
 
-// List takes label and field selectors, and returns the list of AppsyncGraphqlApis that match those selectors.
-func (c *appsyncGraphqlApis) List(opts v1.ListOptions) (result *v1alpha1.AppsyncGraphqlApiList, err error) {
+// List takes label and field selectors, and returns the list of AppsyncGraphqlAPIs that match those selectors.
+func (c *appsyncGraphqlAPIs) List(opts v1.ListOptions) (result *v1alpha1.AppsyncGraphqlAPIList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.AppsyncGraphqlApiList{}
+	result = &v1alpha1.AppsyncGraphqlAPIList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appsyncgraphqlapis").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *appsyncGraphqlApis) List(opts v1.ListOptions) (result *v1alpha1.Appsync
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested appsyncGraphqlApis.
-func (c *appsyncGraphqlApis) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested appsyncGraphqlAPIs.
+func (c *appsyncGraphqlAPIs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("appsyncgraphqlapis").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a appsyncGraphqlApi and creates it.  Returns the server's representation of the appsyncGraphqlApi, and an error, if there is any.
-func (c *appsyncGraphqlApis) Create(appsyncGraphqlApi *v1alpha1.AppsyncGraphqlApi) (result *v1alpha1.AppsyncGraphqlApi, err error) {
-	result = &v1alpha1.AppsyncGraphqlApi{}
+// Create takes the representation of a appsyncGraphqlAPI and creates it.  Returns the server's representation of the appsyncGraphqlAPI, and an error, if there is any.
+func (c *appsyncGraphqlAPIs) Create(appsyncGraphqlAPI *v1alpha1.AppsyncGraphqlAPI) (result *v1alpha1.AppsyncGraphqlAPI, err error) {
+	result = &v1alpha1.AppsyncGraphqlAPI{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("appsyncgraphqlapis").
-		Body(appsyncGraphqlApi).
+		Body(appsyncGraphqlAPI).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a appsyncGraphqlApi and updates it. Returns the server's representation of the appsyncGraphqlApi, and an error, if there is any.
-func (c *appsyncGraphqlApis) Update(appsyncGraphqlApi *v1alpha1.AppsyncGraphqlApi) (result *v1alpha1.AppsyncGraphqlApi, err error) {
-	result = &v1alpha1.AppsyncGraphqlApi{}
+// Update takes the representation of a appsyncGraphqlAPI and updates it. Returns the server's representation of the appsyncGraphqlAPI, and an error, if there is any.
+func (c *appsyncGraphqlAPIs) Update(appsyncGraphqlAPI *v1alpha1.AppsyncGraphqlAPI) (result *v1alpha1.AppsyncGraphqlAPI, err error) {
+	result = &v1alpha1.AppsyncGraphqlAPI{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appsyncgraphqlapis").
-		Name(appsyncGraphqlApi.Name).
-		Body(appsyncGraphqlApi).
+		Name(appsyncGraphqlAPI.Name).
+		Body(appsyncGraphqlAPI).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *appsyncGraphqlApis) Update(appsyncGraphqlApi *v1alpha1.AppsyncGraphqlAp
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *appsyncGraphqlApis) UpdateStatus(appsyncGraphqlApi *v1alpha1.AppsyncGraphqlApi) (result *v1alpha1.AppsyncGraphqlApi, err error) {
-	result = &v1alpha1.AppsyncGraphqlApi{}
+func (c *appsyncGraphqlAPIs) UpdateStatus(appsyncGraphqlAPI *v1alpha1.AppsyncGraphqlAPI) (result *v1alpha1.AppsyncGraphqlAPI, err error) {
+	result = &v1alpha1.AppsyncGraphqlAPI{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appsyncgraphqlapis").
-		Name(appsyncGraphqlApi.Name).
+		Name(appsyncGraphqlAPI.Name).
 		SubResource("status").
-		Body(appsyncGraphqlApi).
+		Body(appsyncGraphqlAPI).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the appsyncGraphqlApi and deletes it. Returns an error if one occurs.
-func (c *appsyncGraphqlApis) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the appsyncGraphqlAPI and deletes it. Returns an error if one occurs.
+func (c *appsyncGraphqlAPIs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appsyncgraphqlapis").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *appsyncGraphqlApis) Delete(name string, options *v1.DeleteOptions) erro
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *appsyncGraphqlApis) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *appsyncGraphqlAPIs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appsyncgraphqlapis").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *appsyncGraphqlApis) DeleteCollection(options *v1.DeleteOptions, listOpt
 		Error()
 }
 
-// Patch applies the patch and returns the patched appsyncGraphqlApi.
-func (c *appsyncGraphqlApis) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppsyncGraphqlApi, err error) {
-	result = &v1alpha1.AppsyncGraphqlApi{}
+// Patch applies the patch and returns the patched appsyncGraphqlAPI.
+func (c *appsyncGraphqlAPIs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppsyncGraphqlAPI, err error) {
+	result = &v1alpha1.AppsyncGraphqlAPI{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("appsyncgraphqlapis").
 		SubResource(subresources...).
 		Name(name).

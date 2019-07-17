@@ -31,6 +31,7 @@ import (
 // FakeEc2TransitGatewayVpcAttachments implements Ec2TransitGatewayVpcAttachmentInterface
 type FakeEc2TransitGatewayVpcAttachments struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ec2transitgatewayvpcattachmentsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ec2transitgatewayvpcattachments"}
@@ -40,7 +41,8 @@ var ec2transitgatewayvpcattachmentsKind = schema.GroupVersionKind{Group: "aws.ku
 // Get takes name of the ec2TransitGatewayVpcAttachment, and returns the corresponding ec2TransitGatewayVpcAttachment object, and an error if there is any.
 func (c *FakeEc2TransitGatewayVpcAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.Ec2TransitGatewayVpcAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ec2transitgatewayvpcattachmentsResource, name), &v1alpha1.Ec2TransitGatewayVpcAttachment{})
+		Invokes(testing.NewGetAction(ec2transitgatewayvpcattachmentsResource, c.ns, name), &v1alpha1.Ec2TransitGatewayVpcAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEc2TransitGatewayVpcAttachments) Get(name string, options v1.GetOpt
 // List takes label and field selectors, and returns the list of Ec2TransitGatewayVpcAttachments that match those selectors.
 func (c *FakeEc2TransitGatewayVpcAttachments) List(opts v1.ListOptions) (result *v1alpha1.Ec2TransitGatewayVpcAttachmentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ec2transitgatewayvpcattachmentsResource, ec2transitgatewayvpcattachmentsKind, opts), &v1alpha1.Ec2TransitGatewayVpcAttachmentList{})
+		Invokes(testing.NewListAction(ec2transitgatewayvpcattachmentsResource, ec2transitgatewayvpcattachmentsKind, c.ns, opts), &v1alpha1.Ec2TransitGatewayVpcAttachmentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEc2TransitGatewayVpcAttachments) List(opts v1.ListOptions) (result 
 // Watch returns a watch.Interface that watches the requested ec2TransitGatewayVpcAttachments.
 func (c *FakeEc2TransitGatewayVpcAttachments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ec2transitgatewayvpcattachmentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(ec2transitgatewayvpcattachmentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ec2TransitGatewayVpcAttachment and creates it.  Returns the server's representation of the ec2TransitGatewayVpcAttachment, and an error, if there is any.
 func (c *FakeEc2TransitGatewayVpcAttachments) Create(ec2TransitGatewayVpcAttachment *v1alpha1.Ec2TransitGatewayVpcAttachment) (result *v1alpha1.Ec2TransitGatewayVpcAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ec2transitgatewayvpcattachmentsResource, ec2TransitGatewayVpcAttachment), &v1alpha1.Ec2TransitGatewayVpcAttachment{})
+		Invokes(testing.NewCreateAction(ec2transitgatewayvpcattachmentsResource, c.ns, ec2TransitGatewayVpcAttachment), &v1alpha1.Ec2TransitGatewayVpcAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEc2TransitGatewayVpcAttachments) Create(ec2TransitGatewayVpcAttachm
 // Update takes the representation of a ec2TransitGatewayVpcAttachment and updates it. Returns the server's representation of the ec2TransitGatewayVpcAttachment, and an error, if there is any.
 func (c *FakeEc2TransitGatewayVpcAttachments) Update(ec2TransitGatewayVpcAttachment *v1alpha1.Ec2TransitGatewayVpcAttachment) (result *v1alpha1.Ec2TransitGatewayVpcAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ec2transitgatewayvpcattachmentsResource, ec2TransitGatewayVpcAttachment), &v1alpha1.Ec2TransitGatewayVpcAttachment{})
+		Invokes(testing.NewUpdateAction(ec2transitgatewayvpcattachmentsResource, c.ns, ec2TransitGatewayVpcAttachment), &v1alpha1.Ec2TransitGatewayVpcAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEc2TransitGatewayVpcAttachments) Update(ec2TransitGatewayVpcAttachm
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEc2TransitGatewayVpcAttachments) UpdateStatus(ec2TransitGatewayVpcAttachment *v1alpha1.Ec2TransitGatewayVpcAttachment) (*v1alpha1.Ec2TransitGatewayVpcAttachment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ec2transitgatewayvpcattachmentsResource, "status", ec2TransitGatewayVpcAttachment), &v1alpha1.Ec2TransitGatewayVpcAttachment{})
+		Invokes(testing.NewUpdateSubresourceAction(ec2transitgatewayvpcattachmentsResource, "status", c.ns, ec2TransitGatewayVpcAttachment), &v1alpha1.Ec2TransitGatewayVpcAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEc2TransitGatewayVpcAttachments) UpdateStatus(ec2TransitGatewayVpcA
 // Delete takes name of the ec2TransitGatewayVpcAttachment and deletes it. Returns an error if one occurs.
 func (c *FakeEc2TransitGatewayVpcAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ec2transitgatewayvpcattachmentsResource, name), &v1alpha1.Ec2TransitGatewayVpcAttachment{})
+		Invokes(testing.NewDeleteAction(ec2transitgatewayvpcattachmentsResource, c.ns, name), &v1alpha1.Ec2TransitGatewayVpcAttachment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEc2TransitGatewayVpcAttachments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ec2transitgatewayvpcattachmentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ec2transitgatewayvpcattachmentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.Ec2TransitGatewayVpcAttachmentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEc2TransitGatewayVpcAttachments) DeleteCollection(options *v1.Delet
 // Patch applies the patch and returns the patched ec2TransitGatewayVpcAttachment.
 func (c *FakeEc2TransitGatewayVpcAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Ec2TransitGatewayVpcAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ec2transitgatewayvpcattachmentsResource, name, pt, data, subresources...), &v1alpha1.Ec2TransitGatewayVpcAttachment{})
+		Invokes(testing.NewPatchSubresourceAction(ec2transitgatewayvpcattachmentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.Ec2TransitGatewayVpcAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}

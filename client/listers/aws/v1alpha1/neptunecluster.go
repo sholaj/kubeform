@@ -29,8 +29,8 @@ import (
 type NeptuneClusterLister interface {
 	// List lists all NeptuneClusters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NeptuneCluster, err error)
-	// Get retrieves the NeptuneCluster from the index for a given name.
-	Get(name string) (*v1alpha1.NeptuneCluster, error)
+	// NeptuneClusters returns an object that can list and get NeptuneClusters.
+	NeptuneClusters(namespace string) NeptuneClusterNamespaceLister
 	NeptuneClusterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *neptuneClusterLister) List(selector labels.Selector) (ret []*v1alpha1.N
 	return ret, err
 }
 
-// Get retrieves the NeptuneCluster from the index for a given name.
-func (s *neptuneClusterLister) Get(name string) (*v1alpha1.NeptuneCluster, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NeptuneClusters returns an object that can list and get NeptuneClusters.
+func (s *neptuneClusterLister) NeptuneClusters(namespace string) NeptuneClusterNamespaceLister {
+	return neptuneClusterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NeptuneClusterNamespaceLister helps list and get NeptuneClusters.
+type NeptuneClusterNamespaceLister interface {
+	// List lists all NeptuneClusters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NeptuneCluster, err error)
+	// Get retrieves the NeptuneCluster from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NeptuneCluster, error)
+	NeptuneClusterNamespaceListerExpansion
+}
+
+// neptuneClusterNamespaceLister implements the NeptuneClusterNamespaceLister
+// interface.
+type neptuneClusterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NeptuneClusters in the indexer for a given namespace.
+func (s neptuneClusterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NeptuneCluster, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NeptuneCluster))
+	})
+	return ret, err
+}
+
+// Get retrieves the NeptuneCluster from the indexer for a given namespace and name.
+func (s neptuneClusterNamespaceLister) Get(name string) (*v1alpha1.NeptuneCluster, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

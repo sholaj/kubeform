@@ -32,7 +32,7 @@ import (
 // ServicebusQueuesGetter has a method to return a ServicebusQueueInterface.
 // A group's client should implement this interface.
 type ServicebusQueuesGetter interface {
-	ServicebusQueues() ServicebusQueueInterface
+	ServicebusQueues(namespace string) ServicebusQueueInterface
 }
 
 // ServicebusQueueInterface has methods to work with ServicebusQueue resources.
@@ -52,12 +52,14 @@ type ServicebusQueueInterface interface {
 // servicebusQueues implements ServicebusQueueInterface
 type servicebusQueues struct {
 	client rest.Interface
+	ns     string
 }
 
 // newServicebusQueues returns a ServicebusQueues
-func newServicebusQueues(c *AzurermV1alpha1Client) *servicebusQueues {
+func newServicebusQueues(c *AzurermV1alpha1Client, namespace string) *servicebusQueues {
 	return &servicebusQueues{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newServicebusQueues(c *AzurermV1alpha1Client) *servicebusQueues {
 func (c *servicebusQueues) Get(name string, options v1.GetOptions) (result *v1alpha1.ServicebusQueue, err error) {
 	result = &v1alpha1.ServicebusQueue{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicebusqueues").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *servicebusQueues) List(opts v1.ListOptions) (result *v1alpha1.Servicebu
 	}
 	result = &v1alpha1.ServicebusQueueList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicebusqueues").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *servicebusQueues) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("servicebusqueues").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *servicebusQueues) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *servicebusQueues) Create(servicebusQueue *v1alpha1.ServicebusQueue) (result *v1alpha1.ServicebusQueue, err error) {
 	result = &v1alpha1.ServicebusQueue{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("servicebusqueues").
 		Body(servicebusQueue).
 		Do().
@@ -118,6 +124,7 @@ func (c *servicebusQueues) Create(servicebusQueue *v1alpha1.ServicebusQueue) (re
 func (c *servicebusQueues) Update(servicebusQueue *v1alpha1.ServicebusQueue) (result *v1alpha1.ServicebusQueue, err error) {
 	result = &v1alpha1.ServicebusQueue{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicebusqueues").
 		Name(servicebusQueue.Name).
 		Body(servicebusQueue).
@@ -132,6 +139,7 @@ func (c *servicebusQueues) Update(servicebusQueue *v1alpha1.ServicebusQueue) (re
 func (c *servicebusQueues) UpdateStatus(servicebusQueue *v1alpha1.ServicebusQueue) (result *v1alpha1.ServicebusQueue, err error) {
 	result = &v1alpha1.ServicebusQueue{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicebusqueues").
 		Name(servicebusQueue.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *servicebusQueues) UpdateStatus(servicebusQueue *v1alpha1.ServicebusQueu
 // Delete takes name of the servicebusQueue and deletes it. Returns an error if one occurs.
 func (c *servicebusQueues) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicebusqueues").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *servicebusQueues) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicebusqueues").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *servicebusQueues) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *servicebusQueues) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServicebusQueue, err error) {
 	result = &v1alpha1.ServicebusQueue{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("servicebusqueues").
 		SubResource(subresources...).
 		Name(name).

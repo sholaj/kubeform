@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,60 +20,61 @@ type Instance struct {
 
 type InstanceSpecConfig struct {
 	// +optional
-	Comments string `json:"comments,omitempty"`
+	Comments string `json:"comments,omitempty" tf:"comments,omitempty"`
 	// +optional
-	Kernel string `json:"kernel,omitempty"`
-	Label  string `json:"label"`
+	Kernel string `json:"kernel,omitempty" tf:"kernel,omitempty"`
+	Label  string `json:"label" tf:"label"`
 	// +optional
-	MemoryLimit int `json:"memory_limit,omitempty"`
+	MemoryLimit int `json:"memoryLimit,omitempty" tf:"memory_limit,omitempty"`
 	// +optional
-	RunLevel string `json:"run_level,omitempty"`
+	RunLevel string `json:"runLevel,omitempty" tf:"run_level,omitempty"`
 	// +optional
-	VirtMode string `json:"virt_mode,omitempty"`
+	VirtMode string `json:"virtMode,omitempty" tf:"virt_mode,omitempty"`
 }
 
 type InstanceSpecDisk struct {
 	// +optional
-	AuthorizedKeys []string `json:"authorized_keys,omitempty"`
+	AuthorizedKeys []string `json:"authorizedKeys,omitempty" tf:"authorized_keys,omitempty"`
 	// +optional
-	AuthorizedUsers []string `json:"authorized_users,omitempty"`
-	Label           string   `json:"label"`
+	AuthorizedUsers []string `json:"authorizedUsers,omitempty" tf:"authorized_users,omitempty"`
+	Label           string   `json:"label" tf:"label"`
 	// +optional
-	RootPass string `json:"root_pass,omitempty"`
-	Size     int    `json:"size"`
+	RootPass string `json:"rootPass,omitempty" tf:"root_pass,omitempty"`
+	Size     int    `json:"size" tf:"size"`
 }
 
 type InstanceSpec struct {
 	// +optional
-	AuthorizedKeys []string `json:"authorized_keys,omitempty"`
+	AuthorizedKeys []string `json:"authorizedKeys,omitempty" tf:"authorized_keys,omitempty"`
 	// +optional
-	AuthorizedUsers []string `json:"authorized_users,omitempty"`
+	AuthorizedUsers []string `json:"authorizedUsers,omitempty" tf:"authorized_users,omitempty"`
 	// +optional
-	BackupId int `json:"backup_id,omitempty"`
+	BackupID int `json:"backupID,omitempty" tf:"backup_id,omitempty"`
 	// +optional
-	Config *[]InstanceSpec `json:"config,omitempty"`
+	Config []InstanceSpecConfig `json:"config,omitempty" tf:"config,omitempty"`
 	// +optional
-	Disk *[]InstanceSpec `json:"disk,omitempty"`
+	Disk []InstanceSpecDisk `json:"disk,omitempty" tf:"disk,omitempty"`
 	// +optional
-	Group string `json:"group,omitempty"`
+	Group string `json:"group,omitempty" tf:"group,omitempty"`
 	// +optional
-	Image string `json:"image,omitempty"`
+	Image string `json:"image,omitempty" tf:"image,omitempty"`
 	// +optional
-	PrivateIp bool   `json:"private_ip,omitempty"`
-	Region    string `json:"region"`
+	PrivateIP bool   `json:"privateIP,omitempty" tf:"private_ip,omitempty"`
+	Region    string `json:"region" tf:"region"`
 	// +optional
-	RootPass string `json:"root_pass,omitempty"`
+	RootPass string `json:"rootPass,omitempty" tf:"root_pass,omitempty"`
 	// +optional
-	StackscriptData map[string]string `json:"stackscript_data,omitempty"`
+	StackscriptData map[string]string `json:"stackscriptData,omitempty" tf:"stackscript_data,omitempty"`
 	// +optional
-	StackscriptId int `json:"stackscript_id,omitempty"`
+	StackscriptID int `json:"stackscriptID,omitempty" tf:"stackscript_id,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Tags []string `json:"tags,omitempty"`
+	Tags []string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	Type string `json:"type,omitempty"`
+	Type string `json:"type,omitempty" tf:"type,omitempty"`
 	// +optional
-	WatchdogEnabled bool `json:"watchdog_enabled,omitempty"`
+	WatchdogEnabled bool                      `json:"watchdogEnabled,omitempty" tf:"watchdog_enabled,omitempty"`
+	ProviderRef     core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type InstanceStatus struct {
@@ -81,7 +82,9 @@ type InstanceStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

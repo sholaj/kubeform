@@ -29,8 +29,8 @@ import (
 type ApiManagementOpenidConnectProviderLister interface {
 	// List lists all ApiManagementOpenidConnectProviders in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementOpenidConnectProvider, err error)
-	// Get retrieves the ApiManagementOpenidConnectProvider from the index for a given name.
-	Get(name string) (*v1alpha1.ApiManagementOpenidConnectProvider, error)
+	// ApiManagementOpenidConnectProviders returns an object that can list and get ApiManagementOpenidConnectProviders.
+	ApiManagementOpenidConnectProviders(namespace string) ApiManagementOpenidConnectProviderNamespaceLister
 	ApiManagementOpenidConnectProviderListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiManagementOpenidConnectProviderLister) List(selector labels.Selector
 	return ret, err
 }
 
-// Get retrieves the ApiManagementOpenidConnectProvider from the index for a given name.
-func (s *apiManagementOpenidConnectProviderLister) Get(name string) (*v1alpha1.ApiManagementOpenidConnectProvider, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiManagementOpenidConnectProviders returns an object that can list and get ApiManagementOpenidConnectProviders.
+func (s *apiManagementOpenidConnectProviderLister) ApiManagementOpenidConnectProviders(namespace string) ApiManagementOpenidConnectProviderNamespaceLister {
+	return apiManagementOpenidConnectProviderNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiManagementOpenidConnectProviderNamespaceLister helps list and get ApiManagementOpenidConnectProviders.
+type ApiManagementOpenidConnectProviderNamespaceLister interface {
+	// List lists all ApiManagementOpenidConnectProviders in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementOpenidConnectProvider, err error)
+	// Get retrieves the ApiManagementOpenidConnectProvider from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiManagementOpenidConnectProvider, error)
+	ApiManagementOpenidConnectProviderNamespaceListerExpansion
+}
+
+// apiManagementOpenidConnectProviderNamespaceLister implements the ApiManagementOpenidConnectProviderNamespaceLister
+// interface.
+type apiManagementOpenidConnectProviderNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiManagementOpenidConnectProviders in the indexer for a given namespace.
+func (s apiManagementOpenidConnectProviderNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementOpenidConnectProvider, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiManagementOpenidConnectProvider))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiManagementOpenidConnectProvider from the indexer for a given namespace and name.
+func (s apiManagementOpenidConnectProviderNamespaceLister) Get(name string) (*v1alpha1.ApiManagementOpenidConnectProvider, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -41,32 +41,33 @@ type SecurityCenterSubscriptionPricingInformer interface {
 type securityCenterSubscriptionPricingInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSecurityCenterSubscriptionPricingInformer constructs a new informer for SecurityCenterSubscriptionPricing type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSecurityCenterSubscriptionPricingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSecurityCenterSubscriptionPricingInformer(client, resyncPeriod, indexers, nil)
+func NewSecurityCenterSubscriptionPricingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSecurityCenterSubscriptionPricingInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSecurityCenterSubscriptionPricingInformer constructs a new informer for SecurityCenterSubscriptionPricing type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSecurityCenterSubscriptionPricingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSecurityCenterSubscriptionPricingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().SecurityCenterSubscriptionPricings().List(options)
+				return client.AzurermV1alpha1().SecurityCenterSubscriptionPricings(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().SecurityCenterSubscriptionPricings().Watch(options)
+				return client.AzurermV1alpha1().SecurityCenterSubscriptionPricings(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.SecurityCenterSubscriptionPricing{},
@@ -76,7 +77,7 @@ func NewFilteredSecurityCenterSubscriptionPricingInformer(client versioned.Inter
 }
 
 func (f *securityCenterSubscriptionPricingInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSecurityCenterSubscriptionPricingInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSecurityCenterSubscriptionPricingInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *securityCenterSubscriptionPricingInformer) Informer() cache.SharedIndexInformer {

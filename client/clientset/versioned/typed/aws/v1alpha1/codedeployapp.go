@@ -32,7 +32,7 @@ import (
 // CodedeployAppsGetter has a method to return a CodedeployAppInterface.
 // A group's client should implement this interface.
 type CodedeployAppsGetter interface {
-	CodedeployApps() CodedeployAppInterface
+	CodedeployApps(namespace string) CodedeployAppInterface
 }
 
 // CodedeployAppInterface has methods to work with CodedeployApp resources.
@@ -52,12 +52,14 @@ type CodedeployAppInterface interface {
 // codedeployApps implements CodedeployAppInterface
 type codedeployApps struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCodedeployApps returns a CodedeployApps
-func newCodedeployApps(c *AwsV1alpha1Client) *codedeployApps {
+func newCodedeployApps(c *AwsV1alpha1Client, namespace string) *codedeployApps {
 	return &codedeployApps{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCodedeployApps(c *AwsV1alpha1Client) *codedeployApps {
 func (c *codedeployApps) Get(name string, options v1.GetOptions) (result *v1alpha1.CodedeployApp, err error) {
 	result = &v1alpha1.CodedeployApp{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("codedeployapps").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *codedeployApps) List(opts v1.ListOptions) (result *v1alpha1.CodedeployA
 	}
 	result = &v1alpha1.CodedeployAppList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("codedeployapps").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *codedeployApps) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("codedeployapps").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *codedeployApps) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *codedeployApps) Create(codedeployApp *v1alpha1.CodedeployApp) (result *v1alpha1.CodedeployApp, err error) {
 	result = &v1alpha1.CodedeployApp{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("codedeployapps").
 		Body(codedeployApp).
 		Do().
@@ -118,6 +124,7 @@ func (c *codedeployApps) Create(codedeployApp *v1alpha1.CodedeployApp) (result *
 func (c *codedeployApps) Update(codedeployApp *v1alpha1.CodedeployApp) (result *v1alpha1.CodedeployApp, err error) {
 	result = &v1alpha1.CodedeployApp{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("codedeployapps").
 		Name(codedeployApp.Name).
 		Body(codedeployApp).
@@ -132,6 +139,7 @@ func (c *codedeployApps) Update(codedeployApp *v1alpha1.CodedeployApp) (result *
 func (c *codedeployApps) UpdateStatus(codedeployApp *v1alpha1.CodedeployApp) (result *v1alpha1.CodedeployApp, err error) {
 	result = &v1alpha1.CodedeployApp{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("codedeployapps").
 		Name(codedeployApp.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *codedeployApps) UpdateStatus(codedeployApp *v1alpha1.CodedeployApp) (re
 // Delete takes name of the codedeployApp and deletes it. Returns an error if one occurs.
 func (c *codedeployApps) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("codedeployapps").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *codedeployApps) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("codedeployapps").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *codedeployApps) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *codedeployApps) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CodedeployApp, err error) {
 	result = &v1alpha1.CodedeployApp{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("codedeployapps").
 		SubResource(subresources...).
 		Name(name).

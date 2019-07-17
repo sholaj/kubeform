@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// Ec2ClientVpnNetworkAssociationInformer provides access to a shared informer and lister for
-// Ec2ClientVpnNetworkAssociations.
-type Ec2ClientVpnNetworkAssociationInformer interface {
+// Ec2ClientVPNNetworkAssociationInformer provides access to a shared informer and lister for
+// Ec2ClientVPNNetworkAssociations.
+type Ec2ClientVPNNetworkAssociationInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.Ec2ClientVpnNetworkAssociationLister
+	Lister() v1alpha1.Ec2ClientVPNNetworkAssociationLister
 }
 
-type ec2ClientVpnNetworkAssociationInformer struct {
+type ec2ClientVPNNetworkAssociationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewEc2ClientVpnNetworkAssociationInformer constructs a new informer for Ec2ClientVpnNetworkAssociation type.
+// NewEc2ClientVPNNetworkAssociationInformer constructs a new informer for Ec2ClientVPNNetworkAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewEc2ClientVpnNetworkAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredEc2ClientVpnNetworkAssociationInformer(client, resyncPeriod, indexers, nil)
+func NewEc2ClientVPNNetworkAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredEc2ClientVPNNetworkAssociationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredEc2ClientVpnNetworkAssociationInformer constructs a new informer for Ec2ClientVpnNetworkAssociation type.
+// NewFilteredEc2ClientVPNNetworkAssociationInformer constructs a new informer for Ec2ClientVPNNetworkAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredEc2ClientVpnNetworkAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredEc2ClientVPNNetworkAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().Ec2ClientVpnNetworkAssociations().List(options)
+				return client.AwsV1alpha1().Ec2ClientVPNNetworkAssociations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().Ec2ClientVpnNetworkAssociations().Watch(options)
+				return client.AwsV1alpha1().Ec2ClientVPNNetworkAssociations(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.Ec2ClientVpnNetworkAssociation{},
+		&awsv1alpha1.Ec2ClientVPNNetworkAssociation{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *ec2ClientVpnNetworkAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredEc2ClientVpnNetworkAssociationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *ec2ClientVPNNetworkAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredEc2ClientVPNNetworkAssociationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *ec2ClientVpnNetworkAssociationInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.Ec2ClientVpnNetworkAssociation{}, f.defaultInformer)
+func (f *ec2ClientVPNNetworkAssociationInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.Ec2ClientVPNNetworkAssociation{}, f.defaultInformer)
 }
 
-func (f *ec2ClientVpnNetworkAssociationInformer) Lister() v1alpha1.Ec2ClientVpnNetworkAssociationLister {
-	return v1alpha1.NewEc2ClientVpnNetworkAssociationLister(f.Informer().GetIndexer())
+func (f *ec2ClientVPNNetworkAssociationInformer) Lister() v1alpha1.Ec2ClientVPNNetworkAssociationLister {
+	return v1alpha1.NewEc2ClientVPNNetworkAssociationLister(f.Informer().GetIndexer())
 }

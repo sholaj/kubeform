@@ -32,7 +32,7 @@ import (
 // LoggingBillingAccountSinksGetter has a method to return a LoggingBillingAccountSinkInterface.
 // A group's client should implement this interface.
 type LoggingBillingAccountSinksGetter interface {
-	LoggingBillingAccountSinks() LoggingBillingAccountSinkInterface
+	LoggingBillingAccountSinks(namespace string) LoggingBillingAccountSinkInterface
 }
 
 // LoggingBillingAccountSinkInterface has methods to work with LoggingBillingAccountSink resources.
@@ -52,12 +52,14 @@ type LoggingBillingAccountSinkInterface interface {
 // loggingBillingAccountSinks implements LoggingBillingAccountSinkInterface
 type loggingBillingAccountSinks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLoggingBillingAccountSinks returns a LoggingBillingAccountSinks
-func newLoggingBillingAccountSinks(c *GoogleV1alpha1Client) *loggingBillingAccountSinks {
+func newLoggingBillingAccountSinks(c *GoogleV1alpha1Client, namespace string) *loggingBillingAccountSinks {
 	return &loggingBillingAccountSinks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLoggingBillingAccountSinks(c *GoogleV1alpha1Client) *loggingBillingAccou
 func (c *loggingBillingAccountSinks) Get(name string, options v1.GetOptions) (result *v1alpha1.LoggingBillingAccountSink, err error) {
 	result = &v1alpha1.LoggingBillingAccountSink{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingbillingaccountsinks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *loggingBillingAccountSinks) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.LoggingBillingAccountSinkList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingbillingaccountsinks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *loggingBillingAccountSinks) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingbillingaccountsinks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *loggingBillingAccountSinks) Watch(opts v1.ListOptions) (watch.Interface
 func (c *loggingBillingAccountSinks) Create(loggingBillingAccountSink *v1alpha1.LoggingBillingAccountSink) (result *v1alpha1.LoggingBillingAccountSink, err error) {
 	result = &v1alpha1.LoggingBillingAccountSink{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("loggingbillingaccountsinks").
 		Body(loggingBillingAccountSink).
 		Do().
@@ -118,6 +124,7 @@ func (c *loggingBillingAccountSinks) Create(loggingBillingAccountSink *v1alpha1.
 func (c *loggingBillingAccountSinks) Update(loggingBillingAccountSink *v1alpha1.LoggingBillingAccountSink) (result *v1alpha1.LoggingBillingAccountSink, err error) {
 	result = &v1alpha1.LoggingBillingAccountSink{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loggingbillingaccountsinks").
 		Name(loggingBillingAccountSink.Name).
 		Body(loggingBillingAccountSink).
@@ -132,6 +139,7 @@ func (c *loggingBillingAccountSinks) Update(loggingBillingAccountSink *v1alpha1.
 func (c *loggingBillingAccountSinks) UpdateStatus(loggingBillingAccountSink *v1alpha1.LoggingBillingAccountSink) (result *v1alpha1.LoggingBillingAccountSink, err error) {
 	result = &v1alpha1.LoggingBillingAccountSink{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loggingbillingaccountsinks").
 		Name(loggingBillingAccountSink.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *loggingBillingAccountSinks) UpdateStatus(loggingBillingAccountSink *v1a
 // Delete takes name of the loggingBillingAccountSink and deletes it. Returns an error if one occurs.
 func (c *loggingBillingAccountSinks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loggingbillingaccountsinks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *loggingBillingAccountSinks) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loggingbillingaccountsinks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *loggingBillingAccountSinks) DeleteCollection(options *v1.DeleteOptions,
 func (c *loggingBillingAccountSinks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LoggingBillingAccountSink, err error) {
 	result = &v1alpha1.LoggingBillingAccountSink{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("loggingbillingaccountsinks").
 		SubResource(subresources...).
 		Name(name).

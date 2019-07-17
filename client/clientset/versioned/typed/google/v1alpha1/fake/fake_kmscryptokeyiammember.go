@@ -31,6 +31,7 @@ import (
 // FakeKmsCryptoKeyIamMembers implements KmsCryptoKeyIamMemberInterface
 type FakeKmsCryptoKeyIamMembers struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var kmscryptokeyiammembersResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "kmscryptokeyiammembers"}
@@ -40,7 +41,8 @@ var kmscryptokeyiammembersKind = schema.GroupVersionKind{Group: "google.kubeform
 // Get takes name of the kmsCryptoKeyIamMember, and returns the corresponding kmsCryptoKeyIamMember object, and an error if there is any.
 func (c *FakeKmsCryptoKeyIamMembers) Get(name string, options v1.GetOptions) (result *v1alpha1.KmsCryptoKeyIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(kmscryptokeyiammembersResource, name), &v1alpha1.KmsCryptoKeyIamMember{})
+		Invokes(testing.NewGetAction(kmscryptokeyiammembersResource, c.ns, name), &v1alpha1.KmsCryptoKeyIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeKmsCryptoKeyIamMembers) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of KmsCryptoKeyIamMembers that match those selectors.
 func (c *FakeKmsCryptoKeyIamMembers) List(opts v1.ListOptions) (result *v1alpha1.KmsCryptoKeyIamMemberList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(kmscryptokeyiammembersResource, kmscryptokeyiammembersKind, opts), &v1alpha1.KmsCryptoKeyIamMemberList{})
+		Invokes(testing.NewListAction(kmscryptokeyiammembersResource, kmscryptokeyiammembersKind, c.ns, opts), &v1alpha1.KmsCryptoKeyIamMemberList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeKmsCryptoKeyIamMembers) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested kmsCryptoKeyIamMembers.
 func (c *FakeKmsCryptoKeyIamMembers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(kmscryptokeyiammembersResource, opts))
+		InvokesWatch(testing.NewWatchAction(kmscryptokeyiammembersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a kmsCryptoKeyIamMember and creates it.  Returns the server's representation of the kmsCryptoKeyIamMember, and an error, if there is any.
 func (c *FakeKmsCryptoKeyIamMembers) Create(kmsCryptoKeyIamMember *v1alpha1.KmsCryptoKeyIamMember) (result *v1alpha1.KmsCryptoKeyIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(kmscryptokeyiammembersResource, kmsCryptoKeyIamMember), &v1alpha1.KmsCryptoKeyIamMember{})
+		Invokes(testing.NewCreateAction(kmscryptokeyiammembersResource, c.ns, kmsCryptoKeyIamMember), &v1alpha1.KmsCryptoKeyIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeKmsCryptoKeyIamMembers) Create(kmsCryptoKeyIamMember *v1alpha1.KmsC
 // Update takes the representation of a kmsCryptoKeyIamMember and updates it. Returns the server's representation of the kmsCryptoKeyIamMember, and an error, if there is any.
 func (c *FakeKmsCryptoKeyIamMembers) Update(kmsCryptoKeyIamMember *v1alpha1.KmsCryptoKeyIamMember) (result *v1alpha1.KmsCryptoKeyIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(kmscryptokeyiammembersResource, kmsCryptoKeyIamMember), &v1alpha1.KmsCryptoKeyIamMember{})
+		Invokes(testing.NewUpdateAction(kmscryptokeyiammembersResource, c.ns, kmsCryptoKeyIamMember), &v1alpha1.KmsCryptoKeyIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeKmsCryptoKeyIamMembers) Update(kmsCryptoKeyIamMember *v1alpha1.KmsC
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeKmsCryptoKeyIamMembers) UpdateStatus(kmsCryptoKeyIamMember *v1alpha1.KmsCryptoKeyIamMember) (*v1alpha1.KmsCryptoKeyIamMember, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(kmscryptokeyiammembersResource, "status", kmsCryptoKeyIamMember), &v1alpha1.KmsCryptoKeyIamMember{})
+		Invokes(testing.NewUpdateSubresourceAction(kmscryptokeyiammembersResource, "status", c.ns, kmsCryptoKeyIamMember), &v1alpha1.KmsCryptoKeyIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeKmsCryptoKeyIamMembers) UpdateStatus(kmsCryptoKeyIamMember *v1alpha
 // Delete takes name of the kmsCryptoKeyIamMember and deletes it. Returns an error if one occurs.
 func (c *FakeKmsCryptoKeyIamMembers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(kmscryptokeyiammembersResource, name), &v1alpha1.KmsCryptoKeyIamMember{})
+		Invokes(testing.NewDeleteAction(kmscryptokeyiammembersResource, c.ns, name), &v1alpha1.KmsCryptoKeyIamMember{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeKmsCryptoKeyIamMembers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(kmscryptokeyiammembersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(kmscryptokeyiammembersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.KmsCryptoKeyIamMemberList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeKmsCryptoKeyIamMembers) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched kmsCryptoKeyIamMember.
 func (c *FakeKmsCryptoKeyIamMembers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KmsCryptoKeyIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(kmscryptokeyiammembersResource, name, pt, data, subresources...), &v1alpha1.KmsCryptoKeyIamMember{})
+		Invokes(testing.NewPatchSubresourceAction(kmscryptokeyiammembersResource, c.ns, name, pt, data, subresources...), &v1alpha1.KmsCryptoKeyIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}

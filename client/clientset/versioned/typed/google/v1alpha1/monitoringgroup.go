@@ -32,7 +32,7 @@ import (
 // MonitoringGroupsGetter has a method to return a MonitoringGroupInterface.
 // A group's client should implement this interface.
 type MonitoringGroupsGetter interface {
-	MonitoringGroups() MonitoringGroupInterface
+	MonitoringGroups(namespace string) MonitoringGroupInterface
 }
 
 // MonitoringGroupInterface has methods to work with MonitoringGroup resources.
@@ -52,12 +52,14 @@ type MonitoringGroupInterface interface {
 // monitoringGroups implements MonitoringGroupInterface
 type monitoringGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMonitoringGroups returns a MonitoringGroups
-func newMonitoringGroups(c *GoogleV1alpha1Client) *monitoringGroups {
+func newMonitoringGroups(c *GoogleV1alpha1Client, namespace string) *monitoringGroups {
 	return &monitoringGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMonitoringGroups(c *GoogleV1alpha1Client) *monitoringGroups {
 func (c *monitoringGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.MonitoringGroup, err error) {
 	result = &v1alpha1.MonitoringGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitoringgroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *monitoringGroups) List(opts v1.ListOptions) (result *v1alpha1.Monitorin
 	}
 	result = &v1alpha1.MonitoringGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitoringgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *monitoringGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("monitoringgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *monitoringGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *monitoringGroups) Create(monitoringGroup *v1alpha1.MonitoringGroup) (result *v1alpha1.MonitoringGroup, err error) {
 	result = &v1alpha1.MonitoringGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("monitoringgroups").
 		Body(monitoringGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *monitoringGroups) Create(monitoringGroup *v1alpha1.MonitoringGroup) (re
 func (c *monitoringGroups) Update(monitoringGroup *v1alpha1.MonitoringGroup) (result *v1alpha1.MonitoringGroup, err error) {
 	result = &v1alpha1.MonitoringGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitoringgroups").
 		Name(monitoringGroup.Name).
 		Body(monitoringGroup).
@@ -132,6 +139,7 @@ func (c *monitoringGroups) Update(monitoringGroup *v1alpha1.MonitoringGroup) (re
 func (c *monitoringGroups) UpdateStatus(monitoringGroup *v1alpha1.MonitoringGroup) (result *v1alpha1.MonitoringGroup, err error) {
 	result = &v1alpha1.MonitoringGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitoringgroups").
 		Name(monitoringGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *monitoringGroups) UpdateStatus(monitoringGroup *v1alpha1.MonitoringGrou
 // Delete takes name of the monitoringGroup and deletes it. Returns an error if one occurs.
 func (c *monitoringGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitoringgroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *monitoringGroups) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitoringgroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *monitoringGroups) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *monitoringGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MonitoringGroup, err error) {
 	result = &v1alpha1.MonitoringGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("monitoringgroups").
 		SubResource(subresources...).
 		Name(name).

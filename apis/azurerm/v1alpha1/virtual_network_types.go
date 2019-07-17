@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,21 +19,22 @@ type VirtualNetwork struct {
 }
 
 type VirtualNetworkSpecDdosProtectionPlan struct {
-	Enable bool   `json:"enable"`
-	Id     string `json:"id"`
+	Enable bool   `json:"enable" tf:"enable"`
+	ID     string `json:"ID" tf:"id"`
 }
 
 type VirtualNetworkSpec struct {
 	// +kubebuilder:validation:MinItems=1
-	AddressSpace []string `json:"address_space"`
+	AddressSpace []string `json:"addressSpace" tf:"address_space"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	DdosProtectionPlan *[]VirtualNetworkSpec `json:"ddos_protection_plan,omitempty"`
+	DdosProtectionPlan []VirtualNetworkSpecDdosProtectionPlan `json:"ddosProtectionPlan,omitempty" tf:"ddos_protection_plan,omitempty"`
 	// +optional
-	DnsServers        []string `json:"dns_servers,omitempty"`
-	Location          string   `json:"location"`
-	Name              string   `json:"name"`
-	ResourceGroupName string   `json:"resource_group_name"`
+	DnsServers        []string                  `json:"dnsServers,omitempty" tf:"dns_servers,omitempty"`
+	Location          string                    `json:"location" tf:"location"`
+	Name              string                    `json:"name" tf:"name"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type VirtualNetworkStatus struct {
@@ -41,7 +42,9 @@ type VirtualNetworkStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

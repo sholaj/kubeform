@@ -31,6 +31,7 @@ import (
 // FakePostgresqlConfigurations implements PostgresqlConfigurationInterface
 type FakePostgresqlConfigurations struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var postgresqlconfigurationsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "postgresqlconfigurations"}
@@ -40,7 +41,8 @@ var postgresqlconfigurationsKind = schema.GroupVersionKind{Group: "azurerm.kubef
 // Get takes name of the postgresqlConfiguration, and returns the corresponding postgresqlConfiguration object, and an error if there is any.
 func (c *FakePostgresqlConfigurations) Get(name string, options v1.GetOptions) (result *v1alpha1.PostgresqlConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(postgresqlconfigurationsResource, name), &v1alpha1.PostgresqlConfiguration{})
+		Invokes(testing.NewGetAction(postgresqlconfigurationsResource, c.ns, name), &v1alpha1.PostgresqlConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakePostgresqlConfigurations) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of PostgresqlConfigurations that match those selectors.
 func (c *FakePostgresqlConfigurations) List(opts v1.ListOptions) (result *v1alpha1.PostgresqlConfigurationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(postgresqlconfigurationsResource, postgresqlconfigurationsKind, opts), &v1alpha1.PostgresqlConfigurationList{})
+		Invokes(testing.NewListAction(postgresqlconfigurationsResource, postgresqlconfigurationsKind, c.ns, opts), &v1alpha1.PostgresqlConfigurationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakePostgresqlConfigurations) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested postgresqlConfigurations.
 func (c *FakePostgresqlConfigurations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(postgresqlconfigurationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(postgresqlconfigurationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a postgresqlConfiguration and creates it.  Returns the server's representation of the postgresqlConfiguration, and an error, if there is any.
 func (c *FakePostgresqlConfigurations) Create(postgresqlConfiguration *v1alpha1.PostgresqlConfiguration) (result *v1alpha1.PostgresqlConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(postgresqlconfigurationsResource, postgresqlConfiguration), &v1alpha1.PostgresqlConfiguration{})
+		Invokes(testing.NewCreateAction(postgresqlconfigurationsResource, c.ns, postgresqlConfiguration), &v1alpha1.PostgresqlConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakePostgresqlConfigurations) Create(postgresqlConfiguration *v1alpha1.
 // Update takes the representation of a postgresqlConfiguration and updates it. Returns the server's representation of the postgresqlConfiguration, and an error, if there is any.
 func (c *FakePostgresqlConfigurations) Update(postgresqlConfiguration *v1alpha1.PostgresqlConfiguration) (result *v1alpha1.PostgresqlConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(postgresqlconfigurationsResource, postgresqlConfiguration), &v1alpha1.PostgresqlConfiguration{})
+		Invokes(testing.NewUpdateAction(postgresqlconfigurationsResource, c.ns, postgresqlConfiguration), &v1alpha1.PostgresqlConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakePostgresqlConfigurations) Update(postgresqlConfiguration *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakePostgresqlConfigurations) UpdateStatus(postgresqlConfiguration *v1alpha1.PostgresqlConfiguration) (*v1alpha1.PostgresqlConfiguration, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(postgresqlconfigurationsResource, "status", postgresqlConfiguration), &v1alpha1.PostgresqlConfiguration{})
+		Invokes(testing.NewUpdateSubresourceAction(postgresqlconfigurationsResource, "status", c.ns, postgresqlConfiguration), &v1alpha1.PostgresqlConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakePostgresqlConfigurations) UpdateStatus(postgresqlConfiguration *v1a
 // Delete takes name of the postgresqlConfiguration and deletes it. Returns an error if one occurs.
 func (c *FakePostgresqlConfigurations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(postgresqlconfigurationsResource, name), &v1alpha1.PostgresqlConfiguration{})
+		Invokes(testing.NewDeleteAction(postgresqlconfigurationsResource, c.ns, name), &v1alpha1.PostgresqlConfiguration{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakePostgresqlConfigurations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(postgresqlconfigurationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(postgresqlconfigurationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PostgresqlConfigurationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakePostgresqlConfigurations) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched postgresqlConfiguration.
 func (c *FakePostgresqlConfigurations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PostgresqlConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(postgresqlconfigurationsResource, name, pt, data, subresources...), &v1alpha1.PostgresqlConfiguration{})
+		Invokes(testing.NewPatchSubresourceAction(postgresqlconfigurationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.PostgresqlConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}

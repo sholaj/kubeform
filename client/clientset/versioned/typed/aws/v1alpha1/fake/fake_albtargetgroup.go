@@ -31,6 +31,7 @@ import (
 // FakeAlbTargetGroups implements AlbTargetGroupInterface
 type FakeAlbTargetGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var albtargetgroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "albtargetgroups"}
@@ -40,7 +41,8 @@ var albtargetgroupsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ver
 // Get takes name of the albTargetGroup, and returns the corresponding albTargetGroup object, and an error if there is any.
 func (c *FakeAlbTargetGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.AlbTargetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(albtargetgroupsResource, name), &v1alpha1.AlbTargetGroup{})
+		Invokes(testing.NewGetAction(albtargetgroupsResource, c.ns, name), &v1alpha1.AlbTargetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAlbTargetGroups) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of AlbTargetGroups that match those selectors.
 func (c *FakeAlbTargetGroups) List(opts v1.ListOptions) (result *v1alpha1.AlbTargetGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(albtargetgroupsResource, albtargetgroupsKind, opts), &v1alpha1.AlbTargetGroupList{})
+		Invokes(testing.NewListAction(albtargetgroupsResource, albtargetgroupsKind, c.ns, opts), &v1alpha1.AlbTargetGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAlbTargetGroups) List(opts v1.ListOptions) (result *v1alpha1.AlbTar
 // Watch returns a watch.Interface that watches the requested albTargetGroups.
 func (c *FakeAlbTargetGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(albtargetgroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(albtargetgroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a albTargetGroup and creates it.  Returns the server's representation of the albTargetGroup, and an error, if there is any.
 func (c *FakeAlbTargetGroups) Create(albTargetGroup *v1alpha1.AlbTargetGroup) (result *v1alpha1.AlbTargetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(albtargetgroupsResource, albTargetGroup), &v1alpha1.AlbTargetGroup{})
+		Invokes(testing.NewCreateAction(albtargetgroupsResource, c.ns, albTargetGroup), &v1alpha1.AlbTargetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAlbTargetGroups) Create(albTargetGroup *v1alpha1.AlbTargetGroup) (r
 // Update takes the representation of a albTargetGroup and updates it. Returns the server's representation of the albTargetGroup, and an error, if there is any.
 func (c *FakeAlbTargetGroups) Update(albTargetGroup *v1alpha1.AlbTargetGroup) (result *v1alpha1.AlbTargetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(albtargetgroupsResource, albTargetGroup), &v1alpha1.AlbTargetGroup{})
+		Invokes(testing.NewUpdateAction(albtargetgroupsResource, c.ns, albTargetGroup), &v1alpha1.AlbTargetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAlbTargetGroups) Update(albTargetGroup *v1alpha1.AlbTargetGroup) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAlbTargetGroups) UpdateStatus(albTargetGroup *v1alpha1.AlbTargetGroup) (*v1alpha1.AlbTargetGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(albtargetgroupsResource, "status", albTargetGroup), &v1alpha1.AlbTargetGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(albtargetgroupsResource, "status", c.ns, albTargetGroup), &v1alpha1.AlbTargetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAlbTargetGroups) UpdateStatus(albTargetGroup *v1alpha1.AlbTargetGro
 // Delete takes name of the albTargetGroup and deletes it. Returns an error if one occurs.
 func (c *FakeAlbTargetGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(albtargetgroupsResource, name), &v1alpha1.AlbTargetGroup{})
+		Invokes(testing.NewDeleteAction(albtargetgroupsResource, c.ns, name), &v1alpha1.AlbTargetGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAlbTargetGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(albtargetgroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(albtargetgroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AlbTargetGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAlbTargetGroups) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched albTargetGroup.
 func (c *FakeAlbTargetGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AlbTargetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(albtargetgroupsResource, name, pt, data, subresources...), &v1alpha1.AlbTargetGroup{})
+		Invokes(testing.NewPatchSubresourceAction(albtargetgroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.AlbTargetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

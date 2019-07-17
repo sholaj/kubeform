@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,13 +19,14 @@ type LoggingOrganizationSink struct {
 }
 
 type LoggingOrganizationSinkSpec struct {
-	Destination string `json:"destination"`
+	Destination string `json:"destination" tf:"destination"`
 	// +optional
-	Filter string `json:"filter,omitempty"`
+	Filter string `json:"filter,omitempty" tf:"filter,omitempty"`
 	// +optional
-	IncludeChildren bool   `json:"include_children,omitempty"`
-	Name            string `json:"name"`
-	OrgId           string `json:"org_id"`
+	IncludeChildren bool                      `json:"includeChildren,omitempty" tf:"include_children,omitempty"`
+	Name            string                    `json:"name" tf:"name"`
+	OrgID           string                    `json:"orgID" tf:"org_id"`
+	ProviderRef     core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type LoggingOrganizationSinkStatus struct {
@@ -33,7 +34,9 @@ type LoggingOrganizationSinkStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -41,32 +41,33 @@ type DnsCnameRecordInformer interface {
 type dnsCnameRecordInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDnsCnameRecordInformer constructs a new informer for DnsCnameRecord type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDnsCnameRecordInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDnsCnameRecordInformer(client, resyncPeriod, indexers, nil)
+func NewDnsCnameRecordInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDnsCnameRecordInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDnsCnameRecordInformer constructs a new informer for DnsCnameRecord type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDnsCnameRecordInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDnsCnameRecordInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DnsCnameRecords().List(options)
+				return client.AzurermV1alpha1().DnsCnameRecords(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DnsCnameRecords().Watch(options)
+				return client.AzurermV1alpha1().DnsCnameRecords(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.DnsCnameRecord{},
@@ -76,7 +77,7 @@ func NewFilteredDnsCnameRecordInformer(client versioned.Interface, resyncPeriod 
 }
 
 func (f *dnsCnameRecordInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDnsCnameRecordInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDnsCnameRecordInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *dnsCnameRecordInformer) Informer() cache.SharedIndexInformer {

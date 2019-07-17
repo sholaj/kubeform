@@ -41,32 +41,33 @@ type WafXssMatchSetInformer interface {
 type wafXssMatchSetInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewWafXssMatchSetInformer constructs a new informer for WafXssMatchSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewWafXssMatchSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredWafXssMatchSetInformer(client, resyncPeriod, indexers, nil)
+func NewWafXssMatchSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredWafXssMatchSetInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredWafXssMatchSetInformer constructs a new informer for WafXssMatchSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredWafXssMatchSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredWafXssMatchSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafXssMatchSets().List(options)
+				return client.AwsV1alpha1().WafXssMatchSets(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafXssMatchSets().Watch(options)
+				return client.AwsV1alpha1().WafXssMatchSets(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.WafXssMatchSet{},
@@ -76,7 +77,7 @@ func NewFilteredWafXssMatchSetInformer(client versioned.Interface, resyncPeriod 
 }
 
 func (f *wafXssMatchSetInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredWafXssMatchSetInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredWafXssMatchSetInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *wafXssMatchSetInformer) Informer() cache.SharedIndexInformer {

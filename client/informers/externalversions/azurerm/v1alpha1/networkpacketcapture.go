@@ -41,32 +41,33 @@ type NetworkPacketCaptureInformer interface {
 type networkPacketCaptureInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewNetworkPacketCaptureInformer constructs a new informer for NetworkPacketCapture type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewNetworkPacketCaptureInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredNetworkPacketCaptureInformer(client, resyncPeriod, indexers, nil)
+func NewNetworkPacketCaptureInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredNetworkPacketCaptureInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredNetworkPacketCaptureInformer constructs a new informer for NetworkPacketCapture type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredNetworkPacketCaptureInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredNetworkPacketCaptureInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().NetworkPacketCaptures().List(options)
+				return client.AzurermV1alpha1().NetworkPacketCaptures(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().NetworkPacketCaptures().Watch(options)
+				return client.AzurermV1alpha1().NetworkPacketCaptures(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.NetworkPacketCapture{},
@@ -76,7 +77,7 @@ func NewFilteredNetworkPacketCaptureInformer(client versioned.Interface, resyncP
 }
 
 func (f *networkPacketCaptureInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredNetworkPacketCaptureInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredNetworkPacketCaptureInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *networkPacketCaptureInformer) Informer() cache.SharedIndexInformer {

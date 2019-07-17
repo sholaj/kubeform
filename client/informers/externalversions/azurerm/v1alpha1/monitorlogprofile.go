@@ -41,32 +41,33 @@ type MonitorLogProfileInformer interface {
 type monitorLogProfileInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewMonitorLogProfileInformer constructs a new informer for MonitorLogProfile type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewMonitorLogProfileInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredMonitorLogProfileInformer(client, resyncPeriod, indexers, nil)
+func NewMonitorLogProfileInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredMonitorLogProfileInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredMonitorLogProfileInformer constructs a new informer for MonitorLogProfile type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredMonitorLogProfileInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredMonitorLogProfileInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().MonitorLogProfiles().List(options)
+				return client.AzurermV1alpha1().MonitorLogProfiles(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().MonitorLogProfiles().Watch(options)
+				return client.AzurermV1alpha1().MonitorLogProfiles(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.MonitorLogProfile{},
@@ -76,7 +77,7 @@ func NewFilteredMonitorLogProfileInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *monitorLogProfileInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredMonitorLogProfileInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredMonitorLogProfileInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *monitorLogProfileInformer) Informer() cache.SharedIndexInformer {

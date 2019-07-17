@@ -1,44 +1,47 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type IamUserSshKey struct {
+type IamUserSSHKey struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              IamUserSshKeySpec   `json:"spec,omitempty"`
-	Status            IamUserSshKeyStatus `json:"status,omitempty"`
+	Spec              IamUserSSHKeySpec   `json:"spec,omitempty"`
+	Status            IamUserSSHKeyStatus `json:"status,omitempty"`
 }
 
-type IamUserSshKeySpec struct {
-	Encoding  string `json:"encoding"`
-	PublicKey string `json:"public_key"`
-	Username  string `json:"username"`
+type IamUserSSHKeySpec struct {
+	Encoding    string                    `json:"encoding" tf:"encoding"`
+	PublicKey   string                    `json:"publicKey" tf:"public_key"`
+	Username    string                    `json:"username" tf:"username"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
-type IamUserSshKeyStatus struct {
+type IamUserSSHKeyStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// IamUserSshKeyList is a list of IamUserSshKeys
-type IamUserSshKeyList struct {
+// IamUserSSHKeyList is a list of IamUserSSHKeys
+type IamUserSSHKeyList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of IamUserSshKey CRD objects
-	Items []IamUserSshKey `json:"items,omitempty"`
+	// Items is a list of IamUserSSHKey CRD objects
+	Items []IamUserSSHKey `json:"items,omitempty"`
 }

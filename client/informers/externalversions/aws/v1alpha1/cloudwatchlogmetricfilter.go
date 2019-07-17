@@ -41,32 +41,33 @@ type CloudwatchLogMetricFilterInformer interface {
 type cloudwatchLogMetricFilterInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewCloudwatchLogMetricFilterInformer constructs a new informer for CloudwatchLogMetricFilter type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCloudwatchLogMetricFilterInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCloudwatchLogMetricFilterInformer(client, resyncPeriod, indexers, nil)
+func NewCloudwatchLogMetricFilterInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCloudwatchLogMetricFilterInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredCloudwatchLogMetricFilterInformer constructs a new informer for CloudwatchLogMetricFilter type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCloudwatchLogMetricFilterInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCloudwatchLogMetricFilterInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CloudwatchLogMetricFilters().List(options)
+				return client.AwsV1alpha1().CloudwatchLogMetricFilters(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CloudwatchLogMetricFilters().Watch(options)
+				return client.AwsV1alpha1().CloudwatchLogMetricFilters(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.CloudwatchLogMetricFilter{},
@@ -76,7 +77,7 @@ func NewFilteredCloudwatchLogMetricFilterInformer(client versioned.Interface, re
 }
 
 func (f *cloudwatchLogMetricFilterInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCloudwatchLogMetricFilterInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredCloudwatchLogMetricFilterInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *cloudwatchLogMetricFilterInformer) Informer() cache.SharedIndexInformer {

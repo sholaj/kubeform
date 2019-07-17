@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/google/v1alpha1"
 )
 
-// FakeStorageBucketAcls implements StorageBucketAclInterface
-type FakeStorageBucketAcls struct {
+// FakeStorageBucketACLs implements StorageBucketACLInterface
+type FakeStorageBucketACLs struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var storagebucketaclsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "storagebucketacls"}
 
-var storagebucketaclsKind = schema.GroupVersionKind{Group: "google.kubeform.com", Version: "v1alpha1", Kind: "StorageBucketAcl"}
+var storagebucketaclsKind = schema.GroupVersionKind{Group: "google.kubeform.com", Version: "v1alpha1", Kind: "StorageBucketACL"}
 
-// Get takes name of the storageBucketAcl, and returns the corresponding storageBucketAcl object, and an error if there is any.
-func (c *FakeStorageBucketAcls) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageBucketAcl, err error) {
+// Get takes name of the storageBucketACL, and returns the corresponding storageBucketACL object, and an error if there is any.
+func (c *FakeStorageBucketACLs) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageBucketACL, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(storagebucketaclsResource, name), &v1alpha1.StorageBucketAcl{})
+		Invokes(testing.NewGetAction(storagebucketaclsResource, c.ns, name), &v1alpha1.StorageBucketACL{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.StorageBucketAcl), err
+	return obj.(*v1alpha1.StorageBucketACL), err
 }
 
-// List takes label and field selectors, and returns the list of StorageBucketAcls that match those selectors.
-func (c *FakeStorageBucketAcls) List(opts v1.ListOptions) (result *v1alpha1.StorageBucketAclList, err error) {
+// List takes label and field selectors, and returns the list of StorageBucketACLs that match those selectors.
+func (c *FakeStorageBucketACLs) List(opts v1.ListOptions) (result *v1alpha1.StorageBucketACLList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(storagebucketaclsResource, storagebucketaclsKind, opts), &v1alpha1.StorageBucketAclList{})
+		Invokes(testing.NewListAction(storagebucketaclsResource, storagebucketaclsKind, c.ns, opts), &v1alpha1.StorageBucketACLList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeStorageBucketAcls) List(opts v1.ListOptions) (result *v1alpha1.Stor
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.StorageBucketAclList{ListMeta: obj.(*v1alpha1.StorageBucketAclList).ListMeta}
-	for _, item := range obj.(*v1alpha1.StorageBucketAclList).Items {
+	list := &v1alpha1.StorageBucketACLList{ListMeta: obj.(*v1alpha1.StorageBucketACLList).ListMeta}
+	for _, item := range obj.(*v1alpha1.StorageBucketACLList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeStorageBucketAcls) List(opts v1.ListOptions) (result *v1alpha1.Stor
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested storageBucketAcls.
-func (c *FakeStorageBucketAcls) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested storageBucketACLs.
+func (c *FakeStorageBucketACLs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(storagebucketaclsResource, opts))
+		InvokesWatch(testing.NewWatchAction(storagebucketaclsResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a storageBucketAcl and creates it.  Returns the server's representation of the storageBucketAcl, and an error, if there is any.
-func (c *FakeStorageBucketAcls) Create(storageBucketAcl *v1alpha1.StorageBucketAcl) (result *v1alpha1.StorageBucketAcl, err error) {
+// Create takes the representation of a storageBucketACL and creates it.  Returns the server's representation of the storageBucketACL, and an error, if there is any.
+func (c *FakeStorageBucketACLs) Create(storageBucketACL *v1alpha1.StorageBucketACL) (result *v1alpha1.StorageBucketACL, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(storagebucketaclsResource, storageBucketAcl), &v1alpha1.StorageBucketAcl{})
+		Invokes(testing.NewCreateAction(storagebucketaclsResource, c.ns, storageBucketACL), &v1alpha1.StorageBucketACL{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.StorageBucketAcl), err
+	return obj.(*v1alpha1.StorageBucketACL), err
 }
 
-// Update takes the representation of a storageBucketAcl and updates it. Returns the server's representation of the storageBucketAcl, and an error, if there is any.
-func (c *FakeStorageBucketAcls) Update(storageBucketAcl *v1alpha1.StorageBucketAcl) (result *v1alpha1.StorageBucketAcl, err error) {
+// Update takes the representation of a storageBucketACL and updates it. Returns the server's representation of the storageBucketACL, and an error, if there is any.
+func (c *FakeStorageBucketACLs) Update(storageBucketACL *v1alpha1.StorageBucketACL) (result *v1alpha1.StorageBucketACL, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(storagebucketaclsResource, storageBucketAcl), &v1alpha1.StorageBucketAcl{})
+		Invokes(testing.NewUpdateAction(storagebucketaclsResource, c.ns, storageBucketACL), &v1alpha1.StorageBucketACL{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.StorageBucketAcl), err
+	return obj.(*v1alpha1.StorageBucketACL), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeStorageBucketAcls) UpdateStatus(storageBucketAcl *v1alpha1.StorageBucketAcl) (*v1alpha1.StorageBucketAcl, error) {
+func (c *FakeStorageBucketACLs) UpdateStatus(storageBucketACL *v1alpha1.StorageBucketACL) (*v1alpha1.StorageBucketACL, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(storagebucketaclsResource, "status", storageBucketAcl), &v1alpha1.StorageBucketAcl{})
+		Invokes(testing.NewUpdateSubresourceAction(storagebucketaclsResource, "status", c.ns, storageBucketACL), &v1alpha1.StorageBucketACL{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.StorageBucketAcl), err
+	return obj.(*v1alpha1.StorageBucketACL), err
 }
 
-// Delete takes name of the storageBucketAcl and deletes it. Returns an error if one occurs.
-func (c *FakeStorageBucketAcls) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the storageBucketACL and deletes it. Returns an error if one occurs.
+func (c *FakeStorageBucketACLs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(storagebucketaclsResource, name), &v1alpha1.StorageBucketAcl{})
+		Invokes(testing.NewDeleteAction(storagebucketaclsResource, c.ns, name), &v1alpha1.StorageBucketACL{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeStorageBucketAcls) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(storagebucketaclsResource, listOptions)
+func (c *FakeStorageBucketACLs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(storagebucketaclsResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.StorageBucketAclList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.StorageBucketACLList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched storageBucketAcl.
-func (c *FakeStorageBucketAcls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageBucketAcl, err error) {
+// Patch applies the patch and returns the patched storageBucketACL.
+func (c *FakeStorageBucketACLs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageBucketACL, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(storagebucketaclsResource, name, pt, data, subresources...), &v1alpha1.StorageBucketAcl{})
+		Invokes(testing.NewPatchSubresourceAction(storagebucketaclsResource, c.ns, name, pt, data, subresources...), &v1alpha1.StorageBucketACL{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.StorageBucketAcl), err
+	return obj.(*v1alpha1.StorageBucketACL), err
 }

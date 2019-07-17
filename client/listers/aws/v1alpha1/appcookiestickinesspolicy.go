@@ -29,8 +29,8 @@ import (
 type AppCookieStickinessPolicyLister interface {
 	// List lists all AppCookieStickinessPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AppCookieStickinessPolicy, err error)
-	// Get retrieves the AppCookieStickinessPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.AppCookieStickinessPolicy, error)
+	// AppCookieStickinessPolicies returns an object that can list and get AppCookieStickinessPolicies.
+	AppCookieStickinessPolicies(namespace string) AppCookieStickinessPolicyNamespaceLister
 	AppCookieStickinessPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *appCookieStickinessPolicyLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the AppCookieStickinessPolicy from the index for a given name.
-func (s *appCookieStickinessPolicyLister) Get(name string) (*v1alpha1.AppCookieStickinessPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AppCookieStickinessPolicies returns an object that can list and get AppCookieStickinessPolicies.
+func (s *appCookieStickinessPolicyLister) AppCookieStickinessPolicies(namespace string) AppCookieStickinessPolicyNamespaceLister {
+	return appCookieStickinessPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AppCookieStickinessPolicyNamespaceLister helps list and get AppCookieStickinessPolicies.
+type AppCookieStickinessPolicyNamespaceLister interface {
+	// List lists all AppCookieStickinessPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AppCookieStickinessPolicy, err error)
+	// Get retrieves the AppCookieStickinessPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AppCookieStickinessPolicy, error)
+	AppCookieStickinessPolicyNamespaceListerExpansion
+}
+
+// appCookieStickinessPolicyNamespaceLister implements the AppCookieStickinessPolicyNamespaceLister
+// interface.
+type appCookieStickinessPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AppCookieStickinessPolicies in the indexer for a given namespace.
+func (s appCookieStickinessPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AppCookieStickinessPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AppCookieStickinessPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the AppCookieStickinessPolicy from the indexer for a given namespace and name.
+func (s appCookieStickinessPolicyNamespaceLister) Get(name string) (*v1alpha1.AppCookieStickinessPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

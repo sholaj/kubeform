@@ -32,7 +32,7 @@ import (
 // ElasticsearchDomainPoliciesGetter has a method to return a ElasticsearchDomainPolicyInterface.
 // A group's client should implement this interface.
 type ElasticsearchDomainPoliciesGetter interface {
-	ElasticsearchDomainPolicies() ElasticsearchDomainPolicyInterface
+	ElasticsearchDomainPolicies(namespace string) ElasticsearchDomainPolicyInterface
 }
 
 // ElasticsearchDomainPolicyInterface has methods to work with ElasticsearchDomainPolicy resources.
@@ -52,12 +52,14 @@ type ElasticsearchDomainPolicyInterface interface {
 // elasticsearchDomainPolicies implements ElasticsearchDomainPolicyInterface
 type elasticsearchDomainPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newElasticsearchDomainPolicies returns a ElasticsearchDomainPolicies
-func newElasticsearchDomainPolicies(c *AwsV1alpha1Client) *elasticsearchDomainPolicies {
+func newElasticsearchDomainPolicies(c *AwsV1alpha1Client, namespace string) *elasticsearchDomainPolicies {
 	return &elasticsearchDomainPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newElasticsearchDomainPolicies(c *AwsV1alpha1Client) *elasticsearchDomainPo
 func (c *elasticsearchDomainPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.ElasticsearchDomainPolicy, err error) {
 	result = &v1alpha1.ElasticsearchDomainPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticsearchdomainpolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *elasticsearchDomainPolicies) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.ElasticsearchDomainPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticsearchdomainpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *elasticsearchDomainPolicies) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticsearchdomainpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *elasticsearchDomainPolicies) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *elasticsearchDomainPolicies) Create(elasticsearchDomainPolicy *v1alpha1.ElasticsearchDomainPolicy) (result *v1alpha1.ElasticsearchDomainPolicy, err error) {
 	result = &v1alpha1.ElasticsearchDomainPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("elasticsearchdomainpolicies").
 		Body(elasticsearchDomainPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *elasticsearchDomainPolicies) Create(elasticsearchDomainPolicy *v1alpha1
 func (c *elasticsearchDomainPolicies) Update(elasticsearchDomainPolicy *v1alpha1.ElasticsearchDomainPolicy) (result *v1alpha1.ElasticsearchDomainPolicy, err error) {
 	result = &v1alpha1.ElasticsearchDomainPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elasticsearchdomainpolicies").
 		Name(elasticsearchDomainPolicy.Name).
 		Body(elasticsearchDomainPolicy).
@@ -132,6 +139,7 @@ func (c *elasticsearchDomainPolicies) Update(elasticsearchDomainPolicy *v1alpha1
 func (c *elasticsearchDomainPolicies) UpdateStatus(elasticsearchDomainPolicy *v1alpha1.ElasticsearchDomainPolicy) (result *v1alpha1.ElasticsearchDomainPolicy, err error) {
 	result = &v1alpha1.ElasticsearchDomainPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elasticsearchdomainpolicies").
 		Name(elasticsearchDomainPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *elasticsearchDomainPolicies) UpdateStatus(elasticsearchDomainPolicy *v1
 // Delete takes name of the elasticsearchDomainPolicy and deletes it. Returns an error if one occurs.
 func (c *elasticsearchDomainPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elasticsearchdomainpolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *elasticsearchDomainPolicies) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elasticsearchdomainpolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *elasticsearchDomainPolicies) DeleteCollection(options *v1.DeleteOptions
 func (c *elasticsearchDomainPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ElasticsearchDomainPolicy, err error) {
 	result = &v1alpha1.ElasticsearchDomainPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("elasticsearchdomainpolicies").
 		SubResource(subresources...).
 		Name(name).

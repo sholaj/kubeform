@@ -29,8 +29,8 @@ import (
 type GlacierVaultLockLister interface {
 	// List lists all GlacierVaultLocks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GlacierVaultLock, err error)
-	// Get retrieves the GlacierVaultLock from the index for a given name.
-	Get(name string) (*v1alpha1.GlacierVaultLock, error)
+	// GlacierVaultLocks returns an object that can list and get GlacierVaultLocks.
+	GlacierVaultLocks(namespace string) GlacierVaultLockNamespaceLister
 	GlacierVaultLockListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *glacierVaultLockLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the GlacierVaultLock from the index for a given name.
-func (s *glacierVaultLockLister) Get(name string) (*v1alpha1.GlacierVaultLock, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GlacierVaultLocks returns an object that can list and get GlacierVaultLocks.
+func (s *glacierVaultLockLister) GlacierVaultLocks(namespace string) GlacierVaultLockNamespaceLister {
+	return glacierVaultLockNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GlacierVaultLockNamespaceLister helps list and get GlacierVaultLocks.
+type GlacierVaultLockNamespaceLister interface {
+	// List lists all GlacierVaultLocks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GlacierVaultLock, err error)
+	// Get retrieves the GlacierVaultLock from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GlacierVaultLock, error)
+	GlacierVaultLockNamespaceListerExpansion
+}
+
+// glacierVaultLockNamespaceLister implements the GlacierVaultLockNamespaceLister
+// interface.
+type glacierVaultLockNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GlacierVaultLocks in the indexer for a given namespace.
+func (s glacierVaultLockNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GlacierVaultLock, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GlacierVaultLock))
+	})
+	return ret, err
+}
+
+// Get retrieves the GlacierVaultLock from the indexer for a given namespace and name.
+func (s glacierVaultLockNamespaceLister) Get(name string) (*v1alpha1.GlacierVaultLock, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

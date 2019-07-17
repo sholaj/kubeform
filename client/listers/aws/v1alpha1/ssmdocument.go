@@ -29,8 +29,8 @@ import (
 type SsmDocumentLister interface {
 	// List lists all SsmDocuments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SsmDocument, err error)
-	// Get retrieves the SsmDocument from the index for a given name.
-	Get(name string) (*v1alpha1.SsmDocument, error)
+	// SsmDocuments returns an object that can list and get SsmDocuments.
+	SsmDocuments(namespace string) SsmDocumentNamespaceLister
 	SsmDocumentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ssmDocumentLister) List(selector labels.Selector) (ret []*v1alpha1.SsmD
 	return ret, err
 }
 
-// Get retrieves the SsmDocument from the index for a given name.
-func (s *ssmDocumentLister) Get(name string) (*v1alpha1.SsmDocument, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SsmDocuments returns an object that can list and get SsmDocuments.
+func (s *ssmDocumentLister) SsmDocuments(namespace string) SsmDocumentNamespaceLister {
+	return ssmDocumentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SsmDocumentNamespaceLister helps list and get SsmDocuments.
+type SsmDocumentNamespaceLister interface {
+	// List lists all SsmDocuments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SsmDocument, err error)
+	// Get retrieves the SsmDocument from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SsmDocument, error)
+	SsmDocumentNamespaceListerExpansion
+}
+
+// ssmDocumentNamespaceLister implements the SsmDocumentNamespaceLister
+// interface.
+type ssmDocumentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SsmDocuments in the indexer for a given namespace.
+func (s ssmDocumentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SsmDocument, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SsmDocument))
+	})
+	return ret, err
+}
+
+// Get retrieves the SsmDocument from the indexer for a given namespace and name.
+func (s ssmDocumentNamespaceLister) Get(name string) (*v1alpha1.SsmDocument, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

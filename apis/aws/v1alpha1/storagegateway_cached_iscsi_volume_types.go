@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,14 +19,15 @@ type StoragegatewayCachedIscsiVolume struct {
 }
 
 type StoragegatewayCachedIscsiVolumeSpec struct {
-	GatewayArn         string `json:"gateway_arn"`
-	NetworkInterfaceId string `json:"network_interface_id"`
+	GatewayArn         string `json:"gatewayArn" tf:"gateway_arn"`
+	NetworkInterfaceID string `json:"networkInterfaceID" tf:"network_interface_id"`
 	// +optional
-	SnapshotId string `json:"snapshot_id,omitempty"`
+	SnapshotID string `json:"snapshotID,omitempty" tf:"snapshot_id,omitempty"`
 	// +optional
-	SourceVolumeArn   string `json:"source_volume_arn,omitempty"`
-	TargetName        string `json:"target_name"`
-	VolumeSizeInBytes int    `json:"volume_size_in_bytes"`
+	SourceVolumeArn   string                    `json:"sourceVolumeArn,omitempty" tf:"source_volume_arn,omitempty"`
+	TargetName        string                    `json:"targetName" tf:"target_name"`
+	VolumeSizeInBytes int                       `json:"volumeSizeInBytes" tf:"volume_size_in_bytes"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type StoragegatewayCachedIscsiVolumeStatus struct {
@@ -34,7 +35,9 @@ type StoragegatewayCachedIscsiVolumeStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

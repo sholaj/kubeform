@@ -31,6 +31,7 @@ import (
 // FakeServiceAccountIamMembers implements ServiceAccountIamMemberInterface
 type FakeServiceAccountIamMembers struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var serviceaccountiammembersResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "serviceaccountiammembers"}
@@ -40,7 +41,8 @@ var serviceaccountiammembersKind = schema.GroupVersionKind{Group: "google.kubefo
 // Get takes name of the serviceAccountIamMember, and returns the corresponding serviceAccountIamMember object, and an error if there is any.
 func (c *FakeServiceAccountIamMembers) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceAccountIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(serviceaccountiammembersResource, name), &v1alpha1.ServiceAccountIamMember{})
+		Invokes(testing.NewGetAction(serviceaccountiammembersResource, c.ns, name), &v1alpha1.ServiceAccountIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeServiceAccountIamMembers) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of ServiceAccountIamMembers that match those selectors.
 func (c *FakeServiceAccountIamMembers) List(opts v1.ListOptions) (result *v1alpha1.ServiceAccountIamMemberList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(serviceaccountiammembersResource, serviceaccountiammembersKind, opts), &v1alpha1.ServiceAccountIamMemberList{})
+		Invokes(testing.NewListAction(serviceaccountiammembersResource, serviceaccountiammembersKind, c.ns, opts), &v1alpha1.ServiceAccountIamMemberList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeServiceAccountIamMembers) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested serviceAccountIamMembers.
 func (c *FakeServiceAccountIamMembers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(serviceaccountiammembersResource, opts))
+		InvokesWatch(testing.NewWatchAction(serviceaccountiammembersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a serviceAccountIamMember and creates it.  Returns the server's representation of the serviceAccountIamMember, and an error, if there is any.
 func (c *FakeServiceAccountIamMembers) Create(serviceAccountIamMember *v1alpha1.ServiceAccountIamMember) (result *v1alpha1.ServiceAccountIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(serviceaccountiammembersResource, serviceAccountIamMember), &v1alpha1.ServiceAccountIamMember{})
+		Invokes(testing.NewCreateAction(serviceaccountiammembersResource, c.ns, serviceAccountIamMember), &v1alpha1.ServiceAccountIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeServiceAccountIamMembers) Create(serviceAccountIamMember *v1alpha1.
 // Update takes the representation of a serviceAccountIamMember and updates it. Returns the server's representation of the serviceAccountIamMember, and an error, if there is any.
 func (c *FakeServiceAccountIamMembers) Update(serviceAccountIamMember *v1alpha1.ServiceAccountIamMember) (result *v1alpha1.ServiceAccountIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(serviceaccountiammembersResource, serviceAccountIamMember), &v1alpha1.ServiceAccountIamMember{})
+		Invokes(testing.NewUpdateAction(serviceaccountiammembersResource, c.ns, serviceAccountIamMember), &v1alpha1.ServiceAccountIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeServiceAccountIamMembers) Update(serviceAccountIamMember *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeServiceAccountIamMembers) UpdateStatus(serviceAccountIamMember *v1alpha1.ServiceAccountIamMember) (*v1alpha1.ServiceAccountIamMember, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(serviceaccountiammembersResource, "status", serviceAccountIamMember), &v1alpha1.ServiceAccountIamMember{})
+		Invokes(testing.NewUpdateSubresourceAction(serviceaccountiammembersResource, "status", c.ns, serviceAccountIamMember), &v1alpha1.ServiceAccountIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeServiceAccountIamMembers) UpdateStatus(serviceAccountIamMember *v1a
 // Delete takes name of the serviceAccountIamMember and deletes it. Returns an error if one occurs.
 func (c *FakeServiceAccountIamMembers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(serviceaccountiammembersResource, name), &v1alpha1.ServiceAccountIamMember{})
+		Invokes(testing.NewDeleteAction(serviceaccountiammembersResource, c.ns, name), &v1alpha1.ServiceAccountIamMember{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeServiceAccountIamMembers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(serviceaccountiammembersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(serviceaccountiammembersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ServiceAccountIamMemberList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeServiceAccountIamMembers) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched serviceAccountIamMember.
 func (c *FakeServiceAccountIamMembers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceAccountIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(serviceaccountiammembersResource, name, pt, data, subresources...), &v1alpha1.ServiceAccountIamMember{})
+		Invokes(testing.NewPatchSubresourceAction(serviceaccountiammembersResource, c.ns, name, pt, data, subresources...), &v1alpha1.ServiceAccountIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}

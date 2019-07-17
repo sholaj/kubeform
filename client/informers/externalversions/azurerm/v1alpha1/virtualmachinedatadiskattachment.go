@@ -41,32 +41,33 @@ type VirtualMachineDataDiskAttachmentInformer interface {
 type virtualMachineDataDiskAttachmentInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewVirtualMachineDataDiskAttachmentInformer constructs a new informer for VirtualMachineDataDiskAttachment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewVirtualMachineDataDiskAttachmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredVirtualMachineDataDiskAttachmentInformer(client, resyncPeriod, indexers, nil)
+func NewVirtualMachineDataDiskAttachmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredVirtualMachineDataDiskAttachmentInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredVirtualMachineDataDiskAttachmentInformer constructs a new informer for VirtualMachineDataDiskAttachment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredVirtualMachineDataDiskAttachmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredVirtualMachineDataDiskAttachmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().VirtualMachineDataDiskAttachments().List(options)
+				return client.AzurermV1alpha1().VirtualMachineDataDiskAttachments(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().VirtualMachineDataDiskAttachments().Watch(options)
+				return client.AzurermV1alpha1().VirtualMachineDataDiskAttachments(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.VirtualMachineDataDiskAttachment{},
@@ -76,7 +77,7 @@ func NewFilteredVirtualMachineDataDiskAttachmentInformer(client versioned.Interf
 }
 
 func (f *virtualMachineDataDiskAttachmentInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredVirtualMachineDataDiskAttachmentInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredVirtualMachineDataDiskAttachmentInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *virtualMachineDataDiskAttachmentInformer) Informer() cache.SharedIndexInformer {

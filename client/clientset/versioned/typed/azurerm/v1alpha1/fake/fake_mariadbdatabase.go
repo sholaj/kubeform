@@ -31,6 +31,7 @@ import (
 // FakeMariadbDatabases implements MariadbDatabaseInterface
 type FakeMariadbDatabases struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var mariadbdatabasesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "mariadbdatabases"}
@@ -40,7 +41,8 @@ var mariadbdatabasesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com"
 // Get takes name of the mariadbDatabase, and returns the corresponding mariadbDatabase object, and an error if there is any.
 func (c *FakeMariadbDatabases) Get(name string, options v1.GetOptions) (result *v1alpha1.MariadbDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(mariadbdatabasesResource, name), &v1alpha1.MariadbDatabase{})
+		Invokes(testing.NewGetAction(mariadbdatabasesResource, c.ns, name), &v1alpha1.MariadbDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMariadbDatabases) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of MariadbDatabases that match those selectors.
 func (c *FakeMariadbDatabases) List(opts v1.ListOptions) (result *v1alpha1.MariadbDatabaseList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(mariadbdatabasesResource, mariadbdatabasesKind, opts), &v1alpha1.MariadbDatabaseList{})
+		Invokes(testing.NewListAction(mariadbdatabasesResource, mariadbdatabasesKind, c.ns, opts), &v1alpha1.MariadbDatabaseList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMariadbDatabases) List(opts v1.ListOptions) (result *v1alpha1.Maria
 // Watch returns a watch.Interface that watches the requested mariadbDatabases.
 func (c *FakeMariadbDatabases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(mariadbdatabasesResource, opts))
+		InvokesWatch(testing.NewWatchAction(mariadbdatabasesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a mariadbDatabase and creates it.  Returns the server's representation of the mariadbDatabase, and an error, if there is any.
 func (c *FakeMariadbDatabases) Create(mariadbDatabase *v1alpha1.MariadbDatabase) (result *v1alpha1.MariadbDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(mariadbdatabasesResource, mariadbDatabase), &v1alpha1.MariadbDatabase{})
+		Invokes(testing.NewCreateAction(mariadbdatabasesResource, c.ns, mariadbDatabase), &v1alpha1.MariadbDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMariadbDatabases) Create(mariadbDatabase *v1alpha1.MariadbDatabase)
 // Update takes the representation of a mariadbDatabase and updates it. Returns the server's representation of the mariadbDatabase, and an error, if there is any.
 func (c *FakeMariadbDatabases) Update(mariadbDatabase *v1alpha1.MariadbDatabase) (result *v1alpha1.MariadbDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(mariadbdatabasesResource, mariadbDatabase), &v1alpha1.MariadbDatabase{})
+		Invokes(testing.NewUpdateAction(mariadbdatabasesResource, c.ns, mariadbDatabase), &v1alpha1.MariadbDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMariadbDatabases) Update(mariadbDatabase *v1alpha1.MariadbDatabase)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMariadbDatabases) UpdateStatus(mariadbDatabase *v1alpha1.MariadbDatabase) (*v1alpha1.MariadbDatabase, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(mariadbdatabasesResource, "status", mariadbDatabase), &v1alpha1.MariadbDatabase{})
+		Invokes(testing.NewUpdateSubresourceAction(mariadbdatabasesResource, "status", c.ns, mariadbDatabase), &v1alpha1.MariadbDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMariadbDatabases) UpdateStatus(mariadbDatabase *v1alpha1.MariadbDat
 // Delete takes name of the mariadbDatabase and deletes it. Returns an error if one occurs.
 func (c *FakeMariadbDatabases) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(mariadbdatabasesResource, name), &v1alpha1.MariadbDatabase{})
+		Invokes(testing.NewDeleteAction(mariadbdatabasesResource, c.ns, name), &v1alpha1.MariadbDatabase{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMariadbDatabases) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(mariadbdatabasesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(mariadbdatabasesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MariadbDatabaseList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMariadbDatabases) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched mariadbDatabase.
 func (c *FakeMariadbDatabases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MariadbDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(mariadbdatabasesResource, name, pt, data, subresources...), &v1alpha1.MariadbDatabase{})
+		Invokes(testing.NewPatchSubresourceAction(mariadbdatabasesResource, c.ns, name, pt, data, subresources...), &v1alpha1.MariadbDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}

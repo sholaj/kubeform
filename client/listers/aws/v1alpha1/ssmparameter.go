@@ -29,8 +29,8 @@ import (
 type SsmParameterLister interface {
 	// List lists all SsmParameters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SsmParameter, err error)
-	// Get retrieves the SsmParameter from the index for a given name.
-	Get(name string) (*v1alpha1.SsmParameter, error)
+	// SsmParameters returns an object that can list and get SsmParameters.
+	SsmParameters(namespace string) SsmParameterNamespaceLister
 	SsmParameterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ssmParameterLister) List(selector labels.Selector) (ret []*v1alpha1.Ssm
 	return ret, err
 }
 
-// Get retrieves the SsmParameter from the index for a given name.
-func (s *ssmParameterLister) Get(name string) (*v1alpha1.SsmParameter, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SsmParameters returns an object that can list and get SsmParameters.
+func (s *ssmParameterLister) SsmParameters(namespace string) SsmParameterNamespaceLister {
+	return ssmParameterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SsmParameterNamespaceLister helps list and get SsmParameters.
+type SsmParameterNamespaceLister interface {
+	// List lists all SsmParameters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SsmParameter, err error)
+	// Get retrieves the SsmParameter from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SsmParameter, error)
+	SsmParameterNamespaceListerExpansion
+}
+
+// ssmParameterNamespaceLister implements the SsmParameterNamespaceLister
+// interface.
+type ssmParameterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SsmParameters in the indexer for a given namespace.
+func (s ssmParameterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SsmParameter, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SsmParameter))
+	})
+	return ret, err
+}
+
+// Get retrieves the SsmParameter from the indexer for a given namespace and name.
+func (s ssmParameterNamespaceLister) Get(name string) (*v1alpha1.SsmParameter, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeLoggingOrganizationSinks implements LoggingOrganizationSinkInterface
 type FakeLoggingOrganizationSinks struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var loggingorganizationsinksResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "loggingorganizationsinks"}
@@ -40,7 +41,8 @@ var loggingorganizationsinksKind = schema.GroupVersionKind{Group: "google.kubefo
 // Get takes name of the loggingOrganizationSink, and returns the corresponding loggingOrganizationSink object, and an error if there is any.
 func (c *FakeLoggingOrganizationSinks) Get(name string, options v1.GetOptions) (result *v1alpha1.LoggingOrganizationSink, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(loggingorganizationsinksResource, name), &v1alpha1.LoggingOrganizationSink{})
+		Invokes(testing.NewGetAction(loggingorganizationsinksResource, c.ns, name), &v1alpha1.LoggingOrganizationSink{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLoggingOrganizationSinks) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of LoggingOrganizationSinks that match those selectors.
 func (c *FakeLoggingOrganizationSinks) List(opts v1.ListOptions) (result *v1alpha1.LoggingOrganizationSinkList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(loggingorganizationsinksResource, loggingorganizationsinksKind, opts), &v1alpha1.LoggingOrganizationSinkList{})
+		Invokes(testing.NewListAction(loggingorganizationsinksResource, loggingorganizationsinksKind, c.ns, opts), &v1alpha1.LoggingOrganizationSinkList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLoggingOrganizationSinks) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested loggingOrganizationSinks.
 func (c *FakeLoggingOrganizationSinks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(loggingorganizationsinksResource, opts))
+		InvokesWatch(testing.NewWatchAction(loggingorganizationsinksResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a loggingOrganizationSink and creates it.  Returns the server's representation of the loggingOrganizationSink, and an error, if there is any.
 func (c *FakeLoggingOrganizationSinks) Create(loggingOrganizationSink *v1alpha1.LoggingOrganizationSink) (result *v1alpha1.LoggingOrganizationSink, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(loggingorganizationsinksResource, loggingOrganizationSink), &v1alpha1.LoggingOrganizationSink{})
+		Invokes(testing.NewCreateAction(loggingorganizationsinksResource, c.ns, loggingOrganizationSink), &v1alpha1.LoggingOrganizationSink{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLoggingOrganizationSinks) Create(loggingOrganizationSink *v1alpha1.
 // Update takes the representation of a loggingOrganizationSink and updates it. Returns the server's representation of the loggingOrganizationSink, and an error, if there is any.
 func (c *FakeLoggingOrganizationSinks) Update(loggingOrganizationSink *v1alpha1.LoggingOrganizationSink) (result *v1alpha1.LoggingOrganizationSink, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(loggingorganizationsinksResource, loggingOrganizationSink), &v1alpha1.LoggingOrganizationSink{})
+		Invokes(testing.NewUpdateAction(loggingorganizationsinksResource, c.ns, loggingOrganizationSink), &v1alpha1.LoggingOrganizationSink{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLoggingOrganizationSinks) Update(loggingOrganizationSink *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLoggingOrganizationSinks) UpdateStatus(loggingOrganizationSink *v1alpha1.LoggingOrganizationSink) (*v1alpha1.LoggingOrganizationSink, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(loggingorganizationsinksResource, "status", loggingOrganizationSink), &v1alpha1.LoggingOrganizationSink{})
+		Invokes(testing.NewUpdateSubresourceAction(loggingorganizationsinksResource, "status", c.ns, loggingOrganizationSink), &v1alpha1.LoggingOrganizationSink{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLoggingOrganizationSinks) UpdateStatus(loggingOrganizationSink *v1a
 // Delete takes name of the loggingOrganizationSink and deletes it. Returns an error if one occurs.
 func (c *FakeLoggingOrganizationSinks) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(loggingorganizationsinksResource, name), &v1alpha1.LoggingOrganizationSink{})
+		Invokes(testing.NewDeleteAction(loggingorganizationsinksResource, c.ns, name), &v1alpha1.LoggingOrganizationSink{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLoggingOrganizationSinks) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(loggingorganizationsinksResource, listOptions)
+	action := testing.NewDeleteCollectionAction(loggingorganizationsinksResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LoggingOrganizationSinkList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLoggingOrganizationSinks) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched loggingOrganizationSink.
 func (c *FakeLoggingOrganizationSinks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LoggingOrganizationSink, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(loggingorganizationsinksResource, name, pt, data, subresources...), &v1alpha1.LoggingOrganizationSink{})
+		Invokes(testing.NewPatchSubresourceAction(loggingorganizationsinksResource, c.ns, name, pt, data, subresources...), &v1alpha1.LoggingOrganizationSink{})
+
 	if obj == nil {
 		return nil, err
 	}

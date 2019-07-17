@@ -29,8 +29,8 @@ import (
 type NeptuneClusterParameterGroupLister interface {
 	// List lists all NeptuneClusterParameterGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NeptuneClusterParameterGroup, err error)
-	// Get retrieves the NeptuneClusterParameterGroup from the index for a given name.
-	Get(name string) (*v1alpha1.NeptuneClusterParameterGroup, error)
+	// NeptuneClusterParameterGroups returns an object that can list and get NeptuneClusterParameterGroups.
+	NeptuneClusterParameterGroups(namespace string) NeptuneClusterParameterGroupNamespaceLister
 	NeptuneClusterParameterGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *neptuneClusterParameterGroupLister) List(selector labels.Selector) (ret
 	return ret, err
 }
 
-// Get retrieves the NeptuneClusterParameterGroup from the index for a given name.
-func (s *neptuneClusterParameterGroupLister) Get(name string) (*v1alpha1.NeptuneClusterParameterGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NeptuneClusterParameterGroups returns an object that can list and get NeptuneClusterParameterGroups.
+func (s *neptuneClusterParameterGroupLister) NeptuneClusterParameterGroups(namespace string) NeptuneClusterParameterGroupNamespaceLister {
+	return neptuneClusterParameterGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NeptuneClusterParameterGroupNamespaceLister helps list and get NeptuneClusterParameterGroups.
+type NeptuneClusterParameterGroupNamespaceLister interface {
+	// List lists all NeptuneClusterParameterGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NeptuneClusterParameterGroup, err error)
+	// Get retrieves the NeptuneClusterParameterGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NeptuneClusterParameterGroup, error)
+	NeptuneClusterParameterGroupNamespaceListerExpansion
+}
+
+// neptuneClusterParameterGroupNamespaceLister implements the NeptuneClusterParameterGroupNamespaceLister
+// interface.
+type neptuneClusterParameterGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NeptuneClusterParameterGroups in the indexer for a given namespace.
+func (s neptuneClusterParameterGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NeptuneClusterParameterGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NeptuneClusterParameterGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the NeptuneClusterParameterGroup from the indexer for a given namespace and name.
+func (s neptuneClusterParameterGroupNamespaceLister) Get(name string) (*v1alpha1.NeptuneClusterParameterGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

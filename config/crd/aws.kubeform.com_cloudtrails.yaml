@@ -397,33 +397,63 @@ spec:
           type: object
         spec:
           properties:
-            cloud_watch_logs_group_arn:
+            cloudWatchLogsGroupArn:
               type: string
-            cloud_watch_logs_role_arn:
+            cloudWatchLogsRoleArn:
               type: string
-            enable_log_file_validation:
+            enableLogFileValidation:
               type: boolean
-            enable_logging:
+            enableLogging:
               type: boolean
-            event_selector:
-              items: {}
+            eventSelector:
+              items:
+                properties:
+                  dataResource:
+                    items:
+                      properties:
+                        type:
+                          type: string
+                        values:
+                          items:
+                            type: string
+                          maxItems: 250
+                          type: array
+                      required:
+                      - type
+                      - values
+                      type: object
+                    type: array
+                  includeManagementEvents:
+                    type: boolean
+                  readWriteType:
+                    type: string
+                type: object
               maxItems: 5
               type: array
-            include_global_service_events:
+            includeGlobalServiceEvents:
               type: boolean
-            is_multi_region_trail:
+            isMultiRegionTrail:
               type: boolean
-            is_organization_trail:
+            isOrganizationTrail:
               type: boolean
-            kms_key_id:
+            kmsKeyID:
               type: string
             name:
               type: string
-            s3_bucket_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            s3BucketName:
               type: string
-            s3_key_prefix:
+            s3KeyPrefix:
               type: string
-            sns_topic_name:
+            snsTopicName:
               type: string
             tags:
               additionalProperties:
@@ -431,7 +461,8 @@ spec:
               type: object
           required:
           - name
-          - s3_bucket_name
+          - providerRef
+          - s3BucketName
           type: object
         status:
           properties:
@@ -442,6 +473,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

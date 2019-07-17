@@ -31,6 +31,7 @@ import (
 // FakeVolumes implements VolumeInterface
 type FakeVolumes struct {
 	Fake *FakeDigitaloceanV1alpha1
+	ns   string
 }
 
 var volumesResource = schema.GroupVersionResource{Group: "digitalocean.kubeform.com", Version: "v1alpha1", Resource: "volumes"}
@@ -40,7 +41,8 @@ var volumesKind = schema.GroupVersionKind{Group: "digitalocean.kubeform.com", Ve
 // Get takes name of the volume, and returns the corresponding volume object, and an error if there is any.
 func (c *FakeVolumes) Get(name string, options v1.GetOptions) (result *v1alpha1.Volume, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(volumesResource, name), &v1alpha1.Volume{})
+		Invokes(testing.NewGetAction(volumesResource, c.ns, name), &v1alpha1.Volume{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeVolumes) Get(name string, options v1.GetOptions) (result *v1alpha1.
 // List takes label and field selectors, and returns the list of Volumes that match those selectors.
 func (c *FakeVolumes) List(opts v1.ListOptions) (result *v1alpha1.VolumeList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(volumesResource, volumesKind, opts), &v1alpha1.VolumeList{})
+		Invokes(testing.NewListAction(volumesResource, volumesKind, c.ns, opts), &v1alpha1.VolumeList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeVolumes) List(opts v1.ListOptions) (result *v1alpha1.VolumeList, er
 // Watch returns a watch.Interface that watches the requested volumes.
 func (c *FakeVolumes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(volumesResource, opts))
+		InvokesWatch(testing.NewWatchAction(volumesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a volume and creates it.  Returns the server's representation of the volume, and an error, if there is any.
 func (c *FakeVolumes) Create(volume *v1alpha1.Volume) (result *v1alpha1.Volume, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(volumesResource, volume), &v1alpha1.Volume{})
+		Invokes(testing.NewCreateAction(volumesResource, c.ns, volume), &v1alpha1.Volume{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeVolumes) Create(volume *v1alpha1.Volume) (result *v1alpha1.Volume, 
 // Update takes the representation of a volume and updates it. Returns the server's representation of the volume, and an error, if there is any.
 func (c *FakeVolumes) Update(volume *v1alpha1.Volume) (result *v1alpha1.Volume, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(volumesResource, volume), &v1alpha1.Volume{})
+		Invokes(testing.NewUpdateAction(volumesResource, c.ns, volume), &v1alpha1.Volume{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeVolumes) Update(volume *v1alpha1.Volume) (result *v1alpha1.Volume, 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeVolumes) UpdateStatus(volume *v1alpha1.Volume) (*v1alpha1.Volume, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(volumesResource, "status", volume), &v1alpha1.Volume{})
+		Invokes(testing.NewUpdateSubresourceAction(volumesResource, "status", c.ns, volume), &v1alpha1.Volume{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeVolumes) UpdateStatus(volume *v1alpha1.Volume) (*v1alpha1.Volume, e
 // Delete takes name of the volume and deletes it. Returns an error if one occurs.
 func (c *FakeVolumes) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(volumesResource, name), &v1alpha1.Volume{})
+		Invokes(testing.NewDeleteAction(volumesResource, c.ns, name), &v1alpha1.Volume{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeVolumes) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(volumesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(volumesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.VolumeList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeVolumes) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 // Patch applies the patch and returns the patched volume.
 func (c *FakeVolumes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Volume, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(volumesResource, name, pt, data, subresources...), &v1alpha1.Volume{})
+		Invokes(testing.NewPatchSubresourceAction(volumesResource, c.ns, name, pt, data, subresources...), &v1alpha1.Volume{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // ServiceAccountIamBindingsGetter has a method to return a ServiceAccountIamBindingInterface.
 // A group's client should implement this interface.
 type ServiceAccountIamBindingsGetter interface {
-	ServiceAccountIamBindings() ServiceAccountIamBindingInterface
+	ServiceAccountIamBindings(namespace string) ServiceAccountIamBindingInterface
 }
 
 // ServiceAccountIamBindingInterface has methods to work with ServiceAccountIamBinding resources.
@@ -52,12 +52,14 @@ type ServiceAccountIamBindingInterface interface {
 // serviceAccountIamBindings implements ServiceAccountIamBindingInterface
 type serviceAccountIamBindings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newServiceAccountIamBindings returns a ServiceAccountIamBindings
-func newServiceAccountIamBindings(c *GoogleV1alpha1Client) *serviceAccountIamBindings {
+func newServiceAccountIamBindings(c *GoogleV1alpha1Client, namespace string) *serviceAccountIamBindings {
 	return &serviceAccountIamBindings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newServiceAccountIamBindings(c *GoogleV1alpha1Client) *serviceAccountIamBin
 func (c *serviceAccountIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceAccountIamBinding, err error) {
 	result = &v1alpha1.ServiceAccountIamBinding{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("serviceaccountiambindings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *serviceAccountIamBindings) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.ServiceAccountIamBindingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("serviceaccountiambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *serviceAccountIamBindings) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("serviceaccountiambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *serviceAccountIamBindings) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *serviceAccountIamBindings) Create(serviceAccountIamBinding *v1alpha1.ServiceAccountIamBinding) (result *v1alpha1.ServiceAccountIamBinding, err error) {
 	result = &v1alpha1.ServiceAccountIamBinding{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("serviceaccountiambindings").
 		Body(serviceAccountIamBinding).
 		Do().
@@ -118,6 +124,7 @@ func (c *serviceAccountIamBindings) Create(serviceAccountIamBinding *v1alpha1.Se
 func (c *serviceAccountIamBindings) Update(serviceAccountIamBinding *v1alpha1.ServiceAccountIamBinding) (result *v1alpha1.ServiceAccountIamBinding, err error) {
 	result = &v1alpha1.ServiceAccountIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("serviceaccountiambindings").
 		Name(serviceAccountIamBinding.Name).
 		Body(serviceAccountIamBinding).
@@ -132,6 +139,7 @@ func (c *serviceAccountIamBindings) Update(serviceAccountIamBinding *v1alpha1.Se
 func (c *serviceAccountIamBindings) UpdateStatus(serviceAccountIamBinding *v1alpha1.ServiceAccountIamBinding) (result *v1alpha1.ServiceAccountIamBinding, err error) {
 	result = &v1alpha1.ServiceAccountIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("serviceaccountiambindings").
 		Name(serviceAccountIamBinding.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *serviceAccountIamBindings) UpdateStatus(serviceAccountIamBinding *v1alp
 // Delete takes name of the serviceAccountIamBinding and deletes it. Returns an error if one occurs.
 func (c *serviceAccountIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("serviceaccountiambindings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *serviceAccountIamBindings) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("serviceaccountiambindings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *serviceAccountIamBindings) DeleteCollection(options *v1.DeleteOptions, 
 func (c *serviceAccountIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceAccountIamBinding, err error) {
 	result = &v1alpha1.ServiceAccountIamBinding{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("serviceaccountiambindings").
 		SubResource(subresources...).
 		Name(name).

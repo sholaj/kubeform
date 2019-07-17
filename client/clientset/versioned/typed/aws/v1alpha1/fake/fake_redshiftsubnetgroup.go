@@ -31,6 +31,7 @@ import (
 // FakeRedshiftSubnetGroups implements RedshiftSubnetGroupInterface
 type FakeRedshiftSubnetGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var redshiftsubnetgroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "redshiftsubnetgroups"}
@@ -40,7 +41,8 @@ var redshiftsubnetgroupsKind = schema.GroupVersionKind{Group: "aws.kubeform.com"
 // Get takes name of the redshiftSubnetGroup, and returns the corresponding redshiftSubnetGroup object, and an error if there is any.
 func (c *FakeRedshiftSubnetGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.RedshiftSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(redshiftsubnetgroupsResource, name), &v1alpha1.RedshiftSubnetGroup{})
+		Invokes(testing.NewGetAction(redshiftsubnetgroupsResource, c.ns, name), &v1alpha1.RedshiftSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRedshiftSubnetGroups) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of RedshiftSubnetGroups that match those selectors.
 func (c *FakeRedshiftSubnetGroups) List(opts v1.ListOptions) (result *v1alpha1.RedshiftSubnetGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(redshiftsubnetgroupsResource, redshiftsubnetgroupsKind, opts), &v1alpha1.RedshiftSubnetGroupList{})
+		Invokes(testing.NewListAction(redshiftsubnetgroupsResource, redshiftsubnetgroupsKind, c.ns, opts), &v1alpha1.RedshiftSubnetGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRedshiftSubnetGroups) List(opts v1.ListOptions) (result *v1alpha1.R
 // Watch returns a watch.Interface that watches the requested redshiftSubnetGroups.
 func (c *FakeRedshiftSubnetGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(redshiftsubnetgroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(redshiftsubnetgroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a redshiftSubnetGroup and creates it.  Returns the server's representation of the redshiftSubnetGroup, and an error, if there is any.
 func (c *FakeRedshiftSubnetGroups) Create(redshiftSubnetGroup *v1alpha1.RedshiftSubnetGroup) (result *v1alpha1.RedshiftSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(redshiftsubnetgroupsResource, redshiftSubnetGroup), &v1alpha1.RedshiftSubnetGroup{})
+		Invokes(testing.NewCreateAction(redshiftsubnetgroupsResource, c.ns, redshiftSubnetGroup), &v1alpha1.RedshiftSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRedshiftSubnetGroups) Create(redshiftSubnetGroup *v1alpha1.Redshift
 // Update takes the representation of a redshiftSubnetGroup and updates it. Returns the server's representation of the redshiftSubnetGroup, and an error, if there is any.
 func (c *FakeRedshiftSubnetGroups) Update(redshiftSubnetGroup *v1alpha1.RedshiftSubnetGroup) (result *v1alpha1.RedshiftSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(redshiftsubnetgroupsResource, redshiftSubnetGroup), &v1alpha1.RedshiftSubnetGroup{})
+		Invokes(testing.NewUpdateAction(redshiftsubnetgroupsResource, c.ns, redshiftSubnetGroup), &v1alpha1.RedshiftSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRedshiftSubnetGroups) Update(redshiftSubnetGroup *v1alpha1.Redshift
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRedshiftSubnetGroups) UpdateStatus(redshiftSubnetGroup *v1alpha1.RedshiftSubnetGroup) (*v1alpha1.RedshiftSubnetGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(redshiftsubnetgroupsResource, "status", redshiftSubnetGroup), &v1alpha1.RedshiftSubnetGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(redshiftsubnetgroupsResource, "status", c.ns, redshiftSubnetGroup), &v1alpha1.RedshiftSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRedshiftSubnetGroups) UpdateStatus(redshiftSubnetGroup *v1alpha1.Re
 // Delete takes name of the redshiftSubnetGroup and deletes it. Returns an error if one occurs.
 func (c *FakeRedshiftSubnetGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(redshiftsubnetgroupsResource, name), &v1alpha1.RedshiftSubnetGroup{})
+		Invokes(testing.NewDeleteAction(redshiftsubnetgroupsResource, c.ns, name), &v1alpha1.RedshiftSubnetGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRedshiftSubnetGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(redshiftsubnetgroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(redshiftsubnetgroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.RedshiftSubnetGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRedshiftSubnetGroups) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched redshiftSubnetGroup.
 func (c *FakeRedshiftSubnetGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RedshiftSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(redshiftsubnetgroupsResource, name, pt, data, subresources...), &v1alpha1.RedshiftSubnetGroup{})
+		Invokes(testing.NewPatchSubresourceAction(redshiftsubnetgroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.RedshiftSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

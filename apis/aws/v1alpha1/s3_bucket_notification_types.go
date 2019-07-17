@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,43 +20,44 @@ type S3BucketNotification struct {
 
 type S3BucketNotificationSpecLambdaFunction struct {
 	// +kubebuilder:validation:UniqueItems=true
-	Events []string `json:"events"`
+	Events []string `json:"events" tf:"events"`
 	// +optional
-	FilterPrefix string `json:"filter_prefix,omitempty"`
+	FilterPrefix string `json:"filterPrefix,omitempty" tf:"filter_prefix,omitempty"`
 	// +optional
-	FilterSuffix string `json:"filter_suffix,omitempty"`
+	FilterSuffix string `json:"filterSuffix,omitempty" tf:"filter_suffix,omitempty"`
 	// +optional
-	LambdaFunctionArn string `json:"lambda_function_arn,omitempty"`
+	LambdaFunctionArn string `json:"lambdaFunctionArn,omitempty" tf:"lambda_function_arn,omitempty"`
 }
 
 type S3BucketNotificationSpecQueue struct {
 	// +kubebuilder:validation:UniqueItems=true
-	Events []string `json:"events"`
+	Events []string `json:"events" tf:"events"`
 	// +optional
-	FilterPrefix string `json:"filter_prefix,omitempty"`
+	FilterPrefix string `json:"filterPrefix,omitempty" tf:"filter_prefix,omitempty"`
 	// +optional
-	FilterSuffix string `json:"filter_suffix,omitempty"`
-	QueueArn     string `json:"queue_arn"`
+	FilterSuffix string `json:"filterSuffix,omitempty" tf:"filter_suffix,omitempty"`
+	QueueArn     string `json:"queueArn" tf:"queue_arn"`
 }
 
 type S3BucketNotificationSpecTopic struct {
 	// +kubebuilder:validation:UniqueItems=true
-	Events []string `json:"events"`
+	Events []string `json:"events" tf:"events"`
 	// +optional
-	FilterPrefix string `json:"filter_prefix,omitempty"`
+	FilterPrefix string `json:"filterPrefix,omitempty" tf:"filter_prefix,omitempty"`
 	// +optional
-	FilterSuffix string `json:"filter_suffix,omitempty"`
-	TopicArn     string `json:"topic_arn"`
+	FilterSuffix string `json:"filterSuffix,omitempty" tf:"filter_suffix,omitempty"`
+	TopicArn     string `json:"topicArn" tf:"topic_arn"`
 }
 
 type S3BucketNotificationSpec struct {
-	Bucket string `json:"bucket"`
+	Bucket string `json:"bucket" tf:"bucket"`
 	// +optional
-	LambdaFunction *[]S3BucketNotificationSpec `json:"lambda_function,omitempty"`
+	LambdaFunction []S3BucketNotificationSpecLambdaFunction `json:"lambdaFunction,omitempty" tf:"lambda_function,omitempty"`
 	// +optional
-	Queue *[]S3BucketNotificationSpec `json:"queue,omitempty"`
+	Queue []S3BucketNotificationSpecQueue `json:"queue,omitempty" tf:"queue,omitempty"`
 	// +optional
-	Topic *[]S3BucketNotificationSpec `json:"topic,omitempty"`
+	Topic       []S3BucketNotificationSpecTopic `json:"topic,omitempty" tf:"topic,omitempty"`
+	ProviderRef core.LocalObjectReference       `json:"providerRef" tf:"-"`
 }
 
 type S3BucketNotificationStatus struct {
@@ -64,7 +65,9 @@ type S3BucketNotificationStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

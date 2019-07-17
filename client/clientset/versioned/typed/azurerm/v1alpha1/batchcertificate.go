@@ -32,7 +32,7 @@ import (
 // BatchCertificatesGetter has a method to return a BatchCertificateInterface.
 // A group's client should implement this interface.
 type BatchCertificatesGetter interface {
-	BatchCertificates() BatchCertificateInterface
+	BatchCertificates(namespace string) BatchCertificateInterface
 }
 
 // BatchCertificateInterface has methods to work with BatchCertificate resources.
@@ -52,12 +52,14 @@ type BatchCertificateInterface interface {
 // batchCertificates implements BatchCertificateInterface
 type batchCertificates struct {
 	client rest.Interface
+	ns     string
 }
 
 // newBatchCertificates returns a BatchCertificates
-func newBatchCertificates(c *AzurermV1alpha1Client) *batchCertificates {
+func newBatchCertificates(c *AzurermV1alpha1Client, namespace string) *batchCertificates {
 	return &batchCertificates{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newBatchCertificates(c *AzurermV1alpha1Client) *batchCertificates {
 func (c *batchCertificates) Get(name string, options v1.GetOptions) (result *v1alpha1.BatchCertificate, err error) {
 	result = &v1alpha1.BatchCertificate{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("batchcertificates").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *batchCertificates) List(opts v1.ListOptions) (result *v1alpha1.BatchCer
 	}
 	result = &v1alpha1.BatchCertificateList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("batchcertificates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *batchCertificates) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("batchcertificates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *batchCertificates) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *batchCertificates) Create(batchCertificate *v1alpha1.BatchCertificate) (result *v1alpha1.BatchCertificate, err error) {
 	result = &v1alpha1.BatchCertificate{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("batchcertificates").
 		Body(batchCertificate).
 		Do().
@@ -118,6 +124,7 @@ func (c *batchCertificates) Create(batchCertificate *v1alpha1.BatchCertificate) 
 func (c *batchCertificates) Update(batchCertificate *v1alpha1.BatchCertificate) (result *v1alpha1.BatchCertificate, err error) {
 	result = &v1alpha1.BatchCertificate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("batchcertificates").
 		Name(batchCertificate.Name).
 		Body(batchCertificate).
@@ -132,6 +139,7 @@ func (c *batchCertificates) Update(batchCertificate *v1alpha1.BatchCertificate) 
 func (c *batchCertificates) UpdateStatus(batchCertificate *v1alpha1.BatchCertificate) (result *v1alpha1.BatchCertificate, err error) {
 	result = &v1alpha1.BatchCertificate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("batchcertificates").
 		Name(batchCertificate.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *batchCertificates) UpdateStatus(batchCertificate *v1alpha1.BatchCertifi
 // Delete takes name of the batchCertificate and deletes it. Returns an error if one occurs.
 func (c *batchCertificates) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("batchcertificates").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *batchCertificates) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("batchcertificates").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *batchCertificates) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *batchCertificates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BatchCertificate, err error) {
 	result = &v1alpha1.BatchCertificate{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("batchcertificates").
 		SubResource(subresources...).
 		Name(name).

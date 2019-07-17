@@ -29,8 +29,8 @@ import (
 type WafregionalRuleGroupLister interface {
 	// List lists all WafregionalRuleGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.WafregionalRuleGroup, err error)
-	// Get retrieves the WafregionalRuleGroup from the index for a given name.
-	Get(name string) (*v1alpha1.WafregionalRuleGroup, error)
+	// WafregionalRuleGroups returns an object that can list and get WafregionalRuleGroups.
+	WafregionalRuleGroups(namespace string) WafregionalRuleGroupNamespaceLister
 	WafregionalRuleGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *wafregionalRuleGroupLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the WafregionalRuleGroup from the index for a given name.
-func (s *wafregionalRuleGroupLister) Get(name string) (*v1alpha1.WafregionalRuleGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafregionalRuleGroups returns an object that can list and get WafregionalRuleGroups.
+func (s *wafregionalRuleGroupLister) WafregionalRuleGroups(namespace string) WafregionalRuleGroupNamespaceLister {
+	return wafregionalRuleGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafregionalRuleGroupNamespaceLister helps list and get WafregionalRuleGroups.
+type WafregionalRuleGroupNamespaceLister interface {
+	// List lists all WafregionalRuleGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafregionalRuleGroup, err error)
+	// Get retrieves the WafregionalRuleGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafregionalRuleGroup, error)
+	WafregionalRuleGroupNamespaceListerExpansion
+}
+
+// wafregionalRuleGroupNamespaceLister implements the WafregionalRuleGroupNamespaceLister
+// interface.
+type wafregionalRuleGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafregionalRuleGroups in the indexer for a given namespace.
+func (s wafregionalRuleGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafregionalRuleGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafregionalRuleGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafregionalRuleGroup from the indexer for a given namespace and name.
+func (s wafregionalRuleGroupNamespaceLister) Get(name string) (*v1alpha1.WafregionalRuleGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

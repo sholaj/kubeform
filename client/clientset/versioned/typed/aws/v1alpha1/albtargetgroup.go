@@ -32,7 +32,7 @@ import (
 // AlbTargetGroupsGetter has a method to return a AlbTargetGroupInterface.
 // A group's client should implement this interface.
 type AlbTargetGroupsGetter interface {
-	AlbTargetGroups() AlbTargetGroupInterface
+	AlbTargetGroups(namespace string) AlbTargetGroupInterface
 }
 
 // AlbTargetGroupInterface has methods to work with AlbTargetGroup resources.
@@ -52,12 +52,14 @@ type AlbTargetGroupInterface interface {
 // albTargetGroups implements AlbTargetGroupInterface
 type albTargetGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAlbTargetGroups returns a AlbTargetGroups
-func newAlbTargetGroups(c *AwsV1alpha1Client) *albTargetGroups {
+func newAlbTargetGroups(c *AwsV1alpha1Client, namespace string) *albTargetGroups {
 	return &albTargetGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAlbTargetGroups(c *AwsV1alpha1Client) *albTargetGroups {
 func (c *albTargetGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.AlbTargetGroup, err error) {
 	result = &v1alpha1.AlbTargetGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("albtargetgroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *albTargetGroups) List(opts v1.ListOptions) (result *v1alpha1.AlbTargetG
 	}
 	result = &v1alpha1.AlbTargetGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("albtargetgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *albTargetGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("albtargetgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *albTargetGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *albTargetGroups) Create(albTargetGroup *v1alpha1.AlbTargetGroup) (result *v1alpha1.AlbTargetGroup, err error) {
 	result = &v1alpha1.AlbTargetGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("albtargetgroups").
 		Body(albTargetGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *albTargetGroups) Create(albTargetGroup *v1alpha1.AlbTargetGroup) (resul
 func (c *albTargetGroups) Update(albTargetGroup *v1alpha1.AlbTargetGroup) (result *v1alpha1.AlbTargetGroup, err error) {
 	result = &v1alpha1.AlbTargetGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("albtargetgroups").
 		Name(albTargetGroup.Name).
 		Body(albTargetGroup).
@@ -132,6 +139,7 @@ func (c *albTargetGroups) Update(albTargetGroup *v1alpha1.AlbTargetGroup) (resul
 func (c *albTargetGroups) UpdateStatus(albTargetGroup *v1alpha1.AlbTargetGroup) (result *v1alpha1.AlbTargetGroup, err error) {
 	result = &v1alpha1.AlbTargetGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("albtargetgroups").
 		Name(albTargetGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *albTargetGroups) UpdateStatus(albTargetGroup *v1alpha1.AlbTargetGroup) 
 // Delete takes name of the albTargetGroup and deletes it. Returns an error if one occurs.
 func (c *albTargetGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("albtargetgroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *albTargetGroups) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("albtargetgroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *albTargetGroups) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *albTargetGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AlbTargetGroup, err error) {
 	result = &v1alpha1.AlbTargetGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("albtargetgroups").
 		SubResource(subresources...).
 		Name(name).

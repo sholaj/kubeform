@@ -41,32 +41,33 @@ type CloudiotRegistryInformer interface {
 type cloudiotRegistryInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewCloudiotRegistryInformer constructs a new informer for CloudiotRegistry type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCloudiotRegistryInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCloudiotRegistryInformer(client, resyncPeriod, indexers, nil)
+func NewCloudiotRegistryInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCloudiotRegistryInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredCloudiotRegistryInformer constructs a new informer for CloudiotRegistry type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCloudiotRegistryInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCloudiotRegistryInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().CloudiotRegistries().List(options)
+				return client.GoogleV1alpha1().CloudiotRegistries(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().CloudiotRegistries().Watch(options)
+				return client.GoogleV1alpha1().CloudiotRegistries(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.CloudiotRegistry{},
@@ -76,7 +77,7 @@ func NewFilteredCloudiotRegistryInformer(client versioned.Interface, resyncPerio
 }
 
 func (f *cloudiotRegistryInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCloudiotRegistryInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredCloudiotRegistryInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *cloudiotRegistryInformer) Informer() cache.SharedIndexInformer {

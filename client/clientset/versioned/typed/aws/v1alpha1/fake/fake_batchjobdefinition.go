@@ -31,6 +31,7 @@ import (
 // FakeBatchJobDefinitions implements BatchJobDefinitionInterface
 type FakeBatchJobDefinitions struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var batchjobdefinitionsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "batchjobdefinitions"}
@@ -40,7 +41,8 @@ var batchjobdefinitionsKind = schema.GroupVersionKind{Group: "aws.kubeform.com",
 // Get takes name of the batchJobDefinition, and returns the corresponding batchJobDefinition object, and an error if there is any.
 func (c *FakeBatchJobDefinitions) Get(name string, options v1.GetOptions) (result *v1alpha1.BatchJobDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(batchjobdefinitionsResource, name), &v1alpha1.BatchJobDefinition{})
+		Invokes(testing.NewGetAction(batchjobdefinitionsResource, c.ns, name), &v1alpha1.BatchJobDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeBatchJobDefinitions) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of BatchJobDefinitions that match those selectors.
 func (c *FakeBatchJobDefinitions) List(opts v1.ListOptions) (result *v1alpha1.BatchJobDefinitionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(batchjobdefinitionsResource, batchjobdefinitionsKind, opts), &v1alpha1.BatchJobDefinitionList{})
+		Invokes(testing.NewListAction(batchjobdefinitionsResource, batchjobdefinitionsKind, c.ns, opts), &v1alpha1.BatchJobDefinitionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeBatchJobDefinitions) List(opts v1.ListOptions) (result *v1alpha1.Ba
 // Watch returns a watch.Interface that watches the requested batchJobDefinitions.
 func (c *FakeBatchJobDefinitions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(batchjobdefinitionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(batchjobdefinitionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a batchJobDefinition and creates it.  Returns the server's representation of the batchJobDefinition, and an error, if there is any.
 func (c *FakeBatchJobDefinitions) Create(batchJobDefinition *v1alpha1.BatchJobDefinition) (result *v1alpha1.BatchJobDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(batchjobdefinitionsResource, batchJobDefinition), &v1alpha1.BatchJobDefinition{})
+		Invokes(testing.NewCreateAction(batchjobdefinitionsResource, c.ns, batchJobDefinition), &v1alpha1.BatchJobDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeBatchJobDefinitions) Create(batchJobDefinition *v1alpha1.BatchJobDe
 // Update takes the representation of a batchJobDefinition and updates it. Returns the server's representation of the batchJobDefinition, and an error, if there is any.
 func (c *FakeBatchJobDefinitions) Update(batchJobDefinition *v1alpha1.BatchJobDefinition) (result *v1alpha1.BatchJobDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(batchjobdefinitionsResource, batchJobDefinition), &v1alpha1.BatchJobDefinition{})
+		Invokes(testing.NewUpdateAction(batchjobdefinitionsResource, c.ns, batchJobDefinition), &v1alpha1.BatchJobDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeBatchJobDefinitions) Update(batchJobDefinition *v1alpha1.BatchJobDe
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeBatchJobDefinitions) UpdateStatus(batchJobDefinition *v1alpha1.BatchJobDefinition) (*v1alpha1.BatchJobDefinition, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(batchjobdefinitionsResource, "status", batchJobDefinition), &v1alpha1.BatchJobDefinition{})
+		Invokes(testing.NewUpdateSubresourceAction(batchjobdefinitionsResource, "status", c.ns, batchJobDefinition), &v1alpha1.BatchJobDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeBatchJobDefinitions) UpdateStatus(batchJobDefinition *v1alpha1.Batc
 // Delete takes name of the batchJobDefinition and deletes it. Returns an error if one occurs.
 func (c *FakeBatchJobDefinitions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(batchjobdefinitionsResource, name), &v1alpha1.BatchJobDefinition{})
+		Invokes(testing.NewDeleteAction(batchjobdefinitionsResource, c.ns, name), &v1alpha1.BatchJobDefinition{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeBatchJobDefinitions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(batchjobdefinitionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(batchjobdefinitionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.BatchJobDefinitionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeBatchJobDefinitions) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched batchJobDefinition.
 func (c *FakeBatchJobDefinitions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BatchJobDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(batchjobdefinitionsResource, name, pt, data, subresources...), &v1alpha1.BatchJobDefinition{})
+		Invokes(testing.NewPatchSubresourceAction(batchjobdefinitionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.BatchJobDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}

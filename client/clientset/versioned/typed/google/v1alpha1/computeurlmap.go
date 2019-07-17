@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// ComputeUrlMapsGetter has a method to return a ComputeUrlMapInterface.
+// ComputeURLMapsGetter has a method to return a ComputeURLMapInterface.
 // A group's client should implement this interface.
-type ComputeUrlMapsGetter interface {
-	ComputeUrlMaps() ComputeUrlMapInterface
+type ComputeURLMapsGetter interface {
+	ComputeURLMaps(namespace string) ComputeURLMapInterface
 }
 
-// ComputeUrlMapInterface has methods to work with ComputeUrlMap resources.
-type ComputeUrlMapInterface interface {
-	Create(*v1alpha1.ComputeUrlMap) (*v1alpha1.ComputeUrlMap, error)
-	Update(*v1alpha1.ComputeUrlMap) (*v1alpha1.ComputeUrlMap, error)
-	UpdateStatus(*v1alpha1.ComputeUrlMap) (*v1alpha1.ComputeUrlMap, error)
+// ComputeURLMapInterface has methods to work with ComputeURLMap resources.
+type ComputeURLMapInterface interface {
+	Create(*v1alpha1.ComputeURLMap) (*v1alpha1.ComputeURLMap, error)
+	Update(*v1alpha1.ComputeURLMap) (*v1alpha1.ComputeURLMap, error)
+	UpdateStatus(*v1alpha1.ComputeURLMap) (*v1alpha1.ComputeURLMap, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.ComputeUrlMap, error)
-	List(opts v1.ListOptions) (*v1alpha1.ComputeUrlMapList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.ComputeURLMap, error)
+	List(opts v1.ListOptions) (*v1alpha1.ComputeURLMapList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeUrlMap, err error)
-	ComputeUrlMapExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeURLMap, err error)
+	ComputeURLMapExpansion
 }
 
-// computeUrlMaps implements ComputeUrlMapInterface
-type computeUrlMaps struct {
+// computeURLMaps implements ComputeURLMapInterface
+type computeURLMaps struct {
 	client rest.Interface
+	ns     string
 }
 
-// newComputeUrlMaps returns a ComputeUrlMaps
-func newComputeUrlMaps(c *GoogleV1alpha1Client) *computeUrlMaps {
-	return &computeUrlMaps{
+// newComputeURLMaps returns a ComputeURLMaps
+func newComputeURLMaps(c *GoogleV1alpha1Client, namespace string) *computeURLMaps {
+	return &computeURLMaps{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the computeUrlMap, and returns the corresponding computeUrlMap object, and an error if there is any.
-func (c *computeUrlMaps) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeUrlMap, err error) {
-	result = &v1alpha1.ComputeUrlMap{}
+// Get takes name of the computeURLMap, and returns the corresponding computeURLMap object, and an error if there is any.
+func (c *computeURLMaps) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeURLMap, err error) {
+	result = &v1alpha1.ComputeURLMap{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeurlmaps").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *computeUrlMaps) Get(name string, options v1.GetOptions) (result *v1alph
 	return
 }
 
-// List takes label and field selectors, and returns the list of ComputeUrlMaps that match those selectors.
-func (c *computeUrlMaps) List(opts v1.ListOptions) (result *v1alpha1.ComputeUrlMapList, err error) {
+// List takes label and field selectors, and returns the list of ComputeURLMaps that match those selectors.
+func (c *computeURLMaps) List(opts v1.ListOptions) (result *v1alpha1.ComputeURLMapList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.ComputeUrlMapList{}
+	result = &v1alpha1.ComputeURLMapList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeurlmaps").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *computeUrlMaps) List(opts v1.ListOptions) (result *v1alpha1.ComputeUrlM
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested computeUrlMaps.
-func (c *computeUrlMaps) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested computeURLMaps.
+func (c *computeURLMaps) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computeurlmaps").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a computeUrlMap and creates it.  Returns the server's representation of the computeUrlMap, and an error, if there is any.
-func (c *computeUrlMaps) Create(computeUrlMap *v1alpha1.ComputeUrlMap) (result *v1alpha1.ComputeUrlMap, err error) {
-	result = &v1alpha1.ComputeUrlMap{}
+// Create takes the representation of a computeURLMap and creates it.  Returns the server's representation of the computeURLMap, and an error, if there is any.
+func (c *computeURLMaps) Create(computeURLMap *v1alpha1.ComputeURLMap) (result *v1alpha1.ComputeURLMap, err error) {
+	result = &v1alpha1.ComputeURLMap{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computeurlmaps").
-		Body(computeUrlMap).
+		Body(computeURLMap).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a computeUrlMap and updates it. Returns the server's representation of the computeUrlMap, and an error, if there is any.
-func (c *computeUrlMaps) Update(computeUrlMap *v1alpha1.ComputeUrlMap) (result *v1alpha1.ComputeUrlMap, err error) {
-	result = &v1alpha1.ComputeUrlMap{}
+// Update takes the representation of a computeURLMap and updates it. Returns the server's representation of the computeURLMap, and an error, if there is any.
+func (c *computeURLMaps) Update(computeURLMap *v1alpha1.ComputeURLMap) (result *v1alpha1.ComputeURLMap, err error) {
+	result = &v1alpha1.ComputeURLMap{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeurlmaps").
-		Name(computeUrlMap.Name).
-		Body(computeUrlMap).
+		Name(computeURLMap.Name).
+		Body(computeURLMap).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *computeUrlMaps) Update(computeUrlMap *v1alpha1.ComputeUrlMap) (result *
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *computeUrlMaps) UpdateStatus(computeUrlMap *v1alpha1.ComputeUrlMap) (result *v1alpha1.ComputeUrlMap, err error) {
-	result = &v1alpha1.ComputeUrlMap{}
+func (c *computeURLMaps) UpdateStatus(computeURLMap *v1alpha1.ComputeURLMap) (result *v1alpha1.ComputeURLMap, err error) {
+	result = &v1alpha1.ComputeURLMap{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeurlmaps").
-		Name(computeUrlMap.Name).
+		Name(computeURLMap.Name).
 		SubResource("status").
-		Body(computeUrlMap).
+		Body(computeURLMap).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the computeUrlMap and deletes it. Returns an error if one occurs.
-func (c *computeUrlMaps) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the computeURLMap and deletes it. Returns an error if one occurs.
+func (c *computeURLMaps) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeurlmaps").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *computeUrlMaps) Delete(name string, options *v1.DeleteOptions) error {
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *computeUrlMaps) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *computeURLMaps) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeurlmaps").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *computeUrlMaps) DeleteCollection(options *v1.DeleteOptions, listOptions
 		Error()
 }
 
-// Patch applies the patch and returns the patched computeUrlMap.
-func (c *computeUrlMaps) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeUrlMap, err error) {
-	result = &v1alpha1.ComputeUrlMap{}
+// Patch applies the patch and returns the patched computeURLMap.
+func (c *computeURLMaps) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeURLMap, err error) {
+	result = &v1alpha1.ComputeURLMap{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computeurlmaps").
 		SubResource(subresources...).
 		Name(name).

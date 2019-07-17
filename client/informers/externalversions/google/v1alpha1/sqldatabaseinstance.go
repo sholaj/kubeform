@@ -41,32 +41,33 @@ type SqlDatabaseInstanceInformer interface {
 type sqlDatabaseInstanceInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSqlDatabaseInstanceInformer constructs a new informer for SqlDatabaseInstance type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSqlDatabaseInstanceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSqlDatabaseInstanceInformer(client, resyncPeriod, indexers, nil)
+func NewSqlDatabaseInstanceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSqlDatabaseInstanceInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSqlDatabaseInstanceInformer constructs a new informer for SqlDatabaseInstance type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSqlDatabaseInstanceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSqlDatabaseInstanceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().SqlDatabaseInstances().List(options)
+				return client.GoogleV1alpha1().SqlDatabaseInstances(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().SqlDatabaseInstances().Watch(options)
+				return client.GoogleV1alpha1().SqlDatabaseInstances(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.SqlDatabaseInstance{},
@@ -76,7 +77,7 @@ func NewFilteredSqlDatabaseInstanceInformer(client versioned.Interface, resyncPe
 }
 
 func (f *sqlDatabaseInstanceInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSqlDatabaseInstanceInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSqlDatabaseInstanceInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *sqlDatabaseInstanceInformer) Informer() cache.SharedIndexInformer {

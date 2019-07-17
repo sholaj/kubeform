@@ -31,6 +31,7 @@ import (
 // FakeCloud9EnvironmentEc2s implements Cloud9EnvironmentEc2Interface
 type FakeCloud9EnvironmentEc2s struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var cloud9environmentec2sResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "cloud9environmentec2s"}
@@ -40,7 +41,8 @@ var cloud9environmentec2sKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the cloud9EnvironmentEc2, and returns the corresponding cloud9EnvironmentEc2 object, and an error if there is any.
 func (c *FakeCloud9EnvironmentEc2s) Get(name string, options v1.GetOptions) (result *v1alpha1.Cloud9EnvironmentEc2, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cloud9environmentec2sResource, name), &v1alpha1.Cloud9EnvironmentEc2{})
+		Invokes(testing.NewGetAction(cloud9environmentec2sResource, c.ns, name), &v1alpha1.Cloud9EnvironmentEc2{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCloud9EnvironmentEc2s) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of Cloud9EnvironmentEc2s that match those selectors.
 func (c *FakeCloud9EnvironmentEc2s) List(opts v1.ListOptions) (result *v1alpha1.Cloud9EnvironmentEc2List, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cloud9environmentec2sResource, cloud9environmentec2sKind, opts), &v1alpha1.Cloud9EnvironmentEc2List{})
+		Invokes(testing.NewListAction(cloud9environmentec2sResource, cloud9environmentec2sKind, c.ns, opts), &v1alpha1.Cloud9EnvironmentEc2List{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCloud9EnvironmentEc2s) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested cloud9EnvironmentEc2s.
 func (c *FakeCloud9EnvironmentEc2s) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cloud9environmentec2sResource, opts))
+		InvokesWatch(testing.NewWatchAction(cloud9environmentec2sResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cloud9EnvironmentEc2 and creates it.  Returns the server's representation of the cloud9EnvironmentEc2, and an error, if there is any.
 func (c *FakeCloud9EnvironmentEc2s) Create(cloud9EnvironmentEc2 *v1alpha1.Cloud9EnvironmentEc2) (result *v1alpha1.Cloud9EnvironmentEc2, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cloud9environmentec2sResource, cloud9EnvironmentEc2), &v1alpha1.Cloud9EnvironmentEc2{})
+		Invokes(testing.NewCreateAction(cloud9environmentec2sResource, c.ns, cloud9EnvironmentEc2), &v1alpha1.Cloud9EnvironmentEc2{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCloud9EnvironmentEc2s) Create(cloud9EnvironmentEc2 *v1alpha1.Cloud9
 // Update takes the representation of a cloud9EnvironmentEc2 and updates it. Returns the server's representation of the cloud9EnvironmentEc2, and an error, if there is any.
 func (c *FakeCloud9EnvironmentEc2s) Update(cloud9EnvironmentEc2 *v1alpha1.Cloud9EnvironmentEc2) (result *v1alpha1.Cloud9EnvironmentEc2, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cloud9environmentec2sResource, cloud9EnvironmentEc2), &v1alpha1.Cloud9EnvironmentEc2{})
+		Invokes(testing.NewUpdateAction(cloud9environmentec2sResource, c.ns, cloud9EnvironmentEc2), &v1alpha1.Cloud9EnvironmentEc2{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCloud9EnvironmentEc2s) Update(cloud9EnvironmentEc2 *v1alpha1.Cloud9
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCloud9EnvironmentEc2s) UpdateStatus(cloud9EnvironmentEc2 *v1alpha1.Cloud9EnvironmentEc2) (*v1alpha1.Cloud9EnvironmentEc2, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cloud9environmentec2sResource, "status", cloud9EnvironmentEc2), &v1alpha1.Cloud9EnvironmentEc2{})
+		Invokes(testing.NewUpdateSubresourceAction(cloud9environmentec2sResource, "status", c.ns, cloud9EnvironmentEc2), &v1alpha1.Cloud9EnvironmentEc2{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCloud9EnvironmentEc2s) UpdateStatus(cloud9EnvironmentEc2 *v1alpha1.
 // Delete takes name of the cloud9EnvironmentEc2 and deletes it. Returns an error if one occurs.
 func (c *FakeCloud9EnvironmentEc2s) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cloud9environmentec2sResource, name), &v1alpha1.Cloud9EnvironmentEc2{})
+		Invokes(testing.NewDeleteAction(cloud9environmentec2sResource, c.ns, name), &v1alpha1.Cloud9EnvironmentEc2{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCloud9EnvironmentEc2s) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cloud9environmentec2sResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cloud9environmentec2sResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.Cloud9EnvironmentEc2List{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCloud9EnvironmentEc2s) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched cloud9EnvironmentEc2.
 func (c *FakeCloud9EnvironmentEc2s) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Cloud9EnvironmentEc2, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cloud9environmentec2sResource, name, pt, data, subresources...), &v1alpha1.Cloud9EnvironmentEc2{})
+		Invokes(testing.NewPatchSubresourceAction(cloud9environmentec2sResource, c.ns, name, pt, data, subresources...), &v1alpha1.Cloud9EnvironmentEc2{})
+
 	if obj == nil {
 		return nil, err
 	}

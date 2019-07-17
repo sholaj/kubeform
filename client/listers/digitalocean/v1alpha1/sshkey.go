@@ -29,8 +29,8 @@ import (
 type SshKeyLister interface {
 	// List lists all SshKeys in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SshKey, err error)
-	// Get retrieves the SshKey from the index for a given name.
-	Get(name string) (*v1alpha1.SshKey, error)
+	// SshKeys returns an object that can list and get SshKeys.
+	SshKeys(namespace string) SshKeyNamespaceLister
 	SshKeyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sshKeyLister) List(selector labels.Selector) (ret []*v1alpha1.SshKey, e
 	return ret, err
 }
 
-// Get retrieves the SshKey from the index for a given name.
-func (s *sshKeyLister) Get(name string) (*v1alpha1.SshKey, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SshKeys returns an object that can list and get SshKeys.
+func (s *sshKeyLister) SshKeys(namespace string) SshKeyNamespaceLister {
+	return sshKeyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SshKeyNamespaceLister helps list and get SshKeys.
+type SshKeyNamespaceLister interface {
+	// List lists all SshKeys in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SshKey, err error)
+	// Get retrieves the SshKey from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SshKey, error)
+	SshKeyNamespaceListerExpansion
+}
+
+// sshKeyNamespaceLister implements the SshKeyNamespaceLister
+// interface.
+type sshKeyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SshKeys in the indexer for a given namespace.
+func (s sshKeyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SshKey, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SshKey))
+	})
+	return ret, err
+}
+
+// Get retrieves the SshKey from the indexer for a given namespace and name.
+func (s sshKeyNamespaceLister) Get(name string) (*v1alpha1.SshKey, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

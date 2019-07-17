@@ -29,8 +29,8 @@ import (
 type NodebalancerConfigLister interface {
 	// List lists all NodebalancerConfigs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NodebalancerConfig, err error)
-	// Get retrieves the NodebalancerConfig from the index for a given name.
-	Get(name string) (*v1alpha1.NodebalancerConfig, error)
+	// NodebalancerConfigs returns an object that can list and get NodebalancerConfigs.
+	NodebalancerConfigs(namespace string) NodebalancerConfigNamespaceLister
 	NodebalancerConfigListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *nodebalancerConfigLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the NodebalancerConfig from the index for a given name.
-func (s *nodebalancerConfigLister) Get(name string) (*v1alpha1.NodebalancerConfig, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NodebalancerConfigs returns an object that can list and get NodebalancerConfigs.
+func (s *nodebalancerConfigLister) NodebalancerConfigs(namespace string) NodebalancerConfigNamespaceLister {
+	return nodebalancerConfigNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NodebalancerConfigNamespaceLister helps list and get NodebalancerConfigs.
+type NodebalancerConfigNamespaceLister interface {
+	// List lists all NodebalancerConfigs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NodebalancerConfig, err error)
+	// Get retrieves the NodebalancerConfig from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NodebalancerConfig, error)
+	NodebalancerConfigNamespaceListerExpansion
+}
+
+// nodebalancerConfigNamespaceLister implements the NodebalancerConfigNamespaceLister
+// interface.
+type nodebalancerConfigNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NodebalancerConfigs in the indexer for a given namespace.
+func (s nodebalancerConfigNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NodebalancerConfig, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NodebalancerConfig))
+	})
+	return ret, err
+}
+
+// Get retrieves the NodebalancerConfig from the indexer for a given namespace and name.
+func (s nodebalancerConfigNamespaceLister) Get(name string) (*v1alpha1.NodebalancerConfig, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

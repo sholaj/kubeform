@@ -41,32 +41,33 @@ type MainRouteTableAssociationInformer interface {
 type mainRouteTableAssociationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewMainRouteTableAssociationInformer constructs a new informer for MainRouteTableAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewMainRouteTableAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredMainRouteTableAssociationInformer(client, resyncPeriod, indexers, nil)
+func NewMainRouteTableAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredMainRouteTableAssociationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredMainRouteTableAssociationInformer constructs a new informer for MainRouteTableAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredMainRouteTableAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredMainRouteTableAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().MainRouteTableAssociations().List(options)
+				return client.AwsV1alpha1().MainRouteTableAssociations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().MainRouteTableAssociations().Watch(options)
+				return client.AwsV1alpha1().MainRouteTableAssociations(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.MainRouteTableAssociation{},
@@ -76,7 +77,7 @@ func NewFilteredMainRouteTableAssociationInformer(client versioned.Interface, re
 }
 
 func (f *mainRouteTableAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredMainRouteTableAssociationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredMainRouteTableAssociationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *mainRouteTableAssociationInformer) Informer() cache.SharedIndexInformer {

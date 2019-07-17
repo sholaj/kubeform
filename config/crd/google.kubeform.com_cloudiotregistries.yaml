@@ -398,31 +398,55 @@ spec:
         spec:
           properties:
             credentials:
-              items: {}
+              items:
+                properties:
+                  publicKeyCertificate:
+                    additionalProperties:
+                      properties:
+                        certificate:
+                          type: string
+                        format:
+                          type: string
+                      required:
+                      - certificate
+                      - format
+                      type: object
+                    type: object
+                type: object
               maxItems: 10
               type: array
-            event_notification_config:
+            eventNotificationConfig:
               additionalProperties:
                 properties:
-                  pubsub_topic_name:
+                  pubsubTopicName:
                     type: string
                 required:
-                - pubsub_topic_name
+                - pubsubTopicName
                 type: object
               type: object
             name:
               type: string
-            state_notification_config:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            stateNotificationConfig:
               additionalProperties:
                 properties:
-                  pubsub_topic_name:
+                  pubsubTopicName:
                     type: string
                 required:
-                - pubsub_topic_name
+                - pubsubTopicName
                 type: object
               type: object
           required:
           - name
+          - providerRef
           type: object
         status:
           properties:
@@ -433,6 +457,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

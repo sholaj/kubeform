@@ -41,32 +41,33 @@ type CodedeployDeploymentConfigInformer interface {
 type codedeployDeploymentConfigInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewCodedeployDeploymentConfigInformer constructs a new informer for CodedeployDeploymentConfig type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCodedeployDeploymentConfigInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCodedeployDeploymentConfigInformer(client, resyncPeriod, indexers, nil)
+func NewCodedeployDeploymentConfigInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCodedeployDeploymentConfigInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredCodedeployDeploymentConfigInformer constructs a new informer for CodedeployDeploymentConfig type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCodedeployDeploymentConfigInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCodedeployDeploymentConfigInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CodedeployDeploymentConfigs().List(options)
+				return client.AwsV1alpha1().CodedeployDeploymentConfigs(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CodedeployDeploymentConfigs().Watch(options)
+				return client.AwsV1alpha1().CodedeployDeploymentConfigs(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.CodedeployDeploymentConfig{},
@@ -76,7 +77,7 @@ func NewFilteredCodedeployDeploymentConfigInformer(client versioned.Interface, r
 }
 
 func (f *codedeployDeploymentConfigInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCodedeployDeploymentConfigInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredCodedeployDeploymentConfigInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *codedeployDeploymentConfigInformer) Informer() cache.SharedIndexInformer {

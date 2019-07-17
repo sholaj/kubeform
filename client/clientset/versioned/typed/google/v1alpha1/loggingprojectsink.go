@@ -32,7 +32,7 @@ import (
 // LoggingProjectSinksGetter has a method to return a LoggingProjectSinkInterface.
 // A group's client should implement this interface.
 type LoggingProjectSinksGetter interface {
-	LoggingProjectSinks() LoggingProjectSinkInterface
+	LoggingProjectSinks(namespace string) LoggingProjectSinkInterface
 }
 
 // LoggingProjectSinkInterface has methods to work with LoggingProjectSink resources.
@@ -52,12 +52,14 @@ type LoggingProjectSinkInterface interface {
 // loggingProjectSinks implements LoggingProjectSinkInterface
 type loggingProjectSinks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLoggingProjectSinks returns a LoggingProjectSinks
-func newLoggingProjectSinks(c *GoogleV1alpha1Client) *loggingProjectSinks {
+func newLoggingProjectSinks(c *GoogleV1alpha1Client, namespace string) *loggingProjectSinks {
 	return &loggingProjectSinks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLoggingProjectSinks(c *GoogleV1alpha1Client) *loggingProjectSinks {
 func (c *loggingProjectSinks) Get(name string, options v1.GetOptions) (result *v1alpha1.LoggingProjectSink, err error) {
 	result = &v1alpha1.LoggingProjectSink{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingprojectsinks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *loggingProjectSinks) List(opts v1.ListOptions) (result *v1alpha1.Loggin
 	}
 	result = &v1alpha1.LoggingProjectSinkList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingprojectsinks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *loggingProjectSinks) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingprojectsinks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *loggingProjectSinks) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *loggingProjectSinks) Create(loggingProjectSink *v1alpha1.LoggingProjectSink) (result *v1alpha1.LoggingProjectSink, err error) {
 	result = &v1alpha1.LoggingProjectSink{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("loggingprojectsinks").
 		Body(loggingProjectSink).
 		Do().
@@ -118,6 +124,7 @@ func (c *loggingProjectSinks) Create(loggingProjectSink *v1alpha1.LoggingProject
 func (c *loggingProjectSinks) Update(loggingProjectSink *v1alpha1.LoggingProjectSink) (result *v1alpha1.LoggingProjectSink, err error) {
 	result = &v1alpha1.LoggingProjectSink{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loggingprojectsinks").
 		Name(loggingProjectSink.Name).
 		Body(loggingProjectSink).
@@ -132,6 +139,7 @@ func (c *loggingProjectSinks) Update(loggingProjectSink *v1alpha1.LoggingProject
 func (c *loggingProjectSinks) UpdateStatus(loggingProjectSink *v1alpha1.LoggingProjectSink) (result *v1alpha1.LoggingProjectSink, err error) {
 	result = &v1alpha1.LoggingProjectSink{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loggingprojectsinks").
 		Name(loggingProjectSink.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *loggingProjectSinks) UpdateStatus(loggingProjectSink *v1alpha1.LoggingP
 // Delete takes name of the loggingProjectSink and deletes it. Returns an error if one occurs.
 func (c *loggingProjectSinks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loggingprojectsinks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *loggingProjectSinks) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loggingprojectsinks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *loggingProjectSinks) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *loggingProjectSinks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LoggingProjectSink, err error) {
 	result = &v1alpha1.LoggingProjectSink{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("loggingprojectsinks").
 		SubResource(subresources...).
 		Name(name).

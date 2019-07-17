@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// ApiGatewayRestApisGetter has a method to return a ApiGatewayRestApiInterface.
+// ApiGatewayRestAPIsGetter has a method to return a ApiGatewayRestAPIInterface.
 // A group's client should implement this interface.
-type ApiGatewayRestApisGetter interface {
-	ApiGatewayRestApis() ApiGatewayRestApiInterface
+type ApiGatewayRestAPIsGetter interface {
+	ApiGatewayRestAPIs(namespace string) ApiGatewayRestAPIInterface
 }
 
-// ApiGatewayRestApiInterface has methods to work with ApiGatewayRestApi resources.
-type ApiGatewayRestApiInterface interface {
-	Create(*v1alpha1.ApiGatewayRestApi) (*v1alpha1.ApiGatewayRestApi, error)
-	Update(*v1alpha1.ApiGatewayRestApi) (*v1alpha1.ApiGatewayRestApi, error)
-	UpdateStatus(*v1alpha1.ApiGatewayRestApi) (*v1alpha1.ApiGatewayRestApi, error)
+// ApiGatewayRestAPIInterface has methods to work with ApiGatewayRestAPI resources.
+type ApiGatewayRestAPIInterface interface {
+	Create(*v1alpha1.ApiGatewayRestAPI) (*v1alpha1.ApiGatewayRestAPI, error)
+	Update(*v1alpha1.ApiGatewayRestAPI) (*v1alpha1.ApiGatewayRestAPI, error)
+	UpdateStatus(*v1alpha1.ApiGatewayRestAPI) (*v1alpha1.ApiGatewayRestAPI, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.ApiGatewayRestApi, error)
-	List(opts v1.ListOptions) (*v1alpha1.ApiGatewayRestApiList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.ApiGatewayRestAPI, error)
+	List(opts v1.ListOptions) (*v1alpha1.ApiGatewayRestAPIList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayRestApi, err error)
-	ApiGatewayRestApiExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayRestAPI, err error)
+	ApiGatewayRestAPIExpansion
 }
 
-// apiGatewayRestApis implements ApiGatewayRestApiInterface
-type apiGatewayRestApis struct {
+// apiGatewayRestAPIs implements ApiGatewayRestAPIInterface
+type apiGatewayRestAPIs struct {
 	client rest.Interface
+	ns     string
 }
 
-// newApiGatewayRestApis returns a ApiGatewayRestApis
-func newApiGatewayRestApis(c *AwsV1alpha1Client) *apiGatewayRestApis {
-	return &apiGatewayRestApis{
+// newApiGatewayRestAPIs returns a ApiGatewayRestAPIs
+func newApiGatewayRestAPIs(c *AwsV1alpha1Client, namespace string) *apiGatewayRestAPIs {
+	return &apiGatewayRestAPIs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the apiGatewayRestApi, and returns the corresponding apiGatewayRestApi object, and an error if there is any.
-func (c *apiGatewayRestApis) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayRestApi, err error) {
-	result = &v1alpha1.ApiGatewayRestApi{}
+// Get takes name of the apiGatewayRestAPI, and returns the corresponding apiGatewayRestAPI object, and an error if there is any.
+func (c *apiGatewayRestAPIs) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayRestAPI, err error) {
+	result = &v1alpha1.ApiGatewayRestAPI{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayrestapis").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *apiGatewayRestApis) Get(name string, options v1.GetOptions) (result *v1
 	return
 }
 
-// List takes label and field selectors, and returns the list of ApiGatewayRestApis that match those selectors.
-func (c *apiGatewayRestApis) List(opts v1.ListOptions) (result *v1alpha1.ApiGatewayRestApiList, err error) {
+// List takes label and field selectors, and returns the list of ApiGatewayRestAPIs that match those selectors.
+func (c *apiGatewayRestAPIs) List(opts v1.ListOptions) (result *v1alpha1.ApiGatewayRestAPIList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.ApiGatewayRestApiList{}
+	result = &v1alpha1.ApiGatewayRestAPIList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayrestapis").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *apiGatewayRestApis) List(opts v1.ListOptions) (result *v1alpha1.ApiGate
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested apiGatewayRestApis.
-func (c *apiGatewayRestApis) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested apiGatewayRestAPIs.
+func (c *apiGatewayRestAPIs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayrestapis").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a apiGatewayRestApi and creates it.  Returns the server's representation of the apiGatewayRestApi, and an error, if there is any.
-func (c *apiGatewayRestApis) Create(apiGatewayRestApi *v1alpha1.ApiGatewayRestApi) (result *v1alpha1.ApiGatewayRestApi, err error) {
-	result = &v1alpha1.ApiGatewayRestApi{}
+// Create takes the representation of a apiGatewayRestAPI and creates it.  Returns the server's representation of the apiGatewayRestAPI, and an error, if there is any.
+func (c *apiGatewayRestAPIs) Create(apiGatewayRestAPI *v1alpha1.ApiGatewayRestAPI) (result *v1alpha1.ApiGatewayRestAPI, err error) {
+	result = &v1alpha1.ApiGatewayRestAPI{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apigatewayrestapis").
-		Body(apiGatewayRestApi).
+		Body(apiGatewayRestAPI).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a apiGatewayRestApi and updates it. Returns the server's representation of the apiGatewayRestApi, and an error, if there is any.
-func (c *apiGatewayRestApis) Update(apiGatewayRestApi *v1alpha1.ApiGatewayRestApi) (result *v1alpha1.ApiGatewayRestApi, err error) {
-	result = &v1alpha1.ApiGatewayRestApi{}
+// Update takes the representation of a apiGatewayRestAPI and updates it. Returns the server's representation of the apiGatewayRestAPI, and an error, if there is any.
+func (c *apiGatewayRestAPIs) Update(apiGatewayRestAPI *v1alpha1.ApiGatewayRestAPI) (result *v1alpha1.ApiGatewayRestAPI, err error) {
+	result = &v1alpha1.ApiGatewayRestAPI{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewayrestapis").
-		Name(apiGatewayRestApi.Name).
-		Body(apiGatewayRestApi).
+		Name(apiGatewayRestAPI.Name).
+		Body(apiGatewayRestAPI).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *apiGatewayRestApis) Update(apiGatewayRestApi *v1alpha1.ApiGatewayRestAp
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *apiGatewayRestApis) UpdateStatus(apiGatewayRestApi *v1alpha1.ApiGatewayRestApi) (result *v1alpha1.ApiGatewayRestApi, err error) {
-	result = &v1alpha1.ApiGatewayRestApi{}
+func (c *apiGatewayRestAPIs) UpdateStatus(apiGatewayRestAPI *v1alpha1.ApiGatewayRestAPI) (result *v1alpha1.ApiGatewayRestAPI, err error) {
+	result = &v1alpha1.ApiGatewayRestAPI{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewayrestapis").
-		Name(apiGatewayRestApi.Name).
+		Name(apiGatewayRestAPI.Name).
 		SubResource("status").
-		Body(apiGatewayRestApi).
+		Body(apiGatewayRestAPI).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the apiGatewayRestApi and deletes it. Returns an error if one occurs.
-func (c *apiGatewayRestApis) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the apiGatewayRestAPI and deletes it. Returns an error if one occurs.
+func (c *apiGatewayRestAPIs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewayrestapis").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *apiGatewayRestApis) Delete(name string, options *v1.DeleteOptions) erro
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *apiGatewayRestApis) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *apiGatewayRestAPIs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewayrestapis").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *apiGatewayRestApis) DeleteCollection(options *v1.DeleteOptions, listOpt
 		Error()
 }
 
-// Patch applies the patch and returns the patched apiGatewayRestApi.
-func (c *apiGatewayRestApis) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayRestApi, err error) {
-	result = &v1alpha1.ApiGatewayRestApi{}
+// Patch applies the patch and returns the patched apiGatewayRestAPI.
+func (c *apiGatewayRestAPIs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayRestAPI, err error) {
+	result = &v1alpha1.ApiGatewayRestAPI{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apigatewayrestapis").
 		SubResource(subresources...).
 		Name(name).

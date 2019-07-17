@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,15 +19,16 @@ type EventhubConsumerGroup struct {
 }
 
 type EventhubConsumerGroupSpec struct {
-	EventhubName string `json:"eventhub_name"`
+	EventhubName string `json:"eventhubName" tf:"eventhub_name"`
 	// +optional
 	// Deprecated
-	Location          string `json:"location,omitempty"`
-	Name              string `json:"name"`
-	NamespaceName     string `json:"namespace_name"`
-	ResourceGroupName string `json:"resource_group_name"`
+	Location          string `json:"location,omitempty" tf:"location,omitempty"`
+	Name              string `json:"name" tf:"name"`
+	NamespaceName     string `json:"namespaceName" tf:"namespace_name"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	UserMetadata string `json:"user_metadata,omitempty"`
+	UserMetadata string                    `json:"userMetadata,omitempty" tf:"user_metadata,omitempty"`
+	ProviderRef  core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type EventhubConsumerGroupStatus struct {
@@ -35,7 +36,9 @@ type EventhubConsumerGroupStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -397,37 +397,47 @@ spec:
           type: object
         spec:
           properties:
-            cidr_blocks:
+            cidrBlocks:
               items:
                 type: string
               type: array
             description:
               type: string
-            from_port:
+            fromPort:
               type: integer
-            ipv6_cidr_blocks:
+            ipv6CIDRBlocks:
               items:
                 type: string
               type: array
-            prefix_list_ids:
+            prefixListIDS:
               items:
                 type: string
               type: array
             protocol:
               type: string
-            security_group_id:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            securityGroupID:
               type: string
             self:
               type: boolean
-            to_port:
+            toPort:
               type: integer
             type:
               type: string
           required:
-          - from_port
+          - fromPort
           - protocol
-          - security_group_id
-          - to_port
+          - providerRef
+          - securityGroupID
+          - toPort
           - type
           type: object
         status:
@@ -439,6 +449,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,31 +19,32 @@ type Alb struct {
 }
 
 type AlbSpecAccessLogs struct {
-	Bucket string `json:"bucket"`
+	Bucket string `json:"bucket" tf:"bucket"`
 	// +optional
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
 	// +optional
-	Prefix string `json:"prefix,omitempty"`
+	Prefix string `json:"prefix,omitempty" tf:"prefix,omitempty"`
 }
 
 type AlbSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	AccessLogs *[]AlbSpec `json:"access_logs,omitempty"`
+	AccessLogs []AlbSpecAccessLogs `json:"accessLogs,omitempty" tf:"access_logs,omitempty"`
 	// +optional
-	EnableCrossZoneLoadBalancing bool `json:"enable_cross_zone_load_balancing,omitempty"`
+	EnableCrossZoneLoadBalancing bool `json:"enableCrossZoneLoadBalancing,omitempty" tf:"enable_cross_zone_load_balancing,omitempty"`
 	// +optional
-	EnableDeletionProtection bool `json:"enable_deletion_protection,omitempty"`
+	EnableDeletionProtection bool `json:"enableDeletionProtection,omitempty" tf:"enable_deletion_protection,omitempty"`
 	// +optional
-	EnableHttp2 bool `json:"enable_http2,omitempty"`
+	EnableHttp2 bool `json:"enableHttp2,omitempty" tf:"enable_http2,omitempty"`
 	// +optional
-	IdleTimeout int `json:"idle_timeout,omitempty"`
+	IdleTimeout int `json:"idleTimeout,omitempty" tf:"idle_timeout,omitempty"`
 	// +optional
-	LoadBalancerType string `json:"load_balancer_type,omitempty"`
+	LoadBalancerType string `json:"loadBalancerType,omitempty" tf:"load_balancer_type,omitempty"`
 	// +optional
-	NamePrefix string `json:"name_prefix,omitempty"`
+	NamePrefix string `json:"namePrefix,omitempty" tf:"name_prefix,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type AlbStatus struct {
@@ -51,7 +52,9 @@ type AlbStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

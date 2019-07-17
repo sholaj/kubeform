@@ -31,6 +31,7 @@ import (
 // FakeProjectIamPolicies implements ProjectIamPolicyInterface
 type FakeProjectIamPolicies struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var projectiampoliciesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "projectiampolicies"}
@@ -40,7 +41,8 @@ var projectiampoliciesKind = schema.GroupVersionKind{Group: "google.kubeform.com
 // Get takes name of the projectIamPolicy, and returns the corresponding projectIamPolicy object, and an error if there is any.
 func (c *FakeProjectIamPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.ProjectIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(projectiampoliciesResource, name), &v1alpha1.ProjectIamPolicy{})
+		Invokes(testing.NewGetAction(projectiampoliciesResource, c.ns, name), &v1alpha1.ProjectIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeProjectIamPolicies) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of ProjectIamPolicies that match those selectors.
 func (c *FakeProjectIamPolicies) List(opts v1.ListOptions) (result *v1alpha1.ProjectIamPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(projectiampoliciesResource, projectiampoliciesKind, opts), &v1alpha1.ProjectIamPolicyList{})
+		Invokes(testing.NewListAction(projectiampoliciesResource, projectiampoliciesKind, c.ns, opts), &v1alpha1.ProjectIamPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeProjectIamPolicies) List(opts v1.ListOptions) (result *v1alpha1.Pro
 // Watch returns a watch.Interface that watches the requested projectIamPolicies.
 func (c *FakeProjectIamPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(projectiampoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(projectiampoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a projectIamPolicy and creates it.  Returns the server's representation of the projectIamPolicy, and an error, if there is any.
 func (c *FakeProjectIamPolicies) Create(projectIamPolicy *v1alpha1.ProjectIamPolicy) (result *v1alpha1.ProjectIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(projectiampoliciesResource, projectIamPolicy), &v1alpha1.ProjectIamPolicy{})
+		Invokes(testing.NewCreateAction(projectiampoliciesResource, c.ns, projectIamPolicy), &v1alpha1.ProjectIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeProjectIamPolicies) Create(projectIamPolicy *v1alpha1.ProjectIamPol
 // Update takes the representation of a projectIamPolicy and updates it. Returns the server's representation of the projectIamPolicy, and an error, if there is any.
 func (c *FakeProjectIamPolicies) Update(projectIamPolicy *v1alpha1.ProjectIamPolicy) (result *v1alpha1.ProjectIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(projectiampoliciesResource, projectIamPolicy), &v1alpha1.ProjectIamPolicy{})
+		Invokes(testing.NewUpdateAction(projectiampoliciesResource, c.ns, projectIamPolicy), &v1alpha1.ProjectIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeProjectIamPolicies) Update(projectIamPolicy *v1alpha1.ProjectIamPol
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeProjectIamPolicies) UpdateStatus(projectIamPolicy *v1alpha1.ProjectIamPolicy) (*v1alpha1.ProjectIamPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(projectiampoliciesResource, "status", projectIamPolicy), &v1alpha1.ProjectIamPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(projectiampoliciesResource, "status", c.ns, projectIamPolicy), &v1alpha1.ProjectIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeProjectIamPolicies) UpdateStatus(projectIamPolicy *v1alpha1.Project
 // Delete takes name of the projectIamPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeProjectIamPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(projectiampoliciesResource, name), &v1alpha1.ProjectIamPolicy{})
+		Invokes(testing.NewDeleteAction(projectiampoliciesResource, c.ns, name), &v1alpha1.ProjectIamPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeProjectIamPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(projectiampoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(projectiampoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ProjectIamPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeProjectIamPolicies) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched projectIamPolicy.
 func (c *FakeProjectIamPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ProjectIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(projectiampoliciesResource, name, pt, data, subresources...), &v1alpha1.ProjectIamPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(projectiampoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ProjectIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

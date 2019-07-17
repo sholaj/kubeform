@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// FirewallNatRuleCollectionsGetter has a method to return a FirewallNatRuleCollectionInterface.
+// FirewallNATRuleCollectionsGetter has a method to return a FirewallNATRuleCollectionInterface.
 // A group's client should implement this interface.
-type FirewallNatRuleCollectionsGetter interface {
-	FirewallNatRuleCollections() FirewallNatRuleCollectionInterface
+type FirewallNATRuleCollectionsGetter interface {
+	FirewallNATRuleCollections(namespace string) FirewallNATRuleCollectionInterface
 }
 
-// FirewallNatRuleCollectionInterface has methods to work with FirewallNatRuleCollection resources.
-type FirewallNatRuleCollectionInterface interface {
-	Create(*v1alpha1.FirewallNatRuleCollection) (*v1alpha1.FirewallNatRuleCollection, error)
-	Update(*v1alpha1.FirewallNatRuleCollection) (*v1alpha1.FirewallNatRuleCollection, error)
-	UpdateStatus(*v1alpha1.FirewallNatRuleCollection) (*v1alpha1.FirewallNatRuleCollection, error)
+// FirewallNATRuleCollectionInterface has methods to work with FirewallNATRuleCollection resources.
+type FirewallNATRuleCollectionInterface interface {
+	Create(*v1alpha1.FirewallNATRuleCollection) (*v1alpha1.FirewallNATRuleCollection, error)
+	Update(*v1alpha1.FirewallNATRuleCollection) (*v1alpha1.FirewallNATRuleCollection, error)
+	UpdateStatus(*v1alpha1.FirewallNATRuleCollection) (*v1alpha1.FirewallNATRuleCollection, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.FirewallNatRuleCollection, error)
-	List(opts v1.ListOptions) (*v1alpha1.FirewallNatRuleCollectionList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.FirewallNATRuleCollection, error)
+	List(opts v1.ListOptions) (*v1alpha1.FirewallNATRuleCollectionList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FirewallNatRuleCollection, err error)
-	FirewallNatRuleCollectionExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FirewallNATRuleCollection, err error)
+	FirewallNATRuleCollectionExpansion
 }
 
-// firewallNatRuleCollections implements FirewallNatRuleCollectionInterface
-type firewallNatRuleCollections struct {
+// firewallNATRuleCollections implements FirewallNATRuleCollectionInterface
+type firewallNATRuleCollections struct {
 	client rest.Interface
+	ns     string
 }
 
-// newFirewallNatRuleCollections returns a FirewallNatRuleCollections
-func newFirewallNatRuleCollections(c *AzurermV1alpha1Client) *firewallNatRuleCollections {
-	return &firewallNatRuleCollections{
+// newFirewallNATRuleCollections returns a FirewallNATRuleCollections
+func newFirewallNATRuleCollections(c *AzurermV1alpha1Client, namespace string) *firewallNATRuleCollections {
+	return &firewallNATRuleCollections{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the firewallNatRuleCollection, and returns the corresponding firewallNatRuleCollection object, and an error if there is any.
-func (c *firewallNatRuleCollections) Get(name string, options v1.GetOptions) (result *v1alpha1.FirewallNatRuleCollection, err error) {
-	result = &v1alpha1.FirewallNatRuleCollection{}
+// Get takes name of the firewallNATRuleCollection, and returns the corresponding firewallNATRuleCollection object, and an error if there is any.
+func (c *firewallNATRuleCollections) Get(name string, options v1.GetOptions) (result *v1alpha1.FirewallNATRuleCollection, err error) {
+	result = &v1alpha1.FirewallNATRuleCollection{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("firewallnatrulecollections").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *firewallNatRuleCollections) Get(name string, options v1.GetOptions) (re
 	return
 }
 
-// List takes label and field selectors, and returns the list of FirewallNatRuleCollections that match those selectors.
-func (c *firewallNatRuleCollections) List(opts v1.ListOptions) (result *v1alpha1.FirewallNatRuleCollectionList, err error) {
+// List takes label and field selectors, and returns the list of FirewallNATRuleCollections that match those selectors.
+func (c *firewallNATRuleCollections) List(opts v1.ListOptions) (result *v1alpha1.FirewallNATRuleCollectionList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.FirewallNatRuleCollectionList{}
+	result = &v1alpha1.FirewallNATRuleCollectionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("firewallnatrulecollections").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *firewallNatRuleCollections) List(opts v1.ListOptions) (result *v1alpha1
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested firewallNatRuleCollections.
-func (c *firewallNatRuleCollections) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested firewallNATRuleCollections.
+func (c *firewallNATRuleCollections) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("firewallnatrulecollections").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a firewallNatRuleCollection and creates it.  Returns the server's representation of the firewallNatRuleCollection, and an error, if there is any.
-func (c *firewallNatRuleCollections) Create(firewallNatRuleCollection *v1alpha1.FirewallNatRuleCollection) (result *v1alpha1.FirewallNatRuleCollection, err error) {
-	result = &v1alpha1.FirewallNatRuleCollection{}
+// Create takes the representation of a firewallNATRuleCollection and creates it.  Returns the server's representation of the firewallNATRuleCollection, and an error, if there is any.
+func (c *firewallNATRuleCollections) Create(firewallNATRuleCollection *v1alpha1.FirewallNATRuleCollection) (result *v1alpha1.FirewallNATRuleCollection, err error) {
+	result = &v1alpha1.FirewallNATRuleCollection{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("firewallnatrulecollections").
-		Body(firewallNatRuleCollection).
+		Body(firewallNATRuleCollection).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a firewallNatRuleCollection and updates it. Returns the server's representation of the firewallNatRuleCollection, and an error, if there is any.
-func (c *firewallNatRuleCollections) Update(firewallNatRuleCollection *v1alpha1.FirewallNatRuleCollection) (result *v1alpha1.FirewallNatRuleCollection, err error) {
-	result = &v1alpha1.FirewallNatRuleCollection{}
+// Update takes the representation of a firewallNATRuleCollection and updates it. Returns the server's representation of the firewallNATRuleCollection, and an error, if there is any.
+func (c *firewallNATRuleCollections) Update(firewallNATRuleCollection *v1alpha1.FirewallNATRuleCollection) (result *v1alpha1.FirewallNATRuleCollection, err error) {
+	result = &v1alpha1.FirewallNATRuleCollection{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("firewallnatrulecollections").
-		Name(firewallNatRuleCollection.Name).
-		Body(firewallNatRuleCollection).
+		Name(firewallNATRuleCollection.Name).
+		Body(firewallNATRuleCollection).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *firewallNatRuleCollections) Update(firewallNatRuleCollection *v1alpha1.
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *firewallNatRuleCollections) UpdateStatus(firewallNatRuleCollection *v1alpha1.FirewallNatRuleCollection) (result *v1alpha1.FirewallNatRuleCollection, err error) {
-	result = &v1alpha1.FirewallNatRuleCollection{}
+func (c *firewallNATRuleCollections) UpdateStatus(firewallNATRuleCollection *v1alpha1.FirewallNATRuleCollection) (result *v1alpha1.FirewallNATRuleCollection, err error) {
+	result = &v1alpha1.FirewallNATRuleCollection{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("firewallnatrulecollections").
-		Name(firewallNatRuleCollection.Name).
+		Name(firewallNATRuleCollection.Name).
 		SubResource("status").
-		Body(firewallNatRuleCollection).
+		Body(firewallNATRuleCollection).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the firewallNatRuleCollection and deletes it. Returns an error if one occurs.
-func (c *firewallNatRuleCollections) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the firewallNATRuleCollection and deletes it. Returns an error if one occurs.
+func (c *firewallNATRuleCollections) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("firewallnatrulecollections").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *firewallNatRuleCollections) Delete(name string, options *v1.DeleteOptio
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *firewallNatRuleCollections) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *firewallNATRuleCollections) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("firewallnatrulecollections").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *firewallNatRuleCollections) DeleteCollection(options *v1.DeleteOptions,
 		Error()
 }
 
-// Patch applies the patch and returns the patched firewallNatRuleCollection.
-func (c *firewallNatRuleCollections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FirewallNatRuleCollection, err error) {
-	result = &v1alpha1.FirewallNatRuleCollection{}
+// Patch applies the patch and returns the patched firewallNATRuleCollection.
+func (c *firewallNATRuleCollections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FirewallNATRuleCollection, err error) {
+	result = &v1alpha1.FirewallNATRuleCollection{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("firewallnatrulecollections").
 		SubResource(subresources...).
 		Name(name).

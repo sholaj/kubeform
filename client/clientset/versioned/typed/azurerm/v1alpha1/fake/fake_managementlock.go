@@ -31,6 +31,7 @@ import (
 // FakeManagementLocks implements ManagementLockInterface
 type FakeManagementLocks struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var managementlocksResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "managementlocks"}
@@ -40,7 +41,8 @@ var managementlocksKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com",
 // Get takes name of the managementLock, and returns the corresponding managementLock object, and an error if there is any.
 func (c *FakeManagementLocks) Get(name string, options v1.GetOptions) (result *v1alpha1.ManagementLock, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(managementlocksResource, name), &v1alpha1.ManagementLock{})
+		Invokes(testing.NewGetAction(managementlocksResource, c.ns, name), &v1alpha1.ManagementLock{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeManagementLocks) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of ManagementLocks that match those selectors.
 func (c *FakeManagementLocks) List(opts v1.ListOptions) (result *v1alpha1.ManagementLockList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(managementlocksResource, managementlocksKind, opts), &v1alpha1.ManagementLockList{})
+		Invokes(testing.NewListAction(managementlocksResource, managementlocksKind, c.ns, opts), &v1alpha1.ManagementLockList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeManagementLocks) List(opts v1.ListOptions) (result *v1alpha1.Manage
 // Watch returns a watch.Interface that watches the requested managementLocks.
 func (c *FakeManagementLocks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(managementlocksResource, opts))
+		InvokesWatch(testing.NewWatchAction(managementlocksResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a managementLock and creates it.  Returns the server's representation of the managementLock, and an error, if there is any.
 func (c *FakeManagementLocks) Create(managementLock *v1alpha1.ManagementLock) (result *v1alpha1.ManagementLock, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(managementlocksResource, managementLock), &v1alpha1.ManagementLock{})
+		Invokes(testing.NewCreateAction(managementlocksResource, c.ns, managementLock), &v1alpha1.ManagementLock{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeManagementLocks) Create(managementLock *v1alpha1.ManagementLock) (r
 // Update takes the representation of a managementLock and updates it. Returns the server's representation of the managementLock, and an error, if there is any.
 func (c *FakeManagementLocks) Update(managementLock *v1alpha1.ManagementLock) (result *v1alpha1.ManagementLock, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(managementlocksResource, managementLock), &v1alpha1.ManagementLock{})
+		Invokes(testing.NewUpdateAction(managementlocksResource, c.ns, managementLock), &v1alpha1.ManagementLock{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeManagementLocks) Update(managementLock *v1alpha1.ManagementLock) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeManagementLocks) UpdateStatus(managementLock *v1alpha1.ManagementLock) (*v1alpha1.ManagementLock, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(managementlocksResource, "status", managementLock), &v1alpha1.ManagementLock{})
+		Invokes(testing.NewUpdateSubresourceAction(managementlocksResource, "status", c.ns, managementLock), &v1alpha1.ManagementLock{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeManagementLocks) UpdateStatus(managementLock *v1alpha1.ManagementLo
 // Delete takes name of the managementLock and deletes it. Returns an error if one occurs.
 func (c *FakeManagementLocks) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(managementlocksResource, name), &v1alpha1.ManagementLock{})
+		Invokes(testing.NewDeleteAction(managementlocksResource, c.ns, name), &v1alpha1.ManagementLock{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeManagementLocks) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(managementlocksResource, listOptions)
+	action := testing.NewDeleteCollectionAction(managementlocksResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ManagementLockList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeManagementLocks) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched managementLock.
 func (c *FakeManagementLocks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ManagementLock, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(managementlocksResource, name, pt, data, subresources...), &v1alpha1.ManagementLock{})
+		Invokes(testing.NewPatchSubresourceAction(managementlocksResource, c.ns, name, pt, data, subresources...), &v1alpha1.ManagementLock{})
+
 	if obj == nil {
 		return nil, err
 	}

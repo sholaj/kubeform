@@ -399,24 +399,34 @@ spec:
           properties:
             action:
               type: string
-            event_source_token:
+            eventSourceToken:
               type: string
-            function_name:
+            functionName:
               type: string
             principal:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             qualifier:
               type: string
-            source_account:
+            sourceAccount:
               type: string
-            source_arn:
+            sourceArn:
               type: string
-            statement_id_prefix:
+            statementIDPrefix:
               type: string
           required:
           - action
-          - function_name
+          - functionName
           - principal
+          - providerRef
           type: object
         status:
           properties:
@@ -427,6 +437,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

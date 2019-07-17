@@ -32,7 +32,7 @@ import (
 // PinpointAppsGetter has a method to return a PinpointAppInterface.
 // A group's client should implement this interface.
 type PinpointAppsGetter interface {
-	PinpointApps() PinpointAppInterface
+	PinpointApps(namespace string) PinpointAppInterface
 }
 
 // PinpointAppInterface has methods to work with PinpointApp resources.
@@ -52,12 +52,14 @@ type PinpointAppInterface interface {
 // pinpointApps implements PinpointAppInterface
 type pinpointApps struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPinpointApps returns a PinpointApps
-func newPinpointApps(c *AwsV1alpha1Client) *pinpointApps {
+func newPinpointApps(c *AwsV1alpha1Client, namespace string) *pinpointApps {
 	return &pinpointApps{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPinpointApps(c *AwsV1alpha1Client) *pinpointApps {
 func (c *pinpointApps) Get(name string, options v1.GetOptions) (result *v1alpha1.PinpointApp, err error) {
 	result = &v1alpha1.PinpointApp{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointapps").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *pinpointApps) List(opts v1.ListOptions) (result *v1alpha1.PinpointAppLi
 	}
 	result = &v1alpha1.PinpointAppList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointapps").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *pinpointApps) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointapps").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *pinpointApps) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *pinpointApps) Create(pinpointApp *v1alpha1.PinpointApp) (result *v1alpha1.PinpointApp, err error) {
 	result = &v1alpha1.PinpointApp{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("pinpointapps").
 		Body(pinpointApp).
 		Do().
@@ -118,6 +124,7 @@ func (c *pinpointApps) Create(pinpointApp *v1alpha1.PinpointApp) (result *v1alph
 func (c *pinpointApps) Update(pinpointApp *v1alpha1.PinpointApp) (result *v1alpha1.PinpointApp, err error) {
 	result = &v1alpha1.PinpointApp{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pinpointapps").
 		Name(pinpointApp.Name).
 		Body(pinpointApp).
@@ -132,6 +139,7 @@ func (c *pinpointApps) Update(pinpointApp *v1alpha1.PinpointApp) (result *v1alph
 func (c *pinpointApps) UpdateStatus(pinpointApp *v1alpha1.PinpointApp) (result *v1alpha1.PinpointApp, err error) {
 	result = &v1alpha1.PinpointApp{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pinpointapps").
 		Name(pinpointApp.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *pinpointApps) UpdateStatus(pinpointApp *v1alpha1.PinpointApp) (result *
 // Delete takes name of the pinpointApp and deletes it. Returns an error if one occurs.
 func (c *pinpointApps) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pinpointapps").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *pinpointApps) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pinpointapps").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *pinpointApps) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *pinpointApps) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PinpointApp, err error) {
 	result = &v1alpha1.PinpointApp{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("pinpointapps").
 		SubResource(subresources...).
 		Name(name).

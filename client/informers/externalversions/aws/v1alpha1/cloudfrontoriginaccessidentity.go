@@ -41,32 +41,33 @@ type CloudfrontOriginAccessIdentityInformer interface {
 type cloudfrontOriginAccessIdentityInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewCloudfrontOriginAccessIdentityInformer constructs a new informer for CloudfrontOriginAccessIdentity type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCloudfrontOriginAccessIdentityInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCloudfrontOriginAccessIdentityInformer(client, resyncPeriod, indexers, nil)
+func NewCloudfrontOriginAccessIdentityInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCloudfrontOriginAccessIdentityInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredCloudfrontOriginAccessIdentityInformer constructs a new informer for CloudfrontOriginAccessIdentity type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCloudfrontOriginAccessIdentityInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCloudfrontOriginAccessIdentityInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CloudfrontOriginAccessIdentities().List(options)
+				return client.AwsV1alpha1().CloudfrontOriginAccessIdentities(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CloudfrontOriginAccessIdentities().Watch(options)
+				return client.AwsV1alpha1().CloudfrontOriginAccessIdentities(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.CloudfrontOriginAccessIdentity{},
@@ -76,7 +77,7 @@ func NewFilteredCloudfrontOriginAccessIdentityInformer(client versioned.Interfac
 }
 
 func (f *cloudfrontOriginAccessIdentityInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCloudfrontOriginAccessIdentityInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredCloudfrontOriginAccessIdentityInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *cloudfrontOriginAccessIdentityInformer) Informer() cache.SharedIndexInformer {

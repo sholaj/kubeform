@@ -29,8 +29,8 @@ import (
 type DatasyncLocationEfsLister interface {
 	// List lists all DatasyncLocationEfses in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DatasyncLocationEfs, err error)
-	// Get retrieves the DatasyncLocationEfs from the index for a given name.
-	Get(name string) (*v1alpha1.DatasyncLocationEfs, error)
+	// DatasyncLocationEfses returns an object that can list and get DatasyncLocationEfses.
+	DatasyncLocationEfses(namespace string) DatasyncLocationEfsNamespaceLister
 	DatasyncLocationEfsListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *datasyncLocationEfsLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the DatasyncLocationEfs from the index for a given name.
-func (s *datasyncLocationEfsLister) Get(name string) (*v1alpha1.DatasyncLocationEfs, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DatasyncLocationEfses returns an object that can list and get DatasyncLocationEfses.
+func (s *datasyncLocationEfsLister) DatasyncLocationEfses(namespace string) DatasyncLocationEfsNamespaceLister {
+	return datasyncLocationEfsNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DatasyncLocationEfsNamespaceLister helps list and get DatasyncLocationEfses.
+type DatasyncLocationEfsNamespaceLister interface {
+	// List lists all DatasyncLocationEfses in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DatasyncLocationEfs, err error)
+	// Get retrieves the DatasyncLocationEfs from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DatasyncLocationEfs, error)
+	DatasyncLocationEfsNamespaceListerExpansion
+}
+
+// datasyncLocationEfsNamespaceLister implements the DatasyncLocationEfsNamespaceLister
+// interface.
+type datasyncLocationEfsNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DatasyncLocationEfses in the indexer for a given namespace.
+func (s datasyncLocationEfsNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DatasyncLocationEfs, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DatasyncLocationEfs))
+	})
+	return ret, err
+}
+
+// Get retrieves the DatasyncLocationEfs from the indexer for a given namespace and name.
+func (s datasyncLocationEfsNamespaceLister) Get(name string) (*v1alpha1.DatasyncLocationEfs, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

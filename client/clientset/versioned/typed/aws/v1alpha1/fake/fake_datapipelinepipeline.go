@@ -31,6 +31,7 @@ import (
 // FakeDatapipelinePipelines implements DatapipelinePipelineInterface
 type FakeDatapipelinePipelines struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var datapipelinepipelinesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "datapipelinepipelines"}
@@ -40,7 +41,8 @@ var datapipelinepipelinesKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the datapipelinePipeline, and returns the corresponding datapipelinePipeline object, and an error if there is any.
 func (c *FakeDatapipelinePipelines) Get(name string, options v1.GetOptions) (result *v1alpha1.DatapipelinePipeline, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(datapipelinepipelinesResource, name), &v1alpha1.DatapipelinePipeline{})
+		Invokes(testing.NewGetAction(datapipelinepipelinesResource, c.ns, name), &v1alpha1.DatapipelinePipeline{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDatapipelinePipelines) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of DatapipelinePipelines that match those selectors.
 func (c *FakeDatapipelinePipelines) List(opts v1.ListOptions) (result *v1alpha1.DatapipelinePipelineList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(datapipelinepipelinesResource, datapipelinepipelinesKind, opts), &v1alpha1.DatapipelinePipelineList{})
+		Invokes(testing.NewListAction(datapipelinepipelinesResource, datapipelinepipelinesKind, c.ns, opts), &v1alpha1.DatapipelinePipelineList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDatapipelinePipelines) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested datapipelinePipelines.
 func (c *FakeDatapipelinePipelines) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(datapipelinepipelinesResource, opts))
+		InvokesWatch(testing.NewWatchAction(datapipelinepipelinesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a datapipelinePipeline and creates it.  Returns the server's representation of the datapipelinePipeline, and an error, if there is any.
 func (c *FakeDatapipelinePipelines) Create(datapipelinePipeline *v1alpha1.DatapipelinePipeline) (result *v1alpha1.DatapipelinePipeline, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(datapipelinepipelinesResource, datapipelinePipeline), &v1alpha1.DatapipelinePipeline{})
+		Invokes(testing.NewCreateAction(datapipelinepipelinesResource, c.ns, datapipelinePipeline), &v1alpha1.DatapipelinePipeline{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDatapipelinePipelines) Create(datapipelinePipeline *v1alpha1.Datapi
 // Update takes the representation of a datapipelinePipeline and updates it. Returns the server's representation of the datapipelinePipeline, and an error, if there is any.
 func (c *FakeDatapipelinePipelines) Update(datapipelinePipeline *v1alpha1.DatapipelinePipeline) (result *v1alpha1.DatapipelinePipeline, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(datapipelinepipelinesResource, datapipelinePipeline), &v1alpha1.DatapipelinePipeline{})
+		Invokes(testing.NewUpdateAction(datapipelinepipelinesResource, c.ns, datapipelinePipeline), &v1alpha1.DatapipelinePipeline{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDatapipelinePipelines) Update(datapipelinePipeline *v1alpha1.Datapi
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDatapipelinePipelines) UpdateStatus(datapipelinePipeline *v1alpha1.DatapipelinePipeline) (*v1alpha1.DatapipelinePipeline, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(datapipelinepipelinesResource, "status", datapipelinePipeline), &v1alpha1.DatapipelinePipeline{})
+		Invokes(testing.NewUpdateSubresourceAction(datapipelinepipelinesResource, "status", c.ns, datapipelinePipeline), &v1alpha1.DatapipelinePipeline{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDatapipelinePipelines) UpdateStatus(datapipelinePipeline *v1alpha1.
 // Delete takes name of the datapipelinePipeline and deletes it. Returns an error if one occurs.
 func (c *FakeDatapipelinePipelines) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(datapipelinepipelinesResource, name), &v1alpha1.DatapipelinePipeline{})
+		Invokes(testing.NewDeleteAction(datapipelinepipelinesResource, c.ns, name), &v1alpha1.DatapipelinePipeline{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDatapipelinePipelines) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(datapipelinepipelinesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(datapipelinepipelinesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DatapipelinePipelineList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDatapipelinePipelines) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched datapipelinePipeline.
 func (c *FakeDatapipelinePipelines) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DatapipelinePipeline, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(datapipelinepipelinesResource, name, pt, data, subresources...), &v1alpha1.DatapipelinePipeline{})
+		Invokes(testing.NewPatchSubresourceAction(datapipelinepipelinesResource, c.ns, name, pt, data, subresources...), &v1alpha1.DatapipelinePipeline{})
+
 	if obj == nil {
 		return nil, err
 	}

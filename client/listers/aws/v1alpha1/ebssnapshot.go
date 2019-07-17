@@ -29,8 +29,8 @@ import (
 type EbsSnapshotLister interface {
 	// List lists all EbsSnapshots in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EbsSnapshot, err error)
-	// Get retrieves the EbsSnapshot from the index for a given name.
-	Get(name string) (*v1alpha1.EbsSnapshot, error)
+	// EbsSnapshots returns an object that can list and get EbsSnapshots.
+	EbsSnapshots(namespace string) EbsSnapshotNamespaceLister
 	EbsSnapshotListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ebsSnapshotLister) List(selector labels.Selector) (ret []*v1alpha1.EbsS
 	return ret, err
 }
 
-// Get retrieves the EbsSnapshot from the index for a given name.
-func (s *ebsSnapshotLister) Get(name string) (*v1alpha1.EbsSnapshot, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EbsSnapshots returns an object that can list and get EbsSnapshots.
+func (s *ebsSnapshotLister) EbsSnapshots(namespace string) EbsSnapshotNamespaceLister {
+	return ebsSnapshotNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EbsSnapshotNamespaceLister helps list and get EbsSnapshots.
+type EbsSnapshotNamespaceLister interface {
+	// List lists all EbsSnapshots in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EbsSnapshot, err error)
+	// Get retrieves the EbsSnapshot from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EbsSnapshot, error)
+	EbsSnapshotNamespaceListerExpansion
+}
+
+// ebsSnapshotNamespaceLister implements the EbsSnapshotNamespaceLister
+// interface.
+type ebsSnapshotNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EbsSnapshots in the indexer for a given namespace.
+func (s ebsSnapshotNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EbsSnapshot, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EbsSnapshot))
+	})
+	return ret, err
+}
+
+// Get retrieves the EbsSnapshot from the indexer for a given namespace and name.
+func (s ebsSnapshotNamespaceLister) Get(name string) (*v1alpha1.EbsSnapshot, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

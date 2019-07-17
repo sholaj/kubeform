@@ -41,32 +41,33 @@ type HdinsightKafkaClusterInformer interface {
 type hdinsightKafkaClusterInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewHdinsightKafkaClusterInformer constructs a new informer for HdinsightKafkaCluster type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewHdinsightKafkaClusterInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredHdinsightKafkaClusterInformer(client, resyncPeriod, indexers, nil)
+func NewHdinsightKafkaClusterInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredHdinsightKafkaClusterInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredHdinsightKafkaClusterInformer constructs a new informer for HdinsightKafkaCluster type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredHdinsightKafkaClusterInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredHdinsightKafkaClusterInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().HdinsightKafkaClusters().List(options)
+				return client.AzurermV1alpha1().HdinsightKafkaClusters(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().HdinsightKafkaClusters().Watch(options)
+				return client.AzurermV1alpha1().HdinsightKafkaClusters(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.HdinsightKafkaCluster{},
@@ -76,7 +77,7 @@ func NewFilteredHdinsightKafkaClusterInformer(client versioned.Interface, resync
 }
 
 func (f *hdinsightKafkaClusterInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredHdinsightKafkaClusterInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredHdinsightKafkaClusterInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *hdinsightKafkaClusterInformer) Informer() cache.SharedIndexInformer {

@@ -31,6 +31,7 @@ import (
 // FakeTokens implements TokenInterface
 type FakeTokens struct {
 	Fake *FakeLinodeV1alpha1
+	ns   string
 }
 
 var tokensResource = schema.GroupVersionResource{Group: "linode.kubeform.com", Version: "v1alpha1", Resource: "tokens"}
@@ -40,7 +41,8 @@ var tokensKind = schema.GroupVersionKind{Group: "linode.kubeform.com", Version: 
 // Get takes name of the token, and returns the corresponding token object, and an error if there is any.
 func (c *FakeTokens) Get(name string, options v1.GetOptions) (result *v1alpha1.Token, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(tokensResource, name), &v1alpha1.Token{})
+		Invokes(testing.NewGetAction(tokensResource, c.ns, name), &v1alpha1.Token{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeTokens) Get(name string, options v1.GetOptions) (result *v1alpha1.T
 // List takes label and field selectors, and returns the list of Tokens that match those selectors.
 func (c *FakeTokens) List(opts v1.ListOptions) (result *v1alpha1.TokenList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(tokensResource, tokensKind, opts), &v1alpha1.TokenList{})
+		Invokes(testing.NewListAction(tokensResource, tokensKind, c.ns, opts), &v1alpha1.TokenList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeTokens) List(opts v1.ListOptions) (result *v1alpha1.TokenList, err 
 // Watch returns a watch.Interface that watches the requested tokens.
 func (c *FakeTokens) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(tokensResource, opts))
+		InvokesWatch(testing.NewWatchAction(tokensResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a token and creates it.  Returns the server's representation of the token, and an error, if there is any.
 func (c *FakeTokens) Create(token *v1alpha1.Token) (result *v1alpha1.Token, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(tokensResource, token), &v1alpha1.Token{})
+		Invokes(testing.NewCreateAction(tokensResource, c.ns, token), &v1alpha1.Token{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeTokens) Create(token *v1alpha1.Token) (result *v1alpha1.Token, err 
 // Update takes the representation of a token and updates it. Returns the server's representation of the token, and an error, if there is any.
 func (c *FakeTokens) Update(token *v1alpha1.Token) (result *v1alpha1.Token, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(tokensResource, token), &v1alpha1.Token{})
+		Invokes(testing.NewUpdateAction(tokensResource, c.ns, token), &v1alpha1.Token{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeTokens) Update(token *v1alpha1.Token) (result *v1alpha1.Token, err 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeTokens) UpdateStatus(token *v1alpha1.Token) (*v1alpha1.Token, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(tokensResource, "status", token), &v1alpha1.Token{})
+		Invokes(testing.NewUpdateSubresourceAction(tokensResource, "status", c.ns, token), &v1alpha1.Token{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeTokens) UpdateStatus(token *v1alpha1.Token) (*v1alpha1.Token, error
 // Delete takes name of the token and deletes it. Returns an error if one occurs.
 func (c *FakeTokens) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(tokensResource, name), &v1alpha1.Token{})
+		Invokes(testing.NewDeleteAction(tokensResource, c.ns, name), &v1alpha1.Token{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeTokens) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(tokensResource, listOptions)
+	action := testing.NewDeleteCollectionAction(tokensResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.TokenList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeTokens) DeleteCollection(options *v1.DeleteOptions, listOptions v1.
 // Patch applies the patch and returns the patched token.
 func (c *FakeTokens) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Token, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(tokensResource, name, pt, data, subresources...), &v1alpha1.Token{})
+		Invokes(testing.NewPatchSubresourceAction(tokensResource, c.ns, name, pt, data, subresources...), &v1alpha1.Token{})
+
 	if obj == nil {
 		return nil, err
 	}

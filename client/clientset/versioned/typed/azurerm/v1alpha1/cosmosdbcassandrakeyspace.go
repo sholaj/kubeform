@@ -32,7 +32,7 @@ import (
 // CosmosdbCassandraKeyspacesGetter has a method to return a CosmosdbCassandraKeyspaceInterface.
 // A group's client should implement this interface.
 type CosmosdbCassandraKeyspacesGetter interface {
-	CosmosdbCassandraKeyspaces() CosmosdbCassandraKeyspaceInterface
+	CosmosdbCassandraKeyspaces(namespace string) CosmosdbCassandraKeyspaceInterface
 }
 
 // CosmosdbCassandraKeyspaceInterface has methods to work with CosmosdbCassandraKeyspace resources.
@@ -52,12 +52,14 @@ type CosmosdbCassandraKeyspaceInterface interface {
 // cosmosdbCassandraKeyspaces implements CosmosdbCassandraKeyspaceInterface
 type cosmosdbCassandraKeyspaces struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCosmosdbCassandraKeyspaces returns a CosmosdbCassandraKeyspaces
-func newCosmosdbCassandraKeyspaces(c *AzurermV1alpha1Client) *cosmosdbCassandraKeyspaces {
+func newCosmosdbCassandraKeyspaces(c *AzurermV1alpha1Client, namespace string) *cosmosdbCassandraKeyspaces {
 	return &cosmosdbCassandraKeyspaces{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCosmosdbCassandraKeyspaces(c *AzurermV1alpha1Client) *cosmosdbCassandraK
 func (c *cosmosdbCassandraKeyspaces) Get(name string, options v1.GetOptions) (result *v1alpha1.CosmosdbCassandraKeyspace, err error) {
 	result = &v1alpha1.CosmosdbCassandraKeyspace{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cosmosdbcassandrakeyspaces").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cosmosdbCassandraKeyspaces) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.CosmosdbCassandraKeyspaceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cosmosdbcassandrakeyspaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cosmosdbCassandraKeyspaces) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cosmosdbcassandrakeyspaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cosmosdbCassandraKeyspaces) Watch(opts v1.ListOptions) (watch.Interface
 func (c *cosmosdbCassandraKeyspaces) Create(cosmosdbCassandraKeyspace *v1alpha1.CosmosdbCassandraKeyspace) (result *v1alpha1.CosmosdbCassandraKeyspace, err error) {
 	result = &v1alpha1.CosmosdbCassandraKeyspace{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cosmosdbcassandrakeyspaces").
 		Body(cosmosdbCassandraKeyspace).
 		Do().
@@ -118,6 +124,7 @@ func (c *cosmosdbCassandraKeyspaces) Create(cosmosdbCassandraKeyspace *v1alpha1.
 func (c *cosmosdbCassandraKeyspaces) Update(cosmosdbCassandraKeyspace *v1alpha1.CosmosdbCassandraKeyspace) (result *v1alpha1.CosmosdbCassandraKeyspace, err error) {
 	result = &v1alpha1.CosmosdbCassandraKeyspace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cosmosdbcassandrakeyspaces").
 		Name(cosmosdbCassandraKeyspace.Name).
 		Body(cosmosdbCassandraKeyspace).
@@ -132,6 +139,7 @@ func (c *cosmosdbCassandraKeyspaces) Update(cosmosdbCassandraKeyspace *v1alpha1.
 func (c *cosmosdbCassandraKeyspaces) UpdateStatus(cosmosdbCassandraKeyspace *v1alpha1.CosmosdbCassandraKeyspace) (result *v1alpha1.CosmosdbCassandraKeyspace, err error) {
 	result = &v1alpha1.CosmosdbCassandraKeyspace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cosmosdbcassandrakeyspaces").
 		Name(cosmosdbCassandraKeyspace.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cosmosdbCassandraKeyspaces) UpdateStatus(cosmosdbCassandraKeyspace *v1a
 // Delete takes name of the cosmosdbCassandraKeyspace and deletes it. Returns an error if one occurs.
 func (c *cosmosdbCassandraKeyspaces) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cosmosdbcassandrakeyspaces").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cosmosdbCassandraKeyspaces) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cosmosdbcassandrakeyspaces").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cosmosdbCassandraKeyspaces) DeleteCollection(options *v1.DeleteOptions,
 func (c *cosmosdbCassandraKeyspaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CosmosdbCassandraKeyspace, err error) {
 	result = &v1alpha1.CosmosdbCassandraKeyspace{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cosmosdbcassandrakeyspaces").
 		SubResource(subresources...).
 		Name(name).

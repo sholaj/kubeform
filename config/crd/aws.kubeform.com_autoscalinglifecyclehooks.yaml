@@ -397,24 +397,34 @@ spec:
           type: object
         spec:
           properties:
-            autoscaling_group_name:
+            autoscalingGroupName:
               type: string
-            heartbeat_timeout:
+            heartbeatTimeout:
               type: integer
-            lifecycle_transition:
+            lifecycleTransition:
               type: string
             name:
               type: string
-            notification_metadata:
+            notificationMetadata:
               type: string
-            notification_target_arn:
+            notificationTargetArn:
               type: string
-            role_arn:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            roleArn:
               type: string
           required:
-          - autoscaling_group_name
-          - lifecycle_transition
+          - autoscalingGroupName
+          - lifecycleTransition
           - name
+          - providerRef
           type: object
         status:
           properties:
@@ -425,6 +435,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

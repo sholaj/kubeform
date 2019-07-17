@@ -399,31 +399,45 @@ spec:
           properties:
             attempts:
               type: integer
-            content_type:
+            contentType:
               type: string
+            metadata:
+              additionalProperties:
+                type: string
+              type: object
             name:
               type: string
             parallelism:
               type: integer
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
             size:
               type: integer
             source:
               type: string
-            source_uri:
+            sourceURI:
               type: string
-            storage_account_name:
+            storageAccountName:
               type: string
-            storage_container_name:
+            storageContainerName:
               type: string
             type:
               type: string
           required:
           - name
-          - resource_group_name
-          - storage_account_name
-          - storage_container_name
+          - providerRef
+          - resourceGroupName
+          - storageAccountName
+          - storageContainerName
           type: object
         status:
           properties:
@@ -434,6 +448,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

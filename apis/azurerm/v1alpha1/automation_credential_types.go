@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,13 +19,14 @@ type AutomationCredential struct {
 }
 
 type AutomationCredentialSpec struct {
-	AccountName string `json:"account_name"`
+	AccountName string `json:"accountName" tf:"account_name"`
 	// +optional
-	Description       string `json:"description,omitempty"`
-	Name              string `json:"name"`
-	Password          string `json:"password"`
-	ResourceGroupName string `json:"resource_group_name"`
-	Username          string `json:"username"`
+	Description       string                    `json:"description,omitempty" tf:"description,omitempty"`
+	Name              string                    `json:"name" tf:"name"`
+	Password          string                    `json:"password" tf:"password"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	Username          string                    `json:"username" tf:"username"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type AutomationCredentialStatus struct {
@@ -33,7 +34,9 @@ type AutomationCredentialStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

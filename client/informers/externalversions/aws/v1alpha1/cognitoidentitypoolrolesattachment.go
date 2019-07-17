@@ -41,32 +41,33 @@ type CognitoIdentityPoolRolesAttachmentInformer interface {
 type cognitoIdentityPoolRolesAttachmentInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewCognitoIdentityPoolRolesAttachmentInformer constructs a new informer for CognitoIdentityPoolRolesAttachment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCognitoIdentityPoolRolesAttachmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCognitoIdentityPoolRolesAttachmentInformer(client, resyncPeriod, indexers, nil)
+func NewCognitoIdentityPoolRolesAttachmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCognitoIdentityPoolRolesAttachmentInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredCognitoIdentityPoolRolesAttachmentInformer constructs a new informer for CognitoIdentityPoolRolesAttachment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCognitoIdentityPoolRolesAttachmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCognitoIdentityPoolRolesAttachmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CognitoIdentityPoolRolesAttachments().List(options)
+				return client.AwsV1alpha1().CognitoIdentityPoolRolesAttachments(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CognitoIdentityPoolRolesAttachments().Watch(options)
+				return client.AwsV1alpha1().CognitoIdentityPoolRolesAttachments(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.CognitoIdentityPoolRolesAttachment{},
@@ -76,7 +77,7 @@ func NewFilteredCognitoIdentityPoolRolesAttachmentInformer(client versioned.Inte
 }
 
 func (f *cognitoIdentityPoolRolesAttachmentInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCognitoIdentityPoolRolesAttachmentInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredCognitoIdentityPoolRolesAttachmentInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *cognitoIdentityPoolRolesAttachmentInformer) Informer() cache.SharedIndexInformer {

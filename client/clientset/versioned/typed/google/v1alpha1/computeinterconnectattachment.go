@@ -32,7 +32,7 @@ import (
 // ComputeInterconnectAttachmentsGetter has a method to return a ComputeInterconnectAttachmentInterface.
 // A group's client should implement this interface.
 type ComputeInterconnectAttachmentsGetter interface {
-	ComputeInterconnectAttachments() ComputeInterconnectAttachmentInterface
+	ComputeInterconnectAttachments(namespace string) ComputeInterconnectAttachmentInterface
 }
 
 // ComputeInterconnectAttachmentInterface has methods to work with ComputeInterconnectAttachment resources.
@@ -52,12 +52,14 @@ type ComputeInterconnectAttachmentInterface interface {
 // computeInterconnectAttachments implements ComputeInterconnectAttachmentInterface
 type computeInterconnectAttachments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeInterconnectAttachments returns a ComputeInterconnectAttachments
-func newComputeInterconnectAttachments(c *GoogleV1alpha1Client) *computeInterconnectAttachments {
+func newComputeInterconnectAttachments(c *GoogleV1alpha1Client, namespace string) *computeInterconnectAttachments {
 	return &computeInterconnectAttachments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeInterconnectAttachments(c *GoogleV1alpha1Client) *computeIntercon
 func (c *computeInterconnectAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeInterconnectAttachment, err error) {
 	result = &v1alpha1.ComputeInterconnectAttachment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeinterconnectattachments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeInterconnectAttachments) List(opts v1.ListOptions) (result *v1al
 	}
 	result = &v1alpha1.ComputeInterconnectAttachmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeinterconnectattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeInterconnectAttachments) Watch(opts v1.ListOptions) (watch.Inter
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computeinterconnectattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeInterconnectAttachments) Watch(opts v1.ListOptions) (watch.Inter
 func (c *computeInterconnectAttachments) Create(computeInterconnectAttachment *v1alpha1.ComputeInterconnectAttachment) (result *v1alpha1.ComputeInterconnectAttachment, err error) {
 	result = &v1alpha1.ComputeInterconnectAttachment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computeinterconnectattachments").
 		Body(computeInterconnectAttachment).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeInterconnectAttachments) Create(computeInterconnectAttachment *v
 func (c *computeInterconnectAttachments) Update(computeInterconnectAttachment *v1alpha1.ComputeInterconnectAttachment) (result *v1alpha1.ComputeInterconnectAttachment, err error) {
 	result = &v1alpha1.ComputeInterconnectAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeinterconnectattachments").
 		Name(computeInterconnectAttachment.Name).
 		Body(computeInterconnectAttachment).
@@ -132,6 +139,7 @@ func (c *computeInterconnectAttachments) Update(computeInterconnectAttachment *v
 func (c *computeInterconnectAttachments) UpdateStatus(computeInterconnectAttachment *v1alpha1.ComputeInterconnectAttachment) (result *v1alpha1.ComputeInterconnectAttachment, err error) {
 	result = &v1alpha1.ComputeInterconnectAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeinterconnectattachments").
 		Name(computeInterconnectAttachment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeInterconnectAttachments) UpdateStatus(computeInterconnectAttachm
 // Delete takes name of the computeInterconnectAttachment and deletes it. Returns an error if one occurs.
 func (c *computeInterconnectAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeinterconnectattachments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeInterconnectAttachments) DeleteCollection(options *v1.DeleteOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeinterconnectattachments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeInterconnectAttachments) DeleteCollection(options *v1.DeleteOpti
 func (c *computeInterconnectAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeInterconnectAttachment, err error) {
 	result = &v1alpha1.ComputeInterconnectAttachment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computeinterconnectattachments").
 		SubResource(subresources...).
 		Name(name).

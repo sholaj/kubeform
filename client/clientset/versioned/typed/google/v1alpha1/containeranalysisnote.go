@@ -32,7 +32,7 @@ import (
 // ContainerAnalysisNotesGetter has a method to return a ContainerAnalysisNoteInterface.
 // A group's client should implement this interface.
 type ContainerAnalysisNotesGetter interface {
-	ContainerAnalysisNotes() ContainerAnalysisNoteInterface
+	ContainerAnalysisNotes(namespace string) ContainerAnalysisNoteInterface
 }
 
 // ContainerAnalysisNoteInterface has methods to work with ContainerAnalysisNote resources.
@@ -52,12 +52,14 @@ type ContainerAnalysisNoteInterface interface {
 // containerAnalysisNotes implements ContainerAnalysisNoteInterface
 type containerAnalysisNotes struct {
 	client rest.Interface
+	ns     string
 }
 
 // newContainerAnalysisNotes returns a ContainerAnalysisNotes
-func newContainerAnalysisNotes(c *GoogleV1alpha1Client) *containerAnalysisNotes {
+func newContainerAnalysisNotes(c *GoogleV1alpha1Client, namespace string) *containerAnalysisNotes {
 	return &containerAnalysisNotes{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newContainerAnalysisNotes(c *GoogleV1alpha1Client) *containerAnalysisNotes 
 func (c *containerAnalysisNotes) Get(name string, options v1.GetOptions) (result *v1alpha1.ContainerAnalysisNote, err error) {
 	result = &v1alpha1.ContainerAnalysisNote{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("containeranalysisnotes").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *containerAnalysisNotes) List(opts v1.ListOptions) (result *v1alpha1.Con
 	}
 	result = &v1alpha1.ContainerAnalysisNoteList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("containeranalysisnotes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *containerAnalysisNotes) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("containeranalysisnotes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *containerAnalysisNotes) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *containerAnalysisNotes) Create(containerAnalysisNote *v1alpha1.ContainerAnalysisNote) (result *v1alpha1.ContainerAnalysisNote, err error) {
 	result = &v1alpha1.ContainerAnalysisNote{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("containeranalysisnotes").
 		Body(containerAnalysisNote).
 		Do().
@@ -118,6 +124,7 @@ func (c *containerAnalysisNotes) Create(containerAnalysisNote *v1alpha1.Containe
 func (c *containerAnalysisNotes) Update(containerAnalysisNote *v1alpha1.ContainerAnalysisNote) (result *v1alpha1.ContainerAnalysisNote, err error) {
 	result = &v1alpha1.ContainerAnalysisNote{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("containeranalysisnotes").
 		Name(containerAnalysisNote.Name).
 		Body(containerAnalysisNote).
@@ -132,6 +139,7 @@ func (c *containerAnalysisNotes) Update(containerAnalysisNote *v1alpha1.Containe
 func (c *containerAnalysisNotes) UpdateStatus(containerAnalysisNote *v1alpha1.ContainerAnalysisNote) (result *v1alpha1.ContainerAnalysisNote, err error) {
 	result = &v1alpha1.ContainerAnalysisNote{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("containeranalysisnotes").
 		Name(containerAnalysisNote.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *containerAnalysisNotes) UpdateStatus(containerAnalysisNote *v1alpha1.Co
 // Delete takes name of the containerAnalysisNote and deletes it. Returns an error if one occurs.
 func (c *containerAnalysisNotes) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("containeranalysisnotes").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *containerAnalysisNotes) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("containeranalysisnotes").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *containerAnalysisNotes) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *containerAnalysisNotes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ContainerAnalysisNote, err error) {
 	result = &v1alpha1.ContainerAnalysisNote{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("containeranalysisnotes").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // MariadbFirewallRulesGetter has a method to return a MariadbFirewallRuleInterface.
 // A group's client should implement this interface.
 type MariadbFirewallRulesGetter interface {
-	MariadbFirewallRules() MariadbFirewallRuleInterface
+	MariadbFirewallRules(namespace string) MariadbFirewallRuleInterface
 }
 
 // MariadbFirewallRuleInterface has methods to work with MariadbFirewallRule resources.
@@ -52,12 +52,14 @@ type MariadbFirewallRuleInterface interface {
 // mariadbFirewallRules implements MariadbFirewallRuleInterface
 type mariadbFirewallRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMariadbFirewallRules returns a MariadbFirewallRules
-func newMariadbFirewallRules(c *AzurermV1alpha1Client) *mariadbFirewallRules {
+func newMariadbFirewallRules(c *AzurermV1alpha1Client, namespace string) *mariadbFirewallRules {
 	return &mariadbFirewallRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMariadbFirewallRules(c *AzurermV1alpha1Client) *mariadbFirewallRules {
 func (c *mariadbFirewallRules) Get(name string, options v1.GetOptions) (result *v1alpha1.MariadbFirewallRule, err error) {
 	result = &v1alpha1.MariadbFirewallRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mariadbfirewallrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *mariadbFirewallRules) List(opts v1.ListOptions) (result *v1alpha1.Maria
 	}
 	result = &v1alpha1.MariadbFirewallRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mariadbfirewallrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *mariadbFirewallRules) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("mariadbfirewallrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *mariadbFirewallRules) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *mariadbFirewallRules) Create(mariadbFirewallRule *v1alpha1.MariadbFirewallRule) (result *v1alpha1.MariadbFirewallRule, err error) {
 	result = &v1alpha1.MariadbFirewallRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("mariadbfirewallrules").
 		Body(mariadbFirewallRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *mariadbFirewallRules) Create(mariadbFirewallRule *v1alpha1.MariadbFirew
 func (c *mariadbFirewallRules) Update(mariadbFirewallRule *v1alpha1.MariadbFirewallRule) (result *v1alpha1.MariadbFirewallRule, err error) {
 	result = &v1alpha1.MariadbFirewallRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mariadbfirewallrules").
 		Name(mariadbFirewallRule.Name).
 		Body(mariadbFirewallRule).
@@ -132,6 +139,7 @@ func (c *mariadbFirewallRules) Update(mariadbFirewallRule *v1alpha1.MariadbFirew
 func (c *mariadbFirewallRules) UpdateStatus(mariadbFirewallRule *v1alpha1.MariadbFirewallRule) (result *v1alpha1.MariadbFirewallRule, err error) {
 	result = &v1alpha1.MariadbFirewallRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mariadbfirewallrules").
 		Name(mariadbFirewallRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *mariadbFirewallRules) UpdateStatus(mariadbFirewallRule *v1alpha1.Mariad
 // Delete takes name of the mariadbFirewallRule and deletes it. Returns an error if one occurs.
 func (c *mariadbFirewallRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mariadbfirewallrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *mariadbFirewallRules) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mariadbfirewallrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *mariadbFirewallRules) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *mariadbFirewallRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MariadbFirewallRule, err error) {
 	result = &v1alpha1.MariadbFirewallRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("mariadbfirewallrules").
 		SubResource(subresources...).
 		Name(name).

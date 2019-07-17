@@ -41,32 +41,33 @@ type ApiGatewayBasePathMappingInformer interface {
 type apiGatewayBasePathMappingInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewApiGatewayBasePathMappingInformer constructs a new informer for ApiGatewayBasePathMapping type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewApiGatewayBasePathMappingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredApiGatewayBasePathMappingInformer(client, resyncPeriod, indexers, nil)
+func NewApiGatewayBasePathMappingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredApiGatewayBasePathMappingInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredApiGatewayBasePathMappingInformer constructs a new informer for ApiGatewayBasePathMapping type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredApiGatewayBasePathMappingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredApiGatewayBasePathMappingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ApiGatewayBasePathMappings().List(options)
+				return client.AwsV1alpha1().ApiGatewayBasePathMappings(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ApiGatewayBasePathMappings().Watch(options)
+				return client.AwsV1alpha1().ApiGatewayBasePathMappings(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.ApiGatewayBasePathMapping{},
@@ -76,7 +77,7 @@ func NewFilteredApiGatewayBasePathMappingInformer(client versioned.Interface, re
 }
 
 func (f *apiGatewayBasePathMappingInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredApiGatewayBasePathMappingInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredApiGatewayBasePathMappingInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *apiGatewayBasePathMappingInformer) Informer() cache.SharedIndexInformer {

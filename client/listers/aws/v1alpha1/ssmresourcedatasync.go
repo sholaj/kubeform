@@ -29,8 +29,8 @@ import (
 type SsmResourceDataSyncLister interface {
 	// List lists all SsmResourceDataSyncs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SsmResourceDataSync, err error)
-	// Get retrieves the SsmResourceDataSync from the index for a given name.
-	Get(name string) (*v1alpha1.SsmResourceDataSync, error)
+	// SsmResourceDataSyncs returns an object that can list and get SsmResourceDataSyncs.
+	SsmResourceDataSyncs(namespace string) SsmResourceDataSyncNamespaceLister
 	SsmResourceDataSyncListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ssmResourceDataSyncLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the SsmResourceDataSync from the index for a given name.
-func (s *ssmResourceDataSyncLister) Get(name string) (*v1alpha1.SsmResourceDataSync, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SsmResourceDataSyncs returns an object that can list and get SsmResourceDataSyncs.
+func (s *ssmResourceDataSyncLister) SsmResourceDataSyncs(namespace string) SsmResourceDataSyncNamespaceLister {
+	return ssmResourceDataSyncNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SsmResourceDataSyncNamespaceLister helps list and get SsmResourceDataSyncs.
+type SsmResourceDataSyncNamespaceLister interface {
+	// List lists all SsmResourceDataSyncs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SsmResourceDataSync, err error)
+	// Get retrieves the SsmResourceDataSync from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SsmResourceDataSync, error)
+	SsmResourceDataSyncNamespaceListerExpansion
+}
+
+// ssmResourceDataSyncNamespaceLister implements the SsmResourceDataSyncNamespaceLister
+// interface.
+type ssmResourceDataSyncNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SsmResourceDataSyncs in the indexer for a given namespace.
+func (s ssmResourceDataSyncNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SsmResourceDataSync, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SsmResourceDataSync))
+	})
+	return ret, err
+}
+
+// Get retrieves the SsmResourceDataSync from the indexer for a given namespace and name.
+func (s ssmResourceDataSyncNamespaceLister) Get(name string) (*v1alpha1.SsmResourceDataSync, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

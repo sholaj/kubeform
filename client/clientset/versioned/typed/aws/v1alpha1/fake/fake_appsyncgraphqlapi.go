@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// FakeAppsyncGraphqlApis implements AppsyncGraphqlApiInterface
-type FakeAppsyncGraphqlApis struct {
+// FakeAppsyncGraphqlAPIs implements AppsyncGraphqlAPIInterface
+type FakeAppsyncGraphqlAPIs struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var appsyncgraphqlapisResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "appsyncgraphqlapis"}
 
-var appsyncgraphqlapisKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "AppsyncGraphqlApi"}
+var appsyncgraphqlapisKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "AppsyncGraphqlAPI"}
 
-// Get takes name of the appsyncGraphqlApi, and returns the corresponding appsyncGraphqlApi object, and an error if there is any.
-func (c *FakeAppsyncGraphqlApis) Get(name string, options v1.GetOptions) (result *v1alpha1.AppsyncGraphqlApi, err error) {
+// Get takes name of the appsyncGraphqlAPI, and returns the corresponding appsyncGraphqlAPI object, and an error if there is any.
+func (c *FakeAppsyncGraphqlAPIs) Get(name string, options v1.GetOptions) (result *v1alpha1.AppsyncGraphqlAPI, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(appsyncgraphqlapisResource, name), &v1alpha1.AppsyncGraphqlApi{})
+		Invokes(testing.NewGetAction(appsyncgraphqlapisResource, c.ns, name), &v1alpha1.AppsyncGraphqlAPI{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.AppsyncGraphqlApi), err
+	return obj.(*v1alpha1.AppsyncGraphqlAPI), err
 }
 
-// List takes label and field selectors, and returns the list of AppsyncGraphqlApis that match those selectors.
-func (c *FakeAppsyncGraphqlApis) List(opts v1.ListOptions) (result *v1alpha1.AppsyncGraphqlApiList, err error) {
+// List takes label and field selectors, and returns the list of AppsyncGraphqlAPIs that match those selectors.
+func (c *FakeAppsyncGraphqlAPIs) List(opts v1.ListOptions) (result *v1alpha1.AppsyncGraphqlAPIList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(appsyncgraphqlapisResource, appsyncgraphqlapisKind, opts), &v1alpha1.AppsyncGraphqlApiList{})
+		Invokes(testing.NewListAction(appsyncgraphqlapisResource, appsyncgraphqlapisKind, c.ns, opts), &v1alpha1.AppsyncGraphqlAPIList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeAppsyncGraphqlApis) List(opts v1.ListOptions) (result *v1alpha1.App
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.AppsyncGraphqlApiList{ListMeta: obj.(*v1alpha1.AppsyncGraphqlApiList).ListMeta}
-	for _, item := range obj.(*v1alpha1.AppsyncGraphqlApiList).Items {
+	list := &v1alpha1.AppsyncGraphqlAPIList{ListMeta: obj.(*v1alpha1.AppsyncGraphqlAPIList).ListMeta}
+	for _, item := range obj.(*v1alpha1.AppsyncGraphqlAPIList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeAppsyncGraphqlApis) List(opts v1.ListOptions) (result *v1alpha1.App
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested appsyncGraphqlApis.
-func (c *FakeAppsyncGraphqlApis) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested appsyncGraphqlAPIs.
+func (c *FakeAppsyncGraphqlAPIs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(appsyncgraphqlapisResource, opts))
+		InvokesWatch(testing.NewWatchAction(appsyncgraphqlapisResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a appsyncGraphqlApi and creates it.  Returns the server's representation of the appsyncGraphqlApi, and an error, if there is any.
-func (c *FakeAppsyncGraphqlApis) Create(appsyncGraphqlApi *v1alpha1.AppsyncGraphqlApi) (result *v1alpha1.AppsyncGraphqlApi, err error) {
+// Create takes the representation of a appsyncGraphqlAPI and creates it.  Returns the server's representation of the appsyncGraphqlAPI, and an error, if there is any.
+func (c *FakeAppsyncGraphqlAPIs) Create(appsyncGraphqlAPI *v1alpha1.AppsyncGraphqlAPI) (result *v1alpha1.AppsyncGraphqlAPI, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(appsyncgraphqlapisResource, appsyncGraphqlApi), &v1alpha1.AppsyncGraphqlApi{})
+		Invokes(testing.NewCreateAction(appsyncgraphqlapisResource, c.ns, appsyncGraphqlAPI), &v1alpha1.AppsyncGraphqlAPI{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.AppsyncGraphqlApi), err
+	return obj.(*v1alpha1.AppsyncGraphqlAPI), err
 }
 
-// Update takes the representation of a appsyncGraphqlApi and updates it. Returns the server's representation of the appsyncGraphqlApi, and an error, if there is any.
-func (c *FakeAppsyncGraphqlApis) Update(appsyncGraphqlApi *v1alpha1.AppsyncGraphqlApi) (result *v1alpha1.AppsyncGraphqlApi, err error) {
+// Update takes the representation of a appsyncGraphqlAPI and updates it. Returns the server's representation of the appsyncGraphqlAPI, and an error, if there is any.
+func (c *FakeAppsyncGraphqlAPIs) Update(appsyncGraphqlAPI *v1alpha1.AppsyncGraphqlAPI) (result *v1alpha1.AppsyncGraphqlAPI, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(appsyncgraphqlapisResource, appsyncGraphqlApi), &v1alpha1.AppsyncGraphqlApi{})
+		Invokes(testing.NewUpdateAction(appsyncgraphqlapisResource, c.ns, appsyncGraphqlAPI), &v1alpha1.AppsyncGraphqlAPI{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.AppsyncGraphqlApi), err
+	return obj.(*v1alpha1.AppsyncGraphqlAPI), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeAppsyncGraphqlApis) UpdateStatus(appsyncGraphqlApi *v1alpha1.AppsyncGraphqlApi) (*v1alpha1.AppsyncGraphqlApi, error) {
+func (c *FakeAppsyncGraphqlAPIs) UpdateStatus(appsyncGraphqlAPI *v1alpha1.AppsyncGraphqlAPI) (*v1alpha1.AppsyncGraphqlAPI, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(appsyncgraphqlapisResource, "status", appsyncGraphqlApi), &v1alpha1.AppsyncGraphqlApi{})
+		Invokes(testing.NewUpdateSubresourceAction(appsyncgraphqlapisResource, "status", c.ns, appsyncGraphqlAPI), &v1alpha1.AppsyncGraphqlAPI{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.AppsyncGraphqlApi), err
+	return obj.(*v1alpha1.AppsyncGraphqlAPI), err
 }
 
-// Delete takes name of the appsyncGraphqlApi and deletes it. Returns an error if one occurs.
-func (c *FakeAppsyncGraphqlApis) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the appsyncGraphqlAPI and deletes it. Returns an error if one occurs.
+func (c *FakeAppsyncGraphqlAPIs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(appsyncgraphqlapisResource, name), &v1alpha1.AppsyncGraphqlApi{})
+		Invokes(testing.NewDeleteAction(appsyncgraphqlapisResource, c.ns, name), &v1alpha1.AppsyncGraphqlAPI{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeAppsyncGraphqlApis) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(appsyncgraphqlapisResource, listOptions)
+func (c *FakeAppsyncGraphqlAPIs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(appsyncgraphqlapisResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.AppsyncGraphqlApiList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.AppsyncGraphqlAPIList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched appsyncGraphqlApi.
-func (c *FakeAppsyncGraphqlApis) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppsyncGraphqlApi, err error) {
+// Patch applies the patch and returns the patched appsyncGraphqlAPI.
+func (c *FakeAppsyncGraphqlAPIs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppsyncGraphqlAPI, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(appsyncgraphqlapisResource, name, pt, data, subresources...), &v1alpha1.AppsyncGraphqlApi{})
+		Invokes(testing.NewPatchSubresourceAction(appsyncgraphqlapisResource, c.ns, name, pt, data, subresources...), &v1alpha1.AppsyncGraphqlAPI{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.AppsyncGraphqlApi), err
+	return obj.(*v1alpha1.AppsyncGraphqlAPI), err
 }

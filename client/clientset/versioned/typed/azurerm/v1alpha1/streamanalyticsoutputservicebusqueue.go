@@ -32,7 +32,7 @@ import (
 // StreamAnalyticsOutputServicebusQueuesGetter has a method to return a StreamAnalyticsOutputServicebusQueueInterface.
 // A group's client should implement this interface.
 type StreamAnalyticsOutputServicebusQueuesGetter interface {
-	StreamAnalyticsOutputServicebusQueues() StreamAnalyticsOutputServicebusQueueInterface
+	StreamAnalyticsOutputServicebusQueues(namespace string) StreamAnalyticsOutputServicebusQueueInterface
 }
 
 // StreamAnalyticsOutputServicebusQueueInterface has methods to work with StreamAnalyticsOutputServicebusQueue resources.
@@ -52,12 +52,14 @@ type StreamAnalyticsOutputServicebusQueueInterface interface {
 // streamAnalyticsOutputServicebusQueues implements StreamAnalyticsOutputServicebusQueueInterface
 type streamAnalyticsOutputServicebusQueues struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStreamAnalyticsOutputServicebusQueues returns a StreamAnalyticsOutputServicebusQueues
-func newStreamAnalyticsOutputServicebusQueues(c *AzurermV1alpha1Client) *streamAnalyticsOutputServicebusQueues {
+func newStreamAnalyticsOutputServicebusQueues(c *AzurermV1alpha1Client, namespace string) *streamAnalyticsOutputServicebusQueues {
 	return &streamAnalyticsOutputServicebusQueues{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStreamAnalyticsOutputServicebusQueues(c *AzurermV1alpha1Client) *streamA
 func (c *streamAnalyticsOutputServicebusQueues) Get(name string, options v1.GetOptions) (result *v1alpha1.StreamAnalyticsOutputServicebusQueue, err error) {
 	result = &v1alpha1.StreamAnalyticsOutputServicebusQueue{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("streamanalyticsoutputservicebusqueues").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *streamAnalyticsOutputServicebusQueues) List(opts v1.ListOptions) (resul
 	}
 	result = &v1alpha1.StreamAnalyticsOutputServicebusQueueList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("streamanalyticsoutputservicebusqueues").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *streamAnalyticsOutputServicebusQueues) Watch(opts v1.ListOptions) (watc
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("streamanalyticsoutputservicebusqueues").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *streamAnalyticsOutputServicebusQueues) Watch(opts v1.ListOptions) (watc
 func (c *streamAnalyticsOutputServicebusQueues) Create(streamAnalyticsOutputServicebusQueue *v1alpha1.StreamAnalyticsOutputServicebusQueue) (result *v1alpha1.StreamAnalyticsOutputServicebusQueue, err error) {
 	result = &v1alpha1.StreamAnalyticsOutputServicebusQueue{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("streamanalyticsoutputservicebusqueues").
 		Body(streamAnalyticsOutputServicebusQueue).
 		Do().
@@ -118,6 +124,7 @@ func (c *streamAnalyticsOutputServicebusQueues) Create(streamAnalyticsOutputServ
 func (c *streamAnalyticsOutputServicebusQueues) Update(streamAnalyticsOutputServicebusQueue *v1alpha1.StreamAnalyticsOutputServicebusQueue) (result *v1alpha1.StreamAnalyticsOutputServicebusQueue, err error) {
 	result = &v1alpha1.StreamAnalyticsOutputServicebusQueue{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("streamanalyticsoutputservicebusqueues").
 		Name(streamAnalyticsOutputServicebusQueue.Name).
 		Body(streamAnalyticsOutputServicebusQueue).
@@ -132,6 +139,7 @@ func (c *streamAnalyticsOutputServicebusQueues) Update(streamAnalyticsOutputServ
 func (c *streamAnalyticsOutputServicebusQueues) UpdateStatus(streamAnalyticsOutputServicebusQueue *v1alpha1.StreamAnalyticsOutputServicebusQueue) (result *v1alpha1.StreamAnalyticsOutputServicebusQueue, err error) {
 	result = &v1alpha1.StreamAnalyticsOutputServicebusQueue{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("streamanalyticsoutputservicebusqueues").
 		Name(streamAnalyticsOutputServicebusQueue.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *streamAnalyticsOutputServicebusQueues) UpdateStatus(streamAnalyticsOutp
 // Delete takes name of the streamAnalyticsOutputServicebusQueue and deletes it. Returns an error if one occurs.
 func (c *streamAnalyticsOutputServicebusQueues) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("streamanalyticsoutputservicebusqueues").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *streamAnalyticsOutputServicebusQueues) DeleteCollection(options *v1.Del
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("streamanalyticsoutputservicebusqueues").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *streamAnalyticsOutputServicebusQueues) DeleteCollection(options *v1.Del
 func (c *streamAnalyticsOutputServicebusQueues) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StreamAnalyticsOutputServicebusQueue, err error) {
 	result = &v1alpha1.StreamAnalyticsOutputServicebusQueue{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("streamanalyticsoutputservicebusqueues").
 		SubResource(subresources...).
 		Name(name).

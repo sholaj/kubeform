@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,38 +19,39 @@ type DlmLifecyclePolicy struct {
 }
 
 type DlmLifecyclePolicySpecPolicyDetailsScheduleCreateRule struct {
-	Interval int `json:"interval"`
+	Interval int `json:"interval" tf:"interval"`
 	// +optional
-	IntervalUnit string `json:"interval_unit,omitempty"`
+	IntervalUnit string `json:"intervalUnit,omitempty" tf:"interval_unit,omitempty"`
 }
 
 type DlmLifecyclePolicySpecPolicyDetailsScheduleRetainRule struct {
-	Count int `json:"count"`
+	Count int `json:"count" tf:"count"`
 }
 
 type DlmLifecyclePolicySpecPolicyDetailsSchedule struct {
 	// +kubebuilder:validation:MaxItems=1
-	CreateRule []DlmLifecyclePolicySpecPolicyDetailsSchedule `json:"create_rule"`
-	Name       string                                        `json:"name"`
+	CreateRule []DlmLifecyclePolicySpecPolicyDetailsScheduleCreateRule `json:"createRule" tf:"create_rule"`
+	Name       string                                                  `json:"name" tf:"name"`
 	// +kubebuilder:validation:MaxItems=1
-	RetainRule []DlmLifecyclePolicySpecPolicyDetailsSchedule `json:"retain_rule"`
+	RetainRule []DlmLifecyclePolicySpecPolicyDetailsScheduleRetainRule `json:"retainRule" tf:"retain_rule"`
 	// +optional
-	TagsToAdd map[string]string `json:"tags_to_add,omitempty"`
+	TagsToAdd map[string]string `json:"tagsToAdd,omitempty" tf:"tags_to_add,omitempty"`
 }
 
 type DlmLifecyclePolicySpecPolicyDetails struct {
-	ResourceTypes []string                              `json:"resource_types"`
-	Schedule      []DlmLifecyclePolicySpecPolicyDetails `json:"schedule"`
-	TargetTags    map[string]string                     `json:"target_tags"`
+	ResourceTypes []string                                      `json:"resourceTypes" tf:"resource_types"`
+	Schedule      []DlmLifecyclePolicySpecPolicyDetailsSchedule `json:"schedule" tf:"schedule"`
+	TargetTags    map[string]string                             `json:"targetTags" tf:"target_tags"`
 }
 
 type DlmLifecyclePolicySpec struct {
-	Description      string `json:"description"`
-	ExecutionRoleArn string `json:"execution_role_arn"`
+	Description      string `json:"description" tf:"description"`
+	ExecutionRoleArn string `json:"executionRoleArn" tf:"execution_role_arn"`
 	// +kubebuilder:validation:MaxItems=1
-	PolicyDetails []DlmLifecyclePolicySpec `json:"policy_details"`
+	PolicyDetails []DlmLifecyclePolicySpecPolicyDetails `json:"policyDetails" tf:"policy_details"`
 	// +optional
-	State string `json:"state,omitempty"`
+	State       string                    `json:"state,omitempty" tf:"state,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DlmLifecyclePolicyStatus struct {
@@ -58,7 +59,9 @@ type DlmLifecyclePolicyStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -32,7 +32,7 @@ import (
 // ApiGatewayIntegrationsGetter has a method to return a ApiGatewayIntegrationInterface.
 // A group's client should implement this interface.
 type ApiGatewayIntegrationsGetter interface {
-	ApiGatewayIntegrations() ApiGatewayIntegrationInterface
+	ApiGatewayIntegrations(namespace string) ApiGatewayIntegrationInterface
 }
 
 // ApiGatewayIntegrationInterface has methods to work with ApiGatewayIntegration resources.
@@ -52,12 +52,14 @@ type ApiGatewayIntegrationInterface interface {
 // apiGatewayIntegrations implements ApiGatewayIntegrationInterface
 type apiGatewayIntegrations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiGatewayIntegrations returns a ApiGatewayIntegrations
-func newApiGatewayIntegrations(c *AwsV1alpha1Client) *apiGatewayIntegrations {
+func newApiGatewayIntegrations(c *AwsV1alpha1Client, namespace string) *apiGatewayIntegrations {
 	return &apiGatewayIntegrations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiGatewayIntegrations(c *AwsV1alpha1Client) *apiGatewayIntegrations {
 func (c *apiGatewayIntegrations) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayIntegration, err error) {
 	result = &v1alpha1.ApiGatewayIntegration{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayintegrations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiGatewayIntegrations) List(opts v1.ListOptions) (result *v1alpha1.Api
 	}
 	result = &v1alpha1.ApiGatewayIntegrationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayintegrations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiGatewayIntegrations) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayintegrations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiGatewayIntegrations) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *apiGatewayIntegrations) Create(apiGatewayIntegration *v1alpha1.ApiGatewayIntegration) (result *v1alpha1.ApiGatewayIntegration, err error) {
 	result = &v1alpha1.ApiGatewayIntegration{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apigatewayintegrations").
 		Body(apiGatewayIntegration).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiGatewayIntegrations) Create(apiGatewayIntegration *v1alpha1.ApiGatew
 func (c *apiGatewayIntegrations) Update(apiGatewayIntegration *v1alpha1.ApiGatewayIntegration) (result *v1alpha1.ApiGatewayIntegration, err error) {
 	result = &v1alpha1.ApiGatewayIntegration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewayintegrations").
 		Name(apiGatewayIntegration.Name).
 		Body(apiGatewayIntegration).
@@ -132,6 +139,7 @@ func (c *apiGatewayIntegrations) Update(apiGatewayIntegration *v1alpha1.ApiGatew
 func (c *apiGatewayIntegrations) UpdateStatus(apiGatewayIntegration *v1alpha1.ApiGatewayIntegration) (result *v1alpha1.ApiGatewayIntegration, err error) {
 	result = &v1alpha1.ApiGatewayIntegration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewayintegrations").
 		Name(apiGatewayIntegration.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiGatewayIntegrations) UpdateStatus(apiGatewayIntegration *v1alpha1.Ap
 // Delete takes name of the apiGatewayIntegration and deletes it. Returns an error if one occurs.
 func (c *apiGatewayIntegrations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewayintegrations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiGatewayIntegrations) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewayintegrations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiGatewayIntegrations) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *apiGatewayIntegrations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayIntegration, err error) {
 	result = &v1alpha1.ApiGatewayIntegration{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apigatewayintegrations").
 		SubResource(subresources...).
 		Name(name).

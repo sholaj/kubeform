@@ -41,32 +41,33 @@ type StorageBucketIamPolicyInformer interface {
 type storageBucketIamPolicyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewStorageBucketIamPolicyInformer constructs a new informer for StorageBucketIamPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewStorageBucketIamPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredStorageBucketIamPolicyInformer(client, resyncPeriod, indexers, nil)
+func NewStorageBucketIamPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredStorageBucketIamPolicyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredStorageBucketIamPolicyInformer constructs a new informer for StorageBucketIamPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredStorageBucketIamPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredStorageBucketIamPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().StorageBucketIamPolicies().List(options)
+				return client.GoogleV1alpha1().StorageBucketIamPolicies(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().StorageBucketIamPolicies().Watch(options)
+				return client.GoogleV1alpha1().StorageBucketIamPolicies(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.StorageBucketIamPolicy{},
@@ -76,7 +77,7 @@ func NewFilteredStorageBucketIamPolicyInformer(client versioned.Interface, resyn
 }
 
 func (f *storageBucketIamPolicyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredStorageBucketIamPolicyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredStorageBucketIamPolicyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *storageBucketIamPolicyInformer) Informer() cache.SharedIndexInformer {

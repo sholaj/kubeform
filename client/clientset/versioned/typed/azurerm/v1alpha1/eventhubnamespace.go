@@ -32,7 +32,7 @@ import (
 // EventhubNamespacesGetter has a method to return a EventhubNamespaceInterface.
 // A group's client should implement this interface.
 type EventhubNamespacesGetter interface {
-	EventhubNamespaces() EventhubNamespaceInterface
+	EventhubNamespaces(namespace string) EventhubNamespaceInterface
 }
 
 // EventhubNamespaceInterface has methods to work with EventhubNamespace resources.
@@ -52,12 +52,14 @@ type EventhubNamespaceInterface interface {
 // eventhubNamespaces implements EventhubNamespaceInterface
 type eventhubNamespaces struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEventhubNamespaces returns a EventhubNamespaces
-func newEventhubNamespaces(c *AzurermV1alpha1Client) *eventhubNamespaces {
+func newEventhubNamespaces(c *AzurermV1alpha1Client, namespace string) *eventhubNamespaces {
 	return &eventhubNamespaces{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEventhubNamespaces(c *AzurermV1alpha1Client) *eventhubNamespaces {
 func (c *eventhubNamespaces) Get(name string, options v1.GetOptions) (result *v1alpha1.EventhubNamespace, err error) {
 	result = &v1alpha1.EventhubNamespace{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eventhubnamespaces").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *eventhubNamespaces) List(opts v1.ListOptions) (result *v1alpha1.Eventhu
 	}
 	result = &v1alpha1.EventhubNamespaceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eventhubnamespaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *eventhubNamespaces) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("eventhubnamespaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *eventhubNamespaces) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *eventhubNamespaces) Create(eventhubNamespace *v1alpha1.EventhubNamespace) (result *v1alpha1.EventhubNamespace, err error) {
 	result = &v1alpha1.EventhubNamespace{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("eventhubnamespaces").
 		Body(eventhubNamespace).
 		Do().
@@ -118,6 +124,7 @@ func (c *eventhubNamespaces) Create(eventhubNamespace *v1alpha1.EventhubNamespac
 func (c *eventhubNamespaces) Update(eventhubNamespace *v1alpha1.EventhubNamespace) (result *v1alpha1.EventhubNamespace, err error) {
 	result = &v1alpha1.EventhubNamespace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eventhubnamespaces").
 		Name(eventhubNamespace.Name).
 		Body(eventhubNamespace).
@@ -132,6 +139,7 @@ func (c *eventhubNamespaces) Update(eventhubNamespace *v1alpha1.EventhubNamespac
 func (c *eventhubNamespaces) UpdateStatus(eventhubNamespace *v1alpha1.EventhubNamespace) (result *v1alpha1.EventhubNamespace, err error) {
 	result = &v1alpha1.EventhubNamespace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eventhubnamespaces").
 		Name(eventhubNamespace.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *eventhubNamespaces) UpdateStatus(eventhubNamespace *v1alpha1.EventhubNa
 // Delete takes name of the eventhubNamespace and deletes it. Returns an error if one occurs.
 func (c *eventhubNamespaces) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eventhubnamespaces").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *eventhubNamespaces) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eventhubnamespaces").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *eventhubNamespaces) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *eventhubNamespaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EventhubNamespace, err error) {
 	result = &v1alpha1.EventhubNamespace{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("eventhubnamespaces").
 		SubResource(subresources...).
 		Name(name).

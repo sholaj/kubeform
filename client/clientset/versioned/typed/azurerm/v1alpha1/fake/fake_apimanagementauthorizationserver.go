@@ -31,6 +31,7 @@ import (
 // FakeApiManagementAuthorizationServers implements ApiManagementAuthorizationServerInterface
 type FakeApiManagementAuthorizationServers struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var apimanagementauthorizationserversResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "apimanagementauthorizationservers"}
@@ -40,7 +41,8 @@ var apimanagementauthorizationserversKind = schema.GroupVersionKind{Group: "azur
 // Get takes name of the apiManagementAuthorizationServer, and returns the corresponding apiManagementAuthorizationServer object, and an error if there is any.
 func (c *FakeApiManagementAuthorizationServers) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementAuthorizationServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apimanagementauthorizationserversResource, name), &v1alpha1.ApiManagementAuthorizationServer{})
+		Invokes(testing.NewGetAction(apimanagementauthorizationserversResource, c.ns, name), &v1alpha1.ApiManagementAuthorizationServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApiManagementAuthorizationServers) Get(name string, options v1.GetO
 // List takes label and field selectors, and returns the list of ApiManagementAuthorizationServers that match those selectors.
 func (c *FakeApiManagementAuthorizationServers) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementAuthorizationServerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apimanagementauthorizationserversResource, apimanagementauthorizationserversKind, opts), &v1alpha1.ApiManagementAuthorizationServerList{})
+		Invokes(testing.NewListAction(apimanagementauthorizationserversResource, apimanagementauthorizationserversKind, c.ns, opts), &v1alpha1.ApiManagementAuthorizationServerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApiManagementAuthorizationServers) List(opts v1.ListOptions) (resul
 // Watch returns a watch.Interface that watches the requested apiManagementAuthorizationServers.
 func (c *FakeApiManagementAuthorizationServers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apimanagementauthorizationserversResource, opts))
+		InvokesWatch(testing.NewWatchAction(apimanagementauthorizationserversResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a apiManagementAuthorizationServer and creates it.  Returns the server's representation of the apiManagementAuthorizationServer, and an error, if there is any.
 func (c *FakeApiManagementAuthorizationServers) Create(apiManagementAuthorizationServer *v1alpha1.ApiManagementAuthorizationServer) (result *v1alpha1.ApiManagementAuthorizationServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apimanagementauthorizationserversResource, apiManagementAuthorizationServer), &v1alpha1.ApiManagementAuthorizationServer{})
+		Invokes(testing.NewCreateAction(apimanagementauthorizationserversResource, c.ns, apiManagementAuthorizationServer), &v1alpha1.ApiManagementAuthorizationServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApiManagementAuthorizationServers) Create(apiManagementAuthorizatio
 // Update takes the representation of a apiManagementAuthorizationServer and updates it. Returns the server's representation of the apiManagementAuthorizationServer, and an error, if there is any.
 func (c *FakeApiManagementAuthorizationServers) Update(apiManagementAuthorizationServer *v1alpha1.ApiManagementAuthorizationServer) (result *v1alpha1.ApiManagementAuthorizationServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apimanagementauthorizationserversResource, apiManagementAuthorizationServer), &v1alpha1.ApiManagementAuthorizationServer{})
+		Invokes(testing.NewUpdateAction(apimanagementauthorizationserversResource, c.ns, apiManagementAuthorizationServer), &v1alpha1.ApiManagementAuthorizationServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApiManagementAuthorizationServers) Update(apiManagementAuthorizatio
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApiManagementAuthorizationServers) UpdateStatus(apiManagementAuthorizationServer *v1alpha1.ApiManagementAuthorizationServer) (*v1alpha1.ApiManagementAuthorizationServer, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apimanagementauthorizationserversResource, "status", apiManagementAuthorizationServer), &v1alpha1.ApiManagementAuthorizationServer{})
+		Invokes(testing.NewUpdateSubresourceAction(apimanagementauthorizationserversResource, "status", c.ns, apiManagementAuthorizationServer), &v1alpha1.ApiManagementAuthorizationServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApiManagementAuthorizationServers) UpdateStatus(apiManagementAuthor
 // Delete takes name of the apiManagementAuthorizationServer and deletes it. Returns an error if one occurs.
 func (c *FakeApiManagementAuthorizationServers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apimanagementauthorizationserversResource, name), &v1alpha1.ApiManagementAuthorizationServer{})
+		Invokes(testing.NewDeleteAction(apimanagementauthorizationserversResource, c.ns, name), &v1alpha1.ApiManagementAuthorizationServer{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApiManagementAuthorizationServers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apimanagementauthorizationserversResource, listOptions)
+	action := testing.NewDeleteCollectionAction(apimanagementauthorizationserversResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApiManagementAuthorizationServerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApiManagementAuthorizationServers) DeleteCollection(options *v1.Del
 // Patch applies the patch and returns the patched apiManagementAuthorizationServer.
 func (c *FakeApiManagementAuthorizationServers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementAuthorizationServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apimanagementauthorizationserversResource, name, pt, data, subresources...), &v1alpha1.ApiManagementAuthorizationServer{})
+		Invokes(testing.NewPatchSubresourceAction(apimanagementauthorizationserversResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiManagementAuthorizationServer{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -41,32 +41,33 @@ type SnsSmsPreferencesInformer interface {
 type snsSmsPreferencesInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSnsSmsPreferencesInformer constructs a new informer for SnsSmsPreferences type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSnsSmsPreferencesInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSnsSmsPreferencesInformer(client, resyncPeriod, indexers, nil)
+func NewSnsSmsPreferencesInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSnsSmsPreferencesInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSnsSmsPreferencesInformer constructs a new informer for SnsSmsPreferences type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSnsSmsPreferencesInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSnsSmsPreferencesInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SnsSmsPreferenceses().List(options)
+				return client.AwsV1alpha1().SnsSmsPreferenceses(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SnsSmsPreferenceses().Watch(options)
+				return client.AwsV1alpha1().SnsSmsPreferenceses(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.SnsSmsPreferences{},
@@ -76,7 +77,7 @@ func NewFilteredSnsSmsPreferencesInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *snsSmsPreferencesInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSnsSmsPreferencesInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSnsSmsPreferencesInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *snsSmsPreferencesInformer) Informer() cache.SharedIndexInformer {

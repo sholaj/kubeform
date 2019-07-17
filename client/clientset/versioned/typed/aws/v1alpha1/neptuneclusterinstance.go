@@ -32,7 +32,7 @@ import (
 // NeptuneClusterInstancesGetter has a method to return a NeptuneClusterInstanceInterface.
 // A group's client should implement this interface.
 type NeptuneClusterInstancesGetter interface {
-	NeptuneClusterInstances() NeptuneClusterInstanceInterface
+	NeptuneClusterInstances(namespace string) NeptuneClusterInstanceInterface
 }
 
 // NeptuneClusterInstanceInterface has methods to work with NeptuneClusterInstance resources.
@@ -52,12 +52,14 @@ type NeptuneClusterInstanceInterface interface {
 // neptuneClusterInstances implements NeptuneClusterInstanceInterface
 type neptuneClusterInstances struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNeptuneClusterInstances returns a NeptuneClusterInstances
-func newNeptuneClusterInstances(c *AwsV1alpha1Client) *neptuneClusterInstances {
+func newNeptuneClusterInstances(c *AwsV1alpha1Client, namespace string) *neptuneClusterInstances {
 	return &neptuneClusterInstances{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNeptuneClusterInstances(c *AwsV1alpha1Client) *neptuneClusterInstances {
 func (c *neptuneClusterInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.NeptuneClusterInstance, err error) {
 	result = &v1alpha1.NeptuneClusterInstance{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("neptuneclusterinstances").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *neptuneClusterInstances) List(opts v1.ListOptions) (result *v1alpha1.Ne
 	}
 	result = &v1alpha1.NeptuneClusterInstanceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("neptuneclusterinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *neptuneClusterInstances) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("neptuneclusterinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *neptuneClusterInstances) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *neptuneClusterInstances) Create(neptuneClusterInstance *v1alpha1.NeptuneClusterInstance) (result *v1alpha1.NeptuneClusterInstance, err error) {
 	result = &v1alpha1.NeptuneClusterInstance{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("neptuneclusterinstances").
 		Body(neptuneClusterInstance).
 		Do().
@@ -118,6 +124,7 @@ func (c *neptuneClusterInstances) Create(neptuneClusterInstance *v1alpha1.Neptun
 func (c *neptuneClusterInstances) Update(neptuneClusterInstance *v1alpha1.NeptuneClusterInstance) (result *v1alpha1.NeptuneClusterInstance, err error) {
 	result = &v1alpha1.NeptuneClusterInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("neptuneclusterinstances").
 		Name(neptuneClusterInstance.Name).
 		Body(neptuneClusterInstance).
@@ -132,6 +139,7 @@ func (c *neptuneClusterInstances) Update(neptuneClusterInstance *v1alpha1.Neptun
 func (c *neptuneClusterInstances) UpdateStatus(neptuneClusterInstance *v1alpha1.NeptuneClusterInstance) (result *v1alpha1.NeptuneClusterInstance, err error) {
 	result = &v1alpha1.NeptuneClusterInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("neptuneclusterinstances").
 		Name(neptuneClusterInstance.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *neptuneClusterInstances) UpdateStatus(neptuneClusterInstance *v1alpha1.
 // Delete takes name of the neptuneClusterInstance and deletes it. Returns an error if one occurs.
 func (c *neptuneClusterInstances) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("neptuneclusterinstances").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *neptuneClusterInstances) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("neptuneclusterinstances").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *neptuneClusterInstances) DeleteCollection(options *v1.DeleteOptions, li
 func (c *neptuneClusterInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NeptuneClusterInstance, err error) {
 	result = &v1alpha1.NeptuneClusterInstance{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("neptuneclusterinstances").
 		SubResource(subresources...).
 		Name(name).

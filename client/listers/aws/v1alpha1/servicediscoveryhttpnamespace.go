@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// ServiceDiscoveryHttpNamespaceLister helps list ServiceDiscoveryHttpNamespaces.
-type ServiceDiscoveryHttpNamespaceLister interface {
-	// List lists all ServiceDiscoveryHttpNamespaces in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryHttpNamespace, err error)
-	// Get retrieves the ServiceDiscoveryHttpNamespace from the index for a given name.
-	Get(name string) (*v1alpha1.ServiceDiscoveryHttpNamespace, error)
-	ServiceDiscoveryHttpNamespaceListerExpansion
+// ServiceDiscoveryHTTPNamespaceLister helps list ServiceDiscoveryHTTPNamespaces.
+type ServiceDiscoveryHTTPNamespaceLister interface {
+	// List lists all ServiceDiscoveryHTTPNamespaces in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryHTTPNamespace, err error)
+	// ServiceDiscoveryHTTPNamespaces returns an object that can list and get ServiceDiscoveryHTTPNamespaces.
+	ServiceDiscoveryHTTPNamespaces(namespace string) ServiceDiscoveryHTTPNamespaceNamespaceLister
+	ServiceDiscoveryHTTPNamespaceListerExpansion
 }
 
-// serviceDiscoveryHttpNamespaceLister implements the ServiceDiscoveryHttpNamespaceLister interface.
-type serviceDiscoveryHttpNamespaceLister struct {
+// serviceDiscoveryHTTPNamespaceLister implements the ServiceDiscoveryHTTPNamespaceLister interface.
+type serviceDiscoveryHTTPNamespaceLister struct {
 	indexer cache.Indexer
 }
 
-// NewServiceDiscoveryHttpNamespaceLister returns a new ServiceDiscoveryHttpNamespaceLister.
-func NewServiceDiscoveryHttpNamespaceLister(indexer cache.Indexer) ServiceDiscoveryHttpNamespaceLister {
-	return &serviceDiscoveryHttpNamespaceLister{indexer: indexer}
+// NewServiceDiscoveryHTTPNamespaceLister returns a new ServiceDiscoveryHTTPNamespaceLister.
+func NewServiceDiscoveryHTTPNamespaceLister(indexer cache.Indexer) ServiceDiscoveryHTTPNamespaceLister {
+	return &serviceDiscoveryHTTPNamespaceLister{indexer: indexer}
 }
 
-// List lists all ServiceDiscoveryHttpNamespaces in the indexer.
-func (s *serviceDiscoveryHttpNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryHttpNamespace, err error) {
+// List lists all ServiceDiscoveryHTTPNamespaces in the indexer.
+func (s *serviceDiscoveryHTTPNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryHTTPNamespace, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ServiceDiscoveryHttpNamespace))
+		ret = append(ret, m.(*v1alpha1.ServiceDiscoveryHTTPNamespace))
 	})
 	return ret, err
 }
 
-// Get retrieves the ServiceDiscoveryHttpNamespace from the index for a given name.
-func (s *serviceDiscoveryHttpNamespaceLister) Get(name string) (*v1alpha1.ServiceDiscoveryHttpNamespace, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ServiceDiscoveryHTTPNamespaces returns an object that can list and get ServiceDiscoveryHTTPNamespaces.
+func (s *serviceDiscoveryHTTPNamespaceLister) ServiceDiscoveryHTTPNamespaces(namespace string) ServiceDiscoveryHTTPNamespaceNamespaceLister {
+	return serviceDiscoveryHTTPNamespaceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ServiceDiscoveryHTTPNamespaceNamespaceLister helps list and get ServiceDiscoveryHTTPNamespaces.
+type ServiceDiscoveryHTTPNamespaceNamespaceLister interface {
+	// List lists all ServiceDiscoveryHTTPNamespaces in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryHTTPNamespace, err error)
+	// Get retrieves the ServiceDiscoveryHTTPNamespace from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ServiceDiscoveryHTTPNamespace, error)
+	ServiceDiscoveryHTTPNamespaceNamespaceListerExpansion
+}
+
+// serviceDiscoveryHTTPNamespaceNamespaceLister implements the ServiceDiscoveryHTTPNamespaceNamespaceLister
+// interface.
+type serviceDiscoveryHTTPNamespaceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ServiceDiscoveryHTTPNamespaces in the indexer for a given namespace.
+func (s serviceDiscoveryHTTPNamespaceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryHTTPNamespace, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ServiceDiscoveryHTTPNamespace))
+	})
+	return ret, err
+}
+
+// Get retrieves the ServiceDiscoveryHTTPNamespace from the indexer for a given namespace and name.
+func (s serviceDiscoveryHTTPNamespaceNamespaceLister) Get(name string) (*v1alpha1.ServiceDiscoveryHTTPNamespace, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("servicediscoveryhttpnamespace"), name)
 	}
-	return obj.(*v1alpha1.ServiceDiscoveryHttpNamespace), nil
+	return obj.(*v1alpha1.ServiceDiscoveryHTTPNamespace), nil
 }

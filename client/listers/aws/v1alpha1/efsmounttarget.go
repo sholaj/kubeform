@@ -29,8 +29,8 @@ import (
 type EfsMountTargetLister interface {
 	// List lists all EfsMountTargets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EfsMountTarget, err error)
-	// Get retrieves the EfsMountTarget from the index for a given name.
-	Get(name string) (*v1alpha1.EfsMountTarget, error)
+	// EfsMountTargets returns an object that can list and get EfsMountTargets.
+	EfsMountTargets(namespace string) EfsMountTargetNamespaceLister
 	EfsMountTargetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *efsMountTargetLister) List(selector labels.Selector) (ret []*v1alpha1.E
 	return ret, err
 }
 
-// Get retrieves the EfsMountTarget from the index for a given name.
-func (s *efsMountTargetLister) Get(name string) (*v1alpha1.EfsMountTarget, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EfsMountTargets returns an object that can list and get EfsMountTargets.
+func (s *efsMountTargetLister) EfsMountTargets(namespace string) EfsMountTargetNamespaceLister {
+	return efsMountTargetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EfsMountTargetNamespaceLister helps list and get EfsMountTargets.
+type EfsMountTargetNamespaceLister interface {
+	// List lists all EfsMountTargets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EfsMountTarget, err error)
+	// Get retrieves the EfsMountTarget from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EfsMountTarget, error)
+	EfsMountTargetNamespaceListerExpansion
+}
+
+// efsMountTargetNamespaceLister implements the EfsMountTargetNamespaceLister
+// interface.
+type efsMountTargetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EfsMountTargets in the indexer for a given namespace.
+func (s efsMountTargetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EfsMountTarget, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EfsMountTarget))
+	})
+	return ret, err
+}
+
+// Get retrieves the EfsMountTarget from the indexer for a given namespace and name.
+func (s efsMountTargetNamespaceLister) Get(name string) (*v1alpha1.EfsMountTarget, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

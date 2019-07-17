@@ -31,6 +31,7 @@ import (
 // FakeWafregionalRuleGroups implements WafregionalRuleGroupInterface
 type FakeWafregionalRuleGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var wafregionalrulegroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "wafregionalrulegroups"}
@@ -40,7 +41,8 @@ var wafregionalrulegroupsKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the wafregionalRuleGroup, and returns the corresponding wafregionalRuleGroup object, and an error if there is any.
 func (c *FakeWafregionalRuleGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalRuleGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(wafregionalrulegroupsResource, name), &v1alpha1.WafregionalRuleGroup{})
+		Invokes(testing.NewGetAction(wafregionalrulegroupsResource, c.ns, name), &v1alpha1.WafregionalRuleGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeWafregionalRuleGroups) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of WafregionalRuleGroups that match those selectors.
 func (c *FakeWafregionalRuleGroups) List(opts v1.ListOptions) (result *v1alpha1.WafregionalRuleGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(wafregionalrulegroupsResource, wafregionalrulegroupsKind, opts), &v1alpha1.WafregionalRuleGroupList{})
+		Invokes(testing.NewListAction(wafregionalrulegroupsResource, wafregionalrulegroupsKind, c.ns, opts), &v1alpha1.WafregionalRuleGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeWafregionalRuleGroups) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested wafregionalRuleGroups.
 func (c *FakeWafregionalRuleGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(wafregionalrulegroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(wafregionalrulegroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a wafregionalRuleGroup and creates it.  Returns the server's representation of the wafregionalRuleGroup, and an error, if there is any.
 func (c *FakeWafregionalRuleGroups) Create(wafregionalRuleGroup *v1alpha1.WafregionalRuleGroup) (result *v1alpha1.WafregionalRuleGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(wafregionalrulegroupsResource, wafregionalRuleGroup), &v1alpha1.WafregionalRuleGroup{})
+		Invokes(testing.NewCreateAction(wafregionalrulegroupsResource, c.ns, wafregionalRuleGroup), &v1alpha1.WafregionalRuleGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeWafregionalRuleGroups) Create(wafregionalRuleGroup *v1alpha1.Wafreg
 // Update takes the representation of a wafregionalRuleGroup and updates it. Returns the server's representation of the wafregionalRuleGroup, and an error, if there is any.
 func (c *FakeWafregionalRuleGroups) Update(wafregionalRuleGroup *v1alpha1.WafregionalRuleGroup) (result *v1alpha1.WafregionalRuleGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(wafregionalrulegroupsResource, wafregionalRuleGroup), &v1alpha1.WafregionalRuleGroup{})
+		Invokes(testing.NewUpdateAction(wafregionalrulegroupsResource, c.ns, wafregionalRuleGroup), &v1alpha1.WafregionalRuleGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeWafregionalRuleGroups) Update(wafregionalRuleGroup *v1alpha1.Wafreg
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeWafregionalRuleGroups) UpdateStatus(wafregionalRuleGroup *v1alpha1.WafregionalRuleGroup) (*v1alpha1.WafregionalRuleGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(wafregionalrulegroupsResource, "status", wafregionalRuleGroup), &v1alpha1.WafregionalRuleGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(wafregionalrulegroupsResource, "status", c.ns, wafregionalRuleGroup), &v1alpha1.WafregionalRuleGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeWafregionalRuleGroups) UpdateStatus(wafregionalRuleGroup *v1alpha1.
 // Delete takes name of the wafregionalRuleGroup and deletes it. Returns an error if one occurs.
 func (c *FakeWafregionalRuleGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(wafregionalrulegroupsResource, name), &v1alpha1.WafregionalRuleGroup{})
+		Invokes(testing.NewDeleteAction(wafregionalrulegroupsResource, c.ns, name), &v1alpha1.WafregionalRuleGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeWafregionalRuleGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(wafregionalrulegroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(wafregionalrulegroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.WafregionalRuleGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeWafregionalRuleGroups) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched wafregionalRuleGroup.
 func (c *FakeWafregionalRuleGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalRuleGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(wafregionalrulegroupsResource, name, pt, data, subresources...), &v1alpha1.WafregionalRuleGroup{})
+		Invokes(testing.NewPatchSubresourceAction(wafregionalrulegroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.WafregionalRuleGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

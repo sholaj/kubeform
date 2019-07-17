@@ -397,7 +397,7 @@ spec:
           type: object
         spec:
           properties:
-            domain_id:
+            domainID:
               type: integer
             name:
               type: string
@@ -407,7 +407,16 @@ spec:
               type: integer
             protocol:
               type: string
-            record_type:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            recordType:
               type: string
             service:
               type: string
@@ -415,14 +424,15 @@ spec:
               type: string
             target:
               type: string
-            ttl_sec:
+            ttlSec:
               type: integer
             weight:
               type: integer
           required:
-          - domain_id
+          - domainID
           - name
-          - record_type
+          - providerRef
+          - recordType
           - target
           type: object
         status:
@@ -434,6 +444,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

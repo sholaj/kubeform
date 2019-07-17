@@ -31,6 +31,7 @@ import (
 // FakeDataLakeAnalyticsAccounts implements DataLakeAnalyticsAccountInterface
 type FakeDataLakeAnalyticsAccounts struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var datalakeanalyticsaccountsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "datalakeanalyticsaccounts"}
@@ -40,7 +41,8 @@ var datalakeanalyticsaccountsKind = schema.GroupVersionKind{Group: "azurerm.kube
 // Get takes name of the dataLakeAnalyticsAccount, and returns the corresponding dataLakeAnalyticsAccount object, and an error if there is any.
 func (c *FakeDataLakeAnalyticsAccounts) Get(name string, options v1.GetOptions) (result *v1alpha1.DataLakeAnalyticsAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(datalakeanalyticsaccountsResource, name), &v1alpha1.DataLakeAnalyticsAccount{})
+		Invokes(testing.NewGetAction(datalakeanalyticsaccountsResource, c.ns, name), &v1alpha1.DataLakeAnalyticsAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDataLakeAnalyticsAccounts) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of DataLakeAnalyticsAccounts that match those selectors.
 func (c *FakeDataLakeAnalyticsAccounts) List(opts v1.ListOptions) (result *v1alpha1.DataLakeAnalyticsAccountList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(datalakeanalyticsaccountsResource, datalakeanalyticsaccountsKind, opts), &v1alpha1.DataLakeAnalyticsAccountList{})
+		Invokes(testing.NewListAction(datalakeanalyticsaccountsResource, datalakeanalyticsaccountsKind, c.ns, opts), &v1alpha1.DataLakeAnalyticsAccountList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDataLakeAnalyticsAccounts) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested dataLakeAnalyticsAccounts.
 func (c *FakeDataLakeAnalyticsAccounts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(datalakeanalyticsaccountsResource, opts))
+		InvokesWatch(testing.NewWatchAction(datalakeanalyticsaccountsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dataLakeAnalyticsAccount and creates it.  Returns the server's representation of the dataLakeAnalyticsAccount, and an error, if there is any.
 func (c *FakeDataLakeAnalyticsAccounts) Create(dataLakeAnalyticsAccount *v1alpha1.DataLakeAnalyticsAccount) (result *v1alpha1.DataLakeAnalyticsAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(datalakeanalyticsaccountsResource, dataLakeAnalyticsAccount), &v1alpha1.DataLakeAnalyticsAccount{})
+		Invokes(testing.NewCreateAction(datalakeanalyticsaccountsResource, c.ns, dataLakeAnalyticsAccount), &v1alpha1.DataLakeAnalyticsAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDataLakeAnalyticsAccounts) Create(dataLakeAnalyticsAccount *v1alpha
 // Update takes the representation of a dataLakeAnalyticsAccount and updates it. Returns the server's representation of the dataLakeAnalyticsAccount, and an error, if there is any.
 func (c *FakeDataLakeAnalyticsAccounts) Update(dataLakeAnalyticsAccount *v1alpha1.DataLakeAnalyticsAccount) (result *v1alpha1.DataLakeAnalyticsAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(datalakeanalyticsaccountsResource, dataLakeAnalyticsAccount), &v1alpha1.DataLakeAnalyticsAccount{})
+		Invokes(testing.NewUpdateAction(datalakeanalyticsaccountsResource, c.ns, dataLakeAnalyticsAccount), &v1alpha1.DataLakeAnalyticsAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDataLakeAnalyticsAccounts) Update(dataLakeAnalyticsAccount *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDataLakeAnalyticsAccounts) UpdateStatus(dataLakeAnalyticsAccount *v1alpha1.DataLakeAnalyticsAccount) (*v1alpha1.DataLakeAnalyticsAccount, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(datalakeanalyticsaccountsResource, "status", dataLakeAnalyticsAccount), &v1alpha1.DataLakeAnalyticsAccount{})
+		Invokes(testing.NewUpdateSubresourceAction(datalakeanalyticsaccountsResource, "status", c.ns, dataLakeAnalyticsAccount), &v1alpha1.DataLakeAnalyticsAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDataLakeAnalyticsAccounts) UpdateStatus(dataLakeAnalyticsAccount *v
 // Delete takes name of the dataLakeAnalyticsAccount and deletes it. Returns an error if one occurs.
 func (c *FakeDataLakeAnalyticsAccounts) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(datalakeanalyticsaccountsResource, name), &v1alpha1.DataLakeAnalyticsAccount{})
+		Invokes(testing.NewDeleteAction(datalakeanalyticsaccountsResource, c.ns, name), &v1alpha1.DataLakeAnalyticsAccount{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDataLakeAnalyticsAccounts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(datalakeanalyticsaccountsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(datalakeanalyticsaccountsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DataLakeAnalyticsAccountList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDataLakeAnalyticsAccounts) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched dataLakeAnalyticsAccount.
 func (c *FakeDataLakeAnalyticsAccounts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataLakeAnalyticsAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(datalakeanalyticsaccountsResource, name, pt, data, subresources...), &v1alpha1.DataLakeAnalyticsAccount{})
+		Invokes(testing.NewPatchSubresourceAction(datalakeanalyticsaccountsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DataLakeAnalyticsAccount{})
+
 	if obj == nil {
 		return nil, err
 	}

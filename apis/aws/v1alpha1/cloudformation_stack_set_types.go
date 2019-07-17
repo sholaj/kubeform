@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,21 +19,22 @@ type CloudformationStackSet struct {
 }
 
 type CloudformationStackSetSpec struct {
-	AdministrationRoleArn string `json:"administration_role_arn"`
+	AdministrationRoleArn string `json:"administrationRoleArn" tf:"administration_role_arn"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Capabilities []string `json:"capabilities,omitempty"`
+	Capabilities []string `json:"capabilities,omitempty" tf:"capabilities,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	ExecutionRoleName string `json:"execution_role_name,omitempty"`
-	Name              string `json:"name"`
+	ExecutionRoleName string `json:"executionRoleName,omitempty" tf:"execution_role_name,omitempty"`
+	Name              string `json:"name" tf:"name"`
 	// +optional
-	Parameters map[string]string `json:"parameters,omitempty"`
+	Parameters map[string]string `json:"parameters,omitempty" tf:"parameters,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	TemplateUrl string `json:"template_url,omitempty"`
+	TemplateURL string                    `json:"templateURL,omitempty" tf:"template_url,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type CloudformationStackSetStatus struct {
@@ -41,7 +42,9 @@ type CloudformationStackSetStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

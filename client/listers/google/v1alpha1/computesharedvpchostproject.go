@@ -29,8 +29,8 @@ import (
 type ComputeSharedVpcHostProjectLister interface {
 	// List lists all ComputeSharedVpcHostProjects in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeSharedVpcHostProject, err error)
-	// Get retrieves the ComputeSharedVpcHostProject from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeSharedVpcHostProject, error)
+	// ComputeSharedVpcHostProjects returns an object that can list and get ComputeSharedVpcHostProjects.
+	ComputeSharedVpcHostProjects(namespace string) ComputeSharedVpcHostProjectNamespaceLister
 	ComputeSharedVpcHostProjectListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeSharedVpcHostProjectLister) List(selector labels.Selector) (ret 
 	return ret, err
 }
 
-// Get retrieves the ComputeSharedVpcHostProject from the index for a given name.
-func (s *computeSharedVpcHostProjectLister) Get(name string) (*v1alpha1.ComputeSharedVpcHostProject, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeSharedVpcHostProjects returns an object that can list and get ComputeSharedVpcHostProjects.
+func (s *computeSharedVpcHostProjectLister) ComputeSharedVpcHostProjects(namespace string) ComputeSharedVpcHostProjectNamespaceLister {
+	return computeSharedVpcHostProjectNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeSharedVpcHostProjectNamespaceLister helps list and get ComputeSharedVpcHostProjects.
+type ComputeSharedVpcHostProjectNamespaceLister interface {
+	// List lists all ComputeSharedVpcHostProjects in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeSharedVpcHostProject, err error)
+	// Get retrieves the ComputeSharedVpcHostProject from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeSharedVpcHostProject, error)
+	ComputeSharedVpcHostProjectNamespaceListerExpansion
+}
+
+// computeSharedVpcHostProjectNamespaceLister implements the ComputeSharedVpcHostProjectNamespaceLister
+// interface.
+type computeSharedVpcHostProjectNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeSharedVpcHostProjects in the indexer for a given namespace.
+func (s computeSharedVpcHostProjectNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeSharedVpcHostProject, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeSharedVpcHostProject))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeSharedVpcHostProject from the indexer for a given namespace and name.
+func (s computeSharedVpcHostProjectNamespaceLister) Get(name string) (*v1alpha1.ComputeSharedVpcHostProject, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

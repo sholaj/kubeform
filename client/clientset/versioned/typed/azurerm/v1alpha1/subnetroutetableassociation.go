@@ -32,7 +32,7 @@ import (
 // SubnetRouteTableAssociationsGetter has a method to return a SubnetRouteTableAssociationInterface.
 // A group's client should implement this interface.
 type SubnetRouteTableAssociationsGetter interface {
-	SubnetRouteTableAssociations() SubnetRouteTableAssociationInterface
+	SubnetRouteTableAssociations(namespace string) SubnetRouteTableAssociationInterface
 }
 
 // SubnetRouteTableAssociationInterface has methods to work with SubnetRouteTableAssociation resources.
@@ -52,12 +52,14 @@ type SubnetRouteTableAssociationInterface interface {
 // subnetRouteTableAssociations implements SubnetRouteTableAssociationInterface
 type subnetRouteTableAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSubnetRouteTableAssociations returns a SubnetRouteTableAssociations
-func newSubnetRouteTableAssociations(c *AzurermV1alpha1Client) *subnetRouteTableAssociations {
+func newSubnetRouteTableAssociations(c *AzurermV1alpha1Client, namespace string) *subnetRouteTableAssociations {
 	return &subnetRouteTableAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSubnetRouteTableAssociations(c *AzurermV1alpha1Client) *subnetRouteTable
 func (c *subnetRouteTableAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.SubnetRouteTableAssociation, err error) {
 	result = &v1alpha1.SubnetRouteTableAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("subnetroutetableassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *subnetRouteTableAssociations) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.SubnetRouteTableAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("subnetroutetableassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *subnetRouteTableAssociations) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("subnetroutetableassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *subnetRouteTableAssociations) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *subnetRouteTableAssociations) Create(subnetRouteTableAssociation *v1alpha1.SubnetRouteTableAssociation) (result *v1alpha1.SubnetRouteTableAssociation, err error) {
 	result = &v1alpha1.SubnetRouteTableAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("subnetroutetableassociations").
 		Body(subnetRouteTableAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *subnetRouteTableAssociations) Create(subnetRouteTableAssociation *v1alp
 func (c *subnetRouteTableAssociations) Update(subnetRouteTableAssociation *v1alpha1.SubnetRouteTableAssociation) (result *v1alpha1.SubnetRouteTableAssociation, err error) {
 	result = &v1alpha1.SubnetRouteTableAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("subnetroutetableassociations").
 		Name(subnetRouteTableAssociation.Name).
 		Body(subnetRouteTableAssociation).
@@ -132,6 +139,7 @@ func (c *subnetRouteTableAssociations) Update(subnetRouteTableAssociation *v1alp
 func (c *subnetRouteTableAssociations) UpdateStatus(subnetRouteTableAssociation *v1alpha1.SubnetRouteTableAssociation) (result *v1alpha1.SubnetRouteTableAssociation, err error) {
 	result = &v1alpha1.SubnetRouteTableAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("subnetroutetableassociations").
 		Name(subnetRouteTableAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *subnetRouteTableAssociations) UpdateStatus(subnetRouteTableAssociation 
 // Delete takes name of the subnetRouteTableAssociation and deletes it. Returns an error if one occurs.
 func (c *subnetRouteTableAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("subnetroutetableassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *subnetRouteTableAssociations) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("subnetroutetableassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *subnetRouteTableAssociations) DeleteCollection(options *v1.DeleteOption
 func (c *subnetRouteTableAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SubnetRouteTableAssociation, err error) {
 	result = &v1alpha1.SubnetRouteTableAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("subnetroutetableassociations").
 		SubResource(subresources...).
 		Name(name).

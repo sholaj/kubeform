@@ -31,6 +31,7 @@ import (
 // FakeLoggingFolderExclusions implements LoggingFolderExclusionInterface
 type FakeLoggingFolderExclusions struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var loggingfolderexclusionsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "loggingfolderexclusions"}
@@ -40,7 +41,8 @@ var loggingfolderexclusionsKind = schema.GroupVersionKind{Group: "google.kubefor
 // Get takes name of the loggingFolderExclusion, and returns the corresponding loggingFolderExclusion object, and an error if there is any.
 func (c *FakeLoggingFolderExclusions) Get(name string, options v1.GetOptions) (result *v1alpha1.LoggingFolderExclusion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(loggingfolderexclusionsResource, name), &v1alpha1.LoggingFolderExclusion{})
+		Invokes(testing.NewGetAction(loggingfolderexclusionsResource, c.ns, name), &v1alpha1.LoggingFolderExclusion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLoggingFolderExclusions) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of LoggingFolderExclusions that match those selectors.
 func (c *FakeLoggingFolderExclusions) List(opts v1.ListOptions) (result *v1alpha1.LoggingFolderExclusionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(loggingfolderexclusionsResource, loggingfolderexclusionsKind, opts), &v1alpha1.LoggingFolderExclusionList{})
+		Invokes(testing.NewListAction(loggingfolderexclusionsResource, loggingfolderexclusionsKind, c.ns, opts), &v1alpha1.LoggingFolderExclusionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLoggingFolderExclusions) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested loggingFolderExclusions.
 func (c *FakeLoggingFolderExclusions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(loggingfolderexclusionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(loggingfolderexclusionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a loggingFolderExclusion and creates it.  Returns the server's representation of the loggingFolderExclusion, and an error, if there is any.
 func (c *FakeLoggingFolderExclusions) Create(loggingFolderExclusion *v1alpha1.LoggingFolderExclusion) (result *v1alpha1.LoggingFolderExclusion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(loggingfolderexclusionsResource, loggingFolderExclusion), &v1alpha1.LoggingFolderExclusion{})
+		Invokes(testing.NewCreateAction(loggingfolderexclusionsResource, c.ns, loggingFolderExclusion), &v1alpha1.LoggingFolderExclusion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLoggingFolderExclusions) Create(loggingFolderExclusion *v1alpha1.Lo
 // Update takes the representation of a loggingFolderExclusion and updates it. Returns the server's representation of the loggingFolderExclusion, and an error, if there is any.
 func (c *FakeLoggingFolderExclusions) Update(loggingFolderExclusion *v1alpha1.LoggingFolderExclusion) (result *v1alpha1.LoggingFolderExclusion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(loggingfolderexclusionsResource, loggingFolderExclusion), &v1alpha1.LoggingFolderExclusion{})
+		Invokes(testing.NewUpdateAction(loggingfolderexclusionsResource, c.ns, loggingFolderExclusion), &v1alpha1.LoggingFolderExclusion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLoggingFolderExclusions) Update(loggingFolderExclusion *v1alpha1.Lo
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLoggingFolderExclusions) UpdateStatus(loggingFolderExclusion *v1alpha1.LoggingFolderExclusion) (*v1alpha1.LoggingFolderExclusion, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(loggingfolderexclusionsResource, "status", loggingFolderExclusion), &v1alpha1.LoggingFolderExclusion{})
+		Invokes(testing.NewUpdateSubresourceAction(loggingfolderexclusionsResource, "status", c.ns, loggingFolderExclusion), &v1alpha1.LoggingFolderExclusion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLoggingFolderExclusions) UpdateStatus(loggingFolderExclusion *v1alp
 // Delete takes name of the loggingFolderExclusion and deletes it. Returns an error if one occurs.
 func (c *FakeLoggingFolderExclusions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(loggingfolderexclusionsResource, name), &v1alpha1.LoggingFolderExclusion{})
+		Invokes(testing.NewDeleteAction(loggingfolderexclusionsResource, c.ns, name), &v1alpha1.LoggingFolderExclusion{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLoggingFolderExclusions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(loggingfolderexclusionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(loggingfolderexclusionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LoggingFolderExclusionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLoggingFolderExclusions) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched loggingFolderExclusion.
 func (c *FakeLoggingFolderExclusions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LoggingFolderExclusion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(loggingfolderexclusionsResource, name, pt, data, subresources...), &v1alpha1.LoggingFolderExclusion{})
+		Invokes(testing.NewPatchSubresourceAction(loggingfolderexclusionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.LoggingFolderExclusion{})
+
 	if obj == nil {
 		return nil, err
 	}

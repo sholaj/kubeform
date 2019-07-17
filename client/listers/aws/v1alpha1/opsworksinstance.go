@@ -29,8 +29,8 @@ import (
 type OpsworksInstanceLister interface {
 	// List lists all OpsworksInstances in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OpsworksInstance, err error)
-	// Get retrieves the OpsworksInstance from the index for a given name.
-	Get(name string) (*v1alpha1.OpsworksInstance, error)
+	// OpsworksInstances returns an object that can list and get OpsworksInstances.
+	OpsworksInstances(namespace string) OpsworksInstanceNamespaceLister
 	OpsworksInstanceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *opsworksInstanceLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the OpsworksInstance from the index for a given name.
-func (s *opsworksInstanceLister) Get(name string) (*v1alpha1.OpsworksInstance, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OpsworksInstances returns an object that can list and get OpsworksInstances.
+func (s *opsworksInstanceLister) OpsworksInstances(namespace string) OpsworksInstanceNamespaceLister {
+	return opsworksInstanceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OpsworksInstanceNamespaceLister helps list and get OpsworksInstances.
+type OpsworksInstanceNamespaceLister interface {
+	// List lists all OpsworksInstances in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OpsworksInstance, err error)
+	// Get retrieves the OpsworksInstance from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OpsworksInstance, error)
+	OpsworksInstanceNamespaceListerExpansion
+}
+
+// opsworksInstanceNamespaceLister implements the OpsworksInstanceNamespaceLister
+// interface.
+type opsworksInstanceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OpsworksInstances in the indexer for a given namespace.
+func (s opsworksInstanceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OpsworksInstance, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OpsworksInstance))
+	})
+	return ret, err
+}
+
+// Get retrieves the OpsworksInstance from the indexer for a given namespace and name.
+func (s opsworksInstanceNamespaceLister) Get(name string) (*v1alpha1.OpsworksInstance, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

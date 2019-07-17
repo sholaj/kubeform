@@ -29,8 +29,8 @@ import (
 type MskConfigurationLister interface {
 	// List lists all MskConfigurations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MskConfiguration, err error)
-	// Get retrieves the MskConfiguration from the index for a given name.
-	Get(name string) (*v1alpha1.MskConfiguration, error)
+	// MskConfigurations returns an object that can list and get MskConfigurations.
+	MskConfigurations(namespace string) MskConfigurationNamespaceLister
 	MskConfigurationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *mskConfigurationLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the MskConfiguration from the index for a given name.
-func (s *mskConfigurationLister) Get(name string) (*v1alpha1.MskConfiguration, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MskConfigurations returns an object that can list and get MskConfigurations.
+func (s *mskConfigurationLister) MskConfigurations(namespace string) MskConfigurationNamespaceLister {
+	return mskConfigurationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MskConfigurationNamespaceLister helps list and get MskConfigurations.
+type MskConfigurationNamespaceLister interface {
+	// List lists all MskConfigurations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MskConfiguration, err error)
+	// Get retrieves the MskConfiguration from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MskConfiguration, error)
+	MskConfigurationNamespaceListerExpansion
+}
+
+// mskConfigurationNamespaceLister implements the MskConfigurationNamespaceLister
+// interface.
+type mskConfigurationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MskConfigurations in the indexer for a given namespace.
+func (s mskConfigurationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MskConfiguration, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MskConfiguration))
+	})
+	return ret, err
+}
+
+// Get retrieves the MskConfiguration from the indexer for a given namespace and name.
+func (s mskConfigurationNamespaceLister) Get(name string) (*v1alpha1.MskConfiguration, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeMonitorActivityLogAlerts implements MonitorActivityLogAlertInterface
 type FakeMonitorActivityLogAlerts struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var monitoractivitylogalertsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "monitoractivitylogalerts"}
@@ -40,7 +41,8 @@ var monitoractivitylogalertsKind = schema.GroupVersionKind{Group: "azurerm.kubef
 // Get takes name of the monitorActivityLogAlert, and returns the corresponding monitorActivityLogAlert object, and an error if there is any.
 func (c *FakeMonitorActivityLogAlerts) Get(name string, options v1.GetOptions) (result *v1alpha1.MonitorActivityLogAlert, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(monitoractivitylogalertsResource, name), &v1alpha1.MonitorActivityLogAlert{})
+		Invokes(testing.NewGetAction(monitoractivitylogalertsResource, c.ns, name), &v1alpha1.MonitorActivityLogAlert{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMonitorActivityLogAlerts) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of MonitorActivityLogAlerts that match those selectors.
 func (c *FakeMonitorActivityLogAlerts) List(opts v1.ListOptions) (result *v1alpha1.MonitorActivityLogAlertList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(monitoractivitylogalertsResource, monitoractivitylogalertsKind, opts), &v1alpha1.MonitorActivityLogAlertList{})
+		Invokes(testing.NewListAction(monitoractivitylogalertsResource, monitoractivitylogalertsKind, c.ns, opts), &v1alpha1.MonitorActivityLogAlertList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMonitorActivityLogAlerts) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested monitorActivityLogAlerts.
 func (c *FakeMonitorActivityLogAlerts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(monitoractivitylogalertsResource, opts))
+		InvokesWatch(testing.NewWatchAction(monitoractivitylogalertsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a monitorActivityLogAlert and creates it.  Returns the server's representation of the monitorActivityLogAlert, and an error, if there is any.
 func (c *FakeMonitorActivityLogAlerts) Create(monitorActivityLogAlert *v1alpha1.MonitorActivityLogAlert) (result *v1alpha1.MonitorActivityLogAlert, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(monitoractivitylogalertsResource, monitorActivityLogAlert), &v1alpha1.MonitorActivityLogAlert{})
+		Invokes(testing.NewCreateAction(monitoractivitylogalertsResource, c.ns, monitorActivityLogAlert), &v1alpha1.MonitorActivityLogAlert{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMonitorActivityLogAlerts) Create(monitorActivityLogAlert *v1alpha1.
 // Update takes the representation of a monitorActivityLogAlert and updates it. Returns the server's representation of the monitorActivityLogAlert, and an error, if there is any.
 func (c *FakeMonitorActivityLogAlerts) Update(monitorActivityLogAlert *v1alpha1.MonitorActivityLogAlert) (result *v1alpha1.MonitorActivityLogAlert, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(monitoractivitylogalertsResource, monitorActivityLogAlert), &v1alpha1.MonitorActivityLogAlert{})
+		Invokes(testing.NewUpdateAction(monitoractivitylogalertsResource, c.ns, monitorActivityLogAlert), &v1alpha1.MonitorActivityLogAlert{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMonitorActivityLogAlerts) Update(monitorActivityLogAlert *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMonitorActivityLogAlerts) UpdateStatus(monitorActivityLogAlert *v1alpha1.MonitorActivityLogAlert) (*v1alpha1.MonitorActivityLogAlert, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(monitoractivitylogalertsResource, "status", monitorActivityLogAlert), &v1alpha1.MonitorActivityLogAlert{})
+		Invokes(testing.NewUpdateSubresourceAction(monitoractivitylogalertsResource, "status", c.ns, monitorActivityLogAlert), &v1alpha1.MonitorActivityLogAlert{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMonitorActivityLogAlerts) UpdateStatus(monitorActivityLogAlert *v1a
 // Delete takes name of the monitorActivityLogAlert and deletes it. Returns an error if one occurs.
 func (c *FakeMonitorActivityLogAlerts) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(monitoractivitylogalertsResource, name), &v1alpha1.MonitorActivityLogAlert{})
+		Invokes(testing.NewDeleteAction(monitoractivitylogalertsResource, c.ns, name), &v1alpha1.MonitorActivityLogAlert{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMonitorActivityLogAlerts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(monitoractivitylogalertsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(monitoractivitylogalertsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MonitorActivityLogAlertList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMonitorActivityLogAlerts) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched monitorActivityLogAlert.
 func (c *FakeMonitorActivityLogAlerts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MonitorActivityLogAlert, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(monitoractivitylogalertsResource, name, pt, data, subresources...), &v1alpha1.MonitorActivityLogAlert{})
+		Invokes(testing.NewPatchSubresourceAction(monitoractivitylogalertsResource, c.ns, name, pt, data, subresources...), &v1alpha1.MonitorActivityLogAlert{})
+
 	if obj == nil {
 		return nil, err
 	}

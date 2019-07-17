@@ -41,32 +41,33 @@ type FirewallNetworkRuleCollectionInformer interface {
 type firewallNetworkRuleCollectionInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewFirewallNetworkRuleCollectionInformer constructs a new informer for FirewallNetworkRuleCollection type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFirewallNetworkRuleCollectionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredFirewallNetworkRuleCollectionInformer(client, resyncPeriod, indexers, nil)
+func NewFirewallNetworkRuleCollectionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredFirewallNetworkRuleCollectionInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredFirewallNetworkRuleCollectionInformer constructs a new informer for FirewallNetworkRuleCollection type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredFirewallNetworkRuleCollectionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredFirewallNetworkRuleCollectionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().FirewallNetworkRuleCollections().List(options)
+				return client.AzurermV1alpha1().FirewallNetworkRuleCollections(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().FirewallNetworkRuleCollections().Watch(options)
+				return client.AzurermV1alpha1().FirewallNetworkRuleCollections(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.FirewallNetworkRuleCollection{},
@@ -76,7 +77,7 @@ func NewFilteredFirewallNetworkRuleCollectionInformer(client versioned.Interface
 }
 
 func (f *firewallNetworkRuleCollectionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredFirewallNetworkRuleCollectionInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredFirewallNetworkRuleCollectionInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *firewallNetworkRuleCollectionInformer) Informer() cache.SharedIndexInformer {

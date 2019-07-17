@@ -32,7 +32,7 @@ import (
 // GameliftAliasesGetter has a method to return a GameliftAliasInterface.
 // A group's client should implement this interface.
 type GameliftAliasesGetter interface {
-	GameliftAliases() GameliftAliasInterface
+	GameliftAliases(namespace string) GameliftAliasInterface
 }
 
 // GameliftAliasInterface has methods to work with GameliftAlias resources.
@@ -52,12 +52,14 @@ type GameliftAliasInterface interface {
 // gameliftAliases implements GameliftAliasInterface
 type gameliftAliases struct {
 	client rest.Interface
+	ns     string
 }
 
 // newGameliftAliases returns a GameliftAliases
-func newGameliftAliases(c *AwsV1alpha1Client) *gameliftAliases {
+func newGameliftAliases(c *AwsV1alpha1Client, namespace string) *gameliftAliases {
 	return &gameliftAliases{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newGameliftAliases(c *AwsV1alpha1Client) *gameliftAliases {
 func (c *gameliftAliases) Get(name string, options v1.GetOptions) (result *v1alpha1.GameliftAlias, err error) {
 	result = &v1alpha1.GameliftAlias{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("gameliftaliases").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *gameliftAliases) List(opts v1.ListOptions) (result *v1alpha1.GameliftAl
 	}
 	result = &v1alpha1.GameliftAliasList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("gameliftaliases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *gameliftAliases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("gameliftaliases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *gameliftAliases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *gameliftAliases) Create(gameliftAlias *v1alpha1.GameliftAlias) (result *v1alpha1.GameliftAlias, err error) {
 	result = &v1alpha1.GameliftAlias{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("gameliftaliases").
 		Body(gameliftAlias).
 		Do().
@@ -118,6 +124,7 @@ func (c *gameliftAliases) Create(gameliftAlias *v1alpha1.GameliftAlias) (result 
 func (c *gameliftAliases) Update(gameliftAlias *v1alpha1.GameliftAlias) (result *v1alpha1.GameliftAlias, err error) {
 	result = &v1alpha1.GameliftAlias{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("gameliftaliases").
 		Name(gameliftAlias.Name).
 		Body(gameliftAlias).
@@ -132,6 +139,7 @@ func (c *gameliftAliases) Update(gameliftAlias *v1alpha1.GameliftAlias) (result 
 func (c *gameliftAliases) UpdateStatus(gameliftAlias *v1alpha1.GameliftAlias) (result *v1alpha1.GameliftAlias, err error) {
 	result = &v1alpha1.GameliftAlias{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("gameliftaliases").
 		Name(gameliftAlias.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *gameliftAliases) UpdateStatus(gameliftAlias *v1alpha1.GameliftAlias) (r
 // Delete takes name of the gameliftAlias and deletes it. Returns an error if one occurs.
 func (c *gameliftAliases) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("gameliftaliases").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *gameliftAliases) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("gameliftaliases").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *gameliftAliases) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *gameliftAliases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GameliftAlias, err error) {
 	result = &v1alpha1.GameliftAlias{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("gameliftaliases").
 		SubResource(subresources...).
 		Name(name).

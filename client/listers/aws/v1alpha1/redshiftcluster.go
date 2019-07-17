@@ -29,8 +29,8 @@ import (
 type RedshiftClusterLister interface {
 	// List lists all RedshiftClusters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RedshiftCluster, err error)
-	// Get retrieves the RedshiftCluster from the index for a given name.
-	Get(name string) (*v1alpha1.RedshiftCluster, error)
+	// RedshiftClusters returns an object that can list and get RedshiftClusters.
+	RedshiftClusters(namespace string) RedshiftClusterNamespaceLister
 	RedshiftClusterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *redshiftClusterLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the RedshiftCluster from the index for a given name.
-func (s *redshiftClusterLister) Get(name string) (*v1alpha1.RedshiftCluster, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RedshiftClusters returns an object that can list and get RedshiftClusters.
+func (s *redshiftClusterLister) RedshiftClusters(namespace string) RedshiftClusterNamespaceLister {
+	return redshiftClusterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RedshiftClusterNamespaceLister helps list and get RedshiftClusters.
+type RedshiftClusterNamespaceLister interface {
+	// List lists all RedshiftClusters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RedshiftCluster, err error)
+	// Get retrieves the RedshiftCluster from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RedshiftCluster, error)
+	RedshiftClusterNamespaceListerExpansion
+}
+
+// redshiftClusterNamespaceLister implements the RedshiftClusterNamespaceLister
+// interface.
+type redshiftClusterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RedshiftClusters in the indexer for a given namespace.
+func (s redshiftClusterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RedshiftCluster, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RedshiftCluster))
+	})
+	return ret, err
+}
+
+// Get retrieves the RedshiftCluster from the indexer for a given namespace and name.
+func (s redshiftClusterNamespaceLister) Get(name string) (*v1alpha1.RedshiftCluster, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

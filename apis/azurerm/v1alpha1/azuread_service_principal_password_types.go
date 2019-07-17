@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,9 +19,10 @@ type AzureadServicePrincipalPassword struct {
 }
 
 type AzureadServicePrincipalPasswordSpec struct {
-	EndDate            string `json:"end_date"`
-	ServicePrincipalId string `json:"service_principal_id"`
-	Value              string `json:"value"`
+	EndDate            string                    `json:"endDate" tf:"end_date"`
+	ServicePrincipalID string                    `json:"servicePrincipalID" tf:"service_principal_id"`
+	Value              string                    `json:"value" tf:"value"`
+	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type AzureadServicePrincipalPasswordStatus struct {
@@ -29,7 +30,9 @@ type AzureadServicePrincipalPasswordStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

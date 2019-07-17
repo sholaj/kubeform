@@ -32,7 +32,7 @@ import (
 // OpsworksStacksGetter has a method to return a OpsworksStackInterface.
 // A group's client should implement this interface.
 type OpsworksStacksGetter interface {
-	OpsworksStacks() OpsworksStackInterface
+	OpsworksStacks(namespace string) OpsworksStackInterface
 }
 
 // OpsworksStackInterface has methods to work with OpsworksStack resources.
@@ -52,12 +52,14 @@ type OpsworksStackInterface interface {
 // opsworksStacks implements OpsworksStackInterface
 type opsworksStacks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOpsworksStacks returns a OpsworksStacks
-func newOpsworksStacks(c *AwsV1alpha1Client) *opsworksStacks {
+func newOpsworksStacks(c *AwsV1alpha1Client, namespace string) *opsworksStacks {
 	return &opsworksStacks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOpsworksStacks(c *AwsV1alpha1Client) *opsworksStacks {
 func (c *opsworksStacks) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksStack, err error) {
 	result = &v1alpha1.OpsworksStack{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksstacks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *opsworksStacks) List(opts v1.ListOptions) (result *v1alpha1.OpsworksSta
 	}
 	result = &v1alpha1.OpsworksStackList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksstacks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *opsworksStacks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksstacks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *opsworksStacks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *opsworksStacks) Create(opsworksStack *v1alpha1.OpsworksStack) (result *v1alpha1.OpsworksStack, err error) {
 	result = &v1alpha1.OpsworksStack{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("opsworksstacks").
 		Body(opsworksStack).
 		Do().
@@ -118,6 +124,7 @@ func (c *opsworksStacks) Create(opsworksStack *v1alpha1.OpsworksStack) (result *
 func (c *opsworksStacks) Update(opsworksStack *v1alpha1.OpsworksStack) (result *v1alpha1.OpsworksStack, err error) {
 	result = &v1alpha1.OpsworksStack{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksstacks").
 		Name(opsworksStack.Name).
 		Body(opsworksStack).
@@ -132,6 +139,7 @@ func (c *opsworksStacks) Update(opsworksStack *v1alpha1.OpsworksStack) (result *
 func (c *opsworksStacks) UpdateStatus(opsworksStack *v1alpha1.OpsworksStack) (result *v1alpha1.OpsworksStack, err error) {
 	result = &v1alpha1.OpsworksStack{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksstacks").
 		Name(opsworksStack.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *opsworksStacks) UpdateStatus(opsworksStack *v1alpha1.OpsworksStack) (re
 // Delete takes name of the opsworksStack and deletes it. Returns an error if one occurs.
 func (c *opsworksStacks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksstacks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *opsworksStacks) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksstacks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *opsworksStacks) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *opsworksStacks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksStack, err error) {
 	result = &v1alpha1.OpsworksStack{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("opsworksstacks").
 		SubResource(subresources...).
 		Name(name).

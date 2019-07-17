@@ -400,9 +400,114 @@ spec:
             combiner:
               type: string
             conditions:
-              items: {}
+              items:
+                properties:
+                  conditionAbsent:
+                    items:
+                      properties:
+                        aggregations:
+                          items:
+                            properties:
+                              alignmentPeriod:
+                                type: string
+                              crossSeriesReducer:
+                                type: string
+                              groupByFields:
+                                items:
+                                  type: string
+                                type: array
+                              perSeriesAligner:
+                                type: string
+                            type: object
+                          type: array
+                        duration:
+                          type: string
+                        filter:
+                          type: string
+                        trigger:
+                          items:
+                            properties:
+                              count:
+                                type: integer
+                              percent:
+                                description: A Number represents a JSON number literal.
+                                type: string
+                            type: object
+                          maxItems: 1
+                          type: array
+                      required:
+                      - duration
+                      type: object
+                    maxItems: 1
+                    type: array
+                  conditionThreshold:
+                    items:
+                      properties:
+                        aggregations:
+                          items:
+                            properties:
+                              alignmentPeriod:
+                                type: string
+                              crossSeriesReducer:
+                                type: string
+                              groupByFields:
+                                items:
+                                  type: string
+                                type: array
+                              perSeriesAligner:
+                                type: string
+                            type: object
+                          type: array
+                        comparison:
+                          type: string
+                        denominatorAggregations:
+                          items:
+                            properties:
+                              alignmentPeriod:
+                                type: string
+                              crossSeriesReducer:
+                                type: string
+                              groupByFields:
+                                items:
+                                  type: string
+                                type: array
+                              perSeriesAligner:
+                                type: string
+                            type: object
+                          type: array
+                        denominatorFilter:
+                          type: string
+                        duration:
+                          type: string
+                        filter:
+                          type: string
+                        thresholdValue:
+                          description: A Number represents a JSON number literal.
+                          type: string
+                        trigger:
+                          items:
+                            properties:
+                              count:
+                                type: integer
+                              percent:
+                                description: A Number represents a JSON number literal.
+                                type: string
+                            type: object
+                          maxItems: 1
+                          type: array
+                      required:
+                      - comparison
+                      - duration
+                      type: object
+                    maxItems: 1
+                    type: array
+                  displayName:
+                    type: string
+                required:
+                - displayName
+                type: object
               type: array
-            display_name:
+            displayName:
               type: string
             enabled:
               type: boolean
@@ -410,15 +515,25 @@ spec:
               items:
                 type: string
               type: array
-            notification_channels:
+            notificationChannels:
               items:
                 type: string
               type: array
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
           required:
           - combiner
           - conditions
-          - display_name
+          - displayName
           - enabled
+          - providerRef
           type: object
         status:
           properties:
@@ -429,6 +544,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

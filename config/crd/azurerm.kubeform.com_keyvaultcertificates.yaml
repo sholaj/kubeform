@@ -398,18 +398,109 @@ spec:
         spec:
           properties:
             certificate:
-              items: {}
+              items:
+                properties:
+                  contents:
+                    type: string
+                  password:
+                    type: string
+                required:
+                - contents
+                type: object
               maxItems: 1
               type: array
-            certificate_policy:
-              items: {}
+            certificatePolicy:
+              items:
+                properties:
+                  issuerParameters:
+                    items:
+                      properties:
+                        name:
+                          type: string
+                      required:
+                      - name
+                      type: object
+                    maxItems: 1
+                    type: array
+                  keyProperties:
+                    items:
+                      properties:
+                        exportable:
+                          type: boolean
+                        keySize:
+                          type: integer
+                        keyType:
+                          type: string
+                        reuseKey:
+                          type: boolean
+                      required:
+                      - exportable
+                      - keySize
+                      - keyType
+                      - reuseKey
+                      type: object
+                    maxItems: 1
+                    type: array
+                  lifetimeAction:
+                    items:
+                      properties:
+                        action:
+                          items:
+                            properties:
+                              actionType:
+                                type: string
+                            required:
+                            - actionType
+                            type: object
+                          maxItems: 1
+                          type: array
+                        trigger:
+                          items:
+                            properties:
+                              daysBeforeExpiry:
+                                type: integer
+                              lifetimePercentage:
+                                type: integer
+                            type: object
+                          maxItems: 1
+                          type: array
+                      required:
+                      - action
+                      - trigger
+                      type: object
+                    type: array
+                  secretProperties:
+                    items:
+                      properties:
+                        contentType:
+                          type: string
+                      required:
+                      - contentType
+                      type: object
+                    maxItems: 1
+                    type: array
+                required:
+                - issuerParameters
+                - keyProperties
+                - secretProperties
+                type: object
               maxItems: 1
               type: array
             name:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
           required:
-          - certificate_policy
+          - certificatePolicy
           - name
+          - providerRef
           type: object
         status:
           properties:
@@ -420,6 +511,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

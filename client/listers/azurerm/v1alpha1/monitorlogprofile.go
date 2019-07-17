@@ -29,8 +29,8 @@ import (
 type MonitorLogProfileLister interface {
 	// List lists all MonitorLogProfiles in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MonitorLogProfile, err error)
-	// Get retrieves the MonitorLogProfile from the index for a given name.
-	Get(name string) (*v1alpha1.MonitorLogProfile, error)
+	// MonitorLogProfiles returns an object that can list and get MonitorLogProfiles.
+	MonitorLogProfiles(namespace string) MonitorLogProfileNamespaceLister
 	MonitorLogProfileListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *monitorLogProfileLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the MonitorLogProfile from the index for a given name.
-func (s *monitorLogProfileLister) Get(name string) (*v1alpha1.MonitorLogProfile, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MonitorLogProfiles returns an object that can list and get MonitorLogProfiles.
+func (s *monitorLogProfileLister) MonitorLogProfiles(namespace string) MonitorLogProfileNamespaceLister {
+	return monitorLogProfileNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MonitorLogProfileNamespaceLister helps list and get MonitorLogProfiles.
+type MonitorLogProfileNamespaceLister interface {
+	// List lists all MonitorLogProfiles in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MonitorLogProfile, err error)
+	// Get retrieves the MonitorLogProfile from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MonitorLogProfile, error)
+	MonitorLogProfileNamespaceListerExpansion
+}
+
+// monitorLogProfileNamespaceLister implements the MonitorLogProfileNamespaceLister
+// interface.
+type monitorLogProfileNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MonitorLogProfiles in the indexer for a given namespace.
+func (s monitorLogProfileNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MonitorLogProfile, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MonitorLogProfile))
+	})
+	return ret, err
+}
+
+// Get retrieves the MonitorLogProfile from the indexer for a given namespace and name.
+func (s monitorLogProfileNamespaceLister) Get(name string) (*v1alpha1.MonitorLogProfile, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

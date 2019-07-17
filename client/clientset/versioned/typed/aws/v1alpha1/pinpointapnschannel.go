@@ -32,7 +32,7 @@ import (
 // PinpointApnsChannelsGetter has a method to return a PinpointApnsChannelInterface.
 // A group's client should implement this interface.
 type PinpointApnsChannelsGetter interface {
-	PinpointApnsChannels() PinpointApnsChannelInterface
+	PinpointApnsChannels(namespace string) PinpointApnsChannelInterface
 }
 
 // PinpointApnsChannelInterface has methods to work with PinpointApnsChannel resources.
@@ -52,12 +52,14 @@ type PinpointApnsChannelInterface interface {
 // pinpointApnsChannels implements PinpointApnsChannelInterface
 type pinpointApnsChannels struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPinpointApnsChannels returns a PinpointApnsChannels
-func newPinpointApnsChannels(c *AwsV1alpha1Client) *pinpointApnsChannels {
+func newPinpointApnsChannels(c *AwsV1alpha1Client, namespace string) *pinpointApnsChannels {
 	return &pinpointApnsChannels{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPinpointApnsChannels(c *AwsV1alpha1Client) *pinpointApnsChannels {
 func (c *pinpointApnsChannels) Get(name string, options v1.GetOptions) (result *v1alpha1.PinpointApnsChannel, err error) {
 	result = &v1alpha1.PinpointApnsChannel{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointapnschannels").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *pinpointApnsChannels) List(opts v1.ListOptions) (result *v1alpha1.Pinpo
 	}
 	result = &v1alpha1.PinpointApnsChannelList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointapnschannels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *pinpointApnsChannels) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointapnschannels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *pinpointApnsChannels) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *pinpointApnsChannels) Create(pinpointApnsChannel *v1alpha1.PinpointApnsChannel) (result *v1alpha1.PinpointApnsChannel, err error) {
 	result = &v1alpha1.PinpointApnsChannel{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("pinpointapnschannels").
 		Body(pinpointApnsChannel).
 		Do().
@@ -118,6 +124,7 @@ func (c *pinpointApnsChannels) Create(pinpointApnsChannel *v1alpha1.PinpointApns
 func (c *pinpointApnsChannels) Update(pinpointApnsChannel *v1alpha1.PinpointApnsChannel) (result *v1alpha1.PinpointApnsChannel, err error) {
 	result = &v1alpha1.PinpointApnsChannel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pinpointapnschannels").
 		Name(pinpointApnsChannel.Name).
 		Body(pinpointApnsChannel).
@@ -132,6 +139,7 @@ func (c *pinpointApnsChannels) Update(pinpointApnsChannel *v1alpha1.PinpointApns
 func (c *pinpointApnsChannels) UpdateStatus(pinpointApnsChannel *v1alpha1.PinpointApnsChannel) (result *v1alpha1.PinpointApnsChannel, err error) {
 	result = &v1alpha1.PinpointApnsChannel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pinpointapnschannels").
 		Name(pinpointApnsChannel.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *pinpointApnsChannels) UpdateStatus(pinpointApnsChannel *v1alpha1.Pinpoi
 // Delete takes name of the pinpointApnsChannel and deletes it. Returns an error if one occurs.
 func (c *pinpointApnsChannels) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pinpointapnschannels").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *pinpointApnsChannels) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pinpointapnschannels").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *pinpointApnsChannels) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *pinpointApnsChannels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PinpointApnsChannel, err error) {
 	result = &v1alpha1.PinpointApnsChannel{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("pinpointapnschannels").
 		SubResource(subresources...).
 		Name(name).

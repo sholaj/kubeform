@@ -397,49 +397,94 @@ spec:
           type: object
         spec:
           properties:
-            actions_enabled:
+            actionsEnabled:
               type: boolean
-            alarm_actions:
+            alarmActions:
               items:
                 type: string
               type: array
               uniqueItems: true
-            alarm_description:
+            alarmDescription:
               type: string
-            alarm_name:
+            alarmName:
               type: string
-            comparison_operator:
+            comparisonOperator:
               type: string
-            datapoints_to_alarm:
+            datapointsToAlarm:
               type: integer
             dimensions:
               additionalProperties:
                 type: string
               type: object
-            evaluation_periods:
+            evaluationPeriods:
               type: integer
-            extended_statistic:
+            extendedStatistic:
               type: string
-            insufficient_data_actions:
+            insufficientDataActions:
               items:
                 type: string
               type: array
               uniqueItems: true
-            metric_name:
+            metricName:
               type: string
-            metric_query:
-              items: {}
+            metricQuery:
+              items:
+                properties:
+                  ID:
+                    type: string
+                  expression:
+                    type: string
+                  label:
+                    type: string
+                  metric:
+                    items:
+                      properties:
+                        dimensions:
+                          additionalProperties:
+                            type: string
+                          type: object
+                        metricName:
+                          type: string
+                        namespace:
+                          type: string
+                        period:
+                          type: integer
+                        stat:
+                          type: string
+                        unit:
+                          type: string
+                      required:
+                      - metricName
+                      - period
+                      - stat
+                      type: object
+                    maxItems: 1
+                    type: array
+                  returnData:
+                    type: boolean
+                required:
+                - ID
+                type: object
               type: array
               uniqueItems: true
             namespace:
               type: string
-            ok_actions:
+            okActions:
               items:
                 type: string
               type: array
               uniqueItems: true
             period:
               type: integer
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             statistic:
               type: string
             tags:
@@ -449,14 +494,15 @@ spec:
             threshold:
               description: A Number represents a JSON number literal.
               type: string
-            treat_missing_data:
+            treatMissingData:
               type: string
             unit:
               type: string
           required:
-          - alarm_name
-          - comparison_operator
-          - evaluation_periods
+          - alarmName
+          - comparisonOperator
+          - evaluationPeriods
+          - providerRef
           - threshold
           type: object
         status:
@@ -468,6 +514,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

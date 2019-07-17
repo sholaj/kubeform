@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/google/v1alpha1"
 )
 
-// ComputeUrlMapInformer provides access to a shared informer and lister for
-// ComputeUrlMaps.
-type ComputeUrlMapInformer interface {
+// ComputeURLMapInformer provides access to a shared informer and lister for
+// ComputeURLMaps.
+type ComputeURLMapInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.ComputeUrlMapLister
+	Lister() v1alpha1.ComputeURLMapLister
 }
 
-type computeUrlMapInformer struct {
+type computeURLMapInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewComputeUrlMapInformer constructs a new informer for ComputeUrlMap type.
+// NewComputeURLMapInformer constructs a new informer for ComputeURLMap type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewComputeUrlMapInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredComputeUrlMapInformer(client, resyncPeriod, indexers, nil)
+func NewComputeURLMapInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredComputeURLMapInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredComputeUrlMapInformer constructs a new informer for ComputeUrlMap type.
+// NewFilteredComputeURLMapInformer constructs a new informer for ComputeURLMap type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredComputeUrlMapInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredComputeURLMapInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeUrlMaps().List(options)
+				return client.GoogleV1alpha1().ComputeURLMaps(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeUrlMaps().Watch(options)
+				return client.GoogleV1alpha1().ComputeURLMaps(namespace).Watch(options)
 			},
 		},
-		&googlev1alpha1.ComputeUrlMap{},
+		&googlev1alpha1.ComputeURLMap{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *computeUrlMapInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredComputeUrlMapInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *computeURLMapInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredComputeURLMapInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *computeUrlMapInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&googlev1alpha1.ComputeUrlMap{}, f.defaultInformer)
+func (f *computeURLMapInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&googlev1alpha1.ComputeURLMap{}, f.defaultInformer)
 }
 
-func (f *computeUrlMapInformer) Lister() v1alpha1.ComputeUrlMapLister {
-	return v1alpha1.NewComputeUrlMapLister(f.Informer().GetIndexer())
+func (f *computeURLMapInformer) Lister() v1alpha1.ComputeURLMapLister {
+	return v1alpha1.NewComputeURLMapLister(f.Informer().GetIndexer())
 }

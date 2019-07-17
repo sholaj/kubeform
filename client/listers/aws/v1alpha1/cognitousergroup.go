@@ -29,8 +29,8 @@ import (
 type CognitoUserGroupLister interface {
 	// List lists all CognitoUserGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CognitoUserGroup, err error)
-	// Get retrieves the CognitoUserGroup from the index for a given name.
-	Get(name string) (*v1alpha1.CognitoUserGroup, error)
+	// CognitoUserGroups returns an object that can list and get CognitoUserGroups.
+	CognitoUserGroups(namespace string) CognitoUserGroupNamespaceLister
 	CognitoUserGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cognitoUserGroupLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the CognitoUserGroup from the index for a given name.
-func (s *cognitoUserGroupLister) Get(name string) (*v1alpha1.CognitoUserGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CognitoUserGroups returns an object that can list and get CognitoUserGroups.
+func (s *cognitoUserGroupLister) CognitoUserGroups(namespace string) CognitoUserGroupNamespaceLister {
+	return cognitoUserGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CognitoUserGroupNamespaceLister helps list and get CognitoUserGroups.
+type CognitoUserGroupNamespaceLister interface {
+	// List lists all CognitoUserGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CognitoUserGroup, err error)
+	// Get retrieves the CognitoUserGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CognitoUserGroup, error)
+	CognitoUserGroupNamespaceListerExpansion
+}
+
+// cognitoUserGroupNamespaceLister implements the CognitoUserGroupNamespaceLister
+// interface.
+type cognitoUserGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CognitoUserGroups in the indexer for a given namespace.
+func (s cognitoUserGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CognitoUserGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CognitoUserGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the CognitoUserGroup from the indexer for a given namespace and name.
+func (s cognitoUserGroupNamespaceLister) Get(name string) (*v1alpha1.CognitoUserGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

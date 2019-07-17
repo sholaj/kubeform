@@ -397,31 +397,41 @@ spec:
           type: object
         spec:
           properties:
-            application_id:
+            applicationID:
               type: string
-            certificate_permissions:
+            certificatePermissions:
               items:
                 type: string
               type: array
-            key_permissions:
+            keyPermissions:
               items:
                 type: string
               type: array
-            object_id:
+            objectID:
               type: string
-            secret_permissions:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            secretPermissions:
               items:
                 type: string
               type: array
-            storage_permissions:
+            storagePermissions:
               items:
                 type: string
               type: array
-            tenant_id:
+            tenantID:
               type: string
           required:
-          - object_id
-          - tenant_id
+          - objectID
+          - providerRef
+          - tenantID
           type: object
         status:
           properties:
@@ -432,6 +442,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

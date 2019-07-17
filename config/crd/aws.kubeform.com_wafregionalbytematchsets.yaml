@@ -397,14 +397,48 @@ spec:
           type: object
         spec:
           properties:
-            byte_match_tuples:
-              items: {}
+            byteMatchTuples:
+              items:
+                properties:
+                  fieldToMatch:
+                    items:
+                      properties:
+                        data:
+                          type: string
+                        type:
+                          type: string
+                      required:
+                      - type
+                      type: object
+                    maxItems: 1
+                    type: array
+                  positionalConstraint:
+                    type: string
+                  targetString:
+                    type: string
+                  textTransformation:
+                    type: string
+                required:
+                - fieldToMatch
+                - positionalConstraint
+                - textTransformation
+                type: object
               type: array
               uniqueItems: true
             name:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
           required:
           - name
+          - providerRef
           type: object
         status:
           properties:
@@ -415,6 +449,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

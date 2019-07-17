@@ -41,32 +41,33 @@ type SecretsmanagerSecretVersionInformer interface {
 type secretsmanagerSecretVersionInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSecretsmanagerSecretVersionInformer constructs a new informer for SecretsmanagerSecretVersion type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSecretsmanagerSecretVersionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSecretsmanagerSecretVersionInformer(client, resyncPeriod, indexers, nil)
+func NewSecretsmanagerSecretVersionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSecretsmanagerSecretVersionInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSecretsmanagerSecretVersionInformer constructs a new informer for SecretsmanagerSecretVersion type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSecretsmanagerSecretVersionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSecretsmanagerSecretVersionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SecretsmanagerSecretVersions().List(options)
+				return client.AwsV1alpha1().SecretsmanagerSecretVersions(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SecretsmanagerSecretVersions().Watch(options)
+				return client.AwsV1alpha1().SecretsmanagerSecretVersions(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.SecretsmanagerSecretVersion{},
@@ -76,7 +77,7 @@ func NewFilteredSecretsmanagerSecretVersionInformer(client versioned.Interface, 
 }
 
 func (f *secretsmanagerSecretVersionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSecretsmanagerSecretVersionInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSecretsmanagerSecretVersionInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *secretsmanagerSecretVersionInformer) Informer() cache.SharedIndexInformer {

@@ -31,6 +31,7 @@ import (
 // FakeRuntimeconfigVariables implements RuntimeconfigVariableInterface
 type FakeRuntimeconfigVariables struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var runtimeconfigvariablesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "runtimeconfigvariables"}
@@ -40,7 +41,8 @@ var runtimeconfigvariablesKind = schema.GroupVersionKind{Group: "google.kubeform
 // Get takes name of the runtimeconfigVariable, and returns the corresponding runtimeconfigVariable object, and an error if there is any.
 func (c *FakeRuntimeconfigVariables) Get(name string, options v1.GetOptions) (result *v1alpha1.RuntimeconfigVariable, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(runtimeconfigvariablesResource, name), &v1alpha1.RuntimeconfigVariable{})
+		Invokes(testing.NewGetAction(runtimeconfigvariablesResource, c.ns, name), &v1alpha1.RuntimeconfigVariable{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRuntimeconfigVariables) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of RuntimeconfigVariables that match those selectors.
 func (c *FakeRuntimeconfigVariables) List(opts v1.ListOptions) (result *v1alpha1.RuntimeconfigVariableList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(runtimeconfigvariablesResource, runtimeconfigvariablesKind, opts), &v1alpha1.RuntimeconfigVariableList{})
+		Invokes(testing.NewListAction(runtimeconfigvariablesResource, runtimeconfigvariablesKind, c.ns, opts), &v1alpha1.RuntimeconfigVariableList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRuntimeconfigVariables) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested runtimeconfigVariables.
 func (c *FakeRuntimeconfigVariables) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(runtimeconfigvariablesResource, opts))
+		InvokesWatch(testing.NewWatchAction(runtimeconfigvariablesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a runtimeconfigVariable and creates it.  Returns the server's representation of the runtimeconfigVariable, and an error, if there is any.
 func (c *FakeRuntimeconfigVariables) Create(runtimeconfigVariable *v1alpha1.RuntimeconfigVariable) (result *v1alpha1.RuntimeconfigVariable, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(runtimeconfigvariablesResource, runtimeconfigVariable), &v1alpha1.RuntimeconfigVariable{})
+		Invokes(testing.NewCreateAction(runtimeconfigvariablesResource, c.ns, runtimeconfigVariable), &v1alpha1.RuntimeconfigVariable{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRuntimeconfigVariables) Create(runtimeconfigVariable *v1alpha1.Runt
 // Update takes the representation of a runtimeconfigVariable and updates it. Returns the server's representation of the runtimeconfigVariable, and an error, if there is any.
 func (c *FakeRuntimeconfigVariables) Update(runtimeconfigVariable *v1alpha1.RuntimeconfigVariable) (result *v1alpha1.RuntimeconfigVariable, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(runtimeconfigvariablesResource, runtimeconfigVariable), &v1alpha1.RuntimeconfigVariable{})
+		Invokes(testing.NewUpdateAction(runtimeconfigvariablesResource, c.ns, runtimeconfigVariable), &v1alpha1.RuntimeconfigVariable{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRuntimeconfigVariables) Update(runtimeconfigVariable *v1alpha1.Runt
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRuntimeconfigVariables) UpdateStatus(runtimeconfigVariable *v1alpha1.RuntimeconfigVariable) (*v1alpha1.RuntimeconfigVariable, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(runtimeconfigvariablesResource, "status", runtimeconfigVariable), &v1alpha1.RuntimeconfigVariable{})
+		Invokes(testing.NewUpdateSubresourceAction(runtimeconfigvariablesResource, "status", c.ns, runtimeconfigVariable), &v1alpha1.RuntimeconfigVariable{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRuntimeconfigVariables) UpdateStatus(runtimeconfigVariable *v1alpha
 // Delete takes name of the runtimeconfigVariable and deletes it. Returns an error if one occurs.
 func (c *FakeRuntimeconfigVariables) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(runtimeconfigvariablesResource, name), &v1alpha1.RuntimeconfigVariable{})
+		Invokes(testing.NewDeleteAction(runtimeconfigvariablesResource, c.ns, name), &v1alpha1.RuntimeconfigVariable{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRuntimeconfigVariables) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(runtimeconfigvariablesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(runtimeconfigvariablesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.RuntimeconfigVariableList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRuntimeconfigVariables) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched runtimeconfigVariable.
 func (c *FakeRuntimeconfigVariables) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RuntimeconfigVariable, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(runtimeconfigvariablesResource, name, pt, data, subresources...), &v1alpha1.RuntimeconfigVariable{})
+		Invokes(testing.NewPatchSubresourceAction(runtimeconfigvariablesResource, c.ns, name, pt, data, subresources...), &v1alpha1.RuntimeconfigVariable{})
+
 	if obj == nil {
 		return nil, err
 	}

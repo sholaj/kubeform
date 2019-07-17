@@ -29,8 +29,8 @@ import (
 type DbEventSubscriptionLister interface {
 	// List lists all DbEventSubscriptions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DbEventSubscription, err error)
-	// Get retrieves the DbEventSubscription from the index for a given name.
-	Get(name string) (*v1alpha1.DbEventSubscription, error)
+	// DbEventSubscriptions returns an object that can list and get DbEventSubscriptions.
+	DbEventSubscriptions(namespace string) DbEventSubscriptionNamespaceLister
 	DbEventSubscriptionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dbEventSubscriptionLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the DbEventSubscription from the index for a given name.
-func (s *dbEventSubscriptionLister) Get(name string) (*v1alpha1.DbEventSubscription, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DbEventSubscriptions returns an object that can list and get DbEventSubscriptions.
+func (s *dbEventSubscriptionLister) DbEventSubscriptions(namespace string) DbEventSubscriptionNamespaceLister {
+	return dbEventSubscriptionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DbEventSubscriptionNamespaceLister helps list and get DbEventSubscriptions.
+type DbEventSubscriptionNamespaceLister interface {
+	// List lists all DbEventSubscriptions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DbEventSubscription, err error)
+	// Get retrieves the DbEventSubscription from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DbEventSubscription, error)
+	DbEventSubscriptionNamespaceListerExpansion
+}
+
+// dbEventSubscriptionNamespaceLister implements the DbEventSubscriptionNamespaceLister
+// interface.
+type dbEventSubscriptionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DbEventSubscriptions in the indexer for a given namespace.
+func (s dbEventSubscriptionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DbEventSubscription, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DbEventSubscription))
+	})
+	return ret, err
+}
+
+// Get retrieves the DbEventSubscription from the indexer for a given namespace and name.
+func (s dbEventSubscriptionNamespaceLister) Get(name string) (*v1alpha1.DbEventSubscription, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// DataFactoryDatasetSqlServerTablesGetter has a method to return a DataFactoryDatasetSqlServerTableInterface.
+// DataFactoryDatasetSQLServerTablesGetter has a method to return a DataFactoryDatasetSQLServerTableInterface.
 // A group's client should implement this interface.
-type DataFactoryDatasetSqlServerTablesGetter interface {
-	DataFactoryDatasetSqlServerTables() DataFactoryDatasetSqlServerTableInterface
+type DataFactoryDatasetSQLServerTablesGetter interface {
+	DataFactoryDatasetSQLServerTables(namespace string) DataFactoryDatasetSQLServerTableInterface
 }
 
-// DataFactoryDatasetSqlServerTableInterface has methods to work with DataFactoryDatasetSqlServerTable resources.
-type DataFactoryDatasetSqlServerTableInterface interface {
-	Create(*v1alpha1.DataFactoryDatasetSqlServerTable) (*v1alpha1.DataFactoryDatasetSqlServerTable, error)
-	Update(*v1alpha1.DataFactoryDatasetSqlServerTable) (*v1alpha1.DataFactoryDatasetSqlServerTable, error)
-	UpdateStatus(*v1alpha1.DataFactoryDatasetSqlServerTable) (*v1alpha1.DataFactoryDatasetSqlServerTable, error)
+// DataFactoryDatasetSQLServerTableInterface has methods to work with DataFactoryDatasetSQLServerTable resources.
+type DataFactoryDatasetSQLServerTableInterface interface {
+	Create(*v1alpha1.DataFactoryDatasetSQLServerTable) (*v1alpha1.DataFactoryDatasetSQLServerTable, error)
+	Update(*v1alpha1.DataFactoryDatasetSQLServerTable) (*v1alpha1.DataFactoryDatasetSQLServerTable, error)
+	UpdateStatus(*v1alpha1.DataFactoryDatasetSQLServerTable) (*v1alpha1.DataFactoryDatasetSQLServerTable, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.DataFactoryDatasetSqlServerTable, error)
-	List(opts v1.ListOptions) (*v1alpha1.DataFactoryDatasetSqlServerTableList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.DataFactoryDatasetSQLServerTable, error)
+	List(opts v1.ListOptions) (*v1alpha1.DataFactoryDatasetSQLServerTableList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataFactoryDatasetSqlServerTable, err error)
-	DataFactoryDatasetSqlServerTableExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataFactoryDatasetSQLServerTable, err error)
+	DataFactoryDatasetSQLServerTableExpansion
 }
 
-// dataFactoryDatasetSqlServerTables implements DataFactoryDatasetSqlServerTableInterface
-type dataFactoryDatasetSqlServerTables struct {
+// dataFactoryDatasetSQLServerTables implements DataFactoryDatasetSQLServerTableInterface
+type dataFactoryDatasetSQLServerTables struct {
 	client rest.Interface
+	ns     string
 }
 
-// newDataFactoryDatasetSqlServerTables returns a DataFactoryDatasetSqlServerTables
-func newDataFactoryDatasetSqlServerTables(c *AzurermV1alpha1Client) *dataFactoryDatasetSqlServerTables {
-	return &dataFactoryDatasetSqlServerTables{
+// newDataFactoryDatasetSQLServerTables returns a DataFactoryDatasetSQLServerTables
+func newDataFactoryDatasetSQLServerTables(c *AzurermV1alpha1Client, namespace string) *dataFactoryDatasetSQLServerTables {
+	return &dataFactoryDatasetSQLServerTables{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the dataFactoryDatasetSqlServerTable, and returns the corresponding dataFactoryDatasetSqlServerTable object, and an error if there is any.
-func (c *dataFactoryDatasetSqlServerTables) Get(name string, options v1.GetOptions) (result *v1alpha1.DataFactoryDatasetSqlServerTable, err error) {
-	result = &v1alpha1.DataFactoryDatasetSqlServerTable{}
+// Get takes name of the dataFactoryDatasetSQLServerTable, and returns the corresponding dataFactoryDatasetSQLServerTable object, and an error if there is any.
+func (c *dataFactoryDatasetSQLServerTables) Get(name string, options v1.GetOptions) (result *v1alpha1.DataFactoryDatasetSQLServerTable, err error) {
+	result = &v1alpha1.DataFactoryDatasetSQLServerTable{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactorydatasetsqlservertables").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *dataFactoryDatasetSqlServerTables) Get(name string, options v1.GetOptio
 	return
 }
 
-// List takes label and field selectors, and returns the list of DataFactoryDatasetSqlServerTables that match those selectors.
-func (c *dataFactoryDatasetSqlServerTables) List(opts v1.ListOptions) (result *v1alpha1.DataFactoryDatasetSqlServerTableList, err error) {
+// List takes label and field selectors, and returns the list of DataFactoryDatasetSQLServerTables that match those selectors.
+func (c *dataFactoryDatasetSQLServerTables) List(opts v1.ListOptions) (result *v1alpha1.DataFactoryDatasetSQLServerTableList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.DataFactoryDatasetSqlServerTableList{}
+	result = &v1alpha1.DataFactoryDatasetSQLServerTableList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactorydatasetsqlservertables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *dataFactoryDatasetSqlServerTables) List(opts v1.ListOptions) (result *v
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested dataFactoryDatasetSqlServerTables.
-func (c *dataFactoryDatasetSqlServerTables) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested dataFactoryDatasetSQLServerTables.
+func (c *dataFactoryDatasetSQLServerTables) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactorydatasetsqlservertables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a dataFactoryDatasetSqlServerTable and creates it.  Returns the server's representation of the dataFactoryDatasetSqlServerTable, and an error, if there is any.
-func (c *dataFactoryDatasetSqlServerTables) Create(dataFactoryDatasetSqlServerTable *v1alpha1.DataFactoryDatasetSqlServerTable) (result *v1alpha1.DataFactoryDatasetSqlServerTable, err error) {
-	result = &v1alpha1.DataFactoryDatasetSqlServerTable{}
+// Create takes the representation of a dataFactoryDatasetSQLServerTable and creates it.  Returns the server's representation of the dataFactoryDatasetSQLServerTable, and an error, if there is any.
+func (c *dataFactoryDatasetSQLServerTables) Create(dataFactoryDatasetSQLServerTable *v1alpha1.DataFactoryDatasetSQLServerTable) (result *v1alpha1.DataFactoryDatasetSQLServerTable, err error) {
+	result = &v1alpha1.DataFactoryDatasetSQLServerTable{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("datafactorydatasetsqlservertables").
-		Body(dataFactoryDatasetSqlServerTable).
+		Body(dataFactoryDatasetSQLServerTable).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a dataFactoryDatasetSqlServerTable and updates it. Returns the server's representation of the dataFactoryDatasetSqlServerTable, and an error, if there is any.
-func (c *dataFactoryDatasetSqlServerTables) Update(dataFactoryDatasetSqlServerTable *v1alpha1.DataFactoryDatasetSqlServerTable) (result *v1alpha1.DataFactoryDatasetSqlServerTable, err error) {
-	result = &v1alpha1.DataFactoryDatasetSqlServerTable{}
+// Update takes the representation of a dataFactoryDatasetSQLServerTable and updates it. Returns the server's representation of the dataFactoryDatasetSQLServerTable, and an error, if there is any.
+func (c *dataFactoryDatasetSQLServerTables) Update(dataFactoryDatasetSQLServerTable *v1alpha1.DataFactoryDatasetSQLServerTable) (result *v1alpha1.DataFactoryDatasetSQLServerTable, err error) {
+	result = &v1alpha1.DataFactoryDatasetSQLServerTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datafactorydatasetsqlservertables").
-		Name(dataFactoryDatasetSqlServerTable.Name).
-		Body(dataFactoryDatasetSqlServerTable).
+		Name(dataFactoryDatasetSQLServerTable.Name).
+		Body(dataFactoryDatasetSQLServerTable).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *dataFactoryDatasetSqlServerTables) Update(dataFactoryDatasetSqlServerTa
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *dataFactoryDatasetSqlServerTables) UpdateStatus(dataFactoryDatasetSqlServerTable *v1alpha1.DataFactoryDatasetSqlServerTable) (result *v1alpha1.DataFactoryDatasetSqlServerTable, err error) {
-	result = &v1alpha1.DataFactoryDatasetSqlServerTable{}
+func (c *dataFactoryDatasetSQLServerTables) UpdateStatus(dataFactoryDatasetSQLServerTable *v1alpha1.DataFactoryDatasetSQLServerTable) (result *v1alpha1.DataFactoryDatasetSQLServerTable, err error) {
+	result = &v1alpha1.DataFactoryDatasetSQLServerTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datafactorydatasetsqlservertables").
-		Name(dataFactoryDatasetSqlServerTable.Name).
+		Name(dataFactoryDatasetSQLServerTable.Name).
 		SubResource("status").
-		Body(dataFactoryDatasetSqlServerTable).
+		Body(dataFactoryDatasetSQLServerTable).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the dataFactoryDatasetSqlServerTable and deletes it. Returns an error if one occurs.
-func (c *dataFactoryDatasetSqlServerTables) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the dataFactoryDatasetSQLServerTable and deletes it. Returns an error if one occurs.
+func (c *dataFactoryDatasetSQLServerTables) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datafactorydatasetsqlservertables").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *dataFactoryDatasetSqlServerTables) Delete(name string, options *v1.Dele
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *dataFactoryDatasetSqlServerTables) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *dataFactoryDatasetSQLServerTables) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datafactorydatasetsqlservertables").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *dataFactoryDatasetSqlServerTables) DeleteCollection(options *v1.DeleteO
 		Error()
 }
 
-// Patch applies the patch and returns the patched dataFactoryDatasetSqlServerTable.
-func (c *dataFactoryDatasetSqlServerTables) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataFactoryDatasetSqlServerTable, err error) {
-	result = &v1alpha1.DataFactoryDatasetSqlServerTable{}
+// Patch applies the patch and returns the patched dataFactoryDatasetSQLServerTable.
+func (c *dataFactoryDatasetSQLServerTables) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataFactoryDatasetSQLServerTable, err error) {
+	result = &v1alpha1.DataFactoryDatasetSQLServerTable{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("datafactorydatasetsqlservertables").
 		SubResource(subresources...).
 		Name(name).

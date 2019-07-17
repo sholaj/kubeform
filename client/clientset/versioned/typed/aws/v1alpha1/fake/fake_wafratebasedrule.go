@@ -31,6 +31,7 @@ import (
 // FakeWafRateBasedRules implements WafRateBasedRuleInterface
 type FakeWafRateBasedRules struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var wafratebasedrulesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "wafratebasedrules"}
@@ -40,7 +41,8 @@ var wafratebasedrulesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", V
 // Get takes name of the wafRateBasedRule, and returns the corresponding wafRateBasedRule object, and an error if there is any.
 func (c *FakeWafRateBasedRules) Get(name string, options v1.GetOptions) (result *v1alpha1.WafRateBasedRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(wafratebasedrulesResource, name), &v1alpha1.WafRateBasedRule{})
+		Invokes(testing.NewGetAction(wafratebasedrulesResource, c.ns, name), &v1alpha1.WafRateBasedRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeWafRateBasedRules) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of WafRateBasedRules that match those selectors.
 func (c *FakeWafRateBasedRules) List(opts v1.ListOptions) (result *v1alpha1.WafRateBasedRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(wafratebasedrulesResource, wafratebasedrulesKind, opts), &v1alpha1.WafRateBasedRuleList{})
+		Invokes(testing.NewListAction(wafratebasedrulesResource, wafratebasedrulesKind, c.ns, opts), &v1alpha1.WafRateBasedRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeWafRateBasedRules) List(opts v1.ListOptions) (result *v1alpha1.WafR
 // Watch returns a watch.Interface that watches the requested wafRateBasedRules.
 func (c *FakeWafRateBasedRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(wafratebasedrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(wafratebasedrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a wafRateBasedRule and creates it.  Returns the server's representation of the wafRateBasedRule, and an error, if there is any.
 func (c *FakeWafRateBasedRules) Create(wafRateBasedRule *v1alpha1.WafRateBasedRule) (result *v1alpha1.WafRateBasedRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(wafratebasedrulesResource, wafRateBasedRule), &v1alpha1.WafRateBasedRule{})
+		Invokes(testing.NewCreateAction(wafratebasedrulesResource, c.ns, wafRateBasedRule), &v1alpha1.WafRateBasedRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeWafRateBasedRules) Create(wafRateBasedRule *v1alpha1.WafRateBasedRu
 // Update takes the representation of a wafRateBasedRule and updates it. Returns the server's representation of the wafRateBasedRule, and an error, if there is any.
 func (c *FakeWafRateBasedRules) Update(wafRateBasedRule *v1alpha1.WafRateBasedRule) (result *v1alpha1.WafRateBasedRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(wafratebasedrulesResource, wafRateBasedRule), &v1alpha1.WafRateBasedRule{})
+		Invokes(testing.NewUpdateAction(wafratebasedrulesResource, c.ns, wafRateBasedRule), &v1alpha1.WafRateBasedRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeWafRateBasedRules) Update(wafRateBasedRule *v1alpha1.WafRateBasedRu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeWafRateBasedRules) UpdateStatus(wafRateBasedRule *v1alpha1.WafRateBasedRule) (*v1alpha1.WafRateBasedRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(wafratebasedrulesResource, "status", wafRateBasedRule), &v1alpha1.WafRateBasedRule{})
+		Invokes(testing.NewUpdateSubresourceAction(wafratebasedrulesResource, "status", c.ns, wafRateBasedRule), &v1alpha1.WafRateBasedRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeWafRateBasedRules) UpdateStatus(wafRateBasedRule *v1alpha1.WafRateB
 // Delete takes name of the wafRateBasedRule and deletes it. Returns an error if one occurs.
 func (c *FakeWafRateBasedRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(wafratebasedrulesResource, name), &v1alpha1.WafRateBasedRule{})
+		Invokes(testing.NewDeleteAction(wafratebasedrulesResource, c.ns, name), &v1alpha1.WafRateBasedRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeWafRateBasedRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(wafratebasedrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(wafratebasedrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.WafRateBasedRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeWafRateBasedRules) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched wafRateBasedRule.
 func (c *FakeWafRateBasedRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafRateBasedRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(wafratebasedrulesResource, name, pt, data, subresources...), &v1alpha1.WafRateBasedRule{})
+		Invokes(testing.NewPatchSubresourceAction(wafratebasedrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.WafRateBasedRule{})
+
 	if obj == nil {
 		return nil, err
 	}

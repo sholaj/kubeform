@@ -29,8 +29,8 @@ import (
 type MainRouteTableAssociationLister interface {
 	// List lists all MainRouteTableAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MainRouteTableAssociation, err error)
-	// Get retrieves the MainRouteTableAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.MainRouteTableAssociation, error)
+	// MainRouteTableAssociations returns an object that can list and get MainRouteTableAssociations.
+	MainRouteTableAssociations(namespace string) MainRouteTableAssociationNamespaceLister
 	MainRouteTableAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *mainRouteTableAssociationLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the MainRouteTableAssociation from the index for a given name.
-func (s *mainRouteTableAssociationLister) Get(name string) (*v1alpha1.MainRouteTableAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MainRouteTableAssociations returns an object that can list and get MainRouteTableAssociations.
+func (s *mainRouteTableAssociationLister) MainRouteTableAssociations(namespace string) MainRouteTableAssociationNamespaceLister {
+	return mainRouteTableAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MainRouteTableAssociationNamespaceLister helps list and get MainRouteTableAssociations.
+type MainRouteTableAssociationNamespaceLister interface {
+	// List lists all MainRouteTableAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MainRouteTableAssociation, err error)
+	// Get retrieves the MainRouteTableAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MainRouteTableAssociation, error)
+	MainRouteTableAssociationNamespaceListerExpansion
+}
+
+// mainRouteTableAssociationNamespaceLister implements the MainRouteTableAssociationNamespaceLister
+// interface.
+type mainRouteTableAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MainRouteTableAssociations in the indexer for a given namespace.
+func (s mainRouteTableAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MainRouteTableAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MainRouteTableAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the MainRouteTableAssociation from the indexer for a given namespace and name.
+func (s mainRouteTableAssociationNamespaceLister) Get(name string) (*v1alpha1.MainRouteTableAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

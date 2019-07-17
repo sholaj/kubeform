@@ -8,7 +8,7 @@ metadata:
 spec:
   group: azurerm.kubeform.com
   names:
-    kind: ApiManagementApi
+    kind: ApiManagementAPI
     plural: apimanagementapis
   scope: ""
   validation:
@@ -397,14 +397,36 @@ spec:
           type: object
         spec:
           properties:
-            api_management_name:
+            apiManagementName:
               type: string
             description:
               type: string
-            display_name:
+            displayName:
               type: string
             import:
-              items: {}
+              items:
+                properties:
+                  contentFormat:
+                    type: string
+                  contentValue:
+                    type: string
+                  wsdlSelector:
+                    items:
+                      properties:
+                        endpointName:
+                          type: string
+                        serviceName:
+                          type: string
+                      required:
+                      - endpointName
+                      - serviceName
+                      type: object
+                    maxItems: 1
+                    type: array
+                required:
+                - contentFormat
+                - contentValue
+                type: object
               maxItems: 1
               type: array
             name:
@@ -416,19 +438,29 @@ spec:
                 type: string
               type: array
               uniqueItems: true
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
             revision:
               type: string
-            soap_pass_through:
+            soapPassThrough:
               type: boolean
           required:
-          - api_management_name
-          - display_name
+          - apiManagementName
+          - displayName
           - name
           - path
           - protocols
-          - resource_group_name
+          - providerRef
+          - resourceGroupName
           - revision
           type: object
         status:
@@ -440,6 +472,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

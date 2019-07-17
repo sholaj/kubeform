@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,56 +20,57 @@ type VirtualNetworkGateway struct {
 
 type VirtualNetworkGatewaySpecIpConfiguration struct {
 	// +optional
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" tf:"name,omitempty"`
 	// +optional
-	PrivateIpAddressAllocation string `json:"private_ip_address_allocation,omitempty"`
+	PrivateIPAddressAllocation string `json:"privateIPAddressAllocation,omitempty" tf:"private_ip_address_allocation,omitempty"`
 	// +optional
-	PublicIpAddressId string `json:"public_ip_address_id,omitempty"`
-	SubnetId          string `json:"subnet_id"`
+	PublicIPAddressID string `json:"publicIPAddressID,omitempty" tf:"public_ip_address_id,omitempty"`
+	SubnetID          string `json:"subnetID" tf:"subnet_id"`
 }
 
 type VirtualNetworkGatewaySpecVpnClientConfigurationRevokedCertificate struct {
-	Name       string `json:"name"`
-	Thumbprint string `json:"thumbprint"`
+	Name       string `json:"name" tf:"name"`
+	Thumbprint string `json:"thumbprint" tf:"thumbprint"`
 }
 
 type VirtualNetworkGatewaySpecVpnClientConfigurationRootCertificate struct {
-	Name           string `json:"name"`
-	PublicCertData string `json:"public_cert_data"`
+	Name           string `json:"name" tf:"name"`
+	PublicCertData string `json:"publicCertData" tf:"public_cert_data"`
 }
 
 type VirtualNetworkGatewaySpecVpnClientConfiguration struct {
-	AddressSpace []string `json:"address_space"`
+	AddressSpace []string `json:"addressSpace" tf:"address_space"`
 	// +optional
-	RadiusServerAddress string `json:"radius_server_address,omitempty"`
+	RadiusServerAddress string `json:"radiusServerAddress,omitempty" tf:"radius_server_address,omitempty"`
 	// +optional
-	RadiusServerSecret string `json:"radius_server_secret,omitempty"`
-	// +optional
-	// +kubebuilder:validation:UniqueItems=true
-	RevokedCertificate *[]VirtualNetworkGatewaySpecVpnClientConfiguration `json:"revoked_certificate,omitempty"`
+	RadiusServerSecret string `json:"radiusServerSecret,omitempty" tf:"radius_server_secret,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	RootCertificate *[]VirtualNetworkGatewaySpecVpnClientConfiguration `json:"root_certificate,omitempty"`
+	RevokedCertificate []VirtualNetworkGatewaySpecVpnClientConfigurationRevokedCertificate `json:"revokedCertificate,omitempty" tf:"revoked_certificate,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	VpnClientProtocols []string `json:"vpn_client_protocols,omitempty"`
+	RootCertificate []VirtualNetworkGatewaySpecVpnClientConfigurationRootCertificate `json:"rootCertificate,omitempty" tf:"root_certificate,omitempty"`
+	// +optional
+	// +kubebuilder:validation:UniqueItems=true
+	VpnClientProtocols []string `json:"vpnClientProtocols,omitempty" tf:"vpn_client_protocols,omitempty"`
 }
 
 type VirtualNetworkGatewaySpec struct {
 	// +optional
-	DefaultLocalNetworkGatewayId string `json:"default_local_network_gateway_id,omitempty"`
+	DefaultLocalNetworkGatewayID string `json:"defaultLocalNetworkGatewayID,omitempty" tf:"default_local_network_gateway_id,omitempty"`
 	// +kubebuilder:validation:MaxItems=2
-	IpConfiguration   []VirtualNetworkGatewaySpec `json:"ip_configuration"`
-	Location          string                      `json:"location"`
-	Name              string                      `json:"name"`
-	ResourceGroupName string                      `json:"resource_group_name"`
-	Sku               string                      `json:"sku"`
-	Type              string                      `json:"type"`
+	IpConfiguration   []VirtualNetworkGatewaySpecIpConfiguration `json:"ipConfiguration" tf:"ip_configuration"`
+	Location          string                                     `json:"location" tf:"location"`
+	Name              string                                     `json:"name" tf:"name"`
+	ResourceGroupName string                                     `json:"resourceGroupName" tf:"resource_group_name"`
+	Sku               string                                     `json:"sku" tf:"sku"`
+	Type              string                                     `json:"type" tf:"type"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	VpnClientConfiguration *[]VirtualNetworkGatewaySpec `json:"vpn_client_configuration,omitempty"`
+	VpnClientConfiguration []VirtualNetworkGatewaySpecVpnClientConfiguration `json:"vpnClientConfiguration,omitempty" tf:"vpn_client_configuration,omitempty"`
 	// +optional
-	VpnType string `json:"vpn_type,omitempty"`
+	VpnType     string                    `json:"vpnType,omitempty" tf:"vpn_type,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type VirtualNetworkGatewayStatus struct {
@@ -77,7 +78,9 @@ type VirtualNetworkGatewayStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

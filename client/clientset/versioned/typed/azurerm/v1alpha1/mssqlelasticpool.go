@@ -32,7 +32,7 @@ import (
 // MssqlElasticpoolsGetter has a method to return a MssqlElasticpoolInterface.
 // A group's client should implement this interface.
 type MssqlElasticpoolsGetter interface {
-	MssqlElasticpools() MssqlElasticpoolInterface
+	MssqlElasticpools(namespace string) MssqlElasticpoolInterface
 }
 
 // MssqlElasticpoolInterface has methods to work with MssqlElasticpool resources.
@@ -52,12 +52,14 @@ type MssqlElasticpoolInterface interface {
 // mssqlElasticpools implements MssqlElasticpoolInterface
 type mssqlElasticpools struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMssqlElasticpools returns a MssqlElasticpools
-func newMssqlElasticpools(c *AzurermV1alpha1Client) *mssqlElasticpools {
+func newMssqlElasticpools(c *AzurermV1alpha1Client, namespace string) *mssqlElasticpools {
 	return &mssqlElasticpools{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMssqlElasticpools(c *AzurermV1alpha1Client) *mssqlElasticpools {
 func (c *mssqlElasticpools) Get(name string, options v1.GetOptions) (result *v1alpha1.MssqlElasticpool, err error) {
 	result = &v1alpha1.MssqlElasticpool{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mssqlelasticpools").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *mssqlElasticpools) List(opts v1.ListOptions) (result *v1alpha1.MssqlEla
 	}
 	result = &v1alpha1.MssqlElasticpoolList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mssqlelasticpools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *mssqlElasticpools) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("mssqlelasticpools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *mssqlElasticpools) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *mssqlElasticpools) Create(mssqlElasticpool *v1alpha1.MssqlElasticpool) (result *v1alpha1.MssqlElasticpool, err error) {
 	result = &v1alpha1.MssqlElasticpool{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("mssqlelasticpools").
 		Body(mssqlElasticpool).
 		Do().
@@ -118,6 +124,7 @@ func (c *mssqlElasticpools) Create(mssqlElasticpool *v1alpha1.MssqlElasticpool) 
 func (c *mssqlElasticpools) Update(mssqlElasticpool *v1alpha1.MssqlElasticpool) (result *v1alpha1.MssqlElasticpool, err error) {
 	result = &v1alpha1.MssqlElasticpool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mssqlelasticpools").
 		Name(mssqlElasticpool.Name).
 		Body(mssqlElasticpool).
@@ -132,6 +139,7 @@ func (c *mssqlElasticpools) Update(mssqlElasticpool *v1alpha1.MssqlElasticpool) 
 func (c *mssqlElasticpools) UpdateStatus(mssqlElasticpool *v1alpha1.MssqlElasticpool) (result *v1alpha1.MssqlElasticpool, err error) {
 	result = &v1alpha1.MssqlElasticpool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mssqlelasticpools").
 		Name(mssqlElasticpool.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *mssqlElasticpools) UpdateStatus(mssqlElasticpool *v1alpha1.MssqlElastic
 // Delete takes name of the mssqlElasticpool and deletes it. Returns an error if one occurs.
 func (c *mssqlElasticpools) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mssqlelasticpools").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *mssqlElasticpools) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mssqlelasticpools").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *mssqlElasticpools) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *mssqlElasticpools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MssqlElasticpool, err error) {
 	result = &v1alpha1.MssqlElasticpool{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("mssqlelasticpools").
 		SubResource(subresources...).
 		Name(name).

@@ -31,6 +31,7 @@ import (
 // FakePinpointApnsChannels implements PinpointApnsChannelInterface
 type FakePinpointApnsChannels struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var pinpointapnschannelsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "pinpointapnschannels"}
@@ -40,7 +41,8 @@ var pinpointapnschannelsKind = schema.GroupVersionKind{Group: "aws.kubeform.com"
 // Get takes name of the pinpointApnsChannel, and returns the corresponding pinpointApnsChannel object, and an error if there is any.
 func (c *FakePinpointApnsChannels) Get(name string, options v1.GetOptions) (result *v1alpha1.PinpointApnsChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(pinpointapnschannelsResource, name), &v1alpha1.PinpointApnsChannel{})
+		Invokes(testing.NewGetAction(pinpointapnschannelsResource, c.ns, name), &v1alpha1.PinpointApnsChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakePinpointApnsChannels) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of PinpointApnsChannels that match those selectors.
 func (c *FakePinpointApnsChannels) List(opts v1.ListOptions) (result *v1alpha1.PinpointApnsChannelList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(pinpointapnschannelsResource, pinpointapnschannelsKind, opts), &v1alpha1.PinpointApnsChannelList{})
+		Invokes(testing.NewListAction(pinpointapnschannelsResource, pinpointapnschannelsKind, c.ns, opts), &v1alpha1.PinpointApnsChannelList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakePinpointApnsChannels) List(opts v1.ListOptions) (result *v1alpha1.P
 // Watch returns a watch.Interface that watches the requested pinpointApnsChannels.
 func (c *FakePinpointApnsChannels) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(pinpointapnschannelsResource, opts))
+		InvokesWatch(testing.NewWatchAction(pinpointapnschannelsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a pinpointApnsChannel and creates it.  Returns the server's representation of the pinpointApnsChannel, and an error, if there is any.
 func (c *FakePinpointApnsChannels) Create(pinpointApnsChannel *v1alpha1.PinpointApnsChannel) (result *v1alpha1.PinpointApnsChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(pinpointapnschannelsResource, pinpointApnsChannel), &v1alpha1.PinpointApnsChannel{})
+		Invokes(testing.NewCreateAction(pinpointapnschannelsResource, c.ns, pinpointApnsChannel), &v1alpha1.PinpointApnsChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakePinpointApnsChannels) Create(pinpointApnsChannel *v1alpha1.Pinpoint
 // Update takes the representation of a pinpointApnsChannel and updates it. Returns the server's representation of the pinpointApnsChannel, and an error, if there is any.
 func (c *FakePinpointApnsChannels) Update(pinpointApnsChannel *v1alpha1.PinpointApnsChannel) (result *v1alpha1.PinpointApnsChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(pinpointapnschannelsResource, pinpointApnsChannel), &v1alpha1.PinpointApnsChannel{})
+		Invokes(testing.NewUpdateAction(pinpointapnschannelsResource, c.ns, pinpointApnsChannel), &v1alpha1.PinpointApnsChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakePinpointApnsChannels) Update(pinpointApnsChannel *v1alpha1.Pinpoint
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakePinpointApnsChannels) UpdateStatus(pinpointApnsChannel *v1alpha1.PinpointApnsChannel) (*v1alpha1.PinpointApnsChannel, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(pinpointapnschannelsResource, "status", pinpointApnsChannel), &v1alpha1.PinpointApnsChannel{})
+		Invokes(testing.NewUpdateSubresourceAction(pinpointapnschannelsResource, "status", c.ns, pinpointApnsChannel), &v1alpha1.PinpointApnsChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakePinpointApnsChannels) UpdateStatus(pinpointApnsChannel *v1alpha1.Pi
 // Delete takes name of the pinpointApnsChannel and deletes it. Returns an error if one occurs.
 func (c *FakePinpointApnsChannels) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(pinpointapnschannelsResource, name), &v1alpha1.PinpointApnsChannel{})
+		Invokes(testing.NewDeleteAction(pinpointapnschannelsResource, c.ns, name), &v1alpha1.PinpointApnsChannel{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakePinpointApnsChannels) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(pinpointapnschannelsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(pinpointapnschannelsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PinpointApnsChannelList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakePinpointApnsChannels) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched pinpointApnsChannel.
 func (c *FakePinpointApnsChannels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PinpointApnsChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(pinpointapnschannelsResource, name, pt, data, subresources...), &v1alpha1.PinpointApnsChannel{})
+		Invokes(testing.NewPatchSubresourceAction(pinpointapnschannelsResource, c.ns, name, pt, data, subresources...), &v1alpha1.PinpointApnsChannel{})
+
 	if obj == nil {
 		return nil, err
 	}

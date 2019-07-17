@@ -32,7 +32,7 @@ import (
 // ContainerServicesGetter has a method to return a ContainerServiceInterface.
 // A group's client should implement this interface.
 type ContainerServicesGetter interface {
-	ContainerServices() ContainerServiceInterface
+	ContainerServices(namespace string) ContainerServiceInterface
 }
 
 // ContainerServiceInterface has methods to work with ContainerService resources.
@@ -52,12 +52,14 @@ type ContainerServiceInterface interface {
 // containerServices implements ContainerServiceInterface
 type containerServices struct {
 	client rest.Interface
+	ns     string
 }
 
 // newContainerServices returns a ContainerServices
-func newContainerServices(c *AzurermV1alpha1Client) *containerServices {
+func newContainerServices(c *AzurermV1alpha1Client, namespace string) *containerServices {
 	return &containerServices{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newContainerServices(c *AzurermV1alpha1Client) *containerServices {
 func (c *containerServices) Get(name string, options v1.GetOptions) (result *v1alpha1.ContainerService, err error) {
 	result = &v1alpha1.ContainerService{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("containerservices").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *containerServices) List(opts v1.ListOptions) (result *v1alpha1.Containe
 	}
 	result = &v1alpha1.ContainerServiceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("containerservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *containerServices) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("containerservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *containerServices) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *containerServices) Create(containerService *v1alpha1.ContainerService) (result *v1alpha1.ContainerService, err error) {
 	result = &v1alpha1.ContainerService{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("containerservices").
 		Body(containerService).
 		Do().
@@ -118,6 +124,7 @@ func (c *containerServices) Create(containerService *v1alpha1.ContainerService) 
 func (c *containerServices) Update(containerService *v1alpha1.ContainerService) (result *v1alpha1.ContainerService, err error) {
 	result = &v1alpha1.ContainerService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("containerservices").
 		Name(containerService.Name).
 		Body(containerService).
@@ -132,6 +139,7 @@ func (c *containerServices) Update(containerService *v1alpha1.ContainerService) 
 func (c *containerServices) UpdateStatus(containerService *v1alpha1.ContainerService) (result *v1alpha1.ContainerService, err error) {
 	result = &v1alpha1.ContainerService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("containerservices").
 		Name(containerService.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *containerServices) UpdateStatus(containerService *v1alpha1.ContainerSer
 // Delete takes name of the containerService and deletes it. Returns an error if one occurs.
 func (c *containerServices) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("containerservices").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *containerServices) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("containerservices").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *containerServices) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *containerServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ContainerService, err error) {
 	result = &v1alpha1.ContainerService{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("containerservices").
 		SubResource(subresources...).
 		Name(name).

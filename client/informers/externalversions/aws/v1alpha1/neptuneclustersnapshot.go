@@ -41,32 +41,33 @@ type NeptuneClusterSnapshotInformer interface {
 type neptuneClusterSnapshotInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewNeptuneClusterSnapshotInformer constructs a new informer for NeptuneClusterSnapshot type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewNeptuneClusterSnapshotInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredNeptuneClusterSnapshotInformer(client, resyncPeriod, indexers, nil)
+func NewNeptuneClusterSnapshotInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredNeptuneClusterSnapshotInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredNeptuneClusterSnapshotInformer constructs a new informer for NeptuneClusterSnapshot type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredNeptuneClusterSnapshotInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredNeptuneClusterSnapshotInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().NeptuneClusterSnapshots().List(options)
+				return client.AwsV1alpha1().NeptuneClusterSnapshots(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().NeptuneClusterSnapshots().Watch(options)
+				return client.AwsV1alpha1().NeptuneClusterSnapshots(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.NeptuneClusterSnapshot{},
@@ -76,7 +77,7 @@ func NewFilteredNeptuneClusterSnapshotInformer(client versioned.Interface, resyn
 }
 
 func (f *neptuneClusterSnapshotInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredNeptuneClusterSnapshotInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredNeptuneClusterSnapshotInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *neptuneClusterSnapshotInformer) Informer() cache.SharedIndexInformer {

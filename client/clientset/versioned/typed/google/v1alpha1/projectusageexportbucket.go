@@ -32,7 +32,7 @@ import (
 // ProjectUsageExportBucketsGetter has a method to return a ProjectUsageExportBucketInterface.
 // A group's client should implement this interface.
 type ProjectUsageExportBucketsGetter interface {
-	ProjectUsageExportBuckets() ProjectUsageExportBucketInterface
+	ProjectUsageExportBuckets(namespace string) ProjectUsageExportBucketInterface
 }
 
 // ProjectUsageExportBucketInterface has methods to work with ProjectUsageExportBucket resources.
@@ -52,12 +52,14 @@ type ProjectUsageExportBucketInterface interface {
 // projectUsageExportBuckets implements ProjectUsageExportBucketInterface
 type projectUsageExportBuckets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newProjectUsageExportBuckets returns a ProjectUsageExportBuckets
-func newProjectUsageExportBuckets(c *GoogleV1alpha1Client) *projectUsageExportBuckets {
+func newProjectUsageExportBuckets(c *GoogleV1alpha1Client, namespace string) *projectUsageExportBuckets {
 	return &projectUsageExportBuckets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newProjectUsageExportBuckets(c *GoogleV1alpha1Client) *projectUsageExportBu
 func (c *projectUsageExportBuckets) Get(name string, options v1.GetOptions) (result *v1alpha1.ProjectUsageExportBucket, err error) {
 	result = &v1alpha1.ProjectUsageExportBucket{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("projectusageexportbuckets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *projectUsageExportBuckets) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.ProjectUsageExportBucketList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("projectusageexportbuckets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *projectUsageExportBuckets) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("projectusageexportbuckets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *projectUsageExportBuckets) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *projectUsageExportBuckets) Create(projectUsageExportBucket *v1alpha1.ProjectUsageExportBucket) (result *v1alpha1.ProjectUsageExportBucket, err error) {
 	result = &v1alpha1.ProjectUsageExportBucket{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("projectusageexportbuckets").
 		Body(projectUsageExportBucket).
 		Do().
@@ -118,6 +124,7 @@ func (c *projectUsageExportBuckets) Create(projectUsageExportBucket *v1alpha1.Pr
 func (c *projectUsageExportBuckets) Update(projectUsageExportBucket *v1alpha1.ProjectUsageExportBucket) (result *v1alpha1.ProjectUsageExportBucket, err error) {
 	result = &v1alpha1.ProjectUsageExportBucket{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("projectusageexportbuckets").
 		Name(projectUsageExportBucket.Name).
 		Body(projectUsageExportBucket).
@@ -132,6 +139,7 @@ func (c *projectUsageExportBuckets) Update(projectUsageExportBucket *v1alpha1.Pr
 func (c *projectUsageExportBuckets) UpdateStatus(projectUsageExportBucket *v1alpha1.ProjectUsageExportBucket) (result *v1alpha1.ProjectUsageExportBucket, err error) {
 	result = &v1alpha1.ProjectUsageExportBucket{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("projectusageexportbuckets").
 		Name(projectUsageExportBucket.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *projectUsageExportBuckets) UpdateStatus(projectUsageExportBucket *v1alp
 // Delete takes name of the projectUsageExportBucket and deletes it. Returns an error if one occurs.
 func (c *projectUsageExportBuckets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("projectusageexportbuckets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *projectUsageExportBuckets) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("projectusageexportbuckets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *projectUsageExportBuckets) DeleteCollection(options *v1.DeleteOptions, 
 func (c *projectUsageExportBuckets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ProjectUsageExportBucket, err error) {
 	result = &v1alpha1.ProjectUsageExportBucket{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("projectusageexportbuckets").
 		SubResource(subresources...).
 		Name(name).

@@ -3,12 +3,12 @@ package v1alpha1
 import (
 	"encoding/json"
 
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -22,18 +22,19 @@ type LambdaAlias struct {
 
 type LambdaAliasSpecRoutingConfig struct {
 	// +optional
-	AdditionalVersionWeights map[string]json.Number `json:"additional_version_weights,omitempty"`
+	AdditionalVersionWeights map[string]json.Number `json:"additionalVersionWeights,omitempty" tf:"additional_version_weights,omitempty"`
 }
 
 type LambdaAliasSpec struct {
 	// +optional
-	Description     string `json:"description,omitempty"`
-	FunctionName    string `json:"function_name"`
-	FunctionVersion string `json:"function_version"`
-	Name            string `json:"name"`
+	Description     string `json:"description,omitempty" tf:"description,omitempty"`
+	FunctionName    string `json:"functionName" tf:"function_name"`
+	FunctionVersion string `json:"functionVersion" tf:"function_version"`
+	Name            string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	RoutingConfig *[]LambdaAliasSpec `json:"routing_config,omitempty"`
+	RoutingConfig []LambdaAliasSpecRoutingConfig `json:"routingConfig,omitempty" tf:"routing_config,omitempty"`
+	ProviderRef   core.LocalObjectReference      `json:"providerRef" tf:"-"`
 }
 
 type LambdaAliasStatus struct {
@@ -41,7 +42,9 @@ type LambdaAliasStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

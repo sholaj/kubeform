@@ -29,8 +29,8 @@ import (
 type SpotInstanceRequestLister interface {
 	// List lists all SpotInstanceRequests in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SpotInstanceRequest, err error)
-	// Get retrieves the SpotInstanceRequest from the index for a given name.
-	Get(name string) (*v1alpha1.SpotInstanceRequest, error)
+	// SpotInstanceRequests returns an object that can list and get SpotInstanceRequests.
+	SpotInstanceRequests(namespace string) SpotInstanceRequestNamespaceLister
 	SpotInstanceRequestListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *spotInstanceRequestLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the SpotInstanceRequest from the index for a given name.
-func (s *spotInstanceRequestLister) Get(name string) (*v1alpha1.SpotInstanceRequest, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SpotInstanceRequests returns an object that can list and get SpotInstanceRequests.
+func (s *spotInstanceRequestLister) SpotInstanceRequests(namespace string) SpotInstanceRequestNamespaceLister {
+	return spotInstanceRequestNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SpotInstanceRequestNamespaceLister helps list and get SpotInstanceRequests.
+type SpotInstanceRequestNamespaceLister interface {
+	// List lists all SpotInstanceRequests in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SpotInstanceRequest, err error)
+	// Get retrieves the SpotInstanceRequest from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SpotInstanceRequest, error)
+	SpotInstanceRequestNamespaceListerExpansion
+}
+
+// spotInstanceRequestNamespaceLister implements the SpotInstanceRequestNamespaceLister
+// interface.
+type spotInstanceRequestNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SpotInstanceRequests in the indexer for a given namespace.
+func (s spotInstanceRequestNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SpotInstanceRequest, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SpotInstanceRequest))
+	})
+	return ret, err
+}
+
+// Get retrieves the SpotInstanceRequest from the indexer for a given namespace and name.
+func (s spotInstanceRequestNamespaceLister) Get(name string) (*v1alpha1.SpotInstanceRequest, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeFolderIamMembers implements FolderIamMemberInterface
 type FakeFolderIamMembers struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var folderiammembersResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "folderiammembers"}
@@ -40,7 +41,8 @@ var folderiammembersKind = schema.GroupVersionKind{Group: "google.kubeform.com",
 // Get takes name of the folderIamMember, and returns the corresponding folderIamMember object, and an error if there is any.
 func (c *FakeFolderIamMembers) Get(name string, options v1.GetOptions) (result *v1alpha1.FolderIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(folderiammembersResource, name), &v1alpha1.FolderIamMember{})
+		Invokes(testing.NewGetAction(folderiammembersResource, c.ns, name), &v1alpha1.FolderIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeFolderIamMembers) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of FolderIamMembers that match those selectors.
 func (c *FakeFolderIamMembers) List(opts v1.ListOptions) (result *v1alpha1.FolderIamMemberList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(folderiammembersResource, folderiammembersKind, opts), &v1alpha1.FolderIamMemberList{})
+		Invokes(testing.NewListAction(folderiammembersResource, folderiammembersKind, c.ns, opts), &v1alpha1.FolderIamMemberList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeFolderIamMembers) List(opts v1.ListOptions) (result *v1alpha1.Folde
 // Watch returns a watch.Interface that watches the requested folderIamMembers.
 func (c *FakeFolderIamMembers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(folderiammembersResource, opts))
+		InvokesWatch(testing.NewWatchAction(folderiammembersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a folderIamMember and creates it.  Returns the server's representation of the folderIamMember, and an error, if there is any.
 func (c *FakeFolderIamMembers) Create(folderIamMember *v1alpha1.FolderIamMember) (result *v1alpha1.FolderIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(folderiammembersResource, folderIamMember), &v1alpha1.FolderIamMember{})
+		Invokes(testing.NewCreateAction(folderiammembersResource, c.ns, folderIamMember), &v1alpha1.FolderIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeFolderIamMembers) Create(folderIamMember *v1alpha1.FolderIamMember)
 // Update takes the representation of a folderIamMember and updates it. Returns the server's representation of the folderIamMember, and an error, if there is any.
 func (c *FakeFolderIamMembers) Update(folderIamMember *v1alpha1.FolderIamMember) (result *v1alpha1.FolderIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(folderiammembersResource, folderIamMember), &v1alpha1.FolderIamMember{})
+		Invokes(testing.NewUpdateAction(folderiammembersResource, c.ns, folderIamMember), &v1alpha1.FolderIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeFolderIamMembers) Update(folderIamMember *v1alpha1.FolderIamMember)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeFolderIamMembers) UpdateStatus(folderIamMember *v1alpha1.FolderIamMember) (*v1alpha1.FolderIamMember, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(folderiammembersResource, "status", folderIamMember), &v1alpha1.FolderIamMember{})
+		Invokes(testing.NewUpdateSubresourceAction(folderiammembersResource, "status", c.ns, folderIamMember), &v1alpha1.FolderIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeFolderIamMembers) UpdateStatus(folderIamMember *v1alpha1.FolderIamM
 // Delete takes name of the folderIamMember and deletes it. Returns an error if one occurs.
 func (c *FakeFolderIamMembers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(folderiammembersResource, name), &v1alpha1.FolderIamMember{})
+		Invokes(testing.NewDeleteAction(folderiammembersResource, c.ns, name), &v1alpha1.FolderIamMember{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeFolderIamMembers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(folderiammembersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(folderiammembersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.FolderIamMemberList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeFolderIamMembers) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched folderIamMember.
 func (c *FakeFolderIamMembers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FolderIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(folderiammembersResource, name, pt, data, subresources...), &v1alpha1.FolderIamMember{})
+		Invokes(testing.NewPatchSubresourceAction(folderiammembersResource, c.ns, name, pt, data, subresources...), &v1alpha1.FolderIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}

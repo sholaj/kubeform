@@ -31,6 +31,7 @@ import (
 // FakeWafXssMatchSets implements WafXssMatchSetInterface
 type FakeWafXssMatchSets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var wafxssmatchsetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "wafxssmatchsets"}
@@ -40,7 +41,8 @@ var wafxssmatchsetsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ver
 // Get takes name of the wafXssMatchSet, and returns the corresponding wafXssMatchSet object, and an error if there is any.
 func (c *FakeWafXssMatchSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafXssMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(wafxssmatchsetsResource, name), &v1alpha1.WafXssMatchSet{})
+		Invokes(testing.NewGetAction(wafxssmatchsetsResource, c.ns, name), &v1alpha1.WafXssMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeWafXssMatchSets) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of WafXssMatchSets that match those selectors.
 func (c *FakeWafXssMatchSets) List(opts v1.ListOptions) (result *v1alpha1.WafXssMatchSetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(wafxssmatchsetsResource, wafxssmatchsetsKind, opts), &v1alpha1.WafXssMatchSetList{})
+		Invokes(testing.NewListAction(wafxssmatchsetsResource, wafxssmatchsetsKind, c.ns, opts), &v1alpha1.WafXssMatchSetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeWafXssMatchSets) List(opts v1.ListOptions) (result *v1alpha1.WafXss
 // Watch returns a watch.Interface that watches the requested wafXssMatchSets.
 func (c *FakeWafXssMatchSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(wafxssmatchsetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(wafxssmatchsetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a wafXssMatchSet and creates it.  Returns the server's representation of the wafXssMatchSet, and an error, if there is any.
 func (c *FakeWafXssMatchSets) Create(wafXssMatchSet *v1alpha1.WafXssMatchSet) (result *v1alpha1.WafXssMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(wafxssmatchsetsResource, wafXssMatchSet), &v1alpha1.WafXssMatchSet{})
+		Invokes(testing.NewCreateAction(wafxssmatchsetsResource, c.ns, wafXssMatchSet), &v1alpha1.WafXssMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeWafXssMatchSets) Create(wafXssMatchSet *v1alpha1.WafXssMatchSet) (r
 // Update takes the representation of a wafXssMatchSet and updates it. Returns the server's representation of the wafXssMatchSet, and an error, if there is any.
 func (c *FakeWafXssMatchSets) Update(wafXssMatchSet *v1alpha1.WafXssMatchSet) (result *v1alpha1.WafXssMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(wafxssmatchsetsResource, wafXssMatchSet), &v1alpha1.WafXssMatchSet{})
+		Invokes(testing.NewUpdateAction(wafxssmatchsetsResource, c.ns, wafXssMatchSet), &v1alpha1.WafXssMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeWafXssMatchSets) Update(wafXssMatchSet *v1alpha1.WafXssMatchSet) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeWafXssMatchSets) UpdateStatus(wafXssMatchSet *v1alpha1.WafXssMatchSet) (*v1alpha1.WafXssMatchSet, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(wafxssmatchsetsResource, "status", wafXssMatchSet), &v1alpha1.WafXssMatchSet{})
+		Invokes(testing.NewUpdateSubresourceAction(wafxssmatchsetsResource, "status", c.ns, wafXssMatchSet), &v1alpha1.WafXssMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeWafXssMatchSets) UpdateStatus(wafXssMatchSet *v1alpha1.WafXssMatchS
 // Delete takes name of the wafXssMatchSet and deletes it. Returns an error if one occurs.
 func (c *FakeWafXssMatchSets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(wafxssmatchsetsResource, name), &v1alpha1.WafXssMatchSet{})
+		Invokes(testing.NewDeleteAction(wafxssmatchsetsResource, c.ns, name), &v1alpha1.WafXssMatchSet{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeWafXssMatchSets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(wafxssmatchsetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(wafxssmatchsetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.WafXssMatchSetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeWafXssMatchSets) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched wafXssMatchSet.
 func (c *FakeWafXssMatchSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafXssMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(wafxssmatchsetsResource, name, pt, data, subresources...), &v1alpha1.WafXssMatchSet{})
+		Invokes(testing.NewPatchSubresourceAction(wafxssmatchsetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.WafXssMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeGameliftFleets implements GameliftFleetInterface
 type FakeGameliftFleets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var gameliftfleetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "gameliftfleets"}
@@ -40,7 +41,8 @@ var gameliftfleetsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Vers
 // Get takes name of the gameliftFleet, and returns the corresponding gameliftFleet object, and an error if there is any.
 func (c *FakeGameliftFleets) Get(name string, options v1.GetOptions) (result *v1alpha1.GameliftFleet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(gameliftfleetsResource, name), &v1alpha1.GameliftFleet{})
+		Invokes(testing.NewGetAction(gameliftfleetsResource, c.ns, name), &v1alpha1.GameliftFleet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeGameliftFleets) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of GameliftFleets that match those selectors.
 func (c *FakeGameliftFleets) List(opts v1.ListOptions) (result *v1alpha1.GameliftFleetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(gameliftfleetsResource, gameliftfleetsKind, opts), &v1alpha1.GameliftFleetList{})
+		Invokes(testing.NewListAction(gameliftfleetsResource, gameliftfleetsKind, c.ns, opts), &v1alpha1.GameliftFleetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeGameliftFleets) List(opts v1.ListOptions) (result *v1alpha1.Gamelif
 // Watch returns a watch.Interface that watches the requested gameliftFleets.
 func (c *FakeGameliftFleets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(gameliftfleetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(gameliftfleetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a gameliftFleet and creates it.  Returns the server's representation of the gameliftFleet, and an error, if there is any.
 func (c *FakeGameliftFleets) Create(gameliftFleet *v1alpha1.GameliftFleet) (result *v1alpha1.GameliftFleet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(gameliftfleetsResource, gameliftFleet), &v1alpha1.GameliftFleet{})
+		Invokes(testing.NewCreateAction(gameliftfleetsResource, c.ns, gameliftFleet), &v1alpha1.GameliftFleet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeGameliftFleets) Create(gameliftFleet *v1alpha1.GameliftFleet) (resu
 // Update takes the representation of a gameliftFleet and updates it. Returns the server's representation of the gameliftFleet, and an error, if there is any.
 func (c *FakeGameliftFleets) Update(gameliftFleet *v1alpha1.GameliftFleet) (result *v1alpha1.GameliftFleet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(gameliftfleetsResource, gameliftFleet), &v1alpha1.GameliftFleet{})
+		Invokes(testing.NewUpdateAction(gameliftfleetsResource, c.ns, gameliftFleet), &v1alpha1.GameliftFleet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeGameliftFleets) Update(gameliftFleet *v1alpha1.GameliftFleet) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeGameliftFleets) UpdateStatus(gameliftFleet *v1alpha1.GameliftFleet) (*v1alpha1.GameliftFleet, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(gameliftfleetsResource, "status", gameliftFleet), &v1alpha1.GameliftFleet{})
+		Invokes(testing.NewUpdateSubresourceAction(gameliftfleetsResource, "status", c.ns, gameliftFleet), &v1alpha1.GameliftFleet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeGameliftFleets) UpdateStatus(gameliftFleet *v1alpha1.GameliftFleet)
 // Delete takes name of the gameliftFleet and deletes it. Returns an error if one occurs.
 func (c *FakeGameliftFleets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(gameliftfleetsResource, name), &v1alpha1.GameliftFleet{})
+		Invokes(testing.NewDeleteAction(gameliftfleetsResource, c.ns, name), &v1alpha1.GameliftFleet{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeGameliftFleets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(gameliftfleetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(gameliftfleetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.GameliftFleetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeGameliftFleets) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched gameliftFleet.
 func (c *FakeGameliftFleets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GameliftFleet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(gameliftfleetsResource, name, pt, data, subresources...), &v1alpha1.GameliftFleet{})
+		Invokes(testing.NewPatchSubresourceAction(gameliftfleetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.GameliftFleet{})
+
 	if obj == nil {
 		return nil, err
 	}

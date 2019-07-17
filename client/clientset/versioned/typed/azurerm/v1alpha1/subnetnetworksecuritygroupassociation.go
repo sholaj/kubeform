@@ -32,7 +32,7 @@ import (
 // SubnetNetworkSecurityGroupAssociationsGetter has a method to return a SubnetNetworkSecurityGroupAssociationInterface.
 // A group's client should implement this interface.
 type SubnetNetworkSecurityGroupAssociationsGetter interface {
-	SubnetNetworkSecurityGroupAssociations() SubnetNetworkSecurityGroupAssociationInterface
+	SubnetNetworkSecurityGroupAssociations(namespace string) SubnetNetworkSecurityGroupAssociationInterface
 }
 
 // SubnetNetworkSecurityGroupAssociationInterface has methods to work with SubnetNetworkSecurityGroupAssociation resources.
@@ -52,12 +52,14 @@ type SubnetNetworkSecurityGroupAssociationInterface interface {
 // subnetNetworkSecurityGroupAssociations implements SubnetNetworkSecurityGroupAssociationInterface
 type subnetNetworkSecurityGroupAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSubnetNetworkSecurityGroupAssociations returns a SubnetNetworkSecurityGroupAssociations
-func newSubnetNetworkSecurityGroupAssociations(c *AzurermV1alpha1Client) *subnetNetworkSecurityGroupAssociations {
+func newSubnetNetworkSecurityGroupAssociations(c *AzurermV1alpha1Client, namespace string) *subnetNetworkSecurityGroupAssociations {
 	return &subnetNetworkSecurityGroupAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSubnetNetworkSecurityGroupAssociations(c *AzurermV1alpha1Client) *subnet
 func (c *subnetNetworkSecurityGroupAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.SubnetNetworkSecurityGroupAssociation, err error) {
 	result = &v1alpha1.SubnetNetworkSecurityGroupAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("subnetnetworksecuritygroupassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *subnetNetworkSecurityGroupAssociations) List(opts v1.ListOptions) (resu
 	}
 	result = &v1alpha1.SubnetNetworkSecurityGroupAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("subnetnetworksecuritygroupassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *subnetNetworkSecurityGroupAssociations) Watch(opts v1.ListOptions) (wat
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("subnetnetworksecuritygroupassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *subnetNetworkSecurityGroupAssociations) Watch(opts v1.ListOptions) (wat
 func (c *subnetNetworkSecurityGroupAssociations) Create(subnetNetworkSecurityGroupAssociation *v1alpha1.SubnetNetworkSecurityGroupAssociation) (result *v1alpha1.SubnetNetworkSecurityGroupAssociation, err error) {
 	result = &v1alpha1.SubnetNetworkSecurityGroupAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("subnetnetworksecuritygroupassociations").
 		Body(subnetNetworkSecurityGroupAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *subnetNetworkSecurityGroupAssociations) Create(subnetNetworkSecurityGro
 func (c *subnetNetworkSecurityGroupAssociations) Update(subnetNetworkSecurityGroupAssociation *v1alpha1.SubnetNetworkSecurityGroupAssociation) (result *v1alpha1.SubnetNetworkSecurityGroupAssociation, err error) {
 	result = &v1alpha1.SubnetNetworkSecurityGroupAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("subnetnetworksecuritygroupassociations").
 		Name(subnetNetworkSecurityGroupAssociation.Name).
 		Body(subnetNetworkSecurityGroupAssociation).
@@ -132,6 +139,7 @@ func (c *subnetNetworkSecurityGroupAssociations) Update(subnetNetworkSecurityGro
 func (c *subnetNetworkSecurityGroupAssociations) UpdateStatus(subnetNetworkSecurityGroupAssociation *v1alpha1.SubnetNetworkSecurityGroupAssociation) (result *v1alpha1.SubnetNetworkSecurityGroupAssociation, err error) {
 	result = &v1alpha1.SubnetNetworkSecurityGroupAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("subnetnetworksecuritygroupassociations").
 		Name(subnetNetworkSecurityGroupAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *subnetNetworkSecurityGroupAssociations) UpdateStatus(subnetNetworkSecur
 // Delete takes name of the subnetNetworkSecurityGroupAssociation and deletes it. Returns an error if one occurs.
 func (c *subnetNetworkSecurityGroupAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("subnetnetworksecuritygroupassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *subnetNetworkSecurityGroupAssociations) DeleteCollection(options *v1.De
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("subnetnetworksecuritygroupassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *subnetNetworkSecurityGroupAssociations) DeleteCollection(options *v1.De
 func (c *subnetNetworkSecurityGroupAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SubnetNetworkSecurityGroupAssociation, err error) {
 	result = &v1alpha1.SubnetNetworkSecurityGroupAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("subnetnetworksecuritygroupassociations").
 		SubResource(subresources...).
 		Name(name).

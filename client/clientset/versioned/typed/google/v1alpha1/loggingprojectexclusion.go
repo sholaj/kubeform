@@ -32,7 +32,7 @@ import (
 // LoggingProjectExclusionsGetter has a method to return a LoggingProjectExclusionInterface.
 // A group's client should implement this interface.
 type LoggingProjectExclusionsGetter interface {
-	LoggingProjectExclusions() LoggingProjectExclusionInterface
+	LoggingProjectExclusions(namespace string) LoggingProjectExclusionInterface
 }
 
 // LoggingProjectExclusionInterface has methods to work with LoggingProjectExclusion resources.
@@ -52,12 +52,14 @@ type LoggingProjectExclusionInterface interface {
 // loggingProjectExclusions implements LoggingProjectExclusionInterface
 type loggingProjectExclusions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLoggingProjectExclusions returns a LoggingProjectExclusions
-func newLoggingProjectExclusions(c *GoogleV1alpha1Client) *loggingProjectExclusions {
+func newLoggingProjectExclusions(c *GoogleV1alpha1Client, namespace string) *loggingProjectExclusions {
 	return &loggingProjectExclusions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLoggingProjectExclusions(c *GoogleV1alpha1Client) *loggingProjectExclusi
 func (c *loggingProjectExclusions) Get(name string, options v1.GetOptions) (result *v1alpha1.LoggingProjectExclusion, err error) {
 	result = &v1alpha1.LoggingProjectExclusion{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingprojectexclusions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *loggingProjectExclusions) List(opts v1.ListOptions) (result *v1alpha1.L
 	}
 	result = &v1alpha1.LoggingProjectExclusionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingprojectexclusions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *loggingProjectExclusions) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingprojectexclusions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *loggingProjectExclusions) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *loggingProjectExclusions) Create(loggingProjectExclusion *v1alpha1.LoggingProjectExclusion) (result *v1alpha1.LoggingProjectExclusion, err error) {
 	result = &v1alpha1.LoggingProjectExclusion{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("loggingprojectexclusions").
 		Body(loggingProjectExclusion).
 		Do().
@@ -118,6 +124,7 @@ func (c *loggingProjectExclusions) Create(loggingProjectExclusion *v1alpha1.Logg
 func (c *loggingProjectExclusions) Update(loggingProjectExclusion *v1alpha1.LoggingProjectExclusion) (result *v1alpha1.LoggingProjectExclusion, err error) {
 	result = &v1alpha1.LoggingProjectExclusion{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loggingprojectexclusions").
 		Name(loggingProjectExclusion.Name).
 		Body(loggingProjectExclusion).
@@ -132,6 +139,7 @@ func (c *loggingProjectExclusions) Update(loggingProjectExclusion *v1alpha1.Logg
 func (c *loggingProjectExclusions) UpdateStatus(loggingProjectExclusion *v1alpha1.LoggingProjectExclusion) (result *v1alpha1.LoggingProjectExclusion, err error) {
 	result = &v1alpha1.LoggingProjectExclusion{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loggingprojectexclusions").
 		Name(loggingProjectExclusion.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *loggingProjectExclusions) UpdateStatus(loggingProjectExclusion *v1alpha
 // Delete takes name of the loggingProjectExclusion and deletes it. Returns an error if one occurs.
 func (c *loggingProjectExclusions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loggingprojectexclusions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *loggingProjectExclusions) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loggingprojectexclusions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *loggingProjectExclusions) DeleteCollection(options *v1.DeleteOptions, l
 func (c *loggingProjectExclusions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LoggingProjectExclusion, err error) {
 	result = &v1alpha1.LoggingProjectExclusion{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("loggingprojectexclusions").
 		SubResource(subresources...).
 		Name(name).

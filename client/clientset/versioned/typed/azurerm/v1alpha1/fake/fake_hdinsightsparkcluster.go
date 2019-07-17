@@ -31,6 +31,7 @@ import (
 // FakeHdinsightSparkClusters implements HdinsightSparkClusterInterface
 type FakeHdinsightSparkClusters struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var hdinsightsparkclustersResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "hdinsightsparkclusters"}
@@ -40,7 +41,8 @@ var hdinsightsparkclustersKind = schema.GroupVersionKind{Group: "azurerm.kubefor
 // Get takes name of the hdinsightSparkCluster, and returns the corresponding hdinsightSparkCluster object, and an error if there is any.
 func (c *FakeHdinsightSparkClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.HdinsightSparkCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(hdinsightsparkclustersResource, name), &v1alpha1.HdinsightSparkCluster{})
+		Invokes(testing.NewGetAction(hdinsightsparkclustersResource, c.ns, name), &v1alpha1.HdinsightSparkCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeHdinsightSparkClusters) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of HdinsightSparkClusters that match those selectors.
 func (c *FakeHdinsightSparkClusters) List(opts v1.ListOptions) (result *v1alpha1.HdinsightSparkClusterList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(hdinsightsparkclustersResource, hdinsightsparkclustersKind, opts), &v1alpha1.HdinsightSparkClusterList{})
+		Invokes(testing.NewListAction(hdinsightsparkclustersResource, hdinsightsparkclustersKind, c.ns, opts), &v1alpha1.HdinsightSparkClusterList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeHdinsightSparkClusters) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested hdinsightSparkClusters.
 func (c *FakeHdinsightSparkClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(hdinsightsparkclustersResource, opts))
+		InvokesWatch(testing.NewWatchAction(hdinsightsparkclustersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a hdinsightSparkCluster and creates it.  Returns the server's representation of the hdinsightSparkCluster, and an error, if there is any.
 func (c *FakeHdinsightSparkClusters) Create(hdinsightSparkCluster *v1alpha1.HdinsightSparkCluster) (result *v1alpha1.HdinsightSparkCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(hdinsightsparkclustersResource, hdinsightSparkCluster), &v1alpha1.HdinsightSparkCluster{})
+		Invokes(testing.NewCreateAction(hdinsightsparkclustersResource, c.ns, hdinsightSparkCluster), &v1alpha1.HdinsightSparkCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeHdinsightSparkClusters) Create(hdinsightSparkCluster *v1alpha1.Hdin
 // Update takes the representation of a hdinsightSparkCluster and updates it. Returns the server's representation of the hdinsightSparkCluster, and an error, if there is any.
 func (c *FakeHdinsightSparkClusters) Update(hdinsightSparkCluster *v1alpha1.HdinsightSparkCluster) (result *v1alpha1.HdinsightSparkCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(hdinsightsparkclustersResource, hdinsightSparkCluster), &v1alpha1.HdinsightSparkCluster{})
+		Invokes(testing.NewUpdateAction(hdinsightsparkclustersResource, c.ns, hdinsightSparkCluster), &v1alpha1.HdinsightSparkCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeHdinsightSparkClusters) Update(hdinsightSparkCluster *v1alpha1.Hdin
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeHdinsightSparkClusters) UpdateStatus(hdinsightSparkCluster *v1alpha1.HdinsightSparkCluster) (*v1alpha1.HdinsightSparkCluster, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(hdinsightsparkclustersResource, "status", hdinsightSparkCluster), &v1alpha1.HdinsightSparkCluster{})
+		Invokes(testing.NewUpdateSubresourceAction(hdinsightsparkclustersResource, "status", c.ns, hdinsightSparkCluster), &v1alpha1.HdinsightSparkCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeHdinsightSparkClusters) UpdateStatus(hdinsightSparkCluster *v1alpha
 // Delete takes name of the hdinsightSparkCluster and deletes it. Returns an error if one occurs.
 func (c *FakeHdinsightSparkClusters) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(hdinsightsparkclustersResource, name), &v1alpha1.HdinsightSparkCluster{})
+		Invokes(testing.NewDeleteAction(hdinsightsparkclustersResource, c.ns, name), &v1alpha1.HdinsightSparkCluster{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeHdinsightSparkClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(hdinsightsparkclustersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(hdinsightsparkclustersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.HdinsightSparkClusterList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeHdinsightSparkClusters) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched hdinsightSparkCluster.
 func (c *FakeHdinsightSparkClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.HdinsightSparkCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(hdinsightsparkclustersResource, name, pt, data, subresources...), &v1alpha1.HdinsightSparkCluster{})
+		Invokes(testing.NewPatchSubresourceAction(hdinsightsparkclustersResource, c.ns, name, pt, data, subresources...), &v1alpha1.HdinsightSparkCluster{})
+
 	if obj == nil {
 		return nil, err
 	}

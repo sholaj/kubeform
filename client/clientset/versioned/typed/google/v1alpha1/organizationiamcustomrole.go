@@ -32,7 +32,7 @@ import (
 // OrganizationIamCustomRolesGetter has a method to return a OrganizationIamCustomRoleInterface.
 // A group's client should implement this interface.
 type OrganizationIamCustomRolesGetter interface {
-	OrganizationIamCustomRoles() OrganizationIamCustomRoleInterface
+	OrganizationIamCustomRoles(namespace string) OrganizationIamCustomRoleInterface
 }
 
 // OrganizationIamCustomRoleInterface has methods to work with OrganizationIamCustomRole resources.
@@ -52,12 +52,14 @@ type OrganizationIamCustomRoleInterface interface {
 // organizationIamCustomRoles implements OrganizationIamCustomRoleInterface
 type organizationIamCustomRoles struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOrganizationIamCustomRoles returns a OrganizationIamCustomRoles
-func newOrganizationIamCustomRoles(c *GoogleV1alpha1Client) *organizationIamCustomRoles {
+func newOrganizationIamCustomRoles(c *GoogleV1alpha1Client, namespace string) *organizationIamCustomRoles {
 	return &organizationIamCustomRoles{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOrganizationIamCustomRoles(c *GoogleV1alpha1Client) *organizationIamCust
 func (c *organizationIamCustomRoles) Get(name string, options v1.GetOptions) (result *v1alpha1.OrganizationIamCustomRole, err error) {
 	result = &v1alpha1.OrganizationIamCustomRole{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationiamcustomroles").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *organizationIamCustomRoles) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.OrganizationIamCustomRoleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationiamcustomroles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *organizationIamCustomRoles) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationiamcustomroles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *organizationIamCustomRoles) Watch(opts v1.ListOptions) (watch.Interface
 func (c *organizationIamCustomRoles) Create(organizationIamCustomRole *v1alpha1.OrganizationIamCustomRole) (result *v1alpha1.OrganizationIamCustomRole, err error) {
 	result = &v1alpha1.OrganizationIamCustomRole{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("organizationiamcustomroles").
 		Body(organizationIamCustomRole).
 		Do().
@@ -118,6 +124,7 @@ func (c *organizationIamCustomRoles) Create(organizationIamCustomRole *v1alpha1.
 func (c *organizationIamCustomRoles) Update(organizationIamCustomRole *v1alpha1.OrganizationIamCustomRole) (result *v1alpha1.OrganizationIamCustomRole, err error) {
 	result = &v1alpha1.OrganizationIamCustomRole{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("organizationiamcustomroles").
 		Name(organizationIamCustomRole.Name).
 		Body(organizationIamCustomRole).
@@ -132,6 +139,7 @@ func (c *organizationIamCustomRoles) Update(organizationIamCustomRole *v1alpha1.
 func (c *organizationIamCustomRoles) UpdateStatus(organizationIamCustomRole *v1alpha1.OrganizationIamCustomRole) (result *v1alpha1.OrganizationIamCustomRole, err error) {
 	result = &v1alpha1.OrganizationIamCustomRole{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("organizationiamcustomroles").
 		Name(organizationIamCustomRole.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *organizationIamCustomRoles) UpdateStatus(organizationIamCustomRole *v1a
 // Delete takes name of the organizationIamCustomRole and deletes it. Returns an error if one occurs.
 func (c *organizationIamCustomRoles) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("organizationiamcustomroles").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *organizationIamCustomRoles) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("organizationiamcustomroles").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *organizationIamCustomRoles) DeleteCollection(options *v1.DeleteOptions,
 func (c *organizationIamCustomRoles) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OrganizationIamCustomRole, err error) {
 	result = &v1alpha1.OrganizationIamCustomRole{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("organizationiamcustomroles").
 		SubResource(subresources...).
 		Name(name).

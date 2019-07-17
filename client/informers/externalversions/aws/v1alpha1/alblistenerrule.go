@@ -41,32 +41,33 @@ type AlbListenerRuleInformer interface {
 type albListenerRuleInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewAlbListenerRuleInformer constructs a new informer for AlbListenerRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAlbListenerRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAlbListenerRuleInformer(client, resyncPeriod, indexers, nil)
+func NewAlbListenerRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAlbListenerRuleInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredAlbListenerRuleInformer constructs a new informer for AlbListenerRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAlbListenerRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAlbListenerRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AlbListenerRules().List(options)
+				return client.AwsV1alpha1().AlbListenerRules(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AlbListenerRules().Watch(options)
+				return client.AwsV1alpha1().AlbListenerRules(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.AlbListenerRule{},
@@ -76,7 +77,7 @@ func NewFilteredAlbListenerRuleInformer(client versioned.Interface, resyncPeriod
 }
 
 func (f *albListenerRuleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAlbListenerRuleInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredAlbListenerRuleInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *albListenerRuleInformer) Informer() cache.SharedIndexInformer {

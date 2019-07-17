@@ -41,32 +41,33 @@ type RedshiftSnapshotCopyGrantInformer interface {
 type redshiftSnapshotCopyGrantInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewRedshiftSnapshotCopyGrantInformer constructs a new informer for RedshiftSnapshotCopyGrant type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewRedshiftSnapshotCopyGrantInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredRedshiftSnapshotCopyGrantInformer(client, resyncPeriod, indexers, nil)
+func NewRedshiftSnapshotCopyGrantInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredRedshiftSnapshotCopyGrantInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredRedshiftSnapshotCopyGrantInformer constructs a new informer for RedshiftSnapshotCopyGrant type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredRedshiftSnapshotCopyGrantInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredRedshiftSnapshotCopyGrantInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().RedshiftSnapshotCopyGrants().List(options)
+				return client.AwsV1alpha1().RedshiftSnapshotCopyGrants(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().RedshiftSnapshotCopyGrants().Watch(options)
+				return client.AwsV1alpha1().RedshiftSnapshotCopyGrants(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.RedshiftSnapshotCopyGrant{},
@@ -76,7 +77,7 @@ func NewFilteredRedshiftSnapshotCopyGrantInformer(client versioned.Interface, re
 }
 
 func (f *redshiftSnapshotCopyGrantInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredRedshiftSnapshotCopyGrantInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredRedshiftSnapshotCopyGrantInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *redshiftSnapshotCopyGrantInformer) Informer() cache.SharedIndexInformer {

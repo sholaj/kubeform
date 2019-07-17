@@ -31,6 +31,7 @@ import (
 // FakeSesIdentityNotificationTopics implements SesIdentityNotificationTopicInterface
 type FakeSesIdentityNotificationTopics struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var sesidentitynotificationtopicsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "sesidentitynotificationtopics"}
@@ -40,7 +41,8 @@ var sesidentitynotificationtopicsKind = schema.GroupVersionKind{Group: "aws.kube
 // Get takes name of the sesIdentityNotificationTopic, and returns the corresponding sesIdentityNotificationTopic object, and an error if there is any.
 func (c *FakeSesIdentityNotificationTopics) Get(name string, options v1.GetOptions) (result *v1alpha1.SesIdentityNotificationTopic, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sesidentitynotificationtopicsResource, name), &v1alpha1.SesIdentityNotificationTopic{})
+		Invokes(testing.NewGetAction(sesidentitynotificationtopicsResource, c.ns, name), &v1alpha1.SesIdentityNotificationTopic{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSesIdentityNotificationTopics) Get(name string, options v1.GetOptio
 // List takes label and field selectors, and returns the list of SesIdentityNotificationTopics that match those selectors.
 func (c *FakeSesIdentityNotificationTopics) List(opts v1.ListOptions) (result *v1alpha1.SesIdentityNotificationTopicList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sesidentitynotificationtopicsResource, sesidentitynotificationtopicsKind, opts), &v1alpha1.SesIdentityNotificationTopicList{})
+		Invokes(testing.NewListAction(sesidentitynotificationtopicsResource, sesidentitynotificationtopicsKind, c.ns, opts), &v1alpha1.SesIdentityNotificationTopicList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSesIdentityNotificationTopics) List(opts v1.ListOptions) (result *v
 // Watch returns a watch.Interface that watches the requested sesIdentityNotificationTopics.
 func (c *FakeSesIdentityNotificationTopics) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sesidentitynotificationtopicsResource, opts))
+		InvokesWatch(testing.NewWatchAction(sesidentitynotificationtopicsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sesIdentityNotificationTopic and creates it.  Returns the server's representation of the sesIdentityNotificationTopic, and an error, if there is any.
 func (c *FakeSesIdentityNotificationTopics) Create(sesIdentityNotificationTopic *v1alpha1.SesIdentityNotificationTopic) (result *v1alpha1.SesIdentityNotificationTopic, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sesidentitynotificationtopicsResource, sesIdentityNotificationTopic), &v1alpha1.SesIdentityNotificationTopic{})
+		Invokes(testing.NewCreateAction(sesidentitynotificationtopicsResource, c.ns, sesIdentityNotificationTopic), &v1alpha1.SesIdentityNotificationTopic{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSesIdentityNotificationTopics) Create(sesIdentityNotificationTopic 
 // Update takes the representation of a sesIdentityNotificationTopic and updates it. Returns the server's representation of the sesIdentityNotificationTopic, and an error, if there is any.
 func (c *FakeSesIdentityNotificationTopics) Update(sesIdentityNotificationTopic *v1alpha1.SesIdentityNotificationTopic) (result *v1alpha1.SesIdentityNotificationTopic, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sesidentitynotificationtopicsResource, sesIdentityNotificationTopic), &v1alpha1.SesIdentityNotificationTopic{})
+		Invokes(testing.NewUpdateAction(sesidentitynotificationtopicsResource, c.ns, sesIdentityNotificationTopic), &v1alpha1.SesIdentityNotificationTopic{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSesIdentityNotificationTopics) Update(sesIdentityNotificationTopic 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSesIdentityNotificationTopics) UpdateStatus(sesIdentityNotificationTopic *v1alpha1.SesIdentityNotificationTopic) (*v1alpha1.SesIdentityNotificationTopic, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sesidentitynotificationtopicsResource, "status", sesIdentityNotificationTopic), &v1alpha1.SesIdentityNotificationTopic{})
+		Invokes(testing.NewUpdateSubresourceAction(sesidentitynotificationtopicsResource, "status", c.ns, sesIdentityNotificationTopic), &v1alpha1.SesIdentityNotificationTopic{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSesIdentityNotificationTopics) UpdateStatus(sesIdentityNotification
 // Delete takes name of the sesIdentityNotificationTopic and deletes it. Returns an error if one occurs.
 func (c *FakeSesIdentityNotificationTopics) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sesidentitynotificationtopicsResource, name), &v1alpha1.SesIdentityNotificationTopic{})
+		Invokes(testing.NewDeleteAction(sesidentitynotificationtopicsResource, c.ns, name), &v1alpha1.SesIdentityNotificationTopic{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSesIdentityNotificationTopics) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sesidentitynotificationtopicsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sesidentitynotificationtopicsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SesIdentityNotificationTopicList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSesIdentityNotificationTopics) DeleteCollection(options *v1.DeleteO
 // Patch applies the patch and returns the patched sesIdentityNotificationTopic.
 func (c *FakeSesIdentityNotificationTopics) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesIdentityNotificationTopic, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sesidentitynotificationtopicsResource, name, pt, data, subresources...), &v1alpha1.SesIdentityNotificationTopic{})
+		Invokes(testing.NewPatchSubresourceAction(sesidentitynotificationtopicsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SesIdentityNotificationTopic{})
+
 	if obj == nil {
 		return nil, err
 	}

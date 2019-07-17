@@ -401,22 +401,22 @@ spec:
               type: string
             description:
               type: string
-            destination_address_prefix:
+            destinationAddressPrefix:
               type: string
-            destination_address_prefixes:
+            destinationAddressPrefixes:
               items:
                 type: string
               type: array
               uniqueItems: true
-            destination_application_security_group_ids:
+            destinationApplicationSecurityGroupIDS:
               items:
                 type: string
               maxItems: 1
               type: array
               uniqueItems: true
-            destination_port_range:
+            destinationPortRange:
               type: string
-            destination_port_ranges:
+            destinationPortRanges:
               items:
                 type: string
               type: array
@@ -425,30 +425,39 @@ spec:
               type: string
             name:
               type: string
-            network_security_group_name:
+            networkSecurityGroupName:
               type: string
             priority:
               type: integer
             protocol:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
-            source_address_prefix:
+            sourceAddressPrefix:
               type: string
-            source_address_prefixes:
+            sourceAddressPrefixes:
               items:
                 type: string
               type: array
               uniqueItems: true
-            source_application_security_group_ids:
+            sourceApplicationSecurityGroupIDS:
               items:
                 type: string
               maxItems: 1
               type: array
               uniqueItems: true
-            source_port_range:
+            sourcePortRange:
               type: string
-            source_port_ranges:
+            sourcePortRanges:
               items:
                 type: string
               type: array
@@ -457,10 +466,11 @@ spec:
           - access
           - direction
           - name
-          - network_security_group_name
+          - networkSecurityGroupName
           - priority
           - protocol
-          - resource_group_name
+          - providerRef
+          - resourceGroupName
           type: object
         status:
           properties:
@@ -471,6 +481,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

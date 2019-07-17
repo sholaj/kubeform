@@ -1,42 +1,45 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type StorageDefaultObjectAcl struct {
+type StorageDefaultObjectACL struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              StorageDefaultObjectAclSpec   `json:"spec,omitempty"`
-	Status            StorageDefaultObjectAclStatus `json:"status,omitempty"`
+	Spec              StorageDefaultObjectACLSpec   `json:"spec,omitempty"`
+	Status            StorageDefaultObjectACLStatus `json:"status,omitempty"`
 }
 
-type StorageDefaultObjectAclSpec struct {
-	Bucket string `json:"bucket"`
+type StorageDefaultObjectACLSpec struct {
+	Bucket      string                    `json:"bucket" tf:"bucket"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
-type StorageDefaultObjectAclStatus struct {
+type StorageDefaultObjectACLStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// StorageDefaultObjectAclList is a list of StorageDefaultObjectAcls
-type StorageDefaultObjectAclList struct {
+// StorageDefaultObjectACLList is a list of StorageDefaultObjectACLs
+type StorageDefaultObjectACLList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of StorageDefaultObjectAcl CRD objects
-	Items []StorageDefaultObjectAcl `json:"items,omitempty"`
+	// Items is a list of StorageDefaultObjectACL CRD objects
+	Items []StorageDefaultObjectACL `json:"items,omitempty"`
 }

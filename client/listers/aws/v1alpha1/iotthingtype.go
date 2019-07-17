@@ -29,8 +29,8 @@ import (
 type IotThingTypeLister interface {
 	// List lists all IotThingTypes in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IotThingType, err error)
-	// Get retrieves the IotThingType from the index for a given name.
-	Get(name string) (*v1alpha1.IotThingType, error)
+	// IotThingTypes returns an object that can list and get IotThingTypes.
+	IotThingTypes(namespace string) IotThingTypeNamespaceLister
 	IotThingTypeListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iotThingTypeLister) List(selector labels.Selector) (ret []*v1alpha1.Iot
 	return ret, err
 }
 
-// Get retrieves the IotThingType from the index for a given name.
-func (s *iotThingTypeLister) Get(name string) (*v1alpha1.IotThingType, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IotThingTypes returns an object that can list and get IotThingTypes.
+func (s *iotThingTypeLister) IotThingTypes(namespace string) IotThingTypeNamespaceLister {
+	return iotThingTypeNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IotThingTypeNamespaceLister helps list and get IotThingTypes.
+type IotThingTypeNamespaceLister interface {
+	// List lists all IotThingTypes in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IotThingType, err error)
+	// Get retrieves the IotThingType from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IotThingType, error)
+	IotThingTypeNamespaceListerExpansion
+}
+
+// iotThingTypeNamespaceLister implements the IotThingTypeNamespaceLister
+// interface.
+type iotThingTypeNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IotThingTypes in the indexer for a given namespace.
+func (s iotThingTypeNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IotThingType, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IotThingType))
+	})
+	return ret, err
+}
+
+// Get retrieves the IotThingType from the indexer for a given namespace and name.
+func (s iotThingTypeNamespaceLister) Get(name string) (*v1alpha1.IotThingType, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

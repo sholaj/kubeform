@@ -29,8 +29,8 @@ import (
 type SqlElasticpoolLister interface {
 	// List lists all SqlElasticpools in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SqlElasticpool, err error)
-	// Get retrieves the SqlElasticpool from the index for a given name.
-	Get(name string) (*v1alpha1.SqlElasticpool, error)
+	// SqlElasticpools returns an object that can list and get SqlElasticpools.
+	SqlElasticpools(namespace string) SqlElasticpoolNamespaceLister
 	SqlElasticpoolListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sqlElasticpoolLister) List(selector labels.Selector) (ret []*v1alpha1.S
 	return ret, err
 }
 
-// Get retrieves the SqlElasticpool from the index for a given name.
-func (s *sqlElasticpoolLister) Get(name string) (*v1alpha1.SqlElasticpool, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SqlElasticpools returns an object that can list and get SqlElasticpools.
+func (s *sqlElasticpoolLister) SqlElasticpools(namespace string) SqlElasticpoolNamespaceLister {
+	return sqlElasticpoolNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SqlElasticpoolNamespaceLister helps list and get SqlElasticpools.
+type SqlElasticpoolNamespaceLister interface {
+	// List lists all SqlElasticpools in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SqlElasticpool, err error)
+	// Get retrieves the SqlElasticpool from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SqlElasticpool, error)
+	SqlElasticpoolNamespaceListerExpansion
+}
+
+// sqlElasticpoolNamespaceLister implements the SqlElasticpoolNamespaceLister
+// interface.
+type sqlElasticpoolNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SqlElasticpools in the indexer for a given namespace.
+func (s sqlElasticpoolNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SqlElasticpool, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SqlElasticpool))
+	})
+	return ret, err
+}
+
+// Get retrieves the SqlElasticpool from the indexer for a given namespace and name.
+func (s sqlElasticpoolNamespaceLister) Get(name string) (*v1alpha1.SqlElasticpool, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

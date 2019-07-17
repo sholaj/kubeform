@@ -41,32 +41,33 @@ type AlbTargetGroupAttachmentInformer interface {
 type albTargetGroupAttachmentInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewAlbTargetGroupAttachmentInformer constructs a new informer for AlbTargetGroupAttachment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAlbTargetGroupAttachmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAlbTargetGroupAttachmentInformer(client, resyncPeriod, indexers, nil)
+func NewAlbTargetGroupAttachmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAlbTargetGroupAttachmentInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredAlbTargetGroupAttachmentInformer constructs a new informer for AlbTargetGroupAttachment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAlbTargetGroupAttachmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAlbTargetGroupAttachmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AlbTargetGroupAttachments().List(options)
+				return client.AwsV1alpha1().AlbTargetGroupAttachments(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AlbTargetGroupAttachments().Watch(options)
+				return client.AwsV1alpha1().AlbTargetGroupAttachments(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.AlbTargetGroupAttachment{},
@@ -76,7 +77,7 @@ func NewFilteredAlbTargetGroupAttachmentInformer(client versioned.Interface, res
 }
 
 func (f *albTargetGroupAttachmentInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAlbTargetGroupAttachmentInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredAlbTargetGroupAttachmentInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *albTargetGroupAttachmentInformer) Informer() cache.SharedIndexInformer {

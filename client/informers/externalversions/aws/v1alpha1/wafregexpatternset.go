@@ -41,32 +41,33 @@ type WafRegexPatternSetInformer interface {
 type wafRegexPatternSetInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewWafRegexPatternSetInformer constructs a new informer for WafRegexPatternSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewWafRegexPatternSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredWafRegexPatternSetInformer(client, resyncPeriod, indexers, nil)
+func NewWafRegexPatternSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredWafRegexPatternSetInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredWafRegexPatternSetInformer constructs a new informer for WafRegexPatternSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredWafRegexPatternSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredWafRegexPatternSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafRegexPatternSets().List(options)
+				return client.AwsV1alpha1().WafRegexPatternSets(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafRegexPatternSets().Watch(options)
+				return client.AwsV1alpha1().WafRegexPatternSets(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.WafRegexPatternSet{},
@@ -76,7 +77,7 @@ func NewFilteredWafRegexPatternSetInformer(client versioned.Interface, resyncPer
 }
 
 func (f *wafRegexPatternSetInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredWafRegexPatternSetInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredWafRegexPatternSetInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *wafRegexPatternSetInformer) Informer() cache.SharedIndexInformer {

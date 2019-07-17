@@ -31,6 +31,7 @@ import (
 // FakeApiGatewayResources implements ApiGatewayResourceInterface
 type FakeApiGatewayResources struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var apigatewayresourcesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "apigatewayresources"}
@@ -40,7 +41,8 @@ var apigatewayresourcesKind = schema.GroupVersionKind{Group: "aws.kubeform.com",
 // Get takes name of the apiGatewayResource, and returns the corresponding apiGatewayResource object, and an error if there is any.
 func (c *FakeApiGatewayResources) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayResource, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apigatewayresourcesResource, name), &v1alpha1.ApiGatewayResource{})
+		Invokes(testing.NewGetAction(apigatewayresourcesResource, c.ns, name), &v1alpha1.ApiGatewayResource{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApiGatewayResources) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of ApiGatewayResources that match those selectors.
 func (c *FakeApiGatewayResources) List(opts v1.ListOptions) (result *v1alpha1.ApiGatewayResourceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apigatewayresourcesResource, apigatewayresourcesKind, opts), &v1alpha1.ApiGatewayResourceList{})
+		Invokes(testing.NewListAction(apigatewayresourcesResource, apigatewayresourcesKind, c.ns, opts), &v1alpha1.ApiGatewayResourceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApiGatewayResources) List(opts v1.ListOptions) (result *v1alpha1.Ap
 // Watch returns a watch.Interface that watches the requested apiGatewayResources.
 func (c *FakeApiGatewayResources) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apigatewayresourcesResource, opts))
+		InvokesWatch(testing.NewWatchAction(apigatewayresourcesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a apiGatewayResource and creates it.  Returns the server's representation of the apiGatewayResource, and an error, if there is any.
 func (c *FakeApiGatewayResources) Create(apiGatewayResource *v1alpha1.ApiGatewayResource) (result *v1alpha1.ApiGatewayResource, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apigatewayresourcesResource, apiGatewayResource), &v1alpha1.ApiGatewayResource{})
+		Invokes(testing.NewCreateAction(apigatewayresourcesResource, c.ns, apiGatewayResource), &v1alpha1.ApiGatewayResource{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApiGatewayResources) Create(apiGatewayResource *v1alpha1.ApiGateway
 // Update takes the representation of a apiGatewayResource and updates it. Returns the server's representation of the apiGatewayResource, and an error, if there is any.
 func (c *FakeApiGatewayResources) Update(apiGatewayResource *v1alpha1.ApiGatewayResource) (result *v1alpha1.ApiGatewayResource, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apigatewayresourcesResource, apiGatewayResource), &v1alpha1.ApiGatewayResource{})
+		Invokes(testing.NewUpdateAction(apigatewayresourcesResource, c.ns, apiGatewayResource), &v1alpha1.ApiGatewayResource{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApiGatewayResources) Update(apiGatewayResource *v1alpha1.ApiGateway
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApiGatewayResources) UpdateStatus(apiGatewayResource *v1alpha1.ApiGatewayResource) (*v1alpha1.ApiGatewayResource, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apigatewayresourcesResource, "status", apiGatewayResource), &v1alpha1.ApiGatewayResource{})
+		Invokes(testing.NewUpdateSubresourceAction(apigatewayresourcesResource, "status", c.ns, apiGatewayResource), &v1alpha1.ApiGatewayResource{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApiGatewayResources) UpdateStatus(apiGatewayResource *v1alpha1.ApiG
 // Delete takes name of the apiGatewayResource and deletes it. Returns an error if one occurs.
 func (c *FakeApiGatewayResources) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apigatewayresourcesResource, name), &v1alpha1.ApiGatewayResource{})
+		Invokes(testing.NewDeleteAction(apigatewayresourcesResource, c.ns, name), &v1alpha1.ApiGatewayResource{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApiGatewayResources) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apigatewayresourcesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(apigatewayresourcesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApiGatewayResourceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApiGatewayResources) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched apiGatewayResource.
 func (c *FakeApiGatewayResources) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayResource, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apigatewayresourcesResource, name, pt, data, subresources...), &v1alpha1.ApiGatewayResource{})
+		Invokes(testing.NewPatchSubresourceAction(apigatewayresourcesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiGatewayResource{})
+
 	if obj == nil {
 		return nil, err
 	}

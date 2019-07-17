@@ -29,8 +29,8 @@ import (
 type VpcEndpointServiceLister interface {
 	// List lists all VpcEndpointServices in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.VpcEndpointService, err error)
-	// Get retrieves the VpcEndpointService from the index for a given name.
-	Get(name string) (*v1alpha1.VpcEndpointService, error)
+	// VpcEndpointServices returns an object that can list and get VpcEndpointServices.
+	VpcEndpointServices(namespace string) VpcEndpointServiceNamespaceLister
 	VpcEndpointServiceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *vpcEndpointServiceLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the VpcEndpointService from the index for a given name.
-func (s *vpcEndpointServiceLister) Get(name string) (*v1alpha1.VpcEndpointService, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VpcEndpointServices returns an object that can list and get VpcEndpointServices.
+func (s *vpcEndpointServiceLister) VpcEndpointServices(namespace string) VpcEndpointServiceNamespaceLister {
+	return vpcEndpointServiceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VpcEndpointServiceNamespaceLister helps list and get VpcEndpointServices.
+type VpcEndpointServiceNamespaceLister interface {
+	// List lists all VpcEndpointServices in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VpcEndpointService, err error)
+	// Get retrieves the VpcEndpointService from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VpcEndpointService, error)
+	VpcEndpointServiceNamespaceListerExpansion
+}
+
+// vpcEndpointServiceNamespaceLister implements the VpcEndpointServiceNamespaceLister
+// interface.
+type vpcEndpointServiceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VpcEndpointServices in the indexer for a given namespace.
+func (s vpcEndpointServiceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VpcEndpointService, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VpcEndpointService))
+	})
+	return ret, err
+}
+
+// Get retrieves the VpcEndpointService from the indexer for a given namespace and name.
+func (s vpcEndpointServiceNamespaceLister) Get(name string) (*v1alpha1.VpcEndpointService, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

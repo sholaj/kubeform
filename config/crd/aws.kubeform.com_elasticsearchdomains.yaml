@@ -397,32 +397,85 @@ spec:
           type: object
         spec:
           properties:
-            cognito_options:
-              items: {}
+            cognitoOptions:
+              items:
+                properties:
+                  enabled:
+                    type: boolean
+                  identityPoolID:
+                    type: string
+                  roleArn:
+                    type: string
+                  userPoolID:
+                    type: string
+                required:
+                - identityPoolID
+                - roleArn
+                - userPoolID
+                type: object
               maxItems: 1
               type: array
-            domain_name:
+            domainName:
               type: string
-            elasticsearch_version:
+            elasticsearchVersion:
               type: string
-            log_publishing_options:
-              items: {}
+            logPublishingOptions:
+              items:
+                properties:
+                  cloudwatchLogGroupArn:
+                    type: string
+                  enabled:
+                    type: boolean
+                  logType:
+                    type: string
+                required:
+                - cloudwatchLogGroupArn
+                - logType
+                type: object
               type: array
               uniqueItems: true
-            snapshot_options:
-              items: {}
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            snapshotOptions:
+              items:
+                properties:
+                  automatedSnapshotStartHour:
+                    type: integer
+                required:
+                - automatedSnapshotStartHour
+                type: object
               maxItems: 1
               type: array
             tags:
               additionalProperties:
                 type: string
               type: object
-            vpc_options:
-              items: {}
+            vpcOptions:
+              items:
+                properties:
+                  securityGroupIDS:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                  subnetIDS:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                type: object
               maxItems: 1
               type: array
           required:
-          - domain_name
+          - domainName
+          - providerRef
           type: object
         status:
           properties:
@@ -433,6 +486,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -32,7 +32,7 @@ import (
 // StorageBlobsGetter has a method to return a StorageBlobInterface.
 // A group's client should implement this interface.
 type StorageBlobsGetter interface {
-	StorageBlobs() StorageBlobInterface
+	StorageBlobs(namespace string) StorageBlobInterface
 }
 
 // StorageBlobInterface has methods to work with StorageBlob resources.
@@ -52,12 +52,14 @@ type StorageBlobInterface interface {
 // storageBlobs implements StorageBlobInterface
 type storageBlobs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStorageBlobs returns a StorageBlobs
-func newStorageBlobs(c *AzurermV1alpha1Client) *storageBlobs {
+func newStorageBlobs(c *AzurermV1alpha1Client, namespace string) *storageBlobs {
 	return &storageBlobs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStorageBlobs(c *AzurermV1alpha1Client) *storageBlobs {
 func (c *storageBlobs) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageBlob, err error) {
 	result = &v1alpha1.StorageBlob{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storageblobs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *storageBlobs) List(opts v1.ListOptions) (result *v1alpha1.StorageBlobLi
 	}
 	result = &v1alpha1.StorageBlobList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storageblobs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *storageBlobs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storageblobs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *storageBlobs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *storageBlobs) Create(storageBlob *v1alpha1.StorageBlob) (result *v1alpha1.StorageBlob, err error) {
 	result = &v1alpha1.StorageBlob{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storageblobs").
 		Body(storageBlob).
 		Do().
@@ -118,6 +124,7 @@ func (c *storageBlobs) Create(storageBlob *v1alpha1.StorageBlob) (result *v1alph
 func (c *storageBlobs) Update(storageBlob *v1alpha1.StorageBlob) (result *v1alpha1.StorageBlob, err error) {
 	result = &v1alpha1.StorageBlob{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storageblobs").
 		Name(storageBlob.Name).
 		Body(storageBlob).
@@ -132,6 +139,7 @@ func (c *storageBlobs) Update(storageBlob *v1alpha1.StorageBlob) (result *v1alph
 func (c *storageBlobs) UpdateStatus(storageBlob *v1alpha1.StorageBlob) (result *v1alpha1.StorageBlob, err error) {
 	result = &v1alpha1.StorageBlob{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storageblobs").
 		Name(storageBlob.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *storageBlobs) UpdateStatus(storageBlob *v1alpha1.StorageBlob) (result *
 // Delete takes name of the storageBlob and deletes it. Returns an error if one occurs.
 func (c *storageBlobs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storageblobs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *storageBlobs) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storageblobs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *storageBlobs) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *storageBlobs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageBlob, err error) {
 	result = &v1alpha1.StorageBlob{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storageblobs").
 		SubResource(subresources...).
 		Name(name).

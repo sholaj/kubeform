@@ -31,6 +31,7 @@ import (
 // FakeSchedulerJobs implements SchedulerJobInterface
 type FakeSchedulerJobs struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var schedulerjobsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "schedulerjobs"}
@@ -40,7 +41,8 @@ var schedulerjobsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", V
 // Get takes name of the schedulerJob, and returns the corresponding schedulerJob object, and an error if there is any.
 func (c *FakeSchedulerJobs) Get(name string, options v1.GetOptions) (result *v1alpha1.SchedulerJob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(schedulerjobsResource, name), &v1alpha1.SchedulerJob{})
+		Invokes(testing.NewGetAction(schedulerjobsResource, c.ns, name), &v1alpha1.SchedulerJob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSchedulerJobs) Get(name string, options v1.GetOptions) (result *v1a
 // List takes label and field selectors, and returns the list of SchedulerJobs that match those selectors.
 func (c *FakeSchedulerJobs) List(opts v1.ListOptions) (result *v1alpha1.SchedulerJobList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(schedulerjobsResource, schedulerjobsKind, opts), &v1alpha1.SchedulerJobList{})
+		Invokes(testing.NewListAction(schedulerjobsResource, schedulerjobsKind, c.ns, opts), &v1alpha1.SchedulerJobList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSchedulerJobs) List(opts v1.ListOptions) (result *v1alpha1.Schedule
 // Watch returns a watch.Interface that watches the requested schedulerJobs.
 func (c *FakeSchedulerJobs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(schedulerjobsResource, opts))
+		InvokesWatch(testing.NewWatchAction(schedulerjobsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a schedulerJob and creates it.  Returns the server's representation of the schedulerJob, and an error, if there is any.
 func (c *FakeSchedulerJobs) Create(schedulerJob *v1alpha1.SchedulerJob) (result *v1alpha1.SchedulerJob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(schedulerjobsResource, schedulerJob), &v1alpha1.SchedulerJob{})
+		Invokes(testing.NewCreateAction(schedulerjobsResource, c.ns, schedulerJob), &v1alpha1.SchedulerJob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSchedulerJobs) Create(schedulerJob *v1alpha1.SchedulerJob) (result 
 // Update takes the representation of a schedulerJob and updates it. Returns the server's representation of the schedulerJob, and an error, if there is any.
 func (c *FakeSchedulerJobs) Update(schedulerJob *v1alpha1.SchedulerJob) (result *v1alpha1.SchedulerJob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(schedulerjobsResource, schedulerJob), &v1alpha1.SchedulerJob{})
+		Invokes(testing.NewUpdateAction(schedulerjobsResource, c.ns, schedulerJob), &v1alpha1.SchedulerJob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSchedulerJobs) Update(schedulerJob *v1alpha1.SchedulerJob) (result 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSchedulerJobs) UpdateStatus(schedulerJob *v1alpha1.SchedulerJob) (*v1alpha1.SchedulerJob, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(schedulerjobsResource, "status", schedulerJob), &v1alpha1.SchedulerJob{})
+		Invokes(testing.NewUpdateSubresourceAction(schedulerjobsResource, "status", c.ns, schedulerJob), &v1alpha1.SchedulerJob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSchedulerJobs) UpdateStatus(schedulerJob *v1alpha1.SchedulerJob) (*
 // Delete takes name of the schedulerJob and deletes it. Returns an error if one occurs.
 func (c *FakeSchedulerJobs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(schedulerjobsResource, name), &v1alpha1.SchedulerJob{})
+		Invokes(testing.NewDeleteAction(schedulerjobsResource, c.ns, name), &v1alpha1.SchedulerJob{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSchedulerJobs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(schedulerjobsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(schedulerjobsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SchedulerJobList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSchedulerJobs) DeleteCollection(options *v1.DeleteOptions, listOpti
 // Patch applies the patch and returns the patched schedulerJob.
 func (c *FakeSchedulerJobs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SchedulerJob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(schedulerjobsResource, name, pt, data, subresources...), &v1alpha1.SchedulerJob{})
+		Invokes(testing.NewPatchSubresourceAction(schedulerjobsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SchedulerJob{})
+
 	if obj == nil {
 		return nil, err
 	}

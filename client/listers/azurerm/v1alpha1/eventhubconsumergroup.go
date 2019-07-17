@@ -29,8 +29,8 @@ import (
 type EventhubConsumerGroupLister interface {
 	// List lists all EventhubConsumerGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EventhubConsumerGroup, err error)
-	// Get retrieves the EventhubConsumerGroup from the index for a given name.
-	Get(name string) (*v1alpha1.EventhubConsumerGroup, error)
+	// EventhubConsumerGroups returns an object that can list and get EventhubConsumerGroups.
+	EventhubConsumerGroups(namespace string) EventhubConsumerGroupNamespaceLister
 	EventhubConsumerGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *eventhubConsumerGroupLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the EventhubConsumerGroup from the index for a given name.
-func (s *eventhubConsumerGroupLister) Get(name string) (*v1alpha1.EventhubConsumerGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EventhubConsumerGroups returns an object that can list and get EventhubConsumerGroups.
+func (s *eventhubConsumerGroupLister) EventhubConsumerGroups(namespace string) EventhubConsumerGroupNamespaceLister {
+	return eventhubConsumerGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EventhubConsumerGroupNamespaceLister helps list and get EventhubConsumerGroups.
+type EventhubConsumerGroupNamespaceLister interface {
+	// List lists all EventhubConsumerGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EventhubConsumerGroup, err error)
+	// Get retrieves the EventhubConsumerGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EventhubConsumerGroup, error)
+	EventhubConsumerGroupNamespaceListerExpansion
+}
+
+// eventhubConsumerGroupNamespaceLister implements the EventhubConsumerGroupNamespaceLister
+// interface.
+type eventhubConsumerGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EventhubConsumerGroups in the indexer for a given namespace.
+func (s eventhubConsumerGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EventhubConsumerGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EventhubConsumerGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the EventhubConsumerGroup from the indexer for a given namespace and name.
+func (s eventhubConsumerGroupNamespaceLister) Get(name string) (*v1alpha1.EventhubConsumerGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

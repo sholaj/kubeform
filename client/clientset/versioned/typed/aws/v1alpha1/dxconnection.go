@@ -32,7 +32,7 @@ import (
 // DxConnectionsGetter has a method to return a DxConnectionInterface.
 // A group's client should implement this interface.
 type DxConnectionsGetter interface {
-	DxConnections() DxConnectionInterface
+	DxConnections(namespace string) DxConnectionInterface
 }
 
 // DxConnectionInterface has methods to work with DxConnection resources.
@@ -52,12 +52,14 @@ type DxConnectionInterface interface {
 // dxConnections implements DxConnectionInterface
 type dxConnections struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDxConnections returns a DxConnections
-func newDxConnections(c *AwsV1alpha1Client) *dxConnections {
+func newDxConnections(c *AwsV1alpha1Client, namespace string) *dxConnections {
 	return &dxConnections{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDxConnections(c *AwsV1alpha1Client) *dxConnections {
 func (c *dxConnections) Get(name string, options v1.GetOptions) (result *v1alpha1.DxConnection, err error) {
 	result = &v1alpha1.DxConnection{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dxconnections").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dxConnections) List(opts v1.ListOptions) (result *v1alpha1.DxConnection
 	}
 	result = &v1alpha1.DxConnectionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dxconnections").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dxConnections) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dxconnections").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dxConnections) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dxConnections) Create(dxConnection *v1alpha1.DxConnection) (result *v1alpha1.DxConnection, err error) {
 	result = &v1alpha1.DxConnection{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dxconnections").
 		Body(dxConnection).
 		Do().
@@ -118,6 +124,7 @@ func (c *dxConnections) Create(dxConnection *v1alpha1.DxConnection) (result *v1a
 func (c *dxConnections) Update(dxConnection *v1alpha1.DxConnection) (result *v1alpha1.DxConnection, err error) {
 	result = &v1alpha1.DxConnection{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dxconnections").
 		Name(dxConnection.Name).
 		Body(dxConnection).
@@ -132,6 +139,7 @@ func (c *dxConnections) Update(dxConnection *v1alpha1.DxConnection) (result *v1a
 func (c *dxConnections) UpdateStatus(dxConnection *v1alpha1.DxConnection) (result *v1alpha1.DxConnection, err error) {
 	result = &v1alpha1.DxConnection{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dxconnections").
 		Name(dxConnection.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dxConnections) UpdateStatus(dxConnection *v1alpha1.DxConnection) (resul
 // Delete takes name of the dxConnection and deletes it. Returns an error if one occurs.
 func (c *dxConnections) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dxconnections").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dxConnections) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dxconnections").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dxConnections) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *dxConnections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DxConnection, err error) {
 	result = &v1alpha1.DxConnection{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dxconnections").
 		SubResource(subresources...).
 		Name(name).

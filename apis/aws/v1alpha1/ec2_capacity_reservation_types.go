@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,24 +19,25 @@ type Ec2CapacityReservation struct {
 }
 
 type Ec2CapacityReservationSpec struct {
-	AvailabilityZone string `json:"availability_zone"`
+	AvailabilityZone string `json:"availabilityZone" tf:"availability_zone"`
 	// +optional
-	EbsOptimized bool `json:"ebs_optimized,omitempty"`
+	EbsOptimized bool `json:"ebsOptimized,omitempty" tf:"ebs_optimized,omitempty"`
 	// +optional
-	EndDate string `json:"end_date,omitempty"`
+	EndDate string `json:"endDate,omitempty" tf:"end_date,omitempty"`
 	// +optional
-	EndDateType string `json:"end_date_type,omitempty"`
+	EndDateType string `json:"endDateType,omitempty" tf:"end_date_type,omitempty"`
 	// +optional
-	EphemeralStorage bool `json:"ephemeral_storage,omitempty"`
-	InstanceCount    int  `json:"instance_count"`
+	EphemeralStorage bool `json:"ephemeralStorage,omitempty" tf:"ephemeral_storage,omitempty"`
+	InstanceCount    int  `json:"instanceCount" tf:"instance_count"`
 	// +optional
-	InstanceMatchCriteria string `json:"instance_match_criteria,omitempty"`
-	InstancePlatform      string `json:"instance_platform"`
-	InstanceType          string `json:"instance_type"`
+	InstanceMatchCriteria string `json:"instanceMatchCriteria,omitempty" tf:"instance_match_criteria,omitempty"`
+	InstancePlatform      string `json:"instancePlatform" tf:"instance_platform"`
+	InstanceType          string `json:"instanceType" tf:"instance_type"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	Tenancy string `json:"tenancy,omitempty"`
+	Tenancy     string                    `json:"tenancy,omitempty" tf:"tenancy,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type Ec2CapacityReservationStatus struct {
@@ -44,7 +45,9 @@ type Ec2CapacityReservationStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

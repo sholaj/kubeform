@@ -32,7 +32,7 @@ import (
 // PinpointSmsChannelsGetter has a method to return a PinpointSmsChannelInterface.
 // A group's client should implement this interface.
 type PinpointSmsChannelsGetter interface {
-	PinpointSmsChannels() PinpointSmsChannelInterface
+	PinpointSmsChannels(namespace string) PinpointSmsChannelInterface
 }
 
 // PinpointSmsChannelInterface has methods to work with PinpointSmsChannel resources.
@@ -52,12 +52,14 @@ type PinpointSmsChannelInterface interface {
 // pinpointSmsChannels implements PinpointSmsChannelInterface
 type pinpointSmsChannels struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPinpointSmsChannels returns a PinpointSmsChannels
-func newPinpointSmsChannels(c *AwsV1alpha1Client) *pinpointSmsChannels {
+func newPinpointSmsChannels(c *AwsV1alpha1Client, namespace string) *pinpointSmsChannels {
 	return &pinpointSmsChannels{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPinpointSmsChannels(c *AwsV1alpha1Client) *pinpointSmsChannels {
 func (c *pinpointSmsChannels) Get(name string, options v1.GetOptions) (result *v1alpha1.PinpointSmsChannel, err error) {
 	result = &v1alpha1.PinpointSmsChannel{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointsmschannels").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *pinpointSmsChannels) List(opts v1.ListOptions) (result *v1alpha1.Pinpoi
 	}
 	result = &v1alpha1.PinpointSmsChannelList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointsmschannels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *pinpointSmsChannels) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointsmschannels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *pinpointSmsChannels) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *pinpointSmsChannels) Create(pinpointSmsChannel *v1alpha1.PinpointSmsChannel) (result *v1alpha1.PinpointSmsChannel, err error) {
 	result = &v1alpha1.PinpointSmsChannel{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("pinpointsmschannels").
 		Body(pinpointSmsChannel).
 		Do().
@@ -118,6 +124,7 @@ func (c *pinpointSmsChannels) Create(pinpointSmsChannel *v1alpha1.PinpointSmsCha
 func (c *pinpointSmsChannels) Update(pinpointSmsChannel *v1alpha1.PinpointSmsChannel) (result *v1alpha1.PinpointSmsChannel, err error) {
 	result = &v1alpha1.PinpointSmsChannel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pinpointsmschannels").
 		Name(pinpointSmsChannel.Name).
 		Body(pinpointSmsChannel).
@@ -132,6 +139,7 @@ func (c *pinpointSmsChannels) Update(pinpointSmsChannel *v1alpha1.PinpointSmsCha
 func (c *pinpointSmsChannels) UpdateStatus(pinpointSmsChannel *v1alpha1.PinpointSmsChannel) (result *v1alpha1.PinpointSmsChannel, err error) {
 	result = &v1alpha1.PinpointSmsChannel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pinpointsmschannels").
 		Name(pinpointSmsChannel.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *pinpointSmsChannels) UpdateStatus(pinpointSmsChannel *v1alpha1.Pinpoint
 // Delete takes name of the pinpointSmsChannel and deletes it. Returns an error if one occurs.
 func (c *pinpointSmsChannels) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pinpointsmschannels").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *pinpointSmsChannels) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pinpointsmschannels").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *pinpointSmsChannels) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *pinpointSmsChannels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PinpointSmsChannel, err error) {
 	result = &v1alpha1.PinpointSmsChannel{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("pinpointsmschannels").
 		SubResource(subresources...).
 		Name(name).

@@ -31,6 +31,7 @@ import (
 // FakeAutoscalingAttachments implements AutoscalingAttachmentInterface
 type FakeAutoscalingAttachments struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var autoscalingattachmentsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "autoscalingattachments"}
@@ -40,7 +41,8 @@ var autoscalingattachmentsKind = schema.GroupVersionKind{Group: "aws.kubeform.co
 // Get takes name of the autoscalingAttachment, and returns the corresponding autoscalingAttachment object, and an error if there is any.
 func (c *FakeAutoscalingAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.AutoscalingAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(autoscalingattachmentsResource, name), &v1alpha1.AutoscalingAttachment{})
+		Invokes(testing.NewGetAction(autoscalingattachmentsResource, c.ns, name), &v1alpha1.AutoscalingAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAutoscalingAttachments) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of AutoscalingAttachments that match those selectors.
 func (c *FakeAutoscalingAttachments) List(opts v1.ListOptions) (result *v1alpha1.AutoscalingAttachmentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(autoscalingattachmentsResource, autoscalingattachmentsKind, opts), &v1alpha1.AutoscalingAttachmentList{})
+		Invokes(testing.NewListAction(autoscalingattachmentsResource, autoscalingattachmentsKind, c.ns, opts), &v1alpha1.AutoscalingAttachmentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAutoscalingAttachments) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested autoscalingAttachments.
 func (c *FakeAutoscalingAttachments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(autoscalingattachmentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(autoscalingattachmentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a autoscalingAttachment and creates it.  Returns the server's representation of the autoscalingAttachment, and an error, if there is any.
 func (c *FakeAutoscalingAttachments) Create(autoscalingAttachment *v1alpha1.AutoscalingAttachment) (result *v1alpha1.AutoscalingAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(autoscalingattachmentsResource, autoscalingAttachment), &v1alpha1.AutoscalingAttachment{})
+		Invokes(testing.NewCreateAction(autoscalingattachmentsResource, c.ns, autoscalingAttachment), &v1alpha1.AutoscalingAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAutoscalingAttachments) Create(autoscalingAttachment *v1alpha1.Auto
 // Update takes the representation of a autoscalingAttachment and updates it. Returns the server's representation of the autoscalingAttachment, and an error, if there is any.
 func (c *FakeAutoscalingAttachments) Update(autoscalingAttachment *v1alpha1.AutoscalingAttachment) (result *v1alpha1.AutoscalingAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(autoscalingattachmentsResource, autoscalingAttachment), &v1alpha1.AutoscalingAttachment{})
+		Invokes(testing.NewUpdateAction(autoscalingattachmentsResource, c.ns, autoscalingAttachment), &v1alpha1.AutoscalingAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAutoscalingAttachments) Update(autoscalingAttachment *v1alpha1.Auto
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAutoscalingAttachments) UpdateStatus(autoscalingAttachment *v1alpha1.AutoscalingAttachment) (*v1alpha1.AutoscalingAttachment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(autoscalingattachmentsResource, "status", autoscalingAttachment), &v1alpha1.AutoscalingAttachment{})
+		Invokes(testing.NewUpdateSubresourceAction(autoscalingattachmentsResource, "status", c.ns, autoscalingAttachment), &v1alpha1.AutoscalingAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAutoscalingAttachments) UpdateStatus(autoscalingAttachment *v1alpha
 // Delete takes name of the autoscalingAttachment and deletes it. Returns an error if one occurs.
 func (c *FakeAutoscalingAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(autoscalingattachmentsResource, name), &v1alpha1.AutoscalingAttachment{})
+		Invokes(testing.NewDeleteAction(autoscalingattachmentsResource, c.ns, name), &v1alpha1.AutoscalingAttachment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAutoscalingAttachments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(autoscalingattachmentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(autoscalingattachmentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AutoscalingAttachmentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAutoscalingAttachments) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched autoscalingAttachment.
 func (c *FakeAutoscalingAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AutoscalingAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(autoscalingattachmentsResource, name, pt, data, subresources...), &v1alpha1.AutoscalingAttachment{})
+		Invokes(testing.NewPatchSubresourceAction(autoscalingattachmentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.AutoscalingAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // CloudwatchLogGroupsGetter has a method to return a CloudwatchLogGroupInterface.
 // A group's client should implement this interface.
 type CloudwatchLogGroupsGetter interface {
-	CloudwatchLogGroups() CloudwatchLogGroupInterface
+	CloudwatchLogGroups(namespace string) CloudwatchLogGroupInterface
 }
 
 // CloudwatchLogGroupInterface has methods to work with CloudwatchLogGroup resources.
@@ -52,12 +52,14 @@ type CloudwatchLogGroupInterface interface {
 // cloudwatchLogGroups implements CloudwatchLogGroupInterface
 type cloudwatchLogGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCloudwatchLogGroups returns a CloudwatchLogGroups
-func newCloudwatchLogGroups(c *AwsV1alpha1Client) *cloudwatchLogGroups {
+func newCloudwatchLogGroups(c *AwsV1alpha1Client, namespace string) *cloudwatchLogGroups {
 	return &cloudwatchLogGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCloudwatchLogGroups(c *AwsV1alpha1Client) *cloudwatchLogGroups {
 func (c *cloudwatchLogGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudwatchLogGroup, err error) {
 	result = &v1alpha1.CloudwatchLogGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatchloggroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cloudwatchLogGroups) List(opts v1.ListOptions) (result *v1alpha1.Cloudw
 	}
 	result = &v1alpha1.CloudwatchLogGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatchloggroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cloudwatchLogGroups) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatchloggroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cloudwatchLogGroups) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *cloudwatchLogGroups) Create(cloudwatchLogGroup *v1alpha1.CloudwatchLogGroup) (result *v1alpha1.CloudwatchLogGroup, err error) {
 	result = &v1alpha1.CloudwatchLogGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cloudwatchloggroups").
 		Body(cloudwatchLogGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *cloudwatchLogGroups) Create(cloudwatchLogGroup *v1alpha1.CloudwatchLogG
 func (c *cloudwatchLogGroups) Update(cloudwatchLogGroup *v1alpha1.CloudwatchLogGroup) (result *v1alpha1.CloudwatchLogGroup, err error) {
 	result = &v1alpha1.CloudwatchLogGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudwatchloggroups").
 		Name(cloudwatchLogGroup.Name).
 		Body(cloudwatchLogGroup).
@@ -132,6 +139,7 @@ func (c *cloudwatchLogGroups) Update(cloudwatchLogGroup *v1alpha1.CloudwatchLogG
 func (c *cloudwatchLogGroups) UpdateStatus(cloudwatchLogGroup *v1alpha1.CloudwatchLogGroup) (result *v1alpha1.CloudwatchLogGroup, err error) {
 	result = &v1alpha1.CloudwatchLogGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudwatchloggroups").
 		Name(cloudwatchLogGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cloudwatchLogGroups) UpdateStatus(cloudwatchLogGroup *v1alpha1.Cloudwat
 // Delete takes name of the cloudwatchLogGroup and deletes it. Returns an error if one occurs.
 func (c *cloudwatchLogGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudwatchloggroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cloudwatchLogGroups) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudwatchloggroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cloudwatchLogGroups) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *cloudwatchLogGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudwatchLogGroup, err error) {
 	result = &v1alpha1.CloudwatchLogGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cloudwatchloggroups").
 		SubResource(subresources...).
 		Name(name).

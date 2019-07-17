@@ -29,8 +29,8 @@ import (
 type DocdbSubnetGroupLister interface {
 	// List lists all DocdbSubnetGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DocdbSubnetGroup, err error)
-	// Get retrieves the DocdbSubnetGroup from the index for a given name.
-	Get(name string) (*v1alpha1.DocdbSubnetGroup, error)
+	// DocdbSubnetGroups returns an object that can list and get DocdbSubnetGroups.
+	DocdbSubnetGroups(namespace string) DocdbSubnetGroupNamespaceLister
 	DocdbSubnetGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *docdbSubnetGroupLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the DocdbSubnetGroup from the index for a given name.
-func (s *docdbSubnetGroupLister) Get(name string) (*v1alpha1.DocdbSubnetGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DocdbSubnetGroups returns an object that can list and get DocdbSubnetGroups.
+func (s *docdbSubnetGroupLister) DocdbSubnetGroups(namespace string) DocdbSubnetGroupNamespaceLister {
+	return docdbSubnetGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DocdbSubnetGroupNamespaceLister helps list and get DocdbSubnetGroups.
+type DocdbSubnetGroupNamespaceLister interface {
+	// List lists all DocdbSubnetGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DocdbSubnetGroup, err error)
+	// Get retrieves the DocdbSubnetGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DocdbSubnetGroup, error)
+	DocdbSubnetGroupNamespaceListerExpansion
+}
+
+// docdbSubnetGroupNamespaceLister implements the DocdbSubnetGroupNamespaceLister
+// interface.
+type docdbSubnetGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DocdbSubnetGroups in the indexer for a given namespace.
+func (s docdbSubnetGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DocdbSubnetGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DocdbSubnetGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the DocdbSubnetGroup from the indexer for a given namespace and name.
+func (s docdbSubnetGroupNamespaceLister) Get(name string) (*v1alpha1.DocdbSubnetGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

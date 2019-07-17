@@ -31,6 +31,7 @@ import (
 // FakeLoggingBillingAccountSinks implements LoggingBillingAccountSinkInterface
 type FakeLoggingBillingAccountSinks struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var loggingbillingaccountsinksResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "loggingbillingaccountsinks"}
@@ -40,7 +41,8 @@ var loggingbillingaccountsinksKind = schema.GroupVersionKind{Group: "google.kube
 // Get takes name of the loggingBillingAccountSink, and returns the corresponding loggingBillingAccountSink object, and an error if there is any.
 func (c *FakeLoggingBillingAccountSinks) Get(name string, options v1.GetOptions) (result *v1alpha1.LoggingBillingAccountSink, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(loggingbillingaccountsinksResource, name), &v1alpha1.LoggingBillingAccountSink{})
+		Invokes(testing.NewGetAction(loggingbillingaccountsinksResource, c.ns, name), &v1alpha1.LoggingBillingAccountSink{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLoggingBillingAccountSinks) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of LoggingBillingAccountSinks that match those selectors.
 func (c *FakeLoggingBillingAccountSinks) List(opts v1.ListOptions) (result *v1alpha1.LoggingBillingAccountSinkList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(loggingbillingaccountsinksResource, loggingbillingaccountsinksKind, opts), &v1alpha1.LoggingBillingAccountSinkList{})
+		Invokes(testing.NewListAction(loggingbillingaccountsinksResource, loggingbillingaccountsinksKind, c.ns, opts), &v1alpha1.LoggingBillingAccountSinkList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLoggingBillingAccountSinks) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested loggingBillingAccountSinks.
 func (c *FakeLoggingBillingAccountSinks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(loggingbillingaccountsinksResource, opts))
+		InvokesWatch(testing.NewWatchAction(loggingbillingaccountsinksResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a loggingBillingAccountSink and creates it.  Returns the server's representation of the loggingBillingAccountSink, and an error, if there is any.
 func (c *FakeLoggingBillingAccountSinks) Create(loggingBillingAccountSink *v1alpha1.LoggingBillingAccountSink) (result *v1alpha1.LoggingBillingAccountSink, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(loggingbillingaccountsinksResource, loggingBillingAccountSink), &v1alpha1.LoggingBillingAccountSink{})
+		Invokes(testing.NewCreateAction(loggingbillingaccountsinksResource, c.ns, loggingBillingAccountSink), &v1alpha1.LoggingBillingAccountSink{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLoggingBillingAccountSinks) Create(loggingBillingAccountSink *v1alp
 // Update takes the representation of a loggingBillingAccountSink and updates it. Returns the server's representation of the loggingBillingAccountSink, and an error, if there is any.
 func (c *FakeLoggingBillingAccountSinks) Update(loggingBillingAccountSink *v1alpha1.LoggingBillingAccountSink) (result *v1alpha1.LoggingBillingAccountSink, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(loggingbillingaccountsinksResource, loggingBillingAccountSink), &v1alpha1.LoggingBillingAccountSink{})
+		Invokes(testing.NewUpdateAction(loggingbillingaccountsinksResource, c.ns, loggingBillingAccountSink), &v1alpha1.LoggingBillingAccountSink{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLoggingBillingAccountSinks) Update(loggingBillingAccountSink *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLoggingBillingAccountSinks) UpdateStatus(loggingBillingAccountSink *v1alpha1.LoggingBillingAccountSink) (*v1alpha1.LoggingBillingAccountSink, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(loggingbillingaccountsinksResource, "status", loggingBillingAccountSink), &v1alpha1.LoggingBillingAccountSink{})
+		Invokes(testing.NewUpdateSubresourceAction(loggingbillingaccountsinksResource, "status", c.ns, loggingBillingAccountSink), &v1alpha1.LoggingBillingAccountSink{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLoggingBillingAccountSinks) UpdateStatus(loggingBillingAccountSink 
 // Delete takes name of the loggingBillingAccountSink and deletes it. Returns an error if one occurs.
 func (c *FakeLoggingBillingAccountSinks) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(loggingbillingaccountsinksResource, name), &v1alpha1.LoggingBillingAccountSink{})
+		Invokes(testing.NewDeleteAction(loggingbillingaccountsinksResource, c.ns, name), &v1alpha1.LoggingBillingAccountSink{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLoggingBillingAccountSinks) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(loggingbillingaccountsinksResource, listOptions)
+	action := testing.NewDeleteCollectionAction(loggingbillingaccountsinksResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LoggingBillingAccountSinkList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLoggingBillingAccountSinks) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched loggingBillingAccountSink.
 func (c *FakeLoggingBillingAccountSinks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LoggingBillingAccountSink, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(loggingbillingaccountsinksResource, name, pt, data, subresources...), &v1alpha1.LoggingBillingAccountSink{})
+		Invokes(testing.NewPatchSubresourceAction(loggingbillingaccountsinksResource, c.ns, name, pt, data, subresources...), &v1alpha1.LoggingBillingAccountSink{})
+
 	if obj == nil {
 		return nil, err
 	}

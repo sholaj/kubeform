@@ -29,8 +29,8 @@ import (
 type ApiManagementLister interface {
 	// List lists all ApiManagements in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiManagement, err error)
-	// Get retrieves the ApiManagement from the index for a given name.
-	Get(name string) (*v1alpha1.ApiManagement, error)
+	// ApiManagements returns an object that can list and get ApiManagements.
+	ApiManagements(namespace string) ApiManagementNamespaceLister
 	ApiManagementListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiManagementLister) List(selector labels.Selector) (ret []*v1alpha1.Ap
 	return ret, err
 }
 
-// Get retrieves the ApiManagement from the index for a given name.
-func (s *apiManagementLister) Get(name string) (*v1alpha1.ApiManagement, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiManagements returns an object that can list and get ApiManagements.
+func (s *apiManagementLister) ApiManagements(namespace string) ApiManagementNamespaceLister {
+	return apiManagementNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiManagementNamespaceLister helps list and get ApiManagements.
+type ApiManagementNamespaceLister interface {
+	// List lists all ApiManagements in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagement, err error)
+	// Get retrieves the ApiManagement from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiManagement, error)
+	ApiManagementNamespaceListerExpansion
+}
+
+// apiManagementNamespaceLister implements the ApiManagementNamespaceLister
+// interface.
+type apiManagementNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiManagements in the indexer for a given namespace.
+func (s apiManagementNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagement, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiManagement))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiManagement from the indexer for a given namespace and name.
+func (s apiManagementNamespaceLister) Get(name string) (*v1alpha1.ApiManagement, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

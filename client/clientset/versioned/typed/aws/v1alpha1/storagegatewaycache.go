@@ -32,7 +32,7 @@ import (
 // StoragegatewayCachesGetter has a method to return a StoragegatewayCacheInterface.
 // A group's client should implement this interface.
 type StoragegatewayCachesGetter interface {
-	StoragegatewayCaches() StoragegatewayCacheInterface
+	StoragegatewayCaches(namespace string) StoragegatewayCacheInterface
 }
 
 // StoragegatewayCacheInterface has methods to work with StoragegatewayCache resources.
@@ -52,12 +52,14 @@ type StoragegatewayCacheInterface interface {
 // storagegatewayCaches implements StoragegatewayCacheInterface
 type storagegatewayCaches struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStoragegatewayCaches returns a StoragegatewayCaches
-func newStoragegatewayCaches(c *AwsV1alpha1Client) *storagegatewayCaches {
+func newStoragegatewayCaches(c *AwsV1alpha1Client, namespace string) *storagegatewayCaches {
 	return &storagegatewayCaches{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStoragegatewayCaches(c *AwsV1alpha1Client) *storagegatewayCaches {
 func (c *storagegatewayCaches) Get(name string, options v1.GetOptions) (result *v1alpha1.StoragegatewayCache, err error) {
 	result = &v1alpha1.StoragegatewayCache{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagegatewaycaches").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *storagegatewayCaches) List(opts v1.ListOptions) (result *v1alpha1.Stora
 	}
 	result = &v1alpha1.StoragegatewayCacheList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagegatewaycaches").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *storagegatewayCaches) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storagegatewaycaches").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *storagegatewayCaches) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *storagegatewayCaches) Create(storagegatewayCache *v1alpha1.StoragegatewayCache) (result *v1alpha1.StoragegatewayCache, err error) {
 	result = &v1alpha1.StoragegatewayCache{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storagegatewaycaches").
 		Body(storagegatewayCache).
 		Do().
@@ -118,6 +124,7 @@ func (c *storagegatewayCaches) Create(storagegatewayCache *v1alpha1.Storagegatew
 func (c *storagegatewayCaches) Update(storagegatewayCache *v1alpha1.StoragegatewayCache) (result *v1alpha1.StoragegatewayCache, err error) {
 	result = &v1alpha1.StoragegatewayCache{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagegatewaycaches").
 		Name(storagegatewayCache.Name).
 		Body(storagegatewayCache).
@@ -132,6 +139,7 @@ func (c *storagegatewayCaches) Update(storagegatewayCache *v1alpha1.Storagegatew
 func (c *storagegatewayCaches) UpdateStatus(storagegatewayCache *v1alpha1.StoragegatewayCache) (result *v1alpha1.StoragegatewayCache, err error) {
 	result = &v1alpha1.StoragegatewayCache{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagegatewaycaches").
 		Name(storagegatewayCache.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *storagegatewayCaches) UpdateStatus(storagegatewayCache *v1alpha1.Storag
 // Delete takes name of the storagegatewayCache and deletes it. Returns an error if one occurs.
 func (c *storagegatewayCaches) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagegatewaycaches").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *storagegatewayCaches) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagegatewaycaches").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *storagegatewayCaches) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *storagegatewayCaches) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StoragegatewayCache, err error) {
 	result = &v1alpha1.StoragegatewayCache{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storagegatewaycaches").
 		SubResource(subresources...).
 		Name(name).

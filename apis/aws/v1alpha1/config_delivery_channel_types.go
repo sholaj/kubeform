@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,20 +20,21 @@ type ConfigDeliveryChannel struct {
 
 type ConfigDeliveryChannelSpecSnapshotDeliveryProperties struct {
 	// +optional
-	DeliveryFrequency string `json:"delivery_frequency,omitempty"`
+	DeliveryFrequency string `json:"deliveryFrequency,omitempty" tf:"delivery_frequency,omitempty"`
 }
 
 type ConfigDeliveryChannelSpec struct {
 	// +optional
-	Name         string `json:"name,omitempty"`
-	S3BucketName string `json:"s3_bucket_name"`
+	Name         string `json:"name,omitempty" tf:"name,omitempty"`
+	S3BucketName string `json:"s3BucketName" tf:"s3_bucket_name"`
 	// +optional
-	S3KeyPrefix string `json:"s3_key_prefix,omitempty"`
+	S3KeyPrefix string `json:"s3KeyPrefix,omitempty" tf:"s3_key_prefix,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	SnapshotDeliveryProperties *[]ConfigDeliveryChannelSpec `json:"snapshot_delivery_properties,omitempty"`
+	SnapshotDeliveryProperties []ConfigDeliveryChannelSpecSnapshotDeliveryProperties `json:"snapshotDeliveryProperties,omitempty" tf:"snapshot_delivery_properties,omitempty"`
 	// +optional
-	SnsTopicArn string `json:"sns_topic_arn,omitempty"`
+	SnsTopicArn string                    `json:"snsTopicArn,omitempty" tf:"sns_topic_arn,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ConfigDeliveryChannelStatus struct {
@@ -41,7 +42,9 @@ type ConfigDeliveryChannelStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

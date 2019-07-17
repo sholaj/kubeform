@@ -29,8 +29,8 @@ import (
 type SharedImageLister interface {
 	// List lists all SharedImages in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SharedImage, err error)
-	// Get retrieves the SharedImage from the index for a given name.
-	Get(name string) (*v1alpha1.SharedImage, error)
+	// SharedImages returns an object that can list and get SharedImages.
+	SharedImages(namespace string) SharedImageNamespaceLister
 	SharedImageListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sharedImageLister) List(selector labels.Selector) (ret []*v1alpha1.Shar
 	return ret, err
 }
 
-// Get retrieves the SharedImage from the index for a given name.
-func (s *sharedImageLister) Get(name string) (*v1alpha1.SharedImage, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SharedImages returns an object that can list and get SharedImages.
+func (s *sharedImageLister) SharedImages(namespace string) SharedImageNamespaceLister {
+	return sharedImageNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SharedImageNamespaceLister helps list and get SharedImages.
+type SharedImageNamespaceLister interface {
+	// List lists all SharedImages in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SharedImage, err error)
+	// Get retrieves the SharedImage from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SharedImage, error)
+	SharedImageNamespaceListerExpansion
+}
+
+// sharedImageNamespaceLister implements the SharedImageNamespaceLister
+// interface.
+type sharedImageNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SharedImages in the indexer for a given namespace.
+func (s sharedImageNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SharedImage, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SharedImage))
+	})
+	return ret, err
+}
+
+// Get retrieves the SharedImage from the indexer for a given namespace and name.
+func (s sharedImageNamespaceLister) Get(name string) (*v1alpha1.SharedImage, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type DbInstanceRoleAssociationLister interface {
 	// List lists all DbInstanceRoleAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DbInstanceRoleAssociation, err error)
-	// Get retrieves the DbInstanceRoleAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.DbInstanceRoleAssociation, error)
+	// DbInstanceRoleAssociations returns an object that can list and get DbInstanceRoleAssociations.
+	DbInstanceRoleAssociations(namespace string) DbInstanceRoleAssociationNamespaceLister
 	DbInstanceRoleAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dbInstanceRoleAssociationLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the DbInstanceRoleAssociation from the index for a given name.
-func (s *dbInstanceRoleAssociationLister) Get(name string) (*v1alpha1.DbInstanceRoleAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DbInstanceRoleAssociations returns an object that can list and get DbInstanceRoleAssociations.
+func (s *dbInstanceRoleAssociationLister) DbInstanceRoleAssociations(namespace string) DbInstanceRoleAssociationNamespaceLister {
+	return dbInstanceRoleAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DbInstanceRoleAssociationNamespaceLister helps list and get DbInstanceRoleAssociations.
+type DbInstanceRoleAssociationNamespaceLister interface {
+	// List lists all DbInstanceRoleAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DbInstanceRoleAssociation, err error)
+	// Get retrieves the DbInstanceRoleAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DbInstanceRoleAssociation, error)
+	DbInstanceRoleAssociationNamespaceListerExpansion
+}
+
+// dbInstanceRoleAssociationNamespaceLister implements the DbInstanceRoleAssociationNamespaceLister
+// interface.
+type dbInstanceRoleAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DbInstanceRoleAssociations in the indexer for a given namespace.
+func (s dbInstanceRoleAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DbInstanceRoleAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DbInstanceRoleAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the DbInstanceRoleAssociation from the indexer for a given namespace and name.
+func (s dbInstanceRoleAssociationNamespaceLister) Get(name string) (*v1alpha1.DbInstanceRoleAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

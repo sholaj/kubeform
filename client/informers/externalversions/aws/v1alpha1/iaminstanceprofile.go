@@ -41,32 +41,33 @@ type IamInstanceProfileInformer interface {
 type iamInstanceProfileInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewIamInstanceProfileInformer constructs a new informer for IamInstanceProfile type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewIamInstanceProfileInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredIamInstanceProfileInformer(client, resyncPeriod, indexers, nil)
+func NewIamInstanceProfileInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredIamInstanceProfileInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredIamInstanceProfileInformer constructs a new informer for IamInstanceProfile type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredIamInstanceProfileInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredIamInstanceProfileInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().IamInstanceProfiles().List(options)
+				return client.AwsV1alpha1().IamInstanceProfiles(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().IamInstanceProfiles().Watch(options)
+				return client.AwsV1alpha1().IamInstanceProfiles(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.IamInstanceProfile{},
@@ -76,7 +77,7 @@ func NewFilteredIamInstanceProfileInformer(client versioned.Interface, resyncPer
 }
 
 func (f *iamInstanceProfileInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredIamInstanceProfileInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredIamInstanceProfileInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *iamInstanceProfileInformer) Informer() cache.SharedIndexInformer {

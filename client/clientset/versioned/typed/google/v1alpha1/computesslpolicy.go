@@ -32,7 +32,7 @@ import (
 // ComputeSslPoliciesGetter has a method to return a ComputeSslPolicyInterface.
 // A group's client should implement this interface.
 type ComputeSslPoliciesGetter interface {
-	ComputeSslPolicies() ComputeSslPolicyInterface
+	ComputeSslPolicies(namespace string) ComputeSslPolicyInterface
 }
 
 // ComputeSslPolicyInterface has methods to work with ComputeSslPolicy resources.
@@ -52,12 +52,14 @@ type ComputeSslPolicyInterface interface {
 // computeSslPolicies implements ComputeSslPolicyInterface
 type computeSslPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeSslPolicies returns a ComputeSslPolicies
-func newComputeSslPolicies(c *GoogleV1alpha1Client) *computeSslPolicies {
+func newComputeSslPolicies(c *GoogleV1alpha1Client, namespace string) *computeSslPolicies {
 	return &computeSslPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeSslPolicies(c *GoogleV1alpha1Client) *computeSslPolicies {
 func (c *computeSslPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeSslPolicy, err error) {
 	result = &v1alpha1.ComputeSslPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computesslpolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeSslPolicies) List(opts v1.ListOptions) (result *v1alpha1.Compute
 	}
 	result = &v1alpha1.ComputeSslPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computesslpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeSslPolicies) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computesslpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeSslPolicies) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *computeSslPolicies) Create(computeSslPolicy *v1alpha1.ComputeSslPolicy) (result *v1alpha1.ComputeSslPolicy, err error) {
 	result = &v1alpha1.ComputeSslPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computesslpolicies").
 		Body(computeSslPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeSslPolicies) Create(computeSslPolicy *v1alpha1.ComputeSslPolicy)
 func (c *computeSslPolicies) Update(computeSslPolicy *v1alpha1.ComputeSslPolicy) (result *v1alpha1.ComputeSslPolicy, err error) {
 	result = &v1alpha1.ComputeSslPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computesslpolicies").
 		Name(computeSslPolicy.Name).
 		Body(computeSslPolicy).
@@ -132,6 +139,7 @@ func (c *computeSslPolicies) Update(computeSslPolicy *v1alpha1.ComputeSslPolicy)
 func (c *computeSslPolicies) UpdateStatus(computeSslPolicy *v1alpha1.ComputeSslPolicy) (result *v1alpha1.ComputeSslPolicy, err error) {
 	result = &v1alpha1.ComputeSslPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computesslpolicies").
 		Name(computeSslPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeSslPolicies) UpdateStatus(computeSslPolicy *v1alpha1.ComputeSslP
 // Delete takes name of the computeSslPolicy and deletes it. Returns an error if one occurs.
 func (c *computeSslPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computesslpolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeSslPolicies) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computesslpolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeSslPolicies) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *computeSslPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeSslPolicy, err error) {
 	result = &v1alpha1.ComputeSslPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computesslpolicies").
 		SubResource(subresources...).
 		Name(name).

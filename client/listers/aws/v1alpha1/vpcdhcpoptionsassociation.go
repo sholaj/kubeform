@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// VpcDhcpOptionsAssociationLister helps list VpcDhcpOptionsAssociations.
-type VpcDhcpOptionsAssociationLister interface {
-	// List lists all VpcDhcpOptionsAssociations in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.VpcDhcpOptionsAssociation, err error)
-	// Get retrieves the VpcDhcpOptionsAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.VpcDhcpOptionsAssociation, error)
-	VpcDhcpOptionsAssociationListerExpansion
+// VpcDHCPOptionsAssociationLister helps list VpcDHCPOptionsAssociations.
+type VpcDHCPOptionsAssociationLister interface {
+	// List lists all VpcDHCPOptionsAssociations in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.VpcDHCPOptionsAssociation, err error)
+	// VpcDHCPOptionsAssociations returns an object that can list and get VpcDHCPOptionsAssociations.
+	VpcDHCPOptionsAssociations(namespace string) VpcDHCPOptionsAssociationNamespaceLister
+	VpcDHCPOptionsAssociationListerExpansion
 }
 
-// vpcDhcpOptionsAssociationLister implements the VpcDhcpOptionsAssociationLister interface.
-type vpcDhcpOptionsAssociationLister struct {
+// vpcDHCPOptionsAssociationLister implements the VpcDHCPOptionsAssociationLister interface.
+type vpcDHCPOptionsAssociationLister struct {
 	indexer cache.Indexer
 }
 
-// NewVpcDhcpOptionsAssociationLister returns a new VpcDhcpOptionsAssociationLister.
-func NewVpcDhcpOptionsAssociationLister(indexer cache.Indexer) VpcDhcpOptionsAssociationLister {
-	return &vpcDhcpOptionsAssociationLister{indexer: indexer}
+// NewVpcDHCPOptionsAssociationLister returns a new VpcDHCPOptionsAssociationLister.
+func NewVpcDHCPOptionsAssociationLister(indexer cache.Indexer) VpcDHCPOptionsAssociationLister {
+	return &vpcDHCPOptionsAssociationLister{indexer: indexer}
 }
 
-// List lists all VpcDhcpOptionsAssociations in the indexer.
-func (s *vpcDhcpOptionsAssociationLister) List(selector labels.Selector) (ret []*v1alpha1.VpcDhcpOptionsAssociation, err error) {
+// List lists all VpcDHCPOptionsAssociations in the indexer.
+func (s *vpcDHCPOptionsAssociationLister) List(selector labels.Selector) (ret []*v1alpha1.VpcDHCPOptionsAssociation, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.VpcDhcpOptionsAssociation))
+		ret = append(ret, m.(*v1alpha1.VpcDHCPOptionsAssociation))
 	})
 	return ret, err
 }
 
-// Get retrieves the VpcDhcpOptionsAssociation from the index for a given name.
-func (s *vpcDhcpOptionsAssociationLister) Get(name string) (*v1alpha1.VpcDhcpOptionsAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VpcDHCPOptionsAssociations returns an object that can list and get VpcDHCPOptionsAssociations.
+func (s *vpcDHCPOptionsAssociationLister) VpcDHCPOptionsAssociations(namespace string) VpcDHCPOptionsAssociationNamespaceLister {
+	return vpcDHCPOptionsAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VpcDHCPOptionsAssociationNamespaceLister helps list and get VpcDHCPOptionsAssociations.
+type VpcDHCPOptionsAssociationNamespaceLister interface {
+	// List lists all VpcDHCPOptionsAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VpcDHCPOptionsAssociation, err error)
+	// Get retrieves the VpcDHCPOptionsAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VpcDHCPOptionsAssociation, error)
+	VpcDHCPOptionsAssociationNamespaceListerExpansion
+}
+
+// vpcDHCPOptionsAssociationNamespaceLister implements the VpcDHCPOptionsAssociationNamespaceLister
+// interface.
+type vpcDHCPOptionsAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VpcDHCPOptionsAssociations in the indexer for a given namespace.
+func (s vpcDHCPOptionsAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VpcDHCPOptionsAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VpcDHCPOptionsAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the VpcDHCPOptionsAssociation from the indexer for a given namespace and name.
+func (s vpcDHCPOptionsAssociationNamespaceLister) Get(name string) (*v1alpha1.VpcDHCPOptionsAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("vpcdhcpoptionsassociation"), name)
 	}
-	return obj.(*v1alpha1.VpcDhcpOptionsAssociation), nil
+	return obj.(*v1alpha1.VpcDHCPOptionsAssociation), nil
 }

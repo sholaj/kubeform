@@ -29,8 +29,8 @@ import (
 type ComputeRegionAutoscalerLister interface {
 	// List lists all ComputeRegionAutoscalers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeRegionAutoscaler, err error)
-	// Get retrieves the ComputeRegionAutoscaler from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeRegionAutoscaler, error)
+	// ComputeRegionAutoscalers returns an object that can list and get ComputeRegionAutoscalers.
+	ComputeRegionAutoscalers(namespace string) ComputeRegionAutoscalerNamespaceLister
 	ComputeRegionAutoscalerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeRegionAutoscalerLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the ComputeRegionAutoscaler from the index for a given name.
-func (s *computeRegionAutoscalerLister) Get(name string) (*v1alpha1.ComputeRegionAutoscaler, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeRegionAutoscalers returns an object that can list and get ComputeRegionAutoscalers.
+func (s *computeRegionAutoscalerLister) ComputeRegionAutoscalers(namespace string) ComputeRegionAutoscalerNamespaceLister {
+	return computeRegionAutoscalerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeRegionAutoscalerNamespaceLister helps list and get ComputeRegionAutoscalers.
+type ComputeRegionAutoscalerNamespaceLister interface {
+	// List lists all ComputeRegionAutoscalers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeRegionAutoscaler, err error)
+	// Get retrieves the ComputeRegionAutoscaler from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeRegionAutoscaler, error)
+	ComputeRegionAutoscalerNamespaceListerExpansion
+}
+
+// computeRegionAutoscalerNamespaceLister implements the ComputeRegionAutoscalerNamespaceLister
+// interface.
+type computeRegionAutoscalerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeRegionAutoscalers in the indexer for a given namespace.
+func (s computeRegionAutoscalerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeRegionAutoscaler, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeRegionAutoscaler))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeRegionAutoscaler from the indexer for a given namespace and name.
+func (s computeRegionAutoscalerNamespaceLister) Get(name string) (*v1alpha1.ComputeRegionAutoscaler, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

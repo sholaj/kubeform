@@ -399,11 +399,20 @@ spec:
           properties:
             email:
               type: string
-            iam_user_access_to_billing:
+            iamUserAccessToBilling:
               type: string
             name:
               type: string
-            role_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            roleName:
               type: string
             tags:
               additionalProperties:
@@ -412,6 +421,7 @@ spec:
           required:
           - email
           - name
+          - providerRef
           type: object
         status:
           properties:
@@ -422,6 +432,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

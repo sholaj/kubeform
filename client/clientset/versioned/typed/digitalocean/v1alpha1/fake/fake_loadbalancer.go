@@ -31,6 +31,7 @@ import (
 // FakeLoadbalancers implements LoadbalancerInterface
 type FakeLoadbalancers struct {
 	Fake *FakeDigitaloceanV1alpha1
+	ns   string
 }
 
 var loadbalancersResource = schema.GroupVersionResource{Group: "digitalocean.kubeform.com", Version: "v1alpha1", Resource: "loadbalancers"}
@@ -40,7 +41,8 @@ var loadbalancersKind = schema.GroupVersionKind{Group: "digitalocean.kubeform.co
 // Get takes name of the loadbalancer, and returns the corresponding loadbalancer object, and an error if there is any.
 func (c *FakeLoadbalancers) Get(name string, options v1.GetOptions) (result *v1alpha1.Loadbalancer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(loadbalancersResource, name), &v1alpha1.Loadbalancer{})
+		Invokes(testing.NewGetAction(loadbalancersResource, c.ns, name), &v1alpha1.Loadbalancer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLoadbalancers) Get(name string, options v1.GetOptions) (result *v1a
 // List takes label and field selectors, and returns the list of Loadbalancers that match those selectors.
 func (c *FakeLoadbalancers) List(opts v1.ListOptions) (result *v1alpha1.LoadbalancerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(loadbalancersResource, loadbalancersKind, opts), &v1alpha1.LoadbalancerList{})
+		Invokes(testing.NewListAction(loadbalancersResource, loadbalancersKind, c.ns, opts), &v1alpha1.LoadbalancerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLoadbalancers) List(opts v1.ListOptions) (result *v1alpha1.Loadbala
 // Watch returns a watch.Interface that watches the requested loadbalancers.
 func (c *FakeLoadbalancers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(loadbalancersResource, opts))
+		InvokesWatch(testing.NewWatchAction(loadbalancersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a loadbalancer and creates it.  Returns the server's representation of the loadbalancer, and an error, if there is any.
 func (c *FakeLoadbalancers) Create(loadbalancer *v1alpha1.Loadbalancer) (result *v1alpha1.Loadbalancer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(loadbalancersResource, loadbalancer), &v1alpha1.Loadbalancer{})
+		Invokes(testing.NewCreateAction(loadbalancersResource, c.ns, loadbalancer), &v1alpha1.Loadbalancer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLoadbalancers) Create(loadbalancer *v1alpha1.Loadbalancer) (result 
 // Update takes the representation of a loadbalancer and updates it. Returns the server's representation of the loadbalancer, and an error, if there is any.
 func (c *FakeLoadbalancers) Update(loadbalancer *v1alpha1.Loadbalancer) (result *v1alpha1.Loadbalancer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(loadbalancersResource, loadbalancer), &v1alpha1.Loadbalancer{})
+		Invokes(testing.NewUpdateAction(loadbalancersResource, c.ns, loadbalancer), &v1alpha1.Loadbalancer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLoadbalancers) Update(loadbalancer *v1alpha1.Loadbalancer) (result 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLoadbalancers) UpdateStatus(loadbalancer *v1alpha1.Loadbalancer) (*v1alpha1.Loadbalancer, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(loadbalancersResource, "status", loadbalancer), &v1alpha1.Loadbalancer{})
+		Invokes(testing.NewUpdateSubresourceAction(loadbalancersResource, "status", c.ns, loadbalancer), &v1alpha1.Loadbalancer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLoadbalancers) UpdateStatus(loadbalancer *v1alpha1.Loadbalancer) (*
 // Delete takes name of the loadbalancer and deletes it. Returns an error if one occurs.
 func (c *FakeLoadbalancers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(loadbalancersResource, name), &v1alpha1.Loadbalancer{})
+		Invokes(testing.NewDeleteAction(loadbalancersResource, c.ns, name), &v1alpha1.Loadbalancer{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLoadbalancers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(loadbalancersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(loadbalancersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LoadbalancerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLoadbalancers) DeleteCollection(options *v1.DeleteOptions, listOpti
 // Patch applies the patch and returns the patched loadbalancer.
 func (c *FakeLoadbalancers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Loadbalancer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(loadbalancersResource, name, pt, data, subresources...), &v1alpha1.Loadbalancer{})
+		Invokes(testing.NewPatchSubresourceAction(loadbalancersResource, c.ns, name, pt, data, subresources...), &v1alpha1.Loadbalancer{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // ServicecatalogPortfoliosGetter has a method to return a ServicecatalogPortfolioInterface.
 // A group's client should implement this interface.
 type ServicecatalogPortfoliosGetter interface {
-	ServicecatalogPortfolios() ServicecatalogPortfolioInterface
+	ServicecatalogPortfolios(namespace string) ServicecatalogPortfolioInterface
 }
 
 // ServicecatalogPortfolioInterface has methods to work with ServicecatalogPortfolio resources.
@@ -52,12 +52,14 @@ type ServicecatalogPortfolioInterface interface {
 // servicecatalogPortfolios implements ServicecatalogPortfolioInterface
 type servicecatalogPortfolios struct {
 	client rest.Interface
+	ns     string
 }
 
 // newServicecatalogPortfolios returns a ServicecatalogPortfolios
-func newServicecatalogPortfolios(c *AwsV1alpha1Client) *servicecatalogPortfolios {
+func newServicecatalogPortfolios(c *AwsV1alpha1Client, namespace string) *servicecatalogPortfolios {
 	return &servicecatalogPortfolios{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newServicecatalogPortfolios(c *AwsV1alpha1Client) *servicecatalogPortfolios
 func (c *servicecatalogPortfolios) Get(name string, options v1.GetOptions) (result *v1alpha1.ServicecatalogPortfolio, err error) {
 	result = &v1alpha1.ServicecatalogPortfolio{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicecatalogportfolios").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *servicecatalogPortfolios) List(opts v1.ListOptions) (result *v1alpha1.S
 	}
 	result = &v1alpha1.ServicecatalogPortfolioList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicecatalogportfolios").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *servicecatalogPortfolios) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("servicecatalogportfolios").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *servicecatalogPortfolios) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *servicecatalogPortfolios) Create(servicecatalogPortfolio *v1alpha1.ServicecatalogPortfolio) (result *v1alpha1.ServicecatalogPortfolio, err error) {
 	result = &v1alpha1.ServicecatalogPortfolio{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("servicecatalogportfolios").
 		Body(servicecatalogPortfolio).
 		Do().
@@ -118,6 +124,7 @@ func (c *servicecatalogPortfolios) Create(servicecatalogPortfolio *v1alpha1.Serv
 func (c *servicecatalogPortfolios) Update(servicecatalogPortfolio *v1alpha1.ServicecatalogPortfolio) (result *v1alpha1.ServicecatalogPortfolio, err error) {
 	result = &v1alpha1.ServicecatalogPortfolio{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicecatalogportfolios").
 		Name(servicecatalogPortfolio.Name).
 		Body(servicecatalogPortfolio).
@@ -132,6 +139,7 @@ func (c *servicecatalogPortfolios) Update(servicecatalogPortfolio *v1alpha1.Serv
 func (c *servicecatalogPortfolios) UpdateStatus(servicecatalogPortfolio *v1alpha1.ServicecatalogPortfolio) (result *v1alpha1.ServicecatalogPortfolio, err error) {
 	result = &v1alpha1.ServicecatalogPortfolio{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicecatalogportfolios").
 		Name(servicecatalogPortfolio.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *servicecatalogPortfolios) UpdateStatus(servicecatalogPortfolio *v1alpha
 // Delete takes name of the servicecatalogPortfolio and deletes it. Returns an error if one occurs.
 func (c *servicecatalogPortfolios) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicecatalogportfolios").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *servicecatalogPortfolios) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicecatalogportfolios").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *servicecatalogPortfolios) DeleteCollection(options *v1.DeleteOptions, l
 func (c *servicecatalogPortfolios) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServicecatalogPortfolio, err error) {
 	result = &v1alpha1.ServicecatalogPortfolio{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("servicecatalogportfolios").
 		SubResource(subresources...).
 		Name(name).

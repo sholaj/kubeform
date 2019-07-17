@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,43 +19,44 @@ type ManagedDisk struct {
 }
 
 type ManagedDiskSpecEncryptionSettingsDiskEncryptionKey struct {
-	SecretUrl     string `json:"secret_url"`
-	SourceVaultId string `json:"source_vault_id"`
+	SecretURL     string `json:"secretURL" tf:"secret_url"`
+	SourceVaultID string `json:"sourceVaultID" tf:"source_vault_id"`
 }
 
 type ManagedDiskSpecEncryptionSettingsKeyEncryptionKey struct {
-	KeyUrl        string `json:"key_url"`
-	SourceVaultId string `json:"source_vault_id"`
+	KeyURL        string `json:"keyURL" tf:"key_url"`
+	SourceVaultID string `json:"sourceVaultID" tf:"source_vault_id"`
 }
 
 type ManagedDiskSpecEncryptionSettings struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	DiskEncryptionKey *[]ManagedDiskSpecEncryptionSettings `json:"disk_encryption_key,omitempty"`
-	Enabled           bool                                 `json:"enabled"`
+	DiskEncryptionKey []ManagedDiskSpecEncryptionSettingsDiskEncryptionKey `json:"diskEncryptionKey,omitempty" tf:"disk_encryption_key,omitempty"`
+	Enabled           bool                                                 `json:"enabled" tf:"enabled"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	KeyEncryptionKey *[]ManagedDiskSpecEncryptionSettings `json:"key_encryption_key,omitempty"`
+	KeyEncryptionKey []ManagedDiskSpecEncryptionSettingsKeyEncryptionKey `json:"keyEncryptionKey,omitempty" tf:"key_encryption_key,omitempty"`
 }
 
 type ManagedDiskSpec struct {
-	CreateOption string `json:"create_option"`
+	CreateOption string `json:"createOption" tf:"create_option"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	EncryptionSettings *[]ManagedDiskSpec `json:"encryption_settings,omitempty"`
+	EncryptionSettings []ManagedDiskSpecEncryptionSettings `json:"encryptionSettings,omitempty" tf:"encryption_settings,omitempty"`
 	// +optional
-	ImageReferenceId string `json:"image_reference_id,omitempty"`
-	Location         string `json:"location"`
-	Name             string `json:"name"`
+	ImageReferenceID string `json:"imageReferenceID,omitempty" tf:"image_reference_id,omitempty"`
+	Location         string `json:"location" tf:"location"`
+	Name             string `json:"name" tf:"name"`
 	// +optional
-	OsType            string `json:"os_type,omitempty"`
-	ResourceGroupName string `json:"resource_group_name"`
+	OsType            string `json:"osType,omitempty" tf:"os_type,omitempty"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	SourceResourceId   string `json:"source_resource_id,omitempty"`
-	StorageAccountType string `json:"storage_account_type"`
+	SourceResourceID   string `json:"sourceResourceID,omitempty" tf:"source_resource_id,omitempty"`
+	StorageAccountType string `json:"storageAccountType" tf:"storage_account_type"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Zones []string `json:"zones,omitempty"`
+	Zones       []string                  `json:"zones,omitempty" tf:"zones,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ManagedDiskStatus struct {
@@ -63,7 +64,9 @@ type ManagedDiskStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

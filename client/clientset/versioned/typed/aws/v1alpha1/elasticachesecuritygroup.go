@@ -32,7 +32,7 @@ import (
 // ElasticacheSecurityGroupsGetter has a method to return a ElasticacheSecurityGroupInterface.
 // A group's client should implement this interface.
 type ElasticacheSecurityGroupsGetter interface {
-	ElasticacheSecurityGroups() ElasticacheSecurityGroupInterface
+	ElasticacheSecurityGroups(namespace string) ElasticacheSecurityGroupInterface
 }
 
 // ElasticacheSecurityGroupInterface has methods to work with ElasticacheSecurityGroup resources.
@@ -52,12 +52,14 @@ type ElasticacheSecurityGroupInterface interface {
 // elasticacheSecurityGroups implements ElasticacheSecurityGroupInterface
 type elasticacheSecurityGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newElasticacheSecurityGroups returns a ElasticacheSecurityGroups
-func newElasticacheSecurityGroups(c *AwsV1alpha1Client) *elasticacheSecurityGroups {
+func newElasticacheSecurityGroups(c *AwsV1alpha1Client, namespace string) *elasticacheSecurityGroups {
 	return &elasticacheSecurityGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newElasticacheSecurityGroups(c *AwsV1alpha1Client) *elasticacheSecurityGrou
 func (c *elasticacheSecurityGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.ElasticacheSecurityGroup, err error) {
 	result = &v1alpha1.ElasticacheSecurityGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticachesecuritygroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *elasticacheSecurityGroups) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.ElasticacheSecurityGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticachesecuritygroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *elasticacheSecurityGroups) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticachesecuritygroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *elasticacheSecurityGroups) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *elasticacheSecurityGroups) Create(elasticacheSecurityGroup *v1alpha1.ElasticacheSecurityGroup) (result *v1alpha1.ElasticacheSecurityGroup, err error) {
 	result = &v1alpha1.ElasticacheSecurityGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("elasticachesecuritygroups").
 		Body(elasticacheSecurityGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *elasticacheSecurityGroups) Create(elasticacheSecurityGroup *v1alpha1.El
 func (c *elasticacheSecurityGroups) Update(elasticacheSecurityGroup *v1alpha1.ElasticacheSecurityGroup) (result *v1alpha1.ElasticacheSecurityGroup, err error) {
 	result = &v1alpha1.ElasticacheSecurityGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elasticachesecuritygroups").
 		Name(elasticacheSecurityGroup.Name).
 		Body(elasticacheSecurityGroup).
@@ -132,6 +139,7 @@ func (c *elasticacheSecurityGroups) Update(elasticacheSecurityGroup *v1alpha1.El
 func (c *elasticacheSecurityGroups) UpdateStatus(elasticacheSecurityGroup *v1alpha1.ElasticacheSecurityGroup) (result *v1alpha1.ElasticacheSecurityGroup, err error) {
 	result = &v1alpha1.ElasticacheSecurityGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elasticachesecuritygroups").
 		Name(elasticacheSecurityGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *elasticacheSecurityGroups) UpdateStatus(elasticacheSecurityGroup *v1alp
 // Delete takes name of the elasticacheSecurityGroup and deletes it. Returns an error if one occurs.
 func (c *elasticacheSecurityGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elasticachesecuritygroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *elasticacheSecurityGroups) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elasticachesecuritygroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *elasticacheSecurityGroups) DeleteCollection(options *v1.DeleteOptions, 
 func (c *elasticacheSecurityGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ElasticacheSecurityGroup, err error) {
 	result = &v1alpha1.ElasticacheSecurityGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("elasticachesecuritygroups").
 		SubResource(subresources...).
 		Name(name).

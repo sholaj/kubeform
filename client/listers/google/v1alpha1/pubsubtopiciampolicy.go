@@ -29,8 +29,8 @@ import (
 type PubsubTopicIamPolicyLister interface {
 	// List lists all PubsubTopicIamPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.PubsubTopicIamPolicy, err error)
-	// Get retrieves the PubsubTopicIamPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.PubsubTopicIamPolicy, error)
+	// PubsubTopicIamPolicies returns an object that can list and get PubsubTopicIamPolicies.
+	PubsubTopicIamPolicies(namespace string) PubsubTopicIamPolicyNamespaceLister
 	PubsubTopicIamPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *pubsubTopicIamPolicyLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the PubsubTopicIamPolicy from the index for a given name.
-func (s *pubsubTopicIamPolicyLister) Get(name string) (*v1alpha1.PubsubTopicIamPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// PubsubTopicIamPolicies returns an object that can list and get PubsubTopicIamPolicies.
+func (s *pubsubTopicIamPolicyLister) PubsubTopicIamPolicies(namespace string) PubsubTopicIamPolicyNamespaceLister {
+	return pubsubTopicIamPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// PubsubTopicIamPolicyNamespaceLister helps list and get PubsubTopicIamPolicies.
+type PubsubTopicIamPolicyNamespaceLister interface {
+	// List lists all PubsubTopicIamPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.PubsubTopicIamPolicy, err error)
+	// Get retrieves the PubsubTopicIamPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.PubsubTopicIamPolicy, error)
+	PubsubTopicIamPolicyNamespaceListerExpansion
+}
+
+// pubsubTopicIamPolicyNamespaceLister implements the PubsubTopicIamPolicyNamespaceLister
+// interface.
+type pubsubTopicIamPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all PubsubTopicIamPolicies in the indexer for a given namespace.
+func (s pubsubTopicIamPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.PubsubTopicIamPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.PubsubTopicIamPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the PubsubTopicIamPolicy from the indexer for a given namespace and name.
+func (s pubsubTopicIamPolicyNamespaceLister) Get(name string) (*v1alpha1.PubsubTopicIamPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

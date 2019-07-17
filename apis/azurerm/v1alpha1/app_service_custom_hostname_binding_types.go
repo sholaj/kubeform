@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,9 +19,10 @@ type AppServiceCustomHostnameBinding struct {
 }
 
 type AppServiceCustomHostnameBindingSpec struct {
-	AppServiceName    string `json:"app_service_name"`
-	Hostname          string `json:"hostname"`
-	ResourceGroupName string `json:"resource_group_name"`
+	AppServiceName    string                    `json:"appServiceName" tf:"app_service_name"`
+	Hostname          string                    `json:"hostname" tf:"hostname"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type AppServiceCustomHostnameBindingStatus struct {
@@ -29,7 +30,9 @@ type AppServiceCustomHostnameBindingStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

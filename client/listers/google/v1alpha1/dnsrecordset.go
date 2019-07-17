@@ -29,8 +29,8 @@ import (
 type DnsRecordSetLister interface {
 	// List lists all DnsRecordSets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DnsRecordSet, err error)
-	// Get retrieves the DnsRecordSet from the index for a given name.
-	Get(name string) (*v1alpha1.DnsRecordSet, error)
+	// DnsRecordSets returns an object that can list and get DnsRecordSets.
+	DnsRecordSets(namespace string) DnsRecordSetNamespaceLister
 	DnsRecordSetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dnsRecordSetLister) List(selector labels.Selector) (ret []*v1alpha1.Dns
 	return ret, err
 }
 
-// Get retrieves the DnsRecordSet from the index for a given name.
-func (s *dnsRecordSetLister) Get(name string) (*v1alpha1.DnsRecordSet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DnsRecordSets returns an object that can list and get DnsRecordSets.
+func (s *dnsRecordSetLister) DnsRecordSets(namespace string) DnsRecordSetNamespaceLister {
+	return dnsRecordSetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DnsRecordSetNamespaceLister helps list and get DnsRecordSets.
+type DnsRecordSetNamespaceLister interface {
+	// List lists all DnsRecordSets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DnsRecordSet, err error)
+	// Get retrieves the DnsRecordSet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DnsRecordSet, error)
+	DnsRecordSetNamespaceListerExpansion
+}
+
+// dnsRecordSetNamespaceLister implements the DnsRecordSetNamespaceLister
+// interface.
+type dnsRecordSetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DnsRecordSets in the indexer for a given namespace.
+func (s dnsRecordSetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DnsRecordSet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DnsRecordSet))
+	})
+	return ret, err
+}
+
+// Get retrieves the DnsRecordSet from the indexer for a given namespace and name.
+func (s dnsRecordSetNamespaceLister) Get(name string) (*v1alpha1.DnsRecordSet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

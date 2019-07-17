@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,13 +19,14 @@ type TemplateDeployment struct {
 }
 
 type TemplateDeploymentSpec struct {
-	DeploymentMode string `json:"deployment_mode"`
-	Name           string `json:"name"`
+	DeploymentMode string `json:"deploymentMode" tf:"deployment_mode"`
+	Name           string `json:"name" tf:"name"`
 	// +optional
-	Parameters map[string]string `json:"parameters,omitempty"`
+	Parameters map[string]string `json:"parameters,omitempty" tf:"parameters,omitempty"`
 	// +optional
-	ParametersBody    string `json:"parameters_body,omitempty"`
-	ResourceGroupName string `json:"resource_group_name"`
+	ParametersBody    string                    `json:"parametersBody,omitempty" tf:"parameters_body,omitempty"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type TemplateDeploymentStatus struct {
@@ -33,7 +34,9 @@ type TemplateDeploymentStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

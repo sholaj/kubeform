@@ -8,7 +8,7 @@ metadata:
 spec:
   group: aws.kubeform.com
   names:
-    kind: DefaultNetworkAcl
+    kind: DefaultNetworkACL
     plural: defaultnetworkacls
   scope: ""
   validation:
@@ -397,17 +397,78 @@ spec:
           type: object
         spec:
           properties:
-            default_network_acl_id:
+            defaultNetworkACLID:
               type: string
             egress:
-              items: {}
+              items:
+                properties:
+                  action:
+                    type: string
+                  cidrBlock:
+                    type: string
+                  fromPort:
+                    type: integer
+                  icmpCode:
+                    type: integer
+                  icmpType:
+                    type: integer
+                  ipv6CIDRBlock:
+                    type: string
+                  protocol:
+                    type: string
+                  ruleNo:
+                    type: integer
+                  toPort:
+                    type: integer
+                required:
+                - action
+                - fromPort
+                - protocol
+                - ruleNo
+                - toPort
+                type: object
               type: array
               uniqueItems: true
             ingress:
-              items: {}
+              items:
+                properties:
+                  action:
+                    type: string
+                  cidrBlock:
+                    type: string
+                  fromPort:
+                    type: integer
+                  icmpCode:
+                    type: integer
+                  icmpType:
+                    type: integer
+                  ipv6CIDRBlock:
+                    type: string
+                  protocol:
+                    type: string
+                  ruleNo:
+                    type: integer
+                  toPort:
+                    type: integer
+                required:
+                - action
+                - fromPort
+                - protocol
+                - ruleNo
+                - toPort
+                type: object
               type: array
               uniqueItems: true
-            subnet_ids:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            subnetIDS:
               items:
                 type: string
               type: array
@@ -417,7 +478,8 @@ spec:
                 type: string
               type: object
           required:
-          - default_network_acl_id
+          - defaultNetworkACLID
+          - providerRef
           type: object
         status:
           properties:
@@ -428,6 +490,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

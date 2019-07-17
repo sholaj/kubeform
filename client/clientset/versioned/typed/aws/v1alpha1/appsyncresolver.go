@@ -32,7 +32,7 @@ import (
 // AppsyncResolversGetter has a method to return a AppsyncResolverInterface.
 // A group's client should implement this interface.
 type AppsyncResolversGetter interface {
-	AppsyncResolvers() AppsyncResolverInterface
+	AppsyncResolvers(namespace string) AppsyncResolverInterface
 }
 
 // AppsyncResolverInterface has methods to work with AppsyncResolver resources.
@@ -52,12 +52,14 @@ type AppsyncResolverInterface interface {
 // appsyncResolvers implements AppsyncResolverInterface
 type appsyncResolvers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAppsyncResolvers returns a AppsyncResolvers
-func newAppsyncResolvers(c *AwsV1alpha1Client) *appsyncResolvers {
+func newAppsyncResolvers(c *AwsV1alpha1Client, namespace string) *appsyncResolvers {
 	return &appsyncResolvers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAppsyncResolvers(c *AwsV1alpha1Client) *appsyncResolvers {
 func (c *appsyncResolvers) Get(name string, options v1.GetOptions) (result *v1alpha1.AppsyncResolver, err error) {
 	result = &v1alpha1.AppsyncResolver{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appsyncresolvers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *appsyncResolvers) List(opts v1.ListOptions) (result *v1alpha1.AppsyncRe
 	}
 	result = &v1alpha1.AppsyncResolverList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appsyncresolvers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *appsyncResolvers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("appsyncresolvers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *appsyncResolvers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *appsyncResolvers) Create(appsyncResolver *v1alpha1.AppsyncResolver) (result *v1alpha1.AppsyncResolver, err error) {
 	result = &v1alpha1.AppsyncResolver{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("appsyncresolvers").
 		Body(appsyncResolver).
 		Do().
@@ -118,6 +124,7 @@ func (c *appsyncResolvers) Create(appsyncResolver *v1alpha1.AppsyncResolver) (re
 func (c *appsyncResolvers) Update(appsyncResolver *v1alpha1.AppsyncResolver) (result *v1alpha1.AppsyncResolver, err error) {
 	result = &v1alpha1.AppsyncResolver{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appsyncresolvers").
 		Name(appsyncResolver.Name).
 		Body(appsyncResolver).
@@ -132,6 +139,7 @@ func (c *appsyncResolvers) Update(appsyncResolver *v1alpha1.AppsyncResolver) (re
 func (c *appsyncResolvers) UpdateStatus(appsyncResolver *v1alpha1.AppsyncResolver) (result *v1alpha1.AppsyncResolver, err error) {
 	result = &v1alpha1.AppsyncResolver{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appsyncresolvers").
 		Name(appsyncResolver.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *appsyncResolvers) UpdateStatus(appsyncResolver *v1alpha1.AppsyncResolve
 // Delete takes name of the appsyncResolver and deletes it. Returns an error if one occurs.
 func (c *appsyncResolvers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appsyncresolvers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *appsyncResolvers) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appsyncresolvers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *appsyncResolvers) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *appsyncResolvers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppsyncResolver, err error) {
 	result = &v1alpha1.AppsyncResolver{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("appsyncresolvers").
 		SubResource(subresources...).
 		Name(name).

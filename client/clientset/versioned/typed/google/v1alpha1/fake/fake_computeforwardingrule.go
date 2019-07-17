@@ -31,6 +31,7 @@ import (
 // FakeComputeForwardingRules implements ComputeForwardingRuleInterface
 type FakeComputeForwardingRules struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computeforwardingrulesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computeforwardingrules"}
@@ -40,7 +41,8 @@ var computeforwardingrulesKind = schema.GroupVersionKind{Group: "google.kubeform
 // Get takes name of the computeForwardingRule, and returns the corresponding computeForwardingRule object, and an error if there is any.
 func (c *FakeComputeForwardingRules) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeForwardingRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computeforwardingrulesResource, name), &v1alpha1.ComputeForwardingRule{})
+		Invokes(testing.NewGetAction(computeforwardingrulesResource, c.ns, name), &v1alpha1.ComputeForwardingRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeForwardingRules) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of ComputeForwardingRules that match those selectors.
 func (c *FakeComputeForwardingRules) List(opts v1.ListOptions) (result *v1alpha1.ComputeForwardingRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computeforwardingrulesResource, computeforwardingrulesKind, opts), &v1alpha1.ComputeForwardingRuleList{})
+		Invokes(testing.NewListAction(computeforwardingrulesResource, computeforwardingrulesKind, c.ns, opts), &v1alpha1.ComputeForwardingRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeForwardingRules) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested computeForwardingRules.
 func (c *FakeComputeForwardingRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computeforwardingrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(computeforwardingrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeForwardingRule and creates it.  Returns the server's representation of the computeForwardingRule, and an error, if there is any.
 func (c *FakeComputeForwardingRules) Create(computeForwardingRule *v1alpha1.ComputeForwardingRule) (result *v1alpha1.ComputeForwardingRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computeforwardingrulesResource, computeForwardingRule), &v1alpha1.ComputeForwardingRule{})
+		Invokes(testing.NewCreateAction(computeforwardingrulesResource, c.ns, computeForwardingRule), &v1alpha1.ComputeForwardingRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeForwardingRules) Create(computeForwardingRule *v1alpha1.Comp
 // Update takes the representation of a computeForwardingRule and updates it. Returns the server's representation of the computeForwardingRule, and an error, if there is any.
 func (c *FakeComputeForwardingRules) Update(computeForwardingRule *v1alpha1.ComputeForwardingRule) (result *v1alpha1.ComputeForwardingRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computeforwardingrulesResource, computeForwardingRule), &v1alpha1.ComputeForwardingRule{})
+		Invokes(testing.NewUpdateAction(computeforwardingrulesResource, c.ns, computeForwardingRule), &v1alpha1.ComputeForwardingRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeForwardingRules) Update(computeForwardingRule *v1alpha1.Comp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeForwardingRules) UpdateStatus(computeForwardingRule *v1alpha1.ComputeForwardingRule) (*v1alpha1.ComputeForwardingRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computeforwardingrulesResource, "status", computeForwardingRule), &v1alpha1.ComputeForwardingRule{})
+		Invokes(testing.NewUpdateSubresourceAction(computeforwardingrulesResource, "status", c.ns, computeForwardingRule), &v1alpha1.ComputeForwardingRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeForwardingRules) UpdateStatus(computeForwardingRule *v1alpha
 // Delete takes name of the computeForwardingRule and deletes it. Returns an error if one occurs.
 func (c *FakeComputeForwardingRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computeforwardingrulesResource, name), &v1alpha1.ComputeForwardingRule{})
+		Invokes(testing.NewDeleteAction(computeforwardingrulesResource, c.ns, name), &v1alpha1.ComputeForwardingRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeForwardingRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computeforwardingrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computeforwardingrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeForwardingRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeForwardingRules) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched computeForwardingRule.
 func (c *FakeComputeForwardingRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeForwardingRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computeforwardingrulesResource, name, pt, data, subresources...), &v1alpha1.ComputeForwardingRule{})
+		Invokes(testing.NewPatchSubresourceAction(computeforwardingrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeForwardingRule{})
+
 	if obj == nil {
 		return nil, err
 	}

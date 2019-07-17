@@ -32,7 +32,7 @@ import (
 // WafregionalByteMatchSetsGetter has a method to return a WafregionalByteMatchSetInterface.
 // A group's client should implement this interface.
 type WafregionalByteMatchSetsGetter interface {
-	WafregionalByteMatchSets() WafregionalByteMatchSetInterface
+	WafregionalByteMatchSets(namespace string) WafregionalByteMatchSetInterface
 }
 
 // WafregionalByteMatchSetInterface has methods to work with WafregionalByteMatchSet resources.
@@ -52,12 +52,14 @@ type WafregionalByteMatchSetInterface interface {
 // wafregionalByteMatchSets implements WafregionalByteMatchSetInterface
 type wafregionalByteMatchSets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWafregionalByteMatchSets returns a WafregionalByteMatchSets
-func newWafregionalByteMatchSets(c *AwsV1alpha1Client) *wafregionalByteMatchSets {
+func newWafregionalByteMatchSets(c *AwsV1alpha1Client, namespace string) *wafregionalByteMatchSets {
 	return &wafregionalByteMatchSets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWafregionalByteMatchSets(c *AwsV1alpha1Client) *wafregionalByteMatchSets
 func (c *wafregionalByteMatchSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalByteMatchSet, err error) {
 	result = &v1alpha1.WafregionalByteMatchSet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalbytematchsets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *wafregionalByteMatchSets) List(opts v1.ListOptions) (result *v1alpha1.W
 	}
 	result = &v1alpha1.WafregionalByteMatchSetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalbytematchsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *wafregionalByteMatchSets) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalbytematchsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *wafregionalByteMatchSets) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *wafregionalByteMatchSets) Create(wafregionalByteMatchSet *v1alpha1.WafregionalByteMatchSet) (result *v1alpha1.WafregionalByteMatchSet, err error) {
 	result = &v1alpha1.WafregionalByteMatchSet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafregionalbytematchsets").
 		Body(wafregionalByteMatchSet).
 		Do().
@@ -118,6 +124,7 @@ func (c *wafregionalByteMatchSets) Create(wafregionalByteMatchSet *v1alpha1.Wafr
 func (c *wafregionalByteMatchSets) Update(wafregionalByteMatchSet *v1alpha1.WafregionalByteMatchSet) (result *v1alpha1.WafregionalByteMatchSet, err error) {
 	result = &v1alpha1.WafregionalByteMatchSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregionalbytematchsets").
 		Name(wafregionalByteMatchSet.Name).
 		Body(wafregionalByteMatchSet).
@@ -132,6 +139,7 @@ func (c *wafregionalByteMatchSets) Update(wafregionalByteMatchSet *v1alpha1.Wafr
 func (c *wafregionalByteMatchSets) UpdateStatus(wafregionalByteMatchSet *v1alpha1.WafregionalByteMatchSet) (result *v1alpha1.WafregionalByteMatchSet, err error) {
 	result = &v1alpha1.WafregionalByteMatchSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregionalbytematchsets").
 		Name(wafregionalByteMatchSet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *wafregionalByteMatchSets) UpdateStatus(wafregionalByteMatchSet *v1alpha
 // Delete takes name of the wafregionalByteMatchSet and deletes it. Returns an error if one occurs.
 func (c *wafregionalByteMatchSets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregionalbytematchsets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *wafregionalByteMatchSets) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregionalbytematchsets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *wafregionalByteMatchSets) DeleteCollection(options *v1.DeleteOptions, l
 func (c *wafregionalByteMatchSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalByteMatchSet, err error) {
 	result = &v1alpha1.WafregionalByteMatchSet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafregionalbytematchsets").
 		SubResource(subresources...).
 		Name(name).

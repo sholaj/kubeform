@@ -41,32 +41,33 @@ type SqlVirtualNetworkRuleInformer interface {
 type sqlVirtualNetworkRuleInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSqlVirtualNetworkRuleInformer constructs a new informer for SqlVirtualNetworkRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSqlVirtualNetworkRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSqlVirtualNetworkRuleInformer(client, resyncPeriod, indexers, nil)
+func NewSqlVirtualNetworkRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSqlVirtualNetworkRuleInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSqlVirtualNetworkRuleInformer constructs a new informer for SqlVirtualNetworkRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSqlVirtualNetworkRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSqlVirtualNetworkRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().SqlVirtualNetworkRules().List(options)
+				return client.AzurermV1alpha1().SqlVirtualNetworkRules(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().SqlVirtualNetworkRules().Watch(options)
+				return client.AzurermV1alpha1().SqlVirtualNetworkRules(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.SqlVirtualNetworkRule{},
@@ -76,7 +77,7 @@ func NewFilteredSqlVirtualNetworkRuleInformer(client versioned.Interface, resync
 }
 
 func (f *sqlVirtualNetworkRuleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSqlVirtualNetworkRuleInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSqlVirtualNetworkRuleInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *sqlVirtualNetworkRuleInformer) Informer() cache.SharedIndexInformer {

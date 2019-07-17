@@ -29,8 +29,8 @@ import (
 type LogAnalyticsLinkedServiceLister interface {
 	// List lists all LogAnalyticsLinkedServices in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LogAnalyticsLinkedService, err error)
-	// Get retrieves the LogAnalyticsLinkedService from the index for a given name.
-	Get(name string) (*v1alpha1.LogAnalyticsLinkedService, error)
+	// LogAnalyticsLinkedServices returns an object that can list and get LogAnalyticsLinkedServices.
+	LogAnalyticsLinkedServices(namespace string) LogAnalyticsLinkedServiceNamespaceLister
 	LogAnalyticsLinkedServiceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *logAnalyticsLinkedServiceLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the LogAnalyticsLinkedService from the index for a given name.
-func (s *logAnalyticsLinkedServiceLister) Get(name string) (*v1alpha1.LogAnalyticsLinkedService, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LogAnalyticsLinkedServices returns an object that can list and get LogAnalyticsLinkedServices.
+func (s *logAnalyticsLinkedServiceLister) LogAnalyticsLinkedServices(namespace string) LogAnalyticsLinkedServiceNamespaceLister {
+	return logAnalyticsLinkedServiceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LogAnalyticsLinkedServiceNamespaceLister helps list and get LogAnalyticsLinkedServices.
+type LogAnalyticsLinkedServiceNamespaceLister interface {
+	// List lists all LogAnalyticsLinkedServices in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LogAnalyticsLinkedService, err error)
+	// Get retrieves the LogAnalyticsLinkedService from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LogAnalyticsLinkedService, error)
+	LogAnalyticsLinkedServiceNamespaceListerExpansion
+}
+
+// logAnalyticsLinkedServiceNamespaceLister implements the LogAnalyticsLinkedServiceNamespaceLister
+// interface.
+type logAnalyticsLinkedServiceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LogAnalyticsLinkedServices in the indexer for a given namespace.
+func (s logAnalyticsLinkedServiceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LogAnalyticsLinkedService, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LogAnalyticsLinkedService))
+	})
+	return ret, err
+}
+
+// Get retrieves the LogAnalyticsLinkedService from the indexer for a given namespace and name.
+func (s logAnalyticsLinkedServiceNamespaceLister) Get(name string) (*v1alpha1.LogAnalyticsLinkedService, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

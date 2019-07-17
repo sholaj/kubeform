@@ -31,6 +31,7 @@ import (
 // FakeDxGatewayAssociations implements DxGatewayAssociationInterface
 type FakeDxGatewayAssociations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var dxgatewayassociationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "dxgatewayassociations"}
@@ -40,7 +41,8 @@ var dxgatewayassociationsKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the dxGatewayAssociation, and returns the corresponding dxGatewayAssociation object, and an error if there is any.
 func (c *FakeDxGatewayAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.DxGatewayAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(dxgatewayassociationsResource, name), &v1alpha1.DxGatewayAssociation{})
+		Invokes(testing.NewGetAction(dxgatewayassociationsResource, c.ns, name), &v1alpha1.DxGatewayAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDxGatewayAssociations) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of DxGatewayAssociations that match those selectors.
 func (c *FakeDxGatewayAssociations) List(opts v1.ListOptions) (result *v1alpha1.DxGatewayAssociationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(dxgatewayassociationsResource, dxgatewayassociationsKind, opts), &v1alpha1.DxGatewayAssociationList{})
+		Invokes(testing.NewListAction(dxgatewayassociationsResource, dxgatewayassociationsKind, c.ns, opts), &v1alpha1.DxGatewayAssociationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDxGatewayAssociations) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested dxGatewayAssociations.
 func (c *FakeDxGatewayAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(dxgatewayassociationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(dxgatewayassociationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dxGatewayAssociation and creates it.  Returns the server's representation of the dxGatewayAssociation, and an error, if there is any.
 func (c *FakeDxGatewayAssociations) Create(dxGatewayAssociation *v1alpha1.DxGatewayAssociation) (result *v1alpha1.DxGatewayAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(dxgatewayassociationsResource, dxGatewayAssociation), &v1alpha1.DxGatewayAssociation{})
+		Invokes(testing.NewCreateAction(dxgatewayassociationsResource, c.ns, dxGatewayAssociation), &v1alpha1.DxGatewayAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDxGatewayAssociations) Create(dxGatewayAssociation *v1alpha1.DxGate
 // Update takes the representation of a dxGatewayAssociation and updates it. Returns the server's representation of the dxGatewayAssociation, and an error, if there is any.
 func (c *FakeDxGatewayAssociations) Update(dxGatewayAssociation *v1alpha1.DxGatewayAssociation) (result *v1alpha1.DxGatewayAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(dxgatewayassociationsResource, dxGatewayAssociation), &v1alpha1.DxGatewayAssociation{})
+		Invokes(testing.NewUpdateAction(dxgatewayassociationsResource, c.ns, dxGatewayAssociation), &v1alpha1.DxGatewayAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDxGatewayAssociations) Update(dxGatewayAssociation *v1alpha1.DxGate
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDxGatewayAssociations) UpdateStatus(dxGatewayAssociation *v1alpha1.DxGatewayAssociation) (*v1alpha1.DxGatewayAssociation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(dxgatewayassociationsResource, "status", dxGatewayAssociation), &v1alpha1.DxGatewayAssociation{})
+		Invokes(testing.NewUpdateSubresourceAction(dxgatewayassociationsResource, "status", c.ns, dxGatewayAssociation), &v1alpha1.DxGatewayAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDxGatewayAssociations) UpdateStatus(dxGatewayAssociation *v1alpha1.
 // Delete takes name of the dxGatewayAssociation and deletes it. Returns an error if one occurs.
 func (c *FakeDxGatewayAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(dxgatewayassociationsResource, name), &v1alpha1.DxGatewayAssociation{})
+		Invokes(testing.NewDeleteAction(dxgatewayassociationsResource, c.ns, name), &v1alpha1.DxGatewayAssociation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDxGatewayAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(dxgatewayassociationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(dxgatewayassociationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DxGatewayAssociationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDxGatewayAssociations) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched dxGatewayAssociation.
 func (c *FakeDxGatewayAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DxGatewayAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(dxgatewayassociationsResource, name, pt, data, subresources...), &v1alpha1.DxGatewayAssociation{})
+		Invokes(testing.NewPatchSubresourceAction(dxgatewayassociationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DxGatewayAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // CloudtrailsGetter has a method to return a CloudtrailInterface.
 // A group's client should implement this interface.
 type CloudtrailsGetter interface {
-	Cloudtrails() CloudtrailInterface
+	Cloudtrails(namespace string) CloudtrailInterface
 }
 
 // CloudtrailInterface has methods to work with Cloudtrail resources.
@@ -52,12 +52,14 @@ type CloudtrailInterface interface {
 // cloudtrails implements CloudtrailInterface
 type cloudtrails struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCloudtrails returns a Cloudtrails
-func newCloudtrails(c *AwsV1alpha1Client) *cloudtrails {
+func newCloudtrails(c *AwsV1alpha1Client, namespace string) *cloudtrails {
 	return &cloudtrails{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCloudtrails(c *AwsV1alpha1Client) *cloudtrails {
 func (c *cloudtrails) Get(name string, options v1.GetOptions) (result *v1alpha1.Cloudtrail, err error) {
 	result = &v1alpha1.Cloudtrail{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudtrails").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cloudtrails) List(opts v1.ListOptions) (result *v1alpha1.CloudtrailList
 	}
 	result = &v1alpha1.CloudtrailList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudtrails").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cloudtrails) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudtrails").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cloudtrails) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *cloudtrails) Create(cloudtrail *v1alpha1.Cloudtrail) (result *v1alpha1.Cloudtrail, err error) {
 	result = &v1alpha1.Cloudtrail{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cloudtrails").
 		Body(cloudtrail).
 		Do().
@@ -118,6 +124,7 @@ func (c *cloudtrails) Create(cloudtrail *v1alpha1.Cloudtrail) (result *v1alpha1.
 func (c *cloudtrails) Update(cloudtrail *v1alpha1.Cloudtrail) (result *v1alpha1.Cloudtrail, err error) {
 	result = &v1alpha1.Cloudtrail{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudtrails").
 		Name(cloudtrail.Name).
 		Body(cloudtrail).
@@ -132,6 +139,7 @@ func (c *cloudtrails) Update(cloudtrail *v1alpha1.Cloudtrail) (result *v1alpha1.
 func (c *cloudtrails) UpdateStatus(cloudtrail *v1alpha1.Cloudtrail) (result *v1alpha1.Cloudtrail, err error) {
 	result = &v1alpha1.Cloudtrail{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudtrails").
 		Name(cloudtrail.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cloudtrails) UpdateStatus(cloudtrail *v1alpha1.Cloudtrail) (result *v1a
 // Delete takes name of the cloudtrail and deletes it. Returns an error if one occurs.
 func (c *cloudtrails) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudtrails").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cloudtrails) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudtrails").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cloudtrails) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *cloudtrails) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Cloudtrail, err error) {
 	result = &v1alpha1.Cloudtrail{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cloudtrails").
 		SubResource(subresources...).
 		Name(name).

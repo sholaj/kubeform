@@ -29,8 +29,8 @@ import (
 type CognitoUserPoolLister interface {
 	// List lists all CognitoUserPools in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CognitoUserPool, err error)
-	// Get retrieves the CognitoUserPool from the index for a given name.
-	Get(name string) (*v1alpha1.CognitoUserPool, error)
+	// CognitoUserPools returns an object that can list and get CognitoUserPools.
+	CognitoUserPools(namespace string) CognitoUserPoolNamespaceLister
 	CognitoUserPoolListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cognitoUserPoolLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the CognitoUserPool from the index for a given name.
-func (s *cognitoUserPoolLister) Get(name string) (*v1alpha1.CognitoUserPool, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CognitoUserPools returns an object that can list and get CognitoUserPools.
+func (s *cognitoUserPoolLister) CognitoUserPools(namespace string) CognitoUserPoolNamespaceLister {
+	return cognitoUserPoolNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CognitoUserPoolNamespaceLister helps list and get CognitoUserPools.
+type CognitoUserPoolNamespaceLister interface {
+	// List lists all CognitoUserPools in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CognitoUserPool, err error)
+	// Get retrieves the CognitoUserPool from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CognitoUserPool, error)
+	CognitoUserPoolNamespaceListerExpansion
+}
+
+// cognitoUserPoolNamespaceLister implements the CognitoUserPoolNamespaceLister
+// interface.
+type cognitoUserPoolNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CognitoUserPools in the indexer for a given namespace.
+func (s cognitoUserPoolNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CognitoUserPool, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CognitoUserPool))
+	})
+	return ret, err
+}
+
+// Get retrieves the CognitoUserPool from the indexer for a given namespace and name.
+func (s cognitoUserPoolNamespaceLister) Get(name string) (*v1alpha1.CognitoUserPool, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

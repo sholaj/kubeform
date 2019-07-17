@@ -32,7 +32,7 @@ import (
 // WafXssMatchSetsGetter has a method to return a WafXssMatchSetInterface.
 // A group's client should implement this interface.
 type WafXssMatchSetsGetter interface {
-	WafXssMatchSets() WafXssMatchSetInterface
+	WafXssMatchSets(namespace string) WafXssMatchSetInterface
 }
 
 // WafXssMatchSetInterface has methods to work with WafXssMatchSet resources.
@@ -52,12 +52,14 @@ type WafXssMatchSetInterface interface {
 // wafXssMatchSets implements WafXssMatchSetInterface
 type wafXssMatchSets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWafXssMatchSets returns a WafXssMatchSets
-func newWafXssMatchSets(c *AwsV1alpha1Client) *wafXssMatchSets {
+func newWafXssMatchSets(c *AwsV1alpha1Client, namespace string) *wafXssMatchSets {
 	return &wafXssMatchSets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWafXssMatchSets(c *AwsV1alpha1Client) *wafXssMatchSets {
 func (c *wafXssMatchSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafXssMatchSet, err error) {
 	result = &v1alpha1.WafXssMatchSet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafxssmatchsets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *wafXssMatchSets) List(opts v1.ListOptions) (result *v1alpha1.WafXssMatc
 	}
 	result = &v1alpha1.WafXssMatchSetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafxssmatchsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *wafXssMatchSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafxssmatchsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *wafXssMatchSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *wafXssMatchSets) Create(wafXssMatchSet *v1alpha1.WafXssMatchSet) (result *v1alpha1.WafXssMatchSet, err error) {
 	result = &v1alpha1.WafXssMatchSet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafxssmatchsets").
 		Body(wafXssMatchSet).
 		Do().
@@ -118,6 +124,7 @@ func (c *wafXssMatchSets) Create(wafXssMatchSet *v1alpha1.WafXssMatchSet) (resul
 func (c *wafXssMatchSets) Update(wafXssMatchSet *v1alpha1.WafXssMatchSet) (result *v1alpha1.WafXssMatchSet, err error) {
 	result = &v1alpha1.WafXssMatchSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafxssmatchsets").
 		Name(wafXssMatchSet.Name).
 		Body(wafXssMatchSet).
@@ -132,6 +139,7 @@ func (c *wafXssMatchSets) Update(wafXssMatchSet *v1alpha1.WafXssMatchSet) (resul
 func (c *wafXssMatchSets) UpdateStatus(wafXssMatchSet *v1alpha1.WafXssMatchSet) (result *v1alpha1.WafXssMatchSet, err error) {
 	result = &v1alpha1.WafXssMatchSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafxssmatchsets").
 		Name(wafXssMatchSet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *wafXssMatchSets) UpdateStatus(wafXssMatchSet *v1alpha1.WafXssMatchSet) 
 // Delete takes name of the wafXssMatchSet and deletes it. Returns an error if one occurs.
 func (c *wafXssMatchSets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafxssmatchsets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *wafXssMatchSets) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafxssmatchsets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *wafXssMatchSets) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *wafXssMatchSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafXssMatchSet, err error) {
 	result = &v1alpha1.WafXssMatchSet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafxssmatchsets").
 		SubResource(subresources...).
 		Name(name).

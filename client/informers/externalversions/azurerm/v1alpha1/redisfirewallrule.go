@@ -41,32 +41,33 @@ type RedisFirewallRuleInformer interface {
 type redisFirewallRuleInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewRedisFirewallRuleInformer constructs a new informer for RedisFirewallRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewRedisFirewallRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredRedisFirewallRuleInformer(client, resyncPeriod, indexers, nil)
+func NewRedisFirewallRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredRedisFirewallRuleInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredRedisFirewallRuleInformer constructs a new informer for RedisFirewallRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredRedisFirewallRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredRedisFirewallRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().RedisFirewallRules().List(options)
+				return client.AzurermV1alpha1().RedisFirewallRules(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().RedisFirewallRules().Watch(options)
+				return client.AzurermV1alpha1().RedisFirewallRules(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.RedisFirewallRule{},
@@ -76,7 +77,7 @@ func NewFilteredRedisFirewallRuleInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *redisFirewallRuleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredRedisFirewallRuleInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredRedisFirewallRuleInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *redisFirewallRuleInformer) Informer() cache.SharedIndexInformer {

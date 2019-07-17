@@ -32,7 +32,7 @@ import (
 // ComputeRouterInterfacesGetter has a method to return a ComputeRouterInterfaceInterface.
 // A group's client should implement this interface.
 type ComputeRouterInterfacesGetter interface {
-	ComputeRouterInterfaces() ComputeRouterInterfaceInterface
+	ComputeRouterInterfaces(namespace string) ComputeRouterInterfaceInterface
 }
 
 // ComputeRouterInterfaceInterface has methods to work with ComputeRouterInterface resources.
@@ -52,12 +52,14 @@ type ComputeRouterInterfaceInterface interface {
 // computeRouterInterfaces implements ComputeRouterInterfaceInterface
 type computeRouterInterfaces struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeRouterInterfaces returns a ComputeRouterInterfaces
-func newComputeRouterInterfaces(c *GoogleV1alpha1Client) *computeRouterInterfaces {
+func newComputeRouterInterfaces(c *GoogleV1alpha1Client, namespace string) *computeRouterInterfaces {
 	return &computeRouterInterfaces{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeRouterInterfaces(c *GoogleV1alpha1Client) *computeRouterInterface
 func (c *computeRouterInterfaces) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeRouterInterface, err error) {
 	result = &v1alpha1.ComputeRouterInterface{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computerouterinterfaces").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeRouterInterfaces) List(opts v1.ListOptions) (result *v1alpha1.Co
 	}
 	result = &v1alpha1.ComputeRouterInterfaceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computerouterinterfaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeRouterInterfaces) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computerouterinterfaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeRouterInterfaces) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *computeRouterInterfaces) Create(computeRouterInterface *v1alpha1.ComputeRouterInterface) (result *v1alpha1.ComputeRouterInterface, err error) {
 	result = &v1alpha1.ComputeRouterInterface{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computerouterinterfaces").
 		Body(computeRouterInterface).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeRouterInterfaces) Create(computeRouterInterface *v1alpha1.Comput
 func (c *computeRouterInterfaces) Update(computeRouterInterface *v1alpha1.ComputeRouterInterface) (result *v1alpha1.ComputeRouterInterface, err error) {
 	result = &v1alpha1.ComputeRouterInterface{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computerouterinterfaces").
 		Name(computeRouterInterface.Name).
 		Body(computeRouterInterface).
@@ -132,6 +139,7 @@ func (c *computeRouterInterfaces) Update(computeRouterInterface *v1alpha1.Comput
 func (c *computeRouterInterfaces) UpdateStatus(computeRouterInterface *v1alpha1.ComputeRouterInterface) (result *v1alpha1.ComputeRouterInterface, err error) {
 	result = &v1alpha1.ComputeRouterInterface{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computerouterinterfaces").
 		Name(computeRouterInterface.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeRouterInterfaces) UpdateStatus(computeRouterInterface *v1alpha1.
 // Delete takes name of the computeRouterInterface and deletes it. Returns an error if one occurs.
 func (c *computeRouterInterfaces) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computerouterinterfaces").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeRouterInterfaces) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computerouterinterfaces").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeRouterInterfaces) DeleteCollection(options *v1.DeleteOptions, li
 func (c *computeRouterInterfaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeRouterInterface, err error) {
 	result = &v1alpha1.ComputeRouterInterface{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computerouterinterfaces").
 		SubResource(subresources...).
 		Name(name).

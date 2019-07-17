@@ -29,8 +29,8 @@ import (
 type ApiGatewayMethodLister interface {
 	// List lists all ApiGatewayMethods in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayMethod, err error)
-	// Get retrieves the ApiGatewayMethod from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayMethod, error)
+	// ApiGatewayMethods returns an object that can list and get ApiGatewayMethods.
+	ApiGatewayMethods(namespace string) ApiGatewayMethodNamespaceLister
 	ApiGatewayMethodListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiGatewayMethodLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayMethod from the index for a given name.
-func (s *apiGatewayMethodLister) Get(name string) (*v1alpha1.ApiGatewayMethod, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayMethods returns an object that can list and get ApiGatewayMethods.
+func (s *apiGatewayMethodLister) ApiGatewayMethods(namespace string) ApiGatewayMethodNamespaceLister {
+	return apiGatewayMethodNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayMethodNamespaceLister helps list and get ApiGatewayMethods.
+type ApiGatewayMethodNamespaceLister interface {
+	// List lists all ApiGatewayMethods in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayMethod, err error)
+	// Get retrieves the ApiGatewayMethod from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayMethod, error)
+	ApiGatewayMethodNamespaceListerExpansion
+}
+
+// apiGatewayMethodNamespaceLister implements the ApiGatewayMethodNamespaceLister
+// interface.
+type apiGatewayMethodNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayMethods in the indexer for a given namespace.
+func (s apiGatewayMethodNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayMethod, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayMethod))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayMethod from the indexer for a given namespace and name.
+func (s apiGatewayMethodNamespaceLister) Get(name string) (*v1alpha1.ApiGatewayMethod, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

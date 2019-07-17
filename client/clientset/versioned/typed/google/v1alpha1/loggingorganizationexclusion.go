@@ -32,7 +32,7 @@ import (
 // LoggingOrganizationExclusionsGetter has a method to return a LoggingOrganizationExclusionInterface.
 // A group's client should implement this interface.
 type LoggingOrganizationExclusionsGetter interface {
-	LoggingOrganizationExclusions() LoggingOrganizationExclusionInterface
+	LoggingOrganizationExclusions(namespace string) LoggingOrganizationExclusionInterface
 }
 
 // LoggingOrganizationExclusionInterface has methods to work with LoggingOrganizationExclusion resources.
@@ -52,12 +52,14 @@ type LoggingOrganizationExclusionInterface interface {
 // loggingOrganizationExclusions implements LoggingOrganizationExclusionInterface
 type loggingOrganizationExclusions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLoggingOrganizationExclusions returns a LoggingOrganizationExclusions
-func newLoggingOrganizationExclusions(c *GoogleV1alpha1Client) *loggingOrganizationExclusions {
+func newLoggingOrganizationExclusions(c *GoogleV1alpha1Client, namespace string) *loggingOrganizationExclusions {
 	return &loggingOrganizationExclusions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLoggingOrganizationExclusions(c *GoogleV1alpha1Client) *loggingOrganizat
 func (c *loggingOrganizationExclusions) Get(name string, options v1.GetOptions) (result *v1alpha1.LoggingOrganizationExclusion, err error) {
 	result = &v1alpha1.LoggingOrganizationExclusion{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingorganizationexclusions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *loggingOrganizationExclusions) List(opts v1.ListOptions) (result *v1alp
 	}
 	result = &v1alpha1.LoggingOrganizationExclusionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingorganizationexclusions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *loggingOrganizationExclusions) Watch(opts v1.ListOptions) (watch.Interf
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingorganizationexclusions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *loggingOrganizationExclusions) Watch(opts v1.ListOptions) (watch.Interf
 func (c *loggingOrganizationExclusions) Create(loggingOrganizationExclusion *v1alpha1.LoggingOrganizationExclusion) (result *v1alpha1.LoggingOrganizationExclusion, err error) {
 	result = &v1alpha1.LoggingOrganizationExclusion{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("loggingorganizationexclusions").
 		Body(loggingOrganizationExclusion).
 		Do().
@@ -118,6 +124,7 @@ func (c *loggingOrganizationExclusions) Create(loggingOrganizationExclusion *v1a
 func (c *loggingOrganizationExclusions) Update(loggingOrganizationExclusion *v1alpha1.LoggingOrganizationExclusion) (result *v1alpha1.LoggingOrganizationExclusion, err error) {
 	result = &v1alpha1.LoggingOrganizationExclusion{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loggingorganizationexclusions").
 		Name(loggingOrganizationExclusion.Name).
 		Body(loggingOrganizationExclusion).
@@ -132,6 +139,7 @@ func (c *loggingOrganizationExclusions) Update(loggingOrganizationExclusion *v1a
 func (c *loggingOrganizationExclusions) UpdateStatus(loggingOrganizationExclusion *v1alpha1.LoggingOrganizationExclusion) (result *v1alpha1.LoggingOrganizationExclusion, err error) {
 	result = &v1alpha1.LoggingOrganizationExclusion{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loggingorganizationexclusions").
 		Name(loggingOrganizationExclusion.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *loggingOrganizationExclusions) UpdateStatus(loggingOrganizationExclusio
 // Delete takes name of the loggingOrganizationExclusion and deletes it. Returns an error if one occurs.
 func (c *loggingOrganizationExclusions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loggingorganizationexclusions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *loggingOrganizationExclusions) DeleteCollection(options *v1.DeleteOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loggingorganizationexclusions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *loggingOrganizationExclusions) DeleteCollection(options *v1.DeleteOptio
 func (c *loggingOrganizationExclusions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LoggingOrganizationExclusion, err error) {
 	result = &v1alpha1.LoggingOrganizationExclusion{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("loggingorganizationexclusions").
 		SubResource(subresources...).
 		Name(name).

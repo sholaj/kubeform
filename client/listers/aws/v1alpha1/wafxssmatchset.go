@@ -29,8 +29,8 @@ import (
 type WafXssMatchSetLister interface {
 	// List lists all WafXssMatchSets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.WafXssMatchSet, err error)
-	// Get retrieves the WafXssMatchSet from the index for a given name.
-	Get(name string) (*v1alpha1.WafXssMatchSet, error)
+	// WafXssMatchSets returns an object that can list and get WafXssMatchSets.
+	WafXssMatchSets(namespace string) WafXssMatchSetNamespaceLister
 	WafXssMatchSetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *wafXssMatchSetLister) List(selector labels.Selector) (ret []*v1alpha1.W
 	return ret, err
 }
 
-// Get retrieves the WafXssMatchSet from the index for a given name.
-func (s *wafXssMatchSetLister) Get(name string) (*v1alpha1.WafXssMatchSet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafXssMatchSets returns an object that can list and get WafXssMatchSets.
+func (s *wafXssMatchSetLister) WafXssMatchSets(namespace string) WafXssMatchSetNamespaceLister {
+	return wafXssMatchSetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafXssMatchSetNamespaceLister helps list and get WafXssMatchSets.
+type WafXssMatchSetNamespaceLister interface {
+	// List lists all WafXssMatchSets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafXssMatchSet, err error)
+	// Get retrieves the WafXssMatchSet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafXssMatchSet, error)
+	WafXssMatchSetNamespaceListerExpansion
+}
+
+// wafXssMatchSetNamespaceLister implements the WafXssMatchSetNamespaceLister
+// interface.
+type wafXssMatchSetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafXssMatchSets in the indexer for a given namespace.
+func (s wafXssMatchSetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafXssMatchSet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafXssMatchSet))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafXssMatchSet from the indexer for a given namespace and name.
+func (s wafXssMatchSetNamespaceLister) Get(name string) (*v1alpha1.WafXssMatchSet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

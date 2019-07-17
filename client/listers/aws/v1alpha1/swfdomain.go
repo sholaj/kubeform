@@ -29,8 +29,8 @@ import (
 type SwfDomainLister interface {
 	// List lists all SwfDomains in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SwfDomain, err error)
-	// Get retrieves the SwfDomain from the index for a given name.
-	Get(name string) (*v1alpha1.SwfDomain, error)
+	// SwfDomains returns an object that can list and get SwfDomains.
+	SwfDomains(namespace string) SwfDomainNamespaceLister
 	SwfDomainListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *swfDomainLister) List(selector labels.Selector) (ret []*v1alpha1.SwfDom
 	return ret, err
 }
 
-// Get retrieves the SwfDomain from the index for a given name.
-func (s *swfDomainLister) Get(name string) (*v1alpha1.SwfDomain, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SwfDomains returns an object that can list and get SwfDomains.
+func (s *swfDomainLister) SwfDomains(namespace string) SwfDomainNamespaceLister {
+	return swfDomainNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SwfDomainNamespaceLister helps list and get SwfDomains.
+type SwfDomainNamespaceLister interface {
+	// List lists all SwfDomains in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SwfDomain, err error)
+	// Get retrieves the SwfDomain from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SwfDomain, error)
+	SwfDomainNamespaceListerExpansion
+}
+
+// swfDomainNamespaceLister implements the SwfDomainNamespaceLister
+// interface.
+type swfDomainNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SwfDomains in the indexer for a given namespace.
+func (s swfDomainNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SwfDomain, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SwfDomain))
+	})
+	return ret, err
+}
+
+// Get retrieves the SwfDomain from the indexer for a given namespace and name.
+func (s swfDomainNamespaceLister) Get(name string) (*v1alpha1.SwfDomain, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

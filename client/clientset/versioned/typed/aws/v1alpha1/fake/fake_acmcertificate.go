@@ -31,6 +31,7 @@ import (
 // FakeAcmCertificates implements AcmCertificateInterface
 type FakeAcmCertificates struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var acmcertificatesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "acmcertificates"}
@@ -40,7 +41,8 @@ var acmcertificatesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ver
 // Get takes name of the acmCertificate, and returns the corresponding acmCertificate object, and an error if there is any.
 func (c *FakeAcmCertificates) Get(name string, options v1.GetOptions) (result *v1alpha1.AcmCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(acmcertificatesResource, name), &v1alpha1.AcmCertificate{})
+		Invokes(testing.NewGetAction(acmcertificatesResource, c.ns, name), &v1alpha1.AcmCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAcmCertificates) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of AcmCertificates that match those selectors.
 func (c *FakeAcmCertificates) List(opts v1.ListOptions) (result *v1alpha1.AcmCertificateList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(acmcertificatesResource, acmcertificatesKind, opts), &v1alpha1.AcmCertificateList{})
+		Invokes(testing.NewListAction(acmcertificatesResource, acmcertificatesKind, c.ns, opts), &v1alpha1.AcmCertificateList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAcmCertificates) List(opts v1.ListOptions) (result *v1alpha1.AcmCer
 // Watch returns a watch.Interface that watches the requested acmCertificates.
 func (c *FakeAcmCertificates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(acmcertificatesResource, opts))
+		InvokesWatch(testing.NewWatchAction(acmcertificatesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a acmCertificate and creates it.  Returns the server's representation of the acmCertificate, and an error, if there is any.
 func (c *FakeAcmCertificates) Create(acmCertificate *v1alpha1.AcmCertificate) (result *v1alpha1.AcmCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(acmcertificatesResource, acmCertificate), &v1alpha1.AcmCertificate{})
+		Invokes(testing.NewCreateAction(acmcertificatesResource, c.ns, acmCertificate), &v1alpha1.AcmCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAcmCertificates) Create(acmCertificate *v1alpha1.AcmCertificate) (r
 // Update takes the representation of a acmCertificate and updates it. Returns the server's representation of the acmCertificate, and an error, if there is any.
 func (c *FakeAcmCertificates) Update(acmCertificate *v1alpha1.AcmCertificate) (result *v1alpha1.AcmCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(acmcertificatesResource, acmCertificate), &v1alpha1.AcmCertificate{})
+		Invokes(testing.NewUpdateAction(acmcertificatesResource, c.ns, acmCertificate), &v1alpha1.AcmCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAcmCertificates) Update(acmCertificate *v1alpha1.AcmCertificate) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAcmCertificates) UpdateStatus(acmCertificate *v1alpha1.AcmCertificate) (*v1alpha1.AcmCertificate, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(acmcertificatesResource, "status", acmCertificate), &v1alpha1.AcmCertificate{})
+		Invokes(testing.NewUpdateSubresourceAction(acmcertificatesResource, "status", c.ns, acmCertificate), &v1alpha1.AcmCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAcmCertificates) UpdateStatus(acmCertificate *v1alpha1.AcmCertifica
 // Delete takes name of the acmCertificate and deletes it. Returns an error if one occurs.
 func (c *FakeAcmCertificates) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(acmcertificatesResource, name), &v1alpha1.AcmCertificate{})
+		Invokes(testing.NewDeleteAction(acmcertificatesResource, c.ns, name), &v1alpha1.AcmCertificate{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAcmCertificates) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(acmcertificatesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(acmcertificatesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AcmCertificateList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAcmCertificates) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched acmCertificate.
 func (c *FakeAcmCertificates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AcmCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(acmcertificatesResource, name, pt, data, subresources...), &v1alpha1.AcmCertificate{})
+		Invokes(testing.NewPatchSubresourceAction(acmcertificatesResource, c.ns, name, pt, data, subresources...), &v1alpha1.AcmCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}

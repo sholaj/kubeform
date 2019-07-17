@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/google/v1alpha1"
 )
 
-// ComputeTargetHttpsProxyLister helps list ComputeTargetHttpsProxies.
-type ComputeTargetHttpsProxyLister interface {
-	// List lists all ComputeTargetHttpsProxies in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.ComputeTargetHttpsProxy, err error)
-	// Get retrieves the ComputeTargetHttpsProxy from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeTargetHttpsProxy, error)
-	ComputeTargetHttpsProxyListerExpansion
+// ComputeTargetHTTPSProxyLister helps list ComputeTargetHTTPSProxies.
+type ComputeTargetHTTPSProxyLister interface {
+	// List lists all ComputeTargetHTTPSProxies in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeTargetHTTPSProxy, err error)
+	// ComputeTargetHTTPSProxies returns an object that can list and get ComputeTargetHTTPSProxies.
+	ComputeTargetHTTPSProxies(namespace string) ComputeTargetHTTPSProxyNamespaceLister
+	ComputeTargetHTTPSProxyListerExpansion
 }
 
-// computeTargetHttpsProxyLister implements the ComputeTargetHttpsProxyLister interface.
-type computeTargetHttpsProxyLister struct {
+// computeTargetHTTPSProxyLister implements the ComputeTargetHTTPSProxyLister interface.
+type computeTargetHTTPSProxyLister struct {
 	indexer cache.Indexer
 }
 
-// NewComputeTargetHttpsProxyLister returns a new ComputeTargetHttpsProxyLister.
-func NewComputeTargetHttpsProxyLister(indexer cache.Indexer) ComputeTargetHttpsProxyLister {
-	return &computeTargetHttpsProxyLister{indexer: indexer}
+// NewComputeTargetHTTPSProxyLister returns a new ComputeTargetHTTPSProxyLister.
+func NewComputeTargetHTTPSProxyLister(indexer cache.Indexer) ComputeTargetHTTPSProxyLister {
+	return &computeTargetHTTPSProxyLister{indexer: indexer}
 }
 
-// List lists all ComputeTargetHttpsProxies in the indexer.
-func (s *computeTargetHttpsProxyLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeTargetHttpsProxy, err error) {
+// List lists all ComputeTargetHTTPSProxies in the indexer.
+func (s *computeTargetHTTPSProxyLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeTargetHTTPSProxy, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ComputeTargetHttpsProxy))
+		ret = append(ret, m.(*v1alpha1.ComputeTargetHTTPSProxy))
 	})
 	return ret, err
 }
 
-// Get retrieves the ComputeTargetHttpsProxy from the index for a given name.
-func (s *computeTargetHttpsProxyLister) Get(name string) (*v1alpha1.ComputeTargetHttpsProxy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeTargetHTTPSProxies returns an object that can list and get ComputeTargetHTTPSProxies.
+func (s *computeTargetHTTPSProxyLister) ComputeTargetHTTPSProxies(namespace string) ComputeTargetHTTPSProxyNamespaceLister {
+	return computeTargetHTTPSProxyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeTargetHTTPSProxyNamespaceLister helps list and get ComputeTargetHTTPSProxies.
+type ComputeTargetHTTPSProxyNamespaceLister interface {
+	// List lists all ComputeTargetHTTPSProxies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeTargetHTTPSProxy, err error)
+	// Get retrieves the ComputeTargetHTTPSProxy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeTargetHTTPSProxy, error)
+	ComputeTargetHTTPSProxyNamespaceListerExpansion
+}
+
+// computeTargetHTTPSProxyNamespaceLister implements the ComputeTargetHTTPSProxyNamespaceLister
+// interface.
+type computeTargetHTTPSProxyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeTargetHTTPSProxies in the indexer for a given namespace.
+func (s computeTargetHTTPSProxyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeTargetHTTPSProxy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeTargetHTTPSProxy))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeTargetHTTPSProxy from the indexer for a given namespace and name.
+func (s computeTargetHTTPSProxyNamespaceLister) Get(name string) (*v1alpha1.ComputeTargetHTTPSProxy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("computetargethttpsproxy"), name)
 	}
-	return obj.(*v1alpha1.ComputeTargetHttpsProxy), nil
+	return obj.(*v1alpha1.ComputeTargetHTTPSProxy), nil
 }

@@ -31,6 +31,7 @@ import (
 // FakeGlueConnections implements GlueConnectionInterface
 type FakeGlueConnections struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var glueconnectionsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "glueconnections"}
@@ -40,7 +41,8 @@ var glueconnectionsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ver
 // Get takes name of the glueConnection, and returns the corresponding glueConnection object, and an error if there is any.
 func (c *FakeGlueConnections) Get(name string, options v1.GetOptions) (result *v1alpha1.GlueConnection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(glueconnectionsResource, name), &v1alpha1.GlueConnection{})
+		Invokes(testing.NewGetAction(glueconnectionsResource, c.ns, name), &v1alpha1.GlueConnection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeGlueConnections) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of GlueConnections that match those selectors.
 func (c *FakeGlueConnections) List(opts v1.ListOptions) (result *v1alpha1.GlueConnectionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(glueconnectionsResource, glueconnectionsKind, opts), &v1alpha1.GlueConnectionList{})
+		Invokes(testing.NewListAction(glueconnectionsResource, glueconnectionsKind, c.ns, opts), &v1alpha1.GlueConnectionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeGlueConnections) List(opts v1.ListOptions) (result *v1alpha1.GlueCo
 // Watch returns a watch.Interface that watches the requested glueConnections.
 func (c *FakeGlueConnections) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(glueconnectionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(glueconnectionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a glueConnection and creates it.  Returns the server's representation of the glueConnection, and an error, if there is any.
 func (c *FakeGlueConnections) Create(glueConnection *v1alpha1.GlueConnection) (result *v1alpha1.GlueConnection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(glueconnectionsResource, glueConnection), &v1alpha1.GlueConnection{})
+		Invokes(testing.NewCreateAction(glueconnectionsResource, c.ns, glueConnection), &v1alpha1.GlueConnection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeGlueConnections) Create(glueConnection *v1alpha1.GlueConnection) (r
 // Update takes the representation of a glueConnection and updates it. Returns the server's representation of the glueConnection, and an error, if there is any.
 func (c *FakeGlueConnections) Update(glueConnection *v1alpha1.GlueConnection) (result *v1alpha1.GlueConnection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(glueconnectionsResource, glueConnection), &v1alpha1.GlueConnection{})
+		Invokes(testing.NewUpdateAction(glueconnectionsResource, c.ns, glueConnection), &v1alpha1.GlueConnection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeGlueConnections) Update(glueConnection *v1alpha1.GlueConnection) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeGlueConnections) UpdateStatus(glueConnection *v1alpha1.GlueConnection) (*v1alpha1.GlueConnection, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(glueconnectionsResource, "status", glueConnection), &v1alpha1.GlueConnection{})
+		Invokes(testing.NewUpdateSubresourceAction(glueconnectionsResource, "status", c.ns, glueConnection), &v1alpha1.GlueConnection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeGlueConnections) UpdateStatus(glueConnection *v1alpha1.GlueConnecti
 // Delete takes name of the glueConnection and deletes it. Returns an error if one occurs.
 func (c *FakeGlueConnections) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(glueconnectionsResource, name), &v1alpha1.GlueConnection{})
+		Invokes(testing.NewDeleteAction(glueconnectionsResource, c.ns, name), &v1alpha1.GlueConnection{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeGlueConnections) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(glueconnectionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(glueconnectionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.GlueConnectionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeGlueConnections) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched glueConnection.
 func (c *FakeGlueConnections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GlueConnection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(glueconnectionsResource, name, pt, data, subresources...), &v1alpha1.GlueConnection{})
+		Invokes(testing.NewPatchSubresourceAction(glueconnectionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.GlueConnection{})
+
 	if obj == nil {
 		return nil, err
 	}

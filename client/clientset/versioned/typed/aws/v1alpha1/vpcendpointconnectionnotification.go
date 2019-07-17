@@ -32,7 +32,7 @@ import (
 // VpcEndpointConnectionNotificationsGetter has a method to return a VpcEndpointConnectionNotificationInterface.
 // A group's client should implement this interface.
 type VpcEndpointConnectionNotificationsGetter interface {
-	VpcEndpointConnectionNotifications() VpcEndpointConnectionNotificationInterface
+	VpcEndpointConnectionNotifications(namespace string) VpcEndpointConnectionNotificationInterface
 }
 
 // VpcEndpointConnectionNotificationInterface has methods to work with VpcEndpointConnectionNotification resources.
@@ -52,12 +52,14 @@ type VpcEndpointConnectionNotificationInterface interface {
 // vpcEndpointConnectionNotifications implements VpcEndpointConnectionNotificationInterface
 type vpcEndpointConnectionNotifications struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVpcEndpointConnectionNotifications returns a VpcEndpointConnectionNotifications
-func newVpcEndpointConnectionNotifications(c *AwsV1alpha1Client) *vpcEndpointConnectionNotifications {
+func newVpcEndpointConnectionNotifications(c *AwsV1alpha1Client, namespace string) *vpcEndpointConnectionNotifications {
 	return &vpcEndpointConnectionNotifications{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVpcEndpointConnectionNotifications(c *AwsV1alpha1Client) *vpcEndpointCon
 func (c *vpcEndpointConnectionNotifications) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcEndpointConnectionNotification, err error) {
 	result = &v1alpha1.VpcEndpointConnectionNotification{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcendpointconnectionnotifications").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *vpcEndpointConnectionNotifications) List(opts v1.ListOptions) (result *
 	}
 	result = &v1alpha1.VpcEndpointConnectionNotificationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcendpointconnectionnotifications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *vpcEndpointConnectionNotifications) Watch(opts v1.ListOptions) (watch.I
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcendpointconnectionnotifications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *vpcEndpointConnectionNotifications) Watch(opts v1.ListOptions) (watch.I
 func (c *vpcEndpointConnectionNotifications) Create(vpcEndpointConnectionNotification *v1alpha1.VpcEndpointConnectionNotification) (result *v1alpha1.VpcEndpointConnectionNotification, err error) {
 	result = &v1alpha1.VpcEndpointConnectionNotification{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("vpcendpointconnectionnotifications").
 		Body(vpcEndpointConnectionNotification).
 		Do().
@@ -118,6 +124,7 @@ func (c *vpcEndpointConnectionNotifications) Create(vpcEndpointConnectionNotific
 func (c *vpcEndpointConnectionNotifications) Update(vpcEndpointConnectionNotification *v1alpha1.VpcEndpointConnectionNotification) (result *v1alpha1.VpcEndpointConnectionNotification, err error) {
 	result = &v1alpha1.VpcEndpointConnectionNotification{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcendpointconnectionnotifications").
 		Name(vpcEndpointConnectionNotification.Name).
 		Body(vpcEndpointConnectionNotification).
@@ -132,6 +139,7 @@ func (c *vpcEndpointConnectionNotifications) Update(vpcEndpointConnectionNotific
 func (c *vpcEndpointConnectionNotifications) UpdateStatus(vpcEndpointConnectionNotification *v1alpha1.VpcEndpointConnectionNotification) (result *v1alpha1.VpcEndpointConnectionNotification, err error) {
 	result = &v1alpha1.VpcEndpointConnectionNotification{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcendpointconnectionnotifications").
 		Name(vpcEndpointConnectionNotification.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *vpcEndpointConnectionNotifications) UpdateStatus(vpcEndpointConnectionN
 // Delete takes name of the vpcEndpointConnectionNotification and deletes it. Returns an error if one occurs.
 func (c *vpcEndpointConnectionNotifications) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcendpointconnectionnotifications").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *vpcEndpointConnectionNotifications) DeleteCollection(options *v1.Delete
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcendpointconnectionnotifications").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *vpcEndpointConnectionNotifications) DeleteCollection(options *v1.Delete
 func (c *vpcEndpointConnectionNotifications) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcEndpointConnectionNotification, err error) {
 	result = &v1alpha1.VpcEndpointConnectionNotification{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("vpcendpointconnectionnotifications").
 		SubResource(subresources...).
 		Name(name).

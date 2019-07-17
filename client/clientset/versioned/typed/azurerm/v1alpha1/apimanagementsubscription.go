@@ -32,7 +32,7 @@ import (
 // ApiManagementSubscriptionsGetter has a method to return a ApiManagementSubscriptionInterface.
 // A group's client should implement this interface.
 type ApiManagementSubscriptionsGetter interface {
-	ApiManagementSubscriptions() ApiManagementSubscriptionInterface
+	ApiManagementSubscriptions(namespace string) ApiManagementSubscriptionInterface
 }
 
 // ApiManagementSubscriptionInterface has methods to work with ApiManagementSubscription resources.
@@ -52,12 +52,14 @@ type ApiManagementSubscriptionInterface interface {
 // apiManagementSubscriptions implements ApiManagementSubscriptionInterface
 type apiManagementSubscriptions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiManagementSubscriptions returns a ApiManagementSubscriptions
-func newApiManagementSubscriptions(c *AzurermV1alpha1Client) *apiManagementSubscriptions {
+func newApiManagementSubscriptions(c *AzurermV1alpha1Client, namespace string) *apiManagementSubscriptions {
 	return &apiManagementSubscriptions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiManagementSubscriptions(c *AzurermV1alpha1Client) *apiManagementSubsc
 func (c *apiManagementSubscriptions) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementSubscription, err error) {
 	result = &v1alpha1.ApiManagementSubscription{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementsubscriptions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiManagementSubscriptions) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.ApiManagementSubscriptionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementsubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiManagementSubscriptions) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementsubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiManagementSubscriptions) Watch(opts v1.ListOptions) (watch.Interface
 func (c *apiManagementSubscriptions) Create(apiManagementSubscription *v1alpha1.ApiManagementSubscription) (result *v1alpha1.ApiManagementSubscription, err error) {
 	result = &v1alpha1.ApiManagementSubscription{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apimanagementsubscriptions").
 		Body(apiManagementSubscription).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiManagementSubscriptions) Create(apiManagementSubscription *v1alpha1.
 func (c *apiManagementSubscriptions) Update(apiManagementSubscription *v1alpha1.ApiManagementSubscription) (result *v1alpha1.ApiManagementSubscription, err error) {
 	result = &v1alpha1.ApiManagementSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementsubscriptions").
 		Name(apiManagementSubscription.Name).
 		Body(apiManagementSubscription).
@@ -132,6 +139,7 @@ func (c *apiManagementSubscriptions) Update(apiManagementSubscription *v1alpha1.
 func (c *apiManagementSubscriptions) UpdateStatus(apiManagementSubscription *v1alpha1.ApiManagementSubscription) (result *v1alpha1.ApiManagementSubscription, err error) {
 	result = &v1alpha1.ApiManagementSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementsubscriptions").
 		Name(apiManagementSubscription.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiManagementSubscriptions) UpdateStatus(apiManagementSubscription *v1a
 // Delete takes name of the apiManagementSubscription and deletes it. Returns an error if one occurs.
 func (c *apiManagementSubscriptions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementsubscriptions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiManagementSubscriptions) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementsubscriptions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiManagementSubscriptions) DeleteCollection(options *v1.DeleteOptions,
 func (c *apiManagementSubscriptions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementSubscription, err error) {
 	result = &v1alpha1.ApiManagementSubscription{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apimanagementsubscriptions").
 		SubResource(subresources...).
 		Name(name).

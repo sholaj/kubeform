@@ -31,6 +31,7 @@ import (
 // FakeComputeTargetPools implements ComputeTargetPoolInterface
 type FakeComputeTargetPools struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computetargetpoolsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computetargetpools"}
@@ -40,7 +41,8 @@ var computetargetpoolsKind = schema.GroupVersionKind{Group: "google.kubeform.com
 // Get takes name of the computeTargetPool, and returns the corresponding computeTargetPool object, and an error if there is any.
 func (c *FakeComputeTargetPools) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeTargetPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computetargetpoolsResource, name), &v1alpha1.ComputeTargetPool{})
+		Invokes(testing.NewGetAction(computetargetpoolsResource, c.ns, name), &v1alpha1.ComputeTargetPool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeTargetPools) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of ComputeTargetPools that match those selectors.
 func (c *FakeComputeTargetPools) List(opts v1.ListOptions) (result *v1alpha1.ComputeTargetPoolList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computetargetpoolsResource, computetargetpoolsKind, opts), &v1alpha1.ComputeTargetPoolList{})
+		Invokes(testing.NewListAction(computetargetpoolsResource, computetargetpoolsKind, c.ns, opts), &v1alpha1.ComputeTargetPoolList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeTargetPools) List(opts v1.ListOptions) (result *v1alpha1.Com
 // Watch returns a watch.Interface that watches the requested computeTargetPools.
 func (c *FakeComputeTargetPools) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computetargetpoolsResource, opts))
+		InvokesWatch(testing.NewWatchAction(computetargetpoolsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeTargetPool and creates it.  Returns the server's representation of the computeTargetPool, and an error, if there is any.
 func (c *FakeComputeTargetPools) Create(computeTargetPool *v1alpha1.ComputeTargetPool) (result *v1alpha1.ComputeTargetPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computetargetpoolsResource, computeTargetPool), &v1alpha1.ComputeTargetPool{})
+		Invokes(testing.NewCreateAction(computetargetpoolsResource, c.ns, computeTargetPool), &v1alpha1.ComputeTargetPool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeTargetPools) Create(computeTargetPool *v1alpha1.ComputeTarge
 // Update takes the representation of a computeTargetPool and updates it. Returns the server's representation of the computeTargetPool, and an error, if there is any.
 func (c *FakeComputeTargetPools) Update(computeTargetPool *v1alpha1.ComputeTargetPool) (result *v1alpha1.ComputeTargetPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computetargetpoolsResource, computeTargetPool), &v1alpha1.ComputeTargetPool{})
+		Invokes(testing.NewUpdateAction(computetargetpoolsResource, c.ns, computeTargetPool), &v1alpha1.ComputeTargetPool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeTargetPools) Update(computeTargetPool *v1alpha1.ComputeTarge
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeTargetPools) UpdateStatus(computeTargetPool *v1alpha1.ComputeTargetPool) (*v1alpha1.ComputeTargetPool, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computetargetpoolsResource, "status", computeTargetPool), &v1alpha1.ComputeTargetPool{})
+		Invokes(testing.NewUpdateSubresourceAction(computetargetpoolsResource, "status", c.ns, computeTargetPool), &v1alpha1.ComputeTargetPool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeTargetPools) UpdateStatus(computeTargetPool *v1alpha1.Comput
 // Delete takes name of the computeTargetPool and deletes it. Returns an error if one occurs.
 func (c *FakeComputeTargetPools) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computetargetpoolsResource, name), &v1alpha1.ComputeTargetPool{})
+		Invokes(testing.NewDeleteAction(computetargetpoolsResource, c.ns, name), &v1alpha1.ComputeTargetPool{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeTargetPools) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computetargetpoolsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computetargetpoolsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeTargetPoolList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeTargetPools) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched computeTargetPool.
 func (c *FakeComputeTargetPools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeTargetPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computetargetpoolsResource, name, pt, data, subresources...), &v1alpha1.ComputeTargetPool{})
+		Invokes(testing.NewPatchSubresourceAction(computetargetpoolsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeTargetPool{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeComputeSecurityPolicies implements ComputeSecurityPolicyInterface
 type FakeComputeSecurityPolicies struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computesecuritypoliciesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computesecuritypolicies"}
@@ -40,7 +41,8 @@ var computesecuritypoliciesKind = schema.GroupVersionKind{Group: "google.kubefor
 // Get takes name of the computeSecurityPolicy, and returns the corresponding computeSecurityPolicy object, and an error if there is any.
 func (c *FakeComputeSecurityPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeSecurityPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computesecuritypoliciesResource, name), &v1alpha1.ComputeSecurityPolicy{})
+		Invokes(testing.NewGetAction(computesecuritypoliciesResource, c.ns, name), &v1alpha1.ComputeSecurityPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeSecurityPolicies) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of ComputeSecurityPolicies that match those selectors.
 func (c *FakeComputeSecurityPolicies) List(opts v1.ListOptions) (result *v1alpha1.ComputeSecurityPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computesecuritypoliciesResource, computesecuritypoliciesKind, opts), &v1alpha1.ComputeSecurityPolicyList{})
+		Invokes(testing.NewListAction(computesecuritypoliciesResource, computesecuritypoliciesKind, c.ns, opts), &v1alpha1.ComputeSecurityPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeSecurityPolicies) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested computeSecurityPolicies.
 func (c *FakeComputeSecurityPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computesecuritypoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(computesecuritypoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeSecurityPolicy and creates it.  Returns the server's representation of the computeSecurityPolicy, and an error, if there is any.
 func (c *FakeComputeSecurityPolicies) Create(computeSecurityPolicy *v1alpha1.ComputeSecurityPolicy) (result *v1alpha1.ComputeSecurityPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computesecuritypoliciesResource, computeSecurityPolicy), &v1alpha1.ComputeSecurityPolicy{})
+		Invokes(testing.NewCreateAction(computesecuritypoliciesResource, c.ns, computeSecurityPolicy), &v1alpha1.ComputeSecurityPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeSecurityPolicies) Create(computeSecurityPolicy *v1alpha1.Com
 // Update takes the representation of a computeSecurityPolicy and updates it. Returns the server's representation of the computeSecurityPolicy, and an error, if there is any.
 func (c *FakeComputeSecurityPolicies) Update(computeSecurityPolicy *v1alpha1.ComputeSecurityPolicy) (result *v1alpha1.ComputeSecurityPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computesecuritypoliciesResource, computeSecurityPolicy), &v1alpha1.ComputeSecurityPolicy{})
+		Invokes(testing.NewUpdateAction(computesecuritypoliciesResource, c.ns, computeSecurityPolicy), &v1alpha1.ComputeSecurityPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeSecurityPolicies) Update(computeSecurityPolicy *v1alpha1.Com
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeSecurityPolicies) UpdateStatus(computeSecurityPolicy *v1alpha1.ComputeSecurityPolicy) (*v1alpha1.ComputeSecurityPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computesecuritypoliciesResource, "status", computeSecurityPolicy), &v1alpha1.ComputeSecurityPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(computesecuritypoliciesResource, "status", c.ns, computeSecurityPolicy), &v1alpha1.ComputeSecurityPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeSecurityPolicies) UpdateStatus(computeSecurityPolicy *v1alph
 // Delete takes name of the computeSecurityPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeComputeSecurityPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computesecuritypoliciesResource, name), &v1alpha1.ComputeSecurityPolicy{})
+		Invokes(testing.NewDeleteAction(computesecuritypoliciesResource, c.ns, name), &v1alpha1.ComputeSecurityPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeSecurityPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computesecuritypoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computesecuritypoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeSecurityPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeSecurityPolicies) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched computeSecurityPolicy.
 func (c *FakeComputeSecurityPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeSecurityPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computesecuritypoliciesResource, name, pt, data, subresources...), &v1alpha1.ComputeSecurityPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(computesecuritypoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeSecurityPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

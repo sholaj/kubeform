@@ -32,7 +32,7 @@ import (
 // GlueSecurityConfigurationsGetter has a method to return a GlueSecurityConfigurationInterface.
 // A group's client should implement this interface.
 type GlueSecurityConfigurationsGetter interface {
-	GlueSecurityConfigurations() GlueSecurityConfigurationInterface
+	GlueSecurityConfigurations(namespace string) GlueSecurityConfigurationInterface
 }
 
 // GlueSecurityConfigurationInterface has methods to work with GlueSecurityConfiguration resources.
@@ -52,12 +52,14 @@ type GlueSecurityConfigurationInterface interface {
 // glueSecurityConfigurations implements GlueSecurityConfigurationInterface
 type glueSecurityConfigurations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newGlueSecurityConfigurations returns a GlueSecurityConfigurations
-func newGlueSecurityConfigurations(c *AwsV1alpha1Client) *glueSecurityConfigurations {
+func newGlueSecurityConfigurations(c *AwsV1alpha1Client, namespace string) *glueSecurityConfigurations {
 	return &glueSecurityConfigurations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newGlueSecurityConfigurations(c *AwsV1alpha1Client) *glueSecurityConfigurat
 func (c *glueSecurityConfigurations) Get(name string, options v1.GetOptions) (result *v1alpha1.GlueSecurityConfiguration, err error) {
 	result = &v1alpha1.GlueSecurityConfiguration{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("gluesecurityconfigurations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *glueSecurityConfigurations) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.GlueSecurityConfigurationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("gluesecurityconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *glueSecurityConfigurations) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("gluesecurityconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *glueSecurityConfigurations) Watch(opts v1.ListOptions) (watch.Interface
 func (c *glueSecurityConfigurations) Create(glueSecurityConfiguration *v1alpha1.GlueSecurityConfiguration) (result *v1alpha1.GlueSecurityConfiguration, err error) {
 	result = &v1alpha1.GlueSecurityConfiguration{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("gluesecurityconfigurations").
 		Body(glueSecurityConfiguration).
 		Do().
@@ -118,6 +124,7 @@ func (c *glueSecurityConfigurations) Create(glueSecurityConfiguration *v1alpha1.
 func (c *glueSecurityConfigurations) Update(glueSecurityConfiguration *v1alpha1.GlueSecurityConfiguration) (result *v1alpha1.GlueSecurityConfiguration, err error) {
 	result = &v1alpha1.GlueSecurityConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("gluesecurityconfigurations").
 		Name(glueSecurityConfiguration.Name).
 		Body(glueSecurityConfiguration).
@@ -132,6 +139,7 @@ func (c *glueSecurityConfigurations) Update(glueSecurityConfiguration *v1alpha1.
 func (c *glueSecurityConfigurations) UpdateStatus(glueSecurityConfiguration *v1alpha1.GlueSecurityConfiguration) (result *v1alpha1.GlueSecurityConfiguration, err error) {
 	result = &v1alpha1.GlueSecurityConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("gluesecurityconfigurations").
 		Name(glueSecurityConfiguration.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *glueSecurityConfigurations) UpdateStatus(glueSecurityConfiguration *v1a
 // Delete takes name of the glueSecurityConfiguration and deletes it. Returns an error if one occurs.
 func (c *glueSecurityConfigurations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("gluesecurityconfigurations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *glueSecurityConfigurations) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("gluesecurityconfigurations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *glueSecurityConfigurations) DeleteCollection(options *v1.DeleteOptions,
 func (c *glueSecurityConfigurations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GlueSecurityConfiguration, err error) {
 	result = &v1alpha1.GlueSecurityConfiguration{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("gluesecurityconfigurations").
 		SubResource(subresources...).
 		Name(name).

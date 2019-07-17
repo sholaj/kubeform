@@ -32,7 +32,7 @@ import (
 // DataFactoryPipelinesGetter has a method to return a DataFactoryPipelineInterface.
 // A group's client should implement this interface.
 type DataFactoryPipelinesGetter interface {
-	DataFactoryPipelines() DataFactoryPipelineInterface
+	DataFactoryPipelines(namespace string) DataFactoryPipelineInterface
 }
 
 // DataFactoryPipelineInterface has methods to work with DataFactoryPipeline resources.
@@ -52,12 +52,14 @@ type DataFactoryPipelineInterface interface {
 // dataFactoryPipelines implements DataFactoryPipelineInterface
 type dataFactoryPipelines struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDataFactoryPipelines returns a DataFactoryPipelines
-func newDataFactoryPipelines(c *AzurermV1alpha1Client) *dataFactoryPipelines {
+func newDataFactoryPipelines(c *AzurermV1alpha1Client, namespace string) *dataFactoryPipelines {
 	return &dataFactoryPipelines{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDataFactoryPipelines(c *AzurermV1alpha1Client) *dataFactoryPipelines {
 func (c *dataFactoryPipelines) Get(name string, options v1.GetOptions) (result *v1alpha1.DataFactoryPipeline, err error) {
 	result = &v1alpha1.DataFactoryPipeline{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactorypipelines").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dataFactoryPipelines) List(opts v1.ListOptions) (result *v1alpha1.DataF
 	}
 	result = &v1alpha1.DataFactoryPipelineList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactorypipelines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dataFactoryPipelines) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactorypipelines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dataFactoryPipelines) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *dataFactoryPipelines) Create(dataFactoryPipeline *v1alpha1.DataFactoryPipeline) (result *v1alpha1.DataFactoryPipeline, err error) {
 	result = &v1alpha1.DataFactoryPipeline{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("datafactorypipelines").
 		Body(dataFactoryPipeline).
 		Do().
@@ -118,6 +124,7 @@ func (c *dataFactoryPipelines) Create(dataFactoryPipeline *v1alpha1.DataFactoryP
 func (c *dataFactoryPipelines) Update(dataFactoryPipeline *v1alpha1.DataFactoryPipeline) (result *v1alpha1.DataFactoryPipeline, err error) {
 	result = &v1alpha1.DataFactoryPipeline{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datafactorypipelines").
 		Name(dataFactoryPipeline.Name).
 		Body(dataFactoryPipeline).
@@ -132,6 +139,7 @@ func (c *dataFactoryPipelines) Update(dataFactoryPipeline *v1alpha1.DataFactoryP
 func (c *dataFactoryPipelines) UpdateStatus(dataFactoryPipeline *v1alpha1.DataFactoryPipeline) (result *v1alpha1.DataFactoryPipeline, err error) {
 	result = &v1alpha1.DataFactoryPipeline{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datafactorypipelines").
 		Name(dataFactoryPipeline.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dataFactoryPipelines) UpdateStatus(dataFactoryPipeline *v1alpha1.DataFa
 // Delete takes name of the dataFactoryPipeline and deletes it. Returns an error if one occurs.
 func (c *dataFactoryPipelines) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datafactorypipelines").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dataFactoryPipelines) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datafactorypipelines").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dataFactoryPipelines) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *dataFactoryPipelines) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataFactoryPipeline, err error) {
 	result = &v1alpha1.DataFactoryPipeline{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("datafactorypipelines").
 		SubResource(subresources...).
 		Name(name).

@@ -398,13 +398,48 @@ spec:
         spec:
           properties:
             configuration:
-              items: {}
+              items:
+                properties:
+                  bytesScannedCutoffPerQuery:
+                    type: integer
+                  enforceWorkgroupConfiguration:
+                    type: boolean
+                  publishCloudwatchMetricsEnabled:
+                    type: boolean
+                  resultConfiguration:
+                    items:
+                      properties:
+                        encryptionConfiguration:
+                          items:
+                            properties:
+                              encryptionOption:
+                                type: string
+                              kmsKeyArn:
+                                type: string
+                            type: object
+                          maxItems: 1
+                          type: array
+                        outputLocation:
+                          type: string
+                      type: object
+                    maxItems: 1
+                    type: array
+                type: object
               maxItems: 1
               type: array
             description:
               type: string
             name:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             state:
               type: string
             tags:
@@ -413,6 +448,7 @@ spec:
               type: object
           required:
           - name
+          - providerRef
           type: object
         status:
           properties:
@@ -423,6 +459,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

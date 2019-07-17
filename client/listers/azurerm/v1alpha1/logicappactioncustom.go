@@ -29,8 +29,8 @@ import (
 type LogicAppActionCustomLister interface {
 	// List lists all LogicAppActionCustoms in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LogicAppActionCustom, err error)
-	// Get retrieves the LogicAppActionCustom from the index for a given name.
-	Get(name string) (*v1alpha1.LogicAppActionCustom, error)
+	// LogicAppActionCustoms returns an object that can list and get LogicAppActionCustoms.
+	LogicAppActionCustoms(namespace string) LogicAppActionCustomNamespaceLister
 	LogicAppActionCustomListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *logicAppActionCustomLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the LogicAppActionCustom from the index for a given name.
-func (s *logicAppActionCustomLister) Get(name string) (*v1alpha1.LogicAppActionCustom, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LogicAppActionCustoms returns an object that can list and get LogicAppActionCustoms.
+func (s *logicAppActionCustomLister) LogicAppActionCustoms(namespace string) LogicAppActionCustomNamespaceLister {
+	return logicAppActionCustomNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LogicAppActionCustomNamespaceLister helps list and get LogicAppActionCustoms.
+type LogicAppActionCustomNamespaceLister interface {
+	// List lists all LogicAppActionCustoms in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LogicAppActionCustom, err error)
+	// Get retrieves the LogicAppActionCustom from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LogicAppActionCustom, error)
+	LogicAppActionCustomNamespaceListerExpansion
+}
+
+// logicAppActionCustomNamespaceLister implements the LogicAppActionCustomNamespaceLister
+// interface.
+type logicAppActionCustomNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LogicAppActionCustoms in the indexer for a given namespace.
+func (s logicAppActionCustomNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LogicAppActionCustom, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LogicAppActionCustom))
+	})
+	return ret, err
+}
+
+// Get retrieves the LogicAppActionCustom from the indexer for a given namespace and name.
+func (s logicAppActionCustomNamespaceLister) Get(name string) (*v1alpha1.LogicAppActionCustom, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

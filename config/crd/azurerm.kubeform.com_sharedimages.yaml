@@ -401,31 +401,53 @@ spec:
               type: string
             eula:
               type: string
-            gallery_name:
+            galleryName:
               type: string
             identifier:
-              items: {}
+              items:
+                properties:
+                  offer:
+                    type: string
+                  publisher:
+                    type: string
+                  sku:
+                    type: string
+                required:
+                - offer
+                - publisher
+                - sku
+                type: object
               maxItems: 1
               type: array
             location:
               type: string
             name:
               type: string
-            os_type:
+            osType:
               type: string
-            privacy_statement_uri:
+            privacyStatementURI:
               type: string
-            release_note_uri:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            releaseNoteURI:
               type: string
-            resource_group_name:
+            resourceGroupName:
               type: string
           required:
-          - gallery_name
+          - galleryName
           - identifier
           - location
           - name
-          - os_type
-          - resource_group_name
+          - osType
+          - providerRef
+          - resourceGroupName
           type: object
         status:
           properties:
@@ -436,6 +458,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

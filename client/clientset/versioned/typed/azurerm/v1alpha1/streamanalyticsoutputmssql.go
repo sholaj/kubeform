@@ -32,7 +32,7 @@ import (
 // StreamAnalyticsOutputMssqlsGetter has a method to return a StreamAnalyticsOutputMssqlInterface.
 // A group's client should implement this interface.
 type StreamAnalyticsOutputMssqlsGetter interface {
-	StreamAnalyticsOutputMssqls() StreamAnalyticsOutputMssqlInterface
+	StreamAnalyticsOutputMssqls(namespace string) StreamAnalyticsOutputMssqlInterface
 }
 
 // StreamAnalyticsOutputMssqlInterface has methods to work with StreamAnalyticsOutputMssql resources.
@@ -52,12 +52,14 @@ type StreamAnalyticsOutputMssqlInterface interface {
 // streamAnalyticsOutputMssqls implements StreamAnalyticsOutputMssqlInterface
 type streamAnalyticsOutputMssqls struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStreamAnalyticsOutputMssqls returns a StreamAnalyticsOutputMssqls
-func newStreamAnalyticsOutputMssqls(c *AzurermV1alpha1Client) *streamAnalyticsOutputMssqls {
+func newStreamAnalyticsOutputMssqls(c *AzurermV1alpha1Client, namespace string) *streamAnalyticsOutputMssqls {
 	return &streamAnalyticsOutputMssqls{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStreamAnalyticsOutputMssqls(c *AzurermV1alpha1Client) *streamAnalyticsOu
 func (c *streamAnalyticsOutputMssqls) Get(name string, options v1.GetOptions) (result *v1alpha1.StreamAnalyticsOutputMssql, err error) {
 	result = &v1alpha1.StreamAnalyticsOutputMssql{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("streamanalyticsoutputmssqls").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *streamAnalyticsOutputMssqls) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.StreamAnalyticsOutputMssqlList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("streamanalyticsoutputmssqls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *streamAnalyticsOutputMssqls) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("streamanalyticsoutputmssqls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *streamAnalyticsOutputMssqls) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *streamAnalyticsOutputMssqls) Create(streamAnalyticsOutputMssql *v1alpha1.StreamAnalyticsOutputMssql) (result *v1alpha1.StreamAnalyticsOutputMssql, err error) {
 	result = &v1alpha1.StreamAnalyticsOutputMssql{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("streamanalyticsoutputmssqls").
 		Body(streamAnalyticsOutputMssql).
 		Do().
@@ -118,6 +124,7 @@ func (c *streamAnalyticsOutputMssqls) Create(streamAnalyticsOutputMssql *v1alpha
 func (c *streamAnalyticsOutputMssqls) Update(streamAnalyticsOutputMssql *v1alpha1.StreamAnalyticsOutputMssql) (result *v1alpha1.StreamAnalyticsOutputMssql, err error) {
 	result = &v1alpha1.StreamAnalyticsOutputMssql{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("streamanalyticsoutputmssqls").
 		Name(streamAnalyticsOutputMssql.Name).
 		Body(streamAnalyticsOutputMssql).
@@ -132,6 +139,7 @@ func (c *streamAnalyticsOutputMssqls) Update(streamAnalyticsOutputMssql *v1alpha
 func (c *streamAnalyticsOutputMssqls) UpdateStatus(streamAnalyticsOutputMssql *v1alpha1.StreamAnalyticsOutputMssql) (result *v1alpha1.StreamAnalyticsOutputMssql, err error) {
 	result = &v1alpha1.StreamAnalyticsOutputMssql{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("streamanalyticsoutputmssqls").
 		Name(streamAnalyticsOutputMssql.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *streamAnalyticsOutputMssqls) UpdateStatus(streamAnalyticsOutputMssql *v
 // Delete takes name of the streamAnalyticsOutputMssql and deletes it. Returns an error if one occurs.
 func (c *streamAnalyticsOutputMssqls) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("streamanalyticsoutputmssqls").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *streamAnalyticsOutputMssqls) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("streamanalyticsoutputmssqls").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *streamAnalyticsOutputMssqls) DeleteCollection(options *v1.DeleteOptions
 func (c *streamAnalyticsOutputMssqls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StreamAnalyticsOutputMssql, err error) {
 	result = &v1alpha1.StreamAnalyticsOutputMssql{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("streamanalyticsoutputmssqls").
 		SubResource(subresources...).
 		Name(name).

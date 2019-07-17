@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,58 +19,59 @@ type RedshiftCluster struct {
 }
 
 type RedshiftClusterSpecLogging struct {
-	Enable bool `json:"enable"`
+	Enable bool `json:"enable" tf:"enable"`
 }
 
 type RedshiftClusterSpecSnapshotCopy struct {
-	DestinationRegion string `json:"destination_region"`
+	DestinationRegion string `json:"destinationRegion" tf:"destination_region"`
 	// +optional
-	GrantName string `json:"grant_name,omitempty"`
+	GrantName string `json:"grantName,omitempty" tf:"grant_name,omitempty"`
 	// +optional
-	RetentionPeriod int `json:"retention_period,omitempty"`
+	RetentionPeriod int `json:"retentionPeriod,omitempty" tf:"retention_period,omitempty"`
 }
 
 type RedshiftClusterSpec struct {
 	// +optional
-	AllowVersionUpgrade bool `json:"allow_version_upgrade,omitempty"`
+	AllowVersionUpgrade bool `json:"allowVersionUpgrade,omitempty" tf:"allow_version_upgrade,omitempty"`
 	// +optional
-	AutomatedSnapshotRetentionPeriod int    `json:"automated_snapshot_retention_period,omitempty"`
-	ClusterIdentifier                string `json:"cluster_identifier"`
+	AutomatedSnapshotRetentionPeriod int    `json:"automatedSnapshotRetentionPeriod,omitempty" tf:"automated_snapshot_retention_period,omitempty"`
+	ClusterIdentifier                string `json:"clusterIdentifier" tf:"cluster_identifier"`
 	// +optional
-	ClusterVersion string `json:"cluster_version,omitempty"`
+	ClusterVersion string `json:"clusterVersion,omitempty" tf:"cluster_version,omitempty"`
 	// +optional
-	ElasticIp string `json:"elastic_ip,omitempty"`
+	ElasticIP string `json:"elasticIP,omitempty" tf:"elastic_ip,omitempty"`
 	// +optional
-	Encrypted bool `json:"encrypted,omitempty"`
+	Encrypted bool `json:"encrypted,omitempty" tf:"encrypted,omitempty"`
 	// +optional
-	FinalSnapshotIdentifier string `json:"final_snapshot_identifier,omitempty"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	Logging *[]RedshiftClusterSpec `json:"logging,omitempty"`
-	// +optional
-	MasterPassword string `json:"master_password,omitempty"`
-	// +optional
-	MasterUsername string `json:"master_username,omitempty"`
-	NodeType       string `json:"node_type"`
-	// +optional
-	NumberOfNodes int `json:"number_of_nodes,omitempty"`
-	// +optional
-	OwnerAccount string `json:"owner_account,omitempty"`
-	// +optional
-	Port int `json:"port,omitempty"`
-	// +optional
-	PubliclyAccessible bool `json:"publicly_accessible,omitempty"`
-	// +optional
-	SkipFinalSnapshot bool `json:"skip_final_snapshot,omitempty"`
-	// +optional
-	SnapshotClusterIdentifier string `json:"snapshot_cluster_identifier,omitempty"`
+	FinalSnapshotIdentifier string `json:"finalSnapshotIdentifier,omitempty" tf:"final_snapshot_identifier,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	SnapshotCopy *[]RedshiftClusterSpec `json:"snapshot_copy,omitempty"`
+	Logging []RedshiftClusterSpecLogging `json:"logging,omitempty" tf:"logging,omitempty"`
 	// +optional
-	SnapshotIdentifier string `json:"snapshot_identifier,omitempty"`
+	MasterPassword string `json:"masterPassword,omitempty" tf:"master_password,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	MasterUsername string `json:"masterUsername,omitempty" tf:"master_username,omitempty"`
+	NodeType       string `json:"nodeType" tf:"node_type"`
+	// +optional
+	NumberOfNodes int `json:"numberOfNodes,omitempty" tf:"number_of_nodes,omitempty"`
+	// +optional
+	OwnerAccount string `json:"ownerAccount,omitempty" tf:"owner_account,omitempty"`
+	// +optional
+	Port int `json:"port,omitempty" tf:"port,omitempty"`
+	// +optional
+	PubliclyAccessible bool `json:"publiclyAccessible,omitempty" tf:"publicly_accessible,omitempty"`
+	// +optional
+	SkipFinalSnapshot bool `json:"skipFinalSnapshot,omitempty" tf:"skip_final_snapshot,omitempty"`
+	// +optional
+	SnapshotClusterIdentifier string `json:"snapshotClusterIdentifier,omitempty" tf:"snapshot_cluster_identifier,omitempty"`
+	// +optional
+	// +kubebuilder:validation:MaxItems=1
+	SnapshotCopy []RedshiftClusterSpecSnapshotCopy `json:"snapshotCopy,omitempty" tf:"snapshot_copy,omitempty"`
+	// +optional
+	SnapshotIdentifier string `json:"snapshotIdentifier,omitempty" tf:"snapshot_identifier,omitempty"`
+	// +optional
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type RedshiftClusterStatus struct {
@@ -78,7 +79,9 @@ type RedshiftClusterStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

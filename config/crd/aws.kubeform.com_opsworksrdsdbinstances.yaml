@@ -397,19 +397,29 @@ spec:
           type: object
         spec:
           properties:
-            db_password:
+            dbPassword:
               type: string
-            db_user:
+            dbUser:
               type: string
-            rds_db_instance_arn:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            rdsDbInstanceArn:
               type: string
-            stack_id:
+            stackID:
               type: string
           required:
-          - db_password
-          - db_user
-          - rds_db_instance_arn
-          - stack_id
+          - dbPassword
+          - dbUser
+          - providerRef
+          - rdsDbInstanceArn
+          - stackID
           type: object
         status:
           properties:
@@ -420,6 +430,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

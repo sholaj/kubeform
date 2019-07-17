@@ -31,6 +31,7 @@ import (
 // FakeSesIdentityPolicies implements SesIdentityPolicyInterface
 type FakeSesIdentityPolicies struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var sesidentitypoliciesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "sesidentitypolicies"}
@@ -40,7 +41,8 @@ var sesidentitypoliciesKind = schema.GroupVersionKind{Group: "aws.kubeform.com",
 // Get takes name of the sesIdentityPolicy, and returns the corresponding sesIdentityPolicy object, and an error if there is any.
 func (c *FakeSesIdentityPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.SesIdentityPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sesidentitypoliciesResource, name), &v1alpha1.SesIdentityPolicy{})
+		Invokes(testing.NewGetAction(sesidentitypoliciesResource, c.ns, name), &v1alpha1.SesIdentityPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSesIdentityPolicies) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of SesIdentityPolicies that match those selectors.
 func (c *FakeSesIdentityPolicies) List(opts v1.ListOptions) (result *v1alpha1.SesIdentityPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sesidentitypoliciesResource, sesidentitypoliciesKind, opts), &v1alpha1.SesIdentityPolicyList{})
+		Invokes(testing.NewListAction(sesidentitypoliciesResource, sesidentitypoliciesKind, c.ns, opts), &v1alpha1.SesIdentityPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSesIdentityPolicies) List(opts v1.ListOptions) (result *v1alpha1.Se
 // Watch returns a watch.Interface that watches the requested sesIdentityPolicies.
 func (c *FakeSesIdentityPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sesidentitypoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(sesidentitypoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sesIdentityPolicy and creates it.  Returns the server's representation of the sesIdentityPolicy, and an error, if there is any.
 func (c *FakeSesIdentityPolicies) Create(sesIdentityPolicy *v1alpha1.SesIdentityPolicy) (result *v1alpha1.SesIdentityPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sesidentitypoliciesResource, sesIdentityPolicy), &v1alpha1.SesIdentityPolicy{})
+		Invokes(testing.NewCreateAction(sesidentitypoliciesResource, c.ns, sesIdentityPolicy), &v1alpha1.SesIdentityPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSesIdentityPolicies) Create(sesIdentityPolicy *v1alpha1.SesIdentity
 // Update takes the representation of a sesIdentityPolicy and updates it. Returns the server's representation of the sesIdentityPolicy, and an error, if there is any.
 func (c *FakeSesIdentityPolicies) Update(sesIdentityPolicy *v1alpha1.SesIdentityPolicy) (result *v1alpha1.SesIdentityPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sesidentitypoliciesResource, sesIdentityPolicy), &v1alpha1.SesIdentityPolicy{})
+		Invokes(testing.NewUpdateAction(sesidentitypoliciesResource, c.ns, sesIdentityPolicy), &v1alpha1.SesIdentityPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSesIdentityPolicies) Update(sesIdentityPolicy *v1alpha1.SesIdentity
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSesIdentityPolicies) UpdateStatus(sesIdentityPolicy *v1alpha1.SesIdentityPolicy) (*v1alpha1.SesIdentityPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sesidentitypoliciesResource, "status", sesIdentityPolicy), &v1alpha1.SesIdentityPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(sesidentitypoliciesResource, "status", c.ns, sesIdentityPolicy), &v1alpha1.SesIdentityPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSesIdentityPolicies) UpdateStatus(sesIdentityPolicy *v1alpha1.SesId
 // Delete takes name of the sesIdentityPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeSesIdentityPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sesidentitypoliciesResource, name), &v1alpha1.SesIdentityPolicy{})
+		Invokes(testing.NewDeleteAction(sesidentitypoliciesResource, c.ns, name), &v1alpha1.SesIdentityPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSesIdentityPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sesidentitypoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sesidentitypoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SesIdentityPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSesIdentityPolicies) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched sesIdentityPolicy.
 func (c *FakeSesIdentityPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesIdentityPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sesidentitypoliciesResource, name, pt, data, subresources...), &v1alpha1.SesIdentityPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(sesidentitypoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.SesIdentityPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type DxLagLister interface {
 	// List lists all DxLags in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DxLag, err error)
-	// Get retrieves the DxLag from the index for a given name.
-	Get(name string) (*v1alpha1.DxLag, error)
+	// DxLags returns an object that can list and get DxLags.
+	DxLags(namespace string) DxLagNamespaceLister
 	DxLagListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dxLagLister) List(selector labels.Selector) (ret []*v1alpha1.DxLag, err
 	return ret, err
 }
 
-// Get retrieves the DxLag from the index for a given name.
-func (s *dxLagLister) Get(name string) (*v1alpha1.DxLag, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DxLags returns an object that can list and get DxLags.
+func (s *dxLagLister) DxLags(namespace string) DxLagNamespaceLister {
+	return dxLagNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DxLagNamespaceLister helps list and get DxLags.
+type DxLagNamespaceLister interface {
+	// List lists all DxLags in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DxLag, err error)
+	// Get retrieves the DxLag from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DxLag, error)
+	DxLagNamespaceListerExpansion
+}
+
+// dxLagNamespaceLister implements the DxLagNamespaceLister
+// interface.
+type dxLagNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DxLags in the indexer for a given namespace.
+func (s dxLagNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DxLag, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DxLag))
+	})
+	return ret, err
+}
+
+// Get retrieves the DxLag from the indexer for a given namespace and name.
+func (s dxLagNamespaceLister) Get(name string) (*v1alpha1.DxLag, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

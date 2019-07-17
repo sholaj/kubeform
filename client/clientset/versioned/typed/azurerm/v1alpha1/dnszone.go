@@ -32,7 +32,7 @@ import (
 // DnsZonesGetter has a method to return a DnsZoneInterface.
 // A group's client should implement this interface.
 type DnsZonesGetter interface {
-	DnsZones() DnsZoneInterface
+	DnsZones(namespace string) DnsZoneInterface
 }
 
 // DnsZoneInterface has methods to work with DnsZone resources.
@@ -52,12 +52,14 @@ type DnsZoneInterface interface {
 // dnsZones implements DnsZoneInterface
 type dnsZones struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDnsZones returns a DnsZones
-func newDnsZones(c *AzurermV1alpha1Client) *dnsZones {
+func newDnsZones(c *AzurermV1alpha1Client, namespace string) *dnsZones {
 	return &dnsZones{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDnsZones(c *AzurermV1alpha1Client) *dnsZones {
 func (c *dnsZones) Get(name string, options v1.GetOptions) (result *v1alpha1.DnsZone, err error) {
 	result = &v1alpha1.DnsZone{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dnszones").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dnsZones) List(opts v1.ListOptions) (result *v1alpha1.DnsZoneList, err 
 	}
 	result = &v1alpha1.DnsZoneList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dnszones").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dnsZones) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dnszones").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dnsZones) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dnsZones) Create(dnsZone *v1alpha1.DnsZone) (result *v1alpha1.DnsZone, err error) {
 	result = &v1alpha1.DnsZone{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dnszones").
 		Body(dnsZone).
 		Do().
@@ -118,6 +124,7 @@ func (c *dnsZones) Create(dnsZone *v1alpha1.DnsZone) (result *v1alpha1.DnsZone, 
 func (c *dnsZones) Update(dnsZone *v1alpha1.DnsZone) (result *v1alpha1.DnsZone, err error) {
 	result = &v1alpha1.DnsZone{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dnszones").
 		Name(dnsZone.Name).
 		Body(dnsZone).
@@ -132,6 +139,7 @@ func (c *dnsZones) Update(dnsZone *v1alpha1.DnsZone) (result *v1alpha1.DnsZone, 
 func (c *dnsZones) UpdateStatus(dnsZone *v1alpha1.DnsZone) (result *v1alpha1.DnsZone, err error) {
 	result = &v1alpha1.DnsZone{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dnszones").
 		Name(dnsZone.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dnsZones) UpdateStatus(dnsZone *v1alpha1.DnsZone) (result *v1alpha1.Dns
 // Delete takes name of the dnsZone and deletes it. Returns an error if one occurs.
 func (c *dnsZones) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dnszones").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dnsZones) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dnszones").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dnsZones) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 func (c *dnsZones) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DnsZone, err error) {
 	result = &v1alpha1.DnsZone{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dnszones").
 		SubResource(subresources...).
 		Name(name).

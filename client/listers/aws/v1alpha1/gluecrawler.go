@@ -29,8 +29,8 @@ import (
 type GlueCrawlerLister interface {
 	// List lists all GlueCrawlers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GlueCrawler, err error)
-	// Get retrieves the GlueCrawler from the index for a given name.
-	Get(name string) (*v1alpha1.GlueCrawler, error)
+	// GlueCrawlers returns an object that can list and get GlueCrawlers.
+	GlueCrawlers(namespace string) GlueCrawlerNamespaceLister
 	GlueCrawlerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *glueCrawlerLister) List(selector labels.Selector) (ret []*v1alpha1.Glue
 	return ret, err
 }
 
-// Get retrieves the GlueCrawler from the index for a given name.
-func (s *glueCrawlerLister) Get(name string) (*v1alpha1.GlueCrawler, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GlueCrawlers returns an object that can list and get GlueCrawlers.
+func (s *glueCrawlerLister) GlueCrawlers(namespace string) GlueCrawlerNamespaceLister {
+	return glueCrawlerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GlueCrawlerNamespaceLister helps list and get GlueCrawlers.
+type GlueCrawlerNamespaceLister interface {
+	// List lists all GlueCrawlers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GlueCrawler, err error)
+	// Get retrieves the GlueCrawler from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GlueCrawler, error)
+	GlueCrawlerNamespaceListerExpansion
+}
+
+// glueCrawlerNamespaceLister implements the GlueCrawlerNamespaceLister
+// interface.
+type glueCrawlerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GlueCrawlers in the indexer for a given namespace.
+func (s glueCrawlerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GlueCrawler, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GlueCrawler))
+	})
+	return ret, err
+}
+
+// Get retrieves the GlueCrawler from the indexer for a given namespace and name.
+func (s glueCrawlerNamespaceLister) Get(name string) (*v1alpha1.GlueCrawler, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

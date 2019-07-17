@@ -31,6 +31,7 @@ import (
 // FakeStoragegatewayCachedIscsiVolumes implements StoragegatewayCachedIscsiVolumeInterface
 type FakeStoragegatewayCachedIscsiVolumes struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var storagegatewaycachediscsivolumesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "storagegatewaycachediscsivolumes"}
@@ -40,7 +41,8 @@ var storagegatewaycachediscsivolumesKind = schema.GroupVersionKind{Group: "aws.k
 // Get takes name of the storagegatewayCachedIscsiVolume, and returns the corresponding storagegatewayCachedIscsiVolume object, and an error if there is any.
 func (c *FakeStoragegatewayCachedIscsiVolumes) Get(name string, options v1.GetOptions) (result *v1alpha1.StoragegatewayCachedIscsiVolume, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(storagegatewaycachediscsivolumesResource, name), &v1alpha1.StoragegatewayCachedIscsiVolume{})
+		Invokes(testing.NewGetAction(storagegatewaycachediscsivolumesResource, c.ns, name), &v1alpha1.StoragegatewayCachedIscsiVolume{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeStoragegatewayCachedIscsiVolumes) Get(name string, options v1.GetOp
 // List takes label and field selectors, and returns the list of StoragegatewayCachedIscsiVolumes that match those selectors.
 func (c *FakeStoragegatewayCachedIscsiVolumes) List(opts v1.ListOptions) (result *v1alpha1.StoragegatewayCachedIscsiVolumeList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(storagegatewaycachediscsivolumesResource, storagegatewaycachediscsivolumesKind, opts), &v1alpha1.StoragegatewayCachedIscsiVolumeList{})
+		Invokes(testing.NewListAction(storagegatewaycachediscsivolumesResource, storagegatewaycachediscsivolumesKind, c.ns, opts), &v1alpha1.StoragegatewayCachedIscsiVolumeList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeStoragegatewayCachedIscsiVolumes) List(opts v1.ListOptions) (result
 // Watch returns a watch.Interface that watches the requested storagegatewayCachedIscsiVolumes.
 func (c *FakeStoragegatewayCachedIscsiVolumes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(storagegatewaycachediscsivolumesResource, opts))
+		InvokesWatch(testing.NewWatchAction(storagegatewaycachediscsivolumesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a storagegatewayCachedIscsiVolume and creates it.  Returns the server's representation of the storagegatewayCachedIscsiVolume, and an error, if there is any.
 func (c *FakeStoragegatewayCachedIscsiVolumes) Create(storagegatewayCachedIscsiVolume *v1alpha1.StoragegatewayCachedIscsiVolume) (result *v1alpha1.StoragegatewayCachedIscsiVolume, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(storagegatewaycachediscsivolumesResource, storagegatewayCachedIscsiVolume), &v1alpha1.StoragegatewayCachedIscsiVolume{})
+		Invokes(testing.NewCreateAction(storagegatewaycachediscsivolumesResource, c.ns, storagegatewayCachedIscsiVolume), &v1alpha1.StoragegatewayCachedIscsiVolume{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeStoragegatewayCachedIscsiVolumes) Create(storagegatewayCachedIscsiV
 // Update takes the representation of a storagegatewayCachedIscsiVolume and updates it. Returns the server's representation of the storagegatewayCachedIscsiVolume, and an error, if there is any.
 func (c *FakeStoragegatewayCachedIscsiVolumes) Update(storagegatewayCachedIscsiVolume *v1alpha1.StoragegatewayCachedIscsiVolume) (result *v1alpha1.StoragegatewayCachedIscsiVolume, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(storagegatewaycachediscsivolumesResource, storagegatewayCachedIscsiVolume), &v1alpha1.StoragegatewayCachedIscsiVolume{})
+		Invokes(testing.NewUpdateAction(storagegatewaycachediscsivolumesResource, c.ns, storagegatewayCachedIscsiVolume), &v1alpha1.StoragegatewayCachedIscsiVolume{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeStoragegatewayCachedIscsiVolumes) Update(storagegatewayCachedIscsiV
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeStoragegatewayCachedIscsiVolumes) UpdateStatus(storagegatewayCachedIscsiVolume *v1alpha1.StoragegatewayCachedIscsiVolume) (*v1alpha1.StoragegatewayCachedIscsiVolume, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(storagegatewaycachediscsivolumesResource, "status", storagegatewayCachedIscsiVolume), &v1alpha1.StoragegatewayCachedIscsiVolume{})
+		Invokes(testing.NewUpdateSubresourceAction(storagegatewaycachediscsivolumesResource, "status", c.ns, storagegatewayCachedIscsiVolume), &v1alpha1.StoragegatewayCachedIscsiVolume{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeStoragegatewayCachedIscsiVolumes) UpdateStatus(storagegatewayCached
 // Delete takes name of the storagegatewayCachedIscsiVolume and deletes it. Returns an error if one occurs.
 func (c *FakeStoragegatewayCachedIscsiVolumes) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(storagegatewaycachediscsivolumesResource, name), &v1alpha1.StoragegatewayCachedIscsiVolume{})
+		Invokes(testing.NewDeleteAction(storagegatewaycachediscsivolumesResource, c.ns, name), &v1alpha1.StoragegatewayCachedIscsiVolume{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeStoragegatewayCachedIscsiVolumes) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(storagegatewaycachediscsivolumesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(storagegatewaycachediscsivolumesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.StoragegatewayCachedIscsiVolumeList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeStoragegatewayCachedIscsiVolumes) DeleteCollection(options *v1.Dele
 // Patch applies the patch and returns the patched storagegatewayCachedIscsiVolume.
 func (c *FakeStoragegatewayCachedIscsiVolumes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StoragegatewayCachedIscsiVolume, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(storagegatewaycachediscsivolumesResource, name, pt, data, subresources...), &v1alpha1.StoragegatewayCachedIscsiVolume{})
+		Invokes(testing.NewPatchSubresourceAction(storagegatewaycachediscsivolumesResource, c.ns, name, pt, data, subresources...), &v1alpha1.StoragegatewayCachedIscsiVolume{})
+
 	if obj == nil {
 		return nil, err
 	}

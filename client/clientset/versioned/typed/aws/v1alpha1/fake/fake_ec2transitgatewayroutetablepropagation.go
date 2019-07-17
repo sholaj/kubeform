@@ -31,6 +31,7 @@ import (
 // FakeEc2TransitGatewayRouteTablePropagations implements Ec2TransitGatewayRouteTablePropagationInterface
 type FakeEc2TransitGatewayRouteTablePropagations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ec2transitgatewayroutetablepropagationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ec2transitgatewayroutetablepropagations"}
@@ -40,7 +41,8 @@ var ec2transitgatewayroutetablepropagationsKind = schema.GroupVersionKind{Group:
 // Get takes name of the ec2TransitGatewayRouteTablePropagation, and returns the corresponding ec2TransitGatewayRouteTablePropagation object, and an error if there is any.
 func (c *FakeEc2TransitGatewayRouteTablePropagations) Get(name string, options v1.GetOptions) (result *v1alpha1.Ec2TransitGatewayRouteTablePropagation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ec2transitgatewayroutetablepropagationsResource, name), &v1alpha1.Ec2TransitGatewayRouteTablePropagation{})
+		Invokes(testing.NewGetAction(ec2transitgatewayroutetablepropagationsResource, c.ns, name), &v1alpha1.Ec2TransitGatewayRouteTablePropagation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEc2TransitGatewayRouteTablePropagations) Get(name string, options v
 // List takes label and field selectors, and returns the list of Ec2TransitGatewayRouteTablePropagations that match those selectors.
 func (c *FakeEc2TransitGatewayRouteTablePropagations) List(opts v1.ListOptions) (result *v1alpha1.Ec2TransitGatewayRouteTablePropagationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ec2transitgatewayroutetablepropagationsResource, ec2transitgatewayroutetablepropagationsKind, opts), &v1alpha1.Ec2TransitGatewayRouteTablePropagationList{})
+		Invokes(testing.NewListAction(ec2transitgatewayroutetablepropagationsResource, ec2transitgatewayroutetablepropagationsKind, c.ns, opts), &v1alpha1.Ec2TransitGatewayRouteTablePropagationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEc2TransitGatewayRouteTablePropagations) List(opts v1.ListOptions) 
 // Watch returns a watch.Interface that watches the requested ec2TransitGatewayRouteTablePropagations.
 func (c *FakeEc2TransitGatewayRouteTablePropagations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ec2transitgatewayroutetablepropagationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(ec2transitgatewayroutetablepropagationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ec2TransitGatewayRouteTablePropagation and creates it.  Returns the server's representation of the ec2TransitGatewayRouteTablePropagation, and an error, if there is any.
 func (c *FakeEc2TransitGatewayRouteTablePropagations) Create(ec2TransitGatewayRouteTablePropagation *v1alpha1.Ec2TransitGatewayRouteTablePropagation) (result *v1alpha1.Ec2TransitGatewayRouteTablePropagation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ec2transitgatewayroutetablepropagationsResource, ec2TransitGatewayRouteTablePropagation), &v1alpha1.Ec2TransitGatewayRouteTablePropagation{})
+		Invokes(testing.NewCreateAction(ec2transitgatewayroutetablepropagationsResource, c.ns, ec2TransitGatewayRouteTablePropagation), &v1alpha1.Ec2TransitGatewayRouteTablePropagation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEc2TransitGatewayRouteTablePropagations) Create(ec2TransitGatewayRo
 // Update takes the representation of a ec2TransitGatewayRouteTablePropagation and updates it. Returns the server's representation of the ec2TransitGatewayRouteTablePropagation, and an error, if there is any.
 func (c *FakeEc2TransitGatewayRouteTablePropagations) Update(ec2TransitGatewayRouteTablePropagation *v1alpha1.Ec2TransitGatewayRouteTablePropagation) (result *v1alpha1.Ec2TransitGatewayRouteTablePropagation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ec2transitgatewayroutetablepropagationsResource, ec2TransitGatewayRouteTablePropagation), &v1alpha1.Ec2TransitGatewayRouteTablePropagation{})
+		Invokes(testing.NewUpdateAction(ec2transitgatewayroutetablepropagationsResource, c.ns, ec2TransitGatewayRouteTablePropagation), &v1alpha1.Ec2TransitGatewayRouteTablePropagation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEc2TransitGatewayRouteTablePropagations) Update(ec2TransitGatewayRo
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEc2TransitGatewayRouteTablePropagations) UpdateStatus(ec2TransitGatewayRouteTablePropagation *v1alpha1.Ec2TransitGatewayRouteTablePropagation) (*v1alpha1.Ec2TransitGatewayRouteTablePropagation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ec2transitgatewayroutetablepropagationsResource, "status", ec2TransitGatewayRouteTablePropagation), &v1alpha1.Ec2TransitGatewayRouteTablePropagation{})
+		Invokes(testing.NewUpdateSubresourceAction(ec2transitgatewayroutetablepropagationsResource, "status", c.ns, ec2TransitGatewayRouteTablePropagation), &v1alpha1.Ec2TransitGatewayRouteTablePropagation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEc2TransitGatewayRouteTablePropagations) UpdateStatus(ec2TransitGat
 // Delete takes name of the ec2TransitGatewayRouteTablePropagation and deletes it. Returns an error if one occurs.
 func (c *FakeEc2TransitGatewayRouteTablePropagations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ec2transitgatewayroutetablepropagationsResource, name), &v1alpha1.Ec2TransitGatewayRouteTablePropagation{})
+		Invokes(testing.NewDeleteAction(ec2transitgatewayroutetablepropagationsResource, c.ns, name), &v1alpha1.Ec2TransitGatewayRouteTablePropagation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEc2TransitGatewayRouteTablePropagations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ec2transitgatewayroutetablepropagationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ec2transitgatewayroutetablepropagationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.Ec2TransitGatewayRouteTablePropagationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEc2TransitGatewayRouteTablePropagations) DeleteCollection(options *
 // Patch applies the patch and returns the patched ec2TransitGatewayRouteTablePropagation.
 func (c *FakeEc2TransitGatewayRouteTablePropagations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Ec2TransitGatewayRouteTablePropagation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ec2transitgatewayroutetablepropagationsResource, name, pt, data, subresources...), &v1alpha1.Ec2TransitGatewayRouteTablePropagation{})
+		Invokes(testing.NewPatchSubresourceAction(ec2transitgatewayroutetablepropagationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.Ec2TransitGatewayRouteTablePropagation{})
+
 	if obj == nil {
 		return nil, err
 	}

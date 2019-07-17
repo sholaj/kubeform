@@ -31,6 +31,7 @@ import (
 // FakeTransferUsers implements TransferUserInterface
 type FakeTransferUsers struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var transferusersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "transferusers"}
@@ -40,7 +41,8 @@ var transferusersKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Versi
 // Get takes name of the transferUser, and returns the corresponding transferUser object, and an error if there is any.
 func (c *FakeTransferUsers) Get(name string, options v1.GetOptions) (result *v1alpha1.TransferUser, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(transferusersResource, name), &v1alpha1.TransferUser{})
+		Invokes(testing.NewGetAction(transferusersResource, c.ns, name), &v1alpha1.TransferUser{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeTransferUsers) Get(name string, options v1.GetOptions) (result *v1a
 // List takes label and field selectors, and returns the list of TransferUsers that match those selectors.
 func (c *FakeTransferUsers) List(opts v1.ListOptions) (result *v1alpha1.TransferUserList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(transferusersResource, transferusersKind, opts), &v1alpha1.TransferUserList{})
+		Invokes(testing.NewListAction(transferusersResource, transferusersKind, c.ns, opts), &v1alpha1.TransferUserList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeTransferUsers) List(opts v1.ListOptions) (result *v1alpha1.Transfer
 // Watch returns a watch.Interface that watches the requested transferUsers.
 func (c *FakeTransferUsers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(transferusersResource, opts))
+		InvokesWatch(testing.NewWatchAction(transferusersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a transferUser and creates it.  Returns the server's representation of the transferUser, and an error, if there is any.
 func (c *FakeTransferUsers) Create(transferUser *v1alpha1.TransferUser) (result *v1alpha1.TransferUser, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(transferusersResource, transferUser), &v1alpha1.TransferUser{})
+		Invokes(testing.NewCreateAction(transferusersResource, c.ns, transferUser), &v1alpha1.TransferUser{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeTransferUsers) Create(transferUser *v1alpha1.TransferUser) (result 
 // Update takes the representation of a transferUser and updates it. Returns the server's representation of the transferUser, and an error, if there is any.
 func (c *FakeTransferUsers) Update(transferUser *v1alpha1.TransferUser) (result *v1alpha1.TransferUser, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(transferusersResource, transferUser), &v1alpha1.TransferUser{})
+		Invokes(testing.NewUpdateAction(transferusersResource, c.ns, transferUser), &v1alpha1.TransferUser{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeTransferUsers) Update(transferUser *v1alpha1.TransferUser) (result 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeTransferUsers) UpdateStatus(transferUser *v1alpha1.TransferUser) (*v1alpha1.TransferUser, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(transferusersResource, "status", transferUser), &v1alpha1.TransferUser{})
+		Invokes(testing.NewUpdateSubresourceAction(transferusersResource, "status", c.ns, transferUser), &v1alpha1.TransferUser{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeTransferUsers) UpdateStatus(transferUser *v1alpha1.TransferUser) (*
 // Delete takes name of the transferUser and deletes it. Returns an error if one occurs.
 func (c *FakeTransferUsers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(transferusersResource, name), &v1alpha1.TransferUser{})
+		Invokes(testing.NewDeleteAction(transferusersResource, c.ns, name), &v1alpha1.TransferUser{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeTransferUsers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(transferusersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(transferusersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.TransferUserList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeTransferUsers) DeleteCollection(options *v1.DeleteOptions, listOpti
 // Patch applies the patch and returns the patched transferUser.
 func (c *FakeTransferUsers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.TransferUser, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(transferusersResource, name, pt, data, subresources...), &v1alpha1.TransferUser{})
+		Invokes(testing.NewPatchSubresourceAction(transferusersResource, c.ns, name, pt, data, subresources...), &v1alpha1.TransferUser{})
+
 	if obj == nil {
 		return nil, err
 	}

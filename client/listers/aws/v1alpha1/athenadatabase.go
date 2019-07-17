@@ -29,8 +29,8 @@ import (
 type AthenaDatabaseLister interface {
 	// List lists all AthenaDatabases in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AthenaDatabase, err error)
-	// Get retrieves the AthenaDatabase from the index for a given name.
-	Get(name string) (*v1alpha1.AthenaDatabase, error)
+	// AthenaDatabases returns an object that can list and get AthenaDatabases.
+	AthenaDatabases(namespace string) AthenaDatabaseNamespaceLister
 	AthenaDatabaseListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *athenaDatabaseLister) List(selector labels.Selector) (ret []*v1alpha1.A
 	return ret, err
 }
 
-// Get retrieves the AthenaDatabase from the index for a given name.
-func (s *athenaDatabaseLister) Get(name string) (*v1alpha1.AthenaDatabase, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AthenaDatabases returns an object that can list and get AthenaDatabases.
+func (s *athenaDatabaseLister) AthenaDatabases(namespace string) AthenaDatabaseNamespaceLister {
+	return athenaDatabaseNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AthenaDatabaseNamespaceLister helps list and get AthenaDatabases.
+type AthenaDatabaseNamespaceLister interface {
+	// List lists all AthenaDatabases in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AthenaDatabase, err error)
+	// Get retrieves the AthenaDatabase from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AthenaDatabase, error)
+	AthenaDatabaseNamespaceListerExpansion
+}
+
+// athenaDatabaseNamespaceLister implements the AthenaDatabaseNamespaceLister
+// interface.
+type athenaDatabaseNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AthenaDatabases in the indexer for a given namespace.
+func (s athenaDatabaseNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AthenaDatabase, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AthenaDatabase))
+	})
+	return ret, err
+}
+
+// Get retrieves the AthenaDatabase from the indexer for a given namespace and name.
+func (s athenaDatabaseNamespaceLister) Get(name string) (*v1alpha1.AthenaDatabase, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,11 +19,12 @@ type IamServiceLinkedRole struct {
 }
 
 type IamServiceLinkedRoleSpec struct {
-	AwsServiceName string `json:"aws_service_name"`
+	AwsServiceName string `json:"awsServiceName" tf:"aws_service_name"`
 	// +optional
-	CustomSuffix string `json:"custom_suffix,omitempty"`
+	CustomSuffix string `json:"customSuffix,omitempty" tf:"custom_suffix,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string                    `json:"description,omitempty" tf:"description,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type IamServiceLinkedRoleStatus struct {
@@ -31,7 +32,9 @@ type IamServiceLinkedRoleStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

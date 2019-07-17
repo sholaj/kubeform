@@ -29,8 +29,8 @@ import (
 type NodebalancerLister interface {
 	// List lists all Nodebalancers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Nodebalancer, err error)
-	// Get retrieves the Nodebalancer from the index for a given name.
-	Get(name string) (*v1alpha1.Nodebalancer, error)
+	// Nodebalancers returns an object that can list and get Nodebalancers.
+	Nodebalancers(namespace string) NodebalancerNamespaceLister
 	NodebalancerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *nodebalancerLister) List(selector labels.Selector) (ret []*v1alpha1.Nod
 	return ret, err
 }
 
-// Get retrieves the Nodebalancer from the index for a given name.
-func (s *nodebalancerLister) Get(name string) (*v1alpha1.Nodebalancer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Nodebalancers returns an object that can list and get Nodebalancers.
+func (s *nodebalancerLister) Nodebalancers(namespace string) NodebalancerNamespaceLister {
+	return nodebalancerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NodebalancerNamespaceLister helps list and get Nodebalancers.
+type NodebalancerNamespaceLister interface {
+	// List lists all Nodebalancers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Nodebalancer, err error)
+	// Get retrieves the Nodebalancer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Nodebalancer, error)
+	NodebalancerNamespaceListerExpansion
+}
+
+// nodebalancerNamespaceLister implements the NodebalancerNamespaceLister
+// interface.
+type nodebalancerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Nodebalancers in the indexer for a given namespace.
+func (s nodebalancerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Nodebalancer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Nodebalancer))
+	})
+	return ret, err
+}
+
+// Get retrieves the Nodebalancer from the indexer for a given namespace and name.
+func (s nodebalancerNamespaceLister) Get(name string) (*v1alpha1.Nodebalancer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

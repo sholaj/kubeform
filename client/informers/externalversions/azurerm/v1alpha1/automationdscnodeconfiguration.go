@@ -41,32 +41,33 @@ type AutomationDscNodeconfigurationInformer interface {
 type automationDscNodeconfigurationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewAutomationDscNodeconfigurationInformer constructs a new informer for AutomationDscNodeconfiguration type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAutomationDscNodeconfigurationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAutomationDscNodeconfigurationInformer(client, resyncPeriod, indexers, nil)
+func NewAutomationDscNodeconfigurationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAutomationDscNodeconfigurationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredAutomationDscNodeconfigurationInformer constructs a new informer for AutomationDscNodeconfiguration type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAutomationDscNodeconfigurationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAutomationDscNodeconfigurationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().AutomationDscNodeconfigurations().List(options)
+				return client.AzurermV1alpha1().AutomationDscNodeconfigurations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().AutomationDscNodeconfigurations().Watch(options)
+				return client.AzurermV1alpha1().AutomationDscNodeconfigurations(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.AutomationDscNodeconfiguration{},
@@ -76,7 +77,7 @@ func NewFilteredAutomationDscNodeconfigurationInformer(client versioned.Interfac
 }
 
 func (f *automationDscNodeconfigurationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAutomationDscNodeconfigurationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredAutomationDscNodeconfigurationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *automationDscNodeconfigurationInformer) Informer() cache.SharedIndexInformer {

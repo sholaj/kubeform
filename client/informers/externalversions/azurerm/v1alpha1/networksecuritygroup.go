@@ -41,32 +41,33 @@ type NetworkSecurityGroupInformer interface {
 type networkSecurityGroupInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewNetworkSecurityGroupInformer constructs a new informer for NetworkSecurityGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewNetworkSecurityGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredNetworkSecurityGroupInformer(client, resyncPeriod, indexers, nil)
+func NewNetworkSecurityGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredNetworkSecurityGroupInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredNetworkSecurityGroupInformer constructs a new informer for NetworkSecurityGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredNetworkSecurityGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredNetworkSecurityGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().NetworkSecurityGroups().List(options)
+				return client.AzurermV1alpha1().NetworkSecurityGroups(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().NetworkSecurityGroups().Watch(options)
+				return client.AzurermV1alpha1().NetworkSecurityGroups(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.NetworkSecurityGroup{},
@@ -76,7 +77,7 @@ func NewFilteredNetworkSecurityGroupInformer(client versioned.Interface, resyncP
 }
 
 func (f *networkSecurityGroupInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredNetworkSecurityGroupInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredNetworkSecurityGroupInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *networkSecurityGroupInformer) Informer() cache.SharedIndexInformer {

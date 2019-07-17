@@ -32,7 +32,7 @@ import (
 // BatchJobQueuesGetter has a method to return a BatchJobQueueInterface.
 // A group's client should implement this interface.
 type BatchJobQueuesGetter interface {
-	BatchJobQueues() BatchJobQueueInterface
+	BatchJobQueues(namespace string) BatchJobQueueInterface
 }
 
 // BatchJobQueueInterface has methods to work with BatchJobQueue resources.
@@ -52,12 +52,14 @@ type BatchJobQueueInterface interface {
 // batchJobQueues implements BatchJobQueueInterface
 type batchJobQueues struct {
 	client rest.Interface
+	ns     string
 }
 
 // newBatchJobQueues returns a BatchJobQueues
-func newBatchJobQueues(c *AwsV1alpha1Client) *batchJobQueues {
+func newBatchJobQueues(c *AwsV1alpha1Client, namespace string) *batchJobQueues {
 	return &batchJobQueues{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newBatchJobQueues(c *AwsV1alpha1Client) *batchJobQueues {
 func (c *batchJobQueues) Get(name string, options v1.GetOptions) (result *v1alpha1.BatchJobQueue, err error) {
 	result = &v1alpha1.BatchJobQueue{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("batchjobqueues").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *batchJobQueues) List(opts v1.ListOptions) (result *v1alpha1.BatchJobQue
 	}
 	result = &v1alpha1.BatchJobQueueList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("batchjobqueues").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *batchJobQueues) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("batchjobqueues").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *batchJobQueues) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *batchJobQueues) Create(batchJobQueue *v1alpha1.BatchJobQueue) (result *v1alpha1.BatchJobQueue, err error) {
 	result = &v1alpha1.BatchJobQueue{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("batchjobqueues").
 		Body(batchJobQueue).
 		Do().
@@ -118,6 +124,7 @@ func (c *batchJobQueues) Create(batchJobQueue *v1alpha1.BatchJobQueue) (result *
 func (c *batchJobQueues) Update(batchJobQueue *v1alpha1.BatchJobQueue) (result *v1alpha1.BatchJobQueue, err error) {
 	result = &v1alpha1.BatchJobQueue{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("batchjobqueues").
 		Name(batchJobQueue.Name).
 		Body(batchJobQueue).
@@ -132,6 +139,7 @@ func (c *batchJobQueues) Update(batchJobQueue *v1alpha1.BatchJobQueue) (result *
 func (c *batchJobQueues) UpdateStatus(batchJobQueue *v1alpha1.BatchJobQueue) (result *v1alpha1.BatchJobQueue, err error) {
 	result = &v1alpha1.BatchJobQueue{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("batchjobqueues").
 		Name(batchJobQueue.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *batchJobQueues) UpdateStatus(batchJobQueue *v1alpha1.BatchJobQueue) (re
 // Delete takes name of the batchJobQueue and deletes it. Returns an error if one occurs.
 func (c *batchJobQueues) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("batchjobqueues").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *batchJobQueues) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("batchjobqueues").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *batchJobQueues) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *batchJobQueues) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BatchJobQueue, err error) {
 	result = &v1alpha1.BatchJobQueue{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("batchjobqueues").
 		SubResource(subresources...).
 		Name(name).

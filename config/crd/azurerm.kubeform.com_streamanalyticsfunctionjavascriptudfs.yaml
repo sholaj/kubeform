@@ -398,28 +398,50 @@ spec:
         spec:
           properties:
             input:
-              items: {}
+              items:
+                properties:
+                  type:
+                    type: string
+                required:
+                - type
+                type: object
               minItems: 1
               type: array
             name:
               type: string
             output:
-              items: {}
+              items:
+                properties:
+                  type:
+                    type: string
+                required:
+                - type
+                type: object
               maxItems: 1
               type: array
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
             script:
               type: string
-            stream_analytics_job_name:
+            streamAnalyticsJobName:
               type: string
           required:
           - input
           - name
           - output
-          - resource_group_name
+          - providerRef
+          - resourceGroupName
           - script
-          - stream_analytics_job_name
+          - streamAnalyticsJobName
           type: object
         status:
           properties:
@@ -430,6 +452,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -29,8 +29,8 @@ import (
 type ProjectUsageExportBucketLister interface {
 	// List lists all ProjectUsageExportBuckets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ProjectUsageExportBucket, err error)
-	// Get retrieves the ProjectUsageExportBucket from the index for a given name.
-	Get(name string) (*v1alpha1.ProjectUsageExportBucket, error)
+	// ProjectUsageExportBuckets returns an object that can list and get ProjectUsageExportBuckets.
+	ProjectUsageExportBuckets(namespace string) ProjectUsageExportBucketNamespaceLister
 	ProjectUsageExportBucketListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *projectUsageExportBucketLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the ProjectUsageExportBucket from the index for a given name.
-func (s *projectUsageExportBucketLister) Get(name string) (*v1alpha1.ProjectUsageExportBucket, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ProjectUsageExportBuckets returns an object that can list and get ProjectUsageExportBuckets.
+func (s *projectUsageExportBucketLister) ProjectUsageExportBuckets(namespace string) ProjectUsageExportBucketNamespaceLister {
+	return projectUsageExportBucketNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ProjectUsageExportBucketNamespaceLister helps list and get ProjectUsageExportBuckets.
+type ProjectUsageExportBucketNamespaceLister interface {
+	// List lists all ProjectUsageExportBuckets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ProjectUsageExportBucket, err error)
+	// Get retrieves the ProjectUsageExportBucket from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ProjectUsageExportBucket, error)
+	ProjectUsageExportBucketNamespaceListerExpansion
+}
+
+// projectUsageExportBucketNamespaceLister implements the ProjectUsageExportBucketNamespaceLister
+// interface.
+type projectUsageExportBucketNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ProjectUsageExportBuckets in the indexer for a given namespace.
+func (s projectUsageExportBucketNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ProjectUsageExportBucket, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ProjectUsageExportBucket))
+	})
+	return ret, err
+}
+
+// Get retrieves the ProjectUsageExportBucket from the indexer for a given namespace and name.
+func (s projectUsageExportBucketNamespaceLister) Get(name string) (*v1alpha1.ProjectUsageExportBucket, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

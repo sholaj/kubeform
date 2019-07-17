@@ -51,9 +51,9 @@ type GoogleV1alpha1Interface interface {
 	ComputeForwardingRulesGetter
 	ComputeGlobalAddressesGetter
 	ComputeGlobalForwardingRulesGetter
+	ComputeHTTPHealthChecksGetter
+	ComputeHTTPSHealthChecksGetter
 	ComputeHealthChecksGetter
-	ComputeHttpHealthChecksGetter
-	ComputeHttpsHealthChecksGetter
 	ComputeImagesGetter
 	ComputeInstancesGetter
 	ComputeInstanceFromTemplatesGetter
@@ -72,7 +72,7 @@ type GoogleV1alpha1Interface interface {
 	ComputeRoutesGetter
 	ComputeRoutersGetter
 	ComputeRouterInterfacesGetter
-	ComputeRouterNatsGetter
+	ComputeRouterNATsGetter
 	ComputeRouterPeersGetter
 	ComputeSecurityPoliciesGetter
 	ComputeSharedVpcHostProjectsGetter
@@ -84,14 +84,14 @@ type GoogleV1alpha1Interface interface {
 	ComputeSubnetworkIamBindingsGetter
 	ComputeSubnetworkIamMembersGetter
 	ComputeSubnetworkIamPoliciesGetter
-	ComputeTargetHttpProxiesGetter
-	ComputeTargetHttpsProxiesGetter
+	ComputeTargetHTTPProxiesGetter
+	ComputeTargetHTTPSProxiesGetter
 	ComputeTargetPoolsGetter
 	ComputeTargetSslProxiesGetter
 	ComputeTargetTcpProxiesGetter
-	ComputeUrlMapsGetter
-	ComputeVpnGatewaysGetter
-	ComputeVpnTunnelsGetter
+	ComputeURLMapsGetter
+	ComputeVPNGatewaysGetter
+	ComputeVPNTunnelsGetter
 	ContainerAnalysisNotesGetter
 	ContainerClustersGetter
 	ContainerNodePoolsGetter
@@ -171,16 +171,16 @@ type GoogleV1alpha1Interface interface {
 	SqlSslCertsGetter
 	SqlUsersGetter
 	StorageBucketsGetter
-	StorageBucketAclsGetter
+	StorageBucketACLsGetter
 	StorageBucketIamBindingsGetter
 	StorageBucketIamMembersGetter
 	StorageBucketIamPoliciesGetter
 	StorageBucketObjectsGetter
+	StorageDefaultObjectACLsGetter
 	StorageDefaultObjectAccessControlsGetter
-	StorageDefaultObjectAclsGetter
 	StorageNotificationsGetter
+	StorageObjectACLsGetter
 	StorageObjectAccessControlsGetter
-	StorageObjectAclsGetter
 }
 
 // GoogleV1alpha1Client is used to interact with features provided by the google.kubeform.com group.
@@ -188,620 +188,620 @@ type GoogleV1alpha1Client struct {
 	restClient rest.Interface
 }
 
-func (c *GoogleV1alpha1Client) AppEngineApplications() AppEngineApplicationInterface {
-	return newAppEngineApplications(c)
+func (c *GoogleV1alpha1Client) AppEngineApplications(namespace string) AppEngineApplicationInterface {
+	return newAppEngineApplications(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) BigqueryDatasets() BigqueryDatasetInterface {
-	return newBigqueryDatasets(c)
+func (c *GoogleV1alpha1Client) BigqueryDatasets(namespace string) BigqueryDatasetInterface {
+	return newBigqueryDatasets(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) BigqueryTables() BigqueryTableInterface {
-	return newBigqueryTables(c)
+func (c *GoogleV1alpha1Client) BigqueryTables(namespace string) BigqueryTableInterface {
+	return newBigqueryTables(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) BigtableInstances() BigtableInstanceInterface {
-	return newBigtableInstances(c)
+func (c *GoogleV1alpha1Client) BigtableInstances(namespace string) BigtableInstanceInterface {
+	return newBigtableInstances(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) BigtableTables() BigtableTableInterface {
-	return newBigtableTables(c)
+func (c *GoogleV1alpha1Client) BigtableTables(namespace string) BigtableTableInterface {
+	return newBigtableTables(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) BillingAccountIamBindings() BillingAccountIamBindingInterface {
-	return newBillingAccountIamBindings(c)
+func (c *GoogleV1alpha1Client) BillingAccountIamBindings(namespace string) BillingAccountIamBindingInterface {
+	return newBillingAccountIamBindings(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) BillingAccountIamMembers() BillingAccountIamMemberInterface {
-	return newBillingAccountIamMembers(c)
+func (c *GoogleV1alpha1Client) BillingAccountIamMembers(namespace string) BillingAccountIamMemberInterface {
+	return newBillingAccountIamMembers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) BillingAccountIamPolicies() BillingAccountIamPolicyInterface {
-	return newBillingAccountIamPolicies(c)
+func (c *GoogleV1alpha1Client) BillingAccountIamPolicies(namespace string) BillingAccountIamPolicyInterface {
+	return newBillingAccountIamPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) BinaryAuthorizationAttestors() BinaryAuthorizationAttestorInterface {
-	return newBinaryAuthorizationAttestors(c)
+func (c *GoogleV1alpha1Client) BinaryAuthorizationAttestors(namespace string) BinaryAuthorizationAttestorInterface {
+	return newBinaryAuthorizationAttestors(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) BinaryAuthorizationPolicies() BinaryAuthorizationPolicyInterface {
-	return newBinaryAuthorizationPolicies(c)
+func (c *GoogleV1alpha1Client) BinaryAuthorizationPolicies(namespace string) BinaryAuthorizationPolicyInterface {
+	return newBinaryAuthorizationPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) CloudbuildTriggers() CloudbuildTriggerInterface {
-	return newCloudbuildTriggers(c)
+func (c *GoogleV1alpha1Client) CloudbuildTriggers(namespace string) CloudbuildTriggerInterface {
+	return newCloudbuildTriggers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) CloudfunctionsFunctions() CloudfunctionsFunctionInterface {
-	return newCloudfunctionsFunctions(c)
+func (c *GoogleV1alpha1Client) CloudfunctionsFunctions(namespace string) CloudfunctionsFunctionInterface {
+	return newCloudfunctionsFunctions(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) CloudiotRegistries() CloudiotRegistryInterface {
-	return newCloudiotRegistries(c)
+func (c *GoogleV1alpha1Client) CloudiotRegistries(namespace string) CloudiotRegistryInterface {
+	return newCloudiotRegistries(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComposerEnvironments() ComposerEnvironmentInterface {
-	return newComposerEnvironments(c)
+func (c *GoogleV1alpha1Client) ComposerEnvironments(namespace string) ComposerEnvironmentInterface {
+	return newComposerEnvironments(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeAddresses() ComputeAddressInterface {
-	return newComputeAddresses(c)
+func (c *GoogleV1alpha1Client) ComputeAddresses(namespace string) ComputeAddressInterface {
+	return newComputeAddresses(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeAttachedDisks() ComputeAttachedDiskInterface {
-	return newComputeAttachedDisks(c)
+func (c *GoogleV1alpha1Client) ComputeAttachedDisks(namespace string) ComputeAttachedDiskInterface {
+	return newComputeAttachedDisks(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeAutoscalers() ComputeAutoscalerInterface {
-	return newComputeAutoscalers(c)
+func (c *GoogleV1alpha1Client) ComputeAutoscalers(namespace string) ComputeAutoscalerInterface {
+	return newComputeAutoscalers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeBackendBuckets() ComputeBackendBucketInterface {
-	return newComputeBackendBuckets(c)
+func (c *GoogleV1alpha1Client) ComputeBackendBuckets(namespace string) ComputeBackendBucketInterface {
+	return newComputeBackendBuckets(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeBackendServices() ComputeBackendServiceInterface {
-	return newComputeBackendServices(c)
+func (c *GoogleV1alpha1Client) ComputeBackendServices(namespace string) ComputeBackendServiceInterface {
+	return newComputeBackendServices(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeDisks() ComputeDiskInterface {
-	return newComputeDisks(c)
+func (c *GoogleV1alpha1Client) ComputeDisks(namespace string) ComputeDiskInterface {
+	return newComputeDisks(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeFirewalls() ComputeFirewallInterface {
-	return newComputeFirewalls(c)
+func (c *GoogleV1alpha1Client) ComputeFirewalls(namespace string) ComputeFirewallInterface {
+	return newComputeFirewalls(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeForwardingRules() ComputeForwardingRuleInterface {
-	return newComputeForwardingRules(c)
+func (c *GoogleV1alpha1Client) ComputeForwardingRules(namespace string) ComputeForwardingRuleInterface {
+	return newComputeForwardingRules(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeGlobalAddresses() ComputeGlobalAddressInterface {
-	return newComputeGlobalAddresses(c)
+func (c *GoogleV1alpha1Client) ComputeGlobalAddresses(namespace string) ComputeGlobalAddressInterface {
+	return newComputeGlobalAddresses(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeGlobalForwardingRules() ComputeGlobalForwardingRuleInterface {
-	return newComputeGlobalForwardingRules(c)
+func (c *GoogleV1alpha1Client) ComputeGlobalForwardingRules(namespace string) ComputeGlobalForwardingRuleInterface {
+	return newComputeGlobalForwardingRules(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeHealthChecks() ComputeHealthCheckInterface {
-	return newComputeHealthChecks(c)
+func (c *GoogleV1alpha1Client) ComputeHTTPHealthChecks(namespace string) ComputeHTTPHealthCheckInterface {
+	return newComputeHTTPHealthChecks(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeHttpHealthChecks() ComputeHttpHealthCheckInterface {
-	return newComputeHttpHealthChecks(c)
+func (c *GoogleV1alpha1Client) ComputeHTTPSHealthChecks(namespace string) ComputeHTTPSHealthCheckInterface {
+	return newComputeHTTPSHealthChecks(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeHttpsHealthChecks() ComputeHttpsHealthCheckInterface {
-	return newComputeHttpsHealthChecks(c)
+func (c *GoogleV1alpha1Client) ComputeHealthChecks(namespace string) ComputeHealthCheckInterface {
+	return newComputeHealthChecks(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeImages() ComputeImageInterface {
-	return newComputeImages(c)
+func (c *GoogleV1alpha1Client) ComputeImages(namespace string) ComputeImageInterface {
+	return newComputeImages(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeInstances() ComputeInstanceInterface {
-	return newComputeInstances(c)
+func (c *GoogleV1alpha1Client) ComputeInstances(namespace string) ComputeInstanceInterface {
+	return newComputeInstances(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeInstanceFromTemplates() ComputeInstanceFromTemplateInterface {
-	return newComputeInstanceFromTemplates(c)
+func (c *GoogleV1alpha1Client) ComputeInstanceFromTemplates(namespace string) ComputeInstanceFromTemplateInterface {
+	return newComputeInstanceFromTemplates(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeInstanceGroups() ComputeInstanceGroupInterface {
-	return newComputeInstanceGroups(c)
+func (c *GoogleV1alpha1Client) ComputeInstanceGroups(namespace string) ComputeInstanceGroupInterface {
+	return newComputeInstanceGroups(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeInstanceGroupManagers() ComputeInstanceGroupManagerInterface {
-	return newComputeInstanceGroupManagers(c)
+func (c *GoogleV1alpha1Client) ComputeInstanceGroupManagers(namespace string) ComputeInstanceGroupManagerInterface {
+	return newComputeInstanceGroupManagers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeInstanceTemplates() ComputeInstanceTemplateInterface {
-	return newComputeInstanceTemplates(c)
+func (c *GoogleV1alpha1Client) ComputeInstanceTemplates(namespace string) ComputeInstanceTemplateInterface {
+	return newComputeInstanceTemplates(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeInterconnectAttachments() ComputeInterconnectAttachmentInterface {
-	return newComputeInterconnectAttachments(c)
+func (c *GoogleV1alpha1Client) ComputeInterconnectAttachments(namespace string) ComputeInterconnectAttachmentInterface {
+	return newComputeInterconnectAttachments(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeNetworks() ComputeNetworkInterface {
-	return newComputeNetworks(c)
+func (c *GoogleV1alpha1Client) ComputeNetworks(namespace string) ComputeNetworkInterface {
+	return newComputeNetworks(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeNetworkPeerings() ComputeNetworkPeeringInterface {
-	return newComputeNetworkPeerings(c)
+func (c *GoogleV1alpha1Client) ComputeNetworkPeerings(namespace string) ComputeNetworkPeeringInterface {
+	return newComputeNetworkPeerings(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeProjectMetadatas() ComputeProjectMetadataInterface {
-	return newComputeProjectMetadatas(c)
+func (c *GoogleV1alpha1Client) ComputeProjectMetadatas(namespace string) ComputeProjectMetadataInterface {
+	return newComputeProjectMetadatas(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeProjectMetadataItems() ComputeProjectMetadataItemInterface {
-	return newComputeProjectMetadataItems(c)
+func (c *GoogleV1alpha1Client) ComputeProjectMetadataItems(namespace string) ComputeProjectMetadataItemInterface {
+	return newComputeProjectMetadataItems(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeRegionAutoscalers() ComputeRegionAutoscalerInterface {
-	return newComputeRegionAutoscalers(c)
+func (c *GoogleV1alpha1Client) ComputeRegionAutoscalers(namespace string) ComputeRegionAutoscalerInterface {
+	return newComputeRegionAutoscalers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeRegionBackendServices() ComputeRegionBackendServiceInterface {
-	return newComputeRegionBackendServices(c)
+func (c *GoogleV1alpha1Client) ComputeRegionBackendServices(namespace string) ComputeRegionBackendServiceInterface {
+	return newComputeRegionBackendServices(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeRegionDisks() ComputeRegionDiskInterface {
-	return newComputeRegionDisks(c)
+func (c *GoogleV1alpha1Client) ComputeRegionDisks(namespace string) ComputeRegionDiskInterface {
+	return newComputeRegionDisks(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeRegionInstanceGroupManagers() ComputeRegionInstanceGroupManagerInterface {
-	return newComputeRegionInstanceGroupManagers(c)
+func (c *GoogleV1alpha1Client) ComputeRegionInstanceGroupManagers(namespace string) ComputeRegionInstanceGroupManagerInterface {
+	return newComputeRegionInstanceGroupManagers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeRoutes() ComputeRouteInterface {
-	return newComputeRoutes(c)
+func (c *GoogleV1alpha1Client) ComputeRoutes(namespace string) ComputeRouteInterface {
+	return newComputeRoutes(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeRouters() ComputeRouterInterface {
-	return newComputeRouters(c)
+func (c *GoogleV1alpha1Client) ComputeRouters(namespace string) ComputeRouterInterface {
+	return newComputeRouters(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeRouterInterfaces() ComputeRouterInterfaceInterface {
-	return newComputeRouterInterfaces(c)
+func (c *GoogleV1alpha1Client) ComputeRouterInterfaces(namespace string) ComputeRouterInterfaceInterface {
+	return newComputeRouterInterfaces(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeRouterNats() ComputeRouterNatInterface {
-	return newComputeRouterNats(c)
+func (c *GoogleV1alpha1Client) ComputeRouterNATs(namespace string) ComputeRouterNATInterface {
+	return newComputeRouterNATs(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeRouterPeers() ComputeRouterPeerInterface {
-	return newComputeRouterPeers(c)
+func (c *GoogleV1alpha1Client) ComputeRouterPeers(namespace string) ComputeRouterPeerInterface {
+	return newComputeRouterPeers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeSecurityPolicies() ComputeSecurityPolicyInterface {
-	return newComputeSecurityPolicies(c)
+func (c *GoogleV1alpha1Client) ComputeSecurityPolicies(namespace string) ComputeSecurityPolicyInterface {
+	return newComputeSecurityPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeSharedVpcHostProjects() ComputeSharedVpcHostProjectInterface {
-	return newComputeSharedVpcHostProjects(c)
+func (c *GoogleV1alpha1Client) ComputeSharedVpcHostProjects(namespace string) ComputeSharedVpcHostProjectInterface {
+	return newComputeSharedVpcHostProjects(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeSharedVpcServiceProjects() ComputeSharedVpcServiceProjectInterface {
-	return newComputeSharedVpcServiceProjects(c)
+func (c *GoogleV1alpha1Client) ComputeSharedVpcServiceProjects(namespace string) ComputeSharedVpcServiceProjectInterface {
+	return newComputeSharedVpcServiceProjects(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeSnapshots() ComputeSnapshotInterface {
-	return newComputeSnapshots(c)
+func (c *GoogleV1alpha1Client) ComputeSnapshots(namespace string) ComputeSnapshotInterface {
+	return newComputeSnapshots(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeSslCertificates() ComputeSslCertificateInterface {
-	return newComputeSslCertificates(c)
+func (c *GoogleV1alpha1Client) ComputeSslCertificates(namespace string) ComputeSslCertificateInterface {
+	return newComputeSslCertificates(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeSslPolicies() ComputeSslPolicyInterface {
-	return newComputeSslPolicies(c)
+func (c *GoogleV1alpha1Client) ComputeSslPolicies(namespace string) ComputeSslPolicyInterface {
+	return newComputeSslPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeSubnetworks() ComputeSubnetworkInterface {
-	return newComputeSubnetworks(c)
+func (c *GoogleV1alpha1Client) ComputeSubnetworks(namespace string) ComputeSubnetworkInterface {
+	return newComputeSubnetworks(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeSubnetworkIamBindings() ComputeSubnetworkIamBindingInterface {
-	return newComputeSubnetworkIamBindings(c)
+func (c *GoogleV1alpha1Client) ComputeSubnetworkIamBindings(namespace string) ComputeSubnetworkIamBindingInterface {
+	return newComputeSubnetworkIamBindings(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeSubnetworkIamMembers() ComputeSubnetworkIamMemberInterface {
-	return newComputeSubnetworkIamMembers(c)
+func (c *GoogleV1alpha1Client) ComputeSubnetworkIamMembers(namespace string) ComputeSubnetworkIamMemberInterface {
+	return newComputeSubnetworkIamMembers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeSubnetworkIamPolicies() ComputeSubnetworkIamPolicyInterface {
-	return newComputeSubnetworkIamPolicies(c)
+func (c *GoogleV1alpha1Client) ComputeSubnetworkIamPolicies(namespace string) ComputeSubnetworkIamPolicyInterface {
+	return newComputeSubnetworkIamPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeTargetHttpProxies() ComputeTargetHttpProxyInterface {
-	return newComputeTargetHttpProxies(c)
+func (c *GoogleV1alpha1Client) ComputeTargetHTTPProxies(namespace string) ComputeTargetHTTPProxyInterface {
+	return newComputeTargetHTTPProxies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeTargetHttpsProxies() ComputeTargetHttpsProxyInterface {
-	return newComputeTargetHttpsProxies(c)
+func (c *GoogleV1alpha1Client) ComputeTargetHTTPSProxies(namespace string) ComputeTargetHTTPSProxyInterface {
+	return newComputeTargetHTTPSProxies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeTargetPools() ComputeTargetPoolInterface {
-	return newComputeTargetPools(c)
+func (c *GoogleV1alpha1Client) ComputeTargetPools(namespace string) ComputeTargetPoolInterface {
+	return newComputeTargetPools(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeTargetSslProxies() ComputeTargetSslProxyInterface {
-	return newComputeTargetSslProxies(c)
+func (c *GoogleV1alpha1Client) ComputeTargetSslProxies(namespace string) ComputeTargetSslProxyInterface {
+	return newComputeTargetSslProxies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeTargetTcpProxies() ComputeTargetTcpProxyInterface {
-	return newComputeTargetTcpProxies(c)
+func (c *GoogleV1alpha1Client) ComputeTargetTcpProxies(namespace string) ComputeTargetTcpProxyInterface {
+	return newComputeTargetTcpProxies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeUrlMaps() ComputeUrlMapInterface {
-	return newComputeUrlMaps(c)
+func (c *GoogleV1alpha1Client) ComputeURLMaps(namespace string) ComputeURLMapInterface {
+	return newComputeURLMaps(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeVpnGateways() ComputeVpnGatewayInterface {
-	return newComputeVpnGateways(c)
+func (c *GoogleV1alpha1Client) ComputeVPNGateways(namespace string) ComputeVPNGatewayInterface {
+	return newComputeVPNGateways(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ComputeVpnTunnels() ComputeVpnTunnelInterface {
-	return newComputeVpnTunnels(c)
+func (c *GoogleV1alpha1Client) ComputeVPNTunnels(namespace string) ComputeVPNTunnelInterface {
+	return newComputeVPNTunnels(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ContainerAnalysisNotes() ContainerAnalysisNoteInterface {
-	return newContainerAnalysisNotes(c)
+func (c *GoogleV1alpha1Client) ContainerAnalysisNotes(namespace string) ContainerAnalysisNoteInterface {
+	return newContainerAnalysisNotes(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ContainerClusters() ContainerClusterInterface {
-	return newContainerClusters(c)
+func (c *GoogleV1alpha1Client) ContainerClusters(namespace string) ContainerClusterInterface {
+	return newContainerClusters(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ContainerNodePools() ContainerNodePoolInterface {
-	return newContainerNodePools(c)
+func (c *GoogleV1alpha1Client) ContainerNodePools(namespace string) ContainerNodePoolInterface {
+	return newContainerNodePools(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) DataflowJobs() DataflowJobInterface {
-	return newDataflowJobs(c)
+func (c *GoogleV1alpha1Client) DataflowJobs(namespace string) DataflowJobInterface {
+	return newDataflowJobs(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) DataprocClusters() DataprocClusterInterface {
-	return newDataprocClusters(c)
+func (c *GoogleV1alpha1Client) DataprocClusters(namespace string) DataprocClusterInterface {
+	return newDataprocClusters(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) DataprocJobs() DataprocJobInterface {
-	return newDataprocJobs(c)
+func (c *GoogleV1alpha1Client) DataprocJobs(namespace string) DataprocJobInterface {
+	return newDataprocJobs(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) DnsManagedZones() DnsManagedZoneInterface {
-	return newDnsManagedZones(c)
+func (c *GoogleV1alpha1Client) DnsManagedZones(namespace string) DnsManagedZoneInterface {
+	return newDnsManagedZones(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) DnsRecordSets() DnsRecordSetInterface {
-	return newDnsRecordSets(c)
+func (c *GoogleV1alpha1Client) DnsRecordSets(namespace string) DnsRecordSetInterface {
+	return newDnsRecordSets(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) EndpointsServices() EndpointsServiceInterface {
-	return newEndpointsServices(c)
+func (c *GoogleV1alpha1Client) EndpointsServices(namespace string) EndpointsServiceInterface {
+	return newEndpointsServices(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) FilestoreInstances() FilestoreInstanceInterface {
-	return newFilestoreInstances(c)
+func (c *GoogleV1alpha1Client) FilestoreInstances(namespace string) FilestoreInstanceInterface {
+	return newFilestoreInstances(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) Folders() FolderInterface {
-	return newFolders(c)
+func (c *GoogleV1alpha1Client) Folders(namespace string) FolderInterface {
+	return newFolders(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) FolderIamBindings() FolderIamBindingInterface {
-	return newFolderIamBindings(c)
+func (c *GoogleV1alpha1Client) FolderIamBindings(namespace string) FolderIamBindingInterface {
+	return newFolderIamBindings(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) FolderIamMembers() FolderIamMemberInterface {
-	return newFolderIamMembers(c)
+func (c *GoogleV1alpha1Client) FolderIamMembers(namespace string) FolderIamMemberInterface {
+	return newFolderIamMembers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) FolderIamPolicies() FolderIamPolicyInterface {
-	return newFolderIamPolicies(c)
+func (c *GoogleV1alpha1Client) FolderIamPolicies(namespace string) FolderIamPolicyInterface {
+	return newFolderIamPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) FolderOrganizationPolicies() FolderOrganizationPolicyInterface {
-	return newFolderOrganizationPolicies(c)
+func (c *GoogleV1alpha1Client) FolderOrganizationPolicies(namespace string) FolderOrganizationPolicyInterface {
+	return newFolderOrganizationPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) KmsCryptoKeys() KmsCryptoKeyInterface {
-	return newKmsCryptoKeys(c)
+func (c *GoogleV1alpha1Client) KmsCryptoKeys(namespace string) KmsCryptoKeyInterface {
+	return newKmsCryptoKeys(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) KmsCryptoKeyIamBindings() KmsCryptoKeyIamBindingInterface {
-	return newKmsCryptoKeyIamBindings(c)
+func (c *GoogleV1alpha1Client) KmsCryptoKeyIamBindings(namespace string) KmsCryptoKeyIamBindingInterface {
+	return newKmsCryptoKeyIamBindings(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) KmsCryptoKeyIamMembers() KmsCryptoKeyIamMemberInterface {
-	return newKmsCryptoKeyIamMembers(c)
+func (c *GoogleV1alpha1Client) KmsCryptoKeyIamMembers(namespace string) KmsCryptoKeyIamMemberInterface {
+	return newKmsCryptoKeyIamMembers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) KmsKeyRings() KmsKeyRingInterface {
-	return newKmsKeyRings(c)
+func (c *GoogleV1alpha1Client) KmsKeyRings(namespace string) KmsKeyRingInterface {
+	return newKmsKeyRings(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) KmsKeyRingIamBindings() KmsKeyRingIamBindingInterface {
-	return newKmsKeyRingIamBindings(c)
+func (c *GoogleV1alpha1Client) KmsKeyRingIamBindings(namespace string) KmsKeyRingIamBindingInterface {
+	return newKmsKeyRingIamBindings(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) KmsKeyRingIamMembers() KmsKeyRingIamMemberInterface {
-	return newKmsKeyRingIamMembers(c)
+func (c *GoogleV1alpha1Client) KmsKeyRingIamMembers(namespace string) KmsKeyRingIamMemberInterface {
+	return newKmsKeyRingIamMembers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) KmsKeyRingIamPolicies() KmsKeyRingIamPolicyInterface {
-	return newKmsKeyRingIamPolicies(c)
+func (c *GoogleV1alpha1Client) KmsKeyRingIamPolicies(namespace string) KmsKeyRingIamPolicyInterface {
+	return newKmsKeyRingIamPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) LoggingBillingAccountExclusions() LoggingBillingAccountExclusionInterface {
-	return newLoggingBillingAccountExclusions(c)
+func (c *GoogleV1alpha1Client) LoggingBillingAccountExclusions(namespace string) LoggingBillingAccountExclusionInterface {
+	return newLoggingBillingAccountExclusions(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) LoggingBillingAccountSinks() LoggingBillingAccountSinkInterface {
-	return newLoggingBillingAccountSinks(c)
+func (c *GoogleV1alpha1Client) LoggingBillingAccountSinks(namespace string) LoggingBillingAccountSinkInterface {
+	return newLoggingBillingAccountSinks(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) LoggingFolderExclusions() LoggingFolderExclusionInterface {
-	return newLoggingFolderExclusions(c)
+func (c *GoogleV1alpha1Client) LoggingFolderExclusions(namespace string) LoggingFolderExclusionInterface {
+	return newLoggingFolderExclusions(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) LoggingFolderSinks() LoggingFolderSinkInterface {
-	return newLoggingFolderSinks(c)
+func (c *GoogleV1alpha1Client) LoggingFolderSinks(namespace string) LoggingFolderSinkInterface {
+	return newLoggingFolderSinks(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) LoggingOrganizationExclusions() LoggingOrganizationExclusionInterface {
-	return newLoggingOrganizationExclusions(c)
+func (c *GoogleV1alpha1Client) LoggingOrganizationExclusions(namespace string) LoggingOrganizationExclusionInterface {
+	return newLoggingOrganizationExclusions(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) LoggingOrganizationSinks() LoggingOrganizationSinkInterface {
-	return newLoggingOrganizationSinks(c)
+func (c *GoogleV1alpha1Client) LoggingOrganizationSinks(namespace string) LoggingOrganizationSinkInterface {
+	return newLoggingOrganizationSinks(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) LoggingProjectExclusions() LoggingProjectExclusionInterface {
-	return newLoggingProjectExclusions(c)
+func (c *GoogleV1alpha1Client) LoggingProjectExclusions(namespace string) LoggingProjectExclusionInterface {
+	return newLoggingProjectExclusions(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) LoggingProjectSinks() LoggingProjectSinkInterface {
-	return newLoggingProjectSinks(c)
+func (c *GoogleV1alpha1Client) LoggingProjectSinks(namespace string) LoggingProjectSinkInterface {
+	return newLoggingProjectSinks(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) MonitoringAlertPolicies() MonitoringAlertPolicyInterface {
-	return newMonitoringAlertPolicies(c)
+func (c *GoogleV1alpha1Client) MonitoringAlertPolicies(namespace string) MonitoringAlertPolicyInterface {
+	return newMonitoringAlertPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) MonitoringGroups() MonitoringGroupInterface {
-	return newMonitoringGroups(c)
+func (c *GoogleV1alpha1Client) MonitoringGroups(namespace string) MonitoringGroupInterface {
+	return newMonitoringGroups(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) MonitoringNotificationChannels() MonitoringNotificationChannelInterface {
-	return newMonitoringNotificationChannels(c)
+func (c *GoogleV1alpha1Client) MonitoringNotificationChannels(namespace string) MonitoringNotificationChannelInterface {
+	return newMonitoringNotificationChannels(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) MonitoringUptimeCheckConfigs() MonitoringUptimeCheckConfigInterface {
-	return newMonitoringUptimeCheckConfigs(c)
+func (c *GoogleV1alpha1Client) MonitoringUptimeCheckConfigs(namespace string) MonitoringUptimeCheckConfigInterface {
+	return newMonitoringUptimeCheckConfigs(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) OrganizationIamBindings() OrganizationIamBindingInterface {
-	return newOrganizationIamBindings(c)
+func (c *GoogleV1alpha1Client) OrganizationIamBindings(namespace string) OrganizationIamBindingInterface {
+	return newOrganizationIamBindings(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) OrganizationIamCustomRoles() OrganizationIamCustomRoleInterface {
-	return newOrganizationIamCustomRoles(c)
+func (c *GoogleV1alpha1Client) OrganizationIamCustomRoles(namespace string) OrganizationIamCustomRoleInterface {
+	return newOrganizationIamCustomRoles(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) OrganizationIamMembers() OrganizationIamMemberInterface {
-	return newOrganizationIamMembers(c)
+func (c *GoogleV1alpha1Client) OrganizationIamMembers(namespace string) OrganizationIamMemberInterface {
+	return newOrganizationIamMembers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) OrganizationIamPolicies() OrganizationIamPolicyInterface {
-	return newOrganizationIamPolicies(c)
+func (c *GoogleV1alpha1Client) OrganizationIamPolicies(namespace string) OrganizationIamPolicyInterface {
+	return newOrganizationIamPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) OrganizationPolicies() OrganizationPolicyInterface {
-	return newOrganizationPolicies(c)
+func (c *GoogleV1alpha1Client) OrganizationPolicies(namespace string) OrganizationPolicyInterface {
+	return newOrganizationPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) Projects() ProjectInterface {
-	return newProjects(c)
+func (c *GoogleV1alpha1Client) Projects(namespace string) ProjectInterface {
+	return newProjects(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ProjectIamBindings() ProjectIamBindingInterface {
-	return newProjectIamBindings(c)
+func (c *GoogleV1alpha1Client) ProjectIamBindings(namespace string) ProjectIamBindingInterface {
+	return newProjectIamBindings(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ProjectIamCustomRoles() ProjectIamCustomRoleInterface {
-	return newProjectIamCustomRoles(c)
+func (c *GoogleV1alpha1Client) ProjectIamCustomRoles(namespace string) ProjectIamCustomRoleInterface {
+	return newProjectIamCustomRoles(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ProjectIamMembers() ProjectIamMemberInterface {
-	return newProjectIamMembers(c)
+func (c *GoogleV1alpha1Client) ProjectIamMembers(namespace string) ProjectIamMemberInterface {
+	return newProjectIamMembers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ProjectIamPolicies() ProjectIamPolicyInterface {
-	return newProjectIamPolicies(c)
+func (c *GoogleV1alpha1Client) ProjectIamPolicies(namespace string) ProjectIamPolicyInterface {
+	return newProjectIamPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ProjectOrganizationPolicies() ProjectOrganizationPolicyInterface {
-	return newProjectOrganizationPolicies(c)
+func (c *GoogleV1alpha1Client) ProjectOrganizationPolicies(namespace string) ProjectOrganizationPolicyInterface {
+	return newProjectOrganizationPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ProjectServices() ProjectServiceInterface {
-	return newProjectServices(c)
+func (c *GoogleV1alpha1Client) ProjectServices(namespace string) ProjectServiceInterface {
+	return newProjectServices(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ProjectServiceses() ProjectServicesInterface {
-	return newProjectServiceses(c)
+func (c *GoogleV1alpha1Client) ProjectServiceses(namespace string) ProjectServicesInterface {
+	return newProjectServiceses(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ProjectUsageExportBuckets() ProjectUsageExportBucketInterface {
-	return newProjectUsageExportBuckets(c)
+func (c *GoogleV1alpha1Client) ProjectUsageExportBuckets(namespace string) ProjectUsageExportBucketInterface {
+	return newProjectUsageExportBuckets(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) PubsubSubscriptions() PubsubSubscriptionInterface {
-	return newPubsubSubscriptions(c)
+func (c *GoogleV1alpha1Client) PubsubSubscriptions(namespace string) PubsubSubscriptionInterface {
+	return newPubsubSubscriptions(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) PubsubSubscriptionIamBindings() PubsubSubscriptionIamBindingInterface {
-	return newPubsubSubscriptionIamBindings(c)
+func (c *GoogleV1alpha1Client) PubsubSubscriptionIamBindings(namespace string) PubsubSubscriptionIamBindingInterface {
+	return newPubsubSubscriptionIamBindings(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) PubsubSubscriptionIamMembers() PubsubSubscriptionIamMemberInterface {
-	return newPubsubSubscriptionIamMembers(c)
+func (c *GoogleV1alpha1Client) PubsubSubscriptionIamMembers(namespace string) PubsubSubscriptionIamMemberInterface {
+	return newPubsubSubscriptionIamMembers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) PubsubSubscriptionIamPolicies() PubsubSubscriptionIamPolicyInterface {
-	return newPubsubSubscriptionIamPolicies(c)
+func (c *GoogleV1alpha1Client) PubsubSubscriptionIamPolicies(namespace string) PubsubSubscriptionIamPolicyInterface {
+	return newPubsubSubscriptionIamPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) PubsubTopics() PubsubTopicInterface {
-	return newPubsubTopics(c)
+func (c *GoogleV1alpha1Client) PubsubTopics(namespace string) PubsubTopicInterface {
+	return newPubsubTopics(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) PubsubTopicIamBindings() PubsubTopicIamBindingInterface {
-	return newPubsubTopicIamBindings(c)
+func (c *GoogleV1alpha1Client) PubsubTopicIamBindings(namespace string) PubsubTopicIamBindingInterface {
+	return newPubsubTopicIamBindings(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) PubsubTopicIamMembers() PubsubTopicIamMemberInterface {
-	return newPubsubTopicIamMembers(c)
+func (c *GoogleV1alpha1Client) PubsubTopicIamMembers(namespace string) PubsubTopicIamMemberInterface {
+	return newPubsubTopicIamMembers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) PubsubTopicIamPolicies() PubsubTopicIamPolicyInterface {
-	return newPubsubTopicIamPolicies(c)
+func (c *GoogleV1alpha1Client) PubsubTopicIamPolicies(namespace string) PubsubTopicIamPolicyInterface {
+	return newPubsubTopicIamPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) RedisInstances() RedisInstanceInterface {
-	return newRedisInstances(c)
+func (c *GoogleV1alpha1Client) RedisInstances(namespace string) RedisInstanceInterface {
+	return newRedisInstances(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ResourceManagerLiens() ResourceManagerLienInterface {
-	return newResourceManagerLiens(c)
+func (c *GoogleV1alpha1Client) ResourceManagerLiens(namespace string) ResourceManagerLienInterface {
+	return newResourceManagerLiens(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) RuntimeconfigConfigs() RuntimeconfigConfigInterface {
-	return newRuntimeconfigConfigs(c)
+func (c *GoogleV1alpha1Client) RuntimeconfigConfigs(namespace string) RuntimeconfigConfigInterface {
+	return newRuntimeconfigConfigs(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) RuntimeconfigVariables() RuntimeconfigVariableInterface {
-	return newRuntimeconfigVariables(c)
+func (c *GoogleV1alpha1Client) RuntimeconfigVariables(namespace string) RuntimeconfigVariableInterface {
+	return newRuntimeconfigVariables(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ServiceAccounts() ServiceAccountInterface {
-	return newServiceAccounts(c)
+func (c *GoogleV1alpha1Client) ServiceAccounts(namespace string) ServiceAccountInterface {
+	return newServiceAccounts(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ServiceAccountIamBindings() ServiceAccountIamBindingInterface {
-	return newServiceAccountIamBindings(c)
+func (c *GoogleV1alpha1Client) ServiceAccountIamBindings(namespace string) ServiceAccountIamBindingInterface {
+	return newServiceAccountIamBindings(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ServiceAccountIamMembers() ServiceAccountIamMemberInterface {
-	return newServiceAccountIamMembers(c)
+func (c *GoogleV1alpha1Client) ServiceAccountIamMembers(namespace string) ServiceAccountIamMemberInterface {
+	return newServiceAccountIamMembers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ServiceAccountIamPolicies() ServiceAccountIamPolicyInterface {
-	return newServiceAccountIamPolicies(c)
+func (c *GoogleV1alpha1Client) ServiceAccountIamPolicies(namespace string) ServiceAccountIamPolicyInterface {
+	return newServiceAccountIamPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) ServiceAccountKeys() ServiceAccountKeyInterface {
-	return newServiceAccountKeys(c)
+func (c *GoogleV1alpha1Client) ServiceAccountKeys(namespace string) ServiceAccountKeyInterface {
+	return newServiceAccountKeys(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) SourcerepoRepositories() SourcerepoRepositoryInterface {
-	return newSourcerepoRepositories(c)
+func (c *GoogleV1alpha1Client) SourcerepoRepositories(namespace string) SourcerepoRepositoryInterface {
+	return newSourcerepoRepositories(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) SpannerDatabases() SpannerDatabaseInterface {
-	return newSpannerDatabases(c)
+func (c *GoogleV1alpha1Client) SpannerDatabases(namespace string) SpannerDatabaseInterface {
+	return newSpannerDatabases(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) SpannerDatabaseIamBindings() SpannerDatabaseIamBindingInterface {
-	return newSpannerDatabaseIamBindings(c)
+func (c *GoogleV1alpha1Client) SpannerDatabaseIamBindings(namespace string) SpannerDatabaseIamBindingInterface {
+	return newSpannerDatabaseIamBindings(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) SpannerDatabaseIamMembers() SpannerDatabaseIamMemberInterface {
-	return newSpannerDatabaseIamMembers(c)
+func (c *GoogleV1alpha1Client) SpannerDatabaseIamMembers(namespace string) SpannerDatabaseIamMemberInterface {
+	return newSpannerDatabaseIamMembers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) SpannerDatabaseIamPolicies() SpannerDatabaseIamPolicyInterface {
-	return newSpannerDatabaseIamPolicies(c)
+func (c *GoogleV1alpha1Client) SpannerDatabaseIamPolicies(namespace string) SpannerDatabaseIamPolicyInterface {
+	return newSpannerDatabaseIamPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) SpannerInstances() SpannerInstanceInterface {
-	return newSpannerInstances(c)
+func (c *GoogleV1alpha1Client) SpannerInstances(namespace string) SpannerInstanceInterface {
+	return newSpannerInstances(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) SpannerInstanceIamBindings() SpannerInstanceIamBindingInterface {
-	return newSpannerInstanceIamBindings(c)
+func (c *GoogleV1alpha1Client) SpannerInstanceIamBindings(namespace string) SpannerInstanceIamBindingInterface {
+	return newSpannerInstanceIamBindings(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) SpannerInstanceIamMembers() SpannerInstanceIamMemberInterface {
-	return newSpannerInstanceIamMembers(c)
+func (c *GoogleV1alpha1Client) SpannerInstanceIamMembers(namespace string) SpannerInstanceIamMemberInterface {
+	return newSpannerInstanceIamMembers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) SpannerInstanceIamPolicies() SpannerInstanceIamPolicyInterface {
-	return newSpannerInstanceIamPolicies(c)
+func (c *GoogleV1alpha1Client) SpannerInstanceIamPolicies(namespace string) SpannerInstanceIamPolicyInterface {
+	return newSpannerInstanceIamPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) SqlDatabases() SqlDatabaseInterface {
-	return newSqlDatabases(c)
+func (c *GoogleV1alpha1Client) SqlDatabases(namespace string) SqlDatabaseInterface {
+	return newSqlDatabases(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) SqlDatabaseInstances() SqlDatabaseInstanceInterface {
-	return newSqlDatabaseInstances(c)
+func (c *GoogleV1alpha1Client) SqlDatabaseInstances(namespace string) SqlDatabaseInstanceInterface {
+	return newSqlDatabaseInstances(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) SqlSslCerts() SqlSslCertInterface {
-	return newSqlSslCerts(c)
+func (c *GoogleV1alpha1Client) SqlSslCerts(namespace string) SqlSslCertInterface {
+	return newSqlSslCerts(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) SqlUsers() SqlUserInterface {
-	return newSqlUsers(c)
+func (c *GoogleV1alpha1Client) SqlUsers(namespace string) SqlUserInterface {
+	return newSqlUsers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) StorageBuckets() StorageBucketInterface {
-	return newStorageBuckets(c)
+func (c *GoogleV1alpha1Client) StorageBuckets(namespace string) StorageBucketInterface {
+	return newStorageBuckets(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) StorageBucketAcls() StorageBucketAclInterface {
-	return newStorageBucketAcls(c)
+func (c *GoogleV1alpha1Client) StorageBucketACLs(namespace string) StorageBucketACLInterface {
+	return newStorageBucketACLs(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) StorageBucketIamBindings() StorageBucketIamBindingInterface {
-	return newStorageBucketIamBindings(c)
+func (c *GoogleV1alpha1Client) StorageBucketIamBindings(namespace string) StorageBucketIamBindingInterface {
+	return newStorageBucketIamBindings(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) StorageBucketIamMembers() StorageBucketIamMemberInterface {
-	return newStorageBucketIamMembers(c)
+func (c *GoogleV1alpha1Client) StorageBucketIamMembers(namespace string) StorageBucketIamMemberInterface {
+	return newStorageBucketIamMembers(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) StorageBucketIamPolicies() StorageBucketIamPolicyInterface {
-	return newStorageBucketIamPolicies(c)
+func (c *GoogleV1alpha1Client) StorageBucketIamPolicies(namespace string) StorageBucketIamPolicyInterface {
+	return newStorageBucketIamPolicies(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) StorageBucketObjects() StorageBucketObjectInterface {
-	return newStorageBucketObjects(c)
+func (c *GoogleV1alpha1Client) StorageBucketObjects(namespace string) StorageBucketObjectInterface {
+	return newStorageBucketObjects(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) StorageDefaultObjectAccessControls() StorageDefaultObjectAccessControlInterface {
-	return newStorageDefaultObjectAccessControls(c)
+func (c *GoogleV1alpha1Client) StorageDefaultObjectACLs(namespace string) StorageDefaultObjectACLInterface {
+	return newStorageDefaultObjectACLs(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) StorageDefaultObjectAcls() StorageDefaultObjectAclInterface {
-	return newStorageDefaultObjectAcls(c)
+func (c *GoogleV1alpha1Client) StorageDefaultObjectAccessControls(namespace string) StorageDefaultObjectAccessControlInterface {
+	return newStorageDefaultObjectAccessControls(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) StorageNotifications() StorageNotificationInterface {
-	return newStorageNotifications(c)
+func (c *GoogleV1alpha1Client) StorageNotifications(namespace string) StorageNotificationInterface {
+	return newStorageNotifications(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) StorageObjectAccessControls() StorageObjectAccessControlInterface {
-	return newStorageObjectAccessControls(c)
+func (c *GoogleV1alpha1Client) StorageObjectACLs(namespace string) StorageObjectACLInterface {
+	return newStorageObjectACLs(c, namespace)
 }
 
-func (c *GoogleV1alpha1Client) StorageObjectAcls() StorageObjectAclInterface {
-	return newStorageObjectAcls(c)
+func (c *GoogleV1alpha1Client) StorageObjectAccessControls(namespace string) StorageObjectAccessControlInterface {
+	return newStorageObjectAccessControls(c, namespace)
 }
 
 // NewForConfig creates a new GoogleV1alpha1Client for the given config.

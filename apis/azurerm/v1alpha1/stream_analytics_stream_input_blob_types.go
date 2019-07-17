@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,24 +20,25 @@ type StreamAnalyticsStreamInputBlob struct {
 
 type StreamAnalyticsStreamInputBlobSpecSerialization struct {
 	// +optional
-	Encoding string `json:"encoding,omitempty"`
+	Encoding string `json:"encoding,omitempty" tf:"encoding,omitempty"`
 	// +optional
-	FieldDelimiter string `json:"field_delimiter,omitempty"`
-	Type           string `json:"type"`
+	FieldDelimiter string `json:"fieldDelimiter,omitempty" tf:"field_delimiter,omitempty"`
+	Type           string `json:"type" tf:"type"`
 }
 
 type StreamAnalyticsStreamInputBlobSpec struct {
-	DateFormat        string `json:"date_format"`
-	Name              string `json:"name"`
-	PathPattern       string `json:"path_pattern"`
-	ResourceGroupName string `json:"resource_group_name"`
+	DateFormat        string `json:"dateFormat" tf:"date_format"`
+	Name              string `json:"name" tf:"name"`
+	PathPattern       string `json:"pathPattern" tf:"path_pattern"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +kubebuilder:validation:MaxItems=1
-	Serialization          []StreamAnalyticsStreamInputBlobSpec `json:"serialization"`
-	StorageAccountKey      string                               `json:"storage_account_key"`
-	StorageAccountName     string                               `json:"storage_account_name"`
-	StorageContainerName   string                               `json:"storage_container_name"`
-	StreamAnalyticsJobName string                               `json:"stream_analytics_job_name"`
-	TimeFormat             string                               `json:"time_format"`
+	Serialization          []StreamAnalyticsStreamInputBlobSpecSerialization `json:"serialization" tf:"serialization"`
+	StorageAccountKey      string                                            `json:"storageAccountKey" tf:"storage_account_key"`
+	StorageAccountName     string                                            `json:"storageAccountName" tf:"storage_account_name"`
+	StorageContainerName   string                                            `json:"storageContainerName" tf:"storage_container_name"`
+	StreamAnalyticsJobName string                                            `json:"streamAnalyticsJobName" tf:"stream_analytics_job_name"`
+	TimeFormat             string                                            `json:"timeFormat" tf:"time_format"`
+	ProviderRef            core.LocalObjectReference                         `json:"providerRef" tf:"-"`
 }
 
 type StreamAnalyticsStreamInputBlobStatus struct {
@@ -45,7 +46,9 @@ type StreamAnalyticsStreamInputBlobStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

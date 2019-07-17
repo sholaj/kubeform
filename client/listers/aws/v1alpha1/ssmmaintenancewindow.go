@@ -29,8 +29,8 @@ import (
 type SsmMaintenanceWindowLister interface {
 	// List lists all SsmMaintenanceWindows in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SsmMaintenanceWindow, err error)
-	// Get retrieves the SsmMaintenanceWindow from the index for a given name.
-	Get(name string) (*v1alpha1.SsmMaintenanceWindow, error)
+	// SsmMaintenanceWindows returns an object that can list and get SsmMaintenanceWindows.
+	SsmMaintenanceWindows(namespace string) SsmMaintenanceWindowNamespaceLister
 	SsmMaintenanceWindowListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ssmMaintenanceWindowLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the SsmMaintenanceWindow from the index for a given name.
-func (s *ssmMaintenanceWindowLister) Get(name string) (*v1alpha1.SsmMaintenanceWindow, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SsmMaintenanceWindows returns an object that can list and get SsmMaintenanceWindows.
+func (s *ssmMaintenanceWindowLister) SsmMaintenanceWindows(namespace string) SsmMaintenanceWindowNamespaceLister {
+	return ssmMaintenanceWindowNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SsmMaintenanceWindowNamespaceLister helps list and get SsmMaintenanceWindows.
+type SsmMaintenanceWindowNamespaceLister interface {
+	// List lists all SsmMaintenanceWindows in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SsmMaintenanceWindow, err error)
+	// Get retrieves the SsmMaintenanceWindow from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SsmMaintenanceWindow, error)
+	SsmMaintenanceWindowNamespaceListerExpansion
+}
+
+// ssmMaintenanceWindowNamespaceLister implements the SsmMaintenanceWindowNamespaceLister
+// interface.
+type ssmMaintenanceWindowNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SsmMaintenanceWindows in the indexer for a given namespace.
+func (s ssmMaintenanceWindowNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SsmMaintenanceWindow, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SsmMaintenanceWindow))
+	})
+	return ret, err
+}
+
+// Get retrieves the SsmMaintenanceWindow from the indexer for a given namespace and name.
+func (s ssmMaintenanceWindowNamespaceLister) Get(name string) (*v1alpha1.SsmMaintenanceWindow, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

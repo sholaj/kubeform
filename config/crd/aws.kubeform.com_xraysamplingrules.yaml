@@ -401,39 +401,49 @@ spec:
               additionalProperties:
                 type: string
               type: object
-            fixed_rate:
+            fixedRate:
               description: A Number represents a JSON number literal.
               type: string
             host:
               type: string
-            http_method:
+            httpMethod:
               type: string
             priority:
               type: integer
-            reservoir_size:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            reservoirSize:
               type: integer
-            resource_arn:
+            resourceArn:
               type: string
-            rule_name:
+            ruleName:
               type: string
-            service_name:
+            serviceName:
               type: string
-            service_type:
+            serviceType:
               type: string
-            url_path:
+            urlPath:
               type: string
             version:
               type: integer
           required:
-          - fixed_rate
+          - fixedRate
           - host
-          - http_method
+          - httpMethod
           - priority
-          - reservoir_size
-          - resource_arn
-          - service_name
-          - service_type
-          - url_path
+          - providerRef
+          - reservoirSize
+          - resourceArn
+          - serviceName
+          - serviceType
+          - urlPath
           - version
           type: object
         status:
@@ -445,6 +455,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

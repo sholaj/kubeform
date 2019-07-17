@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/google/v1alpha1"
 )
 
-// StorageBucketAclInformer provides access to a shared informer and lister for
-// StorageBucketAcls.
-type StorageBucketAclInformer interface {
+// StorageBucketACLInformer provides access to a shared informer and lister for
+// StorageBucketACLs.
+type StorageBucketACLInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.StorageBucketAclLister
+	Lister() v1alpha1.StorageBucketACLLister
 }
 
-type storageBucketAclInformer struct {
+type storageBucketACLInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewStorageBucketAclInformer constructs a new informer for StorageBucketAcl type.
+// NewStorageBucketACLInformer constructs a new informer for StorageBucketACL type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewStorageBucketAclInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredStorageBucketAclInformer(client, resyncPeriod, indexers, nil)
+func NewStorageBucketACLInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredStorageBucketACLInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredStorageBucketAclInformer constructs a new informer for StorageBucketAcl type.
+// NewFilteredStorageBucketACLInformer constructs a new informer for StorageBucketACL type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredStorageBucketAclInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredStorageBucketACLInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().StorageBucketAcls().List(options)
+				return client.GoogleV1alpha1().StorageBucketACLs(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().StorageBucketAcls().Watch(options)
+				return client.GoogleV1alpha1().StorageBucketACLs(namespace).Watch(options)
 			},
 		},
-		&googlev1alpha1.StorageBucketAcl{},
+		&googlev1alpha1.StorageBucketACL{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *storageBucketAclInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredStorageBucketAclInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *storageBucketACLInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredStorageBucketACLInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *storageBucketAclInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&googlev1alpha1.StorageBucketAcl{}, f.defaultInformer)
+func (f *storageBucketACLInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&googlev1alpha1.StorageBucketACL{}, f.defaultInformer)
 }
 
-func (f *storageBucketAclInformer) Lister() v1alpha1.StorageBucketAclLister {
-	return v1alpha1.NewStorageBucketAclLister(f.Informer().GetIndexer())
+func (f *storageBucketACLInformer) Lister() v1alpha1.StorageBucketACLLister {
+	return v1alpha1.NewStorageBucketACLLister(f.Informer().GetIndexer())
 }

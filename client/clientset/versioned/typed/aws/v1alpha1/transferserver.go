@@ -32,7 +32,7 @@ import (
 // TransferServersGetter has a method to return a TransferServerInterface.
 // A group's client should implement this interface.
 type TransferServersGetter interface {
-	TransferServers() TransferServerInterface
+	TransferServers(namespace string) TransferServerInterface
 }
 
 // TransferServerInterface has methods to work with TransferServer resources.
@@ -52,12 +52,14 @@ type TransferServerInterface interface {
 // transferServers implements TransferServerInterface
 type transferServers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newTransferServers returns a TransferServers
-func newTransferServers(c *AwsV1alpha1Client) *transferServers {
+func newTransferServers(c *AwsV1alpha1Client, namespace string) *transferServers {
 	return &transferServers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newTransferServers(c *AwsV1alpha1Client) *transferServers {
 func (c *transferServers) Get(name string, options v1.GetOptions) (result *v1alpha1.TransferServer, err error) {
 	result = &v1alpha1.TransferServer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("transferservers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *transferServers) List(opts v1.ListOptions) (result *v1alpha1.TransferSe
 	}
 	result = &v1alpha1.TransferServerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("transferservers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *transferServers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("transferservers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *transferServers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *transferServers) Create(transferServer *v1alpha1.TransferServer) (result *v1alpha1.TransferServer, err error) {
 	result = &v1alpha1.TransferServer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("transferservers").
 		Body(transferServer).
 		Do().
@@ -118,6 +124,7 @@ func (c *transferServers) Create(transferServer *v1alpha1.TransferServer) (resul
 func (c *transferServers) Update(transferServer *v1alpha1.TransferServer) (result *v1alpha1.TransferServer, err error) {
 	result = &v1alpha1.TransferServer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("transferservers").
 		Name(transferServer.Name).
 		Body(transferServer).
@@ -132,6 +139,7 @@ func (c *transferServers) Update(transferServer *v1alpha1.TransferServer) (resul
 func (c *transferServers) UpdateStatus(transferServer *v1alpha1.TransferServer) (result *v1alpha1.TransferServer, err error) {
 	result = &v1alpha1.TransferServer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("transferservers").
 		Name(transferServer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *transferServers) UpdateStatus(transferServer *v1alpha1.TransferServer) 
 // Delete takes name of the transferServer and deletes it. Returns an error if one occurs.
 func (c *transferServers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("transferservers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *transferServers) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("transferservers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *transferServers) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *transferServers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.TransferServer, err error) {
 	result = &v1alpha1.TransferServer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("transferservers").
 		SubResource(subresources...).
 		Name(name).

@@ -31,6 +31,7 @@ import (
 // FakeSagemakerModels implements SagemakerModelInterface
 type FakeSagemakerModels struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var sagemakermodelsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "sagemakermodels"}
@@ -40,7 +41,8 @@ var sagemakermodelsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ver
 // Get takes name of the sagemakerModel, and returns the corresponding sagemakerModel object, and an error if there is any.
 func (c *FakeSagemakerModels) Get(name string, options v1.GetOptions) (result *v1alpha1.SagemakerModel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sagemakermodelsResource, name), &v1alpha1.SagemakerModel{})
+		Invokes(testing.NewGetAction(sagemakermodelsResource, c.ns, name), &v1alpha1.SagemakerModel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSagemakerModels) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of SagemakerModels that match those selectors.
 func (c *FakeSagemakerModels) List(opts v1.ListOptions) (result *v1alpha1.SagemakerModelList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sagemakermodelsResource, sagemakermodelsKind, opts), &v1alpha1.SagemakerModelList{})
+		Invokes(testing.NewListAction(sagemakermodelsResource, sagemakermodelsKind, c.ns, opts), &v1alpha1.SagemakerModelList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSagemakerModels) List(opts v1.ListOptions) (result *v1alpha1.Sagema
 // Watch returns a watch.Interface that watches the requested sagemakerModels.
 func (c *FakeSagemakerModels) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sagemakermodelsResource, opts))
+		InvokesWatch(testing.NewWatchAction(sagemakermodelsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sagemakerModel and creates it.  Returns the server's representation of the sagemakerModel, and an error, if there is any.
 func (c *FakeSagemakerModels) Create(sagemakerModel *v1alpha1.SagemakerModel) (result *v1alpha1.SagemakerModel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sagemakermodelsResource, sagemakerModel), &v1alpha1.SagemakerModel{})
+		Invokes(testing.NewCreateAction(sagemakermodelsResource, c.ns, sagemakerModel), &v1alpha1.SagemakerModel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSagemakerModels) Create(sagemakerModel *v1alpha1.SagemakerModel) (r
 // Update takes the representation of a sagemakerModel and updates it. Returns the server's representation of the sagemakerModel, and an error, if there is any.
 func (c *FakeSagemakerModels) Update(sagemakerModel *v1alpha1.SagemakerModel) (result *v1alpha1.SagemakerModel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sagemakermodelsResource, sagemakerModel), &v1alpha1.SagemakerModel{})
+		Invokes(testing.NewUpdateAction(sagemakermodelsResource, c.ns, sagemakerModel), &v1alpha1.SagemakerModel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSagemakerModels) Update(sagemakerModel *v1alpha1.SagemakerModel) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSagemakerModels) UpdateStatus(sagemakerModel *v1alpha1.SagemakerModel) (*v1alpha1.SagemakerModel, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sagemakermodelsResource, "status", sagemakerModel), &v1alpha1.SagemakerModel{})
+		Invokes(testing.NewUpdateSubresourceAction(sagemakermodelsResource, "status", c.ns, sagemakerModel), &v1alpha1.SagemakerModel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSagemakerModels) UpdateStatus(sagemakerModel *v1alpha1.SagemakerMod
 // Delete takes name of the sagemakerModel and deletes it. Returns an error if one occurs.
 func (c *FakeSagemakerModels) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sagemakermodelsResource, name), &v1alpha1.SagemakerModel{})
+		Invokes(testing.NewDeleteAction(sagemakermodelsResource, c.ns, name), &v1alpha1.SagemakerModel{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSagemakerModels) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sagemakermodelsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sagemakermodelsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SagemakerModelList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSagemakerModels) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched sagemakerModel.
 func (c *FakeSagemakerModels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SagemakerModel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sagemakermodelsResource, name, pt, data, subresources...), &v1alpha1.SagemakerModel{})
+		Invokes(testing.NewPatchSubresourceAction(sagemakermodelsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SagemakerModel{})
+
 	if obj == nil {
 		return nil, err
 	}

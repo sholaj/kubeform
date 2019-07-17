@@ -32,7 +32,7 @@ import (
 // DevicefarmProjectsGetter has a method to return a DevicefarmProjectInterface.
 // A group's client should implement this interface.
 type DevicefarmProjectsGetter interface {
-	DevicefarmProjects() DevicefarmProjectInterface
+	DevicefarmProjects(namespace string) DevicefarmProjectInterface
 }
 
 // DevicefarmProjectInterface has methods to work with DevicefarmProject resources.
@@ -52,12 +52,14 @@ type DevicefarmProjectInterface interface {
 // devicefarmProjects implements DevicefarmProjectInterface
 type devicefarmProjects struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDevicefarmProjects returns a DevicefarmProjects
-func newDevicefarmProjects(c *AwsV1alpha1Client) *devicefarmProjects {
+func newDevicefarmProjects(c *AwsV1alpha1Client, namespace string) *devicefarmProjects {
 	return &devicefarmProjects{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDevicefarmProjects(c *AwsV1alpha1Client) *devicefarmProjects {
 func (c *devicefarmProjects) Get(name string, options v1.GetOptions) (result *v1alpha1.DevicefarmProject, err error) {
 	result = &v1alpha1.DevicefarmProject{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("devicefarmprojects").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *devicefarmProjects) List(opts v1.ListOptions) (result *v1alpha1.Devicef
 	}
 	result = &v1alpha1.DevicefarmProjectList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("devicefarmprojects").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *devicefarmProjects) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("devicefarmprojects").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *devicefarmProjects) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *devicefarmProjects) Create(devicefarmProject *v1alpha1.DevicefarmProject) (result *v1alpha1.DevicefarmProject, err error) {
 	result = &v1alpha1.DevicefarmProject{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("devicefarmprojects").
 		Body(devicefarmProject).
 		Do().
@@ -118,6 +124,7 @@ func (c *devicefarmProjects) Create(devicefarmProject *v1alpha1.DevicefarmProjec
 func (c *devicefarmProjects) Update(devicefarmProject *v1alpha1.DevicefarmProject) (result *v1alpha1.DevicefarmProject, err error) {
 	result = &v1alpha1.DevicefarmProject{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("devicefarmprojects").
 		Name(devicefarmProject.Name).
 		Body(devicefarmProject).
@@ -132,6 +139,7 @@ func (c *devicefarmProjects) Update(devicefarmProject *v1alpha1.DevicefarmProjec
 func (c *devicefarmProjects) UpdateStatus(devicefarmProject *v1alpha1.DevicefarmProject) (result *v1alpha1.DevicefarmProject, err error) {
 	result = &v1alpha1.DevicefarmProject{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("devicefarmprojects").
 		Name(devicefarmProject.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *devicefarmProjects) UpdateStatus(devicefarmProject *v1alpha1.Devicefarm
 // Delete takes name of the devicefarmProject and deletes it. Returns an error if one occurs.
 func (c *devicefarmProjects) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("devicefarmprojects").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *devicefarmProjects) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("devicefarmprojects").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *devicefarmProjects) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *devicefarmProjects) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DevicefarmProject, err error) {
 	result = &v1alpha1.DevicefarmProject{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("devicefarmprojects").
 		SubResource(subresources...).
 		Name(name).

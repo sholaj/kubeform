@@ -31,6 +31,7 @@ import (
 // FakeComputeRoutes implements ComputeRouteInterface
 type FakeComputeRoutes struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computeroutesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computeroutes"}
@@ -40,7 +41,8 @@ var computeroutesKind = schema.GroupVersionKind{Group: "google.kubeform.com", Ve
 // Get takes name of the computeRoute, and returns the corresponding computeRoute object, and an error if there is any.
 func (c *FakeComputeRoutes) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeRoute, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computeroutesResource, name), &v1alpha1.ComputeRoute{})
+		Invokes(testing.NewGetAction(computeroutesResource, c.ns, name), &v1alpha1.ComputeRoute{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeRoutes) Get(name string, options v1.GetOptions) (result *v1a
 // List takes label and field selectors, and returns the list of ComputeRoutes that match those selectors.
 func (c *FakeComputeRoutes) List(opts v1.ListOptions) (result *v1alpha1.ComputeRouteList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computeroutesResource, computeroutesKind, opts), &v1alpha1.ComputeRouteList{})
+		Invokes(testing.NewListAction(computeroutesResource, computeroutesKind, c.ns, opts), &v1alpha1.ComputeRouteList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeRoutes) List(opts v1.ListOptions) (result *v1alpha1.ComputeR
 // Watch returns a watch.Interface that watches the requested computeRoutes.
 func (c *FakeComputeRoutes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computeroutesResource, opts))
+		InvokesWatch(testing.NewWatchAction(computeroutesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeRoute and creates it.  Returns the server's representation of the computeRoute, and an error, if there is any.
 func (c *FakeComputeRoutes) Create(computeRoute *v1alpha1.ComputeRoute) (result *v1alpha1.ComputeRoute, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computeroutesResource, computeRoute), &v1alpha1.ComputeRoute{})
+		Invokes(testing.NewCreateAction(computeroutesResource, c.ns, computeRoute), &v1alpha1.ComputeRoute{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeRoutes) Create(computeRoute *v1alpha1.ComputeRoute) (result 
 // Update takes the representation of a computeRoute and updates it. Returns the server's representation of the computeRoute, and an error, if there is any.
 func (c *FakeComputeRoutes) Update(computeRoute *v1alpha1.ComputeRoute) (result *v1alpha1.ComputeRoute, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computeroutesResource, computeRoute), &v1alpha1.ComputeRoute{})
+		Invokes(testing.NewUpdateAction(computeroutesResource, c.ns, computeRoute), &v1alpha1.ComputeRoute{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeRoutes) Update(computeRoute *v1alpha1.ComputeRoute) (result 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeRoutes) UpdateStatus(computeRoute *v1alpha1.ComputeRoute) (*v1alpha1.ComputeRoute, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computeroutesResource, "status", computeRoute), &v1alpha1.ComputeRoute{})
+		Invokes(testing.NewUpdateSubresourceAction(computeroutesResource, "status", c.ns, computeRoute), &v1alpha1.ComputeRoute{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeRoutes) UpdateStatus(computeRoute *v1alpha1.ComputeRoute) (*
 // Delete takes name of the computeRoute and deletes it. Returns an error if one occurs.
 func (c *FakeComputeRoutes) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computeroutesResource, name), &v1alpha1.ComputeRoute{})
+		Invokes(testing.NewDeleteAction(computeroutesResource, c.ns, name), &v1alpha1.ComputeRoute{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeRoutes) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computeroutesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computeroutesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeRouteList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeRoutes) DeleteCollection(options *v1.DeleteOptions, listOpti
 // Patch applies the patch and returns the patched computeRoute.
 func (c *FakeComputeRoutes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeRoute, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computeroutesResource, name, pt, data, subresources...), &v1alpha1.ComputeRoute{})
+		Invokes(testing.NewPatchSubresourceAction(computeroutesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeRoute{})
+
 	if obj == nil {
 		return nil, err
 	}

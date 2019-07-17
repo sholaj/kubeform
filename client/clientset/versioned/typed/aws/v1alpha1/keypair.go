@@ -32,7 +32,7 @@ import (
 // KeyPairsGetter has a method to return a KeyPairInterface.
 // A group's client should implement this interface.
 type KeyPairsGetter interface {
-	KeyPairs() KeyPairInterface
+	KeyPairs(namespace string) KeyPairInterface
 }
 
 // KeyPairInterface has methods to work with KeyPair resources.
@@ -52,12 +52,14 @@ type KeyPairInterface interface {
 // keyPairs implements KeyPairInterface
 type keyPairs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKeyPairs returns a KeyPairs
-func newKeyPairs(c *AwsV1alpha1Client) *keyPairs {
+func newKeyPairs(c *AwsV1alpha1Client, namespace string) *keyPairs {
 	return &keyPairs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKeyPairs(c *AwsV1alpha1Client) *keyPairs {
 func (c *keyPairs) Get(name string, options v1.GetOptions) (result *v1alpha1.KeyPair, err error) {
 	result = &v1alpha1.KeyPair{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("keypairs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *keyPairs) List(opts v1.ListOptions) (result *v1alpha1.KeyPairList, err 
 	}
 	result = &v1alpha1.KeyPairList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("keypairs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *keyPairs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("keypairs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *keyPairs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *keyPairs) Create(keyPair *v1alpha1.KeyPair) (result *v1alpha1.KeyPair, err error) {
 	result = &v1alpha1.KeyPair{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("keypairs").
 		Body(keyPair).
 		Do().
@@ -118,6 +124,7 @@ func (c *keyPairs) Create(keyPair *v1alpha1.KeyPair) (result *v1alpha1.KeyPair, 
 func (c *keyPairs) Update(keyPair *v1alpha1.KeyPair) (result *v1alpha1.KeyPair, err error) {
 	result = &v1alpha1.KeyPair{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("keypairs").
 		Name(keyPair.Name).
 		Body(keyPair).
@@ -132,6 +139,7 @@ func (c *keyPairs) Update(keyPair *v1alpha1.KeyPair) (result *v1alpha1.KeyPair, 
 func (c *keyPairs) UpdateStatus(keyPair *v1alpha1.KeyPair) (result *v1alpha1.KeyPair, err error) {
 	result = &v1alpha1.KeyPair{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("keypairs").
 		Name(keyPair.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *keyPairs) UpdateStatus(keyPair *v1alpha1.KeyPair) (result *v1alpha1.Key
 // Delete takes name of the keyPair and deletes it. Returns an error if one occurs.
 func (c *keyPairs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("keypairs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *keyPairs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("keypairs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *keyPairs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 func (c *keyPairs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KeyPair, err error) {
 	result = &v1alpha1.KeyPair{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("keypairs").
 		SubResource(subresources...).
 		Name(name).

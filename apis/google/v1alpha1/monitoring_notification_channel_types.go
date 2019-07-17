@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,15 +20,16 @@ type MonitoringNotificationChannel struct {
 
 type MonitoringNotificationChannelSpec struct {
 	// +optional
-	Description string `json:"description,omitempty"`
-	DisplayName string `json:"display_name"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
+	DisplayName string `json:"displayName" tf:"display_name"`
 	// +optional
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
 	// +optional
-	Labels map[string]string `json:"labels,omitempty"`
-	Type   string            `json:"type"`
+	Labels map[string]string `json:"labels,omitempty" tf:"labels,omitempty"`
+	Type   string            `json:"type" tf:"type"`
 	// +optional
-	UserLabels map[string]string `json:"user_labels,omitempty"`
+	UserLabels  map[string]string         `json:"userLabels,omitempty" tf:"user_labels,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type MonitoringNotificationChannelStatus struct {
@@ -36,7 +37,9 @@ type MonitoringNotificationChannelStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

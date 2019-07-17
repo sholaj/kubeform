@@ -31,6 +31,7 @@ import (
 // FakeStorageShares implements StorageShareInterface
 type FakeStorageShares struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var storagesharesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "storageshares"}
@@ -40,7 +41,8 @@ var storagesharesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", V
 // Get takes name of the storageShare, and returns the corresponding storageShare object, and an error if there is any.
 func (c *FakeStorageShares) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageShare, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(storagesharesResource, name), &v1alpha1.StorageShare{})
+		Invokes(testing.NewGetAction(storagesharesResource, c.ns, name), &v1alpha1.StorageShare{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeStorageShares) Get(name string, options v1.GetOptions) (result *v1a
 // List takes label and field selectors, and returns the list of StorageShares that match those selectors.
 func (c *FakeStorageShares) List(opts v1.ListOptions) (result *v1alpha1.StorageShareList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(storagesharesResource, storagesharesKind, opts), &v1alpha1.StorageShareList{})
+		Invokes(testing.NewListAction(storagesharesResource, storagesharesKind, c.ns, opts), &v1alpha1.StorageShareList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeStorageShares) List(opts v1.ListOptions) (result *v1alpha1.StorageS
 // Watch returns a watch.Interface that watches the requested storageShares.
 func (c *FakeStorageShares) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(storagesharesResource, opts))
+		InvokesWatch(testing.NewWatchAction(storagesharesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a storageShare and creates it.  Returns the server's representation of the storageShare, and an error, if there is any.
 func (c *FakeStorageShares) Create(storageShare *v1alpha1.StorageShare) (result *v1alpha1.StorageShare, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(storagesharesResource, storageShare), &v1alpha1.StorageShare{})
+		Invokes(testing.NewCreateAction(storagesharesResource, c.ns, storageShare), &v1alpha1.StorageShare{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeStorageShares) Create(storageShare *v1alpha1.StorageShare) (result 
 // Update takes the representation of a storageShare and updates it. Returns the server's representation of the storageShare, and an error, if there is any.
 func (c *FakeStorageShares) Update(storageShare *v1alpha1.StorageShare) (result *v1alpha1.StorageShare, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(storagesharesResource, storageShare), &v1alpha1.StorageShare{})
+		Invokes(testing.NewUpdateAction(storagesharesResource, c.ns, storageShare), &v1alpha1.StorageShare{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeStorageShares) Update(storageShare *v1alpha1.StorageShare) (result 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeStorageShares) UpdateStatus(storageShare *v1alpha1.StorageShare) (*v1alpha1.StorageShare, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(storagesharesResource, "status", storageShare), &v1alpha1.StorageShare{})
+		Invokes(testing.NewUpdateSubresourceAction(storagesharesResource, "status", c.ns, storageShare), &v1alpha1.StorageShare{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeStorageShares) UpdateStatus(storageShare *v1alpha1.StorageShare) (*
 // Delete takes name of the storageShare and deletes it. Returns an error if one occurs.
 func (c *FakeStorageShares) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(storagesharesResource, name), &v1alpha1.StorageShare{})
+		Invokes(testing.NewDeleteAction(storagesharesResource, c.ns, name), &v1alpha1.StorageShare{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeStorageShares) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(storagesharesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(storagesharesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.StorageShareList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeStorageShares) DeleteCollection(options *v1.DeleteOptions, listOpti
 // Patch applies the patch and returns the patched storageShare.
 func (c *FakeStorageShares) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageShare, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(storagesharesResource, name, pt, data, subresources...), &v1alpha1.StorageShare{})
+		Invokes(testing.NewPatchSubresourceAction(storagesharesResource, c.ns, name, pt, data, subresources...), &v1alpha1.StorageShare{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type OrganizationsPolicyAttachmentLister interface {
 	// List lists all OrganizationsPolicyAttachments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OrganizationsPolicyAttachment, err error)
-	// Get retrieves the OrganizationsPolicyAttachment from the index for a given name.
-	Get(name string) (*v1alpha1.OrganizationsPolicyAttachment, error)
+	// OrganizationsPolicyAttachments returns an object that can list and get OrganizationsPolicyAttachments.
+	OrganizationsPolicyAttachments(namespace string) OrganizationsPolicyAttachmentNamespaceLister
 	OrganizationsPolicyAttachmentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *organizationsPolicyAttachmentLister) List(selector labels.Selector) (re
 	return ret, err
 }
 
-// Get retrieves the OrganizationsPolicyAttachment from the index for a given name.
-func (s *organizationsPolicyAttachmentLister) Get(name string) (*v1alpha1.OrganizationsPolicyAttachment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OrganizationsPolicyAttachments returns an object that can list and get OrganizationsPolicyAttachments.
+func (s *organizationsPolicyAttachmentLister) OrganizationsPolicyAttachments(namespace string) OrganizationsPolicyAttachmentNamespaceLister {
+	return organizationsPolicyAttachmentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OrganizationsPolicyAttachmentNamespaceLister helps list and get OrganizationsPolicyAttachments.
+type OrganizationsPolicyAttachmentNamespaceLister interface {
+	// List lists all OrganizationsPolicyAttachments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OrganizationsPolicyAttachment, err error)
+	// Get retrieves the OrganizationsPolicyAttachment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OrganizationsPolicyAttachment, error)
+	OrganizationsPolicyAttachmentNamespaceListerExpansion
+}
+
+// organizationsPolicyAttachmentNamespaceLister implements the OrganizationsPolicyAttachmentNamespaceLister
+// interface.
+type organizationsPolicyAttachmentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OrganizationsPolicyAttachments in the indexer for a given namespace.
+func (s organizationsPolicyAttachmentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OrganizationsPolicyAttachment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OrganizationsPolicyAttachment))
+	})
+	return ret, err
+}
+
+// Get retrieves the OrganizationsPolicyAttachment from the indexer for a given namespace and name.
+func (s organizationsPolicyAttachmentNamespaceLister) Get(name string) (*v1alpha1.OrganizationsPolicyAttachment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

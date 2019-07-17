@@ -32,7 +32,7 @@ import (
 // AzureadApplicationsGetter has a method to return a AzureadApplicationInterface.
 // A group's client should implement this interface.
 type AzureadApplicationsGetter interface {
-	AzureadApplications() AzureadApplicationInterface
+	AzureadApplications(namespace string) AzureadApplicationInterface
 }
 
 // AzureadApplicationInterface has methods to work with AzureadApplication resources.
@@ -52,12 +52,14 @@ type AzureadApplicationInterface interface {
 // azureadApplications implements AzureadApplicationInterface
 type azureadApplications struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAzureadApplications returns a AzureadApplications
-func newAzureadApplications(c *AzurermV1alpha1Client) *azureadApplications {
+func newAzureadApplications(c *AzurermV1alpha1Client, namespace string) *azureadApplications {
 	return &azureadApplications{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAzureadApplications(c *AzurermV1alpha1Client) *azureadApplications {
 func (c *azureadApplications) Get(name string, options v1.GetOptions) (result *v1alpha1.AzureadApplication, err error) {
 	result = &v1alpha1.AzureadApplication{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("azureadapplications").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *azureadApplications) List(opts v1.ListOptions) (result *v1alpha1.Azurea
 	}
 	result = &v1alpha1.AzureadApplicationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("azureadapplications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *azureadApplications) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("azureadapplications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *azureadApplications) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *azureadApplications) Create(azureadApplication *v1alpha1.AzureadApplication) (result *v1alpha1.AzureadApplication, err error) {
 	result = &v1alpha1.AzureadApplication{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("azureadapplications").
 		Body(azureadApplication).
 		Do().
@@ -118,6 +124,7 @@ func (c *azureadApplications) Create(azureadApplication *v1alpha1.AzureadApplica
 func (c *azureadApplications) Update(azureadApplication *v1alpha1.AzureadApplication) (result *v1alpha1.AzureadApplication, err error) {
 	result = &v1alpha1.AzureadApplication{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("azureadapplications").
 		Name(azureadApplication.Name).
 		Body(azureadApplication).
@@ -132,6 +139,7 @@ func (c *azureadApplications) Update(azureadApplication *v1alpha1.AzureadApplica
 func (c *azureadApplications) UpdateStatus(azureadApplication *v1alpha1.AzureadApplication) (result *v1alpha1.AzureadApplication, err error) {
 	result = &v1alpha1.AzureadApplication{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("azureadapplications").
 		Name(azureadApplication.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *azureadApplications) UpdateStatus(azureadApplication *v1alpha1.AzureadA
 // Delete takes name of the azureadApplication and deletes it. Returns an error if one occurs.
 func (c *azureadApplications) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("azureadapplications").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *azureadApplications) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("azureadapplications").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *azureadApplications) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *azureadApplications) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AzureadApplication, err error) {
 	result = &v1alpha1.AzureadApplication{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("azureadapplications").
 		SubResource(subresources...).
 		Name(name).

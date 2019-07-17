@@ -1,115 +1,118 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type ApiManagementApiOperation struct {
+type ApiManagementAPIOperation struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              ApiManagementApiOperationSpec   `json:"spec,omitempty"`
-	Status            ApiManagementApiOperationStatus `json:"status,omitempty"`
+	Spec              ApiManagementAPIOperationSpec   `json:"spec,omitempty"`
+	Status            ApiManagementAPIOperationStatus `json:"status,omitempty"`
 }
 
-type ApiManagementApiOperationSpecResponseHeader struct {
+type ApiManagementAPIOperationSpecResponseHeader struct {
 	// +optional
-	DefaultValue string `json:"default_value,omitempty"`
+	DefaultValue string `json:"defaultValue,omitempty" tf:"default_value,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
-	Name        string `json:"name"`
-	Required    bool   `json:"required"`
-	Type        string `json:"type"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
+	Name        string `json:"name" tf:"name"`
+	Required    bool   `json:"required" tf:"required"`
+	Type        string `json:"type" tf:"type"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Values []string `json:"values,omitempty"`
+	Values []string `json:"values,omitempty" tf:"values,omitempty"`
 }
 
-type ApiManagementApiOperationSpecResponseRepresentationFormParameter struct {
+type ApiManagementAPIOperationSpecResponseRepresentationFormParameter struct {
 	// +optional
-	DefaultValue string `json:"default_value,omitempty"`
+	DefaultValue string `json:"defaultValue,omitempty" tf:"default_value,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
-	Name        string `json:"name"`
-	Required    bool   `json:"required"`
-	Type        string `json:"type"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
+	Name        string `json:"name" tf:"name"`
+	Required    bool   `json:"required" tf:"required"`
+	Type        string `json:"type" tf:"type"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Values []string `json:"values,omitempty"`
+	Values []string `json:"values,omitempty" tf:"values,omitempty"`
 }
 
-type ApiManagementApiOperationSpecResponseRepresentation struct {
-	ContentType string `json:"content_type"`
+type ApiManagementAPIOperationSpecResponseRepresentation struct {
+	ContentType string `json:"contentType" tf:"content_type"`
 	// +optional
-	FormParameter *[]ApiManagementApiOperationSpecResponseRepresentation `json:"form_parameter,omitempty"`
+	FormParameter []ApiManagementAPIOperationSpecResponseRepresentationFormParameter `json:"formParameter,omitempty" tf:"form_parameter,omitempty"`
 	// +optional
-	Sample string `json:"sample,omitempty"`
+	Sample string `json:"sample,omitempty" tf:"sample,omitempty"`
 	// +optional
-	SchemaId string `json:"schema_id,omitempty"`
+	SchemaID string `json:"schemaID,omitempty" tf:"schema_id,omitempty"`
 	// +optional
-	TypeName string `json:"type_name,omitempty"`
+	TypeName string `json:"typeName,omitempty" tf:"type_name,omitempty"`
 }
 
-type ApiManagementApiOperationSpecResponse struct {
+type ApiManagementAPIOperationSpecResponse struct {
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	Header *[]ApiManagementApiOperationSpecResponse `json:"header,omitempty"`
+	Header []ApiManagementAPIOperationSpecResponseHeader `json:"header,omitempty" tf:"header,omitempty"`
 	// +optional
-	Representation *[]ApiManagementApiOperationSpecResponse `json:"representation,omitempty"`
-	StatusCode     int                                      `json:"status_code"`
+	Representation []ApiManagementAPIOperationSpecResponseRepresentation `json:"representation,omitempty" tf:"representation,omitempty"`
+	StatusCode     int                                                   `json:"statusCode" tf:"status_code"`
 }
 
-type ApiManagementApiOperationSpecTemplateParameter struct {
+type ApiManagementAPIOperationSpecTemplateParameter struct {
 	// +optional
-	DefaultValue string `json:"default_value,omitempty"`
+	DefaultValue string `json:"defaultValue,omitempty" tf:"default_value,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
-	Name        string `json:"name"`
-	Required    bool   `json:"required"`
-	Type        string `json:"type"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
+	Name        string `json:"name" tf:"name"`
+	Required    bool   `json:"required" tf:"required"`
+	Type        string `json:"type" tf:"type"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Values []string `json:"values,omitempty"`
+	Values []string `json:"values,omitempty" tf:"values,omitempty"`
 }
 
-type ApiManagementApiOperationSpec struct {
-	ApiManagementName string `json:"api_management_name"`
-	ApiName           string `json:"api_name"`
+type ApiManagementAPIOperationSpec struct {
+	ApiManagementName string `json:"apiManagementName" tf:"api_management_name"`
+	ApiName           string `json:"apiName" tf:"api_name"`
 	// +optional
-	Description       string `json:"description,omitempty"`
-	DisplayName       string `json:"display_name"`
-	Method            string `json:"method"`
-	OperationId       string `json:"operation_id"`
-	ResourceGroupName string `json:"resource_group_name"`
+	Description       string `json:"description,omitempty" tf:"description,omitempty"`
+	DisplayName       string `json:"displayName" tf:"display_name"`
+	Method            string `json:"method" tf:"method"`
+	OperationID       string `json:"operationID" tf:"operation_id"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	Response *[]ApiManagementApiOperationSpec `json:"response,omitempty"`
+	Response []ApiManagementAPIOperationSpecResponse `json:"response,omitempty" tf:"response,omitempty"`
 	// +optional
-	TemplateParameter *[]ApiManagementApiOperationSpec `json:"template_parameter,omitempty"`
-	UrlTemplate       string                           `json:"url_template"`
+	TemplateParameter []ApiManagementAPIOperationSpecTemplateParameter `json:"templateParameter,omitempty" tf:"template_parameter,omitempty"`
+	UrlTemplate       string                                           `json:"urlTemplate" tf:"url_template"`
+	ProviderRef       core.LocalObjectReference                        `json:"providerRef" tf:"-"`
 }
 
-type ApiManagementApiOperationStatus struct {
+type ApiManagementAPIOperationStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// ApiManagementApiOperationList is a list of ApiManagementApiOperations
-type ApiManagementApiOperationList struct {
+// ApiManagementAPIOperationList is a list of ApiManagementAPIOperations
+type ApiManagementAPIOperationList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of ApiManagementApiOperation CRD objects
-	Items []ApiManagementApiOperation `json:"items,omitempty"`
+	// Items is a list of ApiManagementAPIOperation CRD objects
+	Items []ApiManagementAPIOperation `json:"items,omitempty"`
 }

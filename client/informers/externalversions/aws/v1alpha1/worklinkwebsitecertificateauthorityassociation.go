@@ -41,32 +41,33 @@ type WorklinkWebsiteCertificateAuthorityAssociationInformer interface {
 type worklinkWebsiteCertificateAuthorityAssociationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewWorklinkWebsiteCertificateAuthorityAssociationInformer constructs a new informer for WorklinkWebsiteCertificateAuthorityAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewWorklinkWebsiteCertificateAuthorityAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredWorklinkWebsiteCertificateAuthorityAssociationInformer(client, resyncPeriod, indexers, nil)
+func NewWorklinkWebsiteCertificateAuthorityAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredWorklinkWebsiteCertificateAuthorityAssociationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredWorklinkWebsiteCertificateAuthorityAssociationInformer constructs a new informer for WorklinkWebsiteCertificateAuthorityAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredWorklinkWebsiteCertificateAuthorityAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredWorklinkWebsiteCertificateAuthorityAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WorklinkWebsiteCertificateAuthorityAssociations().List(options)
+				return client.AwsV1alpha1().WorklinkWebsiteCertificateAuthorityAssociations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WorklinkWebsiteCertificateAuthorityAssociations().Watch(options)
+				return client.AwsV1alpha1().WorklinkWebsiteCertificateAuthorityAssociations(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.WorklinkWebsiteCertificateAuthorityAssociation{},
@@ -76,7 +77,7 @@ func NewFilteredWorklinkWebsiteCertificateAuthorityAssociationInformer(client ve
 }
 
 func (f *worklinkWebsiteCertificateAuthorityAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredWorklinkWebsiteCertificateAuthorityAssociationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredWorklinkWebsiteCertificateAuthorityAssociationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *worklinkWebsiteCertificateAuthorityAssociationInformer) Informer() cache.SharedIndexInformer {

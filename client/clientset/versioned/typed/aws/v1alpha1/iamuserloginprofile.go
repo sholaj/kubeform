@@ -32,7 +32,7 @@ import (
 // IamUserLoginProfilesGetter has a method to return a IamUserLoginProfileInterface.
 // A group's client should implement this interface.
 type IamUserLoginProfilesGetter interface {
-	IamUserLoginProfiles() IamUserLoginProfileInterface
+	IamUserLoginProfiles(namespace string) IamUserLoginProfileInterface
 }
 
 // IamUserLoginProfileInterface has methods to work with IamUserLoginProfile resources.
@@ -52,12 +52,14 @@ type IamUserLoginProfileInterface interface {
 // iamUserLoginProfiles implements IamUserLoginProfileInterface
 type iamUserLoginProfiles struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIamUserLoginProfiles returns a IamUserLoginProfiles
-func newIamUserLoginProfiles(c *AwsV1alpha1Client) *iamUserLoginProfiles {
+func newIamUserLoginProfiles(c *AwsV1alpha1Client, namespace string) *iamUserLoginProfiles {
 	return &iamUserLoginProfiles{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIamUserLoginProfiles(c *AwsV1alpha1Client) *iamUserLoginProfiles {
 func (c *iamUserLoginProfiles) Get(name string, options v1.GetOptions) (result *v1alpha1.IamUserLoginProfile, err error) {
 	result = &v1alpha1.IamUserLoginProfile{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamuserloginprofiles").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iamUserLoginProfiles) List(opts v1.ListOptions) (result *v1alpha1.IamUs
 	}
 	result = &v1alpha1.IamUserLoginProfileList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamuserloginprofiles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iamUserLoginProfiles) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iamuserloginprofiles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iamUserLoginProfiles) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *iamUserLoginProfiles) Create(iamUserLoginProfile *v1alpha1.IamUserLoginProfile) (result *v1alpha1.IamUserLoginProfile, err error) {
 	result = &v1alpha1.IamUserLoginProfile{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iamuserloginprofiles").
 		Body(iamUserLoginProfile).
 		Do().
@@ -118,6 +124,7 @@ func (c *iamUserLoginProfiles) Create(iamUserLoginProfile *v1alpha1.IamUserLogin
 func (c *iamUserLoginProfiles) Update(iamUserLoginProfile *v1alpha1.IamUserLoginProfile) (result *v1alpha1.IamUserLoginProfile, err error) {
 	result = &v1alpha1.IamUserLoginProfile{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamuserloginprofiles").
 		Name(iamUserLoginProfile.Name).
 		Body(iamUserLoginProfile).
@@ -132,6 +139,7 @@ func (c *iamUserLoginProfiles) Update(iamUserLoginProfile *v1alpha1.IamUserLogin
 func (c *iamUserLoginProfiles) UpdateStatus(iamUserLoginProfile *v1alpha1.IamUserLoginProfile) (result *v1alpha1.IamUserLoginProfile, err error) {
 	result = &v1alpha1.IamUserLoginProfile{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamuserloginprofiles").
 		Name(iamUserLoginProfile.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iamUserLoginProfiles) UpdateStatus(iamUserLoginProfile *v1alpha1.IamUse
 // Delete takes name of the iamUserLoginProfile and deletes it. Returns an error if one occurs.
 func (c *iamUserLoginProfiles) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamuserloginprofiles").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iamUserLoginProfiles) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamuserloginprofiles").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iamUserLoginProfiles) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *iamUserLoginProfiles) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamUserLoginProfile, err error) {
 	result = &v1alpha1.IamUserLoginProfile{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iamuserloginprofiles").
 		SubResource(subresources...).
 		Name(name).

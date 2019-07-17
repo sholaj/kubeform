@@ -41,32 +41,33 @@ type IamUserLoginProfileInformer interface {
 type iamUserLoginProfileInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewIamUserLoginProfileInformer constructs a new informer for IamUserLoginProfile type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewIamUserLoginProfileInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredIamUserLoginProfileInformer(client, resyncPeriod, indexers, nil)
+func NewIamUserLoginProfileInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredIamUserLoginProfileInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredIamUserLoginProfileInformer constructs a new informer for IamUserLoginProfile type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredIamUserLoginProfileInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredIamUserLoginProfileInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().IamUserLoginProfiles().List(options)
+				return client.AwsV1alpha1().IamUserLoginProfiles(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().IamUserLoginProfiles().Watch(options)
+				return client.AwsV1alpha1().IamUserLoginProfiles(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.IamUserLoginProfile{},
@@ -76,7 +77,7 @@ func NewFilteredIamUserLoginProfileInformer(client versioned.Interface, resyncPe
 }
 
 func (f *iamUserLoginProfileInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredIamUserLoginProfileInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredIamUserLoginProfileInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *iamUserLoginProfileInformer) Informer() cache.SharedIndexInformer {

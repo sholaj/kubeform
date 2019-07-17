@@ -31,6 +31,7 @@ import (
 // FakeSsmDocuments implements SsmDocumentInterface
 type FakeSsmDocuments struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ssmdocumentsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ssmdocuments"}
@@ -40,7 +41,8 @@ var ssmdocumentsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Versio
 // Get takes name of the ssmDocument, and returns the corresponding ssmDocument object, and an error if there is any.
 func (c *FakeSsmDocuments) Get(name string, options v1.GetOptions) (result *v1alpha1.SsmDocument, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ssmdocumentsResource, name), &v1alpha1.SsmDocument{})
+		Invokes(testing.NewGetAction(ssmdocumentsResource, c.ns, name), &v1alpha1.SsmDocument{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSsmDocuments) Get(name string, options v1.GetOptions) (result *v1al
 // List takes label and field selectors, and returns the list of SsmDocuments that match those selectors.
 func (c *FakeSsmDocuments) List(opts v1.ListOptions) (result *v1alpha1.SsmDocumentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ssmdocumentsResource, ssmdocumentsKind, opts), &v1alpha1.SsmDocumentList{})
+		Invokes(testing.NewListAction(ssmdocumentsResource, ssmdocumentsKind, c.ns, opts), &v1alpha1.SsmDocumentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSsmDocuments) List(opts v1.ListOptions) (result *v1alpha1.SsmDocume
 // Watch returns a watch.Interface that watches the requested ssmDocuments.
 func (c *FakeSsmDocuments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ssmdocumentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(ssmdocumentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ssmDocument and creates it.  Returns the server's representation of the ssmDocument, and an error, if there is any.
 func (c *FakeSsmDocuments) Create(ssmDocument *v1alpha1.SsmDocument) (result *v1alpha1.SsmDocument, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ssmdocumentsResource, ssmDocument), &v1alpha1.SsmDocument{})
+		Invokes(testing.NewCreateAction(ssmdocumentsResource, c.ns, ssmDocument), &v1alpha1.SsmDocument{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSsmDocuments) Create(ssmDocument *v1alpha1.SsmDocument) (result *v1
 // Update takes the representation of a ssmDocument and updates it. Returns the server's representation of the ssmDocument, and an error, if there is any.
 func (c *FakeSsmDocuments) Update(ssmDocument *v1alpha1.SsmDocument) (result *v1alpha1.SsmDocument, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ssmdocumentsResource, ssmDocument), &v1alpha1.SsmDocument{})
+		Invokes(testing.NewUpdateAction(ssmdocumentsResource, c.ns, ssmDocument), &v1alpha1.SsmDocument{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSsmDocuments) Update(ssmDocument *v1alpha1.SsmDocument) (result *v1
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSsmDocuments) UpdateStatus(ssmDocument *v1alpha1.SsmDocument) (*v1alpha1.SsmDocument, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ssmdocumentsResource, "status", ssmDocument), &v1alpha1.SsmDocument{})
+		Invokes(testing.NewUpdateSubresourceAction(ssmdocumentsResource, "status", c.ns, ssmDocument), &v1alpha1.SsmDocument{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSsmDocuments) UpdateStatus(ssmDocument *v1alpha1.SsmDocument) (*v1a
 // Delete takes name of the ssmDocument and deletes it. Returns an error if one occurs.
 func (c *FakeSsmDocuments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ssmdocumentsResource, name), &v1alpha1.SsmDocument{})
+		Invokes(testing.NewDeleteAction(ssmdocumentsResource, c.ns, name), &v1alpha1.SsmDocument{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSsmDocuments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ssmdocumentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ssmdocumentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SsmDocumentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSsmDocuments) DeleteCollection(options *v1.DeleteOptions, listOptio
 // Patch applies the patch and returns the patched ssmDocument.
 func (c *FakeSsmDocuments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SsmDocument, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ssmdocumentsResource, name, pt, data, subresources...), &v1alpha1.SsmDocument{})
+		Invokes(testing.NewPatchSubresourceAction(ssmdocumentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SsmDocument{})
+
 	if obj == nil {
 		return nil, err
 	}

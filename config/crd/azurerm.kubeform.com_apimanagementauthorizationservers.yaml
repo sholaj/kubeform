@@ -397,67 +397,86 @@ spec:
           type: object
         spec:
           properties:
-            api_management_name:
+            apiManagementName:
               type: string
-            authorization_endpoint:
+            authorizationEndpoint:
               type: string
-            authorization_methods:
+            authorizationMethods:
               items:
                 type: string
               type: array
               uniqueItems: true
-            bearer_token_sending_methods:
+            bearerTokenSendingMethods:
               items:
                 type: string
               type: array
               uniqueItems: true
-            client_authentication_method:
+            clientAuthenticationMethod:
               items:
                 type: string
               type: array
               uniqueItems: true
-            client_id:
+            clientID:
               type: string
-            client_registration_endpoint:
+            clientRegistrationEndpoint:
               type: string
-            client_secret:
+            clientSecret:
               type: string
-            default_scope:
+            defaultScope:
               type: string
             description:
               type: string
-            display_name:
+            displayName:
               type: string
-            grant_types:
+            grantTypes:
               items:
                 type: string
               type: array
               uniqueItems: true
             name:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
-            resource_owner_password:
+            resourceOwnerPassword:
               type: string
-            resource_owner_username:
+            resourceOwnerUsername:
               type: string
-            support_state:
+            supportState:
               type: boolean
-            token_body_parameter:
-              items: {}
+            tokenBodyParameter:
+              items:
+                properties:
+                  name:
+                    type: string
+                  value:
+                    type: string
+                required:
+                - name
+                - value
+                type: object
               type: array
-            token_endpoint:
+            tokenEndpoint:
               type: string
           required:
-          - api_management_name
-          - authorization_endpoint
-          - authorization_methods
-          - client_id
-          - client_registration_endpoint
-          - display_name
-          - grant_types
+          - apiManagementName
+          - authorizationEndpoint
+          - authorizationMethods
+          - clientID
+          - clientRegistrationEndpoint
+          - displayName
+          - grantTypes
           - name
-          - resource_group_name
+          - providerRef
+          - resourceGroupName
           type: object
         status:
           properties:
@@ -468,6 +487,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

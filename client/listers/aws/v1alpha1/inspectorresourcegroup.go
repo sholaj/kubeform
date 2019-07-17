@@ -29,8 +29,8 @@ import (
 type InspectorResourceGroupLister interface {
 	// List lists all InspectorResourceGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.InspectorResourceGroup, err error)
-	// Get retrieves the InspectorResourceGroup from the index for a given name.
-	Get(name string) (*v1alpha1.InspectorResourceGroup, error)
+	// InspectorResourceGroups returns an object that can list and get InspectorResourceGroups.
+	InspectorResourceGroups(namespace string) InspectorResourceGroupNamespaceLister
 	InspectorResourceGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *inspectorResourceGroupLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the InspectorResourceGroup from the index for a given name.
-func (s *inspectorResourceGroupLister) Get(name string) (*v1alpha1.InspectorResourceGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// InspectorResourceGroups returns an object that can list and get InspectorResourceGroups.
+func (s *inspectorResourceGroupLister) InspectorResourceGroups(namespace string) InspectorResourceGroupNamespaceLister {
+	return inspectorResourceGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// InspectorResourceGroupNamespaceLister helps list and get InspectorResourceGroups.
+type InspectorResourceGroupNamespaceLister interface {
+	// List lists all InspectorResourceGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.InspectorResourceGroup, err error)
+	// Get retrieves the InspectorResourceGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.InspectorResourceGroup, error)
+	InspectorResourceGroupNamespaceListerExpansion
+}
+
+// inspectorResourceGroupNamespaceLister implements the InspectorResourceGroupNamespaceLister
+// interface.
+type inspectorResourceGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all InspectorResourceGroups in the indexer for a given namespace.
+func (s inspectorResourceGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.InspectorResourceGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.InspectorResourceGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the InspectorResourceGroup from the indexer for a given namespace and name.
+func (s inspectorResourceGroupNamespaceLister) Get(name string) (*v1alpha1.InspectorResourceGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

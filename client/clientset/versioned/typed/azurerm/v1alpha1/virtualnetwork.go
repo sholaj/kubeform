@@ -32,7 +32,7 @@ import (
 // VirtualNetworksGetter has a method to return a VirtualNetworkInterface.
 // A group's client should implement this interface.
 type VirtualNetworksGetter interface {
-	VirtualNetworks() VirtualNetworkInterface
+	VirtualNetworks(namespace string) VirtualNetworkInterface
 }
 
 // VirtualNetworkInterface has methods to work with VirtualNetwork resources.
@@ -52,12 +52,14 @@ type VirtualNetworkInterface interface {
 // virtualNetworks implements VirtualNetworkInterface
 type virtualNetworks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVirtualNetworks returns a VirtualNetworks
-func newVirtualNetworks(c *AzurermV1alpha1Client) *virtualNetworks {
+func newVirtualNetworks(c *AzurermV1alpha1Client, namespace string) *virtualNetworks {
 	return &virtualNetworks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVirtualNetworks(c *AzurermV1alpha1Client) *virtualNetworks {
 func (c *virtualNetworks) Get(name string, options v1.GetOptions) (result *v1alpha1.VirtualNetwork, err error) {
 	result = &v1alpha1.VirtualNetwork{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("virtualnetworks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *virtualNetworks) List(opts v1.ListOptions) (result *v1alpha1.VirtualNet
 	}
 	result = &v1alpha1.VirtualNetworkList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("virtualnetworks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *virtualNetworks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("virtualnetworks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *virtualNetworks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *virtualNetworks) Create(virtualNetwork *v1alpha1.VirtualNetwork) (result *v1alpha1.VirtualNetwork, err error) {
 	result = &v1alpha1.VirtualNetwork{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("virtualnetworks").
 		Body(virtualNetwork).
 		Do().
@@ -118,6 +124,7 @@ func (c *virtualNetworks) Create(virtualNetwork *v1alpha1.VirtualNetwork) (resul
 func (c *virtualNetworks) Update(virtualNetwork *v1alpha1.VirtualNetwork) (result *v1alpha1.VirtualNetwork, err error) {
 	result = &v1alpha1.VirtualNetwork{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("virtualnetworks").
 		Name(virtualNetwork.Name).
 		Body(virtualNetwork).
@@ -132,6 +139,7 @@ func (c *virtualNetworks) Update(virtualNetwork *v1alpha1.VirtualNetwork) (resul
 func (c *virtualNetworks) UpdateStatus(virtualNetwork *v1alpha1.VirtualNetwork) (result *v1alpha1.VirtualNetwork, err error) {
 	result = &v1alpha1.VirtualNetwork{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("virtualnetworks").
 		Name(virtualNetwork.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *virtualNetworks) UpdateStatus(virtualNetwork *v1alpha1.VirtualNetwork) 
 // Delete takes name of the virtualNetwork and deletes it. Returns an error if one occurs.
 func (c *virtualNetworks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("virtualnetworks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *virtualNetworks) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("virtualnetworks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *virtualNetworks) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *virtualNetworks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VirtualNetwork, err error) {
 	result = &v1alpha1.VirtualNetwork{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("virtualnetworks").
 		SubResource(subresources...).
 		Name(name).

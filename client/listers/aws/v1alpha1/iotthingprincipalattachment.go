@@ -29,8 +29,8 @@ import (
 type IotThingPrincipalAttachmentLister interface {
 	// List lists all IotThingPrincipalAttachments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IotThingPrincipalAttachment, err error)
-	// Get retrieves the IotThingPrincipalAttachment from the index for a given name.
-	Get(name string) (*v1alpha1.IotThingPrincipalAttachment, error)
+	// IotThingPrincipalAttachments returns an object that can list and get IotThingPrincipalAttachments.
+	IotThingPrincipalAttachments(namespace string) IotThingPrincipalAttachmentNamespaceLister
 	IotThingPrincipalAttachmentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iotThingPrincipalAttachmentLister) List(selector labels.Selector) (ret 
 	return ret, err
 }
 
-// Get retrieves the IotThingPrincipalAttachment from the index for a given name.
-func (s *iotThingPrincipalAttachmentLister) Get(name string) (*v1alpha1.IotThingPrincipalAttachment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IotThingPrincipalAttachments returns an object that can list and get IotThingPrincipalAttachments.
+func (s *iotThingPrincipalAttachmentLister) IotThingPrincipalAttachments(namespace string) IotThingPrincipalAttachmentNamespaceLister {
+	return iotThingPrincipalAttachmentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IotThingPrincipalAttachmentNamespaceLister helps list and get IotThingPrincipalAttachments.
+type IotThingPrincipalAttachmentNamespaceLister interface {
+	// List lists all IotThingPrincipalAttachments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IotThingPrincipalAttachment, err error)
+	// Get retrieves the IotThingPrincipalAttachment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IotThingPrincipalAttachment, error)
+	IotThingPrincipalAttachmentNamespaceListerExpansion
+}
+
+// iotThingPrincipalAttachmentNamespaceLister implements the IotThingPrincipalAttachmentNamespaceLister
+// interface.
+type iotThingPrincipalAttachmentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IotThingPrincipalAttachments in the indexer for a given namespace.
+func (s iotThingPrincipalAttachmentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IotThingPrincipalAttachment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IotThingPrincipalAttachment))
+	})
+	return ret, err
+}
+
+// Get retrieves the IotThingPrincipalAttachment from the indexer for a given namespace and name.
+func (s iotThingPrincipalAttachmentNamespaceLister) Get(name string) (*v1alpha1.IotThingPrincipalAttachment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

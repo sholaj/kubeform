@@ -32,7 +32,7 @@ import (
 // CloudwatchLogDestinationsGetter has a method to return a CloudwatchLogDestinationInterface.
 // A group's client should implement this interface.
 type CloudwatchLogDestinationsGetter interface {
-	CloudwatchLogDestinations() CloudwatchLogDestinationInterface
+	CloudwatchLogDestinations(namespace string) CloudwatchLogDestinationInterface
 }
 
 // CloudwatchLogDestinationInterface has methods to work with CloudwatchLogDestination resources.
@@ -52,12 +52,14 @@ type CloudwatchLogDestinationInterface interface {
 // cloudwatchLogDestinations implements CloudwatchLogDestinationInterface
 type cloudwatchLogDestinations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCloudwatchLogDestinations returns a CloudwatchLogDestinations
-func newCloudwatchLogDestinations(c *AwsV1alpha1Client) *cloudwatchLogDestinations {
+func newCloudwatchLogDestinations(c *AwsV1alpha1Client, namespace string) *cloudwatchLogDestinations {
 	return &cloudwatchLogDestinations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCloudwatchLogDestinations(c *AwsV1alpha1Client) *cloudwatchLogDestinatio
 func (c *cloudwatchLogDestinations) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudwatchLogDestination, err error) {
 	result = &v1alpha1.CloudwatchLogDestination{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatchlogdestinations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cloudwatchLogDestinations) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.CloudwatchLogDestinationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatchlogdestinations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cloudwatchLogDestinations) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatchlogdestinations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cloudwatchLogDestinations) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *cloudwatchLogDestinations) Create(cloudwatchLogDestination *v1alpha1.CloudwatchLogDestination) (result *v1alpha1.CloudwatchLogDestination, err error) {
 	result = &v1alpha1.CloudwatchLogDestination{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cloudwatchlogdestinations").
 		Body(cloudwatchLogDestination).
 		Do().
@@ -118,6 +124,7 @@ func (c *cloudwatchLogDestinations) Create(cloudwatchLogDestination *v1alpha1.Cl
 func (c *cloudwatchLogDestinations) Update(cloudwatchLogDestination *v1alpha1.CloudwatchLogDestination) (result *v1alpha1.CloudwatchLogDestination, err error) {
 	result = &v1alpha1.CloudwatchLogDestination{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudwatchlogdestinations").
 		Name(cloudwatchLogDestination.Name).
 		Body(cloudwatchLogDestination).
@@ -132,6 +139,7 @@ func (c *cloudwatchLogDestinations) Update(cloudwatchLogDestination *v1alpha1.Cl
 func (c *cloudwatchLogDestinations) UpdateStatus(cloudwatchLogDestination *v1alpha1.CloudwatchLogDestination) (result *v1alpha1.CloudwatchLogDestination, err error) {
 	result = &v1alpha1.CloudwatchLogDestination{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudwatchlogdestinations").
 		Name(cloudwatchLogDestination.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cloudwatchLogDestinations) UpdateStatus(cloudwatchLogDestination *v1alp
 // Delete takes name of the cloudwatchLogDestination and deletes it. Returns an error if one occurs.
 func (c *cloudwatchLogDestinations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudwatchlogdestinations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cloudwatchLogDestinations) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudwatchlogdestinations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cloudwatchLogDestinations) DeleteCollection(options *v1.DeleteOptions, 
 func (c *cloudwatchLogDestinations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudwatchLogDestination, err error) {
 	result = &v1alpha1.CloudwatchLogDestination{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cloudwatchlogdestinations").
 		SubResource(subresources...).
 		Name(name).

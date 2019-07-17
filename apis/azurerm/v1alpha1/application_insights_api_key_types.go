@@ -1,49 +1,52 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type ApplicationInsightsApiKey struct {
+type ApplicationInsightsAPIKey struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              ApplicationInsightsApiKeySpec   `json:"spec,omitempty"`
-	Status            ApplicationInsightsApiKeyStatus `json:"status,omitempty"`
+	Spec              ApplicationInsightsAPIKeySpec   `json:"spec,omitempty"`
+	Status            ApplicationInsightsAPIKeyStatus `json:"status,omitempty"`
 }
 
-type ApplicationInsightsApiKeySpec struct {
-	ApplicationInsightsId string `json:"application_insights_id"`
-	Name                  string `json:"name"`
+type ApplicationInsightsAPIKeySpec struct {
+	ApplicationInsightsID string `json:"applicationInsightsID" tf:"application_insights_id"`
+	Name                  string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	ReadPermissions []string `json:"read_permissions,omitempty"`
+	ReadPermissions []string `json:"readPermissions,omitempty" tf:"read_permissions,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	WritePermissions []string `json:"write_permissions,omitempty"`
+	WritePermissions []string                  `json:"writePermissions,omitempty" tf:"write_permissions,omitempty"`
+	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
-type ApplicationInsightsApiKeyStatus struct {
+type ApplicationInsightsAPIKeyStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// ApplicationInsightsApiKeyList is a list of ApplicationInsightsApiKeys
-type ApplicationInsightsApiKeyList struct {
+// ApplicationInsightsAPIKeyList is a list of ApplicationInsightsAPIKeys
+type ApplicationInsightsAPIKeyList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of ApplicationInsightsApiKey CRD objects
-	Items []ApplicationInsightsApiKey `json:"items,omitempty"`
+	// Items is a list of ApplicationInsightsAPIKey CRD objects
+	Items []ApplicationInsightsAPIKey `json:"items,omitempty"`
 }

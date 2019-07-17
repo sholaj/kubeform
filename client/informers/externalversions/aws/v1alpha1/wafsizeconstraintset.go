@@ -41,32 +41,33 @@ type WafSizeConstraintSetInformer interface {
 type wafSizeConstraintSetInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewWafSizeConstraintSetInformer constructs a new informer for WafSizeConstraintSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewWafSizeConstraintSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredWafSizeConstraintSetInformer(client, resyncPeriod, indexers, nil)
+func NewWafSizeConstraintSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredWafSizeConstraintSetInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredWafSizeConstraintSetInformer constructs a new informer for WafSizeConstraintSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredWafSizeConstraintSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredWafSizeConstraintSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafSizeConstraintSets().List(options)
+				return client.AwsV1alpha1().WafSizeConstraintSets(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafSizeConstraintSets().Watch(options)
+				return client.AwsV1alpha1().WafSizeConstraintSets(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.WafSizeConstraintSet{},
@@ -76,7 +77,7 @@ func NewFilteredWafSizeConstraintSetInformer(client versioned.Interface, resyncP
 }
 
 func (f *wafSizeConstraintSetInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredWafSizeConstraintSetInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredWafSizeConstraintSetInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *wafSizeConstraintSetInformer) Informer() cache.SharedIndexInformer {

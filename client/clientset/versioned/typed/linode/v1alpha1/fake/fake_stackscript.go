@@ -31,6 +31,7 @@ import (
 // FakeStackscripts implements StackscriptInterface
 type FakeStackscripts struct {
 	Fake *FakeLinodeV1alpha1
+	ns   string
 }
 
 var stackscriptsResource = schema.GroupVersionResource{Group: "linode.kubeform.com", Version: "v1alpha1", Resource: "stackscripts"}
@@ -40,7 +41,8 @@ var stackscriptsKind = schema.GroupVersionKind{Group: "linode.kubeform.com", Ver
 // Get takes name of the stackscript, and returns the corresponding stackscript object, and an error if there is any.
 func (c *FakeStackscripts) Get(name string, options v1.GetOptions) (result *v1alpha1.Stackscript, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(stackscriptsResource, name), &v1alpha1.Stackscript{})
+		Invokes(testing.NewGetAction(stackscriptsResource, c.ns, name), &v1alpha1.Stackscript{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeStackscripts) Get(name string, options v1.GetOptions) (result *v1al
 // List takes label and field selectors, and returns the list of Stackscripts that match those selectors.
 func (c *FakeStackscripts) List(opts v1.ListOptions) (result *v1alpha1.StackscriptList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(stackscriptsResource, stackscriptsKind, opts), &v1alpha1.StackscriptList{})
+		Invokes(testing.NewListAction(stackscriptsResource, stackscriptsKind, c.ns, opts), &v1alpha1.StackscriptList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeStackscripts) List(opts v1.ListOptions) (result *v1alpha1.Stackscri
 // Watch returns a watch.Interface that watches the requested stackscripts.
 func (c *FakeStackscripts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(stackscriptsResource, opts))
+		InvokesWatch(testing.NewWatchAction(stackscriptsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a stackscript and creates it.  Returns the server's representation of the stackscript, and an error, if there is any.
 func (c *FakeStackscripts) Create(stackscript *v1alpha1.Stackscript) (result *v1alpha1.Stackscript, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(stackscriptsResource, stackscript), &v1alpha1.Stackscript{})
+		Invokes(testing.NewCreateAction(stackscriptsResource, c.ns, stackscript), &v1alpha1.Stackscript{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeStackscripts) Create(stackscript *v1alpha1.Stackscript) (result *v1
 // Update takes the representation of a stackscript and updates it. Returns the server's representation of the stackscript, and an error, if there is any.
 func (c *FakeStackscripts) Update(stackscript *v1alpha1.Stackscript) (result *v1alpha1.Stackscript, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(stackscriptsResource, stackscript), &v1alpha1.Stackscript{})
+		Invokes(testing.NewUpdateAction(stackscriptsResource, c.ns, stackscript), &v1alpha1.Stackscript{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeStackscripts) Update(stackscript *v1alpha1.Stackscript) (result *v1
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeStackscripts) UpdateStatus(stackscript *v1alpha1.Stackscript) (*v1alpha1.Stackscript, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(stackscriptsResource, "status", stackscript), &v1alpha1.Stackscript{})
+		Invokes(testing.NewUpdateSubresourceAction(stackscriptsResource, "status", c.ns, stackscript), &v1alpha1.Stackscript{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeStackscripts) UpdateStatus(stackscript *v1alpha1.Stackscript) (*v1a
 // Delete takes name of the stackscript and deletes it. Returns an error if one occurs.
 func (c *FakeStackscripts) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(stackscriptsResource, name), &v1alpha1.Stackscript{})
+		Invokes(testing.NewDeleteAction(stackscriptsResource, c.ns, name), &v1alpha1.Stackscript{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeStackscripts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(stackscriptsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(stackscriptsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.StackscriptList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeStackscripts) DeleteCollection(options *v1.DeleteOptions, listOptio
 // Patch applies the patch and returns the patched stackscript.
 func (c *FakeStackscripts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Stackscript, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(stackscriptsResource, name, pt, data, subresources...), &v1alpha1.Stackscript{})
+		Invokes(testing.NewPatchSubresourceAction(stackscriptsResource, c.ns, name, pt, data, subresources...), &v1alpha1.Stackscript{})
+
 	if obj == nil {
 		return nil, err
 	}

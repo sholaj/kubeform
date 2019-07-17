@@ -29,8 +29,8 @@ import (
 type StorageShareLister interface {
 	// List lists all StorageShares in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StorageShare, err error)
-	// Get retrieves the StorageShare from the index for a given name.
-	Get(name string) (*v1alpha1.StorageShare, error)
+	// StorageShares returns an object that can list and get StorageShares.
+	StorageShares(namespace string) StorageShareNamespaceLister
 	StorageShareListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *storageShareLister) List(selector labels.Selector) (ret []*v1alpha1.Sto
 	return ret, err
 }
 
-// Get retrieves the StorageShare from the index for a given name.
-func (s *storageShareLister) Get(name string) (*v1alpha1.StorageShare, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StorageShares returns an object that can list and get StorageShares.
+func (s *storageShareLister) StorageShares(namespace string) StorageShareNamespaceLister {
+	return storageShareNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StorageShareNamespaceLister helps list and get StorageShares.
+type StorageShareNamespaceLister interface {
+	// List lists all StorageShares in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StorageShare, err error)
+	// Get retrieves the StorageShare from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StorageShare, error)
+	StorageShareNamespaceListerExpansion
+}
+
+// storageShareNamespaceLister implements the StorageShareNamespaceLister
+// interface.
+type storageShareNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StorageShares in the indexer for a given namespace.
+func (s storageShareNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StorageShare, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StorageShare))
+	})
+	return ret, err
+}
+
+// Get retrieves the StorageShare from the indexer for a given namespace and name.
+func (s storageShareNamespaceLister) Get(name string) (*v1alpha1.StorageShare, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type NetworkInterfaceApplicationSecurityGroupAssociationLister interface {
 	// List lists all NetworkInterfaceApplicationSecurityGroupAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation, err error)
-	// Get retrieves the NetworkInterfaceApplicationSecurityGroupAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation, error)
+	// NetworkInterfaceApplicationSecurityGroupAssociations returns an object that can list and get NetworkInterfaceApplicationSecurityGroupAssociations.
+	NetworkInterfaceApplicationSecurityGroupAssociations(namespace string) NetworkInterfaceApplicationSecurityGroupAssociationNamespaceLister
 	NetworkInterfaceApplicationSecurityGroupAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *networkInterfaceApplicationSecurityGroupAssociationLister) List(selecto
 	return ret, err
 }
 
-// Get retrieves the NetworkInterfaceApplicationSecurityGroupAssociation from the index for a given name.
-func (s *networkInterfaceApplicationSecurityGroupAssociationLister) Get(name string) (*v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NetworkInterfaceApplicationSecurityGroupAssociations returns an object that can list and get NetworkInterfaceApplicationSecurityGroupAssociations.
+func (s *networkInterfaceApplicationSecurityGroupAssociationLister) NetworkInterfaceApplicationSecurityGroupAssociations(namespace string) NetworkInterfaceApplicationSecurityGroupAssociationNamespaceLister {
+	return networkInterfaceApplicationSecurityGroupAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NetworkInterfaceApplicationSecurityGroupAssociationNamespaceLister helps list and get NetworkInterfaceApplicationSecurityGroupAssociations.
+type NetworkInterfaceApplicationSecurityGroupAssociationNamespaceLister interface {
+	// List lists all NetworkInterfaceApplicationSecurityGroupAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation, err error)
+	// Get retrieves the NetworkInterfaceApplicationSecurityGroupAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation, error)
+	NetworkInterfaceApplicationSecurityGroupAssociationNamespaceListerExpansion
+}
+
+// networkInterfaceApplicationSecurityGroupAssociationNamespaceLister implements the NetworkInterfaceApplicationSecurityGroupAssociationNamespaceLister
+// interface.
+type networkInterfaceApplicationSecurityGroupAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NetworkInterfaceApplicationSecurityGroupAssociations in the indexer for a given namespace.
+func (s networkInterfaceApplicationSecurityGroupAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the NetworkInterfaceApplicationSecurityGroupAssociation from the indexer for a given namespace and name.
+func (s networkInterfaceApplicationSecurityGroupAssociationNamespaceLister) Get(name string) (*v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

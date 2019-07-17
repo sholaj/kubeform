@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// ApiManagementApiLister helps list ApiManagementApis.
-type ApiManagementApiLister interface {
-	// List lists all ApiManagementApis in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementApi, err error)
-	// Get retrieves the ApiManagementApi from the index for a given name.
-	Get(name string) (*v1alpha1.ApiManagementApi, error)
-	ApiManagementApiListerExpansion
+// ApiManagementAPILister helps list ApiManagementAPIs.
+type ApiManagementAPILister interface {
+	// List lists all ApiManagementAPIs in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPI, err error)
+	// ApiManagementAPIs returns an object that can list and get ApiManagementAPIs.
+	ApiManagementAPIs(namespace string) ApiManagementAPINamespaceLister
+	ApiManagementAPIListerExpansion
 }
 
-// apiManagementApiLister implements the ApiManagementApiLister interface.
-type apiManagementApiLister struct {
+// apiManagementAPILister implements the ApiManagementAPILister interface.
+type apiManagementAPILister struct {
 	indexer cache.Indexer
 }
 
-// NewApiManagementApiLister returns a new ApiManagementApiLister.
-func NewApiManagementApiLister(indexer cache.Indexer) ApiManagementApiLister {
-	return &apiManagementApiLister{indexer: indexer}
+// NewApiManagementAPILister returns a new ApiManagementAPILister.
+func NewApiManagementAPILister(indexer cache.Indexer) ApiManagementAPILister {
+	return &apiManagementAPILister{indexer: indexer}
 }
 
-// List lists all ApiManagementApis in the indexer.
-func (s *apiManagementApiLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementApi, err error) {
+// List lists all ApiManagementAPIs in the indexer.
+func (s *apiManagementAPILister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPI, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ApiManagementApi))
+		ret = append(ret, m.(*v1alpha1.ApiManagementAPI))
 	})
 	return ret, err
 }
 
-// Get retrieves the ApiManagementApi from the index for a given name.
-func (s *apiManagementApiLister) Get(name string) (*v1alpha1.ApiManagementApi, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiManagementAPIs returns an object that can list and get ApiManagementAPIs.
+func (s *apiManagementAPILister) ApiManagementAPIs(namespace string) ApiManagementAPINamespaceLister {
+	return apiManagementAPINamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiManagementAPINamespaceLister helps list and get ApiManagementAPIs.
+type ApiManagementAPINamespaceLister interface {
+	// List lists all ApiManagementAPIs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPI, err error)
+	// Get retrieves the ApiManagementAPI from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiManagementAPI, error)
+	ApiManagementAPINamespaceListerExpansion
+}
+
+// apiManagementAPINamespaceLister implements the ApiManagementAPINamespaceLister
+// interface.
+type apiManagementAPINamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiManagementAPIs in the indexer for a given namespace.
+func (s apiManagementAPINamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPI, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiManagementAPI))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiManagementAPI from the indexer for a given namespace and name.
+func (s apiManagementAPINamespaceLister) Get(name string) (*v1alpha1.ApiManagementAPI, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("apimanagementapi"), name)
 	}
-	return obj.(*v1alpha1.ApiManagementApi), nil
+	return obj.(*v1alpha1.ApiManagementAPI), nil
 }

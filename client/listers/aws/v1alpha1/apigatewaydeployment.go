@@ -29,8 +29,8 @@ import (
 type ApiGatewayDeploymentLister interface {
 	// List lists all ApiGatewayDeployments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayDeployment, err error)
-	// Get retrieves the ApiGatewayDeployment from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayDeployment, error)
+	// ApiGatewayDeployments returns an object that can list and get ApiGatewayDeployments.
+	ApiGatewayDeployments(namespace string) ApiGatewayDeploymentNamespaceLister
 	ApiGatewayDeploymentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiGatewayDeploymentLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayDeployment from the index for a given name.
-func (s *apiGatewayDeploymentLister) Get(name string) (*v1alpha1.ApiGatewayDeployment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayDeployments returns an object that can list and get ApiGatewayDeployments.
+func (s *apiGatewayDeploymentLister) ApiGatewayDeployments(namespace string) ApiGatewayDeploymentNamespaceLister {
+	return apiGatewayDeploymentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayDeploymentNamespaceLister helps list and get ApiGatewayDeployments.
+type ApiGatewayDeploymentNamespaceLister interface {
+	// List lists all ApiGatewayDeployments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayDeployment, err error)
+	// Get retrieves the ApiGatewayDeployment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayDeployment, error)
+	ApiGatewayDeploymentNamespaceListerExpansion
+}
+
+// apiGatewayDeploymentNamespaceLister implements the ApiGatewayDeploymentNamespaceLister
+// interface.
+type apiGatewayDeploymentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayDeployments in the indexer for a given namespace.
+func (s apiGatewayDeploymentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayDeployment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayDeployment))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayDeployment from the indexer for a given namespace and name.
+func (s apiGatewayDeploymentNamespaceLister) Get(name string) (*v1alpha1.ApiGatewayDeployment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

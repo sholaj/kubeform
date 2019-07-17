@@ -32,7 +32,7 @@ import (
 // IamSamlProvidersGetter has a method to return a IamSamlProviderInterface.
 // A group's client should implement this interface.
 type IamSamlProvidersGetter interface {
-	IamSamlProviders() IamSamlProviderInterface
+	IamSamlProviders(namespace string) IamSamlProviderInterface
 }
 
 // IamSamlProviderInterface has methods to work with IamSamlProvider resources.
@@ -52,12 +52,14 @@ type IamSamlProviderInterface interface {
 // iamSamlProviders implements IamSamlProviderInterface
 type iamSamlProviders struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIamSamlProviders returns a IamSamlProviders
-func newIamSamlProviders(c *AwsV1alpha1Client) *iamSamlProviders {
+func newIamSamlProviders(c *AwsV1alpha1Client, namespace string) *iamSamlProviders {
 	return &iamSamlProviders{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIamSamlProviders(c *AwsV1alpha1Client) *iamSamlProviders {
 func (c *iamSamlProviders) Get(name string, options v1.GetOptions) (result *v1alpha1.IamSamlProvider, err error) {
 	result = &v1alpha1.IamSamlProvider{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamsamlproviders").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iamSamlProviders) List(opts v1.ListOptions) (result *v1alpha1.IamSamlPr
 	}
 	result = &v1alpha1.IamSamlProviderList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamsamlproviders").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iamSamlProviders) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iamsamlproviders").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iamSamlProviders) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *iamSamlProviders) Create(iamSamlProvider *v1alpha1.IamSamlProvider) (result *v1alpha1.IamSamlProvider, err error) {
 	result = &v1alpha1.IamSamlProvider{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iamsamlproviders").
 		Body(iamSamlProvider).
 		Do().
@@ -118,6 +124,7 @@ func (c *iamSamlProviders) Create(iamSamlProvider *v1alpha1.IamSamlProvider) (re
 func (c *iamSamlProviders) Update(iamSamlProvider *v1alpha1.IamSamlProvider) (result *v1alpha1.IamSamlProvider, err error) {
 	result = &v1alpha1.IamSamlProvider{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamsamlproviders").
 		Name(iamSamlProvider.Name).
 		Body(iamSamlProvider).
@@ -132,6 +139,7 @@ func (c *iamSamlProviders) Update(iamSamlProvider *v1alpha1.IamSamlProvider) (re
 func (c *iamSamlProviders) UpdateStatus(iamSamlProvider *v1alpha1.IamSamlProvider) (result *v1alpha1.IamSamlProvider, err error) {
 	result = &v1alpha1.IamSamlProvider{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamsamlproviders").
 		Name(iamSamlProvider.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iamSamlProviders) UpdateStatus(iamSamlProvider *v1alpha1.IamSamlProvide
 // Delete takes name of the iamSamlProvider and deletes it. Returns an error if one occurs.
 func (c *iamSamlProviders) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamsamlproviders").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iamSamlProviders) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamsamlproviders").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iamSamlProviders) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *iamSamlProviders) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamSamlProvider, err error) {
 	result = &v1alpha1.IamSamlProvider{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iamsamlproviders").
 		SubResource(subresources...).
 		Name(name).

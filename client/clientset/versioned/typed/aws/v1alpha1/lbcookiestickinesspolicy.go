@@ -32,7 +32,7 @@ import (
 // LbCookieStickinessPoliciesGetter has a method to return a LbCookieStickinessPolicyInterface.
 // A group's client should implement this interface.
 type LbCookieStickinessPoliciesGetter interface {
-	LbCookieStickinessPolicies() LbCookieStickinessPolicyInterface
+	LbCookieStickinessPolicies(namespace string) LbCookieStickinessPolicyInterface
 }
 
 // LbCookieStickinessPolicyInterface has methods to work with LbCookieStickinessPolicy resources.
@@ -52,12 +52,14 @@ type LbCookieStickinessPolicyInterface interface {
 // lbCookieStickinessPolicies implements LbCookieStickinessPolicyInterface
 type lbCookieStickinessPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLbCookieStickinessPolicies returns a LbCookieStickinessPolicies
-func newLbCookieStickinessPolicies(c *AwsV1alpha1Client) *lbCookieStickinessPolicies {
+func newLbCookieStickinessPolicies(c *AwsV1alpha1Client, namespace string) *lbCookieStickinessPolicies {
 	return &lbCookieStickinessPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLbCookieStickinessPolicies(c *AwsV1alpha1Client) *lbCookieStickinessPoli
 func (c *lbCookieStickinessPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.LbCookieStickinessPolicy, err error) {
 	result = &v1alpha1.LbCookieStickinessPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lbcookiestickinesspolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lbCookieStickinessPolicies) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.LbCookieStickinessPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lbcookiestickinesspolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lbCookieStickinessPolicies) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lbcookiestickinesspolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lbCookieStickinessPolicies) Watch(opts v1.ListOptions) (watch.Interface
 func (c *lbCookieStickinessPolicies) Create(lbCookieStickinessPolicy *v1alpha1.LbCookieStickinessPolicy) (result *v1alpha1.LbCookieStickinessPolicy, err error) {
 	result = &v1alpha1.LbCookieStickinessPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lbcookiestickinesspolicies").
 		Body(lbCookieStickinessPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *lbCookieStickinessPolicies) Create(lbCookieStickinessPolicy *v1alpha1.L
 func (c *lbCookieStickinessPolicies) Update(lbCookieStickinessPolicy *v1alpha1.LbCookieStickinessPolicy) (result *v1alpha1.LbCookieStickinessPolicy, err error) {
 	result = &v1alpha1.LbCookieStickinessPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lbcookiestickinesspolicies").
 		Name(lbCookieStickinessPolicy.Name).
 		Body(lbCookieStickinessPolicy).
@@ -132,6 +139,7 @@ func (c *lbCookieStickinessPolicies) Update(lbCookieStickinessPolicy *v1alpha1.L
 func (c *lbCookieStickinessPolicies) UpdateStatus(lbCookieStickinessPolicy *v1alpha1.LbCookieStickinessPolicy) (result *v1alpha1.LbCookieStickinessPolicy, err error) {
 	result = &v1alpha1.LbCookieStickinessPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lbcookiestickinesspolicies").
 		Name(lbCookieStickinessPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lbCookieStickinessPolicies) UpdateStatus(lbCookieStickinessPolicy *v1al
 // Delete takes name of the lbCookieStickinessPolicy and deletes it. Returns an error if one occurs.
 func (c *lbCookieStickinessPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lbcookiestickinesspolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lbCookieStickinessPolicies) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lbcookiestickinesspolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lbCookieStickinessPolicies) DeleteCollection(options *v1.DeleteOptions,
 func (c *lbCookieStickinessPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbCookieStickinessPolicy, err error) {
 	result = &v1alpha1.LbCookieStickinessPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lbcookiestickinesspolicies").
 		SubResource(subresources...).
 		Name(name).

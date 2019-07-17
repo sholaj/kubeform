@@ -29,8 +29,8 @@ import (
 type MysqlVirtualNetworkRuleLister interface {
 	// List lists all MysqlVirtualNetworkRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MysqlVirtualNetworkRule, err error)
-	// Get retrieves the MysqlVirtualNetworkRule from the index for a given name.
-	Get(name string) (*v1alpha1.MysqlVirtualNetworkRule, error)
+	// MysqlVirtualNetworkRules returns an object that can list and get MysqlVirtualNetworkRules.
+	MysqlVirtualNetworkRules(namespace string) MysqlVirtualNetworkRuleNamespaceLister
 	MysqlVirtualNetworkRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *mysqlVirtualNetworkRuleLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the MysqlVirtualNetworkRule from the index for a given name.
-func (s *mysqlVirtualNetworkRuleLister) Get(name string) (*v1alpha1.MysqlVirtualNetworkRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MysqlVirtualNetworkRules returns an object that can list and get MysqlVirtualNetworkRules.
+func (s *mysqlVirtualNetworkRuleLister) MysqlVirtualNetworkRules(namespace string) MysqlVirtualNetworkRuleNamespaceLister {
+	return mysqlVirtualNetworkRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MysqlVirtualNetworkRuleNamespaceLister helps list and get MysqlVirtualNetworkRules.
+type MysqlVirtualNetworkRuleNamespaceLister interface {
+	// List lists all MysqlVirtualNetworkRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MysqlVirtualNetworkRule, err error)
+	// Get retrieves the MysqlVirtualNetworkRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MysqlVirtualNetworkRule, error)
+	MysqlVirtualNetworkRuleNamespaceListerExpansion
+}
+
+// mysqlVirtualNetworkRuleNamespaceLister implements the MysqlVirtualNetworkRuleNamespaceLister
+// interface.
+type mysqlVirtualNetworkRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MysqlVirtualNetworkRules in the indexer for a given namespace.
+func (s mysqlVirtualNetworkRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MysqlVirtualNetworkRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MysqlVirtualNetworkRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the MysqlVirtualNetworkRule from the indexer for a given namespace and name.
+func (s mysqlVirtualNetworkRuleNamespaceLister) Get(name string) (*v1alpha1.MysqlVirtualNetworkRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

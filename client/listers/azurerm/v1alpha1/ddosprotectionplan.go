@@ -29,8 +29,8 @@ import (
 type DdosProtectionPlanLister interface {
 	// List lists all DdosProtectionPlans in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DdosProtectionPlan, err error)
-	// Get retrieves the DdosProtectionPlan from the index for a given name.
-	Get(name string) (*v1alpha1.DdosProtectionPlan, error)
+	// DdosProtectionPlans returns an object that can list and get DdosProtectionPlans.
+	DdosProtectionPlans(namespace string) DdosProtectionPlanNamespaceLister
 	DdosProtectionPlanListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ddosProtectionPlanLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the DdosProtectionPlan from the index for a given name.
-func (s *ddosProtectionPlanLister) Get(name string) (*v1alpha1.DdosProtectionPlan, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DdosProtectionPlans returns an object that can list and get DdosProtectionPlans.
+func (s *ddosProtectionPlanLister) DdosProtectionPlans(namespace string) DdosProtectionPlanNamespaceLister {
+	return ddosProtectionPlanNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DdosProtectionPlanNamespaceLister helps list and get DdosProtectionPlans.
+type DdosProtectionPlanNamespaceLister interface {
+	// List lists all DdosProtectionPlans in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DdosProtectionPlan, err error)
+	// Get retrieves the DdosProtectionPlan from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DdosProtectionPlan, error)
+	DdosProtectionPlanNamespaceListerExpansion
+}
+
+// ddosProtectionPlanNamespaceLister implements the DdosProtectionPlanNamespaceLister
+// interface.
+type ddosProtectionPlanNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DdosProtectionPlans in the indexer for a given namespace.
+func (s ddosProtectionPlanNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DdosProtectionPlan, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DdosProtectionPlan))
+	})
+	return ret, err
+}
+
+// Get retrieves the DdosProtectionPlan from the indexer for a given namespace and name.
+func (s ddosProtectionPlanNamespaceLister) Get(name string) (*v1alpha1.DdosProtectionPlan, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

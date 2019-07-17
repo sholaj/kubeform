@@ -32,7 +32,7 @@ import (
 // ApiManagementPropertiesGetter has a method to return a ApiManagementPropertyInterface.
 // A group's client should implement this interface.
 type ApiManagementPropertiesGetter interface {
-	ApiManagementProperties() ApiManagementPropertyInterface
+	ApiManagementProperties(namespace string) ApiManagementPropertyInterface
 }
 
 // ApiManagementPropertyInterface has methods to work with ApiManagementProperty resources.
@@ -52,12 +52,14 @@ type ApiManagementPropertyInterface interface {
 // apiManagementProperties implements ApiManagementPropertyInterface
 type apiManagementProperties struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiManagementProperties returns a ApiManagementProperties
-func newApiManagementProperties(c *AzurermV1alpha1Client) *apiManagementProperties {
+func newApiManagementProperties(c *AzurermV1alpha1Client, namespace string) *apiManagementProperties {
 	return &apiManagementProperties{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiManagementProperties(c *AzurermV1alpha1Client) *apiManagementProperti
 func (c *apiManagementProperties) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementProperty, err error) {
 	result = &v1alpha1.ApiManagementProperty{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementproperties").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiManagementProperties) List(opts v1.ListOptions) (result *v1alpha1.Ap
 	}
 	result = &v1alpha1.ApiManagementPropertyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementproperties").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiManagementProperties) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementproperties").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiManagementProperties) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *apiManagementProperties) Create(apiManagementProperty *v1alpha1.ApiManagementProperty) (result *v1alpha1.ApiManagementProperty, err error) {
 	result = &v1alpha1.ApiManagementProperty{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apimanagementproperties").
 		Body(apiManagementProperty).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiManagementProperties) Create(apiManagementProperty *v1alpha1.ApiMana
 func (c *apiManagementProperties) Update(apiManagementProperty *v1alpha1.ApiManagementProperty) (result *v1alpha1.ApiManagementProperty, err error) {
 	result = &v1alpha1.ApiManagementProperty{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementproperties").
 		Name(apiManagementProperty.Name).
 		Body(apiManagementProperty).
@@ -132,6 +139,7 @@ func (c *apiManagementProperties) Update(apiManagementProperty *v1alpha1.ApiMana
 func (c *apiManagementProperties) UpdateStatus(apiManagementProperty *v1alpha1.ApiManagementProperty) (result *v1alpha1.ApiManagementProperty, err error) {
 	result = &v1alpha1.ApiManagementProperty{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementproperties").
 		Name(apiManagementProperty.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiManagementProperties) UpdateStatus(apiManagementProperty *v1alpha1.A
 // Delete takes name of the apiManagementProperty and deletes it. Returns an error if one occurs.
 func (c *apiManagementProperties) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementproperties").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiManagementProperties) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementproperties").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiManagementProperties) DeleteCollection(options *v1.DeleteOptions, li
 func (c *apiManagementProperties) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementProperty, err error) {
 	result = &v1alpha1.ApiManagementProperty{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apimanagementproperties").
 		SubResource(subresources...).
 		Name(name).

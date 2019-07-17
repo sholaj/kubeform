@@ -31,6 +31,7 @@ import (
 // FakePubsubSubscriptionIamBindings implements PubsubSubscriptionIamBindingInterface
 type FakePubsubSubscriptionIamBindings struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var pubsubsubscriptioniambindingsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "pubsubsubscriptioniambindings"}
@@ -40,7 +41,8 @@ var pubsubsubscriptioniambindingsKind = schema.GroupVersionKind{Group: "google.k
 // Get takes name of the pubsubSubscriptionIamBinding, and returns the corresponding pubsubSubscriptionIamBinding object, and an error if there is any.
 func (c *FakePubsubSubscriptionIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.PubsubSubscriptionIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(pubsubsubscriptioniambindingsResource, name), &v1alpha1.PubsubSubscriptionIamBinding{})
+		Invokes(testing.NewGetAction(pubsubsubscriptioniambindingsResource, c.ns, name), &v1alpha1.PubsubSubscriptionIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakePubsubSubscriptionIamBindings) Get(name string, options v1.GetOptio
 // List takes label and field selectors, and returns the list of PubsubSubscriptionIamBindings that match those selectors.
 func (c *FakePubsubSubscriptionIamBindings) List(opts v1.ListOptions) (result *v1alpha1.PubsubSubscriptionIamBindingList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(pubsubsubscriptioniambindingsResource, pubsubsubscriptioniambindingsKind, opts), &v1alpha1.PubsubSubscriptionIamBindingList{})
+		Invokes(testing.NewListAction(pubsubsubscriptioniambindingsResource, pubsubsubscriptioniambindingsKind, c.ns, opts), &v1alpha1.PubsubSubscriptionIamBindingList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakePubsubSubscriptionIamBindings) List(opts v1.ListOptions) (result *v
 // Watch returns a watch.Interface that watches the requested pubsubSubscriptionIamBindings.
 func (c *FakePubsubSubscriptionIamBindings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(pubsubsubscriptioniambindingsResource, opts))
+		InvokesWatch(testing.NewWatchAction(pubsubsubscriptioniambindingsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a pubsubSubscriptionIamBinding and creates it.  Returns the server's representation of the pubsubSubscriptionIamBinding, and an error, if there is any.
 func (c *FakePubsubSubscriptionIamBindings) Create(pubsubSubscriptionIamBinding *v1alpha1.PubsubSubscriptionIamBinding) (result *v1alpha1.PubsubSubscriptionIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(pubsubsubscriptioniambindingsResource, pubsubSubscriptionIamBinding), &v1alpha1.PubsubSubscriptionIamBinding{})
+		Invokes(testing.NewCreateAction(pubsubsubscriptioniambindingsResource, c.ns, pubsubSubscriptionIamBinding), &v1alpha1.PubsubSubscriptionIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakePubsubSubscriptionIamBindings) Create(pubsubSubscriptionIamBinding 
 // Update takes the representation of a pubsubSubscriptionIamBinding and updates it. Returns the server's representation of the pubsubSubscriptionIamBinding, and an error, if there is any.
 func (c *FakePubsubSubscriptionIamBindings) Update(pubsubSubscriptionIamBinding *v1alpha1.PubsubSubscriptionIamBinding) (result *v1alpha1.PubsubSubscriptionIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(pubsubsubscriptioniambindingsResource, pubsubSubscriptionIamBinding), &v1alpha1.PubsubSubscriptionIamBinding{})
+		Invokes(testing.NewUpdateAction(pubsubsubscriptioniambindingsResource, c.ns, pubsubSubscriptionIamBinding), &v1alpha1.PubsubSubscriptionIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakePubsubSubscriptionIamBindings) Update(pubsubSubscriptionIamBinding 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakePubsubSubscriptionIamBindings) UpdateStatus(pubsubSubscriptionIamBinding *v1alpha1.PubsubSubscriptionIamBinding) (*v1alpha1.PubsubSubscriptionIamBinding, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(pubsubsubscriptioniambindingsResource, "status", pubsubSubscriptionIamBinding), &v1alpha1.PubsubSubscriptionIamBinding{})
+		Invokes(testing.NewUpdateSubresourceAction(pubsubsubscriptioniambindingsResource, "status", c.ns, pubsubSubscriptionIamBinding), &v1alpha1.PubsubSubscriptionIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakePubsubSubscriptionIamBindings) UpdateStatus(pubsubSubscriptionIamBi
 // Delete takes name of the pubsubSubscriptionIamBinding and deletes it. Returns an error if one occurs.
 func (c *FakePubsubSubscriptionIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(pubsubsubscriptioniambindingsResource, name), &v1alpha1.PubsubSubscriptionIamBinding{})
+		Invokes(testing.NewDeleteAction(pubsubsubscriptioniambindingsResource, c.ns, name), &v1alpha1.PubsubSubscriptionIamBinding{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakePubsubSubscriptionIamBindings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(pubsubsubscriptioniambindingsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(pubsubsubscriptioniambindingsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PubsubSubscriptionIamBindingList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakePubsubSubscriptionIamBindings) DeleteCollection(options *v1.DeleteO
 // Patch applies the patch and returns the patched pubsubSubscriptionIamBinding.
 func (c *FakePubsubSubscriptionIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PubsubSubscriptionIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(pubsubsubscriptioniambindingsResource, name, pt, data, subresources...), &v1alpha1.PubsubSubscriptionIamBinding{})
+		Invokes(testing.NewPatchSubresourceAction(pubsubsubscriptioniambindingsResource, c.ns, name, pt, data, subresources...), &v1alpha1.PubsubSubscriptionIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}

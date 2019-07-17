@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,38 +20,39 @@ type NetworkPacketCapture struct {
 
 type NetworkPacketCaptureSpecFilter struct {
 	// +optional
-	LocalIpAddress string `json:"local_ip_address,omitempty"`
+	LocalIPAddress string `json:"localIPAddress,omitempty" tf:"local_ip_address,omitempty"`
 	// +optional
-	LocalPort string `json:"local_port,omitempty"`
-	Protocol  string `json:"protocol"`
+	LocalPort string `json:"localPort,omitempty" tf:"local_port,omitempty"`
+	Protocol  string `json:"protocol" tf:"protocol"`
 	// +optional
-	RemoteIpAddress string `json:"remote_ip_address,omitempty"`
+	RemoteIPAddress string `json:"remoteIPAddress,omitempty" tf:"remote_ip_address,omitempty"`
 	// +optional
-	RemotePort string `json:"remote_port,omitempty"`
+	RemotePort string `json:"remotePort,omitempty" tf:"remote_port,omitempty"`
 }
 
 type NetworkPacketCaptureSpecStorageLocation struct {
 	// +optional
-	FilePath string `json:"file_path,omitempty"`
+	FilePath string `json:"filePath,omitempty" tf:"file_path,omitempty"`
 	// +optional
-	StorageAccountId string `json:"storage_account_id,omitempty"`
+	StorageAccountID string `json:"storageAccountID,omitempty" tf:"storage_account_id,omitempty"`
 }
 
 type NetworkPacketCaptureSpec struct {
 	// +optional
-	Filter *[]NetworkPacketCaptureSpec `json:"filter,omitempty"`
+	Filter []NetworkPacketCaptureSpecFilter `json:"filter,omitempty" tf:"filter,omitempty"`
 	// +optional
-	MaximumBytesPerPacket int `json:"maximum_bytes_per_packet,omitempty"`
+	MaximumBytesPerPacket int `json:"maximumBytesPerPacket,omitempty" tf:"maximum_bytes_per_packet,omitempty"`
 	// +optional
-	MaximumBytesPerSession int `json:"maximum_bytes_per_session,omitempty"`
+	MaximumBytesPerSession int `json:"maximumBytesPerSession,omitempty" tf:"maximum_bytes_per_session,omitempty"`
 	// +optional
-	MaximumCaptureDuration int    `json:"maximum_capture_duration,omitempty"`
-	Name                   string `json:"name"`
-	NetworkWatcherName     string `json:"network_watcher_name"`
-	ResourceGroupName      string `json:"resource_group_name"`
+	MaximumCaptureDuration int    `json:"maximumCaptureDuration,omitempty" tf:"maximum_capture_duration,omitempty"`
+	Name                   string `json:"name" tf:"name"`
+	NetworkWatcherName     string `json:"networkWatcherName" tf:"network_watcher_name"`
+	ResourceGroupName      string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +kubebuilder:validation:MaxItems=1
-	StorageLocation  []NetworkPacketCaptureSpec `json:"storage_location"`
-	TargetResourceId string                     `json:"target_resource_id"`
+	StorageLocation  []NetworkPacketCaptureSpecStorageLocation `json:"storageLocation" tf:"storage_location"`
+	TargetResourceID string                                    `json:"targetResourceID" tf:"target_resource_id"`
+	ProviderRef      core.LocalObjectReference                 `json:"providerRef" tf:"-"`
 }
 
 type NetworkPacketCaptureStatus struct {
@@ -59,7 +60,9 @@ type NetworkPacketCaptureStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

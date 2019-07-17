@@ -29,8 +29,8 @@ import (
 type WafSizeConstraintSetLister interface {
 	// List lists all WafSizeConstraintSets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.WafSizeConstraintSet, err error)
-	// Get retrieves the WafSizeConstraintSet from the index for a given name.
-	Get(name string) (*v1alpha1.WafSizeConstraintSet, error)
+	// WafSizeConstraintSets returns an object that can list and get WafSizeConstraintSets.
+	WafSizeConstraintSets(namespace string) WafSizeConstraintSetNamespaceLister
 	WafSizeConstraintSetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *wafSizeConstraintSetLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the WafSizeConstraintSet from the index for a given name.
-func (s *wafSizeConstraintSetLister) Get(name string) (*v1alpha1.WafSizeConstraintSet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafSizeConstraintSets returns an object that can list and get WafSizeConstraintSets.
+func (s *wafSizeConstraintSetLister) WafSizeConstraintSets(namespace string) WafSizeConstraintSetNamespaceLister {
+	return wafSizeConstraintSetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafSizeConstraintSetNamespaceLister helps list and get WafSizeConstraintSets.
+type WafSizeConstraintSetNamespaceLister interface {
+	// List lists all WafSizeConstraintSets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafSizeConstraintSet, err error)
+	// Get retrieves the WafSizeConstraintSet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafSizeConstraintSet, error)
+	WafSizeConstraintSetNamespaceListerExpansion
+}
+
+// wafSizeConstraintSetNamespaceLister implements the WafSizeConstraintSetNamespaceLister
+// interface.
+type wafSizeConstraintSetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafSizeConstraintSets in the indexer for a given namespace.
+func (s wafSizeConstraintSetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafSizeConstraintSet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafSizeConstraintSet))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafSizeConstraintSet from the indexer for a given namespace and name.
+func (s wafSizeConstraintSetNamespaceLister) Get(name string) (*v1alpha1.WafSizeConstraintSet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

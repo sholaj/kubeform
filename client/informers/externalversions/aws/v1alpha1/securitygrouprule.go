@@ -41,32 +41,33 @@ type SecurityGroupRuleInformer interface {
 type securityGroupRuleInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSecurityGroupRuleInformer constructs a new informer for SecurityGroupRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSecurityGroupRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSecurityGroupRuleInformer(client, resyncPeriod, indexers, nil)
+func NewSecurityGroupRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSecurityGroupRuleInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSecurityGroupRuleInformer constructs a new informer for SecurityGroupRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSecurityGroupRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSecurityGroupRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SecurityGroupRules().List(options)
+				return client.AwsV1alpha1().SecurityGroupRules(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SecurityGroupRules().Watch(options)
+				return client.AwsV1alpha1().SecurityGroupRules(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.SecurityGroupRule{},
@@ -76,7 +77,7 @@ func NewFilteredSecurityGroupRuleInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *securityGroupRuleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSecurityGroupRuleInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSecurityGroupRuleInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *securityGroupRuleInformer) Informer() cache.SharedIndexInformer {

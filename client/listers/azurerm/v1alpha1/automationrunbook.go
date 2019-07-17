@@ -29,8 +29,8 @@ import (
 type AutomationRunbookLister interface {
 	// List lists all AutomationRunbooks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AutomationRunbook, err error)
-	// Get retrieves the AutomationRunbook from the index for a given name.
-	Get(name string) (*v1alpha1.AutomationRunbook, error)
+	// AutomationRunbooks returns an object that can list and get AutomationRunbooks.
+	AutomationRunbooks(namespace string) AutomationRunbookNamespaceLister
 	AutomationRunbookListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *automationRunbookLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the AutomationRunbook from the index for a given name.
-func (s *automationRunbookLister) Get(name string) (*v1alpha1.AutomationRunbook, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AutomationRunbooks returns an object that can list and get AutomationRunbooks.
+func (s *automationRunbookLister) AutomationRunbooks(namespace string) AutomationRunbookNamespaceLister {
+	return automationRunbookNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AutomationRunbookNamespaceLister helps list and get AutomationRunbooks.
+type AutomationRunbookNamespaceLister interface {
+	// List lists all AutomationRunbooks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AutomationRunbook, err error)
+	// Get retrieves the AutomationRunbook from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AutomationRunbook, error)
+	AutomationRunbookNamespaceListerExpansion
+}
+
+// automationRunbookNamespaceLister implements the AutomationRunbookNamespaceLister
+// interface.
+type automationRunbookNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AutomationRunbooks in the indexer for a given namespace.
+func (s automationRunbookNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AutomationRunbook, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AutomationRunbook))
+	})
+	return ret, err
+}
+
+// Get retrieves the AutomationRunbook from the indexer for a given namespace and name.
+func (s automationRunbookNamespaceLister) Get(name string) (*v1alpha1.AutomationRunbook, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

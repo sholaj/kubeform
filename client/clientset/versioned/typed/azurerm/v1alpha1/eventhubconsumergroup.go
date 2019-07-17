@@ -32,7 +32,7 @@ import (
 // EventhubConsumerGroupsGetter has a method to return a EventhubConsumerGroupInterface.
 // A group's client should implement this interface.
 type EventhubConsumerGroupsGetter interface {
-	EventhubConsumerGroups() EventhubConsumerGroupInterface
+	EventhubConsumerGroups(namespace string) EventhubConsumerGroupInterface
 }
 
 // EventhubConsumerGroupInterface has methods to work with EventhubConsumerGroup resources.
@@ -52,12 +52,14 @@ type EventhubConsumerGroupInterface interface {
 // eventhubConsumerGroups implements EventhubConsumerGroupInterface
 type eventhubConsumerGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEventhubConsumerGroups returns a EventhubConsumerGroups
-func newEventhubConsumerGroups(c *AzurermV1alpha1Client) *eventhubConsumerGroups {
+func newEventhubConsumerGroups(c *AzurermV1alpha1Client, namespace string) *eventhubConsumerGroups {
 	return &eventhubConsumerGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEventhubConsumerGroups(c *AzurermV1alpha1Client) *eventhubConsumerGroups
 func (c *eventhubConsumerGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.EventhubConsumerGroup, err error) {
 	result = &v1alpha1.EventhubConsumerGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eventhubconsumergroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *eventhubConsumerGroups) List(opts v1.ListOptions) (result *v1alpha1.Eve
 	}
 	result = &v1alpha1.EventhubConsumerGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eventhubconsumergroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *eventhubConsumerGroups) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("eventhubconsumergroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *eventhubConsumerGroups) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *eventhubConsumerGroups) Create(eventhubConsumerGroup *v1alpha1.EventhubConsumerGroup) (result *v1alpha1.EventhubConsumerGroup, err error) {
 	result = &v1alpha1.EventhubConsumerGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("eventhubconsumergroups").
 		Body(eventhubConsumerGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *eventhubConsumerGroups) Create(eventhubConsumerGroup *v1alpha1.Eventhub
 func (c *eventhubConsumerGroups) Update(eventhubConsumerGroup *v1alpha1.EventhubConsumerGroup) (result *v1alpha1.EventhubConsumerGroup, err error) {
 	result = &v1alpha1.EventhubConsumerGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eventhubconsumergroups").
 		Name(eventhubConsumerGroup.Name).
 		Body(eventhubConsumerGroup).
@@ -132,6 +139,7 @@ func (c *eventhubConsumerGroups) Update(eventhubConsumerGroup *v1alpha1.Eventhub
 func (c *eventhubConsumerGroups) UpdateStatus(eventhubConsumerGroup *v1alpha1.EventhubConsumerGroup) (result *v1alpha1.EventhubConsumerGroup, err error) {
 	result = &v1alpha1.EventhubConsumerGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eventhubconsumergroups").
 		Name(eventhubConsumerGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *eventhubConsumerGroups) UpdateStatus(eventhubConsumerGroup *v1alpha1.Ev
 // Delete takes name of the eventhubConsumerGroup and deletes it. Returns an error if one occurs.
 func (c *eventhubConsumerGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eventhubconsumergroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *eventhubConsumerGroups) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eventhubconsumergroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *eventhubConsumerGroups) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *eventhubConsumerGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EventhubConsumerGroup, err error) {
 	result = &v1alpha1.EventhubConsumerGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("eventhubconsumergroups").
 		SubResource(subresources...).
 		Name(name).

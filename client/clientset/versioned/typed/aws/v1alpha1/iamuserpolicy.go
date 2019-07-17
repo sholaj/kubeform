@@ -32,7 +32,7 @@ import (
 // IamUserPoliciesGetter has a method to return a IamUserPolicyInterface.
 // A group's client should implement this interface.
 type IamUserPoliciesGetter interface {
-	IamUserPolicies() IamUserPolicyInterface
+	IamUserPolicies(namespace string) IamUserPolicyInterface
 }
 
 // IamUserPolicyInterface has methods to work with IamUserPolicy resources.
@@ -52,12 +52,14 @@ type IamUserPolicyInterface interface {
 // iamUserPolicies implements IamUserPolicyInterface
 type iamUserPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIamUserPolicies returns a IamUserPolicies
-func newIamUserPolicies(c *AwsV1alpha1Client) *iamUserPolicies {
+func newIamUserPolicies(c *AwsV1alpha1Client, namespace string) *iamUserPolicies {
 	return &iamUserPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIamUserPolicies(c *AwsV1alpha1Client) *iamUserPolicies {
 func (c *iamUserPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.IamUserPolicy, err error) {
 	result = &v1alpha1.IamUserPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamuserpolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iamUserPolicies) List(opts v1.ListOptions) (result *v1alpha1.IamUserPol
 	}
 	result = &v1alpha1.IamUserPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamuserpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iamUserPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iamuserpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iamUserPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *iamUserPolicies) Create(iamUserPolicy *v1alpha1.IamUserPolicy) (result *v1alpha1.IamUserPolicy, err error) {
 	result = &v1alpha1.IamUserPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iamuserpolicies").
 		Body(iamUserPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *iamUserPolicies) Create(iamUserPolicy *v1alpha1.IamUserPolicy) (result 
 func (c *iamUserPolicies) Update(iamUserPolicy *v1alpha1.IamUserPolicy) (result *v1alpha1.IamUserPolicy, err error) {
 	result = &v1alpha1.IamUserPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamuserpolicies").
 		Name(iamUserPolicy.Name).
 		Body(iamUserPolicy).
@@ -132,6 +139,7 @@ func (c *iamUserPolicies) Update(iamUserPolicy *v1alpha1.IamUserPolicy) (result 
 func (c *iamUserPolicies) UpdateStatus(iamUserPolicy *v1alpha1.IamUserPolicy) (result *v1alpha1.IamUserPolicy, err error) {
 	result = &v1alpha1.IamUserPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamuserpolicies").
 		Name(iamUserPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iamUserPolicies) UpdateStatus(iamUserPolicy *v1alpha1.IamUserPolicy) (r
 // Delete takes name of the iamUserPolicy and deletes it. Returns an error if one occurs.
 func (c *iamUserPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamuserpolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iamUserPolicies) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamuserpolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iamUserPolicies) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *iamUserPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamUserPolicy, err error) {
 	result = &v1alpha1.IamUserPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iamuserpolicies").
 		SubResource(subresources...).
 		Name(name).

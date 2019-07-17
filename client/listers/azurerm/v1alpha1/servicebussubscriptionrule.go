@@ -29,8 +29,8 @@ import (
 type ServicebusSubscriptionRuleLister interface {
 	// List lists all ServicebusSubscriptionRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ServicebusSubscriptionRule, err error)
-	// Get retrieves the ServicebusSubscriptionRule from the index for a given name.
-	Get(name string) (*v1alpha1.ServicebusSubscriptionRule, error)
+	// ServicebusSubscriptionRules returns an object that can list and get ServicebusSubscriptionRules.
+	ServicebusSubscriptionRules(namespace string) ServicebusSubscriptionRuleNamespaceLister
 	ServicebusSubscriptionRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *servicebusSubscriptionRuleLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the ServicebusSubscriptionRule from the index for a given name.
-func (s *servicebusSubscriptionRuleLister) Get(name string) (*v1alpha1.ServicebusSubscriptionRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ServicebusSubscriptionRules returns an object that can list and get ServicebusSubscriptionRules.
+func (s *servicebusSubscriptionRuleLister) ServicebusSubscriptionRules(namespace string) ServicebusSubscriptionRuleNamespaceLister {
+	return servicebusSubscriptionRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ServicebusSubscriptionRuleNamespaceLister helps list and get ServicebusSubscriptionRules.
+type ServicebusSubscriptionRuleNamespaceLister interface {
+	// List lists all ServicebusSubscriptionRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ServicebusSubscriptionRule, err error)
+	// Get retrieves the ServicebusSubscriptionRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ServicebusSubscriptionRule, error)
+	ServicebusSubscriptionRuleNamespaceListerExpansion
+}
+
+// servicebusSubscriptionRuleNamespaceLister implements the ServicebusSubscriptionRuleNamespaceLister
+// interface.
+type servicebusSubscriptionRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ServicebusSubscriptionRules in the indexer for a given namespace.
+func (s servicebusSubscriptionRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServicebusSubscriptionRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ServicebusSubscriptionRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the ServicebusSubscriptionRule from the indexer for a given namespace and name.
+func (s servicebusSubscriptionRuleNamespaceLister) Get(name string) (*v1alpha1.ServicebusSubscriptionRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

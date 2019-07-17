@@ -32,7 +32,7 @@ import (
 // LaunchConfigurationsGetter has a method to return a LaunchConfigurationInterface.
 // A group's client should implement this interface.
 type LaunchConfigurationsGetter interface {
-	LaunchConfigurations() LaunchConfigurationInterface
+	LaunchConfigurations(namespace string) LaunchConfigurationInterface
 }
 
 // LaunchConfigurationInterface has methods to work with LaunchConfiguration resources.
@@ -52,12 +52,14 @@ type LaunchConfigurationInterface interface {
 // launchConfigurations implements LaunchConfigurationInterface
 type launchConfigurations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLaunchConfigurations returns a LaunchConfigurations
-func newLaunchConfigurations(c *AwsV1alpha1Client) *launchConfigurations {
+func newLaunchConfigurations(c *AwsV1alpha1Client, namespace string) *launchConfigurations {
 	return &launchConfigurations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLaunchConfigurations(c *AwsV1alpha1Client) *launchConfigurations {
 func (c *launchConfigurations) Get(name string, options v1.GetOptions) (result *v1alpha1.LaunchConfiguration, err error) {
 	result = &v1alpha1.LaunchConfiguration{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("launchconfigurations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *launchConfigurations) List(opts v1.ListOptions) (result *v1alpha1.Launc
 	}
 	result = &v1alpha1.LaunchConfigurationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("launchconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *launchConfigurations) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("launchconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *launchConfigurations) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *launchConfigurations) Create(launchConfiguration *v1alpha1.LaunchConfiguration) (result *v1alpha1.LaunchConfiguration, err error) {
 	result = &v1alpha1.LaunchConfiguration{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("launchconfigurations").
 		Body(launchConfiguration).
 		Do().
@@ -118,6 +124,7 @@ func (c *launchConfigurations) Create(launchConfiguration *v1alpha1.LaunchConfig
 func (c *launchConfigurations) Update(launchConfiguration *v1alpha1.LaunchConfiguration) (result *v1alpha1.LaunchConfiguration, err error) {
 	result = &v1alpha1.LaunchConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("launchconfigurations").
 		Name(launchConfiguration.Name).
 		Body(launchConfiguration).
@@ -132,6 +139,7 @@ func (c *launchConfigurations) Update(launchConfiguration *v1alpha1.LaunchConfig
 func (c *launchConfigurations) UpdateStatus(launchConfiguration *v1alpha1.LaunchConfiguration) (result *v1alpha1.LaunchConfiguration, err error) {
 	result = &v1alpha1.LaunchConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("launchconfigurations").
 		Name(launchConfiguration.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *launchConfigurations) UpdateStatus(launchConfiguration *v1alpha1.Launch
 // Delete takes name of the launchConfiguration and deletes it. Returns an error if one occurs.
 func (c *launchConfigurations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("launchconfigurations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *launchConfigurations) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("launchconfigurations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *launchConfigurations) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *launchConfigurations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LaunchConfiguration, err error) {
 	result = &v1alpha1.LaunchConfiguration{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("launchconfigurations").
 		SubResource(subresources...).
 		Name(name).

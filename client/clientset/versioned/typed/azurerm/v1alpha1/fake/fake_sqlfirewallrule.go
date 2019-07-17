@@ -31,6 +31,7 @@ import (
 // FakeSqlFirewallRules implements SqlFirewallRuleInterface
 type FakeSqlFirewallRules struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var sqlfirewallrulesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "sqlfirewallrules"}
@@ -40,7 +41,8 @@ var sqlfirewallrulesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com"
 // Get takes name of the sqlFirewallRule, and returns the corresponding sqlFirewallRule object, and an error if there is any.
 func (c *FakeSqlFirewallRules) Get(name string, options v1.GetOptions) (result *v1alpha1.SqlFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sqlfirewallrulesResource, name), &v1alpha1.SqlFirewallRule{})
+		Invokes(testing.NewGetAction(sqlfirewallrulesResource, c.ns, name), &v1alpha1.SqlFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSqlFirewallRules) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of SqlFirewallRules that match those selectors.
 func (c *FakeSqlFirewallRules) List(opts v1.ListOptions) (result *v1alpha1.SqlFirewallRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sqlfirewallrulesResource, sqlfirewallrulesKind, opts), &v1alpha1.SqlFirewallRuleList{})
+		Invokes(testing.NewListAction(sqlfirewallrulesResource, sqlfirewallrulesKind, c.ns, opts), &v1alpha1.SqlFirewallRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSqlFirewallRules) List(opts v1.ListOptions) (result *v1alpha1.SqlFi
 // Watch returns a watch.Interface that watches the requested sqlFirewallRules.
 func (c *FakeSqlFirewallRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sqlfirewallrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(sqlfirewallrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sqlFirewallRule and creates it.  Returns the server's representation of the sqlFirewallRule, and an error, if there is any.
 func (c *FakeSqlFirewallRules) Create(sqlFirewallRule *v1alpha1.SqlFirewallRule) (result *v1alpha1.SqlFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sqlfirewallrulesResource, sqlFirewallRule), &v1alpha1.SqlFirewallRule{})
+		Invokes(testing.NewCreateAction(sqlfirewallrulesResource, c.ns, sqlFirewallRule), &v1alpha1.SqlFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSqlFirewallRules) Create(sqlFirewallRule *v1alpha1.SqlFirewallRule)
 // Update takes the representation of a sqlFirewallRule and updates it. Returns the server's representation of the sqlFirewallRule, and an error, if there is any.
 func (c *FakeSqlFirewallRules) Update(sqlFirewallRule *v1alpha1.SqlFirewallRule) (result *v1alpha1.SqlFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sqlfirewallrulesResource, sqlFirewallRule), &v1alpha1.SqlFirewallRule{})
+		Invokes(testing.NewUpdateAction(sqlfirewallrulesResource, c.ns, sqlFirewallRule), &v1alpha1.SqlFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSqlFirewallRules) Update(sqlFirewallRule *v1alpha1.SqlFirewallRule)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSqlFirewallRules) UpdateStatus(sqlFirewallRule *v1alpha1.SqlFirewallRule) (*v1alpha1.SqlFirewallRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sqlfirewallrulesResource, "status", sqlFirewallRule), &v1alpha1.SqlFirewallRule{})
+		Invokes(testing.NewUpdateSubresourceAction(sqlfirewallrulesResource, "status", c.ns, sqlFirewallRule), &v1alpha1.SqlFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSqlFirewallRules) UpdateStatus(sqlFirewallRule *v1alpha1.SqlFirewal
 // Delete takes name of the sqlFirewallRule and deletes it. Returns an error if one occurs.
 func (c *FakeSqlFirewallRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sqlfirewallrulesResource, name), &v1alpha1.SqlFirewallRule{})
+		Invokes(testing.NewDeleteAction(sqlfirewallrulesResource, c.ns, name), &v1alpha1.SqlFirewallRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSqlFirewallRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sqlfirewallrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sqlfirewallrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SqlFirewallRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSqlFirewallRules) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched sqlFirewallRule.
 func (c *FakeSqlFirewallRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SqlFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sqlfirewallrulesResource, name, pt, data, subresources...), &v1alpha1.SqlFirewallRule{})
+		Invokes(testing.NewPatchSubresourceAction(sqlfirewallrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.SqlFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeVpcPeeringConnectionOptionses implements VpcPeeringConnectionOptionsInterface
 type FakeVpcPeeringConnectionOptionses struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var vpcpeeringconnectionoptionsesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "vpcpeeringconnectionoptionses"}
@@ -40,7 +41,8 @@ var vpcpeeringconnectionoptionsesKind = schema.GroupVersionKind{Group: "aws.kube
 // Get takes name of the vpcPeeringConnectionOptions, and returns the corresponding vpcPeeringConnectionOptions object, and an error if there is any.
 func (c *FakeVpcPeeringConnectionOptionses) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcPeeringConnectionOptions, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(vpcpeeringconnectionoptionsesResource, name), &v1alpha1.VpcPeeringConnectionOptions{})
+		Invokes(testing.NewGetAction(vpcpeeringconnectionoptionsesResource, c.ns, name), &v1alpha1.VpcPeeringConnectionOptions{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeVpcPeeringConnectionOptionses) Get(name string, options v1.GetOptio
 // List takes label and field selectors, and returns the list of VpcPeeringConnectionOptionses that match those selectors.
 func (c *FakeVpcPeeringConnectionOptionses) List(opts v1.ListOptions) (result *v1alpha1.VpcPeeringConnectionOptionsList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(vpcpeeringconnectionoptionsesResource, vpcpeeringconnectionoptionsesKind, opts), &v1alpha1.VpcPeeringConnectionOptionsList{})
+		Invokes(testing.NewListAction(vpcpeeringconnectionoptionsesResource, vpcpeeringconnectionoptionsesKind, c.ns, opts), &v1alpha1.VpcPeeringConnectionOptionsList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeVpcPeeringConnectionOptionses) List(opts v1.ListOptions) (result *v
 // Watch returns a watch.Interface that watches the requested vpcPeeringConnectionOptionses.
 func (c *FakeVpcPeeringConnectionOptionses) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(vpcpeeringconnectionoptionsesResource, opts))
+		InvokesWatch(testing.NewWatchAction(vpcpeeringconnectionoptionsesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a vpcPeeringConnectionOptions and creates it.  Returns the server's representation of the vpcPeeringConnectionOptions, and an error, if there is any.
 func (c *FakeVpcPeeringConnectionOptionses) Create(vpcPeeringConnectionOptions *v1alpha1.VpcPeeringConnectionOptions) (result *v1alpha1.VpcPeeringConnectionOptions, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(vpcpeeringconnectionoptionsesResource, vpcPeeringConnectionOptions), &v1alpha1.VpcPeeringConnectionOptions{})
+		Invokes(testing.NewCreateAction(vpcpeeringconnectionoptionsesResource, c.ns, vpcPeeringConnectionOptions), &v1alpha1.VpcPeeringConnectionOptions{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeVpcPeeringConnectionOptionses) Create(vpcPeeringConnectionOptions *
 // Update takes the representation of a vpcPeeringConnectionOptions and updates it. Returns the server's representation of the vpcPeeringConnectionOptions, and an error, if there is any.
 func (c *FakeVpcPeeringConnectionOptionses) Update(vpcPeeringConnectionOptions *v1alpha1.VpcPeeringConnectionOptions) (result *v1alpha1.VpcPeeringConnectionOptions, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(vpcpeeringconnectionoptionsesResource, vpcPeeringConnectionOptions), &v1alpha1.VpcPeeringConnectionOptions{})
+		Invokes(testing.NewUpdateAction(vpcpeeringconnectionoptionsesResource, c.ns, vpcPeeringConnectionOptions), &v1alpha1.VpcPeeringConnectionOptions{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeVpcPeeringConnectionOptionses) Update(vpcPeeringConnectionOptions *
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeVpcPeeringConnectionOptionses) UpdateStatus(vpcPeeringConnectionOptions *v1alpha1.VpcPeeringConnectionOptions) (*v1alpha1.VpcPeeringConnectionOptions, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(vpcpeeringconnectionoptionsesResource, "status", vpcPeeringConnectionOptions), &v1alpha1.VpcPeeringConnectionOptions{})
+		Invokes(testing.NewUpdateSubresourceAction(vpcpeeringconnectionoptionsesResource, "status", c.ns, vpcPeeringConnectionOptions), &v1alpha1.VpcPeeringConnectionOptions{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeVpcPeeringConnectionOptionses) UpdateStatus(vpcPeeringConnectionOpt
 // Delete takes name of the vpcPeeringConnectionOptions and deletes it. Returns an error if one occurs.
 func (c *FakeVpcPeeringConnectionOptionses) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(vpcpeeringconnectionoptionsesResource, name), &v1alpha1.VpcPeeringConnectionOptions{})
+		Invokes(testing.NewDeleteAction(vpcpeeringconnectionoptionsesResource, c.ns, name), &v1alpha1.VpcPeeringConnectionOptions{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeVpcPeeringConnectionOptionses) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(vpcpeeringconnectionoptionsesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(vpcpeeringconnectionoptionsesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.VpcPeeringConnectionOptionsList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeVpcPeeringConnectionOptionses) DeleteCollection(options *v1.DeleteO
 // Patch applies the patch and returns the patched vpcPeeringConnectionOptions.
 func (c *FakeVpcPeeringConnectionOptionses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcPeeringConnectionOptions, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(vpcpeeringconnectionoptionsesResource, name, pt, data, subresources...), &v1alpha1.VpcPeeringConnectionOptions{})
+		Invokes(testing.NewPatchSubresourceAction(vpcpeeringconnectionoptionsesResource, c.ns, name, pt, data, subresources...), &v1alpha1.VpcPeeringConnectionOptions{})
+
 	if obj == nil {
 		return nil, err
 	}

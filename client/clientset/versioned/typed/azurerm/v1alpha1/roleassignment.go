@@ -32,7 +32,7 @@ import (
 // RoleAssignmentsGetter has a method to return a RoleAssignmentInterface.
 // A group's client should implement this interface.
 type RoleAssignmentsGetter interface {
-	RoleAssignments() RoleAssignmentInterface
+	RoleAssignments(namespace string) RoleAssignmentInterface
 }
 
 // RoleAssignmentInterface has methods to work with RoleAssignment resources.
@@ -52,12 +52,14 @@ type RoleAssignmentInterface interface {
 // roleAssignments implements RoleAssignmentInterface
 type roleAssignments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRoleAssignments returns a RoleAssignments
-func newRoleAssignments(c *AzurermV1alpha1Client) *roleAssignments {
+func newRoleAssignments(c *AzurermV1alpha1Client, namespace string) *roleAssignments {
 	return &roleAssignments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRoleAssignments(c *AzurermV1alpha1Client) *roleAssignments {
 func (c *roleAssignments) Get(name string, options v1.GetOptions) (result *v1alpha1.RoleAssignment, err error) {
 	result = &v1alpha1.RoleAssignment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("roleassignments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *roleAssignments) List(opts v1.ListOptions) (result *v1alpha1.RoleAssign
 	}
 	result = &v1alpha1.RoleAssignmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("roleassignments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *roleAssignments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("roleassignments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *roleAssignments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *roleAssignments) Create(roleAssignment *v1alpha1.RoleAssignment) (result *v1alpha1.RoleAssignment, err error) {
 	result = &v1alpha1.RoleAssignment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("roleassignments").
 		Body(roleAssignment).
 		Do().
@@ -118,6 +124,7 @@ func (c *roleAssignments) Create(roleAssignment *v1alpha1.RoleAssignment) (resul
 func (c *roleAssignments) Update(roleAssignment *v1alpha1.RoleAssignment) (result *v1alpha1.RoleAssignment, err error) {
 	result = &v1alpha1.RoleAssignment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("roleassignments").
 		Name(roleAssignment.Name).
 		Body(roleAssignment).
@@ -132,6 +139,7 @@ func (c *roleAssignments) Update(roleAssignment *v1alpha1.RoleAssignment) (resul
 func (c *roleAssignments) UpdateStatus(roleAssignment *v1alpha1.RoleAssignment) (result *v1alpha1.RoleAssignment, err error) {
 	result = &v1alpha1.RoleAssignment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("roleassignments").
 		Name(roleAssignment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *roleAssignments) UpdateStatus(roleAssignment *v1alpha1.RoleAssignment) 
 // Delete takes name of the roleAssignment and deletes it. Returns an error if one occurs.
 func (c *roleAssignments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("roleassignments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *roleAssignments) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("roleassignments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *roleAssignments) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *roleAssignments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RoleAssignment, err error) {
 	result = &v1alpha1.RoleAssignment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("roleassignments").
 		SubResource(subresources...).
 		Name(name).

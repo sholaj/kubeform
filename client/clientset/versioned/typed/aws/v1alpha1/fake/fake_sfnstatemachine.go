@@ -31,6 +31,7 @@ import (
 // FakeSfnStateMachines implements SfnStateMachineInterface
 type FakeSfnStateMachines struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var sfnstatemachinesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "sfnstatemachines"}
@@ -40,7 +41,8 @@ var sfnstatemachinesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ve
 // Get takes name of the sfnStateMachine, and returns the corresponding sfnStateMachine object, and an error if there is any.
 func (c *FakeSfnStateMachines) Get(name string, options v1.GetOptions) (result *v1alpha1.SfnStateMachine, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sfnstatemachinesResource, name), &v1alpha1.SfnStateMachine{})
+		Invokes(testing.NewGetAction(sfnstatemachinesResource, c.ns, name), &v1alpha1.SfnStateMachine{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSfnStateMachines) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of SfnStateMachines that match those selectors.
 func (c *FakeSfnStateMachines) List(opts v1.ListOptions) (result *v1alpha1.SfnStateMachineList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sfnstatemachinesResource, sfnstatemachinesKind, opts), &v1alpha1.SfnStateMachineList{})
+		Invokes(testing.NewListAction(sfnstatemachinesResource, sfnstatemachinesKind, c.ns, opts), &v1alpha1.SfnStateMachineList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSfnStateMachines) List(opts v1.ListOptions) (result *v1alpha1.SfnSt
 // Watch returns a watch.Interface that watches the requested sfnStateMachines.
 func (c *FakeSfnStateMachines) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sfnstatemachinesResource, opts))
+		InvokesWatch(testing.NewWatchAction(sfnstatemachinesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sfnStateMachine and creates it.  Returns the server's representation of the sfnStateMachine, and an error, if there is any.
 func (c *FakeSfnStateMachines) Create(sfnStateMachine *v1alpha1.SfnStateMachine) (result *v1alpha1.SfnStateMachine, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sfnstatemachinesResource, sfnStateMachine), &v1alpha1.SfnStateMachine{})
+		Invokes(testing.NewCreateAction(sfnstatemachinesResource, c.ns, sfnStateMachine), &v1alpha1.SfnStateMachine{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSfnStateMachines) Create(sfnStateMachine *v1alpha1.SfnStateMachine)
 // Update takes the representation of a sfnStateMachine and updates it. Returns the server's representation of the sfnStateMachine, and an error, if there is any.
 func (c *FakeSfnStateMachines) Update(sfnStateMachine *v1alpha1.SfnStateMachine) (result *v1alpha1.SfnStateMachine, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sfnstatemachinesResource, sfnStateMachine), &v1alpha1.SfnStateMachine{})
+		Invokes(testing.NewUpdateAction(sfnstatemachinesResource, c.ns, sfnStateMachine), &v1alpha1.SfnStateMachine{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSfnStateMachines) Update(sfnStateMachine *v1alpha1.SfnStateMachine)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSfnStateMachines) UpdateStatus(sfnStateMachine *v1alpha1.SfnStateMachine) (*v1alpha1.SfnStateMachine, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sfnstatemachinesResource, "status", sfnStateMachine), &v1alpha1.SfnStateMachine{})
+		Invokes(testing.NewUpdateSubresourceAction(sfnstatemachinesResource, "status", c.ns, sfnStateMachine), &v1alpha1.SfnStateMachine{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSfnStateMachines) UpdateStatus(sfnStateMachine *v1alpha1.SfnStateMa
 // Delete takes name of the sfnStateMachine and deletes it. Returns an error if one occurs.
 func (c *FakeSfnStateMachines) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sfnstatemachinesResource, name), &v1alpha1.SfnStateMachine{})
+		Invokes(testing.NewDeleteAction(sfnstatemachinesResource, c.ns, name), &v1alpha1.SfnStateMachine{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSfnStateMachines) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sfnstatemachinesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sfnstatemachinesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SfnStateMachineList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSfnStateMachines) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched sfnStateMachine.
 func (c *FakeSfnStateMachines) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SfnStateMachine, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sfnstatemachinesResource, name, pt, data, subresources...), &v1alpha1.SfnStateMachine{})
+		Invokes(testing.NewPatchSubresourceAction(sfnstatemachinesResource, c.ns, name, pt, data, subresources...), &v1alpha1.SfnStateMachine{})
+
 	if obj == nil {
 		return nil, err
 	}

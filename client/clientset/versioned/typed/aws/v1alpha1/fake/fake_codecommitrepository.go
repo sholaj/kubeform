@@ -31,6 +31,7 @@ import (
 // FakeCodecommitRepositories implements CodecommitRepositoryInterface
 type FakeCodecommitRepositories struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var codecommitrepositoriesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "codecommitrepositories"}
@@ -40,7 +41,8 @@ var codecommitrepositoriesKind = schema.GroupVersionKind{Group: "aws.kubeform.co
 // Get takes name of the codecommitRepository, and returns the corresponding codecommitRepository object, and an error if there is any.
 func (c *FakeCodecommitRepositories) Get(name string, options v1.GetOptions) (result *v1alpha1.CodecommitRepository, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(codecommitrepositoriesResource, name), &v1alpha1.CodecommitRepository{})
+		Invokes(testing.NewGetAction(codecommitrepositoriesResource, c.ns, name), &v1alpha1.CodecommitRepository{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCodecommitRepositories) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of CodecommitRepositories that match those selectors.
 func (c *FakeCodecommitRepositories) List(opts v1.ListOptions) (result *v1alpha1.CodecommitRepositoryList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(codecommitrepositoriesResource, codecommitrepositoriesKind, opts), &v1alpha1.CodecommitRepositoryList{})
+		Invokes(testing.NewListAction(codecommitrepositoriesResource, codecommitrepositoriesKind, c.ns, opts), &v1alpha1.CodecommitRepositoryList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCodecommitRepositories) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested codecommitRepositories.
 func (c *FakeCodecommitRepositories) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(codecommitrepositoriesResource, opts))
+		InvokesWatch(testing.NewWatchAction(codecommitrepositoriesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a codecommitRepository and creates it.  Returns the server's representation of the codecommitRepository, and an error, if there is any.
 func (c *FakeCodecommitRepositories) Create(codecommitRepository *v1alpha1.CodecommitRepository) (result *v1alpha1.CodecommitRepository, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(codecommitrepositoriesResource, codecommitRepository), &v1alpha1.CodecommitRepository{})
+		Invokes(testing.NewCreateAction(codecommitrepositoriesResource, c.ns, codecommitRepository), &v1alpha1.CodecommitRepository{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCodecommitRepositories) Create(codecommitRepository *v1alpha1.Codec
 // Update takes the representation of a codecommitRepository and updates it. Returns the server's representation of the codecommitRepository, and an error, if there is any.
 func (c *FakeCodecommitRepositories) Update(codecommitRepository *v1alpha1.CodecommitRepository) (result *v1alpha1.CodecommitRepository, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(codecommitrepositoriesResource, codecommitRepository), &v1alpha1.CodecommitRepository{})
+		Invokes(testing.NewUpdateAction(codecommitrepositoriesResource, c.ns, codecommitRepository), &v1alpha1.CodecommitRepository{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCodecommitRepositories) Update(codecommitRepository *v1alpha1.Codec
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCodecommitRepositories) UpdateStatus(codecommitRepository *v1alpha1.CodecommitRepository) (*v1alpha1.CodecommitRepository, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(codecommitrepositoriesResource, "status", codecommitRepository), &v1alpha1.CodecommitRepository{})
+		Invokes(testing.NewUpdateSubresourceAction(codecommitrepositoriesResource, "status", c.ns, codecommitRepository), &v1alpha1.CodecommitRepository{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCodecommitRepositories) UpdateStatus(codecommitRepository *v1alpha1
 // Delete takes name of the codecommitRepository and deletes it. Returns an error if one occurs.
 func (c *FakeCodecommitRepositories) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(codecommitrepositoriesResource, name), &v1alpha1.CodecommitRepository{})
+		Invokes(testing.NewDeleteAction(codecommitrepositoriesResource, c.ns, name), &v1alpha1.CodecommitRepository{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCodecommitRepositories) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(codecommitrepositoriesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(codecommitrepositoriesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CodecommitRepositoryList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCodecommitRepositories) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched codecommitRepository.
 func (c *FakeCodecommitRepositories) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CodecommitRepository, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(codecommitrepositoriesResource, name, pt, data, subresources...), &v1alpha1.CodecommitRepository{})
+		Invokes(testing.NewPatchSubresourceAction(codecommitrepositoriesResource, c.ns, name, pt, data, subresources...), &v1alpha1.CodecommitRepository{})
+
 	if obj == nil {
 		return nil, err
 	}

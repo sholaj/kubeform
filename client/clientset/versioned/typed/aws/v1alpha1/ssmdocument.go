@@ -32,7 +32,7 @@ import (
 // SsmDocumentsGetter has a method to return a SsmDocumentInterface.
 // A group's client should implement this interface.
 type SsmDocumentsGetter interface {
-	SsmDocuments() SsmDocumentInterface
+	SsmDocuments(namespace string) SsmDocumentInterface
 }
 
 // SsmDocumentInterface has methods to work with SsmDocument resources.
@@ -52,12 +52,14 @@ type SsmDocumentInterface interface {
 // ssmDocuments implements SsmDocumentInterface
 type ssmDocuments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSsmDocuments returns a SsmDocuments
-func newSsmDocuments(c *AwsV1alpha1Client) *ssmDocuments {
+func newSsmDocuments(c *AwsV1alpha1Client, namespace string) *ssmDocuments {
 	return &ssmDocuments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSsmDocuments(c *AwsV1alpha1Client) *ssmDocuments {
 func (c *ssmDocuments) Get(name string, options v1.GetOptions) (result *v1alpha1.SsmDocument, err error) {
 	result = &v1alpha1.SsmDocument{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmdocuments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ssmDocuments) List(opts v1.ListOptions) (result *v1alpha1.SsmDocumentLi
 	}
 	result = &v1alpha1.SsmDocumentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmdocuments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ssmDocuments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmdocuments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ssmDocuments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *ssmDocuments) Create(ssmDocument *v1alpha1.SsmDocument) (result *v1alpha1.SsmDocument, err error) {
 	result = &v1alpha1.SsmDocument{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ssmdocuments").
 		Body(ssmDocument).
 		Do().
@@ -118,6 +124,7 @@ func (c *ssmDocuments) Create(ssmDocument *v1alpha1.SsmDocument) (result *v1alph
 func (c *ssmDocuments) Update(ssmDocument *v1alpha1.SsmDocument) (result *v1alpha1.SsmDocument, err error) {
 	result = &v1alpha1.SsmDocument{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ssmdocuments").
 		Name(ssmDocument.Name).
 		Body(ssmDocument).
@@ -132,6 +139,7 @@ func (c *ssmDocuments) Update(ssmDocument *v1alpha1.SsmDocument) (result *v1alph
 func (c *ssmDocuments) UpdateStatus(ssmDocument *v1alpha1.SsmDocument) (result *v1alpha1.SsmDocument, err error) {
 	result = &v1alpha1.SsmDocument{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ssmdocuments").
 		Name(ssmDocument.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ssmDocuments) UpdateStatus(ssmDocument *v1alpha1.SsmDocument) (result *
 // Delete takes name of the ssmDocument and deletes it. Returns an error if one occurs.
 func (c *ssmDocuments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ssmdocuments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ssmDocuments) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ssmdocuments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ssmDocuments) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *ssmDocuments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SsmDocument, err error) {
 	result = &v1alpha1.SsmDocument{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ssmdocuments").
 		SubResource(subresources...).
 		Name(name).

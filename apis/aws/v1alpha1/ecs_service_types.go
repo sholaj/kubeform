@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,92 +20,93 @@ type EcsService struct {
 
 type EcsServiceSpecDeploymentController struct {
 	// +optional
-	Type string `json:"type,omitempty"`
+	Type string `json:"type,omitempty" tf:"type,omitempty"`
 }
 
 type EcsServiceSpecLoadBalancer struct {
-	ContainerName string `json:"container_name"`
-	ContainerPort int    `json:"container_port"`
+	ContainerName string `json:"containerName" tf:"container_name"`
+	ContainerPort int    `json:"containerPort" tf:"container_port"`
 	// +optional
-	ElbName string `json:"elb_name,omitempty"`
+	ElbName string `json:"elbName,omitempty" tf:"elb_name,omitempty"`
 	// +optional
-	TargetGroupArn string `json:"target_group_arn,omitempty"`
+	TargetGroupArn string `json:"targetGroupArn,omitempty" tf:"target_group_arn,omitempty"`
 }
 
 type EcsServiceSpecNetworkConfiguration struct {
 	// +optional
-	AssignPublicIp bool `json:"assign_public_ip,omitempty"`
+	AssignPublicIP bool `json:"assignPublicIP,omitempty" tf:"assign_public_ip,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SecurityGroups []string `json:"security_groups,omitempty"`
+	SecurityGroups []string `json:"securityGroups,omitempty" tf:"security_groups,omitempty"`
 	// +kubebuilder:validation:UniqueItems=true
-	Subnets []string `json:"subnets"`
+	Subnets []string `json:"subnets" tf:"subnets"`
 }
 
 type EcsServiceSpecOrderedPlacementStrategy struct {
 	// +optional
-	Field string `json:"field,omitempty"`
-	Type  string `json:"type"`
+	Field string `json:"field,omitempty" tf:"field,omitempty"`
+	Type  string `json:"type" tf:"type"`
 }
 
 type EcsServiceSpecPlacementConstraints struct {
 	// +optional
-	Expression string `json:"expression,omitempty"`
-	Type       string `json:"type"`
+	Expression string `json:"expression,omitempty" tf:"expression,omitempty"`
+	Type       string `json:"type" tf:"type"`
 }
 
 type EcsServiceSpecServiceRegistries struct {
 	// +optional
-	ContainerName string `json:"container_name,omitempty"`
+	ContainerName string `json:"containerName,omitempty" tf:"container_name,omitempty"`
 	// +optional
-	ContainerPort int `json:"container_port,omitempty"`
+	ContainerPort int `json:"containerPort,omitempty" tf:"container_port,omitempty"`
 	// +optional
-	Port        int    `json:"port,omitempty"`
-	RegistryArn string `json:"registry_arn"`
+	Port        int    `json:"port,omitempty" tf:"port,omitempty"`
+	RegistryArn string `json:"registryArn" tf:"registry_arn"`
 }
 
 type EcsServiceSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	DeploymentController *[]EcsServiceSpec `json:"deployment_controller,omitempty"`
+	DeploymentController []EcsServiceSpecDeploymentController `json:"deploymentController,omitempty" tf:"deployment_controller,omitempty"`
 	// +optional
-	DeploymentMaximumPercent int `json:"deployment_maximum_percent,omitempty"`
+	DeploymentMaximumPercent int `json:"deploymentMaximumPercent,omitempty" tf:"deployment_maximum_percent,omitempty"`
 	// +optional
-	DeploymentMinimumHealthyPercent int `json:"deployment_minimum_healthy_percent,omitempty"`
+	DeploymentMinimumHealthyPercent int `json:"deploymentMinimumHealthyPercent,omitempty" tf:"deployment_minimum_healthy_percent,omitempty"`
 	// +optional
-	DesiredCount int `json:"desired_count,omitempty"`
+	DesiredCount int `json:"desiredCount,omitempty" tf:"desired_count,omitempty"`
 	// +optional
-	EnableEcsManagedTags bool `json:"enable_ecs_managed_tags,omitempty"`
+	EnableEcsManagedTags bool `json:"enableEcsManagedTags,omitempty" tf:"enable_ecs_managed_tags,omitempty"`
 	// +optional
-	HealthCheckGracePeriodSeconds int `json:"health_check_grace_period_seconds,omitempty"`
+	HealthCheckGracePeriodSeconds int `json:"healthCheckGracePeriodSeconds,omitempty" tf:"health_check_grace_period_seconds,omitempty"`
 	// +optional
-	LaunchType string `json:"launch_type,omitempty"`
+	LaunchType string `json:"launchType,omitempty" tf:"launch_type,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	LoadBalancer *[]EcsServiceSpec `json:"load_balancer,omitempty"`
-	Name         string            `json:"name"`
+	LoadBalancer []EcsServiceSpecLoadBalancer `json:"loadBalancer,omitempty" tf:"load_balancer,omitempty"`
+	Name         string                       `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	NetworkConfiguration *[]EcsServiceSpec `json:"network_configuration,omitempty"`
+	NetworkConfiguration []EcsServiceSpecNetworkConfiguration `json:"networkConfiguration,omitempty" tf:"network_configuration,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=5
-	OrderedPlacementStrategy *[]EcsServiceSpec `json:"ordered_placement_strategy,omitempty"`
+	OrderedPlacementStrategy []EcsServiceSpecOrderedPlacementStrategy `json:"orderedPlacementStrategy,omitempty" tf:"ordered_placement_strategy,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=10
 	// +kubebuilder:validation:UniqueItems=true
-	PlacementConstraints *[]EcsServiceSpec `json:"placement_constraints,omitempty"`
+	PlacementConstraints []EcsServiceSpecPlacementConstraints `json:"placementConstraints,omitempty" tf:"placement_constraints,omitempty"`
 	// +optional
-	PropagateTags string `json:"propagate_tags,omitempty"`
+	PropagateTags string `json:"propagateTags,omitempty" tf:"propagate_tags,omitempty"`
 	// +optional
-	SchedulingStrategy string `json:"scheduling_strategy,omitempty"`
+	SchedulingStrategy string `json:"schedulingStrategy,omitempty" tf:"scheduling_strategy,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	ServiceRegistries *[]EcsServiceSpec `json:"service_registries,omitempty"`
+	ServiceRegistries []EcsServiceSpecServiceRegistries `json:"serviceRegistries,omitempty" tf:"service_registries,omitempty"`
 	// +optional
-	Tags           map[string]string `json:"tags,omitempty"`
-	TaskDefinition string            `json:"task_definition"`
+	Tags           map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	TaskDefinition string                    `json:"taskDefinition" tf:"task_definition"`
+	ProviderRef    core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type EcsServiceStatus struct {
@@ -113,7 +114,9 @@ type EcsServiceStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

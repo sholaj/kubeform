@@ -32,7 +32,7 @@ import (
 // MysqlConfigurationsGetter has a method to return a MysqlConfigurationInterface.
 // A group's client should implement this interface.
 type MysqlConfigurationsGetter interface {
-	MysqlConfigurations() MysqlConfigurationInterface
+	MysqlConfigurations(namespace string) MysqlConfigurationInterface
 }
 
 // MysqlConfigurationInterface has methods to work with MysqlConfiguration resources.
@@ -52,12 +52,14 @@ type MysqlConfigurationInterface interface {
 // mysqlConfigurations implements MysqlConfigurationInterface
 type mysqlConfigurations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMysqlConfigurations returns a MysqlConfigurations
-func newMysqlConfigurations(c *AzurermV1alpha1Client) *mysqlConfigurations {
+func newMysqlConfigurations(c *AzurermV1alpha1Client, namespace string) *mysqlConfigurations {
 	return &mysqlConfigurations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMysqlConfigurations(c *AzurermV1alpha1Client) *mysqlConfigurations {
 func (c *mysqlConfigurations) Get(name string, options v1.GetOptions) (result *v1alpha1.MysqlConfiguration, err error) {
 	result = &v1alpha1.MysqlConfiguration{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mysqlconfigurations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *mysqlConfigurations) List(opts v1.ListOptions) (result *v1alpha1.MysqlC
 	}
 	result = &v1alpha1.MysqlConfigurationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mysqlconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *mysqlConfigurations) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("mysqlconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *mysqlConfigurations) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *mysqlConfigurations) Create(mysqlConfiguration *v1alpha1.MysqlConfiguration) (result *v1alpha1.MysqlConfiguration, err error) {
 	result = &v1alpha1.MysqlConfiguration{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("mysqlconfigurations").
 		Body(mysqlConfiguration).
 		Do().
@@ -118,6 +124,7 @@ func (c *mysqlConfigurations) Create(mysqlConfiguration *v1alpha1.MysqlConfigura
 func (c *mysqlConfigurations) Update(mysqlConfiguration *v1alpha1.MysqlConfiguration) (result *v1alpha1.MysqlConfiguration, err error) {
 	result = &v1alpha1.MysqlConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mysqlconfigurations").
 		Name(mysqlConfiguration.Name).
 		Body(mysqlConfiguration).
@@ -132,6 +139,7 @@ func (c *mysqlConfigurations) Update(mysqlConfiguration *v1alpha1.MysqlConfigura
 func (c *mysqlConfigurations) UpdateStatus(mysqlConfiguration *v1alpha1.MysqlConfiguration) (result *v1alpha1.MysqlConfiguration, err error) {
 	result = &v1alpha1.MysqlConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mysqlconfigurations").
 		Name(mysqlConfiguration.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *mysqlConfigurations) UpdateStatus(mysqlConfiguration *v1alpha1.MysqlCon
 // Delete takes name of the mysqlConfiguration and deletes it. Returns an error if one occurs.
 func (c *mysqlConfigurations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mysqlconfigurations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *mysqlConfigurations) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mysqlconfigurations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *mysqlConfigurations) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *mysqlConfigurations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MysqlConfiguration, err error) {
 	result = &v1alpha1.MysqlConfiguration{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("mysqlconfigurations").
 		SubResource(subresources...).
 		Name(name).

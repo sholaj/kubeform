@@ -32,7 +32,7 @@ import (
 // ComputeProjectMetadatasGetter has a method to return a ComputeProjectMetadataInterface.
 // A group's client should implement this interface.
 type ComputeProjectMetadatasGetter interface {
-	ComputeProjectMetadatas() ComputeProjectMetadataInterface
+	ComputeProjectMetadatas(namespace string) ComputeProjectMetadataInterface
 }
 
 // ComputeProjectMetadataInterface has methods to work with ComputeProjectMetadata resources.
@@ -52,12 +52,14 @@ type ComputeProjectMetadataInterface interface {
 // computeProjectMetadatas implements ComputeProjectMetadataInterface
 type computeProjectMetadatas struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeProjectMetadatas returns a ComputeProjectMetadatas
-func newComputeProjectMetadatas(c *GoogleV1alpha1Client) *computeProjectMetadatas {
+func newComputeProjectMetadatas(c *GoogleV1alpha1Client, namespace string) *computeProjectMetadatas {
 	return &computeProjectMetadatas{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeProjectMetadatas(c *GoogleV1alpha1Client) *computeProjectMetadata
 func (c *computeProjectMetadatas) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeProjectMetadata, err error) {
 	result = &v1alpha1.ComputeProjectMetadata{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeprojectmetadatas").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeProjectMetadatas) List(opts v1.ListOptions) (result *v1alpha1.Co
 	}
 	result = &v1alpha1.ComputeProjectMetadataList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeprojectmetadatas").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeProjectMetadatas) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computeprojectmetadatas").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeProjectMetadatas) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *computeProjectMetadatas) Create(computeProjectMetadata *v1alpha1.ComputeProjectMetadata) (result *v1alpha1.ComputeProjectMetadata, err error) {
 	result = &v1alpha1.ComputeProjectMetadata{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computeprojectmetadatas").
 		Body(computeProjectMetadata).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeProjectMetadatas) Create(computeProjectMetadata *v1alpha1.Comput
 func (c *computeProjectMetadatas) Update(computeProjectMetadata *v1alpha1.ComputeProjectMetadata) (result *v1alpha1.ComputeProjectMetadata, err error) {
 	result = &v1alpha1.ComputeProjectMetadata{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeprojectmetadatas").
 		Name(computeProjectMetadata.Name).
 		Body(computeProjectMetadata).
@@ -132,6 +139,7 @@ func (c *computeProjectMetadatas) Update(computeProjectMetadata *v1alpha1.Comput
 func (c *computeProjectMetadatas) UpdateStatus(computeProjectMetadata *v1alpha1.ComputeProjectMetadata) (result *v1alpha1.ComputeProjectMetadata, err error) {
 	result = &v1alpha1.ComputeProjectMetadata{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeprojectmetadatas").
 		Name(computeProjectMetadata.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeProjectMetadatas) UpdateStatus(computeProjectMetadata *v1alpha1.
 // Delete takes name of the computeProjectMetadata and deletes it. Returns an error if one occurs.
 func (c *computeProjectMetadatas) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeprojectmetadatas").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeProjectMetadatas) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeprojectmetadatas").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeProjectMetadatas) DeleteCollection(options *v1.DeleteOptions, li
 func (c *computeProjectMetadatas) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeProjectMetadata, err error) {
 	result = &v1alpha1.ComputeProjectMetadata{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computeprojectmetadatas").
 		SubResource(subresources...).
 		Name(name).

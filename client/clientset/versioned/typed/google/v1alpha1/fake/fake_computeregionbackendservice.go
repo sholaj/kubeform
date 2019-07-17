@@ -31,6 +31,7 @@ import (
 // FakeComputeRegionBackendServices implements ComputeRegionBackendServiceInterface
 type FakeComputeRegionBackendServices struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computeregionbackendservicesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computeregionbackendservices"}
@@ -40,7 +41,8 @@ var computeregionbackendservicesKind = schema.GroupVersionKind{Group: "google.ku
 // Get takes name of the computeRegionBackendService, and returns the corresponding computeRegionBackendService object, and an error if there is any.
 func (c *FakeComputeRegionBackendServices) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeRegionBackendService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computeregionbackendservicesResource, name), &v1alpha1.ComputeRegionBackendService{})
+		Invokes(testing.NewGetAction(computeregionbackendservicesResource, c.ns, name), &v1alpha1.ComputeRegionBackendService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeRegionBackendServices) Get(name string, options v1.GetOption
 // List takes label and field selectors, and returns the list of ComputeRegionBackendServices that match those selectors.
 func (c *FakeComputeRegionBackendServices) List(opts v1.ListOptions) (result *v1alpha1.ComputeRegionBackendServiceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computeregionbackendservicesResource, computeregionbackendservicesKind, opts), &v1alpha1.ComputeRegionBackendServiceList{})
+		Invokes(testing.NewListAction(computeregionbackendservicesResource, computeregionbackendservicesKind, c.ns, opts), &v1alpha1.ComputeRegionBackendServiceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeRegionBackendServices) List(opts v1.ListOptions) (result *v1
 // Watch returns a watch.Interface that watches the requested computeRegionBackendServices.
 func (c *FakeComputeRegionBackendServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computeregionbackendservicesResource, opts))
+		InvokesWatch(testing.NewWatchAction(computeregionbackendservicesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeRegionBackendService and creates it.  Returns the server's representation of the computeRegionBackendService, and an error, if there is any.
 func (c *FakeComputeRegionBackendServices) Create(computeRegionBackendService *v1alpha1.ComputeRegionBackendService) (result *v1alpha1.ComputeRegionBackendService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computeregionbackendservicesResource, computeRegionBackendService), &v1alpha1.ComputeRegionBackendService{})
+		Invokes(testing.NewCreateAction(computeregionbackendservicesResource, c.ns, computeRegionBackendService), &v1alpha1.ComputeRegionBackendService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeRegionBackendServices) Create(computeRegionBackendService *v
 // Update takes the representation of a computeRegionBackendService and updates it. Returns the server's representation of the computeRegionBackendService, and an error, if there is any.
 func (c *FakeComputeRegionBackendServices) Update(computeRegionBackendService *v1alpha1.ComputeRegionBackendService) (result *v1alpha1.ComputeRegionBackendService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computeregionbackendservicesResource, computeRegionBackendService), &v1alpha1.ComputeRegionBackendService{})
+		Invokes(testing.NewUpdateAction(computeregionbackendservicesResource, c.ns, computeRegionBackendService), &v1alpha1.ComputeRegionBackendService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeRegionBackendServices) Update(computeRegionBackendService *v
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeRegionBackendServices) UpdateStatus(computeRegionBackendService *v1alpha1.ComputeRegionBackendService) (*v1alpha1.ComputeRegionBackendService, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computeregionbackendservicesResource, "status", computeRegionBackendService), &v1alpha1.ComputeRegionBackendService{})
+		Invokes(testing.NewUpdateSubresourceAction(computeregionbackendservicesResource, "status", c.ns, computeRegionBackendService), &v1alpha1.ComputeRegionBackendService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeRegionBackendServices) UpdateStatus(computeRegionBackendServ
 // Delete takes name of the computeRegionBackendService and deletes it. Returns an error if one occurs.
 func (c *FakeComputeRegionBackendServices) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computeregionbackendservicesResource, name), &v1alpha1.ComputeRegionBackendService{})
+		Invokes(testing.NewDeleteAction(computeregionbackendservicesResource, c.ns, name), &v1alpha1.ComputeRegionBackendService{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeRegionBackendServices) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computeregionbackendservicesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computeregionbackendservicesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeRegionBackendServiceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeRegionBackendServices) DeleteCollection(options *v1.DeleteOp
 // Patch applies the patch and returns the patched computeRegionBackendService.
 func (c *FakeComputeRegionBackendServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeRegionBackendService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computeregionbackendservicesResource, name, pt, data, subresources...), &v1alpha1.ComputeRegionBackendService{})
+		Invokes(testing.NewPatchSubresourceAction(computeregionbackendservicesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeRegionBackendService{})
+
 	if obj == nil {
 		return nil, err
 	}

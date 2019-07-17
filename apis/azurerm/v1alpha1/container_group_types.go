@@ -3,12 +3,12 @@ package v1alpha1
 import (
 	"encoding/json"
 
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -22,131 +22,132 @@ type ContainerGroup struct {
 
 type ContainerGroupSpecContainerGpu struct {
 	// +optional
-	Count int `json:"count,omitempty"`
+	Count int `json:"count,omitempty" tf:"count,omitempty"`
 	// +optional
-	Sku string `json:"sku,omitempty"`
+	Sku string `json:"sku,omitempty" tf:"sku,omitempty"`
 }
 
 type ContainerGroupSpecContainerLivenessProbeHttpGet struct {
 	// +optional
-	Path string `json:"path,omitempty"`
+	Path string `json:"path,omitempty" tf:"path,omitempty"`
 	// +optional
-	Port int `json:"port,omitempty"`
+	Port int `json:"port,omitempty" tf:"port,omitempty"`
 	// +optional
-	Scheme string `json:"scheme,omitempty"`
+	Scheme string `json:"scheme,omitempty" tf:"scheme,omitempty"`
 }
 
 type ContainerGroupSpecContainerLivenessProbe struct {
 	// +optional
-	Exec []string `json:"exec,omitempty"`
+	Exec []string `json:"exec,omitempty" tf:"exec,omitempty"`
 	// +optional
-	FailureThreshold int `json:"failure_threshold,omitempty"`
+	FailureThreshold int `json:"failureThreshold,omitempty" tf:"failure_threshold,omitempty"`
 	// +optional
-	HttpGet *[]ContainerGroupSpecContainerLivenessProbe `json:"http_get,omitempty"`
+	HttpGet []ContainerGroupSpecContainerLivenessProbeHttpGet `json:"httpGet,omitempty" tf:"http_get,omitempty"`
 	// +optional
-	InitialDelaySeconds int `json:"initial_delay_seconds,omitempty"`
+	InitialDelaySeconds int `json:"initialDelaySeconds,omitempty" tf:"initial_delay_seconds,omitempty"`
 	// +optional
-	PeriodSeconds int `json:"period_seconds,omitempty"`
+	PeriodSeconds int `json:"periodSeconds,omitempty" tf:"period_seconds,omitempty"`
 	// +optional
-	SuccessThreshold int `json:"success_threshold,omitempty"`
+	SuccessThreshold int `json:"successThreshold,omitempty" tf:"success_threshold,omitempty"`
 	// +optional
-	TimeoutSeconds int `json:"timeout_seconds,omitempty"`
+	TimeoutSeconds int `json:"timeoutSeconds,omitempty" tf:"timeout_seconds,omitempty"`
 }
 
 type ContainerGroupSpecContainerReadinessProbeHttpGet struct {
 	// +optional
-	Path string `json:"path,omitempty"`
+	Path string `json:"path,omitempty" tf:"path,omitempty"`
 	// +optional
-	Port int `json:"port,omitempty"`
+	Port int `json:"port,omitempty" tf:"port,omitempty"`
 	// +optional
-	Scheme string `json:"scheme,omitempty"`
+	Scheme string `json:"scheme,omitempty" tf:"scheme,omitempty"`
 }
 
 type ContainerGroupSpecContainerReadinessProbe struct {
 	// +optional
-	Exec []string `json:"exec,omitempty"`
+	Exec []string `json:"exec,omitempty" tf:"exec,omitempty"`
 	// +optional
-	FailureThreshold int `json:"failure_threshold,omitempty"`
+	FailureThreshold int `json:"failureThreshold,omitempty" tf:"failure_threshold,omitempty"`
 	// +optional
-	HttpGet *[]ContainerGroupSpecContainerReadinessProbe `json:"http_get,omitempty"`
+	HttpGet []ContainerGroupSpecContainerReadinessProbeHttpGet `json:"httpGet,omitempty" tf:"http_get,omitempty"`
 	// +optional
-	InitialDelaySeconds int `json:"initial_delay_seconds,omitempty"`
+	InitialDelaySeconds int `json:"initialDelaySeconds,omitempty" tf:"initial_delay_seconds,omitempty"`
 	// +optional
-	PeriodSeconds int `json:"period_seconds,omitempty"`
+	PeriodSeconds int `json:"periodSeconds,omitempty" tf:"period_seconds,omitempty"`
 	// +optional
-	SuccessThreshold int `json:"success_threshold,omitempty"`
+	SuccessThreshold int `json:"successThreshold,omitempty" tf:"success_threshold,omitempty"`
 	// +optional
-	TimeoutSeconds int `json:"timeout_seconds,omitempty"`
+	TimeoutSeconds int `json:"timeoutSeconds,omitempty" tf:"timeout_seconds,omitempty"`
 }
 
 type ContainerGroupSpecContainerVolume struct {
-	MountPath string `json:"mount_path"`
-	Name      string `json:"name"`
+	MountPath string `json:"mountPath" tf:"mount_path"`
+	Name      string `json:"name" tf:"name"`
 	// +optional
-	ReadOnly           bool   `json:"read_only,omitempty"`
-	ShareName          string `json:"share_name"`
-	StorageAccountKey  string `json:"storage_account_key"`
-	StorageAccountName string `json:"storage_account_name"`
+	ReadOnly           bool   `json:"readOnly,omitempty" tf:"read_only,omitempty"`
+	ShareName          string `json:"shareName" tf:"share_name"`
+	StorageAccountKey  string `json:"storageAccountKey" tf:"storage_account_key"`
+	StorageAccountName string `json:"storageAccountName" tf:"storage_account_name"`
 }
 
 type ContainerGroupSpecContainer struct {
-	Cpu json.Number `json:"cpu"`
+	Cpu json.Number `json:"cpu" tf:"cpu"`
 	// +optional
-	EnvironmentVariables map[string]string `json:"environment_variables,omitempty"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	Gpu   *[]ContainerGroupSpecContainer `json:"gpu,omitempty"`
-	Image string                         `json:"image"`
+	EnvironmentVariables map[string]string `json:"environmentVariables,omitempty" tf:"environment_variables,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	LivenessProbe *[]ContainerGroupSpecContainer `json:"liveness_probe,omitempty"`
-	Memory        json.Number                    `json:"memory"`
-	Name          string                         `json:"name"`
+	Gpu   []ContainerGroupSpecContainerGpu `json:"gpu,omitempty" tf:"gpu,omitempty"`
+	Image string                           `json:"image" tf:"image"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ReadinessProbe *[]ContainerGroupSpecContainer `json:"readiness_probe,omitempty"`
+	LivenessProbe []ContainerGroupSpecContainerLivenessProbe `json:"livenessProbe,omitempty" tf:"liveness_probe,omitempty"`
+	Memory        json.Number                                `json:"memory" tf:"memory"`
+	Name          string                                     `json:"name" tf:"name"`
 	// +optional
-	SecureEnvironmentVariables map[string]string `json:"secure_environment_variables,omitempty"`
+	// +kubebuilder:validation:MaxItems=1
+	ReadinessProbe []ContainerGroupSpecContainerReadinessProbe `json:"readinessProbe,omitempty" tf:"readiness_probe,omitempty"`
 	// +optional
-	Volume *[]ContainerGroupSpecContainer `json:"volume,omitempty"`
+	SecureEnvironmentVariables map[string]string `json:"secureEnvironmentVariables,omitempty" tf:"secure_environment_variables,omitempty"`
+	// +optional
+	Volume []ContainerGroupSpecContainerVolume `json:"volume,omitempty" tf:"volume,omitempty"`
 }
 
 type ContainerGroupSpecDiagnosticsLogAnalytics struct {
-	LogType string `json:"log_type"`
+	LogType string `json:"logType" tf:"log_type"`
 	// +optional
-	Metadata     map[string]string `json:"metadata,omitempty"`
-	WorkspaceId  string            `json:"workspace_id"`
-	WorkspaceKey string            `json:"workspace_key"`
+	Metadata     map[string]string `json:"metadata,omitempty" tf:"metadata,omitempty"`
+	WorkspaceID  string            `json:"workspaceID" tf:"workspace_id"`
+	WorkspaceKey string            `json:"workspaceKey" tf:"workspace_key"`
 }
 
 type ContainerGroupSpecDiagnostics struct {
 	// +kubebuilder:validation:MaxItems=1
-	LogAnalytics []ContainerGroupSpecDiagnostics `json:"log_analytics"`
+	LogAnalytics []ContainerGroupSpecDiagnosticsLogAnalytics `json:"logAnalytics" tf:"log_analytics"`
 }
 
 type ContainerGroupSpecImageRegistryCredential struct {
-	Password string `json:"password"`
-	Server   string `json:"server"`
-	Username string `json:"username"`
+	Password string `json:"password" tf:"password"`
+	Server   string `json:"server" tf:"server"`
+	Username string `json:"username" tf:"username"`
 }
 
 type ContainerGroupSpec struct {
-	Container []ContainerGroupSpec `json:"container"`
+	Container []ContainerGroupSpecContainer `json:"container" tf:"container"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Diagnostics *[]ContainerGroupSpec `json:"diagnostics,omitempty"`
+	Diagnostics []ContainerGroupSpecDiagnostics `json:"diagnostics,omitempty" tf:"diagnostics,omitempty"`
 	// +optional
-	DnsNameLabel string `json:"dns_name_label,omitempty"`
+	DnsNameLabel string `json:"dnsNameLabel,omitempty" tf:"dns_name_label,omitempty"`
 	// +optional
-	ImageRegistryCredential *[]ContainerGroupSpec `json:"image_registry_credential,omitempty"`
+	ImageRegistryCredential []ContainerGroupSpecImageRegistryCredential `json:"imageRegistryCredential,omitempty" tf:"image_registry_credential,omitempty"`
 	// +optional
-	IpAddressType     string `json:"ip_address_type,omitempty"`
-	Location          string `json:"location"`
-	Name              string `json:"name"`
-	OsType            string `json:"os_type"`
-	ResourceGroupName string `json:"resource_group_name"`
+	IpAddressType     string `json:"ipAddressType,omitempty" tf:"ip_address_type,omitempty"`
+	Location          string `json:"location" tf:"location"`
+	Name              string `json:"name" tf:"name"`
+	OsType            string `json:"osType" tf:"os_type"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	RestartPolicy string `json:"restart_policy,omitempty"`
+	RestartPolicy string                    `json:"restartPolicy,omitempty" tf:"restart_policy,omitempty"`
+	ProviderRef   core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ContainerGroupStatus struct {
@@ -154,7 +155,9 @@ type ContainerGroupStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

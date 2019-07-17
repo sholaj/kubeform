@@ -31,6 +31,7 @@ import (
 // FakeIotPolicyAttachments implements IotPolicyAttachmentInterface
 type FakeIotPolicyAttachments struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var iotpolicyattachmentsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "iotpolicyattachments"}
@@ -40,7 +41,8 @@ var iotpolicyattachmentsKind = schema.GroupVersionKind{Group: "aws.kubeform.com"
 // Get takes name of the iotPolicyAttachment, and returns the corresponding iotPolicyAttachment object, and an error if there is any.
 func (c *FakeIotPolicyAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.IotPolicyAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iotpolicyattachmentsResource, name), &v1alpha1.IotPolicyAttachment{})
+		Invokes(testing.NewGetAction(iotpolicyattachmentsResource, c.ns, name), &v1alpha1.IotPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIotPolicyAttachments) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of IotPolicyAttachments that match those selectors.
 func (c *FakeIotPolicyAttachments) List(opts v1.ListOptions) (result *v1alpha1.IotPolicyAttachmentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iotpolicyattachmentsResource, iotpolicyattachmentsKind, opts), &v1alpha1.IotPolicyAttachmentList{})
+		Invokes(testing.NewListAction(iotpolicyattachmentsResource, iotpolicyattachmentsKind, c.ns, opts), &v1alpha1.IotPolicyAttachmentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIotPolicyAttachments) List(opts v1.ListOptions) (result *v1alpha1.I
 // Watch returns a watch.Interface that watches the requested iotPolicyAttachments.
 func (c *FakeIotPolicyAttachments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iotpolicyattachmentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(iotpolicyattachmentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iotPolicyAttachment and creates it.  Returns the server's representation of the iotPolicyAttachment, and an error, if there is any.
 func (c *FakeIotPolicyAttachments) Create(iotPolicyAttachment *v1alpha1.IotPolicyAttachment) (result *v1alpha1.IotPolicyAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iotpolicyattachmentsResource, iotPolicyAttachment), &v1alpha1.IotPolicyAttachment{})
+		Invokes(testing.NewCreateAction(iotpolicyattachmentsResource, c.ns, iotPolicyAttachment), &v1alpha1.IotPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIotPolicyAttachments) Create(iotPolicyAttachment *v1alpha1.IotPolic
 // Update takes the representation of a iotPolicyAttachment and updates it. Returns the server's representation of the iotPolicyAttachment, and an error, if there is any.
 func (c *FakeIotPolicyAttachments) Update(iotPolicyAttachment *v1alpha1.IotPolicyAttachment) (result *v1alpha1.IotPolicyAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iotpolicyattachmentsResource, iotPolicyAttachment), &v1alpha1.IotPolicyAttachment{})
+		Invokes(testing.NewUpdateAction(iotpolicyattachmentsResource, c.ns, iotPolicyAttachment), &v1alpha1.IotPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIotPolicyAttachments) Update(iotPolicyAttachment *v1alpha1.IotPolic
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIotPolicyAttachments) UpdateStatus(iotPolicyAttachment *v1alpha1.IotPolicyAttachment) (*v1alpha1.IotPolicyAttachment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iotpolicyattachmentsResource, "status", iotPolicyAttachment), &v1alpha1.IotPolicyAttachment{})
+		Invokes(testing.NewUpdateSubresourceAction(iotpolicyattachmentsResource, "status", c.ns, iotPolicyAttachment), &v1alpha1.IotPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIotPolicyAttachments) UpdateStatus(iotPolicyAttachment *v1alpha1.Io
 // Delete takes name of the iotPolicyAttachment and deletes it. Returns an error if one occurs.
 func (c *FakeIotPolicyAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iotpolicyattachmentsResource, name), &v1alpha1.IotPolicyAttachment{})
+		Invokes(testing.NewDeleteAction(iotpolicyattachmentsResource, c.ns, name), &v1alpha1.IotPolicyAttachment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIotPolicyAttachments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iotpolicyattachmentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iotpolicyattachmentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IotPolicyAttachmentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIotPolicyAttachments) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched iotPolicyAttachment.
 func (c *FakeIotPolicyAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IotPolicyAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iotpolicyattachmentsResource, name, pt, data, subresources...), &v1alpha1.IotPolicyAttachment{})
+		Invokes(testing.NewPatchSubresourceAction(iotpolicyattachmentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.IotPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,13 +19,14 @@ type LoggingBillingAccountExclusion struct {
 }
 
 type LoggingBillingAccountExclusionSpec struct {
-	BillingAccount string `json:"billing_account"`
+	BillingAccount string `json:"billingAccount" tf:"billing_account"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	Disabled bool   `json:"disabled,omitempty"`
-	Filter   string `json:"filter"`
-	Name     string `json:"name"`
+	Disabled    bool                      `json:"disabled,omitempty" tf:"disabled,omitempty"`
+	Filter      string                    `json:"filter" tf:"filter"`
+	Name        string                    `json:"name" tf:"name"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type LoggingBillingAccountExclusionStatus struct {
@@ -33,7 +34,9 @@ type LoggingBillingAccountExclusionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/digitalocean/v1alpha1"
 )
 
-// FloatingIpLister helps list FloatingIps.
-type FloatingIpLister interface {
-	// List lists all FloatingIps in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.FloatingIp, err error)
-	// Get retrieves the FloatingIp from the index for a given name.
-	Get(name string) (*v1alpha1.FloatingIp, error)
-	FloatingIpListerExpansion
+// FloatingIPLister helps list FloatingIPs.
+type FloatingIPLister interface {
+	// List lists all FloatingIPs in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.FloatingIP, err error)
+	// FloatingIPs returns an object that can list and get FloatingIPs.
+	FloatingIPs(namespace string) FloatingIPNamespaceLister
+	FloatingIPListerExpansion
 }
 
-// floatingIpLister implements the FloatingIpLister interface.
-type floatingIpLister struct {
+// floatingIPLister implements the FloatingIPLister interface.
+type floatingIPLister struct {
 	indexer cache.Indexer
 }
 
-// NewFloatingIpLister returns a new FloatingIpLister.
-func NewFloatingIpLister(indexer cache.Indexer) FloatingIpLister {
-	return &floatingIpLister{indexer: indexer}
+// NewFloatingIPLister returns a new FloatingIPLister.
+func NewFloatingIPLister(indexer cache.Indexer) FloatingIPLister {
+	return &floatingIPLister{indexer: indexer}
 }
 
-// List lists all FloatingIps in the indexer.
-func (s *floatingIpLister) List(selector labels.Selector) (ret []*v1alpha1.FloatingIp, err error) {
+// List lists all FloatingIPs in the indexer.
+func (s *floatingIPLister) List(selector labels.Selector) (ret []*v1alpha1.FloatingIP, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.FloatingIp))
+		ret = append(ret, m.(*v1alpha1.FloatingIP))
 	})
 	return ret, err
 }
 
-// Get retrieves the FloatingIp from the index for a given name.
-func (s *floatingIpLister) Get(name string) (*v1alpha1.FloatingIp, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// FloatingIPs returns an object that can list and get FloatingIPs.
+func (s *floatingIPLister) FloatingIPs(namespace string) FloatingIPNamespaceLister {
+	return floatingIPNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// FloatingIPNamespaceLister helps list and get FloatingIPs.
+type FloatingIPNamespaceLister interface {
+	// List lists all FloatingIPs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.FloatingIP, err error)
+	// Get retrieves the FloatingIP from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.FloatingIP, error)
+	FloatingIPNamespaceListerExpansion
+}
+
+// floatingIPNamespaceLister implements the FloatingIPNamespaceLister
+// interface.
+type floatingIPNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all FloatingIPs in the indexer for a given namespace.
+func (s floatingIPNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.FloatingIP, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.FloatingIP))
+	})
+	return ret, err
+}
+
+// Get retrieves the FloatingIP from the indexer for a given namespace and name.
+func (s floatingIPNamespaceLister) Get(name string) (*v1alpha1.FloatingIP, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("floatingip"), name)
 	}
-	return obj.(*v1alpha1.FloatingIp), nil
+	return obj.(*v1alpha1.FloatingIP), nil
 }

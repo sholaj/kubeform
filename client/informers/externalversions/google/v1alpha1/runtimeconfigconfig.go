@@ -41,32 +41,33 @@ type RuntimeconfigConfigInformer interface {
 type runtimeconfigConfigInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewRuntimeconfigConfigInformer constructs a new informer for RuntimeconfigConfig type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewRuntimeconfigConfigInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredRuntimeconfigConfigInformer(client, resyncPeriod, indexers, nil)
+func NewRuntimeconfigConfigInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredRuntimeconfigConfigInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredRuntimeconfigConfigInformer constructs a new informer for RuntimeconfigConfig type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredRuntimeconfigConfigInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredRuntimeconfigConfigInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().RuntimeconfigConfigs().List(options)
+				return client.GoogleV1alpha1().RuntimeconfigConfigs(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().RuntimeconfigConfigs().Watch(options)
+				return client.GoogleV1alpha1().RuntimeconfigConfigs(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.RuntimeconfigConfig{},
@@ -76,7 +77,7 @@ func NewFilteredRuntimeconfigConfigInformer(client versioned.Interface, resyncPe
 }
 
 func (f *runtimeconfigConfigInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredRuntimeconfigConfigInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredRuntimeconfigConfigInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *runtimeconfigConfigInformer) Informer() cache.SharedIndexInformer {

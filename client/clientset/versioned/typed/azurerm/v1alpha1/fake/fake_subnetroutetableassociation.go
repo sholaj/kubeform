@@ -31,6 +31,7 @@ import (
 // FakeSubnetRouteTableAssociations implements SubnetRouteTableAssociationInterface
 type FakeSubnetRouteTableAssociations struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var subnetroutetableassociationsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "subnetroutetableassociations"}
@@ -40,7 +41,8 @@ var subnetroutetableassociationsKind = schema.GroupVersionKind{Group: "azurerm.k
 // Get takes name of the subnetRouteTableAssociation, and returns the corresponding subnetRouteTableAssociation object, and an error if there is any.
 func (c *FakeSubnetRouteTableAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.SubnetRouteTableAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(subnetroutetableassociationsResource, name), &v1alpha1.SubnetRouteTableAssociation{})
+		Invokes(testing.NewGetAction(subnetroutetableassociationsResource, c.ns, name), &v1alpha1.SubnetRouteTableAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSubnetRouteTableAssociations) Get(name string, options v1.GetOption
 // List takes label and field selectors, and returns the list of SubnetRouteTableAssociations that match those selectors.
 func (c *FakeSubnetRouteTableAssociations) List(opts v1.ListOptions) (result *v1alpha1.SubnetRouteTableAssociationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(subnetroutetableassociationsResource, subnetroutetableassociationsKind, opts), &v1alpha1.SubnetRouteTableAssociationList{})
+		Invokes(testing.NewListAction(subnetroutetableassociationsResource, subnetroutetableassociationsKind, c.ns, opts), &v1alpha1.SubnetRouteTableAssociationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSubnetRouteTableAssociations) List(opts v1.ListOptions) (result *v1
 // Watch returns a watch.Interface that watches the requested subnetRouteTableAssociations.
 func (c *FakeSubnetRouteTableAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(subnetroutetableassociationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(subnetroutetableassociationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a subnetRouteTableAssociation and creates it.  Returns the server's representation of the subnetRouteTableAssociation, and an error, if there is any.
 func (c *FakeSubnetRouteTableAssociations) Create(subnetRouteTableAssociation *v1alpha1.SubnetRouteTableAssociation) (result *v1alpha1.SubnetRouteTableAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(subnetroutetableassociationsResource, subnetRouteTableAssociation), &v1alpha1.SubnetRouteTableAssociation{})
+		Invokes(testing.NewCreateAction(subnetroutetableassociationsResource, c.ns, subnetRouteTableAssociation), &v1alpha1.SubnetRouteTableAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSubnetRouteTableAssociations) Create(subnetRouteTableAssociation *v
 // Update takes the representation of a subnetRouteTableAssociation and updates it. Returns the server's representation of the subnetRouteTableAssociation, and an error, if there is any.
 func (c *FakeSubnetRouteTableAssociations) Update(subnetRouteTableAssociation *v1alpha1.SubnetRouteTableAssociation) (result *v1alpha1.SubnetRouteTableAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(subnetroutetableassociationsResource, subnetRouteTableAssociation), &v1alpha1.SubnetRouteTableAssociation{})
+		Invokes(testing.NewUpdateAction(subnetroutetableassociationsResource, c.ns, subnetRouteTableAssociation), &v1alpha1.SubnetRouteTableAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSubnetRouteTableAssociations) Update(subnetRouteTableAssociation *v
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSubnetRouteTableAssociations) UpdateStatus(subnetRouteTableAssociation *v1alpha1.SubnetRouteTableAssociation) (*v1alpha1.SubnetRouteTableAssociation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(subnetroutetableassociationsResource, "status", subnetRouteTableAssociation), &v1alpha1.SubnetRouteTableAssociation{})
+		Invokes(testing.NewUpdateSubresourceAction(subnetroutetableassociationsResource, "status", c.ns, subnetRouteTableAssociation), &v1alpha1.SubnetRouteTableAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSubnetRouteTableAssociations) UpdateStatus(subnetRouteTableAssociat
 // Delete takes name of the subnetRouteTableAssociation and deletes it. Returns an error if one occurs.
 func (c *FakeSubnetRouteTableAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(subnetroutetableassociationsResource, name), &v1alpha1.SubnetRouteTableAssociation{})
+		Invokes(testing.NewDeleteAction(subnetroutetableassociationsResource, c.ns, name), &v1alpha1.SubnetRouteTableAssociation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSubnetRouteTableAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(subnetroutetableassociationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(subnetroutetableassociationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SubnetRouteTableAssociationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSubnetRouteTableAssociations) DeleteCollection(options *v1.DeleteOp
 // Patch applies the patch and returns the patched subnetRouteTableAssociation.
 func (c *FakeSubnetRouteTableAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SubnetRouteTableAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(subnetroutetableassociationsResource, name, pt, data, subresources...), &v1alpha1.SubnetRouteTableAssociation{})
+		Invokes(testing.NewPatchSubresourceAction(subnetroutetableassociationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SubnetRouteTableAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}

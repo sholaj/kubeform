@@ -29,8 +29,8 @@ import (
 type LambdaPermissionLister interface {
 	// List lists all LambdaPermissions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LambdaPermission, err error)
-	// Get retrieves the LambdaPermission from the index for a given name.
-	Get(name string) (*v1alpha1.LambdaPermission, error)
+	// LambdaPermissions returns an object that can list and get LambdaPermissions.
+	LambdaPermissions(namespace string) LambdaPermissionNamespaceLister
 	LambdaPermissionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *lambdaPermissionLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the LambdaPermission from the index for a given name.
-func (s *lambdaPermissionLister) Get(name string) (*v1alpha1.LambdaPermission, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LambdaPermissions returns an object that can list and get LambdaPermissions.
+func (s *lambdaPermissionLister) LambdaPermissions(namespace string) LambdaPermissionNamespaceLister {
+	return lambdaPermissionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LambdaPermissionNamespaceLister helps list and get LambdaPermissions.
+type LambdaPermissionNamespaceLister interface {
+	// List lists all LambdaPermissions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LambdaPermission, err error)
+	// Get retrieves the LambdaPermission from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LambdaPermission, error)
+	LambdaPermissionNamespaceListerExpansion
+}
+
+// lambdaPermissionNamespaceLister implements the LambdaPermissionNamespaceLister
+// interface.
+type lambdaPermissionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LambdaPermissions in the indexer for a given namespace.
+func (s lambdaPermissionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LambdaPermission, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LambdaPermission))
+	})
+	return ret, err
+}
+
+// Get retrieves the LambdaPermission from the indexer for a given namespace and name.
+func (s lambdaPermissionNamespaceLister) Get(name string) (*v1alpha1.LambdaPermission, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

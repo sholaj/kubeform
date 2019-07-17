@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/azurerm/v1alpha1"
 )
 
-// PrivateDnsZoneInformer provides access to a shared informer and lister for
-// PrivateDnsZones.
-type PrivateDnsZoneInformer interface {
+// PrivateDNSZoneInformer provides access to a shared informer and lister for
+// PrivateDNSZones.
+type PrivateDNSZoneInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.PrivateDnsZoneLister
+	Lister() v1alpha1.PrivateDNSZoneLister
 }
 
-type privateDnsZoneInformer struct {
+type privateDNSZoneInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewPrivateDnsZoneInformer constructs a new informer for PrivateDnsZone type.
+// NewPrivateDNSZoneInformer constructs a new informer for PrivateDNSZone type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewPrivateDnsZoneInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredPrivateDnsZoneInformer(client, resyncPeriod, indexers, nil)
+func NewPrivateDNSZoneInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredPrivateDNSZoneInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredPrivateDnsZoneInformer constructs a new informer for PrivateDnsZone type.
+// NewFilteredPrivateDNSZoneInformer constructs a new informer for PrivateDNSZone type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredPrivateDnsZoneInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredPrivateDNSZoneInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().PrivateDnsZones().List(options)
+				return client.AzurermV1alpha1().PrivateDNSZones(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().PrivateDnsZones().Watch(options)
+				return client.AzurermV1alpha1().PrivateDNSZones(namespace).Watch(options)
 			},
 		},
-		&azurermv1alpha1.PrivateDnsZone{},
+		&azurermv1alpha1.PrivateDNSZone{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *privateDnsZoneInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredPrivateDnsZoneInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *privateDNSZoneInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredPrivateDNSZoneInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *privateDnsZoneInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&azurermv1alpha1.PrivateDnsZone{}, f.defaultInformer)
+func (f *privateDNSZoneInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&azurermv1alpha1.PrivateDNSZone{}, f.defaultInformer)
 }
 
-func (f *privateDnsZoneInformer) Lister() v1alpha1.PrivateDnsZoneLister {
-	return v1alpha1.NewPrivateDnsZoneLister(f.Informer().GetIndexer())
+func (f *privateDNSZoneInformer) Lister() v1alpha1.PrivateDNSZoneLister {
+	return v1alpha1.NewPrivateDNSZoneLister(f.Informer().GetIndexer())
 }

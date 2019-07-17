@@ -32,7 +32,7 @@ import (
 // ComputeGlobalAddressesGetter has a method to return a ComputeGlobalAddressInterface.
 // A group's client should implement this interface.
 type ComputeGlobalAddressesGetter interface {
-	ComputeGlobalAddresses() ComputeGlobalAddressInterface
+	ComputeGlobalAddresses(namespace string) ComputeGlobalAddressInterface
 }
 
 // ComputeGlobalAddressInterface has methods to work with ComputeGlobalAddress resources.
@@ -52,12 +52,14 @@ type ComputeGlobalAddressInterface interface {
 // computeGlobalAddresses implements ComputeGlobalAddressInterface
 type computeGlobalAddresses struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeGlobalAddresses returns a ComputeGlobalAddresses
-func newComputeGlobalAddresses(c *GoogleV1alpha1Client) *computeGlobalAddresses {
+func newComputeGlobalAddresses(c *GoogleV1alpha1Client, namespace string) *computeGlobalAddresses {
 	return &computeGlobalAddresses{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeGlobalAddresses(c *GoogleV1alpha1Client) *computeGlobalAddresses 
 func (c *computeGlobalAddresses) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeGlobalAddress, err error) {
 	result = &v1alpha1.ComputeGlobalAddress{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeglobaladdresses").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeGlobalAddresses) List(opts v1.ListOptions) (result *v1alpha1.Com
 	}
 	result = &v1alpha1.ComputeGlobalAddressList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeglobaladdresses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeGlobalAddresses) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computeglobaladdresses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeGlobalAddresses) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *computeGlobalAddresses) Create(computeGlobalAddress *v1alpha1.ComputeGlobalAddress) (result *v1alpha1.ComputeGlobalAddress, err error) {
 	result = &v1alpha1.ComputeGlobalAddress{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computeglobaladdresses").
 		Body(computeGlobalAddress).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeGlobalAddresses) Create(computeGlobalAddress *v1alpha1.ComputeGl
 func (c *computeGlobalAddresses) Update(computeGlobalAddress *v1alpha1.ComputeGlobalAddress) (result *v1alpha1.ComputeGlobalAddress, err error) {
 	result = &v1alpha1.ComputeGlobalAddress{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeglobaladdresses").
 		Name(computeGlobalAddress.Name).
 		Body(computeGlobalAddress).
@@ -132,6 +139,7 @@ func (c *computeGlobalAddresses) Update(computeGlobalAddress *v1alpha1.ComputeGl
 func (c *computeGlobalAddresses) UpdateStatus(computeGlobalAddress *v1alpha1.ComputeGlobalAddress) (result *v1alpha1.ComputeGlobalAddress, err error) {
 	result = &v1alpha1.ComputeGlobalAddress{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeglobaladdresses").
 		Name(computeGlobalAddress.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeGlobalAddresses) UpdateStatus(computeGlobalAddress *v1alpha1.Com
 // Delete takes name of the computeGlobalAddress and deletes it. Returns an error if one occurs.
 func (c *computeGlobalAddresses) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeglobaladdresses").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeGlobalAddresses) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeglobaladdresses").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeGlobalAddresses) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *computeGlobalAddresses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeGlobalAddress, err error) {
 	result = &v1alpha1.ComputeGlobalAddress{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computeglobaladdresses").
 		SubResource(subresources...).
 		Name(name).

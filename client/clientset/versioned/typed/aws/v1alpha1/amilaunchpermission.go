@@ -32,7 +32,7 @@ import (
 // AmiLaunchPermissionsGetter has a method to return a AmiLaunchPermissionInterface.
 // A group's client should implement this interface.
 type AmiLaunchPermissionsGetter interface {
-	AmiLaunchPermissions() AmiLaunchPermissionInterface
+	AmiLaunchPermissions(namespace string) AmiLaunchPermissionInterface
 }
 
 // AmiLaunchPermissionInterface has methods to work with AmiLaunchPermission resources.
@@ -52,12 +52,14 @@ type AmiLaunchPermissionInterface interface {
 // amiLaunchPermissions implements AmiLaunchPermissionInterface
 type amiLaunchPermissions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAmiLaunchPermissions returns a AmiLaunchPermissions
-func newAmiLaunchPermissions(c *AwsV1alpha1Client) *amiLaunchPermissions {
+func newAmiLaunchPermissions(c *AwsV1alpha1Client, namespace string) *amiLaunchPermissions {
 	return &amiLaunchPermissions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAmiLaunchPermissions(c *AwsV1alpha1Client) *amiLaunchPermissions {
 func (c *amiLaunchPermissions) Get(name string, options v1.GetOptions) (result *v1alpha1.AmiLaunchPermission, err error) {
 	result = &v1alpha1.AmiLaunchPermission{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("amilaunchpermissions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *amiLaunchPermissions) List(opts v1.ListOptions) (result *v1alpha1.AmiLa
 	}
 	result = &v1alpha1.AmiLaunchPermissionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("amilaunchpermissions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *amiLaunchPermissions) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("amilaunchpermissions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *amiLaunchPermissions) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *amiLaunchPermissions) Create(amiLaunchPermission *v1alpha1.AmiLaunchPermission) (result *v1alpha1.AmiLaunchPermission, err error) {
 	result = &v1alpha1.AmiLaunchPermission{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("amilaunchpermissions").
 		Body(amiLaunchPermission).
 		Do().
@@ -118,6 +124,7 @@ func (c *amiLaunchPermissions) Create(amiLaunchPermission *v1alpha1.AmiLaunchPer
 func (c *amiLaunchPermissions) Update(amiLaunchPermission *v1alpha1.AmiLaunchPermission) (result *v1alpha1.AmiLaunchPermission, err error) {
 	result = &v1alpha1.AmiLaunchPermission{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("amilaunchpermissions").
 		Name(amiLaunchPermission.Name).
 		Body(amiLaunchPermission).
@@ -132,6 +139,7 @@ func (c *amiLaunchPermissions) Update(amiLaunchPermission *v1alpha1.AmiLaunchPer
 func (c *amiLaunchPermissions) UpdateStatus(amiLaunchPermission *v1alpha1.AmiLaunchPermission) (result *v1alpha1.AmiLaunchPermission, err error) {
 	result = &v1alpha1.AmiLaunchPermission{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("amilaunchpermissions").
 		Name(amiLaunchPermission.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *amiLaunchPermissions) UpdateStatus(amiLaunchPermission *v1alpha1.AmiLau
 // Delete takes name of the amiLaunchPermission and deletes it. Returns an error if one occurs.
 func (c *amiLaunchPermissions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("amilaunchpermissions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *amiLaunchPermissions) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("amilaunchpermissions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *amiLaunchPermissions) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *amiLaunchPermissions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AmiLaunchPermission, err error) {
 	result = &v1alpha1.AmiLaunchPermission{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("amilaunchpermissions").
 		SubResource(subresources...).
 		Name(name).

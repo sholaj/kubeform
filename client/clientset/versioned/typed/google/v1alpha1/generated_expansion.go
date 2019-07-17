@@ -66,11 +66,11 @@ type ComputeGlobalAddressExpansion interface{}
 
 type ComputeGlobalForwardingRuleExpansion interface{}
 
+type ComputeHTTPHealthCheckExpansion interface{}
+
+type ComputeHTTPSHealthCheckExpansion interface{}
+
 type ComputeHealthCheckExpansion interface{}
-
-type ComputeHttpHealthCheckExpansion interface{}
-
-type ComputeHttpsHealthCheckExpansion interface{}
 
 type ComputeImageExpansion interface{}
 
@@ -108,7 +108,7 @@ type ComputeRouterExpansion interface{}
 
 type ComputeRouterInterfaceExpansion interface{}
 
-type ComputeRouterNatExpansion interface{}
+type ComputeRouterNATExpansion interface{}
 
 type ComputeRouterPeerExpansion interface{}
 
@@ -132,9 +132,9 @@ type ComputeSubnetworkIamMemberExpansion interface{}
 
 type ComputeSubnetworkIamPolicyExpansion interface{}
 
-type ComputeTargetHttpProxyExpansion interface{}
+type ComputeTargetHTTPProxyExpansion interface{}
 
-type ComputeTargetHttpsProxyExpansion interface{}
+type ComputeTargetHTTPSProxyExpansion interface{}
 
 type ComputeTargetPoolExpansion interface{}
 
@@ -142,11 +142,11 @@ type ComputeTargetSslProxyExpansion interface{}
 
 type ComputeTargetTcpProxyExpansion interface{}
 
-type ComputeUrlMapExpansion interface{}
+type ComputeURLMapExpansion interface{}
 
-type ComputeVpnGatewayExpansion interface{}
+type ComputeVPNGatewayExpansion interface{}
 
-type ComputeVpnTunnelExpansion interface{}
+type ComputeVPNTunnelExpansion interface{}
 
 type ContainerAnalysisNoteExpansion interface{}
 
@@ -306,7 +306,7 @@ type SqlUserExpansion interface{}
 
 type StorageBucketExpansion interface{}
 
-type StorageBucketAclExpansion interface{}
+type StorageBucketACLExpansion interface{}
 
 type StorageBucketIamBindingExpansion interface{}
 
@@ -316,12 +316,12 @@ type StorageBucketIamPolicyExpansion interface{}
 
 type StorageBucketObjectExpansion interface{}
 
-type StorageDefaultObjectAccessControlExpansion interface{}
+type StorageDefaultObjectACLExpansion interface{}
 
-type StorageDefaultObjectAclExpansion interface{}
+type StorageDefaultObjectAccessControlExpansion interface{}
 
 type StorageNotificationExpansion interface{}
 
-type StorageObjectAccessControlExpansion interface{}
+type StorageObjectACLExpansion interface{}
 
-type StorageObjectAclExpansion interface{}
+type StorageObjectAccessControlExpansion interface{}

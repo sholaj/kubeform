@@ -32,7 +32,7 @@ import (
 // AutoscalingSchedulesGetter has a method to return a AutoscalingScheduleInterface.
 // A group's client should implement this interface.
 type AutoscalingSchedulesGetter interface {
-	AutoscalingSchedules() AutoscalingScheduleInterface
+	AutoscalingSchedules(namespace string) AutoscalingScheduleInterface
 }
 
 // AutoscalingScheduleInterface has methods to work with AutoscalingSchedule resources.
@@ -52,12 +52,14 @@ type AutoscalingScheduleInterface interface {
 // autoscalingSchedules implements AutoscalingScheduleInterface
 type autoscalingSchedules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAutoscalingSchedules returns a AutoscalingSchedules
-func newAutoscalingSchedules(c *AwsV1alpha1Client) *autoscalingSchedules {
+func newAutoscalingSchedules(c *AwsV1alpha1Client, namespace string) *autoscalingSchedules {
 	return &autoscalingSchedules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAutoscalingSchedules(c *AwsV1alpha1Client) *autoscalingSchedules {
 func (c *autoscalingSchedules) Get(name string, options v1.GetOptions) (result *v1alpha1.AutoscalingSchedule, err error) {
 	result = &v1alpha1.AutoscalingSchedule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("autoscalingschedules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *autoscalingSchedules) List(opts v1.ListOptions) (result *v1alpha1.Autos
 	}
 	result = &v1alpha1.AutoscalingScheduleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("autoscalingschedules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *autoscalingSchedules) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("autoscalingschedules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *autoscalingSchedules) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *autoscalingSchedules) Create(autoscalingSchedule *v1alpha1.AutoscalingSchedule) (result *v1alpha1.AutoscalingSchedule, err error) {
 	result = &v1alpha1.AutoscalingSchedule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("autoscalingschedules").
 		Body(autoscalingSchedule).
 		Do().
@@ -118,6 +124,7 @@ func (c *autoscalingSchedules) Create(autoscalingSchedule *v1alpha1.AutoscalingS
 func (c *autoscalingSchedules) Update(autoscalingSchedule *v1alpha1.AutoscalingSchedule) (result *v1alpha1.AutoscalingSchedule, err error) {
 	result = &v1alpha1.AutoscalingSchedule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("autoscalingschedules").
 		Name(autoscalingSchedule.Name).
 		Body(autoscalingSchedule).
@@ -132,6 +139,7 @@ func (c *autoscalingSchedules) Update(autoscalingSchedule *v1alpha1.AutoscalingS
 func (c *autoscalingSchedules) UpdateStatus(autoscalingSchedule *v1alpha1.AutoscalingSchedule) (result *v1alpha1.AutoscalingSchedule, err error) {
 	result = &v1alpha1.AutoscalingSchedule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("autoscalingschedules").
 		Name(autoscalingSchedule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *autoscalingSchedules) UpdateStatus(autoscalingSchedule *v1alpha1.Autosc
 // Delete takes name of the autoscalingSchedule and deletes it. Returns an error if one occurs.
 func (c *autoscalingSchedules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("autoscalingschedules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *autoscalingSchedules) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("autoscalingschedules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *autoscalingSchedules) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *autoscalingSchedules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AutoscalingSchedule, err error) {
 	result = &v1alpha1.AutoscalingSchedule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("autoscalingschedules").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // HdinsightInteractiveQueryClustersGetter has a method to return a HdinsightInteractiveQueryClusterInterface.
 // A group's client should implement this interface.
 type HdinsightInteractiveQueryClustersGetter interface {
-	HdinsightInteractiveQueryClusters() HdinsightInteractiveQueryClusterInterface
+	HdinsightInteractiveQueryClusters(namespace string) HdinsightInteractiveQueryClusterInterface
 }
 
 // HdinsightInteractiveQueryClusterInterface has methods to work with HdinsightInteractiveQueryCluster resources.
@@ -52,12 +52,14 @@ type HdinsightInteractiveQueryClusterInterface interface {
 // hdinsightInteractiveQueryClusters implements HdinsightInteractiveQueryClusterInterface
 type hdinsightInteractiveQueryClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newHdinsightInteractiveQueryClusters returns a HdinsightInteractiveQueryClusters
-func newHdinsightInteractiveQueryClusters(c *AzurermV1alpha1Client) *hdinsightInteractiveQueryClusters {
+func newHdinsightInteractiveQueryClusters(c *AzurermV1alpha1Client, namespace string) *hdinsightInteractiveQueryClusters {
 	return &hdinsightInteractiveQueryClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newHdinsightInteractiveQueryClusters(c *AzurermV1alpha1Client) *hdinsightIn
 func (c *hdinsightInteractiveQueryClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.HdinsightInteractiveQueryCluster, err error) {
 	result = &v1alpha1.HdinsightInteractiveQueryCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("hdinsightinteractivequeryclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *hdinsightInteractiveQueryClusters) List(opts v1.ListOptions) (result *v
 	}
 	result = &v1alpha1.HdinsightInteractiveQueryClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("hdinsightinteractivequeryclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *hdinsightInteractiveQueryClusters) Watch(opts v1.ListOptions) (watch.In
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("hdinsightinteractivequeryclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *hdinsightInteractiveQueryClusters) Watch(opts v1.ListOptions) (watch.In
 func (c *hdinsightInteractiveQueryClusters) Create(hdinsightInteractiveQueryCluster *v1alpha1.HdinsightInteractiveQueryCluster) (result *v1alpha1.HdinsightInteractiveQueryCluster, err error) {
 	result = &v1alpha1.HdinsightInteractiveQueryCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("hdinsightinteractivequeryclusters").
 		Body(hdinsightInteractiveQueryCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *hdinsightInteractiveQueryClusters) Create(hdinsightInteractiveQueryClus
 func (c *hdinsightInteractiveQueryClusters) Update(hdinsightInteractiveQueryCluster *v1alpha1.HdinsightInteractiveQueryCluster) (result *v1alpha1.HdinsightInteractiveQueryCluster, err error) {
 	result = &v1alpha1.HdinsightInteractiveQueryCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("hdinsightinteractivequeryclusters").
 		Name(hdinsightInteractiveQueryCluster.Name).
 		Body(hdinsightInteractiveQueryCluster).
@@ -132,6 +139,7 @@ func (c *hdinsightInteractiveQueryClusters) Update(hdinsightInteractiveQueryClus
 func (c *hdinsightInteractiveQueryClusters) UpdateStatus(hdinsightInteractiveQueryCluster *v1alpha1.HdinsightInteractiveQueryCluster) (result *v1alpha1.HdinsightInteractiveQueryCluster, err error) {
 	result = &v1alpha1.HdinsightInteractiveQueryCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("hdinsightinteractivequeryclusters").
 		Name(hdinsightInteractiveQueryCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *hdinsightInteractiveQueryClusters) UpdateStatus(hdinsightInteractiveQue
 // Delete takes name of the hdinsightInteractiveQueryCluster and deletes it. Returns an error if one occurs.
 func (c *hdinsightInteractiveQueryClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("hdinsightinteractivequeryclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *hdinsightInteractiveQueryClusters) DeleteCollection(options *v1.DeleteO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("hdinsightinteractivequeryclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *hdinsightInteractiveQueryClusters) DeleteCollection(options *v1.DeleteO
 func (c *hdinsightInteractiveQueryClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.HdinsightInteractiveQueryCluster, err error) {
 	result = &v1alpha1.HdinsightInteractiveQueryCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("hdinsightinteractivequeryclusters").
 		SubResource(subresources...).
 		Name(name).

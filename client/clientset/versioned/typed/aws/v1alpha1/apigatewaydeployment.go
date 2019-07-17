@@ -32,7 +32,7 @@ import (
 // ApiGatewayDeploymentsGetter has a method to return a ApiGatewayDeploymentInterface.
 // A group's client should implement this interface.
 type ApiGatewayDeploymentsGetter interface {
-	ApiGatewayDeployments() ApiGatewayDeploymentInterface
+	ApiGatewayDeployments(namespace string) ApiGatewayDeploymentInterface
 }
 
 // ApiGatewayDeploymentInterface has methods to work with ApiGatewayDeployment resources.
@@ -52,12 +52,14 @@ type ApiGatewayDeploymentInterface interface {
 // apiGatewayDeployments implements ApiGatewayDeploymentInterface
 type apiGatewayDeployments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiGatewayDeployments returns a ApiGatewayDeployments
-func newApiGatewayDeployments(c *AwsV1alpha1Client) *apiGatewayDeployments {
+func newApiGatewayDeployments(c *AwsV1alpha1Client, namespace string) *apiGatewayDeployments {
 	return &apiGatewayDeployments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiGatewayDeployments(c *AwsV1alpha1Client) *apiGatewayDeployments {
 func (c *apiGatewayDeployments) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayDeployment, err error) {
 	result = &v1alpha1.ApiGatewayDeployment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaydeployments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiGatewayDeployments) List(opts v1.ListOptions) (result *v1alpha1.ApiG
 	}
 	result = &v1alpha1.ApiGatewayDeploymentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaydeployments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiGatewayDeployments) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaydeployments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiGatewayDeployments) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *apiGatewayDeployments) Create(apiGatewayDeployment *v1alpha1.ApiGatewayDeployment) (result *v1alpha1.ApiGatewayDeployment, err error) {
 	result = &v1alpha1.ApiGatewayDeployment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apigatewaydeployments").
 		Body(apiGatewayDeployment).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiGatewayDeployments) Create(apiGatewayDeployment *v1alpha1.ApiGateway
 func (c *apiGatewayDeployments) Update(apiGatewayDeployment *v1alpha1.ApiGatewayDeployment) (result *v1alpha1.ApiGatewayDeployment, err error) {
 	result = &v1alpha1.ApiGatewayDeployment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewaydeployments").
 		Name(apiGatewayDeployment.Name).
 		Body(apiGatewayDeployment).
@@ -132,6 +139,7 @@ func (c *apiGatewayDeployments) Update(apiGatewayDeployment *v1alpha1.ApiGateway
 func (c *apiGatewayDeployments) UpdateStatus(apiGatewayDeployment *v1alpha1.ApiGatewayDeployment) (result *v1alpha1.ApiGatewayDeployment, err error) {
 	result = &v1alpha1.ApiGatewayDeployment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewaydeployments").
 		Name(apiGatewayDeployment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiGatewayDeployments) UpdateStatus(apiGatewayDeployment *v1alpha1.ApiG
 // Delete takes name of the apiGatewayDeployment and deletes it. Returns an error if one occurs.
 func (c *apiGatewayDeployments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewaydeployments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiGatewayDeployments) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewaydeployments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiGatewayDeployments) DeleteCollection(options *v1.DeleteOptions, list
 func (c *apiGatewayDeployments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayDeployment, err error) {
 	result = &v1alpha1.ApiGatewayDeployment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apigatewaydeployments").
 		SubResource(subresources...).
 		Name(name).

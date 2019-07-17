@@ -31,6 +31,7 @@ import (
 // FakeSesActiveReceiptRuleSets implements SesActiveReceiptRuleSetInterface
 type FakeSesActiveReceiptRuleSets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var sesactivereceiptrulesetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "sesactivereceiptrulesets"}
@@ -40,7 +41,8 @@ var sesactivereceiptrulesetsKind = schema.GroupVersionKind{Group: "aws.kubeform.
 // Get takes name of the sesActiveReceiptRuleSet, and returns the corresponding sesActiveReceiptRuleSet object, and an error if there is any.
 func (c *FakeSesActiveReceiptRuleSets) Get(name string, options v1.GetOptions) (result *v1alpha1.SesActiveReceiptRuleSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sesactivereceiptrulesetsResource, name), &v1alpha1.SesActiveReceiptRuleSet{})
+		Invokes(testing.NewGetAction(sesactivereceiptrulesetsResource, c.ns, name), &v1alpha1.SesActiveReceiptRuleSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSesActiveReceiptRuleSets) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of SesActiveReceiptRuleSets that match those selectors.
 func (c *FakeSesActiveReceiptRuleSets) List(opts v1.ListOptions) (result *v1alpha1.SesActiveReceiptRuleSetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sesactivereceiptrulesetsResource, sesactivereceiptrulesetsKind, opts), &v1alpha1.SesActiveReceiptRuleSetList{})
+		Invokes(testing.NewListAction(sesactivereceiptrulesetsResource, sesactivereceiptrulesetsKind, c.ns, opts), &v1alpha1.SesActiveReceiptRuleSetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSesActiveReceiptRuleSets) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested sesActiveReceiptRuleSets.
 func (c *FakeSesActiveReceiptRuleSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sesactivereceiptrulesetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(sesactivereceiptrulesetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sesActiveReceiptRuleSet and creates it.  Returns the server's representation of the sesActiveReceiptRuleSet, and an error, if there is any.
 func (c *FakeSesActiveReceiptRuleSets) Create(sesActiveReceiptRuleSet *v1alpha1.SesActiveReceiptRuleSet) (result *v1alpha1.SesActiveReceiptRuleSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sesactivereceiptrulesetsResource, sesActiveReceiptRuleSet), &v1alpha1.SesActiveReceiptRuleSet{})
+		Invokes(testing.NewCreateAction(sesactivereceiptrulesetsResource, c.ns, sesActiveReceiptRuleSet), &v1alpha1.SesActiveReceiptRuleSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSesActiveReceiptRuleSets) Create(sesActiveReceiptRuleSet *v1alpha1.
 // Update takes the representation of a sesActiveReceiptRuleSet and updates it. Returns the server's representation of the sesActiveReceiptRuleSet, and an error, if there is any.
 func (c *FakeSesActiveReceiptRuleSets) Update(sesActiveReceiptRuleSet *v1alpha1.SesActiveReceiptRuleSet) (result *v1alpha1.SesActiveReceiptRuleSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sesactivereceiptrulesetsResource, sesActiveReceiptRuleSet), &v1alpha1.SesActiveReceiptRuleSet{})
+		Invokes(testing.NewUpdateAction(sesactivereceiptrulesetsResource, c.ns, sesActiveReceiptRuleSet), &v1alpha1.SesActiveReceiptRuleSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSesActiveReceiptRuleSets) Update(sesActiveReceiptRuleSet *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSesActiveReceiptRuleSets) UpdateStatus(sesActiveReceiptRuleSet *v1alpha1.SesActiveReceiptRuleSet) (*v1alpha1.SesActiveReceiptRuleSet, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sesactivereceiptrulesetsResource, "status", sesActiveReceiptRuleSet), &v1alpha1.SesActiveReceiptRuleSet{})
+		Invokes(testing.NewUpdateSubresourceAction(sesactivereceiptrulesetsResource, "status", c.ns, sesActiveReceiptRuleSet), &v1alpha1.SesActiveReceiptRuleSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSesActiveReceiptRuleSets) UpdateStatus(sesActiveReceiptRuleSet *v1a
 // Delete takes name of the sesActiveReceiptRuleSet and deletes it. Returns an error if one occurs.
 func (c *FakeSesActiveReceiptRuleSets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sesactivereceiptrulesetsResource, name), &v1alpha1.SesActiveReceiptRuleSet{})
+		Invokes(testing.NewDeleteAction(sesactivereceiptrulesetsResource, c.ns, name), &v1alpha1.SesActiveReceiptRuleSet{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSesActiveReceiptRuleSets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sesactivereceiptrulesetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sesactivereceiptrulesetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SesActiveReceiptRuleSetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSesActiveReceiptRuleSets) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched sesActiveReceiptRuleSet.
 func (c *FakeSesActiveReceiptRuleSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesActiveReceiptRuleSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sesactivereceiptrulesetsResource, name, pt, data, subresources...), &v1alpha1.SesActiveReceiptRuleSet{})
+		Invokes(testing.NewPatchSubresourceAction(sesactivereceiptrulesetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SesActiveReceiptRuleSet{})
+
 	if obj == nil {
 		return nil, err
 	}

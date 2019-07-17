@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,48 +20,49 @@ type ComputeFirewall struct {
 
 type ComputeFirewallSpecAllow struct {
 	// +optional
-	Ports    []string `json:"ports,omitempty"`
-	Protocol string   `json:"protocol"`
+	Ports    []string `json:"ports,omitempty" tf:"ports,omitempty"`
+	Protocol string   `json:"protocol" tf:"protocol"`
 }
 
 type ComputeFirewallSpecDeny struct {
 	// +optional
-	Ports    []string `json:"ports,omitempty"`
-	Protocol string   `json:"protocol"`
+	Ports    []string `json:"ports,omitempty" tf:"ports,omitempty"`
+	Protocol string   `json:"protocol" tf:"protocol"`
 }
 
 type ComputeFirewallSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Allow *[]ComputeFirewallSpec `json:"allow,omitempty"`
+	Allow []ComputeFirewallSpecAllow `json:"allow,omitempty" tf:"allow,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Deny *[]ComputeFirewallSpec `json:"deny,omitempty"`
+	Deny []ComputeFirewallSpecDeny `json:"deny,omitempty" tf:"deny,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	Disabled bool `json:"disabled,omitempty"`
+	Disabled bool `json:"disabled,omitempty" tf:"disabled,omitempty"`
 	// +optional
 	// Deprecated
-	EnableLogging bool   `json:"enable_logging,omitempty"`
-	Name          string `json:"name"`
-	Network       string `json:"network"`
+	EnableLogging bool   `json:"enableLogging,omitempty" tf:"enable_logging,omitempty"`
+	Name          string `json:"name" tf:"name"`
+	Network       string `json:"network" tf:"network"`
 	// +optional
-	Priority int `json:"priority,omitempty"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
-	SourceServiceAccounts []string `json:"source_service_accounts,omitempty"`
-	// +optional
-	// +kubebuilder:validation:UniqueItems=true
-	SourceTags []string `json:"source_tags,omitempty"`
+	Priority int `json:"priority,omitempty" tf:"priority,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	TargetServiceAccounts []string `json:"target_service_accounts,omitempty"`
+	SourceServiceAccounts []string `json:"sourceServiceAccounts,omitempty" tf:"source_service_accounts,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	TargetTags []string `json:"target_tags,omitempty"`
+	SourceTags []string `json:"sourceTags,omitempty" tf:"source_tags,omitempty"`
+	// +optional
+	// +kubebuilder:validation:MaxItems=1
+	// +kubebuilder:validation:UniqueItems=true
+	TargetServiceAccounts []string `json:"targetServiceAccounts,omitempty" tf:"target_service_accounts,omitempty"`
+	// +optional
+	// +kubebuilder:validation:UniqueItems=true
+	TargetTags  []string                  `json:"targetTags,omitempty" tf:"target_tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ComputeFirewallStatus struct {
@@ -69,7 +70,9 @@ type ComputeFirewallStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

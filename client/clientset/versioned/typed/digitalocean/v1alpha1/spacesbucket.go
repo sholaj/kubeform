@@ -32,7 +32,7 @@ import (
 // SpacesBucketsGetter has a method to return a SpacesBucketInterface.
 // A group's client should implement this interface.
 type SpacesBucketsGetter interface {
-	SpacesBuckets() SpacesBucketInterface
+	SpacesBuckets(namespace string) SpacesBucketInterface
 }
 
 // SpacesBucketInterface has methods to work with SpacesBucket resources.
@@ -52,12 +52,14 @@ type SpacesBucketInterface interface {
 // spacesBuckets implements SpacesBucketInterface
 type spacesBuckets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSpacesBuckets returns a SpacesBuckets
-func newSpacesBuckets(c *DigitaloceanV1alpha1Client) *spacesBuckets {
+func newSpacesBuckets(c *DigitaloceanV1alpha1Client, namespace string) *spacesBuckets {
 	return &spacesBuckets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSpacesBuckets(c *DigitaloceanV1alpha1Client) *spacesBuckets {
 func (c *spacesBuckets) Get(name string, options v1.GetOptions) (result *v1alpha1.SpacesBucket, err error) {
 	result = &v1alpha1.SpacesBucket{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("spacesbuckets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *spacesBuckets) List(opts v1.ListOptions) (result *v1alpha1.SpacesBucket
 	}
 	result = &v1alpha1.SpacesBucketList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("spacesbuckets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *spacesBuckets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("spacesbuckets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *spacesBuckets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *spacesBuckets) Create(spacesBucket *v1alpha1.SpacesBucket) (result *v1alpha1.SpacesBucket, err error) {
 	result = &v1alpha1.SpacesBucket{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("spacesbuckets").
 		Body(spacesBucket).
 		Do().
@@ -118,6 +124,7 @@ func (c *spacesBuckets) Create(spacesBucket *v1alpha1.SpacesBucket) (result *v1a
 func (c *spacesBuckets) Update(spacesBucket *v1alpha1.SpacesBucket) (result *v1alpha1.SpacesBucket, err error) {
 	result = &v1alpha1.SpacesBucket{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("spacesbuckets").
 		Name(spacesBucket.Name).
 		Body(spacesBucket).
@@ -132,6 +139,7 @@ func (c *spacesBuckets) Update(spacesBucket *v1alpha1.SpacesBucket) (result *v1a
 func (c *spacesBuckets) UpdateStatus(spacesBucket *v1alpha1.SpacesBucket) (result *v1alpha1.SpacesBucket, err error) {
 	result = &v1alpha1.SpacesBucket{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("spacesbuckets").
 		Name(spacesBucket.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *spacesBuckets) UpdateStatus(spacesBucket *v1alpha1.SpacesBucket) (resul
 // Delete takes name of the spacesBucket and deletes it. Returns an error if one occurs.
 func (c *spacesBuckets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("spacesbuckets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *spacesBuckets) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("spacesbuckets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *spacesBuckets) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *spacesBuckets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SpacesBucket, err error) {
 	result = &v1alpha1.SpacesBucket{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("spacesbuckets").
 		SubResource(subresources...).
 		Name(name).

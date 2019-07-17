@@ -29,8 +29,8 @@ import (
 type AutomationDscConfigurationLister interface {
 	// List lists all AutomationDscConfigurations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AutomationDscConfiguration, err error)
-	// Get retrieves the AutomationDscConfiguration from the index for a given name.
-	Get(name string) (*v1alpha1.AutomationDscConfiguration, error)
+	// AutomationDscConfigurations returns an object that can list and get AutomationDscConfigurations.
+	AutomationDscConfigurations(namespace string) AutomationDscConfigurationNamespaceLister
 	AutomationDscConfigurationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *automationDscConfigurationLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the AutomationDscConfiguration from the index for a given name.
-func (s *automationDscConfigurationLister) Get(name string) (*v1alpha1.AutomationDscConfiguration, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AutomationDscConfigurations returns an object that can list and get AutomationDscConfigurations.
+func (s *automationDscConfigurationLister) AutomationDscConfigurations(namespace string) AutomationDscConfigurationNamespaceLister {
+	return automationDscConfigurationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AutomationDscConfigurationNamespaceLister helps list and get AutomationDscConfigurations.
+type AutomationDscConfigurationNamespaceLister interface {
+	// List lists all AutomationDscConfigurations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AutomationDscConfiguration, err error)
+	// Get retrieves the AutomationDscConfiguration from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AutomationDscConfiguration, error)
+	AutomationDscConfigurationNamespaceListerExpansion
+}
+
+// automationDscConfigurationNamespaceLister implements the AutomationDscConfigurationNamespaceLister
+// interface.
+type automationDscConfigurationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AutomationDscConfigurations in the indexer for a given namespace.
+func (s automationDscConfigurationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AutomationDscConfiguration, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AutomationDscConfiguration))
+	})
+	return ret, err
+}
+
+// Get retrieves the AutomationDscConfiguration from the indexer for a given namespace and name.
+func (s automationDscConfigurationNamespaceLister) Get(name string) (*v1alpha1.AutomationDscConfiguration, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

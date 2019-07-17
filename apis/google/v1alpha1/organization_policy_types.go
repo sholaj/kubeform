@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,50 +19,51 @@ type OrganizationPolicy struct {
 }
 
 type OrganizationPolicySpecBooleanPolicy struct {
-	Enforced bool `json:"enforced"`
+	Enforced bool `json:"enforced" tf:"enforced"`
 }
 
 type OrganizationPolicySpecListPolicyAllow struct {
 	// +optional
-	All bool `json:"all,omitempty"`
+	All bool `json:"all,omitempty" tf:"all,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Values []string `json:"values,omitempty"`
+	Values []string `json:"values,omitempty" tf:"values,omitempty"`
 }
 
 type OrganizationPolicySpecListPolicyDeny struct {
 	// +optional
-	All bool `json:"all,omitempty"`
+	All bool `json:"all,omitempty" tf:"all,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Values []string `json:"values,omitempty"`
+	Values []string `json:"values,omitempty" tf:"values,omitempty"`
 }
 
 type OrganizationPolicySpecListPolicy struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Allow *[]OrganizationPolicySpecListPolicy `json:"allow,omitempty"`
+	Allow []OrganizationPolicySpecListPolicyAllow `json:"allow,omitempty" tf:"allow,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Deny *[]OrganizationPolicySpecListPolicy `json:"deny,omitempty"`
+	Deny []OrganizationPolicySpecListPolicyDeny `json:"deny,omitempty" tf:"deny,omitempty"`
 }
 
 type OrganizationPolicySpecRestorePolicy struct {
-	Default bool `json:"default"`
+	Default bool `json:"default" tf:"default"`
 }
 
 type OrganizationPolicySpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	BooleanPolicy *[]OrganizationPolicySpec `json:"boolean_policy,omitempty"`
-	Constraint    string                    `json:"constraint"`
+	BooleanPolicy []OrganizationPolicySpecBooleanPolicy `json:"booleanPolicy,omitempty" tf:"boolean_policy,omitempty"`
+	Constraint    string                                `json:"constraint" tf:"constraint"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ListPolicy *[]OrganizationPolicySpec `json:"list_policy,omitempty"`
-	OrgId      string                    `json:"org_id"`
+	ListPolicy []OrganizationPolicySpecListPolicy `json:"listPolicy,omitempty" tf:"list_policy,omitempty"`
+	OrgID      string                             `json:"orgID" tf:"org_id"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	RestorePolicy *[]OrganizationPolicySpec `json:"restore_policy,omitempty"`
+	RestorePolicy []OrganizationPolicySpecRestorePolicy `json:"restorePolicy,omitempty" tf:"restore_policy,omitempty"`
+	ProviderRef   core.LocalObjectReference             `json:"providerRef" tf:"-"`
 }
 
 type OrganizationPolicyStatus struct {
@@ -70,7 +71,9 @@ type OrganizationPolicyStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -32,7 +32,7 @@ import (
 // AmisGetter has a method to return a AmiInterface.
 // A group's client should implement this interface.
 type AmisGetter interface {
-	Amis() AmiInterface
+	Amis(namespace string) AmiInterface
 }
 
 // AmiInterface has methods to work with Ami resources.
@@ -52,12 +52,14 @@ type AmiInterface interface {
 // amis implements AmiInterface
 type amis struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAmis returns a Amis
-func newAmis(c *AwsV1alpha1Client) *amis {
+func newAmis(c *AwsV1alpha1Client, namespace string) *amis {
 	return &amis{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAmis(c *AwsV1alpha1Client) *amis {
 func (c *amis) Get(name string, options v1.GetOptions) (result *v1alpha1.Ami, err error) {
 	result = &v1alpha1.Ami{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("amis").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *amis) List(opts v1.ListOptions) (result *v1alpha1.AmiList, err error) {
 	}
 	result = &v1alpha1.AmiList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("amis").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *amis) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("amis").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *amis) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *amis) Create(ami *v1alpha1.Ami) (result *v1alpha1.Ami, err error) {
 	result = &v1alpha1.Ami{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("amis").
 		Body(ami).
 		Do().
@@ -118,6 +124,7 @@ func (c *amis) Create(ami *v1alpha1.Ami) (result *v1alpha1.Ami, err error) {
 func (c *amis) Update(ami *v1alpha1.Ami) (result *v1alpha1.Ami, err error) {
 	result = &v1alpha1.Ami{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("amis").
 		Name(ami.Name).
 		Body(ami).
@@ -132,6 +139,7 @@ func (c *amis) Update(ami *v1alpha1.Ami) (result *v1alpha1.Ami, err error) {
 func (c *amis) UpdateStatus(ami *v1alpha1.Ami) (result *v1alpha1.Ami, err error) {
 	result = &v1alpha1.Ami{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("amis").
 		Name(ami.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *amis) UpdateStatus(ami *v1alpha1.Ami) (result *v1alpha1.Ami, err error)
 // Delete takes name of the ami and deletes it. Returns an error if one occurs.
 func (c *amis) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("amis").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *amis) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("amis").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *amis) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOp
 func (c *amis) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Ami, err error) {
 	result = &v1alpha1.Ami{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("amis").
 		SubResource(subresources...).
 		Name(name).

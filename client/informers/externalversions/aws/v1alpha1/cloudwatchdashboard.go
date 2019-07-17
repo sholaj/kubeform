@@ -41,32 +41,33 @@ type CloudwatchDashboardInformer interface {
 type cloudwatchDashboardInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewCloudwatchDashboardInformer constructs a new informer for CloudwatchDashboard type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCloudwatchDashboardInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCloudwatchDashboardInformer(client, resyncPeriod, indexers, nil)
+func NewCloudwatchDashboardInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCloudwatchDashboardInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredCloudwatchDashboardInformer constructs a new informer for CloudwatchDashboard type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCloudwatchDashboardInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCloudwatchDashboardInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CloudwatchDashboards().List(options)
+				return client.AwsV1alpha1().CloudwatchDashboards(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CloudwatchDashboards().Watch(options)
+				return client.AwsV1alpha1().CloudwatchDashboards(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.CloudwatchDashboard{},
@@ -76,7 +77,7 @@ func NewFilteredCloudwatchDashboardInformer(client versioned.Interface, resyncPe
 }
 
 func (f *cloudwatchDashboardInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCloudwatchDashboardInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredCloudwatchDashboardInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *cloudwatchDashboardInformer) Informer() cache.SharedIndexInformer {

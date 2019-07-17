@@ -31,6 +31,7 @@ import (
 // FakeInstances implements InstanceInterface
 type FakeInstances struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var instancesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "instances"}
@@ -40,7 +41,8 @@ var instancesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: 
 // Get takes name of the instance, and returns the corresponding instance object, and an error if there is any.
 func (c *FakeInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.Instance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(instancesResource, name), &v1alpha1.Instance{})
+		Invokes(testing.NewGetAction(instancesResource, c.ns, name), &v1alpha1.Instance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeInstances) Get(name string, options v1.GetOptions) (result *v1alpha
 // List takes label and field selectors, and returns the list of Instances that match those selectors.
 func (c *FakeInstances) List(opts v1.ListOptions) (result *v1alpha1.InstanceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(instancesResource, instancesKind, opts), &v1alpha1.InstanceList{})
+		Invokes(testing.NewListAction(instancesResource, instancesKind, c.ns, opts), &v1alpha1.InstanceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeInstances) List(opts v1.ListOptions) (result *v1alpha1.InstanceList
 // Watch returns a watch.Interface that watches the requested instances.
 func (c *FakeInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(instancesResource, opts))
+		InvokesWatch(testing.NewWatchAction(instancesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a instance and creates it.  Returns the server's representation of the instance, and an error, if there is any.
 func (c *FakeInstances) Create(instance *v1alpha1.Instance) (result *v1alpha1.Instance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(instancesResource, instance), &v1alpha1.Instance{})
+		Invokes(testing.NewCreateAction(instancesResource, c.ns, instance), &v1alpha1.Instance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeInstances) Create(instance *v1alpha1.Instance) (result *v1alpha1.In
 // Update takes the representation of a instance and updates it. Returns the server's representation of the instance, and an error, if there is any.
 func (c *FakeInstances) Update(instance *v1alpha1.Instance) (result *v1alpha1.Instance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(instancesResource, instance), &v1alpha1.Instance{})
+		Invokes(testing.NewUpdateAction(instancesResource, c.ns, instance), &v1alpha1.Instance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeInstances) Update(instance *v1alpha1.Instance) (result *v1alpha1.In
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeInstances) UpdateStatus(instance *v1alpha1.Instance) (*v1alpha1.Instance, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(instancesResource, "status", instance), &v1alpha1.Instance{})
+		Invokes(testing.NewUpdateSubresourceAction(instancesResource, "status", c.ns, instance), &v1alpha1.Instance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeInstances) UpdateStatus(instance *v1alpha1.Instance) (*v1alpha1.Ins
 // Delete takes name of the instance and deletes it. Returns an error if one occurs.
 func (c *FakeInstances) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(instancesResource, name), &v1alpha1.Instance{})
+		Invokes(testing.NewDeleteAction(instancesResource, c.ns, name), &v1alpha1.Instance{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeInstances) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(instancesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(instancesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.InstanceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeInstances) DeleteCollection(options *v1.DeleteOptions, listOptions 
 // Patch applies the patch and returns the patched instance.
 func (c *FakeInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Instance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(instancesResource, name, pt, data, subresources...), &v1alpha1.Instance{})
+		Invokes(testing.NewPatchSubresourceAction(instancesResource, c.ns, name, pt, data, subresources...), &v1alpha1.Instance{})
+
 	if obj == nil {
 		return nil, err
 	}

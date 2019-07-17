@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,36 +20,37 @@ type DirectoryServiceDirectory struct {
 
 type DirectoryServiceDirectorySpecConnectSettings struct {
 	// +kubebuilder:validation:UniqueItems=true
-	CustomerDnsIps   []string `json:"customer_dns_ips"`
-	CustomerUsername string   `json:"customer_username"`
+	CustomerDNSIPS   []string `json:"customerDNSIPS" tf:"customer_dns_ips"`
+	CustomerUsername string   `json:"customerUsername" tf:"customer_username"`
 	// +kubebuilder:validation:UniqueItems=true
-	SubnetIds []string `json:"subnet_ids"`
-	VpcId     string   `json:"vpc_id"`
+	SubnetIDS []string `json:"subnetIDS" tf:"subnet_ids"`
+	VpcID     string   `json:"vpcID" tf:"vpc_id"`
 }
 
 type DirectoryServiceDirectorySpecVpcSettings struct {
 	// +kubebuilder:validation:UniqueItems=true
-	SubnetIds []string `json:"subnet_ids"`
-	VpcId     string   `json:"vpc_id"`
+	SubnetIDS []string `json:"subnetIDS" tf:"subnet_ids"`
+	VpcID     string   `json:"vpcID" tf:"vpc_id"`
 }
 
 type DirectoryServiceDirectorySpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ConnectSettings *[]DirectoryServiceDirectorySpec `json:"connect_settings,omitempty"`
+	ConnectSettings []DirectoryServiceDirectorySpecConnectSettings `json:"connectSettings,omitempty" tf:"connect_settings,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	EnableSso bool   `json:"enable_sso,omitempty"`
-	Name      string `json:"name"`
-	Password  string `json:"password"`
+	EnableSso bool   `json:"enableSso,omitempty" tf:"enable_sso,omitempty"`
+	Name      string `json:"name" tf:"name"`
+	Password  string `json:"password" tf:"password"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	Type string `json:"type,omitempty"`
+	Type string `json:"type,omitempty" tf:"type,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	VpcSettings *[]DirectoryServiceDirectorySpec `json:"vpc_settings,omitempty"`
+	VpcSettings []DirectoryServiceDirectorySpecVpcSettings `json:"vpcSettings,omitempty" tf:"vpc_settings,omitempty"`
+	ProviderRef core.LocalObjectReference                  `json:"providerRef" tf:"-"`
 }
 
 type DirectoryServiceDirectoryStatus struct {
@@ -57,7 +58,9 @@ type DirectoryServiceDirectoryStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,37 +19,38 @@ type Eventhub struct {
 }
 
 type EventhubSpecCaptureDescriptionDestination struct {
-	ArchiveNameFormat string `json:"archive_name_format"`
-	BlobContainerName string `json:"blob_container_name"`
-	Name              string `json:"name"`
-	StorageAccountId  string `json:"storage_account_id"`
+	ArchiveNameFormat string `json:"archiveNameFormat" tf:"archive_name_format"`
+	BlobContainerName string `json:"blobContainerName" tf:"blob_container_name"`
+	Name              string `json:"name" tf:"name"`
+	StorageAccountID  string `json:"storageAccountID" tf:"storage_account_id"`
 }
 
 type EventhubSpecCaptureDescription struct {
 	// +kubebuilder:validation:MaxItems=1
-	Destination []EventhubSpecCaptureDescription `json:"destination"`
-	Enabled     bool                             `json:"enabled"`
-	Encoding    string                           `json:"encoding"`
+	Destination []EventhubSpecCaptureDescriptionDestination `json:"destination" tf:"destination"`
+	Enabled     bool                                        `json:"enabled" tf:"enabled"`
+	Encoding    string                                      `json:"encoding" tf:"encoding"`
 	// +optional
-	IntervalInSeconds int `json:"interval_in_seconds,omitempty"`
+	IntervalInSeconds int `json:"intervalInSeconds,omitempty" tf:"interval_in_seconds,omitempty"`
 	// +optional
-	SizeLimitInBytes int `json:"size_limit_in_bytes,omitempty"`
+	SizeLimitInBytes int `json:"sizeLimitInBytes,omitempty" tf:"size_limit_in_bytes,omitempty"`
 	// +optional
-	SkipEmptyArchives bool `json:"skip_empty_archives,omitempty"`
+	SkipEmptyArchives bool `json:"skipEmptyArchives,omitempty" tf:"skip_empty_archives,omitempty"`
 }
 
 type EventhubSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	CaptureDescription *[]EventhubSpec `json:"capture_description,omitempty"`
+	CaptureDescription []EventhubSpecCaptureDescription `json:"captureDescription,omitempty" tf:"capture_description,omitempty"`
 	// +optional
 	// Deprecated
-	Location          string `json:"location,omitempty"`
-	MessageRetention  int    `json:"message_retention"`
-	Name              string `json:"name"`
-	NamespaceName     string `json:"namespace_name"`
-	PartitionCount    int    `json:"partition_count"`
-	ResourceGroupName string `json:"resource_group_name"`
+	Location          string                    `json:"location,omitempty" tf:"location,omitempty"`
+	MessageRetention  int                       `json:"messageRetention" tf:"message_retention"`
+	Name              string                    `json:"name" tf:"name"`
+	NamespaceName     string                    `json:"namespaceName" tf:"namespace_name"`
+	PartitionCount    int                       `json:"partitionCount" tf:"partition_count"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type EventhubStatus struct {
@@ -57,7 +58,9 @@ type EventhubStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

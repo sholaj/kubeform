@@ -32,7 +32,7 @@ import (
 // AmiFromInstancesGetter has a method to return a AmiFromInstanceInterface.
 // A group's client should implement this interface.
 type AmiFromInstancesGetter interface {
-	AmiFromInstances() AmiFromInstanceInterface
+	AmiFromInstances(namespace string) AmiFromInstanceInterface
 }
 
 // AmiFromInstanceInterface has methods to work with AmiFromInstance resources.
@@ -52,12 +52,14 @@ type AmiFromInstanceInterface interface {
 // amiFromInstances implements AmiFromInstanceInterface
 type amiFromInstances struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAmiFromInstances returns a AmiFromInstances
-func newAmiFromInstances(c *AwsV1alpha1Client) *amiFromInstances {
+func newAmiFromInstances(c *AwsV1alpha1Client, namespace string) *amiFromInstances {
 	return &amiFromInstances{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAmiFromInstances(c *AwsV1alpha1Client) *amiFromInstances {
 func (c *amiFromInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.AmiFromInstance, err error) {
 	result = &v1alpha1.AmiFromInstance{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("amifrominstances").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *amiFromInstances) List(opts v1.ListOptions) (result *v1alpha1.AmiFromIn
 	}
 	result = &v1alpha1.AmiFromInstanceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("amifrominstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *amiFromInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("amifrominstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *amiFromInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *amiFromInstances) Create(amiFromInstance *v1alpha1.AmiFromInstance) (result *v1alpha1.AmiFromInstance, err error) {
 	result = &v1alpha1.AmiFromInstance{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("amifrominstances").
 		Body(amiFromInstance).
 		Do().
@@ -118,6 +124,7 @@ func (c *amiFromInstances) Create(amiFromInstance *v1alpha1.AmiFromInstance) (re
 func (c *amiFromInstances) Update(amiFromInstance *v1alpha1.AmiFromInstance) (result *v1alpha1.AmiFromInstance, err error) {
 	result = &v1alpha1.AmiFromInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("amifrominstances").
 		Name(amiFromInstance.Name).
 		Body(amiFromInstance).
@@ -132,6 +139,7 @@ func (c *amiFromInstances) Update(amiFromInstance *v1alpha1.AmiFromInstance) (re
 func (c *amiFromInstances) UpdateStatus(amiFromInstance *v1alpha1.AmiFromInstance) (result *v1alpha1.AmiFromInstance, err error) {
 	result = &v1alpha1.AmiFromInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("amifrominstances").
 		Name(amiFromInstance.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *amiFromInstances) UpdateStatus(amiFromInstance *v1alpha1.AmiFromInstanc
 // Delete takes name of the amiFromInstance and deletes it. Returns an error if one occurs.
 func (c *amiFromInstances) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("amifrominstances").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *amiFromInstances) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("amifrominstances").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *amiFromInstances) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *amiFromInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AmiFromInstance, err error) {
 	result = &v1alpha1.AmiFromInstance{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("amifrominstances").
 		SubResource(subresources...).
 		Name(name).

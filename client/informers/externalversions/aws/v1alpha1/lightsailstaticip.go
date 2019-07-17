@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// LightsailStaticIpInformer provides access to a shared informer and lister for
-// LightsailStaticIps.
-type LightsailStaticIpInformer interface {
+// LightsailStaticIPInformer provides access to a shared informer and lister for
+// LightsailStaticIPs.
+type LightsailStaticIPInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.LightsailStaticIpLister
+	Lister() v1alpha1.LightsailStaticIPLister
 }
 
-type lightsailStaticIpInformer struct {
+type lightsailStaticIPInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewLightsailStaticIpInformer constructs a new informer for LightsailStaticIp type.
+// NewLightsailStaticIPInformer constructs a new informer for LightsailStaticIP type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLightsailStaticIpInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLightsailStaticIpInformer(client, resyncPeriod, indexers, nil)
+func NewLightsailStaticIPInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLightsailStaticIPInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredLightsailStaticIpInformer constructs a new informer for LightsailStaticIp type.
+// NewFilteredLightsailStaticIPInformer constructs a new informer for LightsailStaticIP type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLightsailStaticIpInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLightsailStaticIPInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().LightsailStaticIps().List(options)
+				return client.AwsV1alpha1().LightsailStaticIPs(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().LightsailStaticIps().Watch(options)
+				return client.AwsV1alpha1().LightsailStaticIPs(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.LightsailStaticIp{},
+		&awsv1alpha1.LightsailStaticIP{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *lightsailStaticIpInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLightsailStaticIpInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *lightsailStaticIPInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredLightsailStaticIPInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *lightsailStaticIpInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.LightsailStaticIp{}, f.defaultInformer)
+func (f *lightsailStaticIPInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.LightsailStaticIP{}, f.defaultInformer)
 }
 
-func (f *lightsailStaticIpInformer) Lister() v1alpha1.LightsailStaticIpLister {
-	return v1alpha1.NewLightsailStaticIpLister(f.Informer().GetIndexer())
+func (f *lightsailStaticIPInformer) Lister() v1alpha1.LightsailStaticIPLister {
+	return v1alpha1.NewLightsailStaticIPLister(f.Informer().GetIndexer())
 }

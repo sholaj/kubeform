@@ -41,32 +41,33 @@ type ApiManagementGroupUserInformer interface {
 type apiManagementGroupUserInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewApiManagementGroupUserInformer constructs a new informer for ApiManagementGroupUser type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewApiManagementGroupUserInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredApiManagementGroupUserInformer(client, resyncPeriod, indexers, nil)
+func NewApiManagementGroupUserInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredApiManagementGroupUserInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredApiManagementGroupUserInformer constructs a new informer for ApiManagementGroupUser type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredApiManagementGroupUserInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredApiManagementGroupUserInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ApiManagementGroupUsers().List(options)
+				return client.AzurermV1alpha1().ApiManagementGroupUsers(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ApiManagementGroupUsers().Watch(options)
+				return client.AzurermV1alpha1().ApiManagementGroupUsers(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.ApiManagementGroupUser{},
@@ -76,7 +77,7 @@ func NewFilteredApiManagementGroupUserInformer(client versioned.Interface, resyn
 }
 
 func (f *apiManagementGroupUserInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredApiManagementGroupUserInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredApiManagementGroupUserInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *apiManagementGroupUserInformer) Informer() cache.SharedIndexInformer {

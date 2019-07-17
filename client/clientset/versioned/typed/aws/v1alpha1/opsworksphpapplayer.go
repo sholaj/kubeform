@@ -32,7 +32,7 @@ import (
 // OpsworksPhpAppLayersGetter has a method to return a OpsworksPhpAppLayerInterface.
 // A group's client should implement this interface.
 type OpsworksPhpAppLayersGetter interface {
-	OpsworksPhpAppLayers() OpsworksPhpAppLayerInterface
+	OpsworksPhpAppLayers(namespace string) OpsworksPhpAppLayerInterface
 }
 
 // OpsworksPhpAppLayerInterface has methods to work with OpsworksPhpAppLayer resources.
@@ -52,12 +52,14 @@ type OpsworksPhpAppLayerInterface interface {
 // opsworksPhpAppLayers implements OpsworksPhpAppLayerInterface
 type opsworksPhpAppLayers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOpsworksPhpAppLayers returns a OpsworksPhpAppLayers
-func newOpsworksPhpAppLayers(c *AwsV1alpha1Client) *opsworksPhpAppLayers {
+func newOpsworksPhpAppLayers(c *AwsV1alpha1Client, namespace string) *opsworksPhpAppLayers {
 	return &opsworksPhpAppLayers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOpsworksPhpAppLayers(c *AwsV1alpha1Client) *opsworksPhpAppLayers {
 func (c *opsworksPhpAppLayers) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksPhpAppLayer, err error) {
 	result = &v1alpha1.OpsworksPhpAppLayer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksphpapplayers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *opsworksPhpAppLayers) List(opts v1.ListOptions) (result *v1alpha1.Opswo
 	}
 	result = &v1alpha1.OpsworksPhpAppLayerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksphpapplayers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *opsworksPhpAppLayers) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksphpapplayers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *opsworksPhpAppLayers) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *opsworksPhpAppLayers) Create(opsworksPhpAppLayer *v1alpha1.OpsworksPhpAppLayer) (result *v1alpha1.OpsworksPhpAppLayer, err error) {
 	result = &v1alpha1.OpsworksPhpAppLayer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("opsworksphpapplayers").
 		Body(opsworksPhpAppLayer).
 		Do().
@@ -118,6 +124,7 @@ func (c *opsworksPhpAppLayers) Create(opsworksPhpAppLayer *v1alpha1.OpsworksPhpA
 func (c *opsworksPhpAppLayers) Update(opsworksPhpAppLayer *v1alpha1.OpsworksPhpAppLayer) (result *v1alpha1.OpsworksPhpAppLayer, err error) {
 	result = &v1alpha1.OpsworksPhpAppLayer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksphpapplayers").
 		Name(opsworksPhpAppLayer.Name).
 		Body(opsworksPhpAppLayer).
@@ -132,6 +139,7 @@ func (c *opsworksPhpAppLayers) Update(opsworksPhpAppLayer *v1alpha1.OpsworksPhpA
 func (c *opsworksPhpAppLayers) UpdateStatus(opsworksPhpAppLayer *v1alpha1.OpsworksPhpAppLayer) (result *v1alpha1.OpsworksPhpAppLayer, err error) {
 	result = &v1alpha1.OpsworksPhpAppLayer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksphpapplayers").
 		Name(opsworksPhpAppLayer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *opsworksPhpAppLayers) UpdateStatus(opsworksPhpAppLayer *v1alpha1.Opswor
 // Delete takes name of the opsworksPhpAppLayer and deletes it. Returns an error if one occurs.
 func (c *opsworksPhpAppLayers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksphpapplayers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *opsworksPhpAppLayers) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksphpapplayers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *opsworksPhpAppLayers) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *opsworksPhpAppLayers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksPhpAppLayer, err error) {
 	result = &v1alpha1.OpsworksPhpAppLayer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("opsworksphpapplayers").
 		SubResource(subresources...).
 		Name(name).

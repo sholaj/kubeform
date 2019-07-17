@@ -29,8 +29,8 @@ import (
 type CosmosdbCassandraKeyspaceLister interface {
 	// List lists all CosmosdbCassandraKeyspaces in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CosmosdbCassandraKeyspace, err error)
-	// Get retrieves the CosmosdbCassandraKeyspace from the index for a given name.
-	Get(name string) (*v1alpha1.CosmosdbCassandraKeyspace, error)
+	// CosmosdbCassandraKeyspaces returns an object that can list and get CosmosdbCassandraKeyspaces.
+	CosmosdbCassandraKeyspaces(namespace string) CosmosdbCassandraKeyspaceNamespaceLister
 	CosmosdbCassandraKeyspaceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cosmosdbCassandraKeyspaceLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the CosmosdbCassandraKeyspace from the index for a given name.
-func (s *cosmosdbCassandraKeyspaceLister) Get(name string) (*v1alpha1.CosmosdbCassandraKeyspace, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CosmosdbCassandraKeyspaces returns an object that can list and get CosmosdbCassandraKeyspaces.
+func (s *cosmosdbCassandraKeyspaceLister) CosmosdbCassandraKeyspaces(namespace string) CosmosdbCassandraKeyspaceNamespaceLister {
+	return cosmosdbCassandraKeyspaceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CosmosdbCassandraKeyspaceNamespaceLister helps list and get CosmosdbCassandraKeyspaces.
+type CosmosdbCassandraKeyspaceNamespaceLister interface {
+	// List lists all CosmosdbCassandraKeyspaces in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CosmosdbCassandraKeyspace, err error)
+	// Get retrieves the CosmosdbCassandraKeyspace from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CosmosdbCassandraKeyspace, error)
+	CosmosdbCassandraKeyspaceNamespaceListerExpansion
+}
+
+// cosmosdbCassandraKeyspaceNamespaceLister implements the CosmosdbCassandraKeyspaceNamespaceLister
+// interface.
+type cosmosdbCassandraKeyspaceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CosmosdbCassandraKeyspaces in the indexer for a given namespace.
+func (s cosmosdbCassandraKeyspaceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CosmosdbCassandraKeyspace, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CosmosdbCassandraKeyspace))
+	})
+	return ret, err
+}
+
+// Get retrieves the CosmosdbCassandraKeyspace from the indexer for a given namespace and name.
+func (s cosmosdbCassandraKeyspaceNamespaceLister) Get(name string) (*v1alpha1.CosmosdbCassandraKeyspace, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // IotTopicRulesGetter has a method to return a IotTopicRuleInterface.
 // A group's client should implement this interface.
 type IotTopicRulesGetter interface {
-	IotTopicRules() IotTopicRuleInterface
+	IotTopicRules(namespace string) IotTopicRuleInterface
 }
 
 // IotTopicRuleInterface has methods to work with IotTopicRule resources.
@@ -52,12 +52,14 @@ type IotTopicRuleInterface interface {
 // iotTopicRules implements IotTopicRuleInterface
 type iotTopicRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIotTopicRules returns a IotTopicRules
-func newIotTopicRules(c *AwsV1alpha1Client) *iotTopicRules {
+func newIotTopicRules(c *AwsV1alpha1Client, namespace string) *iotTopicRules {
 	return &iotTopicRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIotTopicRules(c *AwsV1alpha1Client) *iotTopicRules {
 func (c *iotTopicRules) Get(name string, options v1.GetOptions) (result *v1alpha1.IotTopicRule, err error) {
 	result = &v1alpha1.IotTopicRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iottopicrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iotTopicRules) List(opts v1.ListOptions) (result *v1alpha1.IotTopicRule
 	}
 	result = &v1alpha1.IotTopicRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iottopicrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iotTopicRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iottopicrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iotTopicRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *iotTopicRules) Create(iotTopicRule *v1alpha1.IotTopicRule) (result *v1alpha1.IotTopicRule, err error) {
 	result = &v1alpha1.IotTopicRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iottopicrules").
 		Body(iotTopicRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *iotTopicRules) Create(iotTopicRule *v1alpha1.IotTopicRule) (result *v1a
 func (c *iotTopicRules) Update(iotTopicRule *v1alpha1.IotTopicRule) (result *v1alpha1.IotTopicRule, err error) {
 	result = &v1alpha1.IotTopicRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iottopicrules").
 		Name(iotTopicRule.Name).
 		Body(iotTopicRule).
@@ -132,6 +139,7 @@ func (c *iotTopicRules) Update(iotTopicRule *v1alpha1.IotTopicRule) (result *v1a
 func (c *iotTopicRules) UpdateStatus(iotTopicRule *v1alpha1.IotTopicRule) (result *v1alpha1.IotTopicRule, err error) {
 	result = &v1alpha1.IotTopicRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iottopicrules").
 		Name(iotTopicRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iotTopicRules) UpdateStatus(iotTopicRule *v1alpha1.IotTopicRule) (resul
 // Delete takes name of the iotTopicRule and deletes it. Returns an error if one occurs.
 func (c *iotTopicRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iottopicrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iotTopicRules) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iottopicrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iotTopicRules) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *iotTopicRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IotTopicRule, err error) {
 	result = &v1alpha1.IotTopicRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iottopicrules").
 		SubResource(subresources...).
 		Name(name).

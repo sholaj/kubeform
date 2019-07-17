@@ -32,7 +32,7 @@ import (
 // WorklinkFleetsGetter has a method to return a WorklinkFleetInterface.
 // A group's client should implement this interface.
 type WorklinkFleetsGetter interface {
-	WorklinkFleets() WorklinkFleetInterface
+	WorklinkFleets(namespace string) WorklinkFleetInterface
 }
 
 // WorklinkFleetInterface has methods to work with WorklinkFleet resources.
@@ -52,12 +52,14 @@ type WorklinkFleetInterface interface {
 // worklinkFleets implements WorklinkFleetInterface
 type worklinkFleets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWorklinkFleets returns a WorklinkFleets
-func newWorklinkFleets(c *AwsV1alpha1Client) *worklinkFleets {
+func newWorklinkFleets(c *AwsV1alpha1Client, namespace string) *worklinkFleets {
 	return &worklinkFleets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWorklinkFleets(c *AwsV1alpha1Client) *worklinkFleets {
 func (c *worklinkFleets) Get(name string, options v1.GetOptions) (result *v1alpha1.WorklinkFleet, err error) {
 	result = &v1alpha1.WorklinkFleet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("worklinkfleets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *worklinkFleets) List(opts v1.ListOptions) (result *v1alpha1.WorklinkFle
 	}
 	result = &v1alpha1.WorklinkFleetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("worklinkfleets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *worklinkFleets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("worklinkfleets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *worklinkFleets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *worklinkFleets) Create(worklinkFleet *v1alpha1.WorklinkFleet) (result *v1alpha1.WorklinkFleet, err error) {
 	result = &v1alpha1.WorklinkFleet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("worklinkfleets").
 		Body(worklinkFleet).
 		Do().
@@ -118,6 +124,7 @@ func (c *worklinkFleets) Create(worklinkFleet *v1alpha1.WorklinkFleet) (result *
 func (c *worklinkFleets) Update(worklinkFleet *v1alpha1.WorklinkFleet) (result *v1alpha1.WorklinkFleet, err error) {
 	result = &v1alpha1.WorklinkFleet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("worklinkfleets").
 		Name(worklinkFleet.Name).
 		Body(worklinkFleet).
@@ -132,6 +139,7 @@ func (c *worklinkFleets) Update(worklinkFleet *v1alpha1.WorklinkFleet) (result *
 func (c *worklinkFleets) UpdateStatus(worklinkFleet *v1alpha1.WorklinkFleet) (result *v1alpha1.WorklinkFleet, err error) {
 	result = &v1alpha1.WorklinkFleet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("worklinkfleets").
 		Name(worklinkFleet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *worklinkFleets) UpdateStatus(worklinkFleet *v1alpha1.WorklinkFleet) (re
 // Delete takes name of the worklinkFleet and deletes it. Returns an error if one occurs.
 func (c *worklinkFleets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("worklinkfleets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *worklinkFleets) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("worklinkfleets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *worklinkFleets) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *worklinkFleets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WorklinkFleet, err error) {
 	result = &v1alpha1.WorklinkFleet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("worklinkfleets").
 		SubResource(subresources...).
 		Name(name).

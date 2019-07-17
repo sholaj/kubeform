@@ -32,7 +32,7 @@ import (
 // ComputeRoutesGetter has a method to return a ComputeRouteInterface.
 // A group's client should implement this interface.
 type ComputeRoutesGetter interface {
-	ComputeRoutes() ComputeRouteInterface
+	ComputeRoutes(namespace string) ComputeRouteInterface
 }
 
 // ComputeRouteInterface has methods to work with ComputeRoute resources.
@@ -52,12 +52,14 @@ type ComputeRouteInterface interface {
 // computeRoutes implements ComputeRouteInterface
 type computeRoutes struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeRoutes returns a ComputeRoutes
-func newComputeRoutes(c *GoogleV1alpha1Client) *computeRoutes {
+func newComputeRoutes(c *GoogleV1alpha1Client, namespace string) *computeRoutes {
 	return &computeRoutes{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeRoutes(c *GoogleV1alpha1Client) *computeRoutes {
 func (c *computeRoutes) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeRoute, err error) {
 	result = &v1alpha1.ComputeRoute{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeroutes").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeRoutes) List(opts v1.ListOptions) (result *v1alpha1.ComputeRoute
 	}
 	result = &v1alpha1.ComputeRouteList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeroutes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeRoutes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computeroutes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeRoutes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *computeRoutes) Create(computeRoute *v1alpha1.ComputeRoute) (result *v1alpha1.ComputeRoute, err error) {
 	result = &v1alpha1.ComputeRoute{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computeroutes").
 		Body(computeRoute).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeRoutes) Create(computeRoute *v1alpha1.ComputeRoute) (result *v1a
 func (c *computeRoutes) Update(computeRoute *v1alpha1.ComputeRoute) (result *v1alpha1.ComputeRoute, err error) {
 	result = &v1alpha1.ComputeRoute{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeroutes").
 		Name(computeRoute.Name).
 		Body(computeRoute).
@@ -132,6 +139,7 @@ func (c *computeRoutes) Update(computeRoute *v1alpha1.ComputeRoute) (result *v1a
 func (c *computeRoutes) UpdateStatus(computeRoute *v1alpha1.ComputeRoute) (result *v1alpha1.ComputeRoute, err error) {
 	result = &v1alpha1.ComputeRoute{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeroutes").
 		Name(computeRoute.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeRoutes) UpdateStatus(computeRoute *v1alpha1.ComputeRoute) (resul
 // Delete takes name of the computeRoute and deletes it. Returns an error if one occurs.
 func (c *computeRoutes) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeroutes").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeRoutes) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeroutes").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeRoutes) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *computeRoutes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeRoute, err error) {
 	result = &v1alpha1.ComputeRoute{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computeroutes").
 		SubResource(subresources...).
 		Name(name).

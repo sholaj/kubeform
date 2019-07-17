@@ -29,8 +29,8 @@ import (
 type ProxyProtocolPolicyLister interface {
 	// List lists all ProxyProtocolPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ProxyProtocolPolicy, err error)
-	// Get retrieves the ProxyProtocolPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.ProxyProtocolPolicy, error)
+	// ProxyProtocolPolicies returns an object that can list and get ProxyProtocolPolicies.
+	ProxyProtocolPolicies(namespace string) ProxyProtocolPolicyNamespaceLister
 	ProxyProtocolPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *proxyProtocolPolicyLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the ProxyProtocolPolicy from the index for a given name.
-func (s *proxyProtocolPolicyLister) Get(name string) (*v1alpha1.ProxyProtocolPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ProxyProtocolPolicies returns an object that can list and get ProxyProtocolPolicies.
+func (s *proxyProtocolPolicyLister) ProxyProtocolPolicies(namespace string) ProxyProtocolPolicyNamespaceLister {
+	return proxyProtocolPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ProxyProtocolPolicyNamespaceLister helps list and get ProxyProtocolPolicies.
+type ProxyProtocolPolicyNamespaceLister interface {
+	// List lists all ProxyProtocolPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ProxyProtocolPolicy, err error)
+	// Get retrieves the ProxyProtocolPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ProxyProtocolPolicy, error)
+	ProxyProtocolPolicyNamespaceListerExpansion
+}
+
+// proxyProtocolPolicyNamespaceLister implements the ProxyProtocolPolicyNamespaceLister
+// interface.
+type proxyProtocolPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ProxyProtocolPolicies in the indexer for a given namespace.
+func (s proxyProtocolPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ProxyProtocolPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ProxyProtocolPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the ProxyProtocolPolicy from the indexer for a given namespace and name.
+func (s proxyProtocolPolicyNamespaceLister) Get(name string) (*v1alpha1.ProxyProtocolPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

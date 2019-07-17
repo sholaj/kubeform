@@ -397,22 +397,22 @@ spec:
           type: object
         spec:
           properties:
-            backend_service:
+            backendService:
               type: string
             description:
               type: string
-            ip_version:
+            ipVersion:
               type: string
             labels:
               additionalProperties:
                 type: string
               description: Deprecated
               type: object
-            load_balancing_scheme:
+            loadBalancingScheme:
               type: string
             name:
               type: string
-            port_range:
+            portRange:
               type: string
             ports:
               items:
@@ -420,13 +420,23 @@ spec:
               maxItems: 5
               type: array
               uniqueItems: true
-            service_label:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            serviceLabel:
               description: Deprecated
               type: string
             target:
               type: string
           required:
           - name
+          - providerRef
           type: object
         status:
           properties:
@@ -437,6 +447,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

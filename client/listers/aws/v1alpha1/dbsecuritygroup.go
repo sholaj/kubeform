@@ -29,8 +29,8 @@ import (
 type DbSecurityGroupLister interface {
 	// List lists all DbSecurityGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DbSecurityGroup, err error)
-	// Get retrieves the DbSecurityGroup from the index for a given name.
-	Get(name string) (*v1alpha1.DbSecurityGroup, error)
+	// DbSecurityGroups returns an object that can list and get DbSecurityGroups.
+	DbSecurityGroups(namespace string) DbSecurityGroupNamespaceLister
 	DbSecurityGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dbSecurityGroupLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the DbSecurityGroup from the index for a given name.
-func (s *dbSecurityGroupLister) Get(name string) (*v1alpha1.DbSecurityGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DbSecurityGroups returns an object that can list and get DbSecurityGroups.
+func (s *dbSecurityGroupLister) DbSecurityGroups(namespace string) DbSecurityGroupNamespaceLister {
+	return dbSecurityGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DbSecurityGroupNamespaceLister helps list and get DbSecurityGroups.
+type DbSecurityGroupNamespaceLister interface {
+	// List lists all DbSecurityGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DbSecurityGroup, err error)
+	// Get retrieves the DbSecurityGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DbSecurityGroup, error)
+	DbSecurityGroupNamespaceListerExpansion
+}
+
+// dbSecurityGroupNamespaceLister implements the DbSecurityGroupNamespaceLister
+// interface.
+type dbSecurityGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DbSecurityGroups in the indexer for a given namespace.
+func (s dbSecurityGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DbSecurityGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DbSecurityGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the DbSecurityGroup from the indexer for a given namespace and name.
+func (s dbSecurityGroupNamespaceLister) Get(name string) (*v1alpha1.DbSecurityGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

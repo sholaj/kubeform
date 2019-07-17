@@ -32,7 +32,7 @@ import (
 // ComputeForwardingRulesGetter has a method to return a ComputeForwardingRuleInterface.
 // A group's client should implement this interface.
 type ComputeForwardingRulesGetter interface {
-	ComputeForwardingRules() ComputeForwardingRuleInterface
+	ComputeForwardingRules(namespace string) ComputeForwardingRuleInterface
 }
 
 // ComputeForwardingRuleInterface has methods to work with ComputeForwardingRule resources.
@@ -52,12 +52,14 @@ type ComputeForwardingRuleInterface interface {
 // computeForwardingRules implements ComputeForwardingRuleInterface
 type computeForwardingRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeForwardingRules returns a ComputeForwardingRules
-func newComputeForwardingRules(c *GoogleV1alpha1Client) *computeForwardingRules {
+func newComputeForwardingRules(c *GoogleV1alpha1Client, namespace string) *computeForwardingRules {
 	return &computeForwardingRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeForwardingRules(c *GoogleV1alpha1Client) *computeForwardingRules 
 func (c *computeForwardingRules) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeForwardingRule, err error) {
 	result = &v1alpha1.ComputeForwardingRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeforwardingrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeForwardingRules) List(opts v1.ListOptions) (result *v1alpha1.Com
 	}
 	result = &v1alpha1.ComputeForwardingRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeforwardingrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeForwardingRules) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computeforwardingrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeForwardingRules) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *computeForwardingRules) Create(computeForwardingRule *v1alpha1.ComputeForwardingRule) (result *v1alpha1.ComputeForwardingRule, err error) {
 	result = &v1alpha1.ComputeForwardingRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computeforwardingrules").
 		Body(computeForwardingRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeForwardingRules) Create(computeForwardingRule *v1alpha1.ComputeF
 func (c *computeForwardingRules) Update(computeForwardingRule *v1alpha1.ComputeForwardingRule) (result *v1alpha1.ComputeForwardingRule, err error) {
 	result = &v1alpha1.ComputeForwardingRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeforwardingrules").
 		Name(computeForwardingRule.Name).
 		Body(computeForwardingRule).
@@ -132,6 +139,7 @@ func (c *computeForwardingRules) Update(computeForwardingRule *v1alpha1.ComputeF
 func (c *computeForwardingRules) UpdateStatus(computeForwardingRule *v1alpha1.ComputeForwardingRule) (result *v1alpha1.ComputeForwardingRule, err error) {
 	result = &v1alpha1.ComputeForwardingRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeforwardingrules").
 		Name(computeForwardingRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeForwardingRules) UpdateStatus(computeForwardingRule *v1alpha1.Co
 // Delete takes name of the computeForwardingRule and deletes it. Returns an error if one occurs.
 func (c *computeForwardingRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeforwardingrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeForwardingRules) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeforwardingrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeForwardingRules) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *computeForwardingRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeForwardingRule, err error) {
 	result = &v1alpha1.ComputeForwardingRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computeforwardingrules").
 		SubResource(subresources...).
 		Name(name).

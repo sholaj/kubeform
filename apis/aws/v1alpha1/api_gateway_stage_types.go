@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,33 +19,34 @@ type ApiGatewayStage struct {
 }
 
 type ApiGatewayStageSpecAccessLogSettings struct {
-	DestinationArn string `json:"destination_arn"`
-	Format         string `json:"format"`
+	DestinationArn string `json:"destinationArn" tf:"destination_arn"`
+	Format         string `json:"format" tf:"format"`
 }
 
 type ApiGatewayStageSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	AccessLogSettings *[]ApiGatewayStageSpec `json:"access_log_settings,omitempty"`
+	AccessLogSettings []ApiGatewayStageSpecAccessLogSettings `json:"accessLogSettings,omitempty" tf:"access_log_settings,omitempty"`
 	// +optional
-	CacheClusterEnabled bool `json:"cache_cluster_enabled,omitempty"`
+	CacheClusterEnabled bool `json:"cacheClusterEnabled,omitempty" tf:"cache_cluster_enabled,omitempty"`
 	// +optional
-	CacheClusterSize string `json:"cache_cluster_size,omitempty"`
+	CacheClusterSize string `json:"cacheClusterSize,omitempty" tf:"cache_cluster_size,omitempty"`
 	// +optional
-	ClientCertificateId string `json:"client_certificate_id,omitempty"`
-	DeploymentId        string `json:"deployment_id"`
+	ClientCertificateID string `json:"clientCertificateID,omitempty" tf:"client_certificate_id,omitempty"`
+	DeploymentID        string `json:"deploymentID" tf:"deployment_id"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	DocumentationVersion string `json:"documentation_version,omitempty"`
-	RestApiId            string `json:"rest_api_id"`
-	StageName            string `json:"stage_name"`
+	DocumentationVersion string `json:"documentationVersion,omitempty" tf:"documentation_version,omitempty"`
+	RestAPIID            string `json:"restAPIID" tf:"rest_api_id"`
+	StageName            string `json:"stageName" tf:"stage_name"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	Variables map[string]string `json:"variables,omitempty"`
+	Variables map[string]string `json:"variables,omitempty" tf:"variables,omitempty"`
 	// +optional
-	XrayTracingEnabled bool `json:"xray_tracing_enabled,omitempty"`
+	XrayTracingEnabled bool                      `json:"xrayTracingEnabled,omitempty" tf:"xray_tracing_enabled,omitempty"`
+	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ApiGatewayStageStatus struct {
@@ -53,7 +54,9 @@ type ApiGatewayStageStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

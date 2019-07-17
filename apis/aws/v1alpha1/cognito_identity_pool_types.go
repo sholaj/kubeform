@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,28 +20,29 @@ type CognitoIdentityPool struct {
 
 type CognitoIdentityPoolSpecCognitoIdentityProviders struct {
 	// +optional
-	ClientId string `json:"client_id,omitempty"`
+	ClientID string `json:"clientID,omitempty" tf:"client_id,omitempty"`
 	// +optional
-	ProviderName string `json:"provider_name,omitempty"`
+	ProviderName string `json:"providerName,omitempty" tf:"provider_name,omitempty"`
 	// +optional
-	ServerSideTokenCheck bool `json:"server_side_token_check,omitempty"`
+	ServerSideTokenCheck bool `json:"serverSideTokenCheck,omitempty" tf:"server_side_token_check,omitempty"`
 }
 
 type CognitoIdentityPoolSpec struct {
 	// +optional
-	AllowUnauthenticatedIdentities bool `json:"allow_unauthenticated_identities,omitempty"`
+	AllowUnauthenticatedIdentities bool `json:"allowUnauthenticatedIdentities,omitempty" tf:"allow_unauthenticated_identities,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	CognitoIdentityProviders *[]CognitoIdentityPoolSpec `json:"cognito_identity_providers,omitempty"`
+	CognitoIdentityProviders []CognitoIdentityPoolSpecCognitoIdentityProviders `json:"cognitoIdentityProviders,omitempty" tf:"cognito_identity_providers,omitempty"`
 	// +optional
-	DeveloperProviderName string `json:"developer_provider_name,omitempty"`
-	IdentityPoolName      string `json:"identity_pool_name"`
+	DeveloperProviderName string `json:"developerProviderName,omitempty" tf:"developer_provider_name,omitempty"`
+	IdentityPoolName      string `json:"identityPoolName" tf:"identity_pool_name"`
 	// +optional
-	OpenidConnectProviderArns []string `json:"openid_connect_provider_arns,omitempty"`
+	OpenidConnectProviderArns []string `json:"openidConnectProviderArns,omitempty" tf:"openid_connect_provider_arns,omitempty"`
 	// +optional
-	SamlProviderArns []string `json:"saml_provider_arns,omitempty"`
+	SamlProviderArns []string `json:"samlProviderArns,omitempty" tf:"saml_provider_arns,omitempty"`
 	// +optional
-	SupportedLoginProviders map[string]string `json:"supported_login_providers,omitempty"`
+	SupportedLoginProviders map[string]string         `json:"supportedLoginProviders,omitempty" tf:"supported_login_providers,omitempty"`
+	ProviderRef             core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type CognitoIdentityPoolStatus struct {
@@ -49,7 +50,9 @@ type CognitoIdentityPoolStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

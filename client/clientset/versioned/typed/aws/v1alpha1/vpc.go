@@ -32,7 +32,7 @@ import (
 // VpcsGetter has a method to return a VpcInterface.
 // A group's client should implement this interface.
 type VpcsGetter interface {
-	Vpcs() VpcInterface
+	Vpcs(namespace string) VpcInterface
 }
 
 // VpcInterface has methods to work with Vpc resources.
@@ -52,12 +52,14 @@ type VpcInterface interface {
 // vpcs implements VpcInterface
 type vpcs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVpcs returns a Vpcs
-func newVpcs(c *AwsV1alpha1Client) *vpcs {
+func newVpcs(c *AwsV1alpha1Client, namespace string) *vpcs {
 	return &vpcs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVpcs(c *AwsV1alpha1Client) *vpcs {
 func (c *vpcs) Get(name string, options v1.GetOptions) (result *v1alpha1.Vpc, err error) {
 	result = &v1alpha1.Vpc{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *vpcs) List(opts v1.ListOptions) (result *v1alpha1.VpcList, err error) {
 	}
 	result = &v1alpha1.VpcList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *vpcs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *vpcs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *vpcs) Create(vpc *v1alpha1.Vpc) (result *v1alpha1.Vpc, err error) {
 	result = &v1alpha1.Vpc{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("vpcs").
 		Body(vpc).
 		Do().
@@ -118,6 +124,7 @@ func (c *vpcs) Create(vpc *v1alpha1.Vpc) (result *v1alpha1.Vpc, err error) {
 func (c *vpcs) Update(vpc *v1alpha1.Vpc) (result *v1alpha1.Vpc, err error) {
 	result = &v1alpha1.Vpc{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcs").
 		Name(vpc.Name).
 		Body(vpc).
@@ -132,6 +139,7 @@ func (c *vpcs) Update(vpc *v1alpha1.Vpc) (result *v1alpha1.Vpc, err error) {
 func (c *vpcs) UpdateStatus(vpc *v1alpha1.Vpc) (result *v1alpha1.Vpc, err error) {
 	result = &v1alpha1.Vpc{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcs").
 		Name(vpc.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *vpcs) UpdateStatus(vpc *v1alpha1.Vpc) (result *v1alpha1.Vpc, err error)
 // Delete takes name of the vpc and deletes it. Returns an error if one occurs.
 func (c *vpcs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *vpcs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *vpcs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOp
 func (c *vpcs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Vpc, err error) {
 	result = &v1alpha1.Vpc{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("vpcs").
 		SubResource(subresources...).
 		Name(name).

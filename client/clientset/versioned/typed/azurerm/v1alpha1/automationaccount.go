@@ -32,7 +32,7 @@ import (
 // AutomationAccountsGetter has a method to return a AutomationAccountInterface.
 // A group's client should implement this interface.
 type AutomationAccountsGetter interface {
-	AutomationAccounts() AutomationAccountInterface
+	AutomationAccounts(namespace string) AutomationAccountInterface
 }
 
 // AutomationAccountInterface has methods to work with AutomationAccount resources.
@@ -52,12 +52,14 @@ type AutomationAccountInterface interface {
 // automationAccounts implements AutomationAccountInterface
 type automationAccounts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAutomationAccounts returns a AutomationAccounts
-func newAutomationAccounts(c *AzurermV1alpha1Client) *automationAccounts {
+func newAutomationAccounts(c *AzurermV1alpha1Client, namespace string) *automationAccounts {
 	return &automationAccounts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAutomationAccounts(c *AzurermV1alpha1Client) *automationAccounts {
 func (c *automationAccounts) Get(name string, options v1.GetOptions) (result *v1alpha1.AutomationAccount, err error) {
 	result = &v1alpha1.AutomationAccount{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("automationaccounts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *automationAccounts) List(opts v1.ListOptions) (result *v1alpha1.Automat
 	}
 	result = &v1alpha1.AutomationAccountList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("automationaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *automationAccounts) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("automationaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *automationAccounts) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *automationAccounts) Create(automationAccount *v1alpha1.AutomationAccount) (result *v1alpha1.AutomationAccount, err error) {
 	result = &v1alpha1.AutomationAccount{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("automationaccounts").
 		Body(automationAccount).
 		Do().
@@ -118,6 +124,7 @@ func (c *automationAccounts) Create(automationAccount *v1alpha1.AutomationAccoun
 func (c *automationAccounts) Update(automationAccount *v1alpha1.AutomationAccount) (result *v1alpha1.AutomationAccount, err error) {
 	result = &v1alpha1.AutomationAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("automationaccounts").
 		Name(automationAccount.Name).
 		Body(automationAccount).
@@ -132,6 +139,7 @@ func (c *automationAccounts) Update(automationAccount *v1alpha1.AutomationAccoun
 func (c *automationAccounts) UpdateStatus(automationAccount *v1alpha1.AutomationAccount) (result *v1alpha1.AutomationAccount, err error) {
 	result = &v1alpha1.AutomationAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("automationaccounts").
 		Name(automationAccount.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *automationAccounts) UpdateStatus(automationAccount *v1alpha1.Automation
 // Delete takes name of the automationAccount and deletes it. Returns an error if one occurs.
 func (c *automationAccounts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("automationaccounts").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *automationAccounts) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("automationaccounts").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *automationAccounts) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *automationAccounts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AutomationAccount, err error) {
 	result = &v1alpha1.AutomationAccount{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("automationaccounts").
 		SubResource(subresources...).
 		Name(name).

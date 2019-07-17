@@ -41,32 +41,33 @@ type Ec2TransitGatewayRouteInformer interface {
 type ec2TransitGatewayRouteInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewEc2TransitGatewayRouteInformer constructs a new informer for Ec2TransitGatewayRoute type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewEc2TransitGatewayRouteInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredEc2TransitGatewayRouteInformer(client, resyncPeriod, indexers, nil)
+func NewEc2TransitGatewayRouteInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredEc2TransitGatewayRouteInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredEc2TransitGatewayRouteInformer constructs a new informer for Ec2TransitGatewayRoute type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredEc2TransitGatewayRouteInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredEc2TransitGatewayRouteInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().Ec2TransitGatewayRoutes().List(options)
+				return client.AwsV1alpha1().Ec2TransitGatewayRoutes(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().Ec2TransitGatewayRoutes().Watch(options)
+				return client.AwsV1alpha1().Ec2TransitGatewayRoutes(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.Ec2TransitGatewayRoute{},
@@ -76,7 +77,7 @@ func NewFilteredEc2TransitGatewayRouteInformer(client versioned.Interface, resyn
 }
 
 func (f *ec2TransitGatewayRouteInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredEc2TransitGatewayRouteInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredEc2TransitGatewayRouteInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *ec2TransitGatewayRouteInformer) Informer() cache.SharedIndexInformer {

@@ -29,8 +29,8 @@ import (
 type StorageNotificationLister interface {
 	// List lists all StorageNotifications in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StorageNotification, err error)
-	// Get retrieves the StorageNotification from the index for a given name.
-	Get(name string) (*v1alpha1.StorageNotification, error)
+	// StorageNotifications returns an object that can list and get StorageNotifications.
+	StorageNotifications(namespace string) StorageNotificationNamespaceLister
 	StorageNotificationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *storageNotificationLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the StorageNotification from the index for a given name.
-func (s *storageNotificationLister) Get(name string) (*v1alpha1.StorageNotification, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StorageNotifications returns an object that can list and get StorageNotifications.
+func (s *storageNotificationLister) StorageNotifications(namespace string) StorageNotificationNamespaceLister {
+	return storageNotificationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StorageNotificationNamespaceLister helps list and get StorageNotifications.
+type StorageNotificationNamespaceLister interface {
+	// List lists all StorageNotifications in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StorageNotification, err error)
+	// Get retrieves the StorageNotification from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StorageNotification, error)
+	StorageNotificationNamespaceListerExpansion
+}
+
+// storageNotificationNamespaceLister implements the StorageNotificationNamespaceLister
+// interface.
+type storageNotificationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StorageNotifications in the indexer for a given namespace.
+func (s storageNotificationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StorageNotification, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StorageNotification))
+	})
+	return ret, err
+}
+
+// Get retrieves the StorageNotification from the indexer for a given namespace and name.
+func (s storageNotificationNamespaceLister) Get(name string) (*v1alpha1.StorageNotification, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

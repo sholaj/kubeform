@@ -29,8 +29,8 @@ import (
 type NetworkInterfaceAttachmentLister interface {
 	// List lists all NetworkInterfaceAttachments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NetworkInterfaceAttachment, err error)
-	// Get retrieves the NetworkInterfaceAttachment from the index for a given name.
-	Get(name string) (*v1alpha1.NetworkInterfaceAttachment, error)
+	// NetworkInterfaceAttachments returns an object that can list and get NetworkInterfaceAttachments.
+	NetworkInterfaceAttachments(namespace string) NetworkInterfaceAttachmentNamespaceLister
 	NetworkInterfaceAttachmentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *networkInterfaceAttachmentLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the NetworkInterfaceAttachment from the index for a given name.
-func (s *networkInterfaceAttachmentLister) Get(name string) (*v1alpha1.NetworkInterfaceAttachment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NetworkInterfaceAttachments returns an object that can list and get NetworkInterfaceAttachments.
+func (s *networkInterfaceAttachmentLister) NetworkInterfaceAttachments(namespace string) NetworkInterfaceAttachmentNamespaceLister {
+	return networkInterfaceAttachmentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NetworkInterfaceAttachmentNamespaceLister helps list and get NetworkInterfaceAttachments.
+type NetworkInterfaceAttachmentNamespaceLister interface {
+	// List lists all NetworkInterfaceAttachments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NetworkInterfaceAttachment, err error)
+	// Get retrieves the NetworkInterfaceAttachment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NetworkInterfaceAttachment, error)
+	NetworkInterfaceAttachmentNamespaceListerExpansion
+}
+
+// networkInterfaceAttachmentNamespaceLister implements the NetworkInterfaceAttachmentNamespaceLister
+// interface.
+type networkInterfaceAttachmentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NetworkInterfaceAttachments in the indexer for a given namespace.
+func (s networkInterfaceAttachmentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NetworkInterfaceAttachment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NetworkInterfaceAttachment))
+	})
+	return ret, err
+}
+
+// Get retrieves the NetworkInterfaceAttachment from the indexer for a given namespace and name.
+func (s networkInterfaceAttachmentNamespaceLister) Get(name string) (*v1alpha1.NetworkInterfaceAttachment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

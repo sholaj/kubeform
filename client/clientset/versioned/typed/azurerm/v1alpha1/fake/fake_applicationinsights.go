@@ -31,6 +31,7 @@ import (
 // FakeApplicationInsightses implements ApplicationInsightsInterface
 type FakeApplicationInsightses struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var applicationinsightsesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "applicationinsightses"}
@@ -40,7 +41,8 @@ var applicationinsightsesKind = schema.GroupVersionKind{Group: "azurerm.kubeform
 // Get takes name of the applicationInsights, and returns the corresponding applicationInsights object, and an error if there is any.
 func (c *FakeApplicationInsightses) Get(name string, options v1.GetOptions) (result *v1alpha1.ApplicationInsights, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(applicationinsightsesResource, name), &v1alpha1.ApplicationInsights{})
+		Invokes(testing.NewGetAction(applicationinsightsesResource, c.ns, name), &v1alpha1.ApplicationInsights{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApplicationInsightses) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of ApplicationInsightses that match those selectors.
 func (c *FakeApplicationInsightses) List(opts v1.ListOptions) (result *v1alpha1.ApplicationInsightsList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(applicationinsightsesResource, applicationinsightsesKind, opts), &v1alpha1.ApplicationInsightsList{})
+		Invokes(testing.NewListAction(applicationinsightsesResource, applicationinsightsesKind, c.ns, opts), &v1alpha1.ApplicationInsightsList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApplicationInsightses) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested applicationInsightses.
 func (c *FakeApplicationInsightses) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(applicationinsightsesResource, opts))
+		InvokesWatch(testing.NewWatchAction(applicationinsightsesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a applicationInsights and creates it.  Returns the server's representation of the applicationInsights, and an error, if there is any.
 func (c *FakeApplicationInsightses) Create(applicationInsights *v1alpha1.ApplicationInsights) (result *v1alpha1.ApplicationInsights, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(applicationinsightsesResource, applicationInsights), &v1alpha1.ApplicationInsights{})
+		Invokes(testing.NewCreateAction(applicationinsightsesResource, c.ns, applicationInsights), &v1alpha1.ApplicationInsights{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApplicationInsightses) Create(applicationInsights *v1alpha1.Applica
 // Update takes the representation of a applicationInsights and updates it. Returns the server's representation of the applicationInsights, and an error, if there is any.
 func (c *FakeApplicationInsightses) Update(applicationInsights *v1alpha1.ApplicationInsights) (result *v1alpha1.ApplicationInsights, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(applicationinsightsesResource, applicationInsights), &v1alpha1.ApplicationInsights{})
+		Invokes(testing.NewUpdateAction(applicationinsightsesResource, c.ns, applicationInsights), &v1alpha1.ApplicationInsights{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApplicationInsightses) Update(applicationInsights *v1alpha1.Applica
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApplicationInsightses) UpdateStatus(applicationInsights *v1alpha1.ApplicationInsights) (*v1alpha1.ApplicationInsights, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(applicationinsightsesResource, "status", applicationInsights), &v1alpha1.ApplicationInsights{})
+		Invokes(testing.NewUpdateSubresourceAction(applicationinsightsesResource, "status", c.ns, applicationInsights), &v1alpha1.ApplicationInsights{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApplicationInsightses) UpdateStatus(applicationInsights *v1alpha1.A
 // Delete takes name of the applicationInsights and deletes it. Returns an error if one occurs.
 func (c *FakeApplicationInsightses) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(applicationinsightsesResource, name), &v1alpha1.ApplicationInsights{})
+		Invokes(testing.NewDeleteAction(applicationinsightsesResource, c.ns, name), &v1alpha1.ApplicationInsights{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApplicationInsightses) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(applicationinsightsesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(applicationinsightsesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApplicationInsightsList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApplicationInsightses) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched applicationInsights.
 func (c *FakeApplicationInsightses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApplicationInsights, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(applicationinsightsesResource, name, pt, data, subresources...), &v1alpha1.ApplicationInsights{})
+		Invokes(testing.NewPatchSubresourceAction(applicationinsightsesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApplicationInsights{})
+
 	if obj == nil {
 		return nil, err
 	}

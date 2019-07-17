@@ -29,8 +29,8 @@ import (
 type RedshiftSubnetGroupLister interface {
 	// List lists all RedshiftSubnetGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RedshiftSubnetGroup, err error)
-	// Get retrieves the RedshiftSubnetGroup from the index for a given name.
-	Get(name string) (*v1alpha1.RedshiftSubnetGroup, error)
+	// RedshiftSubnetGroups returns an object that can list and get RedshiftSubnetGroups.
+	RedshiftSubnetGroups(namespace string) RedshiftSubnetGroupNamespaceLister
 	RedshiftSubnetGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *redshiftSubnetGroupLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the RedshiftSubnetGroup from the index for a given name.
-func (s *redshiftSubnetGroupLister) Get(name string) (*v1alpha1.RedshiftSubnetGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RedshiftSubnetGroups returns an object that can list and get RedshiftSubnetGroups.
+func (s *redshiftSubnetGroupLister) RedshiftSubnetGroups(namespace string) RedshiftSubnetGroupNamespaceLister {
+	return redshiftSubnetGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RedshiftSubnetGroupNamespaceLister helps list and get RedshiftSubnetGroups.
+type RedshiftSubnetGroupNamespaceLister interface {
+	// List lists all RedshiftSubnetGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RedshiftSubnetGroup, err error)
+	// Get retrieves the RedshiftSubnetGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RedshiftSubnetGroup, error)
+	RedshiftSubnetGroupNamespaceListerExpansion
+}
+
+// redshiftSubnetGroupNamespaceLister implements the RedshiftSubnetGroupNamespaceLister
+// interface.
+type redshiftSubnetGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RedshiftSubnetGroups in the indexer for a given namespace.
+func (s redshiftSubnetGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RedshiftSubnetGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RedshiftSubnetGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the RedshiftSubnetGroup from the indexer for a given namespace and name.
+func (s redshiftSubnetGroupNamespaceLister) Get(name string) (*v1alpha1.RedshiftSubnetGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

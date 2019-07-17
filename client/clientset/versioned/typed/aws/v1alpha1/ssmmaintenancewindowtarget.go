@@ -32,7 +32,7 @@ import (
 // SsmMaintenanceWindowTargetsGetter has a method to return a SsmMaintenanceWindowTargetInterface.
 // A group's client should implement this interface.
 type SsmMaintenanceWindowTargetsGetter interface {
-	SsmMaintenanceWindowTargets() SsmMaintenanceWindowTargetInterface
+	SsmMaintenanceWindowTargets(namespace string) SsmMaintenanceWindowTargetInterface
 }
 
 // SsmMaintenanceWindowTargetInterface has methods to work with SsmMaintenanceWindowTarget resources.
@@ -52,12 +52,14 @@ type SsmMaintenanceWindowTargetInterface interface {
 // ssmMaintenanceWindowTargets implements SsmMaintenanceWindowTargetInterface
 type ssmMaintenanceWindowTargets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSsmMaintenanceWindowTargets returns a SsmMaintenanceWindowTargets
-func newSsmMaintenanceWindowTargets(c *AwsV1alpha1Client) *ssmMaintenanceWindowTargets {
+func newSsmMaintenanceWindowTargets(c *AwsV1alpha1Client, namespace string) *ssmMaintenanceWindowTargets {
 	return &ssmMaintenanceWindowTargets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSsmMaintenanceWindowTargets(c *AwsV1alpha1Client) *ssmMaintenanceWindowT
 func (c *ssmMaintenanceWindowTargets) Get(name string, options v1.GetOptions) (result *v1alpha1.SsmMaintenanceWindowTarget, err error) {
 	result = &v1alpha1.SsmMaintenanceWindowTarget{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmmaintenancewindowtargets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ssmMaintenanceWindowTargets) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.SsmMaintenanceWindowTargetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmmaintenancewindowtargets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ssmMaintenanceWindowTargets) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmmaintenancewindowtargets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ssmMaintenanceWindowTargets) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *ssmMaintenanceWindowTargets) Create(ssmMaintenanceWindowTarget *v1alpha1.SsmMaintenanceWindowTarget) (result *v1alpha1.SsmMaintenanceWindowTarget, err error) {
 	result = &v1alpha1.SsmMaintenanceWindowTarget{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ssmmaintenancewindowtargets").
 		Body(ssmMaintenanceWindowTarget).
 		Do().
@@ -118,6 +124,7 @@ func (c *ssmMaintenanceWindowTargets) Create(ssmMaintenanceWindowTarget *v1alpha
 func (c *ssmMaintenanceWindowTargets) Update(ssmMaintenanceWindowTarget *v1alpha1.SsmMaintenanceWindowTarget) (result *v1alpha1.SsmMaintenanceWindowTarget, err error) {
 	result = &v1alpha1.SsmMaintenanceWindowTarget{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ssmmaintenancewindowtargets").
 		Name(ssmMaintenanceWindowTarget.Name).
 		Body(ssmMaintenanceWindowTarget).
@@ -132,6 +139,7 @@ func (c *ssmMaintenanceWindowTargets) Update(ssmMaintenanceWindowTarget *v1alpha
 func (c *ssmMaintenanceWindowTargets) UpdateStatus(ssmMaintenanceWindowTarget *v1alpha1.SsmMaintenanceWindowTarget) (result *v1alpha1.SsmMaintenanceWindowTarget, err error) {
 	result = &v1alpha1.SsmMaintenanceWindowTarget{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ssmmaintenancewindowtargets").
 		Name(ssmMaintenanceWindowTarget.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ssmMaintenanceWindowTargets) UpdateStatus(ssmMaintenanceWindowTarget *v
 // Delete takes name of the ssmMaintenanceWindowTarget and deletes it. Returns an error if one occurs.
 func (c *ssmMaintenanceWindowTargets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ssmmaintenancewindowtargets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ssmMaintenanceWindowTargets) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ssmmaintenancewindowtargets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ssmMaintenanceWindowTargets) DeleteCollection(options *v1.DeleteOptions
 func (c *ssmMaintenanceWindowTargets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SsmMaintenanceWindowTarget, err error) {
 	result = &v1alpha1.SsmMaintenanceWindowTarget{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ssmmaintenancewindowtargets").
 		SubResource(subresources...).
 		Name(name).

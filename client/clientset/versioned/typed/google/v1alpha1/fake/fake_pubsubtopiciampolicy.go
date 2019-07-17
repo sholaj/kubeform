@@ -31,6 +31,7 @@ import (
 // FakePubsubTopicIamPolicies implements PubsubTopicIamPolicyInterface
 type FakePubsubTopicIamPolicies struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var pubsubtopiciampoliciesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "pubsubtopiciampolicies"}
@@ -40,7 +41,8 @@ var pubsubtopiciampoliciesKind = schema.GroupVersionKind{Group: "google.kubeform
 // Get takes name of the pubsubTopicIamPolicy, and returns the corresponding pubsubTopicIamPolicy object, and an error if there is any.
 func (c *FakePubsubTopicIamPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.PubsubTopicIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(pubsubtopiciampoliciesResource, name), &v1alpha1.PubsubTopicIamPolicy{})
+		Invokes(testing.NewGetAction(pubsubtopiciampoliciesResource, c.ns, name), &v1alpha1.PubsubTopicIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakePubsubTopicIamPolicies) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of PubsubTopicIamPolicies that match those selectors.
 func (c *FakePubsubTopicIamPolicies) List(opts v1.ListOptions) (result *v1alpha1.PubsubTopicIamPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(pubsubtopiciampoliciesResource, pubsubtopiciampoliciesKind, opts), &v1alpha1.PubsubTopicIamPolicyList{})
+		Invokes(testing.NewListAction(pubsubtopiciampoliciesResource, pubsubtopiciampoliciesKind, c.ns, opts), &v1alpha1.PubsubTopicIamPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakePubsubTopicIamPolicies) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested pubsubTopicIamPolicies.
 func (c *FakePubsubTopicIamPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(pubsubtopiciampoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(pubsubtopiciampoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a pubsubTopicIamPolicy and creates it.  Returns the server's representation of the pubsubTopicIamPolicy, and an error, if there is any.
 func (c *FakePubsubTopicIamPolicies) Create(pubsubTopicIamPolicy *v1alpha1.PubsubTopicIamPolicy) (result *v1alpha1.PubsubTopicIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(pubsubtopiciampoliciesResource, pubsubTopicIamPolicy), &v1alpha1.PubsubTopicIamPolicy{})
+		Invokes(testing.NewCreateAction(pubsubtopiciampoliciesResource, c.ns, pubsubTopicIamPolicy), &v1alpha1.PubsubTopicIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakePubsubTopicIamPolicies) Create(pubsubTopicIamPolicy *v1alpha1.Pubsu
 // Update takes the representation of a pubsubTopicIamPolicy and updates it. Returns the server's representation of the pubsubTopicIamPolicy, and an error, if there is any.
 func (c *FakePubsubTopicIamPolicies) Update(pubsubTopicIamPolicy *v1alpha1.PubsubTopicIamPolicy) (result *v1alpha1.PubsubTopicIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(pubsubtopiciampoliciesResource, pubsubTopicIamPolicy), &v1alpha1.PubsubTopicIamPolicy{})
+		Invokes(testing.NewUpdateAction(pubsubtopiciampoliciesResource, c.ns, pubsubTopicIamPolicy), &v1alpha1.PubsubTopicIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakePubsubTopicIamPolicies) Update(pubsubTopicIamPolicy *v1alpha1.Pubsu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakePubsubTopicIamPolicies) UpdateStatus(pubsubTopicIamPolicy *v1alpha1.PubsubTopicIamPolicy) (*v1alpha1.PubsubTopicIamPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(pubsubtopiciampoliciesResource, "status", pubsubTopicIamPolicy), &v1alpha1.PubsubTopicIamPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(pubsubtopiciampoliciesResource, "status", c.ns, pubsubTopicIamPolicy), &v1alpha1.PubsubTopicIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakePubsubTopicIamPolicies) UpdateStatus(pubsubTopicIamPolicy *v1alpha1
 // Delete takes name of the pubsubTopicIamPolicy and deletes it. Returns an error if one occurs.
 func (c *FakePubsubTopicIamPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(pubsubtopiciampoliciesResource, name), &v1alpha1.PubsubTopicIamPolicy{})
+		Invokes(testing.NewDeleteAction(pubsubtopiciampoliciesResource, c.ns, name), &v1alpha1.PubsubTopicIamPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakePubsubTopicIamPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(pubsubtopiciampoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(pubsubtopiciampoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PubsubTopicIamPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakePubsubTopicIamPolicies) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched pubsubTopicIamPolicy.
 func (c *FakePubsubTopicIamPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PubsubTopicIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(pubsubtopiciampoliciesResource, name, pt, data, subresources...), &v1alpha1.PubsubTopicIamPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(pubsubtopiciampoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.PubsubTopicIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

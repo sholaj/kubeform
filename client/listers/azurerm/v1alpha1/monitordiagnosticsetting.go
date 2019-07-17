@@ -29,8 +29,8 @@ import (
 type MonitorDiagnosticSettingLister interface {
 	// List lists all MonitorDiagnosticSettings in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MonitorDiagnosticSetting, err error)
-	// Get retrieves the MonitorDiagnosticSetting from the index for a given name.
-	Get(name string) (*v1alpha1.MonitorDiagnosticSetting, error)
+	// MonitorDiagnosticSettings returns an object that can list and get MonitorDiagnosticSettings.
+	MonitorDiagnosticSettings(namespace string) MonitorDiagnosticSettingNamespaceLister
 	MonitorDiagnosticSettingListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *monitorDiagnosticSettingLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the MonitorDiagnosticSetting from the index for a given name.
-func (s *monitorDiagnosticSettingLister) Get(name string) (*v1alpha1.MonitorDiagnosticSetting, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MonitorDiagnosticSettings returns an object that can list and get MonitorDiagnosticSettings.
+func (s *monitorDiagnosticSettingLister) MonitorDiagnosticSettings(namespace string) MonitorDiagnosticSettingNamespaceLister {
+	return monitorDiagnosticSettingNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MonitorDiagnosticSettingNamespaceLister helps list and get MonitorDiagnosticSettings.
+type MonitorDiagnosticSettingNamespaceLister interface {
+	// List lists all MonitorDiagnosticSettings in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MonitorDiagnosticSetting, err error)
+	// Get retrieves the MonitorDiagnosticSetting from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MonitorDiagnosticSetting, error)
+	MonitorDiagnosticSettingNamespaceListerExpansion
+}
+
+// monitorDiagnosticSettingNamespaceLister implements the MonitorDiagnosticSettingNamespaceLister
+// interface.
+type monitorDiagnosticSettingNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MonitorDiagnosticSettings in the indexer for a given namespace.
+func (s monitorDiagnosticSettingNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MonitorDiagnosticSetting, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MonitorDiagnosticSetting))
+	})
+	return ret, err
+}
+
+// Get retrieves the MonitorDiagnosticSetting from the indexer for a given namespace and name.
+func (s monitorDiagnosticSettingNamespaceLister) Get(name string) (*v1alpha1.MonitorDiagnosticSetting, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

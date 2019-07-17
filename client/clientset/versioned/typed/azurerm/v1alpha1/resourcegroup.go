@@ -32,7 +32,7 @@ import (
 // ResourceGroupsGetter has a method to return a ResourceGroupInterface.
 // A group's client should implement this interface.
 type ResourceGroupsGetter interface {
-	ResourceGroups() ResourceGroupInterface
+	ResourceGroups(namespace string) ResourceGroupInterface
 }
 
 // ResourceGroupInterface has methods to work with ResourceGroup resources.
@@ -52,12 +52,14 @@ type ResourceGroupInterface interface {
 // resourceGroups implements ResourceGroupInterface
 type resourceGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newResourceGroups returns a ResourceGroups
-func newResourceGroups(c *AzurermV1alpha1Client) *resourceGroups {
+func newResourceGroups(c *AzurermV1alpha1Client, namespace string) *resourceGroups {
 	return &resourceGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newResourceGroups(c *AzurermV1alpha1Client) *resourceGroups {
 func (c *resourceGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.ResourceGroup, err error) {
 	result = &v1alpha1.ResourceGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("resourcegroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *resourceGroups) List(opts v1.ListOptions) (result *v1alpha1.ResourceGro
 	}
 	result = &v1alpha1.ResourceGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("resourcegroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *resourceGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("resourcegroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *resourceGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *resourceGroups) Create(resourceGroup *v1alpha1.ResourceGroup) (result *v1alpha1.ResourceGroup, err error) {
 	result = &v1alpha1.ResourceGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("resourcegroups").
 		Body(resourceGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *resourceGroups) Create(resourceGroup *v1alpha1.ResourceGroup) (result *
 func (c *resourceGroups) Update(resourceGroup *v1alpha1.ResourceGroup) (result *v1alpha1.ResourceGroup, err error) {
 	result = &v1alpha1.ResourceGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("resourcegroups").
 		Name(resourceGroup.Name).
 		Body(resourceGroup).
@@ -132,6 +139,7 @@ func (c *resourceGroups) Update(resourceGroup *v1alpha1.ResourceGroup) (result *
 func (c *resourceGroups) UpdateStatus(resourceGroup *v1alpha1.ResourceGroup) (result *v1alpha1.ResourceGroup, err error) {
 	result = &v1alpha1.ResourceGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("resourcegroups").
 		Name(resourceGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *resourceGroups) UpdateStatus(resourceGroup *v1alpha1.ResourceGroup) (re
 // Delete takes name of the resourceGroup and deletes it. Returns an error if one occurs.
 func (c *resourceGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("resourcegroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *resourceGroups) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("resourcegroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *resourceGroups) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *resourceGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ResourceGroup, err error) {
 	result = &v1alpha1.ResourceGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("resourcegroups").
 		SubResource(subresources...).
 		Name(name).

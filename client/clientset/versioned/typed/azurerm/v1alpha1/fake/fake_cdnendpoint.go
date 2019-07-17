@@ -31,6 +31,7 @@ import (
 // FakeCdnEndpoints implements CdnEndpointInterface
 type FakeCdnEndpoints struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var cdnendpointsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "cdnendpoints"}
@@ -40,7 +41,8 @@ var cdnendpointsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Ve
 // Get takes name of the cdnEndpoint, and returns the corresponding cdnEndpoint object, and an error if there is any.
 func (c *FakeCdnEndpoints) Get(name string, options v1.GetOptions) (result *v1alpha1.CdnEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cdnendpointsResource, name), &v1alpha1.CdnEndpoint{})
+		Invokes(testing.NewGetAction(cdnendpointsResource, c.ns, name), &v1alpha1.CdnEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCdnEndpoints) Get(name string, options v1.GetOptions) (result *v1al
 // List takes label and field selectors, and returns the list of CdnEndpoints that match those selectors.
 func (c *FakeCdnEndpoints) List(opts v1.ListOptions) (result *v1alpha1.CdnEndpointList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cdnendpointsResource, cdnendpointsKind, opts), &v1alpha1.CdnEndpointList{})
+		Invokes(testing.NewListAction(cdnendpointsResource, cdnendpointsKind, c.ns, opts), &v1alpha1.CdnEndpointList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCdnEndpoints) List(opts v1.ListOptions) (result *v1alpha1.CdnEndpoi
 // Watch returns a watch.Interface that watches the requested cdnEndpoints.
 func (c *FakeCdnEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cdnendpointsResource, opts))
+		InvokesWatch(testing.NewWatchAction(cdnendpointsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cdnEndpoint and creates it.  Returns the server's representation of the cdnEndpoint, and an error, if there is any.
 func (c *FakeCdnEndpoints) Create(cdnEndpoint *v1alpha1.CdnEndpoint) (result *v1alpha1.CdnEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cdnendpointsResource, cdnEndpoint), &v1alpha1.CdnEndpoint{})
+		Invokes(testing.NewCreateAction(cdnendpointsResource, c.ns, cdnEndpoint), &v1alpha1.CdnEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCdnEndpoints) Create(cdnEndpoint *v1alpha1.CdnEndpoint) (result *v1
 // Update takes the representation of a cdnEndpoint and updates it. Returns the server's representation of the cdnEndpoint, and an error, if there is any.
 func (c *FakeCdnEndpoints) Update(cdnEndpoint *v1alpha1.CdnEndpoint) (result *v1alpha1.CdnEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cdnendpointsResource, cdnEndpoint), &v1alpha1.CdnEndpoint{})
+		Invokes(testing.NewUpdateAction(cdnendpointsResource, c.ns, cdnEndpoint), &v1alpha1.CdnEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCdnEndpoints) Update(cdnEndpoint *v1alpha1.CdnEndpoint) (result *v1
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCdnEndpoints) UpdateStatus(cdnEndpoint *v1alpha1.CdnEndpoint) (*v1alpha1.CdnEndpoint, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cdnendpointsResource, "status", cdnEndpoint), &v1alpha1.CdnEndpoint{})
+		Invokes(testing.NewUpdateSubresourceAction(cdnendpointsResource, "status", c.ns, cdnEndpoint), &v1alpha1.CdnEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCdnEndpoints) UpdateStatus(cdnEndpoint *v1alpha1.CdnEndpoint) (*v1a
 // Delete takes name of the cdnEndpoint and deletes it. Returns an error if one occurs.
 func (c *FakeCdnEndpoints) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cdnendpointsResource, name), &v1alpha1.CdnEndpoint{})
+		Invokes(testing.NewDeleteAction(cdnendpointsResource, c.ns, name), &v1alpha1.CdnEndpoint{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCdnEndpoints) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cdnendpointsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cdnendpointsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CdnEndpointList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCdnEndpoints) DeleteCollection(options *v1.DeleteOptions, listOptio
 // Patch applies the patch and returns the patched cdnEndpoint.
 func (c *FakeCdnEndpoints) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CdnEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cdnendpointsResource, name, pt, data, subresources...), &v1alpha1.CdnEndpoint{})
+		Invokes(testing.NewPatchSubresourceAction(cdnendpointsResource, c.ns, name, pt, data, subresources...), &v1alpha1.CdnEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}

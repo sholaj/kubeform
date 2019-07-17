@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// TransferSshKeysGetter has a method to return a TransferSshKeyInterface.
+// TransferSSHKeysGetter has a method to return a TransferSSHKeyInterface.
 // A group's client should implement this interface.
-type TransferSshKeysGetter interface {
-	TransferSshKeys() TransferSshKeyInterface
+type TransferSSHKeysGetter interface {
+	TransferSSHKeys(namespace string) TransferSSHKeyInterface
 }
 
-// TransferSshKeyInterface has methods to work with TransferSshKey resources.
-type TransferSshKeyInterface interface {
-	Create(*v1alpha1.TransferSshKey) (*v1alpha1.TransferSshKey, error)
-	Update(*v1alpha1.TransferSshKey) (*v1alpha1.TransferSshKey, error)
-	UpdateStatus(*v1alpha1.TransferSshKey) (*v1alpha1.TransferSshKey, error)
+// TransferSSHKeyInterface has methods to work with TransferSSHKey resources.
+type TransferSSHKeyInterface interface {
+	Create(*v1alpha1.TransferSSHKey) (*v1alpha1.TransferSSHKey, error)
+	Update(*v1alpha1.TransferSSHKey) (*v1alpha1.TransferSSHKey, error)
+	UpdateStatus(*v1alpha1.TransferSSHKey) (*v1alpha1.TransferSSHKey, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.TransferSshKey, error)
-	List(opts v1.ListOptions) (*v1alpha1.TransferSshKeyList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.TransferSSHKey, error)
+	List(opts v1.ListOptions) (*v1alpha1.TransferSSHKeyList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.TransferSshKey, err error)
-	TransferSshKeyExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.TransferSSHKey, err error)
+	TransferSSHKeyExpansion
 }
 
-// transferSshKeys implements TransferSshKeyInterface
-type transferSshKeys struct {
+// transferSSHKeys implements TransferSSHKeyInterface
+type transferSSHKeys struct {
 	client rest.Interface
+	ns     string
 }
 
-// newTransferSshKeys returns a TransferSshKeys
-func newTransferSshKeys(c *AwsV1alpha1Client) *transferSshKeys {
-	return &transferSshKeys{
+// newTransferSSHKeys returns a TransferSSHKeys
+func newTransferSSHKeys(c *AwsV1alpha1Client, namespace string) *transferSSHKeys {
+	return &transferSSHKeys{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the transferSshKey, and returns the corresponding transferSshKey object, and an error if there is any.
-func (c *transferSshKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.TransferSshKey, err error) {
-	result = &v1alpha1.TransferSshKey{}
+// Get takes name of the transferSSHKey, and returns the corresponding transferSSHKey object, and an error if there is any.
+func (c *transferSSHKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.TransferSSHKey, err error) {
+	result = &v1alpha1.TransferSSHKey{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("transfersshkeys").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *transferSshKeys) Get(name string, options v1.GetOptions) (result *v1alp
 	return
 }
 
-// List takes label and field selectors, and returns the list of TransferSshKeys that match those selectors.
-func (c *transferSshKeys) List(opts v1.ListOptions) (result *v1alpha1.TransferSshKeyList, err error) {
+// List takes label and field selectors, and returns the list of TransferSSHKeys that match those selectors.
+func (c *transferSSHKeys) List(opts v1.ListOptions) (result *v1alpha1.TransferSSHKeyList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.TransferSshKeyList{}
+	result = &v1alpha1.TransferSSHKeyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("transfersshkeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *transferSshKeys) List(opts v1.ListOptions) (result *v1alpha1.TransferSs
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested transferSshKeys.
-func (c *transferSshKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested transferSSHKeys.
+func (c *transferSSHKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("transfersshkeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a transferSshKey and creates it.  Returns the server's representation of the transferSshKey, and an error, if there is any.
-func (c *transferSshKeys) Create(transferSshKey *v1alpha1.TransferSshKey) (result *v1alpha1.TransferSshKey, err error) {
-	result = &v1alpha1.TransferSshKey{}
+// Create takes the representation of a transferSSHKey and creates it.  Returns the server's representation of the transferSSHKey, and an error, if there is any.
+func (c *transferSSHKeys) Create(transferSSHKey *v1alpha1.TransferSSHKey) (result *v1alpha1.TransferSSHKey, err error) {
+	result = &v1alpha1.TransferSSHKey{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("transfersshkeys").
-		Body(transferSshKey).
+		Body(transferSSHKey).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a transferSshKey and updates it. Returns the server's representation of the transferSshKey, and an error, if there is any.
-func (c *transferSshKeys) Update(transferSshKey *v1alpha1.TransferSshKey) (result *v1alpha1.TransferSshKey, err error) {
-	result = &v1alpha1.TransferSshKey{}
+// Update takes the representation of a transferSSHKey and updates it. Returns the server's representation of the transferSSHKey, and an error, if there is any.
+func (c *transferSSHKeys) Update(transferSSHKey *v1alpha1.TransferSSHKey) (result *v1alpha1.TransferSSHKey, err error) {
+	result = &v1alpha1.TransferSSHKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("transfersshkeys").
-		Name(transferSshKey.Name).
-		Body(transferSshKey).
+		Name(transferSSHKey.Name).
+		Body(transferSSHKey).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *transferSshKeys) Update(transferSshKey *v1alpha1.TransferSshKey) (resul
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *transferSshKeys) UpdateStatus(transferSshKey *v1alpha1.TransferSshKey) (result *v1alpha1.TransferSshKey, err error) {
-	result = &v1alpha1.TransferSshKey{}
+func (c *transferSSHKeys) UpdateStatus(transferSSHKey *v1alpha1.TransferSSHKey) (result *v1alpha1.TransferSSHKey, err error) {
+	result = &v1alpha1.TransferSSHKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("transfersshkeys").
-		Name(transferSshKey.Name).
+		Name(transferSSHKey.Name).
 		SubResource("status").
-		Body(transferSshKey).
+		Body(transferSSHKey).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the transferSshKey and deletes it. Returns an error if one occurs.
-func (c *transferSshKeys) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the transferSSHKey and deletes it. Returns an error if one occurs.
+func (c *transferSSHKeys) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("transfersshkeys").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *transferSshKeys) Delete(name string, options *v1.DeleteOptions) error {
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *transferSshKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *transferSSHKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("transfersshkeys").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *transferSshKeys) DeleteCollection(options *v1.DeleteOptions, listOption
 		Error()
 }
 
-// Patch applies the patch and returns the patched transferSshKey.
-func (c *transferSshKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.TransferSshKey, err error) {
-	result = &v1alpha1.TransferSshKey{}
+// Patch applies the patch and returns the patched transferSSHKey.
+func (c *transferSSHKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.TransferSSHKey, err error) {
+	result = &v1alpha1.TransferSSHKey{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("transfersshkeys").
 		SubResource(subresources...).
 		Name(name).

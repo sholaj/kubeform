@@ -31,6 +31,7 @@ import (
 // FakePinpointApnsVoipSandboxChannels implements PinpointApnsVoipSandboxChannelInterface
 type FakePinpointApnsVoipSandboxChannels struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var pinpointapnsvoipsandboxchannelsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "pinpointapnsvoipsandboxchannels"}
@@ -40,7 +41,8 @@ var pinpointapnsvoipsandboxchannelsKind = schema.GroupVersionKind{Group: "aws.ku
 // Get takes name of the pinpointApnsVoipSandboxChannel, and returns the corresponding pinpointApnsVoipSandboxChannel object, and an error if there is any.
 func (c *FakePinpointApnsVoipSandboxChannels) Get(name string, options v1.GetOptions) (result *v1alpha1.PinpointApnsVoipSandboxChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(pinpointapnsvoipsandboxchannelsResource, name), &v1alpha1.PinpointApnsVoipSandboxChannel{})
+		Invokes(testing.NewGetAction(pinpointapnsvoipsandboxchannelsResource, c.ns, name), &v1alpha1.PinpointApnsVoipSandboxChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakePinpointApnsVoipSandboxChannels) Get(name string, options v1.GetOpt
 // List takes label and field selectors, and returns the list of PinpointApnsVoipSandboxChannels that match those selectors.
 func (c *FakePinpointApnsVoipSandboxChannels) List(opts v1.ListOptions) (result *v1alpha1.PinpointApnsVoipSandboxChannelList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(pinpointapnsvoipsandboxchannelsResource, pinpointapnsvoipsandboxchannelsKind, opts), &v1alpha1.PinpointApnsVoipSandboxChannelList{})
+		Invokes(testing.NewListAction(pinpointapnsvoipsandboxchannelsResource, pinpointapnsvoipsandboxchannelsKind, c.ns, opts), &v1alpha1.PinpointApnsVoipSandboxChannelList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakePinpointApnsVoipSandboxChannels) List(opts v1.ListOptions) (result 
 // Watch returns a watch.Interface that watches the requested pinpointApnsVoipSandboxChannels.
 func (c *FakePinpointApnsVoipSandboxChannels) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(pinpointapnsvoipsandboxchannelsResource, opts))
+		InvokesWatch(testing.NewWatchAction(pinpointapnsvoipsandboxchannelsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a pinpointApnsVoipSandboxChannel and creates it.  Returns the server's representation of the pinpointApnsVoipSandboxChannel, and an error, if there is any.
 func (c *FakePinpointApnsVoipSandboxChannels) Create(pinpointApnsVoipSandboxChannel *v1alpha1.PinpointApnsVoipSandboxChannel) (result *v1alpha1.PinpointApnsVoipSandboxChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(pinpointapnsvoipsandboxchannelsResource, pinpointApnsVoipSandboxChannel), &v1alpha1.PinpointApnsVoipSandboxChannel{})
+		Invokes(testing.NewCreateAction(pinpointapnsvoipsandboxchannelsResource, c.ns, pinpointApnsVoipSandboxChannel), &v1alpha1.PinpointApnsVoipSandboxChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakePinpointApnsVoipSandboxChannels) Create(pinpointApnsVoipSandboxChan
 // Update takes the representation of a pinpointApnsVoipSandboxChannel and updates it. Returns the server's representation of the pinpointApnsVoipSandboxChannel, and an error, if there is any.
 func (c *FakePinpointApnsVoipSandboxChannels) Update(pinpointApnsVoipSandboxChannel *v1alpha1.PinpointApnsVoipSandboxChannel) (result *v1alpha1.PinpointApnsVoipSandboxChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(pinpointapnsvoipsandboxchannelsResource, pinpointApnsVoipSandboxChannel), &v1alpha1.PinpointApnsVoipSandboxChannel{})
+		Invokes(testing.NewUpdateAction(pinpointapnsvoipsandboxchannelsResource, c.ns, pinpointApnsVoipSandboxChannel), &v1alpha1.PinpointApnsVoipSandboxChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakePinpointApnsVoipSandboxChannels) Update(pinpointApnsVoipSandboxChan
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakePinpointApnsVoipSandboxChannels) UpdateStatus(pinpointApnsVoipSandboxChannel *v1alpha1.PinpointApnsVoipSandboxChannel) (*v1alpha1.PinpointApnsVoipSandboxChannel, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(pinpointapnsvoipsandboxchannelsResource, "status", pinpointApnsVoipSandboxChannel), &v1alpha1.PinpointApnsVoipSandboxChannel{})
+		Invokes(testing.NewUpdateSubresourceAction(pinpointapnsvoipsandboxchannelsResource, "status", c.ns, pinpointApnsVoipSandboxChannel), &v1alpha1.PinpointApnsVoipSandboxChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakePinpointApnsVoipSandboxChannels) UpdateStatus(pinpointApnsVoipSandb
 // Delete takes name of the pinpointApnsVoipSandboxChannel and deletes it. Returns an error if one occurs.
 func (c *FakePinpointApnsVoipSandboxChannels) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(pinpointapnsvoipsandboxchannelsResource, name), &v1alpha1.PinpointApnsVoipSandboxChannel{})
+		Invokes(testing.NewDeleteAction(pinpointapnsvoipsandboxchannelsResource, c.ns, name), &v1alpha1.PinpointApnsVoipSandboxChannel{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakePinpointApnsVoipSandboxChannels) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(pinpointapnsvoipsandboxchannelsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(pinpointapnsvoipsandboxchannelsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PinpointApnsVoipSandboxChannelList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakePinpointApnsVoipSandboxChannels) DeleteCollection(options *v1.Delet
 // Patch applies the patch and returns the patched pinpointApnsVoipSandboxChannel.
 func (c *FakePinpointApnsVoipSandboxChannels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PinpointApnsVoipSandboxChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(pinpointapnsvoipsandboxchannelsResource, name, pt, data, subresources...), &v1alpha1.PinpointApnsVoipSandboxChannel{})
+		Invokes(testing.NewPatchSubresourceAction(pinpointapnsvoipsandboxchannelsResource, c.ns, name, pt, data, subresources...), &v1alpha1.PinpointApnsVoipSandboxChannel{})
+
 	if obj == nil {
 		return nil, err
 	}

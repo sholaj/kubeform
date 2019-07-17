@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,16 +20,17 @@ type SsmActivation struct {
 
 type SsmActivationSpec struct {
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	ExpirationDate string `json:"expiration_date,omitempty"`
-	IamRole        string `json:"iam_role"`
+	ExpirationDate string `json:"expirationDate,omitempty" tf:"expiration_date,omitempty"`
+	IamRole        string `json:"iamRole" tf:"iam_role"`
 	// +optional
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" tf:"name,omitempty"`
 	// +optional
-	RegistrationLimit int `json:"registration_limit,omitempty"`
+	RegistrationLimit int `json:"registrationLimit,omitempty" tf:"registration_limit,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SsmActivationStatus struct {
@@ -37,7 +38,9 @@ type SsmActivationStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -29,8 +29,8 @@ import (
 type SesDomainIdentityLister interface {
 	// List lists all SesDomainIdentities in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SesDomainIdentity, err error)
-	// Get retrieves the SesDomainIdentity from the index for a given name.
-	Get(name string) (*v1alpha1.SesDomainIdentity, error)
+	// SesDomainIdentities returns an object that can list and get SesDomainIdentities.
+	SesDomainIdentities(namespace string) SesDomainIdentityNamespaceLister
 	SesDomainIdentityListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sesDomainIdentityLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the SesDomainIdentity from the index for a given name.
-func (s *sesDomainIdentityLister) Get(name string) (*v1alpha1.SesDomainIdentity, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SesDomainIdentities returns an object that can list and get SesDomainIdentities.
+func (s *sesDomainIdentityLister) SesDomainIdentities(namespace string) SesDomainIdentityNamespaceLister {
+	return sesDomainIdentityNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SesDomainIdentityNamespaceLister helps list and get SesDomainIdentities.
+type SesDomainIdentityNamespaceLister interface {
+	// List lists all SesDomainIdentities in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SesDomainIdentity, err error)
+	// Get retrieves the SesDomainIdentity from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SesDomainIdentity, error)
+	SesDomainIdentityNamespaceListerExpansion
+}
+
+// sesDomainIdentityNamespaceLister implements the SesDomainIdentityNamespaceLister
+// interface.
+type sesDomainIdentityNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SesDomainIdentities in the indexer for a given namespace.
+func (s sesDomainIdentityNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SesDomainIdentity, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SesDomainIdentity))
+	})
+	return ret, err
+}
+
+// Get retrieves the SesDomainIdentity from the indexer for a given namespace and name.
+func (s sesDomainIdentityNamespaceLister) Get(name string) (*v1alpha1.SesDomainIdentity, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

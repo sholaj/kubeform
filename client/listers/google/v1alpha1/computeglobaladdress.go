@@ -29,8 +29,8 @@ import (
 type ComputeGlobalAddressLister interface {
 	// List lists all ComputeGlobalAddresses in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeGlobalAddress, err error)
-	// Get retrieves the ComputeGlobalAddress from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeGlobalAddress, error)
+	// ComputeGlobalAddresses returns an object that can list and get ComputeGlobalAddresses.
+	ComputeGlobalAddresses(namespace string) ComputeGlobalAddressNamespaceLister
 	ComputeGlobalAddressListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeGlobalAddressLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the ComputeGlobalAddress from the index for a given name.
-func (s *computeGlobalAddressLister) Get(name string) (*v1alpha1.ComputeGlobalAddress, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeGlobalAddresses returns an object that can list and get ComputeGlobalAddresses.
+func (s *computeGlobalAddressLister) ComputeGlobalAddresses(namespace string) ComputeGlobalAddressNamespaceLister {
+	return computeGlobalAddressNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeGlobalAddressNamespaceLister helps list and get ComputeGlobalAddresses.
+type ComputeGlobalAddressNamespaceLister interface {
+	// List lists all ComputeGlobalAddresses in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeGlobalAddress, err error)
+	// Get retrieves the ComputeGlobalAddress from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeGlobalAddress, error)
+	ComputeGlobalAddressNamespaceListerExpansion
+}
+
+// computeGlobalAddressNamespaceLister implements the ComputeGlobalAddressNamespaceLister
+// interface.
+type computeGlobalAddressNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeGlobalAddresses in the indexer for a given namespace.
+func (s computeGlobalAddressNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeGlobalAddress, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeGlobalAddress))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeGlobalAddress from the indexer for a given namespace and name.
+func (s computeGlobalAddressNamespaceLister) Get(name string) (*v1alpha1.ComputeGlobalAddress, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

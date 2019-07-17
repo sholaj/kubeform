@@ -32,7 +32,7 @@ import (
 // RelayNamespacesGetter has a method to return a RelayNamespaceInterface.
 // A group's client should implement this interface.
 type RelayNamespacesGetter interface {
-	RelayNamespaces() RelayNamespaceInterface
+	RelayNamespaces(namespace string) RelayNamespaceInterface
 }
 
 // RelayNamespaceInterface has methods to work with RelayNamespace resources.
@@ -52,12 +52,14 @@ type RelayNamespaceInterface interface {
 // relayNamespaces implements RelayNamespaceInterface
 type relayNamespaces struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRelayNamespaces returns a RelayNamespaces
-func newRelayNamespaces(c *AzurermV1alpha1Client) *relayNamespaces {
+func newRelayNamespaces(c *AzurermV1alpha1Client, namespace string) *relayNamespaces {
 	return &relayNamespaces{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRelayNamespaces(c *AzurermV1alpha1Client) *relayNamespaces {
 func (c *relayNamespaces) Get(name string, options v1.GetOptions) (result *v1alpha1.RelayNamespace, err error) {
 	result = &v1alpha1.RelayNamespace{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("relaynamespaces").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *relayNamespaces) List(opts v1.ListOptions) (result *v1alpha1.RelayNames
 	}
 	result = &v1alpha1.RelayNamespaceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("relaynamespaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *relayNamespaces) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("relaynamespaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *relayNamespaces) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *relayNamespaces) Create(relayNamespace *v1alpha1.RelayNamespace) (result *v1alpha1.RelayNamespace, err error) {
 	result = &v1alpha1.RelayNamespace{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("relaynamespaces").
 		Body(relayNamespace).
 		Do().
@@ -118,6 +124,7 @@ func (c *relayNamespaces) Create(relayNamespace *v1alpha1.RelayNamespace) (resul
 func (c *relayNamespaces) Update(relayNamespace *v1alpha1.RelayNamespace) (result *v1alpha1.RelayNamespace, err error) {
 	result = &v1alpha1.RelayNamespace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("relaynamespaces").
 		Name(relayNamespace.Name).
 		Body(relayNamespace).
@@ -132,6 +139,7 @@ func (c *relayNamespaces) Update(relayNamespace *v1alpha1.RelayNamespace) (resul
 func (c *relayNamespaces) UpdateStatus(relayNamespace *v1alpha1.RelayNamespace) (result *v1alpha1.RelayNamespace, err error) {
 	result = &v1alpha1.RelayNamespace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("relaynamespaces").
 		Name(relayNamespace.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *relayNamespaces) UpdateStatus(relayNamespace *v1alpha1.RelayNamespace) 
 // Delete takes name of the relayNamespace and deletes it. Returns an error if one occurs.
 func (c *relayNamespaces) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("relaynamespaces").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *relayNamespaces) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("relaynamespaces").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *relayNamespaces) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *relayNamespaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RelayNamespace, err error) {
 	result = &v1alpha1.RelayNamespace{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("relaynamespaces").
 		SubResource(subresources...).
 		Name(name).

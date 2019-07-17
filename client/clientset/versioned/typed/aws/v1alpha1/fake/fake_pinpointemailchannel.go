@@ -31,6 +31,7 @@ import (
 // FakePinpointEmailChannels implements PinpointEmailChannelInterface
 type FakePinpointEmailChannels struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var pinpointemailchannelsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "pinpointemailchannels"}
@@ -40,7 +41,8 @@ var pinpointemailchannelsKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the pinpointEmailChannel, and returns the corresponding pinpointEmailChannel object, and an error if there is any.
 func (c *FakePinpointEmailChannels) Get(name string, options v1.GetOptions) (result *v1alpha1.PinpointEmailChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(pinpointemailchannelsResource, name), &v1alpha1.PinpointEmailChannel{})
+		Invokes(testing.NewGetAction(pinpointemailchannelsResource, c.ns, name), &v1alpha1.PinpointEmailChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakePinpointEmailChannels) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of PinpointEmailChannels that match those selectors.
 func (c *FakePinpointEmailChannels) List(opts v1.ListOptions) (result *v1alpha1.PinpointEmailChannelList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(pinpointemailchannelsResource, pinpointemailchannelsKind, opts), &v1alpha1.PinpointEmailChannelList{})
+		Invokes(testing.NewListAction(pinpointemailchannelsResource, pinpointemailchannelsKind, c.ns, opts), &v1alpha1.PinpointEmailChannelList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakePinpointEmailChannels) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested pinpointEmailChannels.
 func (c *FakePinpointEmailChannels) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(pinpointemailchannelsResource, opts))
+		InvokesWatch(testing.NewWatchAction(pinpointemailchannelsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a pinpointEmailChannel and creates it.  Returns the server's representation of the pinpointEmailChannel, and an error, if there is any.
 func (c *FakePinpointEmailChannels) Create(pinpointEmailChannel *v1alpha1.PinpointEmailChannel) (result *v1alpha1.PinpointEmailChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(pinpointemailchannelsResource, pinpointEmailChannel), &v1alpha1.PinpointEmailChannel{})
+		Invokes(testing.NewCreateAction(pinpointemailchannelsResource, c.ns, pinpointEmailChannel), &v1alpha1.PinpointEmailChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakePinpointEmailChannels) Create(pinpointEmailChannel *v1alpha1.Pinpoi
 // Update takes the representation of a pinpointEmailChannel and updates it. Returns the server's representation of the pinpointEmailChannel, and an error, if there is any.
 func (c *FakePinpointEmailChannels) Update(pinpointEmailChannel *v1alpha1.PinpointEmailChannel) (result *v1alpha1.PinpointEmailChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(pinpointemailchannelsResource, pinpointEmailChannel), &v1alpha1.PinpointEmailChannel{})
+		Invokes(testing.NewUpdateAction(pinpointemailchannelsResource, c.ns, pinpointEmailChannel), &v1alpha1.PinpointEmailChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakePinpointEmailChannels) Update(pinpointEmailChannel *v1alpha1.Pinpoi
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakePinpointEmailChannels) UpdateStatus(pinpointEmailChannel *v1alpha1.PinpointEmailChannel) (*v1alpha1.PinpointEmailChannel, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(pinpointemailchannelsResource, "status", pinpointEmailChannel), &v1alpha1.PinpointEmailChannel{})
+		Invokes(testing.NewUpdateSubresourceAction(pinpointemailchannelsResource, "status", c.ns, pinpointEmailChannel), &v1alpha1.PinpointEmailChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakePinpointEmailChannels) UpdateStatus(pinpointEmailChannel *v1alpha1.
 // Delete takes name of the pinpointEmailChannel and deletes it. Returns an error if one occurs.
 func (c *FakePinpointEmailChannels) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(pinpointemailchannelsResource, name), &v1alpha1.PinpointEmailChannel{})
+		Invokes(testing.NewDeleteAction(pinpointemailchannelsResource, c.ns, name), &v1alpha1.PinpointEmailChannel{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakePinpointEmailChannels) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(pinpointemailchannelsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(pinpointemailchannelsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PinpointEmailChannelList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakePinpointEmailChannels) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched pinpointEmailChannel.
 func (c *FakePinpointEmailChannels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PinpointEmailChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(pinpointemailchannelsResource, name, pt, data, subresources...), &v1alpha1.PinpointEmailChannel{})
+		Invokes(testing.NewPatchSubresourceAction(pinpointemailchannelsResource, c.ns, name, pt, data, subresources...), &v1alpha1.PinpointEmailChannel{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // AzureadServicePrincipalsGetter has a method to return a AzureadServicePrincipalInterface.
 // A group's client should implement this interface.
 type AzureadServicePrincipalsGetter interface {
-	AzureadServicePrincipals() AzureadServicePrincipalInterface
+	AzureadServicePrincipals(namespace string) AzureadServicePrincipalInterface
 }
 
 // AzureadServicePrincipalInterface has methods to work with AzureadServicePrincipal resources.
@@ -52,12 +52,14 @@ type AzureadServicePrincipalInterface interface {
 // azureadServicePrincipals implements AzureadServicePrincipalInterface
 type azureadServicePrincipals struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAzureadServicePrincipals returns a AzureadServicePrincipals
-func newAzureadServicePrincipals(c *AzurermV1alpha1Client) *azureadServicePrincipals {
+func newAzureadServicePrincipals(c *AzurermV1alpha1Client, namespace string) *azureadServicePrincipals {
 	return &azureadServicePrincipals{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAzureadServicePrincipals(c *AzurermV1alpha1Client) *azureadServicePrinci
 func (c *azureadServicePrincipals) Get(name string, options v1.GetOptions) (result *v1alpha1.AzureadServicePrincipal, err error) {
 	result = &v1alpha1.AzureadServicePrincipal{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("azureadserviceprincipals").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *azureadServicePrincipals) List(opts v1.ListOptions) (result *v1alpha1.A
 	}
 	result = &v1alpha1.AzureadServicePrincipalList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("azureadserviceprincipals").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *azureadServicePrincipals) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("azureadserviceprincipals").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *azureadServicePrincipals) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *azureadServicePrincipals) Create(azureadServicePrincipal *v1alpha1.AzureadServicePrincipal) (result *v1alpha1.AzureadServicePrincipal, err error) {
 	result = &v1alpha1.AzureadServicePrincipal{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("azureadserviceprincipals").
 		Body(azureadServicePrincipal).
 		Do().
@@ -118,6 +124,7 @@ func (c *azureadServicePrincipals) Create(azureadServicePrincipal *v1alpha1.Azur
 func (c *azureadServicePrincipals) Update(azureadServicePrincipal *v1alpha1.AzureadServicePrincipal) (result *v1alpha1.AzureadServicePrincipal, err error) {
 	result = &v1alpha1.AzureadServicePrincipal{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("azureadserviceprincipals").
 		Name(azureadServicePrincipal.Name).
 		Body(azureadServicePrincipal).
@@ -132,6 +139,7 @@ func (c *azureadServicePrincipals) Update(azureadServicePrincipal *v1alpha1.Azur
 func (c *azureadServicePrincipals) UpdateStatus(azureadServicePrincipal *v1alpha1.AzureadServicePrincipal) (result *v1alpha1.AzureadServicePrincipal, err error) {
 	result = &v1alpha1.AzureadServicePrincipal{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("azureadserviceprincipals").
 		Name(azureadServicePrincipal.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *azureadServicePrincipals) UpdateStatus(azureadServicePrincipal *v1alpha
 // Delete takes name of the azureadServicePrincipal and deletes it. Returns an error if one occurs.
 func (c *azureadServicePrincipals) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("azureadserviceprincipals").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *azureadServicePrincipals) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("azureadserviceprincipals").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *azureadServicePrincipals) DeleteCollection(options *v1.DeleteOptions, l
 func (c *azureadServicePrincipals) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AzureadServicePrincipal, err error) {
 	result = &v1alpha1.AzureadServicePrincipal{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("azureadserviceprincipals").
 		SubResource(subresources...).
 		Name(name).

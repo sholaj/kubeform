@@ -29,8 +29,8 @@ import (
 type IothubConsumerGroupLister interface {
 	// List lists all IothubConsumerGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IothubConsumerGroup, err error)
-	// Get retrieves the IothubConsumerGroup from the index for a given name.
-	Get(name string) (*v1alpha1.IothubConsumerGroup, error)
+	// IothubConsumerGroups returns an object that can list and get IothubConsumerGroups.
+	IothubConsumerGroups(namespace string) IothubConsumerGroupNamespaceLister
 	IothubConsumerGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iothubConsumerGroupLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the IothubConsumerGroup from the index for a given name.
-func (s *iothubConsumerGroupLister) Get(name string) (*v1alpha1.IothubConsumerGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IothubConsumerGroups returns an object that can list and get IothubConsumerGroups.
+func (s *iothubConsumerGroupLister) IothubConsumerGroups(namespace string) IothubConsumerGroupNamespaceLister {
+	return iothubConsumerGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IothubConsumerGroupNamespaceLister helps list and get IothubConsumerGroups.
+type IothubConsumerGroupNamespaceLister interface {
+	// List lists all IothubConsumerGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IothubConsumerGroup, err error)
+	// Get retrieves the IothubConsumerGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IothubConsumerGroup, error)
+	IothubConsumerGroupNamespaceListerExpansion
+}
+
+// iothubConsumerGroupNamespaceLister implements the IothubConsumerGroupNamespaceLister
+// interface.
+type iothubConsumerGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IothubConsumerGroups in the indexer for a given namespace.
+func (s iothubConsumerGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IothubConsumerGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IothubConsumerGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the IothubConsumerGroup from the indexer for a given namespace and name.
+func (s iothubConsumerGroupNamespaceLister) Get(name string) (*v1alpha1.IothubConsumerGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

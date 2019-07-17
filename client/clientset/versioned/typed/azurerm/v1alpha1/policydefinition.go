@@ -32,7 +32,7 @@ import (
 // PolicyDefinitionsGetter has a method to return a PolicyDefinitionInterface.
 // A group's client should implement this interface.
 type PolicyDefinitionsGetter interface {
-	PolicyDefinitions() PolicyDefinitionInterface
+	PolicyDefinitions(namespace string) PolicyDefinitionInterface
 }
 
 // PolicyDefinitionInterface has methods to work with PolicyDefinition resources.
@@ -52,12 +52,14 @@ type PolicyDefinitionInterface interface {
 // policyDefinitions implements PolicyDefinitionInterface
 type policyDefinitions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPolicyDefinitions returns a PolicyDefinitions
-func newPolicyDefinitions(c *AzurermV1alpha1Client) *policyDefinitions {
+func newPolicyDefinitions(c *AzurermV1alpha1Client, namespace string) *policyDefinitions {
 	return &policyDefinitions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPolicyDefinitions(c *AzurermV1alpha1Client) *policyDefinitions {
 func (c *policyDefinitions) Get(name string, options v1.GetOptions) (result *v1alpha1.PolicyDefinition, err error) {
 	result = &v1alpha1.PolicyDefinition{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("policydefinitions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *policyDefinitions) List(opts v1.ListOptions) (result *v1alpha1.PolicyDe
 	}
 	result = &v1alpha1.PolicyDefinitionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("policydefinitions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *policyDefinitions) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("policydefinitions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *policyDefinitions) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *policyDefinitions) Create(policyDefinition *v1alpha1.PolicyDefinition) (result *v1alpha1.PolicyDefinition, err error) {
 	result = &v1alpha1.PolicyDefinition{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("policydefinitions").
 		Body(policyDefinition).
 		Do().
@@ -118,6 +124,7 @@ func (c *policyDefinitions) Create(policyDefinition *v1alpha1.PolicyDefinition) 
 func (c *policyDefinitions) Update(policyDefinition *v1alpha1.PolicyDefinition) (result *v1alpha1.PolicyDefinition, err error) {
 	result = &v1alpha1.PolicyDefinition{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("policydefinitions").
 		Name(policyDefinition.Name).
 		Body(policyDefinition).
@@ -132,6 +139,7 @@ func (c *policyDefinitions) Update(policyDefinition *v1alpha1.PolicyDefinition) 
 func (c *policyDefinitions) UpdateStatus(policyDefinition *v1alpha1.PolicyDefinition) (result *v1alpha1.PolicyDefinition, err error) {
 	result = &v1alpha1.PolicyDefinition{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("policydefinitions").
 		Name(policyDefinition.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *policyDefinitions) UpdateStatus(policyDefinition *v1alpha1.PolicyDefini
 // Delete takes name of the policyDefinition and deletes it. Returns an error if one occurs.
 func (c *policyDefinitions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("policydefinitions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *policyDefinitions) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("policydefinitions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *policyDefinitions) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *policyDefinitions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PolicyDefinition, err error) {
 	result = &v1alpha1.PolicyDefinition{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("policydefinitions").
 		SubResource(subresources...).
 		Name(name).

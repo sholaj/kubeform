@@ -41,32 +41,33 @@ type LocalNetworkGatewayInformer interface {
 type localNetworkGatewayInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewLocalNetworkGatewayInformer constructs a new informer for LocalNetworkGateway type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLocalNetworkGatewayInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLocalNetworkGatewayInformer(client, resyncPeriod, indexers, nil)
+func NewLocalNetworkGatewayInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLocalNetworkGatewayInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredLocalNetworkGatewayInformer constructs a new informer for LocalNetworkGateway type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLocalNetworkGatewayInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLocalNetworkGatewayInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().LocalNetworkGateways().List(options)
+				return client.AzurermV1alpha1().LocalNetworkGateways(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().LocalNetworkGateways().Watch(options)
+				return client.AzurermV1alpha1().LocalNetworkGateways(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.LocalNetworkGateway{},
@@ -76,7 +77,7 @@ func NewFilteredLocalNetworkGatewayInformer(client versioned.Interface, resyncPe
 }
 
 func (f *localNetworkGatewayInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLocalNetworkGatewayInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredLocalNetworkGatewayInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *localNetworkGatewayInformer) Informer() cache.SharedIndexInformer {

@@ -41,32 +41,33 @@ type ConfigConfigurationAggregatorInformer interface {
 type configConfigurationAggregatorInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewConfigConfigurationAggregatorInformer constructs a new informer for ConfigConfigurationAggregator type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewConfigConfigurationAggregatorInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredConfigConfigurationAggregatorInformer(client, resyncPeriod, indexers, nil)
+func NewConfigConfigurationAggregatorInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredConfigConfigurationAggregatorInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredConfigConfigurationAggregatorInformer constructs a new informer for ConfigConfigurationAggregator type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredConfigConfigurationAggregatorInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredConfigConfigurationAggregatorInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ConfigConfigurationAggregators().List(options)
+				return client.AwsV1alpha1().ConfigConfigurationAggregators(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ConfigConfigurationAggregators().Watch(options)
+				return client.AwsV1alpha1().ConfigConfigurationAggregators(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.ConfigConfigurationAggregator{},
@@ -76,7 +77,7 @@ func NewFilteredConfigConfigurationAggregatorInformer(client versioned.Interface
 }
 
 func (f *configConfigurationAggregatorInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredConfigConfigurationAggregatorInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredConfigConfigurationAggregatorInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *configConfigurationAggregatorInformer) Informer() cache.SharedIndexInformer {

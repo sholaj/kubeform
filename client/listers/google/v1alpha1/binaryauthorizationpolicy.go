@@ -29,8 +29,8 @@ import (
 type BinaryAuthorizationPolicyLister interface {
 	// List lists all BinaryAuthorizationPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.BinaryAuthorizationPolicy, err error)
-	// Get retrieves the BinaryAuthorizationPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.BinaryAuthorizationPolicy, error)
+	// BinaryAuthorizationPolicies returns an object that can list and get BinaryAuthorizationPolicies.
+	BinaryAuthorizationPolicies(namespace string) BinaryAuthorizationPolicyNamespaceLister
 	BinaryAuthorizationPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *binaryAuthorizationPolicyLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the BinaryAuthorizationPolicy from the index for a given name.
-func (s *binaryAuthorizationPolicyLister) Get(name string) (*v1alpha1.BinaryAuthorizationPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// BinaryAuthorizationPolicies returns an object that can list and get BinaryAuthorizationPolicies.
+func (s *binaryAuthorizationPolicyLister) BinaryAuthorizationPolicies(namespace string) BinaryAuthorizationPolicyNamespaceLister {
+	return binaryAuthorizationPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// BinaryAuthorizationPolicyNamespaceLister helps list and get BinaryAuthorizationPolicies.
+type BinaryAuthorizationPolicyNamespaceLister interface {
+	// List lists all BinaryAuthorizationPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.BinaryAuthorizationPolicy, err error)
+	// Get retrieves the BinaryAuthorizationPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.BinaryAuthorizationPolicy, error)
+	BinaryAuthorizationPolicyNamespaceListerExpansion
+}
+
+// binaryAuthorizationPolicyNamespaceLister implements the BinaryAuthorizationPolicyNamespaceLister
+// interface.
+type binaryAuthorizationPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all BinaryAuthorizationPolicies in the indexer for a given namespace.
+func (s binaryAuthorizationPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.BinaryAuthorizationPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.BinaryAuthorizationPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the BinaryAuthorizationPolicy from the indexer for a given namespace and name.
+func (s binaryAuthorizationPolicyNamespaceLister) Get(name string) (*v1alpha1.BinaryAuthorizationPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

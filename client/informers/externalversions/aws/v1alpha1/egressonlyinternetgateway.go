@@ -41,32 +41,33 @@ type EgressOnlyInternetGatewayInformer interface {
 type egressOnlyInternetGatewayInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewEgressOnlyInternetGatewayInformer constructs a new informer for EgressOnlyInternetGateway type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewEgressOnlyInternetGatewayInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredEgressOnlyInternetGatewayInformer(client, resyncPeriod, indexers, nil)
+func NewEgressOnlyInternetGatewayInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredEgressOnlyInternetGatewayInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredEgressOnlyInternetGatewayInformer constructs a new informer for EgressOnlyInternetGateway type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredEgressOnlyInternetGatewayInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredEgressOnlyInternetGatewayInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().EgressOnlyInternetGateways().List(options)
+				return client.AwsV1alpha1().EgressOnlyInternetGateways(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().EgressOnlyInternetGateways().Watch(options)
+				return client.AwsV1alpha1().EgressOnlyInternetGateways(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.EgressOnlyInternetGateway{},
@@ -76,7 +77,7 @@ func NewFilteredEgressOnlyInternetGatewayInformer(client versioned.Interface, re
 }
 
 func (f *egressOnlyInternetGatewayInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredEgressOnlyInternetGatewayInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredEgressOnlyInternetGatewayInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *egressOnlyInternetGatewayInformer) Informer() cache.SharedIndexInformer {

@@ -29,8 +29,8 @@ import (
 type DnsZoneLister interface {
 	// List lists all DnsZones in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DnsZone, err error)
-	// Get retrieves the DnsZone from the index for a given name.
-	Get(name string) (*v1alpha1.DnsZone, error)
+	// DnsZones returns an object that can list and get DnsZones.
+	DnsZones(namespace string) DnsZoneNamespaceLister
 	DnsZoneListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dnsZoneLister) List(selector labels.Selector) (ret []*v1alpha1.DnsZone,
 	return ret, err
 }
 
-// Get retrieves the DnsZone from the index for a given name.
-func (s *dnsZoneLister) Get(name string) (*v1alpha1.DnsZone, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DnsZones returns an object that can list and get DnsZones.
+func (s *dnsZoneLister) DnsZones(namespace string) DnsZoneNamespaceLister {
+	return dnsZoneNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DnsZoneNamespaceLister helps list and get DnsZones.
+type DnsZoneNamespaceLister interface {
+	// List lists all DnsZones in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DnsZone, err error)
+	// Get retrieves the DnsZone from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DnsZone, error)
+	DnsZoneNamespaceListerExpansion
+}
+
+// dnsZoneNamespaceLister implements the DnsZoneNamespaceLister
+// interface.
+type dnsZoneNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DnsZones in the indexer for a given namespace.
+func (s dnsZoneNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DnsZone, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DnsZone))
+	})
+	return ret, err
+}
+
+// Get retrieves the DnsZone from the indexer for a given namespace and name.
+func (s dnsZoneNamespaceLister) Get(name string) (*v1alpha1.DnsZone, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

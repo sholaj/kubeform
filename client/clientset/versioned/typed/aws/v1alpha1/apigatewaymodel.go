@@ -32,7 +32,7 @@ import (
 // ApiGatewayModelsGetter has a method to return a ApiGatewayModelInterface.
 // A group's client should implement this interface.
 type ApiGatewayModelsGetter interface {
-	ApiGatewayModels() ApiGatewayModelInterface
+	ApiGatewayModels(namespace string) ApiGatewayModelInterface
 }
 
 // ApiGatewayModelInterface has methods to work with ApiGatewayModel resources.
@@ -52,12 +52,14 @@ type ApiGatewayModelInterface interface {
 // apiGatewayModels implements ApiGatewayModelInterface
 type apiGatewayModels struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiGatewayModels returns a ApiGatewayModels
-func newApiGatewayModels(c *AwsV1alpha1Client) *apiGatewayModels {
+func newApiGatewayModels(c *AwsV1alpha1Client, namespace string) *apiGatewayModels {
 	return &apiGatewayModels{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiGatewayModels(c *AwsV1alpha1Client) *apiGatewayModels {
 func (c *apiGatewayModels) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayModel, err error) {
 	result = &v1alpha1.ApiGatewayModel{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaymodels").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiGatewayModels) List(opts v1.ListOptions) (result *v1alpha1.ApiGatewa
 	}
 	result = &v1alpha1.ApiGatewayModelList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaymodels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiGatewayModels) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaymodels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiGatewayModels) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *apiGatewayModels) Create(apiGatewayModel *v1alpha1.ApiGatewayModel) (result *v1alpha1.ApiGatewayModel, err error) {
 	result = &v1alpha1.ApiGatewayModel{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apigatewaymodels").
 		Body(apiGatewayModel).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiGatewayModels) Create(apiGatewayModel *v1alpha1.ApiGatewayModel) (re
 func (c *apiGatewayModels) Update(apiGatewayModel *v1alpha1.ApiGatewayModel) (result *v1alpha1.ApiGatewayModel, err error) {
 	result = &v1alpha1.ApiGatewayModel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewaymodels").
 		Name(apiGatewayModel.Name).
 		Body(apiGatewayModel).
@@ -132,6 +139,7 @@ func (c *apiGatewayModels) Update(apiGatewayModel *v1alpha1.ApiGatewayModel) (re
 func (c *apiGatewayModels) UpdateStatus(apiGatewayModel *v1alpha1.ApiGatewayModel) (result *v1alpha1.ApiGatewayModel, err error) {
 	result = &v1alpha1.ApiGatewayModel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewaymodels").
 		Name(apiGatewayModel.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiGatewayModels) UpdateStatus(apiGatewayModel *v1alpha1.ApiGatewayMode
 // Delete takes name of the apiGatewayModel and deletes it. Returns an error if one occurs.
 func (c *apiGatewayModels) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewaymodels").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiGatewayModels) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewaymodels").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiGatewayModels) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *apiGatewayModels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayModel, err error) {
 	result = &v1alpha1.ApiGatewayModel{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apigatewaymodels").
 		SubResource(subresources...).
 		Name(name).

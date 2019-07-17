@@ -32,7 +32,7 @@ import (
 // DefaultSecurityGroupsGetter has a method to return a DefaultSecurityGroupInterface.
 // A group's client should implement this interface.
 type DefaultSecurityGroupsGetter interface {
-	DefaultSecurityGroups() DefaultSecurityGroupInterface
+	DefaultSecurityGroups(namespace string) DefaultSecurityGroupInterface
 }
 
 // DefaultSecurityGroupInterface has methods to work with DefaultSecurityGroup resources.
@@ -52,12 +52,14 @@ type DefaultSecurityGroupInterface interface {
 // defaultSecurityGroups implements DefaultSecurityGroupInterface
 type defaultSecurityGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDefaultSecurityGroups returns a DefaultSecurityGroups
-func newDefaultSecurityGroups(c *AwsV1alpha1Client) *defaultSecurityGroups {
+func newDefaultSecurityGroups(c *AwsV1alpha1Client, namespace string) *defaultSecurityGroups {
 	return &defaultSecurityGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDefaultSecurityGroups(c *AwsV1alpha1Client) *defaultSecurityGroups {
 func (c *defaultSecurityGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.DefaultSecurityGroup, err error) {
 	result = &v1alpha1.DefaultSecurityGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("defaultsecuritygroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *defaultSecurityGroups) List(opts v1.ListOptions) (result *v1alpha1.Defa
 	}
 	result = &v1alpha1.DefaultSecurityGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("defaultsecuritygroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *defaultSecurityGroups) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("defaultsecuritygroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *defaultSecurityGroups) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *defaultSecurityGroups) Create(defaultSecurityGroup *v1alpha1.DefaultSecurityGroup) (result *v1alpha1.DefaultSecurityGroup, err error) {
 	result = &v1alpha1.DefaultSecurityGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("defaultsecuritygroups").
 		Body(defaultSecurityGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *defaultSecurityGroups) Create(defaultSecurityGroup *v1alpha1.DefaultSec
 func (c *defaultSecurityGroups) Update(defaultSecurityGroup *v1alpha1.DefaultSecurityGroup) (result *v1alpha1.DefaultSecurityGroup, err error) {
 	result = &v1alpha1.DefaultSecurityGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("defaultsecuritygroups").
 		Name(defaultSecurityGroup.Name).
 		Body(defaultSecurityGroup).
@@ -132,6 +139,7 @@ func (c *defaultSecurityGroups) Update(defaultSecurityGroup *v1alpha1.DefaultSec
 func (c *defaultSecurityGroups) UpdateStatus(defaultSecurityGroup *v1alpha1.DefaultSecurityGroup) (result *v1alpha1.DefaultSecurityGroup, err error) {
 	result = &v1alpha1.DefaultSecurityGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("defaultsecuritygroups").
 		Name(defaultSecurityGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *defaultSecurityGroups) UpdateStatus(defaultSecurityGroup *v1alpha1.Defa
 // Delete takes name of the defaultSecurityGroup and deletes it. Returns an error if one occurs.
 func (c *defaultSecurityGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("defaultsecuritygroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *defaultSecurityGroups) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("defaultsecuritygroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *defaultSecurityGroups) DeleteCollection(options *v1.DeleteOptions, list
 func (c *defaultSecurityGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DefaultSecurityGroup, err error) {
 	result = &v1alpha1.DefaultSecurityGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("defaultsecuritygroups").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type ApiGatewayAccountLister interface {
 	// List lists all ApiGatewayAccounts in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayAccount, err error)
-	// Get retrieves the ApiGatewayAccount from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayAccount, error)
+	// ApiGatewayAccounts returns an object that can list and get ApiGatewayAccounts.
+	ApiGatewayAccounts(namespace string) ApiGatewayAccountNamespaceLister
 	ApiGatewayAccountListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiGatewayAccountLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayAccount from the index for a given name.
-func (s *apiGatewayAccountLister) Get(name string) (*v1alpha1.ApiGatewayAccount, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayAccounts returns an object that can list and get ApiGatewayAccounts.
+func (s *apiGatewayAccountLister) ApiGatewayAccounts(namespace string) ApiGatewayAccountNamespaceLister {
+	return apiGatewayAccountNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayAccountNamespaceLister helps list and get ApiGatewayAccounts.
+type ApiGatewayAccountNamespaceLister interface {
+	// List lists all ApiGatewayAccounts in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayAccount, err error)
+	// Get retrieves the ApiGatewayAccount from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayAccount, error)
+	ApiGatewayAccountNamespaceListerExpansion
+}
+
+// apiGatewayAccountNamespaceLister implements the ApiGatewayAccountNamespaceLister
+// interface.
+type apiGatewayAccountNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayAccounts in the indexer for a given namespace.
+func (s apiGatewayAccountNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayAccount, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayAccount))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayAccount from the indexer for a given namespace and name.
+func (s apiGatewayAccountNamespaceLister) Get(name string) (*v1alpha1.ApiGatewayAccount, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

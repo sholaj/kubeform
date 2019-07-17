@@ -31,6 +31,7 @@ import (
 // FakeGuarddutyMembers implements GuarddutyMemberInterface
 type FakeGuarddutyMembers struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var guarddutymembersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "guarddutymembers"}
@@ -40,7 +41,8 @@ var guarddutymembersKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ve
 // Get takes name of the guarddutyMember, and returns the corresponding guarddutyMember object, and an error if there is any.
 func (c *FakeGuarddutyMembers) Get(name string, options v1.GetOptions) (result *v1alpha1.GuarddutyMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(guarddutymembersResource, name), &v1alpha1.GuarddutyMember{})
+		Invokes(testing.NewGetAction(guarddutymembersResource, c.ns, name), &v1alpha1.GuarddutyMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeGuarddutyMembers) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of GuarddutyMembers that match those selectors.
 func (c *FakeGuarddutyMembers) List(opts v1.ListOptions) (result *v1alpha1.GuarddutyMemberList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(guarddutymembersResource, guarddutymembersKind, opts), &v1alpha1.GuarddutyMemberList{})
+		Invokes(testing.NewListAction(guarddutymembersResource, guarddutymembersKind, c.ns, opts), &v1alpha1.GuarddutyMemberList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeGuarddutyMembers) List(opts v1.ListOptions) (result *v1alpha1.Guard
 // Watch returns a watch.Interface that watches the requested guarddutyMembers.
 func (c *FakeGuarddutyMembers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(guarddutymembersResource, opts))
+		InvokesWatch(testing.NewWatchAction(guarddutymembersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a guarddutyMember and creates it.  Returns the server's representation of the guarddutyMember, and an error, if there is any.
 func (c *FakeGuarddutyMembers) Create(guarddutyMember *v1alpha1.GuarddutyMember) (result *v1alpha1.GuarddutyMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(guarddutymembersResource, guarddutyMember), &v1alpha1.GuarddutyMember{})
+		Invokes(testing.NewCreateAction(guarddutymembersResource, c.ns, guarddutyMember), &v1alpha1.GuarddutyMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeGuarddutyMembers) Create(guarddutyMember *v1alpha1.GuarddutyMember)
 // Update takes the representation of a guarddutyMember and updates it. Returns the server's representation of the guarddutyMember, and an error, if there is any.
 func (c *FakeGuarddutyMembers) Update(guarddutyMember *v1alpha1.GuarddutyMember) (result *v1alpha1.GuarddutyMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(guarddutymembersResource, guarddutyMember), &v1alpha1.GuarddutyMember{})
+		Invokes(testing.NewUpdateAction(guarddutymembersResource, c.ns, guarddutyMember), &v1alpha1.GuarddutyMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeGuarddutyMembers) Update(guarddutyMember *v1alpha1.GuarddutyMember)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeGuarddutyMembers) UpdateStatus(guarddutyMember *v1alpha1.GuarddutyMember) (*v1alpha1.GuarddutyMember, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(guarddutymembersResource, "status", guarddutyMember), &v1alpha1.GuarddutyMember{})
+		Invokes(testing.NewUpdateSubresourceAction(guarddutymembersResource, "status", c.ns, guarddutyMember), &v1alpha1.GuarddutyMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeGuarddutyMembers) UpdateStatus(guarddutyMember *v1alpha1.GuarddutyM
 // Delete takes name of the guarddutyMember and deletes it. Returns an error if one occurs.
 func (c *FakeGuarddutyMembers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(guarddutymembersResource, name), &v1alpha1.GuarddutyMember{})
+		Invokes(testing.NewDeleteAction(guarddutymembersResource, c.ns, name), &v1alpha1.GuarddutyMember{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeGuarddutyMembers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(guarddutymembersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(guarddutymembersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.GuarddutyMemberList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeGuarddutyMembers) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched guarddutyMember.
 func (c *FakeGuarddutyMembers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GuarddutyMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(guarddutymembersResource, name, pt, data, subresources...), &v1alpha1.GuarddutyMember{})
+		Invokes(testing.NewPatchSubresourceAction(guarddutymembersResource, c.ns, name, pt, data, subresources...), &v1alpha1.GuarddutyMember{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type ApiGatewayIntegrationResponseLister interface {
 	// List lists all ApiGatewayIntegrationResponses in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayIntegrationResponse, err error)
-	// Get retrieves the ApiGatewayIntegrationResponse from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayIntegrationResponse, error)
+	// ApiGatewayIntegrationResponses returns an object that can list and get ApiGatewayIntegrationResponses.
+	ApiGatewayIntegrationResponses(namespace string) ApiGatewayIntegrationResponseNamespaceLister
 	ApiGatewayIntegrationResponseListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiGatewayIntegrationResponseLister) List(selector labels.Selector) (re
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayIntegrationResponse from the index for a given name.
-func (s *apiGatewayIntegrationResponseLister) Get(name string) (*v1alpha1.ApiGatewayIntegrationResponse, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayIntegrationResponses returns an object that can list and get ApiGatewayIntegrationResponses.
+func (s *apiGatewayIntegrationResponseLister) ApiGatewayIntegrationResponses(namespace string) ApiGatewayIntegrationResponseNamespaceLister {
+	return apiGatewayIntegrationResponseNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayIntegrationResponseNamespaceLister helps list and get ApiGatewayIntegrationResponses.
+type ApiGatewayIntegrationResponseNamespaceLister interface {
+	// List lists all ApiGatewayIntegrationResponses in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayIntegrationResponse, err error)
+	// Get retrieves the ApiGatewayIntegrationResponse from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayIntegrationResponse, error)
+	ApiGatewayIntegrationResponseNamespaceListerExpansion
+}
+
+// apiGatewayIntegrationResponseNamespaceLister implements the ApiGatewayIntegrationResponseNamespaceLister
+// interface.
+type apiGatewayIntegrationResponseNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayIntegrationResponses in the indexer for a given namespace.
+func (s apiGatewayIntegrationResponseNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayIntegrationResponse, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayIntegrationResponse))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayIntegrationResponse from the indexer for a given namespace and name.
+func (s apiGatewayIntegrationResponseNamespaceLister) Get(name string) (*v1alpha1.ApiGatewayIntegrationResponse, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

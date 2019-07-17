@@ -397,10 +397,25 @@ spec:
           type: object
         spec:
           properties:
-            s3_bucket_arn:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            s3BucketArn:
               type: string
-            s3_config:
-              items: {}
+            s3Config:
+              items:
+                properties:
+                  bucketAccessRoleArn:
+                    type: string
+                required:
+                - bucketAccessRoleArn
+                type: object
               maxItems: 1
               type: array
             subdirectory:
@@ -410,8 +425,9 @@ spec:
                 type: string
               type: object
           required:
-          - s3_bucket_arn
-          - s3_config
+          - providerRef
+          - s3BucketArn
+          - s3Config
           - subdirectory
           type: object
         status:
@@ -423,6 +439,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

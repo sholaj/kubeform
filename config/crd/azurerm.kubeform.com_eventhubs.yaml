@@ -397,29 +397,74 @@ spec:
           type: object
         spec:
           properties:
-            capture_description:
-              items: {}
+            captureDescription:
+              items:
+                properties:
+                  destination:
+                    items:
+                      properties:
+                        archiveNameFormat:
+                          type: string
+                        blobContainerName:
+                          type: string
+                        name:
+                          type: string
+                        storageAccountID:
+                          type: string
+                      required:
+                      - archiveNameFormat
+                      - blobContainerName
+                      - name
+                      - storageAccountID
+                      type: object
+                    maxItems: 1
+                    type: array
+                  enabled:
+                    type: boolean
+                  encoding:
+                    type: string
+                  intervalInSeconds:
+                    type: integer
+                  sizeLimitInBytes:
+                    type: integer
+                  skipEmptyArchives:
+                    type: boolean
+                required:
+                - destination
+                - enabled
+                - encoding
+                type: object
               maxItems: 1
               type: array
             location:
               description: Deprecated
               type: string
-            message_retention:
+            messageRetention:
               type: integer
             name:
               type: string
-            namespace_name:
+            namespaceName:
               type: string
-            partition_count:
+            partitionCount:
               type: integer
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
           required:
-          - message_retention
+          - messageRetention
           - name
-          - namespace_name
-          - partition_count
-          - resource_group_name
+          - namespaceName
+          - partitionCount
+          - providerRef
+          - resourceGroupName
           type: object
         status:
           properties:
@@ -430,6 +475,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

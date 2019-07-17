@@ -29,8 +29,8 @@ import (
 type IamServiceLinkedRoleLister interface {
 	// List lists all IamServiceLinkedRoles in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IamServiceLinkedRole, err error)
-	// Get retrieves the IamServiceLinkedRole from the index for a given name.
-	Get(name string) (*v1alpha1.IamServiceLinkedRole, error)
+	// IamServiceLinkedRoles returns an object that can list and get IamServiceLinkedRoles.
+	IamServiceLinkedRoles(namespace string) IamServiceLinkedRoleNamespaceLister
 	IamServiceLinkedRoleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iamServiceLinkedRoleLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the IamServiceLinkedRole from the index for a given name.
-func (s *iamServiceLinkedRoleLister) Get(name string) (*v1alpha1.IamServiceLinkedRole, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IamServiceLinkedRoles returns an object that can list and get IamServiceLinkedRoles.
+func (s *iamServiceLinkedRoleLister) IamServiceLinkedRoles(namespace string) IamServiceLinkedRoleNamespaceLister {
+	return iamServiceLinkedRoleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IamServiceLinkedRoleNamespaceLister helps list and get IamServiceLinkedRoles.
+type IamServiceLinkedRoleNamespaceLister interface {
+	// List lists all IamServiceLinkedRoles in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IamServiceLinkedRole, err error)
+	// Get retrieves the IamServiceLinkedRole from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IamServiceLinkedRole, error)
+	IamServiceLinkedRoleNamespaceListerExpansion
+}
+
+// iamServiceLinkedRoleNamespaceLister implements the IamServiceLinkedRoleNamespaceLister
+// interface.
+type iamServiceLinkedRoleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IamServiceLinkedRoles in the indexer for a given namespace.
+func (s iamServiceLinkedRoleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IamServiceLinkedRole, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IamServiceLinkedRole))
+	})
+	return ret, err
+}
+
+// Get retrieves the IamServiceLinkedRole from the indexer for a given namespace and name.
+func (s iamServiceLinkedRoleNamespaceLister) Get(name string) (*v1alpha1.IamServiceLinkedRole, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -397,19 +397,29 @@ spec:
           type: object
         spec:
           properties:
-            auto_accept:
+            autoAccept:
               type: boolean
-            peer_vpc_id:
+            peerVpcID:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             tags:
               additionalProperties:
                 type: string
               type: object
-            vpc_id:
+            vpcID:
               type: string
           required:
-          - peer_vpc_id
-          - vpc_id
+          - peerVpcID
+          - providerRef
+          - vpcID
           type: object
         status:
           properties:
@@ -420,6 +430,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

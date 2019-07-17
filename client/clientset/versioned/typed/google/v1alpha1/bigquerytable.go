@@ -32,7 +32,7 @@ import (
 // BigqueryTablesGetter has a method to return a BigqueryTableInterface.
 // A group's client should implement this interface.
 type BigqueryTablesGetter interface {
-	BigqueryTables() BigqueryTableInterface
+	BigqueryTables(namespace string) BigqueryTableInterface
 }
 
 // BigqueryTableInterface has methods to work with BigqueryTable resources.
@@ -52,12 +52,14 @@ type BigqueryTableInterface interface {
 // bigqueryTables implements BigqueryTableInterface
 type bigqueryTables struct {
 	client rest.Interface
+	ns     string
 }
 
 // newBigqueryTables returns a BigqueryTables
-func newBigqueryTables(c *GoogleV1alpha1Client) *bigqueryTables {
+func newBigqueryTables(c *GoogleV1alpha1Client, namespace string) *bigqueryTables {
 	return &bigqueryTables{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newBigqueryTables(c *GoogleV1alpha1Client) *bigqueryTables {
 func (c *bigqueryTables) Get(name string, options v1.GetOptions) (result *v1alpha1.BigqueryTable, err error) {
 	result = &v1alpha1.BigqueryTable{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("bigquerytables").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *bigqueryTables) List(opts v1.ListOptions) (result *v1alpha1.BigqueryTab
 	}
 	result = &v1alpha1.BigqueryTableList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("bigquerytables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *bigqueryTables) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("bigquerytables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *bigqueryTables) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *bigqueryTables) Create(bigqueryTable *v1alpha1.BigqueryTable) (result *v1alpha1.BigqueryTable, err error) {
 	result = &v1alpha1.BigqueryTable{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("bigquerytables").
 		Body(bigqueryTable).
 		Do().
@@ -118,6 +124,7 @@ func (c *bigqueryTables) Create(bigqueryTable *v1alpha1.BigqueryTable) (result *
 func (c *bigqueryTables) Update(bigqueryTable *v1alpha1.BigqueryTable) (result *v1alpha1.BigqueryTable, err error) {
 	result = &v1alpha1.BigqueryTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("bigquerytables").
 		Name(bigqueryTable.Name).
 		Body(bigqueryTable).
@@ -132,6 +139,7 @@ func (c *bigqueryTables) Update(bigqueryTable *v1alpha1.BigqueryTable) (result *
 func (c *bigqueryTables) UpdateStatus(bigqueryTable *v1alpha1.BigqueryTable) (result *v1alpha1.BigqueryTable, err error) {
 	result = &v1alpha1.BigqueryTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("bigquerytables").
 		Name(bigqueryTable.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *bigqueryTables) UpdateStatus(bigqueryTable *v1alpha1.BigqueryTable) (re
 // Delete takes name of the bigqueryTable and deletes it. Returns an error if one occurs.
 func (c *bigqueryTables) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("bigquerytables").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *bigqueryTables) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("bigquerytables").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *bigqueryTables) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *bigqueryTables) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BigqueryTable, err error) {
 	result = &v1alpha1.BigqueryTable{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("bigquerytables").
 		SubResource(subresources...).
 		Name(name).

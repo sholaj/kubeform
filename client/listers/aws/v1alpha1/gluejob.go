@@ -29,8 +29,8 @@ import (
 type GlueJobLister interface {
 	// List lists all GlueJobs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GlueJob, err error)
-	// Get retrieves the GlueJob from the index for a given name.
-	Get(name string) (*v1alpha1.GlueJob, error)
+	// GlueJobs returns an object that can list and get GlueJobs.
+	GlueJobs(namespace string) GlueJobNamespaceLister
 	GlueJobListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *glueJobLister) List(selector labels.Selector) (ret []*v1alpha1.GlueJob,
 	return ret, err
 }
 
-// Get retrieves the GlueJob from the index for a given name.
-func (s *glueJobLister) Get(name string) (*v1alpha1.GlueJob, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GlueJobs returns an object that can list and get GlueJobs.
+func (s *glueJobLister) GlueJobs(namespace string) GlueJobNamespaceLister {
+	return glueJobNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GlueJobNamespaceLister helps list and get GlueJobs.
+type GlueJobNamespaceLister interface {
+	// List lists all GlueJobs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GlueJob, err error)
+	// Get retrieves the GlueJob from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GlueJob, error)
+	GlueJobNamespaceListerExpansion
+}
+
+// glueJobNamespaceLister implements the GlueJobNamespaceLister
+// interface.
+type glueJobNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GlueJobs in the indexer for a given namespace.
+func (s glueJobNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GlueJob, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GlueJob))
+	})
+	return ret, err
+}
+
+// Get retrieves the GlueJob from the indexer for a given namespace and name.
+func (s glueJobNamespaceLister) Get(name string) (*v1alpha1.GlueJob, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,27 +20,28 @@ type SqsQueue struct {
 
 type SqsQueueSpec struct {
 	// +optional
-	ContentBasedDeduplication bool `json:"content_based_deduplication,omitempty"`
+	ContentBasedDeduplication bool `json:"contentBasedDeduplication,omitempty" tf:"content_based_deduplication,omitempty"`
 	// +optional
-	DelaySeconds int `json:"delay_seconds,omitempty"`
+	DelaySeconds int `json:"delaySeconds,omitempty" tf:"delay_seconds,omitempty"`
 	// +optional
-	FifoQueue bool `json:"fifo_queue,omitempty"`
+	FifoQueue bool `json:"fifoQueue,omitempty" tf:"fifo_queue,omitempty"`
 	// +optional
-	KmsMasterKeyId string `json:"kms_master_key_id,omitempty"`
+	KmsMasterKeyID string `json:"kmsMasterKeyID,omitempty" tf:"kms_master_key_id,omitempty"`
 	// +optional
-	MaxMessageSize int `json:"max_message_size,omitempty"`
+	MaxMessageSize int `json:"maxMessageSize,omitempty" tf:"max_message_size,omitempty"`
 	// +optional
-	MessageRetentionSeconds int `json:"message_retention_seconds,omitempty"`
+	MessageRetentionSeconds int `json:"messageRetentionSeconds,omitempty" tf:"message_retention_seconds,omitempty"`
 	// +optional
-	NamePrefix string `json:"name_prefix,omitempty"`
+	NamePrefix string `json:"namePrefix,omitempty" tf:"name_prefix,omitempty"`
 	// +optional
-	ReceiveWaitTimeSeconds int `json:"receive_wait_time_seconds,omitempty"`
+	ReceiveWaitTimeSeconds int `json:"receiveWaitTimeSeconds,omitempty" tf:"receive_wait_time_seconds,omitempty"`
 	// +optional
-	RedrivePolicy string `json:"redrive_policy,omitempty"`
+	RedrivePolicy string `json:"redrivePolicy,omitempty" tf:"redrive_policy,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	VisibilityTimeoutSeconds int `json:"visibility_timeout_seconds,omitempty"`
+	VisibilityTimeoutSeconds int                       `json:"visibilityTimeoutSeconds,omitempty" tf:"visibility_timeout_seconds,omitempty"`
+	ProviderRef              core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SqsQueueStatus struct {
@@ -48,7 +49,9 @@ type SqsQueueStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

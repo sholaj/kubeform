@@ -31,6 +31,7 @@ import (
 // FakeRedshiftEventSubscriptions implements RedshiftEventSubscriptionInterface
 type FakeRedshiftEventSubscriptions struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var redshifteventsubscriptionsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "redshifteventsubscriptions"}
@@ -40,7 +41,8 @@ var redshifteventsubscriptionsKind = schema.GroupVersionKind{Group: "aws.kubefor
 // Get takes name of the redshiftEventSubscription, and returns the corresponding redshiftEventSubscription object, and an error if there is any.
 func (c *FakeRedshiftEventSubscriptions) Get(name string, options v1.GetOptions) (result *v1alpha1.RedshiftEventSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(redshifteventsubscriptionsResource, name), &v1alpha1.RedshiftEventSubscription{})
+		Invokes(testing.NewGetAction(redshifteventsubscriptionsResource, c.ns, name), &v1alpha1.RedshiftEventSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRedshiftEventSubscriptions) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of RedshiftEventSubscriptions that match those selectors.
 func (c *FakeRedshiftEventSubscriptions) List(opts v1.ListOptions) (result *v1alpha1.RedshiftEventSubscriptionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(redshifteventsubscriptionsResource, redshifteventsubscriptionsKind, opts), &v1alpha1.RedshiftEventSubscriptionList{})
+		Invokes(testing.NewListAction(redshifteventsubscriptionsResource, redshifteventsubscriptionsKind, c.ns, opts), &v1alpha1.RedshiftEventSubscriptionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRedshiftEventSubscriptions) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested redshiftEventSubscriptions.
 func (c *FakeRedshiftEventSubscriptions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(redshifteventsubscriptionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(redshifteventsubscriptionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a redshiftEventSubscription and creates it.  Returns the server's representation of the redshiftEventSubscription, and an error, if there is any.
 func (c *FakeRedshiftEventSubscriptions) Create(redshiftEventSubscription *v1alpha1.RedshiftEventSubscription) (result *v1alpha1.RedshiftEventSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(redshifteventsubscriptionsResource, redshiftEventSubscription), &v1alpha1.RedshiftEventSubscription{})
+		Invokes(testing.NewCreateAction(redshifteventsubscriptionsResource, c.ns, redshiftEventSubscription), &v1alpha1.RedshiftEventSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRedshiftEventSubscriptions) Create(redshiftEventSubscription *v1alp
 // Update takes the representation of a redshiftEventSubscription and updates it. Returns the server's representation of the redshiftEventSubscription, and an error, if there is any.
 func (c *FakeRedshiftEventSubscriptions) Update(redshiftEventSubscription *v1alpha1.RedshiftEventSubscription) (result *v1alpha1.RedshiftEventSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(redshifteventsubscriptionsResource, redshiftEventSubscription), &v1alpha1.RedshiftEventSubscription{})
+		Invokes(testing.NewUpdateAction(redshifteventsubscriptionsResource, c.ns, redshiftEventSubscription), &v1alpha1.RedshiftEventSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRedshiftEventSubscriptions) Update(redshiftEventSubscription *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRedshiftEventSubscriptions) UpdateStatus(redshiftEventSubscription *v1alpha1.RedshiftEventSubscription) (*v1alpha1.RedshiftEventSubscription, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(redshifteventsubscriptionsResource, "status", redshiftEventSubscription), &v1alpha1.RedshiftEventSubscription{})
+		Invokes(testing.NewUpdateSubresourceAction(redshifteventsubscriptionsResource, "status", c.ns, redshiftEventSubscription), &v1alpha1.RedshiftEventSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRedshiftEventSubscriptions) UpdateStatus(redshiftEventSubscription 
 // Delete takes name of the redshiftEventSubscription and deletes it. Returns an error if one occurs.
 func (c *FakeRedshiftEventSubscriptions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(redshifteventsubscriptionsResource, name), &v1alpha1.RedshiftEventSubscription{})
+		Invokes(testing.NewDeleteAction(redshifteventsubscriptionsResource, c.ns, name), &v1alpha1.RedshiftEventSubscription{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRedshiftEventSubscriptions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(redshifteventsubscriptionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(redshifteventsubscriptionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.RedshiftEventSubscriptionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRedshiftEventSubscriptions) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched redshiftEventSubscription.
 func (c *FakeRedshiftEventSubscriptions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RedshiftEventSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(redshifteventsubscriptionsResource, name, pt, data, subresources...), &v1alpha1.RedshiftEventSubscription{})
+		Invokes(testing.NewPatchSubresourceAction(redshifteventsubscriptionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.RedshiftEventSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}

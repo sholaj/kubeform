@@ -41,32 +41,33 @@ type LambdaPermissionInformer interface {
 type lambdaPermissionInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewLambdaPermissionInformer constructs a new informer for LambdaPermission type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLambdaPermissionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLambdaPermissionInformer(client, resyncPeriod, indexers, nil)
+func NewLambdaPermissionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLambdaPermissionInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredLambdaPermissionInformer constructs a new informer for LambdaPermission type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLambdaPermissionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLambdaPermissionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().LambdaPermissions().List(options)
+				return client.AwsV1alpha1().LambdaPermissions(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().LambdaPermissions().Watch(options)
+				return client.AwsV1alpha1().LambdaPermissions(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.LambdaPermission{},
@@ -76,7 +77,7 @@ func NewFilteredLambdaPermissionInformer(client versioned.Interface, resyncPerio
 }
 
 func (f *lambdaPermissionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLambdaPermissionInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredLambdaPermissionInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *lambdaPermissionInformer) Informer() cache.SharedIndexInformer {

@@ -29,8 +29,8 @@ import (
 type ComputeForwardingRuleLister interface {
 	// List lists all ComputeForwardingRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeForwardingRule, err error)
-	// Get retrieves the ComputeForwardingRule from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeForwardingRule, error)
+	// ComputeForwardingRules returns an object that can list and get ComputeForwardingRules.
+	ComputeForwardingRules(namespace string) ComputeForwardingRuleNamespaceLister
 	ComputeForwardingRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeForwardingRuleLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the ComputeForwardingRule from the index for a given name.
-func (s *computeForwardingRuleLister) Get(name string) (*v1alpha1.ComputeForwardingRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeForwardingRules returns an object that can list and get ComputeForwardingRules.
+func (s *computeForwardingRuleLister) ComputeForwardingRules(namespace string) ComputeForwardingRuleNamespaceLister {
+	return computeForwardingRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeForwardingRuleNamespaceLister helps list and get ComputeForwardingRules.
+type ComputeForwardingRuleNamespaceLister interface {
+	// List lists all ComputeForwardingRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeForwardingRule, err error)
+	// Get retrieves the ComputeForwardingRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeForwardingRule, error)
+	ComputeForwardingRuleNamespaceListerExpansion
+}
+
+// computeForwardingRuleNamespaceLister implements the ComputeForwardingRuleNamespaceLister
+// interface.
+type computeForwardingRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeForwardingRules in the indexer for a given namespace.
+func (s computeForwardingRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeForwardingRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeForwardingRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeForwardingRule from the indexer for a given namespace and name.
+func (s computeForwardingRuleNamespaceLister) Get(name string) (*v1alpha1.ComputeForwardingRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,35 +20,36 @@ type ComputeDisk struct {
 
 type ComputeDiskSpecSourceImageEncryptionKey struct {
 	// +optional
-	RawKey string `json:"raw_key,omitempty"`
+	RawKey string `json:"rawKey,omitempty" tf:"raw_key,omitempty"`
 }
 
 type ComputeDiskSpecSourceSnapshotEncryptionKey struct {
 	// +optional
-	RawKey string `json:"raw_key,omitempty"`
+	RawKey string `json:"rawKey,omitempty" tf:"raw_key,omitempty"`
 }
 
 type ComputeDiskSpec struct {
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
 	// Deprecated
-	DiskEncryptionKeyRaw string `json:"disk_encryption_key_raw,omitempty"`
+	DiskEncryptionKeyRaw string `json:"diskEncryptionKeyRaw,omitempty" tf:"disk_encryption_key_raw,omitempty"`
 	// +optional
-	Image string `json:"image,omitempty"`
+	Image string `json:"image,omitempty" tf:"image,omitempty"`
 	// +optional
-	Labels map[string]string `json:"labels,omitempty"`
-	Name   string            `json:"name"`
+	Labels map[string]string `json:"labels,omitempty" tf:"labels,omitempty"`
+	Name   string            `json:"name" tf:"name"`
 	// +optional
-	Snapshot string `json:"snapshot,omitempty"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	SourceImageEncryptionKey *[]ComputeDiskSpec `json:"source_image_encryption_key,omitempty"`
+	Snapshot string `json:"snapshot,omitempty" tf:"snapshot,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	SourceSnapshotEncryptionKey *[]ComputeDiskSpec `json:"source_snapshot_encryption_key,omitempty"`
+	SourceImageEncryptionKey []ComputeDiskSpecSourceImageEncryptionKey `json:"sourceImageEncryptionKey,omitempty" tf:"source_image_encryption_key,omitempty"`
 	// +optional
-	Type string `json:"type,omitempty"`
+	// +kubebuilder:validation:MaxItems=1
+	SourceSnapshotEncryptionKey []ComputeDiskSpecSourceSnapshotEncryptionKey `json:"sourceSnapshotEncryptionKey,omitempty" tf:"source_snapshot_encryption_key,omitempty"`
+	// +optional
+	Type        string                    `json:"type,omitempty" tf:"type,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ComputeDiskStatus struct {
@@ -56,7 +57,9 @@ type ComputeDiskStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

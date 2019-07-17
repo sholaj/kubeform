@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,18 +19,19 @@ type CognitoResourceServer struct {
 }
 
 type CognitoResourceServerSpecScope struct {
-	ScopeDescription string `json:"scope_description"`
-	ScopeName        string `json:"scope_name"`
+	ScopeDescription string `json:"scopeDescription" tf:"scope_description"`
+	ScopeName        string `json:"scopeName" tf:"scope_name"`
 }
 
 type CognitoResourceServerSpec struct {
-	Identifier string `json:"identifier"`
-	Name       string `json:"name"`
+	Identifier string `json:"identifier" tf:"identifier"`
+	Name       string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=25
 	// +kubebuilder:validation:UniqueItems=true
-	Scope      *[]CognitoResourceServerSpec `json:"scope,omitempty"`
-	UserPoolId string                       `json:"user_pool_id"`
+	Scope       []CognitoResourceServerSpecScope `json:"scope,omitempty" tf:"scope,omitempty"`
+	UserPoolID  string                           `json:"userPoolID" tf:"user_pool_id"`
+	ProviderRef core.LocalObjectReference        `json:"providerRef" tf:"-"`
 }
 
 type CognitoResourceServerStatus struct {
@@ -38,7 +39,9 @@ type CognitoResourceServerStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

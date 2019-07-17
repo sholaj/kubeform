@@ -32,7 +32,7 @@ import (
 // ElasticacheSubnetGroupsGetter has a method to return a ElasticacheSubnetGroupInterface.
 // A group's client should implement this interface.
 type ElasticacheSubnetGroupsGetter interface {
-	ElasticacheSubnetGroups() ElasticacheSubnetGroupInterface
+	ElasticacheSubnetGroups(namespace string) ElasticacheSubnetGroupInterface
 }
 
 // ElasticacheSubnetGroupInterface has methods to work with ElasticacheSubnetGroup resources.
@@ -52,12 +52,14 @@ type ElasticacheSubnetGroupInterface interface {
 // elasticacheSubnetGroups implements ElasticacheSubnetGroupInterface
 type elasticacheSubnetGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newElasticacheSubnetGroups returns a ElasticacheSubnetGroups
-func newElasticacheSubnetGroups(c *AwsV1alpha1Client) *elasticacheSubnetGroups {
+func newElasticacheSubnetGroups(c *AwsV1alpha1Client, namespace string) *elasticacheSubnetGroups {
 	return &elasticacheSubnetGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newElasticacheSubnetGroups(c *AwsV1alpha1Client) *elasticacheSubnetGroups {
 func (c *elasticacheSubnetGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.ElasticacheSubnetGroup, err error) {
 	result = &v1alpha1.ElasticacheSubnetGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticachesubnetgroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *elasticacheSubnetGroups) List(opts v1.ListOptions) (result *v1alpha1.El
 	}
 	result = &v1alpha1.ElasticacheSubnetGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticachesubnetgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *elasticacheSubnetGroups) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticachesubnetgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *elasticacheSubnetGroups) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *elasticacheSubnetGroups) Create(elasticacheSubnetGroup *v1alpha1.ElasticacheSubnetGroup) (result *v1alpha1.ElasticacheSubnetGroup, err error) {
 	result = &v1alpha1.ElasticacheSubnetGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("elasticachesubnetgroups").
 		Body(elasticacheSubnetGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *elasticacheSubnetGroups) Create(elasticacheSubnetGroup *v1alpha1.Elasti
 func (c *elasticacheSubnetGroups) Update(elasticacheSubnetGroup *v1alpha1.ElasticacheSubnetGroup) (result *v1alpha1.ElasticacheSubnetGroup, err error) {
 	result = &v1alpha1.ElasticacheSubnetGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elasticachesubnetgroups").
 		Name(elasticacheSubnetGroup.Name).
 		Body(elasticacheSubnetGroup).
@@ -132,6 +139,7 @@ func (c *elasticacheSubnetGroups) Update(elasticacheSubnetGroup *v1alpha1.Elasti
 func (c *elasticacheSubnetGroups) UpdateStatus(elasticacheSubnetGroup *v1alpha1.ElasticacheSubnetGroup) (result *v1alpha1.ElasticacheSubnetGroup, err error) {
 	result = &v1alpha1.ElasticacheSubnetGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elasticachesubnetgroups").
 		Name(elasticacheSubnetGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *elasticacheSubnetGroups) UpdateStatus(elasticacheSubnetGroup *v1alpha1.
 // Delete takes name of the elasticacheSubnetGroup and deletes it. Returns an error if one occurs.
 func (c *elasticacheSubnetGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elasticachesubnetgroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *elasticacheSubnetGroups) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elasticachesubnetgroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *elasticacheSubnetGroups) DeleteCollection(options *v1.DeleteOptions, li
 func (c *elasticacheSubnetGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ElasticacheSubnetGroup, err error) {
 	result = &v1alpha1.ElasticacheSubnetGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("elasticachesubnetgroups").
 		SubResource(subresources...).
 		Name(name).

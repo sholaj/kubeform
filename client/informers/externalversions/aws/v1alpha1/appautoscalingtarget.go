@@ -41,32 +41,33 @@ type AppautoscalingTargetInformer interface {
 type appautoscalingTargetInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewAppautoscalingTargetInformer constructs a new informer for AppautoscalingTarget type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAppautoscalingTargetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAppautoscalingTargetInformer(client, resyncPeriod, indexers, nil)
+func NewAppautoscalingTargetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAppautoscalingTargetInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredAppautoscalingTargetInformer constructs a new informer for AppautoscalingTarget type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAppautoscalingTargetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAppautoscalingTargetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AppautoscalingTargets().List(options)
+				return client.AwsV1alpha1().AppautoscalingTargets(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AppautoscalingTargets().Watch(options)
+				return client.AwsV1alpha1().AppautoscalingTargets(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.AppautoscalingTarget{},
@@ -76,7 +77,7 @@ func NewFilteredAppautoscalingTargetInformer(client versioned.Interface, resyncP
 }
 
 func (f *appautoscalingTargetInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAppautoscalingTargetInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredAppautoscalingTargetInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *appautoscalingTargetInformer) Informer() cache.SharedIndexInformer {

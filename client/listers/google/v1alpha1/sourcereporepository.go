@@ -29,8 +29,8 @@ import (
 type SourcerepoRepositoryLister interface {
 	// List lists all SourcerepoRepositories in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SourcerepoRepository, err error)
-	// Get retrieves the SourcerepoRepository from the index for a given name.
-	Get(name string) (*v1alpha1.SourcerepoRepository, error)
+	// SourcerepoRepositories returns an object that can list and get SourcerepoRepositories.
+	SourcerepoRepositories(namespace string) SourcerepoRepositoryNamespaceLister
 	SourcerepoRepositoryListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sourcerepoRepositoryLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the SourcerepoRepository from the index for a given name.
-func (s *sourcerepoRepositoryLister) Get(name string) (*v1alpha1.SourcerepoRepository, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SourcerepoRepositories returns an object that can list and get SourcerepoRepositories.
+func (s *sourcerepoRepositoryLister) SourcerepoRepositories(namespace string) SourcerepoRepositoryNamespaceLister {
+	return sourcerepoRepositoryNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SourcerepoRepositoryNamespaceLister helps list and get SourcerepoRepositories.
+type SourcerepoRepositoryNamespaceLister interface {
+	// List lists all SourcerepoRepositories in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SourcerepoRepository, err error)
+	// Get retrieves the SourcerepoRepository from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SourcerepoRepository, error)
+	SourcerepoRepositoryNamespaceListerExpansion
+}
+
+// sourcerepoRepositoryNamespaceLister implements the SourcerepoRepositoryNamespaceLister
+// interface.
+type sourcerepoRepositoryNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SourcerepoRepositories in the indexer for a given namespace.
+func (s sourcerepoRepositoryNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SourcerepoRepository, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SourcerepoRepository))
+	})
+	return ret, err
+}
+
+// Get retrieves the SourcerepoRepository from the indexer for a given namespace and name.
+func (s sourcerepoRepositoryNamespaceLister) Get(name string) (*v1alpha1.SourcerepoRepository, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

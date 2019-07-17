@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/azurerm/v1alpha1"
 )
 
-// ApplicationInsightsApiKeyInformer provides access to a shared informer and lister for
-// ApplicationInsightsApiKeys.
-type ApplicationInsightsApiKeyInformer interface {
+// ApplicationInsightsAPIKeyInformer provides access to a shared informer and lister for
+// ApplicationInsightsAPIKeys.
+type ApplicationInsightsAPIKeyInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.ApplicationInsightsApiKeyLister
+	Lister() v1alpha1.ApplicationInsightsAPIKeyLister
 }
 
-type applicationInsightsApiKeyInformer struct {
+type applicationInsightsAPIKeyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewApplicationInsightsApiKeyInformer constructs a new informer for ApplicationInsightsApiKey type.
+// NewApplicationInsightsAPIKeyInformer constructs a new informer for ApplicationInsightsAPIKey type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewApplicationInsightsApiKeyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredApplicationInsightsApiKeyInformer(client, resyncPeriod, indexers, nil)
+func NewApplicationInsightsAPIKeyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredApplicationInsightsAPIKeyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredApplicationInsightsApiKeyInformer constructs a new informer for ApplicationInsightsApiKey type.
+// NewFilteredApplicationInsightsAPIKeyInformer constructs a new informer for ApplicationInsightsAPIKey type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredApplicationInsightsApiKeyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredApplicationInsightsAPIKeyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ApplicationInsightsApiKeys().List(options)
+				return client.AzurermV1alpha1().ApplicationInsightsAPIKeys(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ApplicationInsightsApiKeys().Watch(options)
+				return client.AzurermV1alpha1().ApplicationInsightsAPIKeys(namespace).Watch(options)
 			},
 		},
-		&azurermv1alpha1.ApplicationInsightsApiKey{},
+		&azurermv1alpha1.ApplicationInsightsAPIKey{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *applicationInsightsApiKeyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredApplicationInsightsApiKeyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *applicationInsightsAPIKeyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredApplicationInsightsAPIKeyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *applicationInsightsApiKeyInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&azurermv1alpha1.ApplicationInsightsApiKey{}, f.defaultInformer)
+func (f *applicationInsightsAPIKeyInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&azurermv1alpha1.ApplicationInsightsAPIKey{}, f.defaultInformer)
 }
 
-func (f *applicationInsightsApiKeyInformer) Lister() v1alpha1.ApplicationInsightsApiKeyLister {
-	return v1alpha1.NewApplicationInsightsApiKeyLister(f.Informer().GetIndexer())
+func (f *applicationInsightsAPIKeyInformer) Lister() v1alpha1.ApplicationInsightsAPIKeyLister {
+	return v1alpha1.NewApplicationInsightsAPIKeyLister(f.Informer().GetIndexer())
 }

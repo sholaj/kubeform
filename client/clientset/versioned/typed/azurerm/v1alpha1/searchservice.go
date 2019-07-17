@@ -32,7 +32,7 @@ import (
 // SearchServicesGetter has a method to return a SearchServiceInterface.
 // A group's client should implement this interface.
 type SearchServicesGetter interface {
-	SearchServices() SearchServiceInterface
+	SearchServices(namespace string) SearchServiceInterface
 }
 
 // SearchServiceInterface has methods to work with SearchService resources.
@@ -52,12 +52,14 @@ type SearchServiceInterface interface {
 // searchServices implements SearchServiceInterface
 type searchServices struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSearchServices returns a SearchServices
-func newSearchServices(c *AzurermV1alpha1Client) *searchServices {
+func newSearchServices(c *AzurermV1alpha1Client, namespace string) *searchServices {
 	return &searchServices{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSearchServices(c *AzurermV1alpha1Client) *searchServices {
 func (c *searchServices) Get(name string, options v1.GetOptions) (result *v1alpha1.SearchService, err error) {
 	result = &v1alpha1.SearchService{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("searchservices").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *searchServices) List(opts v1.ListOptions) (result *v1alpha1.SearchServi
 	}
 	result = &v1alpha1.SearchServiceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("searchservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *searchServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("searchservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *searchServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *searchServices) Create(searchService *v1alpha1.SearchService) (result *v1alpha1.SearchService, err error) {
 	result = &v1alpha1.SearchService{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("searchservices").
 		Body(searchService).
 		Do().
@@ -118,6 +124,7 @@ func (c *searchServices) Create(searchService *v1alpha1.SearchService) (result *
 func (c *searchServices) Update(searchService *v1alpha1.SearchService) (result *v1alpha1.SearchService, err error) {
 	result = &v1alpha1.SearchService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("searchservices").
 		Name(searchService.Name).
 		Body(searchService).
@@ -132,6 +139,7 @@ func (c *searchServices) Update(searchService *v1alpha1.SearchService) (result *
 func (c *searchServices) UpdateStatus(searchService *v1alpha1.SearchService) (result *v1alpha1.SearchService, err error) {
 	result = &v1alpha1.SearchService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("searchservices").
 		Name(searchService.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *searchServices) UpdateStatus(searchService *v1alpha1.SearchService) (re
 // Delete takes name of the searchService and deletes it. Returns an error if one occurs.
 func (c *searchServices) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("searchservices").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *searchServices) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("searchservices").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *searchServices) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *searchServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SearchService, err error) {
 	result = &v1alpha1.SearchService{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("searchservices").
 		SubResource(subresources...).
 		Name(name).

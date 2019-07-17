@@ -31,6 +31,7 @@ import (
 // FakeNeptuneClusterParameterGroups implements NeptuneClusterParameterGroupInterface
 type FakeNeptuneClusterParameterGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var neptuneclusterparametergroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "neptuneclusterparametergroups"}
@@ -40,7 +41,8 @@ var neptuneclusterparametergroupsKind = schema.GroupVersionKind{Group: "aws.kube
 // Get takes name of the neptuneClusterParameterGroup, and returns the corresponding neptuneClusterParameterGroup object, and an error if there is any.
 func (c *FakeNeptuneClusterParameterGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.NeptuneClusterParameterGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(neptuneclusterparametergroupsResource, name), &v1alpha1.NeptuneClusterParameterGroup{})
+		Invokes(testing.NewGetAction(neptuneclusterparametergroupsResource, c.ns, name), &v1alpha1.NeptuneClusterParameterGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeNeptuneClusterParameterGroups) Get(name string, options v1.GetOptio
 // List takes label and field selectors, and returns the list of NeptuneClusterParameterGroups that match those selectors.
 func (c *FakeNeptuneClusterParameterGroups) List(opts v1.ListOptions) (result *v1alpha1.NeptuneClusterParameterGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(neptuneclusterparametergroupsResource, neptuneclusterparametergroupsKind, opts), &v1alpha1.NeptuneClusterParameterGroupList{})
+		Invokes(testing.NewListAction(neptuneclusterparametergroupsResource, neptuneclusterparametergroupsKind, c.ns, opts), &v1alpha1.NeptuneClusterParameterGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeNeptuneClusterParameterGroups) List(opts v1.ListOptions) (result *v
 // Watch returns a watch.Interface that watches the requested neptuneClusterParameterGroups.
 func (c *FakeNeptuneClusterParameterGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(neptuneclusterparametergroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(neptuneclusterparametergroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a neptuneClusterParameterGroup and creates it.  Returns the server's representation of the neptuneClusterParameterGroup, and an error, if there is any.
 func (c *FakeNeptuneClusterParameterGroups) Create(neptuneClusterParameterGroup *v1alpha1.NeptuneClusterParameterGroup) (result *v1alpha1.NeptuneClusterParameterGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(neptuneclusterparametergroupsResource, neptuneClusterParameterGroup), &v1alpha1.NeptuneClusterParameterGroup{})
+		Invokes(testing.NewCreateAction(neptuneclusterparametergroupsResource, c.ns, neptuneClusterParameterGroup), &v1alpha1.NeptuneClusterParameterGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeNeptuneClusterParameterGroups) Create(neptuneClusterParameterGroup 
 // Update takes the representation of a neptuneClusterParameterGroup and updates it. Returns the server's representation of the neptuneClusterParameterGroup, and an error, if there is any.
 func (c *FakeNeptuneClusterParameterGroups) Update(neptuneClusterParameterGroup *v1alpha1.NeptuneClusterParameterGroup) (result *v1alpha1.NeptuneClusterParameterGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(neptuneclusterparametergroupsResource, neptuneClusterParameterGroup), &v1alpha1.NeptuneClusterParameterGroup{})
+		Invokes(testing.NewUpdateAction(neptuneclusterparametergroupsResource, c.ns, neptuneClusterParameterGroup), &v1alpha1.NeptuneClusterParameterGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeNeptuneClusterParameterGroups) Update(neptuneClusterParameterGroup 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNeptuneClusterParameterGroups) UpdateStatus(neptuneClusterParameterGroup *v1alpha1.NeptuneClusterParameterGroup) (*v1alpha1.NeptuneClusterParameterGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(neptuneclusterparametergroupsResource, "status", neptuneClusterParameterGroup), &v1alpha1.NeptuneClusterParameterGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(neptuneclusterparametergroupsResource, "status", c.ns, neptuneClusterParameterGroup), &v1alpha1.NeptuneClusterParameterGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeNeptuneClusterParameterGroups) UpdateStatus(neptuneClusterParameter
 // Delete takes name of the neptuneClusterParameterGroup and deletes it. Returns an error if one occurs.
 func (c *FakeNeptuneClusterParameterGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(neptuneclusterparametergroupsResource, name), &v1alpha1.NeptuneClusterParameterGroup{})
+		Invokes(testing.NewDeleteAction(neptuneclusterparametergroupsResource, c.ns, name), &v1alpha1.NeptuneClusterParameterGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNeptuneClusterParameterGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(neptuneclusterparametergroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(neptuneclusterparametergroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NeptuneClusterParameterGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeNeptuneClusterParameterGroups) DeleteCollection(options *v1.DeleteO
 // Patch applies the patch and returns the patched neptuneClusterParameterGroup.
 func (c *FakeNeptuneClusterParameterGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NeptuneClusterParameterGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(neptuneclusterparametergroupsResource, name, pt, data, subresources...), &v1alpha1.NeptuneClusterParameterGroup{})
+		Invokes(testing.NewPatchSubresourceAction(neptuneclusterparametergroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.NeptuneClusterParameterGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

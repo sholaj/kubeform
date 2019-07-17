@@ -32,7 +32,7 @@ import (
 // DmsReplicationInstancesGetter has a method to return a DmsReplicationInstanceInterface.
 // A group's client should implement this interface.
 type DmsReplicationInstancesGetter interface {
-	DmsReplicationInstances() DmsReplicationInstanceInterface
+	DmsReplicationInstances(namespace string) DmsReplicationInstanceInterface
 }
 
 // DmsReplicationInstanceInterface has methods to work with DmsReplicationInstance resources.
@@ -52,12 +52,14 @@ type DmsReplicationInstanceInterface interface {
 // dmsReplicationInstances implements DmsReplicationInstanceInterface
 type dmsReplicationInstances struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDmsReplicationInstances returns a DmsReplicationInstances
-func newDmsReplicationInstances(c *AwsV1alpha1Client) *dmsReplicationInstances {
+func newDmsReplicationInstances(c *AwsV1alpha1Client, namespace string) *dmsReplicationInstances {
 	return &dmsReplicationInstances{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDmsReplicationInstances(c *AwsV1alpha1Client) *dmsReplicationInstances {
 func (c *dmsReplicationInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.DmsReplicationInstance, err error) {
 	result = &v1alpha1.DmsReplicationInstance{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dmsreplicationinstances").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dmsReplicationInstances) List(opts v1.ListOptions) (result *v1alpha1.Dm
 	}
 	result = &v1alpha1.DmsReplicationInstanceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dmsreplicationinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dmsReplicationInstances) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dmsreplicationinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dmsReplicationInstances) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *dmsReplicationInstances) Create(dmsReplicationInstance *v1alpha1.DmsReplicationInstance) (result *v1alpha1.DmsReplicationInstance, err error) {
 	result = &v1alpha1.DmsReplicationInstance{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dmsreplicationinstances").
 		Body(dmsReplicationInstance).
 		Do().
@@ -118,6 +124,7 @@ func (c *dmsReplicationInstances) Create(dmsReplicationInstance *v1alpha1.DmsRep
 func (c *dmsReplicationInstances) Update(dmsReplicationInstance *v1alpha1.DmsReplicationInstance) (result *v1alpha1.DmsReplicationInstance, err error) {
 	result = &v1alpha1.DmsReplicationInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dmsreplicationinstances").
 		Name(dmsReplicationInstance.Name).
 		Body(dmsReplicationInstance).
@@ -132,6 +139,7 @@ func (c *dmsReplicationInstances) Update(dmsReplicationInstance *v1alpha1.DmsRep
 func (c *dmsReplicationInstances) UpdateStatus(dmsReplicationInstance *v1alpha1.DmsReplicationInstance) (result *v1alpha1.DmsReplicationInstance, err error) {
 	result = &v1alpha1.DmsReplicationInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dmsreplicationinstances").
 		Name(dmsReplicationInstance.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dmsReplicationInstances) UpdateStatus(dmsReplicationInstance *v1alpha1.
 // Delete takes name of the dmsReplicationInstance and deletes it. Returns an error if one occurs.
 func (c *dmsReplicationInstances) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dmsreplicationinstances").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dmsReplicationInstances) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dmsreplicationinstances").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dmsReplicationInstances) DeleteCollection(options *v1.DeleteOptions, li
 func (c *dmsReplicationInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DmsReplicationInstance, err error) {
 	result = &v1alpha1.DmsReplicationInstance{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dmsreplicationinstances").
 		SubResource(subresources...).
 		Name(name).

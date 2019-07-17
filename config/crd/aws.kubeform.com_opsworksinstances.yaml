@@ -397,33 +397,43 @@ spec:
           type: object
         spec:
           properties:
-            agent_version:
+            agentVersion:
               type: string
             architecture:
               type: string
-            auto_scaling_type:
+            autoScalingType:
               type: string
-            delete_ebs:
+            deleteEbs:
               type: boolean
-            delete_eip:
+            deleteEip:
               type: boolean
-            ebs_optimized:
+            ebsOptimized:
               type: boolean
-            install_updates_on_boot:
+            installUpdatesOnBoot:
               type: boolean
-            instance_type:
+            instanceType:
               type: string
-            layer_ids:
+            layerIDS:
               items:
                 type: string
               type: array
-            stack_id:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            stackID:
               type: string
             state:
               type: string
           required:
-          - layer_ids
-          - stack_id
+          - layerIDS
+          - providerRef
+          - stackID
           type: object
         status:
           properties:
@@ -434,6 +444,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

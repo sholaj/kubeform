@@ -32,7 +32,7 @@ import (
 // S3BucketInventoriesGetter has a method to return a S3BucketInventoryInterface.
 // A group's client should implement this interface.
 type S3BucketInventoriesGetter interface {
-	S3BucketInventories() S3BucketInventoryInterface
+	S3BucketInventories(namespace string) S3BucketInventoryInterface
 }
 
 // S3BucketInventoryInterface has methods to work with S3BucketInventory resources.
@@ -52,12 +52,14 @@ type S3BucketInventoryInterface interface {
 // s3BucketInventories implements S3BucketInventoryInterface
 type s3BucketInventories struct {
 	client rest.Interface
+	ns     string
 }
 
 // newS3BucketInventories returns a S3BucketInventories
-func newS3BucketInventories(c *AwsV1alpha1Client) *s3BucketInventories {
+func newS3BucketInventories(c *AwsV1alpha1Client, namespace string) *s3BucketInventories {
 	return &s3BucketInventories{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newS3BucketInventories(c *AwsV1alpha1Client) *s3BucketInventories {
 func (c *s3BucketInventories) Get(name string, options v1.GetOptions) (result *v1alpha1.S3BucketInventory, err error) {
 	result = &v1alpha1.S3BucketInventory{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("s3bucketinventories").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *s3BucketInventories) List(opts v1.ListOptions) (result *v1alpha1.S3Buck
 	}
 	result = &v1alpha1.S3BucketInventoryList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("s3bucketinventories").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *s3BucketInventories) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("s3bucketinventories").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *s3BucketInventories) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *s3BucketInventories) Create(s3BucketInventory *v1alpha1.S3BucketInventory) (result *v1alpha1.S3BucketInventory, err error) {
 	result = &v1alpha1.S3BucketInventory{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("s3bucketinventories").
 		Body(s3BucketInventory).
 		Do().
@@ -118,6 +124,7 @@ func (c *s3BucketInventories) Create(s3BucketInventory *v1alpha1.S3BucketInvento
 func (c *s3BucketInventories) Update(s3BucketInventory *v1alpha1.S3BucketInventory) (result *v1alpha1.S3BucketInventory, err error) {
 	result = &v1alpha1.S3BucketInventory{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("s3bucketinventories").
 		Name(s3BucketInventory.Name).
 		Body(s3BucketInventory).
@@ -132,6 +139,7 @@ func (c *s3BucketInventories) Update(s3BucketInventory *v1alpha1.S3BucketInvento
 func (c *s3BucketInventories) UpdateStatus(s3BucketInventory *v1alpha1.S3BucketInventory) (result *v1alpha1.S3BucketInventory, err error) {
 	result = &v1alpha1.S3BucketInventory{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("s3bucketinventories").
 		Name(s3BucketInventory.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *s3BucketInventories) UpdateStatus(s3BucketInventory *v1alpha1.S3BucketI
 // Delete takes name of the s3BucketInventory and deletes it. Returns an error if one occurs.
 func (c *s3BucketInventories) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("s3bucketinventories").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *s3BucketInventories) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("s3bucketinventories").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *s3BucketInventories) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *s3BucketInventories) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.S3BucketInventory, err error) {
 	result = &v1alpha1.S3BucketInventory{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("s3bucketinventories").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type RedisInstanceLister interface {
 	// List lists all RedisInstances in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RedisInstance, err error)
-	// Get retrieves the RedisInstance from the index for a given name.
-	Get(name string) (*v1alpha1.RedisInstance, error)
+	// RedisInstances returns an object that can list and get RedisInstances.
+	RedisInstances(namespace string) RedisInstanceNamespaceLister
 	RedisInstanceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *redisInstanceLister) List(selector labels.Selector) (ret []*v1alpha1.Re
 	return ret, err
 }
 
-// Get retrieves the RedisInstance from the index for a given name.
-func (s *redisInstanceLister) Get(name string) (*v1alpha1.RedisInstance, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RedisInstances returns an object that can list and get RedisInstances.
+func (s *redisInstanceLister) RedisInstances(namespace string) RedisInstanceNamespaceLister {
+	return redisInstanceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RedisInstanceNamespaceLister helps list and get RedisInstances.
+type RedisInstanceNamespaceLister interface {
+	// List lists all RedisInstances in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RedisInstance, err error)
+	// Get retrieves the RedisInstance from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RedisInstance, error)
+	RedisInstanceNamespaceListerExpansion
+}
+
+// redisInstanceNamespaceLister implements the RedisInstanceNamespaceLister
+// interface.
+type redisInstanceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RedisInstances in the indexer for a given namespace.
+func (s redisInstanceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RedisInstance, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RedisInstance))
+	})
+	return ret, err
+}
+
+// Get retrieves the RedisInstance from the indexer for a given namespace and name.
+func (s redisInstanceNamespaceLister) Get(name string) (*v1alpha1.RedisInstance, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

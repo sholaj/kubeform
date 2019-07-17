@@ -32,7 +32,7 @@ import (
 // IamUsersGetter has a method to return a IamUserInterface.
 // A group's client should implement this interface.
 type IamUsersGetter interface {
-	IamUsers() IamUserInterface
+	IamUsers(namespace string) IamUserInterface
 }
 
 // IamUserInterface has methods to work with IamUser resources.
@@ -52,12 +52,14 @@ type IamUserInterface interface {
 // iamUsers implements IamUserInterface
 type iamUsers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIamUsers returns a IamUsers
-func newIamUsers(c *AwsV1alpha1Client) *iamUsers {
+func newIamUsers(c *AwsV1alpha1Client, namespace string) *iamUsers {
 	return &iamUsers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIamUsers(c *AwsV1alpha1Client) *iamUsers {
 func (c *iamUsers) Get(name string, options v1.GetOptions) (result *v1alpha1.IamUser, err error) {
 	result = &v1alpha1.IamUser{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamusers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iamUsers) List(opts v1.ListOptions) (result *v1alpha1.IamUserList, err 
 	}
 	result = &v1alpha1.IamUserList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamusers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iamUsers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iamusers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iamUsers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *iamUsers) Create(iamUser *v1alpha1.IamUser) (result *v1alpha1.IamUser, err error) {
 	result = &v1alpha1.IamUser{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iamusers").
 		Body(iamUser).
 		Do().
@@ -118,6 +124,7 @@ func (c *iamUsers) Create(iamUser *v1alpha1.IamUser) (result *v1alpha1.IamUser, 
 func (c *iamUsers) Update(iamUser *v1alpha1.IamUser) (result *v1alpha1.IamUser, err error) {
 	result = &v1alpha1.IamUser{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamusers").
 		Name(iamUser.Name).
 		Body(iamUser).
@@ -132,6 +139,7 @@ func (c *iamUsers) Update(iamUser *v1alpha1.IamUser) (result *v1alpha1.IamUser, 
 func (c *iamUsers) UpdateStatus(iamUser *v1alpha1.IamUser) (result *v1alpha1.IamUser, err error) {
 	result = &v1alpha1.IamUser{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamusers").
 		Name(iamUser.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iamUsers) UpdateStatus(iamUser *v1alpha1.IamUser) (result *v1alpha1.Iam
 // Delete takes name of the iamUser and deletes it. Returns an error if one occurs.
 func (c *iamUsers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamusers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iamUsers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamusers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iamUsers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 func (c *iamUsers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamUser, err error) {
 	result = &v1alpha1.IamUser{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iamusers").
 		SubResource(subresources...).
 		Name(name).

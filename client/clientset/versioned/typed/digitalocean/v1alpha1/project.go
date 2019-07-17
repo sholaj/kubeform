@@ -32,7 +32,7 @@ import (
 // ProjectsGetter has a method to return a ProjectInterface.
 // A group's client should implement this interface.
 type ProjectsGetter interface {
-	Projects() ProjectInterface
+	Projects(namespace string) ProjectInterface
 }
 
 // ProjectInterface has methods to work with Project resources.
@@ -52,12 +52,14 @@ type ProjectInterface interface {
 // projects implements ProjectInterface
 type projects struct {
 	client rest.Interface
+	ns     string
 }
 
 // newProjects returns a Projects
-func newProjects(c *DigitaloceanV1alpha1Client) *projects {
+func newProjects(c *DigitaloceanV1alpha1Client, namespace string) *projects {
 	return &projects{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newProjects(c *DigitaloceanV1alpha1Client) *projects {
 func (c *projects) Get(name string, options v1.GetOptions) (result *v1alpha1.Project, err error) {
 	result = &v1alpha1.Project{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("projects").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *projects) List(opts v1.ListOptions) (result *v1alpha1.ProjectList, err 
 	}
 	result = &v1alpha1.ProjectList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("projects").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *projects) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("projects").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *projects) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *projects) Create(project *v1alpha1.Project) (result *v1alpha1.Project, err error) {
 	result = &v1alpha1.Project{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("projects").
 		Body(project).
 		Do().
@@ -118,6 +124,7 @@ func (c *projects) Create(project *v1alpha1.Project) (result *v1alpha1.Project, 
 func (c *projects) Update(project *v1alpha1.Project) (result *v1alpha1.Project, err error) {
 	result = &v1alpha1.Project{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("projects").
 		Name(project.Name).
 		Body(project).
@@ -132,6 +139,7 @@ func (c *projects) Update(project *v1alpha1.Project) (result *v1alpha1.Project, 
 func (c *projects) UpdateStatus(project *v1alpha1.Project) (result *v1alpha1.Project, err error) {
 	result = &v1alpha1.Project{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("projects").
 		Name(project.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *projects) UpdateStatus(project *v1alpha1.Project) (result *v1alpha1.Pro
 // Delete takes name of the project and deletes it. Returns an error if one occurs.
 func (c *projects) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("projects").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *projects) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("projects").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *projects) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 func (c *projects) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Project, err error) {
 	result = &v1alpha1.Project{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("projects").
 		SubResource(subresources...).
 		Name(name).

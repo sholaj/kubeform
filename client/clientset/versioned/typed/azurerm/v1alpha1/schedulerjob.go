@@ -32,7 +32,7 @@ import (
 // SchedulerJobsGetter has a method to return a SchedulerJobInterface.
 // A group's client should implement this interface.
 type SchedulerJobsGetter interface {
-	SchedulerJobs() SchedulerJobInterface
+	SchedulerJobs(namespace string) SchedulerJobInterface
 }
 
 // SchedulerJobInterface has methods to work with SchedulerJob resources.
@@ -52,12 +52,14 @@ type SchedulerJobInterface interface {
 // schedulerJobs implements SchedulerJobInterface
 type schedulerJobs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSchedulerJobs returns a SchedulerJobs
-func newSchedulerJobs(c *AzurermV1alpha1Client) *schedulerJobs {
+func newSchedulerJobs(c *AzurermV1alpha1Client, namespace string) *schedulerJobs {
 	return &schedulerJobs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSchedulerJobs(c *AzurermV1alpha1Client) *schedulerJobs {
 func (c *schedulerJobs) Get(name string, options v1.GetOptions) (result *v1alpha1.SchedulerJob, err error) {
 	result = &v1alpha1.SchedulerJob{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("schedulerjobs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *schedulerJobs) List(opts v1.ListOptions) (result *v1alpha1.SchedulerJob
 	}
 	result = &v1alpha1.SchedulerJobList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("schedulerjobs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *schedulerJobs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("schedulerjobs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *schedulerJobs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *schedulerJobs) Create(schedulerJob *v1alpha1.SchedulerJob) (result *v1alpha1.SchedulerJob, err error) {
 	result = &v1alpha1.SchedulerJob{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("schedulerjobs").
 		Body(schedulerJob).
 		Do().
@@ -118,6 +124,7 @@ func (c *schedulerJobs) Create(schedulerJob *v1alpha1.SchedulerJob) (result *v1a
 func (c *schedulerJobs) Update(schedulerJob *v1alpha1.SchedulerJob) (result *v1alpha1.SchedulerJob, err error) {
 	result = &v1alpha1.SchedulerJob{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("schedulerjobs").
 		Name(schedulerJob.Name).
 		Body(schedulerJob).
@@ -132,6 +139,7 @@ func (c *schedulerJobs) Update(schedulerJob *v1alpha1.SchedulerJob) (result *v1a
 func (c *schedulerJobs) UpdateStatus(schedulerJob *v1alpha1.SchedulerJob) (result *v1alpha1.SchedulerJob, err error) {
 	result = &v1alpha1.SchedulerJob{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("schedulerjobs").
 		Name(schedulerJob.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *schedulerJobs) UpdateStatus(schedulerJob *v1alpha1.SchedulerJob) (resul
 // Delete takes name of the schedulerJob and deletes it. Returns an error if one occurs.
 func (c *schedulerJobs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("schedulerjobs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *schedulerJobs) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("schedulerjobs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *schedulerJobs) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *schedulerJobs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SchedulerJob, err error) {
 	result = &v1alpha1.SchedulerJob{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("schedulerjobs").
 		SubResource(subresources...).
 		Name(name).

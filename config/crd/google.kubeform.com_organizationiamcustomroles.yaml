@@ -402,7 +402,7 @@ spec:
               type: boolean
             description:
               type: string
-            org_id:
+            orgID:
               type: string
             permissions:
               items:
@@ -410,16 +410,26 @@ spec:
               minItems: 1
               type: array
               uniqueItems: true
-            role_id:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            roleID:
               type: string
             stage:
               type: string
             title:
               type: string
           required:
-          - org_id
+          - orgID
           - permissions
-          - role_id
+          - providerRef
+          - roleID
           - title
           type: object
         status:
@@ -431,6 +441,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -31,6 +31,7 @@ import (
 // FakeMskClusters implements MskClusterInterface
 type FakeMskClusters struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var mskclustersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "mskclusters"}
@@ -40,7 +41,8 @@ var mskclustersKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version
 // Get takes name of the mskCluster, and returns the corresponding mskCluster object, and an error if there is any.
 func (c *FakeMskClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.MskCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(mskclustersResource, name), &v1alpha1.MskCluster{})
+		Invokes(testing.NewGetAction(mskclustersResource, c.ns, name), &v1alpha1.MskCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMskClusters) Get(name string, options v1.GetOptions) (result *v1alp
 // List takes label and field selectors, and returns the list of MskClusters that match those selectors.
 func (c *FakeMskClusters) List(opts v1.ListOptions) (result *v1alpha1.MskClusterList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(mskclustersResource, mskclustersKind, opts), &v1alpha1.MskClusterList{})
+		Invokes(testing.NewListAction(mskclustersResource, mskclustersKind, c.ns, opts), &v1alpha1.MskClusterList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMskClusters) List(opts v1.ListOptions) (result *v1alpha1.MskCluster
 // Watch returns a watch.Interface that watches the requested mskClusters.
 func (c *FakeMskClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(mskclustersResource, opts))
+		InvokesWatch(testing.NewWatchAction(mskclustersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a mskCluster and creates it.  Returns the server's representation of the mskCluster, and an error, if there is any.
 func (c *FakeMskClusters) Create(mskCluster *v1alpha1.MskCluster) (result *v1alpha1.MskCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(mskclustersResource, mskCluster), &v1alpha1.MskCluster{})
+		Invokes(testing.NewCreateAction(mskclustersResource, c.ns, mskCluster), &v1alpha1.MskCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMskClusters) Create(mskCluster *v1alpha1.MskCluster) (result *v1alp
 // Update takes the representation of a mskCluster and updates it. Returns the server's representation of the mskCluster, and an error, if there is any.
 func (c *FakeMskClusters) Update(mskCluster *v1alpha1.MskCluster) (result *v1alpha1.MskCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(mskclustersResource, mskCluster), &v1alpha1.MskCluster{})
+		Invokes(testing.NewUpdateAction(mskclustersResource, c.ns, mskCluster), &v1alpha1.MskCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMskClusters) Update(mskCluster *v1alpha1.MskCluster) (result *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMskClusters) UpdateStatus(mskCluster *v1alpha1.MskCluster) (*v1alpha1.MskCluster, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(mskclustersResource, "status", mskCluster), &v1alpha1.MskCluster{})
+		Invokes(testing.NewUpdateSubresourceAction(mskclustersResource, "status", c.ns, mskCluster), &v1alpha1.MskCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMskClusters) UpdateStatus(mskCluster *v1alpha1.MskCluster) (*v1alph
 // Delete takes name of the mskCluster and deletes it. Returns an error if one occurs.
 func (c *FakeMskClusters) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(mskclustersResource, name), &v1alpha1.MskCluster{})
+		Invokes(testing.NewDeleteAction(mskclustersResource, c.ns, name), &v1alpha1.MskCluster{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMskClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(mskclustersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(mskclustersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MskClusterList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMskClusters) DeleteCollection(options *v1.DeleteOptions, listOption
 // Patch applies the patch and returns the patched mskCluster.
 func (c *FakeMskClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MskCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(mskclustersResource, name, pt, data, subresources...), &v1alpha1.MskCluster{})
+		Invokes(testing.NewPatchSubresourceAction(mskclustersResource, c.ns, name, pt, data, subresources...), &v1alpha1.MskCluster{})
+
 	if obj == nil {
 		return nil, err
 	}

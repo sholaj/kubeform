@@ -32,7 +32,7 @@ import (
 // DataFactoryDatasetPostgresqlsGetter has a method to return a DataFactoryDatasetPostgresqlInterface.
 // A group's client should implement this interface.
 type DataFactoryDatasetPostgresqlsGetter interface {
-	DataFactoryDatasetPostgresqls() DataFactoryDatasetPostgresqlInterface
+	DataFactoryDatasetPostgresqls(namespace string) DataFactoryDatasetPostgresqlInterface
 }
 
 // DataFactoryDatasetPostgresqlInterface has methods to work with DataFactoryDatasetPostgresql resources.
@@ -52,12 +52,14 @@ type DataFactoryDatasetPostgresqlInterface interface {
 // dataFactoryDatasetPostgresqls implements DataFactoryDatasetPostgresqlInterface
 type dataFactoryDatasetPostgresqls struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDataFactoryDatasetPostgresqls returns a DataFactoryDatasetPostgresqls
-func newDataFactoryDatasetPostgresqls(c *AzurermV1alpha1Client) *dataFactoryDatasetPostgresqls {
+func newDataFactoryDatasetPostgresqls(c *AzurermV1alpha1Client, namespace string) *dataFactoryDatasetPostgresqls {
 	return &dataFactoryDatasetPostgresqls{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDataFactoryDatasetPostgresqls(c *AzurermV1alpha1Client) *dataFactoryData
 func (c *dataFactoryDatasetPostgresqls) Get(name string, options v1.GetOptions) (result *v1alpha1.DataFactoryDatasetPostgresql, err error) {
 	result = &v1alpha1.DataFactoryDatasetPostgresql{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactorydatasetpostgresqls").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dataFactoryDatasetPostgresqls) List(opts v1.ListOptions) (result *v1alp
 	}
 	result = &v1alpha1.DataFactoryDatasetPostgresqlList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactorydatasetpostgresqls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dataFactoryDatasetPostgresqls) Watch(opts v1.ListOptions) (watch.Interf
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactorydatasetpostgresqls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dataFactoryDatasetPostgresqls) Watch(opts v1.ListOptions) (watch.Interf
 func (c *dataFactoryDatasetPostgresqls) Create(dataFactoryDatasetPostgresql *v1alpha1.DataFactoryDatasetPostgresql) (result *v1alpha1.DataFactoryDatasetPostgresql, err error) {
 	result = &v1alpha1.DataFactoryDatasetPostgresql{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("datafactorydatasetpostgresqls").
 		Body(dataFactoryDatasetPostgresql).
 		Do().
@@ -118,6 +124,7 @@ func (c *dataFactoryDatasetPostgresqls) Create(dataFactoryDatasetPostgresql *v1a
 func (c *dataFactoryDatasetPostgresqls) Update(dataFactoryDatasetPostgresql *v1alpha1.DataFactoryDatasetPostgresql) (result *v1alpha1.DataFactoryDatasetPostgresql, err error) {
 	result = &v1alpha1.DataFactoryDatasetPostgresql{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datafactorydatasetpostgresqls").
 		Name(dataFactoryDatasetPostgresql.Name).
 		Body(dataFactoryDatasetPostgresql).
@@ -132,6 +139,7 @@ func (c *dataFactoryDatasetPostgresqls) Update(dataFactoryDatasetPostgresql *v1a
 func (c *dataFactoryDatasetPostgresqls) UpdateStatus(dataFactoryDatasetPostgresql *v1alpha1.DataFactoryDatasetPostgresql) (result *v1alpha1.DataFactoryDatasetPostgresql, err error) {
 	result = &v1alpha1.DataFactoryDatasetPostgresql{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datafactorydatasetpostgresqls").
 		Name(dataFactoryDatasetPostgresql.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dataFactoryDatasetPostgresqls) UpdateStatus(dataFactoryDatasetPostgresq
 // Delete takes name of the dataFactoryDatasetPostgresql and deletes it. Returns an error if one occurs.
 func (c *dataFactoryDatasetPostgresqls) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datafactorydatasetpostgresqls").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dataFactoryDatasetPostgresqls) DeleteCollection(options *v1.DeleteOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datafactorydatasetpostgresqls").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dataFactoryDatasetPostgresqls) DeleteCollection(options *v1.DeleteOptio
 func (c *dataFactoryDatasetPostgresqls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataFactoryDatasetPostgresql, err error) {
 	result = &v1alpha1.DataFactoryDatasetPostgresql{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("datafactorydatasetpostgresqls").
 		SubResource(subresources...).
 		Name(name).

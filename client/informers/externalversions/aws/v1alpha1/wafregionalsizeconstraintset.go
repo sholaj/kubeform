@@ -41,32 +41,33 @@ type WafregionalSizeConstraintSetInformer interface {
 type wafregionalSizeConstraintSetInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewWafregionalSizeConstraintSetInformer constructs a new informer for WafregionalSizeConstraintSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewWafregionalSizeConstraintSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredWafregionalSizeConstraintSetInformer(client, resyncPeriod, indexers, nil)
+func NewWafregionalSizeConstraintSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredWafregionalSizeConstraintSetInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredWafregionalSizeConstraintSetInformer constructs a new informer for WafregionalSizeConstraintSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredWafregionalSizeConstraintSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredWafregionalSizeConstraintSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafregionalSizeConstraintSets().List(options)
+				return client.AwsV1alpha1().WafregionalSizeConstraintSets(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafregionalSizeConstraintSets().Watch(options)
+				return client.AwsV1alpha1().WafregionalSizeConstraintSets(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.WafregionalSizeConstraintSet{},
@@ -76,7 +77,7 @@ func NewFilteredWafregionalSizeConstraintSetInformer(client versioned.Interface,
 }
 
 func (f *wafregionalSizeConstraintSetInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredWafregionalSizeConstraintSetInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredWafregionalSizeConstraintSetInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *wafregionalSizeConstraintSetInformer) Informer() cache.SharedIndexInformer {

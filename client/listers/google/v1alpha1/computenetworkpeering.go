@@ -29,8 +29,8 @@ import (
 type ComputeNetworkPeeringLister interface {
 	// List lists all ComputeNetworkPeerings in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeNetworkPeering, err error)
-	// Get retrieves the ComputeNetworkPeering from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeNetworkPeering, error)
+	// ComputeNetworkPeerings returns an object that can list and get ComputeNetworkPeerings.
+	ComputeNetworkPeerings(namespace string) ComputeNetworkPeeringNamespaceLister
 	ComputeNetworkPeeringListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeNetworkPeeringLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the ComputeNetworkPeering from the index for a given name.
-func (s *computeNetworkPeeringLister) Get(name string) (*v1alpha1.ComputeNetworkPeering, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeNetworkPeerings returns an object that can list and get ComputeNetworkPeerings.
+func (s *computeNetworkPeeringLister) ComputeNetworkPeerings(namespace string) ComputeNetworkPeeringNamespaceLister {
+	return computeNetworkPeeringNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeNetworkPeeringNamespaceLister helps list and get ComputeNetworkPeerings.
+type ComputeNetworkPeeringNamespaceLister interface {
+	// List lists all ComputeNetworkPeerings in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeNetworkPeering, err error)
+	// Get retrieves the ComputeNetworkPeering from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeNetworkPeering, error)
+	ComputeNetworkPeeringNamespaceListerExpansion
+}
+
+// computeNetworkPeeringNamespaceLister implements the ComputeNetworkPeeringNamespaceLister
+// interface.
+type computeNetworkPeeringNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeNetworkPeerings in the indexer for a given namespace.
+func (s computeNetworkPeeringNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeNetworkPeering, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeNetworkPeering))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeNetworkPeering from the indexer for a given namespace and name.
+func (s computeNetworkPeeringNamespaceLister) Get(name string) (*v1alpha1.ComputeNetworkPeering, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

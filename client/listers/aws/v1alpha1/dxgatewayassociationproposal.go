@@ -29,8 +29,8 @@ import (
 type DxGatewayAssociationProposalLister interface {
 	// List lists all DxGatewayAssociationProposals in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DxGatewayAssociationProposal, err error)
-	// Get retrieves the DxGatewayAssociationProposal from the index for a given name.
-	Get(name string) (*v1alpha1.DxGatewayAssociationProposal, error)
+	// DxGatewayAssociationProposals returns an object that can list and get DxGatewayAssociationProposals.
+	DxGatewayAssociationProposals(namespace string) DxGatewayAssociationProposalNamespaceLister
 	DxGatewayAssociationProposalListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dxGatewayAssociationProposalLister) List(selector labels.Selector) (ret
 	return ret, err
 }
 
-// Get retrieves the DxGatewayAssociationProposal from the index for a given name.
-func (s *dxGatewayAssociationProposalLister) Get(name string) (*v1alpha1.DxGatewayAssociationProposal, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DxGatewayAssociationProposals returns an object that can list and get DxGatewayAssociationProposals.
+func (s *dxGatewayAssociationProposalLister) DxGatewayAssociationProposals(namespace string) DxGatewayAssociationProposalNamespaceLister {
+	return dxGatewayAssociationProposalNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DxGatewayAssociationProposalNamespaceLister helps list and get DxGatewayAssociationProposals.
+type DxGatewayAssociationProposalNamespaceLister interface {
+	// List lists all DxGatewayAssociationProposals in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DxGatewayAssociationProposal, err error)
+	// Get retrieves the DxGatewayAssociationProposal from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DxGatewayAssociationProposal, error)
+	DxGatewayAssociationProposalNamespaceListerExpansion
+}
+
+// dxGatewayAssociationProposalNamespaceLister implements the DxGatewayAssociationProposalNamespaceLister
+// interface.
+type dxGatewayAssociationProposalNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DxGatewayAssociationProposals in the indexer for a given namespace.
+func (s dxGatewayAssociationProposalNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DxGatewayAssociationProposal, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DxGatewayAssociationProposal))
+	})
+	return ret, err
+}
+
+// Get retrieves the DxGatewayAssociationProposal from the indexer for a given namespace and name.
+func (s dxGatewayAssociationProposalNamespaceLister) Get(name string) (*v1alpha1.DxGatewayAssociationProposal, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

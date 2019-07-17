@@ -31,6 +31,7 @@ import (
 // FakeNeptuneSubnetGroups implements NeptuneSubnetGroupInterface
 type FakeNeptuneSubnetGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var neptunesubnetgroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "neptunesubnetgroups"}
@@ -40,7 +41,8 @@ var neptunesubnetgroupsKind = schema.GroupVersionKind{Group: "aws.kubeform.com",
 // Get takes name of the neptuneSubnetGroup, and returns the corresponding neptuneSubnetGroup object, and an error if there is any.
 func (c *FakeNeptuneSubnetGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.NeptuneSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(neptunesubnetgroupsResource, name), &v1alpha1.NeptuneSubnetGroup{})
+		Invokes(testing.NewGetAction(neptunesubnetgroupsResource, c.ns, name), &v1alpha1.NeptuneSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeNeptuneSubnetGroups) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of NeptuneSubnetGroups that match those selectors.
 func (c *FakeNeptuneSubnetGroups) List(opts v1.ListOptions) (result *v1alpha1.NeptuneSubnetGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(neptunesubnetgroupsResource, neptunesubnetgroupsKind, opts), &v1alpha1.NeptuneSubnetGroupList{})
+		Invokes(testing.NewListAction(neptunesubnetgroupsResource, neptunesubnetgroupsKind, c.ns, opts), &v1alpha1.NeptuneSubnetGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeNeptuneSubnetGroups) List(opts v1.ListOptions) (result *v1alpha1.Ne
 // Watch returns a watch.Interface that watches the requested neptuneSubnetGroups.
 func (c *FakeNeptuneSubnetGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(neptunesubnetgroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(neptunesubnetgroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a neptuneSubnetGroup and creates it.  Returns the server's representation of the neptuneSubnetGroup, and an error, if there is any.
 func (c *FakeNeptuneSubnetGroups) Create(neptuneSubnetGroup *v1alpha1.NeptuneSubnetGroup) (result *v1alpha1.NeptuneSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(neptunesubnetgroupsResource, neptuneSubnetGroup), &v1alpha1.NeptuneSubnetGroup{})
+		Invokes(testing.NewCreateAction(neptunesubnetgroupsResource, c.ns, neptuneSubnetGroup), &v1alpha1.NeptuneSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeNeptuneSubnetGroups) Create(neptuneSubnetGroup *v1alpha1.NeptuneSub
 // Update takes the representation of a neptuneSubnetGroup and updates it. Returns the server's representation of the neptuneSubnetGroup, and an error, if there is any.
 func (c *FakeNeptuneSubnetGroups) Update(neptuneSubnetGroup *v1alpha1.NeptuneSubnetGroup) (result *v1alpha1.NeptuneSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(neptunesubnetgroupsResource, neptuneSubnetGroup), &v1alpha1.NeptuneSubnetGroup{})
+		Invokes(testing.NewUpdateAction(neptunesubnetgroupsResource, c.ns, neptuneSubnetGroup), &v1alpha1.NeptuneSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeNeptuneSubnetGroups) Update(neptuneSubnetGroup *v1alpha1.NeptuneSub
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNeptuneSubnetGroups) UpdateStatus(neptuneSubnetGroup *v1alpha1.NeptuneSubnetGroup) (*v1alpha1.NeptuneSubnetGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(neptunesubnetgroupsResource, "status", neptuneSubnetGroup), &v1alpha1.NeptuneSubnetGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(neptunesubnetgroupsResource, "status", c.ns, neptuneSubnetGroup), &v1alpha1.NeptuneSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeNeptuneSubnetGroups) UpdateStatus(neptuneSubnetGroup *v1alpha1.Nept
 // Delete takes name of the neptuneSubnetGroup and deletes it. Returns an error if one occurs.
 func (c *FakeNeptuneSubnetGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(neptunesubnetgroupsResource, name), &v1alpha1.NeptuneSubnetGroup{})
+		Invokes(testing.NewDeleteAction(neptunesubnetgroupsResource, c.ns, name), &v1alpha1.NeptuneSubnetGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNeptuneSubnetGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(neptunesubnetgroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(neptunesubnetgroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NeptuneSubnetGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeNeptuneSubnetGroups) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched neptuneSubnetGroup.
 func (c *FakeNeptuneSubnetGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NeptuneSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(neptunesubnetgroupsResource, name, pt, data, subresources...), &v1alpha1.NeptuneSubnetGroup{})
+		Invokes(testing.NewPatchSubresourceAction(neptunesubnetgroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.NeptuneSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

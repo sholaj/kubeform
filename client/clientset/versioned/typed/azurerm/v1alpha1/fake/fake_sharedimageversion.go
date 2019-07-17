@@ -31,6 +31,7 @@ import (
 // FakeSharedImageVersions implements SharedImageVersionInterface
 type FakeSharedImageVersions struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var sharedimageversionsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "sharedimageversions"}
@@ -40,7 +41,8 @@ var sharedimageversionsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.c
 // Get takes name of the sharedImageVersion, and returns the corresponding sharedImageVersion object, and an error if there is any.
 func (c *FakeSharedImageVersions) Get(name string, options v1.GetOptions) (result *v1alpha1.SharedImageVersion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sharedimageversionsResource, name), &v1alpha1.SharedImageVersion{})
+		Invokes(testing.NewGetAction(sharedimageversionsResource, c.ns, name), &v1alpha1.SharedImageVersion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSharedImageVersions) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of SharedImageVersions that match those selectors.
 func (c *FakeSharedImageVersions) List(opts v1.ListOptions) (result *v1alpha1.SharedImageVersionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sharedimageversionsResource, sharedimageversionsKind, opts), &v1alpha1.SharedImageVersionList{})
+		Invokes(testing.NewListAction(sharedimageversionsResource, sharedimageversionsKind, c.ns, opts), &v1alpha1.SharedImageVersionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSharedImageVersions) List(opts v1.ListOptions) (result *v1alpha1.Sh
 // Watch returns a watch.Interface that watches the requested sharedImageVersions.
 func (c *FakeSharedImageVersions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sharedimageversionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(sharedimageversionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sharedImageVersion and creates it.  Returns the server's representation of the sharedImageVersion, and an error, if there is any.
 func (c *FakeSharedImageVersions) Create(sharedImageVersion *v1alpha1.SharedImageVersion) (result *v1alpha1.SharedImageVersion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sharedimageversionsResource, sharedImageVersion), &v1alpha1.SharedImageVersion{})
+		Invokes(testing.NewCreateAction(sharedimageversionsResource, c.ns, sharedImageVersion), &v1alpha1.SharedImageVersion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSharedImageVersions) Create(sharedImageVersion *v1alpha1.SharedImag
 // Update takes the representation of a sharedImageVersion and updates it. Returns the server's representation of the sharedImageVersion, and an error, if there is any.
 func (c *FakeSharedImageVersions) Update(sharedImageVersion *v1alpha1.SharedImageVersion) (result *v1alpha1.SharedImageVersion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sharedimageversionsResource, sharedImageVersion), &v1alpha1.SharedImageVersion{})
+		Invokes(testing.NewUpdateAction(sharedimageversionsResource, c.ns, sharedImageVersion), &v1alpha1.SharedImageVersion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSharedImageVersions) Update(sharedImageVersion *v1alpha1.SharedImag
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSharedImageVersions) UpdateStatus(sharedImageVersion *v1alpha1.SharedImageVersion) (*v1alpha1.SharedImageVersion, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sharedimageversionsResource, "status", sharedImageVersion), &v1alpha1.SharedImageVersion{})
+		Invokes(testing.NewUpdateSubresourceAction(sharedimageversionsResource, "status", c.ns, sharedImageVersion), &v1alpha1.SharedImageVersion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSharedImageVersions) UpdateStatus(sharedImageVersion *v1alpha1.Shar
 // Delete takes name of the sharedImageVersion and deletes it. Returns an error if one occurs.
 func (c *FakeSharedImageVersions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sharedimageversionsResource, name), &v1alpha1.SharedImageVersion{})
+		Invokes(testing.NewDeleteAction(sharedimageversionsResource, c.ns, name), &v1alpha1.SharedImageVersion{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSharedImageVersions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sharedimageversionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sharedimageversionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SharedImageVersionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSharedImageVersions) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched sharedImageVersion.
 func (c *FakeSharedImageVersions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SharedImageVersion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sharedimageversionsResource, name, pt, data, subresources...), &v1alpha1.SharedImageVersion{})
+		Invokes(testing.NewPatchSubresourceAction(sharedimageversionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SharedImageVersion{})
+
 	if obj == nil {
 		return nil, err
 	}

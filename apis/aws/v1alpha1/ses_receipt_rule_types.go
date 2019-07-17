@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,88 +19,89 @@ type SesReceiptRule struct {
 }
 
 type SesReceiptRuleSpecAddHeaderAction struct {
-	HeaderName  string `json:"header_name"`
-	HeaderValue string `json:"header_value"`
-	Position    int    `json:"position"`
+	HeaderName  string `json:"headerName" tf:"header_name"`
+	HeaderValue string `json:"headerValue" tf:"header_value"`
+	Position    int    `json:"position" tf:"position"`
 }
 
 type SesReceiptRuleSpecBounceAction struct {
-	Message       string `json:"message"`
-	Position      int    `json:"position"`
-	Sender        string `json:"sender"`
-	SmtpReplyCode string `json:"smtp_reply_code"`
+	Message       string `json:"message" tf:"message"`
+	Position      int    `json:"position" tf:"position"`
+	Sender        string `json:"sender" tf:"sender"`
+	SmtpReplyCode string `json:"smtpReplyCode" tf:"smtp_reply_code"`
 	// +optional
-	StatusCode string `json:"status_code,omitempty"`
+	StatusCode string `json:"statusCode,omitempty" tf:"status_code,omitempty"`
 	// +optional
-	TopicArn string `json:"topic_arn,omitempty"`
+	TopicArn string `json:"topicArn,omitempty" tf:"topic_arn,omitempty"`
 }
 
 type SesReceiptRuleSpecLambdaAction struct {
-	FunctionArn string `json:"function_arn"`
-	Position    int    `json:"position"`
+	FunctionArn string `json:"functionArn" tf:"function_arn"`
+	Position    int    `json:"position" tf:"position"`
 	// +optional
-	TopicArn string `json:"topic_arn,omitempty"`
+	TopicArn string `json:"topicArn,omitempty" tf:"topic_arn,omitempty"`
 }
 
 type SesReceiptRuleSpecS3Action struct {
-	BucketName string `json:"bucket_name"`
+	BucketName string `json:"bucketName" tf:"bucket_name"`
 	// +optional
-	KmsKeyArn string `json:"kms_key_arn,omitempty"`
+	KmsKeyArn string `json:"kmsKeyArn,omitempty" tf:"kms_key_arn,omitempty"`
 	// +optional
-	ObjectKeyPrefix string `json:"object_key_prefix,omitempty"`
-	Position        int    `json:"position"`
+	ObjectKeyPrefix string `json:"objectKeyPrefix,omitempty" tf:"object_key_prefix,omitempty"`
+	Position        int    `json:"position" tf:"position"`
 	// +optional
-	TopicArn string `json:"topic_arn,omitempty"`
+	TopicArn string `json:"topicArn,omitempty" tf:"topic_arn,omitempty"`
 }
 
 type SesReceiptRuleSpecSnsAction struct {
-	Position int    `json:"position"`
-	TopicArn string `json:"topic_arn"`
+	Position int    `json:"position" tf:"position"`
+	TopicArn string `json:"topicArn" tf:"topic_arn"`
 }
 
 type SesReceiptRuleSpecStopAction struct {
-	Position int    `json:"position"`
-	Scope    string `json:"scope"`
+	Position int    `json:"position" tf:"position"`
+	Scope    string `json:"scope" tf:"scope"`
 	// +optional
-	TopicArn string `json:"topic_arn,omitempty"`
+	TopicArn string `json:"topicArn,omitempty" tf:"topic_arn,omitempty"`
 }
 
 type SesReceiptRuleSpecWorkmailAction struct {
-	OrganizationArn string `json:"organization_arn"`
-	Position        int    `json:"position"`
+	OrganizationArn string `json:"organizationArn" tf:"organization_arn"`
+	Position        int    `json:"position" tf:"position"`
 	// +optional
-	TopicArn string `json:"topic_arn,omitempty"`
+	TopicArn string `json:"topicArn,omitempty" tf:"topic_arn,omitempty"`
 }
 
 type SesReceiptRuleSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	AddHeaderAction *[]SesReceiptRuleSpec `json:"add_header_action,omitempty"`
+	AddHeaderAction []SesReceiptRuleSpecAddHeaderAction `json:"addHeaderAction,omitempty" tf:"add_header_action,omitempty"`
 	// +optional
-	After string `json:"after,omitempty"`
-	// +optional
-	// +kubebuilder:validation:UniqueItems=true
-	BounceAction *[]SesReceiptRuleSpec `json:"bounce_action,omitempty"`
+	After string `json:"after,omitempty" tf:"after,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	LambdaAction *[]SesReceiptRuleSpec `json:"lambda_action,omitempty"`
-	Name         string                `json:"name"`
+	BounceAction []SesReceiptRuleSpecBounceAction `json:"bounceAction,omitempty" tf:"bounce_action,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Recipients  []string `json:"recipients,omitempty"`
-	RuleSetName string   `json:"rule_set_name"`
+	LambdaAction []SesReceiptRuleSpecLambdaAction `json:"lambdaAction,omitempty" tf:"lambda_action,omitempty"`
+	Name         string                           `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	S3Action *[]SesReceiptRuleSpec `json:"s3_action,omitempty"`
+	Recipients  []string `json:"recipients,omitempty" tf:"recipients,omitempty"`
+	RuleSetName string   `json:"ruleSetName" tf:"rule_set_name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SnsAction *[]SesReceiptRuleSpec `json:"sns_action,omitempty"`
+	S3Action []SesReceiptRuleSpecS3Action `json:"s3Action,omitempty" tf:"s3_action,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	StopAction *[]SesReceiptRuleSpec `json:"stop_action,omitempty"`
+	SnsAction []SesReceiptRuleSpecSnsAction `json:"snsAction,omitempty" tf:"sns_action,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	WorkmailAction *[]SesReceiptRuleSpec `json:"workmail_action,omitempty"`
+	StopAction []SesReceiptRuleSpecStopAction `json:"stopAction,omitempty" tf:"stop_action,omitempty"`
+	// +optional
+	// +kubebuilder:validation:UniqueItems=true
+	WorkmailAction []SesReceiptRuleSpecWorkmailAction `json:"workmailAction,omitempty" tf:"workmail_action,omitempty"`
+	ProviderRef    core.LocalObjectReference          `json:"providerRef" tf:"-"`
 }
 
 type SesReceiptRuleStatus struct {
@@ -108,7 +109,9 @@ type SesReceiptRuleStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

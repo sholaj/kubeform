@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,19 +19,20 @@ type WafregionalRateBasedRule struct {
 }
 
 type WafregionalRateBasedRuleSpecPredicate struct {
-	DataId  string `json:"data_id"`
-	Negated bool   `json:"negated"`
-	Type    string `json:"type"`
+	DataID  string `json:"dataID" tf:"data_id"`
+	Negated bool   `json:"negated" tf:"negated"`
+	Type    string `json:"type" tf:"type"`
 }
 
 type WafregionalRateBasedRuleSpec struct {
-	MetricName string `json:"metric_name"`
-	Name       string `json:"name"`
+	MetricName string `json:"metricName" tf:"metric_name"`
+	Name       string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Predicate *[]WafregionalRateBasedRuleSpec `json:"predicate,omitempty"`
-	RateKey   string                          `json:"rate_key"`
-	RateLimit int                             `json:"rate_limit"`
+	Predicate   []WafregionalRateBasedRuleSpecPredicate `json:"predicate,omitempty" tf:"predicate,omitempty"`
+	RateKey     string                                  `json:"rateKey" tf:"rate_key"`
+	RateLimit   int                                     `json:"rateLimit" tf:"rate_limit"`
+	ProviderRef core.LocalObjectReference               `json:"providerRef" tf:"-"`
 }
 
 type WafregionalRateBasedRuleStatus struct {
@@ -39,7 +40,9 @@ type WafregionalRateBasedRuleStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

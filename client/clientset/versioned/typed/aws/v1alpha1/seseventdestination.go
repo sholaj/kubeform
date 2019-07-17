@@ -32,7 +32,7 @@ import (
 // SesEventDestinationsGetter has a method to return a SesEventDestinationInterface.
 // A group's client should implement this interface.
 type SesEventDestinationsGetter interface {
-	SesEventDestinations() SesEventDestinationInterface
+	SesEventDestinations(namespace string) SesEventDestinationInterface
 }
 
 // SesEventDestinationInterface has methods to work with SesEventDestination resources.
@@ -52,12 +52,14 @@ type SesEventDestinationInterface interface {
 // sesEventDestinations implements SesEventDestinationInterface
 type sesEventDestinations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSesEventDestinations returns a SesEventDestinations
-func newSesEventDestinations(c *AwsV1alpha1Client) *sesEventDestinations {
+func newSesEventDestinations(c *AwsV1alpha1Client, namespace string) *sesEventDestinations {
 	return &sesEventDestinations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSesEventDestinations(c *AwsV1alpha1Client) *sesEventDestinations {
 func (c *sesEventDestinations) Get(name string, options v1.GetOptions) (result *v1alpha1.SesEventDestination, err error) {
 	result = &v1alpha1.SesEventDestination{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("seseventdestinations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sesEventDestinations) List(opts v1.ListOptions) (result *v1alpha1.SesEv
 	}
 	result = &v1alpha1.SesEventDestinationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("seseventdestinations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sesEventDestinations) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("seseventdestinations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sesEventDestinations) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *sesEventDestinations) Create(sesEventDestination *v1alpha1.SesEventDestination) (result *v1alpha1.SesEventDestination, err error) {
 	result = &v1alpha1.SesEventDestination{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("seseventdestinations").
 		Body(sesEventDestination).
 		Do().
@@ -118,6 +124,7 @@ func (c *sesEventDestinations) Create(sesEventDestination *v1alpha1.SesEventDest
 func (c *sesEventDestinations) Update(sesEventDestination *v1alpha1.SesEventDestination) (result *v1alpha1.SesEventDestination, err error) {
 	result = &v1alpha1.SesEventDestination{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("seseventdestinations").
 		Name(sesEventDestination.Name).
 		Body(sesEventDestination).
@@ -132,6 +139,7 @@ func (c *sesEventDestinations) Update(sesEventDestination *v1alpha1.SesEventDest
 func (c *sesEventDestinations) UpdateStatus(sesEventDestination *v1alpha1.SesEventDestination) (result *v1alpha1.SesEventDestination, err error) {
 	result = &v1alpha1.SesEventDestination{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("seseventdestinations").
 		Name(sesEventDestination.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sesEventDestinations) UpdateStatus(sesEventDestination *v1alpha1.SesEve
 // Delete takes name of the sesEventDestination and deletes it. Returns an error if one occurs.
 func (c *sesEventDestinations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("seseventdestinations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sesEventDestinations) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("seseventdestinations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sesEventDestinations) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *sesEventDestinations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesEventDestination, err error) {
 	result = &v1alpha1.SesEventDestination{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("seseventdestinations").
 		SubResource(subresources...).
 		Name(name).

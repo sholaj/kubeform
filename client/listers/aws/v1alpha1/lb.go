@@ -29,8 +29,8 @@ import (
 type LbLister interface {
 	// List lists all Lbs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Lb, err error)
-	// Get retrieves the Lb from the index for a given name.
-	Get(name string) (*v1alpha1.Lb, error)
+	// Lbs returns an object that can list and get Lbs.
+	Lbs(namespace string) LbNamespaceLister
 	LbListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *lbLister) List(selector labels.Selector) (ret []*v1alpha1.Lb, err error
 	return ret, err
 }
 
-// Get retrieves the Lb from the index for a given name.
-func (s *lbLister) Get(name string) (*v1alpha1.Lb, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Lbs returns an object that can list and get Lbs.
+func (s *lbLister) Lbs(namespace string) LbNamespaceLister {
+	return lbNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LbNamespaceLister helps list and get Lbs.
+type LbNamespaceLister interface {
+	// List lists all Lbs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Lb, err error)
+	// Get retrieves the Lb from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Lb, error)
+	LbNamespaceListerExpansion
+}
+
+// lbNamespaceLister implements the LbNamespaceLister
+// interface.
+type lbNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Lbs in the indexer for a given namespace.
+func (s lbNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Lb, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Lb))
+	})
+	return ret, err
+}
+
+// Get retrieves the Lb from the indexer for a given namespace and name.
+func (s lbNamespaceLister) Get(name string) (*v1alpha1.Lb, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

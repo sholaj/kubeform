@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -21,17 +21,18 @@ type CurReportDefinition struct {
 type CurReportDefinitionSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	AdditionalArtifacts []string `json:"additional_artifacts,omitempty"`
+	AdditionalArtifacts []string `json:"additionalArtifacts,omitempty" tf:"additional_artifacts,omitempty"`
 	// +kubebuilder:validation:UniqueItems=true
-	AdditionalSchemaElements []string `json:"additional_schema_elements"`
-	Compression              string   `json:"compression"`
-	Format                   string   `json:"format"`
-	ReportName               string   `json:"report_name"`
-	S3Bucket                 string   `json:"s3_bucket"`
+	AdditionalSchemaElements []string `json:"additionalSchemaElements" tf:"additional_schema_elements"`
+	Compression              string   `json:"compression" tf:"compression"`
+	Format                   string   `json:"format" tf:"format"`
+	ReportName               string   `json:"reportName" tf:"report_name"`
+	S3Bucket                 string   `json:"s3Bucket" tf:"s3_bucket"`
 	// +optional
-	S3Prefix string `json:"s3_prefix,omitempty"`
-	S3Region string `json:"s3_region"`
-	TimeUnit string `json:"time_unit"`
+	S3Prefix    string                    `json:"s3Prefix,omitempty" tf:"s3_prefix,omitempty"`
+	S3Region    string                    `json:"s3Region" tf:"s3_region"`
+	TimeUnit    string                    `json:"timeUnit" tf:"time_unit"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type CurReportDefinitionStatus struct {
@@ -39,7 +40,9 @@ type CurReportDefinitionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

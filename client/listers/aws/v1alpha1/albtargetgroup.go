@@ -29,8 +29,8 @@ import (
 type AlbTargetGroupLister interface {
 	// List lists all AlbTargetGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AlbTargetGroup, err error)
-	// Get retrieves the AlbTargetGroup from the index for a given name.
-	Get(name string) (*v1alpha1.AlbTargetGroup, error)
+	// AlbTargetGroups returns an object that can list and get AlbTargetGroups.
+	AlbTargetGroups(namespace string) AlbTargetGroupNamespaceLister
 	AlbTargetGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *albTargetGroupLister) List(selector labels.Selector) (ret []*v1alpha1.A
 	return ret, err
 }
 
-// Get retrieves the AlbTargetGroup from the index for a given name.
-func (s *albTargetGroupLister) Get(name string) (*v1alpha1.AlbTargetGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AlbTargetGroups returns an object that can list and get AlbTargetGroups.
+func (s *albTargetGroupLister) AlbTargetGroups(namespace string) AlbTargetGroupNamespaceLister {
+	return albTargetGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AlbTargetGroupNamespaceLister helps list and get AlbTargetGroups.
+type AlbTargetGroupNamespaceLister interface {
+	// List lists all AlbTargetGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AlbTargetGroup, err error)
+	// Get retrieves the AlbTargetGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AlbTargetGroup, error)
+	AlbTargetGroupNamespaceListerExpansion
+}
+
+// albTargetGroupNamespaceLister implements the AlbTargetGroupNamespaceLister
+// interface.
+type albTargetGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AlbTargetGroups in the indexer for a given namespace.
+func (s albTargetGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AlbTargetGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AlbTargetGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the AlbTargetGroup from the indexer for a given namespace and name.
+func (s albTargetGroupNamespaceLister) Get(name string) (*v1alpha1.AlbTargetGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

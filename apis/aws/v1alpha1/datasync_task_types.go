@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,37 +20,38 @@ type DatasyncTask struct {
 
 type DatasyncTaskSpecOptions struct {
 	// +optional
-	Atime string `json:"atime,omitempty"`
+	Atime string `json:"atime,omitempty" tf:"atime,omitempty"`
 	// +optional
-	BytesPerSecond int `json:"bytes_per_second,omitempty"`
+	BytesPerSecond int `json:"bytesPerSecond,omitempty" tf:"bytes_per_second,omitempty"`
 	// +optional
-	Gid string `json:"gid,omitempty"`
+	Gid string `json:"gid,omitempty" tf:"gid,omitempty"`
 	// +optional
-	Mtime string `json:"mtime,omitempty"`
+	Mtime string `json:"mtime,omitempty" tf:"mtime,omitempty"`
 	// +optional
-	PosixPermissions string `json:"posix_permissions,omitempty"`
+	PosixPermissions string `json:"posixPermissions,omitempty" tf:"posix_permissions,omitempty"`
 	// +optional
-	PreserveDeletedFiles string `json:"preserve_deleted_files,omitempty"`
+	PreserveDeletedFiles string `json:"preserveDeletedFiles,omitempty" tf:"preserve_deleted_files,omitempty"`
 	// +optional
-	PreserveDevices string `json:"preserve_devices,omitempty"`
+	PreserveDevices string `json:"preserveDevices,omitempty" tf:"preserve_devices,omitempty"`
 	// +optional
-	Uid string `json:"uid,omitempty"`
+	Uid string `json:"uid,omitempty" tf:"uid,omitempty"`
 	// +optional
-	VerifyMode string `json:"verify_mode,omitempty"`
+	VerifyMode string `json:"verifyMode,omitempty" tf:"verify_mode,omitempty"`
 }
 
 type DatasyncTaskSpec struct {
 	// +optional
-	CloudwatchLogGroupArn  string `json:"cloudwatch_log_group_arn,omitempty"`
-	DestinationLocationArn string `json:"destination_location_arn"`
+	CloudwatchLogGroupArn  string `json:"cloudwatchLogGroupArn,omitempty" tf:"cloudwatch_log_group_arn,omitempty"`
+	DestinationLocationArn string `json:"destinationLocationArn" tf:"destination_location_arn"`
 	// +optional
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" tf:"name,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Options           *[]DatasyncTaskSpec `json:"options,omitempty"`
-	SourceLocationArn string              `json:"source_location_arn"`
+	Options           []DatasyncTaskSpecOptions `json:"options,omitempty" tf:"options,omitempty"`
+	SourceLocationArn string                    `json:"sourceLocationArn" tf:"source_location_arn"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DatasyncTaskStatus struct {
@@ -58,7 +59,9 @@ type DatasyncTaskStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

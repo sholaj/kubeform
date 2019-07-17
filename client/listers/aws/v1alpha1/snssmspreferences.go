@@ -29,8 +29,8 @@ import (
 type SnsSmsPreferencesLister interface {
 	// List lists all SnsSmsPreferenceses in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SnsSmsPreferences, err error)
-	// Get retrieves the SnsSmsPreferences from the index for a given name.
-	Get(name string) (*v1alpha1.SnsSmsPreferences, error)
+	// SnsSmsPreferenceses returns an object that can list and get SnsSmsPreferenceses.
+	SnsSmsPreferenceses(namespace string) SnsSmsPreferencesNamespaceLister
 	SnsSmsPreferencesListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *snsSmsPreferencesLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the SnsSmsPreferences from the index for a given name.
-func (s *snsSmsPreferencesLister) Get(name string) (*v1alpha1.SnsSmsPreferences, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SnsSmsPreferenceses returns an object that can list and get SnsSmsPreferenceses.
+func (s *snsSmsPreferencesLister) SnsSmsPreferenceses(namespace string) SnsSmsPreferencesNamespaceLister {
+	return snsSmsPreferencesNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SnsSmsPreferencesNamespaceLister helps list and get SnsSmsPreferenceses.
+type SnsSmsPreferencesNamespaceLister interface {
+	// List lists all SnsSmsPreferenceses in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SnsSmsPreferences, err error)
+	// Get retrieves the SnsSmsPreferences from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SnsSmsPreferences, error)
+	SnsSmsPreferencesNamespaceListerExpansion
+}
+
+// snsSmsPreferencesNamespaceLister implements the SnsSmsPreferencesNamespaceLister
+// interface.
+type snsSmsPreferencesNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SnsSmsPreferenceses in the indexer for a given namespace.
+func (s snsSmsPreferencesNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SnsSmsPreferences, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SnsSmsPreferences))
+	})
+	return ret, err
+}
+
+// Get retrieves the SnsSmsPreferences from the indexer for a given namespace and name.
+func (s snsSmsPreferencesNamespaceLister) Get(name string) (*v1alpha1.SnsSmsPreferences, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

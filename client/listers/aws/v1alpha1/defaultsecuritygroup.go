@@ -29,8 +29,8 @@ import (
 type DefaultSecurityGroupLister interface {
 	// List lists all DefaultSecurityGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DefaultSecurityGroup, err error)
-	// Get retrieves the DefaultSecurityGroup from the index for a given name.
-	Get(name string) (*v1alpha1.DefaultSecurityGroup, error)
+	// DefaultSecurityGroups returns an object that can list and get DefaultSecurityGroups.
+	DefaultSecurityGroups(namespace string) DefaultSecurityGroupNamespaceLister
 	DefaultSecurityGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *defaultSecurityGroupLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the DefaultSecurityGroup from the index for a given name.
-func (s *defaultSecurityGroupLister) Get(name string) (*v1alpha1.DefaultSecurityGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DefaultSecurityGroups returns an object that can list and get DefaultSecurityGroups.
+func (s *defaultSecurityGroupLister) DefaultSecurityGroups(namespace string) DefaultSecurityGroupNamespaceLister {
+	return defaultSecurityGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DefaultSecurityGroupNamespaceLister helps list and get DefaultSecurityGroups.
+type DefaultSecurityGroupNamespaceLister interface {
+	// List lists all DefaultSecurityGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DefaultSecurityGroup, err error)
+	// Get retrieves the DefaultSecurityGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DefaultSecurityGroup, error)
+	DefaultSecurityGroupNamespaceListerExpansion
+}
+
+// defaultSecurityGroupNamespaceLister implements the DefaultSecurityGroupNamespaceLister
+// interface.
+type defaultSecurityGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DefaultSecurityGroups in the indexer for a given namespace.
+func (s defaultSecurityGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DefaultSecurityGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DefaultSecurityGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the DefaultSecurityGroup from the indexer for a given namespace and name.
+func (s defaultSecurityGroupNamespaceLister) Get(name string) (*v1alpha1.DefaultSecurityGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

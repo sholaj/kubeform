@@ -32,7 +32,7 @@ import (
 // StorageAccountsGetter has a method to return a StorageAccountInterface.
 // A group's client should implement this interface.
 type StorageAccountsGetter interface {
-	StorageAccounts() StorageAccountInterface
+	StorageAccounts(namespace string) StorageAccountInterface
 }
 
 // StorageAccountInterface has methods to work with StorageAccount resources.
@@ -52,12 +52,14 @@ type StorageAccountInterface interface {
 // storageAccounts implements StorageAccountInterface
 type storageAccounts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStorageAccounts returns a StorageAccounts
-func newStorageAccounts(c *AzurermV1alpha1Client) *storageAccounts {
+func newStorageAccounts(c *AzurermV1alpha1Client, namespace string) *storageAccounts {
 	return &storageAccounts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStorageAccounts(c *AzurermV1alpha1Client) *storageAccounts {
 func (c *storageAccounts) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageAccount, err error) {
 	result = &v1alpha1.StorageAccount{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storageaccounts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *storageAccounts) List(opts v1.ListOptions) (result *v1alpha1.StorageAcc
 	}
 	result = &v1alpha1.StorageAccountList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storageaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *storageAccounts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storageaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *storageAccounts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *storageAccounts) Create(storageAccount *v1alpha1.StorageAccount) (result *v1alpha1.StorageAccount, err error) {
 	result = &v1alpha1.StorageAccount{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storageaccounts").
 		Body(storageAccount).
 		Do().
@@ -118,6 +124,7 @@ func (c *storageAccounts) Create(storageAccount *v1alpha1.StorageAccount) (resul
 func (c *storageAccounts) Update(storageAccount *v1alpha1.StorageAccount) (result *v1alpha1.StorageAccount, err error) {
 	result = &v1alpha1.StorageAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storageaccounts").
 		Name(storageAccount.Name).
 		Body(storageAccount).
@@ -132,6 +139,7 @@ func (c *storageAccounts) Update(storageAccount *v1alpha1.StorageAccount) (resul
 func (c *storageAccounts) UpdateStatus(storageAccount *v1alpha1.StorageAccount) (result *v1alpha1.StorageAccount, err error) {
 	result = &v1alpha1.StorageAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storageaccounts").
 		Name(storageAccount.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *storageAccounts) UpdateStatus(storageAccount *v1alpha1.StorageAccount) 
 // Delete takes name of the storageAccount and deletes it. Returns an error if one occurs.
 func (c *storageAccounts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storageaccounts").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *storageAccounts) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storageaccounts").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *storageAccounts) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *storageAccounts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageAccount, err error) {
 	result = &v1alpha1.StorageAccount{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storageaccounts").
 		SubResource(subresources...).
 		Name(name).

@@ -31,6 +31,7 @@ import (
 // FakeS3BucketInventories implements S3BucketInventoryInterface
 type FakeS3BucketInventories struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var s3bucketinventoriesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "s3bucketinventories"}
@@ -40,7 +41,8 @@ var s3bucketinventoriesKind = schema.GroupVersionKind{Group: "aws.kubeform.com",
 // Get takes name of the s3BucketInventory, and returns the corresponding s3BucketInventory object, and an error if there is any.
 func (c *FakeS3BucketInventories) Get(name string, options v1.GetOptions) (result *v1alpha1.S3BucketInventory, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(s3bucketinventoriesResource, name), &v1alpha1.S3BucketInventory{})
+		Invokes(testing.NewGetAction(s3bucketinventoriesResource, c.ns, name), &v1alpha1.S3BucketInventory{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeS3BucketInventories) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of S3BucketInventories that match those selectors.
 func (c *FakeS3BucketInventories) List(opts v1.ListOptions) (result *v1alpha1.S3BucketInventoryList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(s3bucketinventoriesResource, s3bucketinventoriesKind, opts), &v1alpha1.S3BucketInventoryList{})
+		Invokes(testing.NewListAction(s3bucketinventoriesResource, s3bucketinventoriesKind, c.ns, opts), &v1alpha1.S3BucketInventoryList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeS3BucketInventories) List(opts v1.ListOptions) (result *v1alpha1.S3
 // Watch returns a watch.Interface that watches the requested s3BucketInventories.
 func (c *FakeS3BucketInventories) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(s3bucketinventoriesResource, opts))
+		InvokesWatch(testing.NewWatchAction(s3bucketinventoriesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a s3BucketInventory and creates it.  Returns the server's representation of the s3BucketInventory, and an error, if there is any.
 func (c *FakeS3BucketInventories) Create(s3BucketInventory *v1alpha1.S3BucketInventory) (result *v1alpha1.S3BucketInventory, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(s3bucketinventoriesResource, s3BucketInventory), &v1alpha1.S3BucketInventory{})
+		Invokes(testing.NewCreateAction(s3bucketinventoriesResource, c.ns, s3BucketInventory), &v1alpha1.S3BucketInventory{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeS3BucketInventories) Create(s3BucketInventory *v1alpha1.S3BucketInv
 // Update takes the representation of a s3BucketInventory and updates it. Returns the server's representation of the s3BucketInventory, and an error, if there is any.
 func (c *FakeS3BucketInventories) Update(s3BucketInventory *v1alpha1.S3BucketInventory) (result *v1alpha1.S3BucketInventory, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(s3bucketinventoriesResource, s3BucketInventory), &v1alpha1.S3BucketInventory{})
+		Invokes(testing.NewUpdateAction(s3bucketinventoriesResource, c.ns, s3BucketInventory), &v1alpha1.S3BucketInventory{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeS3BucketInventories) Update(s3BucketInventory *v1alpha1.S3BucketInv
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeS3BucketInventories) UpdateStatus(s3BucketInventory *v1alpha1.S3BucketInventory) (*v1alpha1.S3BucketInventory, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(s3bucketinventoriesResource, "status", s3BucketInventory), &v1alpha1.S3BucketInventory{})
+		Invokes(testing.NewUpdateSubresourceAction(s3bucketinventoriesResource, "status", c.ns, s3BucketInventory), &v1alpha1.S3BucketInventory{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeS3BucketInventories) UpdateStatus(s3BucketInventory *v1alpha1.S3Buc
 // Delete takes name of the s3BucketInventory and deletes it. Returns an error if one occurs.
 func (c *FakeS3BucketInventories) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(s3bucketinventoriesResource, name), &v1alpha1.S3BucketInventory{})
+		Invokes(testing.NewDeleteAction(s3bucketinventoriesResource, c.ns, name), &v1alpha1.S3BucketInventory{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeS3BucketInventories) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(s3bucketinventoriesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(s3bucketinventoriesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.S3BucketInventoryList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeS3BucketInventories) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched s3BucketInventory.
 func (c *FakeS3BucketInventories) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.S3BucketInventory, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(s3bucketinventoriesResource, name, pt, data, subresources...), &v1alpha1.S3BucketInventory{})
+		Invokes(testing.NewPatchSubresourceAction(s3bucketinventoriesResource, c.ns, name, pt, data, subresources...), &v1alpha1.S3BucketInventory{})
+
 	if obj == nil {
 		return nil, err
 	}

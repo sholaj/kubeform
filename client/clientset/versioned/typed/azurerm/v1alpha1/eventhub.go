@@ -32,7 +32,7 @@ import (
 // EventhubsGetter has a method to return a EventhubInterface.
 // A group's client should implement this interface.
 type EventhubsGetter interface {
-	Eventhubs() EventhubInterface
+	Eventhubs(namespace string) EventhubInterface
 }
 
 // EventhubInterface has methods to work with Eventhub resources.
@@ -52,12 +52,14 @@ type EventhubInterface interface {
 // eventhubs implements EventhubInterface
 type eventhubs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEventhubs returns a Eventhubs
-func newEventhubs(c *AzurermV1alpha1Client) *eventhubs {
+func newEventhubs(c *AzurermV1alpha1Client, namespace string) *eventhubs {
 	return &eventhubs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEventhubs(c *AzurermV1alpha1Client) *eventhubs {
 func (c *eventhubs) Get(name string, options v1.GetOptions) (result *v1alpha1.Eventhub, err error) {
 	result = &v1alpha1.Eventhub{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eventhubs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *eventhubs) List(opts v1.ListOptions) (result *v1alpha1.EventhubList, er
 	}
 	result = &v1alpha1.EventhubList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eventhubs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *eventhubs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("eventhubs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *eventhubs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *eventhubs) Create(eventhub *v1alpha1.Eventhub) (result *v1alpha1.Eventhub, err error) {
 	result = &v1alpha1.Eventhub{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("eventhubs").
 		Body(eventhub).
 		Do().
@@ -118,6 +124,7 @@ func (c *eventhubs) Create(eventhub *v1alpha1.Eventhub) (result *v1alpha1.Eventh
 func (c *eventhubs) Update(eventhub *v1alpha1.Eventhub) (result *v1alpha1.Eventhub, err error) {
 	result = &v1alpha1.Eventhub{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eventhubs").
 		Name(eventhub.Name).
 		Body(eventhub).
@@ -132,6 +139,7 @@ func (c *eventhubs) Update(eventhub *v1alpha1.Eventhub) (result *v1alpha1.Eventh
 func (c *eventhubs) UpdateStatus(eventhub *v1alpha1.Eventhub) (result *v1alpha1.Eventhub, err error) {
 	result = &v1alpha1.Eventhub{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eventhubs").
 		Name(eventhub.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *eventhubs) UpdateStatus(eventhub *v1alpha1.Eventhub) (result *v1alpha1.
 // Delete takes name of the eventhub and deletes it. Returns an error if one occurs.
 func (c *eventhubs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eventhubs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *eventhubs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eventhubs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *eventhubs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 func (c *eventhubs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Eventhub, err error) {
 	result = &v1alpha1.Eventhub{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("eventhubs").
 		SubResource(subresources...).
 		Name(name).

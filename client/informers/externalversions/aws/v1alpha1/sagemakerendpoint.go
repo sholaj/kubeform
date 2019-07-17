@@ -41,32 +41,33 @@ type SagemakerEndpointInformer interface {
 type sagemakerEndpointInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSagemakerEndpointInformer constructs a new informer for SagemakerEndpoint type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSagemakerEndpointInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSagemakerEndpointInformer(client, resyncPeriod, indexers, nil)
+func NewSagemakerEndpointInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSagemakerEndpointInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSagemakerEndpointInformer constructs a new informer for SagemakerEndpoint type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSagemakerEndpointInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSagemakerEndpointInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SagemakerEndpoints().List(options)
+				return client.AwsV1alpha1().SagemakerEndpoints(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SagemakerEndpoints().Watch(options)
+				return client.AwsV1alpha1().SagemakerEndpoints(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.SagemakerEndpoint{},
@@ -76,7 +77,7 @@ func NewFilteredSagemakerEndpointInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *sagemakerEndpointInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSagemakerEndpointInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSagemakerEndpointInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *sagemakerEndpointInformer) Informer() cache.SharedIndexInformer {

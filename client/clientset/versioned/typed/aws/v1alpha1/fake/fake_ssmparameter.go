@@ -31,6 +31,7 @@ import (
 // FakeSsmParameters implements SsmParameterInterface
 type FakeSsmParameters struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ssmparametersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ssmparameters"}
@@ -40,7 +41,8 @@ var ssmparametersKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Versi
 // Get takes name of the ssmParameter, and returns the corresponding ssmParameter object, and an error if there is any.
 func (c *FakeSsmParameters) Get(name string, options v1.GetOptions) (result *v1alpha1.SsmParameter, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ssmparametersResource, name), &v1alpha1.SsmParameter{})
+		Invokes(testing.NewGetAction(ssmparametersResource, c.ns, name), &v1alpha1.SsmParameter{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSsmParameters) Get(name string, options v1.GetOptions) (result *v1a
 // List takes label and field selectors, and returns the list of SsmParameters that match those selectors.
 func (c *FakeSsmParameters) List(opts v1.ListOptions) (result *v1alpha1.SsmParameterList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ssmparametersResource, ssmparametersKind, opts), &v1alpha1.SsmParameterList{})
+		Invokes(testing.NewListAction(ssmparametersResource, ssmparametersKind, c.ns, opts), &v1alpha1.SsmParameterList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSsmParameters) List(opts v1.ListOptions) (result *v1alpha1.SsmParam
 // Watch returns a watch.Interface that watches the requested ssmParameters.
 func (c *FakeSsmParameters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ssmparametersResource, opts))
+		InvokesWatch(testing.NewWatchAction(ssmparametersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ssmParameter and creates it.  Returns the server's representation of the ssmParameter, and an error, if there is any.
 func (c *FakeSsmParameters) Create(ssmParameter *v1alpha1.SsmParameter) (result *v1alpha1.SsmParameter, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ssmparametersResource, ssmParameter), &v1alpha1.SsmParameter{})
+		Invokes(testing.NewCreateAction(ssmparametersResource, c.ns, ssmParameter), &v1alpha1.SsmParameter{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSsmParameters) Create(ssmParameter *v1alpha1.SsmParameter) (result 
 // Update takes the representation of a ssmParameter and updates it. Returns the server's representation of the ssmParameter, and an error, if there is any.
 func (c *FakeSsmParameters) Update(ssmParameter *v1alpha1.SsmParameter) (result *v1alpha1.SsmParameter, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ssmparametersResource, ssmParameter), &v1alpha1.SsmParameter{})
+		Invokes(testing.NewUpdateAction(ssmparametersResource, c.ns, ssmParameter), &v1alpha1.SsmParameter{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSsmParameters) Update(ssmParameter *v1alpha1.SsmParameter) (result 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSsmParameters) UpdateStatus(ssmParameter *v1alpha1.SsmParameter) (*v1alpha1.SsmParameter, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ssmparametersResource, "status", ssmParameter), &v1alpha1.SsmParameter{})
+		Invokes(testing.NewUpdateSubresourceAction(ssmparametersResource, "status", c.ns, ssmParameter), &v1alpha1.SsmParameter{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSsmParameters) UpdateStatus(ssmParameter *v1alpha1.SsmParameter) (*
 // Delete takes name of the ssmParameter and deletes it. Returns an error if one occurs.
 func (c *FakeSsmParameters) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ssmparametersResource, name), &v1alpha1.SsmParameter{})
+		Invokes(testing.NewDeleteAction(ssmparametersResource, c.ns, name), &v1alpha1.SsmParameter{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSsmParameters) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ssmparametersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ssmparametersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SsmParameterList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSsmParameters) DeleteCollection(options *v1.DeleteOptions, listOpti
 // Patch applies the patch and returns the patched ssmParameter.
 func (c *FakeSsmParameters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SsmParameter, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ssmparametersResource, name, pt, data, subresources...), &v1alpha1.SsmParameter{})
+		Invokes(testing.NewPatchSubresourceAction(ssmparametersResource, c.ns, name, pt, data, subresources...), &v1alpha1.SsmParameter{})
+
 	if obj == nil {
 		return nil, err
 	}

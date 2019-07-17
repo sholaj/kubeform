@@ -32,7 +32,7 @@ import (
 // VolumeSnapshotsGetter has a method to return a VolumeSnapshotInterface.
 // A group's client should implement this interface.
 type VolumeSnapshotsGetter interface {
-	VolumeSnapshots() VolumeSnapshotInterface
+	VolumeSnapshots(namespace string) VolumeSnapshotInterface
 }
 
 // VolumeSnapshotInterface has methods to work with VolumeSnapshot resources.
@@ -52,12 +52,14 @@ type VolumeSnapshotInterface interface {
 // volumeSnapshots implements VolumeSnapshotInterface
 type volumeSnapshots struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVolumeSnapshots returns a VolumeSnapshots
-func newVolumeSnapshots(c *DigitaloceanV1alpha1Client) *volumeSnapshots {
+func newVolumeSnapshots(c *DigitaloceanV1alpha1Client, namespace string) *volumeSnapshots {
 	return &volumeSnapshots{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVolumeSnapshots(c *DigitaloceanV1alpha1Client) *volumeSnapshots {
 func (c *volumeSnapshots) Get(name string, options v1.GetOptions) (result *v1alpha1.VolumeSnapshot, err error) {
 	result = &v1alpha1.VolumeSnapshot{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("volumesnapshots").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *volumeSnapshots) List(opts v1.ListOptions) (result *v1alpha1.VolumeSnap
 	}
 	result = &v1alpha1.VolumeSnapshotList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("volumesnapshots").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *volumeSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("volumesnapshots").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *volumeSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *volumeSnapshots) Create(volumeSnapshot *v1alpha1.VolumeSnapshot) (result *v1alpha1.VolumeSnapshot, err error) {
 	result = &v1alpha1.VolumeSnapshot{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("volumesnapshots").
 		Body(volumeSnapshot).
 		Do().
@@ -118,6 +124,7 @@ func (c *volumeSnapshots) Create(volumeSnapshot *v1alpha1.VolumeSnapshot) (resul
 func (c *volumeSnapshots) Update(volumeSnapshot *v1alpha1.VolumeSnapshot) (result *v1alpha1.VolumeSnapshot, err error) {
 	result = &v1alpha1.VolumeSnapshot{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("volumesnapshots").
 		Name(volumeSnapshot.Name).
 		Body(volumeSnapshot).
@@ -132,6 +139,7 @@ func (c *volumeSnapshots) Update(volumeSnapshot *v1alpha1.VolumeSnapshot) (resul
 func (c *volumeSnapshots) UpdateStatus(volumeSnapshot *v1alpha1.VolumeSnapshot) (result *v1alpha1.VolumeSnapshot, err error) {
 	result = &v1alpha1.VolumeSnapshot{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("volumesnapshots").
 		Name(volumeSnapshot.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *volumeSnapshots) UpdateStatus(volumeSnapshot *v1alpha1.VolumeSnapshot) 
 // Delete takes name of the volumeSnapshot and deletes it. Returns an error if one occurs.
 func (c *volumeSnapshots) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("volumesnapshots").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *volumeSnapshots) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("volumesnapshots").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *volumeSnapshots) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *volumeSnapshots) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VolumeSnapshot, err error) {
 	result = &v1alpha1.VolumeSnapshot{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("volumesnapshots").
 		SubResource(subresources...).
 		Name(name).

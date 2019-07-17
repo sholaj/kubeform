@@ -29,8 +29,8 @@ import (
 type OpsworksRailsAppLayerLister interface {
 	// List lists all OpsworksRailsAppLayers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OpsworksRailsAppLayer, err error)
-	// Get retrieves the OpsworksRailsAppLayer from the index for a given name.
-	Get(name string) (*v1alpha1.OpsworksRailsAppLayer, error)
+	// OpsworksRailsAppLayers returns an object that can list and get OpsworksRailsAppLayers.
+	OpsworksRailsAppLayers(namespace string) OpsworksRailsAppLayerNamespaceLister
 	OpsworksRailsAppLayerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *opsworksRailsAppLayerLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the OpsworksRailsAppLayer from the index for a given name.
-func (s *opsworksRailsAppLayerLister) Get(name string) (*v1alpha1.OpsworksRailsAppLayer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OpsworksRailsAppLayers returns an object that can list and get OpsworksRailsAppLayers.
+func (s *opsworksRailsAppLayerLister) OpsworksRailsAppLayers(namespace string) OpsworksRailsAppLayerNamespaceLister {
+	return opsworksRailsAppLayerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OpsworksRailsAppLayerNamespaceLister helps list and get OpsworksRailsAppLayers.
+type OpsworksRailsAppLayerNamespaceLister interface {
+	// List lists all OpsworksRailsAppLayers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OpsworksRailsAppLayer, err error)
+	// Get retrieves the OpsworksRailsAppLayer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OpsworksRailsAppLayer, error)
+	OpsworksRailsAppLayerNamespaceListerExpansion
+}
+
+// opsworksRailsAppLayerNamespaceLister implements the OpsworksRailsAppLayerNamespaceLister
+// interface.
+type opsworksRailsAppLayerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OpsworksRailsAppLayers in the indexer for a given namespace.
+func (s opsworksRailsAppLayerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OpsworksRailsAppLayer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OpsworksRailsAppLayer))
+	})
+	return ret, err
+}
+
+// Get retrieves the OpsworksRailsAppLayer from the indexer for a given namespace and name.
+func (s opsworksRailsAppLayerNamespaceLister) Get(name string) (*v1alpha1.OpsworksRailsAppLayer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type PinpointEmailChannelLister interface {
 	// List lists all PinpointEmailChannels in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.PinpointEmailChannel, err error)
-	// Get retrieves the PinpointEmailChannel from the index for a given name.
-	Get(name string) (*v1alpha1.PinpointEmailChannel, error)
+	// PinpointEmailChannels returns an object that can list and get PinpointEmailChannels.
+	PinpointEmailChannels(namespace string) PinpointEmailChannelNamespaceLister
 	PinpointEmailChannelListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *pinpointEmailChannelLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the PinpointEmailChannel from the index for a given name.
-func (s *pinpointEmailChannelLister) Get(name string) (*v1alpha1.PinpointEmailChannel, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// PinpointEmailChannels returns an object that can list and get PinpointEmailChannels.
+func (s *pinpointEmailChannelLister) PinpointEmailChannels(namespace string) PinpointEmailChannelNamespaceLister {
+	return pinpointEmailChannelNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// PinpointEmailChannelNamespaceLister helps list and get PinpointEmailChannels.
+type PinpointEmailChannelNamespaceLister interface {
+	// List lists all PinpointEmailChannels in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.PinpointEmailChannel, err error)
+	// Get retrieves the PinpointEmailChannel from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.PinpointEmailChannel, error)
+	PinpointEmailChannelNamespaceListerExpansion
+}
+
+// pinpointEmailChannelNamespaceLister implements the PinpointEmailChannelNamespaceLister
+// interface.
+type pinpointEmailChannelNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all PinpointEmailChannels in the indexer for a given namespace.
+func (s pinpointEmailChannelNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.PinpointEmailChannel, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.PinpointEmailChannel))
+	})
+	return ret, err
+}
+
+// Get retrieves the PinpointEmailChannel from the indexer for a given namespace and name.
+func (s pinpointEmailChannelNamespaceLister) Get(name string) (*v1alpha1.PinpointEmailChannel, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

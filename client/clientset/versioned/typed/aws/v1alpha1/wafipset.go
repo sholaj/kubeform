@@ -32,7 +32,7 @@ import (
 // WafIpsetsGetter has a method to return a WafIpsetInterface.
 // A group's client should implement this interface.
 type WafIpsetsGetter interface {
-	WafIpsets() WafIpsetInterface
+	WafIpsets(namespace string) WafIpsetInterface
 }
 
 // WafIpsetInterface has methods to work with WafIpset resources.
@@ -52,12 +52,14 @@ type WafIpsetInterface interface {
 // wafIpsets implements WafIpsetInterface
 type wafIpsets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWafIpsets returns a WafIpsets
-func newWafIpsets(c *AwsV1alpha1Client) *wafIpsets {
+func newWafIpsets(c *AwsV1alpha1Client, namespace string) *wafIpsets {
 	return &wafIpsets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWafIpsets(c *AwsV1alpha1Client) *wafIpsets {
 func (c *wafIpsets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafIpset, err error) {
 	result = &v1alpha1.WafIpset{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafipsets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *wafIpsets) List(opts v1.ListOptions) (result *v1alpha1.WafIpsetList, er
 	}
 	result = &v1alpha1.WafIpsetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafipsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *wafIpsets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafipsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *wafIpsets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *wafIpsets) Create(wafIpset *v1alpha1.WafIpset) (result *v1alpha1.WafIpset, err error) {
 	result = &v1alpha1.WafIpset{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafipsets").
 		Body(wafIpset).
 		Do().
@@ -118,6 +124,7 @@ func (c *wafIpsets) Create(wafIpset *v1alpha1.WafIpset) (result *v1alpha1.WafIps
 func (c *wafIpsets) Update(wafIpset *v1alpha1.WafIpset) (result *v1alpha1.WafIpset, err error) {
 	result = &v1alpha1.WafIpset{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafipsets").
 		Name(wafIpset.Name).
 		Body(wafIpset).
@@ -132,6 +139,7 @@ func (c *wafIpsets) Update(wafIpset *v1alpha1.WafIpset) (result *v1alpha1.WafIps
 func (c *wafIpsets) UpdateStatus(wafIpset *v1alpha1.WafIpset) (result *v1alpha1.WafIpset, err error) {
 	result = &v1alpha1.WafIpset{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafipsets").
 		Name(wafIpset.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *wafIpsets) UpdateStatus(wafIpset *v1alpha1.WafIpset) (result *v1alpha1.
 // Delete takes name of the wafIpset and deletes it. Returns an error if one occurs.
 func (c *wafIpsets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafipsets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *wafIpsets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafipsets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *wafIpsets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 func (c *wafIpsets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafIpset, err error) {
 	result = &v1alpha1.WafIpset{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafipsets").
 		SubResource(subresources...).
 		Name(name).

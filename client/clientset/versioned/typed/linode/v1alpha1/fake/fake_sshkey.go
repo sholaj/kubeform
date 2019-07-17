@@ -31,6 +31,7 @@ import (
 // FakeSshkeys implements SshkeyInterface
 type FakeSshkeys struct {
 	Fake *FakeLinodeV1alpha1
+	ns   string
 }
 
 var sshkeysResource = schema.GroupVersionResource{Group: "linode.kubeform.com", Version: "v1alpha1", Resource: "sshkeys"}
@@ -40,7 +41,8 @@ var sshkeysKind = schema.GroupVersionKind{Group: "linode.kubeform.com", Version:
 // Get takes name of the sshkey, and returns the corresponding sshkey object, and an error if there is any.
 func (c *FakeSshkeys) Get(name string, options v1.GetOptions) (result *v1alpha1.Sshkey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sshkeysResource, name), &v1alpha1.Sshkey{})
+		Invokes(testing.NewGetAction(sshkeysResource, c.ns, name), &v1alpha1.Sshkey{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSshkeys) Get(name string, options v1.GetOptions) (result *v1alpha1.
 // List takes label and field selectors, and returns the list of Sshkeys that match those selectors.
 func (c *FakeSshkeys) List(opts v1.ListOptions) (result *v1alpha1.SshkeyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sshkeysResource, sshkeysKind, opts), &v1alpha1.SshkeyList{})
+		Invokes(testing.NewListAction(sshkeysResource, sshkeysKind, c.ns, opts), &v1alpha1.SshkeyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSshkeys) List(opts v1.ListOptions) (result *v1alpha1.SshkeyList, er
 // Watch returns a watch.Interface that watches the requested sshkeys.
 func (c *FakeSshkeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sshkeysResource, opts))
+		InvokesWatch(testing.NewWatchAction(sshkeysResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sshkey and creates it.  Returns the server's representation of the sshkey, and an error, if there is any.
 func (c *FakeSshkeys) Create(sshkey *v1alpha1.Sshkey) (result *v1alpha1.Sshkey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sshkeysResource, sshkey), &v1alpha1.Sshkey{})
+		Invokes(testing.NewCreateAction(sshkeysResource, c.ns, sshkey), &v1alpha1.Sshkey{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSshkeys) Create(sshkey *v1alpha1.Sshkey) (result *v1alpha1.Sshkey, 
 // Update takes the representation of a sshkey and updates it. Returns the server's representation of the sshkey, and an error, if there is any.
 func (c *FakeSshkeys) Update(sshkey *v1alpha1.Sshkey) (result *v1alpha1.Sshkey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sshkeysResource, sshkey), &v1alpha1.Sshkey{})
+		Invokes(testing.NewUpdateAction(sshkeysResource, c.ns, sshkey), &v1alpha1.Sshkey{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSshkeys) Update(sshkey *v1alpha1.Sshkey) (result *v1alpha1.Sshkey, 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSshkeys) UpdateStatus(sshkey *v1alpha1.Sshkey) (*v1alpha1.Sshkey, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sshkeysResource, "status", sshkey), &v1alpha1.Sshkey{})
+		Invokes(testing.NewUpdateSubresourceAction(sshkeysResource, "status", c.ns, sshkey), &v1alpha1.Sshkey{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSshkeys) UpdateStatus(sshkey *v1alpha1.Sshkey) (*v1alpha1.Sshkey, e
 // Delete takes name of the sshkey and deletes it. Returns an error if one occurs.
 func (c *FakeSshkeys) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sshkeysResource, name), &v1alpha1.Sshkey{})
+		Invokes(testing.NewDeleteAction(sshkeysResource, c.ns, name), &v1alpha1.Sshkey{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSshkeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sshkeysResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sshkeysResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SshkeyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSshkeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 // Patch applies the patch and returns the patched sshkey.
 func (c *FakeSshkeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Sshkey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sshkeysResource, name, pt, data, subresources...), &v1alpha1.Sshkey{})
+		Invokes(testing.NewPatchSubresourceAction(sshkeysResource, c.ns, name, pt, data, subresources...), &v1alpha1.Sshkey{})
+
 	if obj == nil {
 		return nil, err
 	}

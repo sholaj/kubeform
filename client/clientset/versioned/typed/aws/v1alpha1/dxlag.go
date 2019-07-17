@@ -32,7 +32,7 @@ import (
 // DxLagsGetter has a method to return a DxLagInterface.
 // A group's client should implement this interface.
 type DxLagsGetter interface {
-	DxLags() DxLagInterface
+	DxLags(namespace string) DxLagInterface
 }
 
 // DxLagInterface has methods to work with DxLag resources.
@@ -52,12 +52,14 @@ type DxLagInterface interface {
 // dxLags implements DxLagInterface
 type dxLags struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDxLags returns a DxLags
-func newDxLags(c *AwsV1alpha1Client) *dxLags {
+func newDxLags(c *AwsV1alpha1Client, namespace string) *dxLags {
 	return &dxLags{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDxLags(c *AwsV1alpha1Client) *dxLags {
 func (c *dxLags) Get(name string, options v1.GetOptions) (result *v1alpha1.DxLag, err error) {
 	result = &v1alpha1.DxLag{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dxlags").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dxLags) List(opts v1.ListOptions) (result *v1alpha1.DxLagList, err erro
 	}
 	result = &v1alpha1.DxLagList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dxlags").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dxLags) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dxlags").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dxLags) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dxLags) Create(dxLag *v1alpha1.DxLag) (result *v1alpha1.DxLag, err error) {
 	result = &v1alpha1.DxLag{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dxlags").
 		Body(dxLag).
 		Do().
@@ -118,6 +124,7 @@ func (c *dxLags) Create(dxLag *v1alpha1.DxLag) (result *v1alpha1.DxLag, err erro
 func (c *dxLags) Update(dxLag *v1alpha1.DxLag) (result *v1alpha1.DxLag, err error) {
 	result = &v1alpha1.DxLag{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dxlags").
 		Name(dxLag.Name).
 		Body(dxLag).
@@ -132,6 +139,7 @@ func (c *dxLags) Update(dxLag *v1alpha1.DxLag) (result *v1alpha1.DxLag, err erro
 func (c *dxLags) UpdateStatus(dxLag *v1alpha1.DxLag) (result *v1alpha1.DxLag, err error) {
 	result = &v1alpha1.DxLag{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dxlags").
 		Name(dxLag.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dxLags) UpdateStatus(dxLag *v1alpha1.DxLag) (result *v1alpha1.DxLag, er
 // Delete takes name of the dxLag and deletes it. Returns an error if one occurs.
 func (c *dxLags) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dxlags").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dxLags) DeleteCollection(options *v1.DeleteOptions, listOptions v1.List
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dxlags").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dxLags) DeleteCollection(options *v1.DeleteOptions, listOptions v1.List
 func (c *dxLags) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DxLag, err error) {
 	result = &v1alpha1.DxLag{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dxlags").
 		SubResource(subresources...).
 		Name(name).

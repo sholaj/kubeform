@@ -41,32 +41,33 @@ type GameliftGameSessionQueueInformer interface {
 type gameliftGameSessionQueueInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewGameliftGameSessionQueueInformer constructs a new informer for GameliftGameSessionQueue type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewGameliftGameSessionQueueInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredGameliftGameSessionQueueInformer(client, resyncPeriod, indexers, nil)
+func NewGameliftGameSessionQueueInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredGameliftGameSessionQueueInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredGameliftGameSessionQueueInformer constructs a new informer for GameliftGameSessionQueue type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredGameliftGameSessionQueueInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredGameliftGameSessionQueueInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().GameliftGameSessionQueues().List(options)
+				return client.AwsV1alpha1().GameliftGameSessionQueues(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().GameliftGameSessionQueues().Watch(options)
+				return client.AwsV1alpha1().GameliftGameSessionQueues(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.GameliftGameSessionQueue{},
@@ -76,7 +77,7 @@ func NewFilteredGameliftGameSessionQueueInformer(client versioned.Interface, res
 }
 
 func (f *gameliftGameSessionQueueInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredGameliftGameSessionQueueInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredGameliftGameSessionQueueInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *gameliftGameSessionQueueInformer) Informer() cache.SharedIndexInformer {

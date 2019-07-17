@@ -41,32 +41,33 @@ type ElasticsearchDomainInformer interface {
 type elasticsearchDomainInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewElasticsearchDomainInformer constructs a new informer for ElasticsearchDomain type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewElasticsearchDomainInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredElasticsearchDomainInformer(client, resyncPeriod, indexers, nil)
+func NewElasticsearchDomainInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredElasticsearchDomainInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredElasticsearchDomainInformer constructs a new informer for ElasticsearchDomain type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredElasticsearchDomainInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredElasticsearchDomainInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ElasticsearchDomains().List(options)
+				return client.AwsV1alpha1().ElasticsearchDomains(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ElasticsearchDomains().Watch(options)
+				return client.AwsV1alpha1().ElasticsearchDomains(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.ElasticsearchDomain{},
@@ -76,7 +77,7 @@ func NewFilteredElasticsearchDomainInformer(client versioned.Interface, resyncPe
 }
 
 func (f *elasticsearchDomainInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredElasticsearchDomainInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredElasticsearchDomainInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *elasticsearchDomainInformer) Informer() cache.SharedIndexInformer {

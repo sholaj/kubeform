@@ -32,7 +32,7 @@ import (
 // StoragegatewayWorkingStoragesGetter has a method to return a StoragegatewayWorkingStorageInterface.
 // A group's client should implement this interface.
 type StoragegatewayWorkingStoragesGetter interface {
-	StoragegatewayWorkingStorages() StoragegatewayWorkingStorageInterface
+	StoragegatewayWorkingStorages(namespace string) StoragegatewayWorkingStorageInterface
 }
 
 // StoragegatewayWorkingStorageInterface has methods to work with StoragegatewayWorkingStorage resources.
@@ -52,12 +52,14 @@ type StoragegatewayWorkingStorageInterface interface {
 // storagegatewayWorkingStorages implements StoragegatewayWorkingStorageInterface
 type storagegatewayWorkingStorages struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStoragegatewayWorkingStorages returns a StoragegatewayWorkingStorages
-func newStoragegatewayWorkingStorages(c *AwsV1alpha1Client) *storagegatewayWorkingStorages {
+func newStoragegatewayWorkingStorages(c *AwsV1alpha1Client, namespace string) *storagegatewayWorkingStorages {
 	return &storagegatewayWorkingStorages{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStoragegatewayWorkingStorages(c *AwsV1alpha1Client) *storagegatewayWorki
 func (c *storagegatewayWorkingStorages) Get(name string, options v1.GetOptions) (result *v1alpha1.StoragegatewayWorkingStorage, err error) {
 	result = &v1alpha1.StoragegatewayWorkingStorage{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagegatewayworkingstorages").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *storagegatewayWorkingStorages) List(opts v1.ListOptions) (result *v1alp
 	}
 	result = &v1alpha1.StoragegatewayWorkingStorageList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagegatewayworkingstorages").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *storagegatewayWorkingStorages) Watch(opts v1.ListOptions) (watch.Interf
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storagegatewayworkingstorages").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *storagegatewayWorkingStorages) Watch(opts v1.ListOptions) (watch.Interf
 func (c *storagegatewayWorkingStorages) Create(storagegatewayWorkingStorage *v1alpha1.StoragegatewayWorkingStorage) (result *v1alpha1.StoragegatewayWorkingStorage, err error) {
 	result = &v1alpha1.StoragegatewayWorkingStorage{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storagegatewayworkingstorages").
 		Body(storagegatewayWorkingStorage).
 		Do().
@@ -118,6 +124,7 @@ func (c *storagegatewayWorkingStorages) Create(storagegatewayWorkingStorage *v1a
 func (c *storagegatewayWorkingStorages) Update(storagegatewayWorkingStorage *v1alpha1.StoragegatewayWorkingStorage) (result *v1alpha1.StoragegatewayWorkingStorage, err error) {
 	result = &v1alpha1.StoragegatewayWorkingStorage{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagegatewayworkingstorages").
 		Name(storagegatewayWorkingStorage.Name).
 		Body(storagegatewayWorkingStorage).
@@ -132,6 +139,7 @@ func (c *storagegatewayWorkingStorages) Update(storagegatewayWorkingStorage *v1a
 func (c *storagegatewayWorkingStorages) UpdateStatus(storagegatewayWorkingStorage *v1alpha1.StoragegatewayWorkingStorage) (result *v1alpha1.StoragegatewayWorkingStorage, err error) {
 	result = &v1alpha1.StoragegatewayWorkingStorage{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagegatewayworkingstorages").
 		Name(storagegatewayWorkingStorage.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *storagegatewayWorkingStorages) UpdateStatus(storagegatewayWorkingStorag
 // Delete takes name of the storagegatewayWorkingStorage and deletes it. Returns an error if one occurs.
 func (c *storagegatewayWorkingStorages) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagegatewayworkingstorages").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *storagegatewayWorkingStorages) DeleteCollection(options *v1.DeleteOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagegatewayworkingstorages").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *storagegatewayWorkingStorages) DeleteCollection(options *v1.DeleteOptio
 func (c *storagegatewayWorkingStorages) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StoragegatewayWorkingStorage, err error) {
 	result = &v1alpha1.StoragegatewayWorkingStorage{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storagegatewayworkingstorages").
 		SubResource(subresources...).
 		Name(name).

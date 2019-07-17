@@ -397,26 +397,44 @@ spec:
           type: object
         spec:
           properties:
-            association_name:
+            associationName:
               type: string
-            compliance_severity:
+            complianceSeverity:
               type: string
-            instance_id:
+            instanceID:
               type: string
-            max_concurrency:
+            maxConcurrency:
               type: string
-            max_errors:
+            maxErrors:
               type: string
             name:
               type: string
-            output_location:
-              items: {}
+            outputLocation:
+              items:
+                properties:
+                  s3BucketName:
+                    type: string
+                  s3KeyPrefix:
+                    type: string
+                required:
+                - s3BucketName
+                type: object
               maxItems: 1
               type: array
-            schedule_expression:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            scheduleExpression:
               type: string
           required:
           - name
+          - providerRef
           type: object
         status:
           properties:
@@ -427,6 +445,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

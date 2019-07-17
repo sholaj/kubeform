@@ -29,8 +29,8 @@ import (
 type ApiManagementUserLister interface {
 	// List lists all ApiManagementUsers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementUser, err error)
-	// Get retrieves the ApiManagementUser from the index for a given name.
-	Get(name string) (*v1alpha1.ApiManagementUser, error)
+	// ApiManagementUsers returns an object that can list and get ApiManagementUsers.
+	ApiManagementUsers(namespace string) ApiManagementUserNamespaceLister
 	ApiManagementUserListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiManagementUserLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the ApiManagementUser from the index for a given name.
-func (s *apiManagementUserLister) Get(name string) (*v1alpha1.ApiManagementUser, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiManagementUsers returns an object that can list and get ApiManagementUsers.
+func (s *apiManagementUserLister) ApiManagementUsers(namespace string) ApiManagementUserNamespaceLister {
+	return apiManagementUserNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiManagementUserNamespaceLister helps list and get ApiManagementUsers.
+type ApiManagementUserNamespaceLister interface {
+	// List lists all ApiManagementUsers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementUser, err error)
+	// Get retrieves the ApiManagementUser from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiManagementUser, error)
+	ApiManagementUserNamespaceListerExpansion
+}
+
+// apiManagementUserNamespaceLister implements the ApiManagementUserNamespaceLister
+// interface.
+type apiManagementUserNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiManagementUsers in the indexer for a given namespace.
+func (s apiManagementUserNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementUser, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiManagementUser))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiManagementUser from the indexer for a given namespace and name.
+func (s apiManagementUserNamespaceLister) Get(name string) (*v1alpha1.ApiManagementUser, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeContainerGroups implements ContainerGroupInterface
 type FakeContainerGroups struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var containergroupsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "containergroups"}
@@ -40,7 +41,8 @@ var containergroupsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com",
 // Get takes name of the containerGroup, and returns the corresponding containerGroup object, and an error if there is any.
 func (c *FakeContainerGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.ContainerGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(containergroupsResource, name), &v1alpha1.ContainerGroup{})
+		Invokes(testing.NewGetAction(containergroupsResource, c.ns, name), &v1alpha1.ContainerGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeContainerGroups) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of ContainerGroups that match those selectors.
 func (c *FakeContainerGroups) List(opts v1.ListOptions) (result *v1alpha1.ContainerGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(containergroupsResource, containergroupsKind, opts), &v1alpha1.ContainerGroupList{})
+		Invokes(testing.NewListAction(containergroupsResource, containergroupsKind, c.ns, opts), &v1alpha1.ContainerGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeContainerGroups) List(opts v1.ListOptions) (result *v1alpha1.Contai
 // Watch returns a watch.Interface that watches the requested containerGroups.
 func (c *FakeContainerGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(containergroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(containergroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a containerGroup and creates it.  Returns the server's representation of the containerGroup, and an error, if there is any.
 func (c *FakeContainerGroups) Create(containerGroup *v1alpha1.ContainerGroup) (result *v1alpha1.ContainerGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(containergroupsResource, containerGroup), &v1alpha1.ContainerGroup{})
+		Invokes(testing.NewCreateAction(containergroupsResource, c.ns, containerGroup), &v1alpha1.ContainerGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeContainerGroups) Create(containerGroup *v1alpha1.ContainerGroup) (r
 // Update takes the representation of a containerGroup and updates it. Returns the server's representation of the containerGroup, and an error, if there is any.
 func (c *FakeContainerGroups) Update(containerGroup *v1alpha1.ContainerGroup) (result *v1alpha1.ContainerGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(containergroupsResource, containerGroup), &v1alpha1.ContainerGroup{})
+		Invokes(testing.NewUpdateAction(containergroupsResource, c.ns, containerGroup), &v1alpha1.ContainerGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeContainerGroups) Update(containerGroup *v1alpha1.ContainerGroup) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeContainerGroups) UpdateStatus(containerGroup *v1alpha1.ContainerGroup) (*v1alpha1.ContainerGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(containergroupsResource, "status", containerGroup), &v1alpha1.ContainerGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(containergroupsResource, "status", c.ns, containerGroup), &v1alpha1.ContainerGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeContainerGroups) UpdateStatus(containerGroup *v1alpha1.ContainerGro
 // Delete takes name of the containerGroup and deletes it. Returns an error if one occurs.
 func (c *FakeContainerGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(containergroupsResource, name), &v1alpha1.ContainerGroup{})
+		Invokes(testing.NewDeleteAction(containergroupsResource, c.ns, name), &v1alpha1.ContainerGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeContainerGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(containergroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(containergroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ContainerGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeContainerGroups) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched containerGroup.
 func (c *FakeContainerGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ContainerGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(containergroupsResource, name, pt, data, subresources...), &v1alpha1.ContainerGroup{})
+		Invokes(testing.NewPatchSubresourceAction(containergroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ContainerGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

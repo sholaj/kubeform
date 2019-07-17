@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,15 +20,16 @@ type LambdaEventSourceMapping struct {
 
 type LambdaEventSourceMappingSpec struct {
 	// +optional
-	BatchSize int `json:"batch_size,omitempty"`
+	BatchSize int `json:"batchSize,omitempty" tf:"batch_size,omitempty"`
 	// +optional
-	Enabled        bool   `json:"enabled,omitempty"`
-	EventSourceArn string `json:"event_source_arn"`
-	FunctionName   string `json:"function_name"`
+	Enabled        bool   `json:"enabled,omitempty" tf:"enabled,omitempty"`
+	EventSourceArn string `json:"eventSourceArn" tf:"event_source_arn"`
+	FunctionName   string `json:"functionName" tf:"function_name"`
 	// +optional
-	StartingPosition string `json:"starting_position,omitempty"`
+	StartingPosition string `json:"startingPosition,omitempty" tf:"starting_position,omitempty"`
 	// +optional
-	StartingPositionTimestamp string `json:"starting_position_timestamp,omitempty"`
+	StartingPositionTimestamp string                    `json:"startingPositionTimestamp,omitempty" tf:"starting_position_timestamp,omitempty"`
+	ProviderRef               core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type LambdaEventSourceMappingStatus struct {
@@ -36,7 +37,9 @@ type LambdaEventSourceMappingStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

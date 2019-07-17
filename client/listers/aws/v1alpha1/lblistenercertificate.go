@@ -29,8 +29,8 @@ import (
 type LbListenerCertificateLister interface {
 	// List lists all LbListenerCertificates in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LbListenerCertificate, err error)
-	// Get retrieves the LbListenerCertificate from the index for a given name.
-	Get(name string) (*v1alpha1.LbListenerCertificate, error)
+	// LbListenerCertificates returns an object that can list and get LbListenerCertificates.
+	LbListenerCertificates(namespace string) LbListenerCertificateNamespaceLister
 	LbListenerCertificateListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *lbListenerCertificateLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the LbListenerCertificate from the index for a given name.
-func (s *lbListenerCertificateLister) Get(name string) (*v1alpha1.LbListenerCertificate, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LbListenerCertificates returns an object that can list and get LbListenerCertificates.
+func (s *lbListenerCertificateLister) LbListenerCertificates(namespace string) LbListenerCertificateNamespaceLister {
+	return lbListenerCertificateNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LbListenerCertificateNamespaceLister helps list and get LbListenerCertificates.
+type LbListenerCertificateNamespaceLister interface {
+	// List lists all LbListenerCertificates in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LbListenerCertificate, err error)
+	// Get retrieves the LbListenerCertificate from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LbListenerCertificate, error)
+	LbListenerCertificateNamespaceListerExpansion
+}
+
+// lbListenerCertificateNamespaceLister implements the LbListenerCertificateNamespaceLister
+// interface.
+type lbListenerCertificateNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LbListenerCertificates in the indexer for a given namespace.
+func (s lbListenerCertificateNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LbListenerCertificate, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LbListenerCertificate))
+	})
+	return ret, err
+}
+
+// Get retrieves the LbListenerCertificate from the indexer for a given namespace and name.
+func (s lbListenerCertificateNamespaceLister) Get(name string) (*v1alpha1.LbListenerCertificate, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -41,32 +41,33 @@ type DataLakeStoreFirewallRuleInformer interface {
 type dataLakeStoreFirewallRuleInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDataLakeStoreFirewallRuleInformer constructs a new informer for DataLakeStoreFirewallRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDataLakeStoreFirewallRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDataLakeStoreFirewallRuleInformer(client, resyncPeriod, indexers, nil)
+func NewDataLakeStoreFirewallRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDataLakeStoreFirewallRuleInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDataLakeStoreFirewallRuleInformer constructs a new informer for DataLakeStoreFirewallRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDataLakeStoreFirewallRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDataLakeStoreFirewallRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DataLakeStoreFirewallRules().List(options)
+				return client.AzurermV1alpha1().DataLakeStoreFirewallRules(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DataLakeStoreFirewallRules().Watch(options)
+				return client.AzurermV1alpha1().DataLakeStoreFirewallRules(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.DataLakeStoreFirewallRule{},
@@ -76,7 +77,7 @@ func NewFilteredDataLakeStoreFirewallRuleInformer(client versioned.Interface, re
 }
 
 func (f *dataLakeStoreFirewallRuleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDataLakeStoreFirewallRuleInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDataLakeStoreFirewallRuleInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *dataLakeStoreFirewallRuleInformer) Informer() cache.SharedIndexInformer {

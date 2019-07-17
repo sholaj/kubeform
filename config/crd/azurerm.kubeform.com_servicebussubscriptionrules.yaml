@@ -399,31 +399,59 @@ spec:
           properties:
             action:
               type: string
-            correlation_filter:
-              items: {}
+            correlationFilter:
+              items:
+                properties:
+                  contentType:
+                    type: string
+                  correlationID:
+                    type: string
+                  label:
+                    type: string
+                  messageID:
+                    type: string
+                  replyTo:
+                    type: string
+                  replyToSessionID:
+                    type: string
+                  sessionID:
+                    type: string
+                  to:
+                    type: string
+                type: object
               maxItems: 1
               type: array
-            filter_type:
+            filterType:
               type: string
             name:
               type: string
-            namespace_name:
+            namespaceName:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
-            sql_filter:
+            sqlFilter:
               type: string
-            subscription_name:
+            subscriptionName:
               type: string
-            topic_name:
+            topicName:
               type: string
           required:
-          - filter_type
+          - filterType
           - name
-          - namespace_name
-          - resource_group_name
-          - subscription_name
-          - topic_name
+          - namespaceName
+          - providerRef
+          - resourceGroupName
+          - subscriptionName
+          - topicName
           type: object
         status:
           properties:
@@ -434,6 +462,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

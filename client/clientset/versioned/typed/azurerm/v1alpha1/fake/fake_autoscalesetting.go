@@ -31,6 +31,7 @@ import (
 // FakeAutoscaleSettings implements AutoscaleSettingInterface
 type FakeAutoscaleSettings struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var autoscalesettingsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "autoscalesettings"}
@@ -40,7 +41,8 @@ var autoscalesettingsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com
 // Get takes name of the autoscaleSetting, and returns the corresponding autoscaleSetting object, and an error if there is any.
 func (c *FakeAutoscaleSettings) Get(name string, options v1.GetOptions) (result *v1alpha1.AutoscaleSetting, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(autoscalesettingsResource, name), &v1alpha1.AutoscaleSetting{})
+		Invokes(testing.NewGetAction(autoscalesettingsResource, c.ns, name), &v1alpha1.AutoscaleSetting{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAutoscaleSettings) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of AutoscaleSettings that match those selectors.
 func (c *FakeAutoscaleSettings) List(opts v1.ListOptions) (result *v1alpha1.AutoscaleSettingList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(autoscalesettingsResource, autoscalesettingsKind, opts), &v1alpha1.AutoscaleSettingList{})
+		Invokes(testing.NewListAction(autoscalesettingsResource, autoscalesettingsKind, c.ns, opts), &v1alpha1.AutoscaleSettingList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAutoscaleSettings) List(opts v1.ListOptions) (result *v1alpha1.Auto
 // Watch returns a watch.Interface that watches the requested autoscaleSettings.
 func (c *FakeAutoscaleSettings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(autoscalesettingsResource, opts))
+		InvokesWatch(testing.NewWatchAction(autoscalesettingsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a autoscaleSetting and creates it.  Returns the server's representation of the autoscaleSetting, and an error, if there is any.
 func (c *FakeAutoscaleSettings) Create(autoscaleSetting *v1alpha1.AutoscaleSetting) (result *v1alpha1.AutoscaleSetting, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(autoscalesettingsResource, autoscaleSetting), &v1alpha1.AutoscaleSetting{})
+		Invokes(testing.NewCreateAction(autoscalesettingsResource, c.ns, autoscaleSetting), &v1alpha1.AutoscaleSetting{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAutoscaleSettings) Create(autoscaleSetting *v1alpha1.AutoscaleSetti
 // Update takes the representation of a autoscaleSetting and updates it. Returns the server's representation of the autoscaleSetting, and an error, if there is any.
 func (c *FakeAutoscaleSettings) Update(autoscaleSetting *v1alpha1.AutoscaleSetting) (result *v1alpha1.AutoscaleSetting, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(autoscalesettingsResource, autoscaleSetting), &v1alpha1.AutoscaleSetting{})
+		Invokes(testing.NewUpdateAction(autoscalesettingsResource, c.ns, autoscaleSetting), &v1alpha1.AutoscaleSetting{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAutoscaleSettings) Update(autoscaleSetting *v1alpha1.AutoscaleSetti
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAutoscaleSettings) UpdateStatus(autoscaleSetting *v1alpha1.AutoscaleSetting) (*v1alpha1.AutoscaleSetting, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(autoscalesettingsResource, "status", autoscaleSetting), &v1alpha1.AutoscaleSetting{})
+		Invokes(testing.NewUpdateSubresourceAction(autoscalesettingsResource, "status", c.ns, autoscaleSetting), &v1alpha1.AutoscaleSetting{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAutoscaleSettings) UpdateStatus(autoscaleSetting *v1alpha1.Autoscal
 // Delete takes name of the autoscaleSetting and deletes it. Returns an error if one occurs.
 func (c *FakeAutoscaleSettings) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(autoscalesettingsResource, name), &v1alpha1.AutoscaleSetting{})
+		Invokes(testing.NewDeleteAction(autoscalesettingsResource, c.ns, name), &v1alpha1.AutoscaleSetting{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAutoscaleSettings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(autoscalesettingsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(autoscalesettingsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AutoscaleSettingList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAutoscaleSettings) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched autoscaleSetting.
 func (c *FakeAutoscaleSettings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AutoscaleSetting, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(autoscalesettingsResource, name, pt, data, subresources...), &v1alpha1.AutoscaleSetting{})
+		Invokes(testing.NewPatchSubresourceAction(autoscalesettingsResource, c.ns, name, pt, data, subresources...), &v1alpha1.AutoscaleSetting{})
+
 	if obj == nil {
 		return nil, err
 	}

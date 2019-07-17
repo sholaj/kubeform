@@ -41,32 +41,33 @@ type EbsSnapshotCopyInformer interface {
 type ebsSnapshotCopyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewEbsSnapshotCopyInformer constructs a new informer for EbsSnapshotCopy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewEbsSnapshotCopyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredEbsSnapshotCopyInformer(client, resyncPeriod, indexers, nil)
+func NewEbsSnapshotCopyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredEbsSnapshotCopyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredEbsSnapshotCopyInformer constructs a new informer for EbsSnapshotCopy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredEbsSnapshotCopyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredEbsSnapshotCopyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().EbsSnapshotCopies().List(options)
+				return client.AwsV1alpha1().EbsSnapshotCopies(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().EbsSnapshotCopies().Watch(options)
+				return client.AwsV1alpha1().EbsSnapshotCopies(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.EbsSnapshotCopy{},
@@ -76,7 +77,7 @@ func NewFilteredEbsSnapshotCopyInformer(client versioned.Interface, resyncPeriod
 }
 
 func (f *ebsSnapshotCopyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredEbsSnapshotCopyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredEbsSnapshotCopyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *ebsSnapshotCopyInformer) Informer() cache.SharedIndexInformer {

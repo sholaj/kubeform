@@ -32,7 +32,7 @@ import (
 // IotDpsesGetter has a method to return a IotDpsInterface.
 // A group's client should implement this interface.
 type IotDpsesGetter interface {
-	IotDpses() IotDpsInterface
+	IotDpses(namespace string) IotDpsInterface
 }
 
 // IotDpsInterface has methods to work with IotDps resources.
@@ -52,12 +52,14 @@ type IotDpsInterface interface {
 // iotDpses implements IotDpsInterface
 type iotDpses struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIotDpses returns a IotDpses
-func newIotDpses(c *AzurermV1alpha1Client) *iotDpses {
+func newIotDpses(c *AzurermV1alpha1Client, namespace string) *iotDpses {
 	return &iotDpses{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIotDpses(c *AzurermV1alpha1Client) *iotDpses {
 func (c *iotDpses) Get(name string, options v1.GetOptions) (result *v1alpha1.IotDps, err error) {
 	result = &v1alpha1.IotDps{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iotdpses").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iotDpses) List(opts v1.ListOptions) (result *v1alpha1.IotDpsList, err e
 	}
 	result = &v1alpha1.IotDpsList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iotdpses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iotDpses) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iotdpses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iotDpses) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *iotDpses) Create(iotDps *v1alpha1.IotDps) (result *v1alpha1.IotDps, err error) {
 	result = &v1alpha1.IotDps{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iotdpses").
 		Body(iotDps).
 		Do().
@@ -118,6 +124,7 @@ func (c *iotDpses) Create(iotDps *v1alpha1.IotDps) (result *v1alpha1.IotDps, err
 func (c *iotDpses) Update(iotDps *v1alpha1.IotDps) (result *v1alpha1.IotDps, err error) {
 	result = &v1alpha1.IotDps{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iotdpses").
 		Name(iotDps.Name).
 		Body(iotDps).
@@ -132,6 +139,7 @@ func (c *iotDpses) Update(iotDps *v1alpha1.IotDps) (result *v1alpha1.IotDps, err
 func (c *iotDpses) UpdateStatus(iotDps *v1alpha1.IotDps) (result *v1alpha1.IotDps, err error) {
 	result = &v1alpha1.IotDps{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iotdpses").
 		Name(iotDps.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iotDpses) UpdateStatus(iotDps *v1alpha1.IotDps) (result *v1alpha1.IotDp
 // Delete takes name of the iotDps and deletes it. Returns an error if one occurs.
 func (c *iotDpses) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iotdpses").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iotDpses) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iotdpses").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iotDpses) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 func (c *iotDpses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IotDps, err error) {
 	result = &v1alpha1.IotDps{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iotdpses").
 		SubResource(subresources...).
 		Name(name).

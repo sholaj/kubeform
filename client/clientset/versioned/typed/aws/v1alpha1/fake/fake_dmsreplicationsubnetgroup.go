@@ -31,6 +31,7 @@ import (
 // FakeDmsReplicationSubnetGroups implements DmsReplicationSubnetGroupInterface
 type FakeDmsReplicationSubnetGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var dmsreplicationsubnetgroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "dmsreplicationsubnetgroups"}
@@ -40,7 +41,8 @@ var dmsreplicationsubnetgroupsKind = schema.GroupVersionKind{Group: "aws.kubefor
 // Get takes name of the dmsReplicationSubnetGroup, and returns the corresponding dmsReplicationSubnetGroup object, and an error if there is any.
 func (c *FakeDmsReplicationSubnetGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.DmsReplicationSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(dmsreplicationsubnetgroupsResource, name), &v1alpha1.DmsReplicationSubnetGroup{})
+		Invokes(testing.NewGetAction(dmsreplicationsubnetgroupsResource, c.ns, name), &v1alpha1.DmsReplicationSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDmsReplicationSubnetGroups) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of DmsReplicationSubnetGroups that match those selectors.
 func (c *FakeDmsReplicationSubnetGroups) List(opts v1.ListOptions) (result *v1alpha1.DmsReplicationSubnetGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(dmsreplicationsubnetgroupsResource, dmsreplicationsubnetgroupsKind, opts), &v1alpha1.DmsReplicationSubnetGroupList{})
+		Invokes(testing.NewListAction(dmsreplicationsubnetgroupsResource, dmsreplicationsubnetgroupsKind, c.ns, opts), &v1alpha1.DmsReplicationSubnetGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDmsReplicationSubnetGroups) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested dmsReplicationSubnetGroups.
 func (c *FakeDmsReplicationSubnetGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(dmsreplicationsubnetgroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(dmsreplicationsubnetgroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dmsReplicationSubnetGroup and creates it.  Returns the server's representation of the dmsReplicationSubnetGroup, and an error, if there is any.
 func (c *FakeDmsReplicationSubnetGroups) Create(dmsReplicationSubnetGroup *v1alpha1.DmsReplicationSubnetGroup) (result *v1alpha1.DmsReplicationSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(dmsreplicationsubnetgroupsResource, dmsReplicationSubnetGroup), &v1alpha1.DmsReplicationSubnetGroup{})
+		Invokes(testing.NewCreateAction(dmsreplicationsubnetgroupsResource, c.ns, dmsReplicationSubnetGroup), &v1alpha1.DmsReplicationSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDmsReplicationSubnetGroups) Create(dmsReplicationSubnetGroup *v1alp
 // Update takes the representation of a dmsReplicationSubnetGroup and updates it. Returns the server's representation of the dmsReplicationSubnetGroup, and an error, if there is any.
 func (c *FakeDmsReplicationSubnetGroups) Update(dmsReplicationSubnetGroup *v1alpha1.DmsReplicationSubnetGroup) (result *v1alpha1.DmsReplicationSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(dmsreplicationsubnetgroupsResource, dmsReplicationSubnetGroup), &v1alpha1.DmsReplicationSubnetGroup{})
+		Invokes(testing.NewUpdateAction(dmsreplicationsubnetgroupsResource, c.ns, dmsReplicationSubnetGroup), &v1alpha1.DmsReplicationSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDmsReplicationSubnetGroups) Update(dmsReplicationSubnetGroup *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDmsReplicationSubnetGroups) UpdateStatus(dmsReplicationSubnetGroup *v1alpha1.DmsReplicationSubnetGroup) (*v1alpha1.DmsReplicationSubnetGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(dmsreplicationsubnetgroupsResource, "status", dmsReplicationSubnetGroup), &v1alpha1.DmsReplicationSubnetGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(dmsreplicationsubnetgroupsResource, "status", c.ns, dmsReplicationSubnetGroup), &v1alpha1.DmsReplicationSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDmsReplicationSubnetGroups) UpdateStatus(dmsReplicationSubnetGroup 
 // Delete takes name of the dmsReplicationSubnetGroup and deletes it. Returns an error if one occurs.
 func (c *FakeDmsReplicationSubnetGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(dmsreplicationsubnetgroupsResource, name), &v1alpha1.DmsReplicationSubnetGroup{})
+		Invokes(testing.NewDeleteAction(dmsreplicationsubnetgroupsResource, c.ns, name), &v1alpha1.DmsReplicationSubnetGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDmsReplicationSubnetGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(dmsreplicationsubnetgroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(dmsreplicationsubnetgroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DmsReplicationSubnetGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDmsReplicationSubnetGroups) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched dmsReplicationSubnetGroup.
 func (c *FakeDmsReplicationSubnetGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DmsReplicationSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(dmsreplicationsubnetgroupsResource, name, pt, data, subresources...), &v1alpha1.DmsReplicationSubnetGroup{})
+		Invokes(testing.NewPatchSubresourceAction(dmsreplicationsubnetgroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DmsReplicationSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

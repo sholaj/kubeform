@@ -32,7 +32,7 @@ import (
 // ApiManagementProductPoliciesGetter has a method to return a ApiManagementProductPolicyInterface.
 // A group's client should implement this interface.
 type ApiManagementProductPoliciesGetter interface {
-	ApiManagementProductPolicies() ApiManagementProductPolicyInterface
+	ApiManagementProductPolicies(namespace string) ApiManagementProductPolicyInterface
 }
 
 // ApiManagementProductPolicyInterface has methods to work with ApiManagementProductPolicy resources.
@@ -52,12 +52,14 @@ type ApiManagementProductPolicyInterface interface {
 // apiManagementProductPolicies implements ApiManagementProductPolicyInterface
 type apiManagementProductPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiManagementProductPolicies returns a ApiManagementProductPolicies
-func newApiManagementProductPolicies(c *AzurermV1alpha1Client) *apiManagementProductPolicies {
+func newApiManagementProductPolicies(c *AzurermV1alpha1Client, namespace string) *apiManagementProductPolicies {
 	return &apiManagementProductPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiManagementProductPolicies(c *AzurermV1alpha1Client) *apiManagementPro
 func (c *apiManagementProductPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementProductPolicy, err error) {
 	result = &v1alpha1.ApiManagementProductPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementproductpolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiManagementProductPolicies) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.ApiManagementProductPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementproductpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiManagementProductPolicies) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementproductpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiManagementProductPolicies) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *apiManagementProductPolicies) Create(apiManagementProductPolicy *v1alpha1.ApiManagementProductPolicy) (result *v1alpha1.ApiManagementProductPolicy, err error) {
 	result = &v1alpha1.ApiManagementProductPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apimanagementproductpolicies").
 		Body(apiManagementProductPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiManagementProductPolicies) Create(apiManagementProductPolicy *v1alph
 func (c *apiManagementProductPolicies) Update(apiManagementProductPolicy *v1alpha1.ApiManagementProductPolicy) (result *v1alpha1.ApiManagementProductPolicy, err error) {
 	result = &v1alpha1.ApiManagementProductPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementproductpolicies").
 		Name(apiManagementProductPolicy.Name).
 		Body(apiManagementProductPolicy).
@@ -132,6 +139,7 @@ func (c *apiManagementProductPolicies) Update(apiManagementProductPolicy *v1alph
 func (c *apiManagementProductPolicies) UpdateStatus(apiManagementProductPolicy *v1alpha1.ApiManagementProductPolicy) (result *v1alpha1.ApiManagementProductPolicy, err error) {
 	result = &v1alpha1.ApiManagementProductPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementproductpolicies").
 		Name(apiManagementProductPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiManagementProductPolicies) UpdateStatus(apiManagementProductPolicy *
 // Delete takes name of the apiManagementProductPolicy and deletes it. Returns an error if one occurs.
 func (c *apiManagementProductPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementproductpolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiManagementProductPolicies) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementproductpolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiManagementProductPolicies) DeleteCollection(options *v1.DeleteOption
 func (c *apiManagementProductPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementProductPolicy, err error) {
 	result = &v1alpha1.ApiManagementProductPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apimanagementproductpolicies").
 		SubResource(subresources...).
 		Name(name).

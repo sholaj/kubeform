@@ -41,32 +41,33 @@ type SsmDocumentInformer interface {
 type ssmDocumentInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSsmDocumentInformer constructs a new informer for SsmDocument type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSsmDocumentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSsmDocumentInformer(client, resyncPeriod, indexers, nil)
+func NewSsmDocumentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSsmDocumentInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSsmDocumentInformer constructs a new informer for SsmDocument type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSsmDocumentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSsmDocumentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SsmDocuments().List(options)
+				return client.AwsV1alpha1().SsmDocuments(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SsmDocuments().Watch(options)
+				return client.AwsV1alpha1().SsmDocuments(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.SsmDocument{},
@@ -76,7 +77,7 @@ func NewFilteredSsmDocumentInformer(client versioned.Interface, resyncPeriod tim
 }
 
 func (f *ssmDocumentInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSsmDocumentInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSsmDocumentInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *ssmDocumentInformer) Informer() cache.SharedIndexInformer {

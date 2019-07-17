@@ -29,8 +29,8 @@ import (
 type MqConfigurationLister interface {
 	// List lists all MqConfigurations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MqConfiguration, err error)
-	// Get retrieves the MqConfiguration from the index for a given name.
-	Get(name string) (*v1alpha1.MqConfiguration, error)
+	// MqConfigurations returns an object that can list and get MqConfigurations.
+	MqConfigurations(namespace string) MqConfigurationNamespaceLister
 	MqConfigurationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *mqConfigurationLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the MqConfiguration from the index for a given name.
-func (s *mqConfigurationLister) Get(name string) (*v1alpha1.MqConfiguration, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MqConfigurations returns an object that can list and get MqConfigurations.
+func (s *mqConfigurationLister) MqConfigurations(namespace string) MqConfigurationNamespaceLister {
+	return mqConfigurationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MqConfigurationNamespaceLister helps list and get MqConfigurations.
+type MqConfigurationNamespaceLister interface {
+	// List lists all MqConfigurations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MqConfiguration, err error)
+	// Get retrieves the MqConfiguration from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MqConfiguration, error)
+	MqConfigurationNamespaceListerExpansion
+}
+
+// mqConfigurationNamespaceLister implements the MqConfigurationNamespaceLister
+// interface.
+type mqConfigurationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MqConfigurations in the indexer for a given namespace.
+func (s mqConfigurationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MqConfiguration, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MqConfiguration))
+	})
+	return ret, err
+}
+
+// Get retrieves the MqConfiguration from the indexer for a given namespace and name.
+func (s mqConfigurationNamespaceLister) Get(name string) (*v1alpha1.MqConfiguration, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

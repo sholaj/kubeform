@@ -32,7 +32,7 @@ import (
 // DatasyncAgentsGetter has a method to return a DatasyncAgentInterface.
 // A group's client should implement this interface.
 type DatasyncAgentsGetter interface {
-	DatasyncAgents() DatasyncAgentInterface
+	DatasyncAgents(namespace string) DatasyncAgentInterface
 }
 
 // DatasyncAgentInterface has methods to work with DatasyncAgent resources.
@@ -52,12 +52,14 @@ type DatasyncAgentInterface interface {
 // datasyncAgents implements DatasyncAgentInterface
 type datasyncAgents struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDatasyncAgents returns a DatasyncAgents
-func newDatasyncAgents(c *AwsV1alpha1Client) *datasyncAgents {
+func newDatasyncAgents(c *AwsV1alpha1Client, namespace string) *datasyncAgents {
 	return &datasyncAgents{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDatasyncAgents(c *AwsV1alpha1Client) *datasyncAgents {
 func (c *datasyncAgents) Get(name string, options v1.GetOptions) (result *v1alpha1.DatasyncAgent, err error) {
 	result = &v1alpha1.DatasyncAgent{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datasyncagents").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *datasyncAgents) List(opts v1.ListOptions) (result *v1alpha1.DatasyncAge
 	}
 	result = &v1alpha1.DatasyncAgentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datasyncagents").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *datasyncAgents) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("datasyncagents").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *datasyncAgents) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *datasyncAgents) Create(datasyncAgent *v1alpha1.DatasyncAgent) (result *v1alpha1.DatasyncAgent, err error) {
 	result = &v1alpha1.DatasyncAgent{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("datasyncagents").
 		Body(datasyncAgent).
 		Do().
@@ -118,6 +124,7 @@ func (c *datasyncAgents) Create(datasyncAgent *v1alpha1.DatasyncAgent) (result *
 func (c *datasyncAgents) Update(datasyncAgent *v1alpha1.DatasyncAgent) (result *v1alpha1.DatasyncAgent, err error) {
 	result = &v1alpha1.DatasyncAgent{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datasyncagents").
 		Name(datasyncAgent.Name).
 		Body(datasyncAgent).
@@ -132,6 +139,7 @@ func (c *datasyncAgents) Update(datasyncAgent *v1alpha1.DatasyncAgent) (result *
 func (c *datasyncAgents) UpdateStatus(datasyncAgent *v1alpha1.DatasyncAgent) (result *v1alpha1.DatasyncAgent, err error) {
 	result = &v1alpha1.DatasyncAgent{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datasyncagents").
 		Name(datasyncAgent.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *datasyncAgents) UpdateStatus(datasyncAgent *v1alpha1.DatasyncAgent) (re
 // Delete takes name of the datasyncAgent and deletes it. Returns an error if one occurs.
 func (c *datasyncAgents) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datasyncagents").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *datasyncAgents) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datasyncagents").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *datasyncAgents) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *datasyncAgents) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DatasyncAgent, err error) {
 	result = &v1alpha1.DatasyncAgent{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("datasyncagents").
 		SubResource(subresources...).
 		Name(name).

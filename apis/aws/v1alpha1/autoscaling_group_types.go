@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,112 +20,113 @@ type AutoscalingGroup struct {
 
 type AutoscalingGroupSpecInitialLifecycleHook struct {
 	// +optional
-	HeartbeatTimeout    int    `json:"heartbeat_timeout,omitempty"`
-	LifecycleTransition string `json:"lifecycle_transition"`
-	Name                string `json:"name"`
+	HeartbeatTimeout    int    `json:"heartbeatTimeout,omitempty" tf:"heartbeat_timeout,omitempty"`
+	LifecycleTransition string `json:"lifecycleTransition" tf:"lifecycle_transition"`
+	Name                string `json:"name" tf:"name"`
 	// +optional
-	NotificationMetadata string `json:"notification_metadata,omitempty"`
+	NotificationMetadata string `json:"notificationMetadata,omitempty" tf:"notification_metadata,omitempty"`
 	// +optional
-	NotificationTargetArn string `json:"notification_target_arn,omitempty"`
+	NotificationTargetArn string `json:"notificationTargetArn,omitempty" tf:"notification_target_arn,omitempty"`
 	// +optional
-	RoleArn string `json:"role_arn,omitempty"`
+	RoleArn string `json:"roleArn,omitempty" tf:"role_arn,omitempty"`
 }
 
 type AutoscalingGroupSpecLaunchTemplate struct {
 	// +optional
-	Version string `json:"version,omitempty"`
+	Version string `json:"version,omitempty" tf:"version,omitempty"`
 }
 
 type AutoscalingGroupSpecMixedInstancesPolicyInstancesDistribution struct {
 	// +optional
-	OnDemandAllocationStrategy string `json:"on_demand_allocation_strategy,omitempty"`
+	OnDemandAllocationStrategy string `json:"onDemandAllocationStrategy,omitempty" tf:"on_demand_allocation_strategy,omitempty"`
 	// +optional
-	OnDemandBaseCapacity int `json:"on_demand_base_capacity,omitempty"`
+	OnDemandBaseCapacity int `json:"onDemandBaseCapacity,omitempty" tf:"on_demand_base_capacity,omitempty"`
 	// +optional
-	OnDemandPercentageAboveBaseCapacity int `json:"on_demand_percentage_above_base_capacity,omitempty"`
+	OnDemandPercentageAboveBaseCapacity int `json:"onDemandPercentageAboveBaseCapacity,omitempty" tf:"on_demand_percentage_above_base_capacity,omitempty"`
 	// +optional
-	SpotAllocationStrategy string `json:"spot_allocation_strategy,omitempty"`
+	SpotAllocationStrategy string `json:"spotAllocationStrategy,omitempty" tf:"spot_allocation_strategy,omitempty"`
 	// +optional
-	SpotMaxPrice string `json:"spot_max_price,omitempty"`
+	SpotMaxPrice string `json:"spotMaxPrice,omitempty" tf:"spot_max_price,omitempty"`
 }
 
 type AutoscalingGroupSpecMixedInstancesPolicyLaunchTemplateLaunchTemplateSpecification struct {
 	// +optional
-	Version string `json:"version,omitempty"`
+	Version string `json:"version,omitempty" tf:"version,omitempty"`
 }
 
 type AutoscalingGroupSpecMixedInstancesPolicyLaunchTemplateOverride struct {
 	// +optional
-	InstanceType string `json:"instance_type,omitempty"`
+	InstanceType string `json:"instanceType,omitempty" tf:"instance_type,omitempty"`
 }
 
 type AutoscalingGroupSpecMixedInstancesPolicyLaunchTemplate struct {
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	LaunchTemplateSpecification []AutoscalingGroupSpecMixedInstancesPolicyLaunchTemplate `json:"launch_template_specification"`
+	LaunchTemplateSpecification []AutoscalingGroupSpecMixedInstancesPolicyLaunchTemplateLaunchTemplateSpecification `json:"launchTemplateSpecification" tf:"launch_template_specification"`
 	// +optional
-	Override *[]AutoscalingGroupSpecMixedInstancesPolicyLaunchTemplate `json:"override,omitempty"`
+	Override []AutoscalingGroupSpecMixedInstancesPolicyLaunchTemplateOverride `json:"override,omitempty" tf:"override,omitempty"`
 }
 
 type AutoscalingGroupSpecMixedInstancesPolicy struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	InstancesDistribution *[]AutoscalingGroupSpecMixedInstancesPolicy `json:"instances_distribution,omitempty"`
+	InstancesDistribution []AutoscalingGroupSpecMixedInstancesPolicyInstancesDistribution `json:"instancesDistribution,omitempty" tf:"instances_distribution,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	LaunchTemplate []AutoscalingGroupSpecMixedInstancesPolicy `json:"launch_template"`
+	LaunchTemplate []AutoscalingGroupSpecMixedInstancesPolicyLaunchTemplate `json:"launchTemplate" tf:"launch_template"`
 }
 
 type AutoscalingGroupSpecTag struct {
-	Key               string `json:"key"`
-	PropagateAtLaunch bool   `json:"propagate_at_launch"`
-	Value             string `json:"value"`
+	Key               string `json:"key" tf:"key"`
+	PropagateAtLaunch bool   `json:"propagateAtLaunch" tf:"propagate_at_launch"`
+	Value             string `json:"value" tf:"value"`
 }
 
 type AutoscalingGroupSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	EnabledMetrics []string `json:"enabled_metrics,omitempty"`
+	EnabledMetrics []string `json:"enabledMetrics,omitempty" tf:"enabled_metrics,omitempty"`
 	// +optional
-	ForceDelete bool `json:"force_delete,omitempty"`
+	ForceDelete bool `json:"forceDelete,omitempty" tf:"force_delete,omitempty"`
 	// +optional
-	HealthCheckGracePeriod int `json:"health_check_grace_period,omitempty"`
+	HealthCheckGracePeriod int `json:"healthCheckGracePeriod,omitempty" tf:"health_check_grace_period,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	InitialLifecycleHook *[]AutoscalingGroupSpec `json:"initial_lifecycle_hook,omitempty"`
+	InitialLifecycleHook []AutoscalingGroupSpecInitialLifecycleHook `json:"initialLifecycleHook,omitempty" tf:"initial_lifecycle_hook,omitempty"`
 	// +optional
-	LaunchConfiguration string `json:"launch_configuration,omitempty"`
+	LaunchConfiguration string `json:"launchConfiguration,omitempty" tf:"launch_configuration,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	LaunchTemplate *[]AutoscalingGroupSpec `json:"launch_template,omitempty"`
-	MaxSize        int                     `json:"max_size"`
+	LaunchTemplate []AutoscalingGroupSpecLaunchTemplate `json:"launchTemplate,omitempty" tf:"launch_template,omitempty"`
+	MaxSize        int                                  `json:"maxSize" tf:"max_size"`
 	// +optional
-	MetricsGranularity string `json:"metrics_granularity,omitempty"`
+	MetricsGranularity string `json:"metricsGranularity,omitempty" tf:"metrics_granularity,omitempty"`
 	// +optional
-	MinElbCapacity int `json:"min_elb_capacity,omitempty"`
-	MinSize        int `json:"min_size"`
+	MinElbCapacity int `json:"minElbCapacity,omitempty" tf:"min_elb_capacity,omitempty"`
+	MinSize        int `json:"minSize" tf:"min_size"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	MixedInstancesPolicy *[]AutoscalingGroupSpec `json:"mixed_instances_policy,omitempty"`
+	MixedInstancesPolicy []AutoscalingGroupSpecMixedInstancesPolicy `json:"mixedInstancesPolicy,omitempty" tf:"mixed_instances_policy,omitempty"`
 	// +optional
-	NamePrefix string `json:"name_prefix,omitempty"`
+	NamePrefix string `json:"namePrefix,omitempty" tf:"name_prefix,omitempty"`
 	// +optional
-	PlacementGroup string `json:"placement_group,omitempty"`
+	PlacementGroup string `json:"placementGroup,omitempty" tf:"placement_group,omitempty"`
 	// +optional
-	ProtectFromScaleIn bool `json:"protect_from_scale_in,omitempty"`
-	// +optional
-	// +kubebuilder:validation:UniqueItems=true
-	SuspendedProcesses []string `json:"suspended_processes,omitempty"`
+	ProtectFromScaleIn bool `json:"protectFromScaleIn,omitempty" tf:"protect_from_scale_in,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Tag *[]AutoscalingGroupSpec `json:"tag,omitempty"`
+	SuspendedProcesses []string `json:"suspendedProcesses,omitempty" tf:"suspended_processes,omitempty"`
+	// +optional
+	// +kubebuilder:validation:UniqueItems=true
+	Tag []AutoscalingGroupSpecTag `json:"tag,omitempty" tf:"tag,omitempty"`
 	// +optional
 	// +optional
-	TerminationPolicies []string `json:"termination_policies,omitempty"`
+	TerminationPolicies []string `json:"terminationPolicies,omitempty" tf:"termination_policies,omitempty"`
 	// +optional
-	WaitForCapacityTimeout string `json:"wait_for_capacity_timeout,omitempty"`
+	WaitForCapacityTimeout string `json:"waitForCapacityTimeout,omitempty" tf:"wait_for_capacity_timeout,omitempty"`
 	// +optional
-	WaitForElbCapacity int `json:"wait_for_elb_capacity,omitempty"`
+	WaitForElbCapacity int                       `json:"waitForElbCapacity,omitempty" tf:"wait_for_elb_capacity,omitempty"`
+	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type AutoscalingGroupStatus struct {
@@ -133,7 +134,9 @@ type AutoscalingGroupStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

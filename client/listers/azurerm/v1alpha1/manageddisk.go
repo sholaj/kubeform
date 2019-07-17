@@ -29,8 +29,8 @@ import (
 type ManagedDiskLister interface {
 	// List lists all ManagedDisks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ManagedDisk, err error)
-	// Get retrieves the ManagedDisk from the index for a given name.
-	Get(name string) (*v1alpha1.ManagedDisk, error)
+	// ManagedDisks returns an object that can list and get ManagedDisks.
+	ManagedDisks(namespace string) ManagedDiskNamespaceLister
 	ManagedDiskListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *managedDiskLister) List(selector labels.Selector) (ret []*v1alpha1.Mana
 	return ret, err
 }
 
-// Get retrieves the ManagedDisk from the index for a given name.
-func (s *managedDiskLister) Get(name string) (*v1alpha1.ManagedDisk, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ManagedDisks returns an object that can list and get ManagedDisks.
+func (s *managedDiskLister) ManagedDisks(namespace string) ManagedDiskNamespaceLister {
+	return managedDiskNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ManagedDiskNamespaceLister helps list and get ManagedDisks.
+type ManagedDiskNamespaceLister interface {
+	// List lists all ManagedDisks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ManagedDisk, err error)
+	// Get retrieves the ManagedDisk from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ManagedDisk, error)
+	ManagedDiskNamespaceListerExpansion
+}
+
+// managedDiskNamespaceLister implements the ManagedDiskNamespaceLister
+// interface.
+type managedDiskNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ManagedDisks in the indexer for a given namespace.
+func (s managedDiskNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ManagedDisk, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ManagedDisk))
+	})
+	return ret, err
+}
+
+// Get retrieves the ManagedDisk from the indexer for a given namespace and name.
+func (s managedDiskNamespaceLister) Get(name string) (*v1alpha1.ManagedDisk, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

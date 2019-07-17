@@ -32,7 +32,7 @@ import (
 // StreamAnalyticsStreamInputIothubsGetter has a method to return a StreamAnalyticsStreamInputIothubInterface.
 // A group's client should implement this interface.
 type StreamAnalyticsStreamInputIothubsGetter interface {
-	StreamAnalyticsStreamInputIothubs() StreamAnalyticsStreamInputIothubInterface
+	StreamAnalyticsStreamInputIothubs(namespace string) StreamAnalyticsStreamInputIothubInterface
 }
 
 // StreamAnalyticsStreamInputIothubInterface has methods to work with StreamAnalyticsStreamInputIothub resources.
@@ -52,12 +52,14 @@ type StreamAnalyticsStreamInputIothubInterface interface {
 // streamAnalyticsStreamInputIothubs implements StreamAnalyticsStreamInputIothubInterface
 type streamAnalyticsStreamInputIothubs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStreamAnalyticsStreamInputIothubs returns a StreamAnalyticsStreamInputIothubs
-func newStreamAnalyticsStreamInputIothubs(c *AzurermV1alpha1Client) *streamAnalyticsStreamInputIothubs {
+func newStreamAnalyticsStreamInputIothubs(c *AzurermV1alpha1Client, namespace string) *streamAnalyticsStreamInputIothubs {
 	return &streamAnalyticsStreamInputIothubs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStreamAnalyticsStreamInputIothubs(c *AzurermV1alpha1Client) *streamAnaly
 func (c *streamAnalyticsStreamInputIothubs) Get(name string, options v1.GetOptions) (result *v1alpha1.StreamAnalyticsStreamInputIothub, err error) {
 	result = &v1alpha1.StreamAnalyticsStreamInputIothub{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("streamanalyticsstreaminputiothubs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *streamAnalyticsStreamInputIothubs) List(opts v1.ListOptions) (result *v
 	}
 	result = &v1alpha1.StreamAnalyticsStreamInputIothubList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("streamanalyticsstreaminputiothubs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *streamAnalyticsStreamInputIothubs) Watch(opts v1.ListOptions) (watch.In
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("streamanalyticsstreaminputiothubs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *streamAnalyticsStreamInputIothubs) Watch(opts v1.ListOptions) (watch.In
 func (c *streamAnalyticsStreamInputIothubs) Create(streamAnalyticsStreamInputIothub *v1alpha1.StreamAnalyticsStreamInputIothub) (result *v1alpha1.StreamAnalyticsStreamInputIothub, err error) {
 	result = &v1alpha1.StreamAnalyticsStreamInputIothub{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("streamanalyticsstreaminputiothubs").
 		Body(streamAnalyticsStreamInputIothub).
 		Do().
@@ -118,6 +124,7 @@ func (c *streamAnalyticsStreamInputIothubs) Create(streamAnalyticsStreamInputIot
 func (c *streamAnalyticsStreamInputIothubs) Update(streamAnalyticsStreamInputIothub *v1alpha1.StreamAnalyticsStreamInputIothub) (result *v1alpha1.StreamAnalyticsStreamInputIothub, err error) {
 	result = &v1alpha1.StreamAnalyticsStreamInputIothub{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("streamanalyticsstreaminputiothubs").
 		Name(streamAnalyticsStreamInputIothub.Name).
 		Body(streamAnalyticsStreamInputIothub).
@@ -132,6 +139,7 @@ func (c *streamAnalyticsStreamInputIothubs) Update(streamAnalyticsStreamInputIot
 func (c *streamAnalyticsStreamInputIothubs) UpdateStatus(streamAnalyticsStreamInputIothub *v1alpha1.StreamAnalyticsStreamInputIothub) (result *v1alpha1.StreamAnalyticsStreamInputIothub, err error) {
 	result = &v1alpha1.StreamAnalyticsStreamInputIothub{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("streamanalyticsstreaminputiothubs").
 		Name(streamAnalyticsStreamInputIothub.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *streamAnalyticsStreamInputIothubs) UpdateStatus(streamAnalyticsStreamIn
 // Delete takes name of the streamAnalyticsStreamInputIothub and deletes it. Returns an error if one occurs.
 func (c *streamAnalyticsStreamInputIothubs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("streamanalyticsstreaminputiothubs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *streamAnalyticsStreamInputIothubs) DeleteCollection(options *v1.DeleteO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("streamanalyticsstreaminputiothubs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *streamAnalyticsStreamInputIothubs) DeleteCollection(options *v1.DeleteO
 func (c *streamAnalyticsStreamInputIothubs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StreamAnalyticsStreamInputIothub, err error) {
 	result = &v1alpha1.StreamAnalyticsStreamInputIothub{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("streamanalyticsstreaminputiothubs").
 		SubResource(subresources...).
 		Name(name).

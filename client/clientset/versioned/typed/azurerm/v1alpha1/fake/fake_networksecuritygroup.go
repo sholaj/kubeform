@@ -31,6 +31,7 @@ import (
 // FakeNetworkSecurityGroups implements NetworkSecurityGroupInterface
 type FakeNetworkSecurityGroups struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var networksecuritygroupsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "networksecuritygroups"}
@@ -40,7 +41,8 @@ var networksecuritygroupsKind = schema.GroupVersionKind{Group: "azurerm.kubeform
 // Get takes name of the networkSecurityGroup, and returns the corresponding networkSecurityGroup object, and an error if there is any.
 func (c *FakeNetworkSecurityGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkSecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(networksecuritygroupsResource, name), &v1alpha1.NetworkSecurityGroup{})
+		Invokes(testing.NewGetAction(networksecuritygroupsResource, c.ns, name), &v1alpha1.NetworkSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeNetworkSecurityGroups) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of NetworkSecurityGroups that match those selectors.
 func (c *FakeNetworkSecurityGroups) List(opts v1.ListOptions) (result *v1alpha1.NetworkSecurityGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(networksecuritygroupsResource, networksecuritygroupsKind, opts), &v1alpha1.NetworkSecurityGroupList{})
+		Invokes(testing.NewListAction(networksecuritygroupsResource, networksecuritygroupsKind, c.ns, opts), &v1alpha1.NetworkSecurityGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeNetworkSecurityGroups) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested networkSecurityGroups.
 func (c *FakeNetworkSecurityGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(networksecuritygroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(networksecuritygroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a networkSecurityGroup and creates it.  Returns the server's representation of the networkSecurityGroup, and an error, if there is any.
 func (c *FakeNetworkSecurityGroups) Create(networkSecurityGroup *v1alpha1.NetworkSecurityGroup) (result *v1alpha1.NetworkSecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(networksecuritygroupsResource, networkSecurityGroup), &v1alpha1.NetworkSecurityGroup{})
+		Invokes(testing.NewCreateAction(networksecuritygroupsResource, c.ns, networkSecurityGroup), &v1alpha1.NetworkSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeNetworkSecurityGroups) Create(networkSecurityGroup *v1alpha1.Networ
 // Update takes the representation of a networkSecurityGroup and updates it. Returns the server's representation of the networkSecurityGroup, and an error, if there is any.
 func (c *FakeNetworkSecurityGroups) Update(networkSecurityGroup *v1alpha1.NetworkSecurityGroup) (result *v1alpha1.NetworkSecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(networksecuritygroupsResource, networkSecurityGroup), &v1alpha1.NetworkSecurityGroup{})
+		Invokes(testing.NewUpdateAction(networksecuritygroupsResource, c.ns, networkSecurityGroup), &v1alpha1.NetworkSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeNetworkSecurityGroups) Update(networkSecurityGroup *v1alpha1.Networ
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNetworkSecurityGroups) UpdateStatus(networkSecurityGroup *v1alpha1.NetworkSecurityGroup) (*v1alpha1.NetworkSecurityGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(networksecuritygroupsResource, "status", networkSecurityGroup), &v1alpha1.NetworkSecurityGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(networksecuritygroupsResource, "status", c.ns, networkSecurityGroup), &v1alpha1.NetworkSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeNetworkSecurityGroups) UpdateStatus(networkSecurityGroup *v1alpha1.
 // Delete takes name of the networkSecurityGroup and deletes it. Returns an error if one occurs.
 func (c *FakeNetworkSecurityGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(networksecuritygroupsResource, name), &v1alpha1.NetworkSecurityGroup{})
+		Invokes(testing.NewDeleteAction(networksecuritygroupsResource, c.ns, name), &v1alpha1.NetworkSecurityGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNetworkSecurityGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(networksecuritygroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(networksecuritygroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NetworkSecurityGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeNetworkSecurityGroups) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched networkSecurityGroup.
 func (c *FakeNetworkSecurityGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkSecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(networksecuritygroupsResource, name, pt, data, subresources...), &v1alpha1.NetworkSecurityGroup{})
+		Invokes(testing.NewPatchSubresourceAction(networksecuritygroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.NetworkSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

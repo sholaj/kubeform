@@ -29,8 +29,8 @@ import (
 type AutoscalingLifecycleHookLister interface {
 	// List lists all AutoscalingLifecycleHooks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AutoscalingLifecycleHook, err error)
-	// Get retrieves the AutoscalingLifecycleHook from the index for a given name.
-	Get(name string) (*v1alpha1.AutoscalingLifecycleHook, error)
+	// AutoscalingLifecycleHooks returns an object that can list and get AutoscalingLifecycleHooks.
+	AutoscalingLifecycleHooks(namespace string) AutoscalingLifecycleHookNamespaceLister
 	AutoscalingLifecycleHookListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *autoscalingLifecycleHookLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the AutoscalingLifecycleHook from the index for a given name.
-func (s *autoscalingLifecycleHookLister) Get(name string) (*v1alpha1.AutoscalingLifecycleHook, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AutoscalingLifecycleHooks returns an object that can list and get AutoscalingLifecycleHooks.
+func (s *autoscalingLifecycleHookLister) AutoscalingLifecycleHooks(namespace string) AutoscalingLifecycleHookNamespaceLister {
+	return autoscalingLifecycleHookNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AutoscalingLifecycleHookNamespaceLister helps list and get AutoscalingLifecycleHooks.
+type AutoscalingLifecycleHookNamespaceLister interface {
+	// List lists all AutoscalingLifecycleHooks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AutoscalingLifecycleHook, err error)
+	// Get retrieves the AutoscalingLifecycleHook from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AutoscalingLifecycleHook, error)
+	AutoscalingLifecycleHookNamespaceListerExpansion
+}
+
+// autoscalingLifecycleHookNamespaceLister implements the AutoscalingLifecycleHookNamespaceLister
+// interface.
+type autoscalingLifecycleHookNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AutoscalingLifecycleHooks in the indexer for a given namespace.
+func (s autoscalingLifecycleHookNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AutoscalingLifecycleHook, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AutoscalingLifecycleHook))
+	})
+	return ret, err
+}
+
+// Get retrieves the AutoscalingLifecycleHook from the indexer for a given namespace and name.
+func (s autoscalingLifecycleHookNamespaceLister) Get(name string) (*v1alpha1.AutoscalingLifecycleHook, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

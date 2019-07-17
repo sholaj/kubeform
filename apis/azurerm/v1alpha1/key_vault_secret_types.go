@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,9 +20,10 @@ type KeyVaultSecret struct {
 
 type KeyVaultSecretSpec struct {
 	// +optional
-	ContentType string `json:"content_type,omitempty"`
-	Name        string `json:"name"`
-	Value       string `json:"value"`
+	ContentType string                    `json:"contentType,omitempty" tf:"content_type,omitempty"`
+	Name        string                    `json:"name" tf:"name"`
+	Value       string                    `json:"value" tf:"value"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type KeyVaultSecretStatus struct {
@@ -30,7 +31,9 @@ type KeyVaultSecretStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -29,8 +29,8 @@ import (
 type StoragegatewayWorkingStorageLister interface {
 	// List lists all StoragegatewayWorkingStorages in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StoragegatewayWorkingStorage, err error)
-	// Get retrieves the StoragegatewayWorkingStorage from the index for a given name.
-	Get(name string) (*v1alpha1.StoragegatewayWorkingStorage, error)
+	// StoragegatewayWorkingStorages returns an object that can list and get StoragegatewayWorkingStorages.
+	StoragegatewayWorkingStorages(namespace string) StoragegatewayWorkingStorageNamespaceLister
 	StoragegatewayWorkingStorageListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *storagegatewayWorkingStorageLister) List(selector labels.Selector) (ret
 	return ret, err
 }
 
-// Get retrieves the StoragegatewayWorkingStorage from the index for a given name.
-func (s *storagegatewayWorkingStorageLister) Get(name string) (*v1alpha1.StoragegatewayWorkingStorage, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StoragegatewayWorkingStorages returns an object that can list and get StoragegatewayWorkingStorages.
+func (s *storagegatewayWorkingStorageLister) StoragegatewayWorkingStorages(namespace string) StoragegatewayWorkingStorageNamespaceLister {
+	return storagegatewayWorkingStorageNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StoragegatewayWorkingStorageNamespaceLister helps list and get StoragegatewayWorkingStorages.
+type StoragegatewayWorkingStorageNamespaceLister interface {
+	// List lists all StoragegatewayWorkingStorages in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StoragegatewayWorkingStorage, err error)
+	// Get retrieves the StoragegatewayWorkingStorage from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StoragegatewayWorkingStorage, error)
+	StoragegatewayWorkingStorageNamespaceListerExpansion
+}
+
+// storagegatewayWorkingStorageNamespaceLister implements the StoragegatewayWorkingStorageNamespaceLister
+// interface.
+type storagegatewayWorkingStorageNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StoragegatewayWorkingStorages in the indexer for a given namespace.
+func (s storagegatewayWorkingStorageNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StoragegatewayWorkingStorage, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StoragegatewayWorkingStorage))
+	})
+	return ret, err
+}
+
+// Get retrieves the StoragegatewayWorkingStorage from the indexer for a given namespace and name.
+func (s storagegatewayWorkingStorageNamespaceLister) Get(name string) (*v1alpha1.StoragegatewayWorkingStorage, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

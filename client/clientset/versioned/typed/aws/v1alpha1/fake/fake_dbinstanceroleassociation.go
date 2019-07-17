@@ -31,6 +31,7 @@ import (
 // FakeDbInstanceRoleAssociations implements DbInstanceRoleAssociationInterface
 type FakeDbInstanceRoleAssociations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var dbinstanceroleassociationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "dbinstanceroleassociations"}
@@ -40,7 +41,8 @@ var dbinstanceroleassociationsKind = schema.GroupVersionKind{Group: "aws.kubefor
 // Get takes name of the dbInstanceRoleAssociation, and returns the corresponding dbInstanceRoleAssociation object, and an error if there is any.
 func (c *FakeDbInstanceRoleAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.DbInstanceRoleAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(dbinstanceroleassociationsResource, name), &v1alpha1.DbInstanceRoleAssociation{})
+		Invokes(testing.NewGetAction(dbinstanceroleassociationsResource, c.ns, name), &v1alpha1.DbInstanceRoleAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDbInstanceRoleAssociations) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of DbInstanceRoleAssociations that match those selectors.
 func (c *FakeDbInstanceRoleAssociations) List(opts v1.ListOptions) (result *v1alpha1.DbInstanceRoleAssociationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(dbinstanceroleassociationsResource, dbinstanceroleassociationsKind, opts), &v1alpha1.DbInstanceRoleAssociationList{})
+		Invokes(testing.NewListAction(dbinstanceroleassociationsResource, dbinstanceroleassociationsKind, c.ns, opts), &v1alpha1.DbInstanceRoleAssociationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDbInstanceRoleAssociations) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested dbInstanceRoleAssociations.
 func (c *FakeDbInstanceRoleAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(dbinstanceroleassociationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(dbinstanceroleassociationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dbInstanceRoleAssociation and creates it.  Returns the server's representation of the dbInstanceRoleAssociation, and an error, if there is any.
 func (c *FakeDbInstanceRoleAssociations) Create(dbInstanceRoleAssociation *v1alpha1.DbInstanceRoleAssociation) (result *v1alpha1.DbInstanceRoleAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(dbinstanceroleassociationsResource, dbInstanceRoleAssociation), &v1alpha1.DbInstanceRoleAssociation{})
+		Invokes(testing.NewCreateAction(dbinstanceroleassociationsResource, c.ns, dbInstanceRoleAssociation), &v1alpha1.DbInstanceRoleAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDbInstanceRoleAssociations) Create(dbInstanceRoleAssociation *v1alp
 // Update takes the representation of a dbInstanceRoleAssociation and updates it. Returns the server's representation of the dbInstanceRoleAssociation, and an error, if there is any.
 func (c *FakeDbInstanceRoleAssociations) Update(dbInstanceRoleAssociation *v1alpha1.DbInstanceRoleAssociation) (result *v1alpha1.DbInstanceRoleAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(dbinstanceroleassociationsResource, dbInstanceRoleAssociation), &v1alpha1.DbInstanceRoleAssociation{})
+		Invokes(testing.NewUpdateAction(dbinstanceroleassociationsResource, c.ns, dbInstanceRoleAssociation), &v1alpha1.DbInstanceRoleAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDbInstanceRoleAssociations) Update(dbInstanceRoleAssociation *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDbInstanceRoleAssociations) UpdateStatus(dbInstanceRoleAssociation *v1alpha1.DbInstanceRoleAssociation) (*v1alpha1.DbInstanceRoleAssociation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(dbinstanceroleassociationsResource, "status", dbInstanceRoleAssociation), &v1alpha1.DbInstanceRoleAssociation{})
+		Invokes(testing.NewUpdateSubresourceAction(dbinstanceroleassociationsResource, "status", c.ns, dbInstanceRoleAssociation), &v1alpha1.DbInstanceRoleAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDbInstanceRoleAssociations) UpdateStatus(dbInstanceRoleAssociation 
 // Delete takes name of the dbInstanceRoleAssociation and deletes it. Returns an error if one occurs.
 func (c *FakeDbInstanceRoleAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(dbinstanceroleassociationsResource, name), &v1alpha1.DbInstanceRoleAssociation{})
+		Invokes(testing.NewDeleteAction(dbinstanceroleassociationsResource, c.ns, name), &v1alpha1.DbInstanceRoleAssociation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDbInstanceRoleAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(dbinstanceroleassociationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(dbinstanceroleassociationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DbInstanceRoleAssociationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDbInstanceRoleAssociations) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched dbInstanceRoleAssociation.
 func (c *FakeDbInstanceRoleAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DbInstanceRoleAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(dbinstanceroleassociationsResource, name, pt, data, subresources...), &v1alpha1.DbInstanceRoleAssociation{})
+		Invokes(testing.NewPatchSubresourceAction(dbinstanceroleassociationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DbInstanceRoleAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}

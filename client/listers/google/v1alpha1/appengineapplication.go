@@ -29,8 +29,8 @@ import (
 type AppEngineApplicationLister interface {
 	// List lists all AppEngineApplications in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AppEngineApplication, err error)
-	// Get retrieves the AppEngineApplication from the index for a given name.
-	Get(name string) (*v1alpha1.AppEngineApplication, error)
+	// AppEngineApplications returns an object that can list and get AppEngineApplications.
+	AppEngineApplications(namespace string) AppEngineApplicationNamespaceLister
 	AppEngineApplicationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *appEngineApplicationLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the AppEngineApplication from the index for a given name.
-func (s *appEngineApplicationLister) Get(name string) (*v1alpha1.AppEngineApplication, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AppEngineApplications returns an object that can list and get AppEngineApplications.
+func (s *appEngineApplicationLister) AppEngineApplications(namespace string) AppEngineApplicationNamespaceLister {
+	return appEngineApplicationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AppEngineApplicationNamespaceLister helps list and get AppEngineApplications.
+type AppEngineApplicationNamespaceLister interface {
+	// List lists all AppEngineApplications in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AppEngineApplication, err error)
+	// Get retrieves the AppEngineApplication from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AppEngineApplication, error)
+	AppEngineApplicationNamespaceListerExpansion
+}
+
+// appEngineApplicationNamespaceLister implements the AppEngineApplicationNamespaceLister
+// interface.
+type appEngineApplicationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AppEngineApplications in the indexer for a given namespace.
+func (s appEngineApplicationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AppEngineApplication, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AppEngineApplication))
+	})
+	return ret, err
+}
+
+// Get retrieves the AppEngineApplication from the indexer for a given namespace and name.
+func (s appEngineApplicationNamespaceLister) Get(name string) (*v1alpha1.AppEngineApplication, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

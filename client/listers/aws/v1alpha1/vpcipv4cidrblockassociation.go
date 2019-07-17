@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// VpcIpv4CidrBlockAssociationLister helps list VpcIpv4CidrBlockAssociations.
-type VpcIpv4CidrBlockAssociationLister interface {
-	// List lists all VpcIpv4CidrBlockAssociations in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.VpcIpv4CidrBlockAssociation, err error)
-	// Get retrieves the VpcIpv4CidrBlockAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.VpcIpv4CidrBlockAssociation, error)
-	VpcIpv4CidrBlockAssociationListerExpansion
+// VpcIpv4CIDRBlockAssociationLister helps list VpcIpv4CIDRBlockAssociations.
+type VpcIpv4CIDRBlockAssociationLister interface {
+	// List lists all VpcIpv4CIDRBlockAssociations in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.VpcIpv4CIDRBlockAssociation, err error)
+	// VpcIpv4CIDRBlockAssociations returns an object that can list and get VpcIpv4CIDRBlockAssociations.
+	VpcIpv4CIDRBlockAssociations(namespace string) VpcIpv4CIDRBlockAssociationNamespaceLister
+	VpcIpv4CIDRBlockAssociationListerExpansion
 }
 
-// vpcIpv4CidrBlockAssociationLister implements the VpcIpv4CidrBlockAssociationLister interface.
-type vpcIpv4CidrBlockAssociationLister struct {
+// vpcIpv4CIDRBlockAssociationLister implements the VpcIpv4CIDRBlockAssociationLister interface.
+type vpcIpv4CIDRBlockAssociationLister struct {
 	indexer cache.Indexer
 }
 
-// NewVpcIpv4CidrBlockAssociationLister returns a new VpcIpv4CidrBlockAssociationLister.
-func NewVpcIpv4CidrBlockAssociationLister(indexer cache.Indexer) VpcIpv4CidrBlockAssociationLister {
-	return &vpcIpv4CidrBlockAssociationLister{indexer: indexer}
+// NewVpcIpv4CIDRBlockAssociationLister returns a new VpcIpv4CIDRBlockAssociationLister.
+func NewVpcIpv4CIDRBlockAssociationLister(indexer cache.Indexer) VpcIpv4CIDRBlockAssociationLister {
+	return &vpcIpv4CIDRBlockAssociationLister{indexer: indexer}
 }
 
-// List lists all VpcIpv4CidrBlockAssociations in the indexer.
-func (s *vpcIpv4CidrBlockAssociationLister) List(selector labels.Selector) (ret []*v1alpha1.VpcIpv4CidrBlockAssociation, err error) {
+// List lists all VpcIpv4CIDRBlockAssociations in the indexer.
+func (s *vpcIpv4CIDRBlockAssociationLister) List(selector labels.Selector) (ret []*v1alpha1.VpcIpv4CIDRBlockAssociation, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.VpcIpv4CidrBlockAssociation))
+		ret = append(ret, m.(*v1alpha1.VpcIpv4CIDRBlockAssociation))
 	})
 	return ret, err
 }
 
-// Get retrieves the VpcIpv4CidrBlockAssociation from the index for a given name.
-func (s *vpcIpv4CidrBlockAssociationLister) Get(name string) (*v1alpha1.VpcIpv4CidrBlockAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VpcIpv4CIDRBlockAssociations returns an object that can list and get VpcIpv4CIDRBlockAssociations.
+func (s *vpcIpv4CIDRBlockAssociationLister) VpcIpv4CIDRBlockAssociations(namespace string) VpcIpv4CIDRBlockAssociationNamespaceLister {
+	return vpcIpv4CIDRBlockAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VpcIpv4CIDRBlockAssociationNamespaceLister helps list and get VpcIpv4CIDRBlockAssociations.
+type VpcIpv4CIDRBlockAssociationNamespaceLister interface {
+	// List lists all VpcIpv4CIDRBlockAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VpcIpv4CIDRBlockAssociation, err error)
+	// Get retrieves the VpcIpv4CIDRBlockAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VpcIpv4CIDRBlockAssociation, error)
+	VpcIpv4CIDRBlockAssociationNamespaceListerExpansion
+}
+
+// vpcIpv4CIDRBlockAssociationNamespaceLister implements the VpcIpv4CIDRBlockAssociationNamespaceLister
+// interface.
+type vpcIpv4CIDRBlockAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VpcIpv4CIDRBlockAssociations in the indexer for a given namespace.
+func (s vpcIpv4CIDRBlockAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VpcIpv4CIDRBlockAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VpcIpv4CIDRBlockAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the VpcIpv4CIDRBlockAssociation from the indexer for a given namespace and name.
+func (s vpcIpv4CIDRBlockAssociationNamespaceLister) Get(name string) (*v1alpha1.VpcIpv4CIDRBlockAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("vpcipv4cidrblockassociation"), name)
 	}
-	return obj.(*v1alpha1.VpcIpv4CidrBlockAssociation), nil
+	return obj.(*v1alpha1.VpcIpv4CIDRBlockAssociation), nil
 }

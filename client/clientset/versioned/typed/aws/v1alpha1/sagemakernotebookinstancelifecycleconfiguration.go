@@ -32,7 +32,7 @@ import (
 // SagemakerNotebookInstanceLifecycleConfigurationsGetter has a method to return a SagemakerNotebookInstanceLifecycleConfigurationInterface.
 // A group's client should implement this interface.
 type SagemakerNotebookInstanceLifecycleConfigurationsGetter interface {
-	SagemakerNotebookInstanceLifecycleConfigurations() SagemakerNotebookInstanceLifecycleConfigurationInterface
+	SagemakerNotebookInstanceLifecycleConfigurations(namespace string) SagemakerNotebookInstanceLifecycleConfigurationInterface
 }
 
 // SagemakerNotebookInstanceLifecycleConfigurationInterface has methods to work with SagemakerNotebookInstanceLifecycleConfiguration resources.
@@ -52,12 +52,14 @@ type SagemakerNotebookInstanceLifecycleConfigurationInterface interface {
 // sagemakerNotebookInstanceLifecycleConfigurations implements SagemakerNotebookInstanceLifecycleConfigurationInterface
 type sagemakerNotebookInstanceLifecycleConfigurations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSagemakerNotebookInstanceLifecycleConfigurations returns a SagemakerNotebookInstanceLifecycleConfigurations
-func newSagemakerNotebookInstanceLifecycleConfigurations(c *AwsV1alpha1Client) *sagemakerNotebookInstanceLifecycleConfigurations {
+func newSagemakerNotebookInstanceLifecycleConfigurations(c *AwsV1alpha1Client, namespace string) *sagemakerNotebookInstanceLifecycleConfigurations {
 	return &sagemakerNotebookInstanceLifecycleConfigurations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSagemakerNotebookInstanceLifecycleConfigurations(c *AwsV1alpha1Client) *
 func (c *sagemakerNotebookInstanceLifecycleConfigurations) Get(name string, options v1.GetOptions) (result *v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration, err error) {
 	result = &v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sagemakernotebookinstancelifecycleconfigurations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sagemakerNotebookInstanceLifecycleConfigurations) List(opts v1.ListOpti
 	}
 	result = &v1alpha1.SagemakerNotebookInstanceLifecycleConfigurationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sagemakernotebookinstancelifecycleconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sagemakerNotebookInstanceLifecycleConfigurations) Watch(opts v1.ListOpt
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sagemakernotebookinstancelifecycleconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sagemakerNotebookInstanceLifecycleConfigurations) Watch(opts v1.ListOpt
 func (c *sagemakerNotebookInstanceLifecycleConfigurations) Create(sagemakerNotebookInstanceLifecycleConfiguration *v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration) (result *v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration, err error) {
 	result = &v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sagemakernotebookinstancelifecycleconfigurations").
 		Body(sagemakerNotebookInstanceLifecycleConfiguration).
 		Do().
@@ -118,6 +124,7 @@ func (c *sagemakerNotebookInstanceLifecycleConfigurations) Create(sagemakerNoteb
 func (c *sagemakerNotebookInstanceLifecycleConfigurations) Update(sagemakerNotebookInstanceLifecycleConfiguration *v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration) (result *v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration, err error) {
 	result = &v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sagemakernotebookinstancelifecycleconfigurations").
 		Name(sagemakerNotebookInstanceLifecycleConfiguration.Name).
 		Body(sagemakerNotebookInstanceLifecycleConfiguration).
@@ -132,6 +139,7 @@ func (c *sagemakerNotebookInstanceLifecycleConfigurations) Update(sagemakerNoteb
 func (c *sagemakerNotebookInstanceLifecycleConfigurations) UpdateStatus(sagemakerNotebookInstanceLifecycleConfiguration *v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration) (result *v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration, err error) {
 	result = &v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sagemakernotebookinstancelifecycleconfigurations").
 		Name(sagemakerNotebookInstanceLifecycleConfiguration.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sagemakerNotebookInstanceLifecycleConfigurations) UpdateStatus(sagemake
 // Delete takes name of the sagemakerNotebookInstanceLifecycleConfiguration and deletes it. Returns an error if one occurs.
 func (c *sagemakerNotebookInstanceLifecycleConfigurations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sagemakernotebookinstancelifecycleconfigurations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sagemakerNotebookInstanceLifecycleConfigurations) DeleteCollection(opti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sagemakernotebookinstancelifecycleconfigurations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sagemakerNotebookInstanceLifecycleConfigurations) DeleteCollection(opti
 func (c *sagemakerNotebookInstanceLifecycleConfigurations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration, err error) {
 	result = &v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sagemakernotebookinstancelifecycleconfigurations").
 		SubResource(subresources...).
 		Name(name).

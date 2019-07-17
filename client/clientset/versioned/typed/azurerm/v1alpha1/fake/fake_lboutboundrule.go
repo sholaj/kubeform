@@ -31,6 +31,7 @@ import (
 // FakeLbOutboundRules implements LbOutboundRuleInterface
 type FakeLbOutboundRules struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var lboutboundrulesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "lboutboundrules"}
@@ -40,7 +41,8 @@ var lboutboundrulesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com",
 // Get takes name of the lbOutboundRule, and returns the corresponding lbOutboundRule object, and an error if there is any.
 func (c *FakeLbOutboundRules) Get(name string, options v1.GetOptions) (result *v1alpha1.LbOutboundRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(lboutboundrulesResource, name), &v1alpha1.LbOutboundRule{})
+		Invokes(testing.NewGetAction(lboutboundrulesResource, c.ns, name), &v1alpha1.LbOutboundRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLbOutboundRules) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of LbOutboundRules that match those selectors.
 func (c *FakeLbOutboundRules) List(opts v1.ListOptions) (result *v1alpha1.LbOutboundRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(lboutboundrulesResource, lboutboundrulesKind, opts), &v1alpha1.LbOutboundRuleList{})
+		Invokes(testing.NewListAction(lboutboundrulesResource, lboutboundrulesKind, c.ns, opts), &v1alpha1.LbOutboundRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLbOutboundRules) List(opts v1.ListOptions) (result *v1alpha1.LbOutb
 // Watch returns a watch.Interface that watches the requested lbOutboundRules.
 func (c *FakeLbOutboundRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(lboutboundrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(lboutboundrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a lbOutboundRule and creates it.  Returns the server's representation of the lbOutboundRule, and an error, if there is any.
 func (c *FakeLbOutboundRules) Create(lbOutboundRule *v1alpha1.LbOutboundRule) (result *v1alpha1.LbOutboundRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(lboutboundrulesResource, lbOutboundRule), &v1alpha1.LbOutboundRule{})
+		Invokes(testing.NewCreateAction(lboutboundrulesResource, c.ns, lbOutboundRule), &v1alpha1.LbOutboundRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLbOutboundRules) Create(lbOutboundRule *v1alpha1.LbOutboundRule) (r
 // Update takes the representation of a lbOutboundRule and updates it. Returns the server's representation of the lbOutboundRule, and an error, if there is any.
 func (c *FakeLbOutboundRules) Update(lbOutboundRule *v1alpha1.LbOutboundRule) (result *v1alpha1.LbOutboundRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(lboutboundrulesResource, lbOutboundRule), &v1alpha1.LbOutboundRule{})
+		Invokes(testing.NewUpdateAction(lboutboundrulesResource, c.ns, lbOutboundRule), &v1alpha1.LbOutboundRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLbOutboundRules) Update(lbOutboundRule *v1alpha1.LbOutboundRule) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLbOutboundRules) UpdateStatus(lbOutboundRule *v1alpha1.LbOutboundRule) (*v1alpha1.LbOutboundRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(lboutboundrulesResource, "status", lbOutboundRule), &v1alpha1.LbOutboundRule{})
+		Invokes(testing.NewUpdateSubresourceAction(lboutboundrulesResource, "status", c.ns, lbOutboundRule), &v1alpha1.LbOutboundRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLbOutboundRules) UpdateStatus(lbOutboundRule *v1alpha1.LbOutboundRu
 // Delete takes name of the lbOutboundRule and deletes it. Returns an error if one occurs.
 func (c *FakeLbOutboundRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(lboutboundrulesResource, name), &v1alpha1.LbOutboundRule{})
+		Invokes(testing.NewDeleteAction(lboutboundrulesResource, c.ns, name), &v1alpha1.LbOutboundRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLbOutboundRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(lboutboundrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(lboutboundrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LbOutboundRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLbOutboundRules) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched lbOutboundRule.
 func (c *FakeLbOutboundRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbOutboundRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(lboutboundrulesResource, name, pt, data, subresources...), &v1alpha1.LbOutboundRule{})
+		Invokes(testing.NewPatchSubresourceAction(lboutboundrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.LbOutboundRule{})
+
 	if obj == nil {
 		return nil, err
 	}

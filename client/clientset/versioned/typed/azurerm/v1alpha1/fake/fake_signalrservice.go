@@ -31,6 +31,7 @@ import (
 // FakeSignalrServices implements SignalrServiceInterface
 type FakeSignalrServices struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var signalrservicesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "signalrservices"}
@@ -40,7 +41,8 @@ var signalrservicesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com",
 // Get takes name of the signalrService, and returns the corresponding signalrService object, and an error if there is any.
 func (c *FakeSignalrServices) Get(name string, options v1.GetOptions) (result *v1alpha1.SignalrService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(signalrservicesResource, name), &v1alpha1.SignalrService{})
+		Invokes(testing.NewGetAction(signalrservicesResource, c.ns, name), &v1alpha1.SignalrService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSignalrServices) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of SignalrServices that match those selectors.
 func (c *FakeSignalrServices) List(opts v1.ListOptions) (result *v1alpha1.SignalrServiceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(signalrservicesResource, signalrservicesKind, opts), &v1alpha1.SignalrServiceList{})
+		Invokes(testing.NewListAction(signalrservicesResource, signalrservicesKind, c.ns, opts), &v1alpha1.SignalrServiceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSignalrServices) List(opts v1.ListOptions) (result *v1alpha1.Signal
 // Watch returns a watch.Interface that watches the requested signalrServices.
 func (c *FakeSignalrServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(signalrservicesResource, opts))
+		InvokesWatch(testing.NewWatchAction(signalrservicesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a signalrService and creates it.  Returns the server's representation of the signalrService, and an error, if there is any.
 func (c *FakeSignalrServices) Create(signalrService *v1alpha1.SignalrService) (result *v1alpha1.SignalrService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(signalrservicesResource, signalrService), &v1alpha1.SignalrService{})
+		Invokes(testing.NewCreateAction(signalrservicesResource, c.ns, signalrService), &v1alpha1.SignalrService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSignalrServices) Create(signalrService *v1alpha1.SignalrService) (r
 // Update takes the representation of a signalrService and updates it. Returns the server's representation of the signalrService, and an error, if there is any.
 func (c *FakeSignalrServices) Update(signalrService *v1alpha1.SignalrService) (result *v1alpha1.SignalrService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(signalrservicesResource, signalrService), &v1alpha1.SignalrService{})
+		Invokes(testing.NewUpdateAction(signalrservicesResource, c.ns, signalrService), &v1alpha1.SignalrService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSignalrServices) Update(signalrService *v1alpha1.SignalrService) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSignalrServices) UpdateStatus(signalrService *v1alpha1.SignalrService) (*v1alpha1.SignalrService, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(signalrservicesResource, "status", signalrService), &v1alpha1.SignalrService{})
+		Invokes(testing.NewUpdateSubresourceAction(signalrservicesResource, "status", c.ns, signalrService), &v1alpha1.SignalrService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSignalrServices) UpdateStatus(signalrService *v1alpha1.SignalrServi
 // Delete takes name of the signalrService and deletes it. Returns an error if one occurs.
 func (c *FakeSignalrServices) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(signalrservicesResource, name), &v1alpha1.SignalrService{})
+		Invokes(testing.NewDeleteAction(signalrservicesResource, c.ns, name), &v1alpha1.SignalrService{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSignalrServices) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(signalrservicesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(signalrservicesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SignalrServiceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSignalrServices) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched signalrService.
 func (c *FakeSignalrServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SignalrService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(signalrservicesResource, name, pt, data, subresources...), &v1alpha1.SignalrService{})
+		Invokes(testing.NewPatchSubresourceAction(signalrservicesResource, c.ns, name, pt, data, subresources...), &v1alpha1.SignalrService{})
+
 	if obj == nil {
 		return nil, err
 	}

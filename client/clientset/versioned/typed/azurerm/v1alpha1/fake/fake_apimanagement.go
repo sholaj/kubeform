@@ -31,6 +31,7 @@ import (
 // FakeApiManagements implements ApiManagementInterface
 type FakeApiManagements struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var apimanagementsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "apimanagements"}
@@ -40,7 +41,8 @@ var apimanagementsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", 
 // Get takes name of the apiManagement, and returns the corresponding apiManagement object, and an error if there is any.
 func (c *FakeApiManagements) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagement, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apimanagementsResource, name), &v1alpha1.ApiManagement{})
+		Invokes(testing.NewGetAction(apimanagementsResource, c.ns, name), &v1alpha1.ApiManagement{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApiManagements) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of ApiManagements that match those selectors.
 func (c *FakeApiManagements) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apimanagementsResource, apimanagementsKind, opts), &v1alpha1.ApiManagementList{})
+		Invokes(testing.NewListAction(apimanagementsResource, apimanagementsKind, c.ns, opts), &v1alpha1.ApiManagementList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApiManagements) List(opts v1.ListOptions) (result *v1alpha1.ApiMana
 // Watch returns a watch.Interface that watches the requested apiManagements.
 func (c *FakeApiManagements) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apimanagementsResource, opts))
+		InvokesWatch(testing.NewWatchAction(apimanagementsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a apiManagement and creates it.  Returns the server's representation of the apiManagement, and an error, if there is any.
 func (c *FakeApiManagements) Create(apiManagement *v1alpha1.ApiManagement) (result *v1alpha1.ApiManagement, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apimanagementsResource, apiManagement), &v1alpha1.ApiManagement{})
+		Invokes(testing.NewCreateAction(apimanagementsResource, c.ns, apiManagement), &v1alpha1.ApiManagement{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApiManagements) Create(apiManagement *v1alpha1.ApiManagement) (resu
 // Update takes the representation of a apiManagement and updates it. Returns the server's representation of the apiManagement, and an error, if there is any.
 func (c *FakeApiManagements) Update(apiManagement *v1alpha1.ApiManagement) (result *v1alpha1.ApiManagement, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apimanagementsResource, apiManagement), &v1alpha1.ApiManagement{})
+		Invokes(testing.NewUpdateAction(apimanagementsResource, c.ns, apiManagement), &v1alpha1.ApiManagement{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApiManagements) Update(apiManagement *v1alpha1.ApiManagement) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApiManagements) UpdateStatus(apiManagement *v1alpha1.ApiManagement) (*v1alpha1.ApiManagement, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apimanagementsResource, "status", apiManagement), &v1alpha1.ApiManagement{})
+		Invokes(testing.NewUpdateSubresourceAction(apimanagementsResource, "status", c.ns, apiManagement), &v1alpha1.ApiManagement{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApiManagements) UpdateStatus(apiManagement *v1alpha1.ApiManagement)
 // Delete takes name of the apiManagement and deletes it. Returns an error if one occurs.
 func (c *FakeApiManagements) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apimanagementsResource, name), &v1alpha1.ApiManagement{})
+		Invokes(testing.NewDeleteAction(apimanagementsResource, c.ns, name), &v1alpha1.ApiManagement{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApiManagements) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apimanagementsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(apimanagementsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApiManagementList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApiManagements) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched apiManagement.
 func (c *FakeApiManagements) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagement, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apimanagementsResource, name, pt, data, subresources...), &v1alpha1.ApiManagement{})
+		Invokes(testing.NewPatchSubresourceAction(apimanagementsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiManagement{})
+
 	if obj == nil {
 		return nil, err
 	}

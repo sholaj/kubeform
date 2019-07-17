@@ -398,15 +398,34 @@ spec:
         spec:
           properties:
             autoscaling:
-              items: {}
+              items:
+                properties:
+                  maxNodeCount:
+                    type: integer
+                  minNodeCount:
+                    type: integer
+                required:
+                - maxNodeCount
+                - minNodeCount
+                type: object
               maxItems: 1
               type: array
             cluster:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             region:
               type: string
           required:
           - cluster
+          - providerRef
           type: object
         status:
           properties:
@@ -417,6 +436,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

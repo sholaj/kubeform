@@ -41,32 +41,33 @@ type CloudwatchLogGroupInformer interface {
 type cloudwatchLogGroupInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewCloudwatchLogGroupInformer constructs a new informer for CloudwatchLogGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCloudwatchLogGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCloudwatchLogGroupInformer(client, resyncPeriod, indexers, nil)
+func NewCloudwatchLogGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCloudwatchLogGroupInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredCloudwatchLogGroupInformer constructs a new informer for CloudwatchLogGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCloudwatchLogGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCloudwatchLogGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CloudwatchLogGroups().List(options)
+				return client.AwsV1alpha1().CloudwatchLogGroups(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CloudwatchLogGroups().Watch(options)
+				return client.AwsV1alpha1().CloudwatchLogGroups(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.CloudwatchLogGroup{},
@@ -76,7 +77,7 @@ func NewFilteredCloudwatchLogGroupInformer(client versioned.Interface, resyncPer
 }
 
 func (f *cloudwatchLogGroupInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCloudwatchLogGroupInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredCloudwatchLogGroupInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *cloudwatchLogGroupInformer) Informer() cache.SharedIndexInformer {

@@ -29,8 +29,8 @@ import (
 type RamResourceAssociationLister interface {
 	// List lists all RamResourceAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RamResourceAssociation, err error)
-	// Get retrieves the RamResourceAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.RamResourceAssociation, error)
+	// RamResourceAssociations returns an object that can list and get RamResourceAssociations.
+	RamResourceAssociations(namespace string) RamResourceAssociationNamespaceLister
 	RamResourceAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ramResourceAssociationLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the RamResourceAssociation from the index for a given name.
-func (s *ramResourceAssociationLister) Get(name string) (*v1alpha1.RamResourceAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RamResourceAssociations returns an object that can list and get RamResourceAssociations.
+func (s *ramResourceAssociationLister) RamResourceAssociations(namespace string) RamResourceAssociationNamespaceLister {
+	return ramResourceAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RamResourceAssociationNamespaceLister helps list and get RamResourceAssociations.
+type RamResourceAssociationNamespaceLister interface {
+	// List lists all RamResourceAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RamResourceAssociation, err error)
+	// Get retrieves the RamResourceAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RamResourceAssociation, error)
+	RamResourceAssociationNamespaceListerExpansion
+}
+
+// ramResourceAssociationNamespaceLister implements the RamResourceAssociationNamespaceLister
+// interface.
+type ramResourceAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RamResourceAssociations in the indexer for a given namespace.
+func (s ramResourceAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RamResourceAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RamResourceAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the RamResourceAssociation from the indexer for a given namespace and name.
+func (s ramResourceAssociationNamespaceLister) Get(name string) (*v1alpha1.RamResourceAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

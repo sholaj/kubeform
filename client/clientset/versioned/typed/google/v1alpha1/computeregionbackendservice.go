@@ -32,7 +32,7 @@ import (
 // ComputeRegionBackendServicesGetter has a method to return a ComputeRegionBackendServiceInterface.
 // A group's client should implement this interface.
 type ComputeRegionBackendServicesGetter interface {
-	ComputeRegionBackendServices() ComputeRegionBackendServiceInterface
+	ComputeRegionBackendServices(namespace string) ComputeRegionBackendServiceInterface
 }
 
 // ComputeRegionBackendServiceInterface has methods to work with ComputeRegionBackendService resources.
@@ -52,12 +52,14 @@ type ComputeRegionBackendServiceInterface interface {
 // computeRegionBackendServices implements ComputeRegionBackendServiceInterface
 type computeRegionBackendServices struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeRegionBackendServices returns a ComputeRegionBackendServices
-func newComputeRegionBackendServices(c *GoogleV1alpha1Client) *computeRegionBackendServices {
+func newComputeRegionBackendServices(c *GoogleV1alpha1Client, namespace string) *computeRegionBackendServices {
 	return &computeRegionBackendServices{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeRegionBackendServices(c *GoogleV1alpha1Client) *computeRegionBack
 func (c *computeRegionBackendServices) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeRegionBackendService, err error) {
 	result = &v1alpha1.ComputeRegionBackendService{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeregionbackendservices").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeRegionBackendServices) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.ComputeRegionBackendServiceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeregionbackendservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeRegionBackendServices) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computeregionbackendservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeRegionBackendServices) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *computeRegionBackendServices) Create(computeRegionBackendService *v1alpha1.ComputeRegionBackendService) (result *v1alpha1.ComputeRegionBackendService, err error) {
 	result = &v1alpha1.ComputeRegionBackendService{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computeregionbackendservices").
 		Body(computeRegionBackendService).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeRegionBackendServices) Create(computeRegionBackendService *v1alp
 func (c *computeRegionBackendServices) Update(computeRegionBackendService *v1alpha1.ComputeRegionBackendService) (result *v1alpha1.ComputeRegionBackendService, err error) {
 	result = &v1alpha1.ComputeRegionBackendService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeregionbackendservices").
 		Name(computeRegionBackendService.Name).
 		Body(computeRegionBackendService).
@@ -132,6 +139,7 @@ func (c *computeRegionBackendServices) Update(computeRegionBackendService *v1alp
 func (c *computeRegionBackendServices) UpdateStatus(computeRegionBackendService *v1alpha1.ComputeRegionBackendService) (result *v1alpha1.ComputeRegionBackendService, err error) {
 	result = &v1alpha1.ComputeRegionBackendService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeregionbackendservices").
 		Name(computeRegionBackendService.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeRegionBackendServices) UpdateStatus(computeRegionBackendService 
 // Delete takes name of the computeRegionBackendService and deletes it. Returns an error if one occurs.
 func (c *computeRegionBackendServices) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeregionbackendservices").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeRegionBackendServices) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeregionbackendservices").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeRegionBackendServices) DeleteCollection(options *v1.DeleteOption
 func (c *computeRegionBackendServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeRegionBackendService, err error) {
 	result = &v1alpha1.ComputeRegionBackendService{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computeregionbackendservices").
 		SubResource(subresources...).
 		Name(name).

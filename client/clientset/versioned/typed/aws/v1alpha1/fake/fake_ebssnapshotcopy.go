@@ -31,6 +31,7 @@ import (
 // FakeEbsSnapshotCopies implements EbsSnapshotCopyInterface
 type FakeEbsSnapshotCopies struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ebssnapshotcopiesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ebssnapshotcopies"}
@@ -40,7 +41,8 @@ var ebssnapshotcopiesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", V
 // Get takes name of the ebsSnapshotCopy, and returns the corresponding ebsSnapshotCopy object, and an error if there is any.
 func (c *FakeEbsSnapshotCopies) Get(name string, options v1.GetOptions) (result *v1alpha1.EbsSnapshotCopy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ebssnapshotcopiesResource, name), &v1alpha1.EbsSnapshotCopy{})
+		Invokes(testing.NewGetAction(ebssnapshotcopiesResource, c.ns, name), &v1alpha1.EbsSnapshotCopy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEbsSnapshotCopies) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of EbsSnapshotCopies that match those selectors.
 func (c *FakeEbsSnapshotCopies) List(opts v1.ListOptions) (result *v1alpha1.EbsSnapshotCopyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ebssnapshotcopiesResource, ebssnapshotcopiesKind, opts), &v1alpha1.EbsSnapshotCopyList{})
+		Invokes(testing.NewListAction(ebssnapshotcopiesResource, ebssnapshotcopiesKind, c.ns, opts), &v1alpha1.EbsSnapshotCopyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEbsSnapshotCopies) List(opts v1.ListOptions) (result *v1alpha1.EbsS
 // Watch returns a watch.Interface that watches the requested ebsSnapshotCopies.
 func (c *FakeEbsSnapshotCopies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ebssnapshotcopiesResource, opts))
+		InvokesWatch(testing.NewWatchAction(ebssnapshotcopiesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ebsSnapshotCopy and creates it.  Returns the server's representation of the ebsSnapshotCopy, and an error, if there is any.
 func (c *FakeEbsSnapshotCopies) Create(ebsSnapshotCopy *v1alpha1.EbsSnapshotCopy) (result *v1alpha1.EbsSnapshotCopy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ebssnapshotcopiesResource, ebsSnapshotCopy), &v1alpha1.EbsSnapshotCopy{})
+		Invokes(testing.NewCreateAction(ebssnapshotcopiesResource, c.ns, ebsSnapshotCopy), &v1alpha1.EbsSnapshotCopy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEbsSnapshotCopies) Create(ebsSnapshotCopy *v1alpha1.EbsSnapshotCopy
 // Update takes the representation of a ebsSnapshotCopy and updates it. Returns the server's representation of the ebsSnapshotCopy, and an error, if there is any.
 func (c *FakeEbsSnapshotCopies) Update(ebsSnapshotCopy *v1alpha1.EbsSnapshotCopy) (result *v1alpha1.EbsSnapshotCopy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ebssnapshotcopiesResource, ebsSnapshotCopy), &v1alpha1.EbsSnapshotCopy{})
+		Invokes(testing.NewUpdateAction(ebssnapshotcopiesResource, c.ns, ebsSnapshotCopy), &v1alpha1.EbsSnapshotCopy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEbsSnapshotCopies) Update(ebsSnapshotCopy *v1alpha1.EbsSnapshotCopy
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEbsSnapshotCopies) UpdateStatus(ebsSnapshotCopy *v1alpha1.EbsSnapshotCopy) (*v1alpha1.EbsSnapshotCopy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ebssnapshotcopiesResource, "status", ebsSnapshotCopy), &v1alpha1.EbsSnapshotCopy{})
+		Invokes(testing.NewUpdateSubresourceAction(ebssnapshotcopiesResource, "status", c.ns, ebsSnapshotCopy), &v1alpha1.EbsSnapshotCopy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEbsSnapshotCopies) UpdateStatus(ebsSnapshotCopy *v1alpha1.EbsSnapsh
 // Delete takes name of the ebsSnapshotCopy and deletes it. Returns an error if one occurs.
 func (c *FakeEbsSnapshotCopies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ebssnapshotcopiesResource, name), &v1alpha1.EbsSnapshotCopy{})
+		Invokes(testing.NewDeleteAction(ebssnapshotcopiesResource, c.ns, name), &v1alpha1.EbsSnapshotCopy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEbsSnapshotCopies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ebssnapshotcopiesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ebssnapshotcopiesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.EbsSnapshotCopyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEbsSnapshotCopies) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched ebsSnapshotCopy.
 func (c *FakeEbsSnapshotCopies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EbsSnapshotCopy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ebssnapshotcopiesResource, name, pt, data, subresources...), &v1alpha1.EbsSnapshotCopy{})
+		Invokes(testing.NewPatchSubresourceAction(ebssnapshotcopiesResource, c.ns, name, pt, data, subresources...), &v1alpha1.EbsSnapshotCopy{})
+
 	if obj == nil {
 		return nil, err
 	}

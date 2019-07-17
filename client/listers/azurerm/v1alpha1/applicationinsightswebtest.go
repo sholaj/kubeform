@@ -29,8 +29,8 @@ import (
 type ApplicationInsightsWebTestLister interface {
 	// List lists all ApplicationInsightsWebTests in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApplicationInsightsWebTest, err error)
-	// Get retrieves the ApplicationInsightsWebTest from the index for a given name.
-	Get(name string) (*v1alpha1.ApplicationInsightsWebTest, error)
+	// ApplicationInsightsWebTests returns an object that can list and get ApplicationInsightsWebTests.
+	ApplicationInsightsWebTests(namespace string) ApplicationInsightsWebTestNamespaceLister
 	ApplicationInsightsWebTestListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *applicationInsightsWebTestLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the ApplicationInsightsWebTest from the index for a given name.
-func (s *applicationInsightsWebTestLister) Get(name string) (*v1alpha1.ApplicationInsightsWebTest, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApplicationInsightsWebTests returns an object that can list and get ApplicationInsightsWebTests.
+func (s *applicationInsightsWebTestLister) ApplicationInsightsWebTests(namespace string) ApplicationInsightsWebTestNamespaceLister {
+	return applicationInsightsWebTestNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApplicationInsightsWebTestNamespaceLister helps list and get ApplicationInsightsWebTests.
+type ApplicationInsightsWebTestNamespaceLister interface {
+	// List lists all ApplicationInsightsWebTests in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApplicationInsightsWebTest, err error)
+	// Get retrieves the ApplicationInsightsWebTest from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApplicationInsightsWebTest, error)
+	ApplicationInsightsWebTestNamespaceListerExpansion
+}
+
+// applicationInsightsWebTestNamespaceLister implements the ApplicationInsightsWebTestNamespaceLister
+// interface.
+type applicationInsightsWebTestNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApplicationInsightsWebTests in the indexer for a given namespace.
+func (s applicationInsightsWebTestNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApplicationInsightsWebTest, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApplicationInsightsWebTest))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApplicationInsightsWebTest from the indexer for a given namespace and name.
+func (s applicationInsightsWebTestNamespaceLister) Get(name string) (*v1alpha1.ApplicationInsightsWebTest, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

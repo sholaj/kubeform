@@ -32,7 +32,7 @@ import (
 // OpsworksInstancesGetter has a method to return a OpsworksInstanceInterface.
 // A group's client should implement this interface.
 type OpsworksInstancesGetter interface {
-	OpsworksInstances() OpsworksInstanceInterface
+	OpsworksInstances(namespace string) OpsworksInstanceInterface
 }
 
 // OpsworksInstanceInterface has methods to work with OpsworksInstance resources.
@@ -52,12 +52,14 @@ type OpsworksInstanceInterface interface {
 // opsworksInstances implements OpsworksInstanceInterface
 type opsworksInstances struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOpsworksInstances returns a OpsworksInstances
-func newOpsworksInstances(c *AwsV1alpha1Client) *opsworksInstances {
+func newOpsworksInstances(c *AwsV1alpha1Client, namespace string) *opsworksInstances {
 	return &opsworksInstances{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOpsworksInstances(c *AwsV1alpha1Client) *opsworksInstances {
 func (c *opsworksInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksInstance, err error) {
 	result = &v1alpha1.OpsworksInstance{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksinstances").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *opsworksInstances) List(opts v1.ListOptions) (result *v1alpha1.Opsworks
 	}
 	result = &v1alpha1.OpsworksInstanceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *opsworksInstances) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *opsworksInstances) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *opsworksInstances) Create(opsworksInstance *v1alpha1.OpsworksInstance) (result *v1alpha1.OpsworksInstance, err error) {
 	result = &v1alpha1.OpsworksInstance{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("opsworksinstances").
 		Body(opsworksInstance).
 		Do().
@@ -118,6 +124,7 @@ func (c *opsworksInstances) Create(opsworksInstance *v1alpha1.OpsworksInstance) 
 func (c *opsworksInstances) Update(opsworksInstance *v1alpha1.OpsworksInstance) (result *v1alpha1.OpsworksInstance, err error) {
 	result = &v1alpha1.OpsworksInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksinstances").
 		Name(opsworksInstance.Name).
 		Body(opsworksInstance).
@@ -132,6 +139,7 @@ func (c *opsworksInstances) Update(opsworksInstance *v1alpha1.OpsworksInstance) 
 func (c *opsworksInstances) UpdateStatus(opsworksInstance *v1alpha1.OpsworksInstance) (result *v1alpha1.OpsworksInstance, err error) {
 	result = &v1alpha1.OpsworksInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksinstances").
 		Name(opsworksInstance.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *opsworksInstances) UpdateStatus(opsworksInstance *v1alpha1.OpsworksInst
 // Delete takes name of the opsworksInstance and deletes it. Returns an error if one occurs.
 func (c *opsworksInstances) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksinstances").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *opsworksInstances) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksinstances").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *opsworksInstances) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *opsworksInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksInstance, err error) {
 	result = &v1alpha1.OpsworksInstance{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("opsworksinstances").
 		SubResource(subresources...).
 		Name(name).

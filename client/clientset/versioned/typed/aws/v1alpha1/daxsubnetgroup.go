@@ -32,7 +32,7 @@ import (
 // DaxSubnetGroupsGetter has a method to return a DaxSubnetGroupInterface.
 // A group's client should implement this interface.
 type DaxSubnetGroupsGetter interface {
-	DaxSubnetGroups() DaxSubnetGroupInterface
+	DaxSubnetGroups(namespace string) DaxSubnetGroupInterface
 }
 
 // DaxSubnetGroupInterface has methods to work with DaxSubnetGroup resources.
@@ -52,12 +52,14 @@ type DaxSubnetGroupInterface interface {
 // daxSubnetGroups implements DaxSubnetGroupInterface
 type daxSubnetGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDaxSubnetGroups returns a DaxSubnetGroups
-func newDaxSubnetGroups(c *AwsV1alpha1Client) *daxSubnetGroups {
+func newDaxSubnetGroups(c *AwsV1alpha1Client, namespace string) *daxSubnetGroups {
 	return &daxSubnetGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDaxSubnetGroups(c *AwsV1alpha1Client) *daxSubnetGroups {
 func (c *daxSubnetGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.DaxSubnetGroup, err error) {
 	result = &v1alpha1.DaxSubnetGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("daxsubnetgroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *daxSubnetGroups) List(opts v1.ListOptions) (result *v1alpha1.DaxSubnetG
 	}
 	result = &v1alpha1.DaxSubnetGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("daxsubnetgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *daxSubnetGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("daxsubnetgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *daxSubnetGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *daxSubnetGroups) Create(daxSubnetGroup *v1alpha1.DaxSubnetGroup) (result *v1alpha1.DaxSubnetGroup, err error) {
 	result = &v1alpha1.DaxSubnetGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("daxsubnetgroups").
 		Body(daxSubnetGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *daxSubnetGroups) Create(daxSubnetGroup *v1alpha1.DaxSubnetGroup) (resul
 func (c *daxSubnetGroups) Update(daxSubnetGroup *v1alpha1.DaxSubnetGroup) (result *v1alpha1.DaxSubnetGroup, err error) {
 	result = &v1alpha1.DaxSubnetGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("daxsubnetgroups").
 		Name(daxSubnetGroup.Name).
 		Body(daxSubnetGroup).
@@ -132,6 +139,7 @@ func (c *daxSubnetGroups) Update(daxSubnetGroup *v1alpha1.DaxSubnetGroup) (resul
 func (c *daxSubnetGroups) UpdateStatus(daxSubnetGroup *v1alpha1.DaxSubnetGroup) (result *v1alpha1.DaxSubnetGroup, err error) {
 	result = &v1alpha1.DaxSubnetGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("daxsubnetgroups").
 		Name(daxSubnetGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *daxSubnetGroups) UpdateStatus(daxSubnetGroup *v1alpha1.DaxSubnetGroup) 
 // Delete takes name of the daxSubnetGroup and deletes it. Returns an error if one occurs.
 func (c *daxSubnetGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("daxsubnetgroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *daxSubnetGroups) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("daxsubnetgroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *daxSubnetGroups) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *daxSubnetGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DaxSubnetGroup, err error) {
 	result = &v1alpha1.DaxSubnetGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("daxsubnetgroups").
 		SubResource(subresources...).
 		Name(name).

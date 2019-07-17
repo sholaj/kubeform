@@ -31,6 +31,7 @@ import (
 // FakeWafregionalRateBasedRules implements WafregionalRateBasedRuleInterface
 type FakeWafregionalRateBasedRules struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var wafregionalratebasedrulesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "wafregionalratebasedrules"}
@@ -40,7 +41,8 @@ var wafregionalratebasedrulesKind = schema.GroupVersionKind{Group: "aws.kubeform
 // Get takes name of the wafregionalRateBasedRule, and returns the corresponding wafregionalRateBasedRule object, and an error if there is any.
 func (c *FakeWafregionalRateBasedRules) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalRateBasedRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(wafregionalratebasedrulesResource, name), &v1alpha1.WafregionalRateBasedRule{})
+		Invokes(testing.NewGetAction(wafregionalratebasedrulesResource, c.ns, name), &v1alpha1.WafregionalRateBasedRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeWafregionalRateBasedRules) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of WafregionalRateBasedRules that match those selectors.
 func (c *FakeWafregionalRateBasedRules) List(opts v1.ListOptions) (result *v1alpha1.WafregionalRateBasedRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(wafregionalratebasedrulesResource, wafregionalratebasedrulesKind, opts), &v1alpha1.WafregionalRateBasedRuleList{})
+		Invokes(testing.NewListAction(wafregionalratebasedrulesResource, wafregionalratebasedrulesKind, c.ns, opts), &v1alpha1.WafregionalRateBasedRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeWafregionalRateBasedRules) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested wafregionalRateBasedRules.
 func (c *FakeWafregionalRateBasedRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(wafregionalratebasedrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(wafregionalratebasedrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a wafregionalRateBasedRule and creates it.  Returns the server's representation of the wafregionalRateBasedRule, and an error, if there is any.
 func (c *FakeWafregionalRateBasedRules) Create(wafregionalRateBasedRule *v1alpha1.WafregionalRateBasedRule) (result *v1alpha1.WafregionalRateBasedRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(wafregionalratebasedrulesResource, wafregionalRateBasedRule), &v1alpha1.WafregionalRateBasedRule{})
+		Invokes(testing.NewCreateAction(wafregionalratebasedrulesResource, c.ns, wafregionalRateBasedRule), &v1alpha1.WafregionalRateBasedRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeWafregionalRateBasedRules) Create(wafregionalRateBasedRule *v1alpha
 // Update takes the representation of a wafregionalRateBasedRule and updates it. Returns the server's representation of the wafregionalRateBasedRule, and an error, if there is any.
 func (c *FakeWafregionalRateBasedRules) Update(wafregionalRateBasedRule *v1alpha1.WafregionalRateBasedRule) (result *v1alpha1.WafregionalRateBasedRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(wafregionalratebasedrulesResource, wafregionalRateBasedRule), &v1alpha1.WafregionalRateBasedRule{})
+		Invokes(testing.NewUpdateAction(wafregionalratebasedrulesResource, c.ns, wafregionalRateBasedRule), &v1alpha1.WafregionalRateBasedRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeWafregionalRateBasedRules) Update(wafregionalRateBasedRule *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeWafregionalRateBasedRules) UpdateStatus(wafregionalRateBasedRule *v1alpha1.WafregionalRateBasedRule) (*v1alpha1.WafregionalRateBasedRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(wafregionalratebasedrulesResource, "status", wafregionalRateBasedRule), &v1alpha1.WafregionalRateBasedRule{})
+		Invokes(testing.NewUpdateSubresourceAction(wafregionalratebasedrulesResource, "status", c.ns, wafregionalRateBasedRule), &v1alpha1.WafregionalRateBasedRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeWafregionalRateBasedRules) UpdateStatus(wafregionalRateBasedRule *v
 // Delete takes name of the wafregionalRateBasedRule and deletes it. Returns an error if one occurs.
 func (c *FakeWafregionalRateBasedRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(wafregionalratebasedrulesResource, name), &v1alpha1.WafregionalRateBasedRule{})
+		Invokes(testing.NewDeleteAction(wafregionalratebasedrulesResource, c.ns, name), &v1alpha1.WafregionalRateBasedRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeWafregionalRateBasedRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(wafregionalratebasedrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(wafregionalratebasedrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.WafregionalRateBasedRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeWafregionalRateBasedRules) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched wafregionalRateBasedRule.
 func (c *FakeWafregionalRateBasedRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalRateBasedRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(wafregionalratebasedrulesResource, name, pt, data, subresources...), &v1alpha1.WafregionalRateBasedRule{})
+		Invokes(testing.NewPatchSubresourceAction(wafregionalratebasedrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.WafregionalRateBasedRule{})
+
 	if obj == nil {
 		return nil, err
 	}

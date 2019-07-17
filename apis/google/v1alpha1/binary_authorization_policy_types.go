@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,38 +20,39 @@ type BinaryAuthorizationPolicy struct {
 
 type BinaryAuthorizationPolicySpecAdmissionWhitelistPatterns struct {
 	// +optional
-	NamePattern string `json:"name_pattern,omitempty"`
+	NamePattern string `json:"namePattern,omitempty" tf:"name_pattern,omitempty"`
 }
 
 type BinaryAuthorizationPolicySpecClusterAdmissionRules struct {
-	Cluster string `json:"cluster"`
+	Cluster string `json:"cluster" tf:"cluster"`
 	// +optional
-	EnforcementMode string `json:"enforcement_mode,omitempty"`
+	EnforcementMode string `json:"enforcementMode,omitempty" tf:"enforcement_mode,omitempty"`
 	// +optional
-	EvaluationMode string `json:"evaluation_mode,omitempty"`
+	EvaluationMode string `json:"evaluationMode,omitempty" tf:"evaluation_mode,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	RequireAttestationsBy []string `json:"require_attestations_by,omitempty"`
+	RequireAttestationsBy []string `json:"requireAttestationsBy,omitempty" tf:"require_attestations_by,omitempty"`
 }
 
 type BinaryAuthorizationPolicySpecDefaultAdmissionRule struct {
-	EnforcementMode string `json:"enforcement_mode"`
-	EvaluationMode  string `json:"evaluation_mode"`
+	EnforcementMode string `json:"enforcementMode" tf:"enforcement_mode"`
+	EvaluationMode  string `json:"evaluationMode" tf:"evaluation_mode"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	RequireAttestationsBy []string `json:"require_attestations_by,omitempty"`
+	RequireAttestationsBy []string `json:"requireAttestationsBy,omitempty" tf:"require_attestations_by,omitempty"`
 }
 
 type BinaryAuthorizationPolicySpec struct {
 	// +optional
-	AdmissionWhitelistPatterns *[]BinaryAuthorizationPolicySpec `json:"admission_whitelist_patterns,omitempty"`
+	AdmissionWhitelistPatterns []BinaryAuthorizationPolicySpecAdmissionWhitelistPatterns `json:"admissionWhitelistPatterns,omitempty" tf:"admission_whitelist_patterns,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	ClusterAdmissionRules *[]BinaryAuthorizationPolicySpec `json:"cluster_admission_rules,omitempty"`
+	ClusterAdmissionRules []BinaryAuthorizationPolicySpecClusterAdmissionRules `json:"clusterAdmissionRules,omitempty" tf:"cluster_admission_rules,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
-	DefaultAdmissionRule []BinaryAuthorizationPolicySpec `json:"default_admission_rule"`
+	DefaultAdmissionRule []BinaryAuthorizationPolicySpecDefaultAdmissionRule `json:"defaultAdmissionRule" tf:"default_admission_rule"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string                    `json:"description,omitempty" tf:"description,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type BinaryAuthorizationPolicyStatus struct {
@@ -59,7 +60,9 @@ type BinaryAuthorizationPolicyStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

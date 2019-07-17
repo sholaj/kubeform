@@ -31,6 +31,7 @@ import (
 // FakeSubnetNetworkSecurityGroupAssociations implements SubnetNetworkSecurityGroupAssociationInterface
 type FakeSubnetNetworkSecurityGroupAssociations struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var subnetnetworksecuritygroupassociationsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "subnetnetworksecuritygroupassociations"}
@@ -40,7 +41,8 @@ var subnetnetworksecuritygroupassociationsKind = schema.GroupVersionKind{Group: 
 // Get takes name of the subnetNetworkSecurityGroupAssociation, and returns the corresponding subnetNetworkSecurityGroupAssociation object, and an error if there is any.
 func (c *FakeSubnetNetworkSecurityGroupAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.SubnetNetworkSecurityGroupAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(subnetnetworksecuritygroupassociationsResource, name), &v1alpha1.SubnetNetworkSecurityGroupAssociation{})
+		Invokes(testing.NewGetAction(subnetnetworksecuritygroupassociationsResource, c.ns, name), &v1alpha1.SubnetNetworkSecurityGroupAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSubnetNetworkSecurityGroupAssociations) Get(name string, options v1
 // List takes label and field selectors, and returns the list of SubnetNetworkSecurityGroupAssociations that match those selectors.
 func (c *FakeSubnetNetworkSecurityGroupAssociations) List(opts v1.ListOptions) (result *v1alpha1.SubnetNetworkSecurityGroupAssociationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(subnetnetworksecuritygroupassociationsResource, subnetnetworksecuritygroupassociationsKind, opts), &v1alpha1.SubnetNetworkSecurityGroupAssociationList{})
+		Invokes(testing.NewListAction(subnetnetworksecuritygroupassociationsResource, subnetnetworksecuritygroupassociationsKind, c.ns, opts), &v1alpha1.SubnetNetworkSecurityGroupAssociationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSubnetNetworkSecurityGroupAssociations) List(opts v1.ListOptions) (
 // Watch returns a watch.Interface that watches the requested subnetNetworkSecurityGroupAssociations.
 func (c *FakeSubnetNetworkSecurityGroupAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(subnetnetworksecuritygroupassociationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(subnetnetworksecuritygroupassociationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a subnetNetworkSecurityGroupAssociation and creates it.  Returns the server's representation of the subnetNetworkSecurityGroupAssociation, and an error, if there is any.
 func (c *FakeSubnetNetworkSecurityGroupAssociations) Create(subnetNetworkSecurityGroupAssociation *v1alpha1.SubnetNetworkSecurityGroupAssociation) (result *v1alpha1.SubnetNetworkSecurityGroupAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(subnetnetworksecuritygroupassociationsResource, subnetNetworkSecurityGroupAssociation), &v1alpha1.SubnetNetworkSecurityGroupAssociation{})
+		Invokes(testing.NewCreateAction(subnetnetworksecuritygroupassociationsResource, c.ns, subnetNetworkSecurityGroupAssociation), &v1alpha1.SubnetNetworkSecurityGroupAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSubnetNetworkSecurityGroupAssociations) Create(subnetNetworkSecurit
 // Update takes the representation of a subnetNetworkSecurityGroupAssociation and updates it. Returns the server's representation of the subnetNetworkSecurityGroupAssociation, and an error, if there is any.
 func (c *FakeSubnetNetworkSecurityGroupAssociations) Update(subnetNetworkSecurityGroupAssociation *v1alpha1.SubnetNetworkSecurityGroupAssociation) (result *v1alpha1.SubnetNetworkSecurityGroupAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(subnetnetworksecuritygroupassociationsResource, subnetNetworkSecurityGroupAssociation), &v1alpha1.SubnetNetworkSecurityGroupAssociation{})
+		Invokes(testing.NewUpdateAction(subnetnetworksecuritygroupassociationsResource, c.ns, subnetNetworkSecurityGroupAssociation), &v1alpha1.SubnetNetworkSecurityGroupAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSubnetNetworkSecurityGroupAssociations) Update(subnetNetworkSecurit
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSubnetNetworkSecurityGroupAssociations) UpdateStatus(subnetNetworkSecurityGroupAssociation *v1alpha1.SubnetNetworkSecurityGroupAssociation) (*v1alpha1.SubnetNetworkSecurityGroupAssociation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(subnetnetworksecuritygroupassociationsResource, "status", subnetNetworkSecurityGroupAssociation), &v1alpha1.SubnetNetworkSecurityGroupAssociation{})
+		Invokes(testing.NewUpdateSubresourceAction(subnetnetworksecuritygroupassociationsResource, "status", c.ns, subnetNetworkSecurityGroupAssociation), &v1alpha1.SubnetNetworkSecurityGroupAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSubnetNetworkSecurityGroupAssociations) UpdateStatus(subnetNetworkS
 // Delete takes name of the subnetNetworkSecurityGroupAssociation and deletes it. Returns an error if one occurs.
 func (c *FakeSubnetNetworkSecurityGroupAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(subnetnetworksecuritygroupassociationsResource, name), &v1alpha1.SubnetNetworkSecurityGroupAssociation{})
+		Invokes(testing.NewDeleteAction(subnetnetworksecuritygroupassociationsResource, c.ns, name), &v1alpha1.SubnetNetworkSecurityGroupAssociation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSubnetNetworkSecurityGroupAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(subnetnetworksecuritygroupassociationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(subnetnetworksecuritygroupassociationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SubnetNetworkSecurityGroupAssociationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSubnetNetworkSecurityGroupAssociations) DeleteCollection(options *v
 // Patch applies the patch and returns the patched subnetNetworkSecurityGroupAssociation.
 func (c *FakeSubnetNetworkSecurityGroupAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SubnetNetworkSecurityGroupAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(subnetnetworksecuritygroupassociationsResource, name, pt, data, subresources...), &v1alpha1.SubnetNetworkSecurityGroupAssociation{})
+		Invokes(testing.NewPatchSubresourceAction(subnetnetworksecuritygroupassociationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SubnetNetworkSecurityGroupAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}

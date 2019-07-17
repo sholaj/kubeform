@@ -31,6 +31,7 @@ import (
 // FakeApiGatewayClientCertificates implements ApiGatewayClientCertificateInterface
 type FakeApiGatewayClientCertificates struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var apigatewayclientcertificatesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "apigatewayclientcertificates"}
@@ -40,7 +41,8 @@ var apigatewayclientcertificatesKind = schema.GroupVersionKind{Group: "aws.kubef
 // Get takes name of the apiGatewayClientCertificate, and returns the corresponding apiGatewayClientCertificate object, and an error if there is any.
 func (c *FakeApiGatewayClientCertificates) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayClientCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apigatewayclientcertificatesResource, name), &v1alpha1.ApiGatewayClientCertificate{})
+		Invokes(testing.NewGetAction(apigatewayclientcertificatesResource, c.ns, name), &v1alpha1.ApiGatewayClientCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApiGatewayClientCertificates) Get(name string, options v1.GetOption
 // List takes label and field selectors, and returns the list of ApiGatewayClientCertificates that match those selectors.
 func (c *FakeApiGatewayClientCertificates) List(opts v1.ListOptions) (result *v1alpha1.ApiGatewayClientCertificateList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apigatewayclientcertificatesResource, apigatewayclientcertificatesKind, opts), &v1alpha1.ApiGatewayClientCertificateList{})
+		Invokes(testing.NewListAction(apigatewayclientcertificatesResource, apigatewayclientcertificatesKind, c.ns, opts), &v1alpha1.ApiGatewayClientCertificateList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApiGatewayClientCertificates) List(opts v1.ListOptions) (result *v1
 // Watch returns a watch.Interface that watches the requested apiGatewayClientCertificates.
 func (c *FakeApiGatewayClientCertificates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apigatewayclientcertificatesResource, opts))
+		InvokesWatch(testing.NewWatchAction(apigatewayclientcertificatesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a apiGatewayClientCertificate and creates it.  Returns the server's representation of the apiGatewayClientCertificate, and an error, if there is any.
 func (c *FakeApiGatewayClientCertificates) Create(apiGatewayClientCertificate *v1alpha1.ApiGatewayClientCertificate) (result *v1alpha1.ApiGatewayClientCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apigatewayclientcertificatesResource, apiGatewayClientCertificate), &v1alpha1.ApiGatewayClientCertificate{})
+		Invokes(testing.NewCreateAction(apigatewayclientcertificatesResource, c.ns, apiGatewayClientCertificate), &v1alpha1.ApiGatewayClientCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApiGatewayClientCertificates) Create(apiGatewayClientCertificate *v
 // Update takes the representation of a apiGatewayClientCertificate and updates it. Returns the server's representation of the apiGatewayClientCertificate, and an error, if there is any.
 func (c *FakeApiGatewayClientCertificates) Update(apiGatewayClientCertificate *v1alpha1.ApiGatewayClientCertificate) (result *v1alpha1.ApiGatewayClientCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apigatewayclientcertificatesResource, apiGatewayClientCertificate), &v1alpha1.ApiGatewayClientCertificate{})
+		Invokes(testing.NewUpdateAction(apigatewayclientcertificatesResource, c.ns, apiGatewayClientCertificate), &v1alpha1.ApiGatewayClientCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApiGatewayClientCertificates) Update(apiGatewayClientCertificate *v
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApiGatewayClientCertificates) UpdateStatus(apiGatewayClientCertificate *v1alpha1.ApiGatewayClientCertificate) (*v1alpha1.ApiGatewayClientCertificate, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apigatewayclientcertificatesResource, "status", apiGatewayClientCertificate), &v1alpha1.ApiGatewayClientCertificate{})
+		Invokes(testing.NewUpdateSubresourceAction(apigatewayclientcertificatesResource, "status", c.ns, apiGatewayClientCertificate), &v1alpha1.ApiGatewayClientCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApiGatewayClientCertificates) UpdateStatus(apiGatewayClientCertific
 // Delete takes name of the apiGatewayClientCertificate and deletes it. Returns an error if one occurs.
 func (c *FakeApiGatewayClientCertificates) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apigatewayclientcertificatesResource, name), &v1alpha1.ApiGatewayClientCertificate{})
+		Invokes(testing.NewDeleteAction(apigatewayclientcertificatesResource, c.ns, name), &v1alpha1.ApiGatewayClientCertificate{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApiGatewayClientCertificates) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apigatewayclientcertificatesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(apigatewayclientcertificatesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApiGatewayClientCertificateList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApiGatewayClientCertificates) DeleteCollection(options *v1.DeleteOp
 // Patch applies the patch and returns the patched apiGatewayClientCertificate.
 func (c *FakeApiGatewayClientCertificates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayClientCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apigatewayclientcertificatesResource, name, pt, data, subresources...), &v1alpha1.ApiGatewayClientCertificate{})
+		Invokes(testing.NewPatchSubresourceAction(apigatewayclientcertificatesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiGatewayClientCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}

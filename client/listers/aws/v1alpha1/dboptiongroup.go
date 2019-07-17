@@ -29,8 +29,8 @@ import (
 type DbOptionGroupLister interface {
 	// List lists all DbOptionGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DbOptionGroup, err error)
-	// Get retrieves the DbOptionGroup from the index for a given name.
-	Get(name string) (*v1alpha1.DbOptionGroup, error)
+	// DbOptionGroups returns an object that can list and get DbOptionGroups.
+	DbOptionGroups(namespace string) DbOptionGroupNamespaceLister
 	DbOptionGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dbOptionGroupLister) List(selector labels.Selector) (ret []*v1alpha1.Db
 	return ret, err
 }
 
-// Get retrieves the DbOptionGroup from the index for a given name.
-func (s *dbOptionGroupLister) Get(name string) (*v1alpha1.DbOptionGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DbOptionGroups returns an object that can list and get DbOptionGroups.
+func (s *dbOptionGroupLister) DbOptionGroups(namespace string) DbOptionGroupNamespaceLister {
+	return dbOptionGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DbOptionGroupNamespaceLister helps list and get DbOptionGroups.
+type DbOptionGroupNamespaceLister interface {
+	// List lists all DbOptionGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DbOptionGroup, err error)
+	// Get retrieves the DbOptionGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DbOptionGroup, error)
+	DbOptionGroupNamespaceListerExpansion
+}
+
+// dbOptionGroupNamespaceLister implements the DbOptionGroupNamespaceLister
+// interface.
+type dbOptionGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DbOptionGroups in the indexer for a given namespace.
+func (s dbOptionGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DbOptionGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DbOptionGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the DbOptionGroup from the indexer for a given namespace and name.
+func (s dbOptionGroupNamespaceLister) Get(name string) (*v1alpha1.DbOptionGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

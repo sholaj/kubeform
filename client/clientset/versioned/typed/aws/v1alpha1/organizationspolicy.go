@@ -32,7 +32,7 @@ import (
 // OrganizationsPoliciesGetter has a method to return a OrganizationsPolicyInterface.
 // A group's client should implement this interface.
 type OrganizationsPoliciesGetter interface {
-	OrganizationsPolicies() OrganizationsPolicyInterface
+	OrganizationsPolicies(namespace string) OrganizationsPolicyInterface
 }
 
 // OrganizationsPolicyInterface has methods to work with OrganizationsPolicy resources.
@@ -52,12 +52,14 @@ type OrganizationsPolicyInterface interface {
 // organizationsPolicies implements OrganizationsPolicyInterface
 type organizationsPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOrganizationsPolicies returns a OrganizationsPolicies
-func newOrganizationsPolicies(c *AwsV1alpha1Client) *organizationsPolicies {
+func newOrganizationsPolicies(c *AwsV1alpha1Client, namespace string) *organizationsPolicies {
 	return &organizationsPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOrganizationsPolicies(c *AwsV1alpha1Client) *organizationsPolicies {
 func (c *organizationsPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.OrganizationsPolicy, err error) {
 	result = &v1alpha1.OrganizationsPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationspolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *organizationsPolicies) List(opts v1.ListOptions) (result *v1alpha1.Orga
 	}
 	result = &v1alpha1.OrganizationsPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationspolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *organizationsPolicies) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationspolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *organizationsPolicies) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *organizationsPolicies) Create(organizationsPolicy *v1alpha1.OrganizationsPolicy) (result *v1alpha1.OrganizationsPolicy, err error) {
 	result = &v1alpha1.OrganizationsPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("organizationspolicies").
 		Body(organizationsPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *organizationsPolicies) Create(organizationsPolicy *v1alpha1.Organizatio
 func (c *organizationsPolicies) Update(organizationsPolicy *v1alpha1.OrganizationsPolicy) (result *v1alpha1.OrganizationsPolicy, err error) {
 	result = &v1alpha1.OrganizationsPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("organizationspolicies").
 		Name(organizationsPolicy.Name).
 		Body(organizationsPolicy).
@@ -132,6 +139,7 @@ func (c *organizationsPolicies) Update(organizationsPolicy *v1alpha1.Organizatio
 func (c *organizationsPolicies) UpdateStatus(organizationsPolicy *v1alpha1.OrganizationsPolicy) (result *v1alpha1.OrganizationsPolicy, err error) {
 	result = &v1alpha1.OrganizationsPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("organizationspolicies").
 		Name(organizationsPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *organizationsPolicies) UpdateStatus(organizationsPolicy *v1alpha1.Organ
 // Delete takes name of the organizationsPolicy and deletes it. Returns an error if one occurs.
 func (c *organizationsPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("organizationspolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *organizationsPolicies) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("organizationspolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *organizationsPolicies) DeleteCollection(options *v1.DeleteOptions, list
 func (c *organizationsPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OrganizationsPolicy, err error) {
 	result = &v1alpha1.OrganizationsPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("organizationspolicies").
 		SubResource(subresources...).
 		Name(name).

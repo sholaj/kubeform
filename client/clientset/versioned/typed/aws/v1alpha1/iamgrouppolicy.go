@@ -32,7 +32,7 @@ import (
 // IamGroupPoliciesGetter has a method to return a IamGroupPolicyInterface.
 // A group's client should implement this interface.
 type IamGroupPoliciesGetter interface {
-	IamGroupPolicies() IamGroupPolicyInterface
+	IamGroupPolicies(namespace string) IamGroupPolicyInterface
 }
 
 // IamGroupPolicyInterface has methods to work with IamGroupPolicy resources.
@@ -52,12 +52,14 @@ type IamGroupPolicyInterface interface {
 // iamGroupPolicies implements IamGroupPolicyInterface
 type iamGroupPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIamGroupPolicies returns a IamGroupPolicies
-func newIamGroupPolicies(c *AwsV1alpha1Client) *iamGroupPolicies {
+func newIamGroupPolicies(c *AwsV1alpha1Client, namespace string) *iamGroupPolicies {
 	return &iamGroupPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIamGroupPolicies(c *AwsV1alpha1Client) *iamGroupPolicies {
 func (c *iamGroupPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.IamGroupPolicy, err error) {
 	result = &v1alpha1.IamGroupPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamgrouppolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iamGroupPolicies) List(opts v1.ListOptions) (result *v1alpha1.IamGroupP
 	}
 	result = &v1alpha1.IamGroupPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamgrouppolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iamGroupPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iamgrouppolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iamGroupPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *iamGroupPolicies) Create(iamGroupPolicy *v1alpha1.IamGroupPolicy) (result *v1alpha1.IamGroupPolicy, err error) {
 	result = &v1alpha1.IamGroupPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iamgrouppolicies").
 		Body(iamGroupPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *iamGroupPolicies) Create(iamGroupPolicy *v1alpha1.IamGroupPolicy) (resu
 func (c *iamGroupPolicies) Update(iamGroupPolicy *v1alpha1.IamGroupPolicy) (result *v1alpha1.IamGroupPolicy, err error) {
 	result = &v1alpha1.IamGroupPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamgrouppolicies").
 		Name(iamGroupPolicy.Name).
 		Body(iamGroupPolicy).
@@ -132,6 +139,7 @@ func (c *iamGroupPolicies) Update(iamGroupPolicy *v1alpha1.IamGroupPolicy) (resu
 func (c *iamGroupPolicies) UpdateStatus(iamGroupPolicy *v1alpha1.IamGroupPolicy) (result *v1alpha1.IamGroupPolicy, err error) {
 	result = &v1alpha1.IamGroupPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamgrouppolicies").
 		Name(iamGroupPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iamGroupPolicies) UpdateStatus(iamGroupPolicy *v1alpha1.IamGroupPolicy)
 // Delete takes name of the iamGroupPolicy and deletes it. Returns an error if one occurs.
 func (c *iamGroupPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamgrouppolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iamGroupPolicies) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamgrouppolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iamGroupPolicies) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *iamGroupPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamGroupPolicy, err error) {
 	result = &v1alpha1.IamGroupPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iamgrouppolicies").
 		SubResource(subresources...).
 		Name(name).

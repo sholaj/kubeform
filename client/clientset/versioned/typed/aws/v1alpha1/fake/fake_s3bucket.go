@@ -31,6 +31,7 @@ import (
 // FakeS3Buckets implements S3BucketInterface
 type FakeS3Buckets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var s3bucketsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "s3buckets"}
@@ -40,7 +41,8 @@ var s3bucketsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: 
 // Get takes name of the s3Bucket, and returns the corresponding s3Bucket object, and an error if there is any.
 func (c *FakeS3Buckets) Get(name string, options v1.GetOptions) (result *v1alpha1.S3Bucket, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(s3bucketsResource, name), &v1alpha1.S3Bucket{})
+		Invokes(testing.NewGetAction(s3bucketsResource, c.ns, name), &v1alpha1.S3Bucket{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeS3Buckets) Get(name string, options v1.GetOptions) (result *v1alpha
 // List takes label and field selectors, and returns the list of S3Buckets that match those selectors.
 func (c *FakeS3Buckets) List(opts v1.ListOptions) (result *v1alpha1.S3BucketList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(s3bucketsResource, s3bucketsKind, opts), &v1alpha1.S3BucketList{})
+		Invokes(testing.NewListAction(s3bucketsResource, s3bucketsKind, c.ns, opts), &v1alpha1.S3BucketList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeS3Buckets) List(opts v1.ListOptions) (result *v1alpha1.S3BucketList
 // Watch returns a watch.Interface that watches the requested s3Buckets.
 func (c *FakeS3Buckets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(s3bucketsResource, opts))
+		InvokesWatch(testing.NewWatchAction(s3bucketsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a s3Bucket and creates it.  Returns the server's representation of the s3Bucket, and an error, if there is any.
 func (c *FakeS3Buckets) Create(s3Bucket *v1alpha1.S3Bucket) (result *v1alpha1.S3Bucket, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(s3bucketsResource, s3Bucket), &v1alpha1.S3Bucket{})
+		Invokes(testing.NewCreateAction(s3bucketsResource, c.ns, s3Bucket), &v1alpha1.S3Bucket{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeS3Buckets) Create(s3Bucket *v1alpha1.S3Bucket) (result *v1alpha1.S3
 // Update takes the representation of a s3Bucket and updates it. Returns the server's representation of the s3Bucket, and an error, if there is any.
 func (c *FakeS3Buckets) Update(s3Bucket *v1alpha1.S3Bucket) (result *v1alpha1.S3Bucket, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(s3bucketsResource, s3Bucket), &v1alpha1.S3Bucket{})
+		Invokes(testing.NewUpdateAction(s3bucketsResource, c.ns, s3Bucket), &v1alpha1.S3Bucket{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeS3Buckets) Update(s3Bucket *v1alpha1.S3Bucket) (result *v1alpha1.S3
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeS3Buckets) UpdateStatus(s3Bucket *v1alpha1.S3Bucket) (*v1alpha1.S3Bucket, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(s3bucketsResource, "status", s3Bucket), &v1alpha1.S3Bucket{})
+		Invokes(testing.NewUpdateSubresourceAction(s3bucketsResource, "status", c.ns, s3Bucket), &v1alpha1.S3Bucket{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeS3Buckets) UpdateStatus(s3Bucket *v1alpha1.S3Bucket) (*v1alpha1.S3B
 // Delete takes name of the s3Bucket and deletes it. Returns an error if one occurs.
 func (c *FakeS3Buckets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(s3bucketsResource, name), &v1alpha1.S3Bucket{})
+		Invokes(testing.NewDeleteAction(s3bucketsResource, c.ns, name), &v1alpha1.S3Bucket{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeS3Buckets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(s3bucketsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(s3bucketsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.S3BucketList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeS3Buckets) DeleteCollection(options *v1.DeleteOptions, listOptions 
 // Patch applies the patch and returns the patched s3Bucket.
 func (c *FakeS3Buckets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.S3Bucket, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(s3bucketsResource, name, pt, data, subresources...), &v1alpha1.S3Bucket{})
+		Invokes(testing.NewPatchSubresourceAction(s3bucketsResource, c.ns, name, pt, data, subresources...), &v1alpha1.S3Bucket{})
+
 	if obj == nil {
 		return nil, err
 	}

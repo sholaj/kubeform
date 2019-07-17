@@ -32,7 +32,7 @@ import (
 // VirtualMachineScaleSetsGetter has a method to return a VirtualMachineScaleSetInterface.
 // A group's client should implement this interface.
 type VirtualMachineScaleSetsGetter interface {
-	VirtualMachineScaleSets() VirtualMachineScaleSetInterface
+	VirtualMachineScaleSets(namespace string) VirtualMachineScaleSetInterface
 }
 
 // VirtualMachineScaleSetInterface has methods to work with VirtualMachineScaleSet resources.
@@ -52,12 +52,14 @@ type VirtualMachineScaleSetInterface interface {
 // virtualMachineScaleSets implements VirtualMachineScaleSetInterface
 type virtualMachineScaleSets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVirtualMachineScaleSets returns a VirtualMachineScaleSets
-func newVirtualMachineScaleSets(c *AzurermV1alpha1Client) *virtualMachineScaleSets {
+func newVirtualMachineScaleSets(c *AzurermV1alpha1Client, namespace string) *virtualMachineScaleSets {
 	return &virtualMachineScaleSets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVirtualMachineScaleSets(c *AzurermV1alpha1Client) *virtualMachineScaleSe
 func (c *virtualMachineScaleSets) Get(name string, options v1.GetOptions) (result *v1alpha1.VirtualMachineScaleSet, err error) {
 	result = &v1alpha1.VirtualMachineScaleSet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("virtualmachinescalesets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *virtualMachineScaleSets) List(opts v1.ListOptions) (result *v1alpha1.Vi
 	}
 	result = &v1alpha1.VirtualMachineScaleSetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("virtualmachinescalesets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *virtualMachineScaleSets) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("virtualmachinescalesets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *virtualMachineScaleSets) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *virtualMachineScaleSets) Create(virtualMachineScaleSet *v1alpha1.VirtualMachineScaleSet) (result *v1alpha1.VirtualMachineScaleSet, err error) {
 	result = &v1alpha1.VirtualMachineScaleSet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("virtualmachinescalesets").
 		Body(virtualMachineScaleSet).
 		Do().
@@ -118,6 +124,7 @@ func (c *virtualMachineScaleSets) Create(virtualMachineScaleSet *v1alpha1.Virtua
 func (c *virtualMachineScaleSets) Update(virtualMachineScaleSet *v1alpha1.VirtualMachineScaleSet) (result *v1alpha1.VirtualMachineScaleSet, err error) {
 	result = &v1alpha1.VirtualMachineScaleSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("virtualmachinescalesets").
 		Name(virtualMachineScaleSet.Name).
 		Body(virtualMachineScaleSet).
@@ -132,6 +139,7 @@ func (c *virtualMachineScaleSets) Update(virtualMachineScaleSet *v1alpha1.Virtua
 func (c *virtualMachineScaleSets) UpdateStatus(virtualMachineScaleSet *v1alpha1.VirtualMachineScaleSet) (result *v1alpha1.VirtualMachineScaleSet, err error) {
 	result = &v1alpha1.VirtualMachineScaleSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("virtualmachinescalesets").
 		Name(virtualMachineScaleSet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *virtualMachineScaleSets) UpdateStatus(virtualMachineScaleSet *v1alpha1.
 // Delete takes name of the virtualMachineScaleSet and deletes it. Returns an error if one occurs.
 func (c *virtualMachineScaleSets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("virtualmachinescalesets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *virtualMachineScaleSets) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("virtualmachinescalesets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *virtualMachineScaleSets) DeleteCollection(options *v1.DeleteOptions, li
 func (c *virtualMachineScaleSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VirtualMachineScaleSet, err error) {
 	result = &v1alpha1.VirtualMachineScaleSet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("virtualmachinescalesets").
 		SubResource(subresources...).
 		Name(name).

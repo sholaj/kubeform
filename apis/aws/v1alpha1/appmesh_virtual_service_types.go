@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,36 +19,37 @@ type AppmeshVirtualService struct {
 }
 
 type AppmeshVirtualServiceSpecSpecProviderVirtualNode struct {
-	VirtualNodeName string `json:"virtual_node_name"`
+	VirtualNodeName string `json:"virtualNodeName" tf:"virtual_node_name"`
 }
 
 type AppmeshVirtualServiceSpecSpecProviderVirtualRouter struct {
-	VirtualRouterName string `json:"virtual_router_name"`
+	VirtualRouterName string `json:"virtualRouterName" tf:"virtual_router_name"`
 }
 
 type AppmeshVirtualServiceSpecSpecProvider struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	VirtualNode *[]AppmeshVirtualServiceSpecSpecProvider `json:"virtual_node,omitempty"`
+	VirtualNode []AppmeshVirtualServiceSpecSpecProviderVirtualNode `json:"virtualNode,omitempty" tf:"virtual_node,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	VirtualRouter *[]AppmeshVirtualServiceSpecSpecProvider `json:"virtual_router,omitempty"`
+	VirtualRouter []AppmeshVirtualServiceSpecSpecProviderVirtualRouter `json:"virtualRouter,omitempty" tf:"virtual_router,omitempty"`
 }
 
 type AppmeshVirtualServiceSpecSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Provider *[]AppmeshVirtualServiceSpecSpec `json:"provider,omitempty"`
+	Provider []AppmeshVirtualServiceSpecSpecProvider `json:"provider,omitempty" tf:"provider,omitempty"`
 }
 
 type AppmeshVirtualServiceSpec struct {
-	MeshName string `json:"mesh_name"`
-	Name     string `json:"name"`
+	MeshName string `json:"meshName" tf:"mesh_name"`
+	Name     string `json:"name" tf:"name"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	Spec []AppmeshVirtualServiceSpec `json:"spec"`
+	Spec []AppmeshVirtualServiceSpecSpec `json:"spec" tf:"spec"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type AppmeshVirtualServiceStatus struct {
@@ -56,7 +57,9 @@ type AppmeshVirtualServiceStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

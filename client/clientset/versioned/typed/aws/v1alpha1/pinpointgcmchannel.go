@@ -32,7 +32,7 @@ import (
 // PinpointGcmChannelsGetter has a method to return a PinpointGcmChannelInterface.
 // A group's client should implement this interface.
 type PinpointGcmChannelsGetter interface {
-	PinpointGcmChannels() PinpointGcmChannelInterface
+	PinpointGcmChannels(namespace string) PinpointGcmChannelInterface
 }
 
 // PinpointGcmChannelInterface has methods to work with PinpointGcmChannel resources.
@@ -52,12 +52,14 @@ type PinpointGcmChannelInterface interface {
 // pinpointGcmChannels implements PinpointGcmChannelInterface
 type pinpointGcmChannels struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPinpointGcmChannels returns a PinpointGcmChannels
-func newPinpointGcmChannels(c *AwsV1alpha1Client) *pinpointGcmChannels {
+func newPinpointGcmChannels(c *AwsV1alpha1Client, namespace string) *pinpointGcmChannels {
 	return &pinpointGcmChannels{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPinpointGcmChannels(c *AwsV1alpha1Client) *pinpointGcmChannels {
 func (c *pinpointGcmChannels) Get(name string, options v1.GetOptions) (result *v1alpha1.PinpointGcmChannel, err error) {
 	result = &v1alpha1.PinpointGcmChannel{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointgcmchannels").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *pinpointGcmChannels) List(opts v1.ListOptions) (result *v1alpha1.Pinpoi
 	}
 	result = &v1alpha1.PinpointGcmChannelList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointgcmchannels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *pinpointGcmChannels) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointgcmchannels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *pinpointGcmChannels) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *pinpointGcmChannels) Create(pinpointGcmChannel *v1alpha1.PinpointGcmChannel) (result *v1alpha1.PinpointGcmChannel, err error) {
 	result = &v1alpha1.PinpointGcmChannel{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("pinpointgcmchannels").
 		Body(pinpointGcmChannel).
 		Do().
@@ -118,6 +124,7 @@ func (c *pinpointGcmChannels) Create(pinpointGcmChannel *v1alpha1.PinpointGcmCha
 func (c *pinpointGcmChannels) Update(pinpointGcmChannel *v1alpha1.PinpointGcmChannel) (result *v1alpha1.PinpointGcmChannel, err error) {
 	result = &v1alpha1.PinpointGcmChannel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pinpointgcmchannels").
 		Name(pinpointGcmChannel.Name).
 		Body(pinpointGcmChannel).
@@ -132,6 +139,7 @@ func (c *pinpointGcmChannels) Update(pinpointGcmChannel *v1alpha1.PinpointGcmCha
 func (c *pinpointGcmChannels) UpdateStatus(pinpointGcmChannel *v1alpha1.PinpointGcmChannel) (result *v1alpha1.PinpointGcmChannel, err error) {
 	result = &v1alpha1.PinpointGcmChannel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pinpointgcmchannels").
 		Name(pinpointGcmChannel.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *pinpointGcmChannels) UpdateStatus(pinpointGcmChannel *v1alpha1.Pinpoint
 // Delete takes name of the pinpointGcmChannel and deletes it. Returns an error if one occurs.
 func (c *pinpointGcmChannels) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pinpointgcmchannels").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *pinpointGcmChannels) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pinpointgcmchannels").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *pinpointGcmChannels) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *pinpointGcmChannels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PinpointGcmChannel, err error) {
 	result = &v1alpha1.PinpointGcmChannel{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("pinpointgcmchannels").
 		SubResource(subresources...).
 		Name(name).

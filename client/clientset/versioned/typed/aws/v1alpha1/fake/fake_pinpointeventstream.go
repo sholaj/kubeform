@@ -31,6 +31,7 @@ import (
 // FakePinpointEventStreams implements PinpointEventStreamInterface
 type FakePinpointEventStreams struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var pinpointeventstreamsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "pinpointeventstreams"}
@@ -40,7 +41,8 @@ var pinpointeventstreamsKind = schema.GroupVersionKind{Group: "aws.kubeform.com"
 // Get takes name of the pinpointEventStream, and returns the corresponding pinpointEventStream object, and an error if there is any.
 func (c *FakePinpointEventStreams) Get(name string, options v1.GetOptions) (result *v1alpha1.PinpointEventStream, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(pinpointeventstreamsResource, name), &v1alpha1.PinpointEventStream{})
+		Invokes(testing.NewGetAction(pinpointeventstreamsResource, c.ns, name), &v1alpha1.PinpointEventStream{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakePinpointEventStreams) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of PinpointEventStreams that match those selectors.
 func (c *FakePinpointEventStreams) List(opts v1.ListOptions) (result *v1alpha1.PinpointEventStreamList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(pinpointeventstreamsResource, pinpointeventstreamsKind, opts), &v1alpha1.PinpointEventStreamList{})
+		Invokes(testing.NewListAction(pinpointeventstreamsResource, pinpointeventstreamsKind, c.ns, opts), &v1alpha1.PinpointEventStreamList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakePinpointEventStreams) List(opts v1.ListOptions) (result *v1alpha1.P
 // Watch returns a watch.Interface that watches the requested pinpointEventStreams.
 func (c *FakePinpointEventStreams) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(pinpointeventstreamsResource, opts))
+		InvokesWatch(testing.NewWatchAction(pinpointeventstreamsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a pinpointEventStream and creates it.  Returns the server's representation of the pinpointEventStream, and an error, if there is any.
 func (c *FakePinpointEventStreams) Create(pinpointEventStream *v1alpha1.PinpointEventStream) (result *v1alpha1.PinpointEventStream, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(pinpointeventstreamsResource, pinpointEventStream), &v1alpha1.PinpointEventStream{})
+		Invokes(testing.NewCreateAction(pinpointeventstreamsResource, c.ns, pinpointEventStream), &v1alpha1.PinpointEventStream{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakePinpointEventStreams) Create(pinpointEventStream *v1alpha1.Pinpoint
 // Update takes the representation of a pinpointEventStream and updates it. Returns the server's representation of the pinpointEventStream, and an error, if there is any.
 func (c *FakePinpointEventStreams) Update(pinpointEventStream *v1alpha1.PinpointEventStream) (result *v1alpha1.PinpointEventStream, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(pinpointeventstreamsResource, pinpointEventStream), &v1alpha1.PinpointEventStream{})
+		Invokes(testing.NewUpdateAction(pinpointeventstreamsResource, c.ns, pinpointEventStream), &v1alpha1.PinpointEventStream{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakePinpointEventStreams) Update(pinpointEventStream *v1alpha1.Pinpoint
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakePinpointEventStreams) UpdateStatus(pinpointEventStream *v1alpha1.PinpointEventStream) (*v1alpha1.PinpointEventStream, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(pinpointeventstreamsResource, "status", pinpointEventStream), &v1alpha1.PinpointEventStream{})
+		Invokes(testing.NewUpdateSubresourceAction(pinpointeventstreamsResource, "status", c.ns, pinpointEventStream), &v1alpha1.PinpointEventStream{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakePinpointEventStreams) UpdateStatus(pinpointEventStream *v1alpha1.Pi
 // Delete takes name of the pinpointEventStream and deletes it. Returns an error if one occurs.
 func (c *FakePinpointEventStreams) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(pinpointeventstreamsResource, name), &v1alpha1.PinpointEventStream{})
+		Invokes(testing.NewDeleteAction(pinpointeventstreamsResource, c.ns, name), &v1alpha1.PinpointEventStream{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakePinpointEventStreams) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(pinpointeventstreamsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(pinpointeventstreamsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PinpointEventStreamList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakePinpointEventStreams) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched pinpointEventStream.
 func (c *FakePinpointEventStreams) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PinpointEventStream, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(pinpointeventstreamsResource, name, pt, data, subresources...), &v1alpha1.PinpointEventStream{})
+		Invokes(testing.NewPatchSubresourceAction(pinpointeventstreamsResource, c.ns, name, pt, data, subresources...), &v1alpha1.PinpointEventStream{})
+
 	if obj == nil {
 		return nil, err
 	}

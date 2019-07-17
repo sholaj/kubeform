@@ -29,8 +29,8 @@ import (
 type GlueConnectionLister interface {
 	// List lists all GlueConnections in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GlueConnection, err error)
-	// Get retrieves the GlueConnection from the index for a given name.
-	Get(name string) (*v1alpha1.GlueConnection, error)
+	// GlueConnections returns an object that can list and get GlueConnections.
+	GlueConnections(namespace string) GlueConnectionNamespaceLister
 	GlueConnectionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *glueConnectionLister) List(selector labels.Selector) (ret []*v1alpha1.G
 	return ret, err
 }
 
-// Get retrieves the GlueConnection from the index for a given name.
-func (s *glueConnectionLister) Get(name string) (*v1alpha1.GlueConnection, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GlueConnections returns an object that can list and get GlueConnections.
+func (s *glueConnectionLister) GlueConnections(namespace string) GlueConnectionNamespaceLister {
+	return glueConnectionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GlueConnectionNamespaceLister helps list and get GlueConnections.
+type GlueConnectionNamespaceLister interface {
+	// List lists all GlueConnections in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GlueConnection, err error)
+	// Get retrieves the GlueConnection from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GlueConnection, error)
+	GlueConnectionNamespaceListerExpansion
+}
+
+// glueConnectionNamespaceLister implements the GlueConnectionNamespaceLister
+// interface.
+type glueConnectionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GlueConnections in the indexer for a given namespace.
+func (s glueConnectionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GlueConnection, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GlueConnection))
+	})
+	return ret, err
+}
+
+// Get retrieves the GlueConnection from the indexer for a given namespace and name.
+func (s glueConnectionNamespaceLister) Get(name string) (*v1alpha1.GlueConnection, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

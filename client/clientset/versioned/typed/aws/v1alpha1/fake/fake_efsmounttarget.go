@@ -31,6 +31,7 @@ import (
 // FakeEfsMountTargets implements EfsMountTargetInterface
 type FakeEfsMountTargets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var efsmounttargetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "efsmounttargets"}
@@ -40,7 +41,8 @@ var efsmounttargetsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ver
 // Get takes name of the efsMountTarget, and returns the corresponding efsMountTarget object, and an error if there is any.
 func (c *FakeEfsMountTargets) Get(name string, options v1.GetOptions) (result *v1alpha1.EfsMountTarget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(efsmounttargetsResource, name), &v1alpha1.EfsMountTarget{})
+		Invokes(testing.NewGetAction(efsmounttargetsResource, c.ns, name), &v1alpha1.EfsMountTarget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEfsMountTargets) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of EfsMountTargets that match those selectors.
 func (c *FakeEfsMountTargets) List(opts v1.ListOptions) (result *v1alpha1.EfsMountTargetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(efsmounttargetsResource, efsmounttargetsKind, opts), &v1alpha1.EfsMountTargetList{})
+		Invokes(testing.NewListAction(efsmounttargetsResource, efsmounttargetsKind, c.ns, opts), &v1alpha1.EfsMountTargetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEfsMountTargets) List(opts v1.ListOptions) (result *v1alpha1.EfsMou
 // Watch returns a watch.Interface that watches the requested efsMountTargets.
 func (c *FakeEfsMountTargets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(efsmounttargetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(efsmounttargetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a efsMountTarget and creates it.  Returns the server's representation of the efsMountTarget, and an error, if there is any.
 func (c *FakeEfsMountTargets) Create(efsMountTarget *v1alpha1.EfsMountTarget) (result *v1alpha1.EfsMountTarget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(efsmounttargetsResource, efsMountTarget), &v1alpha1.EfsMountTarget{})
+		Invokes(testing.NewCreateAction(efsmounttargetsResource, c.ns, efsMountTarget), &v1alpha1.EfsMountTarget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEfsMountTargets) Create(efsMountTarget *v1alpha1.EfsMountTarget) (r
 // Update takes the representation of a efsMountTarget and updates it. Returns the server's representation of the efsMountTarget, and an error, if there is any.
 func (c *FakeEfsMountTargets) Update(efsMountTarget *v1alpha1.EfsMountTarget) (result *v1alpha1.EfsMountTarget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(efsmounttargetsResource, efsMountTarget), &v1alpha1.EfsMountTarget{})
+		Invokes(testing.NewUpdateAction(efsmounttargetsResource, c.ns, efsMountTarget), &v1alpha1.EfsMountTarget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEfsMountTargets) Update(efsMountTarget *v1alpha1.EfsMountTarget) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEfsMountTargets) UpdateStatus(efsMountTarget *v1alpha1.EfsMountTarget) (*v1alpha1.EfsMountTarget, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(efsmounttargetsResource, "status", efsMountTarget), &v1alpha1.EfsMountTarget{})
+		Invokes(testing.NewUpdateSubresourceAction(efsmounttargetsResource, "status", c.ns, efsMountTarget), &v1alpha1.EfsMountTarget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEfsMountTargets) UpdateStatus(efsMountTarget *v1alpha1.EfsMountTarg
 // Delete takes name of the efsMountTarget and deletes it. Returns an error if one occurs.
 func (c *FakeEfsMountTargets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(efsmounttargetsResource, name), &v1alpha1.EfsMountTarget{})
+		Invokes(testing.NewDeleteAction(efsmounttargetsResource, c.ns, name), &v1alpha1.EfsMountTarget{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEfsMountTargets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(efsmounttargetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(efsmounttargetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.EfsMountTargetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEfsMountTargets) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched efsMountTarget.
 func (c *FakeEfsMountTargets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EfsMountTarget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(efsmounttargetsResource, name, pt, data, subresources...), &v1alpha1.EfsMountTarget{})
+		Invokes(testing.NewPatchSubresourceAction(efsmounttargetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.EfsMountTarget{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type DataFactoryDatasetPostgresqlLister interface {
 	// List lists all DataFactoryDatasetPostgresqls in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DataFactoryDatasetPostgresql, err error)
-	// Get retrieves the DataFactoryDatasetPostgresql from the index for a given name.
-	Get(name string) (*v1alpha1.DataFactoryDatasetPostgresql, error)
+	// DataFactoryDatasetPostgresqls returns an object that can list and get DataFactoryDatasetPostgresqls.
+	DataFactoryDatasetPostgresqls(namespace string) DataFactoryDatasetPostgresqlNamespaceLister
 	DataFactoryDatasetPostgresqlListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dataFactoryDatasetPostgresqlLister) List(selector labels.Selector) (ret
 	return ret, err
 }
 
-// Get retrieves the DataFactoryDatasetPostgresql from the index for a given name.
-func (s *dataFactoryDatasetPostgresqlLister) Get(name string) (*v1alpha1.DataFactoryDatasetPostgresql, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DataFactoryDatasetPostgresqls returns an object that can list and get DataFactoryDatasetPostgresqls.
+func (s *dataFactoryDatasetPostgresqlLister) DataFactoryDatasetPostgresqls(namespace string) DataFactoryDatasetPostgresqlNamespaceLister {
+	return dataFactoryDatasetPostgresqlNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DataFactoryDatasetPostgresqlNamespaceLister helps list and get DataFactoryDatasetPostgresqls.
+type DataFactoryDatasetPostgresqlNamespaceLister interface {
+	// List lists all DataFactoryDatasetPostgresqls in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DataFactoryDatasetPostgresql, err error)
+	// Get retrieves the DataFactoryDatasetPostgresql from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DataFactoryDatasetPostgresql, error)
+	DataFactoryDatasetPostgresqlNamespaceListerExpansion
+}
+
+// dataFactoryDatasetPostgresqlNamespaceLister implements the DataFactoryDatasetPostgresqlNamespaceLister
+// interface.
+type dataFactoryDatasetPostgresqlNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DataFactoryDatasetPostgresqls in the indexer for a given namespace.
+func (s dataFactoryDatasetPostgresqlNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DataFactoryDatasetPostgresql, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DataFactoryDatasetPostgresql))
+	})
+	return ret, err
+}
+
+// Get retrieves the DataFactoryDatasetPostgresql from the indexer for a given namespace and name.
+func (s dataFactoryDatasetPostgresqlNamespaceLister) Get(name string) (*v1alpha1.DataFactoryDatasetPostgresql, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

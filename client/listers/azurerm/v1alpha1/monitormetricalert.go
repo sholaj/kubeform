@@ -29,8 +29,8 @@ import (
 type MonitorMetricAlertLister interface {
 	// List lists all MonitorMetricAlerts in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MonitorMetricAlert, err error)
-	// Get retrieves the MonitorMetricAlert from the index for a given name.
-	Get(name string) (*v1alpha1.MonitorMetricAlert, error)
+	// MonitorMetricAlerts returns an object that can list and get MonitorMetricAlerts.
+	MonitorMetricAlerts(namespace string) MonitorMetricAlertNamespaceLister
 	MonitorMetricAlertListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *monitorMetricAlertLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the MonitorMetricAlert from the index for a given name.
-func (s *monitorMetricAlertLister) Get(name string) (*v1alpha1.MonitorMetricAlert, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MonitorMetricAlerts returns an object that can list and get MonitorMetricAlerts.
+func (s *monitorMetricAlertLister) MonitorMetricAlerts(namespace string) MonitorMetricAlertNamespaceLister {
+	return monitorMetricAlertNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MonitorMetricAlertNamespaceLister helps list and get MonitorMetricAlerts.
+type MonitorMetricAlertNamespaceLister interface {
+	// List lists all MonitorMetricAlerts in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MonitorMetricAlert, err error)
+	// Get retrieves the MonitorMetricAlert from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MonitorMetricAlert, error)
+	MonitorMetricAlertNamespaceListerExpansion
+}
+
+// monitorMetricAlertNamespaceLister implements the MonitorMetricAlertNamespaceLister
+// interface.
+type monitorMetricAlertNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MonitorMetricAlerts in the indexer for a given namespace.
+func (s monitorMetricAlertNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MonitorMetricAlert, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MonitorMetricAlert))
+	})
+	return ret, err
+}
+
+// Get retrieves the MonitorMetricAlert from the indexer for a given namespace and name.
+func (s monitorMetricAlertNamespaceLister) Get(name string) (*v1alpha1.MonitorMetricAlert, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

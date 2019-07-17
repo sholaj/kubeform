@@ -32,7 +32,7 @@ import (
 // SqsQueuesGetter has a method to return a SqsQueueInterface.
 // A group's client should implement this interface.
 type SqsQueuesGetter interface {
-	SqsQueues() SqsQueueInterface
+	SqsQueues(namespace string) SqsQueueInterface
 }
 
 // SqsQueueInterface has methods to work with SqsQueue resources.
@@ -52,12 +52,14 @@ type SqsQueueInterface interface {
 // sqsQueues implements SqsQueueInterface
 type sqsQueues struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSqsQueues returns a SqsQueues
-func newSqsQueues(c *AwsV1alpha1Client) *sqsQueues {
+func newSqsQueues(c *AwsV1alpha1Client, namespace string) *sqsQueues {
 	return &sqsQueues{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSqsQueues(c *AwsV1alpha1Client) *sqsQueues {
 func (c *sqsQueues) Get(name string, options v1.GetOptions) (result *v1alpha1.SqsQueue, err error) {
 	result = &v1alpha1.SqsQueue{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqsqueues").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sqsQueues) List(opts v1.ListOptions) (result *v1alpha1.SqsQueueList, er
 	}
 	result = &v1alpha1.SqsQueueList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqsqueues").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sqsQueues) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sqsqueues").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sqsQueues) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *sqsQueues) Create(sqsQueue *v1alpha1.SqsQueue) (result *v1alpha1.SqsQueue, err error) {
 	result = &v1alpha1.SqsQueue{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sqsqueues").
 		Body(sqsQueue).
 		Do().
@@ -118,6 +124,7 @@ func (c *sqsQueues) Create(sqsQueue *v1alpha1.SqsQueue) (result *v1alpha1.SqsQue
 func (c *sqsQueues) Update(sqsQueue *v1alpha1.SqsQueue) (result *v1alpha1.SqsQueue, err error) {
 	result = &v1alpha1.SqsQueue{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqsqueues").
 		Name(sqsQueue.Name).
 		Body(sqsQueue).
@@ -132,6 +139,7 @@ func (c *sqsQueues) Update(sqsQueue *v1alpha1.SqsQueue) (result *v1alpha1.SqsQue
 func (c *sqsQueues) UpdateStatus(sqsQueue *v1alpha1.SqsQueue) (result *v1alpha1.SqsQueue, err error) {
 	result = &v1alpha1.SqsQueue{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqsqueues").
 		Name(sqsQueue.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sqsQueues) UpdateStatus(sqsQueue *v1alpha1.SqsQueue) (result *v1alpha1.
 // Delete takes name of the sqsQueue and deletes it. Returns an error if one occurs.
 func (c *sqsQueues) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqsqueues").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sqsQueues) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqsqueues").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sqsQueues) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 func (c *sqsQueues) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SqsQueue, err error) {
 	result = &v1alpha1.SqsQueue{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sqsqueues").
 		SubResource(subresources...).
 		Name(name).

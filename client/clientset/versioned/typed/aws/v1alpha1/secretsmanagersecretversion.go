@@ -32,7 +32,7 @@ import (
 // SecretsmanagerSecretVersionsGetter has a method to return a SecretsmanagerSecretVersionInterface.
 // A group's client should implement this interface.
 type SecretsmanagerSecretVersionsGetter interface {
-	SecretsmanagerSecretVersions() SecretsmanagerSecretVersionInterface
+	SecretsmanagerSecretVersions(namespace string) SecretsmanagerSecretVersionInterface
 }
 
 // SecretsmanagerSecretVersionInterface has methods to work with SecretsmanagerSecretVersion resources.
@@ -52,12 +52,14 @@ type SecretsmanagerSecretVersionInterface interface {
 // secretsmanagerSecretVersions implements SecretsmanagerSecretVersionInterface
 type secretsmanagerSecretVersions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSecretsmanagerSecretVersions returns a SecretsmanagerSecretVersions
-func newSecretsmanagerSecretVersions(c *AwsV1alpha1Client) *secretsmanagerSecretVersions {
+func newSecretsmanagerSecretVersions(c *AwsV1alpha1Client, namespace string) *secretsmanagerSecretVersions {
 	return &secretsmanagerSecretVersions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSecretsmanagerSecretVersions(c *AwsV1alpha1Client) *secretsmanagerSecret
 func (c *secretsmanagerSecretVersions) Get(name string, options v1.GetOptions) (result *v1alpha1.SecretsmanagerSecretVersion, err error) {
 	result = &v1alpha1.SecretsmanagerSecretVersion{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("secretsmanagersecretversions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *secretsmanagerSecretVersions) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.SecretsmanagerSecretVersionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("secretsmanagersecretversions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *secretsmanagerSecretVersions) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("secretsmanagersecretversions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *secretsmanagerSecretVersions) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *secretsmanagerSecretVersions) Create(secretsmanagerSecretVersion *v1alpha1.SecretsmanagerSecretVersion) (result *v1alpha1.SecretsmanagerSecretVersion, err error) {
 	result = &v1alpha1.SecretsmanagerSecretVersion{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("secretsmanagersecretversions").
 		Body(secretsmanagerSecretVersion).
 		Do().
@@ -118,6 +124,7 @@ func (c *secretsmanagerSecretVersions) Create(secretsmanagerSecretVersion *v1alp
 func (c *secretsmanagerSecretVersions) Update(secretsmanagerSecretVersion *v1alpha1.SecretsmanagerSecretVersion) (result *v1alpha1.SecretsmanagerSecretVersion, err error) {
 	result = &v1alpha1.SecretsmanagerSecretVersion{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("secretsmanagersecretversions").
 		Name(secretsmanagerSecretVersion.Name).
 		Body(secretsmanagerSecretVersion).
@@ -132,6 +139,7 @@ func (c *secretsmanagerSecretVersions) Update(secretsmanagerSecretVersion *v1alp
 func (c *secretsmanagerSecretVersions) UpdateStatus(secretsmanagerSecretVersion *v1alpha1.SecretsmanagerSecretVersion) (result *v1alpha1.SecretsmanagerSecretVersion, err error) {
 	result = &v1alpha1.SecretsmanagerSecretVersion{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("secretsmanagersecretversions").
 		Name(secretsmanagerSecretVersion.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *secretsmanagerSecretVersions) UpdateStatus(secretsmanagerSecretVersion 
 // Delete takes name of the secretsmanagerSecretVersion and deletes it. Returns an error if one occurs.
 func (c *secretsmanagerSecretVersions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("secretsmanagersecretversions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *secretsmanagerSecretVersions) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("secretsmanagersecretversions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *secretsmanagerSecretVersions) DeleteCollection(options *v1.DeleteOption
 func (c *secretsmanagerSecretVersions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SecretsmanagerSecretVersion, err error) {
 	result = &v1alpha1.SecretsmanagerSecretVersion{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("secretsmanagersecretversions").
 		SubResource(subresources...).
 		Name(name).

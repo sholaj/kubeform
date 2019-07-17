@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// WafregionalWebAclLister helps list WafregionalWebAcls.
-type WafregionalWebAclLister interface {
-	// List lists all WafregionalWebAcls in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.WafregionalWebAcl, err error)
-	// Get retrieves the WafregionalWebAcl from the index for a given name.
-	Get(name string) (*v1alpha1.WafregionalWebAcl, error)
-	WafregionalWebAclListerExpansion
+// WafregionalWebACLLister helps list WafregionalWebACLs.
+type WafregionalWebACLLister interface {
+	// List lists all WafregionalWebACLs in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.WafregionalWebACL, err error)
+	// WafregionalWebACLs returns an object that can list and get WafregionalWebACLs.
+	WafregionalWebACLs(namespace string) WafregionalWebACLNamespaceLister
+	WafregionalWebACLListerExpansion
 }
 
-// wafregionalWebAclLister implements the WafregionalWebAclLister interface.
-type wafregionalWebAclLister struct {
+// wafregionalWebACLLister implements the WafregionalWebACLLister interface.
+type wafregionalWebACLLister struct {
 	indexer cache.Indexer
 }
 
-// NewWafregionalWebAclLister returns a new WafregionalWebAclLister.
-func NewWafregionalWebAclLister(indexer cache.Indexer) WafregionalWebAclLister {
-	return &wafregionalWebAclLister{indexer: indexer}
+// NewWafregionalWebACLLister returns a new WafregionalWebACLLister.
+func NewWafregionalWebACLLister(indexer cache.Indexer) WafregionalWebACLLister {
+	return &wafregionalWebACLLister{indexer: indexer}
 }
 
-// List lists all WafregionalWebAcls in the indexer.
-func (s *wafregionalWebAclLister) List(selector labels.Selector) (ret []*v1alpha1.WafregionalWebAcl, err error) {
+// List lists all WafregionalWebACLs in the indexer.
+func (s *wafregionalWebACLLister) List(selector labels.Selector) (ret []*v1alpha1.WafregionalWebACL, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.WafregionalWebAcl))
+		ret = append(ret, m.(*v1alpha1.WafregionalWebACL))
 	})
 	return ret, err
 }
 
-// Get retrieves the WafregionalWebAcl from the index for a given name.
-func (s *wafregionalWebAclLister) Get(name string) (*v1alpha1.WafregionalWebAcl, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafregionalWebACLs returns an object that can list and get WafregionalWebACLs.
+func (s *wafregionalWebACLLister) WafregionalWebACLs(namespace string) WafregionalWebACLNamespaceLister {
+	return wafregionalWebACLNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafregionalWebACLNamespaceLister helps list and get WafregionalWebACLs.
+type WafregionalWebACLNamespaceLister interface {
+	// List lists all WafregionalWebACLs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafregionalWebACL, err error)
+	// Get retrieves the WafregionalWebACL from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafregionalWebACL, error)
+	WafregionalWebACLNamespaceListerExpansion
+}
+
+// wafregionalWebACLNamespaceLister implements the WafregionalWebACLNamespaceLister
+// interface.
+type wafregionalWebACLNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafregionalWebACLs in the indexer for a given namespace.
+func (s wafregionalWebACLNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafregionalWebACL, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafregionalWebACL))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafregionalWebACL from the indexer for a given namespace and name.
+func (s wafregionalWebACLNamespaceLister) Get(name string) (*v1alpha1.WafregionalWebACL, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("wafregionalwebacl"), name)
 	}
-	return obj.(*v1alpha1.WafregionalWebAcl), nil
+	return obj.(*v1alpha1.WafregionalWebACL), nil
 }

@@ -32,7 +32,7 @@ import (
 // LightsailInstancesGetter has a method to return a LightsailInstanceInterface.
 // A group's client should implement this interface.
 type LightsailInstancesGetter interface {
-	LightsailInstances() LightsailInstanceInterface
+	LightsailInstances(namespace string) LightsailInstanceInterface
 }
 
 // LightsailInstanceInterface has methods to work with LightsailInstance resources.
@@ -52,12 +52,14 @@ type LightsailInstanceInterface interface {
 // lightsailInstances implements LightsailInstanceInterface
 type lightsailInstances struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLightsailInstances returns a LightsailInstances
-func newLightsailInstances(c *AwsV1alpha1Client) *lightsailInstances {
+func newLightsailInstances(c *AwsV1alpha1Client, namespace string) *lightsailInstances {
 	return &lightsailInstances{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLightsailInstances(c *AwsV1alpha1Client) *lightsailInstances {
 func (c *lightsailInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.LightsailInstance, err error) {
 	result = &v1alpha1.LightsailInstance{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lightsailinstances").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lightsailInstances) List(opts v1.ListOptions) (result *v1alpha1.Lightsa
 	}
 	result = &v1alpha1.LightsailInstanceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lightsailinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lightsailInstances) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lightsailinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lightsailInstances) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *lightsailInstances) Create(lightsailInstance *v1alpha1.LightsailInstance) (result *v1alpha1.LightsailInstance, err error) {
 	result = &v1alpha1.LightsailInstance{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lightsailinstances").
 		Body(lightsailInstance).
 		Do().
@@ -118,6 +124,7 @@ func (c *lightsailInstances) Create(lightsailInstance *v1alpha1.LightsailInstanc
 func (c *lightsailInstances) Update(lightsailInstance *v1alpha1.LightsailInstance) (result *v1alpha1.LightsailInstance, err error) {
 	result = &v1alpha1.LightsailInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lightsailinstances").
 		Name(lightsailInstance.Name).
 		Body(lightsailInstance).
@@ -132,6 +139,7 @@ func (c *lightsailInstances) Update(lightsailInstance *v1alpha1.LightsailInstanc
 func (c *lightsailInstances) UpdateStatus(lightsailInstance *v1alpha1.LightsailInstance) (result *v1alpha1.LightsailInstance, err error) {
 	result = &v1alpha1.LightsailInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lightsailinstances").
 		Name(lightsailInstance.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lightsailInstances) UpdateStatus(lightsailInstance *v1alpha1.LightsailI
 // Delete takes name of the lightsailInstance and deletes it. Returns an error if one occurs.
 func (c *lightsailInstances) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lightsailinstances").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lightsailInstances) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lightsailinstances").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lightsailInstances) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *lightsailInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LightsailInstance, err error) {
 	result = &v1alpha1.LightsailInstance{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lightsailinstances").
 		SubResource(subresources...).
 		Name(name).

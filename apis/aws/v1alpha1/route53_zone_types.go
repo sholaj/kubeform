@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,23 +19,24 @@ type Route53Zone struct {
 }
 
 type Route53ZoneSpecVpc struct {
-	VpcId string `json:"vpc_id"`
+	VpcID string `json:"vpcID" tf:"vpc_id"`
 }
 
 type Route53ZoneSpec struct {
 	// +optional
-	Comment string `json:"comment,omitempty"`
+	Comment string `json:"comment,omitempty" tf:"comment,omitempty"`
 	// +optional
-	DelegationSetId string `json:"delegation_set_id,omitempty"`
+	DelegationSetID string `json:"delegationSetID,omitempty" tf:"delegation_set_id,omitempty"`
 	// +optional
-	ForceDestroy bool   `json:"force_destroy,omitempty"`
-	Name         string `json:"name"`
+	ForceDestroy bool   `json:"forceDestroy,omitempty" tf:"force_destroy,omitempty"`
+	Name         string `json:"name" tf:"name"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	Vpc *[]Route53ZoneSpec `json:"vpc,omitempty"`
+	Vpc         []Route53ZoneSpecVpc      `json:"vpc,omitempty" tf:"vpc,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type Route53ZoneStatus struct {
@@ -43,7 +44,9 @@ type Route53ZoneStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

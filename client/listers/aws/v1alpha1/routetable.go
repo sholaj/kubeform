@@ -29,8 +29,8 @@ import (
 type RouteTableLister interface {
 	// List lists all RouteTables in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RouteTable, err error)
-	// Get retrieves the RouteTable from the index for a given name.
-	Get(name string) (*v1alpha1.RouteTable, error)
+	// RouteTables returns an object that can list and get RouteTables.
+	RouteTables(namespace string) RouteTableNamespaceLister
 	RouteTableListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *routeTableLister) List(selector labels.Selector) (ret []*v1alpha1.Route
 	return ret, err
 }
 
-// Get retrieves the RouteTable from the index for a given name.
-func (s *routeTableLister) Get(name string) (*v1alpha1.RouteTable, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RouteTables returns an object that can list and get RouteTables.
+func (s *routeTableLister) RouteTables(namespace string) RouteTableNamespaceLister {
+	return routeTableNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RouteTableNamespaceLister helps list and get RouteTables.
+type RouteTableNamespaceLister interface {
+	// List lists all RouteTables in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RouteTable, err error)
+	// Get retrieves the RouteTable from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RouteTable, error)
+	RouteTableNamespaceListerExpansion
+}
+
+// routeTableNamespaceLister implements the RouteTableNamespaceLister
+// interface.
+type routeTableNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RouteTables in the indexer for a given namespace.
+func (s routeTableNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RouteTable, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RouteTable))
+	})
+	return ret, err
+}
+
+// Get retrieves the RouteTable from the indexer for a given namespace and name.
+func (s routeTableNamespaceLister) Get(name string) (*v1alpha1.RouteTable, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

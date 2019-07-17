@@ -32,7 +32,7 @@ import (
 // CognitoUserPoolDomainsGetter has a method to return a CognitoUserPoolDomainInterface.
 // A group's client should implement this interface.
 type CognitoUserPoolDomainsGetter interface {
-	CognitoUserPoolDomains() CognitoUserPoolDomainInterface
+	CognitoUserPoolDomains(namespace string) CognitoUserPoolDomainInterface
 }
 
 // CognitoUserPoolDomainInterface has methods to work with CognitoUserPoolDomain resources.
@@ -52,12 +52,14 @@ type CognitoUserPoolDomainInterface interface {
 // cognitoUserPoolDomains implements CognitoUserPoolDomainInterface
 type cognitoUserPoolDomains struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCognitoUserPoolDomains returns a CognitoUserPoolDomains
-func newCognitoUserPoolDomains(c *AwsV1alpha1Client) *cognitoUserPoolDomains {
+func newCognitoUserPoolDomains(c *AwsV1alpha1Client, namespace string) *cognitoUserPoolDomains {
 	return &cognitoUserPoolDomains{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCognitoUserPoolDomains(c *AwsV1alpha1Client) *cognitoUserPoolDomains {
 func (c *cognitoUserPoolDomains) Get(name string, options v1.GetOptions) (result *v1alpha1.CognitoUserPoolDomain, err error) {
 	result = &v1alpha1.CognitoUserPoolDomain{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitouserpooldomains").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cognitoUserPoolDomains) List(opts v1.ListOptions) (result *v1alpha1.Cog
 	}
 	result = &v1alpha1.CognitoUserPoolDomainList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitouserpooldomains").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cognitoUserPoolDomains) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitouserpooldomains").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cognitoUserPoolDomains) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *cognitoUserPoolDomains) Create(cognitoUserPoolDomain *v1alpha1.CognitoUserPoolDomain) (result *v1alpha1.CognitoUserPoolDomain, err error) {
 	result = &v1alpha1.CognitoUserPoolDomain{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cognitouserpooldomains").
 		Body(cognitoUserPoolDomain).
 		Do().
@@ -118,6 +124,7 @@ func (c *cognitoUserPoolDomains) Create(cognitoUserPoolDomain *v1alpha1.CognitoU
 func (c *cognitoUserPoolDomains) Update(cognitoUserPoolDomain *v1alpha1.CognitoUserPoolDomain) (result *v1alpha1.CognitoUserPoolDomain, err error) {
 	result = &v1alpha1.CognitoUserPoolDomain{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cognitouserpooldomains").
 		Name(cognitoUserPoolDomain.Name).
 		Body(cognitoUserPoolDomain).
@@ -132,6 +139,7 @@ func (c *cognitoUserPoolDomains) Update(cognitoUserPoolDomain *v1alpha1.CognitoU
 func (c *cognitoUserPoolDomains) UpdateStatus(cognitoUserPoolDomain *v1alpha1.CognitoUserPoolDomain) (result *v1alpha1.CognitoUserPoolDomain, err error) {
 	result = &v1alpha1.CognitoUserPoolDomain{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cognitouserpooldomains").
 		Name(cognitoUserPoolDomain.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cognitoUserPoolDomains) UpdateStatus(cognitoUserPoolDomain *v1alpha1.Co
 // Delete takes name of the cognitoUserPoolDomain and deletes it. Returns an error if one occurs.
 func (c *cognitoUserPoolDomains) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cognitouserpooldomains").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cognitoUserPoolDomains) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cognitouserpooldomains").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cognitoUserPoolDomains) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *cognitoUserPoolDomains) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CognitoUserPoolDomain, err error) {
 	result = &v1alpha1.CognitoUserPoolDomain{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cognitouserpooldomains").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // CdnsGetter has a method to return a CdnInterface.
 // A group's client should implement this interface.
 type CdnsGetter interface {
-	Cdns() CdnInterface
+	Cdns(namespace string) CdnInterface
 }
 
 // CdnInterface has methods to work with Cdn resources.
@@ -52,12 +52,14 @@ type CdnInterface interface {
 // cdns implements CdnInterface
 type cdns struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCdns returns a Cdns
-func newCdns(c *DigitaloceanV1alpha1Client) *cdns {
+func newCdns(c *DigitaloceanV1alpha1Client, namespace string) *cdns {
 	return &cdns{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCdns(c *DigitaloceanV1alpha1Client) *cdns {
 func (c *cdns) Get(name string, options v1.GetOptions) (result *v1alpha1.Cdn, err error) {
 	result = &v1alpha1.Cdn{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cdns").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cdns) List(opts v1.ListOptions) (result *v1alpha1.CdnList, err error) {
 	}
 	result = &v1alpha1.CdnList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cdns").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cdns) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cdns").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cdns) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *cdns) Create(cdn *v1alpha1.Cdn) (result *v1alpha1.Cdn, err error) {
 	result = &v1alpha1.Cdn{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cdns").
 		Body(cdn).
 		Do().
@@ -118,6 +124,7 @@ func (c *cdns) Create(cdn *v1alpha1.Cdn) (result *v1alpha1.Cdn, err error) {
 func (c *cdns) Update(cdn *v1alpha1.Cdn) (result *v1alpha1.Cdn, err error) {
 	result = &v1alpha1.Cdn{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cdns").
 		Name(cdn.Name).
 		Body(cdn).
@@ -132,6 +139,7 @@ func (c *cdns) Update(cdn *v1alpha1.Cdn) (result *v1alpha1.Cdn, err error) {
 func (c *cdns) UpdateStatus(cdn *v1alpha1.Cdn) (result *v1alpha1.Cdn, err error) {
 	result = &v1alpha1.Cdn{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cdns").
 		Name(cdn.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cdns) UpdateStatus(cdn *v1alpha1.Cdn) (result *v1alpha1.Cdn, err error)
 // Delete takes name of the cdn and deletes it. Returns an error if one occurs.
 func (c *cdns) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cdns").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cdns) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cdns").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cdns) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOp
 func (c *cdns) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Cdn, err error) {
 	result = &v1alpha1.Cdn{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cdns").
 		SubResource(subresources...).
 		Name(name).

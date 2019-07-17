@@ -41,32 +41,33 @@ type OpsworksRdsDbInstanceInformer interface {
 type opsworksRdsDbInstanceInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewOpsworksRdsDbInstanceInformer constructs a new informer for OpsworksRdsDbInstance type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewOpsworksRdsDbInstanceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredOpsworksRdsDbInstanceInformer(client, resyncPeriod, indexers, nil)
+func NewOpsworksRdsDbInstanceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredOpsworksRdsDbInstanceInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredOpsworksRdsDbInstanceInformer constructs a new informer for OpsworksRdsDbInstance type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredOpsworksRdsDbInstanceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredOpsworksRdsDbInstanceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().OpsworksRdsDbInstances().List(options)
+				return client.AwsV1alpha1().OpsworksRdsDbInstances(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().OpsworksRdsDbInstances().Watch(options)
+				return client.AwsV1alpha1().OpsworksRdsDbInstances(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.OpsworksRdsDbInstance{},
@@ -76,7 +77,7 @@ func NewFilteredOpsworksRdsDbInstanceInformer(client versioned.Interface, resync
 }
 
 func (f *opsworksRdsDbInstanceInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredOpsworksRdsDbInstanceInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredOpsworksRdsDbInstanceInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *opsworksRdsDbInstanceInformer) Informer() cache.SharedIndexInformer {

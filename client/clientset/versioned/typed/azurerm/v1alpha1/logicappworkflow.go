@@ -32,7 +32,7 @@ import (
 // LogicAppWorkflowsGetter has a method to return a LogicAppWorkflowInterface.
 // A group's client should implement this interface.
 type LogicAppWorkflowsGetter interface {
-	LogicAppWorkflows() LogicAppWorkflowInterface
+	LogicAppWorkflows(namespace string) LogicAppWorkflowInterface
 }
 
 // LogicAppWorkflowInterface has methods to work with LogicAppWorkflow resources.
@@ -52,12 +52,14 @@ type LogicAppWorkflowInterface interface {
 // logicAppWorkflows implements LogicAppWorkflowInterface
 type logicAppWorkflows struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLogicAppWorkflows returns a LogicAppWorkflows
-func newLogicAppWorkflows(c *AzurermV1alpha1Client) *logicAppWorkflows {
+func newLogicAppWorkflows(c *AzurermV1alpha1Client, namespace string) *logicAppWorkflows {
 	return &logicAppWorkflows{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLogicAppWorkflows(c *AzurermV1alpha1Client) *logicAppWorkflows {
 func (c *logicAppWorkflows) Get(name string, options v1.GetOptions) (result *v1alpha1.LogicAppWorkflow, err error) {
 	result = &v1alpha1.LogicAppWorkflow{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("logicappworkflows").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *logicAppWorkflows) List(opts v1.ListOptions) (result *v1alpha1.LogicApp
 	}
 	result = &v1alpha1.LogicAppWorkflowList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("logicappworkflows").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *logicAppWorkflows) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("logicappworkflows").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *logicAppWorkflows) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *logicAppWorkflows) Create(logicAppWorkflow *v1alpha1.LogicAppWorkflow) (result *v1alpha1.LogicAppWorkflow, err error) {
 	result = &v1alpha1.LogicAppWorkflow{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("logicappworkflows").
 		Body(logicAppWorkflow).
 		Do().
@@ -118,6 +124,7 @@ func (c *logicAppWorkflows) Create(logicAppWorkflow *v1alpha1.LogicAppWorkflow) 
 func (c *logicAppWorkflows) Update(logicAppWorkflow *v1alpha1.LogicAppWorkflow) (result *v1alpha1.LogicAppWorkflow, err error) {
 	result = &v1alpha1.LogicAppWorkflow{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("logicappworkflows").
 		Name(logicAppWorkflow.Name).
 		Body(logicAppWorkflow).
@@ -132,6 +139,7 @@ func (c *logicAppWorkflows) Update(logicAppWorkflow *v1alpha1.LogicAppWorkflow) 
 func (c *logicAppWorkflows) UpdateStatus(logicAppWorkflow *v1alpha1.LogicAppWorkflow) (result *v1alpha1.LogicAppWorkflow, err error) {
 	result = &v1alpha1.LogicAppWorkflow{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("logicappworkflows").
 		Name(logicAppWorkflow.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *logicAppWorkflows) UpdateStatus(logicAppWorkflow *v1alpha1.LogicAppWork
 // Delete takes name of the logicAppWorkflow and deletes it. Returns an error if one occurs.
 func (c *logicAppWorkflows) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("logicappworkflows").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *logicAppWorkflows) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("logicappworkflows").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *logicAppWorkflows) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *logicAppWorkflows) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogicAppWorkflow, err error) {
 	result = &v1alpha1.LogicAppWorkflow{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("logicappworkflows").
 		SubResource(subresources...).
 		Name(name).

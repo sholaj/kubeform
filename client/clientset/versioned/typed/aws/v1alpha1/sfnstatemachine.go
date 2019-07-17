@@ -32,7 +32,7 @@ import (
 // SfnStateMachinesGetter has a method to return a SfnStateMachineInterface.
 // A group's client should implement this interface.
 type SfnStateMachinesGetter interface {
-	SfnStateMachines() SfnStateMachineInterface
+	SfnStateMachines(namespace string) SfnStateMachineInterface
 }
 
 // SfnStateMachineInterface has methods to work with SfnStateMachine resources.
@@ -52,12 +52,14 @@ type SfnStateMachineInterface interface {
 // sfnStateMachines implements SfnStateMachineInterface
 type sfnStateMachines struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSfnStateMachines returns a SfnStateMachines
-func newSfnStateMachines(c *AwsV1alpha1Client) *sfnStateMachines {
+func newSfnStateMachines(c *AwsV1alpha1Client, namespace string) *sfnStateMachines {
 	return &sfnStateMachines{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSfnStateMachines(c *AwsV1alpha1Client) *sfnStateMachines {
 func (c *sfnStateMachines) Get(name string, options v1.GetOptions) (result *v1alpha1.SfnStateMachine, err error) {
 	result = &v1alpha1.SfnStateMachine{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sfnstatemachines").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sfnStateMachines) List(opts v1.ListOptions) (result *v1alpha1.SfnStateM
 	}
 	result = &v1alpha1.SfnStateMachineList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sfnstatemachines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sfnStateMachines) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sfnstatemachines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sfnStateMachines) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *sfnStateMachines) Create(sfnStateMachine *v1alpha1.SfnStateMachine) (result *v1alpha1.SfnStateMachine, err error) {
 	result = &v1alpha1.SfnStateMachine{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sfnstatemachines").
 		Body(sfnStateMachine).
 		Do().
@@ -118,6 +124,7 @@ func (c *sfnStateMachines) Create(sfnStateMachine *v1alpha1.SfnStateMachine) (re
 func (c *sfnStateMachines) Update(sfnStateMachine *v1alpha1.SfnStateMachine) (result *v1alpha1.SfnStateMachine, err error) {
 	result = &v1alpha1.SfnStateMachine{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sfnstatemachines").
 		Name(sfnStateMachine.Name).
 		Body(sfnStateMachine).
@@ -132,6 +139,7 @@ func (c *sfnStateMachines) Update(sfnStateMachine *v1alpha1.SfnStateMachine) (re
 func (c *sfnStateMachines) UpdateStatus(sfnStateMachine *v1alpha1.SfnStateMachine) (result *v1alpha1.SfnStateMachine, err error) {
 	result = &v1alpha1.SfnStateMachine{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sfnstatemachines").
 		Name(sfnStateMachine.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sfnStateMachines) UpdateStatus(sfnStateMachine *v1alpha1.SfnStateMachin
 // Delete takes name of the sfnStateMachine and deletes it. Returns an error if one occurs.
 func (c *sfnStateMachines) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sfnstatemachines").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sfnStateMachines) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sfnstatemachines").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sfnStateMachines) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *sfnStateMachines) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SfnStateMachine, err error) {
 	result = &v1alpha1.SfnStateMachine{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sfnstatemachines").
 		SubResource(subresources...).
 		Name(name).

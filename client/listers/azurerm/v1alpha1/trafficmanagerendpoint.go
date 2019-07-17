@@ -29,8 +29,8 @@ import (
 type TrafficManagerEndpointLister interface {
 	// List lists all TrafficManagerEndpoints in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.TrafficManagerEndpoint, err error)
-	// Get retrieves the TrafficManagerEndpoint from the index for a given name.
-	Get(name string) (*v1alpha1.TrafficManagerEndpoint, error)
+	// TrafficManagerEndpoints returns an object that can list and get TrafficManagerEndpoints.
+	TrafficManagerEndpoints(namespace string) TrafficManagerEndpointNamespaceLister
 	TrafficManagerEndpointListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *trafficManagerEndpointLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the TrafficManagerEndpoint from the index for a given name.
-func (s *trafficManagerEndpointLister) Get(name string) (*v1alpha1.TrafficManagerEndpoint, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// TrafficManagerEndpoints returns an object that can list and get TrafficManagerEndpoints.
+func (s *trafficManagerEndpointLister) TrafficManagerEndpoints(namespace string) TrafficManagerEndpointNamespaceLister {
+	return trafficManagerEndpointNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// TrafficManagerEndpointNamespaceLister helps list and get TrafficManagerEndpoints.
+type TrafficManagerEndpointNamespaceLister interface {
+	// List lists all TrafficManagerEndpoints in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.TrafficManagerEndpoint, err error)
+	// Get retrieves the TrafficManagerEndpoint from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.TrafficManagerEndpoint, error)
+	TrafficManagerEndpointNamespaceListerExpansion
+}
+
+// trafficManagerEndpointNamespaceLister implements the TrafficManagerEndpointNamespaceLister
+// interface.
+type trafficManagerEndpointNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all TrafficManagerEndpoints in the indexer for a given namespace.
+func (s trafficManagerEndpointNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.TrafficManagerEndpoint, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.TrafficManagerEndpoint))
+	})
+	return ret, err
+}
+
+// Get retrieves the TrafficManagerEndpoint from the indexer for a given namespace and name.
+func (s trafficManagerEndpointNamespaceLister) Get(name string) (*v1alpha1.TrafficManagerEndpoint, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

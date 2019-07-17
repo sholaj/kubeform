@@ -31,6 +31,7 @@ import (
 // FakeIotPolicies implements IotPolicyInterface
 type FakeIotPolicies struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var iotpoliciesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "iotpolicies"}
@@ -40,7 +41,8 @@ var iotpoliciesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version
 // Get takes name of the iotPolicy, and returns the corresponding iotPolicy object, and an error if there is any.
 func (c *FakeIotPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.IotPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iotpoliciesResource, name), &v1alpha1.IotPolicy{})
+		Invokes(testing.NewGetAction(iotpoliciesResource, c.ns, name), &v1alpha1.IotPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIotPolicies) Get(name string, options v1.GetOptions) (result *v1alp
 // List takes label and field selectors, and returns the list of IotPolicies that match those selectors.
 func (c *FakeIotPolicies) List(opts v1.ListOptions) (result *v1alpha1.IotPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iotpoliciesResource, iotpoliciesKind, opts), &v1alpha1.IotPolicyList{})
+		Invokes(testing.NewListAction(iotpoliciesResource, iotpoliciesKind, c.ns, opts), &v1alpha1.IotPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIotPolicies) List(opts v1.ListOptions) (result *v1alpha1.IotPolicyL
 // Watch returns a watch.Interface that watches the requested iotPolicies.
 func (c *FakeIotPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iotpoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(iotpoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iotPolicy and creates it.  Returns the server's representation of the iotPolicy, and an error, if there is any.
 func (c *FakeIotPolicies) Create(iotPolicy *v1alpha1.IotPolicy) (result *v1alpha1.IotPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iotpoliciesResource, iotPolicy), &v1alpha1.IotPolicy{})
+		Invokes(testing.NewCreateAction(iotpoliciesResource, c.ns, iotPolicy), &v1alpha1.IotPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIotPolicies) Create(iotPolicy *v1alpha1.IotPolicy) (result *v1alpha
 // Update takes the representation of a iotPolicy and updates it. Returns the server's representation of the iotPolicy, and an error, if there is any.
 func (c *FakeIotPolicies) Update(iotPolicy *v1alpha1.IotPolicy) (result *v1alpha1.IotPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iotpoliciesResource, iotPolicy), &v1alpha1.IotPolicy{})
+		Invokes(testing.NewUpdateAction(iotpoliciesResource, c.ns, iotPolicy), &v1alpha1.IotPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIotPolicies) Update(iotPolicy *v1alpha1.IotPolicy) (result *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIotPolicies) UpdateStatus(iotPolicy *v1alpha1.IotPolicy) (*v1alpha1.IotPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iotpoliciesResource, "status", iotPolicy), &v1alpha1.IotPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(iotpoliciesResource, "status", c.ns, iotPolicy), &v1alpha1.IotPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIotPolicies) UpdateStatus(iotPolicy *v1alpha1.IotPolicy) (*v1alpha1
 // Delete takes name of the iotPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeIotPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iotpoliciesResource, name), &v1alpha1.IotPolicy{})
+		Invokes(testing.NewDeleteAction(iotpoliciesResource, c.ns, name), &v1alpha1.IotPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIotPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iotpoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iotpoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IotPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIotPolicies) DeleteCollection(options *v1.DeleteOptions, listOption
 // Patch applies the patch and returns the patched iotPolicy.
 func (c *FakeIotPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IotPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iotpoliciesResource, name, pt, data, subresources...), &v1alpha1.IotPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(iotpoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.IotPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

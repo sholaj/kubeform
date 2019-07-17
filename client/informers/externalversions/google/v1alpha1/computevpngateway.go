@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/google/v1alpha1"
 )
 
-// ComputeVpnGatewayInformer provides access to a shared informer and lister for
-// ComputeVpnGateways.
-type ComputeVpnGatewayInformer interface {
+// ComputeVPNGatewayInformer provides access to a shared informer and lister for
+// ComputeVPNGateways.
+type ComputeVPNGatewayInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.ComputeVpnGatewayLister
+	Lister() v1alpha1.ComputeVPNGatewayLister
 }
 
-type computeVpnGatewayInformer struct {
+type computeVPNGatewayInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewComputeVpnGatewayInformer constructs a new informer for ComputeVpnGateway type.
+// NewComputeVPNGatewayInformer constructs a new informer for ComputeVPNGateway type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewComputeVpnGatewayInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredComputeVpnGatewayInformer(client, resyncPeriod, indexers, nil)
+func NewComputeVPNGatewayInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredComputeVPNGatewayInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredComputeVpnGatewayInformer constructs a new informer for ComputeVpnGateway type.
+// NewFilteredComputeVPNGatewayInformer constructs a new informer for ComputeVPNGateway type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredComputeVpnGatewayInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredComputeVPNGatewayInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeVpnGateways().List(options)
+				return client.GoogleV1alpha1().ComputeVPNGateways(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeVpnGateways().Watch(options)
+				return client.GoogleV1alpha1().ComputeVPNGateways(namespace).Watch(options)
 			},
 		},
-		&googlev1alpha1.ComputeVpnGateway{},
+		&googlev1alpha1.ComputeVPNGateway{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *computeVpnGatewayInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredComputeVpnGatewayInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *computeVPNGatewayInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredComputeVPNGatewayInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *computeVpnGatewayInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&googlev1alpha1.ComputeVpnGateway{}, f.defaultInformer)
+func (f *computeVPNGatewayInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&googlev1alpha1.ComputeVPNGateway{}, f.defaultInformer)
 }
 
-func (f *computeVpnGatewayInformer) Lister() v1alpha1.ComputeVpnGatewayLister {
-	return v1alpha1.NewComputeVpnGatewayLister(f.Informer().GetIndexer())
+func (f *computeVPNGatewayInformer) Lister() v1alpha1.ComputeVPNGatewayLister {
+	return v1alpha1.NewComputeVPNGatewayLister(f.Informer().GetIndexer())
 }

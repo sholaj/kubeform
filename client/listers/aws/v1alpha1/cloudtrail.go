@@ -29,8 +29,8 @@ import (
 type CloudtrailLister interface {
 	// List lists all Cloudtrails in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Cloudtrail, err error)
-	// Get retrieves the Cloudtrail from the index for a given name.
-	Get(name string) (*v1alpha1.Cloudtrail, error)
+	// Cloudtrails returns an object that can list and get Cloudtrails.
+	Cloudtrails(namespace string) CloudtrailNamespaceLister
 	CloudtrailListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cloudtrailLister) List(selector labels.Selector) (ret []*v1alpha1.Cloud
 	return ret, err
 }
 
-// Get retrieves the Cloudtrail from the index for a given name.
-func (s *cloudtrailLister) Get(name string) (*v1alpha1.Cloudtrail, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Cloudtrails returns an object that can list and get Cloudtrails.
+func (s *cloudtrailLister) Cloudtrails(namespace string) CloudtrailNamespaceLister {
+	return cloudtrailNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CloudtrailNamespaceLister helps list and get Cloudtrails.
+type CloudtrailNamespaceLister interface {
+	// List lists all Cloudtrails in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Cloudtrail, err error)
+	// Get retrieves the Cloudtrail from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Cloudtrail, error)
+	CloudtrailNamespaceListerExpansion
+}
+
+// cloudtrailNamespaceLister implements the CloudtrailNamespaceLister
+// interface.
+type cloudtrailNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Cloudtrails in the indexer for a given namespace.
+func (s cloudtrailNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Cloudtrail, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Cloudtrail))
+	})
+	return ret, err
+}
+
+// Get retrieves the Cloudtrail from the indexer for a given namespace and name.
+func (s cloudtrailNamespaceLister) Get(name string) (*v1alpha1.Cloudtrail, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

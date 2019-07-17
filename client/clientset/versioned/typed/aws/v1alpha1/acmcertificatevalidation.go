@@ -32,7 +32,7 @@ import (
 // AcmCertificateValidationsGetter has a method to return a AcmCertificateValidationInterface.
 // A group's client should implement this interface.
 type AcmCertificateValidationsGetter interface {
-	AcmCertificateValidations() AcmCertificateValidationInterface
+	AcmCertificateValidations(namespace string) AcmCertificateValidationInterface
 }
 
 // AcmCertificateValidationInterface has methods to work with AcmCertificateValidation resources.
@@ -52,12 +52,14 @@ type AcmCertificateValidationInterface interface {
 // acmCertificateValidations implements AcmCertificateValidationInterface
 type acmCertificateValidations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAcmCertificateValidations returns a AcmCertificateValidations
-func newAcmCertificateValidations(c *AwsV1alpha1Client) *acmCertificateValidations {
+func newAcmCertificateValidations(c *AwsV1alpha1Client, namespace string) *acmCertificateValidations {
 	return &acmCertificateValidations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAcmCertificateValidations(c *AwsV1alpha1Client) *acmCertificateValidatio
 func (c *acmCertificateValidations) Get(name string, options v1.GetOptions) (result *v1alpha1.AcmCertificateValidation, err error) {
 	result = &v1alpha1.AcmCertificateValidation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("acmcertificatevalidations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *acmCertificateValidations) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.AcmCertificateValidationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("acmcertificatevalidations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *acmCertificateValidations) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("acmcertificatevalidations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *acmCertificateValidations) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *acmCertificateValidations) Create(acmCertificateValidation *v1alpha1.AcmCertificateValidation) (result *v1alpha1.AcmCertificateValidation, err error) {
 	result = &v1alpha1.AcmCertificateValidation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("acmcertificatevalidations").
 		Body(acmCertificateValidation).
 		Do().
@@ -118,6 +124,7 @@ func (c *acmCertificateValidations) Create(acmCertificateValidation *v1alpha1.Ac
 func (c *acmCertificateValidations) Update(acmCertificateValidation *v1alpha1.AcmCertificateValidation) (result *v1alpha1.AcmCertificateValidation, err error) {
 	result = &v1alpha1.AcmCertificateValidation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("acmcertificatevalidations").
 		Name(acmCertificateValidation.Name).
 		Body(acmCertificateValidation).
@@ -132,6 +139,7 @@ func (c *acmCertificateValidations) Update(acmCertificateValidation *v1alpha1.Ac
 func (c *acmCertificateValidations) UpdateStatus(acmCertificateValidation *v1alpha1.AcmCertificateValidation) (result *v1alpha1.AcmCertificateValidation, err error) {
 	result = &v1alpha1.AcmCertificateValidation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("acmcertificatevalidations").
 		Name(acmCertificateValidation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *acmCertificateValidations) UpdateStatus(acmCertificateValidation *v1alp
 // Delete takes name of the acmCertificateValidation and deletes it. Returns an error if one occurs.
 func (c *acmCertificateValidations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("acmcertificatevalidations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *acmCertificateValidations) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("acmcertificatevalidations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *acmCertificateValidations) DeleteCollection(options *v1.DeleteOptions, 
 func (c *acmCertificateValidations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AcmCertificateValidation, err error) {
 	result = &v1alpha1.AcmCertificateValidation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("acmcertificatevalidations").
 		SubResource(subresources...).
 		Name(name).

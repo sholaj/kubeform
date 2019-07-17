@@ -29,8 +29,8 @@ import (
 type KubernetesClusterLister interface {
 	// List lists all KubernetesClusters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KubernetesCluster, err error)
-	// Get retrieves the KubernetesCluster from the index for a given name.
-	Get(name string) (*v1alpha1.KubernetesCluster, error)
+	// KubernetesClusters returns an object that can list and get KubernetesClusters.
+	KubernetesClusters(namespace string) KubernetesClusterNamespaceLister
 	KubernetesClusterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *kubernetesClusterLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the KubernetesCluster from the index for a given name.
-func (s *kubernetesClusterLister) Get(name string) (*v1alpha1.KubernetesCluster, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KubernetesClusters returns an object that can list and get KubernetesClusters.
+func (s *kubernetesClusterLister) KubernetesClusters(namespace string) KubernetesClusterNamespaceLister {
+	return kubernetesClusterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KubernetesClusterNamespaceLister helps list and get KubernetesClusters.
+type KubernetesClusterNamespaceLister interface {
+	// List lists all KubernetesClusters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KubernetesCluster, err error)
+	// Get retrieves the KubernetesCluster from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KubernetesCluster, error)
+	KubernetesClusterNamespaceListerExpansion
+}
+
+// kubernetesClusterNamespaceLister implements the KubernetesClusterNamespaceLister
+// interface.
+type kubernetesClusterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KubernetesClusters in the indexer for a given namespace.
+func (s kubernetesClusterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KubernetesCluster, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KubernetesCluster))
+	})
+	return ret, err
+}
+
+// Get retrieves the KubernetesCluster from the indexer for a given namespace and name.
+func (s kubernetesClusterNamespaceLister) Get(name string) (*v1alpha1.KubernetesCluster, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

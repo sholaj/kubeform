@@ -32,7 +32,7 @@ import (
 // ApiGatewayDocumentationVersionsGetter has a method to return a ApiGatewayDocumentationVersionInterface.
 // A group's client should implement this interface.
 type ApiGatewayDocumentationVersionsGetter interface {
-	ApiGatewayDocumentationVersions() ApiGatewayDocumentationVersionInterface
+	ApiGatewayDocumentationVersions(namespace string) ApiGatewayDocumentationVersionInterface
 }
 
 // ApiGatewayDocumentationVersionInterface has methods to work with ApiGatewayDocumentationVersion resources.
@@ -52,12 +52,14 @@ type ApiGatewayDocumentationVersionInterface interface {
 // apiGatewayDocumentationVersions implements ApiGatewayDocumentationVersionInterface
 type apiGatewayDocumentationVersions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiGatewayDocumentationVersions returns a ApiGatewayDocumentationVersions
-func newApiGatewayDocumentationVersions(c *AwsV1alpha1Client) *apiGatewayDocumentationVersions {
+func newApiGatewayDocumentationVersions(c *AwsV1alpha1Client, namespace string) *apiGatewayDocumentationVersions {
 	return &apiGatewayDocumentationVersions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiGatewayDocumentationVersions(c *AwsV1alpha1Client) *apiGatewayDocumen
 func (c *apiGatewayDocumentationVersions) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayDocumentationVersion, err error) {
 	result = &v1alpha1.ApiGatewayDocumentationVersion{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaydocumentationversions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiGatewayDocumentationVersions) List(opts v1.ListOptions) (result *v1a
 	}
 	result = &v1alpha1.ApiGatewayDocumentationVersionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaydocumentationversions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiGatewayDocumentationVersions) Watch(opts v1.ListOptions) (watch.Inte
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaydocumentationversions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiGatewayDocumentationVersions) Watch(opts v1.ListOptions) (watch.Inte
 func (c *apiGatewayDocumentationVersions) Create(apiGatewayDocumentationVersion *v1alpha1.ApiGatewayDocumentationVersion) (result *v1alpha1.ApiGatewayDocumentationVersion, err error) {
 	result = &v1alpha1.ApiGatewayDocumentationVersion{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apigatewaydocumentationversions").
 		Body(apiGatewayDocumentationVersion).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiGatewayDocumentationVersions) Create(apiGatewayDocumentationVersion 
 func (c *apiGatewayDocumentationVersions) Update(apiGatewayDocumentationVersion *v1alpha1.ApiGatewayDocumentationVersion) (result *v1alpha1.ApiGatewayDocumentationVersion, err error) {
 	result = &v1alpha1.ApiGatewayDocumentationVersion{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewaydocumentationversions").
 		Name(apiGatewayDocumentationVersion.Name).
 		Body(apiGatewayDocumentationVersion).
@@ -132,6 +139,7 @@ func (c *apiGatewayDocumentationVersions) Update(apiGatewayDocumentationVersion 
 func (c *apiGatewayDocumentationVersions) UpdateStatus(apiGatewayDocumentationVersion *v1alpha1.ApiGatewayDocumentationVersion) (result *v1alpha1.ApiGatewayDocumentationVersion, err error) {
 	result = &v1alpha1.ApiGatewayDocumentationVersion{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewaydocumentationversions").
 		Name(apiGatewayDocumentationVersion.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiGatewayDocumentationVersions) UpdateStatus(apiGatewayDocumentationVe
 // Delete takes name of the apiGatewayDocumentationVersion and deletes it. Returns an error if one occurs.
 func (c *apiGatewayDocumentationVersions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewaydocumentationversions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiGatewayDocumentationVersions) DeleteCollection(options *v1.DeleteOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewaydocumentationversions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiGatewayDocumentationVersions) DeleteCollection(options *v1.DeleteOpt
 func (c *apiGatewayDocumentationVersions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayDocumentationVersion, err error) {
 	result = &v1alpha1.ApiGatewayDocumentationVersion{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apigatewaydocumentationversions").
 		SubResource(subresources...).
 		Name(name).

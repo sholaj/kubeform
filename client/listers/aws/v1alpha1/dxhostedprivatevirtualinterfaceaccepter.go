@@ -29,8 +29,8 @@ import (
 type DxHostedPrivateVirtualInterfaceAccepterLister interface {
 	// List lists all DxHostedPrivateVirtualInterfaceAccepters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DxHostedPrivateVirtualInterfaceAccepter, err error)
-	// Get retrieves the DxHostedPrivateVirtualInterfaceAccepter from the index for a given name.
-	Get(name string) (*v1alpha1.DxHostedPrivateVirtualInterfaceAccepter, error)
+	// DxHostedPrivateVirtualInterfaceAccepters returns an object that can list and get DxHostedPrivateVirtualInterfaceAccepters.
+	DxHostedPrivateVirtualInterfaceAccepters(namespace string) DxHostedPrivateVirtualInterfaceAccepterNamespaceLister
 	DxHostedPrivateVirtualInterfaceAccepterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dxHostedPrivateVirtualInterfaceAccepterLister) List(selector labels.Sel
 	return ret, err
 }
 
-// Get retrieves the DxHostedPrivateVirtualInterfaceAccepter from the index for a given name.
-func (s *dxHostedPrivateVirtualInterfaceAccepterLister) Get(name string) (*v1alpha1.DxHostedPrivateVirtualInterfaceAccepter, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DxHostedPrivateVirtualInterfaceAccepters returns an object that can list and get DxHostedPrivateVirtualInterfaceAccepters.
+func (s *dxHostedPrivateVirtualInterfaceAccepterLister) DxHostedPrivateVirtualInterfaceAccepters(namespace string) DxHostedPrivateVirtualInterfaceAccepterNamespaceLister {
+	return dxHostedPrivateVirtualInterfaceAccepterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DxHostedPrivateVirtualInterfaceAccepterNamespaceLister helps list and get DxHostedPrivateVirtualInterfaceAccepters.
+type DxHostedPrivateVirtualInterfaceAccepterNamespaceLister interface {
+	// List lists all DxHostedPrivateVirtualInterfaceAccepters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DxHostedPrivateVirtualInterfaceAccepter, err error)
+	// Get retrieves the DxHostedPrivateVirtualInterfaceAccepter from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DxHostedPrivateVirtualInterfaceAccepter, error)
+	DxHostedPrivateVirtualInterfaceAccepterNamespaceListerExpansion
+}
+
+// dxHostedPrivateVirtualInterfaceAccepterNamespaceLister implements the DxHostedPrivateVirtualInterfaceAccepterNamespaceLister
+// interface.
+type dxHostedPrivateVirtualInterfaceAccepterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DxHostedPrivateVirtualInterfaceAccepters in the indexer for a given namespace.
+func (s dxHostedPrivateVirtualInterfaceAccepterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DxHostedPrivateVirtualInterfaceAccepter, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DxHostedPrivateVirtualInterfaceAccepter))
+	})
+	return ret, err
+}
+
+// Get retrieves the DxHostedPrivateVirtualInterfaceAccepter from the indexer for a given namespace and name.
+func (s dxHostedPrivateVirtualInterfaceAccepterNamespaceLister) Get(name string) (*v1alpha1.DxHostedPrivateVirtualInterfaceAccepter, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

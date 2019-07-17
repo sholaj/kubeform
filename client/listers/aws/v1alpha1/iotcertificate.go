@@ -29,8 +29,8 @@ import (
 type IotCertificateLister interface {
 	// List lists all IotCertificates in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IotCertificate, err error)
-	// Get retrieves the IotCertificate from the index for a given name.
-	Get(name string) (*v1alpha1.IotCertificate, error)
+	// IotCertificates returns an object that can list and get IotCertificates.
+	IotCertificates(namespace string) IotCertificateNamespaceLister
 	IotCertificateListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iotCertificateLister) List(selector labels.Selector) (ret []*v1alpha1.I
 	return ret, err
 }
 
-// Get retrieves the IotCertificate from the index for a given name.
-func (s *iotCertificateLister) Get(name string) (*v1alpha1.IotCertificate, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IotCertificates returns an object that can list and get IotCertificates.
+func (s *iotCertificateLister) IotCertificates(namespace string) IotCertificateNamespaceLister {
+	return iotCertificateNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IotCertificateNamespaceLister helps list and get IotCertificates.
+type IotCertificateNamespaceLister interface {
+	// List lists all IotCertificates in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IotCertificate, err error)
+	// Get retrieves the IotCertificate from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IotCertificate, error)
+	IotCertificateNamespaceListerExpansion
+}
+
+// iotCertificateNamespaceLister implements the IotCertificateNamespaceLister
+// interface.
+type iotCertificateNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IotCertificates in the indexer for a given namespace.
+func (s iotCertificateNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IotCertificate, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IotCertificate))
+	})
+	return ret, err
+}
+
+// Get retrieves the IotCertificate from the indexer for a given namespace and name.
+func (s iotCertificateNamespaceLister) Get(name string) (*v1alpha1.IotCertificate, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

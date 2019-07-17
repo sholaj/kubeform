@@ -32,7 +32,7 @@ import (
 // SpannerDatabasesGetter has a method to return a SpannerDatabaseInterface.
 // A group's client should implement this interface.
 type SpannerDatabasesGetter interface {
-	SpannerDatabases() SpannerDatabaseInterface
+	SpannerDatabases(namespace string) SpannerDatabaseInterface
 }
 
 // SpannerDatabaseInterface has methods to work with SpannerDatabase resources.
@@ -52,12 +52,14 @@ type SpannerDatabaseInterface interface {
 // spannerDatabases implements SpannerDatabaseInterface
 type spannerDatabases struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSpannerDatabases returns a SpannerDatabases
-func newSpannerDatabases(c *GoogleV1alpha1Client) *spannerDatabases {
+func newSpannerDatabases(c *GoogleV1alpha1Client, namespace string) *spannerDatabases {
 	return &spannerDatabases{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSpannerDatabases(c *GoogleV1alpha1Client) *spannerDatabases {
 func (c *spannerDatabases) Get(name string, options v1.GetOptions) (result *v1alpha1.SpannerDatabase, err error) {
 	result = &v1alpha1.SpannerDatabase{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("spannerdatabases").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *spannerDatabases) List(opts v1.ListOptions) (result *v1alpha1.SpannerDa
 	}
 	result = &v1alpha1.SpannerDatabaseList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("spannerdatabases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *spannerDatabases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("spannerdatabases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *spannerDatabases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *spannerDatabases) Create(spannerDatabase *v1alpha1.SpannerDatabase) (result *v1alpha1.SpannerDatabase, err error) {
 	result = &v1alpha1.SpannerDatabase{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("spannerdatabases").
 		Body(spannerDatabase).
 		Do().
@@ -118,6 +124,7 @@ func (c *spannerDatabases) Create(spannerDatabase *v1alpha1.SpannerDatabase) (re
 func (c *spannerDatabases) Update(spannerDatabase *v1alpha1.SpannerDatabase) (result *v1alpha1.SpannerDatabase, err error) {
 	result = &v1alpha1.SpannerDatabase{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("spannerdatabases").
 		Name(spannerDatabase.Name).
 		Body(spannerDatabase).
@@ -132,6 +139,7 @@ func (c *spannerDatabases) Update(spannerDatabase *v1alpha1.SpannerDatabase) (re
 func (c *spannerDatabases) UpdateStatus(spannerDatabase *v1alpha1.SpannerDatabase) (result *v1alpha1.SpannerDatabase, err error) {
 	result = &v1alpha1.SpannerDatabase{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("spannerdatabases").
 		Name(spannerDatabase.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *spannerDatabases) UpdateStatus(spannerDatabase *v1alpha1.SpannerDatabas
 // Delete takes name of the spannerDatabase and deletes it. Returns an error if one occurs.
 func (c *spannerDatabases) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("spannerdatabases").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *spannerDatabases) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("spannerdatabases").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *spannerDatabases) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *spannerDatabases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SpannerDatabase, err error) {
 	result = &v1alpha1.SpannerDatabase{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("spannerdatabases").
 		SubResource(subresources...).
 		Name(name).

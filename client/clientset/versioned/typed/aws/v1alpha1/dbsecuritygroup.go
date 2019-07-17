@@ -32,7 +32,7 @@ import (
 // DbSecurityGroupsGetter has a method to return a DbSecurityGroupInterface.
 // A group's client should implement this interface.
 type DbSecurityGroupsGetter interface {
-	DbSecurityGroups() DbSecurityGroupInterface
+	DbSecurityGroups(namespace string) DbSecurityGroupInterface
 }
 
 // DbSecurityGroupInterface has methods to work with DbSecurityGroup resources.
@@ -52,12 +52,14 @@ type DbSecurityGroupInterface interface {
 // dbSecurityGroups implements DbSecurityGroupInterface
 type dbSecurityGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDbSecurityGroups returns a DbSecurityGroups
-func newDbSecurityGroups(c *AwsV1alpha1Client) *dbSecurityGroups {
+func newDbSecurityGroups(c *AwsV1alpha1Client, namespace string) *dbSecurityGroups {
 	return &dbSecurityGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDbSecurityGroups(c *AwsV1alpha1Client) *dbSecurityGroups {
 func (c *dbSecurityGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.DbSecurityGroup, err error) {
 	result = &v1alpha1.DbSecurityGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dbsecuritygroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dbSecurityGroups) List(opts v1.ListOptions) (result *v1alpha1.DbSecurit
 	}
 	result = &v1alpha1.DbSecurityGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dbsecuritygroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dbSecurityGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dbsecuritygroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dbSecurityGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dbSecurityGroups) Create(dbSecurityGroup *v1alpha1.DbSecurityGroup) (result *v1alpha1.DbSecurityGroup, err error) {
 	result = &v1alpha1.DbSecurityGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dbsecuritygroups").
 		Body(dbSecurityGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *dbSecurityGroups) Create(dbSecurityGroup *v1alpha1.DbSecurityGroup) (re
 func (c *dbSecurityGroups) Update(dbSecurityGroup *v1alpha1.DbSecurityGroup) (result *v1alpha1.DbSecurityGroup, err error) {
 	result = &v1alpha1.DbSecurityGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dbsecuritygroups").
 		Name(dbSecurityGroup.Name).
 		Body(dbSecurityGroup).
@@ -132,6 +139,7 @@ func (c *dbSecurityGroups) Update(dbSecurityGroup *v1alpha1.DbSecurityGroup) (re
 func (c *dbSecurityGroups) UpdateStatus(dbSecurityGroup *v1alpha1.DbSecurityGroup) (result *v1alpha1.DbSecurityGroup, err error) {
 	result = &v1alpha1.DbSecurityGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dbsecuritygroups").
 		Name(dbSecurityGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dbSecurityGroups) UpdateStatus(dbSecurityGroup *v1alpha1.DbSecurityGrou
 // Delete takes name of the dbSecurityGroup and deletes it. Returns an error if one occurs.
 func (c *dbSecurityGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dbsecuritygroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dbSecurityGroups) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dbsecuritygroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dbSecurityGroups) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *dbSecurityGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DbSecurityGroup, err error) {
 	result = &v1alpha1.DbSecurityGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dbsecuritygroups").
 		SubResource(subresources...).
 		Name(name).

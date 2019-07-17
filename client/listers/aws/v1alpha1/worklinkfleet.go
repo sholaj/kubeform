@@ -29,8 +29,8 @@ import (
 type WorklinkFleetLister interface {
 	// List lists all WorklinkFleets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.WorklinkFleet, err error)
-	// Get retrieves the WorklinkFleet from the index for a given name.
-	Get(name string) (*v1alpha1.WorklinkFleet, error)
+	// WorklinkFleets returns an object that can list and get WorklinkFleets.
+	WorklinkFleets(namespace string) WorklinkFleetNamespaceLister
 	WorklinkFleetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *worklinkFleetLister) List(selector labels.Selector) (ret []*v1alpha1.Wo
 	return ret, err
 }
 
-// Get retrieves the WorklinkFleet from the index for a given name.
-func (s *worklinkFleetLister) Get(name string) (*v1alpha1.WorklinkFleet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WorklinkFleets returns an object that can list and get WorklinkFleets.
+func (s *worklinkFleetLister) WorklinkFleets(namespace string) WorklinkFleetNamespaceLister {
+	return worklinkFleetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WorklinkFleetNamespaceLister helps list and get WorklinkFleets.
+type WorklinkFleetNamespaceLister interface {
+	// List lists all WorklinkFleets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WorklinkFleet, err error)
+	// Get retrieves the WorklinkFleet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WorklinkFleet, error)
+	WorklinkFleetNamespaceListerExpansion
+}
+
+// worklinkFleetNamespaceLister implements the WorklinkFleetNamespaceLister
+// interface.
+type worklinkFleetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WorklinkFleets in the indexer for a given namespace.
+func (s worklinkFleetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WorklinkFleet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WorklinkFleet))
+	})
+	return ret, err
+}
+
+// Get retrieves the WorklinkFleet from the indexer for a given namespace and name.
+func (s worklinkFleetNamespaceLister) Get(name string) (*v1alpha1.WorklinkFleet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

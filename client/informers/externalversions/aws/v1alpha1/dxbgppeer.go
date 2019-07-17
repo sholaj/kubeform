@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// DxBgpPeerInformer provides access to a shared informer and lister for
-// DxBgpPeers.
-type DxBgpPeerInformer interface {
+// DxBGPPeerInformer provides access to a shared informer and lister for
+// DxBGPPeers.
+type DxBGPPeerInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.DxBgpPeerLister
+	Lister() v1alpha1.DxBGPPeerLister
 }
 
-type dxBgpPeerInformer struct {
+type dxBGPPeerInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewDxBgpPeerInformer constructs a new informer for DxBgpPeer type.
+// NewDxBGPPeerInformer constructs a new informer for DxBGPPeer type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDxBgpPeerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDxBgpPeerInformer(client, resyncPeriod, indexers, nil)
+func NewDxBGPPeerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDxBGPPeerInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredDxBgpPeerInformer constructs a new informer for DxBgpPeer type.
+// NewFilteredDxBGPPeerInformer constructs a new informer for DxBGPPeer type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDxBgpPeerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDxBGPPeerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DxBgpPeers().List(options)
+				return client.AwsV1alpha1().DxBGPPeers(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DxBgpPeers().Watch(options)
+				return client.AwsV1alpha1().DxBGPPeers(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.DxBgpPeer{},
+		&awsv1alpha1.DxBGPPeer{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *dxBgpPeerInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDxBgpPeerInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *dxBGPPeerInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredDxBGPPeerInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *dxBgpPeerInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.DxBgpPeer{}, f.defaultInformer)
+func (f *dxBGPPeerInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.DxBGPPeer{}, f.defaultInformer)
 }
 
-func (f *dxBgpPeerInformer) Lister() v1alpha1.DxBgpPeerLister {
-	return v1alpha1.NewDxBgpPeerLister(f.Informer().GetIndexer())
+func (f *dxBGPPeerInformer) Lister() v1alpha1.DxBGPPeerLister {
+	return v1alpha1.NewDxBGPPeerLister(f.Informer().GetIndexer())
 }

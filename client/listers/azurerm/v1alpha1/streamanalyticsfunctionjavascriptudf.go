@@ -29,8 +29,8 @@ import (
 type StreamAnalyticsFunctionJavascriptUdfLister interface {
 	// List lists all StreamAnalyticsFunctionJavascriptUdves in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StreamAnalyticsFunctionJavascriptUdf, err error)
-	// Get retrieves the StreamAnalyticsFunctionJavascriptUdf from the index for a given name.
-	Get(name string) (*v1alpha1.StreamAnalyticsFunctionJavascriptUdf, error)
+	// StreamAnalyticsFunctionJavascriptUdves returns an object that can list and get StreamAnalyticsFunctionJavascriptUdves.
+	StreamAnalyticsFunctionJavascriptUdves(namespace string) StreamAnalyticsFunctionJavascriptUdfNamespaceLister
 	StreamAnalyticsFunctionJavascriptUdfListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *streamAnalyticsFunctionJavascriptUdfLister) List(selector labels.Select
 	return ret, err
 }
 
-// Get retrieves the StreamAnalyticsFunctionJavascriptUdf from the index for a given name.
-func (s *streamAnalyticsFunctionJavascriptUdfLister) Get(name string) (*v1alpha1.StreamAnalyticsFunctionJavascriptUdf, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StreamAnalyticsFunctionJavascriptUdves returns an object that can list and get StreamAnalyticsFunctionJavascriptUdves.
+func (s *streamAnalyticsFunctionJavascriptUdfLister) StreamAnalyticsFunctionJavascriptUdves(namespace string) StreamAnalyticsFunctionJavascriptUdfNamespaceLister {
+	return streamAnalyticsFunctionJavascriptUdfNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StreamAnalyticsFunctionJavascriptUdfNamespaceLister helps list and get StreamAnalyticsFunctionJavascriptUdves.
+type StreamAnalyticsFunctionJavascriptUdfNamespaceLister interface {
+	// List lists all StreamAnalyticsFunctionJavascriptUdves in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StreamAnalyticsFunctionJavascriptUdf, err error)
+	// Get retrieves the StreamAnalyticsFunctionJavascriptUdf from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StreamAnalyticsFunctionJavascriptUdf, error)
+	StreamAnalyticsFunctionJavascriptUdfNamespaceListerExpansion
+}
+
+// streamAnalyticsFunctionJavascriptUdfNamespaceLister implements the StreamAnalyticsFunctionJavascriptUdfNamespaceLister
+// interface.
+type streamAnalyticsFunctionJavascriptUdfNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StreamAnalyticsFunctionJavascriptUdves in the indexer for a given namespace.
+func (s streamAnalyticsFunctionJavascriptUdfNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StreamAnalyticsFunctionJavascriptUdf, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StreamAnalyticsFunctionJavascriptUdf))
+	})
+	return ret, err
+}
+
+// Get retrieves the StreamAnalyticsFunctionJavascriptUdf from the indexer for a given namespace and name.
+func (s streamAnalyticsFunctionJavascriptUdfNamespaceLister) Get(name string) (*v1alpha1.StreamAnalyticsFunctionJavascriptUdf, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

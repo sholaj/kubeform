@@ -29,8 +29,8 @@ import (
 type ServiceAccountLister interface {
 	// List lists all ServiceAccounts in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ServiceAccount, err error)
-	// Get retrieves the ServiceAccount from the index for a given name.
-	Get(name string) (*v1alpha1.ServiceAccount, error)
+	// ServiceAccounts returns an object that can list and get ServiceAccounts.
+	ServiceAccounts(namespace string) ServiceAccountNamespaceLister
 	ServiceAccountListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *serviceAccountLister) List(selector labels.Selector) (ret []*v1alpha1.S
 	return ret, err
 }
 
-// Get retrieves the ServiceAccount from the index for a given name.
-func (s *serviceAccountLister) Get(name string) (*v1alpha1.ServiceAccount, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ServiceAccounts returns an object that can list and get ServiceAccounts.
+func (s *serviceAccountLister) ServiceAccounts(namespace string) ServiceAccountNamespaceLister {
+	return serviceAccountNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ServiceAccountNamespaceLister helps list and get ServiceAccounts.
+type ServiceAccountNamespaceLister interface {
+	// List lists all ServiceAccounts in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ServiceAccount, err error)
+	// Get retrieves the ServiceAccount from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ServiceAccount, error)
+	ServiceAccountNamespaceListerExpansion
+}
+
+// serviceAccountNamespaceLister implements the ServiceAccountNamespaceLister
+// interface.
+type serviceAccountNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ServiceAccounts in the indexer for a given namespace.
+func (s serviceAccountNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServiceAccount, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ServiceAccount))
+	})
+	return ret, err
+}
+
+// Get retrieves the ServiceAccount from the indexer for a given namespace and name.
+func (s serviceAccountNamespaceLister) Get(name string) (*v1alpha1.ServiceAccount, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

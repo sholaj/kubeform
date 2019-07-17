@@ -31,6 +31,7 @@ import (
 // FakeDmsReplicationTasks implements DmsReplicationTaskInterface
 type FakeDmsReplicationTasks struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var dmsreplicationtasksResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "dmsreplicationtasks"}
@@ -40,7 +41,8 @@ var dmsreplicationtasksKind = schema.GroupVersionKind{Group: "aws.kubeform.com",
 // Get takes name of the dmsReplicationTask, and returns the corresponding dmsReplicationTask object, and an error if there is any.
 func (c *FakeDmsReplicationTasks) Get(name string, options v1.GetOptions) (result *v1alpha1.DmsReplicationTask, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(dmsreplicationtasksResource, name), &v1alpha1.DmsReplicationTask{})
+		Invokes(testing.NewGetAction(dmsreplicationtasksResource, c.ns, name), &v1alpha1.DmsReplicationTask{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDmsReplicationTasks) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of DmsReplicationTasks that match those selectors.
 func (c *FakeDmsReplicationTasks) List(opts v1.ListOptions) (result *v1alpha1.DmsReplicationTaskList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(dmsreplicationtasksResource, dmsreplicationtasksKind, opts), &v1alpha1.DmsReplicationTaskList{})
+		Invokes(testing.NewListAction(dmsreplicationtasksResource, dmsreplicationtasksKind, c.ns, opts), &v1alpha1.DmsReplicationTaskList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDmsReplicationTasks) List(opts v1.ListOptions) (result *v1alpha1.Dm
 // Watch returns a watch.Interface that watches the requested dmsReplicationTasks.
 func (c *FakeDmsReplicationTasks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(dmsreplicationtasksResource, opts))
+		InvokesWatch(testing.NewWatchAction(dmsreplicationtasksResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dmsReplicationTask and creates it.  Returns the server's representation of the dmsReplicationTask, and an error, if there is any.
 func (c *FakeDmsReplicationTasks) Create(dmsReplicationTask *v1alpha1.DmsReplicationTask) (result *v1alpha1.DmsReplicationTask, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(dmsreplicationtasksResource, dmsReplicationTask), &v1alpha1.DmsReplicationTask{})
+		Invokes(testing.NewCreateAction(dmsreplicationtasksResource, c.ns, dmsReplicationTask), &v1alpha1.DmsReplicationTask{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDmsReplicationTasks) Create(dmsReplicationTask *v1alpha1.DmsReplica
 // Update takes the representation of a dmsReplicationTask and updates it. Returns the server's representation of the dmsReplicationTask, and an error, if there is any.
 func (c *FakeDmsReplicationTasks) Update(dmsReplicationTask *v1alpha1.DmsReplicationTask) (result *v1alpha1.DmsReplicationTask, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(dmsreplicationtasksResource, dmsReplicationTask), &v1alpha1.DmsReplicationTask{})
+		Invokes(testing.NewUpdateAction(dmsreplicationtasksResource, c.ns, dmsReplicationTask), &v1alpha1.DmsReplicationTask{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDmsReplicationTasks) Update(dmsReplicationTask *v1alpha1.DmsReplica
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDmsReplicationTasks) UpdateStatus(dmsReplicationTask *v1alpha1.DmsReplicationTask) (*v1alpha1.DmsReplicationTask, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(dmsreplicationtasksResource, "status", dmsReplicationTask), &v1alpha1.DmsReplicationTask{})
+		Invokes(testing.NewUpdateSubresourceAction(dmsreplicationtasksResource, "status", c.ns, dmsReplicationTask), &v1alpha1.DmsReplicationTask{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDmsReplicationTasks) UpdateStatus(dmsReplicationTask *v1alpha1.DmsR
 // Delete takes name of the dmsReplicationTask and deletes it. Returns an error if one occurs.
 func (c *FakeDmsReplicationTasks) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(dmsreplicationtasksResource, name), &v1alpha1.DmsReplicationTask{})
+		Invokes(testing.NewDeleteAction(dmsreplicationtasksResource, c.ns, name), &v1alpha1.DmsReplicationTask{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDmsReplicationTasks) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(dmsreplicationtasksResource, listOptions)
+	action := testing.NewDeleteCollectionAction(dmsreplicationtasksResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DmsReplicationTaskList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDmsReplicationTasks) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched dmsReplicationTask.
 func (c *FakeDmsReplicationTasks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DmsReplicationTask, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(dmsreplicationtasksResource, name, pt, data, subresources...), &v1alpha1.DmsReplicationTask{})
+		Invokes(testing.NewPatchSubresourceAction(dmsreplicationtasksResource, c.ns, name, pt, data, subresources...), &v1alpha1.DmsReplicationTask{})
+
 	if obj == nil {
 		return nil, err
 	}

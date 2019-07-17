@@ -29,8 +29,8 @@ import (
 type RoleAssignmentLister interface {
 	// List lists all RoleAssignments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RoleAssignment, err error)
-	// Get retrieves the RoleAssignment from the index for a given name.
-	Get(name string) (*v1alpha1.RoleAssignment, error)
+	// RoleAssignments returns an object that can list and get RoleAssignments.
+	RoleAssignments(namespace string) RoleAssignmentNamespaceLister
 	RoleAssignmentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *roleAssignmentLister) List(selector labels.Selector) (ret []*v1alpha1.R
 	return ret, err
 }
 
-// Get retrieves the RoleAssignment from the index for a given name.
-func (s *roleAssignmentLister) Get(name string) (*v1alpha1.RoleAssignment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RoleAssignments returns an object that can list and get RoleAssignments.
+func (s *roleAssignmentLister) RoleAssignments(namespace string) RoleAssignmentNamespaceLister {
+	return roleAssignmentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RoleAssignmentNamespaceLister helps list and get RoleAssignments.
+type RoleAssignmentNamespaceLister interface {
+	// List lists all RoleAssignments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RoleAssignment, err error)
+	// Get retrieves the RoleAssignment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RoleAssignment, error)
+	RoleAssignmentNamespaceListerExpansion
+}
+
+// roleAssignmentNamespaceLister implements the RoleAssignmentNamespaceLister
+// interface.
+type roleAssignmentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RoleAssignments in the indexer for a given namespace.
+func (s roleAssignmentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RoleAssignment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RoleAssignment))
+	})
+	return ret, err
+}
+
+// Get retrieves the RoleAssignment from the indexer for a given namespace and name.
+func (s roleAssignmentNamespaceLister) Get(name string) (*v1alpha1.RoleAssignment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

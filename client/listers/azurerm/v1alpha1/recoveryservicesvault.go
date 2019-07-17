@@ -29,8 +29,8 @@ import (
 type RecoveryServicesVaultLister interface {
 	// List lists all RecoveryServicesVaults in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RecoveryServicesVault, err error)
-	// Get retrieves the RecoveryServicesVault from the index for a given name.
-	Get(name string) (*v1alpha1.RecoveryServicesVault, error)
+	// RecoveryServicesVaults returns an object that can list and get RecoveryServicesVaults.
+	RecoveryServicesVaults(namespace string) RecoveryServicesVaultNamespaceLister
 	RecoveryServicesVaultListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *recoveryServicesVaultLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the RecoveryServicesVault from the index for a given name.
-func (s *recoveryServicesVaultLister) Get(name string) (*v1alpha1.RecoveryServicesVault, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RecoveryServicesVaults returns an object that can list and get RecoveryServicesVaults.
+func (s *recoveryServicesVaultLister) RecoveryServicesVaults(namespace string) RecoveryServicesVaultNamespaceLister {
+	return recoveryServicesVaultNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RecoveryServicesVaultNamespaceLister helps list and get RecoveryServicesVaults.
+type RecoveryServicesVaultNamespaceLister interface {
+	// List lists all RecoveryServicesVaults in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RecoveryServicesVault, err error)
+	// Get retrieves the RecoveryServicesVault from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RecoveryServicesVault, error)
+	RecoveryServicesVaultNamespaceListerExpansion
+}
+
+// recoveryServicesVaultNamespaceLister implements the RecoveryServicesVaultNamespaceLister
+// interface.
+type recoveryServicesVaultNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RecoveryServicesVaults in the indexer for a given namespace.
+func (s recoveryServicesVaultNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RecoveryServicesVault, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RecoveryServicesVault))
+	})
+	return ret, err
+}
+
+// Get retrieves the RecoveryServicesVault from the indexer for a given namespace and name.
+func (s recoveryServicesVaultNamespaceLister) Get(name string) (*v1alpha1.RecoveryServicesVault, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

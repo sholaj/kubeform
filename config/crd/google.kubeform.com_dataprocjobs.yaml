@@ -397,48 +397,214 @@ spec:
           type: object
         spec:
           properties:
-            force_delete:
+            forceDelete:
               type: boolean
-            hadoop_config:
-              items: {}
+            hadoopConfig:
+              items:
+                properties:
+                  archiveUris:
+                    items:
+                      type: string
+                    type: array
+                  args:
+                    items:
+                      type: string
+                    type: array
+                  fileUris:
+                    items:
+                      type: string
+                    type: array
+                  jarFileUris:
+                    items:
+                      type: string
+                    type: array
+                  mainClass:
+                    type: string
+                  mainJarFileURI:
+                    type: string
+                  properties:
+                    additionalProperties:
+                      type: string
+                    type: object
+                type: object
               maxItems: 1
               type: array
-            hive_config:
-              items: {}
+            hiveConfig:
+              items:
+                properties:
+                  continueOnFailure:
+                    type: boolean
+                  jarFileUris:
+                    items:
+                      type: string
+                    type: array
+                  properties:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  queryFileURI:
+                    type: string
+                  queryList:
+                    items:
+                      type: string
+                    type: array
+                  scriptVariables:
+                    additionalProperties:
+                      type: string
+                    type: object
+                type: object
               maxItems: 1
               type: array
             labels:
               additionalProperties:
                 type: string
               type: object
-            pig_config:
-              items: {}
+            pigConfig:
+              items:
+                properties:
+                  continueOnFailure:
+                    type: boolean
+                  jarFileUris:
+                    items:
+                      type: string
+                    type: array
+                  properties:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  queryFileURI:
+                    type: string
+                  queryList:
+                    items:
+                      type: string
+                    type: array
+                  scriptVariables:
+                    additionalProperties:
+                      type: string
+                    type: object
+                type: object
               maxItems: 1
               type: array
             placement:
-              items: {}
+              items:
+                properties:
+                  clusterName:
+                    type: string
+                required:
+                - clusterName
+                type: object
               maxItems: 1
               type: array
-            pyspark_config:
-              items: {}
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            pysparkConfig:
+              items:
+                properties:
+                  archiveUris:
+                    items:
+                      type: string
+                    type: array
+                  args:
+                    items:
+                      type: string
+                    type: array
+                  fileUris:
+                    items:
+                      type: string
+                    type: array
+                  jarFileUris:
+                    items:
+                      type: string
+                    type: array
+                  mainPythonFileURI:
+                    type: string
+                  properties:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  pythonFileUris:
+                    items:
+                      type: string
+                    type: array
+                required:
+                - mainPythonFileURI
+                type: object
               maxItems: 1
               type: array
             region:
               type: string
             scheduling:
-              items: {}
+              items:
+                properties:
+                  maxFailuresPerHour:
+                    type: integer
+                type: object
               maxItems: 1
               type: array
-            spark_config:
-              items: {}
+            sparkConfig:
+              items:
+                properties:
+                  archiveUris:
+                    items:
+                      type: string
+                    type: array
+                  args:
+                    items:
+                      type: string
+                    type: array
+                  fileUris:
+                    items:
+                      type: string
+                    type: array
+                  jarFileUris:
+                    items:
+                      type: string
+                    type: array
+                  mainClass:
+                    type: string
+                  mainJarFileURI:
+                    type: string
+                  properties:
+                    additionalProperties:
+                      type: string
+                    type: object
+                type: object
               maxItems: 1
               type: array
-            sparksql_config:
-              items: {}
+            sparksqlConfig:
+              items:
+                properties:
+                  jarFileUris:
+                    items:
+                      type: string
+                    type: array
+                  properties:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  queryFileURI:
+                    type: string
+                  queryList:
+                    items:
+                      type: string
+                    type: array
+                  scriptVariables:
+                    additionalProperties:
+                      type: string
+                    type: object
+                type: object
               maxItems: 1
               type: array
           required:
           - placement
+          - providerRef
           type: object
         status:
           properties:
@@ -449,6 +615,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

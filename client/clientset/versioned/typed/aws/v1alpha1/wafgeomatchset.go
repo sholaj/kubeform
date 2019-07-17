@@ -32,7 +32,7 @@ import (
 // WafGeoMatchSetsGetter has a method to return a WafGeoMatchSetInterface.
 // A group's client should implement this interface.
 type WafGeoMatchSetsGetter interface {
-	WafGeoMatchSets() WafGeoMatchSetInterface
+	WafGeoMatchSets(namespace string) WafGeoMatchSetInterface
 }
 
 // WafGeoMatchSetInterface has methods to work with WafGeoMatchSet resources.
@@ -52,12 +52,14 @@ type WafGeoMatchSetInterface interface {
 // wafGeoMatchSets implements WafGeoMatchSetInterface
 type wafGeoMatchSets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWafGeoMatchSets returns a WafGeoMatchSets
-func newWafGeoMatchSets(c *AwsV1alpha1Client) *wafGeoMatchSets {
+func newWafGeoMatchSets(c *AwsV1alpha1Client, namespace string) *wafGeoMatchSets {
 	return &wafGeoMatchSets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWafGeoMatchSets(c *AwsV1alpha1Client) *wafGeoMatchSets {
 func (c *wafGeoMatchSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafGeoMatchSet, err error) {
 	result = &v1alpha1.WafGeoMatchSet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafgeomatchsets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *wafGeoMatchSets) List(opts v1.ListOptions) (result *v1alpha1.WafGeoMatc
 	}
 	result = &v1alpha1.WafGeoMatchSetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafgeomatchsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *wafGeoMatchSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafgeomatchsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *wafGeoMatchSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *wafGeoMatchSets) Create(wafGeoMatchSet *v1alpha1.WafGeoMatchSet) (result *v1alpha1.WafGeoMatchSet, err error) {
 	result = &v1alpha1.WafGeoMatchSet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafgeomatchsets").
 		Body(wafGeoMatchSet).
 		Do().
@@ -118,6 +124,7 @@ func (c *wafGeoMatchSets) Create(wafGeoMatchSet *v1alpha1.WafGeoMatchSet) (resul
 func (c *wafGeoMatchSets) Update(wafGeoMatchSet *v1alpha1.WafGeoMatchSet) (result *v1alpha1.WafGeoMatchSet, err error) {
 	result = &v1alpha1.WafGeoMatchSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafgeomatchsets").
 		Name(wafGeoMatchSet.Name).
 		Body(wafGeoMatchSet).
@@ -132,6 +139,7 @@ func (c *wafGeoMatchSets) Update(wafGeoMatchSet *v1alpha1.WafGeoMatchSet) (resul
 func (c *wafGeoMatchSets) UpdateStatus(wafGeoMatchSet *v1alpha1.WafGeoMatchSet) (result *v1alpha1.WafGeoMatchSet, err error) {
 	result = &v1alpha1.WafGeoMatchSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafgeomatchsets").
 		Name(wafGeoMatchSet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *wafGeoMatchSets) UpdateStatus(wafGeoMatchSet *v1alpha1.WafGeoMatchSet) 
 // Delete takes name of the wafGeoMatchSet and deletes it. Returns an error if one occurs.
 func (c *wafGeoMatchSets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafgeomatchsets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *wafGeoMatchSets) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafgeomatchsets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *wafGeoMatchSets) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *wafGeoMatchSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafGeoMatchSet, err error) {
 	result = &v1alpha1.WafGeoMatchSet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafgeomatchsets").
 		SubResource(subresources...).
 		Name(name).

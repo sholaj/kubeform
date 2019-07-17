@@ -32,7 +32,7 @@ import (
 // SesConfigurationSetsGetter has a method to return a SesConfigurationSetInterface.
 // A group's client should implement this interface.
 type SesConfigurationSetsGetter interface {
-	SesConfigurationSets() SesConfigurationSetInterface
+	SesConfigurationSets(namespace string) SesConfigurationSetInterface
 }
 
 // SesConfigurationSetInterface has methods to work with SesConfigurationSet resources.
@@ -52,12 +52,14 @@ type SesConfigurationSetInterface interface {
 // sesConfigurationSets implements SesConfigurationSetInterface
 type sesConfigurationSets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSesConfigurationSets returns a SesConfigurationSets
-func newSesConfigurationSets(c *AwsV1alpha1Client) *sesConfigurationSets {
+func newSesConfigurationSets(c *AwsV1alpha1Client, namespace string) *sesConfigurationSets {
 	return &sesConfigurationSets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSesConfigurationSets(c *AwsV1alpha1Client) *sesConfigurationSets {
 func (c *sesConfigurationSets) Get(name string, options v1.GetOptions) (result *v1alpha1.SesConfigurationSet, err error) {
 	result = &v1alpha1.SesConfigurationSet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sesconfigurationsets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sesConfigurationSets) List(opts v1.ListOptions) (result *v1alpha1.SesCo
 	}
 	result = &v1alpha1.SesConfigurationSetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sesconfigurationsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sesConfigurationSets) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sesconfigurationsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sesConfigurationSets) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *sesConfigurationSets) Create(sesConfigurationSet *v1alpha1.SesConfigurationSet) (result *v1alpha1.SesConfigurationSet, err error) {
 	result = &v1alpha1.SesConfigurationSet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sesconfigurationsets").
 		Body(sesConfigurationSet).
 		Do().
@@ -118,6 +124,7 @@ func (c *sesConfigurationSets) Create(sesConfigurationSet *v1alpha1.SesConfigura
 func (c *sesConfigurationSets) Update(sesConfigurationSet *v1alpha1.SesConfigurationSet) (result *v1alpha1.SesConfigurationSet, err error) {
 	result = &v1alpha1.SesConfigurationSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sesconfigurationsets").
 		Name(sesConfigurationSet.Name).
 		Body(sesConfigurationSet).
@@ -132,6 +139,7 @@ func (c *sesConfigurationSets) Update(sesConfigurationSet *v1alpha1.SesConfigura
 func (c *sesConfigurationSets) UpdateStatus(sesConfigurationSet *v1alpha1.SesConfigurationSet) (result *v1alpha1.SesConfigurationSet, err error) {
 	result = &v1alpha1.SesConfigurationSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sesconfigurationsets").
 		Name(sesConfigurationSet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sesConfigurationSets) UpdateStatus(sesConfigurationSet *v1alpha1.SesCon
 // Delete takes name of the sesConfigurationSet and deletes it. Returns an error if one occurs.
 func (c *sesConfigurationSets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sesconfigurationsets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sesConfigurationSets) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sesconfigurationsets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sesConfigurationSets) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *sesConfigurationSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesConfigurationSet, err error) {
 	result = &v1alpha1.SesConfigurationSet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sesconfigurationsets").
 		SubResource(subresources...).
 		Name(name).

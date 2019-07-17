@@ -41,32 +41,33 @@ type RecoveryServicesVaultInformer interface {
 type recoveryServicesVaultInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewRecoveryServicesVaultInformer constructs a new informer for RecoveryServicesVault type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewRecoveryServicesVaultInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredRecoveryServicesVaultInformer(client, resyncPeriod, indexers, nil)
+func NewRecoveryServicesVaultInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredRecoveryServicesVaultInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredRecoveryServicesVaultInformer constructs a new informer for RecoveryServicesVault type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredRecoveryServicesVaultInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredRecoveryServicesVaultInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().RecoveryServicesVaults().List(options)
+				return client.AzurermV1alpha1().RecoveryServicesVaults(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().RecoveryServicesVaults().Watch(options)
+				return client.AzurermV1alpha1().RecoveryServicesVaults(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.RecoveryServicesVault{},
@@ -76,7 +77,7 @@ func NewFilteredRecoveryServicesVaultInformer(client versioned.Interface, resync
 }
 
 func (f *recoveryServicesVaultInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredRecoveryServicesVaultInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredRecoveryServicesVaultInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *recoveryServicesVaultInformer) Informer() cache.SharedIndexInformer {

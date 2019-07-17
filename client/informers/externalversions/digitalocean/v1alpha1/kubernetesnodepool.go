@@ -41,32 +41,33 @@ type KubernetesNodePoolInformer interface {
 type kubernetesNodePoolInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewKubernetesNodePoolInformer constructs a new informer for KubernetesNodePool type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewKubernetesNodePoolInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredKubernetesNodePoolInformer(client, resyncPeriod, indexers, nil)
+func NewKubernetesNodePoolInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredKubernetesNodePoolInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredKubernetesNodePoolInformer constructs a new informer for KubernetesNodePool type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredKubernetesNodePoolInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredKubernetesNodePoolInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.DigitaloceanV1alpha1().KubernetesNodePools().List(options)
+				return client.DigitaloceanV1alpha1().KubernetesNodePools(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.DigitaloceanV1alpha1().KubernetesNodePools().Watch(options)
+				return client.DigitaloceanV1alpha1().KubernetesNodePools(namespace).Watch(options)
 			},
 		},
 		&digitaloceanv1alpha1.KubernetesNodePool{},
@@ -76,7 +77,7 @@ func NewFilteredKubernetesNodePoolInformer(client versioned.Interface, resyncPer
 }
 
 func (f *kubernetesNodePoolInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredKubernetesNodePoolInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredKubernetesNodePoolInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *kubernetesNodePoolInformer) Informer() cache.SharedIndexInformer {

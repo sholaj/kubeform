@@ -397,45 +397,55 @@ spec:
           type: object
         spec:
           properties:
-            cache_key_parameters:
+            cacheKeyParameters:
               items:
                 type: string
               type: array
               uniqueItems: true
-            connection_id:
+            connectionID:
               type: string
-            connection_type:
+            connectionType:
               type: string
-            content_handling:
+            contentHandling:
               type: string
             credentials:
               type: string
-            http_method:
+            httpMethod:
               type: string
-            integration_http_method:
+            integrationHTTPMethod:
               type: string
-            request_parameters:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            requestParameters:
               additionalProperties:
                 type: string
               type: object
-            request_templates:
+            requestTemplates:
               additionalProperties:
                 type: string
               type: object
-            resource_id:
+            resourceID:
               type: string
-            rest_api_id:
+            restAPIID:
               type: string
-            timeout_milliseconds:
+            timeoutMilliseconds:
               type: integer
             type:
               type: string
             uri:
               type: string
           required:
-          - http_method
-          - resource_id
-          - rest_api_id
+          - httpMethod
+          - providerRef
+          - resourceID
+          - restAPIID
           - type
           type: object
         status:
@@ -447,6 +457,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

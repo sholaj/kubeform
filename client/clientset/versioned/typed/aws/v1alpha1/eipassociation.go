@@ -32,7 +32,7 @@ import (
 // EipAssociationsGetter has a method to return a EipAssociationInterface.
 // A group's client should implement this interface.
 type EipAssociationsGetter interface {
-	EipAssociations() EipAssociationInterface
+	EipAssociations(namespace string) EipAssociationInterface
 }
 
 // EipAssociationInterface has methods to work with EipAssociation resources.
@@ -52,12 +52,14 @@ type EipAssociationInterface interface {
 // eipAssociations implements EipAssociationInterface
 type eipAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEipAssociations returns a EipAssociations
-func newEipAssociations(c *AwsV1alpha1Client) *eipAssociations {
+func newEipAssociations(c *AwsV1alpha1Client, namespace string) *eipAssociations {
 	return &eipAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEipAssociations(c *AwsV1alpha1Client) *eipAssociations {
 func (c *eipAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.EipAssociation, err error) {
 	result = &v1alpha1.EipAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eipassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *eipAssociations) List(opts v1.ListOptions) (result *v1alpha1.EipAssocia
 	}
 	result = &v1alpha1.EipAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eipassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *eipAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("eipassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *eipAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *eipAssociations) Create(eipAssociation *v1alpha1.EipAssociation) (result *v1alpha1.EipAssociation, err error) {
 	result = &v1alpha1.EipAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("eipassociations").
 		Body(eipAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *eipAssociations) Create(eipAssociation *v1alpha1.EipAssociation) (resul
 func (c *eipAssociations) Update(eipAssociation *v1alpha1.EipAssociation) (result *v1alpha1.EipAssociation, err error) {
 	result = &v1alpha1.EipAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eipassociations").
 		Name(eipAssociation.Name).
 		Body(eipAssociation).
@@ -132,6 +139,7 @@ func (c *eipAssociations) Update(eipAssociation *v1alpha1.EipAssociation) (resul
 func (c *eipAssociations) UpdateStatus(eipAssociation *v1alpha1.EipAssociation) (result *v1alpha1.EipAssociation, err error) {
 	result = &v1alpha1.EipAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eipassociations").
 		Name(eipAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *eipAssociations) UpdateStatus(eipAssociation *v1alpha1.EipAssociation) 
 // Delete takes name of the eipAssociation and deletes it. Returns an error if one occurs.
 func (c *eipAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eipassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *eipAssociations) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eipassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *eipAssociations) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *eipAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EipAssociation, err error) {
 	result = &v1alpha1.EipAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("eipassociations").
 		SubResource(subresources...).
 		Name(name).

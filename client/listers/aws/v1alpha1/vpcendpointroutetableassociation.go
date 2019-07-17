@@ -29,8 +29,8 @@ import (
 type VpcEndpointRouteTableAssociationLister interface {
 	// List lists all VpcEndpointRouteTableAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.VpcEndpointRouteTableAssociation, err error)
-	// Get retrieves the VpcEndpointRouteTableAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.VpcEndpointRouteTableAssociation, error)
+	// VpcEndpointRouteTableAssociations returns an object that can list and get VpcEndpointRouteTableAssociations.
+	VpcEndpointRouteTableAssociations(namespace string) VpcEndpointRouteTableAssociationNamespaceLister
 	VpcEndpointRouteTableAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *vpcEndpointRouteTableAssociationLister) List(selector labels.Selector) 
 	return ret, err
 }
 
-// Get retrieves the VpcEndpointRouteTableAssociation from the index for a given name.
-func (s *vpcEndpointRouteTableAssociationLister) Get(name string) (*v1alpha1.VpcEndpointRouteTableAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VpcEndpointRouteTableAssociations returns an object that can list and get VpcEndpointRouteTableAssociations.
+func (s *vpcEndpointRouteTableAssociationLister) VpcEndpointRouteTableAssociations(namespace string) VpcEndpointRouteTableAssociationNamespaceLister {
+	return vpcEndpointRouteTableAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VpcEndpointRouteTableAssociationNamespaceLister helps list and get VpcEndpointRouteTableAssociations.
+type VpcEndpointRouteTableAssociationNamespaceLister interface {
+	// List lists all VpcEndpointRouteTableAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VpcEndpointRouteTableAssociation, err error)
+	// Get retrieves the VpcEndpointRouteTableAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VpcEndpointRouteTableAssociation, error)
+	VpcEndpointRouteTableAssociationNamespaceListerExpansion
+}
+
+// vpcEndpointRouteTableAssociationNamespaceLister implements the VpcEndpointRouteTableAssociationNamespaceLister
+// interface.
+type vpcEndpointRouteTableAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VpcEndpointRouteTableAssociations in the indexer for a given namespace.
+func (s vpcEndpointRouteTableAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VpcEndpointRouteTableAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VpcEndpointRouteTableAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the VpcEndpointRouteTableAssociation from the indexer for a given namespace and name.
+func (s vpcEndpointRouteTableAssociationNamespaceLister) Get(name string) (*v1alpha1.VpcEndpointRouteTableAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

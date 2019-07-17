@@ -31,6 +31,7 @@ import (
 // FakeOpsworksJavaAppLayers implements OpsworksJavaAppLayerInterface
 type FakeOpsworksJavaAppLayers struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var opsworksjavaapplayersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "opsworksjavaapplayers"}
@@ -40,7 +41,8 @@ var opsworksjavaapplayersKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the opsworksJavaAppLayer, and returns the corresponding opsworksJavaAppLayer object, and an error if there is any.
 func (c *FakeOpsworksJavaAppLayers) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksJavaAppLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(opsworksjavaapplayersResource, name), &v1alpha1.OpsworksJavaAppLayer{})
+		Invokes(testing.NewGetAction(opsworksjavaapplayersResource, c.ns, name), &v1alpha1.OpsworksJavaAppLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeOpsworksJavaAppLayers) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of OpsworksJavaAppLayers that match those selectors.
 func (c *FakeOpsworksJavaAppLayers) List(opts v1.ListOptions) (result *v1alpha1.OpsworksJavaAppLayerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(opsworksjavaapplayersResource, opsworksjavaapplayersKind, opts), &v1alpha1.OpsworksJavaAppLayerList{})
+		Invokes(testing.NewListAction(opsworksjavaapplayersResource, opsworksjavaapplayersKind, c.ns, opts), &v1alpha1.OpsworksJavaAppLayerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeOpsworksJavaAppLayers) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested opsworksJavaAppLayers.
 func (c *FakeOpsworksJavaAppLayers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(opsworksjavaapplayersResource, opts))
+		InvokesWatch(testing.NewWatchAction(opsworksjavaapplayersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a opsworksJavaAppLayer and creates it.  Returns the server's representation of the opsworksJavaAppLayer, and an error, if there is any.
 func (c *FakeOpsworksJavaAppLayers) Create(opsworksJavaAppLayer *v1alpha1.OpsworksJavaAppLayer) (result *v1alpha1.OpsworksJavaAppLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(opsworksjavaapplayersResource, opsworksJavaAppLayer), &v1alpha1.OpsworksJavaAppLayer{})
+		Invokes(testing.NewCreateAction(opsworksjavaapplayersResource, c.ns, opsworksJavaAppLayer), &v1alpha1.OpsworksJavaAppLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeOpsworksJavaAppLayers) Create(opsworksJavaAppLayer *v1alpha1.Opswor
 // Update takes the representation of a opsworksJavaAppLayer and updates it. Returns the server's representation of the opsworksJavaAppLayer, and an error, if there is any.
 func (c *FakeOpsworksJavaAppLayers) Update(opsworksJavaAppLayer *v1alpha1.OpsworksJavaAppLayer) (result *v1alpha1.OpsworksJavaAppLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(opsworksjavaapplayersResource, opsworksJavaAppLayer), &v1alpha1.OpsworksJavaAppLayer{})
+		Invokes(testing.NewUpdateAction(opsworksjavaapplayersResource, c.ns, opsworksJavaAppLayer), &v1alpha1.OpsworksJavaAppLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeOpsworksJavaAppLayers) Update(opsworksJavaAppLayer *v1alpha1.Opswor
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeOpsworksJavaAppLayers) UpdateStatus(opsworksJavaAppLayer *v1alpha1.OpsworksJavaAppLayer) (*v1alpha1.OpsworksJavaAppLayer, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(opsworksjavaapplayersResource, "status", opsworksJavaAppLayer), &v1alpha1.OpsworksJavaAppLayer{})
+		Invokes(testing.NewUpdateSubresourceAction(opsworksjavaapplayersResource, "status", c.ns, opsworksJavaAppLayer), &v1alpha1.OpsworksJavaAppLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeOpsworksJavaAppLayers) UpdateStatus(opsworksJavaAppLayer *v1alpha1.
 // Delete takes name of the opsworksJavaAppLayer and deletes it. Returns an error if one occurs.
 func (c *FakeOpsworksJavaAppLayers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(opsworksjavaapplayersResource, name), &v1alpha1.OpsworksJavaAppLayer{})
+		Invokes(testing.NewDeleteAction(opsworksjavaapplayersResource, c.ns, name), &v1alpha1.OpsworksJavaAppLayer{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeOpsworksJavaAppLayers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(opsworksjavaapplayersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(opsworksjavaapplayersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.OpsworksJavaAppLayerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeOpsworksJavaAppLayers) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched opsworksJavaAppLayer.
 func (c *FakeOpsworksJavaAppLayers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksJavaAppLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(opsworksjavaapplayersResource, name, pt, data, subresources...), &v1alpha1.OpsworksJavaAppLayer{})
+		Invokes(testing.NewPatchSubresourceAction(opsworksjavaapplayersResource, c.ns, name, pt, data, subresources...), &v1alpha1.OpsworksJavaAppLayer{})
+
 	if obj == nil {
 		return nil, err
 	}

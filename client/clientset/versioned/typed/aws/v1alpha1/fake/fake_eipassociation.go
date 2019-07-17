@@ -31,6 +31,7 @@ import (
 // FakeEipAssociations implements EipAssociationInterface
 type FakeEipAssociations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var eipassociationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "eipassociations"}
@@ -40,7 +41,8 @@ var eipassociationsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ver
 // Get takes name of the eipAssociation, and returns the corresponding eipAssociation object, and an error if there is any.
 func (c *FakeEipAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.EipAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(eipassociationsResource, name), &v1alpha1.EipAssociation{})
+		Invokes(testing.NewGetAction(eipassociationsResource, c.ns, name), &v1alpha1.EipAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEipAssociations) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of EipAssociations that match those selectors.
 func (c *FakeEipAssociations) List(opts v1.ListOptions) (result *v1alpha1.EipAssociationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(eipassociationsResource, eipassociationsKind, opts), &v1alpha1.EipAssociationList{})
+		Invokes(testing.NewListAction(eipassociationsResource, eipassociationsKind, c.ns, opts), &v1alpha1.EipAssociationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEipAssociations) List(opts v1.ListOptions) (result *v1alpha1.EipAss
 // Watch returns a watch.Interface that watches the requested eipAssociations.
 func (c *FakeEipAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(eipassociationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(eipassociationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a eipAssociation and creates it.  Returns the server's representation of the eipAssociation, and an error, if there is any.
 func (c *FakeEipAssociations) Create(eipAssociation *v1alpha1.EipAssociation) (result *v1alpha1.EipAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(eipassociationsResource, eipAssociation), &v1alpha1.EipAssociation{})
+		Invokes(testing.NewCreateAction(eipassociationsResource, c.ns, eipAssociation), &v1alpha1.EipAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEipAssociations) Create(eipAssociation *v1alpha1.EipAssociation) (r
 // Update takes the representation of a eipAssociation and updates it. Returns the server's representation of the eipAssociation, and an error, if there is any.
 func (c *FakeEipAssociations) Update(eipAssociation *v1alpha1.EipAssociation) (result *v1alpha1.EipAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(eipassociationsResource, eipAssociation), &v1alpha1.EipAssociation{})
+		Invokes(testing.NewUpdateAction(eipassociationsResource, c.ns, eipAssociation), &v1alpha1.EipAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEipAssociations) Update(eipAssociation *v1alpha1.EipAssociation) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEipAssociations) UpdateStatus(eipAssociation *v1alpha1.EipAssociation) (*v1alpha1.EipAssociation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(eipassociationsResource, "status", eipAssociation), &v1alpha1.EipAssociation{})
+		Invokes(testing.NewUpdateSubresourceAction(eipassociationsResource, "status", c.ns, eipAssociation), &v1alpha1.EipAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEipAssociations) UpdateStatus(eipAssociation *v1alpha1.EipAssociati
 // Delete takes name of the eipAssociation and deletes it. Returns an error if one occurs.
 func (c *FakeEipAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(eipassociationsResource, name), &v1alpha1.EipAssociation{})
+		Invokes(testing.NewDeleteAction(eipassociationsResource, c.ns, name), &v1alpha1.EipAssociation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEipAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(eipassociationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(eipassociationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.EipAssociationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEipAssociations) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched eipAssociation.
 func (c *FakeEipAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EipAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(eipassociationsResource, name, pt, data, subresources...), &v1alpha1.EipAssociation{})
+		Invokes(testing.NewPatchSubresourceAction(eipassociationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.EipAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}

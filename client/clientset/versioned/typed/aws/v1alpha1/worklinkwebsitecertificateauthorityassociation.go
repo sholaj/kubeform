@@ -32,7 +32,7 @@ import (
 // WorklinkWebsiteCertificateAuthorityAssociationsGetter has a method to return a WorklinkWebsiteCertificateAuthorityAssociationInterface.
 // A group's client should implement this interface.
 type WorklinkWebsiteCertificateAuthorityAssociationsGetter interface {
-	WorklinkWebsiteCertificateAuthorityAssociations() WorklinkWebsiteCertificateAuthorityAssociationInterface
+	WorklinkWebsiteCertificateAuthorityAssociations(namespace string) WorklinkWebsiteCertificateAuthorityAssociationInterface
 }
 
 // WorklinkWebsiteCertificateAuthorityAssociationInterface has methods to work with WorklinkWebsiteCertificateAuthorityAssociation resources.
@@ -52,12 +52,14 @@ type WorklinkWebsiteCertificateAuthorityAssociationInterface interface {
 // worklinkWebsiteCertificateAuthorityAssociations implements WorklinkWebsiteCertificateAuthorityAssociationInterface
 type worklinkWebsiteCertificateAuthorityAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWorklinkWebsiteCertificateAuthorityAssociations returns a WorklinkWebsiteCertificateAuthorityAssociations
-func newWorklinkWebsiteCertificateAuthorityAssociations(c *AwsV1alpha1Client) *worklinkWebsiteCertificateAuthorityAssociations {
+func newWorklinkWebsiteCertificateAuthorityAssociations(c *AwsV1alpha1Client, namespace string) *worklinkWebsiteCertificateAuthorityAssociations {
 	return &worklinkWebsiteCertificateAuthorityAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWorklinkWebsiteCertificateAuthorityAssociations(c *AwsV1alpha1Client) *w
 func (c *worklinkWebsiteCertificateAuthorityAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation, err error) {
 	result = &v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("worklinkwebsitecertificateauthorityassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *worklinkWebsiteCertificateAuthorityAssociations) List(opts v1.ListOptio
 	}
 	result = &v1alpha1.WorklinkWebsiteCertificateAuthorityAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("worklinkwebsitecertificateauthorityassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *worklinkWebsiteCertificateAuthorityAssociations) Watch(opts v1.ListOpti
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("worklinkwebsitecertificateauthorityassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *worklinkWebsiteCertificateAuthorityAssociations) Watch(opts v1.ListOpti
 func (c *worklinkWebsiteCertificateAuthorityAssociations) Create(worklinkWebsiteCertificateAuthorityAssociation *v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation) (result *v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation, err error) {
 	result = &v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("worklinkwebsitecertificateauthorityassociations").
 		Body(worklinkWebsiteCertificateAuthorityAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *worklinkWebsiteCertificateAuthorityAssociations) Create(worklinkWebsite
 func (c *worklinkWebsiteCertificateAuthorityAssociations) Update(worklinkWebsiteCertificateAuthorityAssociation *v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation) (result *v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation, err error) {
 	result = &v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("worklinkwebsitecertificateauthorityassociations").
 		Name(worklinkWebsiteCertificateAuthorityAssociation.Name).
 		Body(worklinkWebsiteCertificateAuthorityAssociation).
@@ -132,6 +139,7 @@ func (c *worklinkWebsiteCertificateAuthorityAssociations) Update(worklinkWebsite
 func (c *worklinkWebsiteCertificateAuthorityAssociations) UpdateStatus(worklinkWebsiteCertificateAuthorityAssociation *v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation) (result *v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation, err error) {
 	result = &v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("worklinkwebsitecertificateauthorityassociations").
 		Name(worklinkWebsiteCertificateAuthorityAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *worklinkWebsiteCertificateAuthorityAssociations) UpdateStatus(worklinkW
 // Delete takes name of the worklinkWebsiteCertificateAuthorityAssociation and deletes it. Returns an error if one occurs.
 func (c *worklinkWebsiteCertificateAuthorityAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("worklinkwebsitecertificateauthorityassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *worklinkWebsiteCertificateAuthorityAssociations) DeleteCollection(optio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("worklinkwebsitecertificateauthorityassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *worklinkWebsiteCertificateAuthorityAssociations) DeleteCollection(optio
 func (c *worklinkWebsiteCertificateAuthorityAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation, err error) {
 	result = &v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("worklinkwebsitecertificateauthorityassociations").
 		SubResource(subresources...).
 		Name(name).

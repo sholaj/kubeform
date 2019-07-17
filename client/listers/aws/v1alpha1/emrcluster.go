@@ -29,8 +29,8 @@ import (
 type EmrClusterLister interface {
 	// List lists all EmrClusters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EmrCluster, err error)
-	// Get retrieves the EmrCluster from the index for a given name.
-	Get(name string) (*v1alpha1.EmrCluster, error)
+	// EmrClusters returns an object that can list and get EmrClusters.
+	EmrClusters(namespace string) EmrClusterNamespaceLister
 	EmrClusterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *emrClusterLister) List(selector labels.Selector) (ret []*v1alpha1.EmrCl
 	return ret, err
 }
 
-// Get retrieves the EmrCluster from the index for a given name.
-func (s *emrClusterLister) Get(name string) (*v1alpha1.EmrCluster, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EmrClusters returns an object that can list and get EmrClusters.
+func (s *emrClusterLister) EmrClusters(namespace string) EmrClusterNamespaceLister {
+	return emrClusterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EmrClusterNamespaceLister helps list and get EmrClusters.
+type EmrClusterNamespaceLister interface {
+	// List lists all EmrClusters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EmrCluster, err error)
+	// Get retrieves the EmrCluster from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EmrCluster, error)
+	EmrClusterNamespaceListerExpansion
+}
+
+// emrClusterNamespaceLister implements the EmrClusterNamespaceLister
+// interface.
+type emrClusterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EmrClusters in the indexer for a given namespace.
+func (s emrClusterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EmrCluster, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EmrCluster))
+	})
+	return ret, err
+}
+
+// Get retrieves the EmrCluster from the indexer for a given namespace and name.
+func (s emrClusterNamespaceLister) Get(name string) (*v1alpha1.EmrCluster, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

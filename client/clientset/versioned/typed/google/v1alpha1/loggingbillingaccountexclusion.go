@@ -32,7 +32,7 @@ import (
 // LoggingBillingAccountExclusionsGetter has a method to return a LoggingBillingAccountExclusionInterface.
 // A group's client should implement this interface.
 type LoggingBillingAccountExclusionsGetter interface {
-	LoggingBillingAccountExclusions() LoggingBillingAccountExclusionInterface
+	LoggingBillingAccountExclusions(namespace string) LoggingBillingAccountExclusionInterface
 }
 
 // LoggingBillingAccountExclusionInterface has methods to work with LoggingBillingAccountExclusion resources.
@@ -52,12 +52,14 @@ type LoggingBillingAccountExclusionInterface interface {
 // loggingBillingAccountExclusions implements LoggingBillingAccountExclusionInterface
 type loggingBillingAccountExclusions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLoggingBillingAccountExclusions returns a LoggingBillingAccountExclusions
-func newLoggingBillingAccountExclusions(c *GoogleV1alpha1Client) *loggingBillingAccountExclusions {
+func newLoggingBillingAccountExclusions(c *GoogleV1alpha1Client, namespace string) *loggingBillingAccountExclusions {
 	return &loggingBillingAccountExclusions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLoggingBillingAccountExclusions(c *GoogleV1alpha1Client) *loggingBilling
 func (c *loggingBillingAccountExclusions) Get(name string, options v1.GetOptions) (result *v1alpha1.LoggingBillingAccountExclusion, err error) {
 	result = &v1alpha1.LoggingBillingAccountExclusion{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingbillingaccountexclusions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *loggingBillingAccountExclusions) List(opts v1.ListOptions) (result *v1a
 	}
 	result = &v1alpha1.LoggingBillingAccountExclusionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingbillingaccountexclusions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *loggingBillingAccountExclusions) Watch(opts v1.ListOptions) (watch.Inte
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingbillingaccountexclusions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *loggingBillingAccountExclusions) Watch(opts v1.ListOptions) (watch.Inte
 func (c *loggingBillingAccountExclusions) Create(loggingBillingAccountExclusion *v1alpha1.LoggingBillingAccountExclusion) (result *v1alpha1.LoggingBillingAccountExclusion, err error) {
 	result = &v1alpha1.LoggingBillingAccountExclusion{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("loggingbillingaccountexclusions").
 		Body(loggingBillingAccountExclusion).
 		Do().
@@ -118,6 +124,7 @@ func (c *loggingBillingAccountExclusions) Create(loggingBillingAccountExclusion 
 func (c *loggingBillingAccountExclusions) Update(loggingBillingAccountExclusion *v1alpha1.LoggingBillingAccountExclusion) (result *v1alpha1.LoggingBillingAccountExclusion, err error) {
 	result = &v1alpha1.LoggingBillingAccountExclusion{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loggingbillingaccountexclusions").
 		Name(loggingBillingAccountExclusion.Name).
 		Body(loggingBillingAccountExclusion).
@@ -132,6 +139,7 @@ func (c *loggingBillingAccountExclusions) Update(loggingBillingAccountExclusion 
 func (c *loggingBillingAccountExclusions) UpdateStatus(loggingBillingAccountExclusion *v1alpha1.LoggingBillingAccountExclusion) (result *v1alpha1.LoggingBillingAccountExclusion, err error) {
 	result = &v1alpha1.LoggingBillingAccountExclusion{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loggingbillingaccountexclusions").
 		Name(loggingBillingAccountExclusion.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *loggingBillingAccountExclusions) UpdateStatus(loggingBillingAccountExcl
 // Delete takes name of the loggingBillingAccountExclusion and deletes it. Returns an error if one occurs.
 func (c *loggingBillingAccountExclusions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loggingbillingaccountexclusions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *loggingBillingAccountExclusions) DeleteCollection(options *v1.DeleteOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loggingbillingaccountexclusions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *loggingBillingAccountExclusions) DeleteCollection(options *v1.DeleteOpt
 func (c *loggingBillingAccountExclusions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LoggingBillingAccountExclusion, err error) {
 	result = &v1alpha1.LoggingBillingAccountExclusion{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("loggingbillingaccountexclusions").
 		SubResource(subresources...).
 		Name(name).

@@ -31,6 +31,7 @@ import (
 // FakeIamServerCertificates implements IamServerCertificateInterface
 type FakeIamServerCertificates struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var iamservercertificatesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "iamservercertificates"}
@@ -40,7 +41,8 @@ var iamservercertificatesKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the iamServerCertificate, and returns the corresponding iamServerCertificate object, and an error if there is any.
 func (c *FakeIamServerCertificates) Get(name string, options v1.GetOptions) (result *v1alpha1.IamServerCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iamservercertificatesResource, name), &v1alpha1.IamServerCertificate{})
+		Invokes(testing.NewGetAction(iamservercertificatesResource, c.ns, name), &v1alpha1.IamServerCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIamServerCertificates) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of IamServerCertificates that match those selectors.
 func (c *FakeIamServerCertificates) List(opts v1.ListOptions) (result *v1alpha1.IamServerCertificateList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iamservercertificatesResource, iamservercertificatesKind, opts), &v1alpha1.IamServerCertificateList{})
+		Invokes(testing.NewListAction(iamservercertificatesResource, iamservercertificatesKind, c.ns, opts), &v1alpha1.IamServerCertificateList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIamServerCertificates) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested iamServerCertificates.
 func (c *FakeIamServerCertificates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iamservercertificatesResource, opts))
+		InvokesWatch(testing.NewWatchAction(iamservercertificatesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iamServerCertificate and creates it.  Returns the server's representation of the iamServerCertificate, and an error, if there is any.
 func (c *FakeIamServerCertificates) Create(iamServerCertificate *v1alpha1.IamServerCertificate) (result *v1alpha1.IamServerCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iamservercertificatesResource, iamServerCertificate), &v1alpha1.IamServerCertificate{})
+		Invokes(testing.NewCreateAction(iamservercertificatesResource, c.ns, iamServerCertificate), &v1alpha1.IamServerCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIamServerCertificates) Create(iamServerCertificate *v1alpha1.IamSer
 // Update takes the representation of a iamServerCertificate and updates it. Returns the server's representation of the iamServerCertificate, and an error, if there is any.
 func (c *FakeIamServerCertificates) Update(iamServerCertificate *v1alpha1.IamServerCertificate) (result *v1alpha1.IamServerCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iamservercertificatesResource, iamServerCertificate), &v1alpha1.IamServerCertificate{})
+		Invokes(testing.NewUpdateAction(iamservercertificatesResource, c.ns, iamServerCertificate), &v1alpha1.IamServerCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIamServerCertificates) Update(iamServerCertificate *v1alpha1.IamSer
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIamServerCertificates) UpdateStatus(iamServerCertificate *v1alpha1.IamServerCertificate) (*v1alpha1.IamServerCertificate, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iamservercertificatesResource, "status", iamServerCertificate), &v1alpha1.IamServerCertificate{})
+		Invokes(testing.NewUpdateSubresourceAction(iamservercertificatesResource, "status", c.ns, iamServerCertificate), &v1alpha1.IamServerCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIamServerCertificates) UpdateStatus(iamServerCertificate *v1alpha1.
 // Delete takes name of the iamServerCertificate and deletes it. Returns an error if one occurs.
 func (c *FakeIamServerCertificates) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iamservercertificatesResource, name), &v1alpha1.IamServerCertificate{})
+		Invokes(testing.NewDeleteAction(iamservercertificatesResource, c.ns, name), &v1alpha1.IamServerCertificate{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIamServerCertificates) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iamservercertificatesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iamservercertificatesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IamServerCertificateList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIamServerCertificates) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched iamServerCertificate.
 func (c *FakeIamServerCertificates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamServerCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iamservercertificatesResource, name, pt, data, subresources...), &v1alpha1.IamServerCertificate{})
+		Invokes(testing.NewPatchSubresourceAction(iamservercertificatesResource, c.ns, name, pt, data, subresources...), &v1alpha1.IamServerCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}

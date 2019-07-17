@@ -29,8 +29,8 @@ import (
 type ComputeSubnetworkIamPolicyLister interface {
 	// List lists all ComputeSubnetworkIamPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeSubnetworkIamPolicy, err error)
-	// Get retrieves the ComputeSubnetworkIamPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeSubnetworkIamPolicy, error)
+	// ComputeSubnetworkIamPolicies returns an object that can list and get ComputeSubnetworkIamPolicies.
+	ComputeSubnetworkIamPolicies(namespace string) ComputeSubnetworkIamPolicyNamespaceLister
 	ComputeSubnetworkIamPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeSubnetworkIamPolicyLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the ComputeSubnetworkIamPolicy from the index for a given name.
-func (s *computeSubnetworkIamPolicyLister) Get(name string) (*v1alpha1.ComputeSubnetworkIamPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeSubnetworkIamPolicies returns an object that can list and get ComputeSubnetworkIamPolicies.
+func (s *computeSubnetworkIamPolicyLister) ComputeSubnetworkIamPolicies(namespace string) ComputeSubnetworkIamPolicyNamespaceLister {
+	return computeSubnetworkIamPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeSubnetworkIamPolicyNamespaceLister helps list and get ComputeSubnetworkIamPolicies.
+type ComputeSubnetworkIamPolicyNamespaceLister interface {
+	// List lists all ComputeSubnetworkIamPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeSubnetworkIamPolicy, err error)
+	// Get retrieves the ComputeSubnetworkIamPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeSubnetworkIamPolicy, error)
+	ComputeSubnetworkIamPolicyNamespaceListerExpansion
+}
+
+// computeSubnetworkIamPolicyNamespaceLister implements the ComputeSubnetworkIamPolicyNamespaceLister
+// interface.
+type computeSubnetworkIamPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeSubnetworkIamPolicies in the indexer for a given namespace.
+func (s computeSubnetworkIamPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeSubnetworkIamPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeSubnetworkIamPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeSubnetworkIamPolicy from the indexer for a given namespace and name.
+func (s computeSubnetworkIamPolicyNamespaceLister) Get(name string) (*v1alpha1.ComputeSubnetworkIamPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

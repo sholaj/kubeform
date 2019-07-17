@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,11 +19,12 @@ type MacieS3BucketAssociation struct {
 }
 
 type MacieS3BucketAssociationSpec struct {
-	BucketName string `json:"bucket_name"`
+	BucketName string `json:"bucketName" tf:"bucket_name"`
 	// +optional
-	MemberAccountId string `json:"member_account_id,omitempty"`
+	MemberAccountID string `json:"memberAccountID,omitempty" tf:"member_account_id,omitempty"`
 	// +optional
-	Prefix string `json:"prefix,omitempty"`
+	Prefix      string                    `json:"prefix,omitempty" tf:"prefix,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type MacieS3BucketAssociationStatus struct {
@@ -31,7 +32,9 @@ type MacieS3BucketAssociationStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

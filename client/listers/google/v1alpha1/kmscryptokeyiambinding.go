@@ -29,8 +29,8 @@ import (
 type KmsCryptoKeyIamBindingLister interface {
 	// List lists all KmsCryptoKeyIamBindings in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KmsCryptoKeyIamBinding, err error)
-	// Get retrieves the KmsCryptoKeyIamBinding from the index for a given name.
-	Get(name string) (*v1alpha1.KmsCryptoKeyIamBinding, error)
+	// KmsCryptoKeyIamBindings returns an object that can list and get KmsCryptoKeyIamBindings.
+	KmsCryptoKeyIamBindings(namespace string) KmsCryptoKeyIamBindingNamespaceLister
 	KmsCryptoKeyIamBindingListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *kmsCryptoKeyIamBindingLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the KmsCryptoKeyIamBinding from the index for a given name.
-func (s *kmsCryptoKeyIamBindingLister) Get(name string) (*v1alpha1.KmsCryptoKeyIamBinding, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KmsCryptoKeyIamBindings returns an object that can list and get KmsCryptoKeyIamBindings.
+func (s *kmsCryptoKeyIamBindingLister) KmsCryptoKeyIamBindings(namespace string) KmsCryptoKeyIamBindingNamespaceLister {
+	return kmsCryptoKeyIamBindingNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KmsCryptoKeyIamBindingNamespaceLister helps list and get KmsCryptoKeyIamBindings.
+type KmsCryptoKeyIamBindingNamespaceLister interface {
+	// List lists all KmsCryptoKeyIamBindings in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KmsCryptoKeyIamBinding, err error)
+	// Get retrieves the KmsCryptoKeyIamBinding from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KmsCryptoKeyIamBinding, error)
+	KmsCryptoKeyIamBindingNamespaceListerExpansion
+}
+
+// kmsCryptoKeyIamBindingNamespaceLister implements the KmsCryptoKeyIamBindingNamespaceLister
+// interface.
+type kmsCryptoKeyIamBindingNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KmsCryptoKeyIamBindings in the indexer for a given namespace.
+func (s kmsCryptoKeyIamBindingNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KmsCryptoKeyIamBinding, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KmsCryptoKeyIamBinding))
+	})
+	return ret, err
+}
+
+// Get retrieves the KmsCryptoKeyIamBinding from the indexer for a given namespace and name.
+func (s kmsCryptoKeyIamBindingNamespaceLister) Get(name string) (*v1alpha1.KmsCryptoKeyIamBinding, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

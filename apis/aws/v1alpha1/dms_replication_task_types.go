@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,17 +20,18 @@ type DmsReplicationTask struct {
 
 type DmsReplicationTaskSpec struct {
 	// +optional
-	CdcStartTime           string `json:"cdc_start_time,omitempty"`
-	MigrationType          string `json:"migration_type"`
-	ReplicationInstanceArn string `json:"replication_instance_arn"`
-	ReplicationTaskId      string `json:"replication_task_id"`
+	CdcStartTime           string `json:"cdcStartTime,omitempty" tf:"cdc_start_time,omitempty"`
+	MigrationType          string `json:"migrationType" tf:"migration_type"`
+	ReplicationInstanceArn string `json:"replicationInstanceArn" tf:"replication_instance_arn"`
+	ReplicationTaskID      string `json:"replicationTaskID" tf:"replication_task_id"`
 	// +optional
-	ReplicationTaskSettings string `json:"replication_task_settings,omitempty"`
-	SourceEndpointArn       string `json:"source_endpoint_arn"`
-	TableMappings           string `json:"table_mappings"`
+	ReplicationTaskSettings string `json:"replicationTaskSettings,omitempty" tf:"replication_task_settings,omitempty"`
+	SourceEndpointArn       string `json:"sourceEndpointArn" tf:"source_endpoint_arn"`
+	TableMappings           string `json:"tableMappings" tf:"table_mappings"`
 	// +optional
-	Tags              map[string]string `json:"tags,omitempty"`
-	TargetEndpointArn string            `json:"target_endpoint_arn"`
+	Tags              map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	TargetEndpointArn string                    `json:"targetEndpointArn" tf:"target_endpoint_arn"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DmsReplicationTaskStatus struct {
@@ -38,7 +39,9 @@ type DmsReplicationTaskStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

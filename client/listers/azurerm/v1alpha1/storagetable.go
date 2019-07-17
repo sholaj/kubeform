@@ -29,8 +29,8 @@ import (
 type StorageTableLister interface {
 	// List lists all StorageTables in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StorageTable, err error)
-	// Get retrieves the StorageTable from the index for a given name.
-	Get(name string) (*v1alpha1.StorageTable, error)
+	// StorageTables returns an object that can list and get StorageTables.
+	StorageTables(namespace string) StorageTableNamespaceLister
 	StorageTableListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *storageTableLister) List(selector labels.Selector) (ret []*v1alpha1.Sto
 	return ret, err
 }
 
-// Get retrieves the StorageTable from the index for a given name.
-func (s *storageTableLister) Get(name string) (*v1alpha1.StorageTable, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StorageTables returns an object that can list and get StorageTables.
+func (s *storageTableLister) StorageTables(namespace string) StorageTableNamespaceLister {
+	return storageTableNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StorageTableNamespaceLister helps list and get StorageTables.
+type StorageTableNamespaceLister interface {
+	// List lists all StorageTables in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StorageTable, err error)
+	// Get retrieves the StorageTable from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StorageTable, error)
+	StorageTableNamespaceListerExpansion
+}
+
+// storageTableNamespaceLister implements the StorageTableNamespaceLister
+// interface.
+type storageTableNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StorageTables in the indexer for a given namespace.
+func (s storageTableNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StorageTable, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StorageTable))
+	})
+	return ret, err
+}
+
+// Get retrieves the StorageTable from the indexer for a given namespace and name.
+func (s storageTableNamespaceLister) Get(name string) (*v1alpha1.StorageTable, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

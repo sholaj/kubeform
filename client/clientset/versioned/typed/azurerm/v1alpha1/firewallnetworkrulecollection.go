@@ -32,7 +32,7 @@ import (
 // FirewallNetworkRuleCollectionsGetter has a method to return a FirewallNetworkRuleCollectionInterface.
 // A group's client should implement this interface.
 type FirewallNetworkRuleCollectionsGetter interface {
-	FirewallNetworkRuleCollections() FirewallNetworkRuleCollectionInterface
+	FirewallNetworkRuleCollections(namespace string) FirewallNetworkRuleCollectionInterface
 }
 
 // FirewallNetworkRuleCollectionInterface has methods to work with FirewallNetworkRuleCollection resources.
@@ -52,12 +52,14 @@ type FirewallNetworkRuleCollectionInterface interface {
 // firewallNetworkRuleCollections implements FirewallNetworkRuleCollectionInterface
 type firewallNetworkRuleCollections struct {
 	client rest.Interface
+	ns     string
 }
 
 // newFirewallNetworkRuleCollections returns a FirewallNetworkRuleCollections
-func newFirewallNetworkRuleCollections(c *AzurermV1alpha1Client) *firewallNetworkRuleCollections {
+func newFirewallNetworkRuleCollections(c *AzurermV1alpha1Client, namespace string) *firewallNetworkRuleCollections {
 	return &firewallNetworkRuleCollections{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newFirewallNetworkRuleCollections(c *AzurermV1alpha1Client) *firewallNetwor
 func (c *firewallNetworkRuleCollections) Get(name string, options v1.GetOptions) (result *v1alpha1.FirewallNetworkRuleCollection, err error) {
 	result = &v1alpha1.FirewallNetworkRuleCollection{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("firewallnetworkrulecollections").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *firewallNetworkRuleCollections) List(opts v1.ListOptions) (result *v1al
 	}
 	result = &v1alpha1.FirewallNetworkRuleCollectionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("firewallnetworkrulecollections").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *firewallNetworkRuleCollections) Watch(opts v1.ListOptions) (watch.Inter
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("firewallnetworkrulecollections").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *firewallNetworkRuleCollections) Watch(opts v1.ListOptions) (watch.Inter
 func (c *firewallNetworkRuleCollections) Create(firewallNetworkRuleCollection *v1alpha1.FirewallNetworkRuleCollection) (result *v1alpha1.FirewallNetworkRuleCollection, err error) {
 	result = &v1alpha1.FirewallNetworkRuleCollection{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("firewallnetworkrulecollections").
 		Body(firewallNetworkRuleCollection).
 		Do().
@@ -118,6 +124,7 @@ func (c *firewallNetworkRuleCollections) Create(firewallNetworkRuleCollection *v
 func (c *firewallNetworkRuleCollections) Update(firewallNetworkRuleCollection *v1alpha1.FirewallNetworkRuleCollection) (result *v1alpha1.FirewallNetworkRuleCollection, err error) {
 	result = &v1alpha1.FirewallNetworkRuleCollection{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("firewallnetworkrulecollections").
 		Name(firewallNetworkRuleCollection.Name).
 		Body(firewallNetworkRuleCollection).
@@ -132,6 +139,7 @@ func (c *firewallNetworkRuleCollections) Update(firewallNetworkRuleCollection *v
 func (c *firewallNetworkRuleCollections) UpdateStatus(firewallNetworkRuleCollection *v1alpha1.FirewallNetworkRuleCollection) (result *v1alpha1.FirewallNetworkRuleCollection, err error) {
 	result = &v1alpha1.FirewallNetworkRuleCollection{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("firewallnetworkrulecollections").
 		Name(firewallNetworkRuleCollection.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *firewallNetworkRuleCollections) UpdateStatus(firewallNetworkRuleCollect
 // Delete takes name of the firewallNetworkRuleCollection and deletes it. Returns an error if one occurs.
 func (c *firewallNetworkRuleCollections) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("firewallnetworkrulecollections").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *firewallNetworkRuleCollections) DeleteCollection(options *v1.DeleteOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("firewallnetworkrulecollections").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *firewallNetworkRuleCollections) DeleteCollection(options *v1.DeleteOpti
 func (c *firewallNetworkRuleCollections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FirewallNetworkRuleCollection, err error) {
 	result = &v1alpha1.FirewallNetworkRuleCollection{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("firewallnetworkrulecollections").
 		SubResource(subresources...).
 		Name(name).

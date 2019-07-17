@@ -29,8 +29,8 @@ import (
 type VirtualNetworkGatewayLister interface {
 	// List lists all VirtualNetworkGateways in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.VirtualNetworkGateway, err error)
-	// Get retrieves the VirtualNetworkGateway from the index for a given name.
-	Get(name string) (*v1alpha1.VirtualNetworkGateway, error)
+	// VirtualNetworkGateways returns an object that can list and get VirtualNetworkGateways.
+	VirtualNetworkGateways(namespace string) VirtualNetworkGatewayNamespaceLister
 	VirtualNetworkGatewayListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *virtualNetworkGatewayLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the VirtualNetworkGateway from the index for a given name.
-func (s *virtualNetworkGatewayLister) Get(name string) (*v1alpha1.VirtualNetworkGateway, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VirtualNetworkGateways returns an object that can list and get VirtualNetworkGateways.
+func (s *virtualNetworkGatewayLister) VirtualNetworkGateways(namespace string) VirtualNetworkGatewayNamespaceLister {
+	return virtualNetworkGatewayNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VirtualNetworkGatewayNamespaceLister helps list and get VirtualNetworkGateways.
+type VirtualNetworkGatewayNamespaceLister interface {
+	// List lists all VirtualNetworkGateways in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VirtualNetworkGateway, err error)
+	// Get retrieves the VirtualNetworkGateway from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VirtualNetworkGateway, error)
+	VirtualNetworkGatewayNamespaceListerExpansion
+}
+
+// virtualNetworkGatewayNamespaceLister implements the VirtualNetworkGatewayNamespaceLister
+// interface.
+type virtualNetworkGatewayNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VirtualNetworkGateways in the indexer for a given namespace.
+func (s virtualNetworkGatewayNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VirtualNetworkGateway, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VirtualNetworkGateway))
+	})
+	return ret, err
+}
+
+// Get retrieves the VirtualNetworkGateway from the indexer for a given namespace and name.
+func (s virtualNetworkGatewayNamespaceLister) Get(name string) (*v1alpha1.VirtualNetworkGateway, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

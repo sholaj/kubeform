@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,11 +19,12 @@ type KeyVaultKey struct {
 }
 
 type KeyVaultKeySpec struct {
-	KeyOpts []string `json:"key_opts"`
+	KeyOpts []string `json:"keyOpts" tf:"key_opts"`
 	// +optional
-	KeySize int    `json:"key_size,omitempty"`
-	KeyType string `json:"key_type"`
-	Name    string `json:"name"`
+	KeySize     int                       `json:"keySize,omitempty" tf:"key_size,omitempty"`
+	KeyType     string                    `json:"keyType" tf:"key_type"`
+	Name        string                    `json:"name" tf:"name"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type KeyVaultKeyStatus struct {
@@ -31,7 +32,9 @@ type KeyVaultKeyStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

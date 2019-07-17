@@ -32,7 +32,7 @@ import (
 // ComputeBackendServicesGetter has a method to return a ComputeBackendServiceInterface.
 // A group's client should implement this interface.
 type ComputeBackendServicesGetter interface {
-	ComputeBackendServices() ComputeBackendServiceInterface
+	ComputeBackendServices(namespace string) ComputeBackendServiceInterface
 }
 
 // ComputeBackendServiceInterface has methods to work with ComputeBackendService resources.
@@ -52,12 +52,14 @@ type ComputeBackendServiceInterface interface {
 // computeBackendServices implements ComputeBackendServiceInterface
 type computeBackendServices struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeBackendServices returns a ComputeBackendServices
-func newComputeBackendServices(c *GoogleV1alpha1Client) *computeBackendServices {
+func newComputeBackendServices(c *GoogleV1alpha1Client, namespace string) *computeBackendServices {
 	return &computeBackendServices{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeBackendServices(c *GoogleV1alpha1Client) *computeBackendServices 
 func (c *computeBackendServices) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeBackendService, err error) {
 	result = &v1alpha1.ComputeBackendService{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computebackendservices").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeBackendServices) List(opts v1.ListOptions) (result *v1alpha1.Com
 	}
 	result = &v1alpha1.ComputeBackendServiceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computebackendservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeBackendServices) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computebackendservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeBackendServices) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *computeBackendServices) Create(computeBackendService *v1alpha1.ComputeBackendService) (result *v1alpha1.ComputeBackendService, err error) {
 	result = &v1alpha1.ComputeBackendService{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computebackendservices").
 		Body(computeBackendService).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeBackendServices) Create(computeBackendService *v1alpha1.ComputeB
 func (c *computeBackendServices) Update(computeBackendService *v1alpha1.ComputeBackendService) (result *v1alpha1.ComputeBackendService, err error) {
 	result = &v1alpha1.ComputeBackendService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computebackendservices").
 		Name(computeBackendService.Name).
 		Body(computeBackendService).
@@ -132,6 +139,7 @@ func (c *computeBackendServices) Update(computeBackendService *v1alpha1.ComputeB
 func (c *computeBackendServices) UpdateStatus(computeBackendService *v1alpha1.ComputeBackendService) (result *v1alpha1.ComputeBackendService, err error) {
 	result = &v1alpha1.ComputeBackendService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computebackendservices").
 		Name(computeBackendService.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeBackendServices) UpdateStatus(computeBackendService *v1alpha1.Co
 // Delete takes name of the computeBackendService and deletes it. Returns an error if one occurs.
 func (c *computeBackendServices) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computebackendservices").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeBackendServices) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computebackendservices").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeBackendServices) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *computeBackendServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeBackendService, err error) {
 	result = &v1alpha1.ComputeBackendService{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computebackendservices").
 		SubResource(subresources...).
 		Name(name).

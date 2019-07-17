@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,19 +19,20 @@ type AthenaDatabase struct {
 }
 
 type AthenaDatabaseSpecEncryptionConfiguration struct {
-	EncryptionOption string `json:"encryption_option"`
+	EncryptionOption string `json:"encryptionOption" tf:"encryption_option"`
 	// +optional
-	KmsKey string `json:"kms_key,omitempty"`
+	KmsKey string `json:"kmsKey,omitempty" tf:"kms_key,omitempty"`
 }
 
 type AthenaDatabaseSpec struct {
-	Bucket string `json:"bucket"`
+	Bucket string `json:"bucket" tf:"bucket"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	EncryptionConfiguration *[]AthenaDatabaseSpec `json:"encryption_configuration,omitempty"`
+	EncryptionConfiguration []AthenaDatabaseSpecEncryptionConfiguration `json:"encryptionConfiguration,omitempty" tf:"encryption_configuration,omitempty"`
 	// +optional
-	ForceDestroy bool   `json:"force_destroy,omitempty"`
-	Name         string `json:"name"`
+	ForceDestroy bool                      `json:"forceDestroy,omitempty" tf:"force_destroy,omitempty"`
+	Name         string                    `json:"name" tf:"name"`
+	ProviderRef  core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type AthenaDatabaseStatus struct {
@@ -39,7 +40,9 @@ type AthenaDatabaseStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

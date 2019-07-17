@@ -31,6 +31,7 @@ import (
 // FakeCodepipelines implements CodepipelineInterface
 type FakeCodepipelines struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var codepipelinesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "codepipelines"}
@@ -40,7 +41,8 @@ var codepipelinesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Versi
 // Get takes name of the codepipeline, and returns the corresponding codepipeline object, and an error if there is any.
 func (c *FakeCodepipelines) Get(name string, options v1.GetOptions) (result *v1alpha1.Codepipeline, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(codepipelinesResource, name), &v1alpha1.Codepipeline{})
+		Invokes(testing.NewGetAction(codepipelinesResource, c.ns, name), &v1alpha1.Codepipeline{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCodepipelines) Get(name string, options v1.GetOptions) (result *v1a
 // List takes label and field selectors, and returns the list of Codepipelines that match those selectors.
 func (c *FakeCodepipelines) List(opts v1.ListOptions) (result *v1alpha1.CodepipelineList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(codepipelinesResource, codepipelinesKind, opts), &v1alpha1.CodepipelineList{})
+		Invokes(testing.NewListAction(codepipelinesResource, codepipelinesKind, c.ns, opts), &v1alpha1.CodepipelineList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCodepipelines) List(opts v1.ListOptions) (result *v1alpha1.Codepipe
 // Watch returns a watch.Interface that watches the requested codepipelines.
 func (c *FakeCodepipelines) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(codepipelinesResource, opts))
+		InvokesWatch(testing.NewWatchAction(codepipelinesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a codepipeline and creates it.  Returns the server's representation of the codepipeline, and an error, if there is any.
 func (c *FakeCodepipelines) Create(codepipeline *v1alpha1.Codepipeline) (result *v1alpha1.Codepipeline, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(codepipelinesResource, codepipeline), &v1alpha1.Codepipeline{})
+		Invokes(testing.NewCreateAction(codepipelinesResource, c.ns, codepipeline), &v1alpha1.Codepipeline{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCodepipelines) Create(codepipeline *v1alpha1.Codepipeline) (result 
 // Update takes the representation of a codepipeline and updates it. Returns the server's representation of the codepipeline, and an error, if there is any.
 func (c *FakeCodepipelines) Update(codepipeline *v1alpha1.Codepipeline) (result *v1alpha1.Codepipeline, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(codepipelinesResource, codepipeline), &v1alpha1.Codepipeline{})
+		Invokes(testing.NewUpdateAction(codepipelinesResource, c.ns, codepipeline), &v1alpha1.Codepipeline{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCodepipelines) Update(codepipeline *v1alpha1.Codepipeline) (result 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCodepipelines) UpdateStatus(codepipeline *v1alpha1.Codepipeline) (*v1alpha1.Codepipeline, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(codepipelinesResource, "status", codepipeline), &v1alpha1.Codepipeline{})
+		Invokes(testing.NewUpdateSubresourceAction(codepipelinesResource, "status", c.ns, codepipeline), &v1alpha1.Codepipeline{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCodepipelines) UpdateStatus(codepipeline *v1alpha1.Codepipeline) (*
 // Delete takes name of the codepipeline and deletes it. Returns an error if one occurs.
 func (c *FakeCodepipelines) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(codepipelinesResource, name), &v1alpha1.Codepipeline{})
+		Invokes(testing.NewDeleteAction(codepipelinesResource, c.ns, name), &v1alpha1.Codepipeline{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCodepipelines) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(codepipelinesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(codepipelinesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CodepipelineList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCodepipelines) DeleteCollection(options *v1.DeleteOptions, listOpti
 // Patch applies the patch and returns the patched codepipeline.
 func (c *FakeCodepipelines) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Codepipeline, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(codepipelinesResource, name, pt, data, subresources...), &v1alpha1.Codepipeline{})
+		Invokes(testing.NewPatchSubresourceAction(codepipelinesResource, c.ns, name, pt, data, subresources...), &v1alpha1.Codepipeline{})
+
 	if obj == nil {
 		return nil, err
 	}

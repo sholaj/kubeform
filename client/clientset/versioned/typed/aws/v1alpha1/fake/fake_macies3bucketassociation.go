@@ -31,6 +31,7 @@ import (
 // FakeMacieS3BucketAssociations implements MacieS3BucketAssociationInterface
 type FakeMacieS3BucketAssociations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var macies3bucketassociationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "macies3bucketassociations"}
@@ -40,7 +41,8 @@ var macies3bucketassociationsKind = schema.GroupVersionKind{Group: "aws.kubeform
 // Get takes name of the macieS3BucketAssociation, and returns the corresponding macieS3BucketAssociation object, and an error if there is any.
 func (c *FakeMacieS3BucketAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.MacieS3BucketAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(macies3bucketassociationsResource, name), &v1alpha1.MacieS3BucketAssociation{})
+		Invokes(testing.NewGetAction(macies3bucketassociationsResource, c.ns, name), &v1alpha1.MacieS3BucketAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMacieS3BucketAssociations) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of MacieS3BucketAssociations that match those selectors.
 func (c *FakeMacieS3BucketAssociations) List(opts v1.ListOptions) (result *v1alpha1.MacieS3BucketAssociationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(macies3bucketassociationsResource, macies3bucketassociationsKind, opts), &v1alpha1.MacieS3BucketAssociationList{})
+		Invokes(testing.NewListAction(macies3bucketassociationsResource, macies3bucketassociationsKind, c.ns, opts), &v1alpha1.MacieS3BucketAssociationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMacieS3BucketAssociations) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested macieS3BucketAssociations.
 func (c *FakeMacieS3BucketAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(macies3bucketassociationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(macies3bucketassociationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a macieS3BucketAssociation and creates it.  Returns the server's representation of the macieS3BucketAssociation, and an error, if there is any.
 func (c *FakeMacieS3BucketAssociations) Create(macieS3BucketAssociation *v1alpha1.MacieS3BucketAssociation) (result *v1alpha1.MacieS3BucketAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(macies3bucketassociationsResource, macieS3BucketAssociation), &v1alpha1.MacieS3BucketAssociation{})
+		Invokes(testing.NewCreateAction(macies3bucketassociationsResource, c.ns, macieS3BucketAssociation), &v1alpha1.MacieS3BucketAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMacieS3BucketAssociations) Create(macieS3BucketAssociation *v1alpha
 // Update takes the representation of a macieS3BucketAssociation and updates it. Returns the server's representation of the macieS3BucketAssociation, and an error, if there is any.
 func (c *FakeMacieS3BucketAssociations) Update(macieS3BucketAssociation *v1alpha1.MacieS3BucketAssociation) (result *v1alpha1.MacieS3BucketAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(macies3bucketassociationsResource, macieS3BucketAssociation), &v1alpha1.MacieS3BucketAssociation{})
+		Invokes(testing.NewUpdateAction(macies3bucketassociationsResource, c.ns, macieS3BucketAssociation), &v1alpha1.MacieS3BucketAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMacieS3BucketAssociations) Update(macieS3BucketAssociation *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMacieS3BucketAssociations) UpdateStatus(macieS3BucketAssociation *v1alpha1.MacieS3BucketAssociation) (*v1alpha1.MacieS3BucketAssociation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(macies3bucketassociationsResource, "status", macieS3BucketAssociation), &v1alpha1.MacieS3BucketAssociation{})
+		Invokes(testing.NewUpdateSubresourceAction(macies3bucketassociationsResource, "status", c.ns, macieS3BucketAssociation), &v1alpha1.MacieS3BucketAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMacieS3BucketAssociations) UpdateStatus(macieS3BucketAssociation *v
 // Delete takes name of the macieS3BucketAssociation and deletes it. Returns an error if one occurs.
 func (c *FakeMacieS3BucketAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(macies3bucketassociationsResource, name), &v1alpha1.MacieS3BucketAssociation{})
+		Invokes(testing.NewDeleteAction(macies3bucketassociationsResource, c.ns, name), &v1alpha1.MacieS3BucketAssociation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMacieS3BucketAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(macies3bucketassociationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(macies3bucketassociationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MacieS3BucketAssociationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMacieS3BucketAssociations) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched macieS3BucketAssociation.
 func (c *FakeMacieS3BucketAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MacieS3BucketAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(macies3bucketassociationsResource, name, pt, data, subresources...), &v1alpha1.MacieS3BucketAssociation{})
+		Invokes(testing.NewPatchSubresourceAction(macies3bucketassociationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.MacieS3BucketAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}

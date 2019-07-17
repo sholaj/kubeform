@@ -32,7 +32,7 @@ import (
 // DevTestLinuxVirtualMachinesGetter has a method to return a DevTestLinuxVirtualMachineInterface.
 // A group's client should implement this interface.
 type DevTestLinuxVirtualMachinesGetter interface {
-	DevTestLinuxVirtualMachines() DevTestLinuxVirtualMachineInterface
+	DevTestLinuxVirtualMachines(namespace string) DevTestLinuxVirtualMachineInterface
 }
 
 // DevTestLinuxVirtualMachineInterface has methods to work with DevTestLinuxVirtualMachine resources.
@@ -52,12 +52,14 @@ type DevTestLinuxVirtualMachineInterface interface {
 // devTestLinuxVirtualMachines implements DevTestLinuxVirtualMachineInterface
 type devTestLinuxVirtualMachines struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDevTestLinuxVirtualMachines returns a DevTestLinuxVirtualMachines
-func newDevTestLinuxVirtualMachines(c *AzurermV1alpha1Client) *devTestLinuxVirtualMachines {
+func newDevTestLinuxVirtualMachines(c *AzurermV1alpha1Client, namespace string) *devTestLinuxVirtualMachines {
 	return &devTestLinuxVirtualMachines{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDevTestLinuxVirtualMachines(c *AzurermV1alpha1Client) *devTestLinuxVirtu
 func (c *devTestLinuxVirtualMachines) Get(name string, options v1.GetOptions) (result *v1alpha1.DevTestLinuxVirtualMachine, err error) {
 	result = &v1alpha1.DevTestLinuxVirtualMachine{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("devtestlinuxvirtualmachines").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *devTestLinuxVirtualMachines) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.DevTestLinuxVirtualMachineList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("devtestlinuxvirtualmachines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *devTestLinuxVirtualMachines) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("devtestlinuxvirtualmachines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *devTestLinuxVirtualMachines) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *devTestLinuxVirtualMachines) Create(devTestLinuxVirtualMachine *v1alpha1.DevTestLinuxVirtualMachine) (result *v1alpha1.DevTestLinuxVirtualMachine, err error) {
 	result = &v1alpha1.DevTestLinuxVirtualMachine{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("devtestlinuxvirtualmachines").
 		Body(devTestLinuxVirtualMachine).
 		Do().
@@ -118,6 +124,7 @@ func (c *devTestLinuxVirtualMachines) Create(devTestLinuxVirtualMachine *v1alpha
 func (c *devTestLinuxVirtualMachines) Update(devTestLinuxVirtualMachine *v1alpha1.DevTestLinuxVirtualMachine) (result *v1alpha1.DevTestLinuxVirtualMachine, err error) {
 	result = &v1alpha1.DevTestLinuxVirtualMachine{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("devtestlinuxvirtualmachines").
 		Name(devTestLinuxVirtualMachine.Name).
 		Body(devTestLinuxVirtualMachine).
@@ -132,6 +139,7 @@ func (c *devTestLinuxVirtualMachines) Update(devTestLinuxVirtualMachine *v1alpha
 func (c *devTestLinuxVirtualMachines) UpdateStatus(devTestLinuxVirtualMachine *v1alpha1.DevTestLinuxVirtualMachine) (result *v1alpha1.DevTestLinuxVirtualMachine, err error) {
 	result = &v1alpha1.DevTestLinuxVirtualMachine{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("devtestlinuxvirtualmachines").
 		Name(devTestLinuxVirtualMachine.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *devTestLinuxVirtualMachines) UpdateStatus(devTestLinuxVirtualMachine *v
 // Delete takes name of the devTestLinuxVirtualMachine and deletes it. Returns an error if one occurs.
 func (c *devTestLinuxVirtualMachines) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("devtestlinuxvirtualmachines").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *devTestLinuxVirtualMachines) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("devtestlinuxvirtualmachines").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *devTestLinuxVirtualMachines) DeleteCollection(options *v1.DeleteOptions
 func (c *devTestLinuxVirtualMachines) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DevTestLinuxVirtualMachine, err error) {
 	result = &v1alpha1.DevTestLinuxVirtualMachine{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("devtestlinuxvirtualmachines").
 		SubResource(subresources...).
 		Name(name).

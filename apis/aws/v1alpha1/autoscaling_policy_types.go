@@ -3,12 +3,12 @@ package v1alpha1
 import (
 	"encoding/json"
 
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -22,66 +22,67 @@ type AutoscalingPolicy struct {
 
 type AutoscalingPolicySpecStepAdjustment struct {
 	// +optional
-	MetricIntervalLowerBound string `json:"metric_interval_lower_bound,omitempty"`
+	MetricIntervalLowerBound string `json:"metricIntervalLowerBound,omitempty" tf:"metric_interval_lower_bound,omitempty"`
 	// +optional
-	MetricIntervalUpperBound string `json:"metric_interval_upper_bound,omitempty"`
-	ScalingAdjustment        int    `json:"scaling_adjustment"`
+	MetricIntervalUpperBound string `json:"metricIntervalUpperBound,omitempty" tf:"metric_interval_upper_bound,omitempty"`
+	ScalingAdjustment        int    `json:"scalingAdjustment" tf:"scaling_adjustment"`
 }
 
 type AutoscalingPolicySpecTargetTrackingConfigurationCustomizedMetricSpecificationMetricDimension struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
+	Name  string `json:"name" tf:"name"`
+	Value string `json:"value" tf:"value"`
 }
 
 type AutoscalingPolicySpecTargetTrackingConfigurationCustomizedMetricSpecification struct {
 	// +optional
-	MetricDimension *[]AutoscalingPolicySpecTargetTrackingConfigurationCustomizedMetricSpecification `json:"metric_dimension,omitempty"`
-	MetricName      string                                                                           `json:"metric_name"`
-	Namespace       string                                                                           `json:"namespace"`
-	Statistic       string                                                                           `json:"statistic"`
+	MetricDimension []AutoscalingPolicySpecTargetTrackingConfigurationCustomizedMetricSpecificationMetricDimension `json:"metricDimension,omitempty" tf:"metric_dimension,omitempty"`
+	MetricName      string                                                                                         `json:"metricName" tf:"metric_name"`
+	Namespace       string                                                                                         `json:"namespace" tf:"namespace"`
+	Statistic       string                                                                                         `json:"statistic" tf:"statistic"`
 	// +optional
-	Unit string `json:"unit,omitempty"`
+	Unit string `json:"unit,omitempty" tf:"unit,omitempty"`
 }
 
 type AutoscalingPolicySpecTargetTrackingConfigurationPredefinedMetricSpecification struct {
-	PredefinedMetricType string `json:"predefined_metric_type"`
+	PredefinedMetricType string `json:"predefinedMetricType" tf:"predefined_metric_type"`
 	// +optional
-	ResourceLabel string `json:"resource_label,omitempty"`
+	ResourceLabel string `json:"resourceLabel,omitempty" tf:"resource_label,omitempty"`
 }
 
 type AutoscalingPolicySpecTargetTrackingConfiguration struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	CustomizedMetricSpecification *[]AutoscalingPolicySpecTargetTrackingConfiguration `json:"customized_metric_specification,omitempty"`
+	CustomizedMetricSpecification []AutoscalingPolicySpecTargetTrackingConfigurationCustomizedMetricSpecification `json:"customizedMetricSpecification,omitempty" tf:"customized_metric_specification,omitempty"`
 	// +optional
-	DisableScaleIn bool `json:"disable_scale_in,omitempty"`
+	DisableScaleIn bool `json:"disableScaleIn,omitempty" tf:"disable_scale_in,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	PredefinedMetricSpecification *[]AutoscalingPolicySpecTargetTrackingConfiguration `json:"predefined_metric_specification,omitempty"`
-	TargetValue                   json.Number                                         `json:"target_value"`
+	PredefinedMetricSpecification []AutoscalingPolicySpecTargetTrackingConfigurationPredefinedMetricSpecification `json:"predefinedMetricSpecification,omitempty" tf:"predefined_metric_specification,omitempty"`
+	TargetValue                   json.Number                                                                     `json:"targetValue" tf:"target_value"`
 }
 
 type AutoscalingPolicySpec struct {
 	// +optional
-	AdjustmentType       string `json:"adjustment_type,omitempty"`
-	AutoscalingGroupName string `json:"autoscaling_group_name"`
+	AdjustmentType       string `json:"adjustmentType,omitempty" tf:"adjustment_type,omitempty"`
+	AutoscalingGroupName string `json:"autoscalingGroupName" tf:"autoscaling_group_name"`
 	// +optional
-	Cooldown int `json:"cooldown,omitempty"`
+	Cooldown int `json:"cooldown,omitempty" tf:"cooldown,omitempty"`
 	// +optional
-	EstimatedInstanceWarmup int `json:"estimated_instance_warmup,omitempty"`
+	EstimatedInstanceWarmup int `json:"estimatedInstanceWarmup,omitempty" tf:"estimated_instance_warmup,omitempty"`
 	// +optional
-	MinAdjustmentMagnitude int    `json:"min_adjustment_magnitude,omitempty"`
-	Name                   string `json:"name"`
+	MinAdjustmentMagnitude int    `json:"minAdjustmentMagnitude,omitempty" tf:"min_adjustment_magnitude,omitempty"`
+	Name                   string `json:"name" tf:"name"`
 	// +optional
-	PolicyType string `json:"policy_type,omitempty"`
+	PolicyType string `json:"policyType,omitempty" tf:"policy_type,omitempty"`
 	// +optional
-	ScalingAdjustment int `json:"scaling_adjustment,omitempty"`
+	ScalingAdjustment int `json:"scalingAdjustment,omitempty" tf:"scaling_adjustment,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	StepAdjustment *[]AutoscalingPolicySpec `json:"step_adjustment,omitempty"`
+	StepAdjustment []AutoscalingPolicySpecStepAdjustment `json:"stepAdjustment,omitempty" tf:"step_adjustment,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	TargetTrackingConfiguration *[]AutoscalingPolicySpec `json:"target_tracking_configuration,omitempty"`
+	TargetTrackingConfiguration []AutoscalingPolicySpecTargetTrackingConfiguration `json:"targetTrackingConfiguration,omitempty" tf:"target_tracking_configuration,omitempty"`
+	ProviderRef                 core.LocalObjectReference                          `json:"providerRef" tf:"-"`
 }
 
 type AutoscalingPolicyStatus struct {
@@ -89,7 +90,9 @@ type AutoscalingPolicyStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -397,44 +397,64 @@ spec:
           type: object
         spec:
           properties:
-            client_list:
+            clientList:
               items:
                 type: string
               maxItems: 100
               minItems: 1
               type: array
               uniqueItems: true
-            default_storage_class:
+            defaultStorageClass:
               type: string
-            gateway_arn:
+            gatewayArn:
               type: string
-            guess_mime_type_enabled:
+            guessMimeTypeEnabled:
               type: boolean
-            kms_encrypted:
+            kmsEncrypted:
               type: boolean
-            kms_key_arn:
+            kmsKeyArn:
               type: string
-            location_arn:
+            locationArn:
               type: string
-            nfs_file_share_defaults:
-              items: {}
+            nfsFileShareDefaults:
+              items:
+                properties:
+                  directoryMode:
+                    type: string
+                  fileMode:
+                    type: string
+                  groupID:
+                    type: integer
+                  ownerID:
+                    type: integer
+                type: object
               maxItems: 1
               type: array
-            object_acl:
+            objectACL:
               type: string
-            read_only:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            readOnly:
               type: boolean
-            requester_pays:
+            requesterPays:
               type: boolean
-            role_arn:
+            roleArn:
               type: string
             squash:
               type: string
           required:
-          - client_list
-          - gateway_arn
-          - location_arn
-          - role_arn
+          - clientList
+          - gatewayArn
+          - locationArn
+          - providerRef
+          - roleArn
           type: object
         status:
           properties:
@@ -445,6 +465,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

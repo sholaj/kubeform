@@ -31,6 +31,7 @@ import (
 // FakeStoragegatewaySmbFileShares implements StoragegatewaySmbFileShareInterface
 type FakeStoragegatewaySmbFileShares struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var storagegatewaysmbfilesharesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "storagegatewaysmbfileshares"}
@@ -40,7 +41,8 @@ var storagegatewaysmbfilesharesKind = schema.GroupVersionKind{Group: "aws.kubefo
 // Get takes name of the storagegatewaySmbFileShare, and returns the corresponding storagegatewaySmbFileShare object, and an error if there is any.
 func (c *FakeStoragegatewaySmbFileShares) Get(name string, options v1.GetOptions) (result *v1alpha1.StoragegatewaySmbFileShare, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(storagegatewaysmbfilesharesResource, name), &v1alpha1.StoragegatewaySmbFileShare{})
+		Invokes(testing.NewGetAction(storagegatewaysmbfilesharesResource, c.ns, name), &v1alpha1.StoragegatewaySmbFileShare{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeStoragegatewaySmbFileShares) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of StoragegatewaySmbFileShares that match those selectors.
 func (c *FakeStoragegatewaySmbFileShares) List(opts v1.ListOptions) (result *v1alpha1.StoragegatewaySmbFileShareList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(storagegatewaysmbfilesharesResource, storagegatewaysmbfilesharesKind, opts), &v1alpha1.StoragegatewaySmbFileShareList{})
+		Invokes(testing.NewListAction(storagegatewaysmbfilesharesResource, storagegatewaysmbfilesharesKind, c.ns, opts), &v1alpha1.StoragegatewaySmbFileShareList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeStoragegatewaySmbFileShares) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested storagegatewaySmbFileShares.
 func (c *FakeStoragegatewaySmbFileShares) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(storagegatewaysmbfilesharesResource, opts))
+		InvokesWatch(testing.NewWatchAction(storagegatewaysmbfilesharesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a storagegatewaySmbFileShare and creates it.  Returns the server's representation of the storagegatewaySmbFileShare, and an error, if there is any.
 func (c *FakeStoragegatewaySmbFileShares) Create(storagegatewaySmbFileShare *v1alpha1.StoragegatewaySmbFileShare) (result *v1alpha1.StoragegatewaySmbFileShare, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(storagegatewaysmbfilesharesResource, storagegatewaySmbFileShare), &v1alpha1.StoragegatewaySmbFileShare{})
+		Invokes(testing.NewCreateAction(storagegatewaysmbfilesharesResource, c.ns, storagegatewaySmbFileShare), &v1alpha1.StoragegatewaySmbFileShare{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeStoragegatewaySmbFileShares) Create(storagegatewaySmbFileShare *v1a
 // Update takes the representation of a storagegatewaySmbFileShare and updates it. Returns the server's representation of the storagegatewaySmbFileShare, and an error, if there is any.
 func (c *FakeStoragegatewaySmbFileShares) Update(storagegatewaySmbFileShare *v1alpha1.StoragegatewaySmbFileShare) (result *v1alpha1.StoragegatewaySmbFileShare, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(storagegatewaysmbfilesharesResource, storagegatewaySmbFileShare), &v1alpha1.StoragegatewaySmbFileShare{})
+		Invokes(testing.NewUpdateAction(storagegatewaysmbfilesharesResource, c.ns, storagegatewaySmbFileShare), &v1alpha1.StoragegatewaySmbFileShare{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeStoragegatewaySmbFileShares) Update(storagegatewaySmbFileShare *v1a
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeStoragegatewaySmbFileShares) UpdateStatus(storagegatewaySmbFileShare *v1alpha1.StoragegatewaySmbFileShare) (*v1alpha1.StoragegatewaySmbFileShare, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(storagegatewaysmbfilesharesResource, "status", storagegatewaySmbFileShare), &v1alpha1.StoragegatewaySmbFileShare{})
+		Invokes(testing.NewUpdateSubresourceAction(storagegatewaysmbfilesharesResource, "status", c.ns, storagegatewaySmbFileShare), &v1alpha1.StoragegatewaySmbFileShare{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeStoragegatewaySmbFileShares) UpdateStatus(storagegatewaySmbFileShar
 // Delete takes name of the storagegatewaySmbFileShare and deletes it. Returns an error if one occurs.
 func (c *FakeStoragegatewaySmbFileShares) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(storagegatewaysmbfilesharesResource, name), &v1alpha1.StoragegatewaySmbFileShare{})
+		Invokes(testing.NewDeleteAction(storagegatewaysmbfilesharesResource, c.ns, name), &v1alpha1.StoragegatewaySmbFileShare{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeStoragegatewaySmbFileShares) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(storagegatewaysmbfilesharesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(storagegatewaysmbfilesharesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.StoragegatewaySmbFileShareList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeStoragegatewaySmbFileShares) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched storagegatewaySmbFileShare.
 func (c *FakeStoragegatewaySmbFileShares) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StoragegatewaySmbFileShare, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(storagegatewaysmbfilesharesResource, name, pt, data, subresources...), &v1alpha1.StoragegatewaySmbFileShare{})
+		Invokes(testing.NewPatchSubresourceAction(storagegatewaysmbfilesharesResource, c.ns, name, pt, data, subresources...), &v1alpha1.StoragegatewaySmbFileShare{})
+
 	if obj == nil {
 		return nil, err
 	}

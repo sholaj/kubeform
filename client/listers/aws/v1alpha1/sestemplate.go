@@ -29,8 +29,8 @@ import (
 type SesTemplateLister interface {
 	// List lists all SesTemplates in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SesTemplate, err error)
-	// Get retrieves the SesTemplate from the index for a given name.
-	Get(name string) (*v1alpha1.SesTemplate, error)
+	// SesTemplates returns an object that can list and get SesTemplates.
+	SesTemplates(namespace string) SesTemplateNamespaceLister
 	SesTemplateListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sesTemplateLister) List(selector labels.Selector) (ret []*v1alpha1.SesT
 	return ret, err
 }
 
-// Get retrieves the SesTemplate from the index for a given name.
-func (s *sesTemplateLister) Get(name string) (*v1alpha1.SesTemplate, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SesTemplates returns an object that can list and get SesTemplates.
+func (s *sesTemplateLister) SesTemplates(namespace string) SesTemplateNamespaceLister {
+	return sesTemplateNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SesTemplateNamespaceLister helps list and get SesTemplates.
+type SesTemplateNamespaceLister interface {
+	// List lists all SesTemplates in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SesTemplate, err error)
+	// Get retrieves the SesTemplate from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SesTemplate, error)
+	SesTemplateNamespaceListerExpansion
+}
+
+// sesTemplateNamespaceLister implements the SesTemplateNamespaceLister
+// interface.
+type sesTemplateNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SesTemplates in the indexer for a given namespace.
+func (s sesTemplateNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SesTemplate, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SesTemplate))
+	})
+	return ret, err
+}
+
+// Get retrieves the SesTemplate from the indexer for a given namespace and name.
+func (s sesTemplateNamespaceLister) Get(name string) (*v1alpha1.SesTemplate, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

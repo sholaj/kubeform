@@ -31,6 +31,7 @@ import (
 // FakeSqsQueuePolicies implements SqsQueuePolicyInterface
 type FakeSqsQueuePolicies struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var sqsqueuepoliciesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "sqsqueuepolicies"}
@@ -40,7 +41,8 @@ var sqsqueuepoliciesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ve
 // Get takes name of the sqsQueuePolicy, and returns the corresponding sqsQueuePolicy object, and an error if there is any.
 func (c *FakeSqsQueuePolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.SqsQueuePolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sqsqueuepoliciesResource, name), &v1alpha1.SqsQueuePolicy{})
+		Invokes(testing.NewGetAction(sqsqueuepoliciesResource, c.ns, name), &v1alpha1.SqsQueuePolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSqsQueuePolicies) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of SqsQueuePolicies that match those selectors.
 func (c *FakeSqsQueuePolicies) List(opts v1.ListOptions) (result *v1alpha1.SqsQueuePolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sqsqueuepoliciesResource, sqsqueuepoliciesKind, opts), &v1alpha1.SqsQueuePolicyList{})
+		Invokes(testing.NewListAction(sqsqueuepoliciesResource, sqsqueuepoliciesKind, c.ns, opts), &v1alpha1.SqsQueuePolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSqsQueuePolicies) List(opts v1.ListOptions) (result *v1alpha1.SqsQu
 // Watch returns a watch.Interface that watches the requested sqsQueuePolicies.
 func (c *FakeSqsQueuePolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sqsqueuepoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(sqsqueuepoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sqsQueuePolicy and creates it.  Returns the server's representation of the sqsQueuePolicy, and an error, if there is any.
 func (c *FakeSqsQueuePolicies) Create(sqsQueuePolicy *v1alpha1.SqsQueuePolicy) (result *v1alpha1.SqsQueuePolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sqsqueuepoliciesResource, sqsQueuePolicy), &v1alpha1.SqsQueuePolicy{})
+		Invokes(testing.NewCreateAction(sqsqueuepoliciesResource, c.ns, sqsQueuePolicy), &v1alpha1.SqsQueuePolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSqsQueuePolicies) Create(sqsQueuePolicy *v1alpha1.SqsQueuePolicy) (
 // Update takes the representation of a sqsQueuePolicy and updates it. Returns the server's representation of the sqsQueuePolicy, and an error, if there is any.
 func (c *FakeSqsQueuePolicies) Update(sqsQueuePolicy *v1alpha1.SqsQueuePolicy) (result *v1alpha1.SqsQueuePolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sqsqueuepoliciesResource, sqsQueuePolicy), &v1alpha1.SqsQueuePolicy{})
+		Invokes(testing.NewUpdateAction(sqsqueuepoliciesResource, c.ns, sqsQueuePolicy), &v1alpha1.SqsQueuePolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSqsQueuePolicies) Update(sqsQueuePolicy *v1alpha1.SqsQueuePolicy) (
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSqsQueuePolicies) UpdateStatus(sqsQueuePolicy *v1alpha1.SqsQueuePolicy) (*v1alpha1.SqsQueuePolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sqsqueuepoliciesResource, "status", sqsQueuePolicy), &v1alpha1.SqsQueuePolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(sqsqueuepoliciesResource, "status", c.ns, sqsQueuePolicy), &v1alpha1.SqsQueuePolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSqsQueuePolicies) UpdateStatus(sqsQueuePolicy *v1alpha1.SqsQueuePol
 // Delete takes name of the sqsQueuePolicy and deletes it. Returns an error if one occurs.
 func (c *FakeSqsQueuePolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sqsqueuepoliciesResource, name), &v1alpha1.SqsQueuePolicy{})
+		Invokes(testing.NewDeleteAction(sqsqueuepoliciesResource, c.ns, name), &v1alpha1.SqsQueuePolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSqsQueuePolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sqsqueuepoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sqsqueuepoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SqsQueuePolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSqsQueuePolicies) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched sqsQueuePolicy.
 func (c *FakeSqsQueuePolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SqsQueuePolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sqsqueuepoliciesResource, name, pt, data, subresources...), &v1alpha1.SqsQueuePolicy{})
+		Invokes(testing.NewPatchSubresourceAction(sqsqueuepoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.SqsQueuePolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

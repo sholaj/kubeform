@@ -32,7 +32,7 @@ import (
 // MediaServicesAccountsGetter has a method to return a MediaServicesAccountInterface.
 // A group's client should implement this interface.
 type MediaServicesAccountsGetter interface {
-	MediaServicesAccounts() MediaServicesAccountInterface
+	MediaServicesAccounts(namespace string) MediaServicesAccountInterface
 }
 
 // MediaServicesAccountInterface has methods to work with MediaServicesAccount resources.
@@ -52,12 +52,14 @@ type MediaServicesAccountInterface interface {
 // mediaServicesAccounts implements MediaServicesAccountInterface
 type mediaServicesAccounts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMediaServicesAccounts returns a MediaServicesAccounts
-func newMediaServicesAccounts(c *AzurermV1alpha1Client) *mediaServicesAccounts {
+func newMediaServicesAccounts(c *AzurermV1alpha1Client, namespace string) *mediaServicesAccounts {
 	return &mediaServicesAccounts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMediaServicesAccounts(c *AzurermV1alpha1Client) *mediaServicesAccounts {
 func (c *mediaServicesAccounts) Get(name string, options v1.GetOptions) (result *v1alpha1.MediaServicesAccount, err error) {
 	result = &v1alpha1.MediaServicesAccount{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mediaservicesaccounts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *mediaServicesAccounts) List(opts v1.ListOptions) (result *v1alpha1.Medi
 	}
 	result = &v1alpha1.MediaServicesAccountList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mediaservicesaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *mediaServicesAccounts) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("mediaservicesaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *mediaServicesAccounts) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *mediaServicesAccounts) Create(mediaServicesAccount *v1alpha1.MediaServicesAccount) (result *v1alpha1.MediaServicesAccount, err error) {
 	result = &v1alpha1.MediaServicesAccount{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("mediaservicesaccounts").
 		Body(mediaServicesAccount).
 		Do().
@@ -118,6 +124,7 @@ func (c *mediaServicesAccounts) Create(mediaServicesAccount *v1alpha1.MediaServi
 func (c *mediaServicesAccounts) Update(mediaServicesAccount *v1alpha1.MediaServicesAccount) (result *v1alpha1.MediaServicesAccount, err error) {
 	result = &v1alpha1.MediaServicesAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mediaservicesaccounts").
 		Name(mediaServicesAccount.Name).
 		Body(mediaServicesAccount).
@@ -132,6 +139,7 @@ func (c *mediaServicesAccounts) Update(mediaServicesAccount *v1alpha1.MediaServi
 func (c *mediaServicesAccounts) UpdateStatus(mediaServicesAccount *v1alpha1.MediaServicesAccount) (result *v1alpha1.MediaServicesAccount, err error) {
 	result = &v1alpha1.MediaServicesAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mediaservicesaccounts").
 		Name(mediaServicesAccount.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *mediaServicesAccounts) UpdateStatus(mediaServicesAccount *v1alpha1.Medi
 // Delete takes name of the mediaServicesAccount and deletes it. Returns an error if one occurs.
 func (c *mediaServicesAccounts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mediaservicesaccounts").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *mediaServicesAccounts) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mediaservicesaccounts").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *mediaServicesAccounts) DeleteCollection(options *v1.DeleteOptions, list
 func (c *mediaServicesAccounts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MediaServicesAccount, err error) {
 	result = &v1alpha1.MediaServicesAccount{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("mediaservicesaccounts").
 		SubResource(subresources...).
 		Name(name).

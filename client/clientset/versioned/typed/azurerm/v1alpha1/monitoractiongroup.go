@@ -32,7 +32,7 @@ import (
 // MonitorActionGroupsGetter has a method to return a MonitorActionGroupInterface.
 // A group's client should implement this interface.
 type MonitorActionGroupsGetter interface {
-	MonitorActionGroups() MonitorActionGroupInterface
+	MonitorActionGroups(namespace string) MonitorActionGroupInterface
 }
 
 // MonitorActionGroupInterface has methods to work with MonitorActionGroup resources.
@@ -52,12 +52,14 @@ type MonitorActionGroupInterface interface {
 // monitorActionGroups implements MonitorActionGroupInterface
 type monitorActionGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMonitorActionGroups returns a MonitorActionGroups
-func newMonitorActionGroups(c *AzurermV1alpha1Client) *monitorActionGroups {
+func newMonitorActionGroups(c *AzurermV1alpha1Client, namespace string) *monitorActionGroups {
 	return &monitorActionGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMonitorActionGroups(c *AzurermV1alpha1Client) *monitorActionGroups {
 func (c *monitorActionGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.MonitorActionGroup, err error) {
 	result = &v1alpha1.MonitorActionGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitoractiongroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *monitorActionGroups) List(opts v1.ListOptions) (result *v1alpha1.Monito
 	}
 	result = &v1alpha1.MonitorActionGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitoractiongroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *monitorActionGroups) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("monitoractiongroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *monitorActionGroups) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *monitorActionGroups) Create(monitorActionGroup *v1alpha1.MonitorActionGroup) (result *v1alpha1.MonitorActionGroup, err error) {
 	result = &v1alpha1.MonitorActionGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("monitoractiongroups").
 		Body(monitorActionGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *monitorActionGroups) Create(monitorActionGroup *v1alpha1.MonitorActionG
 func (c *monitorActionGroups) Update(monitorActionGroup *v1alpha1.MonitorActionGroup) (result *v1alpha1.MonitorActionGroup, err error) {
 	result = &v1alpha1.MonitorActionGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitoractiongroups").
 		Name(monitorActionGroup.Name).
 		Body(monitorActionGroup).
@@ -132,6 +139,7 @@ func (c *monitorActionGroups) Update(monitorActionGroup *v1alpha1.MonitorActionG
 func (c *monitorActionGroups) UpdateStatus(monitorActionGroup *v1alpha1.MonitorActionGroup) (result *v1alpha1.MonitorActionGroup, err error) {
 	result = &v1alpha1.MonitorActionGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitoractiongroups").
 		Name(monitorActionGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *monitorActionGroups) UpdateStatus(monitorActionGroup *v1alpha1.MonitorA
 // Delete takes name of the monitorActionGroup and deletes it. Returns an error if one occurs.
 func (c *monitorActionGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitoractiongroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *monitorActionGroups) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitoractiongroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *monitorActionGroups) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *monitorActionGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MonitorActionGroup, err error) {
 	result = &v1alpha1.MonitorActionGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("monitoractiongroups").
 		SubResource(subresources...).
 		Name(name).

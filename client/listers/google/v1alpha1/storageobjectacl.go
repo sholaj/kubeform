@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/google/v1alpha1"
 )
 
-// StorageObjectAclLister helps list StorageObjectAcls.
-type StorageObjectAclLister interface {
-	// List lists all StorageObjectAcls in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.StorageObjectAcl, err error)
-	// Get retrieves the StorageObjectAcl from the index for a given name.
-	Get(name string) (*v1alpha1.StorageObjectAcl, error)
-	StorageObjectAclListerExpansion
+// StorageObjectACLLister helps list StorageObjectACLs.
+type StorageObjectACLLister interface {
+	// List lists all StorageObjectACLs in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.StorageObjectACL, err error)
+	// StorageObjectACLs returns an object that can list and get StorageObjectACLs.
+	StorageObjectACLs(namespace string) StorageObjectACLNamespaceLister
+	StorageObjectACLListerExpansion
 }
 
-// storageObjectAclLister implements the StorageObjectAclLister interface.
-type storageObjectAclLister struct {
+// storageObjectACLLister implements the StorageObjectACLLister interface.
+type storageObjectACLLister struct {
 	indexer cache.Indexer
 }
 
-// NewStorageObjectAclLister returns a new StorageObjectAclLister.
-func NewStorageObjectAclLister(indexer cache.Indexer) StorageObjectAclLister {
-	return &storageObjectAclLister{indexer: indexer}
+// NewStorageObjectACLLister returns a new StorageObjectACLLister.
+func NewStorageObjectACLLister(indexer cache.Indexer) StorageObjectACLLister {
+	return &storageObjectACLLister{indexer: indexer}
 }
 
-// List lists all StorageObjectAcls in the indexer.
-func (s *storageObjectAclLister) List(selector labels.Selector) (ret []*v1alpha1.StorageObjectAcl, err error) {
+// List lists all StorageObjectACLs in the indexer.
+func (s *storageObjectACLLister) List(selector labels.Selector) (ret []*v1alpha1.StorageObjectACL, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.StorageObjectAcl))
+		ret = append(ret, m.(*v1alpha1.StorageObjectACL))
 	})
 	return ret, err
 }
 
-// Get retrieves the StorageObjectAcl from the index for a given name.
-func (s *storageObjectAclLister) Get(name string) (*v1alpha1.StorageObjectAcl, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StorageObjectACLs returns an object that can list and get StorageObjectACLs.
+func (s *storageObjectACLLister) StorageObjectACLs(namespace string) StorageObjectACLNamespaceLister {
+	return storageObjectACLNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StorageObjectACLNamespaceLister helps list and get StorageObjectACLs.
+type StorageObjectACLNamespaceLister interface {
+	// List lists all StorageObjectACLs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StorageObjectACL, err error)
+	// Get retrieves the StorageObjectACL from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StorageObjectACL, error)
+	StorageObjectACLNamespaceListerExpansion
+}
+
+// storageObjectACLNamespaceLister implements the StorageObjectACLNamespaceLister
+// interface.
+type storageObjectACLNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StorageObjectACLs in the indexer for a given namespace.
+func (s storageObjectACLNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StorageObjectACL, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StorageObjectACL))
+	})
+	return ret, err
+}
+
+// Get retrieves the StorageObjectACL from the indexer for a given namespace and name.
+func (s storageObjectACLNamespaceLister) Get(name string) (*v1alpha1.StorageObjectACL, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("storageobjectacl"), name)
 	}
-	return obj.(*v1alpha1.StorageObjectAcl), nil
+	return obj.(*v1alpha1.StorageObjectACL), nil
 }

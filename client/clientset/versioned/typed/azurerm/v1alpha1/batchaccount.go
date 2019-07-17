@@ -32,7 +32,7 @@ import (
 // BatchAccountsGetter has a method to return a BatchAccountInterface.
 // A group's client should implement this interface.
 type BatchAccountsGetter interface {
-	BatchAccounts() BatchAccountInterface
+	BatchAccounts(namespace string) BatchAccountInterface
 }
 
 // BatchAccountInterface has methods to work with BatchAccount resources.
@@ -52,12 +52,14 @@ type BatchAccountInterface interface {
 // batchAccounts implements BatchAccountInterface
 type batchAccounts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newBatchAccounts returns a BatchAccounts
-func newBatchAccounts(c *AzurermV1alpha1Client) *batchAccounts {
+func newBatchAccounts(c *AzurermV1alpha1Client, namespace string) *batchAccounts {
 	return &batchAccounts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newBatchAccounts(c *AzurermV1alpha1Client) *batchAccounts {
 func (c *batchAccounts) Get(name string, options v1.GetOptions) (result *v1alpha1.BatchAccount, err error) {
 	result = &v1alpha1.BatchAccount{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("batchaccounts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *batchAccounts) List(opts v1.ListOptions) (result *v1alpha1.BatchAccount
 	}
 	result = &v1alpha1.BatchAccountList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("batchaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *batchAccounts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("batchaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *batchAccounts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *batchAccounts) Create(batchAccount *v1alpha1.BatchAccount) (result *v1alpha1.BatchAccount, err error) {
 	result = &v1alpha1.BatchAccount{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("batchaccounts").
 		Body(batchAccount).
 		Do().
@@ -118,6 +124,7 @@ func (c *batchAccounts) Create(batchAccount *v1alpha1.BatchAccount) (result *v1a
 func (c *batchAccounts) Update(batchAccount *v1alpha1.BatchAccount) (result *v1alpha1.BatchAccount, err error) {
 	result = &v1alpha1.BatchAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("batchaccounts").
 		Name(batchAccount.Name).
 		Body(batchAccount).
@@ -132,6 +139,7 @@ func (c *batchAccounts) Update(batchAccount *v1alpha1.BatchAccount) (result *v1a
 func (c *batchAccounts) UpdateStatus(batchAccount *v1alpha1.BatchAccount) (result *v1alpha1.BatchAccount, err error) {
 	result = &v1alpha1.BatchAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("batchaccounts").
 		Name(batchAccount.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *batchAccounts) UpdateStatus(batchAccount *v1alpha1.BatchAccount) (resul
 // Delete takes name of the batchAccount and deletes it. Returns an error if one occurs.
 func (c *batchAccounts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("batchaccounts").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *batchAccounts) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("batchaccounts").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *batchAccounts) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *batchAccounts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BatchAccount, err error) {
 	result = &v1alpha1.BatchAccount{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("batchaccounts").
 		SubResource(subresources...).
 		Name(name).

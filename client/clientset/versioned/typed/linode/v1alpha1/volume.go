@@ -32,7 +32,7 @@ import (
 // VolumesGetter has a method to return a VolumeInterface.
 // A group's client should implement this interface.
 type VolumesGetter interface {
-	Volumes() VolumeInterface
+	Volumes(namespace string) VolumeInterface
 }
 
 // VolumeInterface has methods to work with Volume resources.
@@ -52,12 +52,14 @@ type VolumeInterface interface {
 // volumes implements VolumeInterface
 type volumes struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVolumes returns a Volumes
-func newVolumes(c *LinodeV1alpha1Client) *volumes {
+func newVolumes(c *LinodeV1alpha1Client, namespace string) *volumes {
 	return &volumes{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVolumes(c *LinodeV1alpha1Client) *volumes {
 func (c *volumes) Get(name string, options v1.GetOptions) (result *v1alpha1.Volume, err error) {
 	result = &v1alpha1.Volume{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("volumes").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *volumes) List(opts v1.ListOptions) (result *v1alpha1.VolumeList, err er
 	}
 	result = &v1alpha1.VolumeList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("volumes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *volumes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("volumes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *volumes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *volumes) Create(volume *v1alpha1.Volume) (result *v1alpha1.Volume, err error) {
 	result = &v1alpha1.Volume{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("volumes").
 		Body(volume).
 		Do().
@@ -118,6 +124,7 @@ func (c *volumes) Create(volume *v1alpha1.Volume) (result *v1alpha1.Volume, err 
 func (c *volumes) Update(volume *v1alpha1.Volume) (result *v1alpha1.Volume, err error) {
 	result = &v1alpha1.Volume{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("volumes").
 		Name(volume.Name).
 		Body(volume).
@@ -132,6 +139,7 @@ func (c *volumes) Update(volume *v1alpha1.Volume) (result *v1alpha1.Volume, err 
 func (c *volumes) UpdateStatus(volume *v1alpha1.Volume) (result *v1alpha1.Volume, err error) {
 	result = &v1alpha1.Volume{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("volumes").
 		Name(volume.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *volumes) UpdateStatus(volume *v1alpha1.Volume) (result *v1alpha1.Volume
 // Delete takes name of the volume and deletes it. Returns an error if one occurs.
 func (c *volumes) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("volumes").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *volumes) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("volumes").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *volumes) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Lis
 func (c *volumes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Volume, err error) {
 	result = &v1alpha1.Volume{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("volumes").
 		SubResource(subresources...).
 		Name(name).

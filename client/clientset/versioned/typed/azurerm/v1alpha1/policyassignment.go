@@ -32,7 +32,7 @@ import (
 // PolicyAssignmentsGetter has a method to return a PolicyAssignmentInterface.
 // A group's client should implement this interface.
 type PolicyAssignmentsGetter interface {
-	PolicyAssignments() PolicyAssignmentInterface
+	PolicyAssignments(namespace string) PolicyAssignmentInterface
 }
 
 // PolicyAssignmentInterface has methods to work with PolicyAssignment resources.
@@ -52,12 +52,14 @@ type PolicyAssignmentInterface interface {
 // policyAssignments implements PolicyAssignmentInterface
 type policyAssignments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPolicyAssignments returns a PolicyAssignments
-func newPolicyAssignments(c *AzurermV1alpha1Client) *policyAssignments {
+func newPolicyAssignments(c *AzurermV1alpha1Client, namespace string) *policyAssignments {
 	return &policyAssignments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPolicyAssignments(c *AzurermV1alpha1Client) *policyAssignments {
 func (c *policyAssignments) Get(name string, options v1.GetOptions) (result *v1alpha1.PolicyAssignment, err error) {
 	result = &v1alpha1.PolicyAssignment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("policyassignments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *policyAssignments) List(opts v1.ListOptions) (result *v1alpha1.PolicyAs
 	}
 	result = &v1alpha1.PolicyAssignmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("policyassignments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *policyAssignments) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("policyassignments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *policyAssignments) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *policyAssignments) Create(policyAssignment *v1alpha1.PolicyAssignment) (result *v1alpha1.PolicyAssignment, err error) {
 	result = &v1alpha1.PolicyAssignment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("policyassignments").
 		Body(policyAssignment).
 		Do().
@@ -118,6 +124,7 @@ func (c *policyAssignments) Create(policyAssignment *v1alpha1.PolicyAssignment) 
 func (c *policyAssignments) Update(policyAssignment *v1alpha1.PolicyAssignment) (result *v1alpha1.PolicyAssignment, err error) {
 	result = &v1alpha1.PolicyAssignment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("policyassignments").
 		Name(policyAssignment.Name).
 		Body(policyAssignment).
@@ -132,6 +139,7 @@ func (c *policyAssignments) Update(policyAssignment *v1alpha1.PolicyAssignment) 
 func (c *policyAssignments) UpdateStatus(policyAssignment *v1alpha1.PolicyAssignment) (result *v1alpha1.PolicyAssignment, err error) {
 	result = &v1alpha1.PolicyAssignment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("policyassignments").
 		Name(policyAssignment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *policyAssignments) UpdateStatus(policyAssignment *v1alpha1.PolicyAssign
 // Delete takes name of the policyAssignment and deletes it. Returns an error if one occurs.
 func (c *policyAssignments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("policyassignments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *policyAssignments) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("policyassignments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *policyAssignments) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *policyAssignments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PolicyAssignment, err error) {
 	result = &v1alpha1.PolicyAssignment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("policyassignments").
 		SubResource(subresources...).
 		Name(name).

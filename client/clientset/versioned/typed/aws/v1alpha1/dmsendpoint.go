@@ -32,7 +32,7 @@ import (
 // DmsEndpointsGetter has a method to return a DmsEndpointInterface.
 // A group's client should implement this interface.
 type DmsEndpointsGetter interface {
-	DmsEndpoints() DmsEndpointInterface
+	DmsEndpoints(namespace string) DmsEndpointInterface
 }
 
 // DmsEndpointInterface has methods to work with DmsEndpoint resources.
@@ -52,12 +52,14 @@ type DmsEndpointInterface interface {
 // dmsEndpoints implements DmsEndpointInterface
 type dmsEndpoints struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDmsEndpoints returns a DmsEndpoints
-func newDmsEndpoints(c *AwsV1alpha1Client) *dmsEndpoints {
+func newDmsEndpoints(c *AwsV1alpha1Client, namespace string) *dmsEndpoints {
 	return &dmsEndpoints{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDmsEndpoints(c *AwsV1alpha1Client) *dmsEndpoints {
 func (c *dmsEndpoints) Get(name string, options v1.GetOptions) (result *v1alpha1.DmsEndpoint, err error) {
 	result = &v1alpha1.DmsEndpoint{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dmsendpoints").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dmsEndpoints) List(opts v1.ListOptions) (result *v1alpha1.DmsEndpointLi
 	}
 	result = &v1alpha1.DmsEndpointList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dmsendpoints").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dmsEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dmsendpoints").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dmsEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dmsEndpoints) Create(dmsEndpoint *v1alpha1.DmsEndpoint) (result *v1alpha1.DmsEndpoint, err error) {
 	result = &v1alpha1.DmsEndpoint{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dmsendpoints").
 		Body(dmsEndpoint).
 		Do().
@@ -118,6 +124,7 @@ func (c *dmsEndpoints) Create(dmsEndpoint *v1alpha1.DmsEndpoint) (result *v1alph
 func (c *dmsEndpoints) Update(dmsEndpoint *v1alpha1.DmsEndpoint) (result *v1alpha1.DmsEndpoint, err error) {
 	result = &v1alpha1.DmsEndpoint{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dmsendpoints").
 		Name(dmsEndpoint.Name).
 		Body(dmsEndpoint).
@@ -132,6 +139,7 @@ func (c *dmsEndpoints) Update(dmsEndpoint *v1alpha1.DmsEndpoint) (result *v1alph
 func (c *dmsEndpoints) UpdateStatus(dmsEndpoint *v1alpha1.DmsEndpoint) (result *v1alpha1.DmsEndpoint, err error) {
 	result = &v1alpha1.DmsEndpoint{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dmsendpoints").
 		Name(dmsEndpoint.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dmsEndpoints) UpdateStatus(dmsEndpoint *v1alpha1.DmsEndpoint) (result *
 // Delete takes name of the dmsEndpoint and deletes it. Returns an error if one occurs.
 func (c *dmsEndpoints) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dmsendpoints").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dmsEndpoints) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dmsendpoints").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dmsEndpoints) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *dmsEndpoints) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DmsEndpoint, err error) {
 	result = &v1alpha1.DmsEndpoint{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dmsendpoints").
 		SubResource(subresources...).
 		Name(name).

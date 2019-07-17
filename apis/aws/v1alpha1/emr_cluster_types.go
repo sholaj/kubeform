@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,76 +20,77 @@ type EmrCluster struct {
 
 type EmrClusterSpecBootstrapAction struct {
 	// +optional
-	Args []string `json:"args,omitempty"`
-	Name string   `json:"name"`
-	Path string   `json:"path"`
+	Args []string `json:"args,omitempty" tf:"args,omitempty"`
+	Name string   `json:"name" tf:"name"`
+	Path string   `json:"path" tf:"path"`
 }
 
 type EmrClusterSpecEc2Attributes struct {
 	// +optional
-	AdditionalMasterSecurityGroups string `json:"additional_master_security_groups,omitempty"`
+	AdditionalMasterSecurityGroups string `json:"additionalMasterSecurityGroups,omitempty" tf:"additional_master_security_groups,omitempty"`
 	// +optional
-	AdditionalSlaveSecurityGroups string `json:"additional_slave_security_groups,omitempty"`
+	AdditionalSlaveSecurityGroups string `json:"additionalSlaveSecurityGroups,omitempty" tf:"additional_slave_security_groups,omitempty"`
 	// +optional
-	EmrManagedMasterSecurityGroup string `json:"emr_managed_master_security_group,omitempty"`
+	EmrManagedMasterSecurityGroup string `json:"emrManagedMasterSecurityGroup,omitempty" tf:"emr_managed_master_security_group,omitempty"`
 	// +optional
-	EmrManagedSlaveSecurityGroup string `json:"emr_managed_slave_security_group,omitempty"`
-	InstanceProfile              string `json:"instance_profile"`
+	EmrManagedSlaveSecurityGroup string `json:"emrManagedSlaveSecurityGroup,omitempty" tf:"emr_managed_slave_security_group,omitempty"`
+	InstanceProfile              string `json:"instanceProfile" tf:"instance_profile"`
 	// +optional
-	KeyName string `json:"key_name,omitempty"`
+	KeyName string `json:"keyName,omitempty" tf:"key_name,omitempty"`
 	// +optional
-	ServiceAccessSecurityGroup string `json:"service_access_security_group,omitempty"`
+	ServiceAccessSecurityGroup string `json:"serviceAccessSecurityGroup,omitempty" tf:"service_access_security_group,omitempty"`
 	// +optional
-	SubnetId string `json:"subnet_id,omitempty"`
+	SubnetID string `json:"subnetID,omitempty" tf:"subnet_id,omitempty"`
 }
 
 type EmrClusterSpecKerberosAttributes struct {
 	// +optional
-	AdDomainJoinPassword string `json:"ad_domain_join_password,omitempty"`
+	AdDomainJoinPassword string `json:"adDomainJoinPassword,omitempty" tf:"ad_domain_join_password,omitempty"`
 	// +optional
-	AdDomainJoinUser string `json:"ad_domain_join_user,omitempty"`
+	AdDomainJoinUser string `json:"adDomainJoinUser,omitempty" tf:"ad_domain_join_user,omitempty"`
 	// +optional
-	CrossRealmTrustPrincipalPassword string `json:"cross_realm_trust_principal_password,omitempty"`
-	KdcAdminPassword                 string `json:"kdc_admin_password"`
-	Realm                            string `json:"realm"`
+	CrossRealmTrustPrincipalPassword string `json:"crossRealmTrustPrincipalPassword,omitempty" tf:"cross_realm_trust_principal_password,omitempty"`
+	KdcAdminPassword                 string `json:"kdcAdminPassword" tf:"kdc_admin_password"`
+	Realm                            string `json:"realm" tf:"realm"`
 }
 
 type EmrClusterSpec struct {
 	// +optional
-	AdditionalInfo string `json:"additional_info,omitempty"`
+	AdditionalInfo string `json:"additionalInfo,omitempty" tf:"additional_info,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Applications []string `json:"applications,omitempty"`
+	Applications []string `json:"applications,omitempty" tf:"applications,omitempty"`
 	// +optional
-	AutoscalingRole string `json:"autoscaling_role,omitempty"`
+	AutoscalingRole string `json:"autoscalingRole,omitempty" tf:"autoscaling_role,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	BootstrapAction *[]EmrClusterSpec `json:"bootstrap_action,omitempty"`
+	BootstrapAction []EmrClusterSpecBootstrapAction `json:"bootstrapAction,omitempty" tf:"bootstrap_action,omitempty"`
 	// +optional
-	Configurations string `json:"configurations,omitempty"`
+	Configurations string `json:"configurations,omitempty" tf:"configurations,omitempty"`
 	// +optional
-	ConfigurationsJson string `json:"configurations_json,omitempty"`
+	ConfigurationsJSON string `json:"configurationsJSON,omitempty" tf:"configurations_json,omitempty"`
 	// +optional
-	CustomAmiId string `json:"custom_ami_id,omitempty"`
+	CustomAmiID string `json:"customAmiID,omitempty" tf:"custom_ami_id,omitempty"`
 	// +optional
-	EbsRootVolumeSize int `json:"ebs_root_volume_size,omitempty"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	Ec2Attributes *[]EmrClusterSpec `json:"ec2_attributes,omitempty"`
+	EbsRootVolumeSize int `json:"ebsRootVolumeSize,omitempty" tf:"ebs_root_volume_size,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	KerberosAttributes *[]EmrClusterSpec `json:"kerberos_attributes,omitempty"`
+	Ec2Attributes []EmrClusterSpecEc2Attributes `json:"ec2Attributes,omitempty" tf:"ec2_attributes,omitempty"`
 	// +optional
-	LogUri       string `json:"log_uri,omitempty"`
-	Name         string `json:"name"`
-	ReleaseLabel string `json:"release_label"`
+	// +kubebuilder:validation:MaxItems=1
+	KerberosAttributes []EmrClusterSpecKerberosAttributes `json:"kerberosAttributes,omitempty" tf:"kerberos_attributes,omitempty"`
 	// +optional
-	SecurityConfiguration string `json:"security_configuration,omitempty"`
-	ServiceRole           string `json:"service_role"`
+	LogURI       string `json:"logURI,omitempty" tf:"log_uri,omitempty"`
+	Name         string `json:"name" tf:"name"`
+	ReleaseLabel string `json:"releaseLabel" tf:"release_label"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	SecurityConfiguration string `json:"securityConfiguration,omitempty" tf:"security_configuration,omitempty"`
+	ServiceRole           string `json:"serviceRole" tf:"service_role"`
 	// +optional
-	VisibleToAllUsers bool `json:"visible_to_all_users,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
+	// +optional
+	VisibleToAllUsers bool                      `json:"visibleToAllUsers,omitempty" tf:"visible_to_all_users,omitempty"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type EmrClusterStatus struct {
@@ -97,7 +98,9 @@ type EmrClusterStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

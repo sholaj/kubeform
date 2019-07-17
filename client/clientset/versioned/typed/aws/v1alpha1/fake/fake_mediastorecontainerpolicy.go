@@ -31,6 +31,7 @@ import (
 // FakeMediaStoreContainerPolicies implements MediaStoreContainerPolicyInterface
 type FakeMediaStoreContainerPolicies struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var mediastorecontainerpoliciesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "mediastorecontainerpolicies"}
@@ -40,7 +41,8 @@ var mediastorecontainerpoliciesKind = schema.GroupVersionKind{Group: "aws.kubefo
 // Get takes name of the mediaStoreContainerPolicy, and returns the corresponding mediaStoreContainerPolicy object, and an error if there is any.
 func (c *FakeMediaStoreContainerPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.MediaStoreContainerPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(mediastorecontainerpoliciesResource, name), &v1alpha1.MediaStoreContainerPolicy{})
+		Invokes(testing.NewGetAction(mediastorecontainerpoliciesResource, c.ns, name), &v1alpha1.MediaStoreContainerPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMediaStoreContainerPolicies) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of MediaStoreContainerPolicies that match those selectors.
 func (c *FakeMediaStoreContainerPolicies) List(opts v1.ListOptions) (result *v1alpha1.MediaStoreContainerPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(mediastorecontainerpoliciesResource, mediastorecontainerpoliciesKind, opts), &v1alpha1.MediaStoreContainerPolicyList{})
+		Invokes(testing.NewListAction(mediastorecontainerpoliciesResource, mediastorecontainerpoliciesKind, c.ns, opts), &v1alpha1.MediaStoreContainerPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMediaStoreContainerPolicies) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested mediaStoreContainerPolicies.
 func (c *FakeMediaStoreContainerPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(mediastorecontainerpoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(mediastorecontainerpoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a mediaStoreContainerPolicy and creates it.  Returns the server's representation of the mediaStoreContainerPolicy, and an error, if there is any.
 func (c *FakeMediaStoreContainerPolicies) Create(mediaStoreContainerPolicy *v1alpha1.MediaStoreContainerPolicy) (result *v1alpha1.MediaStoreContainerPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(mediastorecontainerpoliciesResource, mediaStoreContainerPolicy), &v1alpha1.MediaStoreContainerPolicy{})
+		Invokes(testing.NewCreateAction(mediastorecontainerpoliciesResource, c.ns, mediaStoreContainerPolicy), &v1alpha1.MediaStoreContainerPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMediaStoreContainerPolicies) Create(mediaStoreContainerPolicy *v1al
 // Update takes the representation of a mediaStoreContainerPolicy and updates it. Returns the server's representation of the mediaStoreContainerPolicy, and an error, if there is any.
 func (c *FakeMediaStoreContainerPolicies) Update(mediaStoreContainerPolicy *v1alpha1.MediaStoreContainerPolicy) (result *v1alpha1.MediaStoreContainerPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(mediastorecontainerpoliciesResource, mediaStoreContainerPolicy), &v1alpha1.MediaStoreContainerPolicy{})
+		Invokes(testing.NewUpdateAction(mediastorecontainerpoliciesResource, c.ns, mediaStoreContainerPolicy), &v1alpha1.MediaStoreContainerPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMediaStoreContainerPolicies) Update(mediaStoreContainerPolicy *v1al
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMediaStoreContainerPolicies) UpdateStatus(mediaStoreContainerPolicy *v1alpha1.MediaStoreContainerPolicy) (*v1alpha1.MediaStoreContainerPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(mediastorecontainerpoliciesResource, "status", mediaStoreContainerPolicy), &v1alpha1.MediaStoreContainerPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(mediastorecontainerpoliciesResource, "status", c.ns, mediaStoreContainerPolicy), &v1alpha1.MediaStoreContainerPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMediaStoreContainerPolicies) UpdateStatus(mediaStoreContainerPolicy
 // Delete takes name of the mediaStoreContainerPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeMediaStoreContainerPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(mediastorecontainerpoliciesResource, name), &v1alpha1.MediaStoreContainerPolicy{})
+		Invokes(testing.NewDeleteAction(mediastorecontainerpoliciesResource, c.ns, name), &v1alpha1.MediaStoreContainerPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMediaStoreContainerPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(mediastorecontainerpoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(mediastorecontainerpoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MediaStoreContainerPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMediaStoreContainerPolicies) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched mediaStoreContainerPolicy.
 func (c *FakeMediaStoreContainerPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MediaStoreContainerPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(mediastorecontainerpoliciesResource, name, pt, data, subresources...), &v1alpha1.MediaStoreContainerPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(mediastorecontainerpoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.MediaStoreContainerPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

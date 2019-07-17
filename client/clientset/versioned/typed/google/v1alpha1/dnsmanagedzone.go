@@ -32,7 +32,7 @@ import (
 // DnsManagedZonesGetter has a method to return a DnsManagedZoneInterface.
 // A group's client should implement this interface.
 type DnsManagedZonesGetter interface {
-	DnsManagedZones() DnsManagedZoneInterface
+	DnsManagedZones(namespace string) DnsManagedZoneInterface
 }
 
 // DnsManagedZoneInterface has methods to work with DnsManagedZone resources.
@@ -52,12 +52,14 @@ type DnsManagedZoneInterface interface {
 // dnsManagedZones implements DnsManagedZoneInterface
 type dnsManagedZones struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDnsManagedZones returns a DnsManagedZones
-func newDnsManagedZones(c *GoogleV1alpha1Client) *dnsManagedZones {
+func newDnsManagedZones(c *GoogleV1alpha1Client, namespace string) *dnsManagedZones {
 	return &dnsManagedZones{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDnsManagedZones(c *GoogleV1alpha1Client) *dnsManagedZones {
 func (c *dnsManagedZones) Get(name string, options v1.GetOptions) (result *v1alpha1.DnsManagedZone, err error) {
 	result = &v1alpha1.DnsManagedZone{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dnsmanagedzones").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dnsManagedZones) List(opts v1.ListOptions) (result *v1alpha1.DnsManaged
 	}
 	result = &v1alpha1.DnsManagedZoneList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dnsmanagedzones").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dnsManagedZones) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dnsmanagedzones").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dnsManagedZones) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dnsManagedZones) Create(dnsManagedZone *v1alpha1.DnsManagedZone) (result *v1alpha1.DnsManagedZone, err error) {
 	result = &v1alpha1.DnsManagedZone{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dnsmanagedzones").
 		Body(dnsManagedZone).
 		Do().
@@ -118,6 +124,7 @@ func (c *dnsManagedZones) Create(dnsManagedZone *v1alpha1.DnsManagedZone) (resul
 func (c *dnsManagedZones) Update(dnsManagedZone *v1alpha1.DnsManagedZone) (result *v1alpha1.DnsManagedZone, err error) {
 	result = &v1alpha1.DnsManagedZone{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dnsmanagedzones").
 		Name(dnsManagedZone.Name).
 		Body(dnsManagedZone).
@@ -132,6 +139,7 @@ func (c *dnsManagedZones) Update(dnsManagedZone *v1alpha1.DnsManagedZone) (resul
 func (c *dnsManagedZones) UpdateStatus(dnsManagedZone *v1alpha1.DnsManagedZone) (result *v1alpha1.DnsManagedZone, err error) {
 	result = &v1alpha1.DnsManagedZone{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dnsmanagedzones").
 		Name(dnsManagedZone.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dnsManagedZones) UpdateStatus(dnsManagedZone *v1alpha1.DnsManagedZone) 
 // Delete takes name of the dnsManagedZone and deletes it. Returns an error if one occurs.
 func (c *dnsManagedZones) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dnsmanagedzones").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dnsManagedZones) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dnsmanagedzones").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dnsManagedZones) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *dnsManagedZones) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DnsManagedZone, err error) {
 	result = &v1alpha1.DnsManagedZone{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dnsmanagedzones").
 		SubResource(subresources...).
 		Name(name).

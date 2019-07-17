@@ -400,35 +400,98 @@ spec:
             bucket:
               type: string
             destination:
-              items: {}
+              items:
+                properties:
+                  bucket:
+                    items:
+                      properties:
+                        accountID:
+                          type: string
+                        bucketArn:
+                          type: string
+                        encryption:
+                          items:
+                            properties:
+                              sseKms:
+                                items:
+                                  properties:
+                                    keyID:
+                                      type: string
+                                  required:
+                                  - keyID
+                                  type: object
+                                maxItems: 1
+                                type: array
+                              sseS3:
+                                items:
+                                  type: object
+                                maxItems: 1
+                                type: array
+                            type: object
+                          maxItems: 1
+                          type: array
+                        format:
+                          type: string
+                        prefix:
+                          type: string
+                      required:
+                      - bucketArn
+                      - format
+                      type: object
+                    maxItems: 1
+                    minItems: 1
+                    type: array
+                required:
+                - bucket
+                type: object
               maxItems: 1
               minItems: 1
               type: array
             enabled:
               type: boolean
             filter:
-              items: {}
+              items:
+                properties:
+                  prefix:
+                    type: string
+                type: object
               maxItems: 1
               type: array
-            included_object_versions:
+            includedObjectVersions:
               type: string
             name:
               type: string
-            optional_fields:
+            optionalFields:
               items:
                 type: string
               type: array
               uniqueItems: true
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             schedule:
-              items: {}
+              items:
+                properties:
+                  frequency:
+                    type: string
+                required:
+                - frequency
+                type: object
               maxItems: 1
               minItems: 1
               type: array
           required:
           - bucket
           - destination
-          - included_object_versions
+          - includedObjectVersions
           - name
+          - providerRef
           - schedule
           type: object
         status:
@@ -440,6 +503,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

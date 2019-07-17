@@ -31,6 +31,7 @@ import (
 // FakeRedshiftParameterGroups implements RedshiftParameterGroupInterface
 type FakeRedshiftParameterGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var redshiftparametergroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "redshiftparametergroups"}
@@ -40,7 +41,8 @@ var redshiftparametergroupsKind = schema.GroupVersionKind{Group: "aws.kubeform.c
 // Get takes name of the redshiftParameterGroup, and returns the corresponding redshiftParameterGroup object, and an error if there is any.
 func (c *FakeRedshiftParameterGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.RedshiftParameterGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(redshiftparametergroupsResource, name), &v1alpha1.RedshiftParameterGroup{})
+		Invokes(testing.NewGetAction(redshiftparametergroupsResource, c.ns, name), &v1alpha1.RedshiftParameterGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRedshiftParameterGroups) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of RedshiftParameterGroups that match those selectors.
 func (c *FakeRedshiftParameterGroups) List(opts v1.ListOptions) (result *v1alpha1.RedshiftParameterGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(redshiftparametergroupsResource, redshiftparametergroupsKind, opts), &v1alpha1.RedshiftParameterGroupList{})
+		Invokes(testing.NewListAction(redshiftparametergroupsResource, redshiftparametergroupsKind, c.ns, opts), &v1alpha1.RedshiftParameterGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRedshiftParameterGroups) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested redshiftParameterGroups.
 func (c *FakeRedshiftParameterGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(redshiftparametergroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(redshiftparametergroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a redshiftParameterGroup and creates it.  Returns the server's representation of the redshiftParameterGroup, and an error, if there is any.
 func (c *FakeRedshiftParameterGroups) Create(redshiftParameterGroup *v1alpha1.RedshiftParameterGroup) (result *v1alpha1.RedshiftParameterGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(redshiftparametergroupsResource, redshiftParameterGroup), &v1alpha1.RedshiftParameterGroup{})
+		Invokes(testing.NewCreateAction(redshiftparametergroupsResource, c.ns, redshiftParameterGroup), &v1alpha1.RedshiftParameterGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRedshiftParameterGroups) Create(redshiftParameterGroup *v1alpha1.Re
 // Update takes the representation of a redshiftParameterGroup and updates it. Returns the server's representation of the redshiftParameterGroup, and an error, if there is any.
 func (c *FakeRedshiftParameterGroups) Update(redshiftParameterGroup *v1alpha1.RedshiftParameterGroup) (result *v1alpha1.RedshiftParameterGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(redshiftparametergroupsResource, redshiftParameterGroup), &v1alpha1.RedshiftParameterGroup{})
+		Invokes(testing.NewUpdateAction(redshiftparametergroupsResource, c.ns, redshiftParameterGroup), &v1alpha1.RedshiftParameterGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRedshiftParameterGroups) Update(redshiftParameterGroup *v1alpha1.Re
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRedshiftParameterGroups) UpdateStatus(redshiftParameterGroup *v1alpha1.RedshiftParameterGroup) (*v1alpha1.RedshiftParameterGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(redshiftparametergroupsResource, "status", redshiftParameterGroup), &v1alpha1.RedshiftParameterGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(redshiftparametergroupsResource, "status", c.ns, redshiftParameterGroup), &v1alpha1.RedshiftParameterGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRedshiftParameterGroups) UpdateStatus(redshiftParameterGroup *v1alp
 // Delete takes name of the redshiftParameterGroup and deletes it. Returns an error if one occurs.
 func (c *FakeRedshiftParameterGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(redshiftparametergroupsResource, name), &v1alpha1.RedshiftParameterGroup{})
+		Invokes(testing.NewDeleteAction(redshiftparametergroupsResource, c.ns, name), &v1alpha1.RedshiftParameterGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRedshiftParameterGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(redshiftparametergroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(redshiftparametergroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.RedshiftParameterGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRedshiftParameterGroups) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched redshiftParameterGroup.
 func (c *FakeRedshiftParameterGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RedshiftParameterGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(redshiftparametergroupsResource, name, pt, data, subresources...), &v1alpha1.RedshiftParameterGroup{})
+		Invokes(testing.NewPatchSubresourceAction(redshiftparametergroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.RedshiftParameterGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

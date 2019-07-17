@@ -41,32 +41,33 @@ type SourcerepoRepositoryInformer interface {
 type sourcerepoRepositoryInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSourcerepoRepositoryInformer constructs a new informer for SourcerepoRepository type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSourcerepoRepositoryInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSourcerepoRepositoryInformer(client, resyncPeriod, indexers, nil)
+func NewSourcerepoRepositoryInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSourcerepoRepositoryInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSourcerepoRepositoryInformer constructs a new informer for SourcerepoRepository type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSourcerepoRepositoryInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSourcerepoRepositoryInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().SourcerepoRepositories().List(options)
+				return client.GoogleV1alpha1().SourcerepoRepositories(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().SourcerepoRepositories().Watch(options)
+				return client.GoogleV1alpha1().SourcerepoRepositories(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.SourcerepoRepository{},
@@ -76,7 +77,7 @@ func NewFilteredSourcerepoRepositoryInformer(client versioned.Interface, resyncP
 }
 
 func (f *sourcerepoRepositoryInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSourcerepoRepositoryInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSourcerepoRepositoryInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *sourcerepoRepositoryInformer) Informer() cache.SharedIndexInformer {

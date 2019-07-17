@@ -31,6 +31,7 @@ import (
 // FakeApiGatewayVpcLinks implements ApiGatewayVpcLinkInterface
 type FakeApiGatewayVpcLinks struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var apigatewayvpclinksResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "apigatewayvpclinks"}
@@ -40,7 +41,8 @@ var apigatewayvpclinksKind = schema.GroupVersionKind{Group: "aws.kubeform.com", 
 // Get takes name of the apiGatewayVpcLink, and returns the corresponding apiGatewayVpcLink object, and an error if there is any.
 func (c *FakeApiGatewayVpcLinks) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayVpcLink, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apigatewayvpclinksResource, name), &v1alpha1.ApiGatewayVpcLink{})
+		Invokes(testing.NewGetAction(apigatewayvpclinksResource, c.ns, name), &v1alpha1.ApiGatewayVpcLink{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApiGatewayVpcLinks) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of ApiGatewayVpcLinks that match those selectors.
 func (c *FakeApiGatewayVpcLinks) List(opts v1.ListOptions) (result *v1alpha1.ApiGatewayVpcLinkList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apigatewayvpclinksResource, apigatewayvpclinksKind, opts), &v1alpha1.ApiGatewayVpcLinkList{})
+		Invokes(testing.NewListAction(apigatewayvpclinksResource, apigatewayvpclinksKind, c.ns, opts), &v1alpha1.ApiGatewayVpcLinkList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApiGatewayVpcLinks) List(opts v1.ListOptions) (result *v1alpha1.Api
 // Watch returns a watch.Interface that watches the requested apiGatewayVpcLinks.
 func (c *FakeApiGatewayVpcLinks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apigatewayvpclinksResource, opts))
+		InvokesWatch(testing.NewWatchAction(apigatewayvpclinksResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a apiGatewayVpcLink and creates it.  Returns the server's representation of the apiGatewayVpcLink, and an error, if there is any.
 func (c *FakeApiGatewayVpcLinks) Create(apiGatewayVpcLink *v1alpha1.ApiGatewayVpcLink) (result *v1alpha1.ApiGatewayVpcLink, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apigatewayvpclinksResource, apiGatewayVpcLink), &v1alpha1.ApiGatewayVpcLink{})
+		Invokes(testing.NewCreateAction(apigatewayvpclinksResource, c.ns, apiGatewayVpcLink), &v1alpha1.ApiGatewayVpcLink{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApiGatewayVpcLinks) Create(apiGatewayVpcLink *v1alpha1.ApiGatewayVp
 // Update takes the representation of a apiGatewayVpcLink and updates it. Returns the server's representation of the apiGatewayVpcLink, and an error, if there is any.
 func (c *FakeApiGatewayVpcLinks) Update(apiGatewayVpcLink *v1alpha1.ApiGatewayVpcLink) (result *v1alpha1.ApiGatewayVpcLink, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apigatewayvpclinksResource, apiGatewayVpcLink), &v1alpha1.ApiGatewayVpcLink{})
+		Invokes(testing.NewUpdateAction(apigatewayvpclinksResource, c.ns, apiGatewayVpcLink), &v1alpha1.ApiGatewayVpcLink{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApiGatewayVpcLinks) Update(apiGatewayVpcLink *v1alpha1.ApiGatewayVp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApiGatewayVpcLinks) UpdateStatus(apiGatewayVpcLink *v1alpha1.ApiGatewayVpcLink) (*v1alpha1.ApiGatewayVpcLink, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apigatewayvpclinksResource, "status", apiGatewayVpcLink), &v1alpha1.ApiGatewayVpcLink{})
+		Invokes(testing.NewUpdateSubresourceAction(apigatewayvpclinksResource, "status", c.ns, apiGatewayVpcLink), &v1alpha1.ApiGatewayVpcLink{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApiGatewayVpcLinks) UpdateStatus(apiGatewayVpcLink *v1alpha1.ApiGat
 // Delete takes name of the apiGatewayVpcLink and deletes it. Returns an error if one occurs.
 func (c *FakeApiGatewayVpcLinks) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apigatewayvpclinksResource, name), &v1alpha1.ApiGatewayVpcLink{})
+		Invokes(testing.NewDeleteAction(apigatewayvpclinksResource, c.ns, name), &v1alpha1.ApiGatewayVpcLink{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApiGatewayVpcLinks) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apigatewayvpclinksResource, listOptions)
+	action := testing.NewDeleteCollectionAction(apigatewayvpclinksResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApiGatewayVpcLinkList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApiGatewayVpcLinks) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched apiGatewayVpcLink.
 func (c *FakeApiGatewayVpcLinks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayVpcLink, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apigatewayvpclinksResource, name, pt, data, subresources...), &v1alpha1.ApiGatewayVpcLink{})
+		Invokes(testing.NewPatchSubresourceAction(apigatewayvpclinksResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiGatewayVpcLink{})
+
 	if obj == nil {
 		return nil, err
 	}

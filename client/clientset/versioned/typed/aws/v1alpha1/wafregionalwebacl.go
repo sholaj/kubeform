@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// WafregionalWebAclsGetter has a method to return a WafregionalWebAclInterface.
+// WafregionalWebACLsGetter has a method to return a WafregionalWebACLInterface.
 // A group's client should implement this interface.
-type WafregionalWebAclsGetter interface {
-	WafregionalWebAcls() WafregionalWebAclInterface
+type WafregionalWebACLsGetter interface {
+	WafregionalWebACLs(namespace string) WafregionalWebACLInterface
 }
 
-// WafregionalWebAclInterface has methods to work with WafregionalWebAcl resources.
-type WafregionalWebAclInterface interface {
-	Create(*v1alpha1.WafregionalWebAcl) (*v1alpha1.WafregionalWebAcl, error)
-	Update(*v1alpha1.WafregionalWebAcl) (*v1alpha1.WafregionalWebAcl, error)
-	UpdateStatus(*v1alpha1.WafregionalWebAcl) (*v1alpha1.WafregionalWebAcl, error)
+// WafregionalWebACLInterface has methods to work with WafregionalWebACL resources.
+type WafregionalWebACLInterface interface {
+	Create(*v1alpha1.WafregionalWebACL) (*v1alpha1.WafregionalWebACL, error)
+	Update(*v1alpha1.WafregionalWebACL) (*v1alpha1.WafregionalWebACL, error)
+	UpdateStatus(*v1alpha1.WafregionalWebACL) (*v1alpha1.WafregionalWebACL, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.WafregionalWebAcl, error)
-	List(opts v1.ListOptions) (*v1alpha1.WafregionalWebAclList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.WafregionalWebACL, error)
+	List(opts v1.ListOptions) (*v1alpha1.WafregionalWebACLList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalWebAcl, err error)
-	WafregionalWebAclExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalWebACL, err error)
+	WafregionalWebACLExpansion
 }
 
-// wafregionalWebAcls implements WafregionalWebAclInterface
-type wafregionalWebAcls struct {
+// wafregionalWebACLs implements WafregionalWebACLInterface
+type wafregionalWebACLs struct {
 	client rest.Interface
+	ns     string
 }
 
-// newWafregionalWebAcls returns a WafregionalWebAcls
-func newWafregionalWebAcls(c *AwsV1alpha1Client) *wafregionalWebAcls {
-	return &wafregionalWebAcls{
+// newWafregionalWebACLs returns a WafregionalWebACLs
+func newWafregionalWebACLs(c *AwsV1alpha1Client, namespace string) *wafregionalWebACLs {
+	return &wafregionalWebACLs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the wafregionalWebAcl, and returns the corresponding wafregionalWebAcl object, and an error if there is any.
-func (c *wafregionalWebAcls) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalWebAcl, err error) {
-	result = &v1alpha1.WafregionalWebAcl{}
+// Get takes name of the wafregionalWebACL, and returns the corresponding wafregionalWebACL object, and an error if there is any.
+func (c *wafregionalWebACLs) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalWebACL, err error) {
+	result = &v1alpha1.WafregionalWebACL{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalwebacls").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *wafregionalWebAcls) Get(name string, options v1.GetOptions) (result *v1
 	return
 }
 
-// List takes label and field selectors, and returns the list of WafregionalWebAcls that match those selectors.
-func (c *wafregionalWebAcls) List(opts v1.ListOptions) (result *v1alpha1.WafregionalWebAclList, err error) {
+// List takes label and field selectors, and returns the list of WafregionalWebACLs that match those selectors.
+func (c *wafregionalWebACLs) List(opts v1.ListOptions) (result *v1alpha1.WafregionalWebACLList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.WafregionalWebAclList{}
+	result = &v1alpha1.WafregionalWebACLList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalwebacls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *wafregionalWebAcls) List(opts v1.ListOptions) (result *v1alpha1.Wafregi
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested wafregionalWebAcls.
-func (c *wafregionalWebAcls) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested wafregionalWebACLs.
+func (c *wafregionalWebACLs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalwebacls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a wafregionalWebAcl and creates it.  Returns the server's representation of the wafregionalWebAcl, and an error, if there is any.
-func (c *wafregionalWebAcls) Create(wafregionalWebAcl *v1alpha1.WafregionalWebAcl) (result *v1alpha1.WafregionalWebAcl, err error) {
-	result = &v1alpha1.WafregionalWebAcl{}
+// Create takes the representation of a wafregionalWebACL and creates it.  Returns the server's representation of the wafregionalWebACL, and an error, if there is any.
+func (c *wafregionalWebACLs) Create(wafregionalWebACL *v1alpha1.WafregionalWebACL) (result *v1alpha1.WafregionalWebACL, err error) {
+	result = &v1alpha1.WafregionalWebACL{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafregionalwebacls").
-		Body(wafregionalWebAcl).
+		Body(wafregionalWebACL).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a wafregionalWebAcl and updates it. Returns the server's representation of the wafregionalWebAcl, and an error, if there is any.
-func (c *wafregionalWebAcls) Update(wafregionalWebAcl *v1alpha1.WafregionalWebAcl) (result *v1alpha1.WafregionalWebAcl, err error) {
-	result = &v1alpha1.WafregionalWebAcl{}
+// Update takes the representation of a wafregionalWebACL and updates it. Returns the server's representation of the wafregionalWebACL, and an error, if there is any.
+func (c *wafregionalWebACLs) Update(wafregionalWebACL *v1alpha1.WafregionalWebACL) (result *v1alpha1.WafregionalWebACL, err error) {
+	result = &v1alpha1.WafregionalWebACL{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregionalwebacls").
-		Name(wafregionalWebAcl.Name).
-		Body(wafregionalWebAcl).
+		Name(wafregionalWebACL.Name).
+		Body(wafregionalWebACL).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *wafregionalWebAcls) Update(wafregionalWebAcl *v1alpha1.WafregionalWebAc
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *wafregionalWebAcls) UpdateStatus(wafregionalWebAcl *v1alpha1.WafregionalWebAcl) (result *v1alpha1.WafregionalWebAcl, err error) {
-	result = &v1alpha1.WafregionalWebAcl{}
+func (c *wafregionalWebACLs) UpdateStatus(wafregionalWebACL *v1alpha1.WafregionalWebACL) (result *v1alpha1.WafregionalWebACL, err error) {
+	result = &v1alpha1.WafregionalWebACL{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregionalwebacls").
-		Name(wafregionalWebAcl.Name).
+		Name(wafregionalWebACL.Name).
 		SubResource("status").
-		Body(wafregionalWebAcl).
+		Body(wafregionalWebACL).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the wafregionalWebAcl and deletes it. Returns an error if one occurs.
-func (c *wafregionalWebAcls) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the wafregionalWebACL and deletes it. Returns an error if one occurs.
+func (c *wafregionalWebACLs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregionalwebacls").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *wafregionalWebAcls) Delete(name string, options *v1.DeleteOptions) erro
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *wafregionalWebAcls) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *wafregionalWebACLs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregionalwebacls").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *wafregionalWebAcls) DeleteCollection(options *v1.DeleteOptions, listOpt
 		Error()
 }
 
-// Patch applies the patch and returns the patched wafregionalWebAcl.
-func (c *wafregionalWebAcls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalWebAcl, err error) {
-	result = &v1alpha1.WafregionalWebAcl{}
+// Patch applies the patch and returns the patched wafregionalWebACL.
+func (c *wafregionalWebACLs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalWebACL, err error) {
+	result = &v1alpha1.WafregionalWebACL{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafregionalwebacls").
 		SubResource(subresources...).
 		Name(name).

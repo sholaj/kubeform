@@ -31,6 +31,7 @@ import (
 // FakeAppsyncFunctions implements AppsyncFunctionInterface
 type FakeAppsyncFunctions struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var appsyncfunctionsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "appsyncfunctions"}
@@ -40,7 +41,8 @@ var appsyncfunctionsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ve
 // Get takes name of the appsyncFunction, and returns the corresponding appsyncFunction object, and an error if there is any.
 func (c *FakeAppsyncFunctions) Get(name string, options v1.GetOptions) (result *v1alpha1.AppsyncFunction, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(appsyncfunctionsResource, name), &v1alpha1.AppsyncFunction{})
+		Invokes(testing.NewGetAction(appsyncfunctionsResource, c.ns, name), &v1alpha1.AppsyncFunction{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAppsyncFunctions) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of AppsyncFunctions that match those selectors.
 func (c *FakeAppsyncFunctions) List(opts v1.ListOptions) (result *v1alpha1.AppsyncFunctionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(appsyncfunctionsResource, appsyncfunctionsKind, opts), &v1alpha1.AppsyncFunctionList{})
+		Invokes(testing.NewListAction(appsyncfunctionsResource, appsyncfunctionsKind, c.ns, opts), &v1alpha1.AppsyncFunctionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAppsyncFunctions) List(opts v1.ListOptions) (result *v1alpha1.Appsy
 // Watch returns a watch.Interface that watches the requested appsyncFunctions.
 func (c *FakeAppsyncFunctions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(appsyncfunctionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(appsyncfunctionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a appsyncFunction and creates it.  Returns the server's representation of the appsyncFunction, and an error, if there is any.
 func (c *FakeAppsyncFunctions) Create(appsyncFunction *v1alpha1.AppsyncFunction) (result *v1alpha1.AppsyncFunction, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(appsyncfunctionsResource, appsyncFunction), &v1alpha1.AppsyncFunction{})
+		Invokes(testing.NewCreateAction(appsyncfunctionsResource, c.ns, appsyncFunction), &v1alpha1.AppsyncFunction{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAppsyncFunctions) Create(appsyncFunction *v1alpha1.AppsyncFunction)
 // Update takes the representation of a appsyncFunction and updates it. Returns the server's representation of the appsyncFunction, and an error, if there is any.
 func (c *FakeAppsyncFunctions) Update(appsyncFunction *v1alpha1.AppsyncFunction) (result *v1alpha1.AppsyncFunction, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(appsyncfunctionsResource, appsyncFunction), &v1alpha1.AppsyncFunction{})
+		Invokes(testing.NewUpdateAction(appsyncfunctionsResource, c.ns, appsyncFunction), &v1alpha1.AppsyncFunction{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAppsyncFunctions) Update(appsyncFunction *v1alpha1.AppsyncFunction)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAppsyncFunctions) UpdateStatus(appsyncFunction *v1alpha1.AppsyncFunction) (*v1alpha1.AppsyncFunction, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(appsyncfunctionsResource, "status", appsyncFunction), &v1alpha1.AppsyncFunction{})
+		Invokes(testing.NewUpdateSubresourceAction(appsyncfunctionsResource, "status", c.ns, appsyncFunction), &v1alpha1.AppsyncFunction{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAppsyncFunctions) UpdateStatus(appsyncFunction *v1alpha1.AppsyncFun
 // Delete takes name of the appsyncFunction and deletes it. Returns an error if one occurs.
 func (c *FakeAppsyncFunctions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(appsyncfunctionsResource, name), &v1alpha1.AppsyncFunction{})
+		Invokes(testing.NewDeleteAction(appsyncfunctionsResource, c.ns, name), &v1alpha1.AppsyncFunction{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAppsyncFunctions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(appsyncfunctionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(appsyncfunctionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AppsyncFunctionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAppsyncFunctions) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched appsyncFunction.
 func (c *FakeAppsyncFunctions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppsyncFunction, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(appsyncfunctionsResource, name, pt, data, subresources...), &v1alpha1.AppsyncFunction{})
+		Invokes(testing.NewPatchSubresourceAction(appsyncfunctionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.AppsyncFunction{})
+
 	if obj == nil {
 		return nil, err
 	}

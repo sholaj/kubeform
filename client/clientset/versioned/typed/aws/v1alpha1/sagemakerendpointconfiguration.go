@@ -32,7 +32,7 @@ import (
 // SagemakerEndpointConfigurationsGetter has a method to return a SagemakerEndpointConfigurationInterface.
 // A group's client should implement this interface.
 type SagemakerEndpointConfigurationsGetter interface {
-	SagemakerEndpointConfigurations() SagemakerEndpointConfigurationInterface
+	SagemakerEndpointConfigurations(namespace string) SagemakerEndpointConfigurationInterface
 }
 
 // SagemakerEndpointConfigurationInterface has methods to work with SagemakerEndpointConfiguration resources.
@@ -52,12 +52,14 @@ type SagemakerEndpointConfigurationInterface interface {
 // sagemakerEndpointConfigurations implements SagemakerEndpointConfigurationInterface
 type sagemakerEndpointConfigurations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSagemakerEndpointConfigurations returns a SagemakerEndpointConfigurations
-func newSagemakerEndpointConfigurations(c *AwsV1alpha1Client) *sagemakerEndpointConfigurations {
+func newSagemakerEndpointConfigurations(c *AwsV1alpha1Client, namespace string) *sagemakerEndpointConfigurations {
 	return &sagemakerEndpointConfigurations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSagemakerEndpointConfigurations(c *AwsV1alpha1Client) *sagemakerEndpoint
 func (c *sagemakerEndpointConfigurations) Get(name string, options v1.GetOptions) (result *v1alpha1.SagemakerEndpointConfiguration, err error) {
 	result = &v1alpha1.SagemakerEndpointConfiguration{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sagemakerendpointconfigurations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sagemakerEndpointConfigurations) List(opts v1.ListOptions) (result *v1a
 	}
 	result = &v1alpha1.SagemakerEndpointConfigurationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sagemakerendpointconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sagemakerEndpointConfigurations) Watch(opts v1.ListOptions) (watch.Inte
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sagemakerendpointconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sagemakerEndpointConfigurations) Watch(opts v1.ListOptions) (watch.Inte
 func (c *sagemakerEndpointConfigurations) Create(sagemakerEndpointConfiguration *v1alpha1.SagemakerEndpointConfiguration) (result *v1alpha1.SagemakerEndpointConfiguration, err error) {
 	result = &v1alpha1.SagemakerEndpointConfiguration{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sagemakerendpointconfigurations").
 		Body(sagemakerEndpointConfiguration).
 		Do().
@@ -118,6 +124,7 @@ func (c *sagemakerEndpointConfigurations) Create(sagemakerEndpointConfiguration 
 func (c *sagemakerEndpointConfigurations) Update(sagemakerEndpointConfiguration *v1alpha1.SagemakerEndpointConfiguration) (result *v1alpha1.SagemakerEndpointConfiguration, err error) {
 	result = &v1alpha1.SagemakerEndpointConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sagemakerendpointconfigurations").
 		Name(sagemakerEndpointConfiguration.Name).
 		Body(sagemakerEndpointConfiguration).
@@ -132,6 +139,7 @@ func (c *sagemakerEndpointConfigurations) Update(sagemakerEndpointConfiguration 
 func (c *sagemakerEndpointConfigurations) UpdateStatus(sagemakerEndpointConfiguration *v1alpha1.SagemakerEndpointConfiguration) (result *v1alpha1.SagemakerEndpointConfiguration, err error) {
 	result = &v1alpha1.SagemakerEndpointConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sagemakerendpointconfigurations").
 		Name(sagemakerEndpointConfiguration.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sagemakerEndpointConfigurations) UpdateStatus(sagemakerEndpointConfigur
 // Delete takes name of the sagemakerEndpointConfiguration and deletes it. Returns an error if one occurs.
 func (c *sagemakerEndpointConfigurations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sagemakerendpointconfigurations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sagemakerEndpointConfigurations) DeleteCollection(options *v1.DeleteOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sagemakerendpointconfigurations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sagemakerEndpointConfigurations) DeleteCollection(options *v1.DeleteOpt
 func (c *sagemakerEndpointConfigurations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SagemakerEndpointConfiguration, err error) {
 	result = &v1alpha1.SagemakerEndpointConfiguration{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sagemakerendpointconfigurations").
 		SubResource(subresources...).
 		Name(name).

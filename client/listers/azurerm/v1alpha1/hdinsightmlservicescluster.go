@@ -29,8 +29,8 @@ import (
 type HdinsightMlServicesClusterLister interface {
 	// List lists all HdinsightMlServicesClusters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.HdinsightMlServicesCluster, err error)
-	// Get retrieves the HdinsightMlServicesCluster from the index for a given name.
-	Get(name string) (*v1alpha1.HdinsightMlServicesCluster, error)
+	// HdinsightMlServicesClusters returns an object that can list and get HdinsightMlServicesClusters.
+	HdinsightMlServicesClusters(namespace string) HdinsightMlServicesClusterNamespaceLister
 	HdinsightMlServicesClusterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *hdinsightMlServicesClusterLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the HdinsightMlServicesCluster from the index for a given name.
-func (s *hdinsightMlServicesClusterLister) Get(name string) (*v1alpha1.HdinsightMlServicesCluster, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// HdinsightMlServicesClusters returns an object that can list and get HdinsightMlServicesClusters.
+func (s *hdinsightMlServicesClusterLister) HdinsightMlServicesClusters(namespace string) HdinsightMlServicesClusterNamespaceLister {
+	return hdinsightMlServicesClusterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// HdinsightMlServicesClusterNamespaceLister helps list and get HdinsightMlServicesClusters.
+type HdinsightMlServicesClusterNamespaceLister interface {
+	// List lists all HdinsightMlServicesClusters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.HdinsightMlServicesCluster, err error)
+	// Get retrieves the HdinsightMlServicesCluster from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.HdinsightMlServicesCluster, error)
+	HdinsightMlServicesClusterNamespaceListerExpansion
+}
+
+// hdinsightMlServicesClusterNamespaceLister implements the HdinsightMlServicesClusterNamespaceLister
+// interface.
+type hdinsightMlServicesClusterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all HdinsightMlServicesClusters in the indexer for a given namespace.
+func (s hdinsightMlServicesClusterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.HdinsightMlServicesCluster, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.HdinsightMlServicesCluster))
+	})
+	return ret, err
+}
+
+// Get retrieves the HdinsightMlServicesCluster from the indexer for a given namespace and name.
+func (s hdinsightMlServicesClusterNamespaceLister) Get(name string) (*v1alpha1.HdinsightMlServicesCluster, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

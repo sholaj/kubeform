@@ -32,7 +32,7 @@ import (
 // BudgetsBudgetsGetter has a method to return a BudgetsBudgetInterface.
 // A group's client should implement this interface.
 type BudgetsBudgetsGetter interface {
-	BudgetsBudgets() BudgetsBudgetInterface
+	BudgetsBudgets(namespace string) BudgetsBudgetInterface
 }
 
 // BudgetsBudgetInterface has methods to work with BudgetsBudget resources.
@@ -52,12 +52,14 @@ type BudgetsBudgetInterface interface {
 // budgetsBudgets implements BudgetsBudgetInterface
 type budgetsBudgets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newBudgetsBudgets returns a BudgetsBudgets
-func newBudgetsBudgets(c *AwsV1alpha1Client) *budgetsBudgets {
+func newBudgetsBudgets(c *AwsV1alpha1Client, namespace string) *budgetsBudgets {
 	return &budgetsBudgets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newBudgetsBudgets(c *AwsV1alpha1Client) *budgetsBudgets {
 func (c *budgetsBudgets) Get(name string, options v1.GetOptions) (result *v1alpha1.BudgetsBudget, err error) {
 	result = &v1alpha1.BudgetsBudget{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("budgetsbudgets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *budgetsBudgets) List(opts v1.ListOptions) (result *v1alpha1.BudgetsBudg
 	}
 	result = &v1alpha1.BudgetsBudgetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("budgetsbudgets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *budgetsBudgets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("budgetsbudgets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *budgetsBudgets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *budgetsBudgets) Create(budgetsBudget *v1alpha1.BudgetsBudget) (result *v1alpha1.BudgetsBudget, err error) {
 	result = &v1alpha1.BudgetsBudget{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("budgetsbudgets").
 		Body(budgetsBudget).
 		Do().
@@ -118,6 +124,7 @@ func (c *budgetsBudgets) Create(budgetsBudget *v1alpha1.BudgetsBudget) (result *
 func (c *budgetsBudgets) Update(budgetsBudget *v1alpha1.BudgetsBudget) (result *v1alpha1.BudgetsBudget, err error) {
 	result = &v1alpha1.BudgetsBudget{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("budgetsbudgets").
 		Name(budgetsBudget.Name).
 		Body(budgetsBudget).
@@ -132,6 +139,7 @@ func (c *budgetsBudgets) Update(budgetsBudget *v1alpha1.BudgetsBudget) (result *
 func (c *budgetsBudgets) UpdateStatus(budgetsBudget *v1alpha1.BudgetsBudget) (result *v1alpha1.BudgetsBudget, err error) {
 	result = &v1alpha1.BudgetsBudget{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("budgetsbudgets").
 		Name(budgetsBudget.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *budgetsBudgets) UpdateStatus(budgetsBudget *v1alpha1.BudgetsBudget) (re
 // Delete takes name of the budgetsBudget and deletes it. Returns an error if one occurs.
 func (c *budgetsBudgets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("budgetsbudgets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *budgetsBudgets) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("budgetsbudgets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *budgetsBudgets) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *budgetsBudgets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BudgetsBudget, err error) {
 	result = &v1alpha1.BudgetsBudget{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("budgetsbudgets").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type SfnStateMachineLister interface {
 	// List lists all SfnStateMachines in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SfnStateMachine, err error)
-	// Get retrieves the SfnStateMachine from the index for a given name.
-	Get(name string) (*v1alpha1.SfnStateMachine, error)
+	// SfnStateMachines returns an object that can list and get SfnStateMachines.
+	SfnStateMachines(namespace string) SfnStateMachineNamespaceLister
 	SfnStateMachineListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sfnStateMachineLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the SfnStateMachine from the index for a given name.
-func (s *sfnStateMachineLister) Get(name string) (*v1alpha1.SfnStateMachine, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SfnStateMachines returns an object that can list and get SfnStateMachines.
+func (s *sfnStateMachineLister) SfnStateMachines(namespace string) SfnStateMachineNamespaceLister {
+	return sfnStateMachineNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SfnStateMachineNamespaceLister helps list and get SfnStateMachines.
+type SfnStateMachineNamespaceLister interface {
+	// List lists all SfnStateMachines in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SfnStateMachine, err error)
+	// Get retrieves the SfnStateMachine from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SfnStateMachine, error)
+	SfnStateMachineNamespaceListerExpansion
+}
+
+// sfnStateMachineNamespaceLister implements the SfnStateMachineNamespaceLister
+// interface.
+type sfnStateMachineNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SfnStateMachines in the indexer for a given namespace.
+func (s sfnStateMachineNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SfnStateMachine, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SfnStateMachine))
+	})
+	return ret, err
+}
+
+// Get retrieves the SfnStateMachine from the indexer for a given namespace and name.
+func (s sfnStateMachineNamespaceLister) Get(name string) (*v1alpha1.SfnStateMachine, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type SsmAssociationLister interface {
 	// List lists all SsmAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SsmAssociation, err error)
-	// Get retrieves the SsmAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.SsmAssociation, error)
+	// SsmAssociations returns an object that can list and get SsmAssociations.
+	SsmAssociations(namespace string) SsmAssociationNamespaceLister
 	SsmAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ssmAssociationLister) List(selector labels.Selector) (ret []*v1alpha1.S
 	return ret, err
 }
 
-// Get retrieves the SsmAssociation from the index for a given name.
-func (s *ssmAssociationLister) Get(name string) (*v1alpha1.SsmAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SsmAssociations returns an object that can list and get SsmAssociations.
+func (s *ssmAssociationLister) SsmAssociations(namespace string) SsmAssociationNamespaceLister {
+	return ssmAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SsmAssociationNamespaceLister helps list and get SsmAssociations.
+type SsmAssociationNamespaceLister interface {
+	// List lists all SsmAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SsmAssociation, err error)
+	// Get retrieves the SsmAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SsmAssociation, error)
+	SsmAssociationNamespaceListerExpansion
+}
+
+// ssmAssociationNamespaceLister implements the SsmAssociationNamespaceLister
+// interface.
+type ssmAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SsmAssociations in the indexer for a given namespace.
+func (s ssmAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SsmAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SsmAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the SsmAssociation from the indexer for a given namespace and name.
+func (s ssmAssociationNamespaceLister) Get(name string) (*v1alpha1.SsmAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

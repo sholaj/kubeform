@@ -31,6 +31,7 @@ import (
 // FakeAppsyncResolvers implements AppsyncResolverInterface
 type FakeAppsyncResolvers struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var appsyncresolversResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "appsyncresolvers"}
@@ -40,7 +41,8 @@ var appsyncresolversKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ve
 // Get takes name of the appsyncResolver, and returns the corresponding appsyncResolver object, and an error if there is any.
 func (c *FakeAppsyncResolvers) Get(name string, options v1.GetOptions) (result *v1alpha1.AppsyncResolver, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(appsyncresolversResource, name), &v1alpha1.AppsyncResolver{})
+		Invokes(testing.NewGetAction(appsyncresolversResource, c.ns, name), &v1alpha1.AppsyncResolver{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAppsyncResolvers) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of AppsyncResolvers that match those selectors.
 func (c *FakeAppsyncResolvers) List(opts v1.ListOptions) (result *v1alpha1.AppsyncResolverList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(appsyncresolversResource, appsyncresolversKind, opts), &v1alpha1.AppsyncResolverList{})
+		Invokes(testing.NewListAction(appsyncresolversResource, appsyncresolversKind, c.ns, opts), &v1alpha1.AppsyncResolverList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAppsyncResolvers) List(opts v1.ListOptions) (result *v1alpha1.Appsy
 // Watch returns a watch.Interface that watches the requested appsyncResolvers.
 func (c *FakeAppsyncResolvers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(appsyncresolversResource, opts))
+		InvokesWatch(testing.NewWatchAction(appsyncresolversResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a appsyncResolver and creates it.  Returns the server's representation of the appsyncResolver, and an error, if there is any.
 func (c *FakeAppsyncResolvers) Create(appsyncResolver *v1alpha1.AppsyncResolver) (result *v1alpha1.AppsyncResolver, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(appsyncresolversResource, appsyncResolver), &v1alpha1.AppsyncResolver{})
+		Invokes(testing.NewCreateAction(appsyncresolversResource, c.ns, appsyncResolver), &v1alpha1.AppsyncResolver{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAppsyncResolvers) Create(appsyncResolver *v1alpha1.AppsyncResolver)
 // Update takes the representation of a appsyncResolver and updates it. Returns the server's representation of the appsyncResolver, and an error, if there is any.
 func (c *FakeAppsyncResolvers) Update(appsyncResolver *v1alpha1.AppsyncResolver) (result *v1alpha1.AppsyncResolver, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(appsyncresolversResource, appsyncResolver), &v1alpha1.AppsyncResolver{})
+		Invokes(testing.NewUpdateAction(appsyncresolversResource, c.ns, appsyncResolver), &v1alpha1.AppsyncResolver{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAppsyncResolvers) Update(appsyncResolver *v1alpha1.AppsyncResolver)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAppsyncResolvers) UpdateStatus(appsyncResolver *v1alpha1.AppsyncResolver) (*v1alpha1.AppsyncResolver, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(appsyncresolversResource, "status", appsyncResolver), &v1alpha1.AppsyncResolver{})
+		Invokes(testing.NewUpdateSubresourceAction(appsyncresolversResource, "status", c.ns, appsyncResolver), &v1alpha1.AppsyncResolver{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAppsyncResolvers) UpdateStatus(appsyncResolver *v1alpha1.AppsyncRes
 // Delete takes name of the appsyncResolver and deletes it. Returns an error if one occurs.
 func (c *FakeAppsyncResolvers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(appsyncresolversResource, name), &v1alpha1.AppsyncResolver{})
+		Invokes(testing.NewDeleteAction(appsyncresolversResource, c.ns, name), &v1alpha1.AppsyncResolver{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAppsyncResolvers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(appsyncresolversResource, listOptions)
+	action := testing.NewDeleteCollectionAction(appsyncresolversResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AppsyncResolverList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAppsyncResolvers) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched appsyncResolver.
 func (c *FakeAppsyncResolvers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppsyncResolver, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(appsyncresolversResource, name, pt, data, subresources...), &v1alpha1.AppsyncResolver{})
+		Invokes(testing.NewPatchSubresourceAction(appsyncresolversResource, c.ns, name, pt, data, subresources...), &v1alpha1.AppsyncResolver{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeDnsManagedZones implements DnsManagedZoneInterface
 type FakeDnsManagedZones struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var dnsmanagedzonesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "dnsmanagedzones"}
@@ -40,7 +41,8 @@ var dnsmanagedzonesKind = schema.GroupVersionKind{Group: "google.kubeform.com", 
 // Get takes name of the dnsManagedZone, and returns the corresponding dnsManagedZone object, and an error if there is any.
 func (c *FakeDnsManagedZones) Get(name string, options v1.GetOptions) (result *v1alpha1.DnsManagedZone, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(dnsmanagedzonesResource, name), &v1alpha1.DnsManagedZone{})
+		Invokes(testing.NewGetAction(dnsmanagedzonesResource, c.ns, name), &v1alpha1.DnsManagedZone{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDnsManagedZones) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of DnsManagedZones that match those selectors.
 func (c *FakeDnsManagedZones) List(opts v1.ListOptions) (result *v1alpha1.DnsManagedZoneList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(dnsmanagedzonesResource, dnsmanagedzonesKind, opts), &v1alpha1.DnsManagedZoneList{})
+		Invokes(testing.NewListAction(dnsmanagedzonesResource, dnsmanagedzonesKind, c.ns, opts), &v1alpha1.DnsManagedZoneList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDnsManagedZones) List(opts v1.ListOptions) (result *v1alpha1.DnsMan
 // Watch returns a watch.Interface that watches the requested dnsManagedZones.
 func (c *FakeDnsManagedZones) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(dnsmanagedzonesResource, opts))
+		InvokesWatch(testing.NewWatchAction(dnsmanagedzonesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dnsManagedZone and creates it.  Returns the server's representation of the dnsManagedZone, and an error, if there is any.
 func (c *FakeDnsManagedZones) Create(dnsManagedZone *v1alpha1.DnsManagedZone) (result *v1alpha1.DnsManagedZone, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(dnsmanagedzonesResource, dnsManagedZone), &v1alpha1.DnsManagedZone{})
+		Invokes(testing.NewCreateAction(dnsmanagedzonesResource, c.ns, dnsManagedZone), &v1alpha1.DnsManagedZone{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDnsManagedZones) Create(dnsManagedZone *v1alpha1.DnsManagedZone) (r
 // Update takes the representation of a dnsManagedZone and updates it. Returns the server's representation of the dnsManagedZone, and an error, if there is any.
 func (c *FakeDnsManagedZones) Update(dnsManagedZone *v1alpha1.DnsManagedZone) (result *v1alpha1.DnsManagedZone, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(dnsmanagedzonesResource, dnsManagedZone), &v1alpha1.DnsManagedZone{})
+		Invokes(testing.NewUpdateAction(dnsmanagedzonesResource, c.ns, dnsManagedZone), &v1alpha1.DnsManagedZone{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDnsManagedZones) Update(dnsManagedZone *v1alpha1.DnsManagedZone) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDnsManagedZones) UpdateStatus(dnsManagedZone *v1alpha1.DnsManagedZone) (*v1alpha1.DnsManagedZone, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(dnsmanagedzonesResource, "status", dnsManagedZone), &v1alpha1.DnsManagedZone{})
+		Invokes(testing.NewUpdateSubresourceAction(dnsmanagedzonesResource, "status", c.ns, dnsManagedZone), &v1alpha1.DnsManagedZone{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDnsManagedZones) UpdateStatus(dnsManagedZone *v1alpha1.DnsManagedZo
 // Delete takes name of the dnsManagedZone and deletes it. Returns an error if one occurs.
 func (c *FakeDnsManagedZones) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(dnsmanagedzonesResource, name), &v1alpha1.DnsManagedZone{})
+		Invokes(testing.NewDeleteAction(dnsmanagedzonesResource, c.ns, name), &v1alpha1.DnsManagedZone{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDnsManagedZones) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(dnsmanagedzonesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(dnsmanagedzonesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DnsManagedZoneList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDnsManagedZones) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched dnsManagedZone.
 func (c *FakeDnsManagedZones) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DnsManagedZone, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(dnsmanagedzonesResource, name, pt, data, subresources...), &v1alpha1.DnsManagedZone{})
+		Invokes(testing.NewPatchSubresourceAction(dnsmanagedzonesResource, c.ns, name, pt, data, subresources...), &v1alpha1.DnsManagedZone{})
+
 	if obj == nil {
 		return nil, err
 	}

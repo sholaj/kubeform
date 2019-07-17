@@ -29,8 +29,8 @@ import (
 type OpsworksGangliaLayerLister interface {
 	// List lists all OpsworksGangliaLayers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OpsworksGangliaLayer, err error)
-	// Get retrieves the OpsworksGangliaLayer from the index for a given name.
-	Get(name string) (*v1alpha1.OpsworksGangliaLayer, error)
+	// OpsworksGangliaLayers returns an object that can list and get OpsworksGangliaLayers.
+	OpsworksGangliaLayers(namespace string) OpsworksGangliaLayerNamespaceLister
 	OpsworksGangliaLayerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *opsworksGangliaLayerLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the OpsworksGangliaLayer from the index for a given name.
-func (s *opsworksGangliaLayerLister) Get(name string) (*v1alpha1.OpsworksGangliaLayer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OpsworksGangliaLayers returns an object that can list and get OpsworksGangliaLayers.
+func (s *opsworksGangliaLayerLister) OpsworksGangliaLayers(namespace string) OpsworksGangliaLayerNamespaceLister {
+	return opsworksGangliaLayerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OpsworksGangliaLayerNamespaceLister helps list and get OpsworksGangliaLayers.
+type OpsworksGangliaLayerNamespaceLister interface {
+	// List lists all OpsworksGangliaLayers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OpsworksGangliaLayer, err error)
+	// Get retrieves the OpsworksGangliaLayer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OpsworksGangliaLayer, error)
+	OpsworksGangliaLayerNamespaceListerExpansion
+}
+
+// opsworksGangliaLayerNamespaceLister implements the OpsworksGangliaLayerNamespaceLister
+// interface.
+type opsworksGangliaLayerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OpsworksGangliaLayers in the indexer for a given namespace.
+func (s opsworksGangliaLayerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OpsworksGangliaLayer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OpsworksGangliaLayer))
+	})
+	return ret, err
+}
+
+// Get retrieves the OpsworksGangliaLayer from the indexer for a given namespace and name.
+func (s opsworksGangliaLayerNamespaceLister) Get(name string) (*v1alpha1.OpsworksGangliaLayer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type ServiceDiscoveryServiceLister interface {
 	// List lists all ServiceDiscoveryServices in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryService, err error)
-	// Get retrieves the ServiceDiscoveryService from the index for a given name.
-	Get(name string) (*v1alpha1.ServiceDiscoveryService, error)
+	// ServiceDiscoveryServices returns an object that can list and get ServiceDiscoveryServices.
+	ServiceDiscoveryServices(namespace string) ServiceDiscoveryServiceNamespaceLister
 	ServiceDiscoveryServiceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *serviceDiscoveryServiceLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the ServiceDiscoveryService from the index for a given name.
-func (s *serviceDiscoveryServiceLister) Get(name string) (*v1alpha1.ServiceDiscoveryService, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ServiceDiscoveryServices returns an object that can list and get ServiceDiscoveryServices.
+func (s *serviceDiscoveryServiceLister) ServiceDiscoveryServices(namespace string) ServiceDiscoveryServiceNamespaceLister {
+	return serviceDiscoveryServiceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ServiceDiscoveryServiceNamespaceLister helps list and get ServiceDiscoveryServices.
+type ServiceDiscoveryServiceNamespaceLister interface {
+	// List lists all ServiceDiscoveryServices in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryService, err error)
+	// Get retrieves the ServiceDiscoveryService from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ServiceDiscoveryService, error)
+	ServiceDiscoveryServiceNamespaceListerExpansion
+}
+
+// serviceDiscoveryServiceNamespaceLister implements the ServiceDiscoveryServiceNamespaceLister
+// interface.
+type serviceDiscoveryServiceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ServiceDiscoveryServices in the indexer for a given namespace.
+func (s serviceDiscoveryServiceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryService, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ServiceDiscoveryService))
+	})
+	return ret, err
+}
+
+// Get retrieves the ServiceDiscoveryService from the indexer for a given namespace and name.
+func (s serviceDiscoveryServiceNamespaceLister) Get(name string) (*v1alpha1.ServiceDiscoveryService, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

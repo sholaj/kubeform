@@ -31,6 +31,7 @@ import (
 // FakeWafGeoMatchSets implements WafGeoMatchSetInterface
 type FakeWafGeoMatchSets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var wafgeomatchsetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "wafgeomatchsets"}
@@ -40,7 +41,8 @@ var wafgeomatchsetsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ver
 // Get takes name of the wafGeoMatchSet, and returns the corresponding wafGeoMatchSet object, and an error if there is any.
 func (c *FakeWafGeoMatchSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafGeoMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(wafgeomatchsetsResource, name), &v1alpha1.WafGeoMatchSet{})
+		Invokes(testing.NewGetAction(wafgeomatchsetsResource, c.ns, name), &v1alpha1.WafGeoMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeWafGeoMatchSets) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of WafGeoMatchSets that match those selectors.
 func (c *FakeWafGeoMatchSets) List(opts v1.ListOptions) (result *v1alpha1.WafGeoMatchSetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(wafgeomatchsetsResource, wafgeomatchsetsKind, opts), &v1alpha1.WafGeoMatchSetList{})
+		Invokes(testing.NewListAction(wafgeomatchsetsResource, wafgeomatchsetsKind, c.ns, opts), &v1alpha1.WafGeoMatchSetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeWafGeoMatchSets) List(opts v1.ListOptions) (result *v1alpha1.WafGeo
 // Watch returns a watch.Interface that watches the requested wafGeoMatchSets.
 func (c *FakeWafGeoMatchSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(wafgeomatchsetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(wafgeomatchsetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a wafGeoMatchSet and creates it.  Returns the server's representation of the wafGeoMatchSet, and an error, if there is any.
 func (c *FakeWafGeoMatchSets) Create(wafGeoMatchSet *v1alpha1.WafGeoMatchSet) (result *v1alpha1.WafGeoMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(wafgeomatchsetsResource, wafGeoMatchSet), &v1alpha1.WafGeoMatchSet{})
+		Invokes(testing.NewCreateAction(wafgeomatchsetsResource, c.ns, wafGeoMatchSet), &v1alpha1.WafGeoMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeWafGeoMatchSets) Create(wafGeoMatchSet *v1alpha1.WafGeoMatchSet) (r
 // Update takes the representation of a wafGeoMatchSet and updates it. Returns the server's representation of the wafGeoMatchSet, and an error, if there is any.
 func (c *FakeWafGeoMatchSets) Update(wafGeoMatchSet *v1alpha1.WafGeoMatchSet) (result *v1alpha1.WafGeoMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(wafgeomatchsetsResource, wafGeoMatchSet), &v1alpha1.WafGeoMatchSet{})
+		Invokes(testing.NewUpdateAction(wafgeomatchsetsResource, c.ns, wafGeoMatchSet), &v1alpha1.WafGeoMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeWafGeoMatchSets) Update(wafGeoMatchSet *v1alpha1.WafGeoMatchSet) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeWafGeoMatchSets) UpdateStatus(wafGeoMatchSet *v1alpha1.WafGeoMatchSet) (*v1alpha1.WafGeoMatchSet, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(wafgeomatchsetsResource, "status", wafGeoMatchSet), &v1alpha1.WafGeoMatchSet{})
+		Invokes(testing.NewUpdateSubresourceAction(wafgeomatchsetsResource, "status", c.ns, wafGeoMatchSet), &v1alpha1.WafGeoMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeWafGeoMatchSets) UpdateStatus(wafGeoMatchSet *v1alpha1.WafGeoMatchS
 // Delete takes name of the wafGeoMatchSet and deletes it. Returns an error if one occurs.
 func (c *FakeWafGeoMatchSets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(wafgeomatchsetsResource, name), &v1alpha1.WafGeoMatchSet{})
+		Invokes(testing.NewDeleteAction(wafgeomatchsetsResource, c.ns, name), &v1alpha1.WafGeoMatchSet{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeWafGeoMatchSets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(wafgeomatchsetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(wafgeomatchsetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.WafGeoMatchSetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeWafGeoMatchSets) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched wafGeoMatchSet.
 func (c *FakeWafGeoMatchSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafGeoMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(wafgeomatchsetsResource, name, pt, data, subresources...), &v1alpha1.WafGeoMatchSet{})
+		Invokes(testing.NewPatchSubresourceAction(wafgeomatchsetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.WafGeoMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}

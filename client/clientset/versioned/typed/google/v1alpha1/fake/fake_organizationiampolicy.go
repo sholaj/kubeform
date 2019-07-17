@@ -31,6 +31,7 @@ import (
 // FakeOrganizationIamPolicies implements OrganizationIamPolicyInterface
 type FakeOrganizationIamPolicies struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var organizationiampoliciesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "organizationiampolicies"}
@@ -40,7 +41,8 @@ var organizationiampoliciesKind = schema.GroupVersionKind{Group: "google.kubefor
 // Get takes name of the organizationIamPolicy, and returns the corresponding organizationIamPolicy object, and an error if there is any.
 func (c *FakeOrganizationIamPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.OrganizationIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(organizationiampoliciesResource, name), &v1alpha1.OrganizationIamPolicy{})
+		Invokes(testing.NewGetAction(organizationiampoliciesResource, c.ns, name), &v1alpha1.OrganizationIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeOrganizationIamPolicies) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of OrganizationIamPolicies that match those selectors.
 func (c *FakeOrganizationIamPolicies) List(opts v1.ListOptions) (result *v1alpha1.OrganizationIamPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(organizationiampoliciesResource, organizationiampoliciesKind, opts), &v1alpha1.OrganizationIamPolicyList{})
+		Invokes(testing.NewListAction(organizationiampoliciesResource, organizationiampoliciesKind, c.ns, opts), &v1alpha1.OrganizationIamPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeOrganizationIamPolicies) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested organizationIamPolicies.
 func (c *FakeOrganizationIamPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(organizationiampoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(organizationiampoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a organizationIamPolicy and creates it.  Returns the server's representation of the organizationIamPolicy, and an error, if there is any.
 func (c *FakeOrganizationIamPolicies) Create(organizationIamPolicy *v1alpha1.OrganizationIamPolicy) (result *v1alpha1.OrganizationIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(organizationiampoliciesResource, organizationIamPolicy), &v1alpha1.OrganizationIamPolicy{})
+		Invokes(testing.NewCreateAction(organizationiampoliciesResource, c.ns, organizationIamPolicy), &v1alpha1.OrganizationIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeOrganizationIamPolicies) Create(organizationIamPolicy *v1alpha1.Org
 // Update takes the representation of a organizationIamPolicy and updates it. Returns the server's representation of the organizationIamPolicy, and an error, if there is any.
 func (c *FakeOrganizationIamPolicies) Update(organizationIamPolicy *v1alpha1.OrganizationIamPolicy) (result *v1alpha1.OrganizationIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(organizationiampoliciesResource, organizationIamPolicy), &v1alpha1.OrganizationIamPolicy{})
+		Invokes(testing.NewUpdateAction(organizationiampoliciesResource, c.ns, organizationIamPolicy), &v1alpha1.OrganizationIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeOrganizationIamPolicies) Update(organizationIamPolicy *v1alpha1.Org
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeOrganizationIamPolicies) UpdateStatus(organizationIamPolicy *v1alpha1.OrganizationIamPolicy) (*v1alpha1.OrganizationIamPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(organizationiampoliciesResource, "status", organizationIamPolicy), &v1alpha1.OrganizationIamPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(organizationiampoliciesResource, "status", c.ns, organizationIamPolicy), &v1alpha1.OrganizationIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeOrganizationIamPolicies) UpdateStatus(organizationIamPolicy *v1alph
 // Delete takes name of the organizationIamPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeOrganizationIamPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(organizationiampoliciesResource, name), &v1alpha1.OrganizationIamPolicy{})
+		Invokes(testing.NewDeleteAction(organizationiampoliciesResource, c.ns, name), &v1alpha1.OrganizationIamPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeOrganizationIamPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(organizationiampoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(organizationiampoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.OrganizationIamPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeOrganizationIamPolicies) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched organizationIamPolicy.
 func (c *FakeOrganizationIamPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OrganizationIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(organizationiampoliciesResource, name, pt, data, subresources...), &v1alpha1.OrganizationIamPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(organizationiampoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.OrganizationIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

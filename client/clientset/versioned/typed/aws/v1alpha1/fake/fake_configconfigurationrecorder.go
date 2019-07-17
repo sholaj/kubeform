@@ -31,6 +31,7 @@ import (
 // FakeConfigConfigurationRecorders implements ConfigConfigurationRecorderInterface
 type FakeConfigConfigurationRecorders struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var configconfigurationrecordersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "configconfigurationrecorders"}
@@ -40,7 +41,8 @@ var configconfigurationrecordersKind = schema.GroupVersionKind{Group: "aws.kubef
 // Get takes name of the configConfigurationRecorder, and returns the corresponding configConfigurationRecorder object, and an error if there is any.
 func (c *FakeConfigConfigurationRecorders) Get(name string, options v1.GetOptions) (result *v1alpha1.ConfigConfigurationRecorder, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(configconfigurationrecordersResource, name), &v1alpha1.ConfigConfigurationRecorder{})
+		Invokes(testing.NewGetAction(configconfigurationrecordersResource, c.ns, name), &v1alpha1.ConfigConfigurationRecorder{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeConfigConfigurationRecorders) Get(name string, options v1.GetOption
 // List takes label and field selectors, and returns the list of ConfigConfigurationRecorders that match those selectors.
 func (c *FakeConfigConfigurationRecorders) List(opts v1.ListOptions) (result *v1alpha1.ConfigConfigurationRecorderList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(configconfigurationrecordersResource, configconfigurationrecordersKind, opts), &v1alpha1.ConfigConfigurationRecorderList{})
+		Invokes(testing.NewListAction(configconfigurationrecordersResource, configconfigurationrecordersKind, c.ns, opts), &v1alpha1.ConfigConfigurationRecorderList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeConfigConfigurationRecorders) List(opts v1.ListOptions) (result *v1
 // Watch returns a watch.Interface that watches the requested configConfigurationRecorders.
 func (c *FakeConfigConfigurationRecorders) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(configconfigurationrecordersResource, opts))
+		InvokesWatch(testing.NewWatchAction(configconfigurationrecordersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a configConfigurationRecorder and creates it.  Returns the server's representation of the configConfigurationRecorder, and an error, if there is any.
 func (c *FakeConfigConfigurationRecorders) Create(configConfigurationRecorder *v1alpha1.ConfigConfigurationRecorder) (result *v1alpha1.ConfigConfigurationRecorder, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(configconfigurationrecordersResource, configConfigurationRecorder), &v1alpha1.ConfigConfigurationRecorder{})
+		Invokes(testing.NewCreateAction(configconfigurationrecordersResource, c.ns, configConfigurationRecorder), &v1alpha1.ConfigConfigurationRecorder{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeConfigConfigurationRecorders) Create(configConfigurationRecorder *v
 // Update takes the representation of a configConfigurationRecorder and updates it. Returns the server's representation of the configConfigurationRecorder, and an error, if there is any.
 func (c *FakeConfigConfigurationRecorders) Update(configConfigurationRecorder *v1alpha1.ConfigConfigurationRecorder) (result *v1alpha1.ConfigConfigurationRecorder, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(configconfigurationrecordersResource, configConfigurationRecorder), &v1alpha1.ConfigConfigurationRecorder{})
+		Invokes(testing.NewUpdateAction(configconfigurationrecordersResource, c.ns, configConfigurationRecorder), &v1alpha1.ConfigConfigurationRecorder{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeConfigConfigurationRecorders) Update(configConfigurationRecorder *v
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeConfigConfigurationRecorders) UpdateStatus(configConfigurationRecorder *v1alpha1.ConfigConfigurationRecorder) (*v1alpha1.ConfigConfigurationRecorder, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(configconfigurationrecordersResource, "status", configConfigurationRecorder), &v1alpha1.ConfigConfigurationRecorder{})
+		Invokes(testing.NewUpdateSubresourceAction(configconfigurationrecordersResource, "status", c.ns, configConfigurationRecorder), &v1alpha1.ConfigConfigurationRecorder{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeConfigConfigurationRecorders) UpdateStatus(configConfigurationRecor
 // Delete takes name of the configConfigurationRecorder and deletes it. Returns an error if one occurs.
 func (c *FakeConfigConfigurationRecorders) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(configconfigurationrecordersResource, name), &v1alpha1.ConfigConfigurationRecorder{})
+		Invokes(testing.NewDeleteAction(configconfigurationrecordersResource, c.ns, name), &v1alpha1.ConfigConfigurationRecorder{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeConfigConfigurationRecorders) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(configconfigurationrecordersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(configconfigurationrecordersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ConfigConfigurationRecorderList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeConfigConfigurationRecorders) DeleteCollection(options *v1.DeleteOp
 // Patch applies the patch and returns the patched configConfigurationRecorder.
 func (c *FakeConfigConfigurationRecorders) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ConfigConfigurationRecorder, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(configconfigurationrecordersResource, name, pt, data, subresources...), &v1alpha1.ConfigConfigurationRecorder{})
+		Invokes(testing.NewPatchSubresourceAction(configconfigurationrecordersResource, c.ns, name, pt, data, subresources...), &v1alpha1.ConfigConfigurationRecorder{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // MonitorDiagnosticSettingsGetter has a method to return a MonitorDiagnosticSettingInterface.
 // A group's client should implement this interface.
 type MonitorDiagnosticSettingsGetter interface {
-	MonitorDiagnosticSettings() MonitorDiagnosticSettingInterface
+	MonitorDiagnosticSettings(namespace string) MonitorDiagnosticSettingInterface
 }
 
 // MonitorDiagnosticSettingInterface has methods to work with MonitorDiagnosticSetting resources.
@@ -52,12 +52,14 @@ type MonitorDiagnosticSettingInterface interface {
 // monitorDiagnosticSettings implements MonitorDiagnosticSettingInterface
 type monitorDiagnosticSettings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMonitorDiagnosticSettings returns a MonitorDiagnosticSettings
-func newMonitorDiagnosticSettings(c *AzurermV1alpha1Client) *monitorDiagnosticSettings {
+func newMonitorDiagnosticSettings(c *AzurermV1alpha1Client, namespace string) *monitorDiagnosticSettings {
 	return &monitorDiagnosticSettings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMonitorDiagnosticSettings(c *AzurermV1alpha1Client) *monitorDiagnosticSe
 func (c *monitorDiagnosticSettings) Get(name string, options v1.GetOptions) (result *v1alpha1.MonitorDiagnosticSetting, err error) {
 	result = &v1alpha1.MonitorDiagnosticSetting{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitordiagnosticsettings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *monitorDiagnosticSettings) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.MonitorDiagnosticSettingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitordiagnosticsettings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *monitorDiagnosticSettings) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("monitordiagnosticsettings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *monitorDiagnosticSettings) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *monitorDiagnosticSettings) Create(monitorDiagnosticSetting *v1alpha1.MonitorDiagnosticSetting) (result *v1alpha1.MonitorDiagnosticSetting, err error) {
 	result = &v1alpha1.MonitorDiagnosticSetting{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("monitordiagnosticsettings").
 		Body(monitorDiagnosticSetting).
 		Do().
@@ -118,6 +124,7 @@ func (c *monitorDiagnosticSettings) Create(monitorDiagnosticSetting *v1alpha1.Mo
 func (c *monitorDiagnosticSettings) Update(monitorDiagnosticSetting *v1alpha1.MonitorDiagnosticSetting) (result *v1alpha1.MonitorDiagnosticSetting, err error) {
 	result = &v1alpha1.MonitorDiagnosticSetting{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitordiagnosticsettings").
 		Name(monitorDiagnosticSetting.Name).
 		Body(monitorDiagnosticSetting).
@@ -132,6 +139,7 @@ func (c *monitorDiagnosticSettings) Update(monitorDiagnosticSetting *v1alpha1.Mo
 func (c *monitorDiagnosticSettings) UpdateStatus(monitorDiagnosticSetting *v1alpha1.MonitorDiagnosticSetting) (result *v1alpha1.MonitorDiagnosticSetting, err error) {
 	result = &v1alpha1.MonitorDiagnosticSetting{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitordiagnosticsettings").
 		Name(monitorDiagnosticSetting.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *monitorDiagnosticSettings) UpdateStatus(monitorDiagnosticSetting *v1alp
 // Delete takes name of the monitorDiagnosticSetting and deletes it. Returns an error if one occurs.
 func (c *monitorDiagnosticSettings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitordiagnosticsettings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *monitorDiagnosticSettings) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitordiagnosticsettings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *monitorDiagnosticSettings) DeleteCollection(options *v1.DeleteOptions, 
 func (c *monitorDiagnosticSettings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MonitorDiagnosticSetting, err error) {
 	result = &v1alpha1.MonitorDiagnosticSetting{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("monitordiagnosticsettings").
 		SubResource(subresources...).
 		Name(name).

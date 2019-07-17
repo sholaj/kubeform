@@ -31,6 +31,7 @@ import (
 // FakeSharedImageGalleries implements SharedImageGalleryInterface
 type FakeSharedImageGalleries struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var sharedimagegalleriesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "sharedimagegalleries"}
@@ -40,7 +41,8 @@ var sharedimagegalleriesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.
 // Get takes name of the sharedImageGallery, and returns the corresponding sharedImageGallery object, and an error if there is any.
 func (c *FakeSharedImageGalleries) Get(name string, options v1.GetOptions) (result *v1alpha1.SharedImageGallery, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sharedimagegalleriesResource, name), &v1alpha1.SharedImageGallery{})
+		Invokes(testing.NewGetAction(sharedimagegalleriesResource, c.ns, name), &v1alpha1.SharedImageGallery{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSharedImageGalleries) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of SharedImageGalleries that match those selectors.
 func (c *FakeSharedImageGalleries) List(opts v1.ListOptions) (result *v1alpha1.SharedImageGalleryList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sharedimagegalleriesResource, sharedimagegalleriesKind, opts), &v1alpha1.SharedImageGalleryList{})
+		Invokes(testing.NewListAction(sharedimagegalleriesResource, sharedimagegalleriesKind, c.ns, opts), &v1alpha1.SharedImageGalleryList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSharedImageGalleries) List(opts v1.ListOptions) (result *v1alpha1.S
 // Watch returns a watch.Interface that watches the requested sharedImageGalleries.
 func (c *FakeSharedImageGalleries) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sharedimagegalleriesResource, opts))
+		InvokesWatch(testing.NewWatchAction(sharedimagegalleriesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sharedImageGallery and creates it.  Returns the server's representation of the sharedImageGallery, and an error, if there is any.
 func (c *FakeSharedImageGalleries) Create(sharedImageGallery *v1alpha1.SharedImageGallery) (result *v1alpha1.SharedImageGallery, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sharedimagegalleriesResource, sharedImageGallery), &v1alpha1.SharedImageGallery{})
+		Invokes(testing.NewCreateAction(sharedimagegalleriesResource, c.ns, sharedImageGallery), &v1alpha1.SharedImageGallery{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSharedImageGalleries) Create(sharedImageGallery *v1alpha1.SharedIma
 // Update takes the representation of a sharedImageGallery and updates it. Returns the server's representation of the sharedImageGallery, and an error, if there is any.
 func (c *FakeSharedImageGalleries) Update(sharedImageGallery *v1alpha1.SharedImageGallery) (result *v1alpha1.SharedImageGallery, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sharedimagegalleriesResource, sharedImageGallery), &v1alpha1.SharedImageGallery{})
+		Invokes(testing.NewUpdateAction(sharedimagegalleriesResource, c.ns, sharedImageGallery), &v1alpha1.SharedImageGallery{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSharedImageGalleries) Update(sharedImageGallery *v1alpha1.SharedIma
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSharedImageGalleries) UpdateStatus(sharedImageGallery *v1alpha1.SharedImageGallery) (*v1alpha1.SharedImageGallery, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sharedimagegalleriesResource, "status", sharedImageGallery), &v1alpha1.SharedImageGallery{})
+		Invokes(testing.NewUpdateSubresourceAction(sharedimagegalleriesResource, "status", c.ns, sharedImageGallery), &v1alpha1.SharedImageGallery{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSharedImageGalleries) UpdateStatus(sharedImageGallery *v1alpha1.Sha
 // Delete takes name of the sharedImageGallery and deletes it. Returns an error if one occurs.
 func (c *FakeSharedImageGalleries) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sharedimagegalleriesResource, name), &v1alpha1.SharedImageGallery{})
+		Invokes(testing.NewDeleteAction(sharedimagegalleriesResource, c.ns, name), &v1alpha1.SharedImageGallery{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSharedImageGalleries) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sharedimagegalleriesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sharedimagegalleriesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SharedImageGalleryList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSharedImageGalleries) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched sharedImageGallery.
 func (c *FakeSharedImageGalleries) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SharedImageGallery, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sharedimagegalleriesResource, name, pt, data, subresources...), &v1alpha1.SharedImageGallery{})
+		Invokes(testing.NewPatchSubresourceAction(sharedimagegalleriesResource, c.ns, name, pt, data, subresources...), &v1alpha1.SharedImageGallery{})
+
 	if obj == nil {
 		return nil, err
 	}

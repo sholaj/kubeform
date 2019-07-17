@@ -32,7 +32,7 @@ import (
 // SqlVirtualNetworkRulesGetter has a method to return a SqlVirtualNetworkRuleInterface.
 // A group's client should implement this interface.
 type SqlVirtualNetworkRulesGetter interface {
-	SqlVirtualNetworkRules() SqlVirtualNetworkRuleInterface
+	SqlVirtualNetworkRules(namespace string) SqlVirtualNetworkRuleInterface
 }
 
 // SqlVirtualNetworkRuleInterface has methods to work with SqlVirtualNetworkRule resources.
@@ -52,12 +52,14 @@ type SqlVirtualNetworkRuleInterface interface {
 // sqlVirtualNetworkRules implements SqlVirtualNetworkRuleInterface
 type sqlVirtualNetworkRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSqlVirtualNetworkRules returns a SqlVirtualNetworkRules
-func newSqlVirtualNetworkRules(c *AzurermV1alpha1Client) *sqlVirtualNetworkRules {
+func newSqlVirtualNetworkRules(c *AzurermV1alpha1Client, namespace string) *sqlVirtualNetworkRules {
 	return &sqlVirtualNetworkRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSqlVirtualNetworkRules(c *AzurermV1alpha1Client) *sqlVirtualNetworkRules
 func (c *sqlVirtualNetworkRules) Get(name string, options v1.GetOptions) (result *v1alpha1.SqlVirtualNetworkRule, err error) {
 	result = &v1alpha1.SqlVirtualNetworkRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlvirtualnetworkrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sqlVirtualNetworkRules) List(opts v1.ListOptions) (result *v1alpha1.Sql
 	}
 	result = &v1alpha1.SqlVirtualNetworkRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlvirtualnetworkrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sqlVirtualNetworkRules) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlvirtualnetworkrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sqlVirtualNetworkRules) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *sqlVirtualNetworkRules) Create(sqlVirtualNetworkRule *v1alpha1.SqlVirtualNetworkRule) (result *v1alpha1.SqlVirtualNetworkRule, err error) {
 	result = &v1alpha1.SqlVirtualNetworkRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sqlvirtualnetworkrules").
 		Body(sqlVirtualNetworkRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *sqlVirtualNetworkRules) Create(sqlVirtualNetworkRule *v1alpha1.SqlVirtu
 func (c *sqlVirtualNetworkRules) Update(sqlVirtualNetworkRule *v1alpha1.SqlVirtualNetworkRule) (result *v1alpha1.SqlVirtualNetworkRule, err error) {
 	result = &v1alpha1.SqlVirtualNetworkRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqlvirtualnetworkrules").
 		Name(sqlVirtualNetworkRule.Name).
 		Body(sqlVirtualNetworkRule).
@@ -132,6 +139,7 @@ func (c *sqlVirtualNetworkRules) Update(sqlVirtualNetworkRule *v1alpha1.SqlVirtu
 func (c *sqlVirtualNetworkRules) UpdateStatus(sqlVirtualNetworkRule *v1alpha1.SqlVirtualNetworkRule) (result *v1alpha1.SqlVirtualNetworkRule, err error) {
 	result = &v1alpha1.SqlVirtualNetworkRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqlvirtualnetworkrules").
 		Name(sqlVirtualNetworkRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sqlVirtualNetworkRules) UpdateStatus(sqlVirtualNetworkRule *v1alpha1.Sq
 // Delete takes name of the sqlVirtualNetworkRule and deletes it. Returns an error if one occurs.
 func (c *sqlVirtualNetworkRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqlvirtualnetworkrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sqlVirtualNetworkRules) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqlvirtualnetworkrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sqlVirtualNetworkRules) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *sqlVirtualNetworkRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SqlVirtualNetworkRule, err error) {
 	result = &v1alpha1.SqlVirtualNetworkRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sqlvirtualnetworkrules").
 		SubResource(subresources...).
 		Name(name).

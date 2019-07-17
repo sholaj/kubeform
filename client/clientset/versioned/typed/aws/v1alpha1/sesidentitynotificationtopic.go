@@ -32,7 +32,7 @@ import (
 // SesIdentityNotificationTopicsGetter has a method to return a SesIdentityNotificationTopicInterface.
 // A group's client should implement this interface.
 type SesIdentityNotificationTopicsGetter interface {
-	SesIdentityNotificationTopics() SesIdentityNotificationTopicInterface
+	SesIdentityNotificationTopics(namespace string) SesIdentityNotificationTopicInterface
 }
 
 // SesIdentityNotificationTopicInterface has methods to work with SesIdentityNotificationTopic resources.
@@ -52,12 +52,14 @@ type SesIdentityNotificationTopicInterface interface {
 // sesIdentityNotificationTopics implements SesIdentityNotificationTopicInterface
 type sesIdentityNotificationTopics struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSesIdentityNotificationTopics returns a SesIdentityNotificationTopics
-func newSesIdentityNotificationTopics(c *AwsV1alpha1Client) *sesIdentityNotificationTopics {
+func newSesIdentityNotificationTopics(c *AwsV1alpha1Client, namespace string) *sesIdentityNotificationTopics {
 	return &sesIdentityNotificationTopics{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSesIdentityNotificationTopics(c *AwsV1alpha1Client) *sesIdentityNotifica
 func (c *sesIdentityNotificationTopics) Get(name string, options v1.GetOptions) (result *v1alpha1.SesIdentityNotificationTopic, err error) {
 	result = &v1alpha1.SesIdentityNotificationTopic{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sesidentitynotificationtopics").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sesIdentityNotificationTopics) List(opts v1.ListOptions) (result *v1alp
 	}
 	result = &v1alpha1.SesIdentityNotificationTopicList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sesidentitynotificationtopics").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sesIdentityNotificationTopics) Watch(opts v1.ListOptions) (watch.Interf
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sesidentitynotificationtopics").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sesIdentityNotificationTopics) Watch(opts v1.ListOptions) (watch.Interf
 func (c *sesIdentityNotificationTopics) Create(sesIdentityNotificationTopic *v1alpha1.SesIdentityNotificationTopic) (result *v1alpha1.SesIdentityNotificationTopic, err error) {
 	result = &v1alpha1.SesIdentityNotificationTopic{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sesidentitynotificationtopics").
 		Body(sesIdentityNotificationTopic).
 		Do().
@@ -118,6 +124,7 @@ func (c *sesIdentityNotificationTopics) Create(sesIdentityNotificationTopic *v1a
 func (c *sesIdentityNotificationTopics) Update(sesIdentityNotificationTopic *v1alpha1.SesIdentityNotificationTopic) (result *v1alpha1.SesIdentityNotificationTopic, err error) {
 	result = &v1alpha1.SesIdentityNotificationTopic{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sesidentitynotificationtopics").
 		Name(sesIdentityNotificationTopic.Name).
 		Body(sesIdentityNotificationTopic).
@@ -132,6 +139,7 @@ func (c *sesIdentityNotificationTopics) Update(sesIdentityNotificationTopic *v1a
 func (c *sesIdentityNotificationTopics) UpdateStatus(sesIdentityNotificationTopic *v1alpha1.SesIdentityNotificationTopic) (result *v1alpha1.SesIdentityNotificationTopic, err error) {
 	result = &v1alpha1.SesIdentityNotificationTopic{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sesidentitynotificationtopics").
 		Name(sesIdentityNotificationTopic.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sesIdentityNotificationTopics) UpdateStatus(sesIdentityNotificationTopi
 // Delete takes name of the sesIdentityNotificationTopic and deletes it. Returns an error if one occurs.
 func (c *sesIdentityNotificationTopics) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sesidentitynotificationtopics").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sesIdentityNotificationTopics) DeleteCollection(options *v1.DeleteOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sesidentitynotificationtopics").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sesIdentityNotificationTopics) DeleteCollection(options *v1.DeleteOptio
 func (c *sesIdentityNotificationTopics) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesIdentityNotificationTopic, err error) {
 	result = &v1alpha1.SesIdentityNotificationTopic{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sesidentitynotificationtopics").
 		SubResource(subresources...).
 		Name(name).

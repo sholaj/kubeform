@@ -32,7 +32,7 @@ import (
 // DataFactoriesGetter has a method to return a DataFactoryInterface.
 // A group's client should implement this interface.
 type DataFactoriesGetter interface {
-	DataFactories() DataFactoryInterface
+	DataFactories(namespace string) DataFactoryInterface
 }
 
 // DataFactoryInterface has methods to work with DataFactory resources.
@@ -52,12 +52,14 @@ type DataFactoryInterface interface {
 // dataFactories implements DataFactoryInterface
 type dataFactories struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDataFactories returns a DataFactories
-func newDataFactories(c *AzurermV1alpha1Client) *dataFactories {
+func newDataFactories(c *AzurermV1alpha1Client, namespace string) *dataFactories {
 	return &dataFactories{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDataFactories(c *AzurermV1alpha1Client) *dataFactories {
 func (c *dataFactories) Get(name string, options v1.GetOptions) (result *v1alpha1.DataFactory, err error) {
 	result = &v1alpha1.DataFactory{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactories").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dataFactories) List(opts v1.ListOptions) (result *v1alpha1.DataFactoryL
 	}
 	result = &v1alpha1.DataFactoryList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactories").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dataFactories) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactories").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dataFactories) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dataFactories) Create(dataFactory *v1alpha1.DataFactory) (result *v1alpha1.DataFactory, err error) {
 	result = &v1alpha1.DataFactory{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("datafactories").
 		Body(dataFactory).
 		Do().
@@ -118,6 +124,7 @@ func (c *dataFactories) Create(dataFactory *v1alpha1.DataFactory) (result *v1alp
 func (c *dataFactories) Update(dataFactory *v1alpha1.DataFactory) (result *v1alpha1.DataFactory, err error) {
 	result = &v1alpha1.DataFactory{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datafactories").
 		Name(dataFactory.Name).
 		Body(dataFactory).
@@ -132,6 +139,7 @@ func (c *dataFactories) Update(dataFactory *v1alpha1.DataFactory) (result *v1alp
 func (c *dataFactories) UpdateStatus(dataFactory *v1alpha1.DataFactory) (result *v1alpha1.DataFactory, err error) {
 	result = &v1alpha1.DataFactory{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datafactories").
 		Name(dataFactory.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dataFactories) UpdateStatus(dataFactory *v1alpha1.DataFactory) (result 
 // Delete takes name of the dataFactory and deletes it. Returns an error if one occurs.
 func (c *dataFactories) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datafactories").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dataFactories) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datafactories").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dataFactories) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *dataFactories) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataFactory, err error) {
 	result = &v1alpha1.DataFactory{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("datafactories").
 		SubResource(subresources...).
 		Name(name).

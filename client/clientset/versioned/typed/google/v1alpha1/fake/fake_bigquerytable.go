@@ -31,6 +31,7 @@ import (
 // FakeBigqueryTables implements BigqueryTableInterface
 type FakeBigqueryTables struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var bigquerytablesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "bigquerytables"}
@@ -40,7 +41,8 @@ var bigquerytablesKind = schema.GroupVersionKind{Group: "google.kubeform.com", V
 // Get takes name of the bigqueryTable, and returns the corresponding bigqueryTable object, and an error if there is any.
 func (c *FakeBigqueryTables) Get(name string, options v1.GetOptions) (result *v1alpha1.BigqueryTable, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(bigquerytablesResource, name), &v1alpha1.BigqueryTable{})
+		Invokes(testing.NewGetAction(bigquerytablesResource, c.ns, name), &v1alpha1.BigqueryTable{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeBigqueryTables) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of BigqueryTables that match those selectors.
 func (c *FakeBigqueryTables) List(opts v1.ListOptions) (result *v1alpha1.BigqueryTableList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(bigquerytablesResource, bigquerytablesKind, opts), &v1alpha1.BigqueryTableList{})
+		Invokes(testing.NewListAction(bigquerytablesResource, bigquerytablesKind, c.ns, opts), &v1alpha1.BigqueryTableList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeBigqueryTables) List(opts v1.ListOptions) (result *v1alpha1.Bigquer
 // Watch returns a watch.Interface that watches the requested bigqueryTables.
 func (c *FakeBigqueryTables) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(bigquerytablesResource, opts))
+		InvokesWatch(testing.NewWatchAction(bigquerytablesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a bigqueryTable and creates it.  Returns the server's representation of the bigqueryTable, and an error, if there is any.
 func (c *FakeBigqueryTables) Create(bigqueryTable *v1alpha1.BigqueryTable) (result *v1alpha1.BigqueryTable, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(bigquerytablesResource, bigqueryTable), &v1alpha1.BigqueryTable{})
+		Invokes(testing.NewCreateAction(bigquerytablesResource, c.ns, bigqueryTable), &v1alpha1.BigqueryTable{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeBigqueryTables) Create(bigqueryTable *v1alpha1.BigqueryTable) (resu
 // Update takes the representation of a bigqueryTable and updates it. Returns the server's representation of the bigqueryTable, and an error, if there is any.
 func (c *FakeBigqueryTables) Update(bigqueryTable *v1alpha1.BigqueryTable) (result *v1alpha1.BigqueryTable, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(bigquerytablesResource, bigqueryTable), &v1alpha1.BigqueryTable{})
+		Invokes(testing.NewUpdateAction(bigquerytablesResource, c.ns, bigqueryTable), &v1alpha1.BigqueryTable{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeBigqueryTables) Update(bigqueryTable *v1alpha1.BigqueryTable) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeBigqueryTables) UpdateStatus(bigqueryTable *v1alpha1.BigqueryTable) (*v1alpha1.BigqueryTable, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(bigquerytablesResource, "status", bigqueryTable), &v1alpha1.BigqueryTable{})
+		Invokes(testing.NewUpdateSubresourceAction(bigquerytablesResource, "status", c.ns, bigqueryTable), &v1alpha1.BigqueryTable{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeBigqueryTables) UpdateStatus(bigqueryTable *v1alpha1.BigqueryTable)
 // Delete takes name of the bigqueryTable and deletes it. Returns an error if one occurs.
 func (c *FakeBigqueryTables) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(bigquerytablesResource, name), &v1alpha1.BigqueryTable{})
+		Invokes(testing.NewDeleteAction(bigquerytablesResource, c.ns, name), &v1alpha1.BigqueryTable{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeBigqueryTables) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(bigquerytablesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(bigquerytablesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.BigqueryTableList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeBigqueryTables) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched bigqueryTable.
 func (c *FakeBigqueryTables) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BigqueryTable, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(bigquerytablesResource, name, pt, data, subresources...), &v1alpha1.BigqueryTable{})
+		Invokes(testing.NewPatchSubresourceAction(bigquerytablesResource, c.ns, name, pt, data, subresources...), &v1alpha1.BigqueryTable{})
+
 	if obj == nil {
 		return nil, err
 	}

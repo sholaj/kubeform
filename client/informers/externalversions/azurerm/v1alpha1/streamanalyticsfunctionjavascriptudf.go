@@ -41,32 +41,33 @@ type StreamAnalyticsFunctionJavascriptUdfInformer interface {
 type streamAnalyticsFunctionJavascriptUdfInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewStreamAnalyticsFunctionJavascriptUdfInformer constructs a new informer for StreamAnalyticsFunctionJavascriptUdf type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewStreamAnalyticsFunctionJavascriptUdfInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredStreamAnalyticsFunctionJavascriptUdfInformer(client, resyncPeriod, indexers, nil)
+func NewStreamAnalyticsFunctionJavascriptUdfInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredStreamAnalyticsFunctionJavascriptUdfInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredStreamAnalyticsFunctionJavascriptUdfInformer constructs a new informer for StreamAnalyticsFunctionJavascriptUdf type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredStreamAnalyticsFunctionJavascriptUdfInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredStreamAnalyticsFunctionJavascriptUdfInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().StreamAnalyticsFunctionJavascriptUdves().List(options)
+				return client.AzurermV1alpha1().StreamAnalyticsFunctionJavascriptUdves(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().StreamAnalyticsFunctionJavascriptUdves().Watch(options)
+				return client.AzurermV1alpha1().StreamAnalyticsFunctionJavascriptUdves(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.StreamAnalyticsFunctionJavascriptUdf{},
@@ -76,7 +77,7 @@ func NewFilteredStreamAnalyticsFunctionJavascriptUdfInformer(client versioned.In
 }
 
 func (f *streamAnalyticsFunctionJavascriptUdfInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredStreamAnalyticsFunctionJavascriptUdfInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredStreamAnalyticsFunctionJavascriptUdfInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *streamAnalyticsFunctionJavascriptUdfInformer) Informer() cache.SharedIndexInformer {

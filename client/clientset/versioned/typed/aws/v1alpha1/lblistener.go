@@ -32,7 +32,7 @@ import (
 // LbListenersGetter has a method to return a LbListenerInterface.
 // A group's client should implement this interface.
 type LbListenersGetter interface {
-	LbListeners() LbListenerInterface
+	LbListeners(namespace string) LbListenerInterface
 }
 
 // LbListenerInterface has methods to work with LbListener resources.
@@ -52,12 +52,14 @@ type LbListenerInterface interface {
 // lbListeners implements LbListenerInterface
 type lbListeners struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLbListeners returns a LbListeners
-func newLbListeners(c *AwsV1alpha1Client) *lbListeners {
+func newLbListeners(c *AwsV1alpha1Client, namespace string) *lbListeners {
 	return &lbListeners{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLbListeners(c *AwsV1alpha1Client) *lbListeners {
 func (c *lbListeners) Get(name string, options v1.GetOptions) (result *v1alpha1.LbListener, err error) {
 	result = &v1alpha1.LbListener{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lblisteners").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lbListeners) List(opts v1.ListOptions) (result *v1alpha1.LbListenerList
 	}
 	result = &v1alpha1.LbListenerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lblisteners").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lbListeners) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lblisteners").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lbListeners) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *lbListeners) Create(lbListener *v1alpha1.LbListener) (result *v1alpha1.LbListener, err error) {
 	result = &v1alpha1.LbListener{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lblisteners").
 		Body(lbListener).
 		Do().
@@ -118,6 +124,7 @@ func (c *lbListeners) Create(lbListener *v1alpha1.LbListener) (result *v1alpha1.
 func (c *lbListeners) Update(lbListener *v1alpha1.LbListener) (result *v1alpha1.LbListener, err error) {
 	result = &v1alpha1.LbListener{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lblisteners").
 		Name(lbListener.Name).
 		Body(lbListener).
@@ -132,6 +139,7 @@ func (c *lbListeners) Update(lbListener *v1alpha1.LbListener) (result *v1alpha1.
 func (c *lbListeners) UpdateStatus(lbListener *v1alpha1.LbListener) (result *v1alpha1.LbListener, err error) {
 	result = &v1alpha1.LbListener{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lblisteners").
 		Name(lbListener.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lbListeners) UpdateStatus(lbListener *v1alpha1.LbListener) (result *v1a
 // Delete takes name of the lbListener and deletes it. Returns an error if one occurs.
 func (c *lbListeners) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lblisteners").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lbListeners) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lblisteners").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lbListeners) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *lbListeners) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbListener, err error) {
 	result = &v1alpha1.LbListener{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lblisteners").
 		SubResource(subresources...).
 		Name(name).

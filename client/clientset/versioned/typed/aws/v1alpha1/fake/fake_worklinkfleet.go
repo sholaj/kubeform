@@ -31,6 +31,7 @@ import (
 // FakeWorklinkFleets implements WorklinkFleetInterface
 type FakeWorklinkFleets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var worklinkfleetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "worklinkfleets"}
@@ -40,7 +41,8 @@ var worklinkfleetsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Vers
 // Get takes name of the worklinkFleet, and returns the corresponding worklinkFleet object, and an error if there is any.
 func (c *FakeWorklinkFleets) Get(name string, options v1.GetOptions) (result *v1alpha1.WorklinkFleet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(worklinkfleetsResource, name), &v1alpha1.WorklinkFleet{})
+		Invokes(testing.NewGetAction(worklinkfleetsResource, c.ns, name), &v1alpha1.WorklinkFleet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeWorklinkFleets) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of WorklinkFleets that match those selectors.
 func (c *FakeWorklinkFleets) List(opts v1.ListOptions) (result *v1alpha1.WorklinkFleetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(worklinkfleetsResource, worklinkfleetsKind, opts), &v1alpha1.WorklinkFleetList{})
+		Invokes(testing.NewListAction(worklinkfleetsResource, worklinkfleetsKind, c.ns, opts), &v1alpha1.WorklinkFleetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeWorklinkFleets) List(opts v1.ListOptions) (result *v1alpha1.Worklin
 // Watch returns a watch.Interface that watches the requested worklinkFleets.
 func (c *FakeWorklinkFleets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(worklinkfleetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(worklinkfleetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a worklinkFleet and creates it.  Returns the server's representation of the worklinkFleet, and an error, if there is any.
 func (c *FakeWorklinkFleets) Create(worklinkFleet *v1alpha1.WorklinkFleet) (result *v1alpha1.WorklinkFleet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(worklinkfleetsResource, worklinkFleet), &v1alpha1.WorklinkFleet{})
+		Invokes(testing.NewCreateAction(worklinkfleetsResource, c.ns, worklinkFleet), &v1alpha1.WorklinkFleet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeWorklinkFleets) Create(worklinkFleet *v1alpha1.WorklinkFleet) (resu
 // Update takes the representation of a worklinkFleet and updates it. Returns the server's representation of the worklinkFleet, and an error, if there is any.
 func (c *FakeWorklinkFleets) Update(worklinkFleet *v1alpha1.WorklinkFleet) (result *v1alpha1.WorklinkFleet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(worklinkfleetsResource, worklinkFleet), &v1alpha1.WorklinkFleet{})
+		Invokes(testing.NewUpdateAction(worklinkfleetsResource, c.ns, worklinkFleet), &v1alpha1.WorklinkFleet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeWorklinkFleets) Update(worklinkFleet *v1alpha1.WorklinkFleet) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeWorklinkFleets) UpdateStatus(worklinkFleet *v1alpha1.WorklinkFleet) (*v1alpha1.WorklinkFleet, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(worklinkfleetsResource, "status", worklinkFleet), &v1alpha1.WorklinkFleet{})
+		Invokes(testing.NewUpdateSubresourceAction(worklinkfleetsResource, "status", c.ns, worklinkFleet), &v1alpha1.WorklinkFleet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeWorklinkFleets) UpdateStatus(worklinkFleet *v1alpha1.WorklinkFleet)
 // Delete takes name of the worklinkFleet and deletes it. Returns an error if one occurs.
 func (c *FakeWorklinkFleets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(worklinkfleetsResource, name), &v1alpha1.WorklinkFleet{})
+		Invokes(testing.NewDeleteAction(worklinkfleetsResource, c.ns, name), &v1alpha1.WorklinkFleet{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeWorklinkFleets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(worklinkfleetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(worklinkfleetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.WorklinkFleetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeWorklinkFleets) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched worklinkFleet.
 func (c *FakeWorklinkFleets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WorklinkFleet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(worklinkfleetsResource, name, pt, data, subresources...), &v1alpha1.WorklinkFleet{})
+		Invokes(testing.NewPatchSubresourceAction(worklinkfleetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.WorklinkFleet{})
+
 	if obj == nil {
 		return nil, err
 	}

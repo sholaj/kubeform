@@ -31,6 +31,7 @@ import (
 // FakeRedshiftClusters implements RedshiftClusterInterface
 type FakeRedshiftClusters struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var redshiftclustersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "redshiftclusters"}
@@ -40,7 +41,8 @@ var redshiftclustersKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ve
 // Get takes name of the redshiftCluster, and returns the corresponding redshiftCluster object, and an error if there is any.
 func (c *FakeRedshiftClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.RedshiftCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(redshiftclustersResource, name), &v1alpha1.RedshiftCluster{})
+		Invokes(testing.NewGetAction(redshiftclustersResource, c.ns, name), &v1alpha1.RedshiftCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRedshiftClusters) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of RedshiftClusters that match those selectors.
 func (c *FakeRedshiftClusters) List(opts v1.ListOptions) (result *v1alpha1.RedshiftClusterList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(redshiftclustersResource, redshiftclustersKind, opts), &v1alpha1.RedshiftClusterList{})
+		Invokes(testing.NewListAction(redshiftclustersResource, redshiftclustersKind, c.ns, opts), &v1alpha1.RedshiftClusterList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRedshiftClusters) List(opts v1.ListOptions) (result *v1alpha1.Redsh
 // Watch returns a watch.Interface that watches the requested redshiftClusters.
 func (c *FakeRedshiftClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(redshiftclustersResource, opts))
+		InvokesWatch(testing.NewWatchAction(redshiftclustersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a redshiftCluster and creates it.  Returns the server's representation of the redshiftCluster, and an error, if there is any.
 func (c *FakeRedshiftClusters) Create(redshiftCluster *v1alpha1.RedshiftCluster) (result *v1alpha1.RedshiftCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(redshiftclustersResource, redshiftCluster), &v1alpha1.RedshiftCluster{})
+		Invokes(testing.NewCreateAction(redshiftclustersResource, c.ns, redshiftCluster), &v1alpha1.RedshiftCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRedshiftClusters) Create(redshiftCluster *v1alpha1.RedshiftCluster)
 // Update takes the representation of a redshiftCluster and updates it. Returns the server's representation of the redshiftCluster, and an error, if there is any.
 func (c *FakeRedshiftClusters) Update(redshiftCluster *v1alpha1.RedshiftCluster) (result *v1alpha1.RedshiftCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(redshiftclustersResource, redshiftCluster), &v1alpha1.RedshiftCluster{})
+		Invokes(testing.NewUpdateAction(redshiftclustersResource, c.ns, redshiftCluster), &v1alpha1.RedshiftCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRedshiftClusters) Update(redshiftCluster *v1alpha1.RedshiftCluster)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRedshiftClusters) UpdateStatus(redshiftCluster *v1alpha1.RedshiftCluster) (*v1alpha1.RedshiftCluster, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(redshiftclustersResource, "status", redshiftCluster), &v1alpha1.RedshiftCluster{})
+		Invokes(testing.NewUpdateSubresourceAction(redshiftclustersResource, "status", c.ns, redshiftCluster), &v1alpha1.RedshiftCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRedshiftClusters) UpdateStatus(redshiftCluster *v1alpha1.RedshiftCl
 // Delete takes name of the redshiftCluster and deletes it. Returns an error if one occurs.
 func (c *FakeRedshiftClusters) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(redshiftclustersResource, name), &v1alpha1.RedshiftCluster{})
+		Invokes(testing.NewDeleteAction(redshiftclustersResource, c.ns, name), &v1alpha1.RedshiftCluster{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRedshiftClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(redshiftclustersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(redshiftclustersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.RedshiftClusterList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRedshiftClusters) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched redshiftCluster.
 func (c *FakeRedshiftClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RedshiftCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(redshiftclustersResource, name, pt, data, subresources...), &v1alpha1.RedshiftCluster{})
+		Invokes(testing.NewPatchSubresourceAction(redshiftclustersResource, c.ns, name, pt, data, subresources...), &v1alpha1.RedshiftCluster{})
+
 	if obj == nil {
 		return nil, err
 	}

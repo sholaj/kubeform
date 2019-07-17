@@ -29,8 +29,8 @@ import (
 type IamGroupMembershipLister interface {
 	// List lists all IamGroupMemberships in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IamGroupMembership, err error)
-	// Get retrieves the IamGroupMembership from the index for a given name.
-	Get(name string) (*v1alpha1.IamGroupMembership, error)
+	// IamGroupMemberships returns an object that can list and get IamGroupMemberships.
+	IamGroupMemberships(namespace string) IamGroupMembershipNamespaceLister
 	IamGroupMembershipListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iamGroupMembershipLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the IamGroupMembership from the index for a given name.
-func (s *iamGroupMembershipLister) Get(name string) (*v1alpha1.IamGroupMembership, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IamGroupMemberships returns an object that can list and get IamGroupMemberships.
+func (s *iamGroupMembershipLister) IamGroupMemberships(namespace string) IamGroupMembershipNamespaceLister {
+	return iamGroupMembershipNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IamGroupMembershipNamespaceLister helps list and get IamGroupMemberships.
+type IamGroupMembershipNamespaceLister interface {
+	// List lists all IamGroupMemberships in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IamGroupMembership, err error)
+	// Get retrieves the IamGroupMembership from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IamGroupMembership, error)
+	IamGroupMembershipNamespaceListerExpansion
+}
+
+// iamGroupMembershipNamespaceLister implements the IamGroupMembershipNamespaceLister
+// interface.
+type iamGroupMembershipNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IamGroupMemberships in the indexer for a given namespace.
+func (s iamGroupMembershipNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IamGroupMembership, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IamGroupMembership))
+	})
+	return ret, err
+}
+
+// Get retrieves the IamGroupMembership from the indexer for a given namespace and name.
+func (s iamGroupMembershipNamespaceLister) Get(name string) (*v1alpha1.IamGroupMembership, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // DatabricksWorkspacesGetter has a method to return a DatabricksWorkspaceInterface.
 // A group's client should implement this interface.
 type DatabricksWorkspacesGetter interface {
-	DatabricksWorkspaces() DatabricksWorkspaceInterface
+	DatabricksWorkspaces(namespace string) DatabricksWorkspaceInterface
 }
 
 // DatabricksWorkspaceInterface has methods to work with DatabricksWorkspace resources.
@@ -52,12 +52,14 @@ type DatabricksWorkspaceInterface interface {
 // databricksWorkspaces implements DatabricksWorkspaceInterface
 type databricksWorkspaces struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDatabricksWorkspaces returns a DatabricksWorkspaces
-func newDatabricksWorkspaces(c *AzurermV1alpha1Client) *databricksWorkspaces {
+func newDatabricksWorkspaces(c *AzurermV1alpha1Client, namespace string) *databricksWorkspaces {
 	return &databricksWorkspaces{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDatabricksWorkspaces(c *AzurermV1alpha1Client) *databricksWorkspaces {
 func (c *databricksWorkspaces) Get(name string, options v1.GetOptions) (result *v1alpha1.DatabricksWorkspace, err error) {
 	result = &v1alpha1.DatabricksWorkspace{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("databricksworkspaces").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *databricksWorkspaces) List(opts v1.ListOptions) (result *v1alpha1.Datab
 	}
 	result = &v1alpha1.DatabricksWorkspaceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("databricksworkspaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *databricksWorkspaces) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("databricksworkspaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *databricksWorkspaces) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *databricksWorkspaces) Create(databricksWorkspace *v1alpha1.DatabricksWorkspace) (result *v1alpha1.DatabricksWorkspace, err error) {
 	result = &v1alpha1.DatabricksWorkspace{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("databricksworkspaces").
 		Body(databricksWorkspace).
 		Do().
@@ -118,6 +124,7 @@ func (c *databricksWorkspaces) Create(databricksWorkspace *v1alpha1.DatabricksWo
 func (c *databricksWorkspaces) Update(databricksWorkspace *v1alpha1.DatabricksWorkspace) (result *v1alpha1.DatabricksWorkspace, err error) {
 	result = &v1alpha1.DatabricksWorkspace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("databricksworkspaces").
 		Name(databricksWorkspace.Name).
 		Body(databricksWorkspace).
@@ -132,6 +139,7 @@ func (c *databricksWorkspaces) Update(databricksWorkspace *v1alpha1.DatabricksWo
 func (c *databricksWorkspaces) UpdateStatus(databricksWorkspace *v1alpha1.DatabricksWorkspace) (result *v1alpha1.DatabricksWorkspace, err error) {
 	result = &v1alpha1.DatabricksWorkspace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("databricksworkspaces").
 		Name(databricksWorkspace.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *databricksWorkspaces) UpdateStatus(databricksWorkspace *v1alpha1.Databr
 // Delete takes name of the databricksWorkspace and deletes it. Returns an error if one occurs.
 func (c *databricksWorkspaces) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("databricksworkspaces").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *databricksWorkspaces) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("databricksworkspaces").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *databricksWorkspaces) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *databricksWorkspaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DatabricksWorkspace, err error) {
 	result = &v1alpha1.DatabricksWorkspace{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("databricksworkspaces").
 		SubResource(subresources...).
 		Name(name).

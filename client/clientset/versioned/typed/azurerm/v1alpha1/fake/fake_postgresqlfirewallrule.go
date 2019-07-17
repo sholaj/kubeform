@@ -31,6 +31,7 @@ import (
 // FakePostgresqlFirewallRules implements PostgresqlFirewallRuleInterface
 type FakePostgresqlFirewallRules struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var postgresqlfirewallrulesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "postgresqlfirewallrules"}
@@ -40,7 +41,8 @@ var postgresqlfirewallrulesKind = schema.GroupVersionKind{Group: "azurerm.kubefo
 // Get takes name of the postgresqlFirewallRule, and returns the corresponding postgresqlFirewallRule object, and an error if there is any.
 func (c *FakePostgresqlFirewallRules) Get(name string, options v1.GetOptions) (result *v1alpha1.PostgresqlFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(postgresqlfirewallrulesResource, name), &v1alpha1.PostgresqlFirewallRule{})
+		Invokes(testing.NewGetAction(postgresqlfirewallrulesResource, c.ns, name), &v1alpha1.PostgresqlFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakePostgresqlFirewallRules) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of PostgresqlFirewallRules that match those selectors.
 func (c *FakePostgresqlFirewallRules) List(opts v1.ListOptions) (result *v1alpha1.PostgresqlFirewallRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(postgresqlfirewallrulesResource, postgresqlfirewallrulesKind, opts), &v1alpha1.PostgresqlFirewallRuleList{})
+		Invokes(testing.NewListAction(postgresqlfirewallrulesResource, postgresqlfirewallrulesKind, c.ns, opts), &v1alpha1.PostgresqlFirewallRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakePostgresqlFirewallRules) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested postgresqlFirewallRules.
 func (c *FakePostgresqlFirewallRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(postgresqlfirewallrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(postgresqlfirewallrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a postgresqlFirewallRule and creates it.  Returns the server's representation of the postgresqlFirewallRule, and an error, if there is any.
 func (c *FakePostgresqlFirewallRules) Create(postgresqlFirewallRule *v1alpha1.PostgresqlFirewallRule) (result *v1alpha1.PostgresqlFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(postgresqlfirewallrulesResource, postgresqlFirewallRule), &v1alpha1.PostgresqlFirewallRule{})
+		Invokes(testing.NewCreateAction(postgresqlfirewallrulesResource, c.ns, postgresqlFirewallRule), &v1alpha1.PostgresqlFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakePostgresqlFirewallRules) Create(postgresqlFirewallRule *v1alpha1.Po
 // Update takes the representation of a postgresqlFirewallRule and updates it. Returns the server's representation of the postgresqlFirewallRule, and an error, if there is any.
 func (c *FakePostgresqlFirewallRules) Update(postgresqlFirewallRule *v1alpha1.PostgresqlFirewallRule) (result *v1alpha1.PostgresqlFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(postgresqlfirewallrulesResource, postgresqlFirewallRule), &v1alpha1.PostgresqlFirewallRule{})
+		Invokes(testing.NewUpdateAction(postgresqlfirewallrulesResource, c.ns, postgresqlFirewallRule), &v1alpha1.PostgresqlFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakePostgresqlFirewallRules) Update(postgresqlFirewallRule *v1alpha1.Po
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakePostgresqlFirewallRules) UpdateStatus(postgresqlFirewallRule *v1alpha1.PostgresqlFirewallRule) (*v1alpha1.PostgresqlFirewallRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(postgresqlfirewallrulesResource, "status", postgresqlFirewallRule), &v1alpha1.PostgresqlFirewallRule{})
+		Invokes(testing.NewUpdateSubresourceAction(postgresqlfirewallrulesResource, "status", c.ns, postgresqlFirewallRule), &v1alpha1.PostgresqlFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakePostgresqlFirewallRules) UpdateStatus(postgresqlFirewallRule *v1alp
 // Delete takes name of the postgresqlFirewallRule and deletes it. Returns an error if one occurs.
 func (c *FakePostgresqlFirewallRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(postgresqlfirewallrulesResource, name), &v1alpha1.PostgresqlFirewallRule{})
+		Invokes(testing.NewDeleteAction(postgresqlfirewallrulesResource, c.ns, name), &v1alpha1.PostgresqlFirewallRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakePostgresqlFirewallRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(postgresqlfirewallrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(postgresqlfirewallrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PostgresqlFirewallRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakePostgresqlFirewallRules) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched postgresqlFirewallRule.
 func (c *FakePostgresqlFirewallRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PostgresqlFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(postgresqlfirewallrulesResource, name, pt, data, subresources...), &v1alpha1.PostgresqlFirewallRule{})
+		Invokes(testing.NewPatchSubresourceAction(postgresqlfirewallrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.PostgresqlFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}

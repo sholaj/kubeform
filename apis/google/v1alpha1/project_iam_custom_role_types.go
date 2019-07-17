@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -21,16 +21,17 @@ type ProjectIamCustomRole struct {
 type ProjectIamCustomRoleSpec struct {
 	// +optional
 	// Deprecated
-	Deleted bool `json:"deleted,omitempty"`
+	Deleted bool `json:"deleted,omitempty" tf:"deleted,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	Permissions []string `json:"permissions"`
-	RoleId      string   `json:"role_id"`
+	Permissions []string `json:"permissions" tf:"permissions"`
+	RoleID      string   `json:"roleID" tf:"role_id"`
 	// +optional
-	Stage string `json:"stage,omitempty"`
-	Title string `json:"title"`
+	Stage       string                    `json:"stage,omitempty" tf:"stage,omitempty"`
+	Title       string                    `json:"title" tf:"title"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ProjectIamCustomRoleStatus struct {
@@ -38,7 +39,9 @@ type ProjectIamCustomRoleStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

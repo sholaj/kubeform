@@ -31,6 +31,7 @@ import (
 // FakeSecurityhubAccounts implements SecurityhubAccountInterface
 type FakeSecurityhubAccounts struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var securityhubaccountsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "securityhubaccounts"}
@@ -40,7 +41,8 @@ var securityhubaccountsKind = schema.GroupVersionKind{Group: "aws.kubeform.com",
 // Get takes name of the securityhubAccount, and returns the corresponding securityhubAccount object, and an error if there is any.
 func (c *FakeSecurityhubAccounts) Get(name string, options v1.GetOptions) (result *v1alpha1.SecurityhubAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(securityhubaccountsResource, name), &v1alpha1.SecurityhubAccount{})
+		Invokes(testing.NewGetAction(securityhubaccountsResource, c.ns, name), &v1alpha1.SecurityhubAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSecurityhubAccounts) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of SecurityhubAccounts that match those selectors.
 func (c *FakeSecurityhubAccounts) List(opts v1.ListOptions) (result *v1alpha1.SecurityhubAccountList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(securityhubaccountsResource, securityhubaccountsKind, opts), &v1alpha1.SecurityhubAccountList{})
+		Invokes(testing.NewListAction(securityhubaccountsResource, securityhubaccountsKind, c.ns, opts), &v1alpha1.SecurityhubAccountList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSecurityhubAccounts) List(opts v1.ListOptions) (result *v1alpha1.Se
 // Watch returns a watch.Interface that watches the requested securityhubAccounts.
 func (c *FakeSecurityhubAccounts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(securityhubaccountsResource, opts))
+		InvokesWatch(testing.NewWatchAction(securityhubaccountsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a securityhubAccount and creates it.  Returns the server's representation of the securityhubAccount, and an error, if there is any.
 func (c *FakeSecurityhubAccounts) Create(securityhubAccount *v1alpha1.SecurityhubAccount) (result *v1alpha1.SecurityhubAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(securityhubaccountsResource, securityhubAccount), &v1alpha1.SecurityhubAccount{})
+		Invokes(testing.NewCreateAction(securityhubaccountsResource, c.ns, securityhubAccount), &v1alpha1.SecurityhubAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSecurityhubAccounts) Create(securityhubAccount *v1alpha1.Securityhu
 // Update takes the representation of a securityhubAccount and updates it. Returns the server's representation of the securityhubAccount, and an error, if there is any.
 func (c *FakeSecurityhubAccounts) Update(securityhubAccount *v1alpha1.SecurityhubAccount) (result *v1alpha1.SecurityhubAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(securityhubaccountsResource, securityhubAccount), &v1alpha1.SecurityhubAccount{})
+		Invokes(testing.NewUpdateAction(securityhubaccountsResource, c.ns, securityhubAccount), &v1alpha1.SecurityhubAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSecurityhubAccounts) Update(securityhubAccount *v1alpha1.Securityhu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSecurityhubAccounts) UpdateStatus(securityhubAccount *v1alpha1.SecurityhubAccount) (*v1alpha1.SecurityhubAccount, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(securityhubaccountsResource, "status", securityhubAccount), &v1alpha1.SecurityhubAccount{})
+		Invokes(testing.NewUpdateSubresourceAction(securityhubaccountsResource, "status", c.ns, securityhubAccount), &v1alpha1.SecurityhubAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSecurityhubAccounts) UpdateStatus(securityhubAccount *v1alpha1.Secu
 // Delete takes name of the securityhubAccount and deletes it. Returns an error if one occurs.
 func (c *FakeSecurityhubAccounts) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(securityhubaccountsResource, name), &v1alpha1.SecurityhubAccount{})
+		Invokes(testing.NewDeleteAction(securityhubaccountsResource, c.ns, name), &v1alpha1.SecurityhubAccount{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSecurityhubAccounts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(securityhubaccountsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(securityhubaccountsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SecurityhubAccountList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSecurityhubAccounts) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched securityhubAccount.
 func (c *FakeSecurityhubAccounts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SecurityhubAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(securityhubaccountsResource, name, pt, data, subresources...), &v1alpha1.SecurityhubAccount{})
+		Invokes(testing.NewPatchSubresourceAction(securityhubaccountsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SecurityhubAccount{})
+
 	if obj == nil {
 		return nil, err
 	}

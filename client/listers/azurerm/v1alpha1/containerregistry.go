@@ -29,8 +29,8 @@ import (
 type ContainerRegistryLister interface {
 	// List lists all ContainerRegistries in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ContainerRegistry, err error)
-	// Get retrieves the ContainerRegistry from the index for a given name.
-	Get(name string) (*v1alpha1.ContainerRegistry, error)
+	// ContainerRegistries returns an object that can list and get ContainerRegistries.
+	ContainerRegistries(namespace string) ContainerRegistryNamespaceLister
 	ContainerRegistryListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *containerRegistryLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the ContainerRegistry from the index for a given name.
-func (s *containerRegistryLister) Get(name string) (*v1alpha1.ContainerRegistry, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ContainerRegistries returns an object that can list and get ContainerRegistries.
+func (s *containerRegistryLister) ContainerRegistries(namespace string) ContainerRegistryNamespaceLister {
+	return containerRegistryNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ContainerRegistryNamespaceLister helps list and get ContainerRegistries.
+type ContainerRegistryNamespaceLister interface {
+	// List lists all ContainerRegistries in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ContainerRegistry, err error)
+	// Get retrieves the ContainerRegistry from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ContainerRegistry, error)
+	ContainerRegistryNamespaceListerExpansion
+}
+
+// containerRegistryNamespaceLister implements the ContainerRegistryNamespaceLister
+// interface.
+type containerRegistryNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ContainerRegistries in the indexer for a given namespace.
+func (s containerRegistryNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ContainerRegistry, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ContainerRegistry))
+	})
+	return ret, err
+}
+
+// Get retrieves the ContainerRegistry from the indexer for a given namespace and name.
+func (s containerRegistryNamespaceLister) Get(name string) (*v1alpha1.ContainerRegistry, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

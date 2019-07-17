@@ -32,7 +32,7 @@ import (
 // KeyVaultCertificatesGetter has a method to return a KeyVaultCertificateInterface.
 // A group's client should implement this interface.
 type KeyVaultCertificatesGetter interface {
-	KeyVaultCertificates() KeyVaultCertificateInterface
+	KeyVaultCertificates(namespace string) KeyVaultCertificateInterface
 }
 
 // KeyVaultCertificateInterface has methods to work with KeyVaultCertificate resources.
@@ -52,12 +52,14 @@ type KeyVaultCertificateInterface interface {
 // keyVaultCertificates implements KeyVaultCertificateInterface
 type keyVaultCertificates struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKeyVaultCertificates returns a KeyVaultCertificates
-func newKeyVaultCertificates(c *AzurermV1alpha1Client) *keyVaultCertificates {
+func newKeyVaultCertificates(c *AzurermV1alpha1Client, namespace string) *keyVaultCertificates {
 	return &keyVaultCertificates{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKeyVaultCertificates(c *AzurermV1alpha1Client) *keyVaultCertificates {
 func (c *keyVaultCertificates) Get(name string, options v1.GetOptions) (result *v1alpha1.KeyVaultCertificate, err error) {
 	result = &v1alpha1.KeyVaultCertificate{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("keyvaultcertificates").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *keyVaultCertificates) List(opts v1.ListOptions) (result *v1alpha1.KeyVa
 	}
 	result = &v1alpha1.KeyVaultCertificateList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("keyvaultcertificates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *keyVaultCertificates) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("keyvaultcertificates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *keyVaultCertificates) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *keyVaultCertificates) Create(keyVaultCertificate *v1alpha1.KeyVaultCertificate) (result *v1alpha1.KeyVaultCertificate, err error) {
 	result = &v1alpha1.KeyVaultCertificate{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("keyvaultcertificates").
 		Body(keyVaultCertificate).
 		Do().
@@ -118,6 +124,7 @@ func (c *keyVaultCertificates) Create(keyVaultCertificate *v1alpha1.KeyVaultCert
 func (c *keyVaultCertificates) Update(keyVaultCertificate *v1alpha1.KeyVaultCertificate) (result *v1alpha1.KeyVaultCertificate, err error) {
 	result = &v1alpha1.KeyVaultCertificate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("keyvaultcertificates").
 		Name(keyVaultCertificate.Name).
 		Body(keyVaultCertificate).
@@ -132,6 +139,7 @@ func (c *keyVaultCertificates) Update(keyVaultCertificate *v1alpha1.KeyVaultCert
 func (c *keyVaultCertificates) UpdateStatus(keyVaultCertificate *v1alpha1.KeyVaultCertificate) (result *v1alpha1.KeyVaultCertificate, err error) {
 	result = &v1alpha1.KeyVaultCertificate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("keyvaultcertificates").
 		Name(keyVaultCertificate.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *keyVaultCertificates) UpdateStatus(keyVaultCertificate *v1alpha1.KeyVau
 // Delete takes name of the keyVaultCertificate and deletes it. Returns an error if one occurs.
 func (c *keyVaultCertificates) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("keyvaultcertificates").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *keyVaultCertificates) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("keyvaultcertificates").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *keyVaultCertificates) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *keyVaultCertificates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KeyVaultCertificate, err error) {
 	result = &v1alpha1.KeyVaultCertificate{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("keyvaultcertificates").
 		SubResource(subresources...).
 		Name(name).

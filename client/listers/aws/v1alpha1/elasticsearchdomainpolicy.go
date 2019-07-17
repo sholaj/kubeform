@@ -29,8 +29,8 @@ import (
 type ElasticsearchDomainPolicyLister interface {
 	// List lists all ElasticsearchDomainPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ElasticsearchDomainPolicy, err error)
-	// Get retrieves the ElasticsearchDomainPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.ElasticsearchDomainPolicy, error)
+	// ElasticsearchDomainPolicies returns an object that can list and get ElasticsearchDomainPolicies.
+	ElasticsearchDomainPolicies(namespace string) ElasticsearchDomainPolicyNamespaceLister
 	ElasticsearchDomainPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *elasticsearchDomainPolicyLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the ElasticsearchDomainPolicy from the index for a given name.
-func (s *elasticsearchDomainPolicyLister) Get(name string) (*v1alpha1.ElasticsearchDomainPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ElasticsearchDomainPolicies returns an object that can list and get ElasticsearchDomainPolicies.
+func (s *elasticsearchDomainPolicyLister) ElasticsearchDomainPolicies(namespace string) ElasticsearchDomainPolicyNamespaceLister {
+	return elasticsearchDomainPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ElasticsearchDomainPolicyNamespaceLister helps list and get ElasticsearchDomainPolicies.
+type ElasticsearchDomainPolicyNamespaceLister interface {
+	// List lists all ElasticsearchDomainPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ElasticsearchDomainPolicy, err error)
+	// Get retrieves the ElasticsearchDomainPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ElasticsearchDomainPolicy, error)
+	ElasticsearchDomainPolicyNamespaceListerExpansion
+}
+
+// elasticsearchDomainPolicyNamespaceLister implements the ElasticsearchDomainPolicyNamespaceLister
+// interface.
+type elasticsearchDomainPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ElasticsearchDomainPolicies in the indexer for a given namespace.
+func (s elasticsearchDomainPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ElasticsearchDomainPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ElasticsearchDomainPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the ElasticsearchDomainPolicy from the indexer for a given namespace and name.
+func (s elasticsearchDomainPolicyNamespaceLister) Get(name string) (*v1alpha1.ElasticsearchDomainPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

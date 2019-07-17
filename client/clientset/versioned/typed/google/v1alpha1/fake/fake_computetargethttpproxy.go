@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/google/v1alpha1"
 )
 
-// FakeComputeTargetHttpProxies implements ComputeTargetHttpProxyInterface
-type FakeComputeTargetHttpProxies struct {
+// FakeComputeTargetHTTPProxies implements ComputeTargetHTTPProxyInterface
+type FakeComputeTargetHTTPProxies struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computetargethttpproxiesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computetargethttpproxies"}
 
-var computetargethttpproxiesKind = schema.GroupVersionKind{Group: "google.kubeform.com", Version: "v1alpha1", Kind: "ComputeTargetHttpProxy"}
+var computetargethttpproxiesKind = schema.GroupVersionKind{Group: "google.kubeform.com", Version: "v1alpha1", Kind: "ComputeTargetHTTPProxy"}
 
-// Get takes name of the computeTargetHttpProxy, and returns the corresponding computeTargetHttpProxy object, and an error if there is any.
-func (c *FakeComputeTargetHttpProxies) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeTargetHttpProxy, err error) {
+// Get takes name of the computeTargetHTTPProxy, and returns the corresponding computeTargetHTTPProxy object, and an error if there is any.
+func (c *FakeComputeTargetHTTPProxies) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeTargetHTTPProxy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computetargethttpproxiesResource, name), &v1alpha1.ComputeTargetHttpProxy{})
+		Invokes(testing.NewGetAction(computetargethttpproxiesResource, c.ns, name), &v1alpha1.ComputeTargetHTTPProxy{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeTargetHttpProxy), err
+	return obj.(*v1alpha1.ComputeTargetHTTPProxy), err
 }
 
-// List takes label and field selectors, and returns the list of ComputeTargetHttpProxies that match those selectors.
-func (c *FakeComputeTargetHttpProxies) List(opts v1.ListOptions) (result *v1alpha1.ComputeTargetHttpProxyList, err error) {
+// List takes label and field selectors, and returns the list of ComputeTargetHTTPProxies that match those selectors.
+func (c *FakeComputeTargetHTTPProxies) List(opts v1.ListOptions) (result *v1alpha1.ComputeTargetHTTPProxyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computetargethttpproxiesResource, computetargethttpproxiesKind, opts), &v1alpha1.ComputeTargetHttpProxyList{})
+		Invokes(testing.NewListAction(computetargethttpproxiesResource, computetargethttpproxiesKind, c.ns, opts), &v1alpha1.ComputeTargetHTTPProxyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeComputeTargetHttpProxies) List(opts v1.ListOptions) (result *v1alph
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.ComputeTargetHttpProxyList{ListMeta: obj.(*v1alpha1.ComputeTargetHttpProxyList).ListMeta}
-	for _, item := range obj.(*v1alpha1.ComputeTargetHttpProxyList).Items {
+	list := &v1alpha1.ComputeTargetHTTPProxyList{ListMeta: obj.(*v1alpha1.ComputeTargetHTTPProxyList).ListMeta}
+	for _, item := range obj.(*v1alpha1.ComputeTargetHTTPProxyList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeComputeTargetHttpProxies) List(opts v1.ListOptions) (result *v1alph
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested computeTargetHttpProxies.
-func (c *FakeComputeTargetHttpProxies) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested computeTargetHTTPProxies.
+func (c *FakeComputeTargetHTTPProxies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computetargethttpproxiesResource, opts))
+		InvokesWatch(testing.NewWatchAction(computetargethttpproxiesResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a computeTargetHttpProxy and creates it.  Returns the server's representation of the computeTargetHttpProxy, and an error, if there is any.
-func (c *FakeComputeTargetHttpProxies) Create(computeTargetHttpProxy *v1alpha1.ComputeTargetHttpProxy) (result *v1alpha1.ComputeTargetHttpProxy, err error) {
+// Create takes the representation of a computeTargetHTTPProxy and creates it.  Returns the server's representation of the computeTargetHTTPProxy, and an error, if there is any.
+func (c *FakeComputeTargetHTTPProxies) Create(computeTargetHTTPProxy *v1alpha1.ComputeTargetHTTPProxy) (result *v1alpha1.ComputeTargetHTTPProxy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computetargethttpproxiesResource, computeTargetHttpProxy), &v1alpha1.ComputeTargetHttpProxy{})
+		Invokes(testing.NewCreateAction(computetargethttpproxiesResource, c.ns, computeTargetHTTPProxy), &v1alpha1.ComputeTargetHTTPProxy{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeTargetHttpProxy), err
+	return obj.(*v1alpha1.ComputeTargetHTTPProxy), err
 }
 
-// Update takes the representation of a computeTargetHttpProxy and updates it. Returns the server's representation of the computeTargetHttpProxy, and an error, if there is any.
-func (c *FakeComputeTargetHttpProxies) Update(computeTargetHttpProxy *v1alpha1.ComputeTargetHttpProxy) (result *v1alpha1.ComputeTargetHttpProxy, err error) {
+// Update takes the representation of a computeTargetHTTPProxy and updates it. Returns the server's representation of the computeTargetHTTPProxy, and an error, if there is any.
+func (c *FakeComputeTargetHTTPProxies) Update(computeTargetHTTPProxy *v1alpha1.ComputeTargetHTTPProxy) (result *v1alpha1.ComputeTargetHTTPProxy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computetargethttpproxiesResource, computeTargetHttpProxy), &v1alpha1.ComputeTargetHttpProxy{})
+		Invokes(testing.NewUpdateAction(computetargethttpproxiesResource, c.ns, computeTargetHTTPProxy), &v1alpha1.ComputeTargetHTTPProxy{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeTargetHttpProxy), err
+	return obj.(*v1alpha1.ComputeTargetHTTPProxy), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeComputeTargetHttpProxies) UpdateStatus(computeTargetHttpProxy *v1alpha1.ComputeTargetHttpProxy) (*v1alpha1.ComputeTargetHttpProxy, error) {
+func (c *FakeComputeTargetHTTPProxies) UpdateStatus(computeTargetHTTPProxy *v1alpha1.ComputeTargetHTTPProxy) (*v1alpha1.ComputeTargetHTTPProxy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computetargethttpproxiesResource, "status", computeTargetHttpProxy), &v1alpha1.ComputeTargetHttpProxy{})
+		Invokes(testing.NewUpdateSubresourceAction(computetargethttpproxiesResource, "status", c.ns, computeTargetHTTPProxy), &v1alpha1.ComputeTargetHTTPProxy{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeTargetHttpProxy), err
+	return obj.(*v1alpha1.ComputeTargetHTTPProxy), err
 }
 
-// Delete takes name of the computeTargetHttpProxy and deletes it. Returns an error if one occurs.
-func (c *FakeComputeTargetHttpProxies) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the computeTargetHTTPProxy and deletes it. Returns an error if one occurs.
+func (c *FakeComputeTargetHTTPProxies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computetargethttpproxiesResource, name), &v1alpha1.ComputeTargetHttpProxy{})
+		Invokes(testing.NewDeleteAction(computetargethttpproxiesResource, c.ns, name), &v1alpha1.ComputeTargetHTTPProxy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeComputeTargetHttpProxies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computetargethttpproxiesResource, listOptions)
+func (c *FakeComputeTargetHTTPProxies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(computetargethttpproxiesResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeTargetHttpProxyList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeTargetHTTPProxyList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched computeTargetHttpProxy.
-func (c *FakeComputeTargetHttpProxies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeTargetHttpProxy, err error) {
+// Patch applies the patch and returns the patched computeTargetHTTPProxy.
+func (c *FakeComputeTargetHTTPProxies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeTargetHTTPProxy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computetargethttpproxiesResource, name, pt, data, subresources...), &v1alpha1.ComputeTargetHttpProxy{})
+		Invokes(testing.NewPatchSubresourceAction(computetargethttpproxiesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeTargetHTTPProxy{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeTargetHttpProxy), err
+	return obj.(*v1alpha1.ComputeTargetHTTPProxy), err
 }

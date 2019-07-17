@@ -41,32 +41,33 @@ type MonitoringUptimeCheckConfigInformer interface {
 type monitoringUptimeCheckConfigInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewMonitoringUptimeCheckConfigInformer constructs a new informer for MonitoringUptimeCheckConfig type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewMonitoringUptimeCheckConfigInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredMonitoringUptimeCheckConfigInformer(client, resyncPeriod, indexers, nil)
+func NewMonitoringUptimeCheckConfigInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredMonitoringUptimeCheckConfigInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredMonitoringUptimeCheckConfigInformer constructs a new informer for MonitoringUptimeCheckConfig type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredMonitoringUptimeCheckConfigInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredMonitoringUptimeCheckConfigInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().MonitoringUptimeCheckConfigs().List(options)
+				return client.GoogleV1alpha1().MonitoringUptimeCheckConfigs(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().MonitoringUptimeCheckConfigs().Watch(options)
+				return client.GoogleV1alpha1().MonitoringUptimeCheckConfigs(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.MonitoringUptimeCheckConfig{},
@@ -76,7 +77,7 @@ func NewFilteredMonitoringUptimeCheckConfigInformer(client versioned.Interface, 
 }
 
 func (f *monitoringUptimeCheckConfigInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredMonitoringUptimeCheckConfigInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredMonitoringUptimeCheckConfigInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *monitoringUptimeCheckConfigInformer) Informer() cache.SharedIndexInformer {

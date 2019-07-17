@@ -32,7 +32,7 @@ import (
 // CurReportDefinitionsGetter has a method to return a CurReportDefinitionInterface.
 // A group's client should implement this interface.
 type CurReportDefinitionsGetter interface {
-	CurReportDefinitions() CurReportDefinitionInterface
+	CurReportDefinitions(namespace string) CurReportDefinitionInterface
 }
 
 // CurReportDefinitionInterface has methods to work with CurReportDefinition resources.
@@ -52,12 +52,14 @@ type CurReportDefinitionInterface interface {
 // curReportDefinitions implements CurReportDefinitionInterface
 type curReportDefinitions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCurReportDefinitions returns a CurReportDefinitions
-func newCurReportDefinitions(c *AwsV1alpha1Client) *curReportDefinitions {
+func newCurReportDefinitions(c *AwsV1alpha1Client, namespace string) *curReportDefinitions {
 	return &curReportDefinitions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCurReportDefinitions(c *AwsV1alpha1Client) *curReportDefinitions {
 func (c *curReportDefinitions) Get(name string, options v1.GetOptions) (result *v1alpha1.CurReportDefinition, err error) {
 	result = &v1alpha1.CurReportDefinition{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("curreportdefinitions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *curReportDefinitions) List(opts v1.ListOptions) (result *v1alpha1.CurRe
 	}
 	result = &v1alpha1.CurReportDefinitionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("curreportdefinitions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *curReportDefinitions) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("curreportdefinitions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *curReportDefinitions) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *curReportDefinitions) Create(curReportDefinition *v1alpha1.CurReportDefinition) (result *v1alpha1.CurReportDefinition, err error) {
 	result = &v1alpha1.CurReportDefinition{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("curreportdefinitions").
 		Body(curReportDefinition).
 		Do().
@@ -118,6 +124,7 @@ func (c *curReportDefinitions) Create(curReportDefinition *v1alpha1.CurReportDef
 func (c *curReportDefinitions) Update(curReportDefinition *v1alpha1.CurReportDefinition) (result *v1alpha1.CurReportDefinition, err error) {
 	result = &v1alpha1.CurReportDefinition{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("curreportdefinitions").
 		Name(curReportDefinition.Name).
 		Body(curReportDefinition).
@@ -132,6 +139,7 @@ func (c *curReportDefinitions) Update(curReportDefinition *v1alpha1.CurReportDef
 func (c *curReportDefinitions) UpdateStatus(curReportDefinition *v1alpha1.CurReportDefinition) (result *v1alpha1.CurReportDefinition, err error) {
 	result = &v1alpha1.CurReportDefinition{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("curreportdefinitions").
 		Name(curReportDefinition.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *curReportDefinitions) UpdateStatus(curReportDefinition *v1alpha1.CurRep
 // Delete takes name of the curReportDefinition and deletes it. Returns an error if one occurs.
 func (c *curReportDefinitions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("curreportdefinitions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *curReportDefinitions) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("curreportdefinitions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *curReportDefinitions) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *curReportDefinitions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CurReportDefinition, err error) {
 	result = &v1alpha1.CurReportDefinition{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("curreportdefinitions").
 		SubResource(subresources...).
 		Name(name).

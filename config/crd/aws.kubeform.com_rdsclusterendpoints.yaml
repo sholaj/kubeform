@@ -397,26 +397,36 @@ spec:
           type: object
         spec:
           properties:
-            cluster_endpoint_identifier:
+            clusterEndpointIdentifier:
               type: string
-            cluster_identifier:
+            clusterIdentifier:
               type: string
-            custom_endpoint_type:
+            customEndpointType:
               type: string
-            excluded_members:
+            excludedMembers:
               items:
                 type: string
               type: array
               uniqueItems: true
-            static_members:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            staticMembers:
               items:
                 type: string
               type: array
               uniqueItems: true
           required:
-          - cluster_endpoint_identifier
-          - cluster_identifier
-          - custom_endpoint_type
+          - clusterEndpointIdentifier
+          - clusterIdentifier
+          - customEndpointType
+          - providerRef
           type: object
         status:
           properties:
@@ -427,6 +437,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

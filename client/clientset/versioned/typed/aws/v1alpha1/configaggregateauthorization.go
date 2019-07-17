@@ -32,7 +32,7 @@ import (
 // ConfigAggregateAuthorizationsGetter has a method to return a ConfigAggregateAuthorizationInterface.
 // A group's client should implement this interface.
 type ConfigAggregateAuthorizationsGetter interface {
-	ConfigAggregateAuthorizations() ConfigAggregateAuthorizationInterface
+	ConfigAggregateAuthorizations(namespace string) ConfigAggregateAuthorizationInterface
 }
 
 // ConfigAggregateAuthorizationInterface has methods to work with ConfigAggregateAuthorization resources.
@@ -52,12 +52,14 @@ type ConfigAggregateAuthorizationInterface interface {
 // configAggregateAuthorizations implements ConfigAggregateAuthorizationInterface
 type configAggregateAuthorizations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newConfigAggregateAuthorizations returns a ConfigAggregateAuthorizations
-func newConfigAggregateAuthorizations(c *AwsV1alpha1Client) *configAggregateAuthorizations {
+func newConfigAggregateAuthorizations(c *AwsV1alpha1Client, namespace string) *configAggregateAuthorizations {
 	return &configAggregateAuthorizations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newConfigAggregateAuthorizations(c *AwsV1alpha1Client) *configAggregateAuth
 func (c *configAggregateAuthorizations) Get(name string, options v1.GetOptions) (result *v1alpha1.ConfigAggregateAuthorization, err error) {
 	result = &v1alpha1.ConfigAggregateAuthorization{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("configaggregateauthorizations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *configAggregateAuthorizations) List(opts v1.ListOptions) (result *v1alp
 	}
 	result = &v1alpha1.ConfigAggregateAuthorizationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("configaggregateauthorizations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *configAggregateAuthorizations) Watch(opts v1.ListOptions) (watch.Interf
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("configaggregateauthorizations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *configAggregateAuthorizations) Watch(opts v1.ListOptions) (watch.Interf
 func (c *configAggregateAuthorizations) Create(configAggregateAuthorization *v1alpha1.ConfigAggregateAuthorization) (result *v1alpha1.ConfigAggregateAuthorization, err error) {
 	result = &v1alpha1.ConfigAggregateAuthorization{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("configaggregateauthorizations").
 		Body(configAggregateAuthorization).
 		Do().
@@ -118,6 +124,7 @@ func (c *configAggregateAuthorizations) Create(configAggregateAuthorization *v1a
 func (c *configAggregateAuthorizations) Update(configAggregateAuthorization *v1alpha1.ConfigAggregateAuthorization) (result *v1alpha1.ConfigAggregateAuthorization, err error) {
 	result = &v1alpha1.ConfigAggregateAuthorization{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("configaggregateauthorizations").
 		Name(configAggregateAuthorization.Name).
 		Body(configAggregateAuthorization).
@@ -132,6 +139,7 @@ func (c *configAggregateAuthorizations) Update(configAggregateAuthorization *v1a
 func (c *configAggregateAuthorizations) UpdateStatus(configAggregateAuthorization *v1alpha1.ConfigAggregateAuthorization) (result *v1alpha1.ConfigAggregateAuthorization, err error) {
 	result = &v1alpha1.ConfigAggregateAuthorization{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("configaggregateauthorizations").
 		Name(configAggregateAuthorization.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *configAggregateAuthorizations) UpdateStatus(configAggregateAuthorizatio
 // Delete takes name of the configAggregateAuthorization and deletes it. Returns an error if one occurs.
 func (c *configAggregateAuthorizations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("configaggregateauthorizations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *configAggregateAuthorizations) DeleteCollection(options *v1.DeleteOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("configaggregateauthorizations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *configAggregateAuthorizations) DeleteCollection(options *v1.DeleteOptio
 func (c *configAggregateAuthorizations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ConfigAggregateAuthorization, err error) {
 	result = &v1alpha1.ConfigAggregateAuthorization{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("configaggregateauthorizations").
 		SubResource(subresources...).
 		Name(name).

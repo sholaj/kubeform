@@ -29,8 +29,8 @@ import (
 type RedshiftSnapshotCopyGrantLister interface {
 	// List lists all RedshiftSnapshotCopyGrants in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RedshiftSnapshotCopyGrant, err error)
-	// Get retrieves the RedshiftSnapshotCopyGrant from the index for a given name.
-	Get(name string) (*v1alpha1.RedshiftSnapshotCopyGrant, error)
+	// RedshiftSnapshotCopyGrants returns an object that can list and get RedshiftSnapshotCopyGrants.
+	RedshiftSnapshotCopyGrants(namespace string) RedshiftSnapshotCopyGrantNamespaceLister
 	RedshiftSnapshotCopyGrantListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *redshiftSnapshotCopyGrantLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the RedshiftSnapshotCopyGrant from the index for a given name.
-func (s *redshiftSnapshotCopyGrantLister) Get(name string) (*v1alpha1.RedshiftSnapshotCopyGrant, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RedshiftSnapshotCopyGrants returns an object that can list and get RedshiftSnapshotCopyGrants.
+func (s *redshiftSnapshotCopyGrantLister) RedshiftSnapshotCopyGrants(namespace string) RedshiftSnapshotCopyGrantNamespaceLister {
+	return redshiftSnapshotCopyGrantNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RedshiftSnapshotCopyGrantNamespaceLister helps list and get RedshiftSnapshotCopyGrants.
+type RedshiftSnapshotCopyGrantNamespaceLister interface {
+	// List lists all RedshiftSnapshotCopyGrants in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RedshiftSnapshotCopyGrant, err error)
+	// Get retrieves the RedshiftSnapshotCopyGrant from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RedshiftSnapshotCopyGrant, error)
+	RedshiftSnapshotCopyGrantNamespaceListerExpansion
+}
+
+// redshiftSnapshotCopyGrantNamespaceLister implements the RedshiftSnapshotCopyGrantNamespaceLister
+// interface.
+type redshiftSnapshotCopyGrantNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RedshiftSnapshotCopyGrants in the indexer for a given namespace.
+func (s redshiftSnapshotCopyGrantNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RedshiftSnapshotCopyGrant, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RedshiftSnapshotCopyGrant))
+	})
+	return ret, err
+}
+
+// Get retrieves the RedshiftSnapshotCopyGrant from the indexer for a given namespace and name.
+func (s redshiftSnapshotCopyGrantNamespaceLister) Get(name string) (*v1alpha1.RedshiftSnapshotCopyGrant, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

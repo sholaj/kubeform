@@ -32,7 +32,7 @@ import (
 // IamOpenidConnectProvidersGetter has a method to return a IamOpenidConnectProviderInterface.
 // A group's client should implement this interface.
 type IamOpenidConnectProvidersGetter interface {
-	IamOpenidConnectProviders() IamOpenidConnectProviderInterface
+	IamOpenidConnectProviders(namespace string) IamOpenidConnectProviderInterface
 }
 
 // IamOpenidConnectProviderInterface has methods to work with IamOpenidConnectProvider resources.
@@ -52,12 +52,14 @@ type IamOpenidConnectProviderInterface interface {
 // iamOpenidConnectProviders implements IamOpenidConnectProviderInterface
 type iamOpenidConnectProviders struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIamOpenidConnectProviders returns a IamOpenidConnectProviders
-func newIamOpenidConnectProviders(c *AwsV1alpha1Client) *iamOpenidConnectProviders {
+func newIamOpenidConnectProviders(c *AwsV1alpha1Client, namespace string) *iamOpenidConnectProviders {
 	return &iamOpenidConnectProviders{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIamOpenidConnectProviders(c *AwsV1alpha1Client) *iamOpenidConnectProvide
 func (c *iamOpenidConnectProviders) Get(name string, options v1.GetOptions) (result *v1alpha1.IamOpenidConnectProvider, err error) {
 	result = &v1alpha1.IamOpenidConnectProvider{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamopenidconnectproviders").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iamOpenidConnectProviders) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.IamOpenidConnectProviderList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamopenidconnectproviders").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iamOpenidConnectProviders) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iamopenidconnectproviders").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iamOpenidConnectProviders) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *iamOpenidConnectProviders) Create(iamOpenidConnectProvider *v1alpha1.IamOpenidConnectProvider) (result *v1alpha1.IamOpenidConnectProvider, err error) {
 	result = &v1alpha1.IamOpenidConnectProvider{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iamopenidconnectproviders").
 		Body(iamOpenidConnectProvider).
 		Do().
@@ -118,6 +124,7 @@ func (c *iamOpenidConnectProviders) Create(iamOpenidConnectProvider *v1alpha1.Ia
 func (c *iamOpenidConnectProviders) Update(iamOpenidConnectProvider *v1alpha1.IamOpenidConnectProvider) (result *v1alpha1.IamOpenidConnectProvider, err error) {
 	result = &v1alpha1.IamOpenidConnectProvider{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamopenidconnectproviders").
 		Name(iamOpenidConnectProvider.Name).
 		Body(iamOpenidConnectProvider).
@@ -132,6 +139,7 @@ func (c *iamOpenidConnectProviders) Update(iamOpenidConnectProvider *v1alpha1.Ia
 func (c *iamOpenidConnectProviders) UpdateStatus(iamOpenidConnectProvider *v1alpha1.IamOpenidConnectProvider) (result *v1alpha1.IamOpenidConnectProvider, err error) {
 	result = &v1alpha1.IamOpenidConnectProvider{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamopenidconnectproviders").
 		Name(iamOpenidConnectProvider.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iamOpenidConnectProviders) UpdateStatus(iamOpenidConnectProvider *v1alp
 // Delete takes name of the iamOpenidConnectProvider and deletes it. Returns an error if one occurs.
 func (c *iamOpenidConnectProviders) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamopenidconnectproviders").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iamOpenidConnectProviders) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamopenidconnectproviders").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iamOpenidConnectProviders) DeleteCollection(options *v1.DeleteOptions, 
 func (c *iamOpenidConnectProviders) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamOpenidConnectProvider, err error) {
 	result = &v1alpha1.IamOpenidConnectProvider{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iamopenidconnectproviders").
 		SubResource(subresources...).
 		Name(name).

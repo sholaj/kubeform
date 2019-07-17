@@ -29,8 +29,8 @@ import (
 type FirewallNetworkRuleCollectionLister interface {
 	// List lists all FirewallNetworkRuleCollections in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.FirewallNetworkRuleCollection, err error)
-	// Get retrieves the FirewallNetworkRuleCollection from the index for a given name.
-	Get(name string) (*v1alpha1.FirewallNetworkRuleCollection, error)
+	// FirewallNetworkRuleCollections returns an object that can list and get FirewallNetworkRuleCollections.
+	FirewallNetworkRuleCollections(namespace string) FirewallNetworkRuleCollectionNamespaceLister
 	FirewallNetworkRuleCollectionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *firewallNetworkRuleCollectionLister) List(selector labels.Selector) (re
 	return ret, err
 }
 
-// Get retrieves the FirewallNetworkRuleCollection from the index for a given name.
-func (s *firewallNetworkRuleCollectionLister) Get(name string) (*v1alpha1.FirewallNetworkRuleCollection, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// FirewallNetworkRuleCollections returns an object that can list and get FirewallNetworkRuleCollections.
+func (s *firewallNetworkRuleCollectionLister) FirewallNetworkRuleCollections(namespace string) FirewallNetworkRuleCollectionNamespaceLister {
+	return firewallNetworkRuleCollectionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// FirewallNetworkRuleCollectionNamespaceLister helps list and get FirewallNetworkRuleCollections.
+type FirewallNetworkRuleCollectionNamespaceLister interface {
+	// List lists all FirewallNetworkRuleCollections in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.FirewallNetworkRuleCollection, err error)
+	// Get retrieves the FirewallNetworkRuleCollection from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.FirewallNetworkRuleCollection, error)
+	FirewallNetworkRuleCollectionNamespaceListerExpansion
+}
+
+// firewallNetworkRuleCollectionNamespaceLister implements the FirewallNetworkRuleCollectionNamespaceLister
+// interface.
+type firewallNetworkRuleCollectionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all FirewallNetworkRuleCollections in the indexer for a given namespace.
+func (s firewallNetworkRuleCollectionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.FirewallNetworkRuleCollection, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.FirewallNetworkRuleCollection))
+	})
+	return ret, err
+}
+
+// Get retrieves the FirewallNetworkRuleCollection from the indexer for a given namespace and name.
+func (s firewallNetworkRuleCollectionNamespaceLister) Get(name string) (*v1alpha1.FirewallNetworkRuleCollection, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

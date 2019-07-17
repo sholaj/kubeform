@@ -32,7 +32,7 @@ import (
 // IamUserPolicyAttachmentsGetter has a method to return a IamUserPolicyAttachmentInterface.
 // A group's client should implement this interface.
 type IamUserPolicyAttachmentsGetter interface {
-	IamUserPolicyAttachments() IamUserPolicyAttachmentInterface
+	IamUserPolicyAttachments(namespace string) IamUserPolicyAttachmentInterface
 }
 
 // IamUserPolicyAttachmentInterface has methods to work with IamUserPolicyAttachment resources.
@@ -52,12 +52,14 @@ type IamUserPolicyAttachmentInterface interface {
 // iamUserPolicyAttachments implements IamUserPolicyAttachmentInterface
 type iamUserPolicyAttachments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIamUserPolicyAttachments returns a IamUserPolicyAttachments
-func newIamUserPolicyAttachments(c *AwsV1alpha1Client) *iamUserPolicyAttachments {
+func newIamUserPolicyAttachments(c *AwsV1alpha1Client, namespace string) *iamUserPolicyAttachments {
 	return &iamUserPolicyAttachments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIamUserPolicyAttachments(c *AwsV1alpha1Client) *iamUserPolicyAttachments
 func (c *iamUserPolicyAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.IamUserPolicyAttachment, err error) {
 	result = &v1alpha1.IamUserPolicyAttachment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamuserpolicyattachments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iamUserPolicyAttachments) List(opts v1.ListOptions) (result *v1alpha1.I
 	}
 	result = &v1alpha1.IamUserPolicyAttachmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamuserpolicyattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iamUserPolicyAttachments) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iamuserpolicyattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iamUserPolicyAttachments) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *iamUserPolicyAttachments) Create(iamUserPolicyAttachment *v1alpha1.IamUserPolicyAttachment) (result *v1alpha1.IamUserPolicyAttachment, err error) {
 	result = &v1alpha1.IamUserPolicyAttachment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iamuserpolicyattachments").
 		Body(iamUserPolicyAttachment).
 		Do().
@@ -118,6 +124,7 @@ func (c *iamUserPolicyAttachments) Create(iamUserPolicyAttachment *v1alpha1.IamU
 func (c *iamUserPolicyAttachments) Update(iamUserPolicyAttachment *v1alpha1.IamUserPolicyAttachment) (result *v1alpha1.IamUserPolicyAttachment, err error) {
 	result = &v1alpha1.IamUserPolicyAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamuserpolicyattachments").
 		Name(iamUserPolicyAttachment.Name).
 		Body(iamUserPolicyAttachment).
@@ -132,6 +139,7 @@ func (c *iamUserPolicyAttachments) Update(iamUserPolicyAttachment *v1alpha1.IamU
 func (c *iamUserPolicyAttachments) UpdateStatus(iamUserPolicyAttachment *v1alpha1.IamUserPolicyAttachment) (result *v1alpha1.IamUserPolicyAttachment, err error) {
 	result = &v1alpha1.IamUserPolicyAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamuserpolicyattachments").
 		Name(iamUserPolicyAttachment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iamUserPolicyAttachments) UpdateStatus(iamUserPolicyAttachment *v1alpha
 // Delete takes name of the iamUserPolicyAttachment and deletes it. Returns an error if one occurs.
 func (c *iamUserPolicyAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamuserpolicyattachments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iamUserPolicyAttachments) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamuserpolicyattachments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iamUserPolicyAttachments) DeleteCollection(options *v1.DeleteOptions, l
 func (c *iamUserPolicyAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamUserPolicyAttachment, err error) {
 	result = &v1alpha1.IamUserPolicyAttachment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iamuserpolicyattachments").
 		SubResource(subresources...).
 		Name(name).

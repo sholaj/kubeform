@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// LogicAppTriggerHttpRequestLister helps list LogicAppTriggerHttpRequests.
-type LogicAppTriggerHttpRequestLister interface {
-	// List lists all LogicAppTriggerHttpRequests in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.LogicAppTriggerHttpRequest, err error)
-	// Get retrieves the LogicAppTriggerHttpRequest from the index for a given name.
-	Get(name string) (*v1alpha1.LogicAppTriggerHttpRequest, error)
-	LogicAppTriggerHttpRequestListerExpansion
+// LogicAppTriggerHTTPRequestLister helps list LogicAppTriggerHTTPRequests.
+type LogicAppTriggerHTTPRequestLister interface {
+	// List lists all LogicAppTriggerHTTPRequests in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.LogicAppTriggerHTTPRequest, err error)
+	// LogicAppTriggerHTTPRequests returns an object that can list and get LogicAppTriggerHTTPRequests.
+	LogicAppTriggerHTTPRequests(namespace string) LogicAppTriggerHTTPRequestNamespaceLister
+	LogicAppTriggerHTTPRequestListerExpansion
 }
 
-// logicAppTriggerHttpRequestLister implements the LogicAppTriggerHttpRequestLister interface.
-type logicAppTriggerHttpRequestLister struct {
+// logicAppTriggerHTTPRequestLister implements the LogicAppTriggerHTTPRequestLister interface.
+type logicAppTriggerHTTPRequestLister struct {
 	indexer cache.Indexer
 }
 
-// NewLogicAppTriggerHttpRequestLister returns a new LogicAppTriggerHttpRequestLister.
-func NewLogicAppTriggerHttpRequestLister(indexer cache.Indexer) LogicAppTriggerHttpRequestLister {
-	return &logicAppTriggerHttpRequestLister{indexer: indexer}
+// NewLogicAppTriggerHTTPRequestLister returns a new LogicAppTriggerHTTPRequestLister.
+func NewLogicAppTriggerHTTPRequestLister(indexer cache.Indexer) LogicAppTriggerHTTPRequestLister {
+	return &logicAppTriggerHTTPRequestLister{indexer: indexer}
 }
 
-// List lists all LogicAppTriggerHttpRequests in the indexer.
-func (s *logicAppTriggerHttpRequestLister) List(selector labels.Selector) (ret []*v1alpha1.LogicAppTriggerHttpRequest, err error) {
+// List lists all LogicAppTriggerHTTPRequests in the indexer.
+func (s *logicAppTriggerHTTPRequestLister) List(selector labels.Selector) (ret []*v1alpha1.LogicAppTriggerHTTPRequest, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.LogicAppTriggerHttpRequest))
+		ret = append(ret, m.(*v1alpha1.LogicAppTriggerHTTPRequest))
 	})
 	return ret, err
 }
 
-// Get retrieves the LogicAppTriggerHttpRequest from the index for a given name.
-func (s *logicAppTriggerHttpRequestLister) Get(name string) (*v1alpha1.LogicAppTriggerHttpRequest, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LogicAppTriggerHTTPRequests returns an object that can list and get LogicAppTriggerHTTPRequests.
+func (s *logicAppTriggerHTTPRequestLister) LogicAppTriggerHTTPRequests(namespace string) LogicAppTriggerHTTPRequestNamespaceLister {
+	return logicAppTriggerHTTPRequestNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LogicAppTriggerHTTPRequestNamespaceLister helps list and get LogicAppTriggerHTTPRequests.
+type LogicAppTriggerHTTPRequestNamespaceLister interface {
+	// List lists all LogicAppTriggerHTTPRequests in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LogicAppTriggerHTTPRequest, err error)
+	// Get retrieves the LogicAppTriggerHTTPRequest from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LogicAppTriggerHTTPRequest, error)
+	LogicAppTriggerHTTPRequestNamespaceListerExpansion
+}
+
+// logicAppTriggerHTTPRequestNamespaceLister implements the LogicAppTriggerHTTPRequestNamespaceLister
+// interface.
+type logicAppTriggerHTTPRequestNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LogicAppTriggerHTTPRequests in the indexer for a given namespace.
+func (s logicAppTriggerHTTPRequestNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LogicAppTriggerHTTPRequest, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LogicAppTriggerHTTPRequest))
+	})
+	return ret, err
+}
+
+// Get retrieves the LogicAppTriggerHTTPRequest from the indexer for a given namespace and name.
+func (s logicAppTriggerHTTPRequestNamespaceLister) Get(name string) (*v1alpha1.LogicAppTriggerHTTPRequest, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("logicapptriggerhttprequest"), name)
 	}
-	return obj.(*v1alpha1.LogicAppTriggerHttpRequest), nil
+	return obj.(*v1alpha1.LogicAppTriggerHTTPRequest), nil
 }

@@ -32,7 +32,7 @@ import (
 // NetworkConnectionMonitorsGetter has a method to return a NetworkConnectionMonitorInterface.
 // A group's client should implement this interface.
 type NetworkConnectionMonitorsGetter interface {
-	NetworkConnectionMonitors() NetworkConnectionMonitorInterface
+	NetworkConnectionMonitors(namespace string) NetworkConnectionMonitorInterface
 }
 
 // NetworkConnectionMonitorInterface has methods to work with NetworkConnectionMonitor resources.
@@ -52,12 +52,14 @@ type NetworkConnectionMonitorInterface interface {
 // networkConnectionMonitors implements NetworkConnectionMonitorInterface
 type networkConnectionMonitors struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNetworkConnectionMonitors returns a NetworkConnectionMonitors
-func newNetworkConnectionMonitors(c *AzurermV1alpha1Client) *networkConnectionMonitors {
+func newNetworkConnectionMonitors(c *AzurermV1alpha1Client, namespace string) *networkConnectionMonitors {
 	return &networkConnectionMonitors{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNetworkConnectionMonitors(c *AzurermV1alpha1Client) *networkConnectionMo
 func (c *networkConnectionMonitors) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkConnectionMonitor, err error) {
 	result = &v1alpha1.NetworkConnectionMonitor{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkconnectionmonitors").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *networkConnectionMonitors) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.NetworkConnectionMonitorList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkconnectionmonitors").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *networkConnectionMonitors) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("networkconnectionmonitors").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *networkConnectionMonitors) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *networkConnectionMonitors) Create(networkConnectionMonitor *v1alpha1.NetworkConnectionMonitor) (result *v1alpha1.NetworkConnectionMonitor, err error) {
 	result = &v1alpha1.NetworkConnectionMonitor{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("networkconnectionmonitors").
 		Body(networkConnectionMonitor).
 		Do().
@@ -118,6 +124,7 @@ func (c *networkConnectionMonitors) Create(networkConnectionMonitor *v1alpha1.Ne
 func (c *networkConnectionMonitors) Update(networkConnectionMonitor *v1alpha1.NetworkConnectionMonitor) (result *v1alpha1.NetworkConnectionMonitor, err error) {
 	result = &v1alpha1.NetworkConnectionMonitor{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkconnectionmonitors").
 		Name(networkConnectionMonitor.Name).
 		Body(networkConnectionMonitor).
@@ -132,6 +139,7 @@ func (c *networkConnectionMonitors) Update(networkConnectionMonitor *v1alpha1.Ne
 func (c *networkConnectionMonitors) UpdateStatus(networkConnectionMonitor *v1alpha1.NetworkConnectionMonitor) (result *v1alpha1.NetworkConnectionMonitor, err error) {
 	result = &v1alpha1.NetworkConnectionMonitor{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkconnectionmonitors").
 		Name(networkConnectionMonitor.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *networkConnectionMonitors) UpdateStatus(networkConnectionMonitor *v1alp
 // Delete takes name of the networkConnectionMonitor and deletes it. Returns an error if one occurs.
 func (c *networkConnectionMonitors) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkconnectionmonitors").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *networkConnectionMonitors) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkconnectionmonitors").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *networkConnectionMonitors) DeleteCollection(options *v1.DeleteOptions, 
 func (c *networkConnectionMonitors) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkConnectionMonitor, err error) {
 	result = &v1alpha1.NetworkConnectionMonitor{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("networkconnectionmonitors").
 		SubResource(subresources...).
 		Name(name).

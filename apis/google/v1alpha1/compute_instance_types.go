@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,82 +20,83 @@ type ComputeInstance struct {
 
 type ComputeInstanceSpecAttachedDisk struct {
 	// +optional
-	DiskEncryptionKeyRaw string `json:"disk_encryption_key_raw,omitempty"`
+	DiskEncryptionKeyRaw string `json:"diskEncryptionKeyRaw,omitempty" tf:"disk_encryption_key_raw,omitempty"`
 	// +optional
-	Mode   string `json:"mode,omitempty"`
-	Source string `json:"source"`
+	Mode   string `json:"mode,omitempty" tf:"mode,omitempty"`
+	Source string `json:"source" tf:"source"`
 }
 
 type ComputeInstanceSpecBootDisk struct {
 	// +optional
-	AutoDelete bool `json:"auto_delete,omitempty"`
+	AutoDelete bool `json:"autoDelete,omitempty" tf:"auto_delete,omitempty"`
 	// +optional
-	DiskEncryptionKeyRaw string `json:"disk_encryption_key_raw,omitempty"`
+	DiskEncryptionKeyRaw string `json:"diskEncryptionKeyRaw,omitempty" tf:"disk_encryption_key_raw,omitempty"`
 }
 
 type ComputeInstanceSpecNetworkInterfaceAccessConfig struct {
 	// +optional
-	PublicPtrDomainName string `json:"public_ptr_domain_name,omitempty"`
+	PublicPtrDomainName string `json:"publicPtrDomainName,omitempty" tf:"public_ptr_domain_name,omitempty"`
 }
 
-type ComputeInstanceSpecNetworkInterfaceAliasIpRange struct {
-	IpCidrRange string `json:"ip_cidr_range"`
+type ComputeInstanceSpecNetworkInterfaceAliasIPRange struct {
+	IpCIDRRange string `json:"ipCIDRRange" tf:"ip_cidr_range"`
 	// +optional
-	SubnetworkRangeName string `json:"subnetwork_range_name,omitempty"`
+	SubnetworkRangeName string `json:"subnetworkRangeName,omitempty" tf:"subnetwork_range_name,omitempty"`
 }
 
 type ComputeInstanceSpecNetworkInterface struct {
 	// +optional
-	AccessConfig *[]ComputeInstanceSpecNetworkInterface `json:"access_config,omitempty"`
+	AccessConfig []ComputeInstanceSpecNetworkInterfaceAccessConfig `json:"accessConfig,omitempty" tf:"access_config,omitempty"`
 	// +optional
-	AliasIpRange *[]ComputeInstanceSpecNetworkInterface `json:"alias_ip_range,omitempty"`
+	AliasIPRange []ComputeInstanceSpecNetworkInterfaceAliasIPRange `json:"aliasIPRange,omitempty" tf:"alias_ip_range,omitempty"`
 }
 
 type ComputeInstanceSpecScratchDisk struct {
 	// +optional
-	Interface string `json:"interface,omitempty"`
+	Interface string `json:"interface,omitempty" tf:"interface,omitempty"`
 }
 
 type ComputeInstanceSpecServiceAccount struct {
 	// +kubebuilder:validation:UniqueItems=true
-	Scopes []string `json:"scopes"`
+	Scopes []string `json:"scopes" tf:"scopes"`
 }
 
 type ComputeInstanceSpec struct {
 	// +optional
-	AllowStoppingForUpdate bool `json:"allow_stopping_for_update,omitempty"`
+	AllowStoppingForUpdate bool `json:"allowStoppingForUpdate,omitempty" tf:"allow_stopping_for_update,omitempty"`
 	// +optional
-	AttachedDisk *[]ComputeInstanceSpec `json:"attached_disk,omitempty"`
+	AttachedDisk []ComputeInstanceSpecAttachedDisk `json:"attachedDisk,omitempty" tf:"attached_disk,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
-	BootDisk []ComputeInstanceSpec `json:"boot_disk"`
+	BootDisk []ComputeInstanceSpecBootDisk `json:"bootDisk" tf:"boot_disk"`
 	// +optional
-	CanIpForward bool `json:"can_ip_forward,omitempty"`
+	CanIPForward bool `json:"canIPForward,omitempty" tf:"can_ip_forward,omitempty"`
 	// +optional
 	// Deprecated
-	CreateTimeout int `json:"create_timeout,omitempty"`
+	CreateTimeout int `json:"createTimeout,omitempty" tf:"create_timeout,omitempty"`
 	// +optional
-	DeletionProtection bool `json:"deletion_protection,omitempty"`
+	DeletionProtection bool `json:"deletionProtection,omitempty" tf:"deletion_protection,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	Labels      map[string]string `json:"labels,omitempty"`
-	MachineType string            `json:"machine_type"`
+	Labels      map[string]string `json:"labels,omitempty" tf:"labels,omitempty"`
+	MachineType string            `json:"machineType" tf:"machine_type"`
 	// +optional
-	Metadata map[string]string `json:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata,omitempty" tf:"metadata,omitempty"`
 	// +optional
-	MetadataStartupScript string `json:"metadata_startup_script,omitempty"`
+	MetadataStartupScript string `json:"metadataStartupScript,omitempty" tf:"metadata_startup_script,omitempty"`
 	// +optional
-	MinCpuPlatform   string                `json:"min_cpu_platform,omitempty"`
-	Name             string                `json:"name"`
-	NetworkInterface []ComputeInstanceSpec `json:"network_interface"`
+	MinCPUPlatform   string                                `json:"minCPUPlatform,omitempty" tf:"min_cpu_platform,omitempty"`
+	Name             string                                `json:"name" tf:"name"`
+	NetworkInterface []ComputeInstanceSpecNetworkInterface `json:"networkInterface" tf:"network_interface"`
 	// +optional
-	ScratchDisk *[]ComputeInstanceSpec `json:"scratch_disk,omitempty"`
+	ScratchDisk []ComputeInstanceSpecScratchDisk `json:"scratchDisk,omitempty" tf:"scratch_disk,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ServiceAccount *[]ComputeInstanceSpec `json:"service_account,omitempty"`
+	ServiceAccount []ComputeInstanceSpecServiceAccount `json:"serviceAccount,omitempty" tf:"service_account,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Tags []string `json:"tags,omitempty"`
+	Tags        []string                  `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ComputeInstanceStatus struct {
@@ -103,7 +104,9 @@ type ComputeInstanceStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

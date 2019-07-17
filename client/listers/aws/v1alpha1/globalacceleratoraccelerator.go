@@ -29,8 +29,8 @@ import (
 type GlobalacceleratorAcceleratorLister interface {
 	// List lists all GlobalacceleratorAccelerators in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GlobalacceleratorAccelerator, err error)
-	// Get retrieves the GlobalacceleratorAccelerator from the index for a given name.
-	Get(name string) (*v1alpha1.GlobalacceleratorAccelerator, error)
+	// GlobalacceleratorAccelerators returns an object that can list and get GlobalacceleratorAccelerators.
+	GlobalacceleratorAccelerators(namespace string) GlobalacceleratorAcceleratorNamespaceLister
 	GlobalacceleratorAcceleratorListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *globalacceleratorAcceleratorLister) List(selector labels.Selector) (ret
 	return ret, err
 }
 
-// Get retrieves the GlobalacceleratorAccelerator from the index for a given name.
-func (s *globalacceleratorAcceleratorLister) Get(name string) (*v1alpha1.GlobalacceleratorAccelerator, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GlobalacceleratorAccelerators returns an object that can list and get GlobalacceleratorAccelerators.
+func (s *globalacceleratorAcceleratorLister) GlobalacceleratorAccelerators(namespace string) GlobalacceleratorAcceleratorNamespaceLister {
+	return globalacceleratorAcceleratorNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GlobalacceleratorAcceleratorNamespaceLister helps list and get GlobalacceleratorAccelerators.
+type GlobalacceleratorAcceleratorNamespaceLister interface {
+	// List lists all GlobalacceleratorAccelerators in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GlobalacceleratorAccelerator, err error)
+	// Get retrieves the GlobalacceleratorAccelerator from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GlobalacceleratorAccelerator, error)
+	GlobalacceleratorAcceleratorNamespaceListerExpansion
+}
+
+// globalacceleratorAcceleratorNamespaceLister implements the GlobalacceleratorAcceleratorNamespaceLister
+// interface.
+type globalacceleratorAcceleratorNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GlobalacceleratorAccelerators in the indexer for a given namespace.
+func (s globalacceleratorAcceleratorNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GlobalacceleratorAccelerator, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GlobalacceleratorAccelerator))
+	})
+	return ret, err
+}
+
+// Get retrieves the GlobalacceleratorAccelerator from the indexer for a given namespace and name.
+func (s globalacceleratorAcceleratorNamespaceLister) Get(name string) (*v1alpha1.GlobalacceleratorAccelerator, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

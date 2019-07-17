@@ -32,7 +32,7 @@ import (
 // RedshiftSubnetGroupsGetter has a method to return a RedshiftSubnetGroupInterface.
 // A group's client should implement this interface.
 type RedshiftSubnetGroupsGetter interface {
-	RedshiftSubnetGroups() RedshiftSubnetGroupInterface
+	RedshiftSubnetGroups(namespace string) RedshiftSubnetGroupInterface
 }
 
 // RedshiftSubnetGroupInterface has methods to work with RedshiftSubnetGroup resources.
@@ -52,12 +52,14 @@ type RedshiftSubnetGroupInterface interface {
 // redshiftSubnetGroups implements RedshiftSubnetGroupInterface
 type redshiftSubnetGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRedshiftSubnetGroups returns a RedshiftSubnetGroups
-func newRedshiftSubnetGroups(c *AwsV1alpha1Client) *redshiftSubnetGroups {
+func newRedshiftSubnetGroups(c *AwsV1alpha1Client, namespace string) *redshiftSubnetGroups {
 	return &redshiftSubnetGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRedshiftSubnetGroups(c *AwsV1alpha1Client) *redshiftSubnetGroups {
 func (c *redshiftSubnetGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.RedshiftSubnetGroup, err error) {
 	result = &v1alpha1.RedshiftSubnetGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("redshiftsubnetgroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *redshiftSubnetGroups) List(opts v1.ListOptions) (result *v1alpha1.Redsh
 	}
 	result = &v1alpha1.RedshiftSubnetGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("redshiftsubnetgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *redshiftSubnetGroups) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("redshiftsubnetgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *redshiftSubnetGroups) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *redshiftSubnetGroups) Create(redshiftSubnetGroup *v1alpha1.RedshiftSubnetGroup) (result *v1alpha1.RedshiftSubnetGroup, err error) {
 	result = &v1alpha1.RedshiftSubnetGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("redshiftsubnetgroups").
 		Body(redshiftSubnetGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *redshiftSubnetGroups) Create(redshiftSubnetGroup *v1alpha1.RedshiftSubn
 func (c *redshiftSubnetGroups) Update(redshiftSubnetGroup *v1alpha1.RedshiftSubnetGroup) (result *v1alpha1.RedshiftSubnetGroup, err error) {
 	result = &v1alpha1.RedshiftSubnetGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("redshiftsubnetgroups").
 		Name(redshiftSubnetGroup.Name).
 		Body(redshiftSubnetGroup).
@@ -132,6 +139,7 @@ func (c *redshiftSubnetGroups) Update(redshiftSubnetGroup *v1alpha1.RedshiftSubn
 func (c *redshiftSubnetGroups) UpdateStatus(redshiftSubnetGroup *v1alpha1.RedshiftSubnetGroup) (result *v1alpha1.RedshiftSubnetGroup, err error) {
 	result = &v1alpha1.RedshiftSubnetGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("redshiftsubnetgroups").
 		Name(redshiftSubnetGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *redshiftSubnetGroups) UpdateStatus(redshiftSubnetGroup *v1alpha1.Redshi
 // Delete takes name of the redshiftSubnetGroup and deletes it. Returns an error if one occurs.
 func (c *redshiftSubnetGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("redshiftsubnetgroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *redshiftSubnetGroups) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("redshiftsubnetgroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *redshiftSubnetGroups) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *redshiftSubnetGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RedshiftSubnetGroup, err error) {
 	result = &v1alpha1.RedshiftSubnetGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("redshiftsubnetgroups").
 		SubResource(subresources...).
 		Name(name).

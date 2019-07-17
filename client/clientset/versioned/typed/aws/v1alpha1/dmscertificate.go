@@ -32,7 +32,7 @@ import (
 // DmsCertificatesGetter has a method to return a DmsCertificateInterface.
 // A group's client should implement this interface.
 type DmsCertificatesGetter interface {
-	DmsCertificates() DmsCertificateInterface
+	DmsCertificates(namespace string) DmsCertificateInterface
 }
 
 // DmsCertificateInterface has methods to work with DmsCertificate resources.
@@ -52,12 +52,14 @@ type DmsCertificateInterface interface {
 // dmsCertificates implements DmsCertificateInterface
 type dmsCertificates struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDmsCertificates returns a DmsCertificates
-func newDmsCertificates(c *AwsV1alpha1Client) *dmsCertificates {
+func newDmsCertificates(c *AwsV1alpha1Client, namespace string) *dmsCertificates {
 	return &dmsCertificates{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDmsCertificates(c *AwsV1alpha1Client) *dmsCertificates {
 func (c *dmsCertificates) Get(name string, options v1.GetOptions) (result *v1alpha1.DmsCertificate, err error) {
 	result = &v1alpha1.DmsCertificate{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dmscertificates").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dmsCertificates) List(opts v1.ListOptions) (result *v1alpha1.DmsCertifi
 	}
 	result = &v1alpha1.DmsCertificateList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dmscertificates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dmsCertificates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dmscertificates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dmsCertificates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dmsCertificates) Create(dmsCertificate *v1alpha1.DmsCertificate) (result *v1alpha1.DmsCertificate, err error) {
 	result = &v1alpha1.DmsCertificate{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dmscertificates").
 		Body(dmsCertificate).
 		Do().
@@ -118,6 +124,7 @@ func (c *dmsCertificates) Create(dmsCertificate *v1alpha1.DmsCertificate) (resul
 func (c *dmsCertificates) Update(dmsCertificate *v1alpha1.DmsCertificate) (result *v1alpha1.DmsCertificate, err error) {
 	result = &v1alpha1.DmsCertificate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dmscertificates").
 		Name(dmsCertificate.Name).
 		Body(dmsCertificate).
@@ -132,6 +139,7 @@ func (c *dmsCertificates) Update(dmsCertificate *v1alpha1.DmsCertificate) (resul
 func (c *dmsCertificates) UpdateStatus(dmsCertificate *v1alpha1.DmsCertificate) (result *v1alpha1.DmsCertificate, err error) {
 	result = &v1alpha1.DmsCertificate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dmscertificates").
 		Name(dmsCertificate.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dmsCertificates) UpdateStatus(dmsCertificate *v1alpha1.DmsCertificate) 
 // Delete takes name of the dmsCertificate and deletes it. Returns an error if one occurs.
 func (c *dmsCertificates) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dmscertificates").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dmsCertificates) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dmscertificates").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dmsCertificates) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *dmsCertificates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DmsCertificate, err error) {
 	result = &v1alpha1.DmsCertificate{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dmscertificates").
 		SubResource(subresources...).
 		Name(name).

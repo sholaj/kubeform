@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// WafregionalSqlInjectionMatchSetsGetter has a method to return a WafregionalSqlInjectionMatchSetInterface.
+// WafregionalSQLInjectionMatchSetsGetter has a method to return a WafregionalSQLInjectionMatchSetInterface.
 // A group's client should implement this interface.
-type WafregionalSqlInjectionMatchSetsGetter interface {
-	WafregionalSqlInjectionMatchSets() WafregionalSqlInjectionMatchSetInterface
+type WafregionalSQLInjectionMatchSetsGetter interface {
+	WafregionalSQLInjectionMatchSets(namespace string) WafregionalSQLInjectionMatchSetInterface
 }
 
-// WafregionalSqlInjectionMatchSetInterface has methods to work with WafregionalSqlInjectionMatchSet resources.
-type WafregionalSqlInjectionMatchSetInterface interface {
-	Create(*v1alpha1.WafregionalSqlInjectionMatchSet) (*v1alpha1.WafregionalSqlInjectionMatchSet, error)
-	Update(*v1alpha1.WafregionalSqlInjectionMatchSet) (*v1alpha1.WafregionalSqlInjectionMatchSet, error)
-	UpdateStatus(*v1alpha1.WafregionalSqlInjectionMatchSet) (*v1alpha1.WafregionalSqlInjectionMatchSet, error)
+// WafregionalSQLInjectionMatchSetInterface has methods to work with WafregionalSQLInjectionMatchSet resources.
+type WafregionalSQLInjectionMatchSetInterface interface {
+	Create(*v1alpha1.WafregionalSQLInjectionMatchSet) (*v1alpha1.WafregionalSQLInjectionMatchSet, error)
+	Update(*v1alpha1.WafregionalSQLInjectionMatchSet) (*v1alpha1.WafregionalSQLInjectionMatchSet, error)
+	UpdateStatus(*v1alpha1.WafregionalSQLInjectionMatchSet) (*v1alpha1.WafregionalSQLInjectionMatchSet, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.WafregionalSqlInjectionMatchSet, error)
-	List(opts v1.ListOptions) (*v1alpha1.WafregionalSqlInjectionMatchSetList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.WafregionalSQLInjectionMatchSet, error)
+	List(opts v1.ListOptions) (*v1alpha1.WafregionalSQLInjectionMatchSetList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalSqlInjectionMatchSet, err error)
-	WafregionalSqlInjectionMatchSetExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalSQLInjectionMatchSet, err error)
+	WafregionalSQLInjectionMatchSetExpansion
 }
 
-// wafregionalSqlInjectionMatchSets implements WafregionalSqlInjectionMatchSetInterface
-type wafregionalSqlInjectionMatchSets struct {
+// wafregionalSQLInjectionMatchSets implements WafregionalSQLInjectionMatchSetInterface
+type wafregionalSQLInjectionMatchSets struct {
 	client rest.Interface
+	ns     string
 }
 
-// newWafregionalSqlInjectionMatchSets returns a WafregionalSqlInjectionMatchSets
-func newWafregionalSqlInjectionMatchSets(c *AwsV1alpha1Client) *wafregionalSqlInjectionMatchSets {
-	return &wafregionalSqlInjectionMatchSets{
+// newWafregionalSQLInjectionMatchSets returns a WafregionalSQLInjectionMatchSets
+func newWafregionalSQLInjectionMatchSets(c *AwsV1alpha1Client, namespace string) *wafregionalSQLInjectionMatchSets {
+	return &wafregionalSQLInjectionMatchSets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the wafregionalSqlInjectionMatchSet, and returns the corresponding wafregionalSqlInjectionMatchSet object, and an error if there is any.
-func (c *wafregionalSqlInjectionMatchSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalSqlInjectionMatchSet, err error) {
-	result = &v1alpha1.WafregionalSqlInjectionMatchSet{}
+// Get takes name of the wafregionalSQLInjectionMatchSet, and returns the corresponding wafregionalSQLInjectionMatchSet object, and an error if there is any.
+func (c *wafregionalSQLInjectionMatchSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalSQLInjectionMatchSet, err error) {
+	result = &v1alpha1.WafregionalSQLInjectionMatchSet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalsqlinjectionmatchsets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *wafregionalSqlInjectionMatchSets) Get(name string, options v1.GetOption
 	return
 }
 
-// List takes label and field selectors, and returns the list of WafregionalSqlInjectionMatchSets that match those selectors.
-func (c *wafregionalSqlInjectionMatchSets) List(opts v1.ListOptions) (result *v1alpha1.WafregionalSqlInjectionMatchSetList, err error) {
+// List takes label and field selectors, and returns the list of WafregionalSQLInjectionMatchSets that match those selectors.
+func (c *wafregionalSQLInjectionMatchSets) List(opts v1.ListOptions) (result *v1alpha1.WafregionalSQLInjectionMatchSetList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.WafregionalSqlInjectionMatchSetList{}
+	result = &v1alpha1.WafregionalSQLInjectionMatchSetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalsqlinjectionmatchsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *wafregionalSqlInjectionMatchSets) List(opts v1.ListOptions) (result *v1
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested wafregionalSqlInjectionMatchSets.
-func (c *wafregionalSqlInjectionMatchSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested wafregionalSQLInjectionMatchSets.
+func (c *wafregionalSQLInjectionMatchSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalsqlinjectionmatchsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a wafregionalSqlInjectionMatchSet and creates it.  Returns the server's representation of the wafregionalSqlInjectionMatchSet, and an error, if there is any.
-func (c *wafregionalSqlInjectionMatchSets) Create(wafregionalSqlInjectionMatchSet *v1alpha1.WafregionalSqlInjectionMatchSet) (result *v1alpha1.WafregionalSqlInjectionMatchSet, err error) {
-	result = &v1alpha1.WafregionalSqlInjectionMatchSet{}
+// Create takes the representation of a wafregionalSQLInjectionMatchSet and creates it.  Returns the server's representation of the wafregionalSQLInjectionMatchSet, and an error, if there is any.
+func (c *wafregionalSQLInjectionMatchSets) Create(wafregionalSQLInjectionMatchSet *v1alpha1.WafregionalSQLInjectionMatchSet) (result *v1alpha1.WafregionalSQLInjectionMatchSet, err error) {
+	result = &v1alpha1.WafregionalSQLInjectionMatchSet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafregionalsqlinjectionmatchsets").
-		Body(wafregionalSqlInjectionMatchSet).
+		Body(wafregionalSQLInjectionMatchSet).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a wafregionalSqlInjectionMatchSet and updates it. Returns the server's representation of the wafregionalSqlInjectionMatchSet, and an error, if there is any.
-func (c *wafregionalSqlInjectionMatchSets) Update(wafregionalSqlInjectionMatchSet *v1alpha1.WafregionalSqlInjectionMatchSet) (result *v1alpha1.WafregionalSqlInjectionMatchSet, err error) {
-	result = &v1alpha1.WafregionalSqlInjectionMatchSet{}
+// Update takes the representation of a wafregionalSQLInjectionMatchSet and updates it. Returns the server's representation of the wafregionalSQLInjectionMatchSet, and an error, if there is any.
+func (c *wafregionalSQLInjectionMatchSets) Update(wafregionalSQLInjectionMatchSet *v1alpha1.WafregionalSQLInjectionMatchSet) (result *v1alpha1.WafregionalSQLInjectionMatchSet, err error) {
+	result = &v1alpha1.WafregionalSQLInjectionMatchSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregionalsqlinjectionmatchsets").
-		Name(wafregionalSqlInjectionMatchSet.Name).
-		Body(wafregionalSqlInjectionMatchSet).
+		Name(wafregionalSQLInjectionMatchSet.Name).
+		Body(wafregionalSQLInjectionMatchSet).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *wafregionalSqlInjectionMatchSets) Update(wafregionalSqlInjectionMatchSe
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *wafregionalSqlInjectionMatchSets) UpdateStatus(wafregionalSqlInjectionMatchSet *v1alpha1.WafregionalSqlInjectionMatchSet) (result *v1alpha1.WafregionalSqlInjectionMatchSet, err error) {
-	result = &v1alpha1.WafregionalSqlInjectionMatchSet{}
+func (c *wafregionalSQLInjectionMatchSets) UpdateStatus(wafregionalSQLInjectionMatchSet *v1alpha1.WafregionalSQLInjectionMatchSet) (result *v1alpha1.WafregionalSQLInjectionMatchSet, err error) {
+	result = &v1alpha1.WafregionalSQLInjectionMatchSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregionalsqlinjectionmatchsets").
-		Name(wafregionalSqlInjectionMatchSet.Name).
+		Name(wafregionalSQLInjectionMatchSet.Name).
 		SubResource("status").
-		Body(wafregionalSqlInjectionMatchSet).
+		Body(wafregionalSQLInjectionMatchSet).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the wafregionalSqlInjectionMatchSet and deletes it. Returns an error if one occurs.
-func (c *wafregionalSqlInjectionMatchSets) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the wafregionalSQLInjectionMatchSet and deletes it. Returns an error if one occurs.
+func (c *wafregionalSQLInjectionMatchSets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregionalsqlinjectionmatchsets").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *wafregionalSqlInjectionMatchSets) Delete(name string, options *v1.Delet
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *wafregionalSqlInjectionMatchSets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *wafregionalSQLInjectionMatchSets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregionalsqlinjectionmatchsets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *wafregionalSqlInjectionMatchSets) DeleteCollection(options *v1.DeleteOp
 		Error()
 }
 
-// Patch applies the patch and returns the patched wafregionalSqlInjectionMatchSet.
-func (c *wafregionalSqlInjectionMatchSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalSqlInjectionMatchSet, err error) {
-	result = &v1alpha1.WafregionalSqlInjectionMatchSet{}
+// Patch applies the patch and returns the patched wafregionalSQLInjectionMatchSet.
+func (c *wafregionalSQLInjectionMatchSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalSQLInjectionMatchSet, err error) {
+	result = &v1alpha1.WafregionalSQLInjectionMatchSet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafregionalsqlinjectionmatchsets").
 		SubResource(subresources...).
 		Name(name).

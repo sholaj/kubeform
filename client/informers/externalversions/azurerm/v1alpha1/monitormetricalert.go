@@ -41,32 +41,33 @@ type MonitorMetricAlertInformer interface {
 type monitorMetricAlertInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewMonitorMetricAlertInformer constructs a new informer for MonitorMetricAlert type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewMonitorMetricAlertInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredMonitorMetricAlertInformer(client, resyncPeriod, indexers, nil)
+func NewMonitorMetricAlertInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredMonitorMetricAlertInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredMonitorMetricAlertInformer constructs a new informer for MonitorMetricAlert type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredMonitorMetricAlertInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredMonitorMetricAlertInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().MonitorMetricAlerts().List(options)
+				return client.AzurermV1alpha1().MonitorMetricAlerts(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().MonitorMetricAlerts().Watch(options)
+				return client.AzurermV1alpha1().MonitorMetricAlerts(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.MonitorMetricAlert{},
@@ -76,7 +77,7 @@ func NewFilteredMonitorMetricAlertInformer(client versioned.Interface, resyncPer
 }
 
 func (f *monitorMetricAlertInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredMonitorMetricAlertInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredMonitorMetricAlertInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *monitorMetricAlertInformer) Informer() cache.SharedIndexInformer {

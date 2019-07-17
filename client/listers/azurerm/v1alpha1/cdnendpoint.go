@@ -29,8 +29,8 @@ import (
 type CdnEndpointLister interface {
 	// List lists all CdnEndpoints in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CdnEndpoint, err error)
-	// Get retrieves the CdnEndpoint from the index for a given name.
-	Get(name string) (*v1alpha1.CdnEndpoint, error)
+	// CdnEndpoints returns an object that can list and get CdnEndpoints.
+	CdnEndpoints(namespace string) CdnEndpointNamespaceLister
 	CdnEndpointListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cdnEndpointLister) List(selector labels.Selector) (ret []*v1alpha1.CdnE
 	return ret, err
 }
 
-// Get retrieves the CdnEndpoint from the index for a given name.
-func (s *cdnEndpointLister) Get(name string) (*v1alpha1.CdnEndpoint, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CdnEndpoints returns an object that can list and get CdnEndpoints.
+func (s *cdnEndpointLister) CdnEndpoints(namespace string) CdnEndpointNamespaceLister {
+	return cdnEndpointNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CdnEndpointNamespaceLister helps list and get CdnEndpoints.
+type CdnEndpointNamespaceLister interface {
+	// List lists all CdnEndpoints in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CdnEndpoint, err error)
+	// Get retrieves the CdnEndpoint from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CdnEndpoint, error)
+	CdnEndpointNamespaceListerExpansion
+}
+
+// cdnEndpointNamespaceLister implements the CdnEndpointNamespaceLister
+// interface.
+type cdnEndpointNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CdnEndpoints in the indexer for a given namespace.
+func (s cdnEndpointNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CdnEndpoint, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CdnEndpoint))
+	})
+	return ret, err
+}
+
+// Get retrieves the CdnEndpoint from the indexer for a given namespace and name.
+func (s cdnEndpointNamespaceLister) Get(name string) (*v1alpha1.CdnEndpoint, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

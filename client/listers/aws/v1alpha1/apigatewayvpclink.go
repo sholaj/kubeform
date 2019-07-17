@@ -29,8 +29,8 @@ import (
 type ApiGatewayVpcLinkLister interface {
 	// List lists all ApiGatewayVpcLinks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayVpcLink, err error)
-	// Get retrieves the ApiGatewayVpcLink from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayVpcLink, error)
+	// ApiGatewayVpcLinks returns an object that can list and get ApiGatewayVpcLinks.
+	ApiGatewayVpcLinks(namespace string) ApiGatewayVpcLinkNamespaceLister
 	ApiGatewayVpcLinkListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiGatewayVpcLinkLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayVpcLink from the index for a given name.
-func (s *apiGatewayVpcLinkLister) Get(name string) (*v1alpha1.ApiGatewayVpcLink, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayVpcLinks returns an object that can list and get ApiGatewayVpcLinks.
+func (s *apiGatewayVpcLinkLister) ApiGatewayVpcLinks(namespace string) ApiGatewayVpcLinkNamespaceLister {
+	return apiGatewayVpcLinkNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayVpcLinkNamespaceLister helps list and get ApiGatewayVpcLinks.
+type ApiGatewayVpcLinkNamespaceLister interface {
+	// List lists all ApiGatewayVpcLinks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayVpcLink, err error)
+	// Get retrieves the ApiGatewayVpcLink from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayVpcLink, error)
+	ApiGatewayVpcLinkNamespaceListerExpansion
+}
+
+// apiGatewayVpcLinkNamespaceLister implements the ApiGatewayVpcLinkNamespaceLister
+// interface.
+type apiGatewayVpcLinkNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayVpcLinks in the indexer for a given namespace.
+func (s apiGatewayVpcLinkNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayVpcLink, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayVpcLink))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayVpcLink from the indexer for a given namespace and name.
+func (s apiGatewayVpcLinkNamespaceLister) Get(name string) (*v1alpha1.ApiGatewayVpcLink, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

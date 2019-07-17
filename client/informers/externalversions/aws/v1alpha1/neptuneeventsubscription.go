@@ -41,32 +41,33 @@ type NeptuneEventSubscriptionInformer interface {
 type neptuneEventSubscriptionInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewNeptuneEventSubscriptionInformer constructs a new informer for NeptuneEventSubscription type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewNeptuneEventSubscriptionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredNeptuneEventSubscriptionInformer(client, resyncPeriod, indexers, nil)
+func NewNeptuneEventSubscriptionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredNeptuneEventSubscriptionInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredNeptuneEventSubscriptionInformer constructs a new informer for NeptuneEventSubscription type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredNeptuneEventSubscriptionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredNeptuneEventSubscriptionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().NeptuneEventSubscriptions().List(options)
+				return client.AwsV1alpha1().NeptuneEventSubscriptions(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().NeptuneEventSubscriptions().Watch(options)
+				return client.AwsV1alpha1().NeptuneEventSubscriptions(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.NeptuneEventSubscription{},
@@ -76,7 +77,7 @@ func NewFilteredNeptuneEventSubscriptionInformer(client versioned.Interface, res
 }
 
 func (f *neptuneEventSubscriptionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredNeptuneEventSubscriptionInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredNeptuneEventSubscriptionInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *neptuneEventSubscriptionInformer) Informer() cache.SharedIndexInformer {

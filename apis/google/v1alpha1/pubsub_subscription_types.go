@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,16 +20,17 @@ type PubsubSubscription struct {
 
 type PubsubSubscriptionSpecPushConfig struct {
 	// +optional
-	Attributes   map[string]string `json:"attributes,omitempty"`
-	PushEndpoint string            `json:"push_endpoint"`
+	Attributes   map[string]string `json:"attributes,omitempty" tf:"attributes,omitempty"`
+	PushEndpoint string            `json:"pushEndpoint" tf:"push_endpoint"`
 }
 
 type PubsubSubscriptionSpec struct {
-	Name string `json:"name"`
+	Name string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	PushConfig *[]PubsubSubscriptionSpec `json:"push_config,omitempty"`
-	Topic      string                    `json:"topic"`
+	PushConfig  []PubsubSubscriptionSpecPushConfig `json:"pushConfig,omitempty" tf:"push_config,omitempty"`
+	Topic       string                             `json:"topic" tf:"topic"`
+	ProviderRef core.LocalObjectReference          `json:"providerRef" tf:"-"`
 }
 
 type PubsubSubscriptionStatus struct {
@@ -37,7 +38,9 @@ type PubsubSubscriptionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

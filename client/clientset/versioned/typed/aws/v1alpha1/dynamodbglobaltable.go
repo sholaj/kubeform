@@ -32,7 +32,7 @@ import (
 // DynamodbGlobalTablesGetter has a method to return a DynamodbGlobalTableInterface.
 // A group's client should implement this interface.
 type DynamodbGlobalTablesGetter interface {
-	DynamodbGlobalTables() DynamodbGlobalTableInterface
+	DynamodbGlobalTables(namespace string) DynamodbGlobalTableInterface
 }
 
 // DynamodbGlobalTableInterface has methods to work with DynamodbGlobalTable resources.
@@ -52,12 +52,14 @@ type DynamodbGlobalTableInterface interface {
 // dynamodbGlobalTables implements DynamodbGlobalTableInterface
 type dynamodbGlobalTables struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDynamodbGlobalTables returns a DynamodbGlobalTables
-func newDynamodbGlobalTables(c *AwsV1alpha1Client) *dynamodbGlobalTables {
+func newDynamodbGlobalTables(c *AwsV1alpha1Client, namespace string) *dynamodbGlobalTables {
 	return &dynamodbGlobalTables{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDynamodbGlobalTables(c *AwsV1alpha1Client) *dynamodbGlobalTables {
 func (c *dynamodbGlobalTables) Get(name string, options v1.GetOptions) (result *v1alpha1.DynamodbGlobalTable, err error) {
 	result = &v1alpha1.DynamodbGlobalTable{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dynamodbglobaltables").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dynamodbGlobalTables) List(opts v1.ListOptions) (result *v1alpha1.Dynam
 	}
 	result = &v1alpha1.DynamodbGlobalTableList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dynamodbglobaltables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dynamodbGlobalTables) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dynamodbglobaltables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dynamodbGlobalTables) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *dynamodbGlobalTables) Create(dynamodbGlobalTable *v1alpha1.DynamodbGlobalTable) (result *v1alpha1.DynamodbGlobalTable, err error) {
 	result = &v1alpha1.DynamodbGlobalTable{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dynamodbglobaltables").
 		Body(dynamodbGlobalTable).
 		Do().
@@ -118,6 +124,7 @@ func (c *dynamodbGlobalTables) Create(dynamodbGlobalTable *v1alpha1.DynamodbGlob
 func (c *dynamodbGlobalTables) Update(dynamodbGlobalTable *v1alpha1.DynamodbGlobalTable) (result *v1alpha1.DynamodbGlobalTable, err error) {
 	result = &v1alpha1.DynamodbGlobalTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dynamodbglobaltables").
 		Name(dynamodbGlobalTable.Name).
 		Body(dynamodbGlobalTable).
@@ -132,6 +139,7 @@ func (c *dynamodbGlobalTables) Update(dynamodbGlobalTable *v1alpha1.DynamodbGlob
 func (c *dynamodbGlobalTables) UpdateStatus(dynamodbGlobalTable *v1alpha1.DynamodbGlobalTable) (result *v1alpha1.DynamodbGlobalTable, err error) {
 	result = &v1alpha1.DynamodbGlobalTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dynamodbglobaltables").
 		Name(dynamodbGlobalTable.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dynamodbGlobalTables) UpdateStatus(dynamodbGlobalTable *v1alpha1.Dynamo
 // Delete takes name of the dynamodbGlobalTable and deletes it. Returns an error if one occurs.
 func (c *dynamodbGlobalTables) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dynamodbglobaltables").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dynamodbGlobalTables) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dynamodbglobaltables").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dynamodbGlobalTables) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *dynamodbGlobalTables) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DynamodbGlobalTable, err error) {
 	result = &v1alpha1.DynamodbGlobalTable{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dynamodbglobaltables").
 		SubResource(subresources...).
 		Name(name).

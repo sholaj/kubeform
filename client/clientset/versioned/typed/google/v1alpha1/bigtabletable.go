@@ -32,7 +32,7 @@ import (
 // BigtableTablesGetter has a method to return a BigtableTableInterface.
 // A group's client should implement this interface.
 type BigtableTablesGetter interface {
-	BigtableTables() BigtableTableInterface
+	BigtableTables(namespace string) BigtableTableInterface
 }
 
 // BigtableTableInterface has methods to work with BigtableTable resources.
@@ -52,12 +52,14 @@ type BigtableTableInterface interface {
 // bigtableTables implements BigtableTableInterface
 type bigtableTables struct {
 	client rest.Interface
+	ns     string
 }
 
 // newBigtableTables returns a BigtableTables
-func newBigtableTables(c *GoogleV1alpha1Client) *bigtableTables {
+func newBigtableTables(c *GoogleV1alpha1Client, namespace string) *bigtableTables {
 	return &bigtableTables{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newBigtableTables(c *GoogleV1alpha1Client) *bigtableTables {
 func (c *bigtableTables) Get(name string, options v1.GetOptions) (result *v1alpha1.BigtableTable, err error) {
 	result = &v1alpha1.BigtableTable{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("bigtabletables").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *bigtableTables) List(opts v1.ListOptions) (result *v1alpha1.BigtableTab
 	}
 	result = &v1alpha1.BigtableTableList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("bigtabletables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *bigtableTables) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("bigtabletables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *bigtableTables) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *bigtableTables) Create(bigtableTable *v1alpha1.BigtableTable) (result *v1alpha1.BigtableTable, err error) {
 	result = &v1alpha1.BigtableTable{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("bigtabletables").
 		Body(bigtableTable).
 		Do().
@@ -118,6 +124,7 @@ func (c *bigtableTables) Create(bigtableTable *v1alpha1.BigtableTable) (result *
 func (c *bigtableTables) Update(bigtableTable *v1alpha1.BigtableTable) (result *v1alpha1.BigtableTable, err error) {
 	result = &v1alpha1.BigtableTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("bigtabletables").
 		Name(bigtableTable.Name).
 		Body(bigtableTable).
@@ -132,6 +139,7 @@ func (c *bigtableTables) Update(bigtableTable *v1alpha1.BigtableTable) (result *
 func (c *bigtableTables) UpdateStatus(bigtableTable *v1alpha1.BigtableTable) (result *v1alpha1.BigtableTable, err error) {
 	result = &v1alpha1.BigtableTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("bigtabletables").
 		Name(bigtableTable.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *bigtableTables) UpdateStatus(bigtableTable *v1alpha1.BigtableTable) (re
 // Delete takes name of the bigtableTable and deletes it. Returns an error if one occurs.
 func (c *bigtableTables) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("bigtabletables").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *bigtableTables) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("bigtabletables").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *bigtableTables) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *bigtableTables) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BigtableTable, err error) {
 	result = &v1alpha1.BigtableTable{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("bigtabletables").
 		SubResource(subresources...).
 		Name(name).

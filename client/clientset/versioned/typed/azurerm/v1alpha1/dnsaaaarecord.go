@@ -32,7 +32,7 @@ import (
 // DnsAaaaRecordsGetter has a method to return a DnsAaaaRecordInterface.
 // A group's client should implement this interface.
 type DnsAaaaRecordsGetter interface {
-	DnsAaaaRecords() DnsAaaaRecordInterface
+	DnsAaaaRecords(namespace string) DnsAaaaRecordInterface
 }
 
 // DnsAaaaRecordInterface has methods to work with DnsAaaaRecord resources.
@@ -52,12 +52,14 @@ type DnsAaaaRecordInterface interface {
 // dnsAaaaRecords implements DnsAaaaRecordInterface
 type dnsAaaaRecords struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDnsAaaaRecords returns a DnsAaaaRecords
-func newDnsAaaaRecords(c *AzurermV1alpha1Client) *dnsAaaaRecords {
+func newDnsAaaaRecords(c *AzurermV1alpha1Client, namespace string) *dnsAaaaRecords {
 	return &dnsAaaaRecords{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDnsAaaaRecords(c *AzurermV1alpha1Client) *dnsAaaaRecords {
 func (c *dnsAaaaRecords) Get(name string, options v1.GetOptions) (result *v1alpha1.DnsAaaaRecord, err error) {
 	result = &v1alpha1.DnsAaaaRecord{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dnsaaaarecords").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dnsAaaaRecords) List(opts v1.ListOptions) (result *v1alpha1.DnsAaaaReco
 	}
 	result = &v1alpha1.DnsAaaaRecordList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dnsaaaarecords").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dnsAaaaRecords) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dnsaaaarecords").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dnsAaaaRecords) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dnsAaaaRecords) Create(dnsAaaaRecord *v1alpha1.DnsAaaaRecord) (result *v1alpha1.DnsAaaaRecord, err error) {
 	result = &v1alpha1.DnsAaaaRecord{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dnsaaaarecords").
 		Body(dnsAaaaRecord).
 		Do().
@@ -118,6 +124,7 @@ func (c *dnsAaaaRecords) Create(dnsAaaaRecord *v1alpha1.DnsAaaaRecord) (result *
 func (c *dnsAaaaRecords) Update(dnsAaaaRecord *v1alpha1.DnsAaaaRecord) (result *v1alpha1.DnsAaaaRecord, err error) {
 	result = &v1alpha1.DnsAaaaRecord{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dnsaaaarecords").
 		Name(dnsAaaaRecord.Name).
 		Body(dnsAaaaRecord).
@@ -132,6 +139,7 @@ func (c *dnsAaaaRecords) Update(dnsAaaaRecord *v1alpha1.DnsAaaaRecord) (result *
 func (c *dnsAaaaRecords) UpdateStatus(dnsAaaaRecord *v1alpha1.DnsAaaaRecord) (result *v1alpha1.DnsAaaaRecord, err error) {
 	result = &v1alpha1.DnsAaaaRecord{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dnsaaaarecords").
 		Name(dnsAaaaRecord.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dnsAaaaRecords) UpdateStatus(dnsAaaaRecord *v1alpha1.DnsAaaaRecord) (re
 // Delete takes name of the dnsAaaaRecord and deletes it. Returns an error if one occurs.
 func (c *dnsAaaaRecords) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dnsaaaarecords").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dnsAaaaRecords) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dnsaaaarecords").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dnsAaaaRecords) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *dnsAaaaRecords) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DnsAaaaRecord, err error) {
 	result = &v1alpha1.DnsAaaaRecord{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dnsaaaarecords").
 		SubResource(subresources...).
 		Name(name).

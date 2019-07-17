@@ -32,7 +32,7 @@ import (
 // ElasticBeanstalkConfigurationTemplatesGetter has a method to return a ElasticBeanstalkConfigurationTemplateInterface.
 // A group's client should implement this interface.
 type ElasticBeanstalkConfigurationTemplatesGetter interface {
-	ElasticBeanstalkConfigurationTemplates() ElasticBeanstalkConfigurationTemplateInterface
+	ElasticBeanstalkConfigurationTemplates(namespace string) ElasticBeanstalkConfigurationTemplateInterface
 }
 
 // ElasticBeanstalkConfigurationTemplateInterface has methods to work with ElasticBeanstalkConfigurationTemplate resources.
@@ -52,12 +52,14 @@ type ElasticBeanstalkConfigurationTemplateInterface interface {
 // elasticBeanstalkConfigurationTemplates implements ElasticBeanstalkConfigurationTemplateInterface
 type elasticBeanstalkConfigurationTemplates struct {
 	client rest.Interface
+	ns     string
 }
 
 // newElasticBeanstalkConfigurationTemplates returns a ElasticBeanstalkConfigurationTemplates
-func newElasticBeanstalkConfigurationTemplates(c *AwsV1alpha1Client) *elasticBeanstalkConfigurationTemplates {
+func newElasticBeanstalkConfigurationTemplates(c *AwsV1alpha1Client, namespace string) *elasticBeanstalkConfigurationTemplates {
 	return &elasticBeanstalkConfigurationTemplates{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newElasticBeanstalkConfigurationTemplates(c *AwsV1alpha1Client) *elasticBea
 func (c *elasticBeanstalkConfigurationTemplates) Get(name string, options v1.GetOptions) (result *v1alpha1.ElasticBeanstalkConfigurationTemplate, err error) {
 	result = &v1alpha1.ElasticBeanstalkConfigurationTemplate{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkconfigurationtemplates").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *elasticBeanstalkConfigurationTemplates) List(opts v1.ListOptions) (resu
 	}
 	result = &v1alpha1.ElasticBeanstalkConfigurationTemplateList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkconfigurationtemplates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *elasticBeanstalkConfigurationTemplates) Watch(opts v1.ListOptions) (wat
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkconfigurationtemplates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *elasticBeanstalkConfigurationTemplates) Watch(opts v1.ListOptions) (wat
 func (c *elasticBeanstalkConfigurationTemplates) Create(elasticBeanstalkConfigurationTemplate *v1alpha1.ElasticBeanstalkConfigurationTemplate) (result *v1alpha1.ElasticBeanstalkConfigurationTemplate, err error) {
 	result = &v1alpha1.ElasticBeanstalkConfigurationTemplate{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkconfigurationtemplates").
 		Body(elasticBeanstalkConfigurationTemplate).
 		Do().
@@ -118,6 +124,7 @@ func (c *elasticBeanstalkConfigurationTemplates) Create(elasticBeanstalkConfigur
 func (c *elasticBeanstalkConfigurationTemplates) Update(elasticBeanstalkConfigurationTemplate *v1alpha1.ElasticBeanstalkConfigurationTemplate) (result *v1alpha1.ElasticBeanstalkConfigurationTemplate, err error) {
 	result = &v1alpha1.ElasticBeanstalkConfigurationTemplate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkconfigurationtemplates").
 		Name(elasticBeanstalkConfigurationTemplate.Name).
 		Body(elasticBeanstalkConfigurationTemplate).
@@ -132,6 +139,7 @@ func (c *elasticBeanstalkConfigurationTemplates) Update(elasticBeanstalkConfigur
 func (c *elasticBeanstalkConfigurationTemplates) UpdateStatus(elasticBeanstalkConfigurationTemplate *v1alpha1.ElasticBeanstalkConfigurationTemplate) (result *v1alpha1.ElasticBeanstalkConfigurationTemplate, err error) {
 	result = &v1alpha1.ElasticBeanstalkConfigurationTemplate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkconfigurationtemplates").
 		Name(elasticBeanstalkConfigurationTemplate.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *elasticBeanstalkConfigurationTemplates) UpdateStatus(elasticBeanstalkCo
 // Delete takes name of the elasticBeanstalkConfigurationTemplate and deletes it. Returns an error if one occurs.
 func (c *elasticBeanstalkConfigurationTemplates) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkconfigurationtemplates").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *elasticBeanstalkConfigurationTemplates) DeleteCollection(options *v1.De
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkconfigurationtemplates").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *elasticBeanstalkConfigurationTemplates) DeleteCollection(options *v1.De
 func (c *elasticBeanstalkConfigurationTemplates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ElasticBeanstalkConfigurationTemplate, err error) {
 	result = &v1alpha1.ElasticBeanstalkConfigurationTemplate{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("elasticbeanstalkconfigurationtemplates").
 		SubResource(subresources...).
 		Name(name).

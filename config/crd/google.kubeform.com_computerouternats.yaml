@@ -8,7 +8,7 @@ metadata:
 spec:
   group: google.kubeform.com
   names:
-    kind: ComputeRouterNat
+    kind: ComputeRouterNAT
     plural: computerouternats
   scope: ""
   validation:
@@ -397,36 +397,62 @@ spec:
           type: object
         spec:
           properties:
-            icmp_idle_timeout_sec:
+            icmpIdleTimeoutSec:
               type: integer
-            min_ports_per_vm:
+            minPortsPerVm:
               type: integer
             name:
               type: string
-            nat_ip_allocate_option:
+            natIPAllocateOption:
               type: string
-            nat_ips:
+            natIPS:
               items:
                 type: string
               type: array
               uniqueItems: true
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             router:
               type: string
-            source_subnetwork_ip_ranges_to_nat:
+            sourceSubnetworkIPRangesToNAT:
               type: string
             subnetwork:
-              items: {}
+              items:
+                properties:
+                  name:
+                    type: string
+                  secondaryIPRangeNames:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                  sourceIPRangesToNAT:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                required:
+                - name
+                type: object
               type: array
               uniqueItems: true
-            tcp_established_idle_timeout_sec:
+            tcpEstablishedIdleTimeoutSec:
               type: integer
-            tcp_transitory_idle_timeout_sec:
+            tcpTransitoryIdleTimeoutSec:
               type: integer
-            udp_idle_timeout_sec:
+            udpIdleTimeoutSec:
               type: integer
           required:
           - name
-          - nat_ip_allocate_option
+          - natIPAllocateOption
+          - providerRef
           - router
           type: object
         status:
@@ -438,6 +464,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,11 +19,12 @@ type GlacierVaultLock struct {
 }
 
 type GlacierVaultLockSpec struct {
-	CompleteLock bool `json:"complete_lock"`
+	CompleteLock bool `json:"completeLock" tf:"complete_lock"`
 	// +optional
-	IgnoreDeletionError bool   `json:"ignore_deletion_error,omitempty"`
-	Policy              string `json:"policy"`
-	VaultName           string `json:"vault_name"`
+	IgnoreDeletionError bool                      `json:"ignoreDeletionError,omitempty" tf:"ignore_deletion_error,omitempty"`
+	Policy              string                    `json:"policy" tf:"policy"`
+	VaultName           string                    `json:"vaultName" tf:"vault_name"`
+	ProviderRef         core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type GlacierVaultLockStatus struct {
@@ -31,7 +32,9 @@ type GlacierVaultLockStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

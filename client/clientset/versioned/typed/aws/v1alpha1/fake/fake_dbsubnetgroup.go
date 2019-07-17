@@ -31,6 +31,7 @@ import (
 // FakeDbSubnetGroups implements DbSubnetGroupInterface
 type FakeDbSubnetGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var dbsubnetgroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "dbsubnetgroups"}
@@ -40,7 +41,8 @@ var dbsubnetgroupsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Vers
 // Get takes name of the dbSubnetGroup, and returns the corresponding dbSubnetGroup object, and an error if there is any.
 func (c *FakeDbSubnetGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.DbSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(dbsubnetgroupsResource, name), &v1alpha1.DbSubnetGroup{})
+		Invokes(testing.NewGetAction(dbsubnetgroupsResource, c.ns, name), &v1alpha1.DbSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDbSubnetGroups) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of DbSubnetGroups that match those selectors.
 func (c *FakeDbSubnetGroups) List(opts v1.ListOptions) (result *v1alpha1.DbSubnetGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(dbsubnetgroupsResource, dbsubnetgroupsKind, opts), &v1alpha1.DbSubnetGroupList{})
+		Invokes(testing.NewListAction(dbsubnetgroupsResource, dbsubnetgroupsKind, c.ns, opts), &v1alpha1.DbSubnetGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDbSubnetGroups) List(opts v1.ListOptions) (result *v1alpha1.DbSubne
 // Watch returns a watch.Interface that watches the requested dbSubnetGroups.
 func (c *FakeDbSubnetGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(dbsubnetgroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(dbsubnetgroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dbSubnetGroup and creates it.  Returns the server's representation of the dbSubnetGroup, and an error, if there is any.
 func (c *FakeDbSubnetGroups) Create(dbSubnetGroup *v1alpha1.DbSubnetGroup) (result *v1alpha1.DbSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(dbsubnetgroupsResource, dbSubnetGroup), &v1alpha1.DbSubnetGroup{})
+		Invokes(testing.NewCreateAction(dbsubnetgroupsResource, c.ns, dbSubnetGroup), &v1alpha1.DbSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDbSubnetGroups) Create(dbSubnetGroup *v1alpha1.DbSubnetGroup) (resu
 // Update takes the representation of a dbSubnetGroup and updates it. Returns the server's representation of the dbSubnetGroup, and an error, if there is any.
 func (c *FakeDbSubnetGroups) Update(dbSubnetGroup *v1alpha1.DbSubnetGroup) (result *v1alpha1.DbSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(dbsubnetgroupsResource, dbSubnetGroup), &v1alpha1.DbSubnetGroup{})
+		Invokes(testing.NewUpdateAction(dbsubnetgroupsResource, c.ns, dbSubnetGroup), &v1alpha1.DbSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDbSubnetGroups) Update(dbSubnetGroup *v1alpha1.DbSubnetGroup) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDbSubnetGroups) UpdateStatus(dbSubnetGroup *v1alpha1.DbSubnetGroup) (*v1alpha1.DbSubnetGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(dbsubnetgroupsResource, "status", dbSubnetGroup), &v1alpha1.DbSubnetGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(dbsubnetgroupsResource, "status", c.ns, dbSubnetGroup), &v1alpha1.DbSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDbSubnetGroups) UpdateStatus(dbSubnetGroup *v1alpha1.DbSubnetGroup)
 // Delete takes name of the dbSubnetGroup and deletes it. Returns an error if one occurs.
 func (c *FakeDbSubnetGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(dbsubnetgroupsResource, name), &v1alpha1.DbSubnetGroup{})
+		Invokes(testing.NewDeleteAction(dbsubnetgroupsResource, c.ns, name), &v1alpha1.DbSubnetGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDbSubnetGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(dbsubnetgroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(dbsubnetgroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DbSubnetGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDbSubnetGroups) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched dbSubnetGroup.
 func (c *FakeDbSubnetGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DbSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(dbsubnetgroupsResource, name, pt, data, subresources...), &v1alpha1.DbSubnetGroup{})
+		Invokes(testing.NewPatchSubresourceAction(dbsubnetgroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DbSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

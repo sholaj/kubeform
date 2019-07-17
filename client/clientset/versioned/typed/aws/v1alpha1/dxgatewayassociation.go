@@ -32,7 +32,7 @@ import (
 // DxGatewayAssociationsGetter has a method to return a DxGatewayAssociationInterface.
 // A group's client should implement this interface.
 type DxGatewayAssociationsGetter interface {
-	DxGatewayAssociations() DxGatewayAssociationInterface
+	DxGatewayAssociations(namespace string) DxGatewayAssociationInterface
 }
 
 // DxGatewayAssociationInterface has methods to work with DxGatewayAssociation resources.
@@ -52,12 +52,14 @@ type DxGatewayAssociationInterface interface {
 // dxGatewayAssociations implements DxGatewayAssociationInterface
 type dxGatewayAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDxGatewayAssociations returns a DxGatewayAssociations
-func newDxGatewayAssociations(c *AwsV1alpha1Client) *dxGatewayAssociations {
+func newDxGatewayAssociations(c *AwsV1alpha1Client, namespace string) *dxGatewayAssociations {
 	return &dxGatewayAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDxGatewayAssociations(c *AwsV1alpha1Client) *dxGatewayAssociations {
 func (c *dxGatewayAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.DxGatewayAssociation, err error) {
 	result = &v1alpha1.DxGatewayAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dxgatewayassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dxGatewayAssociations) List(opts v1.ListOptions) (result *v1alpha1.DxGa
 	}
 	result = &v1alpha1.DxGatewayAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dxgatewayassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dxGatewayAssociations) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dxgatewayassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dxGatewayAssociations) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *dxGatewayAssociations) Create(dxGatewayAssociation *v1alpha1.DxGatewayAssociation) (result *v1alpha1.DxGatewayAssociation, err error) {
 	result = &v1alpha1.DxGatewayAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dxgatewayassociations").
 		Body(dxGatewayAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *dxGatewayAssociations) Create(dxGatewayAssociation *v1alpha1.DxGatewayA
 func (c *dxGatewayAssociations) Update(dxGatewayAssociation *v1alpha1.DxGatewayAssociation) (result *v1alpha1.DxGatewayAssociation, err error) {
 	result = &v1alpha1.DxGatewayAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dxgatewayassociations").
 		Name(dxGatewayAssociation.Name).
 		Body(dxGatewayAssociation).
@@ -132,6 +139,7 @@ func (c *dxGatewayAssociations) Update(dxGatewayAssociation *v1alpha1.DxGatewayA
 func (c *dxGatewayAssociations) UpdateStatus(dxGatewayAssociation *v1alpha1.DxGatewayAssociation) (result *v1alpha1.DxGatewayAssociation, err error) {
 	result = &v1alpha1.DxGatewayAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dxgatewayassociations").
 		Name(dxGatewayAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dxGatewayAssociations) UpdateStatus(dxGatewayAssociation *v1alpha1.DxGa
 // Delete takes name of the dxGatewayAssociation and deletes it. Returns an error if one occurs.
 func (c *dxGatewayAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dxgatewayassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dxGatewayAssociations) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dxgatewayassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dxGatewayAssociations) DeleteCollection(options *v1.DeleteOptions, list
 func (c *dxGatewayAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DxGatewayAssociation, err error) {
 	result = &v1alpha1.DxGatewayAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dxgatewayassociations").
 		SubResource(subresources...).
 		Name(name).

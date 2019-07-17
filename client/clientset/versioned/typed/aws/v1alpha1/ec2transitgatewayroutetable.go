@@ -32,7 +32,7 @@ import (
 // Ec2TransitGatewayRouteTablesGetter has a method to return a Ec2TransitGatewayRouteTableInterface.
 // A group's client should implement this interface.
 type Ec2TransitGatewayRouteTablesGetter interface {
-	Ec2TransitGatewayRouteTables() Ec2TransitGatewayRouteTableInterface
+	Ec2TransitGatewayRouteTables(namespace string) Ec2TransitGatewayRouteTableInterface
 }
 
 // Ec2TransitGatewayRouteTableInterface has methods to work with Ec2TransitGatewayRouteTable resources.
@@ -52,12 +52,14 @@ type Ec2TransitGatewayRouteTableInterface interface {
 // ec2TransitGatewayRouteTables implements Ec2TransitGatewayRouteTableInterface
 type ec2TransitGatewayRouteTables struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEc2TransitGatewayRouteTables returns a Ec2TransitGatewayRouteTables
-func newEc2TransitGatewayRouteTables(c *AwsV1alpha1Client) *ec2TransitGatewayRouteTables {
+func newEc2TransitGatewayRouteTables(c *AwsV1alpha1Client, namespace string) *ec2TransitGatewayRouteTables {
 	return &ec2TransitGatewayRouteTables{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEc2TransitGatewayRouteTables(c *AwsV1alpha1Client) *ec2TransitGatewayRou
 func (c *ec2TransitGatewayRouteTables) Get(name string, options v1.GetOptions) (result *v1alpha1.Ec2TransitGatewayRouteTable, err error) {
 	result = &v1alpha1.Ec2TransitGatewayRouteTable{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ec2transitgatewayroutetables").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ec2TransitGatewayRouteTables) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.Ec2TransitGatewayRouteTableList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ec2transitgatewayroutetables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ec2TransitGatewayRouteTables) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ec2transitgatewayroutetables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ec2TransitGatewayRouteTables) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *ec2TransitGatewayRouteTables) Create(ec2TransitGatewayRouteTable *v1alpha1.Ec2TransitGatewayRouteTable) (result *v1alpha1.Ec2TransitGatewayRouteTable, err error) {
 	result = &v1alpha1.Ec2TransitGatewayRouteTable{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ec2transitgatewayroutetables").
 		Body(ec2TransitGatewayRouteTable).
 		Do().
@@ -118,6 +124,7 @@ func (c *ec2TransitGatewayRouteTables) Create(ec2TransitGatewayRouteTable *v1alp
 func (c *ec2TransitGatewayRouteTables) Update(ec2TransitGatewayRouteTable *v1alpha1.Ec2TransitGatewayRouteTable) (result *v1alpha1.Ec2TransitGatewayRouteTable, err error) {
 	result = &v1alpha1.Ec2TransitGatewayRouteTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ec2transitgatewayroutetables").
 		Name(ec2TransitGatewayRouteTable.Name).
 		Body(ec2TransitGatewayRouteTable).
@@ -132,6 +139,7 @@ func (c *ec2TransitGatewayRouteTables) Update(ec2TransitGatewayRouteTable *v1alp
 func (c *ec2TransitGatewayRouteTables) UpdateStatus(ec2TransitGatewayRouteTable *v1alpha1.Ec2TransitGatewayRouteTable) (result *v1alpha1.Ec2TransitGatewayRouteTable, err error) {
 	result = &v1alpha1.Ec2TransitGatewayRouteTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ec2transitgatewayroutetables").
 		Name(ec2TransitGatewayRouteTable.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ec2TransitGatewayRouteTables) UpdateStatus(ec2TransitGatewayRouteTable 
 // Delete takes name of the ec2TransitGatewayRouteTable and deletes it. Returns an error if one occurs.
 func (c *ec2TransitGatewayRouteTables) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ec2transitgatewayroutetables").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ec2TransitGatewayRouteTables) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ec2transitgatewayroutetables").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ec2TransitGatewayRouteTables) DeleteCollection(options *v1.DeleteOption
 func (c *ec2TransitGatewayRouteTables) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Ec2TransitGatewayRouteTable, err error) {
 	result = &v1alpha1.Ec2TransitGatewayRouteTable{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ec2transitgatewayroutetables").
 		SubResource(subresources...).
 		Name(name).

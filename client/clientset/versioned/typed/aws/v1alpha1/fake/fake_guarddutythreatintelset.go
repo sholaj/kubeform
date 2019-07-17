@@ -31,6 +31,7 @@ import (
 // FakeGuarddutyThreatintelsets implements GuarddutyThreatintelsetInterface
 type FakeGuarddutyThreatintelsets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var guarddutythreatintelsetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "guarddutythreatintelsets"}
@@ -40,7 +41,8 @@ var guarddutythreatintelsetsKind = schema.GroupVersionKind{Group: "aws.kubeform.
 // Get takes name of the guarddutyThreatintelset, and returns the corresponding guarddutyThreatintelset object, and an error if there is any.
 func (c *FakeGuarddutyThreatintelsets) Get(name string, options v1.GetOptions) (result *v1alpha1.GuarddutyThreatintelset, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(guarddutythreatintelsetsResource, name), &v1alpha1.GuarddutyThreatintelset{})
+		Invokes(testing.NewGetAction(guarddutythreatintelsetsResource, c.ns, name), &v1alpha1.GuarddutyThreatintelset{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeGuarddutyThreatintelsets) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of GuarddutyThreatintelsets that match those selectors.
 func (c *FakeGuarddutyThreatintelsets) List(opts v1.ListOptions) (result *v1alpha1.GuarddutyThreatintelsetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(guarddutythreatintelsetsResource, guarddutythreatintelsetsKind, opts), &v1alpha1.GuarddutyThreatintelsetList{})
+		Invokes(testing.NewListAction(guarddutythreatintelsetsResource, guarddutythreatintelsetsKind, c.ns, opts), &v1alpha1.GuarddutyThreatintelsetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeGuarddutyThreatintelsets) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested guarddutyThreatintelsets.
 func (c *FakeGuarddutyThreatintelsets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(guarddutythreatintelsetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(guarddutythreatintelsetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a guarddutyThreatintelset and creates it.  Returns the server's representation of the guarddutyThreatintelset, and an error, if there is any.
 func (c *FakeGuarddutyThreatintelsets) Create(guarddutyThreatintelset *v1alpha1.GuarddutyThreatintelset) (result *v1alpha1.GuarddutyThreatintelset, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(guarddutythreatintelsetsResource, guarddutyThreatintelset), &v1alpha1.GuarddutyThreatintelset{})
+		Invokes(testing.NewCreateAction(guarddutythreatintelsetsResource, c.ns, guarddutyThreatintelset), &v1alpha1.GuarddutyThreatintelset{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeGuarddutyThreatintelsets) Create(guarddutyThreatintelset *v1alpha1.
 // Update takes the representation of a guarddutyThreatintelset and updates it. Returns the server's representation of the guarddutyThreatintelset, and an error, if there is any.
 func (c *FakeGuarddutyThreatintelsets) Update(guarddutyThreatintelset *v1alpha1.GuarddutyThreatintelset) (result *v1alpha1.GuarddutyThreatintelset, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(guarddutythreatintelsetsResource, guarddutyThreatintelset), &v1alpha1.GuarddutyThreatintelset{})
+		Invokes(testing.NewUpdateAction(guarddutythreatintelsetsResource, c.ns, guarddutyThreatintelset), &v1alpha1.GuarddutyThreatintelset{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeGuarddutyThreatintelsets) Update(guarddutyThreatintelset *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeGuarddutyThreatintelsets) UpdateStatus(guarddutyThreatintelset *v1alpha1.GuarddutyThreatintelset) (*v1alpha1.GuarddutyThreatintelset, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(guarddutythreatintelsetsResource, "status", guarddutyThreatintelset), &v1alpha1.GuarddutyThreatintelset{})
+		Invokes(testing.NewUpdateSubresourceAction(guarddutythreatintelsetsResource, "status", c.ns, guarddutyThreatintelset), &v1alpha1.GuarddutyThreatintelset{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeGuarddutyThreatintelsets) UpdateStatus(guarddutyThreatintelset *v1a
 // Delete takes name of the guarddutyThreatintelset and deletes it. Returns an error if one occurs.
 func (c *FakeGuarddutyThreatintelsets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(guarddutythreatintelsetsResource, name), &v1alpha1.GuarddutyThreatintelset{})
+		Invokes(testing.NewDeleteAction(guarddutythreatintelsetsResource, c.ns, name), &v1alpha1.GuarddutyThreatintelset{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeGuarddutyThreatintelsets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(guarddutythreatintelsetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(guarddutythreatintelsetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.GuarddutyThreatintelsetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeGuarddutyThreatintelsets) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched guarddutyThreatintelset.
 func (c *FakeGuarddutyThreatintelsets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GuarddutyThreatintelset, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(guarddutythreatintelsetsResource, name, pt, data, subresources...), &v1alpha1.GuarddutyThreatintelset{})
+		Invokes(testing.NewPatchSubresourceAction(guarddutythreatintelsetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.GuarddutyThreatintelset{})
+
 	if obj == nil {
 		return nil, err
 	}

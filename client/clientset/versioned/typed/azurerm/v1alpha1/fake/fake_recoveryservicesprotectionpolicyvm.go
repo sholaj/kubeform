@@ -31,6 +31,7 @@ import (
 // FakeRecoveryServicesProtectionPolicyVms implements RecoveryServicesProtectionPolicyVmInterface
 type FakeRecoveryServicesProtectionPolicyVms struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var recoveryservicesprotectionpolicyvmsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "recoveryservicesprotectionpolicyvms"}
@@ -40,7 +41,8 @@ var recoveryservicesprotectionpolicyvmsKind = schema.GroupVersionKind{Group: "az
 // Get takes name of the recoveryServicesProtectionPolicyVm, and returns the corresponding recoveryServicesProtectionPolicyVm object, and an error if there is any.
 func (c *FakeRecoveryServicesProtectionPolicyVms) Get(name string, options v1.GetOptions) (result *v1alpha1.RecoveryServicesProtectionPolicyVm, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(recoveryservicesprotectionpolicyvmsResource, name), &v1alpha1.RecoveryServicesProtectionPolicyVm{})
+		Invokes(testing.NewGetAction(recoveryservicesprotectionpolicyvmsResource, c.ns, name), &v1alpha1.RecoveryServicesProtectionPolicyVm{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRecoveryServicesProtectionPolicyVms) Get(name string, options v1.Ge
 // List takes label and field selectors, and returns the list of RecoveryServicesProtectionPolicyVms that match those selectors.
 func (c *FakeRecoveryServicesProtectionPolicyVms) List(opts v1.ListOptions) (result *v1alpha1.RecoveryServicesProtectionPolicyVmList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(recoveryservicesprotectionpolicyvmsResource, recoveryservicesprotectionpolicyvmsKind, opts), &v1alpha1.RecoveryServicesProtectionPolicyVmList{})
+		Invokes(testing.NewListAction(recoveryservicesprotectionpolicyvmsResource, recoveryservicesprotectionpolicyvmsKind, c.ns, opts), &v1alpha1.RecoveryServicesProtectionPolicyVmList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRecoveryServicesProtectionPolicyVms) List(opts v1.ListOptions) (res
 // Watch returns a watch.Interface that watches the requested recoveryServicesProtectionPolicyVms.
 func (c *FakeRecoveryServicesProtectionPolicyVms) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(recoveryservicesprotectionpolicyvmsResource, opts))
+		InvokesWatch(testing.NewWatchAction(recoveryservicesprotectionpolicyvmsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a recoveryServicesProtectionPolicyVm and creates it.  Returns the server's representation of the recoveryServicesProtectionPolicyVm, and an error, if there is any.
 func (c *FakeRecoveryServicesProtectionPolicyVms) Create(recoveryServicesProtectionPolicyVm *v1alpha1.RecoveryServicesProtectionPolicyVm) (result *v1alpha1.RecoveryServicesProtectionPolicyVm, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(recoveryservicesprotectionpolicyvmsResource, recoveryServicesProtectionPolicyVm), &v1alpha1.RecoveryServicesProtectionPolicyVm{})
+		Invokes(testing.NewCreateAction(recoveryservicesprotectionpolicyvmsResource, c.ns, recoveryServicesProtectionPolicyVm), &v1alpha1.RecoveryServicesProtectionPolicyVm{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRecoveryServicesProtectionPolicyVms) Create(recoveryServicesProtect
 // Update takes the representation of a recoveryServicesProtectionPolicyVm and updates it. Returns the server's representation of the recoveryServicesProtectionPolicyVm, and an error, if there is any.
 func (c *FakeRecoveryServicesProtectionPolicyVms) Update(recoveryServicesProtectionPolicyVm *v1alpha1.RecoveryServicesProtectionPolicyVm) (result *v1alpha1.RecoveryServicesProtectionPolicyVm, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(recoveryservicesprotectionpolicyvmsResource, recoveryServicesProtectionPolicyVm), &v1alpha1.RecoveryServicesProtectionPolicyVm{})
+		Invokes(testing.NewUpdateAction(recoveryservicesprotectionpolicyvmsResource, c.ns, recoveryServicesProtectionPolicyVm), &v1alpha1.RecoveryServicesProtectionPolicyVm{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRecoveryServicesProtectionPolicyVms) Update(recoveryServicesProtect
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRecoveryServicesProtectionPolicyVms) UpdateStatus(recoveryServicesProtectionPolicyVm *v1alpha1.RecoveryServicesProtectionPolicyVm) (*v1alpha1.RecoveryServicesProtectionPolicyVm, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(recoveryservicesprotectionpolicyvmsResource, "status", recoveryServicesProtectionPolicyVm), &v1alpha1.RecoveryServicesProtectionPolicyVm{})
+		Invokes(testing.NewUpdateSubresourceAction(recoveryservicesprotectionpolicyvmsResource, "status", c.ns, recoveryServicesProtectionPolicyVm), &v1alpha1.RecoveryServicesProtectionPolicyVm{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRecoveryServicesProtectionPolicyVms) UpdateStatus(recoveryServicesP
 // Delete takes name of the recoveryServicesProtectionPolicyVm and deletes it. Returns an error if one occurs.
 func (c *FakeRecoveryServicesProtectionPolicyVms) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(recoveryservicesprotectionpolicyvmsResource, name), &v1alpha1.RecoveryServicesProtectionPolicyVm{})
+		Invokes(testing.NewDeleteAction(recoveryservicesprotectionpolicyvmsResource, c.ns, name), &v1alpha1.RecoveryServicesProtectionPolicyVm{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRecoveryServicesProtectionPolicyVms) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(recoveryservicesprotectionpolicyvmsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(recoveryservicesprotectionpolicyvmsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.RecoveryServicesProtectionPolicyVmList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRecoveryServicesProtectionPolicyVms) DeleteCollection(options *v1.D
 // Patch applies the patch and returns the patched recoveryServicesProtectionPolicyVm.
 func (c *FakeRecoveryServicesProtectionPolicyVms) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RecoveryServicesProtectionPolicyVm, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(recoveryservicesprotectionpolicyvmsResource, name, pt, data, subresources...), &v1alpha1.RecoveryServicesProtectionPolicyVm{})
+		Invokes(testing.NewPatchSubresourceAction(recoveryservicesprotectionpolicyvmsResource, c.ns, name, pt, data, subresources...), &v1alpha1.RecoveryServicesProtectionPolicyVm{})
+
 	if obj == nil {
 		return nil, err
 	}

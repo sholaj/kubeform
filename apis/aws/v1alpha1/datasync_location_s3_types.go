@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,16 +19,17 @@ type DatasyncLocationS3 struct {
 }
 
 type DatasyncLocationS3SpecS3Config struct {
-	BucketAccessRoleArn string `json:"bucket_access_role_arn"`
+	BucketAccessRoleArn string `json:"bucketAccessRoleArn" tf:"bucket_access_role_arn"`
 }
 
 type DatasyncLocationS3Spec struct {
-	S3BucketArn string `json:"s3_bucket_arn"`
+	S3BucketArn string `json:"s3BucketArn" tf:"s3_bucket_arn"`
 	// +kubebuilder:validation:MaxItems=1
-	S3Config     []DatasyncLocationS3Spec `json:"s3_config"`
-	Subdirectory string                   `json:"subdirectory"`
+	S3Config     []DatasyncLocationS3SpecS3Config `json:"s3Config" tf:"s3_config"`
+	Subdirectory string                           `json:"subdirectory" tf:"subdirectory"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DatasyncLocationS3Status struct {
@@ -36,7 +37,9 @@ type DatasyncLocationS3Status struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

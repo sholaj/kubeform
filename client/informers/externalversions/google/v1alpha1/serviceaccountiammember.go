@@ -41,32 +41,33 @@ type ServiceAccountIamMemberInformer interface {
 type serviceAccountIamMemberInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewServiceAccountIamMemberInformer constructs a new informer for ServiceAccountIamMember type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewServiceAccountIamMemberInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredServiceAccountIamMemberInformer(client, resyncPeriod, indexers, nil)
+func NewServiceAccountIamMemberInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredServiceAccountIamMemberInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredServiceAccountIamMemberInformer constructs a new informer for ServiceAccountIamMember type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredServiceAccountIamMemberInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredServiceAccountIamMemberInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ServiceAccountIamMembers().List(options)
+				return client.GoogleV1alpha1().ServiceAccountIamMembers(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ServiceAccountIamMembers().Watch(options)
+				return client.GoogleV1alpha1().ServiceAccountIamMembers(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.ServiceAccountIamMember{},
@@ -76,7 +77,7 @@ func NewFilteredServiceAccountIamMemberInformer(client versioned.Interface, resy
 }
 
 func (f *serviceAccountIamMemberInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredServiceAccountIamMemberInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredServiceAccountIamMemberInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *serviceAccountIamMemberInformer) Informer() cache.SharedIndexInformer {

@@ -29,8 +29,8 @@ import (
 type DirectoryServiceLogSubscriptionLister interface {
 	// List lists all DirectoryServiceLogSubscriptions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DirectoryServiceLogSubscription, err error)
-	// Get retrieves the DirectoryServiceLogSubscription from the index for a given name.
-	Get(name string) (*v1alpha1.DirectoryServiceLogSubscription, error)
+	// DirectoryServiceLogSubscriptions returns an object that can list and get DirectoryServiceLogSubscriptions.
+	DirectoryServiceLogSubscriptions(namespace string) DirectoryServiceLogSubscriptionNamespaceLister
 	DirectoryServiceLogSubscriptionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *directoryServiceLogSubscriptionLister) List(selector labels.Selector) (
 	return ret, err
 }
 
-// Get retrieves the DirectoryServiceLogSubscription from the index for a given name.
-func (s *directoryServiceLogSubscriptionLister) Get(name string) (*v1alpha1.DirectoryServiceLogSubscription, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DirectoryServiceLogSubscriptions returns an object that can list and get DirectoryServiceLogSubscriptions.
+func (s *directoryServiceLogSubscriptionLister) DirectoryServiceLogSubscriptions(namespace string) DirectoryServiceLogSubscriptionNamespaceLister {
+	return directoryServiceLogSubscriptionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DirectoryServiceLogSubscriptionNamespaceLister helps list and get DirectoryServiceLogSubscriptions.
+type DirectoryServiceLogSubscriptionNamespaceLister interface {
+	// List lists all DirectoryServiceLogSubscriptions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DirectoryServiceLogSubscription, err error)
+	// Get retrieves the DirectoryServiceLogSubscription from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DirectoryServiceLogSubscription, error)
+	DirectoryServiceLogSubscriptionNamespaceListerExpansion
+}
+
+// directoryServiceLogSubscriptionNamespaceLister implements the DirectoryServiceLogSubscriptionNamespaceLister
+// interface.
+type directoryServiceLogSubscriptionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DirectoryServiceLogSubscriptions in the indexer for a given namespace.
+func (s directoryServiceLogSubscriptionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DirectoryServiceLogSubscription, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DirectoryServiceLogSubscription))
+	})
+	return ret, err
+}
+
+// Get retrieves the DirectoryServiceLogSubscription from the indexer for a given namespace and name.
+func (s directoryServiceLogSubscriptionNamespaceLister) Get(name string) (*v1alpha1.DirectoryServiceLogSubscription, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

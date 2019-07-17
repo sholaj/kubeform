@@ -29,8 +29,8 @@ import (
 type ShieldProtectionLister interface {
 	// List lists all ShieldProtections in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ShieldProtection, err error)
-	// Get retrieves the ShieldProtection from the index for a given name.
-	Get(name string) (*v1alpha1.ShieldProtection, error)
+	// ShieldProtections returns an object that can list and get ShieldProtections.
+	ShieldProtections(namespace string) ShieldProtectionNamespaceLister
 	ShieldProtectionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *shieldProtectionLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the ShieldProtection from the index for a given name.
-func (s *shieldProtectionLister) Get(name string) (*v1alpha1.ShieldProtection, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ShieldProtections returns an object that can list and get ShieldProtections.
+func (s *shieldProtectionLister) ShieldProtections(namespace string) ShieldProtectionNamespaceLister {
+	return shieldProtectionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ShieldProtectionNamespaceLister helps list and get ShieldProtections.
+type ShieldProtectionNamespaceLister interface {
+	// List lists all ShieldProtections in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ShieldProtection, err error)
+	// Get retrieves the ShieldProtection from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ShieldProtection, error)
+	ShieldProtectionNamespaceListerExpansion
+}
+
+// shieldProtectionNamespaceLister implements the ShieldProtectionNamespaceLister
+// interface.
+type shieldProtectionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ShieldProtections in the indexer for a given namespace.
+func (s shieldProtectionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ShieldProtection, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ShieldProtection))
+	})
+	return ret, err
+}
+
+// Get retrieves the ShieldProtection from the indexer for a given namespace and name.
+func (s shieldProtectionNamespaceLister) Get(name string) (*v1alpha1.ShieldProtection, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

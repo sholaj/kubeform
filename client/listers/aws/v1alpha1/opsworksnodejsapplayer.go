@@ -29,8 +29,8 @@ import (
 type OpsworksNodejsAppLayerLister interface {
 	// List lists all OpsworksNodejsAppLayers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OpsworksNodejsAppLayer, err error)
-	// Get retrieves the OpsworksNodejsAppLayer from the index for a given name.
-	Get(name string) (*v1alpha1.OpsworksNodejsAppLayer, error)
+	// OpsworksNodejsAppLayers returns an object that can list and get OpsworksNodejsAppLayers.
+	OpsworksNodejsAppLayers(namespace string) OpsworksNodejsAppLayerNamespaceLister
 	OpsworksNodejsAppLayerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *opsworksNodejsAppLayerLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the OpsworksNodejsAppLayer from the index for a given name.
-func (s *opsworksNodejsAppLayerLister) Get(name string) (*v1alpha1.OpsworksNodejsAppLayer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OpsworksNodejsAppLayers returns an object that can list and get OpsworksNodejsAppLayers.
+func (s *opsworksNodejsAppLayerLister) OpsworksNodejsAppLayers(namespace string) OpsworksNodejsAppLayerNamespaceLister {
+	return opsworksNodejsAppLayerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OpsworksNodejsAppLayerNamespaceLister helps list and get OpsworksNodejsAppLayers.
+type OpsworksNodejsAppLayerNamespaceLister interface {
+	// List lists all OpsworksNodejsAppLayers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OpsworksNodejsAppLayer, err error)
+	// Get retrieves the OpsworksNodejsAppLayer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OpsworksNodejsAppLayer, error)
+	OpsworksNodejsAppLayerNamespaceListerExpansion
+}
+
+// opsworksNodejsAppLayerNamespaceLister implements the OpsworksNodejsAppLayerNamespaceLister
+// interface.
+type opsworksNodejsAppLayerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OpsworksNodejsAppLayers in the indexer for a given namespace.
+func (s opsworksNodejsAppLayerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OpsworksNodejsAppLayer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OpsworksNodejsAppLayer))
+	})
+	return ret, err
+}
+
+// Get retrieves the OpsworksNodejsAppLayer from the indexer for a given namespace and name.
+func (s opsworksNodejsAppLayerNamespaceLister) Get(name string) (*v1alpha1.OpsworksNodejsAppLayer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -1,49 +1,52 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type LogicAppActionHttp struct {
+type LogicAppActionHTTP struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              LogicAppActionHttpSpec   `json:"spec,omitempty"`
-	Status            LogicAppActionHttpStatus `json:"status,omitempty"`
+	Spec              LogicAppActionHTTPSpec   `json:"spec,omitempty"`
+	Status            LogicAppActionHTTPStatus `json:"status,omitempty"`
 }
 
-type LogicAppActionHttpSpec struct {
+type LogicAppActionHTTPSpec struct {
 	// +optional
-	Body string `json:"body,omitempty"`
+	Body string `json:"body,omitempty" tf:"body,omitempty"`
 	// +optional
-	Headers    map[string]string `json:"headers,omitempty"`
-	LogicAppId string            `json:"logic_app_id"`
-	Method     string            `json:"method"`
-	Name       string            `json:"name"`
-	Uri        string            `json:"uri"`
+	Headers     map[string]string         `json:"headers,omitempty" tf:"headers,omitempty"`
+	LogicAppID  string                    `json:"logicAppID" tf:"logic_app_id"`
+	Method      string                    `json:"method" tf:"method"`
+	Name        string                    `json:"name" tf:"name"`
+	Uri         string                    `json:"uri" tf:"uri"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
-type LogicAppActionHttpStatus struct {
+type LogicAppActionHTTPStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// LogicAppActionHttpList is a list of LogicAppActionHttps
-type LogicAppActionHttpList struct {
+// LogicAppActionHTTPList is a list of LogicAppActionHTTPs
+type LogicAppActionHTTPList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of LogicAppActionHttp CRD objects
-	Items []LogicAppActionHttp `json:"items,omitempty"`
+	// Items is a list of LogicAppActionHTTP CRD objects
+	Items []LogicAppActionHTTP `json:"items,omitempty"`
 }

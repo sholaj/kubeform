@@ -29,8 +29,8 @@ import (
 type CloudwatchLogDestinationPolicyLister interface {
 	// List lists all CloudwatchLogDestinationPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CloudwatchLogDestinationPolicy, err error)
-	// Get retrieves the CloudwatchLogDestinationPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.CloudwatchLogDestinationPolicy, error)
+	// CloudwatchLogDestinationPolicies returns an object that can list and get CloudwatchLogDestinationPolicies.
+	CloudwatchLogDestinationPolicies(namespace string) CloudwatchLogDestinationPolicyNamespaceLister
 	CloudwatchLogDestinationPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cloudwatchLogDestinationPolicyLister) List(selector labels.Selector) (r
 	return ret, err
 }
 
-// Get retrieves the CloudwatchLogDestinationPolicy from the index for a given name.
-func (s *cloudwatchLogDestinationPolicyLister) Get(name string) (*v1alpha1.CloudwatchLogDestinationPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CloudwatchLogDestinationPolicies returns an object that can list and get CloudwatchLogDestinationPolicies.
+func (s *cloudwatchLogDestinationPolicyLister) CloudwatchLogDestinationPolicies(namespace string) CloudwatchLogDestinationPolicyNamespaceLister {
+	return cloudwatchLogDestinationPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CloudwatchLogDestinationPolicyNamespaceLister helps list and get CloudwatchLogDestinationPolicies.
+type CloudwatchLogDestinationPolicyNamespaceLister interface {
+	// List lists all CloudwatchLogDestinationPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CloudwatchLogDestinationPolicy, err error)
+	// Get retrieves the CloudwatchLogDestinationPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CloudwatchLogDestinationPolicy, error)
+	CloudwatchLogDestinationPolicyNamespaceListerExpansion
+}
+
+// cloudwatchLogDestinationPolicyNamespaceLister implements the CloudwatchLogDestinationPolicyNamespaceLister
+// interface.
+type cloudwatchLogDestinationPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CloudwatchLogDestinationPolicies in the indexer for a given namespace.
+func (s cloudwatchLogDestinationPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CloudwatchLogDestinationPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CloudwatchLogDestinationPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the CloudwatchLogDestinationPolicy from the indexer for a given namespace and name.
+func (s cloudwatchLogDestinationPolicyNamespaceLister) Get(name string) (*v1alpha1.CloudwatchLogDestinationPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

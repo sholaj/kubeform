@@ -29,8 +29,8 @@ import (
 type AmiLister interface {
 	// List lists all Amis in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Ami, err error)
-	// Get retrieves the Ami from the index for a given name.
-	Get(name string) (*v1alpha1.Ami, error)
+	// Amis returns an object that can list and get Amis.
+	Amis(namespace string) AmiNamespaceLister
 	AmiListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *amiLister) List(selector labels.Selector) (ret []*v1alpha1.Ami, err err
 	return ret, err
 }
 
-// Get retrieves the Ami from the index for a given name.
-func (s *amiLister) Get(name string) (*v1alpha1.Ami, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Amis returns an object that can list and get Amis.
+func (s *amiLister) Amis(namespace string) AmiNamespaceLister {
+	return amiNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AmiNamespaceLister helps list and get Amis.
+type AmiNamespaceLister interface {
+	// List lists all Amis in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Ami, err error)
+	// Get retrieves the Ami from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Ami, error)
+	AmiNamespaceListerExpansion
+}
+
+// amiNamespaceLister implements the AmiNamespaceLister
+// interface.
+type amiNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Amis in the indexer for a given namespace.
+func (s amiNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Ami, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Ami))
+	})
+	return ret, err
+}
+
+// Get retrieves the Ami from the indexer for a given namespace and name.
+func (s amiNamespaceLister) Get(name string) (*v1alpha1.Ami, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

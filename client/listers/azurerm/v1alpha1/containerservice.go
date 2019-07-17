@@ -29,8 +29,8 @@ import (
 type ContainerServiceLister interface {
 	// List lists all ContainerServices in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ContainerService, err error)
-	// Get retrieves the ContainerService from the index for a given name.
-	Get(name string) (*v1alpha1.ContainerService, error)
+	// ContainerServices returns an object that can list and get ContainerServices.
+	ContainerServices(namespace string) ContainerServiceNamespaceLister
 	ContainerServiceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *containerServiceLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the ContainerService from the index for a given name.
-func (s *containerServiceLister) Get(name string) (*v1alpha1.ContainerService, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ContainerServices returns an object that can list and get ContainerServices.
+func (s *containerServiceLister) ContainerServices(namespace string) ContainerServiceNamespaceLister {
+	return containerServiceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ContainerServiceNamespaceLister helps list and get ContainerServices.
+type ContainerServiceNamespaceLister interface {
+	// List lists all ContainerServices in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ContainerService, err error)
+	// Get retrieves the ContainerService from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ContainerService, error)
+	ContainerServiceNamespaceListerExpansion
+}
+
+// containerServiceNamespaceLister implements the ContainerServiceNamespaceLister
+// interface.
+type containerServiceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ContainerServices in the indexer for a given namespace.
+func (s containerServiceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ContainerService, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ContainerService))
+	})
+	return ret, err
+}
+
+// Get retrieves the ContainerService from the indexer for a given namespace and name.
+func (s containerServiceNamespaceLister) Get(name string) (*v1alpha1.ContainerService, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

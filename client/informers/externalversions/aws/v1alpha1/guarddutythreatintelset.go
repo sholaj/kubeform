@@ -41,32 +41,33 @@ type GuarddutyThreatintelsetInformer interface {
 type guarddutyThreatintelsetInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewGuarddutyThreatintelsetInformer constructs a new informer for GuarddutyThreatintelset type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewGuarddutyThreatintelsetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredGuarddutyThreatintelsetInformer(client, resyncPeriod, indexers, nil)
+func NewGuarddutyThreatintelsetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredGuarddutyThreatintelsetInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredGuarddutyThreatintelsetInformer constructs a new informer for GuarddutyThreatintelset type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredGuarddutyThreatintelsetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredGuarddutyThreatintelsetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().GuarddutyThreatintelsets().List(options)
+				return client.AwsV1alpha1().GuarddutyThreatintelsets(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().GuarddutyThreatintelsets().Watch(options)
+				return client.AwsV1alpha1().GuarddutyThreatintelsets(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.GuarddutyThreatintelset{},
@@ -76,7 +77,7 @@ func NewFilteredGuarddutyThreatintelsetInformer(client versioned.Interface, resy
 }
 
 func (f *guarddutyThreatintelsetInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredGuarddutyThreatintelsetInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredGuarddutyThreatintelsetInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *guarddutyThreatintelsetInformer) Informer() cache.SharedIndexInformer {

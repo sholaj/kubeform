@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,50 +20,51 @@ type BatchComputeEnvironment struct {
 
 type BatchComputeEnvironmentSpecComputeResourcesLaunchTemplate struct {
 	// +optional
-	LaunchTemplateId string `json:"launch_template_id,omitempty"`
+	LaunchTemplateID string `json:"launchTemplateID,omitempty" tf:"launch_template_id,omitempty"`
 	// +optional
-	LaunchTemplateName string `json:"launch_template_name,omitempty"`
+	LaunchTemplateName string `json:"launchTemplateName,omitempty" tf:"launch_template_name,omitempty"`
 	// +optional
-	Version string `json:"version,omitempty"`
+	Version string `json:"version,omitempty" tf:"version,omitempty"`
 }
 
 type BatchComputeEnvironmentSpecComputeResources struct {
 	// +optional
-	BidPercentage int `json:"bid_percentage,omitempty"`
+	BidPercentage int `json:"bidPercentage,omitempty" tf:"bid_percentage,omitempty"`
 	// +optional
-	DesiredVcpus int `json:"desired_vcpus,omitempty"`
+	DesiredVcpus int `json:"desiredVcpus,omitempty" tf:"desired_vcpus,omitempty"`
 	// +optional
-	Ec2KeyPair string `json:"ec2_key_pair,omitempty"`
+	Ec2KeyPair string `json:"ec2KeyPair,omitempty" tf:"ec2_key_pair,omitempty"`
 	// +optional
-	ImageId      string `json:"image_id,omitempty"`
-	InstanceRole string `json:"instance_role"`
+	ImageID      string `json:"imageID,omitempty" tf:"image_id,omitempty"`
+	InstanceRole string `json:"instanceRole" tf:"instance_role"`
 	// +kubebuilder:validation:UniqueItems=true
-	InstanceType []string `json:"instance_type"`
+	InstanceType []string `json:"instanceType" tf:"instance_type"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	LaunchTemplate *[]BatchComputeEnvironmentSpecComputeResources `json:"launch_template,omitempty"`
-	MaxVcpus       int                                            `json:"max_vcpus"`
-	MinVcpus       int                                            `json:"min_vcpus"`
+	LaunchTemplate []BatchComputeEnvironmentSpecComputeResourcesLaunchTemplate `json:"launchTemplate,omitempty" tf:"launch_template,omitempty"`
+	MaxVcpus       int                                                         `json:"maxVcpus" tf:"max_vcpus"`
+	MinVcpus       int                                                         `json:"minVcpus" tf:"min_vcpus"`
 	// +kubebuilder:validation:UniqueItems=true
-	SecurityGroupIds []string `json:"security_group_ids"`
+	SecurityGroupIDS []string `json:"securityGroupIDS" tf:"security_group_ids"`
 	// +optional
-	SpotIamFleetRole string `json:"spot_iam_fleet_role,omitempty"`
+	SpotIamFleetRole string `json:"spotIamFleetRole,omitempty" tf:"spot_iam_fleet_role,omitempty"`
 	// +kubebuilder:validation:UniqueItems=true
-	Subnets []string `json:"subnets"`
+	Subnets []string `json:"subnets" tf:"subnets"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
-	Type string            `json:"type"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
+	Type string            `json:"type" tf:"type"`
 }
 
 type BatchComputeEnvironmentSpec struct {
-	ComputeEnvironmentName string `json:"compute_environment_name"`
+	ComputeEnvironmentName string `json:"computeEnvironmentName" tf:"compute_environment_name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ComputeResources *[]BatchComputeEnvironmentSpec `json:"compute_resources,omitempty"`
-	ServiceRole      string                         `json:"service_role"`
+	ComputeResources []BatchComputeEnvironmentSpecComputeResources `json:"computeResources,omitempty" tf:"compute_resources,omitempty"`
+	ServiceRole      string                                        `json:"serviceRole" tf:"service_role"`
 	// +optional
-	State string `json:"state,omitempty"`
-	Type  string `json:"type"`
+	State       string                    `json:"state,omitempty" tf:"state,omitempty"`
+	Type        string                    `json:"type" tf:"type"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type BatchComputeEnvironmentStatus struct {
@@ -71,7 +72,9 @@ type BatchComputeEnvironmentStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -32,7 +32,7 @@ import (
 // AmiCopiesGetter has a method to return a AmiCopyInterface.
 // A group's client should implement this interface.
 type AmiCopiesGetter interface {
-	AmiCopies() AmiCopyInterface
+	AmiCopies(namespace string) AmiCopyInterface
 }
 
 // AmiCopyInterface has methods to work with AmiCopy resources.
@@ -52,12 +52,14 @@ type AmiCopyInterface interface {
 // amiCopies implements AmiCopyInterface
 type amiCopies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAmiCopies returns a AmiCopies
-func newAmiCopies(c *AwsV1alpha1Client) *amiCopies {
+func newAmiCopies(c *AwsV1alpha1Client, namespace string) *amiCopies {
 	return &amiCopies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAmiCopies(c *AwsV1alpha1Client) *amiCopies {
 func (c *amiCopies) Get(name string, options v1.GetOptions) (result *v1alpha1.AmiCopy, err error) {
 	result = &v1alpha1.AmiCopy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("amicopies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *amiCopies) List(opts v1.ListOptions) (result *v1alpha1.AmiCopyList, err
 	}
 	result = &v1alpha1.AmiCopyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("amicopies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *amiCopies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("amicopies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *amiCopies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *amiCopies) Create(amiCopy *v1alpha1.AmiCopy) (result *v1alpha1.AmiCopy, err error) {
 	result = &v1alpha1.AmiCopy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("amicopies").
 		Body(amiCopy).
 		Do().
@@ -118,6 +124,7 @@ func (c *amiCopies) Create(amiCopy *v1alpha1.AmiCopy) (result *v1alpha1.AmiCopy,
 func (c *amiCopies) Update(amiCopy *v1alpha1.AmiCopy) (result *v1alpha1.AmiCopy, err error) {
 	result = &v1alpha1.AmiCopy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("amicopies").
 		Name(amiCopy.Name).
 		Body(amiCopy).
@@ -132,6 +139,7 @@ func (c *amiCopies) Update(amiCopy *v1alpha1.AmiCopy) (result *v1alpha1.AmiCopy,
 func (c *amiCopies) UpdateStatus(amiCopy *v1alpha1.AmiCopy) (result *v1alpha1.AmiCopy, err error) {
 	result = &v1alpha1.AmiCopy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("amicopies").
 		Name(amiCopy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *amiCopies) UpdateStatus(amiCopy *v1alpha1.AmiCopy) (result *v1alpha1.Am
 // Delete takes name of the amiCopy and deletes it. Returns an error if one occurs.
 func (c *amiCopies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("amicopies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *amiCopies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("amicopies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *amiCopies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 func (c *amiCopies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AmiCopy, err error) {
 	result = &v1alpha1.AmiCopy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("amicopies").
 		SubResource(subresources...).
 		Name(name).

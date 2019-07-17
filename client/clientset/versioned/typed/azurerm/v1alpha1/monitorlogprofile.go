@@ -32,7 +32,7 @@ import (
 // MonitorLogProfilesGetter has a method to return a MonitorLogProfileInterface.
 // A group's client should implement this interface.
 type MonitorLogProfilesGetter interface {
-	MonitorLogProfiles() MonitorLogProfileInterface
+	MonitorLogProfiles(namespace string) MonitorLogProfileInterface
 }
 
 // MonitorLogProfileInterface has methods to work with MonitorLogProfile resources.
@@ -52,12 +52,14 @@ type MonitorLogProfileInterface interface {
 // monitorLogProfiles implements MonitorLogProfileInterface
 type monitorLogProfiles struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMonitorLogProfiles returns a MonitorLogProfiles
-func newMonitorLogProfiles(c *AzurermV1alpha1Client) *monitorLogProfiles {
+func newMonitorLogProfiles(c *AzurermV1alpha1Client, namespace string) *monitorLogProfiles {
 	return &monitorLogProfiles{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMonitorLogProfiles(c *AzurermV1alpha1Client) *monitorLogProfiles {
 func (c *monitorLogProfiles) Get(name string, options v1.GetOptions) (result *v1alpha1.MonitorLogProfile, err error) {
 	result = &v1alpha1.MonitorLogProfile{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitorlogprofiles").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *monitorLogProfiles) List(opts v1.ListOptions) (result *v1alpha1.Monitor
 	}
 	result = &v1alpha1.MonitorLogProfileList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitorlogprofiles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *monitorLogProfiles) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("monitorlogprofiles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *monitorLogProfiles) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *monitorLogProfiles) Create(monitorLogProfile *v1alpha1.MonitorLogProfile) (result *v1alpha1.MonitorLogProfile, err error) {
 	result = &v1alpha1.MonitorLogProfile{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("monitorlogprofiles").
 		Body(monitorLogProfile).
 		Do().
@@ -118,6 +124,7 @@ func (c *monitorLogProfiles) Create(monitorLogProfile *v1alpha1.MonitorLogProfil
 func (c *monitorLogProfiles) Update(monitorLogProfile *v1alpha1.MonitorLogProfile) (result *v1alpha1.MonitorLogProfile, err error) {
 	result = &v1alpha1.MonitorLogProfile{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitorlogprofiles").
 		Name(monitorLogProfile.Name).
 		Body(monitorLogProfile).
@@ -132,6 +139,7 @@ func (c *monitorLogProfiles) Update(monitorLogProfile *v1alpha1.MonitorLogProfil
 func (c *monitorLogProfiles) UpdateStatus(monitorLogProfile *v1alpha1.MonitorLogProfile) (result *v1alpha1.MonitorLogProfile, err error) {
 	result = &v1alpha1.MonitorLogProfile{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitorlogprofiles").
 		Name(monitorLogProfile.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *monitorLogProfiles) UpdateStatus(monitorLogProfile *v1alpha1.MonitorLog
 // Delete takes name of the monitorLogProfile and deletes it. Returns an error if one occurs.
 func (c *monitorLogProfiles) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitorlogprofiles").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *monitorLogProfiles) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitorlogprofiles").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *monitorLogProfiles) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *monitorLogProfiles) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MonitorLogProfile, err error) {
 	result = &v1alpha1.MonitorLogProfile{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("monitorlogprofiles").
 		SubResource(subresources...).
 		Name(name).

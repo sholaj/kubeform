@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// PublicIpsGetter has a method to return a PublicIpInterface.
+// PublicIPsGetter has a method to return a PublicIPInterface.
 // A group's client should implement this interface.
-type PublicIpsGetter interface {
-	PublicIps() PublicIpInterface
+type PublicIPsGetter interface {
+	PublicIPs(namespace string) PublicIPInterface
 }
 
-// PublicIpInterface has methods to work with PublicIp resources.
-type PublicIpInterface interface {
-	Create(*v1alpha1.PublicIp) (*v1alpha1.PublicIp, error)
-	Update(*v1alpha1.PublicIp) (*v1alpha1.PublicIp, error)
-	UpdateStatus(*v1alpha1.PublicIp) (*v1alpha1.PublicIp, error)
+// PublicIPInterface has methods to work with PublicIP resources.
+type PublicIPInterface interface {
+	Create(*v1alpha1.PublicIP) (*v1alpha1.PublicIP, error)
+	Update(*v1alpha1.PublicIP) (*v1alpha1.PublicIP, error)
+	UpdateStatus(*v1alpha1.PublicIP) (*v1alpha1.PublicIP, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.PublicIp, error)
-	List(opts v1.ListOptions) (*v1alpha1.PublicIpList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.PublicIP, error)
+	List(opts v1.ListOptions) (*v1alpha1.PublicIPList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PublicIp, err error)
-	PublicIpExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PublicIP, err error)
+	PublicIPExpansion
 }
 
-// publicIps implements PublicIpInterface
-type publicIps struct {
+// publicIPs implements PublicIPInterface
+type publicIPs struct {
 	client rest.Interface
+	ns     string
 }
 
-// newPublicIps returns a PublicIps
-func newPublicIps(c *AzurermV1alpha1Client) *publicIps {
-	return &publicIps{
+// newPublicIPs returns a PublicIPs
+func newPublicIPs(c *AzurermV1alpha1Client, namespace string) *publicIPs {
+	return &publicIPs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the publicIp, and returns the corresponding publicIp object, and an error if there is any.
-func (c *publicIps) Get(name string, options v1.GetOptions) (result *v1alpha1.PublicIp, err error) {
-	result = &v1alpha1.PublicIp{}
+// Get takes name of the publicIP, and returns the corresponding publicIP object, and an error if there is any.
+func (c *publicIPs) Get(name string, options v1.GetOptions) (result *v1alpha1.PublicIP, err error) {
+	result = &v1alpha1.PublicIP{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("publicips").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *publicIps) Get(name string, options v1.GetOptions) (result *v1alpha1.Pu
 	return
 }
 
-// List takes label and field selectors, and returns the list of PublicIps that match those selectors.
-func (c *publicIps) List(opts v1.ListOptions) (result *v1alpha1.PublicIpList, err error) {
+// List takes label and field selectors, and returns the list of PublicIPs that match those selectors.
+func (c *publicIPs) List(opts v1.ListOptions) (result *v1alpha1.PublicIPList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.PublicIpList{}
+	result = &v1alpha1.PublicIPList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("publicips").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *publicIps) List(opts v1.ListOptions) (result *v1alpha1.PublicIpList, er
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested publicIps.
-func (c *publicIps) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested publicIPs.
+func (c *publicIPs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("publicips").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a publicIp and creates it.  Returns the server's representation of the publicIp, and an error, if there is any.
-func (c *publicIps) Create(publicIp *v1alpha1.PublicIp) (result *v1alpha1.PublicIp, err error) {
-	result = &v1alpha1.PublicIp{}
+// Create takes the representation of a publicIP and creates it.  Returns the server's representation of the publicIP, and an error, if there is any.
+func (c *publicIPs) Create(publicIP *v1alpha1.PublicIP) (result *v1alpha1.PublicIP, err error) {
+	result = &v1alpha1.PublicIP{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("publicips").
-		Body(publicIp).
+		Body(publicIP).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a publicIp and updates it. Returns the server's representation of the publicIp, and an error, if there is any.
-func (c *publicIps) Update(publicIp *v1alpha1.PublicIp) (result *v1alpha1.PublicIp, err error) {
-	result = &v1alpha1.PublicIp{}
+// Update takes the representation of a publicIP and updates it. Returns the server's representation of the publicIP, and an error, if there is any.
+func (c *publicIPs) Update(publicIP *v1alpha1.PublicIP) (result *v1alpha1.PublicIP, err error) {
+	result = &v1alpha1.PublicIP{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("publicips").
-		Name(publicIp.Name).
-		Body(publicIp).
+		Name(publicIP.Name).
+		Body(publicIP).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *publicIps) Update(publicIp *v1alpha1.PublicIp) (result *v1alpha1.Public
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *publicIps) UpdateStatus(publicIp *v1alpha1.PublicIp) (result *v1alpha1.PublicIp, err error) {
-	result = &v1alpha1.PublicIp{}
+func (c *publicIPs) UpdateStatus(publicIP *v1alpha1.PublicIP) (result *v1alpha1.PublicIP, err error) {
+	result = &v1alpha1.PublicIP{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("publicips").
-		Name(publicIp.Name).
+		Name(publicIP.Name).
 		SubResource("status").
-		Body(publicIp).
+		Body(publicIP).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the publicIp and deletes it. Returns an error if one occurs.
-func (c *publicIps) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the publicIP and deletes it. Returns an error if one occurs.
+func (c *publicIPs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("publicips").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *publicIps) Delete(name string, options *v1.DeleteOptions) error {
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *publicIps) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *publicIPs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("publicips").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *publicIps) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 		Error()
 }
 
-// Patch applies the patch and returns the patched publicIp.
-func (c *publicIps) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PublicIp, err error) {
-	result = &v1alpha1.PublicIp{}
+// Patch applies the patch and returns the patched publicIP.
+func (c *publicIPs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PublicIP, err error) {
+	result = &v1alpha1.PublicIP{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("publicips").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // LoggingFolderExclusionsGetter has a method to return a LoggingFolderExclusionInterface.
 // A group's client should implement this interface.
 type LoggingFolderExclusionsGetter interface {
-	LoggingFolderExclusions() LoggingFolderExclusionInterface
+	LoggingFolderExclusions(namespace string) LoggingFolderExclusionInterface
 }
 
 // LoggingFolderExclusionInterface has methods to work with LoggingFolderExclusion resources.
@@ -52,12 +52,14 @@ type LoggingFolderExclusionInterface interface {
 // loggingFolderExclusions implements LoggingFolderExclusionInterface
 type loggingFolderExclusions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLoggingFolderExclusions returns a LoggingFolderExclusions
-func newLoggingFolderExclusions(c *GoogleV1alpha1Client) *loggingFolderExclusions {
+func newLoggingFolderExclusions(c *GoogleV1alpha1Client, namespace string) *loggingFolderExclusions {
 	return &loggingFolderExclusions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLoggingFolderExclusions(c *GoogleV1alpha1Client) *loggingFolderExclusion
 func (c *loggingFolderExclusions) Get(name string, options v1.GetOptions) (result *v1alpha1.LoggingFolderExclusion, err error) {
 	result = &v1alpha1.LoggingFolderExclusion{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingfolderexclusions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *loggingFolderExclusions) List(opts v1.ListOptions) (result *v1alpha1.Lo
 	}
 	result = &v1alpha1.LoggingFolderExclusionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingfolderexclusions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *loggingFolderExclusions) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingfolderexclusions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *loggingFolderExclusions) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *loggingFolderExclusions) Create(loggingFolderExclusion *v1alpha1.LoggingFolderExclusion) (result *v1alpha1.LoggingFolderExclusion, err error) {
 	result = &v1alpha1.LoggingFolderExclusion{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("loggingfolderexclusions").
 		Body(loggingFolderExclusion).
 		Do().
@@ -118,6 +124,7 @@ func (c *loggingFolderExclusions) Create(loggingFolderExclusion *v1alpha1.Loggin
 func (c *loggingFolderExclusions) Update(loggingFolderExclusion *v1alpha1.LoggingFolderExclusion) (result *v1alpha1.LoggingFolderExclusion, err error) {
 	result = &v1alpha1.LoggingFolderExclusion{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loggingfolderexclusions").
 		Name(loggingFolderExclusion.Name).
 		Body(loggingFolderExclusion).
@@ -132,6 +139,7 @@ func (c *loggingFolderExclusions) Update(loggingFolderExclusion *v1alpha1.Loggin
 func (c *loggingFolderExclusions) UpdateStatus(loggingFolderExclusion *v1alpha1.LoggingFolderExclusion) (result *v1alpha1.LoggingFolderExclusion, err error) {
 	result = &v1alpha1.LoggingFolderExclusion{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loggingfolderexclusions").
 		Name(loggingFolderExclusion.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *loggingFolderExclusions) UpdateStatus(loggingFolderExclusion *v1alpha1.
 // Delete takes name of the loggingFolderExclusion and deletes it. Returns an error if one occurs.
 func (c *loggingFolderExclusions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loggingfolderexclusions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *loggingFolderExclusions) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loggingfolderexclusions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *loggingFolderExclusions) DeleteCollection(options *v1.DeleteOptions, li
 func (c *loggingFolderExclusions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LoggingFolderExclusion, err error) {
 	result = &v1alpha1.LoggingFolderExclusion{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("loggingfolderexclusions").
 		SubResource(subresources...).
 		Name(name).

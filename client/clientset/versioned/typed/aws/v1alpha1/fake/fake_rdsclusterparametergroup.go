@@ -31,6 +31,7 @@ import (
 // FakeRdsClusterParameterGroups implements RdsClusterParameterGroupInterface
 type FakeRdsClusterParameterGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var rdsclusterparametergroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "rdsclusterparametergroups"}
@@ -40,7 +41,8 @@ var rdsclusterparametergroupsKind = schema.GroupVersionKind{Group: "aws.kubeform
 // Get takes name of the rdsClusterParameterGroup, and returns the corresponding rdsClusterParameterGroup object, and an error if there is any.
 func (c *FakeRdsClusterParameterGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.RdsClusterParameterGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(rdsclusterparametergroupsResource, name), &v1alpha1.RdsClusterParameterGroup{})
+		Invokes(testing.NewGetAction(rdsclusterparametergroupsResource, c.ns, name), &v1alpha1.RdsClusterParameterGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRdsClusterParameterGroups) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of RdsClusterParameterGroups that match those selectors.
 func (c *FakeRdsClusterParameterGroups) List(opts v1.ListOptions) (result *v1alpha1.RdsClusterParameterGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(rdsclusterparametergroupsResource, rdsclusterparametergroupsKind, opts), &v1alpha1.RdsClusterParameterGroupList{})
+		Invokes(testing.NewListAction(rdsclusterparametergroupsResource, rdsclusterparametergroupsKind, c.ns, opts), &v1alpha1.RdsClusterParameterGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRdsClusterParameterGroups) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested rdsClusterParameterGroups.
 func (c *FakeRdsClusterParameterGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(rdsclusterparametergroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(rdsclusterparametergroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a rdsClusterParameterGroup and creates it.  Returns the server's representation of the rdsClusterParameterGroup, and an error, if there is any.
 func (c *FakeRdsClusterParameterGroups) Create(rdsClusterParameterGroup *v1alpha1.RdsClusterParameterGroup) (result *v1alpha1.RdsClusterParameterGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(rdsclusterparametergroupsResource, rdsClusterParameterGroup), &v1alpha1.RdsClusterParameterGroup{})
+		Invokes(testing.NewCreateAction(rdsclusterparametergroupsResource, c.ns, rdsClusterParameterGroup), &v1alpha1.RdsClusterParameterGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRdsClusterParameterGroups) Create(rdsClusterParameterGroup *v1alpha
 // Update takes the representation of a rdsClusterParameterGroup and updates it. Returns the server's representation of the rdsClusterParameterGroup, and an error, if there is any.
 func (c *FakeRdsClusterParameterGroups) Update(rdsClusterParameterGroup *v1alpha1.RdsClusterParameterGroup) (result *v1alpha1.RdsClusterParameterGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(rdsclusterparametergroupsResource, rdsClusterParameterGroup), &v1alpha1.RdsClusterParameterGroup{})
+		Invokes(testing.NewUpdateAction(rdsclusterparametergroupsResource, c.ns, rdsClusterParameterGroup), &v1alpha1.RdsClusterParameterGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRdsClusterParameterGroups) Update(rdsClusterParameterGroup *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRdsClusterParameterGroups) UpdateStatus(rdsClusterParameterGroup *v1alpha1.RdsClusterParameterGroup) (*v1alpha1.RdsClusterParameterGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(rdsclusterparametergroupsResource, "status", rdsClusterParameterGroup), &v1alpha1.RdsClusterParameterGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(rdsclusterparametergroupsResource, "status", c.ns, rdsClusterParameterGroup), &v1alpha1.RdsClusterParameterGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRdsClusterParameterGroups) UpdateStatus(rdsClusterParameterGroup *v
 // Delete takes name of the rdsClusterParameterGroup and deletes it. Returns an error if one occurs.
 func (c *FakeRdsClusterParameterGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(rdsclusterparametergroupsResource, name), &v1alpha1.RdsClusterParameterGroup{})
+		Invokes(testing.NewDeleteAction(rdsclusterparametergroupsResource, c.ns, name), &v1alpha1.RdsClusterParameterGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRdsClusterParameterGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(rdsclusterparametergroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(rdsclusterparametergroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.RdsClusterParameterGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRdsClusterParameterGroups) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched rdsClusterParameterGroup.
 func (c *FakeRdsClusterParameterGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RdsClusterParameterGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(rdsclusterparametergroupsResource, name, pt, data, subresources...), &v1alpha1.RdsClusterParameterGroup{})
+		Invokes(testing.NewPatchSubresourceAction(rdsclusterparametergroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.RdsClusterParameterGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

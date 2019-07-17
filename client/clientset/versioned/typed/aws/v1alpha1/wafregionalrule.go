@@ -32,7 +32,7 @@ import (
 // WafregionalRulesGetter has a method to return a WafregionalRuleInterface.
 // A group's client should implement this interface.
 type WafregionalRulesGetter interface {
-	WafregionalRules() WafregionalRuleInterface
+	WafregionalRules(namespace string) WafregionalRuleInterface
 }
 
 // WafregionalRuleInterface has methods to work with WafregionalRule resources.
@@ -52,12 +52,14 @@ type WafregionalRuleInterface interface {
 // wafregionalRules implements WafregionalRuleInterface
 type wafregionalRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWafregionalRules returns a WafregionalRules
-func newWafregionalRules(c *AwsV1alpha1Client) *wafregionalRules {
+func newWafregionalRules(c *AwsV1alpha1Client, namespace string) *wafregionalRules {
 	return &wafregionalRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWafregionalRules(c *AwsV1alpha1Client) *wafregionalRules {
 func (c *wafregionalRules) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalRule, err error) {
 	result = &v1alpha1.WafregionalRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *wafregionalRules) List(opts v1.ListOptions) (result *v1alpha1.Wafregion
 	}
 	result = &v1alpha1.WafregionalRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *wafregionalRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *wafregionalRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *wafregionalRules) Create(wafregionalRule *v1alpha1.WafregionalRule) (result *v1alpha1.WafregionalRule, err error) {
 	result = &v1alpha1.WafregionalRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafregionalrules").
 		Body(wafregionalRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *wafregionalRules) Create(wafregionalRule *v1alpha1.WafregionalRule) (re
 func (c *wafregionalRules) Update(wafregionalRule *v1alpha1.WafregionalRule) (result *v1alpha1.WafregionalRule, err error) {
 	result = &v1alpha1.WafregionalRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregionalrules").
 		Name(wafregionalRule.Name).
 		Body(wafregionalRule).
@@ -132,6 +139,7 @@ func (c *wafregionalRules) Update(wafregionalRule *v1alpha1.WafregionalRule) (re
 func (c *wafregionalRules) UpdateStatus(wafregionalRule *v1alpha1.WafregionalRule) (result *v1alpha1.WafregionalRule, err error) {
 	result = &v1alpha1.WafregionalRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregionalrules").
 		Name(wafregionalRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *wafregionalRules) UpdateStatus(wafregionalRule *v1alpha1.WafregionalRul
 // Delete takes name of the wafregionalRule and deletes it. Returns an error if one occurs.
 func (c *wafregionalRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregionalrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *wafregionalRules) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregionalrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *wafregionalRules) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *wafregionalRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalRule, err error) {
 	result = &v1alpha1.WafregionalRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafregionalrules").
 		SubResource(subresources...).
 		Name(name).

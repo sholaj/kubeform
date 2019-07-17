@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,57 +19,58 @@ type GlueCrawler struct {
 }
 
 type GlueCrawlerSpecDynamodbTarget struct {
-	Path string `json:"path"`
+	Path string `json:"path" tf:"path"`
 }
 
 type GlueCrawlerSpecJdbcTarget struct {
-	ConnectionName string `json:"connection_name"`
+	ConnectionName string `json:"connectionName" tf:"connection_name"`
 	// +optional
-	Exclusions []string `json:"exclusions,omitempty"`
-	Path       string   `json:"path"`
+	Exclusions []string `json:"exclusions,omitempty" tf:"exclusions,omitempty"`
+	Path       string   `json:"path" tf:"path"`
 }
 
 type GlueCrawlerSpecS3Target struct {
 	// +optional
-	Exclusions []string `json:"exclusions,omitempty"`
-	Path       string   `json:"path"`
+	Exclusions []string `json:"exclusions,omitempty" tf:"exclusions,omitempty"`
+	Path       string   `json:"path" tf:"path"`
 }
 
 type GlueCrawlerSpecSchemaChangePolicy struct {
 	// +optional
-	DeleteBehavior string `json:"delete_behavior,omitempty"`
+	DeleteBehavior string `json:"deleteBehavior,omitempty" tf:"delete_behavior,omitempty"`
 	// +optional
-	UpdateBehavior string `json:"update_behavior,omitempty"`
+	UpdateBehavior string `json:"updateBehavior,omitempty" tf:"update_behavior,omitempty"`
 }
 
 type GlueCrawlerSpec struct {
 	// +optional
-	Classifiers []string `json:"classifiers,omitempty"`
+	Classifiers []string `json:"classifiers,omitempty" tf:"classifiers,omitempty"`
 	// +optional
-	Configuration string `json:"configuration,omitempty"`
-	DatabaseName  string `json:"database_name"`
+	Configuration string `json:"configuration,omitempty" tf:"configuration,omitempty"`
+	DatabaseName  string `json:"databaseName" tf:"database_name"`
 	// +optional
-	Description string `json:"description,omitempty"`
-	// +optional
-	// +kubebuilder:validation:MinItems=1
-	DynamodbTarget *[]GlueCrawlerSpec `json:"dynamodb_target,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MinItems=1
-	JdbcTarget *[]GlueCrawlerSpec `json:"jdbc_target,omitempty"`
-	Name       string             `json:"name"`
-	Role       string             `json:"role"`
+	DynamodbTarget []GlueCrawlerSpecDynamodbTarget `json:"dynamodbTarget,omitempty" tf:"dynamodb_target,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MinItems=1
-	S3Target *[]GlueCrawlerSpec `json:"s3_target,omitempty"`
+	JdbcTarget []GlueCrawlerSpecJdbcTarget `json:"jdbcTarget,omitempty" tf:"jdbc_target,omitempty"`
+	Name       string                      `json:"name" tf:"name"`
+	Role       string                      `json:"role" tf:"role"`
 	// +optional
-	Schedule string `json:"schedule,omitempty"`
+	// +kubebuilder:validation:MinItems=1
+	S3Target []GlueCrawlerSpecS3Target `json:"s3Target,omitempty" tf:"s3_target,omitempty"`
+	// +optional
+	Schedule string `json:"schedule,omitempty" tf:"schedule,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	SchemaChangePolicy *[]GlueCrawlerSpec `json:"schema_change_policy,omitempty"`
+	SchemaChangePolicy []GlueCrawlerSpecSchemaChangePolicy `json:"schemaChangePolicy,omitempty" tf:"schema_change_policy,omitempty"`
 	// +optional
-	SecurityConfiguration string `json:"security_configuration,omitempty"`
+	SecurityConfiguration string `json:"securityConfiguration,omitempty" tf:"security_configuration,omitempty"`
 	// +optional
-	TablePrefix string `json:"table_prefix,omitempty"`
+	TablePrefix string                    `json:"tablePrefix,omitempty" tf:"table_prefix,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type GlueCrawlerStatus struct {
@@ -77,7 +78,9 @@ type GlueCrawlerStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -32,7 +32,7 @@ import (
 // LaunchTemplatesGetter has a method to return a LaunchTemplateInterface.
 // A group's client should implement this interface.
 type LaunchTemplatesGetter interface {
-	LaunchTemplates() LaunchTemplateInterface
+	LaunchTemplates(namespace string) LaunchTemplateInterface
 }
 
 // LaunchTemplateInterface has methods to work with LaunchTemplate resources.
@@ -52,12 +52,14 @@ type LaunchTemplateInterface interface {
 // launchTemplates implements LaunchTemplateInterface
 type launchTemplates struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLaunchTemplates returns a LaunchTemplates
-func newLaunchTemplates(c *AwsV1alpha1Client) *launchTemplates {
+func newLaunchTemplates(c *AwsV1alpha1Client, namespace string) *launchTemplates {
 	return &launchTemplates{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLaunchTemplates(c *AwsV1alpha1Client) *launchTemplates {
 func (c *launchTemplates) Get(name string, options v1.GetOptions) (result *v1alpha1.LaunchTemplate, err error) {
 	result = &v1alpha1.LaunchTemplate{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("launchtemplates").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *launchTemplates) List(opts v1.ListOptions) (result *v1alpha1.LaunchTemp
 	}
 	result = &v1alpha1.LaunchTemplateList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("launchtemplates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *launchTemplates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("launchtemplates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *launchTemplates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *launchTemplates) Create(launchTemplate *v1alpha1.LaunchTemplate) (result *v1alpha1.LaunchTemplate, err error) {
 	result = &v1alpha1.LaunchTemplate{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("launchtemplates").
 		Body(launchTemplate).
 		Do().
@@ -118,6 +124,7 @@ func (c *launchTemplates) Create(launchTemplate *v1alpha1.LaunchTemplate) (resul
 func (c *launchTemplates) Update(launchTemplate *v1alpha1.LaunchTemplate) (result *v1alpha1.LaunchTemplate, err error) {
 	result = &v1alpha1.LaunchTemplate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("launchtemplates").
 		Name(launchTemplate.Name).
 		Body(launchTemplate).
@@ -132,6 +139,7 @@ func (c *launchTemplates) Update(launchTemplate *v1alpha1.LaunchTemplate) (resul
 func (c *launchTemplates) UpdateStatus(launchTemplate *v1alpha1.LaunchTemplate) (result *v1alpha1.LaunchTemplate, err error) {
 	result = &v1alpha1.LaunchTemplate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("launchtemplates").
 		Name(launchTemplate.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *launchTemplates) UpdateStatus(launchTemplate *v1alpha1.LaunchTemplate) 
 // Delete takes name of the launchTemplate and deletes it. Returns an error if one occurs.
 func (c *launchTemplates) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("launchtemplates").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *launchTemplates) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("launchtemplates").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *launchTemplates) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *launchTemplates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LaunchTemplate, err error) {
 	result = &v1alpha1.LaunchTemplate{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("launchtemplates").
 		SubResource(subresources...).
 		Name(name).

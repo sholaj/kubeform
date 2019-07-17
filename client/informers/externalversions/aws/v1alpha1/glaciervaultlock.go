@@ -41,32 +41,33 @@ type GlacierVaultLockInformer interface {
 type glacierVaultLockInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewGlacierVaultLockInformer constructs a new informer for GlacierVaultLock type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewGlacierVaultLockInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredGlacierVaultLockInformer(client, resyncPeriod, indexers, nil)
+func NewGlacierVaultLockInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredGlacierVaultLockInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredGlacierVaultLockInformer constructs a new informer for GlacierVaultLock type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredGlacierVaultLockInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredGlacierVaultLockInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().GlacierVaultLocks().List(options)
+				return client.AwsV1alpha1().GlacierVaultLocks(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().GlacierVaultLocks().Watch(options)
+				return client.AwsV1alpha1().GlacierVaultLocks(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.GlacierVaultLock{},
@@ -76,7 +77,7 @@ func NewFilteredGlacierVaultLockInformer(client versioned.Interface, resyncPerio
 }
 
 func (f *glacierVaultLockInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredGlacierVaultLockInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredGlacierVaultLockInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *glacierVaultLockInformer) Informer() cache.SharedIndexInformer {

@@ -31,6 +31,7 @@ import (
 // FakeDataFactoryLinkedServiceDataLakeStorageGen2s implements DataFactoryLinkedServiceDataLakeStorageGen2Interface
 type FakeDataFactoryLinkedServiceDataLakeStorageGen2s struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var datafactorylinkedservicedatalakestoragegen2sResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "datafactorylinkedservicedatalakestoragegen2s"}
@@ -40,7 +41,8 @@ var datafactorylinkedservicedatalakestoragegen2sKind = schema.GroupVersionKind{G
 // Get takes name of the dataFactoryLinkedServiceDataLakeStorageGen2, and returns the corresponding dataFactoryLinkedServiceDataLakeStorageGen2 object, and an error if there is any.
 func (c *FakeDataFactoryLinkedServiceDataLakeStorageGen2s) Get(name string, options v1.GetOptions) (result *v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(datafactorylinkedservicedatalakestoragegen2sResource, name), &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2{})
+		Invokes(testing.NewGetAction(datafactorylinkedservicedatalakestoragegen2sResource, c.ns, name), &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDataFactoryLinkedServiceDataLakeStorageGen2s) Get(name string, opti
 // List takes label and field selectors, and returns the list of DataFactoryLinkedServiceDataLakeStorageGen2s that match those selectors.
 func (c *FakeDataFactoryLinkedServiceDataLakeStorageGen2s) List(opts v1.ListOptions) (result *v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2List, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(datafactorylinkedservicedatalakestoragegen2sResource, datafactorylinkedservicedatalakestoragegen2sKind, opts), &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2List{})
+		Invokes(testing.NewListAction(datafactorylinkedservicedatalakestoragegen2sResource, datafactorylinkedservicedatalakestoragegen2sKind, c.ns, opts), &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2List{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDataFactoryLinkedServiceDataLakeStorageGen2s) List(opts v1.ListOpti
 // Watch returns a watch.Interface that watches the requested dataFactoryLinkedServiceDataLakeStorageGen2s.
 func (c *FakeDataFactoryLinkedServiceDataLakeStorageGen2s) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(datafactorylinkedservicedatalakestoragegen2sResource, opts))
+		InvokesWatch(testing.NewWatchAction(datafactorylinkedservicedatalakestoragegen2sResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dataFactoryLinkedServiceDataLakeStorageGen2 and creates it.  Returns the server's representation of the dataFactoryLinkedServiceDataLakeStorageGen2, and an error, if there is any.
 func (c *FakeDataFactoryLinkedServiceDataLakeStorageGen2s) Create(dataFactoryLinkedServiceDataLakeStorageGen2 *v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2) (result *v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(datafactorylinkedservicedatalakestoragegen2sResource, dataFactoryLinkedServiceDataLakeStorageGen2), &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2{})
+		Invokes(testing.NewCreateAction(datafactorylinkedservicedatalakestoragegen2sResource, c.ns, dataFactoryLinkedServiceDataLakeStorageGen2), &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDataFactoryLinkedServiceDataLakeStorageGen2s) Create(dataFactoryLin
 // Update takes the representation of a dataFactoryLinkedServiceDataLakeStorageGen2 and updates it. Returns the server's representation of the dataFactoryLinkedServiceDataLakeStorageGen2, and an error, if there is any.
 func (c *FakeDataFactoryLinkedServiceDataLakeStorageGen2s) Update(dataFactoryLinkedServiceDataLakeStorageGen2 *v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2) (result *v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(datafactorylinkedservicedatalakestoragegen2sResource, dataFactoryLinkedServiceDataLakeStorageGen2), &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2{})
+		Invokes(testing.NewUpdateAction(datafactorylinkedservicedatalakestoragegen2sResource, c.ns, dataFactoryLinkedServiceDataLakeStorageGen2), &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDataFactoryLinkedServiceDataLakeStorageGen2s) Update(dataFactoryLin
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDataFactoryLinkedServiceDataLakeStorageGen2s) UpdateStatus(dataFactoryLinkedServiceDataLakeStorageGen2 *v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2) (*v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(datafactorylinkedservicedatalakestoragegen2sResource, "status", dataFactoryLinkedServiceDataLakeStorageGen2), &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2{})
+		Invokes(testing.NewUpdateSubresourceAction(datafactorylinkedservicedatalakestoragegen2sResource, "status", c.ns, dataFactoryLinkedServiceDataLakeStorageGen2), &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDataFactoryLinkedServiceDataLakeStorageGen2s) UpdateStatus(dataFact
 // Delete takes name of the dataFactoryLinkedServiceDataLakeStorageGen2 and deletes it. Returns an error if one occurs.
 func (c *FakeDataFactoryLinkedServiceDataLakeStorageGen2s) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(datafactorylinkedservicedatalakestoragegen2sResource, name), &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2{})
+		Invokes(testing.NewDeleteAction(datafactorylinkedservicedatalakestoragegen2sResource, c.ns, name), &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDataFactoryLinkedServiceDataLakeStorageGen2s) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(datafactorylinkedservicedatalakestoragegen2sResource, listOptions)
+	action := testing.NewDeleteCollectionAction(datafactorylinkedservicedatalakestoragegen2sResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2List{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDataFactoryLinkedServiceDataLakeStorageGen2s) DeleteCollection(opti
 // Patch applies the patch and returns the patched dataFactoryLinkedServiceDataLakeStorageGen2.
 func (c *FakeDataFactoryLinkedServiceDataLakeStorageGen2s) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(datafactorylinkedservicedatalakestoragegen2sResource, name, pt, data, subresources...), &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2{})
+		Invokes(testing.NewPatchSubresourceAction(datafactorylinkedservicedatalakestoragegen2sResource, c.ns, name, pt, data, subresources...), &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2{})
+
 	if obj == nil {
 		return nil, err
 	}

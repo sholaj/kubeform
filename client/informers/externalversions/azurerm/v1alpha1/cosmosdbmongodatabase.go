@@ -41,32 +41,33 @@ type CosmosdbMongoDatabaseInformer interface {
 type cosmosdbMongoDatabaseInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewCosmosdbMongoDatabaseInformer constructs a new informer for CosmosdbMongoDatabase type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCosmosdbMongoDatabaseInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCosmosdbMongoDatabaseInformer(client, resyncPeriod, indexers, nil)
+func NewCosmosdbMongoDatabaseInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCosmosdbMongoDatabaseInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredCosmosdbMongoDatabaseInformer constructs a new informer for CosmosdbMongoDatabase type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCosmosdbMongoDatabaseInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCosmosdbMongoDatabaseInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().CosmosdbMongoDatabases().List(options)
+				return client.AzurermV1alpha1().CosmosdbMongoDatabases(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().CosmosdbMongoDatabases().Watch(options)
+				return client.AzurermV1alpha1().CosmosdbMongoDatabases(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.CosmosdbMongoDatabase{},
@@ -76,7 +77,7 @@ func NewFilteredCosmosdbMongoDatabaseInformer(client versioned.Interface, resync
 }
 
 func (f *cosmosdbMongoDatabaseInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCosmosdbMongoDatabaseInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredCosmosdbMongoDatabaseInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *cosmosdbMongoDatabaseInformer) Informer() cache.SharedIndexInformer {

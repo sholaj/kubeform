@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,25 +20,26 @@ type ComputeRoute struct {
 
 type ComputeRouteSpec struct {
 	// +optional
-	Description string `json:"description,omitempty"`
-	DestRange   string `json:"dest_range"`
-	Name        string `json:"name"`
-	Network     string `json:"network"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
+	DestRange   string `json:"destRange" tf:"dest_range"`
+	Name        string `json:"name" tf:"name"`
+	Network     string `json:"network" tf:"network"`
 	// +optional
-	NextHopGateway string `json:"next_hop_gateway,omitempty"`
+	NextHopGateway string `json:"nextHopGateway,omitempty" tf:"next_hop_gateway,omitempty"`
 	// +optional
-	NextHopInstance string `json:"next_hop_instance,omitempty"`
+	NextHopInstance string `json:"nextHopInstance,omitempty" tf:"next_hop_instance,omitempty"`
 	// +optional
-	NextHopInstanceZone string `json:"next_hop_instance_zone,omitempty"`
+	NextHopInstanceZone string `json:"nextHopInstanceZone,omitempty" tf:"next_hop_instance_zone,omitempty"`
 	// +optional
-	NextHopIp string `json:"next_hop_ip,omitempty"`
+	NextHopIP string `json:"nextHopIP,omitempty" tf:"next_hop_ip,omitempty"`
 	// +optional
-	NextHopVpnTunnel string `json:"next_hop_vpn_tunnel,omitempty"`
+	NextHopVPNTunnel string `json:"nextHopVPNTunnel,omitempty" tf:"next_hop_vpn_tunnel,omitempty"`
 	// +optional
-	Priority int `json:"priority,omitempty"`
+	Priority int `json:"priority,omitempty" tf:"priority,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Tags []string `json:"tags,omitempty"`
+	Tags        []string                  `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ComputeRouteStatus struct {
@@ -46,7 +47,9 @@ type ComputeRouteStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

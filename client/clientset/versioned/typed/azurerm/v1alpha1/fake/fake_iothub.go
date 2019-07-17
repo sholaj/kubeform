@@ -31,6 +31,7 @@ import (
 // FakeIothubs implements IothubInterface
 type FakeIothubs struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var iothubsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "iothubs"}
@@ -40,7 +41,8 @@ var iothubsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version
 // Get takes name of the iothub, and returns the corresponding iothub object, and an error if there is any.
 func (c *FakeIothubs) Get(name string, options v1.GetOptions) (result *v1alpha1.Iothub, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iothubsResource, name), &v1alpha1.Iothub{})
+		Invokes(testing.NewGetAction(iothubsResource, c.ns, name), &v1alpha1.Iothub{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIothubs) Get(name string, options v1.GetOptions) (result *v1alpha1.
 // List takes label and field selectors, and returns the list of Iothubs that match those selectors.
 func (c *FakeIothubs) List(opts v1.ListOptions) (result *v1alpha1.IothubList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iothubsResource, iothubsKind, opts), &v1alpha1.IothubList{})
+		Invokes(testing.NewListAction(iothubsResource, iothubsKind, c.ns, opts), &v1alpha1.IothubList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIothubs) List(opts v1.ListOptions) (result *v1alpha1.IothubList, er
 // Watch returns a watch.Interface that watches the requested iothubs.
 func (c *FakeIothubs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iothubsResource, opts))
+		InvokesWatch(testing.NewWatchAction(iothubsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iothub and creates it.  Returns the server's representation of the iothub, and an error, if there is any.
 func (c *FakeIothubs) Create(iothub *v1alpha1.Iothub) (result *v1alpha1.Iothub, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iothubsResource, iothub), &v1alpha1.Iothub{})
+		Invokes(testing.NewCreateAction(iothubsResource, c.ns, iothub), &v1alpha1.Iothub{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIothubs) Create(iothub *v1alpha1.Iothub) (result *v1alpha1.Iothub, 
 // Update takes the representation of a iothub and updates it. Returns the server's representation of the iothub, and an error, if there is any.
 func (c *FakeIothubs) Update(iothub *v1alpha1.Iothub) (result *v1alpha1.Iothub, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iothubsResource, iothub), &v1alpha1.Iothub{})
+		Invokes(testing.NewUpdateAction(iothubsResource, c.ns, iothub), &v1alpha1.Iothub{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIothubs) Update(iothub *v1alpha1.Iothub) (result *v1alpha1.Iothub, 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIothubs) UpdateStatus(iothub *v1alpha1.Iothub) (*v1alpha1.Iothub, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iothubsResource, "status", iothub), &v1alpha1.Iothub{})
+		Invokes(testing.NewUpdateSubresourceAction(iothubsResource, "status", c.ns, iothub), &v1alpha1.Iothub{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIothubs) UpdateStatus(iothub *v1alpha1.Iothub) (*v1alpha1.Iothub, e
 // Delete takes name of the iothub and deletes it. Returns an error if one occurs.
 func (c *FakeIothubs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iothubsResource, name), &v1alpha1.Iothub{})
+		Invokes(testing.NewDeleteAction(iothubsResource, c.ns, name), &v1alpha1.Iothub{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIothubs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iothubsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iothubsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IothubList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIothubs) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 // Patch applies the patch and returns the patched iothub.
 func (c *FakeIothubs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Iothub, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iothubsResource, name, pt, data, subresources...), &v1alpha1.Iothub{})
+		Invokes(testing.NewPatchSubresourceAction(iothubsResource, c.ns, name, pt, data, subresources...), &v1alpha1.Iothub{})
+
 	if obj == nil {
 		return nil, err
 	}

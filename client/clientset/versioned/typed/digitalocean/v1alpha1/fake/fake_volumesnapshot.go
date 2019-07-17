@@ -31,6 +31,7 @@ import (
 // FakeVolumeSnapshots implements VolumeSnapshotInterface
 type FakeVolumeSnapshots struct {
 	Fake *FakeDigitaloceanV1alpha1
+	ns   string
 }
 
 var volumesnapshotsResource = schema.GroupVersionResource{Group: "digitalocean.kubeform.com", Version: "v1alpha1", Resource: "volumesnapshots"}
@@ -40,7 +41,8 @@ var volumesnapshotsKind = schema.GroupVersionKind{Group: "digitalocean.kubeform.
 // Get takes name of the volumeSnapshot, and returns the corresponding volumeSnapshot object, and an error if there is any.
 func (c *FakeVolumeSnapshots) Get(name string, options v1.GetOptions) (result *v1alpha1.VolumeSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(volumesnapshotsResource, name), &v1alpha1.VolumeSnapshot{})
+		Invokes(testing.NewGetAction(volumesnapshotsResource, c.ns, name), &v1alpha1.VolumeSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeVolumeSnapshots) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of VolumeSnapshots that match those selectors.
 func (c *FakeVolumeSnapshots) List(opts v1.ListOptions) (result *v1alpha1.VolumeSnapshotList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(volumesnapshotsResource, volumesnapshotsKind, opts), &v1alpha1.VolumeSnapshotList{})
+		Invokes(testing.NewListAction(volumesnapshotsResource, volumesnapshotsKind, c.ns, opts), &v1alpha1.VolumeSnapshotList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeVolumeSnapshots) List(opts v1.ListOptions) (result *v1alpha1.Volume
 // Watch returns a watch.Interface that watches the requested volumeSnapshots.
 func (c *FakeVolumeSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(volumesnapshotsResource, opts))
+		InvokesWatch(testing.NewWatchAction(volumesnapshotsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a volumeSnapshot and creates it.  Returns the server's representation of the volumeSnapshot, and an error, if there is any.
 func (c *FakeVolumeSnapshots) Create(volumeSnapshot *v1alpha1.VolumeSnapshot) (result *v1alpha1.VolumeSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(volumesnapshotsResource, volumeSnapshot), &v1alpha1.VolumeSnapshot{})
+		Invokes(testing.NewCreateAction(volumesnapshotsResource, c.ns, volumeSnapshot), &v1alpha1.VolumeSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeVolumeSnapshots) Create(volumeSnapshot *v1alpha1.VolumeSnapshot) (r
 // Update takes the representation of a volumeSnapshot and updates it. Returns the server's representation of the volumeSnapshot, and an error, if there is any.
 func (c *FakeVolumeSnapshots) Update(volumeSnapshot *v1alpha1.VolumeSnapshot) (result *v1alpha1.VolumeSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(volumesnapshotsResource, volumeSnapshot), &v1alpha1.VolumeSnapshot{})
+		Invokes(testing.NewUpdateAction(volumesnapshotsResource, c.ns, volumeSnapshot), &v1alpha1.VolumeSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeVolumeSnapshots) Update(volumeSnapshot *v1alpha1.VolumeSnapshot) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeVolumeSnapshots) UpdateStatus(volumeSnapshot *v1alpha1.VolumeSnapshot) (*v1alpha1.VolumeSnapshot, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(volumesnapshotsResource, "status", volumeSnapshot), &v1alpha1.VolumeSnapshot{})
+		Invokes(testing.NewUpdateSubresourceAction(volumesnapshotsResource, "status", c.ns, volumeSnapshot), &v1alpha1.VolumeSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeVolumeSnapshots) UpdateStatus(volumeSnapshot *v1alpha1.VolumeSnapsh
 // Delete takes name of the volumeSnapshot and deletes it. Returns an error if one occurs.
 func (c *FakeVolumeSnapshots) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(volumesnapshotsResource, name), &v1alpha1.VolumeSnapshot{})
+		Invokes(testing.NewDeleteAction(volumesnapshotsResource, c.ns, name), &v1alpha1.VolumeSnapshot{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeVolumeSnapshots) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(volumesnapshotsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(volumesnapshotsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.VolumeSnapshotList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeVolumeSnapshots) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched volumeSnapshot.
 func (c *FakeVolumeSnapshots) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VolumeSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(volumesnapshotsResource, name, pt, data, subresources...), &v1alpha1.VolumeSnapshot{})
+		Invokes(testing.NewPatchSubresourceAction(volumesnapshotsResource, c.ns, name, pt, data, subresources...), &v1alpha1.VolumeSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}

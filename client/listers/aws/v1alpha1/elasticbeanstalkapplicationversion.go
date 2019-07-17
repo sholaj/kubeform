@@ -29,8 +29,8 @@ import (
 type ElasticBeanstalkApplicationVersionLister interface {
 	// List lists all ElasticBeanstalkApplicationVersions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ElasticBeanstalkApplicationVersion, err error)
-	// Get retrieves the ElasticBeanstalkApplicationVersion from the index for a given name.
-	Get(name string) (*v1alpha1.ElasticBeanstalkApplicationVersion, error)
+	// ElasticBeanstalkApplicationVersions returns an object that can list and get ElasticBeanstalkApplicationVersions.
+	ElasticBeanstalkApplicationVersions(namespace string) ElasticBeanstalkApplicationVersionNamespaceLister
 	ElasticBeanstalkApplicationVersionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *elasticBeanstalkApplicationVersionLister) List(selector labels.Selector
 	return ret, err
 }
 
-// Get retrieves the ElasticBeanstalkApplicationVersion from the index for a given name.
-func (s *elasticBeanstalkApplicationVersionLister) Get(name string) (*v1alpha1.ElasticBeanstalkApplicationVersion, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ElasticBeanstalkApplicationVersions returns an object that can list and get ElasticBeanstalkApplicationVersions.
+func (s *elasticBeanstalkApplicationVersionLister) ElasticBeanstalkApplicationVersions(namespace string) ElasticBeanstalkApplicationVersionNamespaceLister {
+	return elasticBeanstalkApplicationVersionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ElasticBeanstalkApplicationVersionNamespaceLister helps list and get ElasticBeanstalkApplicationVersions.
+type ElasticBeanstalkApplicationVersionNamespaceLister interface {
+	// List lists all ElasticBeanstalkApplicationVersions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ElasticBeanstalkApplicationVersion, err error)
+	// Get retrieves the ElasticBeanstalkApplicationVersion from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ElasticBeanstalkApplicationVersion, error)
+	ElasticBeanstalkApplicationVersionNamespaceListerExpansion
+}
+
+// elasticBeanstalkApplicationVersionNamespaceLister implements the ElasticBeanstalkApplicationVersionNamespaceLister
+// interface.
+type elasticBeanstalkApplicationVersionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ElasticBeanstalkApplicationVersions in the indexer for a given namespace.
+func (s elasticBeanstalkApplicationVersionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ElasticBeanstalkApplicationVersion, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ElasticBeanstalkApplicationVersion))
+	})
+	return ret, err
+}
+
+// Get retrieves the ElasticBeanstalkApplicationVersion from the indexer for a given namespace and name.
+func (s elasticBeanstalkApplicationVersionNamespaceLister) Get(name string) (*v1alpha1.ElasticBeanstalkApplicationVersion, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

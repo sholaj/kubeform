@@ -29,8 +29,8 @@ import (
 type PostgresqlConfigurationLister interface {
 	// List lists all PostgresqlConfigurations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.PostgresqlConfiguration, err error)
-	// Get retrieves the PostgresqlConfiguration from the index for a given name.
-	Get(name string) (*v1alpha1.PostgresqlConfiguration, error)
+	// PostgresqlConfigurations returns an object that can list and get PostgresqlConfigurations.
+	PostgresqlConfigurations(namespace string) PostgresqlConfigurationNamespaceLister
 	PostgresqlConfigurationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *postgresqlConfigurationLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the PostgresqlConfiguration from the index for a given name.
-func (s *postgresqlConfigurationLister) Get(name string) (*v1alpha1.PostgresqlConfiguration, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// PostgresqlConfigurations returns an object that can list and get PostgresqlConfigurations.
+func (s *postgresqlConfigurationLister) PostgresqlConfigurations(namespace string) PostgresqlConfigurationNamespaceLister {
+	return postgresqlConfigurationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// PostgresqlConfigurationNamespaceLister helps list and get PostgresqlConfigurations.
+type PostgresqlConfigurationNamespaceLister interface {
+	// List lists all PostgresqlConfigurations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.PostgresqlConfiguration, err error)
+	// Get retrieves the PostgresqlConfiguration from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.PostgresqlConfiguration, error)
+	PostgresqlConfigurationNamespaceListerExpansion
+}
+
+// postgresqlConfigurationNamespaceLister implements the PostgresqlConfigurationNamespaceLister
+// interface.
+type postgresqlConfigurationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all PostgresqlConfigurations in the indexer for a given namespace.
+func (s postgresqlConfigurationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.PostgresqlConfiguration, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.PostgresqlConfiguration))
+	})
+	return ret, err
+}
+
+// Get retrieves the PostgresqlConfiguration from the indexer for a given namespace and name.
+func (s postgresqlConfigurationNamespaceLister) Get(name string) (*v1alpha1.PostgresqlConfiguration, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

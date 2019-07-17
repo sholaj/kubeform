@@ -41,32 +41,33 @@ type IamAccountAliasInformer interface {
 type iamAccountAliasInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewIamAccountAliasInformer constructs a new informer for IamAccountAlias type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewIamAccountAliasInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredIamAccountAliasInformer(client, resyncPeriod, indexers, nil)
+func NewIamAccountAliasInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredIamAccountAliasInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredIamAccountAliasInformer constructs a new informer for IamAccountAlias type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredIamAccountAliasInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredIamAccountAliasInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().IamAccountAliases().List(options)
+				return client.AwsV1alpha1().IamAccountAliases(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().IamAccountAliases().Watch(options)
+				return client.AwsV1alpha1().IamAccountAliases(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.IamAccountAlias{},
@@ -76,7 +77,7 @@ func NewFilteredIamAccountAliasInformer(client versioned.Interface, resyncPeriod
 }
 
 func (f *iamAccountAliasInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredIamAccountAliasInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredIamAccountAliasInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *iamAccountAliasInformer) Informer() cache.SharedIndexInformer {

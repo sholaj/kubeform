@@ -31,6 +31,7 @@ import (
 // FakeComputeAttachedDisks implements ComputeAttachedDiskInterface
 type FakeComputeAttachedDisks struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computeattacheddisksResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computeattacheddisks"}
@@ -40,7 +41,8 @@ var computeattacheddisksKind = schema.GroupVersionKind{Group: "google.kubeform.c
 // Get takes name of the computeAttachedDisk, and returns the corresponding computeAttachedDisk object, and an error if there is any.
 func (c *FakeComputeAttachedDisks) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeAttachedDisk, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computeattacheddisksResource, name), &v1alpha1.ComputeAttachedDisk{})
+		Invokes(testing.NewGetAction(computeattacheddisksResource, c.ns, name), &v1alpha1.ComputeAttachedDisk{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeAttachedDisks) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of ComputeAttachedDisks that match those selectors.
 func (c *FakeComputeAttachedDisks) List(opts v1.ListOptions) (result *v1alpha1.ComputeAttachedDiskList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computeattacheddisksResource, computeattacheddisksKind, opts), &v1alpha1.ComputeAttachedDiskList{})
+		Invokes(testing.NewListAction(computeattacheddisksResource, computeattacheddisksKind, c.ns, opts), &v1alpha1.ComputeAttachedDiskList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeAttachedDisks) List(opts v1.ListOptions) (result *v1alpha1.C
 // Watch returns a watch.Interface that watches the requested computeAttachedDisks.
 func (c *FakeComputeAttachedDisks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computeattacheddisksResource, opts))
+		InvokesWatch(testing.NewWatchAction(computeattacheddisksResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeAttachedDisk and creates it.  Returns the server's representation of the computeAttachedDisk, and an error, if there is any.
 func (c *FakeComputeAttachedDisks) Create(computeAttachedDisk *v1alpha1.ComputeAttachedDisk) (result *v1alpha1.ComputeAttachedDisk, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computeattacheddisksResource, computeAttachedDisk), &v1alpha1.ComputeAttachedDisk{})
+		Invokes(testing.NewCreateAction(computeattacheddisksResource, c.ns, computeAttachedDisk), &v1alpha1.ComputeAttachedDisk{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeAttachedDisks) Create(computeAttachedDisk *v1alpha1.ComputeA
 // Update takes the representation of a computeAttachedDisk and updates it. Returns the server's representation of the computeAttachedDisk, and an error, if there is any.
 func (c *FakeComputeAttachedDisks) Update(computeAttachedDisk *v1alpha1.ComputeAttachedDisk) (result *v1alpha1.ComputeAttachedDisk, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computeattacheddisksResource, computeAttachedDisk), &v1alpha1.ComputeAttachedDisk{})
+		Invokes(testing.NewUpdateAction(computeattacheddisksResource, c.ns, computeAttachedDisk), &v1alpha1.ComputeAttachedDisk{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeAttachedDisks) Update(computeAttachedDisk *v1alpha1.ComputeA
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeAttachedDisks) UpdateStatus(computeAttachedDisk *v1alpha1.ComputeAttachedDisk) (*v1alpha1.ComputeAttachedDisk, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computeattacheddisksResource, "status", computeAttachedDisk), &v1alpha1.ComputeAttachedDisk{})
+		Invokes(testing.NewUpdateSubresourceAction(computeattacheddisksResource, "status", c.ns, computeAttachedDisk), &v1alpha1.ComputeAttachedDisk{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeAttachedDisks) UpdateStatus(computeAttachedDisk *v1alpha1.Co
 // Delete takes name of the computeAttachedDisk and deletes it. Returns an error if one occurs.
 func (c *FakeComputeAttachedDisks) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computeattacheddisksResource, name), &v1alpha1.ComputeAttachedDisk{})
+		Invokes(testing.NewDeleteAction(computeattacheddisksResource, c.ns, name), &v1alpha1.ComputeAttachedDisk{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeAttachedDisks) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computeattacheddisksResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computeattacheddisksResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeAttachedDiskList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeAttachedDisks) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched computeAttachedDisk.
 func (c *FakeComputeAttachedDisks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeAttachedDisk, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computeattacheddisksResource, name, pt, data, subresources...), &v1alpha1.ComputeAttachedDisk{})
+		Invokes(testing.NewPatchSubresourceAction(computeattacheddisksResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeAttachedDisk{})
+
 	if obj == nil {
 		return nil, err
 	}

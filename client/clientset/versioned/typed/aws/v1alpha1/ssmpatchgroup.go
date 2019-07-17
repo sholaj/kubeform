@@ -32,7 +32,7 @@ import (
 // SsmPatchGroupsGetter has a method to return a SsmPatchGroupInterface.
 // A group's client should implement this interface.
 type SsmPatchGroupsGetter interface {
-	SsmPatchGroups() SsmPatchGroupInterface
+	SsmPatchGroups(namespace string) SsmPatchGroupInterface
 }
 
 // SsmPatchGroupInterface has methods to work with SsmPatchGroup resources.
@@ -52,12 +52,14 @@ type SsmPatchGroupInterface interface {
 // ssmPatchGroups implements SsmPatchGroupInterface
 type ssmPatchGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSsmPatchGroups returns a SsmPatchGroups
-func newSsmPatchGroups(c *AwsV1alpha1Client) *ssmPatchGroups {
+func newSsmPatchGroups(c *AwsV1alpha1Client, namespace string) *ssmPatchGroups {
 	return &ssmPatchGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSsmPatchGroups(c *AwsV1alpha1Client) *ssmPatchGroups {
 func (c *ssmPatchGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.SsmPatchGroup, err error) {
 	result = &v1alpha1.SsmPatchGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmpatchgroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ssmPatchGroups) List(opts v1.ListOptions) (result *v1alpha1.SsmPatchGro
 	}
 	result = &v1alpha1.SsmPatchGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmpatchgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ssmPatchGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmpatchgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ssmPatchGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *ssmPatchGroups) Create(ssmPatchGroup *v1alpha1.SsmPatchGroup) (result *v1alpha1.SsmPatchGroup, err error) {
 	result = &v1alpha1.SsmPatchGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ssmpatchgroups").
 		Body(ssmPatchGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *ssmPatchGroups) Create(ssmPatchGroup *v1alpha1.SsmPatchGroup) (result *
 func (c *ssmPatchGroups) Update(ssmPatchGroup *v1alpha1.SsmPatchGroup) (result *v1alpha1.SsmPatchGroup, err error) {
 	result = &v1alpha1.SsmPatchGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ssmpatchgroups").
 		Name(ssmPatchGroup.Name).
 		Body(ssmPatchGroup).
@@ -132,6 +139,7 @@ func (c *ssmPatchGroups) Update(ssmPatchGroup *v1alpha1.SsmPatchGroup) (result *
 func (c *ssmPatchGroups) UpdateStatus(ssmPatchGroup *v1alpha1.SsmPatchGroup) (result *v1alpha1.SsmPatchGroup, err error) {
 	result = &v1alpha1.SsmPatchGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ssmpatchgroups").
 		Name(ssmPatchGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ssmPatchGroups) UpdateStatus(ssmPatchGroup *v1alpha1.SsmPatchGroup) (re
 // Delete takes name of the ssmPatchGroup and deletes it. Returns an error if one occurs.
 func (c *ssmPatchGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ssmpatchgroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ssmPatchGroups) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ssmpatchgroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ssmPatchGroups) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *ssmPatchGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SsmPatchGroup, err error) {
 	result = &v1alpha1.SsmPatchGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ssmpatchgroups").
 		SubResource(subresources...).
 		Name(name).

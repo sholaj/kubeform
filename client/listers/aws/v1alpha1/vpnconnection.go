@@ -29,8 +29,8 @@ import (
 type VpnConnectionLister interface {
 	// List lists all VpnConnections in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.VpnConnection, err error)
-	// Get retrieves the VpnConnection from the index for a given name.
-	Get(name string) (*v1alpha1.VpnConnection, error)
+	// VpnConnections returns an object that can list and get VpnConnections.
+	VpnConnections(namespace string) VpnConnectionNamespaceLister
 	VpnConnectionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *vpnConnectionLister) List(selector labels.Selector) (ret []*v1alpha1.Vp
 	return ret, err
 }
 
-// Get retrieves the VpnConnection from the index for a given name.
-func (s *vpnConnectionLister) Get(name string) (*v1alpha1.VpnConnection, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VpnConnections returns an object that can list and get VpnConnections.
+func (s *vpnConnectionLister) VpnConnections(namespace string) VpnConnectionNamespaceLister {
+	return vpnConnectionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VpnConnectionNamespaceLister helps list and get VpnConnections.
+type VpnConnectionNamespaceLister interface {
+	// List lists all VpnConnections in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VpnConnection, err error)
+	// Get retrieves the VpnConnection from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VpnConnection, error)
+	VpnConnectionNamespaceListerExpansion
+}
+
+// vpnConnectionNamespaceLister implements the VpnConnectionNamespaceLister
+// interface.
+type vpnConnectionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VpnConnections in the indexer for a given namespace.
+func (s vpnConnectionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VpnConnection, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VpnConnection))
+	})
+	return ret, err
+}
+
+// Get retrieves the VpnConnection from the indexer for a given namespace and name.
+func (s vpnConnectionNamespaceLister) Get(name string) (*v1alpha1.VpnConnection, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

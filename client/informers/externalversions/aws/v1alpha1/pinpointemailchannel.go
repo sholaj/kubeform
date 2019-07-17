@@ -41,32 +41,33 @@ type PinpointEmailChannelInformer interface {
 type pinpointEmailChannelInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewPinpointEmailChannelInformer constructs a new informer for PinpointEmailChannel type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewPinpointEmailChannelInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredPinpointEmailChannelInformer(client, resyncPeriod, indexers, nil)
+func NewPinpointEmailChannelInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredPinpointEmailChannelInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredPinpointEmailChannelInformer constructs a new informer for PinpointEmailChannel type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredPinpointEmailChannelInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredPinpointEmailChannelInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().PinpointEmailChannels().List(options)
+				return client.AwsV1alpha1().PinpointEmailChannels(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().PinpointEmailChannels().Watch(options)
+				return client.AwsV1alpha1().PinpointEmailChannels(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.PinpointEmailChannel{},
@@ -76,7 +77,7 @@ func NewFilteredPinpointEmailChannelInformer(client versioned.Interface, resyncP
 }
 
 func (f *pinpointEmailChannelInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredPinpointEmailChannelInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredPinpointEmailChannelInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *pinpointEmailChannelInformer) Informer() cache.SharedIndexInformer {

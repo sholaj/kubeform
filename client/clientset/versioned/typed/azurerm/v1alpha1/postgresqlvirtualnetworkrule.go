@@ -32,7 +32,7 @@ import (
 // PostgresqlVirtualNetworkRulesGetter has a method to return a PostgresqlVirtualNetworkRuleInterface.
 // A group's client should implement this interface.
 type PostgresqlVirtualNetworkRulesGetter interface {
-	PostgresqlVirtualNetworkRules() PostgresqlVirtualNetworkRuleInterface
+	PostgresqlVirtualNetworkRules(namespace string) PostgresqlVirtualNetworkRuleInterface
 }
 
 // PostgresqlVirtualNetworkRuleInterface has methods to work with PostgresqlVirtualNetworkRule resources.
@@ -52,12 +52,14 @@ type PostgresqlVirtualNetworkRuleInterface interface {
 // postgresqlVirtualNetworkRules implements PostgresqlVirtualNetworkRuleInterface
 type postgresqlVirtualNetworkRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPostgresqlVirtualNetworkRules returns a PostgresqlVirtualNetworkRules
-func newPostgresqlVirtualNetworkRules(c *AzurermV1alpha1Client) *postgresqlVirtualNetworkRules {
+func newPostgresqlVirtualNetworkRules(c *AzurermV1alpha1Client, namespace string) *postgresqlVirtualNetworkRules {
 	return &postgresqlVirtualNetworkRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPostgresqlVirtualNetworkRules(c *AzurermV1alpha1Client) *postgresqlVirtu
 func (c *postgresqlVirtualNetworkRules) Get(name string, options v1.GetOptions) (result *v1alpha1.PostgresqlVirtualNetworkRule, err error) {
 	result = &v1alpha1.PostgresqlVirtualNetworkRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("postgresqlvirtualnetworkrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *postgresqlVirtualNetworkRules) List(opts v1.ListOptions) (result *v1alp
 	}
 	result = &v1alpha1.PostgresqlVirtualNetworkRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("postgresqlvirtualnetworkrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *postgresqlVirtualNetworkRules) Watch(opts v1.ListOptions) (watch.Interf
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("postgresqlvirtualnetworkrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *postgresqlVirtualNetworkRules) Watch(opts v1.ListOptions) (watch.Interf
 func (c *postgresqlVirtualNetworkRules) Create(postgresqlVirtualNetworkRule *v1alpha1.PostgresqlVirtualNetworkRule) (result *v1alpha1.PostgresqlVirtualNetworkRule, err error) {
 	result = &v1alpha1.PostgresqlVirtualNetworkRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("postgresqlvirtualnetworkrules").
 		Body(postgresqlVirtualNetworkRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *postgresqlVirtualNetworkRules) Create(postgresqlVirtualNetworkRule *v1a
 func (c *postgresqlVirtualNetworkRules) Update(postgresqlVirtualNetworkRule *v1alpha1.PostgresqlVirtualNetworkRule) (result *v1alpha1.PostgresqlVirtualNetworkRule, err error) {
 	result = &v1alpha1.PostgresqlVirtualNetworkRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("postgresqlvirtualnetworkrules").
 		Name(postgresqlVirtualNetworkRule.Name).
 		Body(postgresqlVirtualNetworkRule).
@@ -132,6 +139,7 @@ func (c *postgresqlVirtualNetworkRules) Update(postgresqlVirtualNetworkRule *v1a
 func (c *postgresqlVirtualNetworkRules) UpdateStatus(postgresqlVirtualNetworkRule *v1alpha1.PostgresqlVirtualNetworkRule) (result *v1alpha1.PostgresqlVirtualNetworkRule, err error) {
 	result = &v1alpha1.PostgresqlVirtualNetworkRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("postgresqlvirtualnetworkrules").
 		Name(postgresqlVirtualNetworkRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *postgresqlVirtualNetworkRules) UpdateStatus(postgresqlVirtualNetworkRul
 // Delete takes name of the postgresqlVirtualNetworkRule and deletes it. Returns an error if one occurs.
 func (c *postgresqlVirtualNetworkRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("postgresqlvirtualnetworkrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *postgresqlVirtualNetworkRules) DeleteCollection(options *v1.DeleteOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("postgresqlvirtualnetworkrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *postgresqlVirtualNetworkRules) DeleteCollection(options *v1.DeleteOptio
 func (c *postgresqlVirtualNetworkRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PostgresqlVirtualNetworkRule, err error) {
 	result = &v1alpha1.PostgresqlVirtualNetworkRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("postgresqlvirtualnetworkrules").
 		SubResource(subresources...).
 		Name(name).

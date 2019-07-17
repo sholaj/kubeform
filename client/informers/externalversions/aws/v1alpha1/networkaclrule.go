@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// NetworkAclRuleInformer provides access to a shared informer and lister for
-// NetworkAclRules.
-type NetworkAclRuleInformer interface {
+// NetworkACLRuleInformer provides access to a shared informer and lister for
+// NetworkACLRules.
+type NetworkACLRuleInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.NetworkAclRuleLister
+	Lister() v1alpha1.NetworkACLRuleLister
 }
 
-type networkAclRuleInformer struct {
+type networkACLRuleInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewNetworkAclRuleInformer constructs a new informer for NetworkAclRule type.
+// NewNetworkACLRuleInformer constructs a new informer for NetworkACLRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewNetworkAclRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredNetworkAclRuleInformer(client, resyncPeriod, indexers, nil)
+func NewNetworkACLRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredNetworkACLRuleInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredNetworkAclRuleInformer constructs a new informer for NetworkAclRule type.
+// NewFilteredNetworkACLRuleInformer constructs a new informer for NetworkACLRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredNetworkAclRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredNetworkACLRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().NetworkAclRules().List(options)
+				return client.AwsV1alpha1().NetworkACLRules(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().NetworkAclRules().Watch(options)
+				return client.AwsV1alpha1().NetworkACLRules(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.NetworkAclRule{},
+		&awsv1alpha1.NetworkACLRule{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *networkAclRuleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredNetworkAclRuleInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *networkACLRuleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredNetworkACLRuleInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *networkAclRuleInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.NetworkAclRule{}, f.defaultInformer)
+func (f *networkACLRuleInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.NetworkACLRule{}, f.defaultInformer)
 }
 
-func (f *networkAclRuleInformer) Lister() v1alpha1.NetworkAclRuleLister {
-	return v1alpha1.NewNetworkAclRuleLister(f.Informer().GetIndexer())
+func (f *networkACLRuleInformer) Lister() v1alpha1.NetworkACLRuleLister {
+	return v1alpha1.NewNetworkACLRuleLister(f.Informer().GetIndexer())
 }

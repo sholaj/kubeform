@@ -31,6 +31,7 @@ import (
 // FakeIamServiceLinkedRoles implements IamServiceLinkedRoleInterface
 type FakeIamServiceLinkedRoles struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var iamservicelinkedrolesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "iamservicelinkedroles"}
@@ -40,7 +41,8 @@ var iamservicelinkedrolesKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the iamServiceLinkedRole, and returns the corresponding iamServiceLinkedRole object, and an error if there is any.
 func (c *FakeIamServiceLinkedRoles) Get(name string, options v1.GetOptions) (result *v1alpha1.IamServiceLinkedRole, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iamservicelinkedrolesResource, name), &v1alpha1.IamServiceLinkedRole{})
+		Invokes(testing.NewGetAction(iamservicelinkedrolesResource, c.ns, name), &v1alpha1.IamServiceLinkedRole{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIamServiceLinkedRoles) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of IamServiceLinkedRoles that match those selectors.
 func (c *FakeIamServiceLinkedRoles) List(opts v1.ListOptions) (result *v1alpha1.IamServiceLinkedRoleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iamservicelinkedrolesResource, iamservicelinkedrolesKind, opts), &v1alpha1.IamServiceLinkedRoleList{})
+		Invokes(testing.NewListAction(iamservicelinkedrolesResource, iamservicelinkedrolesKind, c.ns, opts), &v1alpha1.IamServiceLinkedRoleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIamServiceLinkedRoles) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested iamServiceLinkedRoles.
 func (c *FakeIamServiceLinkedRoles) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iamservicelinkedrolesResource, opts))
+		InvokesWatch(testing.NewWatchAction(iamservicelinkedrolesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iamServiceLinkedRole and creates it.  Returns the server's representation of the iamServiceLinkedRole, and an error, if there is any.
 func (c *FakeIamServiceLinkedRoles) Create(iamServiceLinkedRole *v1alpha1.IamServiceLinkedRole) (result *v1alpha1.IamServiceLinkedRole, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iamservicelinkedrolesResource, iamServiceLinkedRole), &v1alpha1.IamServiceLinkedRole{})
+		Invokes(testing.NewCreateAction(iamservicelinkedrolesResource, c.ns, iamServiceLinkedRole), &v1alpha1.IamServiceLinkedRole{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIamServiceLinkedRoles) Create(iamServiceLinkedRole *v1alpha1.IamSer
 // Update takes the representation of a iamServiceLinkedRole and updates it. Returns the server's representation of the iamServiceLinkedRole, and an error, if there is any.
 func (c *FakeIamServiceLinkedRoles) Update(iamServiceLinkedRole *v1alpha1.IamServiceLinkedRole) (result *v1alpha1.IamServiceLinkedRole, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iamservicelinkedrolesResource, iamServiceLinkedRole), &v1alpha1.IamServiceLinkedRole{})
+		Invokes(testing.NewUpdateAction(iamservicelinkedrolesResource, c.ns, iamServiceLinkedRole), &v1alpha1.IamServiceLinkedRole{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIamServiceLinkedRoles) Update(iamServiceLinkedRole *v1alpha1.IamSer
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIamServiceLinkedRoles) UpdateStatus(iamServiceLinkedRole *v1alpha1.IamServiceLinkedRole) (*v1alpha1.IamServiceLinkedRole, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iamservicelinkedrolesResource, "status", iamServiceLinkedRole), &v1alpha1.IamServiceLinkedRole{})
+		Invokes(testing.NewUpdateSubresourceAction(iamservicelinkedrolesResource, "status", c.ns, iamServiceLinkedRole), &v1alpha1.IamServiceLinkedRole{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIamServiceLinkedRoles) UpdateStatus(iamServiceLinkedRole *v1alpha1.
 // Delete takes name of the iamServiceLinkedRole and deletes it. Returns an error if one occurs.
 func (c *FakeIamServiceLinkedRoles) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iamservicelinkedrolesResource, name), &v1alpha1.IamServiceLinkedRole{})
+		Invokes(testing.NewDeleteAction(iamservicelinkedrolesResource, c.ns, name), &v1alpha1.IamServiceLinkedRole{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIamServiceLinkedRoles) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iamservicelinkedrolesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iamservicelinkedrolesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IamServiceLinkedRoleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIamServiceLinkedRoles) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched iamServiceLinkedRole.
 func (c *FakeIamServiceLinkedRoles) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamServiceLinkedRole, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iamservicelinkedrolesResource, name, pt, data, subresources...), &v1alpha1.IamServiceLinkedRole{})
+		Invokes(testing.NewPatchSubresourceAction(iamservicelinkedrolesResource, c.ns, name, pt, data, subresources...), &v1alpha1.IamServiceLinkedRole{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // S3BucketObjectsGetter has a method to return a S3BucketObjectInterface.
 // A group's client should implement this interface.
 type S3BucketObjectsGetter interface {
-	S3BucketObjects() S3BucketObjectInterface
+	S3BucketObjects(namespace string) S3BucketObjectInterface
 }
 
 // S3BucketObjectInterface has methods to work with S3BucketObject resources.
@@ -52,12 +52,14 @@ type S3BucketObjectInterface interface {
 // s3BucketObjects implements S3BucketObjectInterface
 type s3BucketObjects struct {
 	client rest.Interface
+	ns     string
 }
 
 // newS3BucketObjects returns a S3BucketObjects
-func newS3BucketObjects(c *AwsV1alpha1Client) *s3BucketObjects {
+func newS3BucketObjects(c *AwsV1alpha1Client, namespace string) *s3BucketObjects {
 	return &s3BucketObjects{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newS3BucketObjects(c *AwsV1alpha1Client) *s3BucketObjects {
 func (c *s3BucketObjects) Get(name string, options v1.GetOptions) (result *v1alpha1.S3BucketObject, err error) {
 	result = &v1alpha1.S3BucketObject{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("s3bucketobjects").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *s3BucketObjects) List(opts v1.ListOptions) (result *v1alpha1.S3BucketOb
 	}
 	result = &v1alpha1.S3BucketObjectList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("s3bucketobjects").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *s3BucketObjects) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("s3bucketobjects").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *s3BucketObjects) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *s3BucketObjects) Create(s3BucketObject *v1alpha1.S3BucketObject) (result *v1alpha1.S3BucketObject, err error) {
 	result = &v1alpha1.S3BucketObject{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("s3bucketobjects").
 		Body(s3BucketObject).
 		Do().
@@ -118,6 +124,7 @@ func (c *s3BucketObjects) Create(s3BucketObject *v1alpha1.S3BucketObject) (resul
 func (c *s3BucketObjects) Update(s3BucketObject *v1alpha1.S3BucketObject) (result *v1alpha1.S3BucketObject, err error) {
 	result = &v1alpha1.S3BucketObject{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("s3bucketobjects").
 		Name(s3BucketObject.Name).
 		Body(s3BucketObject).
@@ -132,6 +139,7 @@ func (c *s3BucketObjects) Update(s3BucketObject *v1alpha1.S3BucketObject) (resul
 func (c *s3BucketObjects) UpdateStatus(s3BucketObject *v1alpha1.S3BucketObject) (result *v1alpha1.S3BucketObject, err error) {
 	result = &v1alpha1.S3BucketObject{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("s3bucketobjects").
 		Name(s3BucketObject.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *s3BucketObjects) UpdateStatus(s3BucketObject *v1alpha1.S3BucketObject) 
 // Delete takes name of the s3BucketObject and deletes it. Returns an error if one occurs.
 func (c *s3BucketObjects) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("s3bucketobjects").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *s3BucketObjects) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("s3bucketobjects").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *s3BucketObjects) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *s3BucketObjects) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.S3BucketObject, err error) {
 	result = &v1alpha1.S3BucketObject{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("s3bucketobjects").
 		SubResource(subresources...).
 		Name(name).

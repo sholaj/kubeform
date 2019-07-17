@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// FakeLogicAppTriggerHttpRequests implements LogicAppTriggerHttpRequestInterface
-type FakeLogicAppTriggerHttpRequests struct {
+// FakeLogicAppTriggerHTTPRequests implements LogicAppTriggerHTTPRequestInterface
+type FakeLogicAppTriggerHTTPRequests struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var logicapptriggerhttprequestsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "logicapptriggerhttprequests"}
 
-var logicapptriggerhttprequestsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "LogicAppTriggerHttpRequest"}
+var logicapptriggerhttprequestsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "LogicAppTriggerHTTPRequest"}
 
-// Get takes name of the logicAppTriggerHttpRequest, and returns the corresponding logicAppTriggerHttpRequest object, and an error if there is any.
-func (c *FakeLogicAppTriggerHttpRequests) Get(name string, options v1.GetOptions) (result *v1alpha1.LogicAppTriggerHttpRequest, err error) {
+// Get takes name of the logicAppTriggerHTTPRequest, and returns the corresponding logicAppTriggerHTTPRequest object, and an error if there is any.
+func (c *FakeLogicAppTriggerHTTPRequests) Get(name string, options v1.GetOptions) (result *v1alpha1.LogicAppTriggerHTTPRequest, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(logicapptriggerhttprequestsResource, name), &v1alpha1.LogicAppTriggerHttpRequest{})
+		Invokes(testing.NewGetAction(logicapptriggerhttprequestsResource, c.ns, name), &v1alpha1.LogicAppTriggerHTTPRequest{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LogicAppTriggerHttpRequest), err
+	return obj.(*v1alpha1.LogicAppTriggerHTTPRequest), err
 }
 
-// List takes label and field selectors, and returns the list of LogicAppTriggerHttpRequests that match those selectors.
-func (c *FakeLogicAppTriggerHttpRequests) List(opts v1.ListOptions) (result *v1alpha1.LogicAppTriggerHttpRequestList, err error) {
+// List takes label and field selectors, and returns the list of LogicAppTriggerHTTPRequests that match those selectors.
+func (c *FakeLogicAppTriggerHTTPRequests) List(opts v1.ListOptions) (result *v1alpha1.LogicAppTriggerHTTPRequestList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(logicapptriggerhttprequestsResource, logicapptriggerhttprequestsKind, opts), &v1alpha1.LogicAppTriggerHttpRequestList{})
+		Invokes(testing.NewListAction(logicapptriggerhttprequestsResource, logicapptriggerhttprequestsKind, c.ns, opts), &v1alpha1.LogicAppTriggerHTTPRequestList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeLogicAppTriggerHttpRequests) List(opts v1.ListOptions) (result *v1a
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.LogicAppTriggerHttpRequestList{ListMeta: obj.(*v1alpha1.LogicAppTriggerHttpRequestList).ListMeta}
-	for _, item := range obj.(*v1alpha1.LogicAppTriggerHttpRequestList).Items {
+	list := &v1alpha1.LogicAppTriggerHTTPRequestList{ListMeta: obj.(*v1alpha1.LogicAppTriggerHTTPRequestList).ListMeta}
+	for _, item := range obj.(*v1alpha1.LogicAppTriggerHTTPRequestList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeLogicAppTriggerHttpRequests) List(opts v1.ListOptions) (result *v1a
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested logicAppTriggerHttpRequests.
-func (c *FakeLogicAppTriggerHttpRequests) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested logicAppTriggerHTTPRequests.
+func (c *FakeLogicAppTriggerHTTPRequests) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(logicapptriggerhttprequestsResource, opts))
+		InvokesWatch(testing.NewWatchAction(logicapptriggerhttprequestsResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a logicAppTriggerHttpRequest and creates it.  Returns the server's representation of the logicAppTriggerHttpRequest, and an error, if there is any.
-func (c *FakeLogicAppTriggerHttpRequests) Create(logicAppTriggerHttpRequest *v1alpha1.LogicAppTriggerHttpRequest) (result *v1alpha1.LogicAppTriggerHttpRequest, err error) {
+// Create takes the representation of a logicAppTriggerHTTPRequest and creates it.  Returns the server's representation of the logicAppTriggerHTTPRequest, and an error, if there is any.
+func (c *FakeLogicAppTriggerHTTPRequests) Create(logicAppTriggerHTTPRequest *v1alpha1.LogicAppTriggerHTTPRequest) (result *v1alpha1.LogicAppTriggerHTTPRequest, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(logicapptriggerhttprequestsResource, logicAppTriggerHttpRequest), &v1alpha1.LogicAppTriggerHttpRequest{})
+		Invokes(testing.NewCreateAction(logicapptriggerhttprequestsResource, c.ns, logicAppTriggerHTTPRequest), &v1alpha1.LogicAppTriggerHTTPRequest{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LogicAppTriggerHttpRequest), err
+	return obj.(*v1alpha1.LogicAppTriggerHTTPRequest), err
 }
 
-// Update takes the representation of a logicAppTriggerHttpRequest and updates it. Returns the server's representation of the logicAppTriggerHttpRequest, and an error, if there is any.
-func (c *FakeLogicAppTriggerHttpRequests) Update(logicAppTriggerHttpRequest *v1alpha1.LogicAppTriggerHttpRequest) (result *v1alpha1.LogicAppTriggerHttpRequest, err error) {
+// Update takes the representation of a logicAppTriggerHTTPRequest and updates it. Returns the server's representation of the logicAppTriggerHTTPRequest, and an error, if there is any.
+func (c *FakeLogicAppTriggerHTTPRequests) Update(logicAppTriggerHTTPRequest *v1alpha1.LogicAppTriggerHTTPRequest) (result *v1alpha1.LogicAppTriggerHTTPRequest, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(logicapptriggerhttprequestsResource, logicAppTriggerHttpRequest), &v1alpha1.LogicAppTriggerHttpRequest{})
+		Invokes(testing.NewUpdateAction(logicapptriggerhttprequestsResource, c.ns, logicAppTriggerHTTPRequest), &v1alpha1.LogicAppTriggerHTTPRequest{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LogicAppTriggerHttpRequest), err
+	return obj.(*v1alpha1.LogicAppTriggerHTTPRequest), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeLogicAppTriggerHttpRequests) UpdateStatus(logicAppTriggerHttpRequest *v1alpha1.LogicAppTriggerHttpRequest) (*v1alpha1.LogicAppTriggerHttpRequest, error) {
+func (c *FakeLogicAppTriggerHTTPRequests) UpdateStatus(logicAppTriggerHTTPRequest *v1alpha1.LogicAppTriggerHTTPRequest) (*v1alpha1.LogicAppTriggerHTTPRequest, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(logicapptriggerhttprequestsResource, "status", logicAppTriggerHttpRequest), &v1alpha1.LogicAppTriggerHttpRequest{})
+		Invokes(testing.NewUpdateSubresourceAction(logicapptriggerhttprequestsResource, "status", c.ns, logicAppTriggerHTTPRequest), &v1alpha1.LogicAppTriggerHTTPRequest{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LogicAppTriggerHttpRequest), err
+	return obj.(*v1alpha1.LogicAppTriggerHTTPRequest), err
 }
 
-// Delete takes name of the logicAppTriggerHttpRequest and deletes it. Returns an error if one occurs.
-func (c *FakeLogicAppTriggerHttpRequests) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the logicAppTriggerHTTPRequest and deletes it. Returns an error if one occurs.
+func (c *FakeLogicAppTriggerHTTPRequests) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(logicapptriggerhttprequestsResource, name), &v1alpha1.LogicAppTriggerHttpRequest{})
+		Invokes(testing.NewDeleteAction(logicapptriggerhttprequestsResource, c.ns, name), &v1alpha1.LogicAppTriggerHTTPRequest{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeLogicAppTriggerHttpRequests) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(logicapptriggerhttprequestsResource, listOptions)
+func (c *FakeLogicAppTriggerHTTPRequests) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(logicapptriggerhttprequestsResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.LogicAppTriggerHttpRequestList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.LogicAppTriggerHTTPRequestList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched logicAppTriggerHttpRequest.
-func (c *FakeLogicAppTriggerHttpRequests) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogicAppTriggerHttpRequest, err error) {
+// Patch applies the patch and returns the patched logicAppTriggerHTTPRequest.
+func (c *FakeLogicAppTriggerHTTPRequests) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogicAppTriggerHTTPRequest, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(logicapptriggerhttprequestsResource, name, pt, data, subresources...), &v1alpha1.LogicAppTriggerHttpRequest{})
+		Invokes(testing.NewPatchSubresourceAction(logicapptriggerhttprequestsResource, c.ns, name, pt, data, subresources...), &v1alpha1.LogicAppTriggerHTTPRequest{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LogicAppTriggerHttpRequest), err
+	return obj.(*v1alpha1.LogicAppTriggerHTTPRequest), err
 }

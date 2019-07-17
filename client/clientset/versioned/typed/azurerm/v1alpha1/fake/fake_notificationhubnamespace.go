@@ -31,6 +31,7 @@ import (
 // FakeNotificationHubNamespaces implements NotificationHubNamespaceInterface
 type FakeNotificationHubNamespaces struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var notificationhubnamespacesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "notificationhubnamespaces"}
@@ -40,7 +41,8 @@ var notificationhubnamespacesKind = schema.GroupVersionKind{Group: "azurerm.kube
 // Get takes name of the notificationHubNamespace, and returns the corresponding notificationHubNamespace object, and an error if there is any.
 func (c *FakeNotificationHubNamespaces) Get(name string, options v1.GetOptions) (result *v1alpha1.NotificationHubNamespace, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(notificationhubnamespacesResource, name), &v1alpha1.NotificationHubNamespace{})
+		Invokes(testing.NewGetAction(notificationhubnamespacesResource, c.ns, name), &v1alpha1.NotificationHubNamespace{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeNotificationHubNamespaces) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of NotificationHubNamespaces that match those selectors.
 func (c *FakeNotificationHubNamespaces) List(opts v1.ListOptions) (result *v1alpha1.NotificationHubNamespaceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(notificationhubnamespacesResource, notificationhubnamespacesKind, opts), &v1alpha1.NotificationHubNamespaceList{})
+		Invokes(testing.NewListAction(notificationhubnamespacesResource, notificationhubnamespacesKind, c.ns, opts), &v1alpha1.NotificationHubNamespaceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeNotificationHubNamespaces) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested notificationHubNamespaces.
 func (c *FakeNotificationHubNamespaces) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(notificationhubnamespacesResource, opts))
+		InvokesWatch(testing.NewWatchAction(notificationhubnamespacesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a notificationHubNamespace and creates it.  Returns the server's representation of the notificationHubNamespace, and an error, if there is any.
 func (c *FakeNotificationHubNamespaces) Create(notificationHubNamespace *v1alpha1.NotificationHubNamespace) (result *v1alpha1.NotificationHubNamespace, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(notificationhubnamespacesResource, notificationHubNamespace), &v1alpha1.NotificationHubNamespace{})
+		Invokes(testing.NewCreateAction(notificationhubnamespacesResource, c.ns, notificationHubNamespace), &v1alpha1.NotificationHubNamespace{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeNotificationHubNamespaces) Create(notificationHubNamespace *v1alpha
 // Update takes the representation of a notificationHubNamespace and updates it. Returns the server's representation of the notificationHubNamespace, and an error, if there is any.
 func (c *FakeNotificationHubNamespaces) Update(notificationHubNamespace *v1alpha1.NotificationHubNamespace) (result *v1alpha1.NotificationHubNamespace, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(notificationhubnamespacesResource, notificationHubNamespace), &v1alpha1.NotificationHubNamespace{})
+		Invokes(testing.NewUpdateAction(notificationhubnamespacesResource, c.ns, notificationHubNamespace), &v1alpha1.NotificationHubNamespace{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeNotificationHubNamespaces) Update(notificationHubNamespace *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNotificationHubNamespaces) UpdateStatus(notificationHubNamespace *v1alpha1.NotificationHubNamespace) (*v1alpha1.NotificationHubNamespace, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(notificationhubnamespacesResource, "status", notificationHubNamespace), &v1alpha1.NotificationHubNamespace{})
+		Invokes(testing.NewUpdateSubresourceAction(notificationhubnamespacesResource, "status", c.ns, notificationHubNamespace), &v1alpha1.NotificationHubNamespace{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeNotificationHubNamespaces) UpdateStatus(notificationHubNamespace *v
 // Delete takes name of the notificationHubNamespace and deletes it. Returns an error if one occurs.
 func (c *FakeNotificationHubNamespaces) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(notificationhubnamespacesResource, name), &v1alpha1.NotificationHubNamespace{})
+		Invokes(testing.NewDeleteAction(notificationhubnamespacesResource, c.ns, name), &v1alpha1.NotificationHubNamespace{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNotificationHubNamespaces) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(notificationhubnamespacesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(notificationhubnamespacesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NotificationHubNamespaceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeNotificationHubNamespaces) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched notificationHubNamespace.
 func (c *FakeNotificationHubNamespaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NotificationHubNamespace, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(notificationhubnamespacesResource, name, pt, data, subresources...), &v1alpha1.NotificationHubNamespace{})
+		Invokes(testing.NewPatchSubresourceAction(notificationhubnamespacesResource, c.ns, name, pt, data, subresources...), &v1alpha1.NotificationHubNamespace{})
+
 	if obj == nil {
 		return nil, err
 	}

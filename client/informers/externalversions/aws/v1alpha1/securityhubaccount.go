@@ -41,32 +41,33 @@ type SecurityhubAccountInformer interface {
 type securityhubAccountInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSecurityhubAccountInformer constructs a new informer for SecurityhubAccount type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSecurityhubAccountInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSecurityhubAccountInformer(client, resyncPeriod, indexers, nil)
+func NewSecurityhubAccountInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSecurityhubAccountInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSecurityhubAccountInformer constructs a new informer for SecurityhubAccount type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSecurityhubAccountInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSecurityhubAccountInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SecurityhubAccounts().List(options)
+				return client.AwsV1alpha1().SecurityhubAccounts(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SecurityhubAccounts().Watch(options)
+				return client.AwsV1alpha1().SecurityhubAccounts(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.SecurityhubAccount{},
@@ -76,7 +77,7 @@ func NewFilteredSecurityhubAccountInformer(client versioned.Interface, resyncPer
 }
 
 func (f *securityhubAccountInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSecurityhubAccountInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSecurityhubAccountInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *securityhubAccountInformer) Informer() cache.SharedIndexInformer {

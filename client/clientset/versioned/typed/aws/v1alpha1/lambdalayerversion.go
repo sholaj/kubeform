@@ -32,7 +32,7 @@ import (
 // LambdaLayerVersionsGetter has a method to return a LambdaLayerVersionInterface.
 // A group's client should implement this interface.
 type LambdaLayerVersionsGetter interface {
-	LambdaLayerVersions() LambdaLayerVersionInterface
+	LambdaLayerVersions(namespace string) LambdaLayerVersionInterface
 }
 
 // LambdaLayerVersionInterface has methods to work with LambdaLayerVersion resources.
@@ -52,12 +52,14 @@ type LambdaLayerVersionInterface interface {
 // lambdaLayerVersions implements LambdaLayerVersionInterface
 type lambdaLayerVersions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLambdaLayerVersions returns a LambdaLayerVersions
-func newLambdaLayerVersions(c *AwsV1alpha1Client) *lambdaLayerVersions {
+func newLambdaLayerVersions(c *AwsV1alpha1Client, namespace string) *lambdaLayerVersions {
 	return &lambdaLayerVersions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLambdaLayerVersions(c *AwsV1alpha1Client) *lambdaLayerVersions {
 func (c *lambdaLayerVersions) Get(name string, options v1.GetOptions) (result *v1alpha1.LambdaLayerVersion, err error) {
 	result = &v1alpha1.LambdaLayerVersion{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lambdalayerversions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lambdaLayerVersions) List(opts v1.ListOptions) (result *v1alpha1.Lambda
 	}
 	result = &v1alpha1.LambdaLayerVersionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lambdalayerversions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lambdaLayerVersions) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lambdalayerversions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lambdaLayerVersions) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *lambdaLayerVersions) Create(lambdaLayerVersion *v1alpha1.LambdaLayerVersion) (result *v1alpha1.LambdaLayerVersion, err error) {
 	result = &v1alpha1.LambdaLayerVersion{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lambdalayerversions").
 		Body(lambdaLayerVersion).
 		Do().
@@ -118,6 +124,7 @@ func (c *lambdaLayerVersions) Create(lambdaLayerVersion *v1alpha1.LambdaLayerVer
 func (c *lambdaLayerVersions) Update(lambdaLayerVersion *v1alpha1.LambdaLayerVersion) (result *v1alpha1.LambdaLayerVersion, err error) {
 	result = &v1alpha1.LambdaLayerVersion{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lambdalayerversions").
 		Name(lambdaLayerVersion.Name).
 		Body(lambdaLayerVersion).
@@ -132,6 +139,7 @@ func (c *lambdaLayerVersions) Update(lambdaLayerVersion *v1alpha1.LambdaLayerVer
 func (c *lambdaLayerVersions) UpdateStatus(lambdaLayerVersion *v1alpha1.LambdaLayerVersion) (result *v1alpha1.LambdaLayerVersion, err error) {
 	result = &v1alpha1.LambdaLayerVersion{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lambdalayerversions").
 		Name(lambdaLayerVersion.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lambdaLayerVersions) UpdateStatus(lambdaLayerVersion *v1alpha1.LambdaLa
 // Delete takes name of the lambdaLayerVersion and deletes it. Returns an error if one occurs.
 func (c *lambdaLayerVersions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lambdalayerversions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lambdaLayerVersions) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lambdalayerversions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lambdaLayerVersions) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *lambdaLayerVersions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LambdaLayerVersion, err error) {
 	result = &v1alpha1.LambdaLayerVersion{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lambdalayerversions").
 		SubResource(subresources...).
 		Name(name).

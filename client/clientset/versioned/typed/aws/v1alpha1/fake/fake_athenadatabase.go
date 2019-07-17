@@ -31,6 +31,7 @@ import (
 // FakeAthenaDatabases implements AthenaDatabaseInterface
 type FakeAthenaDatabases struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var athenadatabasesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "athenadatabases"}
@@ -40,7 +41,8 @@ var athenadatabasesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ver
 // Get takes name of the athenaDatabase, and returns the corresponding athenaDatabase object, and an error if there is any.
 func (c *FakeAthenaDatabases) Get(name string, options v1.GetOptions) (result *v1alpha1.AthenaDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(athenadatabasesResource, name), &v1alpha1.AthenaDatabase{})
+		Invokes(testing.NewGetAction(athenadatabasesResource, c.ns, name), &v1alpha1.AthenaDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAthenaDatabases) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of AthenaDatabases that match those selectors.
 func (c *FakeAthenaDatabases) List(opts v1.ListOptions) (result *v1alpha1.AthenaDatabaseList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(athenadatabasesResource, athenadatabasesKind, opts), &v1alpha1.AthenaDatabaseList{})
+		Invokes(testing.NewListAction(athenadatabasesResource, athenadatabasesKind, c.ns, opts), &v1alpha1.AthenaDatabaseList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAthenaDatabases) List(opts v1.ListOptions) (result *v1alpha1.Athena
 // Watch returns a watch.Interface that watches the requested athenaDatabases.
 func (c *FakeAthenaDatabases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(athenadatabasesResource, opts))
+		InvokesWatch(testing.NewWatchAction(athenadatabasesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a athenaDatabase and creates it.  Returns the server's representation of the athenaDatabase, and an error, if there is any.
 func (c *FakeAthenaDatabases) Create(athenaDatabase *v1alpha1.AthenaDatabase) (result *v1alpha1.AthenaDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(athenadatabasesResource, athenaDatabase), &v1alpha1.AthenaDatabase{})
+		Invokes(testing.NewCreateAction(athenadatabasesResource, c.ns, athenaDatabase), &v1alpha1.AthenaDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAthenaDatabases) Create(athenaDatabase *v1alpha1.AthenaDatabase) (r
 // Update takes the representation of a athenaDatabase and updates it. Returns the server's representation of the athenaDatabase, and an error, if there is any.
 func (c *FakeAthenaDatabases) Update(athenaDatabase *v1alpha1.AthenaDatabase) (result *v1alpha1.AthenaDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(athenadatabasesResource, athenaDatabase), &v1alpha1.AthenaDatabase{})
+		Invokes(testing.NewUpdateAction(athenadatabasesResource, c.ns, athenaDatabase), &v1alpha1.AthenaDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAthenaDatabases) Update(athenaDatabase *v1alpha1.AthenaDatabase) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAthenaDatabases) UpdateStatus(athenaDatabase *v1alpha1.AthenaDatabase) (*v1alpha1.AthenaDatabase, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(athenadatabasesResource, "status", athenaDatabase), &v1alpha1.AthenaDatabase{})
+		Invokes(testing.NewUpdateSubresourceAction(athenadatabasesResource, "status", c.ns, athenaDatabase), &v1alpha1.AthenaDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAthenaDatabases) UpdateStatus(athenaDatabase *v1alpha1.AthenaDataba
 // Delete takes name of the athenaDatabase and deletes it. Returns an error if one occurs.
 func (c *FakeAthenaDatabases) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(athenadatabasesResource, name), &v1alpha1.AthenaDatabase{})
+		Invokes(testing.NewDeleteAction(athenadatabasesResource, c.ns, name), &v1alpha1.AthenaDatabase{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAthenaDatabases) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(athenadatabasesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(athenadatabasesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AthenaDatabaseList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAthenaDatabases) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched athenaDatabase.
 func (c *FakeAthenaDatabases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AthenaDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(athenadatabasesResource, name, pt, data, subresources...), &v1alpha1.AthenaDatabase{})
+		Invokes(testing.NewPatchSubresourceAction(athenadatabasesResource, c.ns, name, pt, data, subresources...), &v1alpha1.AthenaDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}

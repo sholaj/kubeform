@@ -29,8 +29,8 @@ import (
 type LbListenerRuleLister interface {
 	// List lists all LbListenerRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LbListenerRule, err error)
-	// Get retrieves the LbListenerRule from the index for a given name.
-	Get(name string) (*v1alpha1.LbListenerRule, error)
+	// LbListenerRules returns an object that can list and get LbListenerRules.
+	LbListenerRules(namespace string) LbListenerRuleNamespaceLister
 	LbListenerRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *lbListenerRuleLister) List(selector labels.Selector) (ret []*v1alpha1.L
 	return ret, err
 }
 
-// Get retrieves the LbListenerRule from the index for a given name.
-func (s *lbListenerRuleLister) Get(name string) (*v1alpha1.LbListenerRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LbListenerRules returns an object that can list and get LbListenerRules.
+func (s *lbListenerRuleLister) LbListenerRules(namespace string) LbListenerRuleNamespaceLister {
+	return lbListenerRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LbListenerRuleNamespaceLister helps list and get LbListenerRules.
+type LbListenerRuleNamespaceLister interface {
+	// List lists all LbListenerRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LbListenerRule, err error)
+	// Get retrieves the LbListenerRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LbListenerRule, error)
+	LbListenerRuleNamespaceListerExpansion
+}
+
+// lbListenerRuleNamespaceLister implements the LbListenerRuleNamespaceLister
+// interface.
+type lbListenerRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LbListenerRules in the indexer for a given namespace.
+func (s lbListenerRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LbListenerRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LbListenerRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the LbListenerRule from the indexer for a given namespace and name.
+func (s lbListenerRuleNamespaceLister) Get(name string) (*v1alpha1.LbListenerRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

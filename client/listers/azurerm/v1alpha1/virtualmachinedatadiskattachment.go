@@ -29,8 +29,8 @@ import (
 type VirtualMachineDataDiskAttachmentLister interface {
 	// List lists all VirtualMachineDataDiskAttachments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.VirtualMachineDataDiskAttachment, err error)
-	// Get retrieves the VirtualMachineDataDiskAttachment from the index for a given name.
-	Get(name string) (*v1alpha1.VirtualMachineDataDiskAttachment, error)
+	// VirtualMachineDataDiskAttachments returns an object that can list and get VirtualMachineDataDiskAttachments.
+	VirtualMachineDataDiskAttachments(namespace string) VirtualMachineDataDiskAttachmentNamespaceLister
 	VirtualMachineDataDiskAttachmentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *virtualMachineDataDiskAttachmentLister) List(selector labels.Selector) 
 	return ret, err
 }
 
-// Get retrieves the VirtualMachineDataDiskAttachment from the index for a given name.
-func (s *virtualMachineDataDiskAttachmentLister) Get(name string) (*v1alpha1.VirtualMachineDataDiskAttachment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VirtualMachineDataDiskAttachments returns an object that can list and get VirtualMachineDataDiskAttachments.
+func (s *virtualMachineDataDiskAttachmentLister) VirtualMachineDataDiskAttachments(namespace string) VirtualMachineDataDiskAttachmentNamespaceLister {
+	return virtualMachineDataDiskAttachmentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VirtualMachineDataDiskAttachmentNamespaceLister helps list and get VirtualMachineDataDiskAttachments.
+type VirtualMachineDataDiskAttachmentNamespaceLister interface {
+	// List lists all VirtualMachineDataDiskAttachments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VirtualMachineDataDiskAttachment, err error)
+	// Get retrieves the VirtualMachineDataDiskAttachment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VirtualMachineDataDiskAttachment, error)
+	VirtualMachineDataDiskAttachmentNamespaceListerExpansion
+}
+
+// virtualMachineDataDiskAttachmentNamespaceLister implements the VirtualMachineDataDiskAttachmentNamespaceLister
+// interface.
+type virtualMachineDataDiskAttachmentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VirtualMachineDataDiskAttachments in the indexer for a given namespace.
+func (s virtualMachineDataDiskAttachmentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VirtualMachineDataDiskAttachment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VirtualMachineDataDiskAttachment))
+	})
+	return ret, err
+}
+
+// Get retrieves the VirtualMachineDataDiskAttachment from the indexer for a given namespace and name.
+func (s virtualMachineDataDiskAttachmentNamespaceLister) Get(name string) (*v1alpha1.VirtualMachineDataDiskAttachment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

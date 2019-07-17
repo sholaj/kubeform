@@ -32,7 +32,7 @@ import (
 // GuarddutyDetectorsGetter has a method to return a GuarddutyDetectorInterface.
 // A group's client should implement this interface.
 type GuarddutyDetectorsGetter interface {
-	GuarddutyDetectors() GuarddutyDetectorInterface
+	GuarddutyDetectors(namespace string) GuarddutyDetectorInterface
 }
 
 // GuarddutyDetectorInterface has methods to work with GuarddutyDetector resources.
@@ -52,12 +52,14 @@ type GuarddutyDetectorInterface interface {
 // guarddutyDetectors implements GuarddutyDetectorInterface
 type guarddutyDetectors struct {
 	client rest.Interface
+	ns     string
 }
 
 // newGuarddutyDetectors returns a GuarddutyDetectors
-func newGuarddutyDetectors(c *AwsV1alpha1Client) *guarddutyDetectors {
+func newGuarddutyDetectors(c *AwsV1alpha1Client, namespace string) *guarddutyDetectors {
 	return &guarddutyDetectors{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newGuarddutyDetectors(c *AwsV1alpha1Client) *guarddutyDetectors {
 func (c *guarddutyDetectors) Get(name string, options v1.GetOptions) (result *v1alpha1.GuarddutyDetector, err error) {
 	result = &v1alpha1.GuarddutyDetector{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("guarddutydetectors").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *guarddutyDetectors) List(opts v1.ListOptions) (result *v1alpha1.Guarddu
 	}
 	result = &v1alpha1.GuarddutyDetectorList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("guarddutydetectors").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *guarddutyDetectors) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("guarddutydetectors").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *guarddutyDetectors) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *guarddutyDetectors) Create(guarddutyDetector *v1alpha1.GuarddutyDetector) (result *v1alpha1.GuarddutyDetector, err error) {
 	result = &v1alpha1.GuarddutyDetector{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("guarddutydetectors").
 		Body(guarddutyDetector).
 		Do().
@@ -118,6 +124,7 @@ func (c *guarddutyDetectors) Create(guarddutyDetector *v1alpha1.GuarddutyDetecto
 func (c *guarddutyDetectors) Update(guarddutyDetector *v1alpha1.GuarddutyDetector) (result *v1alpha1.GuarddutyDetector, err error) {
 	result = &v1alpha1.GuarddutyDetector{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("guarddutydetectors").
 		Name(guarddutyDetector.Name).
 		Body(guarddutyDetector).
@@ -132,6 +139,7 @@ func (c *guarddutyDetectors) Update(guarddutyDetector *v1alpha1.GuarddutyDetecto
 func (c *guarddutyDetectors) UpdateStatus(guarddutyDetector *v1alpha1.GuarddutyDetector) (result *v1alpha1.GuarddutyDetector, err error) {
 	result = &v1alpha1.GuarddutyDetector{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("guarddutydetectors").
 		Name(guarddutyDetector.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *guarddutyDetectors) UpdateStatus(guarddutyDetector *v1alpha1.GuarddutyD
 // Delete takes name of the guarddutyDetector and deletes it. Returns an error if one occurs.
 func (c *guarddutyDetectors) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("guarddutydetectors").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *guarddutyDetectors) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("guarddutydetectors").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *guarddutyDetectors) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *guarddutyDetectors) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GuarddutyDetector, err error) {
 	result = &v1alpha1.GuarddutyDetector{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("guarddutydetectors").
 		SubResource(subresources...).
 		Name(name).

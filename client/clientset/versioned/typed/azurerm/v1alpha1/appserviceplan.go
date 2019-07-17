@@ -32,7 +32,7 @@ import (
 // AppServicePlansGetter has a method to return a AppServicePlanInterface.
 // A group's client should implement this interface.
 type AppServicePlansGetter interface {
-	AppServicePlans() AppServicePlanInterface
+	AppServicePlans(namespace string) AppServicePlanInterface
 }
 
 // AppServicePlanInterface has methods to work with AppServicePlan resources.
@@ -52,12 +52,14 @@ type AppServicePlanInterface interface {
 // appServicePlans implements AppServicePlanInterface
 type appServicePlans struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAppServicePlans returns a AppServicePlans
-func newAppServicePlans(c *AzurermV1alpha1Client) *appServicePlans {
+func newAppServicePlans(c *AzurermV1alpha1Client, namespace string) *appServicePlans {
 	return &appServicePlans{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAppServicePlans(c *AzurermV1alpha1Client) *appServicePlans {
 func (c *appServicePlans) Get(name string, options v1.GetOptions) (result *v1alpha1.AppServicePlan, err error) {
 	result = &v1alpha1.AppServicePlan{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appserviceplans").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *appServicePlans) List(opts v1.ListOptions) (result *v1alpha1.AppService
 	}
 	result = &v1alpha1.AppServicePlanList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appserviceplans").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *appServicePlans) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("appserviceplans").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *appServicePlans) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *appServicePlans) Create(appServicePlan *v1alpha1.AppServicePlan) (result *v1alpha1.AppServicePlan, err error) {
 	result = &v1alpha1.AppServicePlan{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("appserviceplans").
 		Body(appServicePlan).
 		Do().
@@ -118,6 +124,7 @@ func (c *appServicePlans) Create(appServicePlan *v1alpha1.AppServicePlan) (resul
 func (c *appServicePlans) Update(appServicePlan *v1alpha1.AppServicePlan) (result *v1alpha1.AppServicePlan, err error) {
 	result = &v1alpha1.AppServicePlan{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appserviceplans").
 		Name(appServicePlan.Name).
 		Body(appServicePlan).
@@ -132,6 +139,7 @@ func (c *appServicePlans) Update(appServicePlan *v1alpha1.AppServicePlan) (resul
 func (c *appServicePlans) UpdateStatus(appServicePlan *v1alpha1.AppServicePlan) (result *v1alpha1.AppServicePlan, err error) {
 	result = &v1alpha1.AppServicePlan{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appserviceplans").
 		Name(appServicePlan.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *appServicePlans) UpdateStatus(appServicePlan *v1alpha1.AppServicePlan) 
 // Delete takes name of the appServicePlan and deletes it. Returns an error if one occurs.
 func (c *appServicePlans) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appserviceplans").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *appServicePlans) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appserviceplans").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *appServicePlans) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *appServicePlans) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppServicePlan, err error) {
 	result = &v1alpha1.AppServicePlan{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("appserviceplans").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type ComputeInstanceLister interface {
 	// List lists all ComputeInstances in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeInstance, err error)
-	// Get retrieves the ComputeInstance from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeInstance, error)
+	// ComputeInstances returns an object that can list and get ComputeInstances.
+	ComputeInstances(namespace string) ComputeInstanceNamespaceLister
 	ComputeInstanceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeInstanceLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the ComputeInstance from the index for a given name.
-func (s *computeInstanceLister) Get(name string) (*v1alpha1.ComputeInstance, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeInstances returns an object that can list and get ComputeInstances.
+func (s *computeInstanceLister) ComputeInstances(namespace string) ComputeInstanceNamespaceLister {
+	return computeInstanceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeInstanceNamespaceLister helps list and get ComputeInstances.
+type ComputeInstanceNamespaceLister interface {
+	// List lists all ComputeInstances in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeInstance, err error)
+	// Get retrieves the ComputeInstance from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeInstance, error)
+	ComputeInstanceNamespaceListerExpansion
+}
+
+// computeInstanceNamespaceLister implements the ComputeInstanceNamespaceLister
+// interface.
+type computeInstanceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeInstances in the indexer for a given namespace.
+func (s computeInstanceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeInstance, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeInstance))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeInstance from the indexer for a given namespace and name.
+func (s computeInstanceNamespaceLister) Get(name string) (*v1alpha1.ComputeInstance, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

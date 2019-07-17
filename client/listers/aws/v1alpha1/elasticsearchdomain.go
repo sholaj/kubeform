@@ -29,8 +29,8 @@ import (
 type ElasticsearchDomainLister interface {
 	// List lists all ElasticsearchDomains in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ElasticsearchDomain, err error)
-	// Get retrieves the ElasticsearchDomain from the index for a given name.
-	Get(name string) (*v1alpha1.ElasticsearchDomain, error)
+	// ElasticsearchDomains returns an object that can list and get ElasticsearchDomains.
+	ElasticsearchDomains(namespace string) ElasticsearchDomainNamespaceLister
 	ElasticsearchDomainListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *elasticsearchDomainLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the ElasticsearchDomain from the index for a given name.
-func (s *elasticsearchDomainLister) Get(name string) (*v1alpha1.ElasticsearchDomain, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ElasticsearchDomains returns an object that can list and get ElasticsearchDomains.
+func (s *elasticsearchDomainLister) ElasticsearchDomains(namespace string) ElasticsearchDomainNamespaceLister {
+	return elasticsearchDomainNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ElasticsearchDomainNamespaceLister helps list and get ElasticsearchDomains.
+type ElasticsearchDomainNamespaceLister interface {
+	// List lists all ElasticsearchDomains in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ElasticsearchDomain, err error)
+	// Get retrieves the ElasticsearchDomain from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ElasticsearchDomain, error)
+	ElasticsearchDomainNamespaceListerExpansion
+}
+
+// elasticsearchDomainNamespaceLister implements the ElasticsearchDomainNamespaceLister
+// interface.
+type elasticsearchDomainNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ElasticsearchDomains in the indexer for a given namespace.
+func (s elasticsearchDomainNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ElasticsearchDomain, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ElasticsearchDomain))
+	})
+	return ret, err
+}
+
+// Get retrieves the ElasticsearchDomain from the indexer for a given namespace and name.
+func (s elasticsearchDomainNamespaceLister) Get(name string) (*v1alpha1.ElasticsearchDomain, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

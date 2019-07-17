@@ -29,8 +29,8 @@ import (
 type ApiManagementLoggerLister interface {
 	// List lists all ApiManagementLoggers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementLogger, err error)
-	// Get retrieves the ApiManagementLogger from the index for a given name.
-	Get(name string) (*v1alpha1.ApiManagementLogger, error)
+	// ApiManagementLoggers returns an object that can list and get ApiManagementLoggers.
+	ApiManagementLoggers(namespace string) ApiManagementLoggerNamespaceLister
 	ApiManagementLoggerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiManagementLoggerLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the ApiManagementLogger from the index for a given name.
-func (s *apiManagementLoggerLister) Get(name string) (*v1alpha1.ApiManagementLogger, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiManagementLoggers returns an object that can list and get ApiManagementLoggers.
+func (s *apiManagementLoggerLister) ApiManagementLoggers(namespace string) ApiManagementLoggerNamespaceLister {
+	return apiManagementLoggerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiManagementLoggerNamespaceLister helps list and get ApiManagementLoggers.
+type ApiManagementLoggerNamespaceLister interface {
+	// List lists all ApiManagementLoggers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementLogger, err error)
+	// Get retrieves the ApiManagementLogger from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiManagementLogger, error)
+	ApiManagementLoggerNamespaceListerExpansion
+}
+
+// apiManagementLoggerNamespaceLister implements the ApiManagementLoggerNamespaceLister
+// interface.
+type apiManagementLoggerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiManagementLoggers in the indexer for a given namespace.
+func (s apiManagementLoggerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementLogger, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiManagementLogger))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiManagementLogger from the indexer for a given namespace and name.
+func (s apiManagementLoggerNamespaceLister) Get(name string) (*v1alpha1.ApiManagementLogger, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

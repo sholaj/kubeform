@@ -29,8 +29,8 @@ import (
 type ElasticacheParameterGroupLister interface {
 	// List lists all ElasticacheParameterGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ElasticacheParameterGroup, err error)
-	// Get retrieves the ElasticacheParameterGroup from the index for a given name.
-	Get(name string) (*v1alpha1.ElasticacheParameterGroup, error)
+	// ElasticacheParameterGroups returns an object that can list and get ElasticacheParameterGroups.
+	ElasticacheParameterGroups(namespace string) ElasticacheParameterGroupNamespaceLister
 	ElasticacheParameterGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *elasticacheParameterGroupLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the ElasticacheParameterGroup from the index for a given name.
-func (s *elasticacheParameterGroupLister) Get(name string) (*v1alpha1.ElasticacheParameterGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ElasticacheParameterGroups returns an object that can list and get ElasticacheParameterGroups.
+func (s *elasticacheParameterGroupLister) ElasticacheParameterGroups(namespace string) ElasticacheParameterGroupNamespaceLister {
+	return elasticacheParameterGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ElasticacheParameterGroupNamespaceLister helps list and get ElasticacheParameterGroups.
+type ElasticacheParameterGroupNamespaceLister interface {
+	// List lists all ElasticacheParameterGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ElasticacheParameterGroup, err error)
+	// Get retrieves the ElasticacheParameterGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ElasticacheParameterGroup, error)
+	ElasticacheParameterGroupNamespaceListerExpansion
+}
+
+// elasticacheParameterGroupNamespaceLister implements the ElasticacheParameterGroupNamespaceLister
+// interface.
+type elasticacheParameterGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ElasticacheParameterGroups in the indexer for a given namespace.
+func (s elasticacheParameterGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ElasticacheParameterGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ElasticacheParameterGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the ElasticacheParameterGroup from the indexer for a given namespace and name.
+func (s elasticacheParameterGroupNamespaceLister) Get(name string) (*v1alpha1.ElasticacheParameterGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

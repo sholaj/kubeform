@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,49 +20,50 @@ type MonitorDiagnosticSetting struct {
 
 type MonitorDiagnosticSettingSpecLogRetentionPolicy struct {
 	// +optional
-	Days    int  `json:"days,omitempty"`
-	Enabled bool `json:"enabled"`
+	Days    int  `json:"days,omitempty" tf:"days,omitempty"`
+	Enabled bool `json:"enabled" tf:"enabled"`
 }
 
 type MonitorDiagnosticSettingSpecLog struct {
-	Category string `json:"category"`
+	Category string `json:"category" tf:"category"`
 	// +optional
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
-	RetentionPolicy []MonitorDiagnosticSettingSpecLog `json:"retention_policy"`
+	RetentionPolicy []MonitorDiagnosticSettingSpecLogRetentionPolicy `json:"retentionPolicy" tf:"retention_policy"`
 }
 
 type MonitorDiagnosticSettingSpecMetricRetentionPolicy struct {
 	// +optional
-	Days    int  `json:"days,omitempty"`
-	Enabled bool `json:"enabled"`
+	Days    int  `json:"days,omitempty" tf:"days,omitempty"`
+	Enabled bool `json:"enabled" tf:"enabled"`
 }
 
 type MonitorDiagnosticSettingSpecMetric struct {
-	Category string `json:"category"`
+	Category string `json:"category" tf:"category"`
 	// +optional
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
-	RetentionPolicy []MonitorDiagnosticSettingSpecMetric `json:"retention_policy"`
+	RetentionPolicy []MonitorDiagnosticSettingSpecMetricRetentionPolicy `json:"retentionPolicy" tf:"retention_policy"`
 }
 
 type MonitorDiagnosticSettingSpec struct {
 	// +optional
-	EventhubAuthorizationRuleId string `json:"eventhub_authorization_rule_id,omitempty"`
+	EventhubAuthorizationRuleID string `json:"eventhubAuthorizationRuleID,omitempty" tf:"eventhub_authorization_rule_id,omitempty"`
 	// +optional
-	EventhubName string `json:"eventhub_name,omitempty"`
-	// +optional
-	// +kubebuilder:validation:UniqueItems=true
-	Log *[]MonitorDiagnosticSettingSpec `json:"log,omitempty"`
-	// +optional
-	LogAnalyticsWorkspaceId string `json:"log_analytics_workspace_id,omitempty"`
+	EventhubName string `json:"eventhubName,omitempty" tf:"eventhub_name,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Metric *[]MonitorDiagnosticSettingSpec `json:"metric,omitempty"`
-	Name   string                          `json:"name"`
+	Log []MonitorDiagnosticSettingSpecLog `json:"log,omitempty" tf:"log,omitempty"`
 	// +optional
-	StorageAccountId string `json:"storage_account_id,omitempty"`
-	TargetResourceId string `json:"target_resource_id"`
+	LogAnalyticsWorkspaceID string `json:"logAnalyticsWorkspaceID,omitempty" tf:"log_analytics_workspace_id,omitempty"`
+	// +optional
+	// +kubebuilder:validation:UniqueItems=true
+	Metric []MonitorDiagnosticSettingSpecMetric `json:"metric,omitempty" tf:"metric,omitempty"`
+	Name   string                               `json:"name" tf:"name"`
+	// +optional
+	StorageAccountID string                    `json:"storageAccountID,omitempty" tf:"storage_account_id,omitempty"`
+	TargetResourceID string                    `json:"targetResourceID" tf:"target_resource_id"`
+	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type MonitorDiagnosticSettingStatus struct {
@@ -70,7 +71,9 @@ type MonitorDiagnosticSettingStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

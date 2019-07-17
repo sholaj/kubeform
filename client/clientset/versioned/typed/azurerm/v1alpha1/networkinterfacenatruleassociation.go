@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// NetworkInterfaceNatRuleAssociationsGetter has a method to return a NetworkInterfaceNatRuleAssociationInterface.
+// NetworkInterfaceNATRuleAssociationsGetter has a method to return a NetworkInterfaceNATRuleAssociationInterface.
 // A group's client should implement this interface.
-type NetworkInterfaceNatRuleAssociationsGetter interface {
-	NetworkInterfaceNatRuleAssociations() NetworkInterfaceNatRuleAssociationInterface
+type NetworkInterfaceNATRuleAssociationsGetter interface {
+	NetworkInterfaceNATRuleAssociations(namespace string) NetworkInterfaceNATRuleAssociationInterface
 }
 
-// NetworkInterfaceNatRuleAssociationInterface has methods to work with NetworkInterfaceNatRuleAssociation resources.
-type NetworkInterfaceNatRuleAssociationInterface interface {
-	Create(*v1alpha1.NetworkInterfaceNatRuleAssociation) (*v1alpha1.NetworkInterfaceNatRuleAssociation, error)
-	Update(*v1alpha1.NetworkInterfaceNatRuleAssociation) (*v1alpha1.NetworkInterfaceNatRuleAssociation, error)
-	UpdateStatus(*v1alpha1.NetworkInterfaceNatRuleAssociation) (*v1alpha1.NetworkInterfaceNatRuleAssociation, error)
+// NetworkInterfaceNATRuleAssociationInterface has methods to work with NetworkInterfaceNATRuleAssociation resources.
+type NetworkInterfaceNATRuleAssociationInterface interface {
+	Create(*v1alpha1.NetworkInterfaceNATRuleAssociation) (*v1alpha1.NetworkInterfaceNATRuleAssociation, error)
+	Update(*v1alpha1.NetworkInterfaceNATRuleAssociation) (*v1alpha1.NetworkInterfaceNATRuleAssociation, error)
+	UpdateStatus(*v1alpha1.NetworkInterfaceNATRuleAssociation) (*v1alpha1.NetworkInterfaceNATRuleAssociation, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.NetworkInterfaceNatRuleAssociation, error)
-	List(opts v1.ListOptions) (*v1alpha1.NetworkInterfaceNatRuleAssociationList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.NetworkInterfaceNATRuleAssociation, error)
+	List(opts v1.ListOptions) (*v1alpha1.NetworkInterfaceNATRuleAssociationList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkInterfaceNatRuleAssociation, err error)
-	NetworkInterfaceNatRuleAssociationExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkInterfaceNATRuleAssociation, err error)
+	NetworkInterfaceNATRuleAssociationExpansion
 }
 
-// networkInterfaceNatRuleAssociations implements NetworkInterfaceNatRuleAssociationInterface
-type networkInterfaceNatRuleAssociations struct {
+// networkInterfaceNATRuleAssociations implements NetworkInterfaceNATRuleAssociationInterface
+type networkInterfaceNATRuleAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
-// newNetworkInterfaceNatRuleAssociations returns a NetworkInterfaceNatRuleAssociations
-func newNetworkInterfaceNatRuleAssociations(c *AzurermV1alpha1Client) *networkInterfaceNatRuleAssociations {
-	return &networkInterfaceNatRuleAssociations{
+// newNetworkInterfaceNATRuleAssociations returns a NetworkInterfaceNATRuleAssociations
+func newNetworkInterfaceNATRuleAssociations(c *AzurermV1alpha1Client, namespace string) *networkInterfaceNATRuleAssociations {
+	return &networkInterfaceNATRuleAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the networkInterfaceNatRuleAssociation, and returns the corresponding networkInterfaceNatRuleAssociation object, and an error if there is any.
-func (c *networkInterfaceNatRuleAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkInterfaceNatRuleAssociation, err error) {
-	result = &v1alpha1.NetworkInterfaceNatRuleAssociation{}
+// Get takes name of the networkInterfaceNATRuleAssociation, and returns the corresponding networkInterfaceNATRuleAssociation object, and an error if there is any.
+func (c *networkInterfaceNATRuleAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkInterfaceNATRuleAssociation, err error) {
+	result = &v1alpha1.NetworkInterfaceNATRuleAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkinterfacenatruleassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *networkInterfaceNatRuleAssociations) Get(name string, options v1.GetOpt
 	return
 }
 
-// List takes label and field selectors, and returns the list of NetworkInterfaceNatRuleAssociations that match those selectors.
-func (c *networkInterfaceNatRuleAssociations) List(opts v1.ListOptions) (result *v1alpha1.NetworkInterfaceNatRuleAssociationList, err error) {
+// List takes label and field selectors, and returns the list of NetworkInterfaceNATRuleAssociations that match those selectors.
+func (c *networkInterfaceNATRuleAssociations) List(opts v1.ListOptions) (result *v1alpha1.NetworkInterfaceNATRuleAssociationList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.NetworkInterfaceNatRuleAssociationList{}
+	result = &v1alpha1.NetworkInterfaceNATRuleAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkinterfacenatruleassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *networkInterfaceNatRuleAssociations) List(opts v1.ListOptions) (result 
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested networkInterfaceNatRuleAssociations.
-func (c *networkInterfaceNatRuleAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested networkInterfaceNATRuleAssociations.
+func (c *networkInterfaceNATRuleAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("networkinterfacenatruleassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a networkInterfaceNatRuleAssociation and creates it.  Returns the server's representation of the networkInterfaceNatRuleAssociation, and an error, if there is any.
-func (c *networkInterfaceNatRuleAssociations) Create(networkInterfaceNatRuleAssociation *v1alpha1.NetworkInterfaceNatRuleAssociation) (result *v1alpha1.NetworkInterfaceNatRuleAssociation, err error) {
-	result = &v1alpha1.NetworkInterfaceNatRuleAssociation{}
+// Create takes the representation of a networkInterfaceNATRuleAssociation and creates it.  Returns the server's representation of the networkInterfaceNATRuleAssociation, and an error, if there is any.
+func (c *networkInterfaceNATRuleAssociations) Create(networkInterfaceNATRuleAssociation *v1alpha1.NetworkInterfaceNATRuleAssociation) (result *v1alpha1.NetworkInterfaceNATRuleAssociation, err error) {
+	result = &v1alpha1.NetworkInterfaceNATRuleAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("networkinterfacenatruleassociations").
-		Body(networkInterfaceNatRuleAssociation).
+		Body(networkInterfaceNATRuleAssociation).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a networkInterfaceNatRuleAssociation and updates it. Returns the server's representation of the networkInterfaceNatRuleAssociation, and an error, if there is any.
-func (c *networkInterfaceNatRuleAssociations) Update(networkInterfaceNatRuleAssociation *v1alpha1.NetworkInterfaceNatRuleAssociation) (result *v1alpha1.NetworkInterfaceNatRuleAssociation, err error) {
-	result = &v1alpha1.NetworkInterfaceNatRuleAssociation{}
+// Update takes the representation of a networkInterfaceNATRuleAssociation and updates it. Returns the server's representation of the networkInterfaceNATRuleAssociation, and an error, if there is any.
+func (c *networkInterfaceNATRuleAssociations) Update(networkInterfaceNATRuleAssociation *v1alpha1.NetworkInterfaceNATRuleAssociation) (result *v1alpha1.NetworkInterfaceNATRuleAssociation, err error) {
+	result = &v1alpha1.NetworkInterfaceNATRuleAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkinterfacenatruleassociations").
-		Name(networkInterfaceNatRuleAssociation.Name).
-		Body(networkInterfaceNatRuleAssociation).
+		Name(networkInterfaceNATRuleAssociation.Name).
+		Body(networkInterfaceNATRuleAssociation).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *networkInterfaceNatRuleAssociations) Update(networkInterfaceNatRuleAsso
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *networkInterfaceNatRuleAssociations) UpdateStatus(networkInterfaceNatRuleAssociation *v1alpha1.NetworkInterfaceNatRuleAssociation) (result *v1alpha1.NetworkInterfaceNatRuleAssociation, err error) {
-	result = &v1alpha1.NetworkInterfaceNatRuleAssociation{}
+func (c *networkInterfaceNATRuleAssociations) UpdateStatus(networkInterfaceNATRuleAssociation *v1alpha1.NetworkInterfaceNATRuleAssociation) (result *v1alpha1.NetworkInterfaceNATRuleAssociation, err error) {
+	result = &v1alpha1.NetworkInterfaceNATRuleAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkinterfacenatruleassociations").
-		Name(networkInterfaceNatRuleAssociation.Name).
+		Name(networkInterfaceNATRuleAssociation.Name).
 		SubResource("status").
-		Body(networkInterfaceNatRuleAssociation).
+		Body(networkInterfaceNATRuleAssociation).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the networkInterfaceNatRuleAssociation and deletes it. Returns an error if one occurs.
-func (c *networkInterfaceNatRuleAssociations) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the networkInterfaceNATRuleAssociation and deletes it. Returns an error if one occurs.
+func (c *networkInterfaceNATRuleAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkinterfacenatruleassociations").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *networkInterfaceNatRuleAssociations) Delete(name string, options *v1.De
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *networkInterfaceNatRuleAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *networkInterfaceNATRuleAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkinterfacenatruleassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *networkInterfaceNatRuleAssociations) DeleteCollection(options *v1.Delet
 		Error()
 }
 
-// Patch applies the patch and returns the patched networkInterfaceNatRuleAssociation.
-func (c *networkInterfaceNatRuleAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkInterfaceNatRuleAssociation, err error) {
-	result = &v1alpha1.NetworkInterfaceNatRuleAssociation{}
+// Patch applies the patch and returns the patched networkInterfaceNATRuleAssociation.
+func (c *networkInterfaceNATRuleAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkInterfaceNATRuleAssociation, err error) {
+	result = &v1alpha1.NetworkInterfaceNATRuleAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("networkinterfacenatruleassociations").
 		SubResource(subresources...).
 		Name(name).

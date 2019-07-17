@@ -32,7 +32,7 @@ import (
 // SqlFirewallRulesGetter has a method to return a SqlFirewallRuleInterface.
 // A group's client should implement this interface.
 type SqlFirewallRulesGetter interface {
-	SqlFirewallRules() SqlFirewallRuleInterface
+	SqlFirewallRules(namespace string) SqlFirewallRuleInterface
 }
 
 // SqlFirewallRuleInterface has methods to work with SqlFirewallRule resources.
@@ -52,12 +52,14 @@ type SqlFirewallRuleInterface interface {
 // sqlFirewallRules implements SqlFirewallRuleInterface
 type sqlFirewallRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSqlFirewallRules returns a SqlFirewallRules
-func newSqlFirewallRules(c *AzurermV1alpha1Client) *sqlFirewallRules {
+func newSqlFirewallRules(c *AzurermV1alpha1Client, namespace string) *sqlFirewallRules {
 	return &sqlFirewallRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSqlFirewallRules(c *AzurermV1alpha1Client) *sqlFirewallRules {
 func (c *sqlFirewallRules) Get(name string, options v1.GetOptions) (result *v1alpha1.SqlFirewallRule, err error) {
 	result = &v1alpha1.SqlFirewallRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlfirewallrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sqlFirewallRules) List(opts v1.ListOptions) (result *v1alpha1.SqlFirewa
 	}
 	result = &v1alpha1.SqlFirewallRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlfirewallrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sqlFirewallRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlfirewallrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sqlFirewallRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *sqlFirewallRules) Create(sqlFirewallRule *v1alpha1.SqlFirewallRule) (result *v1alpha1.SqlFirewallRule, err error) {
 	result = &v1alpha1.SqlFirewallRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sqlfirewallrules").
 		Body(sqlFirewallRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *sqlFirewallRules) Create(sqlFirewallRule *v1alpha1.SqlFirewallRule) (re
 func (c *sqlFirewallRules) Update(sqlFirewallRule *v1alpha1.SqlFirewallRule) (result *v1alpha1.SqlFirewallRule, err error) {
 	result = &v1alpha1.SqlFirewallRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqlfirewallrules").
 		Name(sqlFirewallRule.Name).
 		Body(sqlFirewallRule).
@@ -132,6 +139,7 @@ func (c *sqlFirewallRules) Update(sqlFirewallRule *v1alpha1.SqlFirewallRule) (re
 func (c *sqlFirewallRules) UpdateStatus(sqlFirewallRule *v1alpha1.SqlFirewallRule) (result *v1alpha1.SqlFirewallRule, err error) {
 	result = &v1alpha1.SqlFirewallRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqlfirewallrules").
 		Name(sqlFirewallRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sqlFirewallRules) UpdateStatus(sqlFirewallRule *v1alpha1.SqlFirewallRul
 // Delete takes name of the sqlFirewallRule and deletes it. Returns an error if one occurs.
 func (c *sqlFirewallRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqlfirewallrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sqlFirewallRules) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqlfirewallrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sqlFirewallRules) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *sqlFirewallRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SqlFirewallRule, err error) {
 	result = &v1alpha1.SqlFirewallRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sqlfirewallrules").
 		SubResource(subresources...).
 		Name(name).

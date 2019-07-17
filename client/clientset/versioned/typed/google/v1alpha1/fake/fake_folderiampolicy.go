@@ -31,6 +31,7 @@ import (
 // FakeFolderIamPolicies implements FolderIamPolicyInterface
 type FakeFolderIamPolicies struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var folderiampoliciesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "folderiampolicies"}
@@ -40,7 +41,8 @@ var folderiampoliciesKind = schema.GroupVersionKind{Group: "google.kubeform.com"
 // Get takes name of the folderIamPolicy, and returns the corresponding folderIamPolicy object, and an error if there is any.
 func (c *FakeFolderIamPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.FolderIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(folderiampoliciesResource, name), &v1alpha1.FolderIamPolicy{})
+		Invokes(testing.NewGetAction(folderiampoliciesResource, c.ns, name), &v1alpha1.FolderIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeFolderIamPolicies) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of FolderIamPolicies that match those selectors.
 func (c *FakeFolderIamPolicies) List(opts v1.ListOptions) (result *v1alpha1.FolderIamPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(folderiampoliciesResource, folderiampoliciesKind, opts), &v1alpha1.FolderIamPolicyList{})
+		Invokes(testing.NewListAction(folderiampoliciesResource, folderiampoliciesKind, c.ns, opts), &v1alpha1.FolderIamPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeFolderIamPolicies) List(opts v1.ListOptions) (result *v1alpha1.Fold
 // Watch returns a watch.Interface that watches the requested folderIamPolicies.
 func (c *FakeFolderIamPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(folderiampoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(folderiampoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a folderIamPolicy and creates it.  Returns the server's representation of the folderIamPolicy, and an error, if there is any.
 func (c *FakeFolderIamPolicies) Create(folderIamPolicy *v1alpha1.FolderIamPolicy) (result *v1alpha1.FolderIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(folderiampoliciesResource, folderIamPolicy), &v1alpha1.FolderIamPolicy{})
+		Invokes(testing.NewCreateAction(folderiampoliciesResource, c.ns, folderIamPolicy), &v1alpha1.FolderIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeFolderIamPolicies) Create(folderIamPolicy *v1alpha1.FolderIamPolicy
 // Update takes the representation of a folderIamPolicy and updates it. Returns the server's representation of the folderIamPolicy, and an error, if there is any.
 func (c *FakeFolderIamPolicies) Update(folderIamPolicy *v1alpha1.FolderIamPolicy) (result *v1alpha1.FolderIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(folderiampoliciesResource, folderIamPolicy), &v1alpha1.FolderIamPolicy{})
+		Invokes(testing.NewUpdateAction(folderiampoliciesResource, c.ns, folderIamPolicy), &v1alpha1.FolderIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeFolderIamPolicies) Update(folderIamPolicy *v1alpha1.FolderIamPolicy
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeFolderIamPolicies) UpdateStatus(folderIamPolicy *v1alpha1.FolderIamPolicy) (*v1alpha1.FolderIamPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(folderiampoliciesResource, "status", folderIamPolicy), &v1alpha1.FolderIamPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(folderiampoliciesResource, "status", c.ns, folderIamPolicy), &v1alpha1.FolderIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeFolderIamPolicies) UpdateStatus(folderIamPolicy *v1alpha1.FolderIam
 // Delete takes name of the folderIamPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeFolderIamPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(folderiampoliciesResource, name), &v1alpha1.FolderIamPolicy{})
+		Invokes(testing.NewDeleteAction(folderiampoliciesResource, c.ns, name), &v1alpha1.FolderIamPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeFolderIamPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(folderiampoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(folderiampoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.FolderIamPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeFolderIamPolicies) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched folderIamPolicy.
 func (c *FakeFolderIamPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FolderIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(folderiampoliciesResource, name, pt, data, subresources...), &v1alpha1.FolderIamPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(folderiampoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.FolderIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

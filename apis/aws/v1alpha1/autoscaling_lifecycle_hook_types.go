@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,17 +19,18 @@ type AutoscalingLifecycleHook struct {
 }
 
 type AutoscalingLifecycleHookSpec struct {
-	AutoscalingGroupName string `json:"autoscaling_group_name"`
+	AutoscalingGroupName string `json:"autoscalingGroupName" tf:"autoscaling_group_name"`
 	// +optional
-	HeartbeatTimeout    int    `json:"heartbeat_timeout,omitempty"`
-	LifecycleTransition string `json:"lifecycle_transition"`
-	Name                string `json:"name"`
+	HeartbeatTimeout    int    `json:"heartbeatTimeout,omitempty" tf:"heartbeat_timeout,omitempty"`
+	LifecycleTransition string `json:"lifecycleTransition" tf:"lifecycle_transition"`
+	Name                string `json:"name" tf:"name"`
 	// +optional
-	NotificationMetadata string `json:"notification_metadata,omitempty"`
+	NotificationMetadata string `json:"notificationMetadata,omitempty" tf:"notification_metadata,omitempty"`
 	// +optional
-	NotificationTargetArn string `json:"notification_target_arn,omitempty"`
+	NotificationTargetArn string `json:"notificationTargetArn,omitempty" tf:"notification_target_arn,omitempty"`
 	// +optional
-	RoleArn string `json:"role_arn,omitempty"`
+	RoleArn     string                    `json:"roleArn,omitempty" tf:"role_arn,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type AutoscalingLifecycleHookStatus struct {
@@ -37,7 +38,9 @@ type AutoscalingLifecycleHookStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

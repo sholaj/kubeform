@@ -41,32 +41,33 @@ type DirectoryServiceConditionalForwarderInformer interface {
 type directoryServiceConditionalForwarderInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDirectoryServiceConditionalForwarderInformer constructs a new informer for DirectoryServiceConditionalForwarder type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDirectoryServiceConditionalForwarderInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDirectoryServiceConditionalForwarderInformer(client, resyncPeriod, indexers, nil)
+func NewDirectoryServiceConditionalForwarderInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDirectoryServiceConditionalForwarderInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDirectoryServiceConditionalForwarderInformer constructs a new informer for DirectoryServiceConditionalForwarder type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDirectoryServiceConditionalForwarderInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDirectoryServiceConditionalForwarderInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DirectoryServiceConditionalForwarders().List(options)
+				return client.AwsV1alpha1().DirectoryServiceConditionalForwarders(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DirectoryServiceConditionalForwarders().Watch(options)
+				return client.AwsV1alpha1().DirectoryServiceConditionalForwarders(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.DirectoryServiceConditionalForwarder{},
@@ -76,7 +77,7 @@ func NewFilteredDirectoryServiceConditionalForwarderInformer(client versioned.In
 }
 
 func (f *directoryServiceConditionalForwarderInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDirectoryServiceConditionalForwarderInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDirectoryServiceConditionalForwarderInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *directoryServiceConditionalForwarderInformer) Informer() cache.SharedIndexInformer {

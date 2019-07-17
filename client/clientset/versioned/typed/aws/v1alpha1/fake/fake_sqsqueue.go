@@ -31,6 +31,7 @@ import (
 // FakeSqsQueues implements SqsQueueInterface
 type FakeSqsQueues struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var sqsqueuesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "sqsqueues"}
@@ -40,7 +41,8 @@ var sqsqueuesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: 
 // Get takes name of the sqsQueue, and returns the corresponding sqsQueue object, and an error if there is any.
 func (c *FakeSqsQueues) Get(name string, options v1.GetOptions) (result *v1alpha1.SqsQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sqsqueuesResource, name), &v1alpha1.SqsQueue{})
+		Invokes(testing.NewGetAction(sqsqueuesResource, c.ns, name), &v1alpha1.SqsQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSqsQueues) Get(name string, options v1.GetOptions) (result *v1alpha
 // List takes label and field selectors, and returns the list of SqsQueues that match those selectors.
 func (c *FakeSqsQueues) List(opts v1.ListOptions) (result *v1alpha1.SqsQueueList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sqsqueuesResource, sqsqueuesKind, opts), &v1alpha1.SqsQueueList{})
+		Invokes(testing.NewListAction(sqsqueuesResource, sqsqueuesKind, c.ns, opts), &v1alpha1.SqsQueueList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSqsQueues) List(opts v1.ListOptions) (result *v1alpha1.SqsQueueList
 // Watch returns a watch.Interface that watches the requested sqsQueues.
 func (c *FakeSqsQueues) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sqsqueuesResource, opts))
+		InvokesWatch(testing.NewWatchAction(sqsqueuesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sqsQueue and creates it.  Returns the server's representation of the sqsQueue, and an error, if there is any.
 func (c *FakeSqsQueues) Create(sqsQueue *v1alpha1.SqsQueue) (result *v1alpha1.SqsQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sqsqueuesResource, sqsQueue), &v1alpha1.SqsQueue{})
+		Invokes(testing.NewCreateAction(sqsqueuesResource, c.ns, sqsQueue), &v1alpha1.SqsQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSqsQueues) Create(sqsQueue *v1alpha1.SqsQueue) (result *v1alpha1.Sq
 // Update takes the representation of a sqsQueue and updates it. Returns the server's representation of the sqsQueue, and an error, if there is any.
 func (c *FakeSqsQueues) Update(sqsQueue *v1alpha1.SqsQueue) (result *v1alpha1.SqsQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sqsqueuesResource, sqsQueue), &v1alpha1.SqsQueue{})
+		Invokes(testing.NewUpdateAction(sqsqueuesResource, c.ns, sqsQueue), &v1alpha1.SqsQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSqsQueues) Update(sqsQueue *v1alpha1.SqsQueue) (result *v1alpha1.Sq
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSqsQueues) UpdateStatus(sqsQueue *v1alpha1.SqsQueue) (*v1alpha1.SqsQueue, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sqsqueuesResource, "status", sqsQueue), &v1alpha1.SqsQueue{})
+		Invokes(testing.NewUpdateSubresourceAction(sqsqueuesResource, "status", c.ns, sqsQueue), &v1alpha1.SqsQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSqsQueues) UpdateStatus(sqsQueue *v1alpha1.SqsQueue) (*v1alpha1.Sqs
 // Delete takes name of the sqsQueue and deletes it. Returns an error if one occurs.
 func (c *FakeSqsQueues) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sqsqueuesResource, name), &v1alpha1.SqsQueue{})
+		Invokes(testing.NewDeleteAction(sqsqueuesResource, c.ns, name), &v1alpha1.SqsQueue{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSqsQueues) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sqsqueuesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sqsqueuesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SqsQueueList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSqsQueues) DeleteCollection(options *v1.DeleteOptions, listOptions 
 // Patch applies the patch and returns the patched sqsQueue.
 func (c *FakeSqsQueues) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SqsQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sqsqueuesResource, name, pt, data, subresources...), &v1alpha1.SqsQueue{})
+		Invokes(testing.NewPatchSubresourceAction(sqsqueuesResource, c.ns, name, pt, data, subresources...), &v1alpha1.SqsQueue{})
+
 	if obj == nil {
 		return nil, err
 	}

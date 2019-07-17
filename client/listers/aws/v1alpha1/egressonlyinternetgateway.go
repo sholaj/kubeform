@@ -29,8 +29,8 @@ import (
 type EgressOnlyInternetGatewayLister interface {
 	// List lists all EgressOnlyInternetGateways in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EgressOnlyInternetGateway, err error)
-	// Get retrieves the EgressOnlyInternetGateway from the index for a given name.
-	Get(name string) (*v1alpha1.EgressOnlyInternetGateway, error)
+	// EgressOnlyInternetGateways returns an object that can list and get EgressOnlyInternetGateways.
+	EgressOnlyInternetGateways(namespace string) EgressOnlyInternetGatewayNamespaceLister
 	EgressOnlyInternetGatewayListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *egressOnlyInternetGatewayLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the EgressOnlyInternetGateway from the index for a given name.
-func (s *egressOnlyInternetGatewayLister) Get(name string) (*v1alpha1.EgressOnlyInternetGateway, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EgressOnlyInternetGateways returns an object that can list and get EgressOnlyInternetGateways.
+func (s *egressOnlyInternetGatewayLister) EgressOnlyInternetGateways(namespace string) EgressOnlyInternetGatewayNamespaceLister {
+	return egressOnlyInternetGatewayNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EgressOnlyInternetGatewayNamespaceLister helps list and get EgressOnlyInternetGateways.
+type EgressOnlyInternetGatewayNamespaceLister interface {
+	// List lists all EgressOnlyInternetGateways in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EgressOnlyInternetGateway, err error)
+	// Get retrieves the EgressOnlyInternetGateway from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EgressOnlyInternetGateway, error)
+	EgressOnlyInternetGatewayNamespaceListerExpansion
+}
+
+// egressOnlyInternetGatewayNamespaceLister implements the EgressOnlyInternetGatewayNamespaceLister
+// interface.
+type egressOnlyInternetGatewayNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EgressOnlyInternetGateways in the indexer for a given namespace.
+func (s egressOnlyInternetGatewayNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EgressOnlyInternetGateway, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EgressOnlyInternetGateway))
+	})
+	return ret, err
+}
+
+// Get retrieves the EgressOnlyInternetGateway from the indexer for a given namespace and name.
+func (s egressOnlyInternetGatewayNamespaceLister) Get(name string) (*v1alpha1.EgressOnlyInternetGateway, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

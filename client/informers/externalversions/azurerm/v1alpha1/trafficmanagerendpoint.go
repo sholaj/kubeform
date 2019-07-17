@@ -41,32 +41,33 @@ type TrafficManagerEndpointInformer interface {
 type trafficManagerEndpointInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewTrafficManagerEndpointInformer constructs a new informer for TrafficManagerEndpoint type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewTrafficManagerEndpointInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredTrafficManagerEndpointInformer(client, resyncPeriod, indexers, nil)
+func NewTrafficManagerEndpointInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredTrafficManagerEndpointInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredTrafficManagerEndpointInformer constructs a new informer for TrafficManagerEndpoint type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredTrafficManagerEndpointInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredTrafficManagerEndpointInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().TrafficManagerEndpoints().List(options)
+				return client.AzurermV1alpha1().TrafficManagerEndpoints(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().TrafficManagerEndpoints().Watch(options)
+				return client.AzurermV1alpha1().TrafficManagerEndpoints(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.TrafficManagerEndpoint{},
@@ -76,7 +77,7 @@ func NewFilteredTrafficManagerEndpointInformer(client versioned.Interface, resyn
 }
 
 func (f *trafficManagerEndpointInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredTrafficManagerEndpointInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredTrafficManagerEndpointInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *trafficManagerEndpointInformer) Informer() cache.SharedIndexInformer {

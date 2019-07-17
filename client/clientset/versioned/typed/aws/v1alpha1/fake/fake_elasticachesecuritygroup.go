@@ -31,6 +31,7 @@ import (
 // FakeElasticacheSecurityGroups implements ElasticacheSecurityGroupInterface
 type FakeElasticacheSecurityGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var elasticachesecuritygroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "elasticachesecuritygroups"}
@@ -40,7 +41,8 @@ var elasticachesecuritygroupsKind = schema.GroupVersionKind{Group: "aws.kubeform
 // Get takes name of the elasticacheSecurityGroup, and returns the corresponding elasticacheSecurityGroup object, and an error if there is any.
 func (c *FakeElasticacheSecurityGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.ElasticacheSecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(elasticachesecuritygroupsResource, name), &v1alpha1.ElasticacheSecurityGroup{})
+		Invokes(testing.NewGetAction(elasticachesecuritygroupsResource, c.ns, name), &v1alpha1.ElasticacheSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeElasticacheSecurityGroups) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of ElasticacheSecurityGroups that match those selectors.
 func (c *FakeElasticacheSecurityGroups) List(opts v1.ListOptions) (result *v1alpha1.ElasticacheSecurityGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(elasticachesecuritygroupsResource, elasticachesecuritygroupsKind, opts), &v1alpha1.ElasticacheSecurityGroupList{})
+		Invokes(testing.NewListAction(elasticachesecuritygroupsResource, elasticachesecuritygroupsKind, c.ns, opts), &v1alpha1.ElasticacheSecurityGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeElasticacheSecurityGroups) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested elasticacheSecurityGroups.
 func (c *FakeElasticacheSecurityGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(elasticachesecuritygroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(elasticachesecuritygroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a elasticacheSecurityGroup and creates it.  Returns the server's representation of the elasticacheSecurityGroup, and an error, if there is any.
 func (c *FakeElasticacheSecurityGroups) Create(elasticacheSecurityGroup *v1alpha1.ElasticacheSecurityGroup) (result *v1alpha1.ElasticacheSecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(elasticachesecuritygroupsResource, elasticacheSecurityGroup), &v1alpha1.ElasticacheSecurityGroup{})
+		Invokes(testing.NewCreateAction(elasticachesecuritygroupsResource, c.ns, elasticacheSecurityGroup), &v1alpha1.ElasticacheSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeElasticacheSecurityGroups) Create(elasticacheSecurityGroup *v1alpha
 // Update takes the representation of a elasticacheSecurityGroup and updates it. Returns the server's representation of the elasticacheSecurityGroup, and an error, if there is any.
 func (c *FakeElasticacheSecurityGroups) Update(elasticacheSecurityGroup *v1alpha1.ElasticacheSecurityGroup) (result *v1alpha1.ElasticacheSecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(elasticachesecuritygroupsResource, elasticacheSecurityGroup), &v1alpha1.ElasticacheSecurityGroup{})
+		Invokes(testing.NewUpdateAction(elasticachesecuritygroupsResource, c.ns, elasticacheSecurityGroup), &v1alpha1.ElasticacheSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeElasticacheSecurityGroups) Update(elasticacheSecurityGroup *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeElasticacheSecurityGroups) UpdateStatus(elasticacheSecurityGroup *v1alpha1.ElasticacheSecurityGroup) (*v1alpha1.ElasticacheSecurityGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(elasticachesecuritygroupsResource, "status", elasticacheSecurityGroup), &v1alpha1.ElasticacheSecurityGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(elasticachesecuritygroupsResource, "status", c.ns, elasticacheSecurityGroup), &v1alpha1.ElasticacheSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeElasticacheSecurityGroups) UpdateStatus(elasticacheSecurityGroup *v
 // Delete takes name of the elasticacheSecurityGroup and deletes it. Returns an error if one occurs.
 func (c *FakeElasticacheSecurityGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(elasticachesecuritygroupsResource, name), &v1alpha1.ElasticacheSecurityGroup{})
+		Invokes(testing.NewDeleteAction(elasticachesecuritygroupsResource, c.ns, name), &v1alpha1.ElasticacheSecurityGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeElasticacheSecurityGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(elasticachesecuritygroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(elasticachesecuritygroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ElasticacheSecurityGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeElasticacheSecurityGroups) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched elasticacheSecurityGroup.
 func (c *FakeElasticacheSecurityGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ElasticacheSecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(elasticachesecuritygroupsResource, name, pt, data, subresources...), &v1alpha1.ElasticacheSecurityGroup{})
+		Invokes(testing.NewPatchSubresourceAction(elasticachesecuritygroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ElasticacheSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

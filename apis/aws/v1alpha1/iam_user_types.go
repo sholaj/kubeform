@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,14 +20,15 @@ type IamUser struct {
 
 type IamUserSpec struct {
 	// +optional
-	ForceDestroy bool   `json:"force_destroy,omitempty"`
-	Name         string `json:"name"`
+	ForceDestroy bool   `json:"forceDestroy,omitempty" tf:"force_destroy,omitempty"`
+	Name         string `json:"name" tf:"name"`
 	// +optional
-	Path string `json:"path,omitempty"`
+	Path string `json:"path,omitempty" tf:"path,omitempty"`
 	// +optional
-	PermissionsBoundary string `json:"permissions_boundary,omitempty"`
+	PermissionsBoundary string `json:"permissionsBoundary,omitempty" tf:"permissions_boundary,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type IamUserStatus struct {
@@ -35,7 +36,9 @@ type IamUserStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

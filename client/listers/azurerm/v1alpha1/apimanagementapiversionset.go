@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// ApiManagementApiVersionSetLister helps list ApiManagementApiVersionSets.
-type ApiManagementApiVersionSetLister interface {
-	// List lists all ApiManagementApiVersionSets in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementApiVersionSet, err error)
-	// Get retrieves the ApiManagementApiVersionSet from the index for a given name.
-	Get(name string) (*v1alpha1.ApiManagementApiVersionSet, error)
-	ApiManagementApiVersionSetListerExpansion
+// ApiManagementAPIVersionSetLister helps list ApiManagementAPIVersionSets.
+type ApiManagementAPIVersionSetLister interface {
+	// List lists all ApiManagementAPIVersionSets in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPIVersionSet, err error)
+	// ApiManagementAPIVersionSets returns an object that can list and get ApiManagementAPIVersionSets.
+	ApiManagementAPIVersionSets(namespace string) ApiManagementAPIVersionSetNamespaceLister
+	ApiManagementAPIVersionSetListerExpansion
 }
 
-// apiManagementApiVersionSetLister implements the ApiManagementApiVersionSetLister interface.
-type apiManagementApiVersionSetLister struct {
+// apiManagementAPIVersionSetLister implements the ApiManagementAPIVersionSetLister interface.
+type apiManagementAPIVersionSetLister struct {
 	indexer cache.Indexer
 }
 
-// NewApiManagementApiVersionSetLister returns a new ApiManagementApiVersionSetLister.
-func NewApiManagementApiVersionSetLister(indexer cache.Indexer) ApiManagementApiVersionSetLister {
-	return &apiManagementApiVersionSetLister{indexer: indexer}
+// NewApiManagementAPIVersionSetLister returns a new ApiManagementAPIVersionSetLister.
+func NewApiManagementAPIVersionSetLister(indexer cache.Indexer) ApiManagementAPIVersionSetLister {
+	return &apiManagementAPIVersionSetLister{indexer: indexer}
 }
 
-// List lists all ApiManagementApiVersionSets in the indexer.
-func (s *apiManagementApiVersionSetLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementApiVersionSet, err error) {
+// List lists all ApiManagementAPIVersionSets in the indexer.
+func (s *apiManagementAPIVersionSetLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPIVersionSet, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ApiManagementApiVersionSet))
+		ret = append(ret, m.(*v1alpha1.ApiManagementAPIVersionSet))
 	})
 	return ret, err
 }
 
-// Get retrieves the ApiManagementApiVersionSet from the index for a given name.
-func (s *apiManagementApiVersionSetLister) Get(name string) (*v1alpha1.ApiManagementApiVersionSet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiManagementAPIVersionSets returns an object that can list and get ApiManagementAPIVersionSets.
+func (s *apiManagementAPIVersionSetLister) ApiManagementAPIVersionSets(namespace string) ApiManagementAPIVersionSetNamespaceLister {
+	return apiManagementAPIVersionSetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiManagementAPIVersionSetNamespaceLister helps list and get ApiManagementAPIVersionSets.
+type ApiManagementAPIVersionSetNamespaceLister interface {
+	// List lists all ApiManagementAPIVersionSets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPIVersionSet, err error)
+	// Get retrieves the ApiManagementAPIVersionSet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiManagementAPIVersionSet, error)
+	ApiManagementAPIVersionSetNamespaceListerExpansion
+}
+
+// apiManagementAPIVersionSetNamespaceLister implements the ApiManagementAPIVersionSetNamespaceLister
+// interface.
+type apiManagementAPIVersionSetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiManagementAPIVersionSets in the indexer for a given namespace.
+func (s apiManagementAPIVersionSetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPIVersionSet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiManagementAPIVersionSet))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiManagementAPIVersionSet from the indexer for a given namespace and name.
+func (s apiManagementAPIVersionSetNamespaceLister) Get(name string) (*v1alpha1.ApiManagementAPIVersionSet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("apimanagementapiversionset"), name)
 	}
-	return obj.(*v1alpha1.ApiManagementApiVersionSet), nil
+	return obj.(*v1alpha1.ApiManagementAPIVersionSet), nil
 }

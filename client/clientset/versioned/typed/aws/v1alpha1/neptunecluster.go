@@ -32,7 +32,7 @@ import (
 // NeptuneClustersGetter has a method to return a NeptuneClusterInterface.
 // A group's client should implement this interface.
 type NeptuneClustersGetter interface {
-	NeptuneClusters() NeptuneClusterInterface
+	NeptuneClusters(namespace string) NeptuneClusterInterface
 }
 
 // NeptuneClusterInterface has methods to work with NeptuneCluster resources.
@@ -52,12 +52,14 @@ type NeptuneClusterInterface interface {
 // neptuneClusters implements NeptuneClusterInterface
 type neptuneClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNeptuneClusters returns a NeptuneClusters
-func newNeptuneClusters(c *AwsV1alpha1Client) *neptuneClusters {
+func newNeptuneClusters(c *AwsV1alpha1Client, namespace string) *neptuneClusters {
 	return &neptuneClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNeptuneClusters(c *AwsV1alpha1Client) *neptuneClusters {
 func (c *neptuneClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.NeptuneCluster, err error) {
 	result = &v1alpha1.NeptuneCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("neptuneclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *neptuneClusters) List(opts v1.ListOptions) (result *v1alpha1.NeptuneClu
 	}
 	result = &v1alpha1.NeptuneClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("neptuneclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *neptuneClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("neptuneclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *neptuneClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *neptuneClusters) Create(neptuneCluster *v1alpha1.NeptuneCluster) (result *v1alpha1.NeptuneCluster, err error) {
 	result = &v1alpha1.NeptuneCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("neptuneclusters").
 		Body(neptuneCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *neptuneClusters) Create(neptuneCluster *v1alpha1.NeptuneCluster) (resul
 func (c *neptuneClusters) Update(neptuneCluster *v1alpha1.NeptuneCluster) (result *v1alpha1.NeptuneCluster, err error) {
 	result = &v1alpha1.NeptuneCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("neptuneclusters").
 		Name(neptuneCluster.Name).
 		Body(neptuneCluster).
@@ -132,6 +139,7 @@ func (c *neptuneClusters) Update(neptuneCluster *v1alpha1.NeptuneCluster) (resul
 func (c *neptuneClusters) UpdateStatus(neptuneCluster *v1alpha1.NeptuneCluster) (result *v1alpha1.NeptuneCluster, err error) {
 	result = &v1alpha1.NeptuneCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("neptuneclusters").
 		Name(neptuneCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *neptuneClusters) UpdateStatus(neptuneCluster *v1alpha1.NeptuneCluster) 
 // Delete takes name of the neptuneCluster and deletes it. Returns an error if one occurs.
 func (c *neptuneClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("neptuneclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *neptuneClusters) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("neptuneclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *neptuneClusters) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *neptuneClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NeptuneCluster, err error) {
 	result = &v1alpha1.NeptuneCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("neptuneclusters").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type EcsTaskDefinitionLister interface {
 	// List lists all EcsTaskDefinitions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EcsTaskDefinition, err error)
-	// Get retrieves the EcsTaskDefinition from the index for a given name.
-	Get(name string) (*v1alpha1.EcsTaskDefinition, error)
+	// EcsTaskDefinitions returns an object that can list and get EcsTaskDefinitions.
+	EcsTaskDefinitions(namespace string) EcsTaskDefinitionNamespaceLister
 	EcsTaskDefinitionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ecsTaskDefinitionLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the EcsTaskDefinition from the index for a given name.
-func (s *ecsTaskDefinitionLister) Get(name string) (*v1alpha1.EcsTaskDefinition, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EcsTaskDefinitions returns an object that can list and get EcsTaskDefinitions.
+func (s *ecsTaskDefinitionLister) EcsTaskDefinitions(namespace string) EcsTaskDefinitionNamespaceLister {
+	return ecsTaskDefinitionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EcsTaskDefinitionNamespaceLister helps list and get EcsTaskDefinitions.
+type EcsTaskDefinitionNamespaceLister interface {
+	// List lists all EcsTaskDefinitions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EcsTaskDefinition, err error)
+	// Get retrieves the EcsTaskDefinition from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EcsTaskDefinition, error)
+	EcsTaskDefinitionNamespaceListerExpansion
+}
+
+// ecsTaskDefinitionNamespaceLister implements the EcsTaskDefinitionNamespaceLister
+// interface.
+type ecsTaskDefinitionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EcsTaskDefinitions in the indexer for a given namespace.
+func (s ecsTaskDefinitionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EcsTaskDefinition, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EcsTaskDefinition))
+	})
+	return ret, err
+}
+
+// Get retrieves the EcsTaskDefinition from the indexer for a given namespace and name.
+func (s ecsTaskDefinitionNamespaceLister) Get(name string) (*v1alpha1.EcsTaskDefinition, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

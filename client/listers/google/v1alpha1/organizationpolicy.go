@@ -29,8 +29,8 @@ import (
 type OrganizationPolicyLister interface {
 	// List lists all OrganizationPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OrganizationPolicy, err error)
-	// Get retrieves the OrganizationPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.OrganizationPolicy, error)
+	// OrganizationPolicies returns an object that can list and get OrganizationPolicies.
+	OrganizationPolicies(namespace string) OrganizationPolicyNamespaceLister
 	OrganizationPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *organizationPolicyLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the OrganizationPolicy from the index for a given name.
-func (s *organizationPolicyLister) Get(name string) (*v1alpha1.OrganizationPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OrganizationPolicies returns an object that can list and get OrganizationPolicies.
+func (s *organizationPolicyLister) OrganizationPolicies(namespace string) OrganizationPolicyNamespaceLister {
+	return organizationPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OrganizationPolicyNamespaceLister helps list and get OrganizationPolicies.
+type OrganizationPolicyNamespaceLister interface {
+	// List lists all OrganizationPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OrganizationPolicy, err error)
+	// Get retrieves the OrganizationPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OrganizationPolicy, error)
+	OrganizationPolicyNamespaceListerExpansion
+}
+
+// organizationPolicyNamespaceLister implements the OrganizationPolicyNamespaceLister
+// interface.
+type organizationPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OrganizationPolicies in the indexer for a given namespace.
+func (s organizationPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OrganizationPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OrganizationPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the OrganizationPolicy from the indexer for a given namespace and name.
+func (s organizationPolicyNamespaceLister) Get(name string) (*v1alpha1.OrganizationPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

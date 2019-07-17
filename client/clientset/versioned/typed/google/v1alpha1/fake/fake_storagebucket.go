@@ -31,6 +31,7 @@ import (
 // FakeStorageBuckets implements StorageBucketInterface
 type FakeStorageBuckets struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var storagebucketsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "storagebuckets"}
@@ -40,7 +41,8 @@ var storagebucketsKind = schema.GroupVersionKind{Group: "google.kubeform.com", V
 // Get takes name of the storageBucket, and returns the corresponding storageBucket object, and an error if there is any.
 func (c *FakeStorageBuckets) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageBucket, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(storagebucketsResource, name), &v1alpha1.StorageBucket{})
+		Invokes(testing.NewGetAction(storagebucketsResource, c.ns, name), &v1alpha1.StorageBucket{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeStorageBuckets) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of StorageBuckets that match those selectors.
 func (c *FakeStorageBuckets) List(opts v1.ListOptions) (result *v1alpha1.StorageBucketList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(storagebucketsResource, storagebucketsKind, opts), &v1alpha1.StorageBucketList{})
+		Invokes(testing.NewListAction(storagebucketsResource, storagebucketsKind, c.ns, opts), &v1alpha1.StorageBucketList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeStorageBuckets) List(opts v1.ListOptions) (result *v1alpha1.Storage
 // Watch returns a watch.Interface that watches the requested storageBuckets.
 func (c *FakeStorageBuckets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(storagebucketsResource, opts))
+		InvokesWatch(testing.NewWatchAction(storagebucketsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a storageBucket and creates it.  Returns the server's representation of the storageBucket, and an error, if there is any.
 func (c *FakeStorageBuckets) Create(storageBucket *v1alpha1.StorageBucket) (result *v1alpha1.StorageBucket, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(storagebucketsResource, storageBucket), &v1alpha1.StorageBucket{})
+		Invokes(testing.NewCreateAction(storagebucketsResource, c.ns, storageBucket), &v1alpha1.StorageBucket{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeStorageBuckets) Create(storageBucket *v1alpha1.StorageBucket) (resu
 // Update takes the representation of a storageBucket and updates it. Returns the server's representation of the storageBucket, and an error, if there is any.
 func (c *FakeStorageBuckets) Update(storageBucket *v1alpha1.StorageBucket) (result *v1alpha1.StorageBucket, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(storagebucketsResource, storageBucket), &v1alpha1.StorageBucket{})
+		Invokes(testing.NewUpdateAction(storagebucketsResource, c.ns, storageBucket), &v1alpha1.StorageBucket{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeStorageBuckets) Update(storageBucket *v1alpha1.StorageBucket) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeStorageBuckets) UpdateStatus(storageBucket *v1alpha1.StorageBucket) (*v1alpha1.StorageBucket, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(storagebucketsResource, "status", storageBucket), &v1alpha1.StorageBucket{})
+		Invokes(testing.NewUpdateSubresourceAction(storagebucketsResource, "status", c.ns, storageBucket), &v1alpha1.StorageBucket{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeStorageBuckets) UpdateStatus(storageBucket *v1alpha1.StorageBucket)
 // Delete takes name of the storageBucket and deletes it. Returns an error if one occurs.
 func (c *FakeStorageBuckets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(storagebucketsResource, name), &v1alpha1.StorageBucket{})
+		Invokes(testing.NewDeleteAction(storagebucketsResource, c.ns, name), &v1alpha1.StorageBucket{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeStorageBuckets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(storagebucketsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(storagebucketsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.StorageBucketList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeStorageBuckets) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched storageBucket.
 func (c *FakeStorageBuckets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageBucket, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(storagebucketsResource, name, pt, data, subresources...), &v1alpha1.StorageBucket{})
+		Invokes(testing.NewPatchSubresourceAction(storagebucketsResource, c.ns, name, pt, data, subresources...), &v1alpha1.StorageBucket{})
+
 	if obj == nil {
 		return nil, err
 	}

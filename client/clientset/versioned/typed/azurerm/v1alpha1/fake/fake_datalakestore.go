@@ -31,6 +31,7 @@ import (
 // FakeDataLakeStores implements DataLakeStoreInterface
 type FakeDataLakeStores struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var datalakestoresResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "datalakestores"}
@@ -40,7 +41,8 @@ var datalakestoresKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", 
 // Get takes name of the dataLakeStore, and returns the corresponding dataLakeStore object, and an error if there is any.
 func (c *FakeDataLakeStores) Get(name string, options v1.GetOptions) (result *v1alpha1.DataLakeStore, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(datalakestoresResource, name), &v1alpha1.DataLakeStore{})
+		Invokes(testing.NewGetAction(datalakestoresResource, c.ns, name), &v1alpha1.DataLakeStore{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDataLakeStores) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of DataLakeStores that match those selectors.
 func (c *FakeDataLakeStores) List(opts v1.ListOptions) (result *v1alpha1.DataLakeStoreList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(datalakestoresResource, datalakestoresKind, opts), &v1alpha1.DataLakeStoreList{})
+		Invokes(testing.NewListAction(datalakestoresResource, datalakestoresKind, c.ns, opts), &v1alpha1.DataLakeStoreList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDataLakeStores) List(opts v1.ListOptions) (result *v1alpha1.DataLak
 // Watch returns a watch.Interface that watches the requested dataLakeStores.
 func (c *FakeDataLakeStores) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(datalakestoresResource, opts))
+		InvokesWatch(testing.NewWatchAction(datalakestoresResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dataLakeStore and creates it.  Returns the server's representation of the dataLakeStore, and an error, if there is any.
 func (c *FakeDataLakeStores) Create(dataLakeStore *v1alpha1.DataLakeStore) (result *v1alpha1.DataLakeStore, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(datalakestoresResource, dataLakeStore), &v1alpha1.DataLakeStore{})
+		Invokes(testing.NewCreateAction(datalakestoresResource, c.ns, dataLakeStore), &v1alpha1.DataLakeStore{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDataLakeStores) Create(dataLakeStore *v1alpha1.DataLakeStore) (resu
 // Update takes the representation of a dataLakeStore and updates it. Returns the server's representation of the dataLakeStore, and an error, if there is any.
 func (c *FakeDataLakeStores) Update(dataLakeStore *v1alpha1.DataLakeStore) (result *v1alpha1.DataLakeStore, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(datalakestoresResource, dataLakeStore), &v1alpha1.DataLakeStore{})
+		Invokes(testing.NewUpdateAction(datalakestoresResource, c.ns, dataLakeStore), &v1alpha1.DataLakeStore{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDataLakeStores) Update(dataLakeStore *v1alpha1.DataLakeStore) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDataLakeStores) UpdateStatus(dataLakeStore *v1alpha1.DataLakeStore) (*v1alpha1.DataLakeStore, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(datalakestoresResource, "status", dataLakeStore), &v1alpha1.DataLakeStore{})
+		Invokes(testing.NewUpdateSubresourceAction(datalakestoresResource, "status", c.ns, dataLakeStore), &v1alpha1.DataLakeStore{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDataLakeStores) UpdateStatus(dataLakeStore *v1alpha1.DataLakeStore)
 // Delete takes name of the dataLakeStore and deletes it. Returns an error if one occurs.
 func (c *FakeDataLakeStores) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(datalakestoresResource, name), &v1alpha1.DataLakeStore{})
+		Invokes(testing.NewDeleteAction(datalakestoresResource, c.ns, name), &v1alpha1.DataLakeStore{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDataLakeStores) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(datalakestoresResource, listOptions)
+	action := testing.NewDeleteCollectionAction(datalakestoresResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DataLakeStoreList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDataLakeStores) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched dataLakeStore.
 func (c *FakeDataLakeStores) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataLakeStore, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(datalakestoresResource, name, pt, data, subresources...), &v1alpha1.DataLakeStore{})
+		Invokes(testing.NewPatchSubresourceAction(datalakestoresResource, c.ns, name, pt, data, subresources...), &v1alpha1.DataLakeStore{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type Ec2TransitGatewayRouteTableAssociationLister interface {
 	// List lists all Ec2TransitGatewayRouteTableAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Ec2TransitGatewayRouteTableAssociation, err error)
-	// Get retrieves the Ec2TransitGatewayRouteTableAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.Ec2TransitGatewayRouteTableAssociation, error)
+	// Ec2TransitGatewayRouteTableAssociations returns an object that can list and get Ec2TransitGatewayRouteTableAssociations.
+	Ec2TransitGatewayRouteTableAssociations(namespace string) Ec2TransitGatewayRouteTableAssociationNamespaceLister
 	Ec2TransitGatewayRouteTableAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ec2TransitGatewayRouteTableAssociationLister) List(selector labels.Sele
 	return ret, err
 }
 
-// Get retrieves the Ec2TransitGatewayRouteTableAssociation from the index for a given name.
-func (s *ec2TransitGatewayRouteTableAssociationLister) Get(name string) (*v1alpha1.Ec2TransitGatewayRouteTableAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Ec2TransitGatewayRouteTableAssociations returns an object that can list and get Ec2TransitGatewayRouteTableAssociations.
+func (s *ec2TransitGatewayRouteTableAssociationLister) Ec2TransitGatewayRouteTableAssociations(namespace string) Ec2TransitGatewayRouteTableAssociationNamespaceLister {
+	return ec2TransitGatewayRouteTableAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// Ec2TransitGatewayRouteTableAssociationNamespaceLister helps list and get Ec2TransitGatewayRouteTableAssociations.
+type Ec2TransitGatewayRouteTableAssociationNamespaceLister interface {
+	// List lists all Ec2TransitGatewayRouteTableAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Ec2TransitGatewayRouteTableAssociation, err error)
+	// Get retrieves the Ec2TransitGatewayRouteTableAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Ec2TransitGatewayRouteTableAssociation, error)
+	Ec2TransitGatewayRouteTableAssociationNamespaceListerExpansion
+}
+
+// ec2TransitGatewayRouteTableAssociationNamespaceLister implements the Ec2TransitGatewayRouteTableAssociationNamespaceLister
+// interface.
+type ec2TransitGatewayRouteTableAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Ec2TransitGatewayRouteTableAssociations in the indexer for a given namespace.
+func (s ec2TransitGatewayRouteTableAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Ec2TransitGatewayRouteTableAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Ec2TransitGatewayRouteTableAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the Ec2TransitGatewayRouteTableAssociation from the indexer for a given namespace and name.
+func (s ec2TransitGatewayRouteTableAssociationNamespaceLister) Get(name string) (*v1alpha1.Ec2TransitGatewayRouteTableAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeCertificates implements CertificateInterface
 type FakeCertificates struct {
 	Fake *FakeDigitaloceanV1alpha1
+	ns   string
 }
 
 var certificatesResource = schema.GroupVersionResource{Group: "digitalocean.kubeform.com", Version: "v1alpha1", Resource: "certificates"}
@@ -40,7 +41,8 @@ var certificatesKind = schema.GroupVersionKind{Group: "digitalocean.kubeform.com
 // Get takes name of the certificate, and returns the corresponding certificate object, and an error if there is any.
 func (c *FakeCertificates) Get(name string, options v1.GetOptions) (result *v1alpha1.Certificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(certificatesResource, name), &v1alpha1.Certificate{})
+		Invokes(testing.NewGetAction(certificatesResource, c.ns, name), &v1alpha1.Certificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCertificates) Get(name string, options v1.GetOptions) (result *v1al
 // List takes label and field selectors, and returns the list of Certificates that match those selectors.
 func (c *FakeCertificates) List(opts v1.ListOptions) (result *v1alpha1.CertificateList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(certificatesResource, certificatesKind, opts), &v1alpha1.CertificateList{})
+		Invokes(testing.NewListAction(certificatesResource, certificatesKind, c.ns, opts), &v1alpha1.CertificateList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCertificates) List(opts v1.ListOptions) (result *v1alpha1.Certifica
 // Watch returns a watch.Interface that watches the requested certificates.
 func (c *FakeCertificates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(certificatesResource, opts))
+		InvokesWatch(testing.NewWatchAction(certificatesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a certificate and creates it.  Returns the server's representation of the certificate, and an error, if there is any.
 func (c *FakeCertificates) Create(certificate *v1alpha1.Certificate) (result *v1alpha1.Certificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(certificatesResource, certificate), &v1alpha1.Certificate{})
+		Invokes(testing.NewCreateAction(certificatesResource, c.ns, certificate), &v1alpha1.Certificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCertificates) Create(certificate *v1alpha1.Certificate) (result *v1
 // Update takes the representation of a certificate and updates it. Returns the server's representation of the certificate, and an error, if there is any.
 func (c *FakeCertificates) Update(certificate *v1alpha1.Certificate) (result *v1alpha1.Certificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(certificatesResource, certificate), &v1alpha1.Certificate{})
+		Invokes(testing.NewUpdateAction(certificatesResource, c.ns, certificate), &v1alpha1.Certificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCertificates) Update(certificate *v1alpha1.Certificate) (result *v1
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCertificates) UpdateStatus(certificate *v1alpha1.Certificate) (*v1alpha1.Certificate, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(certificatesResource, "status", certificate), &v1alpha1.Certificate{})
+		Invokes(testing.NewUpdateSubresourceAction(certificatesResource, "status", c.ns, certificate), &v1alpha1.Certificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCertificates) UpdateStatus(certificate *v1alpha1.Certificate) (*v1a
 // Delete takes name of the certificate and deletes it. Returns an error if one occurs.
 func (c *FakeCertificates) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(certificatesResource, name), &v1alpha1.Certificate{})
+		Invokes(testing.NewDeleteAction(certificatesResource, c.ns, name), &v1alpha1.Certificate{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCertificates) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(certificatesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(certificatesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CertificateList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCertificates) DeleteCollection(options *v1.DeleteOptions, listOptio
 // Patch applies the patch and returns the patched certificate.
 func (c *FakeCertificates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Certificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(certificatesResource, name, pt, data, subresources...), &v1alpha1.Certificate{})
+		Invokes(testing.NewPatchSubresourceAction(certificatesResource, c.ns, name, pt, data, subresources...), &v1alpha1.Certificate{})
+
 	if obj == nil {
 		return nil, err
 	}

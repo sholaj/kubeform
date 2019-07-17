@@ -32,7 +32,7 @@ import (
 // GlueJobsGetter has a method to return a GlueJobInterface.
 // A group's client should implement this interface.
 type GlueJobsGetter interface {
-	GlueJobs() GlueJobInterface
+	GlueJobs(namespace string) GlueJobInterface
 }
 
 // GlueJobInterface has methods to work with GlueJob resources.
@@ -52,12 +52,14 @@ type GlueJobInterface interface {
 // glueJobs implements GlueJobInterface
 type glueJobs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newGlueJobs returns a GlueJobs
-func newGlueJobs(c *AwsV1alpha1Client) *glueJobs {
+func newGlueJobs(c *AwsV1alpha1Client, namespace string) *glueJobs {
 	return &glueJobs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newGlueJobs(c *AwsV1alpha1Client) *glueJobs {
 func (c *glueJobs) Get(name string, options v1.GetOptions) (result *v1alpha1.GlueJob, err error) {
 	result = &v1alpha1.GlueJob{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("gluejobs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *glueJobs) List(opts v1.ListOptions) (result *v1alpha1.GlueJobList, err 
 	}
 	result = &v1alpha1.GlueJobList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("gluejobs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *glueJobs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("gluejobs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *glueJobs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *glueJobs) Create(glueJob *v1alpha1.GlueJob) (result *v1alpha1.GlueJob, err error) {
 	result = &v1alpha1.GlueJob{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("gluejobs").
 		Body(glueJob).
 		Do().
@@ -118,6 +124,7 @@ func (c *glueJobs) Create(glueJob *v1alpha1.GlueJob) (result *v1alpha1.GlueJob, 
 func (c *glueJobs) Update(glueJob *v1alpha1.GlueJob) (result *v1alpha1.GlueJob, err error) {
 	result = &v1alpha1.GlueJob{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("gluejobs").
 		Name(glueJob.Name).
 		Body(glueJob).
@@ -132,6 +139,7 @@ func (c *glueJobs) Update(glueJob *v1alpha1.GlueJob) (result *v1alpha1.GlueJob, 
 func (c *glueJobs) UpdateStatus(glueJob *v1alpha1.GlueJob) (result *v1alpha1.GlueJob, err error) {
 	result = &v1alpha1.GlueJob{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("gluejobs").
 		Name(glueJob.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *glueJobs) UpdateStatus(glueJob *v1alpha1.GlueJob) (result *v1alpha1.Glu
 // Delete takes name of the glueJob and deletes it. Returns an error if one occurs.
 func (c *glueJobs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("gluejobs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *glueJobs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("gluejobs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *glueJobs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 func (c *glueJobs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GlueJob, err error) {
 	result = &v1alpha1.GlueJob{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("gluejobs").
 		SubResource(subresources...).
 		Name(name).

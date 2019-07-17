@@ -29,8 +29,8 @@ import (
 type ProjectIamPolicyLister interface {
 	// List lists all ProjectIamPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ProjectIamPolicy, err error)
-	// Get retrieves the ProjectIamPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.ProjectIamPolicy, error)
+	// ProjectIamPolicies returns an object that can list and get ProjectIamPolicies.
+	ProjectIamPolicies(namespace string) ProjectIamPolicyNamespaceLister
 	ProjectIamPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *projectIamPolicyLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the ProjectIamPolicy from the index for a given name.
-func (s *projectIamPolicyLister) Get(name string) (*v1alpha1.ProjectIamPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ProjectIamPolicies returns an object that can list and get ProjectIamPolicies.
+func (s *projectIamPolicyLister) ProjectIamPolicies(namespace string) ProjectIamPolicyNamespaceLister {
+	return projectIamPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ProjectIamPolicyNamespaceLister helps list and get ProjectIamPolicies.
+type ProjectIamPolicyNamespaceLister interface {
+	// List lists all ProjectIamPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ProjectIamPolicy, err error)
+	// Get retrieves the ProjectIamPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ProjectIamPolicy, error)
+	ProjectIamPolicyNamespaceListerExpansion
+}
+
+// projectIamPolicyNamespaceLister implements the ProjectIamPolicyNamespaceLister
+// interface.
+type projectIamPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ProjectIamPolicies in the indexer for a given namespace.
+func (s projectIamPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ProjectIamPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ProjectIamPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the ProjectIamPolicy from the indexer for a given namespace and name.
+func (s projectIamPolicyNamespaceLister) Get(name string) (*v1alpha1.ProjectIamPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

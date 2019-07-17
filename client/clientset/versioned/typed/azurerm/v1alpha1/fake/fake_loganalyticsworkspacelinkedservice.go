@@ -31,6 +31,7 @@ import (
 // FakeLogAnalyticsWorkspaceLinkedServices implements LogAnalyticsWorkspaceLinkedServiceInterface
 type FakeLogAnalyticsWorkspaceLinkedServices struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var loganalyticsworkspacelinkedservicesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "loganalyticsworkspacelinkedservices"}
@@ -40,7 +41,8 @@ var loganalyticsworkspacelinkedservicesKind = schema.GroupVersionKind{Group: "az
 // Get takes name of the logAnalyticsWorkspaceLinkedService, and returns the corresponding logAnalyticsWorkspaceLinkedService object, and an error if there is any.
 func (c *FakeLogAnalyticsWorkspaceLinkedServices) Get(name string, options v1.GetOptions) (result *v1alpha1.LogAnalyticsWorkspaceLinkedService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(loganalyticsworkspacelinkedservicesResource, name), &v1alpha1.LogAnalyticsWorkspaceLinkedService{})
+		Invokes(testing.NewGetAction(loganalyticsworkspacelinkedservicesResource, c.ns, name), &v1alpha1.LogAnalyticsWorkspaceLinkedService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLogAnalyticsWorkspaceLinkedServices) Get(name string, options v1.Ge
 // List takes label and field selectors, and returns the list of LogAnalyticsWorkspaceLinkedServices that match those selectors.
 func (c *FakeLogAnalyticsWorkspaceLinkedServices) List(opts v1.ListOptions) (result *v1alpha1.LogAnalyticsWorkspaceLinkedServiceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(loganalyticsworkspacelinkedservicesResource, loganalyticsworkspacelinkedservicesKind, opts), &v1alpha1.LogAnalyticsWorkspaceLinkedServiceList{})
+		Invokes(testing.NewListAction(loganalyticsworkspacelinkedservicesResource, loganalyticsworkspacelinkedservicesKind, c.ns, opts), &v1alpha1.LogAnalyticsWorkspaceLinkedServiceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLogAnalyticsWorkspaceLinkedServices) List(opts v1.ListOptions) (res
 // Watch returns a watch.Interface that watches the requested logAnalyticsWorkspaceLinkedServices.
 func (c *FakeLogAnalyticsWorkspaceLinkedServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(loganalyticsworkspacelinkedservicesResource, opts))
+		InvokesWatch(testing.NewWatchAction(loganalyticsworkspacelinkedservicesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a logAnalyticsWorkspaceLinkedService and creates it.  Returns the server's representation of the logAnalyticsWorkspaceLinkedService, and an error, if there is any.
 func (c *FakeLogAnalyticsWorkspaceLinkedServices) Create(logAnalyticsWorkspaceLinkedService *v1alpha1.LogAnalyticsWorkspaceLinkedService) (result *v1alpha1.LogAnalyticsWorkspaceLinkedService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(loganalyticsworkspacelinkedservicesResource, logAnalyticsWorkspaceLinkedService), &v1alpha1.LogAnalyticsWorkspaceLinkedService{})
+		Invokes(testing.NewCreateAction(loganalyticsworkspacelinkedservicesResource, c.ns, logAnalyticsWorkspaceLinkedService), &v1alpha1.LogAnalyticsWorkspaceLinkedService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLogAnalyticsWorkspaceLinkedServices) Create(logAnalyticsWorkspaceLi
 // Update takes the representation of a logAnalyticsWorkspaceLinkedService and updates it. Returns the server's representation of the logAnalyticsWorkspaceLinkedService, and an error, if there is any.
 func (c *FakeLogAnalyticsWorkspaceLinkedServices) Update(logAnalyticsWorkspaceLinkedService *v1alpha1.LogAnalyticsWorkspaceLinkedService) (result *v1alpha1.LogAnalyticsWorkspaceLinkedService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(loganalyticsworkspacelinkedservicesResource, logAnalyticsWorkspaceLinkedService), &v1alpha1.LogAnalyticsWorkspaceLinkedService{})
+		Invokes(testing.NewUpdateAction(loganalyticsworkspacelinkedservicesResource, c.ns, logAnalyticsWorkspaceLinkedService), &v1alpha1.LogAnalyticsWorkspaceLinkedService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLogAnalyticsWorkspaceLinkedServices) Update(logAnalyticsWorkspaceLi
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLogAnalyticsWorkspaceLinkedServices) UpdateStatus(logAnalyticsWorkspaceLinkedService *v1alpha1.LogAnalyticsWorkspaceLinkedService) (*v1alpha1.LogAnalyticsWorkspaceLinkedService, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(loganalyticsworkspacelinkedservicesResource, "status", logAnalyticsWorkspaceLinkedService), &v1alpha1.LogAnalyticsWorkspaceLinkedService{})
+		Invokes(testing.NewUpdateSubresourceAction(loganalyticsworkspacelinkedservicesResource, "status", c.ns, logAnalyticsWorkspaceLinkedService), &v1alpha1.LogAnalyticsWorkspaceLinkedService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLogAnalyticsWorkspaceLinkedServices) UpdateStatus(logAnalyticsWorks
 // Delete takes name of the logAnalyticsWorkspaceLinkedService and deletes it. Returns an error if one occurs.
 func (c *FakeLogAnalyticsWorkspaceLinkedServices) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(loganalyticsworkspacelinkedservicesResource, name), &v1alpha1.LogAnalyticsWorkspaceLinkedService{})
+		Invokes(testing.NewDeleteAction(loganalyticsworkspacelinkedservicesResource, c.ns, name), &v1alpha1.LogAnalyticsWorkspaceLinkedService{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLogAnalyticsWorkspaceLinkedServices) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(loganalyticsworkspacelinkedservicesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(loganalyticsworkspacelinkedservicesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LogAnalyticsWorkspaceLinkedServiceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLogAnalyticsWorkspaceLinkedServices) DeleteCollection(options *v1.D
 // Patch applies the patch and returns the patched logAnalyticsWorkspaceLinkedService.
 func (c *FakeLogAnalyticsWorkspaceLinkedServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogAnalyticsWorkspaceLinkedService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(loganalyticsworkspacelinkedservicesResource, name, pt, data, subresources...), &v1alpha1.LogAnalyticsWorkspaceLinkedService{})
+		Invokes(testing.NewPatchSubresourceAction(loganalyticsworkspacelinkedservicesResource, c.ns, name, pt, data, subresources...), &v1alpha1.LogAnalyticsWorkspaceLinkedService{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -41,32 +41,33 @@ type LicensemanagerAssociationInformer interface {
 type licensemanagerAssociationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewLicensemanagerAssociationInformer constructs a new informer for LicensemanagerAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLicensemanagerAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLicensemanagerAssociationInformer(client, resyncPeriod, indexers, nil)
+func NewLicensemanagerAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLicensemanagerAssociationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredLicensemanagerAssociationInformer constructs a new informer for LicensemanagerAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLicensemanagerAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLicensemanagerAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().LicensemanagerAssociations().List(options)
+				return client.AwsV1alpha1().LicensemanagerAssociations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().LicensemanagerAssociations().Watch(options)
+				return client.AwsV1alpha1().LicensemanagerAssociations(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.LicensemanagerAssociation{},
@@ -76,7 +77,7 @@ func NewFilteredLicensemanagerAssociationInformer(client versioned.Interface, re
 }
 
 func (f *licensemanagerAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLicensemanagerAssociationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredLicensemanagerAssociationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *licensemanagerAssociationInformer) Informer() cache.SharedIndexInformer {

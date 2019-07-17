@@ -32,7 +32,7 @@ import (
 // EventgridEventSubscriptionsGetter has a method to return a EventgridEventSubscriptionInterface.
 // A group's client should implement this interface.
 type EventgridEventSubscriptionsGetter interface {
-	EventgridEventSubscriptions() EventgridEventSubscriptionInterface
+	EventgridEventSubscriptions(namespace string) EventgridEventSubscriptionInterface
 }
 
 // EventgridEventSubscriptionInterface has methods to work with EventgridEventSubscription resources.
@@ -52,12 +52,14 @@ type EventgridEventSubscriptionInterface interface {
 // eventgridEventSubscriptions implements EventgridEventSubscriptionInterface
 type eventgridEventSubscriptions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEventgridEventSubscriptions returns a EventgridEventSubscriptions
-func newEventgridEventSubscriptions(c *AzurermV1alpha1Client) *eventgridEventSubscriptions {
+func newEventgridEventSubscriptions(c *AzurermV1alpha1Client, namespace string) *eventgridEventSubscriptions {
 	return &eventgridEventSubscriptions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEventgridEventSubscriptions(c *AzurermV1alpha1Client) *eventgridEventSub
 func (c *eventgridEventSubscriptions) Get(name string, options v1.GetOptions) (result *v1alpha1.EventgridEventSubscription, err error) {
 	result = &v1alpha1.EventgridEventSubscription{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eventgrideventsubscriptions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *eventgridEventSubscriptions) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.EventgridEventSubscriptionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eventgrideventsubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *eventgridEventSubscriptions) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("eventgrideventsubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *eventgridEventSubscriptions) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *eventgridEventSubscriptions) Create(eventgridEventSubscription *v1alpha1.EventgridEventSubscription) (result *v1alpha1.EventgridEventSubscription, err error) {
 	result = &v1alpha1.EventgridEventSubscription{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("eventgrideventsubscriptions").
 		Body(eventgridEventSubscription).
 		Do().
@@ -118,6 +124,7 @@ func (c *eventgridEventSubscriptions) Create(eventgridEventSubscription *v1alpha
 func (c *eventgridEventSubscriptions) Update(eventgridEventSubscription *v1alpha1.EventgridEventSubscription) (result *v1alpha1.EventgridEventSubscription, err error) {
 	result = &v1alpha1.EventgridEventSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eventgrideventsubscriptions").
 		Name(eventgridEventSubscription.Name).
 		Body(eventgridEventSubscription).
@@ -132,6 +139,7 @@ func (c *eventgridEventSubscriptions) Update(eventgridEventSubscription *v1alpha
 func (c *eventgridEventSubscriptions) UpdateStatus(eventgridEventSubscription *v1alpha1.EventgridEventSubscription) (result *v1alpha1.EventgridEventSubscription, err error) {
 	result = &v1alpha1.EventgridEventSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eventgrideventsubscriptions").
 		Name(eventgridEventSubscription.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *eventgridEventSubscriptions) UpdateStatus(eventgridEventSubscription *v
 // Delete takes name of the eventgridEventSubscription and deletes it. Returns an error if one occurs.
 func (c *eventgridEventSubscriptions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eventgrideventsubscriptions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *eventgridEventSubscriptions) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eventgrideventsubscriptions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *eventgridEventSubscriptions) DeleteCollection(options *v1.DeleteOptions
 func (c *eventgridEventSubscriptions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EventgridEventSubscription, err error) {
 	result = &v1alpha1.EventgridEventSubscription{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("eventgrideventsubscriptions").
 		SubResource(subresources...).
 		Name(name).

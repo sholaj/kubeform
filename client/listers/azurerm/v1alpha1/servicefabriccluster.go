@@ -29,8 +29,8 @@ import (
 type ServiceFabricClusterLister interface {
 	// List lists all ServiceFabricClusters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ServiceFabricCluster, err error)
-	// Get retrieves the ServiceFabricCluster from the index for a given name.
-	Get(name string) (*v1alpha1.ServiceFabricCluster, error)
+	// ServiceFabricClusters returns an object that can list and get ServiceFabricClusters.
+	ServiceFabricClusters(namespace string) ServiceFabricClusterNamespaceLister
 	ServiceFabricClusterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *serviceFabricClusterLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the ServiceFabricCluster from the index for a given name.
-func (s *serviceFabricClusterLister) Get(name string) (*v1alpha1.ServiceFabricCluster, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ServiceFabricClusters returns an object that can list and get ServiceFabricClusters.
+func (s *serviceFabricClusterLister) ServiceFabricClusters(namespace string) ServiceFabricClusterNamespaceLister {
+	return serviceFabricClusterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ServiceFabricClusterNamespaceLister helps list and get ServiceFabricClusters.
+type ServiceFabricClusterNamespaceLister interface {
+	// List lists all ServiceFabricClusters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ServiceFabricCluster, err error)
+	// Get retrieves the ServiceFabricCluster from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ServiceFabricCluster, error)
+	ServiceFabricClusterNamespaceListerExpansion
+}
+
+// serviceFabricClusterNamespaceLister implements the ServiceFabricClusterNamespaceLister
+// interface.
+type serviceFabricClusterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ServiceFabricClusters in the indexer for a given namespace.
+func (s serviceFabricClusterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServiceFabricCluster, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ServiceFabricCluster))
+	})
+	return ret, err
+}
+
+// Get retrieves the ServiceFabricCluster from the indexer for a given namespace and name.
+func (s serviceFabricClusterNamespaceLister) Get(name string) (*v1alpha1.ServiceFabricCluster, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

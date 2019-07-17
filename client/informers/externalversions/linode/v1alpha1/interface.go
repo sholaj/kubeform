@@ -63,60 +63,60 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 
 // Domains returns a DomainInformer.
 func (v *version) Domains() DomainInformer {
-	return &domainInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &domainInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DomainRecords returns a DomainRecordInformer.
 func (v *version) DomainRecords() DomainRecordInformer {
-	return &domainRecordInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &domainRecordInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Images returns a ImageInformer.
 func (v *version) Images() ImageInformer {
-	return &imageInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &imageInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Instances returns a InstanceInformer.
 func (v *version) Instances() InstanceInformer {
-	return &instanceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &instanceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Nodebalancers returns a NodebalancerInformer.
 func (v *version) Nodebalancers() NodebalancerInformer {
-	return &nodebalancerInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &nodebalancerInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // NodebalancerConfigs returns a NodebalancerConfigInformer.
 func (v *version) NodebalancerConfigs() NodebalancerConfigInformer {
-	return &nodebalancerConfigInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &nodebalancerConfigInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // NodebalancerNodes returns a NodebalancerNodeInformer.
 func (v *version) NodebalancerNodes() NodebalancerNodeInformer {
-	return &nodebalancerNodeInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &nodebalancerNodeInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Rdnses returns a RdnsInformer.
 func (v *version) Rdnses() RdnsInformer {
-	return &rdnsInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &rdnsInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Sshkeys returns a SshkeyInformer.
 func (v *version) Sshkeys() SshkeyInformer {
-	return &sshkeyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &sshkeyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Stackscripts returns a StackscriptInformer.
 func (v *version) Stackscripts() StackscriptInformer {
-	return &stackscriptInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &stackscriptInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Tokens returns a TokenInformer.
 func (v *version) Tokens() TokenInformer {
-	return &tokenInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &tokenInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Volumes returns a VolumeInformer.
 func (v *version) Volumes() VolumeInformer {
-	return &volumeInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &volumeInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }

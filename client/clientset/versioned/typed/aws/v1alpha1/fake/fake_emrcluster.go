@@ -31,6 +31,7 @@ import (
 // FakeEmrClusters implements EmrClusterInterface
 type FakeEmrClusters struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var emrclustersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "emrclusters"}
@@ -40,7 +41,8 @@ var emrclustersKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version
 // Get takes name of the emrCluster, and returns the corresponding emrCluster object, and an error if there is any.
 func (c *FakeEmrClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.EmrCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(emrclustersResource, name), &v1alpha1.EmrCluster{})
+		Invokes(testing.NewGetAction(emrclustersResource, c.ns, name), &v1alpha1.EmrCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEmrClusters) Get(name string, options v1.GetOptions) (result *v1alp
 // List takes label and field selectors, and returns the list of EmrClusters that match those selectors.
 func (c *FakeEmrClusters) List(opts v1.ListOptions) (result *v1alpha1.EmrClusterList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(emrclustersResource, emrclustersKind, opts), &v1alpha1.EmrClusterList{})
+		Invokes(testing.NewListAction(emrclustersResource, emrclustersKind, c.ns, opts), &v1alpha1.EmrClusterList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEmrClusters) List(opts v1.ListOptions) (result *v1alpha1.EmrCluster
 // Watch returns a watch.Interface that watches the requested emrClusters.
 func (c *FakeEmrClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(emrclustersResource, opts))
+		InvokesWatch(testing.NewWatchAction(emrclustersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a emrCluster and creates it.  Returns the server's representation of the emrCluster, and an error, if there is any.
 func (c *FakeEmrClusters) Create(emrCluster *v1alpha1.EmrCluster) (result *v1alpha1.EmrCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(emrclustersResource, emrCluster), &v1alpha1.EmrCluster{})
+		Invokes(testing.NewCreateAction(emrclustersResource, c.ns, emrCluster), &v1alpha1.EmrCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEmrClusters) Create(emrCluster *v1alpha1.EmrCluster) (result *v1alp
 // Update takes the representation of a emrCluster and updates it. Returns the server's representation of the emrCluster, and an error, if there is any.
 func (c *FakeEmrClusters) Update(emrCluster *v1alpha1.EmrCluster) (result *v1alpha1.EmrCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(emrclustersResource, emrCluster), &v1alpha1.EmrCluster{})
+		Invokes(testing.NewUpdateAction(emrclustersResource, c.ns, emrCluster), &v1alpha1.EmrCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEmrClusters) Update(emrCluster *v1alpha1.EmrCluster) (result *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEmrClusters) UpdateStatus(emrCluster *v1alpha1.EmrCluster) (*v1alpha1.EmrCluster, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(emrclustersResource, "status", emrCluster), &v1alpha1.EmrCluster{})
+		Invokes(testing.NewUpdateSubresourceAction(emrclustersResource, "status", c.ns, emrCluster), &v1alpha1.EmrCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEmrClusters) UpdateStatus(emrCluster *v1alpha1.EmrCluster) (*v1alph
 // Delete takes name of the emrCluster and deletes it. Returns an error if one occurs.
 func (c *FakeEmrClusters) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(emrclustersResource, name), &v1alpha1.EmrCluster{})
+		Invokes(testing.NewDeleteAction(emrclustersResource, c.ns, name), &v1alpha1.EmrCluster{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEmrClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(emrclustersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(emrclustersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.EmrClusterList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEmrClusters) DeleteCollection(options *v1.DeleteOptions, listOption
 // Patch applies the patch and returns the patched emrCluster.
 func (c *FakeEmrClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EmrCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(emrclustersResource, name, pt, data, subresources...), &v1alpha1.EmrCluster{})
+		Invokes(testing.NewPatchSubresourceAction(emrclustersResource, c.ns, name, pt, data, subresources...), &v1alpha1.EmrCluster{})
+
 	if obj == nil {
 		return nil, err
 	}

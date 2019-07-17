@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/gobuffalo/flect"
-
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/terraform-providers/terraform-provider-aws/aws"

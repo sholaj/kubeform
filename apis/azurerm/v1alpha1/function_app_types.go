@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,21 +19,22 @@ type FunctionApp struct {
 }
 
 type FunctionAppSpec struct {
-	AppServicePlanId string `json:"app_service_plan_id"`
+	AppServicePlanID string `json:"appServicePlanID" tf:"app_service_plan_id"`
 	// +optional
-	AppSettings map[string]string `json:"app_settings,omitempty"`
+	AppSettings map[string]string `json:"appSettings,omitempty" tf:"app_settings,omitempty"`
 	// +optional
-	EnableBuiltinLogging bool `json:"enable_builtin_logging,omitempty"`
+	EnableBuiltinLogging bool `json:"enableBuiltinLogging,omitempty" tf:"enable_builtin_logging,omitempty"`
 	// +optional
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
 	// +optional
-	HttpsOnly               bool   `json:"https_only,omitempty"`
-	Location                string `json:"location"`
-	Name                    string `json:"name"`
-	ResourceGroupName       string `json:"resource_group_name"`
-	StorageConnectionString string `json:"storage_connection_string"`
+	HttpsOnly               bool   `json:"httpsOnly,omitempty" tf:"https_only,omitempty"`
+	Location                string `json:"location" tf:"location"`
+	Name                    string `json:"name" tf:"name"`
+	ResourceGroupName       string `json:"resourceGroupName" tf:"resource_group_name"`
+	StorageConnectionString string `json:"storageConnectionString" tf:"storage_connection_string"`
 	// +optional
-	Version string `json:"version,omitempty"`
+	Version     string                    `json:"version,omitempty" tf:"version,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type FunctionAppStatus struct {
@@ -41,7 +42,9 @@ type FunctionAppStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

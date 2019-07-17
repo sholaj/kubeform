@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,17 +20,18 @@ type SnsSmsPreferences struct {
 
 type SnsSmsPreferencesSpec struct {
 	// +optional
-	DefaultSenderId string `json:"default_sender_id,omitempty"`
+	DefaultSenderID string `json:"defaultSenderID,omitempty" tf:"default_sender_id,omitempty"`
 	// +optional
-	DefaultSmsType string `json:"default_sms_type,omitempty"`
+	DefaultSmsType string `json:"defaultSmsType,omitempty" tf:"default_sms_type,omitempty"`
 	// +optional
-	DeliveryStatusIamRoleArn string `json:"delivery_status_iam_role_arn,omitempty"`
+	DeliveryStatusIamRoleArn string `json:"deliveryStatusIamRoleArn,omitempty" tf:"delivery_status_iam_role_arn,omitempty"`
 	// +optional
-	DeliveryStatusSuccessSamplingRate string `json:"delivery_status_success_sampling_rate,omitempty"`
+	DeliveryStatusSuccessSamplingRate string `json:"deliveryStatusSuccessSamplingRate,omitempty" tf:"delivery_status_success_sampling_rate,omitempty"`
 	// +optional
-	MonthlySpendLimit string `json:"monthly_spend_limit,omitempty"`
+	MonthlySpendLimit string `json:"monthlySpendLimit,omitempty" tf:"monthly_spend_limit,omitempty"`
 	// +optional
-	UsageReportS3Bucket string `json:"usage_report_s3_bucket,omitempty"`
+	UsageReportS3Bucket string                    `json:"usageReportS3Bucket,omitempty" tf:"usage_report_s3_bucket,omitempty"`
+	ProviderRef         core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SnsSmsPreferencesStatus struct {
@@ -38,7 +39,9 @@ type SnsSmsPreferencesStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -29,8 +29,8 @@ import (
 type KmsKeyRingIamPolicyLister interface {
 	// List lists all KmsKeyRingIamPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KmsKeyRingIamPolicy, err error)
-	// Get retrieves the KmsKeyRingIamPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.KmsKeyRingIamPolicy, error)
+	// KmsKeyRingIamPolicies returns an object that can list and get KmsKeyRingIamPolicies.
+	KmsKeyRingIamPolicies(namespace string) KmsKeyRingIamPolicyNamespaceLister
 	KmsKeyRingIamPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *kmsKeyRingIamPolicyLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the KmsKeyRingIamPolicy from the index for a given name.
-func (s *kmsKeyRingIamPolicyLister) Get(name string) (*v1alpha1.KmsKeyRingIamPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KmsKeyRingIamPolicies returns an object that can list and get KmsKeyRingIamPolicies.
+func (s *kmsKeyRingIamPolicyLister) KmsKeyRingIamPolicies(namespace string) KmsKeyRingIamPolicyNamespaceLister {
+	return kmsKeyRingIamPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KmsKeyRingIamPolicyNamespaceLister helps list and get KmsKeyRingIamPolicies.
+type KmsKeyRingIamPolicyNamespaceLister interface {
+	// List lists all KmsKeyRingIamPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KmsKeyRingIamPolicy, err error)
+	// Get retrieves the KmsKeyRingIamPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KmsKeyRingIamPolicy, error)
+	KmsKeyRingIamPolicyNamespaceListerExpansion
+}
+
+// kmsKeyRingIamPolicyNamespaceLister implements the KmsKeyRingIamPolicyNamespaceLister
+// interface.
+type kmsKeyRingIamPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KmsKeyRingIamPolicies in the indexer for a given namespace.
+func (s kmsKeyRingIamPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KmsKeyRingIamPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KmsKeyRingIamPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the KmsKeyRingIamPolicy from the indexer for a given namespace and name.
+func (s kmsKeyRingIamPolicyNamespaceLister) Get(name string) (*v1alpha1.KmsKeyRingIamPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

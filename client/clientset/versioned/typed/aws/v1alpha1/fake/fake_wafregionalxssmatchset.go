@@ -31,6 +31,7 @@ import (
 // FakeWafregionalXssMatchSets implements WafregionalXssMatchSetInterface
 type FakeWafregionalXssMatchSets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var wafregionalxssmatchsetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "wafregionalxssmatchsets"}
@@ -40,7 +41,8 @@ var wafregionalxssmatchsetsKind = schema.GroupVersionKind{Group: "aws.kubeform.c
 // Get takes name of the wafregionalXssMatchSet, and returns the corresponding wafregionalXssMatchSet object, and an error if there is any.
 func (c *FakeWafregionalXssMatchSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalXssMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(wafregionalxssmatchsetsResource, name), &v1alpha1.WafregionalXssMatchSet{})
+		Invokes(testing.NewGetAction(wafregionalxssmatchsetsResource, c.ns, name), &v1alpha1.WafregionalXssMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeWafregionalXssMatchSets) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of WafregionalXssMatchSets that match those selectors.
 func (c *FakeWafregionalXssMatchSets) List(opts v1.ListOptions) (result *v1alpha1.WafregionalXssMatchSetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(wafregionalxssmatchsetsResource, wafregionalxssmatchsetsKind, opts), &v1alpha1.WafregionalXssMatchSetList{})
+		Invokes(testing.NewListAction(wafregionalxssmatchsetsResource, wafregionalxssmatchsetsKind, c.ns, opts), &v1alpha1.WafregionalXssMatchSetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeWafregionalXssMatchSets) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested wafregionalXssMatchSets.
 func (c *FakeWafregionalXssMatchSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(wafregionalxssmatchsetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(wafregionalxssmatchsetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a wafregionalXssMatchSet and creates it.  Returns the server's representation of the wafregionalXssMatchSet, and an error, if there is any.
 func (c *FakeWafregionalXssMatchSets) Create(wafregionalXssMatchSet *v1alpha1.WafregionalXssMatchSet) (result *v1alpha1.WafregionalXssMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(wafregionalxssmatchsetsResource, wafregionalXssMatchSet), &v1alpha1.WafregionalXssMatchSet{})
+		Invokes(testing.NewCreateAction(wafregionalxssmatchsetsResource, c.ns, wafregionalXssMatchSet), &v1alpha1.WafregionalXssMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeWafregionalXssMatchSets) Create(wafregionalXssMatchSet *v1alpha1.Wa
 // Update takes the representation of a wafregionalXssMatchSet and updates it. Returns the server's representation of the wafregionalXssMatchSet, and an error, if there is any.
 func (c *FakeWafregionalXssMatchSets) Update(wafregionalXssMatchSet *v1alpha1.WafregionalXssMatchSet) (result *v1alpha1.WafregionalXssMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(wafregionalxssmatchsetsResource, wafregionalXssMatchSet), &v1alpha1.WafregionalXssMatchSet{})
+		Invokes(testing.NewUpdateAction(wafregionalxssmatchsetsResource, c.ns, wafregionalXssMatchSet), &v1alpha1.WafregionalXssMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeWafregionalXssMatchSets) Update(wafregionalXssMatchSet *v1alpha1.Wa
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeWafregionalXssMatchSets) UpdateStatus(wafregionalXssMatchSet *v1alpha1.WafregionalXssMatchSet) (*v1alpha1.WafregionalXssMatchSet, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(wafregionalxssmatchsetsResource, "status", wafregionalXssMatchSet), &v1alpha1.WafregionalXssMatchSet{})
+		Invokes(testing.NewUpdateSubresourceAction(wafregionalxssmatchsetsResource, "status", c.ns, wafregionalXssMatchSet), &v1alpha1.WafregionalXssMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeWafregionalXssMatchSets) UpdateStatus(wafregionalXssMatchSet *v1alp
 // Delete takes name of the wafregionalXssMatchSet and deletes it. Returns an error if one occurs.
 func (c *FakeWafregionalXssMatchSets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(wafregionalxssmatchsetsResource, name), &v1alpha1.WafregionalXssMatchSet{})
+		Invokes(testing.NewDeleteAction(wafregionalxssmatchsetsResource, c.ns, name), &v1alpha1.WafregionalXssMatchSet{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeWafregionalXssMatchSets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(wafregionalxssmatchsetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(wafregionalxssmatchsetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.WafregionalXssMatchSetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeWafregionalXssMatchSets) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched wafregionalXssMatchSet.
 func (c *FakeWafregionalXssMatchSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalXssMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(wafregionalxssmatchsetsResource, name, pt, data, subresources...), &v1alpha1.WafregionalXssMatchSet{})
+		Invokes(testing.NewPatchSubresourceAction(wafregionalxssmatchsetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.WafregionalXssMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}

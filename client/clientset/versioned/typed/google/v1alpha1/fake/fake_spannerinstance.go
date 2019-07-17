@@ -31,6 +31,7 @@ import (
 // FakeSpannerInstances implements SpannerInstanceInterface
 type FakeSpannerInstances struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var spannerinstancesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "spannerinstances"}
@@ -40,7 +41,8 @@ var spannerinstancesKind = schema.GroupVersionKind{Group: "google.kubeform.com",
 // Get takes name of the spannerInstance, and returns the corresponding spannerInstance object, and an error if there is any.
 func (c *FakeSpannerInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.SpannerInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(spannerinstancesResource, name), &v1alpha1.SpannerInstance{})
+		Invokes(testing.NewGetAction(spannerinstancesResource, c.ns, name), &v1alpha1.SpannerInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSpannerInstances) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of SpannerInstances that match those selectors.
 func (c *FakeSpannerInstances) List(opts v1.ListOptions) (result *v1alpha1.SpannerInstanceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(spannerinstancesResource, spannerinstancesKind, opts), &v1alpha1.SpannerInstanceList{})
+		Invokes(testing.NewListAction(spannerinstancesResource, spannerinstancesKind, c.ns, opts), &v1alpha1.SpannerInstanceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSpannerInstances) List(opts v1.ListOptions) (result *v1alpha1.Spann
 // Watch returns a watch.Interface that watches the requested spannerInstances.
 func (c *FakeSpannerInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(spannerinstancesResource, opts))
+		InvokesWatch(testing.NewWatchAction(spannerinstancesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a spannerInstance and creates it.  Returns the server's representation of the spannerInstance, and an error, if there is any.
 func (c *FakeSpannerInstances) Create(spannerInstance *v1alpha1.SpannerInstance) (result *v1alpha1.SpannerInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(spannerinstancesResource, spannerInstance), &v1alpha1.SpannerInstance{})
+		Invokes(testing.NewCreateAction(spannerinstancesResource, c.ns, spannerInstance), &v1alpha1.SpannerInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSpannerInstances) Create(spannerInstance *v1alpha1.SpannerInstance)
 // Update takes the representation of a spannerInstance and updates it. Returns the server's representation of the spannerInstance, and an error, if there is any.
 func (c *FakeSpannerInstances) Update(spannerInstance *v1alpha1.SpannerInstance) (result *v1alpha1.SpannerInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(spannerinstancesResource, spannerInstance), &v1alpha1.SpannerInstance{})
+		Invokes(testing.NewUpdateAction(spannerinstancesResource, c.ns, spannerInstance), &v1alpha1.SpannerInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSpannerInstances) Update(spannerInstance *v1alpha1.SpannerInstance)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSpannerInstances) UpdateStatus(spannerInstance *v1alpha1.SpannerInstance) (*v1alpha1.SpannerInstance, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(spannerinstancesResource, "status", spannerInstance), &v1alpha1.SpannerInstance{})
+		Invokes(testing.NewUpdateSubresourceAction(spannerinstancesResource, "status", c.ns, spannerInstance), &v1alpha1.SpannerInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSpannerInstances) UpdateStatus(spannerInstance *v1alpha1.SpannerIns
 // Delete takes name of the spannerInstance and deletes it. Returns an error if one occurs.
 func (c *FakeSpannerInstances) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(spannerinstancesResource, name), &v1alpha1.SpannerInstance{})
+		Invokes(testing.NewDeleteAction(spannerinstancesResource, c.ns, name), &v1alpha1.SpannerInstance{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSpannerInstances) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(spannerinstancesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(spannerinstancesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SpannerInstanceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSpannerInstances) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched spannerInstance.
 func (c *FakeSpannerInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SpannerInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(spannerinstancesResource, name, pt, data, subresources...), &v1alpha1.SpannerInstance{})
+		Invokes(testing.NewPatchSubresourceAction(spannerinstancesResource, c.ns, name, pt, data, subresources...), &v1alpha1.SpannerInstance{})
+
 	if obj == nil {
 		return nil, err
 	}

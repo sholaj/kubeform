@@ -41,32 +41,33 @@ type MediaStoreContainerInformer interface {
 type mediaStoreContainerInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewMediaStoreContainerInformer constructs a new informer for MediaStoreContainer type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewMediaStoreContainerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredMediaStoreContainerInformer(client, resyncPeriod, indexers, nil)
+func NewMediaStoreContainerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredMediaStoreContainerInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredMediaStoreContainerInformer constructs a new informer for MediaStoreContainer type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredMediaStoreContainerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredMediaStoreContainerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().MediaStoreContainers().List(options)
+				return client.AwsV1alpha1().MediaStoreContainers(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().MediaStoreContainers().Watch(options)
+				return client.AwsV1alpha1().MediaStoreContainers(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.MediaStoreContainer{},
@@ -76,7 +77,7 @@ func NewFilteredMediaStoreContainerInformer(client versioned.Interface, resyncPe
 }
 
 func (f *mediaStoreContainerInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredMediaStoreContainerInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredMediaStoreContainerInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *mediaStoreContainerInformer) Informer() cache.SharedIndexInformer {

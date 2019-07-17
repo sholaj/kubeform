@@ -29,8 +29,8 @@ import (
 type SecretsmanagerSecretVersionLister interface {
 	// List lists all SecretsmanagerSecretVersions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SecretsmanagerSecretVersion, err error)
-	// Get retrieves the SecretsmanagerSecretVersion from the index for a given name.
-	Get(name string) (*v1alpha1.SecretsmanagerSecretVersion, error)
+	// SecretsmanagerSecretVersions returns an object that can list and get SecretsmanagerSecretVersions.
+	SecretsmanagerSecretVersions(namespace string) SecretsmanagerSecretVersionNamespaceLister
 	SecretsmanagerSecretVersionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *secretsmanagerSecretVersionLister) List(selector labels.Selector) (ret 
 	return ret, err
 }
 
-// Get retrieves the SecretsmanagerSecretVersion from the index for a given name.
-func (s *secretsmanagerSecretVersionLister) Get(name string) (*v1alpha1.SecretsmanagerSecretVersion, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SecretsmanagerSecretVersions returns an object that can list and get SecretsmanagerSecretVersions.
+func (s *secretsmanagerSecretVersionLister) SecretsmanagerSecretVersions(namespace string) SecretsmanagerSecretVersionNamespaceLister {
+	return secretsmanagerSecretVersionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SecretsmanagerSecretVersionNamespaceLister helps list and get SecretsmanagerSecretVersions.
+type SecretsmanagerSecretVersionNamespaceLister interface {
+	// List lists all SecretsmanagerSecretVersions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SecretsmanagerSecretVersion, err error)
+	// Get retrieves the SecretsmanagerSecretVersion from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SecretsmanagerSecretVersion, error)
+	SecretsmanagerSecretVersionNamespaceListerExpansion
+}
+
+// secretsmanagerSecretVersionNamespaceLister implements the SecretsmanagerSecretVersionNamespaceLister
+// interface.
+type secretsmanagerSecretVersionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SecretsmanagerSecretVersions in the indexer for a given namespace.
+func (s secretsmanagerSecretVersionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SecretsmanagerSecretVersion, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SecretsmanagerSecretVersion))
+	})
+	return ret, err
+}
+
+// Get retrieves the SecretsmanagerSecretVersion from the indexer for a given namespace and name.
+func (s secretsmanagerSecretVersionNamespaceLister) Get(name string) (*v1alpha1.SecretsmanagerSecretVersion, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

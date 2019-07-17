@@ -31,6 +31,7 @@ import (
 // FakeRdsClusterEndpoints implements RdsClusterEndpointInterface
 type FakeRdsClusterEndpoints struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var rdsclusterendpointsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "rdsclusterendpoints"}
@@ -40,7 +41,8 @@ var rdsclusterendpointsKind = schema.GroupVersionKind{Group: "aws.kubeform.com",
 // Get takes name of the rdsClusterEndpoint, and returns the corresponding rdsClusterEndpoint object, and an error if there is any.
 func (c *FakeRdsClusterEndpoints) Get(name string, options v1.GetOptions) (result *v1alpha1.RdsClusterEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(rdsclusterendpointsResource, name), &v1alpha1.RdsClusterEndpoint{})
+		Invokes(testing.NewGetAction(rdsclusterendpointsResource, c.ns, name), &v1alpha1.RdsClusterEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRdsClusterEndpoints) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of RdsClusterEndpoints that match those selectors.
 func (c *FakeRdsClusterEndpoints) List(opts v1.ListOptions) (result *v1alpha1.RdsClusterEndpointList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(rdsclusterendpointsResource, rdsclusterendpointsKind, opts), &v1alpha1.RdsClusterEndpointList{})
+		Invokes(testing.NewListAction(rdsclusterendpointsResource, rdsclusterendpointsKind, c.ns, opts), &v1alpha1.RdsClusterEndpointList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRdsClusterEndpoints) List(opts v1.ListOptions) (result *v1alpha1.Rd
 // Watch returns a watch.Interface that watches the requested rdsClusterEndpoints.
 func (c *FakeRdsClusterEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(rdsclusterendpointsResource, opts))
+		InvokesWatch(testing.NewWatchAction(rdsclusterendpointsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a rdsClusterEndpoint and creates it.  Returns the server's representation of the rdsClusterEndpoint, and an error, if there is any.
 func (c *FakeRdsClusterEndpoints) Create(rdsClusterEndpoint *v1alpha1.RdsClusterEndpoint) (result *v1alpha1.RdsClusterEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(rdsclusterendpointsResource, rdsClusterEndpoint), &v1alpha1.RdsClusterEndpoint{})
+		Invokes(testing.NewCreateAction(rdsclusterendpointsResource, c.ns, rdsClusterEndpoint), &v1alpha1.RdsClusterEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRdsClusterEndpoints) Create(rdsClusterEndpoint *v1alpha1.RdsCluster
 // Update takes the representation of a rdsClusterEndpoint and updates it. Returns the server's representation of the rdsClusterEndpoint, and an error, if there is any.
 func (c *FakeRdsClusterEndpoints) Update(rdsClusterEndpoint *v1alpha1.RdsClusterEndpoint) (result *v1alpha1.RdsClusterEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(rdsclusterendpointsResource, rdsClusterEndpoint), &v1alpha1.RdsClusterEndpoint{})
+		Invokes(testing.NewUpdateAction(rdsclusterendpointsResource, c.ns, rdsClusterEndpoint), &v1alpha1.RdsClusterEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRdsClusterEndpoints) Update(rdsClusterEndpoint *v1alpha1.RdsCluster
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRdsClusterEndpoints) UpdateStatus(rdsClusterEndpoint *v1alpha1.RdsClusterEndpoint) (*v1alpha1.RdsClusterEndpoint, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(rdsclusterendpointsResource, "status", rdsClusterEndpoint), &v1alpha1.RdsClusterEndpoint{})
+		Invokes(testing.NewUpdateSubresourceAction(rdsclusterendpointsResource, "status", c.ns, rdsClusterEndpoint), &v1alpha1.RdsClusterEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRdsClusterEndpoints) UpdateStatus(rdsClusterEndpoint *v1alpha1.RdsC
 // Delete takes name of the rdsClusterEndpoint and deletes it. Returns an error if one occurs.
 func (c *FakeRdsClusterEndpoints) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(rdsclusterendpointsResource, name), &v1alpha1.RdsClusterEndpoint{})
+		Invokes(testing.NewDeleteAction(rdsclusterendpointsResource, c.ns, name), &v1alpha1.RdsClusterEndpoint{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRdsClusterEndpoints) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(rdsclusterendpointsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(rdsclusterendpointsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.RdsClusterEndpointList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRdsClusterEndpoints) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched rdsClusterEndpoint.
 func (c *FakeRdsClusterEndpoints) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RdsClusterEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(rdsclusterendpointsResource, name, pt, data, subresources...), &v1alpha1.RdsClusterEndpoint{})
+		Invokes(testing.NewPatchSubresourceAction(rdsclusterendpointsResource, c.ns, name, pt, data, subresources...), &v1alpha1.RdsClusterEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // CloudformationStacksGetter has a method to return a CloudformationStackInterface.
 // A group's client should implement this interface.
 type CloudformationStacksGetter interface {
-	CloudformationStacks() CloudformationStackInterface
+	CloudformationStacks(namespace string) CloudformationStackInterface
 }
 
 // CloudformationStackInterface has methods to work with CloudformationStack resources.
@@ -52,12 +52,14 @@ type CloudformationStackInterface interface {
 // cloudformationStacks implements CloudformationStackInterface
 type cloudformationStacks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCloudformationStacks returns a CloudformationStacks
-func newCloudformationStacks(c *AwsV1alpha1Client) *cloudformationStacks {
+func newCloudformationStacks(c *AwsV1alpha1Client, namespace string) *cloudformationStacks {
 	return &cloudformationStacks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCloudformationStacks(c *AwsV1alpha1Client) *cloudformationStacks {
 func (c *cloudformationStacks) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudformationStack, err error) {
 	result = &v1alpha1.CloudformationStack{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudformationstacks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cloudformationStacks) List(opts v1.ListOptions) (result *v1alpha1.Cloud
 	}
 	result = &v1alpha1.CloudformationStackList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudformationstacks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cloudformationStacks) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudformationstacks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cloudformationStacks) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *cloudformationStacks) Create(cloudformationStack *v1alpha1.CloudformationStack) (result *v1alpha1.CloudformationStack, err error) {
 	result = &v1alpha1.CloudformationStack{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cloudformationstacks").
 		Body(cloudformationStack).
 		Do().
@@ -118,6 +124,7 @@ func (c *cloudformationStacks) Create(cloudformationStack *v1alpha1.Cloudformati
 func (c *cloudformationStacks) Update(cloudformationStack *v1alpha1.CloudformationStack) (result *v1alpha1.CloudformationStack, err error) {
 	result = &v1alpha1.CloudformationStack{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudformationstacks").
 		Name(cloudformationStack.Name).
 		Body(cloudformationStack).
@@ -132,6 +139,7 @@ func (c *cloudformationStacks) Update(cloudformationStack *v1alpha1.Cloudformati
 func (c *cloudformationStacks) UpdateStatus(cloudformationStack *v1alpha1.CloudformationStack) (result *v1alpha1.CloudformationStack, err error) {
 	result = &v1alpha1.CloudformationStack{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudformationstacks").
 		Name(cloudformationStack.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cloudformationStacks) UpdateStatus(cloudformationStack *v1alpha1.Cloudf
 // Delete takes name of the cloudformationStack and deletes it. Returns an error if one occurs.
 func (c *cloudformationStacks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudformationstacks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cloudformationStacks) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudformationstacks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cloudformationStacks) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *cloudformationStacks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudformationStack, err error) {
 	result = &v1alpha1.CloudformationStack{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cloudformationstacks").
 		SubResource(subresources...).
 		Name(name).

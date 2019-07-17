@@ -41,32 +41,33 @@ type KmsCryptoKeyIamBindingInformer interface {
 type kmsCryptoKeyIamBindingInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewKmsCryptoKeyIamBindingInformer constructs a new informer for KmsCryptoKeyIamBinding type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewKmsCryptoKeyIamBindingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredKmsCryptoKeyIamBindingInformer(client, resyncPeriod, indexers, nil)
+func NewKmsCryptoKeyIamBindingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredKmsCryptoKeyIamBindingInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredKmsCryptoKeyIamBindingInformer constructs a new informer for KmsCryptoKeyIamBinding type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredKmsCryptoKeyIamBindingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredKmsCryptoKeyIamBindingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().KmsCryptoKeyIamBindings().List(options)
+				return client.GoogleV1alpha1().KmsCryptoKeyIamBindings(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().KmsCryptoKeyIamBindings().Watch(options)
+				return client.GoogleV1alpha1().KmsCryptoKeyIamBindings(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.KmsCryptoKeyIamBinding{},
@@ -76,7 +77,7 @@ func NewFilteredKmsCryptoKeyIamBindingInformer(client versioned.Interface, resyn
 }
 
 func (f *kmsCryptoKeyIamBindingInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredKmsCryptoKeyIamBindingInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredKmsCryptoKeyIamBindingInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *kmsCryptoKeyIamBindingInformer) Informer() cache.SharedIndexInformer {

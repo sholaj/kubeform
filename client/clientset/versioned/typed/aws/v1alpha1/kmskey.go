@@ -32,7 +32,7 @@ import (
 // KmsKeysGetter has a method to return a KmsKeyInterface.
 // A group's client should implement this interface.
 type KmsKeysGetter interface {
-	KmsKeys() KmsKeyInterface
+	KmsKeys(namespace string) KmsKeyInterface
 }
 
 // KmsKeyInterface has methods to work with KmsKey resources.
@@ -52,12 +52,14 @@ type KmsKeyInterface interface {
 // kmsKeys implements KmsKeyInterface
 type kmsKeys struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKmsKeys returns a KmsKeys
-func newKmsKeys(c *AwsV1alpha1Client) *kmsKeys {
+func newKmsKeys(c *AwsV1alpha1Client, namespace string) *kmsKeys {
 	return &kmsKeys{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKmsKeys(c *AwsV1alpha1Client) *kmsKeys {
 func (c *kmsKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.KmsKey, err error) {
 	result = &v1alpha1.KmsKey{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmskeys").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *kmsKeys) List(opts v1.ListOptions) (result *v1alpha1.KmsKeyList, err er
 	}
 	result = &v1alpha1.KmsKeyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmskeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *kmsKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("kmskeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *kmsKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *kmsKeys) Create(kmsKey *v1alpha1.KmsKey) (result *v1alpha1.KmsKey, err error) {
 	result = &v1alpha1.KmsKey{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("kmskeys").
 		Body(kmsKey).
 		Do().
@@ -118,6 +124,7 @@ func (c *kmsKeys) Create(kmsKey *v1alpha1.KmsKey) (result *v1alpha1.KmsKey, err 
 func (c *kmsKeys) Update(kmsKey *v1alpha1.KmsKey) (result *v1alpha1.KmsKey, err error) {
 	result = &v1alpha1.KmsKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmskeys").
 		Name(kmsKey.Name).
 		Body(kmsKey).
@@ -132,6 +139,7 @@ func (c *kmsKeys) Update(kmsKey *v1alpha1.KmsKey) (result *v1alpha1.KmsKey, err 
 func (c *kmsKeys) UpdateStatus(kmsKey *v1alpha1.KmsKey) (result *v1alpha1.KmsKey, err error) {
 	result = &v1alpha1.KmsKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmskeys").
 		Name(kmsKey.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *kmsKeys) UpdateStatus(kmsKey *v1alpha1.KmsKey) (result *v1alpha1.KmsKey
 // Delete takes name of the kmsKey and deletes it. Returns an error if one occurs.
 func (c *kmsKeys) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmskeys").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *kmsKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmskeys").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *kmsKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Lis
 func (c *kmsKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KmsKey, err error) {
 	result = &v1alpha1.KmsKey{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("kmskeys").
 		SubResource(subresources...).
 		Name(name).

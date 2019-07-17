@@ -41,32 +41,33 @@ type OpsworksCustomLayerInformer interface {
 type opsworksCustomLayerInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewOpsworksCustomLayerInformer constructs a new informer for OpsworksCustomLayer type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewOpsworksCustomLayerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredOpsworksCustomLayerInformer(client, resyncPeriod, indexers, nil)
+func NewOpsworksCustomLayerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredOpsworksCustomLayerInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredOpsworksCustomLayerInformer constructs a new informer for OpsworksCustomLayer type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredOpsworksCustomLayerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredOpsworksCustomLayerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().OpsworksCustomLayers().List(options)
+				return client.AwsV1alpha1().OpsworksCustomLayers(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().OpsworksCustomLayers().Watch(options)
+				return client.AwsV1alpha1().OpsworksCustomLayers(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.OpsworksCustomLayer{},
@@ -76,7 +77,7 @@ func NewFilteredOpsworksCustomLayerInformer(client versioned.Interface, resyncPe
 }
 
 func (f *opsworksCustomLayerInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredOpsworksCustomLayerInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredOpsworksCustomLayerInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *opsworksCustomLayerInformer) Informer() cache.SharedIndexInformer {

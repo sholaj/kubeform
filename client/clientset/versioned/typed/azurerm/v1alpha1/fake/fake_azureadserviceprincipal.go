@@ -31,6 +31,7 @@ import (
 // FakeAzureadServicePrincipals implements AzureadServicePrincipalInterface
 type FakeAzureadServicePrincipals struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var azureadserviceprincipalsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "azureadserviceprincipals"}
@@ -40,7 +41,8 @@ var azureadserviceprincipalsKind = schema.GroupVersionKind{Group: "azurerm.kubef
 // Get takes name of the azureadServicePrincipal, and returns the corresponding azureadServicePrincipal object, and an error if there is any.
 func (c *FakeAzureadServicePrincipals) Get(name string, options v1.GetOptions) (result *v1alpha1.AzureadServicePrincipal, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(azureadserviceprincipalsResource, name), &v1alpha1.AzureadServicePrincipal{})
+		Invokes(testing.NewGetAction(azureadserviceprincipalsResource, c.ns, name), &v1alpha1.AzureadServicePrincipal{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAzureadServicePrincipals) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of AzureadServicePrincipals that match those selectors.
 func (c *FakeAzureadServicePrincipals) List(opts v1.ListOptions) (result *v1alpha1.AzureadServicePrincipalList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(azureadserviceprincipalsResource, azureadserviceprincipalsKind, opts), &v1alpha1.AzureadServicePrincipalList{})
+		Invokes(testing.NewListAction(azureadserviceprincipalsResource, azureadserviceprincipalsKind, c.ns, opts), &v1alpha1.AzureadServicePrincipalList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAzureadServicePrincipals) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested azureadServicePrincipals.
 func (c *FakeAzureadServicePrincipals) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(azureadserviceprincipalsResource, opts))
+		InvokesWatch(testing.NewWatchAction(azureadserviceprincipalsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a azureadServicePrincipal and creates it.  Returns the server's representation of the azureadServicePrincipal, and an error, if there is any.
 func (c *FakeAzureadServicePrincipals) Create(azureadServicePrincipal *v1alpha1.AzureadServicePrincipal) (result *v1alpha1.AzureadServicePrincipal, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(azureadserviceprincipalsResource, azureadServicePrincipal), &v1alpha1.AzureadServicePrincipal{})
+		Invokes(testing.NewCreateAction(azureadserviceprincipalsResource, c.ns, azureadServicePrincipal), &v1alpha1.AzureadServicePrincipal{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAzureadServicePrincipals) Create(azureadServicePrincipal *v1alpha1.
 // Update takes the representation of a azureadServicePrincipal and updates it. Returns the server's representation of the azureadServicePrincipal, and an error, if there is any.
 func (c *FakeAzureadServicePrincipals) Update(azureadServicePrincipal *v1alpha1.AzureadServicePrincipal) (result *v1alpha1.AzureadServicePrincipal, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(azureadserviceprincipalsResource, azureadServicePrincipal), &v1alpha1.AzureadServicePrincipal{})
+		Invokes(testing.NewUpdateAction(azureadserviceprincipalsResource, c.ns, azureadServicePrincipal), &v1alpha1.AzureadServicePrincipal{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAzureadServicePrincipals) Update(azureadServicePrincipal *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAzureadServicePrincipals) UpdateStatus(azureadServicePrincipal *v1alpha1.AzureadServicePrincipal) (*v1alpha1.AzureadServicePrincipal, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(azureadserviceprincipalsResource, "status", azureadServicePrincipal), &v1alpha1.AzureadServicePrincipal{})
+		Invokes(testing.NewUpdateSubresourceAction(azureadserviceprincipalsResource, "status", c.ns, azureadServicePrincipal), &v1alpha1.AzureadServicePrincipal{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAzureadServicePrincipals) UpdateStatus(azureadServicePrincipal *v1a
 // Delete takes name of the azureadServicePrincipal and deletes it. Returns an error if one occurs.
 func (c *FakeAzureadServicePrincipals) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(azureadserviceprincipalsResource, name), &v1alpha1.AzureadServicePrincipal{})
+		Invokes(testing.NewDeleteAction(azureadserviceprincipalsResource, c.ns, name), &v1alpha1.AzureadServicePrincipal{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAzureadServicePrincipals) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(azureadserviceprincipalsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(azureadserviceprincipalsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AzureadServicePrincipalList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAzureadServicePrincipals) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched azureadServicePrincipal.
 func (c *FakeAzureadServicePrincipals) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AzureadServicePrincipal, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(azureadserviceprincipalsResource, name, pt, data, subresources...), &v1alpha1.AzureadServicePrincipal{})
+		Invokes(testing.NewPatchSubresourceAction(azureadserviceprincipalsResource, c.ns, name, pt, data, subresources...), &v1alpha1.AzureadServicePrincipal{})
+
 	if obj == nil {
 		return nil, err
 	}

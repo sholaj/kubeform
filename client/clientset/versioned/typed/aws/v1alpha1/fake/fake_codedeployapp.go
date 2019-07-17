@@ -31,6 +31,7 @@ import (
 // FakeCodedeployApps implements CodedeployAppInterface
 type FakeCodedeployApps struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var codedeployappsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "codedeployapps"}
@@ -40,7 +41,8 @@ var codedeployappsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Vers
 // Get takes name of the codedeployApp, and returns the corresponding codedeployApp object, and an error if there is any.
 func (c *FakeCodedeployApps) Get(name string, options v1.GetOptions) (result *v1alpha1.CodedeployApp, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(codedeployappsResource, name), &v1alpha1.CodedeployApp{})
+		Invokes(testing.NewGetAction(codedeployappsResource, c.ns, name), &v1alpha1.CodedeployApp{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCodedeployApps) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of CodedeployApps that match those selectors.
 func (c *FakeCodedeployApps) List(opts v1.ListOptions) (result *v1alpha1.CodedeployAppList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(codedeployappsResource, codedeployappsKind, opts), &v1alpha1.CodedeployAppList{})
+		Invokes(testing.NewListAction(codedeployappsResource, codedeployappsKind, c.ns, opts), &v1alpha1.CodedeployAppList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCodedeployApps) List(opts v1.ListOptions) (result *v1alpha1.Codedep
 // Watch returns a watch.Interface that watches the requested codedeployApps.
 func (c *FakeCodedeployApps) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(codedeployappsResource, opts))
+		InvokesWatch(testing.NewWatchAction(codedeployappsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a codedeployApp and creates it.  Returns the server's representation of the codedeployApp, and an error, if there is any.
 func (c *FakeCodedeployApps) Create(codedeployApp *v1alpha1.CodedeployApp) (result *v1alpha1.CodedeployApp, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(codedeployappsResource, codedeployApp), &v1alpha1.CodedeployApp{})
+		Invokes(testing.NewCreateAction(codedeployappsResource, c.ns, codedeployApp), &v1alpha1.CodedeployApp{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCodedeployApps) Create(codedeployApp *v1alpha1.CodedeployApp) (resu
 // Update takes the representation of a codedeployApp and updates it. Returns the server's representation of the codedeployApp, and an error, if there is any.
 func (c *FakeCodedeployApps) Update(codedeployApp *v1alpha1.CodedeployApp) (result *v1alpha1.CodedeployApp, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(codedeployappsResource, codedeployApp), &v1alpha1.CodedeployApp{})
+		Invokes(testing.NewUpdateAction(codedeployappsResource, c.ns, codedeployApp), &v1alpha1.CodedeployApp{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCodedeployApps) Update(codedeployApp *v1alpha1.CodedeployApp) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCodedeployApps) UpdateStatus(codedeployApp *v1alpha1.CodedeployApp) (*v1alpha1.CodedeployApp, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(codedeployappsResource, "status", codedeployApp), &v1alpha1.CodedeployApp{})
+		Invokes(testing.NewUpdateSubresourceAction(codedeployappsResource, "status", c.ns, codedeployApp), &v1alpha1.CodedeployApp{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCodedeployApps) UpdateStatus(codedeployApp *v1alpha1.CodedeployApp)
 // Delete takes name of the codedeployApp and deletes it. Returns an error if one occurs.
 func (c *FakeCodedeployApps) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(codedeployappsResource, name), &v1alpha1.CodedeployApp{})
+		Invokes(testing.NewDeleteAction(codedeployappsResource, c.ns, name), &v1alpha1.CodedeployApp{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCodedeployApps) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(codedeployappsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(codedeployappsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CodedeployAppList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCodedeployApps) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched codedeployApp.
 func (c *FakeCodedeployApps) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CodedeployApp, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(codedeployappsResource, name, pt, data, subresources...), &v1alpha1.CodedeployApp{})
+		Invokes(testing.NewPatchSubresourceAction(codedeployappsResource, c.ns, name, pt, data, subresources...), &v1alpha1.CodedeployApp{})
+
 	if obj == nil {
 		return nil, err
 	}

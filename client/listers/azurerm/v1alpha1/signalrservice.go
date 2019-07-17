@@ -29,8 +29,8 @@ import (
 type SignalrServiceLister interface {
 	// List lists all SignalrServices in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SignalrService, err error)
-	// Get retrieves the SignalrService from the index for a given name.
-	Get(name string) (*v1alpha1.SignalrService, error)
+	// SignalrServices returns an object that can list and get SignalrServices.
+	SignalrServices(namespace string) SignalrServiceNamespaceLister
 	SignalrServiceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *signalrServiceLister) List(selector labels.Selector) (ret []*v1alpha1.S
 	return ret, err
 }
 
-// Get retrieves the SignalrService from the index for a given name.
-func (s *signalrServiceLister) Get(name string) (*v1alpha1.SignalrService, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SignalrServices returns an object that can list and get SignalrServices.
+func (s *signalrServiceLister) SignalrServices(namespace string) SignalrServiceNamespaceLister {
+	return signalrServiceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SignalrServiceNamespaceLister helps list and get SignalrServices.
+type SignalrServiceNamespaceLister interface {
+	// List lists all SignalrServices in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SignalrService, err error)
+	// Get retrieves the SignalrService from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SignalrService, error)
+	SignalrServiceNamespaceListerExpansion
+}
+
+// signalrServiceNamespaceLister implements the SignalrServiceNamespaceLister
+// interface.
+type signalrServiceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SignalrServices in the indexer for a given namespace.
+func (s signalrServiceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SignalrService, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SignalrService))
+	})
+	return ret, err
+}
+
+// Get retrieves the SignalrService from the indexer for a given namespace and name.
+func (s signalrServiceNamespaceLister) Get(name string) (*v1alpha1.SignalrService, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

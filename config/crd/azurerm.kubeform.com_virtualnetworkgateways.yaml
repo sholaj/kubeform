@@ -397,33 +397,98 @@ spec:
           type: object
         spec:
           properties:
-            default_local_network_gateway_id:
+            defaultLocalNetworkGatewayID:
               type: string
-            ip_configuration:
-              items: {}
+            ipConfiguration:
+              items:
+                properties:
+                  name:
+                    type: string
+                  privateIPAddressAllocation:
+                    type: string
+                  publicIPAddressID:
+                    type: string
+                  subnetID:
+                    type: string
+                required:
+                - subnetID
+                type: object
               maxItems: 2
               type: array
             location:
               type: string
             name:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
             sku:
               type: string
             type:
               type: string
-            vpn_client_configuration:
-              items: {}
+            vpnClientConfiguration:
+              items:
+                properties:
+                  addressSpace:
+                    items:
+                      type: string
+                    type: array
+                  radiusServerAddress:
+                    type: string
+                  radiusServerSecret:
+                    type: string
+                  revokedCertificate:
+                    items:
+                      properties:
+                        name:
+                          type: string
+                        thumbprint:
+                          type: string
+                      required:
+                      - name
+                      - thumbprint
+                      type: object
+                    type: array
+                    uniqueItems: true
+                  rootCertificate:
+                    items:
+                      properties:
+                        name:
+                          type: string
+                        publicCertData:
+                          type: string
+                      required:
+                      - name
+                      - publicCertData
+                      type: object
+                    type: array
+                    uniqueItems: true
+                  vpnClientProtocols:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                required:
+                - addressSpace
+                type: object
               maxItems: 1
               type: array
-            vpn_type:
+            vpnType:
               type: string
           required:
-          - ip_configuration
+          - ipConfiguration
           - location
           - name
-          - resource_group_name
+          - providerRef
+          - resourceGroupName
           - sku
           - type
           type: object
@@ -436,6 +501,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -32,7 +32,7 @@ import (
 // IotThingsGetter has a method to return a IotThingInterface.
 // A group's client should implement this interface.
 type IotThingsGetter interface {
-	IotThings() IotThingInterface
+	IotThings(namespace string) IotThingInterface
 }
 
 // IotThingInterface has methods to work with IotThing resources.
@@ -52,12 +52,14 @@ type IotThingInterface interface {
 // iotThings implements IotThingInterface
 type iotThings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIotThings returns a IotThings
-func newIotThings(c *AwsV1alpha1Client) *iotThings {
+func newIotThings(c *AwsV1alpha1Client, namespace string) *iotThings {
 	return &iotThings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIotThings(c *AwsV1alpha1Client) *iotThings {
 func (c *iotThings) Get(name string, options v1.GetOptions) (result *v1alpha1.IotThing, err error) {
 	result = &v1alpha1.IotThing{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iotthings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iotThings) List(opts v1.ListOptions) (result *v1alpha1.IotThingList, er
 	}
 	result = &v1alpha1.IotThingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iotthings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iotThings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iotthings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iotThings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *iotThings) Create(iotThing *v1alpha1.IotThing) (result *v1alpha1.IotThing, err error) {
 	result = &v1alpha1.IotThing{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iotthings").
 		Body(iotThing).
 		Do().
@@ -118,6 +124,7 @@ func (c *iotThings) Create(iotThing *v1alpha1.IotThing) (result *v1alpha1.IotThi
 func (c *iotThings) Update(iotThing *v1alpha1.IotThing) (result *v1alpha1.IotThing, err error) {
 	result = &v1alpha1.IotThing{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iotthings").
 		Name(iotThing.Name).
 		Body(iotThing).
@@ -132,6 +139,7 @@ func (c *iotThings) Update(iotThing *v1alpha1.IotThing) (result *v1alpha1.IotThi
 func (c *iotThings) UpdateStatus(iotThing *v1alpha1.IotThing) (result *v1alpha1.IotThing, err error) {
 	result = &v1alpha1.IotThing{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iotthings").
 		Name(iotThing.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iotThings) UpdateStatus(iotThing *v1alpha1.IotThing) (result *v1alpha1.
 // Delete takes name of the iotThing and deletes it. Returns an error if one occurs.
 func (c *iotThings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iotthings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iotThings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iotthings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iotThings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 func (c *iotThings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IotThing, err error) {
 	result = &v1alpha1.IotThing{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iotthings").
 		SubResource(subresources...).
 		Name(name).

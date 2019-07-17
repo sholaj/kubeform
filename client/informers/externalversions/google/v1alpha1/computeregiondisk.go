@@ -41,32 +41,33 @@ type ComputeRegionDiskInformer interface {
 type computeRegionDiskInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewComputeRegionDiskInformer constructs a new informer for ComputeRegionDisk type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewComputeRegionDiskInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredComputeRegionDiskInformer(client, resyncPeriod, indexers, nil)
+func NewComputeRegionDiskInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredComputeRegionDiskInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredComputeRegionDiskInformer constructs a new informer for ComputeRegionDisk type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredComputeRegionDiskInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredComputeRegionDiskInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeRegionDisks().List(options)
+				return client.GoogleV1alpha1().ComputeRegionDisks(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeRegionDisks().Watch(options)
+				return client.GoogleV1alpha1().ComputeRegionDisks(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.ComputeRegionDisk{},
@@ -76,7 +77,7 @@ func NewFilteredComputeRegionDiskInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *computeRegionDiskInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredComputeRegionDiskInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredComputeRegionDiskInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *computeRegionDiskInformer) Informer() cache.SharedIndexInformer {

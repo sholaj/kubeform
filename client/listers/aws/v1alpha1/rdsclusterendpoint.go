@@ -29,8 +29,8 @@ import (
 type RdsClusterEndpointLister interface {
 	// List lists all RdsClusterEndpoints in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RdsClusterEndpoint, err error)
-	// Get retrieves the RdsClusterEndpoint from the index for a given name.
-	Get(name string) (*v1alpha1.RdsClusterEndpoint, error)
+	// RdsClusterEndpoints returns an object that can list and get RdsClusterEndpoints.
+	RdsClusterEndpoints(namespace string) RdsClusterEndpointNamespaceLister
 	RdsClusterEndpointListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *rdsClusterEndpointLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the RdsClusterEndpoint from the index for a given name.
-func (s *rdsClusterEndpointLister) Get(name string) (*v1alpha1.RdsClusterEndpoint, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RdsClusterEndpoints returns an object that can list and get RdsClusterEndpoints.
+func (s *rdsClusterEndpointLister) RdsClusterEndpoints(namespace string) RdsClusterEndpointNamespaceLister {
+	return rdsClusterEndpointNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RdsClusterEndpointNamespaceLister helps list and get RdsClusterEndpoints.
+type RdsClusterEndpointNamespaceLister interface {
+	// List lists all RdsClusterEndpoints in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RdsClusterEndpoint, err error)
+	// Get retrieves the RdsClusterEndpoint from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RdsClusterEndpoint, error)
+	RdsClusterEndpointNamespaceListerExpansion
+}
+
+// rdsClusterEndpointNamespaceLister implements the RdsClusterEndpointNamespaceLister
+// interface.
+type rdsClusterEndpointNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RdsClusterEndpoints in the indexer for a given namespace.
+func (s rdsClusterEndpointNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RdsClusterEndpoint, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RdsClusterEndpoint))
+	})
+	return ret, err
+}
+
+// Get retrieves the RdsClusterEndpoint from the indexer for a given namespace and name.
+func (s rdsClusterEndpointNamespaceLister) Get(name string) (*v1alpha1.RdsClusterEndpoint, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

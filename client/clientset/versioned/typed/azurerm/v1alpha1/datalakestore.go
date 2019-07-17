@@ -32,7 +32,7 @@ import (
 // DataLakeStoresGetter has a method to return a DataLakeStoreInterface.
 // A group's client should implement this interface.
 type DataLakeStoresGetter interface {
-	DataLakeStores() DataLakeStoreInterface
+	DataLakeStores(namespace string) DataLakeStoreInterface
 }
 
 // DataLakeStoreInterface has methods to work with DataLakeStore resources.
@@ -52,12 +52,14 @@ type DataLakeStoreInterface interface {
 // dataLakeStores implements DataLakeStoreInterface
 type dataLakeStores struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDataLakeStores returns a DataLakeStores
-func newDataLakeStores(c *AzurermV1alpha1Client) *dataLakeStores {
+func newDataLakeStores(c *AzurermV1alpha1Client, namespace string) *dataLakeStores {
 	return &dataLakeStores{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDataLakeStores(c *AzurermV1alpha1Client) *dataLakeStores {
 func (c *dataLakeStores) Get(name string, options v1.GetOptions) (result *v1alpha1.DataLakeStore, err error) {
 	result = &v1alpha1.DataLakeStore{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datalakestores").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dataLakeStores) List(opts v1.ListOptions) (result *v1alpha1.DataLakeSto
 	}
 	result = &v1alpha1.DataLakeStoreList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datalakestores").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dataLakeStores) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("datalakestores").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dataLakeStores) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dataLakeStores) Create(dataLakeStore *v1alpha1.DataLakeStore) (result *v1alpha1.DataLakeStore, err error) {
 	result = &v1alpha1.DataLakeStore{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("datalakestores").
 		Body(dataLakeStore).
 		Do().
@@ -118,6 +124,7 @@ func (c *dataLakeStores) Create(dataLakeStore *v1alpha1.DataLakeStore) (result *
 func (c *dataLakeStores) Update(dataLakeStore *v1alpha1.DataLakeStore) (result *v1alpha1.DataLakeStore, err error) {
 	result = &v1alpha1.DataLakeStore{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datalakestores").
 		Name(dataLakeStore.Name).
 		Body(dataLakeStore).
@@ -132,6 +139,7 @@ func (c *dataLakeStores) Update(dataLakeStore *v1alpha1.DataLakeStore) (result *
 func (c *dataLakeStores) UpdateStatus(dataLakeStore *v1alpha1.DataLakeStore) (result *v1alpha1.DataLakeStore, err error) {
 	result = &v1alpha1.DataLakeStore{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datalakestores").
 		Name(dataLakeStore.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dataLakeStores) UpdateStatus(dataLakeStore *v1alpha1.DataLakeStore) (re
 // Delete takes name of the dataLakeStore and deletes it. Returns an error if one occurs.
 func (c *dataLakeStores) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datalakestores").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dataLakeStores) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datalakestores").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dataLakeStores) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *dataLakeStores) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataLakeStore, err error) {
 	result = &v1alpha1.DataLakeStore{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("datalakestores").
 		SubResource(subresources...).
 		Name(name).

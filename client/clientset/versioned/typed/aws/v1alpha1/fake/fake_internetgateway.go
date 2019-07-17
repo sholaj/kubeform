@@ -31,6 +31,7 @@ import (
 // FakeInternetGateways implements InternetGatewayInterface
 type FakeInternetGateways struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var internetgatewaysResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "internetgateways"}
@@ -40,7 +41,8 @@ var internetgatewaysKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ve
 // Get takes name of the internetGateway, and returns the corresponding internetGateway object, and an error if there is any.
 func (c *FakeInternetGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.InternetGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(internetgatewaysResource, name), &v1alpha1.InternetGateway{})
+		Invokes(testing.NewGetAction(internetgatewaysResource, c.ns, name), &v1alpha1.InternetGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeInternetGateways) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of InternetGateways that match those selectors.
 func (c *FakeInternetGateways) List(opts v1.ListOptions) (result *v1alpha1.InternetGatewayList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(internetgatewaysResource, internetgatewaysKind, opts), &v1alpha1.InternetGatewayList{})
+		Invokes(testing.NewListAction(internetgatewaysResource, internetgatewaysKind, c.ns, opts), &v1alpha1.InternetGatewayList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeInternetGateways) List(opts v1.ListOptions) (result *v1alpha1.Inter
 // Watch returns a watch.Interface that watches the requested internetGateways.
 func (c *FakeInternetGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(internetgatewaysResource, opts))
+		InvokesWatch(testing.NewWatchAction(internetgatewaysResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a internetGateway and creates it.  Returns the server's representation of the internetGateway, and an error, if there is any.
 func (c *FakeInternetGateways) Create(internetGateway *v1alpha1.InternetGateway) (result *v1alpha1.InternetGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(internetgatewaysResource, internetGateway), &v1alpha1.InternetGateway{})
+		Invokes(testing.NewCreateAction(internetgatewaysResource, c.ns, internetGateway), &v1alpha1.InternetGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeInternetGateways) Create(internetGateway *v1alpha1.InternetGateway)
 // Update takes the representation of a internetGateway and updates it. Returns the server's representation of the internetGateway, and an error, if there is any.
 func (c *FakeInternetGateways) Update(internetGateway *v1alpha1.InternetGateway) (result *v1alpha1.InternetGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(internetgatewaysResource, internetGateway), &v1alpha1.InternetGateway{})
+		Invokes(testing.NewUpdateAction(internetgatewaysResource, c.ns, internetGateway), &v1alpha1.InternetGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeInternetGateways) Update(internetGateway *v1alpha1.InternetGateway)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeInternetGateways) UpdateStatus(internetGateway *v1alpha1.InternetGateway) (*v1alpha1.InternetGateway, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(internetgatewaysResource, "status", internetGateway), &v1alpha1.InternetGateway{})
+		Invokes(testing.NewUpdateSubresourceAction(internetgatewaysResource, "status", c.ns, internetGateway), &v1alpha1.InternetGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeInternetGateways) UpdateStatus(internetGateway *v1alpha1.InternetGa
 // Delete takes name of the internetGateway and deletes it. Returns an error if one occurs.
 func (c *FakeInternetGateways) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(internetgatewaysResource, name), &v1alpha1.InternetGateway{})
+		Invokes(testing.NewDeleteAction(internetgatewaysResource, c.ns, name), &v1alpha1.InternetGateway{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeInternetGateways) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(internetgatewaysResource, listOptions)
+	action := testing.NewDeleteCollectionAction(internetgatewaysResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.InternetGatewayList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeInternetGateways) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched internetGateway.
 func (c *FakeInternetGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.InternetGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(internetgatewaysResource, name, pt, data, subresources...), &v1alpha1.InternetGateway{})
+		Invokes(testing.NewPatchSubresourceAction(internetgatewaysResource, c.ns, name, pt, data, subresources...), &v1alpha1.InternetGateway{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type AppautoscalingScheduledActionLister interface {
 	// List lists all AppautoscalingScheduledActions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AppautoscalingScheduledAction, err error)
-	// Get retrieves the AppautoscalingScheduledAction from the index for a given name.
-	Get(name string) (*v1alpha1.AppautoscalingScheduledAction, error)
+	// AppautoscalingScheduledActions returns an object that can list and get AppautoscalingScheduledActions.
+	AppautoscalingScheduledActions(namespace string) AppautoscalingScheduledActionNamespaceLister
 	AppautoscalingScheduledActionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *appautoscalingScheduledActionLister) List(selector labels.Selector) (re
 	return ret, err
 }
 
-// Get retrieves the AppautoscalingScheduledAction from the index for a given name.
-func (s *appautoscalingScheduledActionLister) Get(name string) (*v1alpha1.AppautoscalingScheduledAction, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AppautoscalingScheduledActions returns an object that can list and get AppautoscalingScheduledActions.
+func (s *appautoscalingScheduledActionLister) AppautoscalingScheduledActions(namespace string) AppautoscalingScheduledActionNamespaceLister {
+	return appautoscalingScheduledActionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AppautoscalingScheduledActionNamespaceLister helps list and get AppautoscalingScheduledActions.
+type AppautoscalingScheduledActionNamespaceLister interface {
+	// List lists all AppautoscalingScheduledActions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AppautoscalingScheduledAction, err error)
+	// Get retrieves the AppautoscalingScheduledAction from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AppautoscalingScheduledAction, error)
+	AppautoscalingScheduledActionNamespaceListerExpansion
+}
+
+// appautoscalingScheduledActionNamespaceLister implements the AppautoscalingScheduledActionNamespaceLister
+// interface.
+type appautoscalingScheduledActionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AppautoscalingScheduledActions in the indexer for a given namespace.
+func (s appautoscalingScheduledActionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AppautoscalingScheduledAction, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AppautoscalingScheduledAction))
+	})
+	return ret, err
+}
+
+// Get retrieves the AppautoscalingScheduledAction from the indexer for a given namespace and name.
+func (s appautoscalingScheduledActionNamespaceLister) Get(name string) (*v1alpha1.AppautoscalingScheduledAction, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

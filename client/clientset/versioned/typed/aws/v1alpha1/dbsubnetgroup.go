@@ -32,7 +32,7 @@ import (
 // DbSubnetGroupsGetter has a method to return a DbSubnetGroupInterface.
 // A group's client should implement this interface.
 type DbSubnetGroupsGetter interface {
-	DbSubnetGroups() DbSubnetGroupInterface
+	DbSubnetGroups(namespace string) DbSubnetGroupInterface
 }
 
 // DbSubnetGroupInterface has methods to work with DbSubnetGroup resources.
@@ -52,12 +52,14 @@ type DbSubnetGroupInterface interface {
 // dbSubnetGroups implements DbSubnetGroupInterface
 type dbSubnetGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDbSubnetGroups returns a DbSubnetGroups
-func newDbSubnetGroups(c *AwsV1alpha1Client) *dbSubnetGroups {
+func newDbSubnetGroups(c *AwsV1alpha1Client, namespace string) *dbSubnetGroups {
 	return &dbSubnetGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDbSubnetGroups(c *AwsV1alpha1Client) *dbSubnetGroups {
 func (c *dbSubnetGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.DbSubnetGroup, err error) {
 	result = &v1alpha1.DbSubnetGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dbsubnetgroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dbSubnetGroups) List(opts v1.ListOptions) (result *v1alpha1.DbSubnetGro
 	}
 	result = &v1alpha1.DbSubnetGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dbsubnetgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dbSubnetGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dbsubnetgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dbSubnetGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dbSubnetGroups) Create(dbSubnetGroup *v1alpha1.DbSubnetGroup) (result *v1alpha1.DbSubnetGroup, err error) {
 	result = &v1alpha1.DbSubnetGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dbsubnetgroups").
 		Body(dbSubnetGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *dbSubnetGroups) Create(dbSubnetGroup *v1alpha1.DbSubnetGroup) (result *
 func (c *dbSubnetGroups) Update(dbSubnetGroup *v1alpha1.DbSubnetGroup) (result *v1alpha1.DbSubnetGroup, err error) {
 	result = &v1alpha1.DbSubnetGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dbsubnetgroups").
 		Name(dbSubnetGroup.Name).
 		Body(dbSubnetGroup).
@@ -132,6 +139,7 @@ func (c *dbSubnetGroups) Update(dbSubnetGroup *v1alpha1.DbSubnetGroup) (result *
 func (c *dbSubnetGroups) UpdateStatus(dbSubnetGroup *v1alpha1.DbSubnetGroup) (result *v1alpha1.DbSubnetGroup, err error) {
 	result = &v1alpha1.DbSubnetGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dbsubnetgroups").
 		Name(dbSubnetGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dbSubnetGroups) UpdateStatus(dbSubnetGroup *v1alpha1.DbSubnetGroup) (re
 // Delete takes name of the dbSubnetGroup and deletes it. Returns an error if one occurs.
 func (c *dbSubnetGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dbsubnetgroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dbSubnetGroups) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dbsubnetgroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dbSubnetGroups) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *dbSubnetGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DbSubnetGroup, err error) {
 	result = &v1alpha1.DbSubnetGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dbsubnetgroups").
 		SubResource(subresources...).
 		Name(name).

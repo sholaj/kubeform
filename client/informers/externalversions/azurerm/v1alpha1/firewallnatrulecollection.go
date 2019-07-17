@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/azurerm/v1alpha1"
 )
 
-// FirewallNatRuleCollectionInformer provides access to a shared informer and lister for
-// FirewallNatRuleCollections.
-type FirewallNatRuleCollectionInformer interface {
+// FirewallNATRuleCollectionInformer provides access to a shared informer and lister for
+// FirewallNATRuleCollections.
+type FirewallNATRuleCollectionInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.FirewallNatRuleCollectionLister
+	Lister() v1alpha1.FirewallNATRuleCollectionLister
 }
 
-type firewallNatRuleCollectionInformer struct {
+type firewallNATRuleCollectionInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewFirewallNatRuleCollectionInformer constructs a new informer for FirewallNatRuleCollection type.
+// NewFirewallNATRuleCollectionInformer constructs a new informer for FirewallNATRuleCollection type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFirewallNatRuleCollectionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredFirewallNatRuleCollectionInformer(client, resyncPeriod, indexers, nil)
+func NewFirewallNATRuleCollectionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredFirewallNATRuleCollectionInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredFirewallNatRuleCollectionInformer constructs a new informer for FirewallNatRuleCollection type.
+// NewFilteredFirewallNATRuleCollectionInformer constructs a new informer for FirewallNATRuleCollection type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredFirewallNatRuleCollectionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredFirewallNATRuleCollectionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().FirewallNatRuleCollections().List(options)
+				return client.AzurermV1alpha1().FirewallNATRuleCollections(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().FirewallNatRuleCollections().Watch(options)
+				return client.AzurermV1alpha1().FirewallNATRuleCollections(namespace).Watch(options)
 			},
 		},
-		&azurermv1alpha1.FirewallNatRuleCollection{},
+		&azurermv1alpha1.FirewallNATRuleCollection{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *firewallNatRuleCollectionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredFirewallNatRuleCollectionInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *firewallNATRuleCollectionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredFirewallNATRuleCollectionInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *firewallNatRuleCollectionInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&azurermv1alpha1.FirewallNatRuleCollection{}, f.defaultInformer)
+func (f *firewallNATRuleCollectionInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&azurermv1alpha1.FirewallNATRuleCollection{}, f.defaultInformer)
 }
 
-func (f *firewallNatRuleCollectionInformer) Lister() v1alpha1.FirewallNatRuleCollectionLister {
-	return v1alpha1.NewFirewallNatRuleCollectionLister(f.Informer().GetIndexer())
+func (f *firewallNATRuleCollectionInformer) Lister() v1alpha1.FirewallNATRuleCollectionLister {
+	return v1alpha1.NewFirewallNATRuleCollectionLister(f.Informer().GetIndexer())
 }

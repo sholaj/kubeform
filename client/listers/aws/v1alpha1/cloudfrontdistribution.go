@@ -29,8 +29,8 @@ import (
 type CloudfrontDistributionLister interface {
 	// List lists all CloudfrontDistributions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CloudfrontDistribution, err error)
-	// Get retrieves the CloudfrontDistribution from the index for a given name.
-	Get(name string) (*v1alpha1.CloudfrontDistribution, error)
+	// CloudfrontDistributions returns an object that can list and get CloudfrontDistributions.
+	CloudfrontDistributions(namespace string) CloudfrontDistributionNamespaceLister
 	CloudfrontDistributionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cloudfrontDistributionLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the CloudfrontDistribution from the index for a given name.
-func (s *cloudfrontDistributionLister) Get(name string) (*v1alpha1.CloudfrontDistribution, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CloudfrontDistributions returns an object that can list and get CloudfrontDistributions.
+func (s *cloudfrontDistributionLister) CloudfrontDistributions(namespace string) CloudfrontDistributionNamespaceLister {
+	return cloudfrontDistributionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CloudfrontDistributionNamespaceLister helps list and get CloudfrontDistributions.
+type CloudfrontDistributionNamespaceLister interface {
+	// List lists all CloudfrontDistributions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CloudfrontDistribution, err error)
+	// Get retrieves the CloudfrontDistribution from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CloudfrontDistribution, error)
+	CloudfrontDistributionNamespaceListerExpansion
+}
+
+// cloudfrontDistributionNamespaceLister implements the CloudfrontDistributionNamespaceLister
+// interface.
+type cloudfrontDistributionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CloudfrontDistributions in the indexer for a given namespace.
+func (s cloudfrontDistributionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CloudfrontDistribution, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CloudfrontDistribution))
+	})
+	return ret, err
+}
+
+// Get retrieves the CloudfrontDistribution from the indexer for a given namespace and name.
+func (s cloudfrontDistributionNamespaceLister) Get(name string) (*v1alpha1.CloudfrontDistribution, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

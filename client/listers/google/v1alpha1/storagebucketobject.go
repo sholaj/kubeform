@@ -29,8 +29,8 @@ import (
 type StorageBucketObjectLister interface {
 	// List lists all StorageBucketObjects in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StorageBucketObject, err error)
-	// Get retrieves the StorageBucketObject from the index for a given name.
-	Get(name string) (*v1alpha1.StorageBucketObject, error)
+	// StorageBucketObjects returns an object that can list and get StorageBucketObjects.
+	StorageBucketObjects(namespace string) StorageBucketObjectNamespaceLister
 	StorageBucketObjectListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *storageBucketObjectLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the StorageBucketObject from the index for a given name.
-func (s *storageBucketObjectLister) Get(name string) (*v1alpha1.StorageBucketObject, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StorageBucketObjects returns an object that can list and get StorageBucketObjects.
+func (s *storageBucketObjectLister) StorageBucketObjects(namespace string) StorageBucketObjectNamespaceLister {
+	return storageBucketObjectNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StorageBucketObjectNamespaceLister helps list and get StorageBucketObjects.
+type StorageBucketObjectNamespaceLister interface {
+	// List lists all StorageBucketObjects in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StorageBucketObject, err error)
+	// Get retrieves the StorageBucketObject from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StorageBucketObject, error)
+	StorageBucketObjectNamespaceListerExpansion
+}
+
+// storageBucketObjectNamespaceLister implements the StorageBucketObjectNamespaceLister
+// interface.
+type storageBucketObjectNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StorageBucketObjects in the indexer for a given namespace.
+func (s storageBucketObjectNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StorageBucketObject, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StorageBucketObject))
+	})
+	return ret, err
+}
+
+// Get retrieves the StorageBucketObject from the indexer for a given namespace and name.
+func (s storageBucketObjectNamespaceLister) Get(name string) (*v1alpha1.StorageBucketObject, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

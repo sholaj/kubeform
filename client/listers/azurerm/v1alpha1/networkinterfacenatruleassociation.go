@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// NetworkInterfaceNatRuleAssociationLister helps list NetworkInterfaceNatRuleAssociations.
-type NetworkInterfaceNatRuleAssociationLister interface {
-	// List lists all NetworkInterfaceNatRuleAssociations in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.NetworkInterfaceNatRuleAssociation, err error)
-	// Get retrieves the NetworkInterfaceNatRuleAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.NetworkInterfaceNatRuleAssociation, error)
-	NetworkInterfaceNatRuleAssociationListerExpansion
+// NetworkInterfaceNATRuleAssociationLister helps list NetworkInterfaceNATRuleAssociations.
+type NetworkInterfaceNATRuleAssociationLister interface {
+	// List lists all NetworkInterfaceNATRuleAssociations in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.NetworkInterfaceNATRuleAssociation, err error)
+	// NetworkInterfaceNATRuleAssociations returns an object that can list and get NetworkInterfaceNATRuleAssociations.
+	NetworkInterfaceNATRuleAssociations(namespace string) NetworkInterfaceNATRuleAssociationNamespaceLister
+	NetworkInterfaceNATRuleAssociationListerExpansion
 }
 
-// networkInterfaceNatRuleAssociationLister implements the NetworkInterfaceNatRuleAssociationLister interface.
-type networkInterfaceNatRuleAssociationLister struct {
+// networkInterfaceNATRuleAssociationLister implements the NetworkInterfaceNATRuleAssociationLister interface.
+type networkInterfaceNATRuleAssociationLister struct {
 	indexer cache.Indexer
 }
 
-// NewNetworkInterfaceNatRuleAssociationLister returns a new NetworkInterfaceNatRuleAssociationLister.
-func NewNetworkInterfaceNatRuleAssociationLister(indexer cache.Indexer) NetworkInterfaceNatRuleAssociationLister {
-	return &networkInterfaceNatRuleAssociationLister{indexer: indexer}
+// NewNetworkInterfaceNATRuleAssociationLister returns a new NetworkInterfaceNATRuleAssociationLister.
+func NewNetworkInterfaceNATRuleAssociationLister(indexer cache.Indexer) NetworkInterfaceNATRuleAssociationLister {
+	return &networkInterfaceNATRuleAssociationLister{indexer: indexer}
 }
 
-// List lists all NetworkInterfaceNatRuleAssociations in the indexer.
-func (s *networkInterfaceNatRuleAssociationLister) List(selector labels.Selector) (ret []*v1alpha1.NetworkInterfaceNatRuleAssociation, err error) {
+// List lists all NetworkInterfaceNATRuleAssociations in the indexer.
+func (s *networkInterfaceNATRuleAssociationLister) List(selector labels.Selector) (ret []*v1alpha1.NetworkInterfaceNATRuleAssociation, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.NetworkInterfaceNatRuleAssociation))
+		ret = append(ret, m.(*v1alpha1.NetworkInterfaceNATRuleAssociation))
 	})
 	return ret, err
 }
 
-// Get retrieves the NetworkInterfaceNatRuleAssociation from the index for a given name.
-func (s *networkInterfaceNatRuleAssociationLister) Get(name string) (*v1alpha1.NetworkInterfaceNatRuleAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NetworkInterfaceNATRuleAssociations returns an object that can list and get NetworkInterfaceNATRuleAssociations.
+func (s *networkInterfaceNATRuleAssociationLister) NetworkInterfaceNATRuleAssociations(namespace string) NetworkInterfaceNATRuleAssociationNamespaceLister {
+	return networkInterfaceNATRuleAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NetworkInterfaceNATRuleAssociationNamespaceLister helps list and get NetworkInterfaceNATRuleAssociations.
+type NetworkInterfaceNATRuleAssociationNamespaceLister interface {
+	// List lists all NetworkInterfaceNATRuleAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NetworkInterfaceNATRuleAssociation, err error)
+	// Get retrieves the NetworkInterfaceNATRuleAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NetworkInterfaceNATRuleAssociation, error)
+	NetworkInterfaceNATRuleAssociationNamespaceListerExpansion
+}
+
+// networkInterfaceNATRuleAssociationNamespaceLister implements the NetworkInterfaceNATRuleAssociationNamespaceLister
+// interface.
+type networkInterfaceNATRuleAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NetworkInterfaceNATRuleAssociations in the indexer for a given namespace.
+func (s networkInterfaceNATRuleAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NetworkInterfaceNATRuleAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NetworkInterfaceNATRuleAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the NetworkInterfaceNATRuleAssociation from the indexer for a given namespace and name.
+func (s networkInterfaceNATRuleAssociationNamespaceLister) Get(name string) (*v1alpha1.NetworkInterfaceNATRuleAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("networkinterfacenatruleassociation"), name)
 	}
-	return obj.(*v1alpha1.NetworkInterfaceNatRuleAssociation), nil
+	return obj.(*v1alpha1.NetworkInterfaceNATRuleAssociation), nil
 }

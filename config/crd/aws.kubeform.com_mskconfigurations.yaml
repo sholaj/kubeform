@@ -399,19 +399,29 @@ spec:
           properties:
             description:
               type: string
-            kafka_versions:
+            kafkaVersions:
               items:
                 type: string
               type: array
               uniqueItems: true
             name:
               type: string
-            server_properties:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            serverProperties:
               type: string
           required:
-          - kafka_versions
+          - kafkaVersions
           - name
-          - server_properties
+          - providerRef
+          - serverProperties
           type: object
         status:
           properties:
@@ -422,6 +432,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

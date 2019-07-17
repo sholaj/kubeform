@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,24 +19,25 @@ type WafregionalRuleGroup struct {
 }
 
 type WafregionalRuleGroupSpecActivatedRuleAction struct {
-	Type string `json:"type"`
+	Type string `json:"type" tf:"type"`
 }
 
 type WafregionalRuleGroupSpecActivatedRule struct {
 	// +kubebuilder:validation:MaxItems=1
-	Action   []WafregionalRuleGroupSpecActivatedRule `json:"action"`
-	Priority int                                     `json:"priority"`
-	RuleId   string                                  `json:"rule_id"`
+	Action   []WafregionalRuleGroupSpecActivatedRuleAction `json:"action" tf:"action"`
+	Priority int                                           `json:"priority" tf:"priority"`
+	RuleID   string                                        `json:"ruleID" tf:"rule_id"`
 	// +optional
-	Type string `json:"type,omitempty"`
+	Type string `json:"type,omitempty" tf:"type,omitempty"`
 }
 
 type WafregionalRuleGroupSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	ActivatedRule *[]WafregionalRuleGroupSpec `json:"activated_rule,omitempty"`
-	MetricName    string                      `json:"metric_name"`
-	Name          string                      `json:"name"`
+	ActivatedRule []WafregionalRuleGroupSpecActivatedRule `json:"activatedRule,omitempty" tf:"activated_rule,omitempty"`
+	MetricName    string                                  `json:"metricName" tf:"metric_name"`
+	Name          string                                  `json:"name" tf:"name"`
+	ProviderRef   core.LocalObjectReference               `json:"providerRef" tf:"-"`
 }
 
 type WafregionalRuleGroupStatus struct {
@@ -44,7 +45,9 @@ type WafregionalRuleGroupStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -1,45 +1,48 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type ServiceDiscoveryPrivateDnsNamespace struct {
+type ServiceDiscoveryPrivateDNSNamespace struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              ServiceDiscoveryPrivateDnsNamespaceSpec   `json:"spec,omitempty"`
-	Status            ServiceDiscoveryPrivateDnsNamespaceStatus `json:"status,omitempty"`
+	Spec              ServiceDiscoveryPrivateDNSNamespaceSpec   `json:"spec,omitempty"`
+	Status            ServiceDiscoveryPrivateDNSNamespaceStatus `json:"status,omitempty"`
 }
 
-type ServiceDiscoveryPrivateDnsNamespaceSpec struct {
+type ServiceDiscoveryPrivateDNSNamespaceSpec struct {
 	// +optional
-	Description string `json:"description,omitempty"`
-	Name        string `json:"name"`
-	Vpc         string `json:"vpc"`
+	Description string                    `json:"description,omitempty" tf:"description,omitempty"`
+	Name        string                    `json:"name" tf:"name"`
+	Vpc         string                    `json:"vpc" tf:"vpc"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
-type ServiceDiscoveryPrivateDnsNamespaceStatus struct {
+type ServiceDiscoveryPrivateDNSNamespaceStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// ServiceDiscoveryPrivateDnsNamespaceList is a list of ServiceDiscoveryPrivateDnsNamespaces
-type ServiceDiscoveryPrivateDnsNamespaceList struct {
+// ServiceDiscoveryPrivateDNSNamespaceList is a list of ServiceDiscoveryPrivateDNSNamespaces
+type ServiceDiscoveryPrivateDNSNamespaceList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of ServiceDiscoveryPrivateDnsNamespace CRD objects
-	Items []ServiceDiscoveryPrivateDnsNamespace `json:"items,omitempty"`
+	// Items is a list of ServiceDiscoveryPrivateDNSNamespace CRD objects
+	Items []ServiceDiscoveryPrivateDNSNamespace `json:"items,omitempty"`
 }

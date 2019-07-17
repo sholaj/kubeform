@@ -29,8 +29,8 @@ import (
 type KinesisStreamLister interface {
 	// List lists all KinesisStreams in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KinesisStream, err error)
-	// Get retrieves the KinesisStream from the index for a given name.
-	Get(name string) (*v1alpha1.KinesisStream, error)
+	// KinesisStreams returns an object that can list and get KinesisStreams.
+	KinesisStreams(namespace string) KinesisStreamNamespaceLister
 	KinesisStreamListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *kinesisStreamLister) List(selector labels.Selector) (ret []*v1alpha1.Ki
 	return ret, err
 }
 
-// Get retrieves the KinesisStream from the index for a given name.
-func (s *kinesisStreamLister) Get(name string) (*v1alpha1.KinesisStream, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KinesisStreams returns an object that can list and get KinesisStreams.
+func (s *kinesisStreamLister) KinesisStreams(namespace string) KinesisStreamNamespaceLister {
+	return kinesisStreamNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KinesisStreamNamespaceLister helps list and get KinesisStreams.
+type KinesisStreamNamespaceLister interface {
+	// List lists all KinesisStreams in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KinesisStream, err error)
+	// Get retrieves the KinesisStream from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KinesisStream, error)
+	KinesisStreamNamespaceListerExpansion
+}
+
+// kinesisStreamNamespaceLister implements the KinesisStreamNamespaceLister
+// interface.
+type kinesisStreamNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KinesisStreams in the indexer for a given namespace.
+func (s kinesisStreamNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KinesisStream, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KinesisStream))
+	})
+	return ret, err
+}
+
+// Get retrieves the KinesisStream from the indexer for a given namespace and name.
+func (s kinesisStreamNamespaceLister) Get(name string) (*v1alpha1.KinesisStream, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

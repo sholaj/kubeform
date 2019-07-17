@@ -32,7 +32,7 @@ import (
 // ApiGatewayAuthorizersGetter has a method to return a ApiGatewayAuthorizerInterface.
 // A group's client should implement this interface.
 type ApiGatewayAuthorizersGetter interface {
-	ApiGatewayAuthorizers() ApiGatewayAuthorizerInterface
+	ApiGatewayAuthorizers(namespace string) ApiGatewayAuthorizerInterface
 }
 
 // ApiGatewayAuthorizerInterface has methods to work with ApiGatewayAuthorizer resources.
@@ -52,12 +52,14 @@ type ApiGatewayAuthorizerInterface interface {
 // apiGatewayAuthorizers implements ApiGatewayAuthorizerInterface
 type apiGatewayAuthorizers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiGatewayAuthorizers returns a ApiGatewayAuthorizers
-func newApiGatewayAuthorizers(c *AwsV1alpha1Client) *apiGatewayAuthorizers {
+func newApiGatewayAuthorizers(c *AwsV1alpha1Client, namespace string) *apiGatewayAuthorizers {
 	return &apiGatewayAuthorizers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiGatewayAuthorizers(c *AwsV1alpha1Client) *apiGatewayAuthorizers {
 func (c *apiGatewayAuthorizers) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayAuthorizer, err error) {
 	result = &v1alpha1.ApiGatewayAuthorizer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayauthorizers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiGatewayAuthorizers) List(opts v1.ListOptions) (result *v1alpha1.ApiG
 	}
 	result = &v1alpha1.ApiGatewayAuthorizerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayauthorizers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiGatewayAuthorizers) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayauthorizers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiGatewayAuthorizers) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *apiGatewayAuthorizers) Create(apiGatewayAuthorizer *v1alpha1.ApiGatewayAuthorizer) (result *v1alpha1.ApiGatewayAuthorizer, err error) {
 	result = &v1alpha1.ApiGatewayAuthorizer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apigatewayauthorizers").
 		Body(apiGatewayAuthorizer).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiGatewayAuthorizers) Create(apiGatewayAuthorizer *v1alpha1.ApiGateway
 func (c *apiGatewayAuthorizers) Update(apiGatewayAuthorizer *v1alpha1.ApiGatewayAuthorizer) (result *v1alpha1.ApiGatewayAuthorizer, err error) {
 	result = &v1alpha1.ApiGatewayAuthorizer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewayauthorizers").
 		Name(apiGatewayAuthorizer.Name).
 		Body(apiGatewayAuthorizer).
@@ -132,6 +139,7 @@ func (c *apiGatewayAuthorizers) Update(apiGatewayAuthorizer *v1alpha1.ApiGateway
 func (c *apiGatewayAuthorizers) UpdateStatus(apiGatewayAuthorizer *v1alpha1.ApiGatewayAuthorizer) (result *v1alpha1.ApiGatewayAuthorizer, err error) {
 	result = &v1alpha1.ApiGatewayAuthorizer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewayauthorizers").
 		Name(apiGatewayAuthorizer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiGatewayAuthorizers) UpdateStatus(apiGatewayAuthorizer *v1alpha1.ApiG
 // Delete takes name of the apiGatewayAuthorizer and deletes it. Returns an error if one occurs.
 func (c *apiGatewayAuthorizers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewayauthorizers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiGatewayAuthorizers) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewayauthorizers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiGatewayAuthorizers) DeleteCollection(options *v1.DeleteOptions, list
 func (c *apiGatewayAuthorizers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayAuthorizer, err error) {
 	result = &v1alpha1.ApiGatewayAuthorizer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apigatewayauthorizers").
 		SubResource(subresources...).
 		Name(name).

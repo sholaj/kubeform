@@ -41,32 +41,33 @@ type SharedImageGalleryInformer interface {
 type sharedImageGalleryInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSharedImageGalleryInformer constructs a new informer for SharedImageGallery type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSharedImageGalleryInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSharedImageGalleryInformer(client, resyncPeriod, indexers, nil)
+func NewSharedImageGalleryInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSharedImageGalleryInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSharedImageGalleryInformer constructs a new informer for SharedImageGallery type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSharedImageGalleryInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSharedImageGalleryInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().SharedImageGalleries().List(options)
+				return client.AzurermV1alpha1().SharedImageGalleries(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().SharedImageGalleries().Watch(options)
+				return client.AzurermV1alpha1().SharedImageGalleries(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.SharedImageGallery{},
@@ -76,7 +77,7 @@ func NewFilteredSharedImageGalleryInformer(client versioned.Interface, resyncPer
 }
 
 func (f *sharedImageGalleryInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSharedImageGalleryInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSharedImageGalleryInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *sharedImageGalleryInformer) Informer() cache.SharedIndexInformer {

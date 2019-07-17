@@ -1,43 +1,46 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type LightsailStaticIpAttachment struct {
+type LightsailStaticIPAttachment struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              LightsailStaticIpAttachmentSpec   `json:"spec,omitempty"`
-	Status            LightsailStaticIpAttachmentStatus `json:"status,omitempty"`
+	Spec              LightsailStaticIPAttachmentSpec   `json:"spec,omitempty"`
+	Status            LightsailStaticIPAttachmentStatus `json:"status,omitempty"`
 }
 
-type LightsailStaticIpAttachmentSpec struct {
-	InstanceName string `json:"instance_name"`
-	StaticIpName string `json:"static_ip_name"`
+type LightsailStaticIPAttachmentSpec struct {
+	InstanceName string                    `json:"instanceName" tf:"instance_name"`
+	StaticIPName string                    `json:"staticIPName" tf:"static_ip_name"`
+	ProviderRef  core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
-type LightsailStaticIpAttachmentStatus struct {
+type LightsailStaticIPAttachmentStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// LightsailStaticIpAttachmentList is a list of LightsailStaticIpAttachments
-type LightsailStaticIpAttachmentList struct {
+// LightsailStaticIPAttachmentList is a list of LightsailStaticIPAttachments
+type LightsailStaticIPAttachmentList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of LightsailStaticIpAttachment CRD objects
-	Items []LightsailStaticIpAttachment `json:"items,omitempty"`
+	// Items is a list of LightsailStaticIPAttachment CRD objects
+	Items []LightsailStaticIPAttachment `json:"items,omitempty"`
 }

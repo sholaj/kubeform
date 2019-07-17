@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/google/v1alpha1"
 )
 
-// ComputeUrlMapLister helps list ComputeUrlMaps.
-type ComputeUrlMapLister interface {
-	// List lists all ComputeUrlMaps in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.ComputeUrlMap, err error)
-	// Get retrieves the ComputeUrlMap from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeUrlMap, error)
-	ComputeUrlMapListerExpansion
+// ComputeURLMapLister helps list ComputeURLMaps.
+type ComputeURLMapLister interface {
+	// List lists all ComputeURLMaps in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeURLMap, err error)
+	// ComputeURLMaps returns an object that can list and get ComputeURLMaps.
+	ComputeURLMaps(namespace string) ComputeURLMapNamespaceLister
+	ComputeURLMapListerExpansion
 }
 
-// computeUrlMapLister implements the ComputeUrlMapLister interface.
-type computeUrlMapLister struct {
+// computeURLMapLister implements the ComputeURLMapLister interface.
+type computeURLMapLister struct {
 	indexer cache.Indexer
 }
 
-// NewComputeUrlMapLister returns a new ComputeUrlMapLister.
-func NewComputeUrlMapLister(indexer cache.Indexer) ComputeUrlMapLister {
-	return &computeUrlMapLister{indexer: indexer}
+// NewComputeURLMapLister returns a new ComputeURLMapLister.
+func NewComputeURLMapLister(indexer cache.Indexer) ComputeURLMapLister {
+	return &computeURLMapLister{indexer: indexer}
 }
 
-// List lists all ComputeUrlMaps in the indexer.
-func (s *computeUrlMapLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeUrlMap, err error) {
+// List lists all ComputeURLMaps in the indexer.
+func (s *computeURLMapLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeURLMap, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ComputeUrlMap))
+		ret = append(ret, m.(*v1alpha1.ComputeURLMap))
 	})
 	return ret, err
 }
 
-// Get retrieves the ComputeUrlMap from the index for a given name.
-func (s *computeUrlMapLister) Get(name string) (*v1alpha1.ComputeUrlMap, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeURLMaps returns an object that can list and get ComputeURLMaps.
+func (s *computeURLMapLister) ComputeURLMaps(namespace string) ComputeURLMapNamespaceLister {
+	return computeURLMapNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeURLMapNamespaceLister helps list and get ComputeURLMaps.
+type ComputeURLMapNamespaceLister interface {
+	// List lists all ComputeURLMaps in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeURLMap, err error)
+	// Get retrieves the ComputeURLMap from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeURLMap, error)
+	ComputeURLMapNamespaceListerExpansion
+}
+
+// computeURLMapNamespaceLister implements the ComputeURLMapNamespaceLister
+// interface.
+type computeURLMapNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeURLMaps in the indexer for a given namespace.
+func (s computeURLMapNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeURLMap, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeURLMap))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeURLMap from the indexer for a given namespace and name.
+func (s computeURLMapNamespaceLister) Get(name string) (*v1alpha1.ComputeURLMap, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("computeurlmap"), name)
 	}
-	return obj.(*v1alpha1.ComputeUrlMap), nil
+	return obj.(*v1alpha1.ComputeURLMap), nil
 }

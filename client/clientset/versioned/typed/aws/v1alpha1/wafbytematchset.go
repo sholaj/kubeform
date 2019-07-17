@@ -32,7 +32,7 @@ import (
 // WafByteMatchSetsGetter has a method to return a WafByteMatchSetInterface.
 // A group's client should implement this interface.
 type WafByteMatchSetsGetter interface {
-	WafByteMatchSets() WafByteMatchSetInterface
+	WafByteMatchSets(namespace string) WafByteMatchSetInterface
 }
 
 // WafByteMatchSetInterface has methods to work with WafByteMatchSet resources.
@@ -52,12 +52,14 @@ type WafByteMatchSetInterface interface {
 // wafByteMatchSets implements WafByteMatchSetInterface
 type wafByteMatchSets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWafByteMatchSets returns a WafByteMatchSets
-func newWafByteMatchSets(c *AwsV1alpha1Client) *wafByteMatchSets {
+func newWafByteMatchSets(c *AwsV1alpha1Client, namespace string) *wafByteMatchSets {
 	return &wafByteMatchSets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWafByteMatchSets(c *AwsV1alpha1Client) *wafByteMatchSets {
 func (c *wafByteMatchSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafByteMatchSet, err error) {
 	result = &v1alpha1.WafByteMatchSet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafbytematchsets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *wafByteMatchSets) List(opts v1.ListOptions) (result *v1alpha1.WafByteMa
 	}
 	result = &v1alpha1.WafByteMatchSetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafbytematchsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *wafByteMatchSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafbytematchsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *wafByteMatchSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *wafByteMatchSets) Create(wafByteMatchSet *v1alpha1.WafByteMatchSet) (result *v1alpha1.WafByteMatchSet, err error) {
 	result = &v1alpha1.WafByteMatchSet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafbytematchsets").
 		Body(wafByteMatchSet).
 		Do().
@@ -118,6 +124,7 @@ func (c *wafByteMatchSets) Create(wafByteMatchSet *v1alpha1.WafByteMatchSet) (re
 func (c *wafByteMatchSets) Update(wafByteMatchSet *v1alpha1.WafByteMatchSet) (result *v1alpha1.WafByteMatchSet, err error) {
 	result = &v1alpha1.WafByteMatchSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafbytematchsets").
 		Name(wafByteMatchSet.Name).
 		Body(wafByteMatchSet).
@@ -132,6 +139,7 @@ func (c *wafByteMatchSets) Update(wafByteMatchSet *v1alpha1.WafByteMatchSet) (re
 func (c *wafByteMatchSets) UpdateStatus(wafByteMatchSet *v1alpha1.WafByteMatchSet) (result *v1alpha1.WafByteMatchSet, err error) {
 	result = &v1alpha1.WafByteMatchSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafbytematchsets").
 		Name(wafByteMatchSet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *wafByteMatchSets) UpdateStatus(wafByteMatchSet *v1alpha1.WafByteMatchSe
 // Delete takes name of the wafByteMatchSet and deletes it. Returns an error if one occurs.
 func (c *wafByteMatchSets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafbytematchsets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *wafByteMatchSets) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafbytematchsets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *wafByteMatchSets) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *wafByteMatchSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafByteMatchSet, err error) {
 	result = &v1alpha1.WafByteMatchSet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafbytematchsets").
 		SubResource(subresources...).
 		Name(name).

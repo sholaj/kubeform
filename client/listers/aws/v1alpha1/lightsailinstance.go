@@ -29,8 +29,8 @@ import (
 type LightsailInstanceLister interface {
 	// List lists all LightsailInstances in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LightsailInstance, err error)
-	// Get retrieves the LightsailInstance from the index for a given name.
-	Get(name string) (*v1alpha1.LightsailInstance, error)
+	// LightsailInstances returns an object that can list and get LightsailInstances.
+	LightsailInstances(namespace string) LightsailInstanceNamespaceLister
 	LightsailInstanceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *lightsailInstanceLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the LightsailInstance from the index for a given name.
-func (s *lightsailInstanceLister) Get(name string) (*v1alpha1.LightsailInstance, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LightsailInstances returns an object that can list and get LightsailInstances.
+func (s *lightsailInstanceLister) LightsailInstances(namespace string) LightsailInstanceNamespaceLister {
+	return lightsailInstanceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LightsailInstanceNamespaceLister helps list and get LightsailInstances.
+type LightsailInstanceNamespaceLister interface {
+	// List lists all LightsailInstances in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LightsailInstance, err error)
+	// Get retrieves the LightsailInstance from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LightsailInstance, error)
+	LightsailInstanceNamespaceListerExpansion
+}
+
+// lightsailInstanceNamespaceLister implements the LightsailInstanceNamespaceLister
+// interface.
+type lightsailInstanceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LightsailInstances in the indexer for a given namespace.
+func (s lightsailInstanceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LightsailInstance, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LightsailInstance))
+	})
+	return ret, err
+}
+
+// Get retrieves the LightsailInstance from the indexer for a given namespace and name.
+func (s lightsailInstanceNamespaceLister) Get(name string) (*v1alpha1.LightsailInstance, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

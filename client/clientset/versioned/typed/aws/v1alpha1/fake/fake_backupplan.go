@@ -31,6 +31,7 @@ import (
 // FakeBackupPlans implements BackupPlanInterface
 type FakeBackupPlans struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var backupplansResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "backupplans"}
@@ -40,7 +41,8 @@ var backupplansKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version
 // Get takes name of the backupPlan, and returns the corresponding backupPlan object, and an error if there is any.
 func (c *FakeBackupPlans) Get(name string, options v1.GetOptions) (result *v1alpha1.BackupPlan, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(backupplansResource, name), &v1alpha1.BackupPlan{})
+		Invokes(testing.NewGetAction(backupplansResource, c.ns, name), &v1alpha1.BackupPlan{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeBackupPlans) Get(name string, options v1.GetOptions) (result *v1alp
 // List takes label and field selectors, and returns the list of BackupPlans that match those selectors.
 func (c *FakeBackupPlans) List(opts v1.ListOptions) (result *v1alpha1.BackupPlanList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(backupplansResource, backupplansKind, opts), &v1alpha1.BackupPlanList{})
+		Invokes(testing.NewListAction(backupplansResource, backupplansKind, c.ns, opts), &v1alpha1.BackupPlanList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeBackupPlans) List(opts v1.ListOptions) (result *v1alpha1.BackupPlan
 // Watch returns a watch.Interface that watches the requested backupPlans.
 func (c *FakeBackupPlans) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(backupplansResource, opts))
+		InvokesWatch(testing.NewWatchAction(backupplansResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a backupPlan and creates it.  Returns the server's representation of the backupPlan, and an error, if there is any.
 func (c *FakeBackupPlans) Create(backupPlan *v1alpha1.BackupPlan) (result *v1alpha1.BackupPlan, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(backupplansResource, backupPlan), &v1alpha1.BackupPlan{})
+		Invokes(testing.NewCreateAction(backupplansResource, c.ns, backupPlan), &v1alpha1.BackupPlan{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeBackupPlans) Create(backupPlan *v1alpha1.BackupPlan) (result *v1alp
 // Update takes the representation of a backupPlan and updates it. Returns the server's representation of the backupPlan, and an error, if there is any.
 func (c *FakeBackupPlans) Update(backupPlan *v1alpha1.BackupPlan) (result *v1alpha1.BackupPlan, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(backupplansResource, backupPlan), &v1alpha1.BackupPlan{})
+		Invokes(testing.NewUpdateAction(backupplansResource, c.ns, backupPlan), &v1alpha1.BackupPlan{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeBackupPlans) Update(backupPlan *v1alpha1.BackupPlan) (result *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeBackupPlans) UpdateStatus(backupPlan *v1alpha1.BackupPlan) (*v1alpha1.BackupPlan, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(backupplansResource, "status", backupPlan), &v1alpha1.BackupPlan{})
+		Invokes(testing.NewUpdateSubresourceAction(backupplansResource, "status", c.ns, backupPlan), &v1alpha1.BackupPlan{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeBackupPlans) UpdateStatus(backupPlan *v1alpha1.BackupPlan) (*v1alph
 // Delete takes name of the backupPlan and deletes it. Returns an error if one occurs.
 func (c *FakeBackupPlans) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(backupplansResource, name), &v1alpha1.BackupPlan{})
+		Invokes(testing.NewDeleteAction(backupplansResource, c.ns, name), &v1alpha1.BackupPlan{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeBackupPlans) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(backupplansResource, listOptions)
+	action := testing.NewDeleteCollectionAction(backupplansResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.BackupPlanList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeBackupPlans) DeleteCollection(options *v1.DeleteOptions, listOption
 // Patch applies the patch and returns the patched backupPlan.
 func (c *FakeBackupPlans) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BackupPlan, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(backupplansResource, name, pt, data, subresources...), &v1alpha1.BackupPlan{})
+		Invokes(testing.NewPatchSubresourceAction(backupplansResource, c.ns, name, pt, data, subresources...), &v1alpha1.BackupPlan{})
+
 	if obj == nil {
 		return nil, err
 	}

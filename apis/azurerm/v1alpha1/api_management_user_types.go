@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,18 +19,19 @@ type ApiManagementUser struct {
 }
 
 type ApiManagementUserSpec struct {
-	ApiManagementName string `json:"api_management_name"`
+	ApiManagementName string `json:"apiManagementName" tf:"api_management_name"`
 	// +optional
-	Confirmation string `json:"confirmation,omitempty"`
-	Email        string `json:"email"`
-	FirstName    string `json:"first_name"`
-	LastName     string `json:"last_name"`
+	Confirmation string `json:"confirmation,omitempty" tf:"confirmation,omitempty"`
+	Email        string `json:"email" tf:"email"`
+	FirstName    string `json:"firstName" tf:"first_name"`
+	LastName     string `json:"lastName" tf:"last_name"`
 	// +optional
-	Note string `json:"note,omitempty"`
+	Note string `json:"note,omitempty" tf:"note,omitempty"`
 	// +optional
-	Password          string `json:"password,omitempty"`
-	ResourceGroupName string `json:"resource_group_name"`
-	UserId            string `json:"user_id"`
+	Password          string                    `json:"password,omitempty" tf:"password,omitempty"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	UserID            string                    `json:"userID" tf:"user_id"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ApiManagementUserStatus struct {
@@ -38,7 +39,9 @@ type ApiManagementUserStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -31,6 +31,7 @@ import (
 // FakeLambdaAliases implements LambdaAliasInterface
 type FakeLambdaAliases struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var lambdaaliasesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "lambdaaliases"}
@@ -40,7 +41,8 @@ var lambdaaliasesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Versi
 // Get takes name of the lambdaAlias, and returns the corresponding lambdaAlias object, and an error if there is any.
 func (c *FakeLambdaAliases) Get(name string, options v1.GetOptions) (result *v1alpha1.LambdaAlias, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(lambdaaliasesResource, name), &v1alpha1.LambdaAlias{})
+		Invokes(testing.NewGetAction(lambdaaliasesResource, c.ns, name), &v1alpha1.LambdaAlias{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLambdaAliases) Get(name string, options v1.GetOptions) (result *v1a
 // List takes label and field selectors, and returns the list of LambdaAliases that match those selectors.
 func (c *FakeLambdaAliases) List(opts v1.ListOptions) (result *v1alpha1.LambdaAliasList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(lambdaaliasesResource, lambdaaliasesKind, opts), &v1alpha1.LambdaAliasList{})
+		Invokes(testing.NewListAction(lambdaaliasesResource, lambdaaliasesKind, c.ns, opts), &v1alpha1.LambdaAliasList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLambdaAliases) List(opts v1.ListOptions) (result *v1alpha1.LambdaAl
 // Watch returns a watch.Interface that watches the requested lambdaAliases.
 func (c *FakeLambdaAliases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(lambdaaliasesResource, opts))
+		InvokesWatch(testing.NewWatchAction(lambdaaliasesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a lambdaAlias and creates it.  Returns the server's representation of the lambdaAlias, and an error, if there is any.
 func (c *FakeLambdaAliases) Create(lambdaAlias *v1alpha1.LambdaAlias) (result *v1alpha1.LambdaAlias, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(lambdaaliasesResource, lambdaAlias), &v1alpha1.LambdaAlias{})
+		Invokes(testing.NewCreateAction(lambdaaliasesResource, c.ns, lambdaAlias), &v1alpha1.LambdaAlias{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLambdaAliases) Create(lambdaAlias *v1alpha1.LambdaAlias) (result *v
 // Update takes the representation of a lambdaAlias and updates it. Returns the server's representation of the lambdaAlias, and an error, if there is any.
 func (c *FakeLambdaAliases) Update(lambdaAlias *v1alpha1.LambdaAlias) (result *v1alpha1.LambdaAlias, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(lambdaaliasesResource, lambdaAlias), &v1alpha1.LambdaAlias{})
+		Invokes(testing.NewUpdateAction(lambdaaliasesResource, c.ns, lambdaAlias), &v1alpha1.LambdaAlias{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLambdaAliases) Update(lambdaAlias *v1alpha1.LambdaAlias) (result *v
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLambdaAliases) UpdateStatus(lambdaAlias *v1alpha1.LambdaAlias) (*v1alpha1.LambdaAlias, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(lambdaaliasesResource, "status", lambdaAlias), &v1alpha1.LambdaAlias{})
+		Invokes(testing.NewUpdateSubresourceAction(lambdaaliasesResource, "status", c.ns, lambdaAlias), &v1alpha1.LambdaAlias{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLambdaAliases) UpdateStatus(lambdaAlias *v1alpha1.LambdaAlias) (*v1
 // Delete takes name of the lambdaAlias and deletes it. Returns an error if one occurs.
 func (c *FakeLambdaAliases) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(lambdaaliasesResource, name), &v1alpha1.LambdaAlias{})
+		Invokes(testing.NewDeleteAction(lambdaaliasesResource, c.ns, name), &v1alpha1.LambdaAlias{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLambdaAliases) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(lambdaaliasesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(lambdaaliasesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LambdaAliasList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLambdaAliases) DeleteCollection(options *v1.DeleteOptions, listOpti
 // Patch applies the patch and returns the patched lambdaAlias.
 func (c *FakeLambdaAliases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LambdaAlias, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(lambdaaliasesResource, name, pt, data, subresources...), &v1alpha1.LambdaAlias{})
+		Invokes(testing.NewPatchSubresourceAction(lambdaaliasesResource, c.ns, name, pt, data, subresources...), &v1alpha1.LambdaAlias{})
+
 	if obj == nil {
 		return nil, err
 	}

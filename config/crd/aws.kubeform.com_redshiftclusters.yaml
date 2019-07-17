@@ -397,55 +397,81 @@ spec:
           type: object
         spec:
           properties:
-            allow_version_upgrade:
+            allowVersionUpgrade:
               type: boolean
-            automated_snapshot_retention_period:
+            automatedSnapshotRetentionPeriod:
               type: integer
-            cluster_identifier:
+            clusterIdentifier:
               type: string
-            cluster_version:
+            clusterVersion:
               type: string
-            elastic_ip:
+            elasticIP:
               type: string
             encrypted:
               type: boolean
-            final_snapshot_identifier:
+            finalSnapshotIdentifier:
               type: string
             logging:
-              items: {}
+              items:
+                properties:
+                  enable:
+                    type: boolean
+                required:
+                - enable
+                type: object
               maxItems: 1
               type: array
-            master_password:
+            masterPassword:
               type: string
-            master_username:
+            masterUsername:
               type: string
-            node_type:
+            nodeType:
               type: string
-            number_of_nodes:
+            numberOfNodes:
               type: integer
-            owner_account:
+            ownerAccount:
               type: string
             port:
               type: integer
-            publicly_accessible:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            publiclyAccessible:
               type: boolean
-            skip_final_snapshot:
+            skipFinalSnapshot:
               type: boolean
-            snapshot_cluster_identifier:
+            snapshotClusterIdentifier:
               type: string
-            snapshot_copy:
-              items: {}
+            snapshotCopy:
+              items:
+                properties:
+                  destinationRegion:
+                    type: string
+                  grantName:
+                    type: string
+                  retentionPeriod:
+                    type: integer
+                required:
+                - destinationRegion
+                type: object
               maxItems: 1
               type: array
-            snapshot_identifier:
+            snapshotIdentifier:
               type: string
             tags:
               additionalProperties:
                 type: string
               type: object
           required:
-          - cluster_identifier
-          - node_type
+          - clusterIdentifier
+          - nodeType
+          - providerRef
           type: object
         status:
           properties:
@@ -456,6 +482,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

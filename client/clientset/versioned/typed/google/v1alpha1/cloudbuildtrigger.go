@@ -32,7 +32,7 @@ import (
 // CloudbuildTriggersGetter has a method to return a CloudbuildTriggerInterface.
 // A group's client should implement this interface.
 type CloudbuildTriggersGetter interface {
-	CloudbuildTriggers() CloudbuildTriggerInterface
+	CloudbuildTriggers(namespace string) CloudbuildTriggerInterface
 }
 
 // CloudbuildTriggerInterface has methods to work with CloudbuildTrigger resources.
@@ -52,12 +52,14 @@ type CloudbuildTriggerInterface interface {
 // cloudbuildTriggers implements CloudbuildTriggerInterface
 type cloudbuildTriggers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCloudbuildTriggers returns a CloudbuildTriggers
-func newCloudbuildTriggers(c *GoogleV1alpha1Client) *cloudbuildTriggers {
+func newCloudbuildTriggers(c *GoogleV1alpha1Client, namespace string) *cloudbuildTriggers {
 	return &cloudbuildTriggers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCloudbuildTriggers(c *GoogleV1alpha1Client) *cloudbuildTriggers {
 func (c *cloudbuildTriggers) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudbuildTrigger, err error) {
 	result = &v1alpha1.CloudbuildTrigger{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudbuildtriggers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cloudbuildTriggers) List(opts v1.ListOptions) (result *v1alpha1.Cloudbu
 	}
 	result = &v1alpha1.CloudbuildTriggerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudbuildtriggers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cloudbuildTriggers) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudbuildtriggers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cloudbuildTriggers) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *cloudbuildTriggers) Create(cloudbuildTrigger *v1alpha1.CloudbuildTrigger) (result *v1alpha1.CloudbuildTrigger, err error) {
 	result = &v1alpha1.CloudbuildTrigger{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cloudbuildtriggers").
 		Body(cloudbuildTrigger).
 		Do().
@@ -118,6 +124,7 @@ func (c *cloudbuildTriggers) Create(cloudbuildTrigger *v1alpha1.CloudbuildTrigge
 func (c *cloudbuildTriggers) Update(cloudbuildTrigger *v1alpha1.CloudbuildTrigger) (result *v1alpha1.CloudbuildTrigger, err error) {
 	result = &v1alpha1.CloudbuildTrigger{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudbuildtriggers").
 		Name(cloudbuildTrigger.Name).
 		Body(cloudbuildTrigger).
@@ -132,6 +139,7 @@ func (c *cloudbuildTriggers) Update(cloudbuildTrigger *v1alpha1.CloudbuildTrigge
 func (c *cloudbuildTriggers) UpdateStatus(cloudbuildTrigger *v1alpha1.CloudbuildTrigger) (result *v1alpha1.CloudbuildTrigger, err error) {
 	result = &v1alpha1.CloudbuildTrigger{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudbuildtriggers").
 		Name(cloudbuildTrigger.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cloudbuildTriggers) UpdateStatus(cloudbuildTrigger *v1alpha1.Cloudbuild
 // Delete takes name of the cloudbuildTrigger and deletes it. Returns an error if one occurs.
 func (c *cloudbuildTriggers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudbuildtriggers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cloudbuildTriggers) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudbuildtriggers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cloudbuildTriggers) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *cloudbuildTriggers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudbuildTrigger, err error) {
 	result = &v1alpha1.CloudbuildTrigger{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cloudbuildtriggers").
 		SubResource(subresources...).
 		Name(name).

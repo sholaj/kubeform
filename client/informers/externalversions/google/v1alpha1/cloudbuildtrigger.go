@@ -41,32 +41,33 @@ type CloudbuildTriggerInformer interface {
 type cloudbuildTriggerInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewCloudbuildTriggerInformer constructs a new informer for CloudbuildTrigger type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCloudbuildTriggerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCloudbuildTriggerInformer(client, resyncPeriod, indexers, nil)
+func NewCloudbuildTriggerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCloudbuildTriggerInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredCloudbuildTriggerInformer constructs a new informer for CloudbuildTrigger type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCloudbuildTriggerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCloudbuildTriggerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().CloudbuildTriggers().List(options)
+				return client.GoogleV1alpha1().CloudbuildTriggers(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().CloudbuildTriggers().Watch(options)
+				return client.GoogleV1alpha1().CloudbuildTriggers(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.CloudbuildTrigger{},
@@ -76,7 +77,7 @@ func NewFilteredCloudbuildTriggerInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *cloudbuildTriggerInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCloudbuildTriggerInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredCloudbuildTriggerInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *cloudbuildTriggerInformer) Informer() cache.SharedIndexInformer {

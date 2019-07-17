@@ -29,8 +29,8 @@ import (
 type Route53HealthCheckLister interface {
 	// List lists all Route53HealthChecks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Route53HealthCheck, err error)
-	// Get retrieves the Route53HealthCheck from the index for a given name.
-	Get(name string) (*v1alpha1.Route53HealthCheck, error)
+	// Route53HealthChecks returns an object that can list and get Route53HealthChecks.
+	Route53HealthChecks(namespace string) Route53HealthCheckNamespaceLister
 	Route53HealthCheckListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *route53HealthCheckLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the Route53HealthCheck from the index for a given name.
-func (s *route53HealthCheckLister) Get(name string) (*v1alpha1.Route53HealthCheck, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Route53HealthChecks returns an object that can list and get Route53HealthChecks.
+func (s *route53HealthCheckLister) Route53HealthChecks(namespace string) Route53HealthCheckNamespaceLister {
+	return route53HealthCheckNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// Route53HealthCheckNamespaceLister helps list and get Route53HealthChecks.
+type Route53HealthCheckNamespaceLister interface {
+	// List lists all Route53HealthChecks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Route53HealthCheck, err error)
+	// Get retrieves the Route53HealthCheck from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Route53HealthCheck, error)
+	Route53HealthCheckNamespaceListerExpansion
+}
+
+// route53HealthCheckNamespaceLister implements the Route53HealthCheckNamespaceLister
+// interface.
+type route53HealthCheckNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Route53HealthChecks in the indexer for a given namespace.
+func (s route53HealthCheckNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Route53HealthCheck, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Route53HealthCheck))
+	})
+	return ret, err
+}
+
+// Get retrieves the Route53HealthCheck from the indexer for a given namespace and name.
+func (s route53HealthCheckNamespaceLister) Get(name string) (*v1alpha1.Route53HealthCheck, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

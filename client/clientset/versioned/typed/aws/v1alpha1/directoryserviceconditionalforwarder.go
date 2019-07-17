@@ -32,7 +32,7 @@ import (
 // DirectoryServiceConditionalForwardersGetter has a method to return a DirectoryServiceConditionalForwarderInterface.
 // A group's client should implement this interface.
 type DirectoryServiceConditionalForwardersGetter interface {
-	DirectoryServiceConditionalForwarders() DirectoryServiceConditionalForwarderInterface
+	DirectoryServiceConditionalForwarders(namespace string) DirectoryServiceConditionalForwarderInterface
 }
 
 // DirectoryServiceConditionalForwarderInterface has methods to work with DirectoryServiceConditionalForwarder resources.
@@ -52,12 +52,14 @@ type DirectoryServiceConditionalForwarderInterface interface {
 // directoryServiceConditionalForwarders implements DirectoryServiceConditionalForwarderInterface
 type directoryServiceConditionalForwarders struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDirectoryServiceConditionalForwarders returns a DirectoryServiceConditionalForwarders
-func newDirectoryServiceConditionalForwarders(c *AwsV1alpha1Client) *directoryServiceConditionalForwarders {
+func newDirectoryServiceConditionalForwarders(c *AwsV1alpha1Client, namespace string) *directoryServiceConditionalForwarders {
 	return &directoryServiceConditionalForwarders{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDirectoryServiceConditionalForwarders(c *AwsV1alpha1Client) *directorySe
 func (c *directoryServiceConditionalForwarders) Get(name string, options v1.GetOptions) (result *v1alpha1.DirectoryServiceConditionalForwarder, err error) {
 	result = &v1alpha1.DirectoryServiceConditionalForwarder{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("directoryserviceconditionalforwarders").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *directoryServiceConditionalForwarders) List(opts v1.ListOptions) (resul
 	}
 	result = &v1alpha1.DirectoryServiceConditionalForwarderList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("directoryserviceconditionalforwarders").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *directoryServiceConditionalForwarders) Watch(opts v1.ListOptions) (watc
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("directoryserviceconditionalforwarders").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *directoryServiceConditionalForwarders) Watch(opts v1.ListOptions) (watc
 func (c *directoryServiceConditionalForwarders) Create(directoryServiceConditionalForwarder *v1alpha1.DirectoryServiceConditionalForwarder) (result *v1alpha1.DirectoryServiceConditionalForwarder, err error) {
 	result = &v1alpha1.DirectoryServiceConditionalForwarder{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("directoryserviceconditionalforwarders").
 		Body(directoryServiceConditionalForwarder).
 		Do().
@@ -118,6 +124,7 @@ func (c *directoryServiceConditionalForwarders) Create(directoryServiceCondition
 func (c *directoryServiceConditionalForwarders) Update(directoryServiceConditionalForwarder *v1alpha1.DirectoryServiceConditionalForwarder) (result *v1alpha1.DirectoryServiceConditionalForwarder, err error) {
 	result = &v1alpha1.DirectoryServiceConditionalForwarder{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("directoryserviceconditionalforwarders").
 		Name(directoryServiceConditionalForwarder.Name).
 		Body(directoryServiceConditionalForwarder).
@@ -132,6 +139,7 @@ func (c *directoryServiceConditionalForwarders) Update(directoryServiceCondition
 func (c *directoryServiceConditionalForwarders) UpdateStatus(directoryServiceConditionalForwarder *v1alpha1.DirectoryServiceConditionalForwarder) (result *v1alpha1.DirectoryServiceConditionalForwarder, err error) {
 	result = &v1alpha1.DirectoryServiceConditionalForwarder{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("directoryserviceconditionalforwarders").
 		Name(directoryServiceConditionalForwarder.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *directoryServiceConditionalForwarders) UpdateStatus(directoryServiceCon
 // Delete takes name of the directoryServiceConditionalForwarder and deletes it. Returns an error if one occurs.
 func (c *directoryServiceConditionalForwarders) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("directoryserviceconditionalforwarders").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *directoryServiceConditionalForwarders) DeleteCollection(options *v1.Del
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("directoryserviceconditionalforwarders").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *directoryServiceConditionalForwarders) DeleteCollection(options *v1.Del
 func (c *directoryServiceConditionalForwarders) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DirectoryServiceConditionalForwarder, err error) {
 	result = &v1alpha1.DirectoryServiceConditionalForwarder{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("directoryserviceconditionalforwarders").
 		SubResource(subresources...).
 		Name(name).

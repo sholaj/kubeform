@@ -31,6 +31,7 @@ import (
 // FakeApiGatewayMethodSettingses implements ApiGatewayMethodSettingsInterface
 type FakeApiGatewayMethodSettingses struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var apigatewaymethodsettingsesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "apigatewaymethodsettingses"}
@@ -40,7 +41,8 @@ var apigatewaymethodsettingsesKind = schema.GroupVersionKind{Group: "aws.kubefor
 // Get takes name of the apiGatewayMethodSettings, and returns the corresponding apiGatewayMethodSettings object, and an error if there is any.
 func (c *FakeApiGatewayMethodSettingses) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayMethodSettings, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apigatewaymethodsettingsesResource, name), &v1alpha1.ApiGatewayMethodSettings{})
+		Invokes(testing.NewGetAction(apigatewaymethodsettingsesResource, c.ns, name), &v1alpha1.ApiGatewayMethodSettings{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApiGatewayMethodSettingses) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of ApiGatewayMethodSettingses that match those selectors.
 func (c *FakeApiGatewayMethodSettingses) List(opts v1.ListOptions) (result *v1alpha1.ApiGatewayMethodSettingsList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apigatewaymethodsettingsesResource, apigatewaymethodsettingsesKind, opts), &v1alpha1.ApiGatewayMethodSettingsList{})
+		Invokes(testing.NewListAction(apigatewaymethodsettingsesResource, apigatewaymethodsettingsesKind, c.ns, opts), &v1alpha1.ApiGatewayMethodSettingsList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApiGatewayMethodSettingses) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested apiGatewayMethodSettingses.
 func (c *FakeApiGatewayMethodSettingses) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apigatewaymethodsettingsesResource, opts))
+		InvokesWatch(testing.NewWatchAction(apigatewaymethodsettingsesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a apiGatewayMethodSettings and creates it.  Returns the server's representation of the apiGatewayMethodSettings, and an error, if there is any.
 func (c *FakeApiGatewayMethodSettingses) Create(apiGatewayMethodSettings *v1alpha1.ApiGatewayMethodSettings) (result *v1alpha1.ApiGatewayMethodSettings, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apigatewaymethodsettingsesResource, apiGatewayMethodSettings), &v1alpha1.ApiGatewayMethodSettings{})
+		Invokes(testing.NewCreateAction(apigatewaymethodsettingsesResource, c.ns, apiGatewayMethodSettings), &v1alpha1.ApiGatewayMethodSettings{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApiGatewayMethodSettingses) Create(apiGatewayMethodSettings *v1alph
 // Update takes the representation of a apiGatewayMethodSettings and updates it. Returns the server's representation of the apiGatewayMethodSettings, and an error, if there is any.
 func (c *FakeApiGatewayMethodSettingses) Update(apiGatewayMethodSettings *v1alpha1.ApiGatewayMethodSettings) (result *v1alpha1.ApiGatewayMethodSettings, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apigatewaymethodsettingsesResource, apiGatewayMethodSettings), &v1alpha1.ApiGatewayMethodSettings{})
+		Invokes(testing.NewUpdateAction(apigatewaymethodsettingsesResource, c.ns, apiGatewayMethodSettings), &v1alpha1.ApiGatewayMethodSettings{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApiGatewayMethodSettingses) Update(apiGatewayMethodSettings *v1alph
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApiGatewayMethodSettingses) UpdateStatus(apiGatewayMethodSettings *v1alpha1.ApiGatewayMethodSettings) (*v1alpha1.ApiGatewayMethodSettings, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apigatewaymethodsettingsesResource, "status", apiGatewayMethodSettings), &v1alpha1.ApiGatewayMethodSettings{})
+		Invokes(testing.NewUpdateSubresourceAction(apigatewaymethodsettingsesResource, "status", c.ns, apiGatewayMethodSettings), &v1alpha1.ApiGatewayMethodSettings{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApiGatewayMethodSettingses) UpdateStatus(apiGatewayMethodSettings *
 // Delete takes name of the apiGatewayMethodSettings and deletes it. Returns an error if one occurs.
 func (c *FakeApiGatewayMethodSettingses) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apigatewaymethodsettingsesResource, name), &v1alpha1.ApiGatewayMethodSettings{})
+		Invokes(testing.NewDeleteAction(apigatewaymethodsettingsesResource, c.ns, name), &v1alpha1.ApiGatewayMethodSettings{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApiGatewayMethodSettingses) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apigatewaymethodsettingsesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(apigatewaymethodsettingsesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApiGatewayMethodSettingsList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApiGatewayMethodSettingses) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched apiGatewayMethodSettings.
 func (c *FakeApiGatewayMethodSettingses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayMethodSettings, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apigatewaymethodsettingsesResource, name, pt, data, subresources...), &v1alpha1.ApiGatewayMethodSettings{})
+		Invokes(testing.NewPatchSubresourceAction(apigatewaymethodsettingsesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiGatewayMethodSettings{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // GlobalacceleratorEndpointGroupsGetter has a method to return a GlobalacceleratorEndpointGroupInterface.
 // A group's client should implement this interface.
 type GlobalacceleratorEndpointGroupsGetter interface {
-	GlobalacceleratorEndpointGroups() GlobalacceleratorEndpointGroupInterface
+	GlobalacceleratorEndpointGroups(namespace string) GlobalacceleratorEndpointGroupInterface
 }
 
 // GlobalacceleratorEndpointGroupInterface has methods to work with GlobalacceleratorEndpointGroup resources.
@@ -52,12 +52,14 @@ type GlobalacceleratorEndpointGroupInterface interface {
 // globalacceleratorEndpointGroups implements GlobalacceleratorEndpointGroupInterface
 type globalacceleratorEndpointGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newGlobalacceleratorEndpointGroups returns a GlobalacceleratorEndpointGroups
-func newGlobalacceleratorEndpointGroups(c *AwsV1alpha1Client) *globalacceleratorEndpointGroups {
+func newGlobalacceleratorEndpointGroups(c *AwsV1alpha1Client, namespace string) *globalacceleratorEndpointGroups {
 	return &globalacceleratorEndpointGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newGlobalacceleratorEndpointGroups(c *AwsV1alpha1Client) *globalaccelerator
 func (c *globalacceleratorEndpointGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.GlobalacceleratorEndpointGroup, err error) {
 	result = &v1alpha1.GlobalacceleratorEndpointGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("globalacceleratorendpointgroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *globalacceleratorEndpointGroups) List(opts v1.ListOptions) (result *v1a
 	}
 	result = &v1alpha1.GlobalacceleratorEndpointGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("globalacceleratorendpointgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *globalacceleratorEndpointGroups) Watch(opts v1.ListOptions) (watch.Inte
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("globalacceleratorendpointgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *globalacceleratorEndpointGroups) Watch(opts v1.ListOptions) (watch.Inte
 func (c *globalacceleratorEndpointGroups) Create(globalacceleratorEndpointGroup *v1alpha1.GlobalacceleratorEndpointGroup) (result *v1alpha1.GlobalacceleratorEndpointGroup, err error) {
 	result = &v1alpha1.GlobalacceleratorEndpointGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("globalacceleratorendpointgroups").
 		Body(globalacceleratorEndpointGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *globalacceleratorEndpointGroups) Create(globalacceleratorEndpointGroup 
 func (c *globalacceleratorEndpointGroups) Update(globalacceleratorEndpointGroup *v1alpha1.GlobalacceleratorEndpointGroup) (result *v1alpha1.GlobalacceleratorEndpointGroup, err error) {
 	result = &v1alpha1.GlobalacceleratorEndpointGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("globalacceleratorendpointgroups").
 		Name(globalacceleratorEndpointGroup.Name).
 		Body(globalacceleratorEndpointGroup).
@@ -132,6 +139,7 @@ func (c *globalacceleratorEndpointGroups) Update(globalacceleratorEndpointGroup 
 func (c *globalacceleratorEndpointGroups) UpdateStatus(globalacceleratorEndpointGroup *v1alpha1.GlobalacceleratorEndpointGroup) (result *v1alpha1.GlobalacceleratorEndpointGroup, err error) {
 	result = &v1alpha1.GlobalacceleratorEndpointGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("globalacceleratorendpointgroups").
 		Name(globalacceleratorEndpointGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *globalacceleratorEndpointGroups) UpdateStatus(globalacceleratorEndpoint
 // Delete takes name of the globalacceleratorEndpointGroup and deletes it. Returns an error if one occurs.
 func (c *globalacceleratorEndpointGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("globalacceleratorendpointgroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *globalacceleratorEndpointGroups) DeleteCollection(options *v1.DeleteOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("globalacceleratorendpointgroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *globalacceleratorEndpointGroups) DeleteCollection(options *v1.DeleteOpt
 func (c *globalacceleratorEndpointGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GlobalacceleratorEndpointGroup, err error) {
 	result = &v1alpha1.GlobalacceleratorEndpointGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("globalacceleratorendpointgroups").
 		SubResource(subresources...).
 		Name(name).

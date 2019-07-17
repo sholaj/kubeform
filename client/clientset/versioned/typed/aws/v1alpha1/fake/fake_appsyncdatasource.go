@@ -31,6 +31,7 @@ import (
 // FakeAppsyncDatasources implements AppsyncDatasourceInterface
 type FakeAppsyncDatasources struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var appsyncdatasourcesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "appsyncdatasources"}
@@ -40,7 +41,8 @@ var appsyncdatasourcesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", 
 // Get takes name of the appsyncDatasource, and returns the corresponding appsyncDatasource object, and an error if there is any.
 func (c *FakeAppsyncDatasources) Get(name string, options v1.GetOptions) (result *v1alpha1.AppsyncDatasource, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(appsyncdatasourcesResource, name), &v1alpha1.AppsyncDatasource{})
+		Invokes(testing.NewGetAction(appsyncdatasourcesResource, c.ns, name), &v1alpha1.AppsyncDatasource{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAppsyncDatasources) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of AppsyncDatasources that match those selectors.
 func (c *FakeAppsyncDatasources) List(opts v1.ListOptions) (result *v1alpha1.AppsyncDatasourceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(appsyncdatasourcesResource, appsyncdatasourcesKind, opts), &v1alpha1.AppsyncDatasourceList{})
+		Invokes(testing.NewListAction(appsyncdatasourcesResource, appsyncdatasourcesKind, c.ns, opts), &v1alpha1.AppsyncDatasourceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAppsyncDatasources) List(opts v1.ListOptions) (result *v1alpha1.App
 // Watch returns a watch.Interface that watches the requested appsyncDatasources.
 func (c *FakeAppsyncDatasources) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(appsyncdatasourcesResource, opts))
+		InvokesWatch(testing.NewWatchAction(appsyncdatasourcesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a appsyncDatasource and creates it.  Returns the server's representation of the appsyncDatasource, and an error, if there is any.
 func (c *FakeAppsyncDatasources) Create(appsyncDatasource *v1alpha1.AppsyncDatasource) (result *v1alpha1.AppsyncDatasource, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(appsyncdatasourcesResource, appsyncDatasource), &v1alpha1.AppsyncDatasource{})
+		Invokes(testing.NewCreateAction(appsyncdatasourcesResource, c.ns, appsyncDatasource), &v1alpha1.AppsyncDatasource{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAppsyncDatasources) Create(appsyncDatasource *v1alpha1.AppsyncDatas
 // Update takes the representation of a appsyncDatasource and updates it. Returns the server's representation of the appsyncDatasource, and an error, if there is any.
 func (c *FakeAppsyncDatasources) Update(appsyncDatasource *v1alpha1.AppsyncDatasource) (result *v1alpha1.AppsyncDatasource, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(appsyncdatasourcesResource, appsyncDatasource), &v1alpha1.AppsyncDatasource{})
+		Invokes(testing.NewUpdateAction(appsyncdatasourcesResource, c.ns, appsyncDatasource), &v1alpha1.AppsyncDatasource{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAppsyncDatasources) Update(appsyncDatasource *v1alpha1.AppsyncDatas
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAppsyncDatasources) UpdateStatus(appsyncDatasource *v1alpha1.AppsyncDatasource) (*v1alpha1.AppsyncDatasource, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(appsyncdatasourcesResource, "status", appsyncDatasource), &v1alpha1.AppsyncDatasource{})
+		Invokes(testing.NewUpdateSubresourceAction(appsyncdatasourcesResource, "status", c.ns, appsyncDatasource), &v1alpha1.AppsyncDatasource{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAppsyncDatasources) UpdateStatus(appsyncDatasource *v1alpha1.Appsyn
 // Delete takes name of the appsyncDatasource and deletes it. Returns an error if one occurs.
 func (c *FakeAppsyncDatasources) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(appsyncdatasourcesResource, name), &v1alpha1.AppsyncDatasource{})
+		Invokes(testing.NewDeleteAction(appsyncdatasourcesResource, c.ns, name), &v1alpha1.AppsyncDatasource{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAppsyncDatasources) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(appsyncdatasourcesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(appsyncdatasourcesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AppsyncDatasourceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAppsyncDatasources) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched appsyncDatasource.
 func (c *FakeAppsyncDatasources) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppsyncDatasource, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(appsyncdatasourcesResource, name, pt, data, subresources...), &v1alpha1.AppsyncDatasource{})
+		Invokes(testing.NewPatchSubresourceAction(appsyncdatasourcesResource, c.ns, name, pt, data, subresources...), &v1alpha1.AppsyncDatasource{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type VirtualMachineExtensionLister interface {
 	// List lists all VirtualMachineExtensions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.VirtualMachineExtension, err error)
-	// Get retrieves the VirtualMachineExtension from the index for a given name.
-	Get(name string) (*v1alpha1.VirtualMachineExtension, error)
+	// VirtualMachineExtensions returns an object that can list and get VirtualMachineExtensions.
+	VirtualMachineExtensions(namespace string) VirtualMachineExtensionNamespaceLister
 	VirtualMachineExtensionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *virtualMachineExtensionLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the VirtualMachineExtension from the index for a given name.
-func (s *virtualMachineExtensionLister) Get(name string) (*v1alpha1.VirtualMachineExtension, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VirtualMachineExtensions returns an object that can list and get VirtualMachineExtensions.
+func (s *virtualMachineExtensionLister) VirtualMachineExtensions(namespace string) VirtualMachineExtensionNamespaceLister {
+	return virtualMachineExtensionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VirtualMachineExtensionNamespaceLister helps list and get VirtualMachineExtensions.
+type VirtualMachineExtensionNamespaceLister interface {
+	// List lists all VirtualMachineExtensions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VirtualMachineExtension, err error)
+	// Get retrieves the VirtualMachineExtension from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VirtualMachineExtension, error)
+	VirtualMachineExtensionNamespaceListerExpansion
+}
+
+// virtualMachineExtensionNamespaceLister implements the VirtualMachineExtensionNamespaceLister
+// interface.
+type virtualMachineExtensionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VirtualMachineExtensions in the indexer for a given namespace.
+func (s virtualMachineExtensionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VirtualMachineExtension, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VirtualMachineExtension))
+	})
+	return ret, err
+}
+
+// Get retrieves the VirtualMachineExtension from the indexer for a given namespace and name.
+func (s virtualMachineExtensionNamespaceLister) Get(name string) (*v1alpha1.VirtualMachineExtension, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

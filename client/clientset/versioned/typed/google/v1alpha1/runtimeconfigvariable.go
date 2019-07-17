@@ -32,7 +32,7 @@ import (
 // RuntimeconfigVariablesGetter has a method to return a RuntimeconfigVariableInterface.
 // A group's client should implement this interface.
 type RuntimeconfigVariablesGetter interface {
-	RuntimeconfigVariables() RuntimeconfigVariableInterface
+	RuntimeconfigVariables(namespace string) RuntimeconfigVariableInterface
 }
 
 // RuntimeconfigVariableInterface has methods to work with RuntimeconfigVariable resources.
@@ -52,12 +52,14 @@ type RuntimeconfigVariableInterface interface {
 // runtimeconfigVariables implements RuntimeconfigVariableInterface
 type runtimeconfigVariables struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRuntimeconfigVariables returns a RuntimeconfigVariables
-func newRuntimeconfigVariables(c *GoogleV1alpha1Client) *runtimeconfigVariables {
+func newRuntimeconfigVariables(c *GoogleV1alpha1Client, namespace string) *runtimeconfigVariables {
 	return &runtimeconfigVariables{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRuntimeconfigVariables(c *GoogleV1alpha1Client) *runtimeconfigVariables 
 func (c *runtimeconfigVariables) Get(name string, options v1.GetOptions) (result *v1alpha1.RuntimeconfigVariable, err error) {
 	result = &v1alpha1.RuntimeconfigVariable{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("runtimeconfigvariables").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *runtimeconfigVariables) List(opts v1.ListOptions) (result *v1alpha1.Run
 	}
 	result = &v1alpha1.RuntimeconfigVariableList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("runtimeconfigvariables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *runtimeconfigVariables) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("runtimeconfigvariables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *runtimeconfigVariables) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *runtimeconfigVariables) Create(runtimeconfigVariable *v1alpha1.RuntimeconfigVariable) (result *v1alpha1.RuntimeconfigVariable, err error) {
 	result = &v1alpha1.RuntimeconfigVariable{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("runtimeconfigvariables").
 		Body(runtimeconfigVariable).
 		Do().
@@ -118,6 +124,7 @@ func (c *runtimeconfigVariables) Create(runtimeconfigVariable *v1alpha1.Runtimec
 func (c *runtimeconfigVariables) Update(runtimeconfigVariable *v1alpha1.RuntimeconfigVariable) (result *v1alpha1.RuntimeconfigVariable, err error) {
 	result = &v1alpha1.RuntimeconfigVariable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("runtimeconfigvariables").
 		Name(runtimeconfigVariable.Name).
 		Body(runtimeconfigVariable).
@@ -132,6 +139,7 @@ func (c *runtimeconfigVariables) Update(runtimeconfigVariable *v1alpha1.Runtimec
 func (c *runtimeconfigVariables) UpdateStatus(runtimeconfigVariable *v1alpha1.RuntimeconfigVariable) (result *v1alpha1.RuntimeconfigVariable, err error) {
 	result = &v1alpha1.RuntimeconfigVariable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("runtimeconfigvariables").
 		Name(runtimeconfigVariable.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *runtimeconfigVariables) UpdateStatus(runtimeconfigVariable *v1alpha1.Ru
 // Delete takes name of the runtimeconfigVariable and deletes it. Returns an error if one occurs.
 func (c *runtimeconfigVariables) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("runtimeconfigvariables").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *runtimeconfigVariables) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("runtimeconfigvariables").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *runtimeconfigVariables) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *runtimeconfigVariables) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RuntimeconfigVariable, err error) {
 	result = &v1alpha1.RuntimeconfigVariable{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("runtimeconfigvariables").
 		SubResource(subresources...).
 		Name(name).

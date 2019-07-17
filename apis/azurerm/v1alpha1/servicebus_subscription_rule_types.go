@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,37 +20,38 @@ type ServicebusSubscriptionRule struct {
 
 type ServicebusSubscriptionRuleSpecCorrelationFilter struct {
 	// +optional
-	ContentType string `json:"content_type,omitempty"`
+	ContentType string `json:"contentType,omitempty" tf:"content_type,omitempty"`
 	// +optional
-	CorrelationId string `json:"correlation_id,omitempty"`
+	CorrelationID string `json:"correlationID,omitempty" tf:"correlation_id,omitempty"`
 	// +optional
-	Label string `json:"label,omitempty"`
+	Label string `json:"label,omitempty" tf:"label,omitempty"`
 	// +optional
-	MessageId string `json:"message_id,omitempty"`
+	MessageID string `json:"messageID,omitempty" tf:"message_id,omitempty"`
 	// +optional
-	ReplyTo string `json:"reply_to,omitempty"`
+	ReplyTo string `json:"replyTo,omitempty" tf:"reply_to,omitempty"`
 	// +optional
-	ReplyToSessionId string `json:"reply_to_session_id,omitempty"`
+	ReplyToSessionID string `json:"replyToSessionID,omitempty" tf:"reply_to_session_id,omitempty"`
 	// +optional
-	SessionId string `json:"session_id,omitempty"`
+	SessionID string `json:"sessionID,omitempty" tf:"session_id,omitempty"`
 	// +optional
-	To string `json:"to,omitempty"`
+	To string `json:"to,omitempty" tf:"to,omitempty"`
 }
 
 type ServicebusSubscriptionRuleSpec struct {
 	// +optional
-	Action string `json:"action,omitempty"`
+	Action string `json:"action,omitempty" tf:"action,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	CorrelationFilter *[]ServicebusSubscriptionRuleSpec `json:"correlation_filter,omitempty"`
-	FilterType        string                            `json:"filter_type"`
-	Name              string                            `json:"name"`
-	NamespaceName     string                            `json:"namespace_name"`
-	ResourceGroupName string                            `json:"resource_group_name"`
+	CorrelationFilter []ServicebusSubscriptionRuleSpecCorrelationFilter `json:"correlationFilter,omitempty" tf:"correlation_filter,omitempty"`
+	FilterType        string                                            `json:"filterType" tf:"filter_type"`
+	Name              string                                            `json:"name" tf:"name"`
+	NamespaceName     string                                            `json:"namespaceName" tf:"namespace_name"`
+	ResourceGroupName string                                            `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	SqlFilter        string `json:"sql_filter,omitempty"`
-	SubscriptionName string `json:"subscription_name"`
-	TopicName        string `json:"topic_name"`
+	SqlFilter        string                    `json:"sqlFilter,omitempty" tf:"sql_filter,omitempty"`
+	SubscriptionName string                    `json:"subscriptionName" tf:"subscription_name"`
+	TopicName        string                    `json:"topicName" tf:"topic_name"`
+	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ServicebusSubscriptionRuleStatus struct {
@@ -58,7 +59,9 @@ type ServicebusSubscriptionRuleStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

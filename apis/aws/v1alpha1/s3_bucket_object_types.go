@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,29 +20,30 @@ type S3BucketObject struct {
 
 type S3BucketObjectSpec struct {
 	// +optional
-	Acl    string `json:"acl,omitempty"`
-	Bucket string `json:"bucket"`
+	Acl    string `json:"acl,omitempty" tf:"acl,omitempty"`
+	Bucket string `json:"bucket" tf:"bucket"`
 	// +optional
-	CacheControl string `json:"cache_control,omitempty"`
+	CacheControl string `json:"cacheControl,omitempty" tf:"cache_control,omitempty"`
 	// +optional
-	Content string `json:"content,omitempty"`
+	Content string `json:"content,omitempty" tf:"content,omitempty"`
 	// +optional
-	ContentBase64 string `json:"content_base64,omitempty"`
+	ContentBase64 string `json:"contentBase64,omitempty" tf:"content_base64,omitempty"`
 	// +optional
-	ContentDisposition string `json:"content_disposition,omitempty"`
+	ContentDisposition string `json:"contentDisposition,omitempty" tf:"content_disposition,omitempty"`
 	// +optional
-	ContentEncoding string `json:"content_encoding,omitempty"`
+	ContentEncoding string `json:"contentEncoding,omitempty" tf:"content_encoding,omitempty"`
 	// +optional
-	ContentLanguage string `json:"content_language,omitempty"`
-	Key             string `json:"key"`
+	ContentLanguage string `json:"contentLanguage,omitempty" tf:"content_language,omitempty"`
+	Key             string `json:"key" tf:"key"`
 	// +optional
-	KmsKeyId string `json:"kms_key_id,omitempty"`
+	KmsKeyID string `json:"kmsKeyID,omitempty" tf:"kms_key_id,omitempty"`
 	// +optional
-	Source string `json:"source,omitempty"`
+	Source string `json:"source,omitempty" tf:"source,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	WebsiteRedirect string `json:"website_redirect,omitempty"`
+	WebsiteRedirect string                    `json:"websiteRedirect,omitempty" tf:"website_redirect,omitempty"`
+	ProviderRef     core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type S3BucketObjectStatus struct {
@@ -50,7 +51,9 @@ type S3BucketObjectStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

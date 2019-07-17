@@ -32,7 +32,7 @@ import (
 // IothubSharedAccessPoliciesGetter has a method to return a IothubSharedAccessPolicyInterface.
 // A group's client should implement this interface.
 type IothubSharedAccessPoliciesGetter interface {
-	IothubSharedAccessPolicies() IothubSharedAccessPolicyInterface
+	IothubSharedAccessPolicies(namespace string) IothubSharedAccessPolicyInterface
 }
 
 // IothubSharedAccessPolicyInterface has methods to work with IothubSharedAccessPolicy resources.
@@ -52,12 +52,14 @@ type IothubSharedAccessPolicyInterface interface {
 // iothubSharedAccessPolicies implements IothubSharedAccessPolicyInterface
 type iothubSharedAccessPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIothubSharedAccessPolicies returns a IothubSharedAccessPolicies
-func newIothubSharedAccessPolicies(c *AzurermV1alpha1Client) *iothubSharedAccessPolicies {
+func newIothubSharedAccessPolicies(c *AzurermV1alpha1Client, namespace string) *iothubSharedAccessPolicies {
 	return &iothubSharedAccessPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIothubSharedAccessPolicies(c *AzurermV1alpha1Client) *iothubSharedAccess
 func (c *iothubSharedAccessPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.IothubSharedAccessPolicy, err error) {
 	result = &v1alpha1.IothubSharedAccessPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iothubsharedaccesspolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iothubSharedAccessPolicies) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.IothubSharedAccessPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iothubsharedaccesspolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iothubSharedAccessPolicies) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iothubsharedaccesspolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iothubSharedAccessPolicies) Watch(opts v1.ListOptions) (watch.Interface
 func (c *iothubSharedAccessPolicies) Create(iothubSharedAccessPolicy *v1alpha1.IothubSharedAccessPolicy) (result *v1alpha1.IothubSharedAccessPolicy, err error) {
 	result = &v1alpha1.IothubSharedAccessPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iothubsharedaccesspolicies").
 		Body(iothubSharedAccessPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *iothubSharedAccessPolicies) Create(iothubSharedAccessPolicy *v1alpha1.I
 func (c *iothubSharedAccessPolicies) Update(iothubSharedAccessPolicy *v1alpha1.IothubSharedAccessPolicy) (result *v1alpha1.IothubSharedAccessPolicy, err error) {
 	result = &v1alpha1.IothubSharedAccessPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iothubsharedaccesspolicies").
 		Name(iothubSharedAccessPolicy.Name).
 		Body(iothubSharedAccessPolicy).
@@ -132,6 +139,7 @@ func (c *iothubSharedAccessPolicies) Update(iothubSharedAccessPolicy *v1alpha1.I
 func (c *iothubSharedAccessPolicies) UpdateStatus(iothubSharedAccessPolicy *v1alpha1.IothubSharedAccessPolicy) (result *v1alpha1.IothubSharedAccessPolicy, err error) {
 	result = &v1alpha1.IothubSharedAccessPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iothubsharedaccesspolicies").
 		Name(iothubSharedAccessPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iothubSharedAccessPolicies) UpdateStatus(iothubSharedAccessPolicy *v1al
 // Delete takes name of the iothubSharedAccessPolicy and deletes it. Returns an error if one occurs.
 func (c *iothubSharedAccessPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iothubsharedaccesspolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iothubSharedAccessPolicies) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iothubsharedaccesspolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iothubSharedAccessPolicies) DeleteCollection(options *v1.DeleteOptions,
 func (c *iothubSharedAccessPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IothubSharedAccessPolicy, err error) {
 	result = &v1alpha1.IothubSharedAccessPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iothubsharedaccesspolicies").
 		SubResource(subresources...).
 		Name(name).

@@ -31,6 +31,7 @@ import (
 // FakeDirectoryServiceDirectories implements DirectoryServiceDirectoryInterface
 type FakeDirectoryServiceDirectories struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var directoryservicedirectoriesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "directoryservicedirectories"}
@@ -40,7 +41,8 @@ var directoryservicedirectoriesKind = schema.GroupVersionKind{Group: "aws.kubefo
 // Get takes name of the directoryServiceDirectory, and returns the corresponding directoryServiceDirectory object, and an error if there is any.
 func (c *FakeDirectoryServiceDirectories) Get(name string, options v1.GetOptions) (result *v1alpha1.DirectoryServiceDirectory, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(directoryservicedirectoriesResource, name), &v1alpha1.DirectoryServiceDirectory{})
+		Invokes(testing.NewGetAction(directoryservicedirectoriesResource, c.ns, name), &v1alpha1.DirectoryServiceDirectory{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDirectoryServiceDirectories) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of DirectoryServiceDirectories that match those selectors.
 func (c *FakeDirectoryServiceDirectories) List(opts v1.ListOptions) (result *v1alpha1.DirectoryServiceDirectoryList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(directoryservicedirectoriesResource, directoryservicedirectoriesKind, opts), &v1alpha1.DirectoryServiceDirectoryList{})
+		Invokes(testing.NewListAction(directoryservicedirectoriesResource, directoryservicedirectoriesKind, c.ns, opts), &v1alpha1.DirectoryServiceDirectoryList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDirectoryServiceDirectories) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested directoryServiceDirectories.
 func (c *FakeDirectoryServiceDirectories) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(directoryservicedirectoriesResource, opts))
+		InvokesWatch(testing.NewWatchAction(directoryservicedirectoriesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a directoryServiceDirectory and creates it.  Returns the server's representation of the directoryServiceDirectory, and an error, if there is any.
 func (c *FakeDirectoryServiceDirectories) Create(directoryServiceDirectory *v1alpha1.DirectoryServiceDirectory) (result *v1alpha1.DirectoryServiceDirectory, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(directoryservicedirectoriesResource, directoryServiceDirectory), &v1alpha1.DirectoryServiceDirectory{})
+		Invokes(testing.NewCreateAction(directoryservicedirectoriesResource, c.ns, directoryServiceDirectory), &v1alpha1.DirectoryServiceDirectory{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDirectoryServiceDirectories) Create(directoryServiceDirectory *v1al
 // Update takes the representation of a directoryServiceDirectory and updates it. Returns the server's representation of the directoryServiceDirectory, and an error, if there is any.
 func (c *FakeDirectoryServiceDirectories) Update(directoryServiceDirectory *v1alpha1.DirectoryServiceDirectory) (result *v1alpha1.DirectoryServiceDirectory, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(directoryservicedirectoriesResource, directoryServiceDirectory), &v1alpha1.DirectoryServiceDirectory{})
+		Invokes(testing.NewUpdateAction(directoryservicedirectoriesResource, c.ns, directoryServiceDirectory), &v1alpha1.DirectoryServiceDirectory{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDirectoryServiceDirectories) Update(directoryServiceDirectory *v1al
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDirectoryServiceDirectories) UpdateStatus(directoryServiceDirectory *v1alpha1.DirectoryServiceDirectory) (*v1alpha1.DirectoryServiceDirectory, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(directoryservicedirectoriesResource, "status", directoryServiceDirectory), &v1alpha1.DirectoryServiceDirectory{})
+		Invokes(testing.NewUpdateSubresourceAction(directoryservicedirectoriesResource, "status", c.ns, directoryServiceDirectory), &v1alpha1.DirectoryServiceDirectory{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDirectoryServiceDirectories) UpdateStatus(directoryServiceDirectory
 // Delete takes name of the directoryServiceDirectory and deletes it. Returns an error if one occurs.
 func (c *FakeDirectoryServiceDirectories) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(directoryservicedirectoriesResource, name), &v1alpha1.DirectoryServiceDirectory{})
+		Invokes(testing.NewDeleteAction(directoryservicedirectoriesResource, c.ns, name), &v1alpha1.DirectoryServiceDirectory{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDirectoryServiceDirectories) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(directoryservicedirectoriesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(directoryservicedirectoriesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DirectoryServiceDirectoryList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDirectoryServiceDirectories) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched directoryServiceDirectory.
 func (c *FakeDirectoryServiceDirectories) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DirectoryServiceDirectory, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(directoryservicedirectoriesResource, name, pt, data, subresources...), &v1alpha1.DirectoryServiceDirectory{})
+		Invokes(testing.NewPatchSubresourceAction(directoryservicedirectoriesResource, c.ns, name, pt, data, subresources...), &v1alpha1.DirectoryServiceDirectory{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeDatasyncLocationS3s implements DatasyncLocationS3Interface
 type FakeDatasyncLocationS3s struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var datasynclocations3sResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "datasynclocations3s"}
@@ -40,7 +41,8 @@ var datasynclocations3sKind = schema.GroupVersionKind{Group: "aws.kubeform.com",
 // Get takes name of the datasyncLocationS3, and returns the corresponding datasyncLocationS3 object, and an error if there is any.
 func (c *FakeDatasyncLocationS3s) Get(name string, options v1.GetOptions) (result *v1alpha1.DatasyncLocationS3, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(datasynclocations3sResource, name), &v1alpha1.DatasyncLocationS3{})
+		Invokes(testing.NewGetAction(datasynclocations3sResource, c.ns, name), &v1alpha1.DatasyncLocationS3{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDatasyncLocationS3s) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of DatasyncLocationS3s that match those selectors.
 func (c *FakeDatasyncLocationS3s) List(opts v1.ListOptions) (result *v1alpha1.DatasyncLocationS3List, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(datasynclocations3sResource, datasynclocations3sKind, opts), &v1alpha1.DatasyncLocationS3List{})
+		Invokes(testing.NewListAction(datasynclocations3sResource, datasynclocations3sKind, c.ns, opts), &v1alpha1.DatasyncLocationS3List{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDatasyncLocationS3s) List(opts v1.ListOptions) (result *v1alpha1.Da
 // Watch returns a watch.Interface that watches the requested datasyncLocationS3s.
 func (c *FakeDatasyncLocationS3s) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(datasynclocations3sResource, opts))
+		InvokesWatch(testing.NewWatchAction(datasynclocations3sResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a datasyncLocationS3 and creates it.  Returns the server's representation of the datasyncLocationS3, and an error, if there is any.
 func (c *FakeDatasyncLocationS3s) Create(datasyncLocationS3 *v1alpha1.DatasyncLocationS3) (result *v1alpha1.DatasyncLocationS3, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(datasynclocations3sResource, datasyncLocationS3), &v1alpha1.DatasyncLocationS3{})
+		Invokes(testing.NewCreateAction(datasynclocations3sResource, c.ns, datasyncLocationS3), &v1alpha1.DatasyncLocationS3{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDatasyncLocationS3s) Create(datasyncLocationS3 *v1alpha1.DatasyncLo
 // Update takes the representation of a datasyncLocationS3 and updates it. Returns the server's representation of the datasyncLocationS3, and an error, if there is any.
 func (c *FakeDatasyncLocationS3s) Update(datasyncLocationS3 *v1alpha1.DatasyncLocationS3) (result *v1alpha1.DatasyncLocationS3, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(datasynclocations3sResource, datasyncLocationS3), &v1alpha1.DatasyncLocationS3{})
+		Invokes(testing.NewUpdateAction(datasynclocations3sResource, c.ns, datasyncLocationS3), &v1alpha1.DatasyncLocationS3{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDatasyncLocationS3s) Update(datasyncLocationS3 *v1alpha1.DatasyncLo
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDatasyncLocationS3s) UpdateStatus(datasyncLocationS3 *v1alpha1.DatasyncLocationS3) (*v1alpha1.DatasyncLocationS3, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(datasynclocations3sResource, "status", datasyncLocationS3), &v1alpha1.DatasyncLocationS3{})
+		Invokes(testing.NewUpdateSubresourceAction(datasynclocations3sResource, "status", c.ns, datasyncLocationS3), &v1alpha1.DatasyncLocationS3{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDatasyncLocationS3s) UpdateStatus(datasyncLocationS3 *v1alpha1.Data
 // Delete takes name of the datasyncLocationS3 and deletes it. Returns an error if one occurs.
 func (c *FakeDatasyncLocationS3s) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(datasynclocations3sResource, name), &v1alpha1.DatasyncLocationS3{})
+		Invokes(testing.NewDeleteAction(datasynclocations3sResource, c.ns, name), &v1alpha1.DatasyncLocationS3{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDatasyncLocationS3s) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(datasynclocations3sResource, listOptions)
+	action := testing.NewDeleteCollectionAction(datasynclocations3sResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DatasyncLocationS3List{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDatasyncLocationS3s) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched datasyncLocationS3.
 func (c *FakeDatasyncLocationS3s) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DatasyncLocationS3, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(datasynclocations3sResource, name, pt, data, subresources...), &v1alpha1.DatasyncLocationS3{})
+		Invokes(testing.NewPatchSubresourceAction(datasynclocations3sResource, c.ns, name, pt, data, subresources...), &v1alpha1.DatasyncLocationS3{})
+
 	if obj == nil {
 		return nil, err
 	}

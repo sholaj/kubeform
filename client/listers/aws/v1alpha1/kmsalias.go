@@ -29,8 +29,8 @@ import (
 type KmsAliasLister interface {
 	// List lists all KmsAliases in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KmsAlias, err error)
-	// Get retrieves the KmsAlias from the index for a given name.
-	Get(name string) (*v1alpha1.KmsAlias, error)
+	// KmsAliases returns an object that can list and get KmsAliases.
+	KmsAliases(namespace string) KmsAliasNamespaceLister
 	KmsAliasListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *kmsAliasLister) List(selector labels.Selector) (ret []*v1alpha1.KmsAlia
 	return ret, err
 }
 
-// Get retrieves the KmsAlias from the index for a given name.
-func (s *kmsAliasLister) Get(name string) (*v1alpha1.KmsAlias, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KmsAliases returns an object that can list and get KmsAliases.
+func (s *kmsAliasLister) KmsAliases(namespace string) KmsAliasNamespaceLister {
+	return kmsAliasNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KmsAliasNamespaceLister helps list and get KmsAliases.
+type KmsAliasNamespaceLister interface {
+	// List lists all KmsAliases in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KmsAlias, err error)
+	// Get retrieves the KmsAlias from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KmsAlias, error)
+	KmsAliasNamespaceListerExpansion
+}
+
+// kmsAliasNamespaceLister implements the KmsAliasNamespaceLister
+// interface.
+type kmsAliasNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KmsAliases in the indexer for a given namespace.
+func (s kmsAliasNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KmsAlias, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KmsAlias))
+	})
+	return ret, err
+}
+
+// Get retrieves the KmsAlias from the indexer for a given namespace and name.
+func (s kmsAliasNamespaceLister) Get(name string) (*v1alpha1.KmsAlias, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

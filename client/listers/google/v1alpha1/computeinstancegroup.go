@@ -29,8 +29,8 @@ import (
 type ComputeInstanceGroupLister interface {
 	// List lists all ComputeInstanceGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeInstanceGroup, err error)
-	// Get retrieves the ComputeInstanceGroup from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeInstanceGroup, error)
+	// ComputeInstanceGroups returns an object that can list and get ComputeInstanceGroups.
+	ComputeInstanceGroups(namespace string) ComputeInstanceGroupNamespaceLister
 	ComputeInstanceGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeInstanceGroupLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the ComputeInstanceGroup from the index for a given name.
-func (s *computeInstanceGroupLister) Get(name string) (*v1alpha1.ComputeInstanceGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeInstanceGroups returns an object that can list and get ComputeInstanceGroups.
+func (s *computeInstanceGroupLister) ComputeInstanceGroups(namespace string) ComputeInstanceGroupNamespaceLister {
+	return computeInstanceGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeInstanceGroupNamespaceLister helps list and get ComputeInstanceGroups.
+type ComputeInstanceGroupNamespaceLister interface {
+	// List lists all ComputeInstanceGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeInstanceGroup, err error)
+	// Get retrieves the ComputeInstanceGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeInstanceGroup, error)
+	ComputeInstanceGroupNamespaceListerExpansion
+}
+
+// computeInstanceGroupNamespaceLister implements the ComputeInstanceGroupNamespaceLister
+// interface.
+type computeInstanceGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeInstanceGroups in the indexer for a given namespace.
+func (s computeInstanceGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeInstanceGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeInstanceGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeInstanceGroup from the indexer for a given namespace and name.
+func (s computeInstanceGroupNamespaceLister) Get(name string) (*v1alpha1.ComputeInstanceGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

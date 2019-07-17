@@ -32,7 +32,7 @@ import (
 // LoadBalancerBackendServerPoliciesGetter has a method to return a LoadBalancerBackendServerPolicyInterface.
 // A group's client should implement this interface.
 type LoadBalancerBackendServerPoliciesGetter interface {
-	LoadBalancerBackendServerPolicies() LoadBalancerBackendServerPolicyInterface
+	LoadBalancerBackendServerPolicies(namespace string) LoadBalancerBackendServerPolicyInterface
 }
 
 // LoadBalancerBackendServerPolicyInterface has methods to work with LoadBalancerBackendServerPolicy resources.
@@ -52,12 +52,14 @@ type LoadBalancerBackendServerPolicyInterface interface {
 // loadBalancerBackendServerPolicies implements LoadBalancerBackendServerPolicyInterface
 type loadBalancerBackendServerPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLoadBalancerBackendServerPolicies returns a LoadBalancerBackendServerPolicies
-func newLoadBalancerBackendServerPolicies(c *AwsV1alpha1Client) *loadBalancerBackendServerPolicies {
+func newLoadBalancerBackendServerPolicies(c *AwsV1alpha1Client, namespace string) *loadBalancerBackendServerPolicies {
 	return &loadBalancerBackendServerPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLoadBalancerBackendServerPolicies(c *AwsV1alpha1Client) *loadBalancerBac
 func (c *loadBalancerBackendServerPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.LoadBalancerBackendServerPolicy, err error) {
 	result = &v1alpha1.LoadBalancerBackendServerPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loadbalancerbackendserverpolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *loadBalancerBackendServerPolicies) List(opts v1.ListOptions) (result *v
 	}
 	result = &v1alpha1.LoadBalancerBackendServerPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loadbalancerbackendserverpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *loadBalancerBackendServerPolicies) Watch(opts v1.ListOptions) (watch.In
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("loadbalancerbackendserverpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *loadBalancerBackendServerPolicies) Watch(opts v1.ListOptions) (watch.In
 func (c *loadBalancerBackendServerPolicies) Create(loadBalancerBackendServerPolicy *v1alpha1.LoadBalancerBackendServerPolicy) (result *v1alpha1.LoadBalancerBackendServerPolicy, err error) {
 	result = &v1alpha1.LoadBalancerBackendServerPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("loadbalancerbackendserverpolicies").
 		Body(loadBalancerBackendServerPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *loadBalancerBackendServerPolicies) Create(loadBalancerBackendServerPoli
 func (c *loadBalancerBackendServerPolicies) Update(loadBalancerBackendServerPolicy *v1alpha1.LoadBalancerBackendServerPolicy) (result *v1alpha1.LoadBalancerBackendServerPolicy, err error) {
 	result = &v1alpha1.LoadBalancerBackendServerPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loadbalancerbackendserverpolicies").
 		Name(loadBalancerBackendServerPolicy.Name).
 		Body(loadBalancerBackendServerPolicy).
@@ -132,6 +139,7 @@ func (c *loadBalancerBackendServerPolicies) Update(loadBalancerBackendServerPoli
 func (c *loadBalancerBackendServerPolicies) UpdateStatus(loadBalancerBackendServerPolicy *v1alpha1.LoadBalancerBackendServerPolicy) (result *v1alpha1.LoadBalancerBackendServerPolicy, err error) {
 	result = &v1alpha1.LoadBalancerBackendServerPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loadbalancerbackendserverpolicies").
 		Name(loadBalancerBackendServerPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *loadBalancerBackendServerPolicies) UpdateStatus(loadBalancerBackendServ
 // Delete takes name of the loadBalancerBackendServerPolicy and deletes it. Returns an error if one occurs.
 func (c *loadBalancerBackendServerPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loadbalancerbackendserverpolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *loadBalancerBackendServerPolicies) DeleteCollection(options *v1.DeleteO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loadbalancerbackendserverpolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *loadBalancerBackendServerPolicies) DeleteCollection(options *v1.DeleteO
 func (c *loadBalancerBackendServerPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LoadBalancerBackendServerPolicy, err error) {
 	result = &v1alpha1.LoadBalancerBackendServerPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("loadbalancerbackendserverpolicies").
 		SubResource(subresources...).
 		Name(name).

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,13 +20,14 @@ type S3AccountPublicAccessBlock struct {
 
 type S3AccountPublicAccessBlockSpec struct {
 	// +optional
-	BlockPublicAcls bool `json:"block_public_acls,omitempty"`
+	BlockPublicAcls bool `json:"blockPublicAcls,omitempty" tf:"block_public_acls,omitempty"`
 	// +optional
-	BlockPublicPolicy bool `json:"block_public_policy,omitempty"`
+	BlockPublicPolicy bool `json:"blockPublicPolicy,omitempty" tf:"block_public_policy,omitempty"`
 	// +optional
-	IgnorePublicAcls bool `json:"ignore_public_acls,omitempty"`
+	IgnorePublicAcls bool `json:"ignorePublicAcls,omitempty" tf:"ignore_public_acls,omitempty"`
 	// +optional
-	RestrictPublicBuckets bool `json:"restrict_public_buckets,omitempty"`
+	RestrictPublicBuckets bool                      `json:"restrictPublicBuckets,omitempty" tf:"restrict_public_buckets,omitempty"`
+	ProviderRef           core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type S3AccountPublicAccessBlockStatus struct {
@@ -34,7 +35,9 @@ type S3AccountPublicAccessBlockStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

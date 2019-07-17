@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,22 +20,23 @@ type ApiGatewayMethod struct {
 
 type ApiGatewayMethodSpec struct {
 	// +optional
-	ApiKeyRequired bool   `json:"api_key_required,omitempty"`
-	Authorization  string `json:"authorization"`
+	ApiKeyRequired bool   `json:"apiKeyRequired,omitempty" tf:"api_key_required,omitempty"`
+	Authorization  string `json:"authorization" tf:"authorization"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	AuthorizationScopes []string `json:"authorization_scopes,omitempty"`
+	AuthorizationScopes []string `json:"authorizationScopes,omitempty" tf:"authorization_scopes,omitempty"`
 	// +optional
-	AuthorizerId string `json:"authorizer_id,omitempty"`
-	HttpMethod   string `json:"http_method"`
+	AuthorizerID string `json:"authorizerID,omitempty" tf:"authorizer_id,omitempty"`
+	HttpMethod   string `json:"httpMethod" tf:"http_method"`
 	// +optional
-	RequestModels map[string]string `json:"request_models,omitempty"`
+	RequestModels map[string]string `json:"requestModels,omitempty" tf:"request_models,omitempty"`
 	// +optional
-	RequestParameters map[string]bool `json:"request_parameters,omitempty"`
+	RequestParameters map[string]bool `json:"requestParameters,omitempty" tf:"request_parameters,omitempty"`
 	// +optional
-	RequestValidatorId string `json:"request_validator_id,omitempty"`
-	ResourceId         string `json:"resource_id"`
-	RestApiId          string `json:"rest_api_id"`
+	RequestValidatorID string                    `json:"requestValidatorID,omitempty" tf:"request_validator_id,omitempty"`
+	ResourceID         string                    `json:"resourceID" tf:"resource_id"`
+	RestAPIID          string                    `json:"restAPIID" tf:"rest_api_id"`
+	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ApiGatewayMethodStatus struct {
@@ -43,7 +44,9 @@ type ApiGatewayMethodStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

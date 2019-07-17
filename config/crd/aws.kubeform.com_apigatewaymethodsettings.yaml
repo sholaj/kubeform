@@ -397,21 +397,54 @@ spec:
           type: object
         spec:
           properties:
-            method_path:
+            methodPath:
               type: string
-            rest_api_id:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            restAPIID:
               type: string
             settings:
-              items: {}
+              items:
+                properties:
+                  cacheDataEncrypted:
+                    type: boolean
+                  cacheTtlInSeconds:
+                    type: integer
+                  cachingEnabled:
+                    type: boolean
+                  dataTraceEnabled:
+                    type: boolean
+                  loggingLevel:
+                    type: string
+                  metricsEnabled:
+                    type: boolean
+                  requireAuthorizationForCacheControl:
+                    type: boolean
+                  throttlingBurstLimit:
+                    type: integer
+                  throttlingRateLimit:
+                    description: A Number represents a JSON number literal.
+                    type: string
+                  unauthorizedCacheControlHeaderStrategy:
+                    type: string
+                type: object
               maxItems: 1
               type: array
-            stage_name:
+            stageName:
               type: string
           required:
-          - method_path
-          - rest_api_id
+          - methodPath
+          - providerRef
+          - restAPIID
           - settings
-          - stage_name
+          - stageName
           type: object
         status:
           properties:
@@ -422,6 +455,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

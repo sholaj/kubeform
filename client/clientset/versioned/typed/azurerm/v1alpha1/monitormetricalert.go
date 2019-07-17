@@ -32,7 +32,7 @@ import (
 // MonitorMetricAlertsGetter has a method to return a MonitorMetricAlertInterface.
 // A group's client should implement this interface.
 type MonitorMetricAlertsGetter interface {
-	MonitorMetricAlerts() MonitorMetricAlertInterface
+	MonitorMetricAlerts(namespace string) MonitorMetricAlertInterface
 }
 
 // MonitorMetricAlertInterface has methods to work with MonitorMetricAlert resources.
@@ -52,12 +52,14 @@ type MonitorMetricAlertInterface interface {
 // monitorMetricAlerts implements MonitorMetricAlertInterface
 type monitorMetricAlerts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMonitorMetricAlerts returns a MonitorMetricAlerts
-func newMonitorMetricAlerts(c *AzurermV1alpha1Client) *monitorMetricAlerts {
+func newMonitorMetricAlerts(c *AzurermV1alpha1Client, namespace string) *monitorMetricAlerts {
 	return &monitorMetricAlerts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMonitorMetricAlerts(c *AzurermV1alpha1Client) *monitorMetricAlerts {
 func (c *monitorMetricAlerts) Get(name string, options v1.GetOptions) (result *v1alpha1.MonitorMetricAlert, err error) {
 	result = &v1alpha1.MonitorMetricAlert{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitormetricalerts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *monitorMetricAlerts) List(opts v1.ListOptions) (result *v1alpha1.Monito
 	}
 	result = &v1alpha1.MonitorMetricAlertList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitormetricalerts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *monitorMetricAlerts) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("monitormetricalerts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *monitorMetricAlerts) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *monitorMetricAlerts) Create(monitorMetricAlert *v1alpha1.MonitorMetricAlert) (result *v1alpha1.MonitorMetricAlert, err error) {
 	result = &v1alpha1.MonitorMetricAlert{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("monitormetricalerts").
 		Body(monitorMetricAlert).
 		Do().
@@ -118,6 +124,7 @@ func (c *monitorMetricAlerts) Create(monitorMetricAlert *v1alpha1.MonitorMetricA
 func (c *monitorMetricAlerts) Update(monitorMetricAlert *v1alpha1.MonitorMetricAlert) (result *v1alpha1.MonitorMetricAlert, err error) {
 	result = &v1alpha1.MonitorMetricAlert{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitormetricalerts").
 		Name(monitorMetricAlert.Name).
 		Body(monitorMetricAlert).
@@ -132,6 +139,7 @@ func (c *monitorMetricAlerts) Update(monitorMetricAlert *v1alpha1.MonitorMetricA
 func (c *monitorMetricAlerts) UpdateStatus(monitorMetricAlert *v1alpha1.MonitorMetricAlert) (result *v1alpha1.MonitorMetricAlert, err error) {
 	result = &v1alpha1.MonitorMetricAlert{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitormetricalerts").
 		Name(monitorMetricAlert.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *monitorMetricAlerts) UpdateStatus(monitorMetricAlert *v1alpha1.MonitorM
 // Delete takes name of the monitorMetricAlert and deletes it. Returns an error if one occurs.
 func (c *monitorMetricAlerts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitormetricalerts").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *monitorMetricAlerts) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitormetricalerts").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *monitorMetricAlerts) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *monitorMetricAlerts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MonitorMetricAlert, err error) {
 	result = &v1alpha1.MonitorMetricAlert{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("monitormetricalerts").
 		SubResource(subresources...).
 		Name(name).

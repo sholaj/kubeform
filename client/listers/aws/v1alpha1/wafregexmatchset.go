@@ -29,8 +29,8 @@ import (
 type WafRegexMatchSetLister interface {
 	// List lists all WafRegexMatchSets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.WafRegexMatchSet, err error)
-	// Get retrieves the WafRegexMatchSet from the index for a given name.
-	Get(name string) (*v1alpha1.WafRegexMatchSet, error)
+	// WafRegexMatchSets returns an object that can list and get WafRegexMatchSets.
+	WafRegexMatchSets(namespace string) WafRegexMatchSetNamespaceLister
 	WafRegexMatchSetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *wafRegexMatchSetLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the WafRegexMatchSet from the index for a given name.
-func (s *wafRegexMatchSetLister) Get(name string) (*v1alpha1.WafRegexMatchSet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafRegexMatchSets returns an object that can list and get WafRegexMatchSets.
+func (s *wafRegexMatchSetLister) WafRegexMatchSets(namespace string) WafRegexMatchSetNamespaceLister {
+	return wafRegexMatchSetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafRegexMatchSetNamespaceLister helps list and get WafRegexMatchSets.
+type WafRegexMatchSetNamespaceLister interface {
+	// List lists all WafRegexMatchSets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafRegexMatchSet, err error)
+	// Get retrieves the WafRegexMatchSet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafRegexMatchSet, error)
+	WafRegexMatchSetNamespaceListerExpansion
+}
+
+// wafRegexMatchSetNamespaceLister implements the WafRegexMatchSetNamespaceLister
+// interface.
+type wafRegexMatchSetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafRegexMatchSets in the indexer for a given namespace.
+func (s wafRegexMatchSetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafRegexMatchSet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafRegexMatchSet))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafRegexMatchSet from the indexer for a given namespace and name.
+func (s wafRegexMatchSetNamespaceLister) Get(name string) (*v1alpha1.WafRegexMatchSet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

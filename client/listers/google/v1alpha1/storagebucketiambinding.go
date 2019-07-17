@@ -29,8 +29,8 @@ import (
 type StorageBucketIamBindingLister interface {
 	// List lists all StorageBucketIamBindings in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StorageBucketIamBinding, err error)
-	// Get retrieves the StorageBucketIamBinding from the index for a given name.
-	Get(name string) (*v1alpha1.StorageBucketIamBinding, error)
+	// StorageBucketIamBindings returns an object that can list and get StorageBucketIamBindings.
+	StorageBucketIamBindings(namespace string) StorageBucketIamBindingNamespaceLister
 	StorageBucketIamBindingListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *storageBucketIamBindingLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the StorageBucketIamBinding from the index for a given name.
-func (s *storageBucketIamBindingLister) Get(name string) (*v1alpha1.StorageBucketIamBinding, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StorageBucketIamBindings returns an object that can list and get StorageBucketIamBindings.
+func (s *storageBucketIamBindingLister) StorageBucketIamBindings(namespace string) StorageBucketIamBindingNamespaceLister {
+	return storageBucketIamBindingNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StorageBucketIamBindingNamespaceLister helps list and get StorageBucketIamBindings.
+type StorageBucketIamBindingNamespaceLister interface {
+	// List lists all StorageBucketIamBindings in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StorageBucketIamBinding, err error)
+	// Get retrieves the StorageBucketIamBinding from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StorageBucketIamBinding, error)
+	StorageBucketIamBindingNamespaceListerExpansion
+}
+
+// storageBucketIamBindingNamespaceLister implements the StorageBucketIamBindingNamespaceLister
+// interface.
+type storageBucketIamBindingNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StorageBucketIamBindings in the indexer for a given namespace.
+func (s storageBucketIamBindingNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StorageBucketIamBinding, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StorageBucketIamBinding))
+	})
+	return ret, err
+}
+
+// Get retrieves the StorageBucketIamBinding from the indexer for a given namespace and name.
+func (s storageBucketIamBindingNamespaceLister) Get(name string) (*v1alpha1.StorageBucketIamBinding, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

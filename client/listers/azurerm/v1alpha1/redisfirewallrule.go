@@ -29,8 +29,8 @@ import (
 type RedisFirewallRuleLister interface {
 	// List lists all RedisFirewallRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RedisFirewallRule, err error)
-	// Get retrieves the RedisFirewallRule from the index for a given name.
-	Get(name string) (*v1alpha1.RedisFirewallRule, error)
+	// RedisFirewallRules returns an object that can list and get RedisFirewallRules.
+	RedisFirewallRules(namespace string) RedisFirewallRuleNamespaceLister
 	RedisFirewallRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *redisFirewallRuleLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the RedisFirewallRule from the index for a given name.
-func (s *redisFirewallRuleLister) Get(name string) (*v1alpha1.RedisFirewallRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RedisFirewallRules returns an object that can list and get RedisFirewallRules.
+func (s *redisFirewallRuleLister) RedisFirewallRules(namespace string) RedisFirewallRuleNamespaceLister {
+	return redisFirewallRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RedisFirewallRuleNamespaceLister helps list and get RedisFirewallRules.
+type RedisFirewallRuleNamespaceLister interface {
+	// List lists all RedisFirewallRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RedisFirewallRule, err error)
+	// Get retrieves the RedisFirewallRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RedisFirewallRule, error)
+	RedisFirewallRuleNamespaceListerExpansion
+}
+
+// redisFirewallRuleNamespaceLister implements the RedisFirewallRuleNamespaceLister
+// interface.
+type redisFirewallRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RedisFirewallRules in the indexer for a given namespace.
+func (s redisFirewallRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RedisFirewallRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RedisFirewallRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the RedisFirewallRule from the indexer for a given namespace and name.
+func (s redisFirewallRuleNamespaceLister) Get(name string) (*v1alpha1.RedisFirewallRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

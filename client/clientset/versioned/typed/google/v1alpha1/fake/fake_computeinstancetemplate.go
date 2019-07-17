@@ -31,6 +31,7 @@ import (
 // FakeComputeInstanceTemplates implements ComputeInstanceTemplateInterface
 type FakeComputeInstanceTemplates struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computeinstancetemplatesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computeinstancetemplates"}
@@ -40,7 +41,8 @@ var computeinstancetemplatesKind = schema.GroupVersionKind{Group: "google.kubefo
 // Get takes name of the computeInstanceTemplate, and returns the corresponding computeInstanceTemplate object, and an error if there is any.
 func (c *FakeComputeInstanceTemplates) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeInstanceTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computeinstancetemplatesResource, name), &v1alpha1.ComputeInstanceTemplate{})
+		Invokes(testing.NewGetAction(computeinstancetemplatesResource, c.ns, name), &v1alpha1.ComputeInstanceTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeInstanceTemplates) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of ComputeInstanceTemplates that match those selectors.
 func (c *FakeComputeInstanceTemplates) List(opts v1.ListOptions) (result *v1alpha1.ComputeInstanceTemplateList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computeinstancetemplatesResource, computeinstancetemplatesKind, opts), &v1alpha1.ComputeInstanceTemplateList{})
+		Invokes(testing.NewListAction(computeinstancetemplatesResource, computeinstancetemplatesKind, c.ns, opts), &v1alpha1.ComputeInstanceTemplateList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeInstanceTemplates) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested computeInstanceTemplates.
 func (c *FakeComputeInstanceTemplates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computeinstancetemplatesResource, opts))
+		InvokesWatch(testing.NewWatchAction(computeinstancetemplatesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeInstanceTemplate and creates it.  Returns the server's representation of the computeInstanceTemplate, and an error, if there is any.
 func (c *FakeComputeInstanceTemplates) Create(computeInstanceTemplate *v1alpha1.ComputeInstanceTemplate) (result *v1alpha1.ComputeInstanceTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computeinstancetemplatesResource, computeInstanceTemplate), &v1alpha1.ComputeInstanceTemplate{})
+		Invokes(testing.NewCreateAction(computeinstancetemplatesResource, c.ns, computeInstanceTemplate), &v1alpha1.ComputeInstanceTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeInstanceTemplates) Create(computeInstanceTemplate *v1alpha1.
 // Update takes the representation of a computeInstanceTemplate and updates it. Returns the server's representation of the computeInstanceTemplate, and an error, if there is any.
 func (c *FakeComputeInstanceTemplates) Update(computeInstanceTemplate *v1alpha1.ComputeInstanceTemplate) (result *v1alpha1.ComputeInstanceTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computeinstancetemplatesResource, computeInstanceTemplate), &v1alpha1.ComputeInstanceTemplate{})
+		Invokes(testing.NewUpdateAction(computeinstancetemplatesResource, c.ns, computeInstanceTemplate), &v1alpha1.ComputeInstanceTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeInstanceTemplates) Update(computeInstanceTemplate *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeInstanceTemplates) UpdateStatus(computeInstanceTemplate *v1alpha1.ComputeInstanceTemplate) (*v1alpha1.ComputeInstanceTemplate, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computeinstancetemplatesResource, "status", computeInstanceTemplate), &v1alpha1.ComputeInstanceTemplate{})
+		Invokes(testing.NewUpdateSubresourceAction(computeinstancetemplatesResource, "status", c.ns, computeInstanceTemplate), &v1alpha1.ComputeInstanceTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeInstanceTemplates) UpdateStatus(computeInstanceTemplate *v1a
 // Delete takes name of the computeInstanceTemplate and deletes it. Returns an error if one occurs.
 func (c *FakeComputeInstanceTemplates) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computeinstancetemplatesResource, name), &v1alpha1.ComputeInstanceTemplate{})
+		Invokes(testing.NewDeleteAction(computeinstancetemplatesResource, c.ns, name), &v1alpha1.ComputeInstanceTemplate{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeInstanceTemplates) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computeinstancetemplatesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computeinstancetemplatesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeInstanceTemplateList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeInstanceTemplates) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched computeInstanceTemplate.
 func (c *FakeComputeInstanceTemplates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeInstanceTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computeinstancetemplatesResource, name, pt, data, subresources...), &v1alpha1.ComputeInstanceTemplate{})
+		Invokes(testing.NewPatchSubresourceAction(computeinstancetemplatesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeInstanceTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakePinpointGcmChannels implements PinpointGcmChannelInterface
 type FakePinpointGcmChannels struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var pinpointgcmchannelsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "pinpointgcmchannels"}
@@ -40,7 +41,8 @@ var pinpointgcmchannelsKind = schema.GroupVersionKind{Group: "aws.kubeform.com",
 // Get takes name of the pinpointGcmChannel, and returns the corresponding pinpointGcmChannel object, and an error if there is any.
 func (c *FakePinpointGcmChannels) Get(name string, options v1.GetOptions) (result *v1alpha1.PinpointGcmChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(pinpointgcmchannelsResource, name), &v1alpha1.PinpointGcmChannel{})
+		Invokes(testing.NewGetAction(pinpointgcmchannelsResource, c.ns, name), &v1alpha1.PinpointGcmChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakePinpointGcmChannels) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of PinpointGcmChannels that match those selectors.
 func (c *FakePinpointGcmChannels) List(opts v1.ListOptions) (result *v1alpha1.PinpointGcmChannelList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(pinpointgcmchannelsResource, pinpointgcmchannelsKind, opts), &v1alpha1.PinpointGcmChannelList{})
+		Invokes(testing.NewListAction(pinpointgcmchannelsResource, pinpointgcmchannelsKind, c.ns, opts), &v1alpha1.PinpointGcmChannelList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakePinpointGcmChannels) List(opts v1.ListOptions) (result *v1alpha1.Pi
 // Watch returns a watch.Interface that watches the requested pinpointGcmChannels.
 func (c *FakePinpointGcmChannels) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(pinpointgcmchannelsResource, opts))
+		InvokesWatch(testing.NewWatchAction(pinpointgcmchannelsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a pinpointGcmChannel and creates it.  Returns the server's representation of the pinpointGcmChannel, and an error, if there is any.
 func (c *FakePinpointGcmChannels) Create(pinpointGcmChannel *v1alpha1.PinpointGcmChannel) (result *v1alpha1.PinpointGcmChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(pinpointgcmchannelsResource, pinpointGcmChannel), &v1alpha1.PinpointGcmChannel{})
+		Invokes(testing.NewCreateAction(pinpointgcmchannelsResource, c.ns, pinpointGcmChannel), &v1alpha1.PinpointGcmChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakePinpointGcmChannels) Create(pinpointGcmChannel *v1alpha1.PinpointGc
 // Update takes the representation of a pinpointGcmChannel and updates it. Returns the server's representation of the pinpointGcmChannel, and an error, if there is any.
 func (c *FakePinpointGcmChannels) Update(pinpointGcmChannel *v1alpha1.PinpointGcmChannel) (result *v1alpha1.PinpointGcmChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(pinpointgcmchannelsResource, pinpointGcmChannel), &v1alpha1.PinpointGcmChannel{})
+		Invokes(testing.NewUpdateAction(pinpointgcmchannelsResource, c.ns, pinpointGcmChannel), &v1alpha1.PinpointGcmChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakePinpointGcmChannels) Update(pinpointGcmChannel *v1alpha1.PinpointGc
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakePinpointGcmChannels) UpdateStatus(pinpointGcmChannel *v1alpha1.PinpointGcmChannel) (*v1alpha1.PinpointGcmChannel, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(pinpointgcmchannelsResource, "status", pinpointGcmChannel), &v1alpha1.PinpointGcmChannel{})
+		Invokes(testing.NewUpdateSubresourceAction(pinpointgcmchannelsResource, "status", c.ns, pinpointGcmChannel), &v1alpha1.PinpointGcmChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakePinpointGcmChannels) UpdateStatus(pinpointGcmChannel *v1alpha1.Pinp
 // Delete takes name of the pinpointGcmChannel and deletes it. Returns an error if one occurs.
 func (c *FakePinpointGcmChannels) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(pinpointgcmchannelsResource, name), &v1alpha1.PinpointGcmChannel{})
+		Invokes(testing.NewDeleteAction(pinpointgcmchannelsResource, c.ns, name), &v1alpha1.PinpointGcmChannel{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakePinpointGcmChannels) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(pinpointgcmchannelsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(pinpointgcmchannelsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PinpointGcmChannelList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakePinpointGcmChannels) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched pinpointGcmChannel.
 func (c *FakePinpointGcmChannels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PinpointGcmChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(pinpointgcmchannelsResource, name, pt, data, subresources...), &v1alpha1.PinpointGcmChannel{})
+		Invokes(testing.NewPatchSubresourceAction(pinpointgcmchannelsResource, c.ns, name, pt, data, subresources...), &v1alpha1.PinpointGcmChannel{})
+
 	if obj == nil {
 		return nil, err
 	}

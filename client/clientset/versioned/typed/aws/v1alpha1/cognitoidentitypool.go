@@ -32,7 +32,7 @@ import (
 // CognitoIdentityPoolsGetter has a method to return a CognitoIdentityPoolInterface.
 // A group's client should implement this interface.
 type CognitoIdentityPoolsGetter interface {
-	CognitoIdentityPools() CognitoIdentityPoolInterface
+	CognitoIdentityPools(namespace string) CognitoIdentityPoolInterface
 }
 
 // CognitoIdentityPoolInterface has methods to work with CognitoIdentityPool resources.
@@ -52,12 +52,14 @@ type CognitoIdentityPoolInterface interface {
 // cognitoIdentityPools implements CognitoIdentityPoolInterface
 type cognitoIdentityPools struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCognitoIdentityPools returns a CognitoIdentityPools
-func newCognitoIdentityPools(c *AwsV1alpha1Client) *cognitoIdentityPools {
+func newCognitoIdentityPools(c *AwsV1alpha1Client, namespace string) *cognitoIdentityPools {
 	return &cognitoIdentityPools{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCognitoIdentityPools(c *AwsV1alpha1Client) *cognitoIdentityPools {
 func (c *cognitoIdentityPools) Get(name string, options v1.GetOptions) (result *v1alpha1.CognitoIdentityPool, err error) {
 	result = &v1alpha1.CognitoIdentityPool{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitoidentitypools").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cognitoIdentityPools) List(opts v1.ListOptions) (result *v1alpha1.Cogni
 	}
 	result = &v1alpha1.CognitoIdentityPoolList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitoidentitypools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cognitoIdentityPools) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitoidentitypools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cognitoIdentityPools) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *cognitoIdentityPools) Create(cognitoIdentityPool *v1alpha1.CognitoIdentityPool) (result *v1alpha1.CognitoIdentityPool, err error) {
 	result = &v1alpha1.CognitoIdentityPool{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cognitoidentitypools").
 		Body(cognitoIdentityPool).
 		Do().
@@ -118,6 +124,7 @@ func (c *cognitoIdentityPools) Create(cognitoIdentityPool *v1alpha1.CognitoIdent
 func (c *cognitoIdentityPools) Update(cognitoIdentityPool *v1alpha1.CognitoIdentityPool) (result *v1alpha1.CognitoIdentityPool, err error) {
 	result = &v1alpha1.CognitoIdentityPool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cognitoidentitypools").
 		Name(cognitoIdentityPool.Name).
 		Body(cognitoIdentityPool).
@@ -132,6 +139,7 @@ func (c *cognitoIdentityPools) Update(cognitoIdentityPool *v1alpha1.CognitoIdent
 func (c *cognitoIdentityPools) UpdateStatus(cognitoIdentityPool *v1alpha1.CognitoIdentityPool) (result *v1alpha1.CognitoIdentityPool, err error) {
 	result = &v1alpha1.CognitoIdentityPool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cognitoidentitypools").
 		Name(cognitoIdentityPool.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cognitoIdentityPools) UpdateStatus(cognitoIdentityPool *v1alpha1.Cognit
 // Delete takes name of the cognitoIdentityPool and deletes it. Returns an error if one occurs.
 func (c *cognitoIdentityPools) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cognitoidentitypools").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cognitoIdentityPools) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cognitoidentitypools").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cognitoIdentityPools) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *cognitoIdentityPools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CognitoIdentityPool, err error) {
 	result = &v1alpha1.CognitoIdentityPool{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cognitoidentitypools").
 		SubResource(subresources...).
 		Name(name).

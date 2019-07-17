@@ -397,19 +397,29 @@ spec:
           type: object
         spec:
           properties:
-            backup_policy_id:
+            backupPolicyID:
               type: string
-            recovery_vault_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            recoveryVaultName:
               type: string
-            resource_group_name:
+            resourceGroupName:
               type: string
-            source_vm_id:
+            sourceVmID:
               type: string
           required:
-          - backup_policy_id
-          - recovery_vault_name
-          - resource_group_name
-          - source_vm_id
+          - backupPolicyID
+          - providerRef
+          - recoveryVaultName
+          - resourceGroupName
+          - sourceVmID
           type: object
         status:
           properties:
@@ -420,6 +430,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

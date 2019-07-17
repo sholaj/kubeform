@@ -397,47 +397,57 @@ spec:
           type: object
         spec:
           properties:
-            berkshelf_version:
+            berkshelfVersion:
               type: string
             color:
               type: string
-            configuration_manager_name:
+            configurationManagerName:
               type: string
-            configuration_manager_version:
+            configurationManagerVersion:
               type: string
-            custom_json:
+            customJSON:
               type: string
-            default_instance_profile_arn:
+            defaultInstanceProfileArn:
               type: string
-            default_os:
+            defaultOs:
               type: string
-            default_root_device_type:
+            defaultRootDeviceType:
               type: string
-            default_ssh_key_name:
+            defaultSSHKeyName:
               type: string
-            hostname_theme:
+            hostnameTheme:
               type: string
-            manage_berkshelf:
+            manageBerkshelf:
               type: boolean
             name:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             region:
               type: string
-            service_role_arn:
+            serviceRoleArn:
               type: string
             tags:
               additionalProperties:
                 type: string
               type: object
-            use_custom_cookbooks:
+            useCustomCookbooks:
               type: boolean
-            use_opsworks_security_groups:
+            useOpsworksSecurityGroups:
               type: boolean
           required:
-          - default_instance_profile_arn
+          - defaultInstanceProfileArn
           - name
+          - providerRef
           - region
-          - service_role_arn
+          - serviceRoleArn
           type: object
         status:
           properties:
@@ -448,6 +458,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

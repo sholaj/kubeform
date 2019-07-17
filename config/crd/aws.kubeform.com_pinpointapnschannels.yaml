@@ -397,26 +397,36 @@ spec:
           type: object
         spec:
           properties:
-            application_id:
+            applicationID:
               type: string
-            bundle_id:
+            bundleID:
               type: string
             certificate:
               type: string
-            default_authentication_method:
+            defaultAuthenticationMethod:
               type: string
             enabled:
               type: boolean
-            private_key:
+            privateKey:
               type: string
-            team_id:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            teamID:
               type: string
-            token_key:
+            tokenKey:
               type: string
-            token_key_id:
+            tokenKeyID:
               type: string
           required:
-          - application_id
+          - applicationID
+          - providerRef
           type: object
         status:
           properties:
@@ -427,6 +437,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

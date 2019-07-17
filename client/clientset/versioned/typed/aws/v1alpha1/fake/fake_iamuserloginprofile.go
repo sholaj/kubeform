@@ -31,6 +31,7 @@ import (
 // FakeIamUserLoginProfiles implements IamUserLoginProfileInterface
 type FakeIamUserLoginProfiles struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var iamuserloginprofilesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "iamuserloginprofiles"}
@@ -40,7 +41,8 @@ var iamuserloginprofilesKind = schema.GroupVersionKind{Group: "aws.kubeform.com"
 // Get takes name of the iamUserLoginProfile, and returns the corresponding iamUserLoginProfile object, and an error if there is any.
 func (c *FakeIamUserLoginProfiles) Get(name string, options v1.GetOptions) (result *v1alpha1.IamUserLoginProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iamuserloginprofilesResource, name), &v1alpha1.IamUserLoginProfile{})
+		Invokes(testing.NewGetAction(iamuserloginprofilesResource, c.ns, name), &v1alpha1.IamUserLoginProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIamUserLoginProfiles) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of IamUserLoginProfiles that match those selectors.
 func (c *FakeIamUserLoginProfiles) List(opts v1.ListOptions) (result *v1alpha1.IamUserLoginProfileList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iamuserloginprofilesResource, iamuserloginprofilesKind, opts), &v1alpha1.IamUserLoginProfileList{})
+		Invokes(testing.NewListAction(iamuserloginprofilesResource, iamuserloginprofilesKind, c.ns, opts), &v1alpha1.IamUserLoginProfileList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIamUserLoginProfiles) List(opts v1.ListOptions) (result *v1alpha1.I
 // Watch returns a watch.Interface that watches the requested iamUserLoginProfiles.
 func (c *FakeIamUserLoginProfiles) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iamuserloginprofilesResource, opts))
+		InvokesWatch(testing.NewWatchAction(iamuserloginprofilesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iamUserLoginProfile and creates it.  Returns the server's representation of the iamUserLoginProfile, and an error, if there is any.
 func (c *FakeIamUserLoginProfiles) Create(iamUserLoginProfile *v1alpha1.IamUserLoginProfile) (result *v1alpha1.IamUserLoginProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iamuserloginprofilesResource, iamUserLoginProfile), &v1alpha1.IamUserLoginProfile{})
+		Invokes(testing.NewCreateAction(iamuserloginprofilesResource, c.ns, iamUserLoginProfile), &v1alpha1.IamUserLoginProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIamUserLoginProfiles) Create(iamUserLoginProfile *v1alpha1.IamUserL
 // Update takes the representation of a iamUserLoginProfile and updates it. Returns the server's representation of the iamUserLoginProfile, and an error, if there is any.
 func (c *FakeIamUserLoginProfiles) Update(iamUserLoginProfile *v1alpha1.IamUserLoginProfile) (result *v1alpha1.IamUserLoginProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iamuserloginprofilesResource, iamUserLoginProfile), &v1alpha1.IamUserLoginProfile{})
+		Invokes(testing.NewUpdateAction(iamuserloginprofilesResource, c.ns, iamUserLoginProfile), &v1alpha1.IamUserLoginProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIamUserLoginProfiles) Update(iamUserLoginProfile *v1alpha1.IamUserL
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIamUserLoginProfiles) UpdateStatus(iamUserLoginProfile *v1alpha1.IamUserLoginProfile) (*v1alpha1.IamUserLoginProfile, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iamuserloginprofilesResource, "status", iamUserLoginProfile), &v1alpha1.IamUserLoginProfile{})
+		Invokes(testing.NewUpdateSubresourceAction(iamuserloginprofilesResource, "status", c.ns, iamUserLoginProfile), &v1alpha1.IamUserLoginProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIamUserLoginProfiles) UpdateStatus(iamUserLoginProfile *v1alpha1.Ia
 // Delete takes name of the iamUserLoginProfile and deletes it. Returns an error if one occurs.
 func (c *FakeIamUserLoginProfiles) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iamuserloginprofilesResource, name), &v1alpha1.IamUserLoginProfile{})
+		Invokes(testing.NewDeleteAction(iamuserloginprofilesResource, c.ns, name), &v1alpha1.IamUserLoginProfile{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIamUserLoginProfiles) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iamuserloginprofilesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iamuserloginprofilesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IamUserLoginProfileList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIamUserLoginProfiles) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched iamUserLoginProfile.
 func (c *FakeIamUserLoginProfiles) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamUserLoginProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iamuserloginprofilesResource, name, pt, data, subresources...), &v1alpha1.IamUserLoginProfile{})
+		Invokes(testing.NewPatchSubresourceAction(iamuserloginprofilesResource, c.ns, name, pt, data, subresources...), &v1alpha1.IamUserLoginProfile{})
+
 	if obj == nil {
 		return nil, err
 	}

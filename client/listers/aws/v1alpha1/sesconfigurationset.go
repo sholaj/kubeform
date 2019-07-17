@@ -29,8 +29,8 @@ import (
 type SesConfigurationSetLister interface {
 	// List lists all SesConfigurationSets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SesConfigurationSet, err error)
-	// Get retrieves the SesConfigurationSet from the index for a given name.
-	Get(name string) (*v1alpha1.SesConfigurationSet, error)
+	// SesConfigurationSets returns an object that can list and get SesConfigurationSets.
+	SesConfigurationSets(namespace string) SesConfigurationSetNamespaceLister
 	SesConfigurationSetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sesConfigurationSetLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the SesConfigurationSet from the index for a given name.
-func (s *sesConfigurationSetLister) Get(name string) (*v1alpha1.SesConfigurationSet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SesConfigurationSets returns an object that can list and get SesConfigurationSets.
+func (s *sesConfigurationSetLister) SesConfigurationSets(namespace string) SesConfigurationSetNamespaceLister {
+	return sesConfigurationSetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SesConfigurationSetNamespaceLister helps list and get SesConfigurationSets.
+type SesConfigurationSetNamespaceLister interface {
+	// List lists all SesConfigurationSets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SesConfigurationSet, err error)
+	// Get retrieves the SesConfigurationSet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SesConfigurationSet, error)
+	SesConfigurationSetNamespaceListerExpansion
+}
+
+// sesConfigurationSetNamespaceLister implements the SesConfigurationSetNamespaceLister
+// interface.
+type sesConfigurationSetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SesConfigurationSets in the indexer for a given namespace.
+func (s sesConfigurationSetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SesConfigurationSet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SesConfigurationSet))
+	})
+	return ret, err
+}
+
+// Get retrieves the SesConfigurationSet from the indexer for a given namespace and name.
+func (s sesConfigurationSetNamespaceLister) Get(name string) (*v1alpha1.SesConfigurationSet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeSpannerDatabaseIamMembers implements SpannerDatabaseIamMemberInterface
 type FakeSpannerDatabaseIamMembers struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var spannerdatabaseiammembersResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "spannerdatabaseiammembers"}
@@ -40,7 +41,8 @@ var spannerdatabaseiammembersKind = schema.GroupVersionKind{Group: "google.kubef
 // Get takes name of the spannerDatabaseIamMember, and returns the corresponding spannerDatabaseIamMember object, and an error if there is any.
 func (c *FakeSpannerDatabaseIamMembers) Get(name string, options v1.GetOptions) (result *v1alpha1.SpannerDatabaseIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(spannerdatabaseiammembersResource, name), &v1alpha1.SpannerDatabaseIamMember{})
+		Invokes(testing.NewGetAction(spannerdatabaseiammembersResource, c.ns, name), &v1alpha1.SpannerDatabaseIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSpannerDatabaseIamMembers) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of SpannerDatabaseIamMembers that match those selectors.
 func (c *FakeSpannerDatabaseIamMembers) List(opts v1.ListOptions) (result *v1alpha1.SpannerDatabaseIamMemberList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(spannerdatabaseiammembersResource, spannerdatabaseiammembersKind, opts), &v1alpha1.SpannerDatabaseIamMemberList{})
+		Invokes(testing.NewListAction(spannerdatabaseiammembersResource, spannerdatabaseiammembersKind, c.ns, opts), &v1alpha1.SpannerDatabaseIamMemberList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSpannerDatabaseIamMembers) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested spannerDatabaseIamMembers.
 func (c *FakeSpannerDatabaseIamMembers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(spannerdatabaseiammembersResource, opts))
+		InvokesWatch(testing.NewWatchAction(spannerdatabaseiammembersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a spannerDatabaseIamMember and creates it.  Returns the server's representation of the spannerDatabaseIamMember, and an error, if there is any.
 func (c *FakeSpannerDatabaseIamMembers) Create(spannerDatabaseIamMember *v1alpha1.SpannerDatabaseIamMember) (result *v1alpha1.SpannerDatabaseIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(spannerdatabaseiammembersResource, spannerDatabaseIamMember), &v1alpha1.SpannerDatabaseIamMember{})
+		Invokes(testing.NewCreateAction(spannerdatabaseiammembersResource, c.ns, spannerDatabaseIamMember), &v1alpha1.SpannerDatabaseIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSpannerDatabaseIamMembers) Create(spannerDatabaseIamMember *v1alpha
 // Update takes the representation of a spannerDatabaseIamMember and updates it. Returns the server's representation of the spannerDatabaseIamMember, and an error, if there is any.
 func (c *FakeSpannerDatabaseIamMembers) Update(spannerDatabaseIamMember *v1alpha1.SpannerDatabaseIamMember) (result *v1alpha1.SpannerDatabaseIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(spannerdatabaseiammembersResource, spannerDatabaseIamMember), &v1alpha1.SpannerDatabaseIamMember{})
+		Invokes(testing.NewUpdateAction(spannerdatabaseiammembersResource, c.ns, spannerDatabaseIamMember), &v1alpha1.SpannerDatabaseIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSpannerDatabaseIamMembers) Update(spannerDatabaseIamMember *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSpannerDatabaseIamMembers) UpdateStatus(spannerDatabaseIamMember *v1alpha1.SpannerDatabaseIamMember) (*v1alpha1.SpannerDatabaseIamMember, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(spannerdatabaseiammembersResource, "status", spannerDatabaseIamMember), &v1alpha1.SpannerDatabaseIamMember{})
+		Invokes(testing.NewUpdateSubresourceAction(spannerdatabaseiammembersResource, "status", c.ns, spannerDatabaseIamMember), &v1alpha1.SpannerDatabaseIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSpannerDatabaseIamMembers) UpdateStatus(spannerDatabaseIamMember *v
 // Delete takes name of the spannerDatabaseIamMember and deletes it. Returns an error if one occurs.
 func (c *FakeSpannerDatabaseIamMembers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(spannerdatabaseiammembersResource, name), &v1alpha1.SpannerDatabaseIamMember{})
+		Invokes(testing.NewDeleteAction(spannerdatabaseiammembersResource, c.ns, name), &v1alpha1.SpannerDatabaseIamMember{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSpannerDatabaseIamMembers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(spannerdatabaseiammembersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(spannerdatabaseiammembersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SpannerDatabaseIamMemberList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSpannerDatabaseIamMembers) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched spannerDatabaseIamMember.
 func (c *FakeSpannerDatabaseIamMembers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SpannerDatabaseIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(spannerdatabaseiammembersResource, name, pt, data, subresources...), &v1alpha1.SpannerDatabaseIamMember{})
+		Invokes(testing.NewPatchSubresourceAction(spannerdatabaseiammembersResource, c.ns, name, pt, data, subresources...), &v1alpha1.SpannerDatabaseIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}

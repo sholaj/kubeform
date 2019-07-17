@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/azurerm/v1alpha1"
 )
 
-// CosmosdbSqlDatabaseInformer provides access to a shared informer and lister for
-// CosmosdbSqlDatabases.
-type CosmosdbSqlDatabaseInformer interface {
+// CosmosdbSQLDatabaseInformer provides access to a shared informer and lister for
+// CosmosdbSQLDatabases.
+type CosmosdbSQLDatabaseInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.CosmosdbSqlDatabaseLister
+	Lister() v1alpha1.CosmosdbSQLDatabaseLister
 }
 
-type cosmosdbSqlDatabaseInformer struct {
+type cosmosdbSQLDatabaseInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewCosmosdbSqlDatabaseInformer constructs a new informer for CosmosdbSqlDatabase type.
+// NewCosmosdbSQLDatabaseInformer constructs a new informer for CosmosdbSQLDatabase type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCosmosdbSqlDatabaseInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCosmosdbSqlDatabaseInformer(client, resyncPeriod, indexers, nil)
+func NewCosmosdbSQLDatabaseInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCosmosdbSQLDatabaseInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredCosmosdbSqlDatabaseInformer constructs a new informer for CosmosdbSqlDatabase type.
+// NewFilteredCosmosdbSQLDatabaseInformer constructs a new informer for CosmosdbSQLDatabase type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCosmosdbSqlDatabaseInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCosmosdbSQLDatabaseInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().CosmosdbSqlDatabases().List(options)
+				return client.AzurermV1alpha1().CosmosdbSQLDatabases(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().CosmosdbSqlDatabases().Watch(options)
+				return client.AzurermV1alpha1().CosmosdbSQLDatabases(namespace).Watch(options)
 			},
 		},
-		&azurermv1alpha1.CosmosdbSqlDatabase{},
+		&azurermv1alpha1.CosmosdbSQLDatabase{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *cosmosdbSqlDatabaseInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCosmosdbSqlDatabaseInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *cosmosdbSQLDatabaseInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredCosmosdbSQLDatabaseInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *cosmosdbSqlDatabaseInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&azurermv1alpha1.CosmosdbSqlDatabase{}, f.defaultInformer)
+func (f *cosmosdbSQLDatabaseInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&azurermv1alpha1.CosmosdbSQLDatabase{}, f.defaultInformer)
 }
 
-func (f *cosmosdbSqlDatabaseInformer) Lister() v1alpha1.CosmosdbSqlDatabaseLister {
-	return v1alpha1.NewCosmosdbSqlDatabaseLister(f.Informer().GetIndexer())
+func (f *cosmosdbSQLDatabaseInformer) Lister() v1alpha1.CosmosdbSQLDatabaseLister {
+	return v1alpha1.NewCosmosdbSQLDatabaseLister(f.Informer().GetIndexer())
 }

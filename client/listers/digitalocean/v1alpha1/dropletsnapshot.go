@@ -29,8 +29,8 @@ import (
 type DropletSnapshotLister interface {
 	// List lists all DropletSnapshots in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DropletSnapshot, err error)
-	// Get retrieves the DropletSnapshot from the index for a given name.
-	Get(name string) (*v1alpha1.DropletSnapshot, error)
+	// DropletSnapshots returns an object that can list and get DropletSnapshots.
+	DropletSnapshots(namespace string) DropletSnapshotNamespaceLister
 	DropletSnapshotListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dropletSnapshotLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the DropletSnapshot from the index for a given name.
-func (s *dropletSnapshotLister) Get(name string) (*v1alpha1.DropletSnapshot, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DropletSnapshots returns an object that can list and get DropletSnapshots.
+func (s *dropletSnapshotLister) DropletSnapshots(namespace string) DropletSnapshotNamespaceLister {
+	return dropletSnapshotNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DropletSnapshotNamespaceLister helps list and get DropletSnapshots.
+type DropletSnapshotNamespaceLister interface {
+	// List lists all DropletSnapshots in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DropletSnapshot, err error)
+	// Get retrieves the DropletSnapshot from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DropletSnapshot, error)
+	DropletSnapshotNamespaceListerExpansion
+}
+
+// dropletSnapshotNamespaceLister implements the DropletSnapshotNamespaceLister
+// interface.
+type dropletSnapshotNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DropletSnapshots in the indexer for a given namespace.
+func (s dropletSnapshotNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DropletSnapshot, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DropletSnapshot))
+	})
+	return ret, err
+}
+
+// Get retrieves the DropletSnapshot from the indexer for a given namespace and name.
+func (s dropletSnapshotNamespaceLister) Get(name string) (*v1alpha1.DropletSnapshot, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

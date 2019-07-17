@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,24 +20,25 @@ type SnsPlatformApplication struct {
 
 type SnsPlatformApplicationSpec struct {
 	// +optional
-	EventDeliveryFailureTopicArn string `json:"event_delivery_failure_topic_arn,omitempty"`
+	EventDeliveryFailureTopicArn string `json:"eventDeliveryFailureTopicArn,omitempty" tf:"event_delivery_failure_topic_arn,omitempty"`
 	// +optional
-	EventEndpointCreatedTopicArn string `json:"event_endpoint_created_topic_arn,omitempty"`
+	EventEndpointCreatedTopicArn string `json:"eventEndpointCreatedTopicArn,omitempty" tf:"event_endpoint_created_topic_arn,omitempty"`
 	// +optional
-	EventEndpointDeletedTopicArn string `json:"event_endpoint_deleted_topic_arn,omitempty"`
+	EventEndpointDeletedTopicArn string `json:"eventEndpointDeletedTopicArn,omitempty" tf:"event_endpoint_deleted_topic_arn,omitempty"`
 	// +optional
-	EventEndpointUpdatedTopicArn string `json:"event_endpoint_updated_topic_arn,omitempty"`
+	EventEndpointUpdatedTopicArn string `json:"eventEndpointUpdatedTopicArn,omitempty" tf:"event_endpoint_updated_topic_arn,omitempty"`
 	// +optional
-	FailureFeedbackRoleArn string `json:"failure_feedback_role_arn,omitempty"`
-	Name                   string `json:"name"`
-	Platform               string `json:"platform"`
-	PlatformCredential     string `json:"platform_credential"`
+	FailureFeedbackRoleArn string `json:"failureFeedbackRoleArn,omitempty" tf:"failure_feedback_role_arn,omitempty"`
+	Name                   string `json:"name" tf:"name"`
+	Platform               string `json:"platform" tf:"platform"`
+	PlatformCredential     string `json:"platformCredential" tf:"platform_credential"`
 	// +optional
-	PlatformPrincipal string `json:"platform_principal,omitempty"`
+	PlatformPrincipal string `json:"platformPrincipal,omitempty" tf:"platform_principal,omitempty"`
 	// +optional
-	SuccessFeedbackRoleArn string `json:"success_feedback_role_arn,omitempty"`
+	SuccessFeedbackRoleArn string `json:"successFeedbackRoleArn,omitempty" tf:"success_feedback_role_arn,omitempty"`
 	// +optional
-	SuccessFeedbackSampleRate string `json:"success_feedback_sample_rate,omitempty"`
+	SuccessFeedbackSampleRate string                    `json:"successFeedbackSampleRate,omitempty" tf:"success_feedback_sample_rate,omitempty"`
+	ProviderRef               core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SnsPlatformApplicationStatus struct {
@@ -45,7 +46,9 @@ type SnsPlatformApplicationStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

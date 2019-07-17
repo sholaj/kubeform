@@ -22,78 +22,158 @@ package v1alpha1
 // CdnLister.
 type CdnListerExpansion interface{}
 
+// CdnNamespaceListerExpansion allows custom methods to be added to
+// CdnNamespaceLister.
+type CdnNamespaceListerExpansion interface{}
+
 // CertificateListerExpansion allows custom methods to be added to
 // CertificateLister.
 type CertificateListerExpansion interface{}
+
+// CertificateNamespaceListerExpansion allows custom methods to be added to
+// CertificateNamespaceLister.
+type CertificateNamespaceListerExpansion interface{}
 
 // DatabaseClusterListerExpansion allows custom methods to be added to
 // DatabaseClusterLister.
 type DatabaseClusterListerExpansion interface{}
 
+// DatabaseClusterNamespaceListerExpansion allows custom methods to be added to
+// DatabaseClusterNamespaceLister.
+type DatabaseClusterNamespaceListerExpansion interface{}
+
 // DomainListerExpansion allows custom methods to be added to
 // DomainLister.
 type DomainListerExpansion interface{}
+
+// DomainNamespaceListerExpansion allows custom methods to be added to
+// DomainNamespaceLister.
+type DomainNamespaceListerExpansion interface{}
 
 // DropletListerExpansion allows custom methods to be added to
 // DropletLister.
 type DropletListerExpansion interface{}
 
+// DropletNamespaceListerExpansion allows custom methods to be added to
+// DropletNamespaceLister.
+type DropletNamespaceListerExpansion interface{}
+
 // DropletSnapshotListerExpansion allows custom methods to be added to
 // DropletSnapshotLister.
 type DropletSnapshotListerExpansion interface{}
+
+// DropletSnapshotNamespaceListerExpansion allows custom methods to be added to
+// DropletSnapshotNamespaceLister.
+type DropletSnapshotNamespaceListerExpansion interface{}
 
 // FirewallListerExpansion allows custom methods to be added to
 // FirewallLister.
 type FirewallListerExpansion interface{}
 
-// FloatingIpListerExpansion allows custom methods to be added to
-// FloatingIpLister.
-type FloatingIpListerExpansion interface{}
+// FirewallNamespaceListerExpansion allows custom methods to be added to
+// FirewallNamespaceLister.
+type FirewallNamespaceListerExpansion interface{}
 
-// FloatingIpAssignmentListerExpansion allows custom methods to be added to
-// FloatingIpAssignmentLister.
-type FloatingIpAssignmentListerExpansion interface{}
+// FloatingIPListerExpansion allows custom methods to be added to
+// FloatingIPLister.
+type FloatingIPListerExpansion interface{}
+
+// FloatingIPNamespaceListerExpansion allows custom methods to be added to
+// FloatingIPNamespaceLister.
+type FloatingIPNamespaceListerExpansion interface{}
+
+// FloatingIPAssignmentListerExpansion allows custom methods to be added to
+// FloatingIPAssignmentLister.
+type FloatingIPAssignmentListerExpansion interface{}
+
+// FloatingIPAssignmentNamespaceListerExpansion allows custom methods to be added to
+// FloatingIPAssignmentNamespaceLister.
+type FloatingIPAssignmentNamespaceListerExpansion interface{}
 
 // KubernetesClusterListerExpansion allows custom methods to be added to
 // KubernetesClusterLister.
 type KubernetesClusterListerExpansion interface{}
 
+// KubernetesClusterNamespaceListerExpansion allows custom methods to be added to
+// KubernetesClusterNamespaceLister.
+type KubernetesClusterNamespaceListerExpansion interface{}
+
 // KubernetesNodePoolListerExpansion allows custom methods to be added to
 // KubernetesNodePoolLister.
 type KubernetesNodePoolListerExpansion interface{}
+
+// KubernetesNodePoolNamespaceListerExpansion allows custom methods to be added to
+// KubernetesNodePoolNamespaceLister.
+type KubernetesNodePoolNamespaceListerExpansion interface{}
 
 // LoadbalancerListerExpansion allows custom methods to be added to
 // LoadbalancerLister.
 type LoadbalancerListerExpansion interface{}
 
+// LoadbalancerNamespaceListerExpansion allows custom methods to be added to
+// LoadbalancerNamespaceLister.
+type LoadbalancerNamespaceListerExpansion interface{}
+
 // ProjectListerExpansion allows custom methods to be added to
 // ProjectLister.
 type ProjectListerExpansion interface{}
+
+// ProjectNamespaceListerExpansion allows custom methods to be added to
+// ProjectNamespaceLister.
+type ProjectNamespaceListerExpansion interface{}
 
 // RecordListerExpansion allows custom methods to be added to
 // RecordLister.
 type RecordListerExpansion interface{}
 
+// RecordNamespaceListerExpansion allows custom methods to be added to
+// RecordNamespaceLister.
+type RecordNamespaceListerExpansion interface{}
+
 // SpacesBucketListerExpansion allows custom methods to be added to
 // SpacesBucketLister.
 type SpacesBucketListerExpansion interface{}
+
+// SpacesBucketNamespaceListerExpansion allows custom methods to be added to
+// SpacesBucketNamespaceLister.
+type SpacesBucketNamespaceListerExpansion interface{}
 
 // SshKeyListerExpansion allows custom methods to be added to
 // SshKeyLister.
 type SshKeyListerExpansion interface{}
 
+// SshKeyNamespaceListerExpansion allows custom methods to be added to
+// SshKeyNamespaceLister.
+type SshKeyNamespaceListerExpansion interface{}
+
 // TagListerExpansion allows custom methods to be added to
 // TagLister.
 type TagListerExpansion interface{}
+
+// TagNamespaceListerExpansion allows custom methods to be added to
+// TagNamespaceLister.
+type TagNamespaceListerExpansion interface{}
 
 // VolumeListerExpansion allows custom methods to be added to
 // VolumeLister.
 type VolumeListerExpansion interface{}
 
+// VolumeNamespaceListerExpansion allows custom methods to be added to
+// VolumeNamespaceLister.
+type VolumeNamespaceListerExpansion interface{}
+
 // VolumeAttachmentListerExpansion allows custom methods to be added to
 // VolumeAttachmentLister.
 type VolumeAttachmentListerExpansion interface{}
 
+// VolumeAttachmentNamespaceListerExpansion allows custom methods to be added to
+// VolumeAttachmentNamespaceLister.
+type VolumeAttachmentNamespaceListerExpansion interface{}
+
 // VolumeSnapshotListerExpansion allows custom methods to be added to
 // VolumeSnapshotLister.
 type VolumeSnapshotListerExpansion interface{}
+
+// VolumeSnapshotNamespaceListerExpansion allows custom methods to be added to
+// VolumeSnapshotNamespaceLister.
+type VolumeSnapshotNamespaceListerExpansion interface{}

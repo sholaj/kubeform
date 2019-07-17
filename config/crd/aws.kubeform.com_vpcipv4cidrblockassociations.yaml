@@ -8,7 +8,7 @@ metadata:
 spec:
   group: aws.kubeform.com
   names:
-    kind: VpcIpv4CidrBlockAssociation
+    kind: VpcIpv4CIDRBlockAssociation
     plural: vpcipv4cidrblockassociations
   scope: ""
   validation:
@@ -397,13 +397,23 @@ spec:
           type: object
         spec:
           properties:
-            cidr_block:
+            cidrBlock:
               type: string
-            vpc_id:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            vpcID:
               type: string
           required:
-          - cidr_block
-          - vpc_id
+          - cidrBlock
+          - providerRef
+          - vpcID
           type: object
         status:
           properties:
@@ -414,6 +424,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

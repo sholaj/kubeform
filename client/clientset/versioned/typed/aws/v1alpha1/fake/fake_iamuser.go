@@ -31,6 +31,7 @@ import (
 // FakeIamUsers implements IamUserInterface
 type FakeIamUsers struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var iamusersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "iamusers"}
@@ -40,7 +41,8 @@ var iamusersKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "
 // Get takes name of the iamUser, and returns the corresponding iamUser object, and an error if there is any.
 func (c *FakeIamUsers) Get(name string, options v1.GetOptions) (result *v1alpha1.IamUser, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iamusersResource, name), &v1alpha1.IamUser{})
+		Invokes(testing.NewGetAction(iamusersResource, c.ns, name), &v1alpha1.IamUser{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIamUsers) Get(name string, options v1.GetOptions) (result *v1alpha1
 // List takes label and field selectors, and returns the list of IamUsers that match those selectors.
 func (c *FakeIamUsers) List(opts v1.ListOptions) (result *v1alpha1.IamUserList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iamusersResource, iamusersKind, opts), &v1alpha1.IamUserList{})
+		Invokes(testing.NewListAction(iamusersResource, iamusersKind, c.ns, opts), &v1alpha1.IamUserList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIamUsers) List(opts v1.ListOptions) (result *v1alpha1.IamUserList, 
 // Watch returns a watch.Interface that watches the requested iamUsers.
 func (c *FakeIamUsers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iamusersResource, opts))
+		InvokesWatch(testing.NewWatchAction(iamusersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iamUser and creates it.  Returns the server's representation of the iamUser, and an error, if there is any.
 func (c *FakeIamUsers) Create(iamUser *v1alpha1.IamUser) (result *v1alpha1.IamUser, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iamusersResource, iamUser), &v1alpha1.IamUser{})
+		Invokes(testing.NewCreateAction(iamusersResource, c.ns, iamUser), &v1alpha1.IamUser{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIamUsers) Create(iamUser *v1alpha1.IamUser) (result *v1alpha1.IamUs
 // Update takes the representation of a iamUser and updates it. Returns the server's representation of the iamUser, and an error, if there is any.
 func (c *FakeIamUsers) Update(iamUser *v1alpha1.IamUser) (result *v1alpha1.IamUser, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iamusersResource, iamUser), &v1alpha1.IamUser{})
+		Invokes(testing.NewUpdateAction(iamusersResource, c.ns, iamUser), &v1alpha1.IamUser{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIamUsers) Update(iamUser *v1alpha1.IamUser) (result *v1alpha1.IamUs
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIamUsers) UpdateStatus(iamUser *v1alpha1.IamUser) (*v1alpha1.IamUser, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iamusersResource, "status", iamUser), &v1alpha1.IamUser{})
+		Invokes(testing.NewUpdateSubresourceAction(iamusersResource, "status", c.ns, iamUser), &v1alpha1.IamUser{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIamUsers) UpdateStatus(iamUser *v1alpha1.IamUser) (*v1alpha1.IamUse
 // Delete takes name of the iamUser and deletes it. Returns an error if one occurs.
 func (c *FakeIamUsers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iamusersResource, name), &v1alpha1.IamUser{})
+		Invokes(testing.NewDeleteAction(iamusersResource, c.ns, name), &v1alpha1.IamUser{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIamUsers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iamusersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iamusersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IamUserList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIamUsers) DeleteCollection(options *v1.DeleteOptions, listOptions v
 // Patch applies the patch and returns the patched iamUser.
 func (c *FakeIamUsers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamUser, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iamusersResource, name, pt, data, subresources...), &v1alpha1.IamUser{})
+		Invokes(testing.NewPatchSubresourceAction(iamusersResource, c.ns, name, pt, data, subresources...), &v1alpha1.IamUser{})
+
 	if obj == nil {
 		return nil, err
 	}

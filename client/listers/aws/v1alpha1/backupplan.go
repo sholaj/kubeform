@@ -29,8 +29,8 @@ import (
 type BackupPlanLister interface {
 	// List lists all BackupPlans in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.BackupPlan, err error)
-	// Get retrieves the BackupPlan from the index for a given name.
-	Get(name string) (*v1alpha1.BackupPlan, error)
+	// BackupPlans returns an object that can list and get BackupPlans.
+	BackupPlans(namespace string) BackupPlanNamespaceLister
 	BackupPlanListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *backupPlanLister) List(selector labels.Selector) (ret []*v1alpha1.Backu
 	return ret, err
 }
 
-// Get retrieves the BackupPlan from the index for a given name.
-func (s *backupPlanLister) Get(name string) (*v1alpha1.BackupPlan, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// BackupPlans returns an object that can list and get BackupPlans.
+func (s *backupPlanLister) BackupPlans(namespace string) BackupPlanNamespaceLister {
+	return backupPlanNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// BackupPlanNamespaceLister helps list and get BackupPlans.
+type BackupPlanNamespaceLister interface {
+	// List lists all BackupPlans in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.BackupPlan, err error)
+	// Get retrieves the BackupPlan from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.BackupPlan, error)
+	BackupPlanNamespaceListerExpansion
+}
+
+// backupPlanNamespaceLister implements the BackupPlanNamespaceLister
+// interface.
+type backupPlanNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all BackupPlans in the indexer for a given namespace.
+func (s backupPlanNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.BackupPlan, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.BackupPlan))
+	})
+	return ret, err
+}
+
+// Get retrieves the BackupPlan from the indexer for a given namespace and name.
+func (s backupPlanNamespaceLister) Get(name string) (*v1alpha1.BackupPlan, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

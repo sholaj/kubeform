@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/digitalocean/v1alpha1"
 )
 
-// FakeFloatingIps implements FloatingIpInterface
-type FakeFloatingIps struct {
+// FakeFloatingIPs implements FloatingIPInterface
+type FakeFloatingIPs struct {
 	Fake *FakeDigitaloceanV1alpha1
+	ns   string
 }
 
 var floatingipsResource = schema.GroupVersionResource{Group: "digitalocean.kubeform.com", Version: "v1alpha1", Resource: "floatingips"}
 
-var floatingipsKind = schema.GroupVersionKind{Group: "digitalocean.kubeform.com", Version: "v1alpha1", Kind: "FloatingIp"}
+var floatingipsKind = schema.GroupVersionKind{Group: "digitalocean.kubeform.com", Version: "v1alpha1", Kind: "FloatingIP"}
 
-// Get takes name of the floatingIp, and returns the corresponding floatingIp object, and an error if there is any.
-func (c *FakeFloatingIps) Get(name string, options v1.GetOptions) (result *v1alpha1.FloatingIp, err error) {
+// Get takes name of the floatingIP, and returns the corresponding floatingIP object, and an error if there is any.
+func (c *FakeFloatingIPs) Get(name string, options v1.GetOptions) (result *v1alpha1.FloatingIP, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(floatingipsResource, name), &v1alpha1.FloatingIp{})
+		Invokes(testing.NewGetAction(floatingipsResource, c.ns, name), &v1alpha1.FloatingIP{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.FloatingIp), err
+	return obj.(*v1alpha1.FloatingIP), err
 }
 
-// List takes label and field selectors, and returns the list of FloatingIps that match those selectors.
-func (c *FakeFloatingIps) List(opts v1.ListOptions) (result *v1alpha1.FloatingIpList, err error) {
+// List takes label and field selectors, and returns the list of FloatingIPs that match those selectors.
+func (c *FakeFloatingIPs) List(opts v1.ListOptions) (result *v1alpha1.FloatingIPList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(floatingipsResource, floatingipsKind, opts), &v1alpha1.FloatingIpList{})
+		Invokes(testing.NewListAction(floatingipsResource, floatingipsKind, c.ns, opts), &v1alpha1.FloatingIPList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeFloatingIps) List(opts v1.ListOptions) (result *v1alpha1.FloatingIp
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.FloatingIpList{ListMeta: obj.(*v1alpha1.FloatingIpList).ListMeta}
-	for _, item := range obj.(*v1alpha1.FloatingIpList).Items {
+	list := &v1alpha1.FloatingIPList{ListMeta: obj.(*v1alpha1.FloatingIPList).ListMeta}
+	for _, item := range obj.(*v1alpha1.FloatingIPList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeFloatingIps) List(opts v1.ListOptions) (result *v1alpha1.FloatingIp
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested floatingIps.
-func (c *FakeFloatingIps) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested floatingIPs.
+func (c *FakeFloatingIPs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(floatingipsResource, opts))
+		InvokesWatch(testing.NewWatchAction(floatingipsResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a floatingIp and creates it.  Returns the server's representation of the floatingIp, and an error, if there is any.
-func (c *FakeFloatingIps) Create(floatingIp *v1alpha1.FloatingIp) (result *v1alpha1.FloatingIp, err error) {
+// Create takes the representation of a floatingIP and creates it.  Returns the server's representation of the floatingIP, and an error, if there is any.
+func (c *FakeFloatingIPs) Create(floatingIP *v1alpha1.FloatingIP) (result *v1alpha1.FloatingIP, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(floatingipsResource, floatingIp), &v1alpha1.FloatingIp{})
+		Invokes(testing.NewCreateAction(floatingipsResource, c.ns, floatingIP), &v1alpha1.FloatingIP{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.FloatingIp), err
+	return obj.(*v1alpha1.FloatingIP), err
 }
 
-// Update takes the representation of a floatingIp and updates it. Returns the server's representation of the floatingIp, and an error, if there is any.
-func (c *FakeFloatingIps) Update(floatingIp *v1alpha1.FloatingIp) (result *v1alpha1.FloatingIp, err error) {
+// Update takes the representation of a floatingIP and updates it. Returns the server's representation of the floatingIP, and an error, if there is any.
+func (c *FakeFloatingIPs) Update(floatingIP *v1alpha1.FloatingIP) (result *v1alpha1.FloatingIP, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(floatingipsResource, floatingIp), &v1alpha1.FloatingIp{})
+		Invokes(testing.NewUpdateAction(floatingipsResource, c.ns, floatingIP), &v1alpha1.FloatingIP{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.FloatingIp), err
+	return obj.(*v1alpha1.FloatingIP), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeFloatingIps) UpdateStatus(floatingIp *v1alpha1.FloatingIp) (*v1alpha1.FloatingIp, error) {
+func (c *FakeFloatingIPs) UpdateStatus(floatingIP *v1alpha1.FloatingIP) (*v1alpha1.FloatingIP, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(floatingipsResource, "status", floatingIp), &v1alpha1.FloatingIp{})
+		Invokes(testing.NewUpdateSubresourceAction(floatingipsResource, "status", c.ns, floatingIP), &v1alpha1.FloatingIP{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.FloatingIp), err
+	return obj.(*v1alpha1.FloatingIP), err
 }
 
-// Delete takes name of the floatingIp and deletes it. Returns an error if one occurs.
-func (c *FakeFloatingIps) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the floatingIP and deletes it. Returns an error if one occurs.
+func (c *FakeFloatingIPs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(floatingipsResource, name), &v1alpha1.FloatingIp{})
+		Invokes(testing.NewDeleteAction(floatingipsResource, c.ns, name), &v1alpha1.FloatingIP{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeFloatingIps) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(floatingipsResource, listOptions)
+func (c *FakeFloatingIPs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(floatingipsResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.FloatingIpList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.FloatingIPList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched floatingIp.
-func (c *FakeFloatingIps) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FloatingIp, err error) {
+// Patch applies the patch and returns the patched floatingIP.
+func (c *FakeFloatingIPs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FloatingIP, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(floatingipsResource, name, pt, data, subresources...), &v1alpha1.FloatingIp{})
+		Invokes(testing.NewPatchSubresourceAction(floatingipsResource, c.ns, name, pt, data, subresources...), &v1alpha1.FloatingIP{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.FloatingIp), err
+	return obj.(*v1alpha1.FloatingIP), err
 }

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,23 +19,24 @@ type AutomationModule struct {
 }
 
 type AutomationModuleSpecModuleLinkHash struct {
-	Algorithm string `json:"algorithm"`
-	Value     string `json:"value"`
+	Algorithm string `json:"algorithm" tf:"algorithm"`
+	Value     string `json:"value" tf:"value"`
 }
 
 type AutomationModuleSpecModuleLink struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Hash *[]AutomationModuleSpecModuleLink `json:"hash,omitempty"`
-	Uri  string                            `json:"uri"`
+	Hash []AutomationModuleSpecModuleLinkHash `json:"hash,omitempty" tf:"hash,omitempty"`
+	Uri  string                               `json:"uri" tf:"uri"`
 }
 
 type AutomationModuleSpec struct {
-	AutomationAccountName string `json:"automation_account_name"`
+	AutomationAccountName string `json:"automationAccountName" tf:"automation_account_name"`
 	// +kubebuilder:validation:MaxItems=1
-	ModuleLink        []AutomationModuleSpec `json:"module_link"`
-	Name              string                 `json:"name"`
-	ResourceGroupName string                 `json:"resource_group_name"`
+	ModuleLink        []AutomationModuleSpecModuleLink `json:"moduleLink" tf:"module_link"`
+	Name              string                           `json:"name" tf:"name"`
+	ResourceGroupName string                           `json:"resourceGroupName" tf:"resource_group_name"`
+	ProviderRef       core.LocalObjectReference        `json:"providerRef" tf:"-"`
 }
 
 type AutomationModuleStatus struct {
@@ -43,7 +44,9 @@ type AutomationModuleStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

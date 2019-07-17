@@ -32,7 +32,7 @@ import (
 // IamServerCertificatesGetter has a method to return a IamServerCertificateInterface.
 // A group's client should implement this interface.
 type IamServerCertificatesGetter interface {
-	IamServerCertificates() IamServerCertificateInterface
+	IamServerCertificates(namespace string) IamServerCertificateInterface
 }
 
 // IamServerCertificateInterface has methods to work with IamServerCertificate resources.
@@ -52,12 +52,14 @@ type IamServerCertificateInterface interface {
 // iamServerCertificates implements IamServerCertificateInterface
 type iamServerCertificates struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIamServerCertificates returns a IamServerCertificates
-func newIamServerCertificates(c *AwsV1alpha1Client) *iamServerCertificates {
+func newIamServerCertificates(c *AwsV1alpha1Client, namespace string) *iamServerCertificates {
 	return &iamServerCertificates{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIamServerCertificates(c *AwsV1alpha1Client) *iamServerCertificates {
 func (c *iamServerCertificates) Get(name string, options v1.GetOptions) (result *v1alpha1.IamServerCertificate, err error) {
 	result = &v1alpha1.IamServerCertificate{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamservercertificates").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iamServerCertificates) List(opts v1.ListOptions) (result *v1alpha1.IamS
 	}
 	result = &v1alpha1.IamServerCertificateList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamservercertificates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iamServerCertificates) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iamservercertificates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iamServerCertificates) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *iamServerCertificates) Create(iamServerCertificate *v1alpha1.IamServerCertificate) (result *v1alpha1.IamServerCertificate, err error) {
 	result = &v1alpha1.IamServerCertificate{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iamservercertificates").
 		Body(iamServerCertificate).
 		Do().
@@ -118,6 +124,7 @@ func (c *iamServerCertificates) Create(iamServerCertificate *v1alpha1.IamServerC
 func (c *iamServerCertificates) Update(iamServerCertificate *v1alpha1.IamServerCertificate) (result *v1alpha1.IamServerCertificate, err error) {
 	result = &v1alpha1.IamServerCertificate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamservercertificates").
 		Name(iamServerCertificate.Name).
 		Body(iamServerCertificate).
@@ -132,6 +139,7 @@ func (c *iamServerCertificates) Update(iamServerCertificate *v1alpha1.IamServerC
 func (c *iamServerCertificates) UpdateStatus(iamServerCertificate *v1alpha1.IamServerCertificate) (result *v1alpha1.IamServerCertificate, err error) {
 	result = &v1alpha1.IamServerCertificate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamservercertificates").
 		Name(iamServerCertificate.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iamServerCertificates) UpdateStatus(iamServerCertificate *v1alpha1.IamS
 // Delete takes name of the iamServerCertificate and deletes it. Returns an error if one occurs.
 func (c *iamServerCertificates) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamservercertificates").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iamServerCertificates) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamservercertificates").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iamServerCertificates) DeleteCollection(options *v1.DeleteOptions, list
 func (c *iamServerCertificates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamServerCertificate, err error) {
 	result = &v1alpha1.IamServerCertificate{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iamservercertificates").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type ApiGatewayUsagePlanKeyLister interface {
 	// List lists all ApiGatewayUsagePlanKeys in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayUsagePlanKey, err error)
-	// Get retrieves the ApiGatewayUsagePlanKey from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayUsagePlanKey, error)
+	// ApiGatewayUsagePlanKeys returns an object that can list and get ApiGatewayUsagePlanKeys.
+	ApiGatewayUsagePlanKeys(namespace string) ApiGatewayUsagePlanKeyNamespaceLister
 	ApiGatewayUsagePlanKeyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiGatewayUsagePlanKeyLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayUsagePlanKey from the index for a given name.
-func (s *apiGatewayUsagePlanKeyLister) Get(name string) (*v1alpha1.ApiGatewayUsagePlanKey, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayUsagePlanKeys returns an object that can list and get ApiGatewayUsagePlanKeys.
+func (s *apiGatewayUsagePlanKeyLister) ApiGatewayUsagePlanKeys(namespace string) ApiGatewayUsagePlanKeyNamespaceLister {
+	return apiGatewayUsagePlanKeyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayUsagePlanKeyNamespaceLister helps list and get ApiGatewayUsagePlanKeys.
+type ApiGatewayUsagePlanKeyNamespaceLister interface {
+	// List lists all ApiGatewayUsagePlanKeys in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayUsagePlanKey, err error)
+	// Get retrieves the ApiGatewayUsagePlanKey from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayUsagePlanKey, error)
+	ApiGatewayUsagePlanKeyNamespaceListerExpansion
+}
+
+// apiGatewayUsagePlanKeyNamespaceLister implements the ApiGatewayUsagePlanKeyNamespaceLister
+// interface.
+type apiGatewayUsagePlanKeyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayUsagePlanKeys in the indexer for a given namespace.
+func (s apiGatewayUsagePlanKeyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayUsagePlanKey, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayUsagePlanKey))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayUsagePlanKey from the indexer for a given namespace and name.
+func (s apiGatewayUsagePlanKeyNamespaceLister) Get(name string) (*v1alpha1.ApiGatewayUsagePlanKey, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

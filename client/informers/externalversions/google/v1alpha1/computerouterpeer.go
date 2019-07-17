@@ -41,32 +41,33 @@ type ComputeRouterPeerInformer interface {
 type computeRouterPeerInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewComputeRouterPeerInformer constructs a new informer for ComputeRouterPeer type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewComputeRouterPeerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredComputeRouterPeerInformer(client, resyncPeriod, indexers, nil)
+func NewComputeRouterPeerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredComputeRouterPeerInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredComputeRouterPeerInformer constructs a new informer for ComputeRouterPeer type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredComputeRouterPeerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredComputeRouterPeerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeRouterPeers().List(options)
+				return client.GoogleV1alpha1().ComputeRouterPeers(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeRouterPeers().Watch(options)
+				return client.GoogleV1alpha1().ComputeRouterPeers(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.ComputeRouterPeer{},
@@ -76,7 +77,7 @@ func NewFilteredComputeRouterPeerInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *computeRouterPeerInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredComputeRouterPeerInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredComputeRouterPeerInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *computeRouterPeerInformer) Informer() cache.SharedIndexInformer {

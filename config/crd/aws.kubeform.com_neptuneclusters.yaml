@@ -397,35 +397,46 @@ spec:
           type: object
         spec:
           properties:
-            backup_retention_period:
+            backupRetentionPeriod:
               type: integer
             engine:
               type: string
-            final_snapshot_identifier:
+            finalSnapshotIdentifier:
               type: string
-            iam_database_authentication_enabled:
+            iamDatabaseAuthenticationEnabled:
               type: boolean
-            iam_roles:
+            iamRoles:
               items:
                 type: string
               type: array
               uniqueItems: true
-            neptune_cluster_parameter_group_name:
+            neptuneClusterParameterGroupName:
               type: string
             port:
               type: integer
-            replication_source_identifier:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            replicationSourceIdentifier:
               type: string
-            skip_final_snapshot:
+            skipFinalSnapshot:
               type: boolean
-            snapshot_identifier:
+            snapshotIdentifier:
               type: string
-            storage_encrypted:
+            storageEncrypted:
               type: boolean
             tags:
               additionalProperties:
                 type: string
               type: object
+          required:
+          - providerRef
           type: object
         status:
           properties:
@@ -436,6 +447,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

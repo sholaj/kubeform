@@ -32,7 +32,7 @@ import (
 // DmsReplicationSubnetGroupsGetter has a method to return a DmsReplicationSubnetGroupInterface.
 // A group's client should implement this interface.
 type DmsReplicationSubnetGroupsGetter interface {
-	DmsReplicationSubnetGroups() DmsReplicationSubnetGroupInterface
+	DmsReplicationSubnetGroups(namespace string) DmsReplicationSubnetGroupInterface
 }
 
 // DmsReplicationSubnetGroupInterface has methods to work with DmsReplicationSubnetGroup resources.
@@ -52,12 +52,14 @@ type DmsReplicationSubnetGroupInterface interface {
 // dmsReplicationSubnetGroups implements DmsReplicationSubnetGroupInterface
 type dmsReplicationSubnetGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDmsReplicationSubnetGroups returns a DmsReplicationSubnetGroups
-func newDmsReplicationSubnetGroups(c *AwsV1alpha1Client) *dmsReplicationSubnetGroups {
+func newDmsReplicationSubnetGroups(c *AwsV1alpha1Client, namespace string) *dmsReplicationSubnetGroups {
 	return &dmsReplicationSubnetGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDmsReplicationSubnetGroups(c *AwsV1alpha1Client) *dmsReplicationSubnetGr
 func (c *dmsReplicationSubnetGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.DmsReplicationSubnetGroup, err error) {
 	result = &v1alpha1.DmsReplicationSubnetGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dmsreplicationsubnetgroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dmsReplicationSubnetGroups) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.DmsReplicationSubnetGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dmsreplicationsubnetgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dmsReplicationSubnetGroups) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dmsreplicationsubnetgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dmsReplicationSubnetGroups) Watch(opts v1.ListOptions) (watch.Interface
 func (c *dmsReplicationSubnetGroups) Create(dmsReplicationSubnetGroup *v1alpha1.DmsReplicationSubnetGroup) (result *v1alpha1.DmsReplicationSubnetGroup, err error) {
 	result = &v1alpha1.DmsReplicationSubnetGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dmsreplicationsubnetgroups").
 		Body(dmsReplicationSubnetGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *dmsReplicationSubnetGroups) Create(dmsReplicationSubnetGroup *v1alpha1.
 func (c *dmsReplicationSubnetGroups) Update(dmsReplicationSubnetGroup *v1alpha1.DmsReplicationSubnetGroup) (result *v1alpha1.DmsReplicationSubnetGroup, err error) {
 	result = &v1alpha1.DmsReplicationSubnetGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dmsreplicationsubnetgroups").
 		Name(dmsReplicationSubnetGroup.Name).
 		Body(dmsReplicationSubnetGroup).
@@ -132,6 +139,7 @@ func (c *dmsReplicationSubnetGroups) Update(dmsReplicationSubnetGroup *v1alpha1.
 func (c *dmsReplicationSubnetGroups) UpdateStatus(dmsReplicationSubnetGroup *v1alpha1.DmsReplicationSubnetGroup) (result *v1alpha1.DmsReplicationSubnetGroup, err error) {
 	result = &v1alpha1.DmsReplicationSubnetGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dmsreplicationsubnetgroups").
 		Name(dmsReplicationSubnetGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dmsReplicationSubnetGroups) UpdateStatus(dmsReplicationSubnetGroup *v1a
 // Delete takes name of the dmsReplicationSubnetGroup and deletes it. Returns an error if one occurs.
 func (c *dmsReplicationSubnetGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dmsreplicationsubnetgroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dmsReplicationSubnetGroups) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dmsreplicationsubnetgroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dmsReplicationSubnetGroups) DeleteCollection(options *v1.DeleteOptions,
 func (c *dmsReplicationSubnetGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DmsReplicationSubnetGroup, err error) {
 	result = &v1alpha1.DmsReplicationSubnetGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dmsreplicationsubnetgroups").
 		SubResource(subresources...).
 		Name(name).

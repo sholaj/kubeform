@@ -32,7 +32,7 @@ import (
 // SesDomainMailFromsGetter has a method to return a SesDomainMailFromInterface.
 // A group's client should implement this interface.
 type SesDomainMailFromsGetter interface {
-	SesDomainMailFroms() SesDomainMailFromInterface
+	SesDomainMailFroms(namespace string) SesDomainMailFromInterface
 }
 
 // SesDomainMailFromInterface has methods to work with SesDomainMailFrom resources.
@@ -52,12 +52,14 @@ type SesDomainMailFromInterface interface {
 // sesDomainMailFroms implements SesDomainMailFromInterface
 type sesDomainMailFroms struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSesDomainMailFroms returns a SesDomainMailFroms
-func newSesDomainMailFroms(c *AwsV1alpha1Client) *sesDomainMailFroms {
+func newSesDomainMailFroms(c *AwsV1alpha1Client, namespace string) *sesDomainMailFroms {
 	return &sesDomainMailFroms{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSesDomainMailFroms(c *AwsV1alpha1Client) *sesDomainMailFroms {
 func (c *sesDomainMailFroms) Get(name string, options v1.GetOptions) (result *v1alpha1.SesDomainMailFrom, err error) {
 	result = &v1alpha1.SesDomainMailFrom{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sesdomainmailfroms").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sesDomainMailFroms) List(opts v1.ListOptions) (result *v1alpha1.SesDoma
 	}
 	result = &v1alpha1.SesDomainMailFromList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sesdomainmailfroms").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sesDomainMailFroms) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sesdomainmailfroms").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sesDomainMailFroms) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *sesDomainMailFroms) Create(sesDomainMailFrom *v1alpha1.SesDomainMailFrom) (result *v1alpha1.SesDomainMailFrom, err error) {
 	result = &v1alpha1.SesDomainMailFrom{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sesdomainmailfroms").
 		Body(sesDomainMailFrom).
 		Do().
@@ -118,6 +124,7 @@ func (c *sesDomainMailFroms) Create(sesDomainMailFrom *v1alpha1.SesDomainMailFro
 func (c *sesDomainMailFroms) Update(sesDomainMailFrom *v1alpha1.SesDomainMailFrom) (result *v1alpha1.SesDomainMailFrom, err error) {
 	result = &v1alpha1.SesDomainMailFrom{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sesdomainmailfroms").
 		Name(sesDomainMailFrom.Name).
 		Body(sesDomainMailFrom).
@@ -132,6 +139,7 @@ func (c *sesDomainMailFroms) Update(sesDomainMailFrom *v1alpha1.SesDomainMailFro
 func (c *sesDomainMailFroms) UpdateStatus(sesDomainMailFrom *v1alpha1.SesDomainMailFrom) (result *v1alpha1.SesDomainMailFrom, err error) {
 	result = &v1alpha1.SesDomainMailFrom{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sesdomainmailfroms").
 		Name(sesDomainMailFrom.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sesDomainMailFroms) UpdateStatus(sesDomainMailFrom *v1alpha1.SesDomainM
 // Delete takes name of the sesDomainMailFrom and deletes it. Returns an error if one occurs.
 func (c *sesDomainMailFroms) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sesdomainmailfroms").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sesDomainMailFroms) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sesdomainmailfroms").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sesDomainMailFroms) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *sesDomainMailFroms) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesDomainMailFrom, err error) {
 	result = &v1alpha1.SesDomainMailFrom{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sesdomainmailfroms").
 		SubResource(subresources...).
 		Name(name).

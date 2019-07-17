@@ -32,7 +32,7 @@ import (
 // Route53ResolverRulesGetter has a method to return a Route53ResolverRuleInterface.
 // A group's client should implement this interface.
 type Route53ResolverRulesGetter interface {
-	Route53ResolverRules() Route53ResolverRuleInterface
+	Route53ResolverRules(namespace string) Route53ResolverRuleInterface
 }
 
 // Route53ResolverRuleInterface has methods to work with Route53ResolverRule resources.
@@ -52,12 +52,14 @@ type Route53ResolverRuleInterface interface {
 // route53ResolverRules implements Route53ResolverRuleInterface
 type route53ResolverRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRoute53ResolverRules returns a Route53ResolverRules
-func newRoute53ResolverRules(c *AwsV1alpha1Client) *route53ResolverRules {
+func newRoute53ResolverRules(c *AwsV1alpha1Client, namespace string) *route53ResolverRules {
 	return &route53ResolverRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRoute53ResolverRules(c *AwsV1alpha1Client) *route53ResolverRules {
 func (c *route53ResolverRules) Get(name string, options v1.GetOptions) (result *v1alpha1.Route53ResolverRule, err error) {
 	result = &v1alpha1.Route53ResolverRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("route53resolverrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *route53ResolverRules) List(opts v1.ListOptions) (result *v1alpha1.Route
 	}
 	result = &v1alpha1.Route53ResolverRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("route53resolverrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *route53ResolverRules) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("route53resolverrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *route53ResolverRules) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *route53ResolverRules) Create(route53ResolverRule *v1alpha1.Route53ResolverRule) (result *v1alpha1.Route53ResolverRule, err error) {
 	result = &v1alpha1.Route53ResolverRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("route53resolverrules").
 		Body(route53ResolverRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *route53ResolverRules) Create(route53ResolverRule *v1alpha1.Route53Resol
 func (c *route53ResolverRules) Update(route53ResolverRule *v1alpha1.Route53ResolverRule) (result *v1alpha1.Route53ResolverRule, err error) {
 	result = &v1alpha1.Route53ResolverRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("route53resolverrules").
 		Name(route53ResolverRule.Name).
 		Body(route53ResolverRule).
@@ -132,6 +139,7 @@ func (c *route53ResolverRules) Update(route53ResolverRule *v1alpha1.Route53Resol
 func (c *route53ResolverRules) UpdateStatus(route53ResolverRule *v1alpha1.Route53ResolverRule) (result *v1alpha1.Route53ResolverRule, err error) {
 	result = &v1alpha1.Route53ResolverRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("route53resolverrules").
 		Name(route53ResolverRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *route53ResolverRules) UpdateStatus(route53ResolverRule *v1alpha1.Route5
 // Delete takes name of the route53ResolverRule and deletes it. Returns an error if one occurs.
 func (c *route53ResolverRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("route53resolverrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *route53ResolverRules) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("route53resolverrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *route53ResolverRules) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *route53ResolverRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Route53ResolverRule, err error) {
 	result = &v1alpha1.Route53ResolverRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("route53resolverrules").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type AppServiceLister interface {
 	// List lists all AppServices in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AppService, err error)
-	// Get retrieves the AppService from the index for a given name.
-	Get(name string) (*v1alpha1.AppService, error)
+	// AppServices returns an object that can list and get AppServices.
+	AppServices(namespace string) AppServiceNamespaceLister
 	AppServiceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *appServiceLister) List(selector labels.Selector) (ret []*v1alpha1.AppSe
 	return ret, err
 }
 
-// Get retrieves the AppService from the index for a given name.
-func (s *appServiceLister) Get(name string) (*v1alpha1.AppService, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AppServices returns an object that can list and get AppServices.
+func (s *appServiceLister) AppServices(namespace string) AppServiceNamespaceLister {
+	return appServiceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AppServiceNamespaceLister helps list and get AppServices.
+type AppServiceNamespaceLister interface {
+	// List lists all AppServices in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AppService, err error)
+	// Get retrieves the AppService from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AppService, error)
+	AppServiceNamespaceListerExpansion
+}
+
+// appServiceNamespaceLister implements the AppServiceNamespaceLister
+// interface.
+type appServiceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AppServices in the indexer for a given namespace.
+func (s appServiceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AppService, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AppService))
+	})
+	return ret, err
+}
+
+// Get retrieves the AppService from the indexer for a given namespace and name.
+func (s appServiceNamespaceLister) Get(name string) (*v1alpha1.AppService, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

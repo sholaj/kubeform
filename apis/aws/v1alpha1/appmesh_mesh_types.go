@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,22 +20,23 @@ type AppmeshMesh struct {
 
 type AppmeshMeshSpecSpecEgressFilter struct {
 	// +optional
-	Type string `json:"type,omitempty"`
+	Type string `json:"type,omitempty" tf:"type,omitempty"`
 }
 
 type AppmeshMeshSpecSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	EgressFilter *[]AppmeshMeshSpecSpec `json:"egress_filter,omitempty"`
+	EgressFilter []AppmeshMeshSpecSpecEgressFilter `json:"egressFilter,omitempty" tf:"egress_filter,omitempty"`
 }
 
 type AppmeshMeshSpec struct {
-	Name string `json:"name"`
+	Name string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Spec *[]AppmeshMeshSpec `json:"spec,omitempty"`
+	Spec []AppmeshMeshSpecSpec `json:"spec,omitempty" tf:"spec,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type AppmeshMeshStatus struct {
@@ -43,7 +44,9 @@ type AppmeshMeshStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

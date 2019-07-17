@@ -31,6 +31,7 @@ import (
 // FakeComputeInstances implements ComputeInstanceInterface
 type FakeComputeInstances struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computeinstancesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computeinstances"}
@@ -40,7 +41,8 @@ var computeinstancesKind = schema.GroupVersionKind{Group: "google.kubeform.com",
 // Get takes name of the computeInstance, and returns the corresponding computeInstance object, and an error if there is any.
 func (c *FakeComputeInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computeinstancesResource, name), &v1alpha1.ComputeInstance{})
+		Invokes(testing.NewGetAction(computeinstancesResource, c.ns, name), &v1alpha1.ComputeInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeInstances) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of ComputeInstances that match those selectors.
 func (c *FakeComputeInstances) List(opts v1.ListOptions) (result *v1alpha1.ComputeInstanceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computeinstancesResource, computeinstancesKind, opts), &v1alpha1.ComputeInstanceList{})
+		Invokes(testing.NewListAction(computeinstancesResource, computeinstancesKind, c.ns, opts), &v1alpha1.ComputeInstanceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeInstances) List(opts v1.ListOptions) (result *v1alpha1.Compu
 // Watch returns a watch.Interface that watches the requested computeInstances.
 func (c *FakeComputeInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computeinstancesResource, opts))
+		InvokesWatch(testing.NewWatchAction(computeinstancesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeInstance and creates it.  Returns the server's representation of the computeInstance, and an error, if there is any.
 func (c *FakeComputeInstances) Create(computeInstance *v1alpha1.ComputeInstance) (result *v1alpha1.ComputeInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computeinstancesResource, computeInstance), &v1alpha1.ComputeInstance{})
+		Invokes(testing.NewCreateAction(computeinstancesResource, c.ns, computeInstance), &v1alpha1.ComputeInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeInstances) Create(computeInstance *v1alpha1.ComputeInstance)
 // Update takes the representation of a computeInstance and updates it. Returns the server's representation of the computeInstance, and an error, if there is any.
 func (c *FakeComputeInstances) Update(computeInstance *v1alpha1.ComputeInstance) (result *v1alpha1.ComputeInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computeinstancesResource, computeInstance), &v1alpha1.ComputeInstance{})
+		Invokes(testing.NewUpdateAction(computeinstancesResource, c.ns, computeInstance), &v1alpha1.ComputeInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeInstances) Update(computeInstance *v1alpha1.ComputeInstance)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeInstances) UpdateStatus(computeInstance *v1alpha1.ComputeInstance) (*v1alpha1.ComputeInstance, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computeinstancesResource, "status", computeInstance), &v1alpha1.ComputeInstance{})
+		Invokes(testing.NewUpdateSubresourceAction(computeinstancesResource, "status", c.ns, computeInstance), &v1alpha1.ComputeInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeInstances) UpdateStatus(computeInstance *v1alpha1.ComputeIns
 // Delete takes name of the computeInstance and deletes it. Returns an error if one occurs.
 func (c *FakeComputeInstances) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computeinstancesResource, name), &v1alpha1.ComputeInstance{})
+		Invokes(testing.NewDeleteAction(computeinstancesResource, c.ns, name), &v1alpha1.ComputeInstance{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeInstances) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computeinstancesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computeinstancesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeInstanceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeInstances) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched computeInstance.
 func (c *FakeComputeInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computeinstancesResource, name, pt, data, subresources...), &v1alpha1.ComputeInstance{})
+		Invokes(testing.NewPatchSubresourceAction(computeinstancesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeInstance{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakePostgresqlServers implements PostgresqlServerInterface
 type FakePostgresqlServers struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var postgresqlserversResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "postgresqlservers"}
@@ -40,7 +41,8 @@ var postgresqlserversKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com
 // Get takes name of the postgresqlServer, and returns the corresponding postgresqlServer object, and an error if there is any.
 func (c *FakePostgresqlServers) Get(name string, options v1.GetOptions) (result *v1alpha1.PostgresqlServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(postgresqlserversResource, name), &v1alpha1.PostgresqlServer{})
+		Invokes(testing.NewGetAction(postgresqlserversResource, c.ns, name), &v1alpha1.PostgresqlServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakePostgresqlServers) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of PostgresqlServers that match those selectors.
 func (c *FakePostgresqlServers) List(opts v1.ListOptions) (result *v1alpha1.PostgresqlServerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(postgresqlserversResource, postgresqlserversKind, opts), &v1alpha1.PostgresqlServerList{})
+		Invokes(testing.NewListAction(postgresqlserversResource, postgresqlserversKind, c.ns, opts), &v1alpha1.PostgresqlServerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakePostgresqlServers) List(opts v1.ListOptions) (result *v1alpha1.Post
 // Watch returns a watch.Interface that watches the requested postgresqlServers.
 func (c *FakePostgresqlServers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(postgresqlserversResource, opts))
+		InvokesWatch(testing.NewWatchAction(postgresqlserversResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a postgresqlServer and creates it.  Returns the server's representation of the postgresqlServer, and an error, if there is any.
 func (c *FakePostgresqlServers) Create(postgresqlServer *v1alpha1.PostgresqlServer) (result *v1alpha1.PostgresqlServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(postgresqlserversResource, postgresqlServer), &v1alpha1.PostgresqlServer{})
+		Invokes(testing.NewCreateAction(postgresqlserversResource, c.ns, postgresqlServer), &v1alpha1.PostgresqlServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakePostgresqlServers) Create(postgresqlServer *v1alpha1.PostgresqlServ
 // Update takes the representation of a postgresqlServer and updates it. Returns the server's representation of the postgresqlServer, and an error, if there is any.
 func (c *FakePostgresqlServers) Update(postgresqlServer *v1alpha1.PostgresqlServer) (result *v1alpha1.PostgresqlServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(postgresqlserversResource, postgresqlServer), &v1alpha1.PostgresqlServer{})
+		Invokes(testing.NewUpdateAction(postgresqlserversResource, c.ns, postgresqlServer), &v1alpha1.PostgresqlServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakePostgresqlServers) Update(postgresqlServer *v1alpha1.PostgresqlServ
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakePostgresqlServers) UpdateStatus(postgresqlServer *v1alpha1.PostgresqlServer) (*v1alpha1.PostgresqlServer, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(postgresqlserversResource, "status", postgresqlServer), &v1alpha1.PostgresqlServer{})
+		Invokes(testing.NewUpdateSubresourceAction(postgresqlserversResource, "status", c.ns, postgresqlServer), &v1alpha1.PostgresqlServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakePostgresqlServers) UpdateStatus(postgresqlServer *v1alpha1.Postgres
 // Delete takes name of the postgresqlServer and deletes it. Returns an error if one occurs.
 func (c *FakePostgresqlServers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(postgresqlserversResource, name), &v1alpha1.PostgresqlServer{})
+		Invokes(testing.NewDeleteAction(postgresqlserversResource, c.ns, name), &v1alpha1.PostgresqlServer{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakePostgresqlServers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(postgresqlserversResource, listOptions)
+	action := testing.NewDeleteCollectionAction(postgresqlserversResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PostgresqlServerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakePostgresqlServers) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched postgresqlServer.
 func (c *FakePostgresqlServers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PostgresqlServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(postgresqlserversResource, name, pt, data, subresources...), &v1alpha1.PostgresqlServer{})
+		Invokes(testing.NewPatchSubresourceAction(postgresqlserversResource, c.ns, name, pt, data, subresources...), &v1alpha1.PostgresqlServer{})
+
 	if obj == nil {
 		return nil, err
 	}

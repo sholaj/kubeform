@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/azurerm/v1alpha1"
 )
 
-// LbNatRuleInformer provides access to a shared informer and lister for
-// LbNatRules.
-type LbNatRuleInformer interface {
+// LbNATRuleInformer provides access to a shared informer and lister for
+// LbNATRules.
+type LbNATRuleInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.LbNatRuleLister
+	Lister() v1alpha1.LbNATRuleLister
 }
 
-type lbNatRuleInformer struct {
+type lbNATRuleInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewLbNatRuleInformer constructs a new informer for LbNatRule type.
+// NewLbNATRuleInformer constructs a new informer for LbNATRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLbNatRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLbNatRuleInformer(client, resyncPeriod, indexers, nil)
+func NewLbNATRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLbNATRuleInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredLbNatRuleInformer constructs a new informer for LbNatRule type.
+// NewFilteredLbNATRuleInformer constructs a new informer for LbNATRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLbNatRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLbNATRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().LbNatRules().List(options)
+				return client.AzurermV1alpha1().LbNATRules(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().LbNatRules().Watch(options)
+				return client.AzurermV1alpha1().LbNATRules(namespace).Watch(options)
 			},
 		},
-		&azurermv1alpha1.LbNatRule{},
+		&azurermv1alpha1.LbNATRule{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *lbNatRuleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLbNatRuleInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *lbNATRuleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredLbNATRuleInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *lbNatRuleInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&azurermv1alpha1.LbNatRule{}, f.defaultInformer)
+func (f *lbNATRuleInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&azurermv1alpha1.LbNATRule{}, f.defaultInformer)
 }
 
-func (f *lbNatRuleInformer) Lister() v1alpha1.LbNatRuleLister {
-	return v1alpha1.NewLbNatRuleLister(f.Informer().GetIndexer())
+func (f *lbNATRuleInformer) Lister() v1alpha1.LbNATRuleLister {
+	return v1alpha1.NewLbNATRuleLister(f.Informer().GetIndexer())
 }

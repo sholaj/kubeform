@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,12 +20,13 @@ type DxHostedPrivateVirtualInterfaceAccepter struct {
 
 type DxHostedPrivateVirtualInterfaceAccepterSpec struct {
 	// +optional
-	DxGatewayId string `json:"dx_gateway_id,omitempty"`
+	DxGatewayID string `json:"dxGatewayID,omitempty" tf:"dx_gateway_id,omitempty"`
 	// +optional
-	Tags               map[string]string `json:"tags,omitempty"`
-	VirtualInterfaceId string            `json:"virtual_interface_id"`
+	Tags               map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
+	VirtualInterfaceID string            `json:"virtualInterfaceID" tf:"virtual_interface_id"`
 	// +optional
-	VpnGatewayId string `json:"vpn_gateway_id,omitempty"`
+	VpnGatewayID string                    `json:"vpnGatewayID,omitempty" tf:"vpn_gateway_id,omitempty"`
+	ProviderRef  core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DxHostedPrivateVirtualInterfaceAccepterStatus struct {
@@ -33,7 +34,9 @@ type DxHostedPrivateVirtualInterfaceAccepterStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

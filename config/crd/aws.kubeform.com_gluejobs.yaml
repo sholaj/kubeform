@@ -398,33 +398,51 @@ spec:
         spec:
           properties:
             command:
-              items: {}
+              items:
+                properties:
+                  name:
+                    type: string
+                  scriptLocation:
+                    type: string
+                required:
+                - scriptLocation
+                type: object
               maxItems: 1
               type: array
             connections:
               items:
                 type: string
               type: array
-            default_arguments:
+            defaultArguments:
               additionalProperties:
                 type: string
               type: object
             description:
               type: string
-            max_retries:
+            maxRetries:
               type: integer
             name:
               type: string
-            role_arn:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            roleArn:
               type: string
-            security_configuration:
+            securityConfiguration:
               type: string
             timeout:
               type: integer
           required:
           - command
           - name
-          - role_arn
+          - providerRef
+          - roleArn
           type: object
         status:
           properties:
@@ -435,6 +453,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

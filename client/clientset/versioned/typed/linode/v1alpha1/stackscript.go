@@ -32,7 +32,7 @@ import (
 // StackscriptsGetter has a method to return a StackscriptInterface.
 // A group's client should implement this interface.
 type StackscriptsGetter interface {
-	Stackscripts() StackscriptInterface
+	Stackscripts(namespace string) StackscriptInterface
 }
 
 // StackscriptInterface has methods to work with Stackscript resources.
@@ -52,12 +52,14 @@ type StackscriptInterface interface {
 // stackscripts implements StackscriptInterface
 type stackscripts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStackscripts returns a Stackscripts
-func newStackscripts(c *LinodeV1alpha1Client) *stackscripts {
+func newStackscripts(c *LinodeV1alpha1Client, namespace string) *stackscripts {
 	return &stackscripts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStackscripts(c *LinodeV1alpha1Client) *stackscripts {
 func (c *stackscripts) Get(name string, options v1.GetOptions) (result *v1alpha1.Stackscript, err error) {
 	result = &v1alpha1.Stackscript{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("stackscripts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *stackscripts) List(opts v1.ListOptions) (result *v1alpha1.StackscriptLi
 	}
 	result = &v1alpha1.StackscriptList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("stackscripts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *stackscripts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("stackscripts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *stackscripts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *stackscripts) Create(stackscript *v1alpha1.Stackscript) (result *v1alpha1.Stackscript, err error) {
 	result = &v1alpha1.Stackscript{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("stackscripts").
 		Body(stackscript).
 		Do().
@@ -118,6 +124,7 @@ func (c *stackscripts) Create(stackscript *v1alpha1.Stackscript) (result *v1alph
 func (c *stackscripts) Update(stackscript *v1alpha1.Stackscript) (result *v1alpha1.Stackscript, err error) {
 	result = &v1alpha1.Stackscript{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("stackscripts").
 		Name(stackscript.Name).
 		Body(stackscript).
@@ -132,6 +139,7 @@ func (c *stackscripts) Update(stackscript *v1alpha1.Stackscript) (result *v1alph
 func (c *stackscripts) UpdateStatus(stackscript *v1alpha1.Stackscript) (result *v1alpha1.Stackscript, err error) {
 	result = &v1alpha1.Stackscript{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("stackscripts").
 		Name(stackscript.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *stackscripts) UpdateStatus(stackscript *v1alpha1.Stackscript) (result *
 // Delete takes name of the stackscript and deletes it. Returns an error if one occurs.
 func (c *stackscripts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("stackscripts").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *stackscripts) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("stackscripts").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *stackscripts) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *stackscripts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Stackscript, err error) {
 	result = &v1alpha1.Stackscript{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("stackscripts").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type BigqueryTableLister interface {
 	// List lists all BigqueryTables in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.BigqueryTable, err error)
-	// Get retrieves the BigqueryTable from the index for a given name.
-	Get(name string) (*v1alpha1.BigqueryTable, error)
+	// BigqueryTables returns an object that can list and get BigqueryTables.
+	BigqueryTables(namespace string) BigqueryTableNamespaceLister
 	BigqueryTableListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *bigqueryTableLister) List(selector labels.Selector) (ret []*v1alpha1.Bi
 	return ret, err
 }
 
-// Get retrieves the BigqueryTable from the index for a given name.
-func (s *bigqueryTableLister) Get(name string) (*v1alpha1.BigqueryTable, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// BigqueryTables returns an object that can list and get BigqueryTables.
+func (s *bigqueryTableLister) BigqueryTables(namespace string) BigqueryTableNamespaceLister {
+	return bigqueryTableNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// BigqueryTableNamespaceLister helps list and get BigqueryTables.
+type BigqueryTableNamespaceLister interface {
+	// List lists all BigqueryTables in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.BigqueryTable, err error)
+	// Get retrieves the BigqueryTable from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.BigqueryTable, error)
+	BigqueryTableNamespaceListerExpansion
+}
+
+// bigqueryTableNamespaceLister implements the BigqueryTableNamespaceLister
+// interface.
+type bigqueryTableNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all BigqueryTables in the indexer for a given namespace.
+func (s bigqueryTableNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.BigqueryTable, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.BigqueryTable))
+	})
+	return ret, err
+}
+
+// Get retrieves the BigqueryTable from the indexer for a given namespace and name.
+func (s bigqueryTableNamespaceLister) Get(name string) (*v1alpha1.BigqueryTable, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

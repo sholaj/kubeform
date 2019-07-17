@@ -32,7 +32,7 @@ import (
 // DefaultRouteTablesGetter has a method to return a DefaultRouteTableInterface.
 // A group's client should implement this interface.
 type DefaultRouteTablesGetter interface {
-	DefaultRouteTables() DefaultRouteTableInterface
+	DefaultRouteTables(namespace string) DefaultRouteTableInterface
 }
 
 // DefaultRouteTableInterface has methods to work with DefaultRouteTable resources.
@@ -52,12 +52,14 @@ type DefaultRouteTableInterface interface {
 // defaultRouteTables implements DefaultRouteTableInterface
 type defaultRouteTables struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDefaultRouteTables returns a DefaultRouteTables
-func newDefaultRouteTables(c *AwsV1alpha1Client) *defaultRouteTables {
+func newDefaultRouteTables(c *AwsV1alpha1Client, namespace string) *defaultRouteTables {
 	return &defaultRouteTables{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDefaultRouteTables(c *AwsV1alpha1Client) *defaultRouteTables {
 func (c *defaultRouteTables) Get(name string, options v1.GetOptions) (result *v1alpha1.DefaultRouteTable, err error) {
 	result = &v1alpha1.DefaultRouteTable{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("defaultroutetables").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *defaultRouteTables) List(opts v1.ListOptions) (result *v1alpha1.Default
 	}
 	result = &v1alpha1.DefaultRouteTableList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("defaultroutetables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *defaultRouteTables) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("defaultroutetables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *defaultRouteTables) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *defaultRouteTables) Create(defaultRouteTable *v1alpha1.DefaultRouteTable) (result *v1alpha1.DefaultRouteTable, err error) {
 	result = &v1alpha1.DefaultRouteTable{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("defaultroutetables").
 		Body(defaultRouteTable).
 		Do().
@@ -118,6 +124,7 @@ func (c *defaultRouteTables) Create(defaultRouteTable *v1alpha1.DefaultRouteTabl
 func (c *defaultRouteTables) Update(defaultRouteTable *v1alpha1.DefaultRouteTable) (result *v1alpha1.DefaultRouteTable, err error) {
 	result = &v1alpha1.DefaultRouteTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("defaultroutetables").
 		Name(defaultRouteTable.Name).
 		Body(defaultRouteTable).
@@ -132,6 +139,7 @@ func (c *defaultRouteTables) Update(defaultRouteTable *v1alpha1.DefaultRouteTabl
 func (c *defaultRouteTables) UpdateStatus(defaultRouteTable *v1alpha1.DefaultRouteTable) (result *v1alpha1.DefaultRouteTable, err error) {
 	result = &v1alpha1.DefaultRouteTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("defaultroutetables").
 		Name(defaultRouteTable.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *defaultRouteTables) UpdateStatus(defaultRouteTable *v1alpha1.DefaultRou
 // Delete takes name of the defaultRouteTable and deletes it. Returns an error if one occurs.
 func (c *defaultRouteTables) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("defaultroutetables").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *defaultRouteTables) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("defaultroutetables").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *defaultRouteTables) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *defaultRouteTables) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DefaultRouteTable, err error) {
 	result = &v1alpha1.DefaultRouteTable{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("defaultroutetables").
 		SubResource(subresources...).
 		Name(name).

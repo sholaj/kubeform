@@ -41,32 +41,33 @@ type CloudwatchLogDestinationInformer interface {
 type cloudwatchLogDestinationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewCloudwatchLogDestinationInformer constructs a new informer for CloudwatchLogDestination type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCloudwatchLogDestinationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCloudwatchLogDestinationInformer(client, resyncPeriod, indexers, nil)
+func NewCloudwatchLogDestinationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCloudwatchLogDestinationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredCloudwatchLogDestinationInformer constructs a new informer for CloudwatchLogDestination type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCloudwatchLogDestinationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCloudwatchLogDestinationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CloudwatchLogDestinations().List(options)
+				return client.AwsV1alpha1().CloudwatchLogDestinations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CloudwatchLogDestinations().Watch(options)
+				return client.AwsV1alpha1().CloudwatchLogDestinations(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.CloudwatchLogDestination{},
@@ -76,7 +77,7 @@ func NewFilteredCloudwatchLogDestinationInformer(client versioned.Interface, res
 }
 
 func (f *cloudwatchLogDestinationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCloudwatchLogDestinationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredCloudwatchLogDestinationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *cloudwatchLogDestinationInformer) Informer() cache.SharedIndexInformer {

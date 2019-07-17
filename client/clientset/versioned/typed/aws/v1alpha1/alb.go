@@ -32,7 +32,7 @@ import (
 // AlbsGetter has a method to return a AlbInterface.
 // A group's client should implement this interface.
 type AlbsGetter interface {
-	Albs() AlbInterface
+	Albs(namespace string) AlbInterface
 }
 
 // AlbInterface has methods to work with Alb resources.
@@ -52,12 +52,14 @@ type AlbInterface interface {
 // albs implements AlbInterface
 type albs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAlbs returns a Albs
-func newAlbs(c *AwsV1alpha1Client) *albs {
+func newAlbs(c *AwsV1alpha1Client, namespace string) *albs {
 	return &albs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAlbs(c *AwsV1alpha1Client) *albs {
 func (c *albs) Get(name string, options v1.GetOptions) (result *v1alpha1.Alb, err error) {
 	result = &v1alpha1.Alb{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("albs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *albs) List(opts v1.ListOptions) (result *v1alpha1.AlbList, err error) {
 	}
 	result = &v1alpha1.AlbList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("albs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *albs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("albs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *albs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *albs) Create(alb *v1alpha1.Alb) (result *v1alpha1.Alb, err error) {
 	result = &v1alpha1.Alb{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("albs").
 		Body(alb).
 		Do().
@@ -118,6 +124,7 @@ func (c *albs) Create(alb *v1alpha1.Alb) (result *v1alpha1.Alb, err error) {
 func (c *albs) Update(alb *v1alpha1.Alb) (result *v1alpha1.Alb, err error) {
 	result = &v1alpha1.Alb{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("albs").
 		Name(alb.Name).
 		Body(alb).
@@ -132,6 +139,7 @@ func (c *albs) Update(alb *v1alpha1.Alb) (result *v1alpha1.Alb, err error) {
 func (c *albs) UpdateStatus(alb *v1alpha1.Alb) (result *v1alpha1.Alb, err error) {
 	result = &v1alpha1.Alb{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("albs").
 		Name(alb.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *albs) UpdateStatus(alb *v1alpha1.Alb) (result *v1alpha1.Alb, err error)
 // Delete takes name of the alb and deletes it. Returns an error if one occurs.
 func (c *albs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("albs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *albs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("albs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *albs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOp
 func (c *albs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Alb, err error) {
 	result = &v1alpha1.Alb{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("albs").
 		SubResource(subresources...).
 		Name(name).

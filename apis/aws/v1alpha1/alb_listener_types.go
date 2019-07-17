@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,69 +20,70 @@ type AlbListener struct {
 
 type AlbListenerSpecDefaultActionAuthenticateCognito struct {
 	// +optional
-	AuthenticationRequestExtraParams map[string]string `json:"authentication_request_extra_params,omitempty"`
-	UserPoolArn                      string            `json:"user_pool_arn"`
-	UserPoolClientId                 string            `json:"user_pool_client_id"`
-	UserPoolDomain                   string            `json:"user_pool_domain"`
+	AuthenticationRequestExtraParams map[string]string `json:"authenticationRequestExtraParams,omitempty" tf:"authentication_request_extra_params,omitempty"`
+	UserPoolArn                      string            `json:"userPoolArn" tf:"user_pool_arn"`
+	UserPoolClientID                 string            `json:"userPoolClientID" tf:"user_pool_client_id"`
+	UserPoolDomain                   string            `json:"userPoolDomain" tf:"user_pool_domain"`
 }
 
 type AlbListenerSpecDefaultActionAuthenticateOidc struct {
 	// +optional
-	AuthenticationRequestExtraParams map[string]string `json:"authentication_request_extra_params,omitempty"`
-	AuthorizationEndpoint            string            `json:"authorization_endpoint"`
-	ClientId                         string            `json:"client_id"`
-	ClientSecret                     string            `json:"client_secret"`
-	Issuer                           string            `json:"issuer"`
-	TokenEndpoint                    string            `json:"token_endpoint"`
-	UserInfoEndpoint                 string            `json:"user_info_endpoint"`
+	AuthenticationRequestExtraParams map[string]string `json:"authenticationRequestExtraParams,omitempty" tf:"authentication_request_extra_params,omitempty"`
+	AuthorizationEndpoint            string            `json:"authorizationEndpoint" tf:"authorization_endpoint"`
+	ClientID                         string            `json:"clientID" tf:"client_id"`
+	ClientSecret                     string            `json:"clientSecret" tf:"client_secret"`
+	Issuer                           string            `json:"issuer" tf:"issuer"`
+	TokenEndpoint                    string            `json:"tokenEndpoint" tf:"token_endpoint"`
+	UserInfoEndpoint                 string            `json:"userInfoEndpoint" tf:"user_info_endpoint"`
 }
 
 type AlbListenerSpecDefaultActionFixedResponse struct {
-	ContentType string `json:"content_type"`
+	ContentType string `json:"contentType" tf:"content_type"`
 	// +optional
-	MessageBody string `json:"message_body,omitempty"`
+	MessageBody string `json:"messageBody,omitempty" tf:"message_body,omitempty"`
 }
 
 type AlbListenerSpecDefaultActionRedirect struct {
 	// +optional
-	Host string `json:"host,omitempty"`
+	Host string `json:"host,omitempty" tf:"host,omitempty"`
 	// +optional
-	Path string `json:"path,omitempty"`
+	Path string `json:"path,omitempty" tf:"path,omitempty"`
 	// +optional
-	Port string `json:"port,omitempty"`
+	Port string `json:"port,omitempty" tf:"port,omitempty"`
 	// +optional
-	Protocol string `json:"protocol,omitempty"`
+	Protocol string `json:"protocol,omitempty" tf:"protocol,omitempty"`
 	// +optional
-	Query      string `json:"query,omitempty"`
-	StatusCode string `json:"status_code"`
+	Query      string `json:"query,omitempty" tf:"query,omitempty"`
+	StatusCode string `json:"statusCode" tf:"status_code"`
 }
 
 type AlbListenerSpecDefaultAction struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	AuthenticateCognito *[]AlbListenerSpecDefaultAction `json:"authenticate_cognito,omitempty"`
+	AuthenticateCognito []AlbListenerSpecDefaultActionAuthenticateCognito `json:"authenticateCognito,omitempty" tf:"authenticate_cognito,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	AuthenticateOidc *[]AlbListenerSpecDefaultAction `json:"authenticate_oidc,omitempty"`
+	AuthenticateOidc []AlbListenerSpecDefaultActionAuthenticateOidc `json:"authenticateOidc,omitempty" tf:"authenticate_oidc,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	FixedResponse *[]AlbListenerSpecDefaultAction `json:"fixed_response,omitempty"`
+	FixedResponse []AlbListenerSpecDefaultActionFixedResponse `json:"fixedResponse,omitempty" tf:"fixed_response,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Redirect *[]AlbListenerSpecDefaultAction `json:"redirect,omitempty"`
+	Redirect []AlbListenerSpecDefaultActionRedirect `json:"redirect,omitempty" tf:"redirect,omitempty"`
 	// +optional
-	TargetGroupArn string `json:"target_group_arn,omitempty"`
-	Type           string `json:"type"`
+	TargetGroupArn string `json:"targetGroupArn,omitempty" tf:"target_group_arn,omitempty"`
+	Type           string `json:"type" tf:"type"`
 }
 
 type AlbListenerSpec struct {
 	// +optional
-	CertificateArn  string            `json:"certificate_arn,omitempty"`
-	DefaultAction   []AlbListenerSpec `json:"default_action"`
-	LoadBalancerArn string            `json:"load_balancer_arn"`
-	Port            int               `json:"port"`
+	CertificateArn  string                         `json:"certificateArn,omitempty" tf:"certificate_arn,omitempty"`
+	DefaultAction   []AlbListenerSpecDefaultAction `json:"defaultAction" tf:"default_action"`
+	LoadBalancerArn string                         `json:"loadBalancerArn" tf:"load_balancer_arn"`
+	Port            int                            `json:"port" tf:"port"`
 	// +optional
-	Protocol string `json:"protocol,omitempty"`
+	Protocol    string                    `json:"protocol,omitempty" tf:"protocol,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type AlbListenerStatus struct {
@@ -90,7 +91,9 @@ type AlbListenerStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

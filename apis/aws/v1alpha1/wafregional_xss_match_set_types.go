@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,22 +20,23 @@ type WafregionalXssMatchSet struct {
 
 type WafregionalXssMatchSetSpecXssMatchTupleFieldToMatch struct {
 	// +optional
-	Data string `json:"data,omitempty"`
-	Type string `json:"type"`
+	Data string `json:"data,omitempty" tf:"data,omitempty"`
+	Type string `json:"type" tf:"type"`
 }
 
 type WafregionalXssMatchSetSpecXssMatchTuple struct {
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	FieldToMatch       []WafregionalXssMatchSetSpecXssMatchTuple `json:"field_to_match"`
-	TextTransformation string                                    `json:"text_transformation"`
+	FieldToMatch       []WafregionalXssMatchSetSpecXssMatchTupleFieldToMatch `json:"fieldToMatch" tf:"field_to_match"`
+	TextTransformation string                                                `json:"textTransformation" tf:"text_transformation"`
 }
 
 type WafregionalXssMatchSetSpec struct {
-	Name string `json:"name"`
+	Name string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	XssMatchTuple *[]WafregionalXssMatchSetSpec `json:"xss_match_tuple,omitempty"`
+	XssMatchTuple []WafregionalXssMatchSetSpecXssMatchTuple `json:"xssMatchTuple,omitempty" tf:"xss_match_tuple,omitempty"`
+	ProviderRef   core.LocalObjectReference                 `json:"providerRef" tf:"-"`
 }
 
 type WafregionalXssMatchSetStatus struct {
@@ -43,7 +44,9 @@ type WafregionalXssMatchSetStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

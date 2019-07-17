@@ -41,32 +41,33 @@ type LoadBalancerPolicyInformer interface {
 type loadBalancerPolicyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewLoadBalancerPolicyInformer constructs a new informer for LoadBalancerPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLoadBalancerPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLoadBalancerPolicyInformer(client, resyncPeriod, indexers, nil)
+func NewLoadBalancerPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLoadBalancerPolicyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredLoadBalancerPolicyInformer constructs a new informer for LoadBalancerPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLoadBalancerPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLoadBalancerPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().LoadBalancerPolicies().List(options)
+				return client.AwsV1alpha1().LoadBalancerPolicies(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().LoadBalancerPolicies().Watch(options)
+				return client.AwsV1alpha1().LoadBalancerPolicies(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.LoadBalancerPolicy{},
@@ -76,7 +77,7 @@ func NewFilteredLoadBalancerPolicyInformer(client versioned.Interface, resyncPer
 }
 
 func (f *loadBalancerPolicyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLoadBalancerPolicyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredLoadBalancerPolicyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *loadBalancerPolicyInformer) Informer() cache.SharedIndexInformer {

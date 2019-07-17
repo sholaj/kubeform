@@ -29,8 +29,8 @@ import (
 type ApiGatewayDocumentationPartLister interface {
 	// List lists all ApiGatewayDocumentationParts in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayDocumentationPart, err error)
-	// Get retrieves the ApiGatewayDocumentationPart from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayDocumentationPart, error)
+	// ApiGatewayDocumentationParts returns an object that can list and get ApiGatewayDocumentationParts.
+	ApiGatewayDocumentationParts(namespace string) ApiGatewayDocumentationPartNamespaceLister
 	ApiGatewayDocumentationPartListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiGatewayDocumentationPartLister) List(selector labels.Selector) (ret 
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayDocumentationPart from the index for a given name.
-func (s *apiGatewayDocumentationPartLister) Get(name string) (*v1alpha1.ApiGatewayDocumentationPart, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayDocumentationParts returns an object that can list and get ApiGatewayDocumentationParts.
+func (s *apiGatewayDocumentationPartLister) ApiGatewayDocumentationParts(namespace string) ApiGatewayDocumentationPartNamespaceLister {
+	return apiGatewayDocumentationPartNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayDocumentationPartNamespaceLister helps list and get ApiGatewayDocumentationParts.
+type ApiGatewayDocumentationPartNamespaceLister interface {
+	// List lists all ApiGatewayDocumentationParts in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayDocumentationPart, err error)
+	// Get retrieves the ApiGatewayDocumentationPart from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayDocumentationPart, error)
+	ApiGatewayDocumentationPartNamespaceListerExpansion
+}
+
+// apiGatewayDocumentationPartNamespaceLister implements the ApiGatewayDocumentationPartNamespaceLister
+// interface.
+type apiGatewayDocumentationPartNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayDocumentationParts in the indexer for a given namespace.
+func (s apiGatewayDocumentationPartNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayDocumentationPart, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayDocumentationPart))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayDocumentationPart from the indexer for a given namespace and name.
+func (s apiGatewayDocumentationPartNamespaceLister) Get(name string) (*v1alpha1.ApiGatewayDocumentationPart, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

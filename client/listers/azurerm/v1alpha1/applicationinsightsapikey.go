@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// ApplicationInsightsApiKeyLister helps list ApplicationInsightsApiKeys.
-type ApplicationInsightsApiKeyLister interface {
-	// List lists all ApplicationInsightsApiKeys in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.ApplicationInsightsApiKey, err error)
-	// Get retrieves the ApplicationInsightsApiKey from the index for a given name.
-	Get(name string) (*v1alpha1.ApplicationInsightsApiKey, error)
-	ApplicationInsightsApiKeyListerExpansion
+// ApplicationInsightsAPIKeyLister helps list ApplicationInsightsAPIKeys.
+type ApplicationInsightsAPIKeyLister interface {
+	// List lists all ApplicationInsightsAPIKeys in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.ApplicationInsightsAPIKey, err error)
+	// ApplicationInsightsAPIKeys returns an object that can list and get ApplicationInsightsAPIKeys.
+	ApplicationInsightsAPIKeys(namespace string) ApplicationInsightsAPIKeyNamespaceLister
+	ApplicationInsightsAPIKeyListerExpansion
 }
 
-// applicationInsightsApiKeyLister implements the ApplicationInsightsApiKeyLister interface.
-type applicationInsightsApiKeyLister struct {
+// applicationInsightsAPIKeyLister implements the ApplicationInsightsAPIKeyLister interface.
+type applicationInsightsAPIKeyLister struct {
 	indexer cache.Indexer
 }
 
-// NewApplicationInsightsApiKeyLister returns a new ApplicationInsightsApiKeyLister.
-func NewApplicationInsightsApiKeyLister(indexer cache.Indexer) ApplicationInsightsApiKeyLister {
-	return &applicationInsightsApiKeyLister{indexer: indexer}
+// NewApplicationInsightsAPIKeyLister returns a new ApplicationInsightsAPIKeyLister.
+func NewApplicationInsightsAPIKeyLister(indexer cache.Indexer) ApplicationInsightsAPIKeyLister {
+	return &applicationInsightsAPIKeyLister{indexer: indexer}
 }
 
-// List lists all ApplicationInsightsApiKeys in the indexer.
-func (s *applicationInsightsApiKeyLister) List(selector labels.Selector) (ret []*v1alpha1.ApplicationInsightsApiKey, err error) {
+// List lists all ApplicationInsightsAPIKeys in the indexer.
+func (s *applicationInsightsAPIKeyLister) List(selector labels.Selector) (ret []*v1alpha1.ApplicationInsightsAPIKey, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ApplicationInsightsApiKey))
+		ret = append(ret, m.(*v1alpha1.ApplicationInsightsAPIKey))
 	})
 	return ret, err
 }
 
-// Get retrieves the ApplicationInsightsApiKey from the index for a given name.
-func (s *applicationInsightsApiKeyLister) Get(name string) (*v1alpha1.ApplicationInsightsApiKey, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApplicationInsightsAPIKeys returns an object that can list and get ApplicationInsightsAPIKeys.
+func (s *applicationInsightsAPIKeyLister) ApplicationInsightsAPIKeys(namespace string) ApplicationInsightsAPIKeyNamespaceLister {
+	return applicationInsightsAPIKeyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApplicationInsightsAPIKeyNamespaceLister helps list and get ApplicationInsightsAPIKeys.
+type ApplicationInsightsAPIKeyNamespaceLister interface {
+	// List lists all ApplicationInsightsAPIKeys in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApplicationInsightsAPIKey, err error)
+	// Get retrieves the ApplicationInsightsAPIKey from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApplicationInsightsAPIKey, error)
+	ApplicationInsightsAPIKeyNamespaceListerExpansion
+}
+
+// applicationInsightsAPIKeyNamespaceLister implements the ApplicationInsightsAPIKeyNamespaceLister
+// interface.
+type applicationInsightsAPIKeyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApplicationInsightsAPIKeys in the indexer for a given namespace.
+func (s applicationInsightsAPIKeyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApplicationInsightsAPIKey, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApplicationInsightsAPIKey))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApplicationInsightsAPIKey from the indexer for a given namespace and name.
+func (s applicationInsightsAPIKeyNamespaceLister) Get(name string) (*v1alpha1.ApplicationInsightsAPIKey, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("applicationinsightsapikey"), name)
 	}
-	return obj.(*v1alpha1.ApplicationInsightsApiKey), nil
+	return obj.(*v1alpha1.ApplicationInsightsAPIKey), nil
 }

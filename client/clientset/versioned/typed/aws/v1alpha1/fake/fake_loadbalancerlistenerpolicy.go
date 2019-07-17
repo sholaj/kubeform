@@ -31,6 +31,7 @@ import (
 // FakeLoadBalancerListenerPolicies implements LoadBalancerListenerPolicyInterface
 type FakeLoadBalancerListenerPolicies struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var loadbalancerlistenerpoliciesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "loadbalancerlistenerpolicies"}
@@ -40,7 +41,8 @@ var loadbalancerlistenerpoliciesKind = schema.GroupVersionKind{Group: "aws.kubef
 // Get takes name of the loadBalancerListenerPolicy, and returns the corresponding loadBalancerListenerPolicy object, and an error if there is any.
 func (c *FakeLoadBalancerListenerPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.LoadBalancerListenerPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(loadbalancerlistenerpoliciesResource, name), &v1alpha1.LoadBalancerListenerPolicy{})
+		Invokes(testing.NewGetAction(loadbalancerlistenerpoliciesResource, c.ns, name), &v1alpha1.LoadBalancerListenerPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLoadBalancerListenerPolicies) Get(name string, options v1.GetOption
 // List takes label and field selectors, and returns the list of LoadBalancerListenerPolicies that match those selectors.
 func (c *FakeLoadBalancerListenerPolicies) List(opts v1.ListOptions) (result *v1alpha1.LoadBalancerListenerPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(loadbalancerlistenerpoliciesResource, loadbalancerlistenerpoliciesKind, opts), &v1alpha1.LoadBalancerListenerPolicyList{})
+		Invokes(testing.NewListAction(loadbalancerlistenerpoliciesResource, loadbalancerlistenerpoliciesKind, c.ns, opts), &v1alpha1.LoadBalancerListenerPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLoadBalancerListenerPolicies) List(opts v1.ListOptions) (result *v1
 // Watch returns a watch.Interface that watches the requested loadBalancerListenerPolicies.
 func (c *FakeLoadBalancerListenerPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(loadbalancerlistenerpoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(loadbalancerlistenerpoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a loadBalancerListenerPolicy and creates it.  Returns the server's representation of the loadBalancerListenerPolicy, and an error, if there is any.
 func (c *FakeLoadBalancerListenerPolicies) Create(loadBalancerListenerPolicy *v1alpha1.LoadBalancerListenerPolicy) (result *v1alpha1.LoadBalancerListenerPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(loadbalancerlistenerpoliciesResource, loadBalancerListenerPolicy), &v1alpha1.LoadBalancerListenerPolicy{})
+		Invokes(testing.NewCreateAction(loadbalancerlistenerpoliciesResource, c.ns, loadBalancerListenerPolicy), &v1alpha1.LoadBalancerListenerPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLoadBalancerListenerPolicies) Create(loadBalancerListenerPolicy *v1
 // Update takes the representation of a loadBalancerListenerPolicy and updates it. Returns the server's representation of the loadBalancerListenerPolicy, and an error, if there is any.
 func (c *FakeLoadBalancerListenerPolicies) Update(loadBalancerListenerPolicy *v1alpha1.LoadBalancerListenerPolicy) (result *v1alpha1.LoadBalancerListenerPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(loadbalancerlistenerpoliciesResource, loadBalancerListenerPolicy), &v1alpha1.LoadBalancerListenerPolicy{})
+		Invokes(testing.NewUpdateAction(loadbalancerlistenerpoliciesResource, c.ns, loadBalancerListenerPolicy), &v1alpha1.LoadBalancerListenerPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLoadBalancerListenerPolicies) Update(loadBalancerListenerPolicy *v1
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLoadBalancerListenerPolicies) UpdateStatus(loadBalancerListenerPolicy *v1alpha1.LoadBalancerListenerPolicy) (*v1alpha1.LoadBalancerListenerPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(loadbalancerlistenerpoliciesResource, "status", loadBalancerListenerPolicy), &v1alpha1.LoadBalancerListenerPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(loadbalancerlistenerpoliciesResource, "status", c.ns, loadBalancerListenerPolicy), &v1alpha1.LoadBalancerListenerPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLoadBalancerListenerPolicies) UpdateStatus(loadBalancerListenerPoli
 // Delete takes name of the loadBalancerListenerPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeLoadBalancerListenerPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(loadbalancerlistenerpoliciesResource, name), &v1alpha1.LoadBalancerListenerPolicy{})
+		Invokes(testing.NewDeleteAction(loadbalancerlistenerpoliciesResource, c.ns, name), &v1alpha1.LoadBalancerListenerPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLoadBalancerListenerPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(loadbalancerlistenerpoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(loadbalancerlistenerpoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LoadBalancerListenerPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLoadBalancerListenerPolicies) DeleteCollection(options *v1.DeleteOp
 // Patch applies the patch and returns the patched loadBalancerListenerPolicy.
 func (c *FakeLoadBalancerListenerPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LoadBalancerListenerPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(loadbalancerlistenerpoliciesResource, name, pt, data, subresources...), &v1alpha1.LoadBalancerListenerPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(loadbalancerlistenerpoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.LoadBalancerListenerPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

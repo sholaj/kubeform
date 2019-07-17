@@ -32,7 +32,7 @@ import (
 // NetworkInterfacesGetter has a method to return a NetworkInterfaceInterface.
 // A group's client should implement this interface.
 type NetworkInterfacesGetter interface {
-	NetworkInterfaces() NetworkInterfaceInterface
+	NetworkInterfaces(namespace string) NetworkInterfaceInterface
 }
 
 // NetworkInterfaceInterface has methods to work with NetworkInterface resources.
@@ -52,12 +52,14 @@ type NetworkInterfaceInterface interface {
 // networkInterfaces implements NetworkInterfaceInterface
 type networkInterfaces struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNetworkInterfaces returns a NetworkInterfaces
-func newNetworkInterfaces(c *AzurermV1alpha1Client) *networkInterfaces {
+func newNetworkInterfaces(c *AzurermV1alpha1Client, namespace string) *networkInterfaces {
 	return &networkInterfaces{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNetworkInterfaces(c *AzurermV1alpha1Client) *networkInterfaces {
 func (c *networkInterfaces) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkInterface, err error) {
 	result = &v1alpha1.NetworkInterface{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkinterfaces").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *networkInterfaces) List(opts v1.ListOptions) (result *v1alpha1.NetworkI
 	}
 	result = &v1alpha1.NetworkInterfaceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkinterfaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *networkInterfaces) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("networkinterfaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *networkInterfaces) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *networkInterfaces) Create(networkInterface *v1alpha1.NetworkInterface) (result *v1alpha1.NetworkInterface, err error) {
 	result = &v1alpha1.NetworkInterface{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("networkinterfaces").
 		Body(networkInterface).
 		Do().
@@ -118,6 +124,7 @@ func (c *networkInterfaces) Create(networkInterface *v1alpha1.NetworkInterface) 
 func (c *networkInterfaces) Update(networkInterface *v1alpha1.NetworkInterface) (result *v1alpha1.NetworkInterface, err error) {
 	result = &v1alpha1.NetworkInterface{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkinterfaces").
 		Name(networkInterface.Name).
 		Body(networkInterface).
@@ -132,6 +139,7 @@ func (c *networkInterfaces) Update(networkInterface *v1alpha1.NetworkInterface) 
 func (c *networkInterfaces) UpdateStatus(networkInterface *v1alpha1.NetworkInterface) (result *v1alpha1.NetworkInterface, err error) {
 	result = &v1alpha1.NetworkInterface{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkinterfaces").
 		Name(networkInterface.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *networkInterfaces) UpdateStatus(networkInterface *v1alpha1.NetworkInter
 // Delete takes name of the networkInterface and deletes it. Returns an error if one occurs.
 func (c *networkInterfaces) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkinterfaces").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *networkInterfaces) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkinterfaces").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *networkInterfaces) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *networkInterfaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkInterface, err error) {
 	result = &v1alpha1.NetworkInterface{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("networkinterfaces").
 		SubResource(subresources...).
 		Name(name).

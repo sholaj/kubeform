@@ -32,7 +32,7 @@ import (
 // KinesisFirehoseDeliveryStreamsGetter has a method to return a KinesisFirehoseDeliveryStreamInterface.
 // A group's client should implement this interface.
 type KinesisFirehoseDeliveryStreamsGetter interface {
-	KinesisFirehoseDeliveryStreams() KinesisFirehoseDeliveryStreamInterface
+	KinesisFirehoseDeliveryStreams(namespace string) KinesisFirehoseDeliveryStreamInterface
 }
 
 // KinesisFirehoseDeliveryStreamInterface has methods to work with KinesisFirehoseDeliveryStream resources.
@@ -52,12 +52,14 @@ type KinesisFirehoseDeliveryStreamInterface interface {
 // kinesisFirehoseDeliveryStreams implements KinesisFirehoseDeliveryStreamInterface
 type kinesisFirehoseDeliveryStreams struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKinesisFirehoseDeliveryStreams returns a KinesisFirehoseDeliveryStreams
-func newKinesisFirehoseDeliveryStreams(c *AwsV1alpha1Client) *kinesisFirehoseDeliveryStreams {
+func newKinesisFirehoseDeliveryStreams(c *AwsV1alpha1Client, namespace string) *kinesisFirehoseDeliveryStreams {
 	return &kinesisFirehoseDeliveryStreams{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKinesisFirehoseDeliveryStreams(c *AwsV1alpha1Client) *kinesisFirehoseDel
 func (c *kinesisFirehoseDeliveryStreams) Get(name string, options v1.GetOptions) (result *v1alpha1.KinesisFirehoseDeliveryStream, err error) {
 	result = &v1alpha1.KinesisFirehoseDeliveryStream{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kinesisfirehosedeliverystreams").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *kinesisFirehoseDeliveryStreams) List(opts v1.ListOptions) (result *v1al
 	}
 	result = &v1alpha1.KinesisFirehoseDeliveryStreamList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kinesisfirehosedeliverystreams").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *kinesisFirehoseDeliveryStreams) Watch(opts v1.ListOptions) (watch.Inter
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("kinesisfirehosedeliverystreams").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *kinesisFirehoseDeliveryStreams) Watch(opts v1.ListOptions) (watch.Inter
 func (c *kinesisFirehoseDeliveryStreams) Create(kinesisFirehoseDeliveryStream *v1alpha1.KinesisFirehoseDeliveryStream) (result *v1alpha1.KinesisFirehoseDeliveryStream, err error) {
 	result = &v1alpha1.KinesisFirehoseDeliveryStream{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("kinesisfirehosedeliverystreams").
 		Body(kinesisFirehoseDeliveryStream).
 		Do().
@@ -118,6 +124,7 @@ func (c *kinesisFirehoseDeliveryStreams) Create(kinesisFirehoseDeliveryStream *v
 func (c *kinesisFirehoseDeliveryStreams) Update(kinesisFirehoseDeliveryStream *v1alpha1.KinesisFirehoseDeliveryStream) (result *v1alpha1.KinesisFirehoseDeliveryStream, err error) {
 	result = &v1alpha1.KinesisFirehoseDeliveryStream{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kinesisfirehosedeliverystreams").
 		Name(kinesisFirehoseDeliveryStream.Name).
 		Body(kinesisFirehoseDeliveryStream).
@@ -132,6 +139,7 @@ func (c *kinesisFirehoseDeliveryStreams) Update(kinesisFirehoseDeliveryStream *v
 func (c *kinesisFirehoseDeliveryStreams) UpdateStatus(kinesisFirehoseDeliveryStream *v1alpha1.KinesisFirehoseDeliveryStream) (result *v1alpha1.KinesisFirehoseDeliveryStream, err error) {
 	result = &v1alpha1.KinesisFirehoseDeliveryStream{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kinesisfirehosedeliverystreams").
 		Name(kinesisFirehoseDeliveryStream.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *kinesisFirehoseDeliveryStreams) UpdateStatus(kinesisFirehoseDeliveryStr
 // Delete takes name of the kinesisFirehoseDeliveryStream and deletes it. Returns an error if one occurs.
 func (c *kinesisFirehoseDeliveryStreams) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kinesisfirehosedeliverystreams").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *kinesisFirehoseDeliveryStreams) DeleteCollection(options *v1.DeleteOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kinesisfirehosedeliverystreams").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *kinesisFirehoseDeliveryStreams) DeleteCollection(options *v1.DeleteOpti
 func (c *kinesisFirehoseDeliveryStreams) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KinesisFirehoseDeliveryStream, err error) {
 	result = &v1alpha1.KinesisFirehoseDeliveryStream{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("kinesisfirehosedeliverystreams").
 		SubResource(subresources...).
 		Name(name).

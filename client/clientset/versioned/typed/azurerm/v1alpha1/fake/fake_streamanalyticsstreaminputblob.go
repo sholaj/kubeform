@@ -31,6 +31,7 @@ import (
 // FakeStreamAnalyticsStreamInputBlobs implements StreamAnalyticsStreamInputBlobInterface
 type FakeStreamAnalyticsStreamInputBlobs struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var streamanalyticsstreaminputblobsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "streamanalyticsstreaminputblobs"}
@@ -40,7 +41,8 @@ var streamanalyticsstreaminputblobsKind = schema.GroupVersionKind{Group: "azurer
 // Get takes name of the streamAnalyticsStreamInputBlob, and returns the corresponding streamAnalyticsStreamInputBlob object, and an error if there is any.
 func (c *FakeStreamAnalyticsStreamInputBlobs) Get(name string, options v1.GetOptions) (result *v1alpha1.StreamAnalyticsStreamInputBlob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(streamanalyticsstreaminputblobsResource, name), &v1alpha1.StreamAnalyticsStreamInputBlob{})
+		Invokes(testing.NewGetAction(streamanalyticsstreaminputblobsResource, c.ns, name), &v1alpha1.StreamAnalyticsStreamInputBlob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeStreamAnalyticsStreamInputBlobs) Get(name string, options v1.GetOpt
 // List takes label and field selectors, and returns the list of StreamAnalyticsStreamInputBlobs that match those selectors.
 func (c *FakeStreamAnalyticsStreamInputBlobs) List(opts v1.ListOptions) (result *v1alpha1.StreamAnalyticsStreamInputBlobList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(streamanalyticsstreaminputblobsResource, streamanalyticsstreaminputblobsKind, opts), &v1alpha1.StreamAnalyticsStreamInputBlobList{})
+		Invokes(testing.NewListAction(streamanalyticsstreaminputblobsResource, streamanalyticsstreaminputblobsKind, c.ns, opts), &v1alpha1.StreamAnalyticsStreamInputBlobList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeStreamAnalyticsStreamInputBlobs) List(opts v1.ListOptions) (result 
 // Watch returns a watch.Interface that watches the requested streamAnalyticsStreamInputBlobs.
 func (c *FakeStreamAnalyticsStreamInputBlobs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(streamanalyticsstreaminputblobsResource, opts))
+		InvokesWatch(testing.NewWatchAction(streamanalyticsstreaminputblobsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a streamAnalyticsStreamInputBlob and creates it.  Returns the server's representation of the streamAnalyticsStreamInputBlob, and an error, if there is any.
 func (c *FakeStreamAnalyticsStreamInputBlobs) Create(streamAnalyticsStreamInputBlob *v1alpha1.StreamAnalyticsStreamInputBlob) (result *v1alpha1.StreamAnalyticsStreamInputBlob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(streamanalyticsstreaminputblobsResource, streamAnalyticsStreamInputBlob), &v1alpha1.StreamAnalyticsStreamInputBlob{})
+		Invokes(testing.NewCreateAction(streamanalyticsstreaminputblobsResource, c.ns, streamAnalyticsStreamInputBlob), &v1alpha1.StreamAnalyticsStreamInputBlob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeStreamAnalyticsStreamInputBlobs) Create(streamAnalyticsStreamInputB
 // Update takes the representation of a streamAnalyticsStreamInputBlob and updates it. Returns the server's representation of the streamAnalyticsStreamInputBlob, and an error, if there is any.
 func (c *FakeStreamAnalyticsStreamInputBlobs) Update(streamAnalyticsStreamInputBlob *v1alpha1.StreamAnalyticsStreamInputBlob) (result *v1alpha1.StreamAnalyticsStreamInputBlob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(streamanalyticsstreaminputblobsResource, streamAnalyticsStreamInputBlob), &v1alpha1.StreamAnalyticsStreamInputBlob{})
+		Invokes(testing.NewUpdateAction(streamanalyticsstreaminputblobsResource, c.ns, streamAnalyticsStreamInputBlob), &v1alpha1.StreamAnalyticsStreamInputBlob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeStreamAnalyticsStreamInputBlobs) Update(streamAnalyticsStreamInputB
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeStreamAnalyticsStreamInputBlobs) UpdateStatus(streamAnalyticsStreamInputBlob *v1alpha1.StreamAnalyticsStreamInputBlob) (*v1alpha1.StreamAnalyticsStreamInputBlob, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(streamanalyticsstreaminputblobsResource, "status", streamAnalyticsStreamInputBlob), &v1alpha1.StreamAnalyticsStreamInputBlob{})
+		Invokes(testing.NewUpdateSubresourceAction(streamanalyticsstreaminputblobsResource, "status", c.ns, streamAnalyticsStreamInputBlob), &v1alpha1.StreamAnalyticsStreamInputBlob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeStreamAnalyticsStreamInputBlobs) UpdateStatus(streamAnalyticsStream
 // Delete takes name of the streamAnalyticsStreamInputBlob and deletes it. Returns an error if one occurs.
 func (c *FakeStreamAnalyticsStreamInputBlobs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(streamanalyticsstreaminputblobsResource, name), &v1alpha1.StreamAnalyticsStreamInputBlob{})
+		Invokes(testing.NewDeleteAction(streamanalyticsstreaminputblobsResource, c.ns, name), &v1alpha1.StreamAnalyticsStreamInputBlob{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeStreamAnalyticsStreamInputBlobs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(streamanalyticsstreaminputblobsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(streamanalyticsstreaminputblobsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.StreamAnalyticsStreamInputBlobList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeStreamAnalyticsStreamInputBlobs) DeleteCollection(options *v1.Delet
 // Patch applies the patch and returns the patched streamAnalyticsStreamInputBlob.
 func (c *FakeStreamAnalyticsStreamInputBlobs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StreamAnalyticsStreamInputBlob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(streamanalyticsstreaminputblobsResource, name, pt, data, subresources...), &v1alpha1.StreamAnalyticsStreamInputBlob{})
+		Invokes(testing.NewPatchSubresourceAction(streamanalyticsstreaminputblobsResource, c.ns, name, pt, data, subresources...), &v1alpha1.StreamAnalyticsStreamInputBlob{})
+
 	if obj == nil {
 		return nil, err
 	}

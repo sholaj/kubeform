@@ -41,32 +41,33 @@ type KinesisAnalyticsApplicationInformer interface {
 type kinesisAnalyticsApplicationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewKinesisAnalyticsApplicationInformer constructs a new informer for KinesisAnalyticsApplication type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewKinesisAnalyticsApplicationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredKinesisAnalyticsApplicationInformer(client, resyncPeriod, indexers, nil)
+func NewKinesisAnalyticsApplicationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredKinesisAnalyticsApplicationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredKinesisAnalyticsApplicationInformer constructs a new informer for KinesisAnalyticsApplication type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredKinesisAnalyticsApplicationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredKinesisAnalyticsApplicationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().KinesisAnalyticsApplications().List(options)
+				return client.AwsV1alpha1().KinesisAnalyticsApplications(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().KinesisAnalyticsApplications().Watch(options)
+				return client.AwsV1alpha1().KinesisAnalyticsApplications(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.KinesisAnalyticsApplication{},
@@ -76,7 +77,7 @@ func NewFilteredKinesisAnalyticsApplicationInformer(client versioned.Interface, 
 }
 
 func (f *kinesisAnalyticsApplicationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredKinesisAnalyticsApplicationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredKinesisAnalyticsApplicationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *kinesisAnalyticsApplicationInformer) Informer() cache.SharedIndexInformer {

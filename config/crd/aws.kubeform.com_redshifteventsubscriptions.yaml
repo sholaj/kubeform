@@ -399,23 +399,32 @@ spec:
           properties:
             enabled:
               type: boolean
-            event_categories:
+            eventCategories:
               items:
                 type: string
               type: array
               uniqueItems: true
             name:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             severity:
               type: string
-            sns_topic_arn:
+            snsTopicArn:
               type: string
-            source_ids:
+            sourceIDS:
               items:
                 type: string
               type: array
               uniqueItems: true
-            source_type:
+            sourceType:
               type: string
             tags:
               additionalProperties:
@@ -423,7 +432,8 @@ spec:
               type: object
           required:
           - name
-          - sns_topic_arn
+          - providerRef
+          - snsTopicArn
           type: object
         status:
           properties:
@@ -434,6 +444,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

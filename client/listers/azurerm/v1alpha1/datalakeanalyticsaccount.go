@@ -29,8 +29,8 @@ import (
 type DataLakeAnalyticsAccountLister interface {
 	// List lists all DataLakeAnalyticsAccounts in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DataLakeAnalyticsAccount, err error)
-	// Get retrieves the DataLakeAnalyticsAccount from the index for a given name.
-	Get(name string) (*v1alpha1.DataLakeAnalyticsAccount, error)
+	// DataLakeAnalyticsAccounts returns an object that can list and get DataLakeAnalyticsAccounts.
+	DataLakeAnalyticsAccounts(namespace string) DataLakeAnalyticsAccountNamespaceLister
 	DataLakeAnalyticsAccountListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dataLakeAnalyticsAccountLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the DataLakeAnalyticsAccount from the index for a given name.
-func (s *dataLakeAnalyticsAccountLister) Get(name string) (*v1alpha1.DataLakeAnalyticsAccount, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DataLakeAnalyticsAccounts returns an object that can list and get DataLakeAnalyticsAccounts.
+func (s *dataLakeAnalyticsAccountLister) DataLakeAnalyticsAccounts(namespace string) DataLakeAnalyticsAccountNamespaceLister {
+	return dataLakeAnalyticsAccountNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DataLakeAnalyticsAccountNamespaceLister helps list and get DataLakeAnalyticsAccounts.
+type DataLakeAnalyticsAccountNamespaceLister interface {
+	// List lists all DataLakeAnalyticsAccounts in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DataLakeAnalyticsAccount, err error)
+	// Get retrieves the DataLakeAnalyticsAccount from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DataLakeAnalyticsAccount, error)
+	DataLakeAnalyticsAccountNamespaceListerExpansion
+}
+
+// dataLakeAnalyticsAccountNamespaceLister implements the DataLakeAnalyticsAccountNamespaceLister
+// interface.
+type dataLakeAnalyticsAccountNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DataLakeAnalyticsAccounts in the indexer for a given namespace.
+func (s dataLakeAnalyticsAccountNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DataLakeAnalyticsAccount, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DataLakeAnalyticsAccount))
+	})
+	return ret, err
+}
+
+// Get retrieves the DataLakeAnalyticsAccount from the indexer for a given namespace and name.
+func (s dataLakeAnalyticsAccountNamespaceLister) Get(name string) (*v1alpha1.DataLakeAnalyticsAccount, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

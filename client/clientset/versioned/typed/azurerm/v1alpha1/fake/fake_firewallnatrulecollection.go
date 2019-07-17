@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// FakeFirewallNatRuleCollections implements FirewallNatRuleCollectionInterface
-type FakeFirewallNatRuleCollections struct {
+// FakeFirewallNATRuleCollections implements FirewallNATRuleCollectionInterface
+type FakeFirewallNATRuleCollections struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var firewallnatrulecollectionsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "firewallnatrulecollections"}
 
-var firewallnatrulecollectionsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "FirewallNatRuleCollection"}
+var firewallnatrulecollectionsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "FirewallNATRuleCollection"}
 
-// Get takes name of the firewallNatRuleCollection, and returns the corresponding firewallNatRuleCollection object, and an error if there is any.
-func (c *FakeFirewallNatRuleCollections) Get(name string, options v1.GetOptions) (result *v1alpha1.FirewallNatRuleCollection, err error) {
+// Get takes name of the firewallNATRuleCollection, and returns the corresponding firewallNATRuleCollection object, and an error if there is any.
+func (c *FakeFirewallNATRuleCollections) Get(name string, options v1.GetOptions) (result *v1alpha1.FirewallNATRuleCollection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(firewallnatrulecollectionsResource, name), &v1alpha1.FirewallNatRuleCollection{})
+		Invokes(testing.NewGetAction(firewallnatrulecollectionsResource, c.ns, name), &v1alpha1.FirewallNATRuleCollection{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.FirewallNatRuleCollection), err
+	return obj.(*v1alpha1.FirewallNATRuleCollection), err
 }
 
-// List takes label and field selectors, and returns the list of FirewallNatRuleCollections that match those selectors.
-func (c *FakeFirewallNatRuleCollections) List(opts v1.ListOptions) (result *v1alpha1.FirewallNatRuleCollectionList, err error) {
+// List takes label and field selectors, and returns the list of FirewallNATRuleCollections that match those selectors.
+func (c *FakeFirewallNATRuleCollections) List(opts v1.ListOptions) (result *v1alpha1.FirewallNATRuleCollectionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(firewallnatrulecollectionsResource, firewallnatrulecollectionsKind, opts), &v1alpha1.FirewallNatRuleCollectionList{})
+		Invokes(testing.NewListAction(firewallnatrulecollectionsResource, firewallnatrulecollectionsKind, c.ns, opts), &v1alpha1.FirewallNATRuleCollectionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeFirewallNatRuleCollections) List(opts v1.ListOptions) (result *v1al
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.FirewallNatRuleCollectionList{ListMeta: obj.(*v1alpha1.FirewallNatRuleCollectionList).ListMeta}
-	for _, item := range obj.(*v1alpha1.FirewallNatRuleCollectionList).Items {
+	list := &v1alpha1.FirewallNATRuleCollectionList{ListMeta: obj.(*v1alpha1.FirewallNATRuleCollectionList).ListMeta}
+	for _, item := range obj.(*v1alpha1.FirewallNATRuleCollectionList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeFirewallNatRuleCollections) List(opts v1.ListOptions) (result *v1al
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested firewallNatRuleCollections.
-func (c *FakeFirewallNatRuleCollections) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested firewallNATRuleCollections.
+func (c *FakeFirewallNATRuleCollections) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(firewallnatrulecollectionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(firewallnatrulecollectionsResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a firewallNatRuleCollection and creates it.  Returns the server's representation of the firewallNatRuleCollection, and an error, if there is any.
-func (c *FakeFirewallNatRuleCollections) Create(firewallNatRuleCollection *v1alpha1.FirewallNatRuleCollection) (result *v1alpha1.FirewallNatRuleCollection, err error) {
+// Create takes the representation of a firewallNATRuleCollection and creates it.  Returns the server's representation of the firewallNATRuleCollection, and an error, if there is any.
+func (c *FakeFirewallNATRuleCollections) Create(firewallNATRuleCollection *v1alpha1.FirewallNATRuleCollection) (result *v1alpha1.FirewallNATRuleCollection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(firewallnatrulecollectionsResource, firewallNatRuleCollection), &v1alpha1.FirewallNatRuleCollection{})
+		Invokes(testing.NewCreateAction(firewallnatrulecollectionsResource, c.ns, firewallNATRuleCollection), &v1alpha1.FirewallNATRuleCollection{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.FirewallNatRuleCollection), err
+	return obj.(*v1alpha1.FirewallNATRuleCollection), err
 }
 
-// Update takes the representation of a firewallNatRuleCollection and updates it. Returns the server's representation of the firewallNatRuleCollection, and an error, if there is any.
-func (c *FakeFirewallNatRuleCollections) Update(firewallNatRuleCollection *v1alpha1.FirewallNatRuleCollection) (result *v1alpha1.FirewallNatRuleCollection, err error) {
+// Update takes the representation of a firewallNATRuleCollection and updates it. Returns the server's representation of the firewallNATRuleCollection, and an error, if there is any.
+func (c *FakeFirewallNATRuleCollections) Update(firewallNATRuleCollection *v1alpha1.FirewallNATRuleCollection) (result *v1alpha1.FirewallNATRuleCollection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(firewallnatrulecollectionsResource, firewallNatRuleCollection), &v1alpha1.FirewallNatRuleCollection{})
+		Invokes(testing.NewUpdateAction(firewallnatrulecollectionsResource, c.ns, firewallNATRuleCollection), &v1alpha1.FirewallNATRuleCollection{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.FirewallNatRuleCollection), err
+	return obj.(*v1alpha1.FirewallNATRuleCollection), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeFirewallNatRuleCollections) UpdateStatus(firewallNatRuleCollection *v1alpha1.FirewallNatRuleCollection) (*v1alpha1.FirewallNatRuleCollection, error) {
+func (c *FakeFirewallNATRuleCollections) UpdateStatus(firewallNATRuleCollection *v1alpha1.FirewallNATRuleCollection) (*v1alpha1.FirewallNATRuleCollection, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(firewallnatrulecollectionsResource, "status", firewallNatRuleCollection), &v1alpha1.FirewallNatRuleCollection{})
+		Invokes(testing.NewUpdateSubresourceAction(firewallnatrulecollectionsResource, "status", c.ns, firewallNATRuleCollection), &v1alpha1.FirewallNATRuleCollection{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.FirewallNatRuleCollection), err
+	return obj.(*v1alpha1.FirewallNATRuleCollection), err
 }
 
-// Delete takes name of the firewallNatRuleCollection and deletes it. Returns an error if one occurs.
-func (c *FakeFirewallNatRuleCollections) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the firewallNATRuleCollection and deletes it. Returns an error if one occurs.
+func (c *FakeFirewallNATRuleCollections) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(firewallnatrulecollectionsResource, name), &v1alpha1.FirewallNatRuleCollection{})
+		Invokes(testing.NewDeleteAction(firewallnatrulecollectionsResource, c.ns, name), &v1alpha1.FirewallNATRuleCollection{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeFirewallNatRuleCollections) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(firewallnatrulecollectionsResource, listOptions)
+func (c *FakeFirewallNATRuleCollections) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(firewallnatrulecollectionsResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.FirewallNatRuleCollectionList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.FirewallNATRuleCollectionList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched firewallNatRuleCollection.
-func (c *FakeFirewallNatRuleCollections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FirewallNatRuleCollection, err error) {
+// Patch applies the patch and returns the patched firewallNATRuleCollection.
+func (c *FakeFirewallNATRuleCollections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FirewallNATRuleCollection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(firewallnatrulecollectionsResource, name, pt, data, subresources...), &v1alpha1.FirewallNatRuleCollection{})
+		Invokes(testing.NewPatchSubresourceAction(firewallnatrulecollectionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.FirewallNATRuleCollection{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.FirewallNatRuleCollection), err
+	return obj.(*v1alpha1.FirewallNATRuleCollection), err
 }

@@ -31,6 +31,7 @@ import (
 // FakeManagedDisks implements ManagedDiskInterface
 type FakeManagedDisks struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var manageddisksResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "manageddisks"}
@@ -40,7 +41,8 @@ var manageddisksKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Ve
 // Get takes name of the managedDisk, and returns the corresponding managedDisk object, and an error if there is any.
 func (c *FakeManagedDisks) Get(name string, options v1.GetOptions) (result *v1alpha1.ManagedDisk, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(manageddisksResource, name), &v1alpha1.ManagedDisk{})
+		Invokes(testing.NewGetAction(manageddisksResource, c.ns, name), &v1alpha1.ManagedDisk{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeManagedDisks) Get(name string, options v1.GetOptions) (result *v1al
 // List takes label and field selectors, and returns the list of ManagedDisks that match those selectors.
 func (c *FakeManagedDisks) List(opts v1.ListOptions) (result *v1alpha1.ManagedDiskList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(manageddisksResource, manageddisksKind, opts), &v1alpha1.ManagedDiskList{})
+		Invokes(testing.NewListAction(manageddisksResource, manageddisksKind, c.ns, opts), &v1alpha1.ManagedDiskList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeManagedDisks) List(opts v1.ListOptions) (result *v1alpha1.ManagedDi
 // Watch returns a watch.Interface that watches the requested managedDisks.
 func (c *FakeManagedDisks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(manageddisksResource, opts))
+		InvokesWatch(testing.NewWatchAction(manageddisksResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a managedDisk and creates it.  Returns the server's representation of the managedDisk, and an error, if there is any.
 func (c *FakeManagedDisks) Create(managedDisk *v1alpha1.ManagedDisk) (result *v1alpha1.ManagedDisk, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(manageddisksResource, managedDisk), &v1alpha1.ManagedDisk{})
+		Invokes(testing.NewCreateAction(manageddisksResource, c.ns, managedDisk), &v1alpha1.ManagedDisk{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeManagedDisks) Create(managedDisk *v1alpha1.ManagedDisk) (result *v1
 // Update takes the representation of a managedDisk and updates it. Returns the server's representation of the managedDisk, and an error, if there is any.
 func (c *FakeManagedDisks) Update(managedDisk *v1alpha1.ManagedDisk) (result *v1alpha1.ManagedDisk, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(manageddisksResource, managedDisk), &v1alpha1.ManagedDisk{})
+		Invokes(testing.NewUpdateAction(manageddisksResource, c.ns, managedDisk), &v1alpha1.ManagedDisk{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeManagedDisks) Update(managedDisk *v1alpha1.ManagedDisk) (result *v1
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeManagedDisks) UpdateStatus(managedDisk *v1alpha1.ManagedDisk) (*v1alpha1.ManagedDisk, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(manageddisksResource, "status", managedDisk), &v1alpha1.ManagedDisk{})
+		Invokes(testing.NewUpdateSubresourceAction(manageddisksResource, "status", c.ns, managedDisk), &v1alpha1.ManagedDisk{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeManagedDisks) UpdateStatus(managedDisk *v1alpha1.ManagedDisk) (*v1a
 // Delete takes name of the managedDisk and deletes it. Returns an error if one occurs.
 func (c *FakeManagedDisks) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(manageddisksResource, name), &v1alpha1.ManagedDisk{})
+		Invokes(testing.NewDeleteAction(manageddisksResource, c.ns, name), &v1alpha1.ManagedDisk{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeManagedDisks) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(manageddisksResource, listOptions)
+	action := testing.NewDeleteCollectionAction(manageddisksResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ManagedDiskList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeManagedDisks) DeleteCollection(options *v1.DeleteOptions, listOptio
 // Patch applies the patch and returns the patched managedDisk.
 func (c *FakeManagedDisks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ManagedDisk, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(manageddisksResource, name, pt, data, subresources...), &v1alpha1.ManagedDisk{})
+		Invokes(testing.NewPatchSubresourceAction(manageddisksResource, c.ns, name, pt, data, subresources...), &v1alpha1.ManagedDisk{})
+
 	if obj == nil {
 		return nil, err
 	}

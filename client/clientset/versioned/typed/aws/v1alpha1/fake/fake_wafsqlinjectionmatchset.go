@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// FakeWafSqlInjectionMatchSets implements WafSqlInjectionMatchSetInterface
-type FakeWafSqlInjectionMatchSets struct {
+// FakeWafSQLInjectionMatchSets implements WafSQLInjectionMatchSetInterface
+type FakeWafSQLInjectionMatchSets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var wafsqlinjectionmatchsetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "wafsqlinjectionmatchsets"}
 
-var wafsqlinjectionmatchsetsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "WafSqlInjectionMatchSet"}
+var wafsqlinjectionmatchsetsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "WafSQLInjectionMatchSet"}
 
-// Get takes name of the wafSqlInjectionMatchSet, and returns the corresponding wafSqlInjectionMatchSet object, and an error if there is any.
-func (c *FakeWafSqlInjectionMatchSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafSqlInjectionMatchSet, err error) {
+// Get takes name of the wafSQLInjectionMatchSet, and returns the corresponding wafSQLInjectionMatchSet object, and an error if there is any.
+func (c *FakeWafSQLInjectionMatchSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafSQLInjectionMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(wafsqlinjectionmatchsetsResource, name), &v1alpha1.WafSqlInjectionMatchSet{})
+		Invokes(testing.NewGetAction(wafsqlinjectionmatchsetsResource, c.ns, name), &v1alpha1.WafSQLInjectionMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.WafSqlInjectionMatchSet), err
+	return obj.(*v1alpha1.WafSQLInjectionMatchSet), err
 }
 
-// List takes label and field selectors, and returns the list of WafSqlInjectionMatchSets that match those selectors.
-func (c *FakeWafSqlInjectionMatchSets) List(opts v1.ListOptions) (result *v1alpha1.WafSqlInjectionMatchSetList, err error) {
+// List takes label and field selectors, and returns the list of WafSQLInjectionMatchSets that match those selectors.
+func (c *FakeWafSQLInjectionMatchSets) List(opts v1.ListOptions) (result *v1alpha1.WafSQLInjectionMatchSetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(wafsqlinjectionmatchsetsResource, wafsqlinjectionmatchsetsKind, opts), &v1alpha1.WafSqlInjectionMatchSetList{})
+		Invokes(testing.NewListAction(wafsqlinjectionmatchsetsResource, wafsqlinjectionmatchsetsKind, c.ns, opts), &v1alpha1.WafSQLInjectionMatchSetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeWafSqlInjectionMatchSets) List(opts v1.ListOptions) (result *v1alph
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.WafSqlInjectionMatchSetList{ListMeta: obj.(*v1alpha1.WafSqlInjectionMatchSetList).ListMeta}
-	for _, item := range obj.(*v1alpha1.WafSqlInjectionMatchSetList).Items {
+	list := &v1alpha1.WafSQLInjectionMatchSetList{ListMeta: obj.(*v1alpha1.WafSQLInjectionMatchSetList).ListMeta}
+	for _, item := range obj.(*v1alpha1.WafSQLInjectionMatchSetList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeWafSqlInjectionMatchSets) List(opts v1.ListOptions) (result *v1alph
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested wafSqlInjectionMatchSets.
-func (c *FakeWafSqlInjectionMatchSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested wafSQLInjectionMatchSets.
+func (c *FakeWafSQLInjectionMatchSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(wafsqlinjectionmatchsetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(wafsqlinjectionmatchsetsResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a wafSqlInjectionMatchSet and creates it.  Returns the server's representation of the wafSqlInjectionMatchSet, and an error, if there is any.
-func (c *FakeWafSqlInjectionMatchSets) Create(wafSqlInjectionMatchSet *v1alpha1.WafSqlInjectionMatchSet) (result *v1alpha1.WafSqlInjectionMatchSet, err error) {
+// Create takes the representation of a wafSQLInjectionMatchSet and creates it.  Returns the server's representation of the wafSQLInjectionMatchSet, and an error, if there is any.
+func (c *FakeWafSQLInjectionMatchSets) Create(wafSQLInjectionMatchSet *v1alpha1.WafSQLInjectionMatchSet) (result *v1alpha1.WafSQLInjectionMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(wafsqlinjectionmatchsetsResource, wafSqlInjectionMatchSet), &v1alpha1.WafSqlInjectionMatchSet{})
+		Invokes(testing.NewCreateAction(wafsqlinjectionmatchsetsResource, c.ns, wafSQLInjectionMatchSet), &v1alpha1.WafSQLInjectionMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.WafSqlInjectionMatchSet), err
+	return obj.(*v1alpha1.WafSQLInjectionMatchSet), err
 }
 
-// Update takes the representation of a wafSqlInjectionMatchSet and updates it. Returns the server's representation of the wafSqlInjectionMatchSet, and an error, if there is any.
-func (c *FakeWafSqlInjectionMatchSets) Update(wafSqlInjectionMatchSet *v1alpha1.WafSqlInjectionMatchSet) (result *v1alpha1.WafSqlInjectionMatchSet, err error) {
+// Update takes the representation of a wafSQLInjectionMatchSet and updates it. Returns the server's representation of the wafSQLInjectionMatchSet, and an error, if there is any.
+func (c *FakeWafSQLInjectionMatchSets) Update(wafSQLInjectionMatchSet *v1alpha1.WafSQLInjectionMatchSet) (result *v1alpha1.WafSQLInjectionMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(wafsqlinjectionmatchsetsResource, wafSqlInjectionMatchSet), &v1alpha1.WafSqlInjectionMatchSet{})
+		Invokes(testing.NewUpdateAction(wafsqlinjectionmatchsetsResource, c.ns, wafSQLInjectionMatchSet), &v1alpha1.WafSQLInjectionMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.WafSqlInjectionMatchSet), err
+	return obj.(*v1alpha1.WafSQLInjectionMatchSet), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeWafSqlInjectionMatchSets) UpdateStatus(wafSqlInjectionMatchSet *v1alpha1.WafSqlInjectionMatchSet) (*v1alpha1.WafSqlInjectionMatchSet, error) {
+func (c *FakeWafSQLInjectionMatchSets) UpdateStatus(wafSQLInjectionMatchSet *v1alpha1.WafSQLInjectionMatchSet) (*v1alpha1.WafSQLInjectionMatchSet, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(wafsqlinjectionmatchsetsResource, "status", wafSqlInjectionMatchSet), &v1alpha1.WafSqlInjectionMatchSet{})
+		Invokes(testing.NewUpdateSubresourceAction(wafsqlinjectionmatchsetsResource, "status", c.ns, wafSQLInjectionMatchSet), &v1alpha1.WafSQLInjectionMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.WafSqlInjectionMatchSet), err
+	return obj.(*v1alpha1.WafSQLInjectionMatchSet), err
 }
 
-// Delete takes name of the wafSqlInjectionMatchSet and deletes it. Returns an error if one occurs.
-func (c *FakeWafSqlInjectionMatchSets) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the wafSQLInjectionMatchSet and deletes it. Returns an error if one occurs.
+func (c *FakeWafSQLInjectionMatchSets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(wafsqlinjectionmatchsetsResource, name), &v1alpha1.WafSqlInjectionMatchSet{})
+		Invokes(testing.NewDeleteAction(wafsqlinjectionmatchsetsResource, c.ns, name), &v1alpha1.WafSQLInjectionMatchSet{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeWafSqlInjectionMatchSets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(wafsqlinjectionmatchsetsResource, listOptions)
+func (c *FakeWafSQLInjectionMatchSets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(wafsqlinjectionmatchsetsResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.WafSqlInjectionMatchSetList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.WafSQLInjectionMatchSetList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched wafSqlInjectionMatchSet.
-func (c *FakeWafSqlInjectionMatchSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafSqlInjectionMatchSet, err error) {
+// Patch applies the patch and returns the patched wafSQLInjectionMatchSet.
+func (c *FakeWafSQLInjectionMatchSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafSQLInjectionMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(wafsqlinjectionmatchsetsResource, name, pt, data, subresources...), &v1alpha1.WafSqlInjectionMatchSet{})
+		Invokes(testing.NewPatchSubresourceAction(wafsqlinjectionmatchsetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.WafSQLInjectionMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.WafSqlInjectionMatchSet), err
+	return obj.(*v1alpha1.WafSQLInjectionMatchSet), err
 }

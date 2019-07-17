@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// FakeApplicationInsightsApiKeys implements ApplicationInsightsApiKeyInterface
-type FakeApplicationInsightsApiKeys struct {
+// FakeApplicationInsightsAPIKeys implements ApplicationInsightsAPIKeyInterface
+type FakeApplicationInsightsAPIKeys struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var applicationinsightsapikeysResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "applicationinsightsapikeys"}
 
-var applicationinsightsapikeysKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "ApplicationInsightsApiKey"}
+var applicationinsightsapikeysKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "ApplicationInsightsAPIKey"}
 
-// Get takes name of the applicationInsightsApiKey, and returns the corresponding applicationInsightsApiKey object, and an error if there is any.
-func (c *FakeApplicationInsightsApiKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.ApplicationInsightsApiKey, err error) {
+// Get takes name of the applicationInsightsAPIKey, and returns the corresponding applicationInsightsAPIKey object, and an error if there is any.
+func (c *FakeApplicationInsightsAPIKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.ApplicationInsightsAPIKey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(applicationinsightsapikeysResource, name), &v1alpha1.ApplicationInsightsApiKey{})
+		Invokes(testing.NewGetAction(applicationinsightsapikeysResource, c.ns, name), &v1alpha1.ApplicationInsightsAPIKey{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApplicationInsightsApiKey), err
+	return obj.(*v1alpha1.ApplicationInsightsAPIKey), err
 }
 
-// List takes label and field selectors, and returns the list of ApplicationInsightsApiKeys that match those selectors.
-func (c *FakeApplicationInsightsApiKeys) List(opts v1.ListOptions) (result *v1alpha1.ApplicationInsightsApiKeyList, err error) {
+// List takes label and field selectors, and returns the list of ApplicationInsightsAPIKeys that match those selectors.
+func (c *FakeApplicationInsightsAPIKeys) List(opts v1.ListOptions) (result *v1alpha1.ApplicationInsightsAPIKeyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(applicationinsightsapikeysResource, applicationinsightsapikeysKind, opts), &v1alpha1.ApplicationInsightsApiKeyList{})
+		Invokes(testing.NewListAction(applicationinsightsapikeysResource, applicationinsightsapikeysKind, c.ns, opts), &v1alpha1.ApplicationInsightsAPIKeyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeApplicationInsightsApiKeys) List(opts v1.ListOptions) (result *v1al
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.ApplicationInsightsApiKeyList{ListMeta: obj.(*v1alpha1.ApplicationInsightsApiKeyList).ListMeta}
-	for _, item := range obj.(*v1alpha1.ApplicationInsightsApiKeyList).Items {
+	list := &v1alpha1.ApplicationInsightsAPIKeyList{ListMeta: obj.(*v1alpha1.ApplicationInsightsAPIKeyList).ListMeta}
+	for _, item := range obj.(*v1alpha1.ApplicationInsightsAPIKeyList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeApplicationInsightsApiKeys) List(opts v1.ListOptions) (result *v1al
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested applicationInsightsApiKeys.
-func (c *FakeApplicationInsightsApiKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested applicationInsightsAPIKeys.
+func (c *FakeApplicationInsightsAPIKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(applicationinsightsapikeysResource, opts))
+		InvokesWatch(testing.NewWatchAction(applicationinsightsapikeysResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a applicationInsightsApiKey and creates it.  Returns the server's representation of the applicationInsightsApiKey, and an error, if there is any.
-func (c *FakeApplicationInsightsApiKeys) Create(applicationInsightsApiKey *v1alpha1.ApplicationInsightsApiKey) (result *v1alpha1.ApplicationInsightsApiKey, err error) {
+// Create takes the representation of a applicationInsightsAPIKey and creates it.  Returns the server's representation of the applicationInsightsAPIKey, and an error, if there is any.
+func (c *FakeApplicationInsightsAPIKeys) Create(applicationInsightsAPIKey *v1alpha1.ApplicationInsightsAPIKey) (result *v1alpha1.ApplicationInsightsAPIKey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(applicationinsightsapikeysResource, applicationInsightsApiKey), &v1alpha1.ApplicationInsightsApiKey{})
+		Invokes(testing.NewCreateAction(applicationinsightsapikeysResource, c.ns, applicationInsightsAPIKey), &v1alpha1.ApplicationInsightsAPIKey{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApplicationInsightsApiKey), err
+	return obj.(*v1alpha1.ApplicationInsightsAPIKey), err
 }
 
-// Update takes the representation of a applicationInsightsApiKey and updates it. Returns the server's representation of the applicationInsightsApiKey, and an error, if there is any.
-func (c *FakeApplicationInsightsApiKeys) Update(applicationInsightsApiKey *v1alpha1.ApplicationInsightsApiKey) (result *v1alpha1.ApplicationInsightsApiKey, err error) {
+// Update takes the representation of a applicationInsightsAPIKey and updates it. Returns the server's representation of the applicationInsightsAPIKey, and an error, if there is any.
+func (c *FakeApplicationInsightsAPIKeys) Update(applicationInsightsAPIKey *v1alpha1.ApplicationInsightsAPIKey) (result *v1alpha1.ApplicationInsightsAPIKey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(applicationinsightsapikeysResource, applicationInsightsApiKey), &v1alpha1.ApplicationInsightsApiKey{})
+		Invokes(testing.NewUpdateAction(applicationinsightsapikeysResource, c.ns, applicationInsightsAPIKey), &v1alpha1.ApplicationInsightsAPIKey{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApplicationInsightsApiKey), err
+	return obj.(*v1alpha1.ApplicationInsightsAPIKey), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeApplicationInsightsApiKeys) UpdateStatus(applicationInsightsApiKey *v1alpha1.ApplicationInsightsApiKey) (*v1alpha1.ApplicationInsightsApiKey, error) {
+func (c *FakeApplicationInsightsAPIKeys) UpdateStatus(applicationInsightsAPIKey *v1alpha1.ApplicationInsightsAPIKey) (*v1alpha1.ApplicationInsightsAPIKey, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(applicationinsightsapikeysResource, "status", applicationInsightsApiKey), &v1alpha1.ApplicationInsightsApiKey{})
+		Invokes(testing.NewUpdateSubresourceAction(applicationinsightsapikeysResource, "status", c.ns, applicationInsightsAPIKey), &v1alpha1.ApplicationInsightsAPIKey{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApplicationInsightsApiKey), err
+	return obj.(*v1alpha1.ApplicationInsightsAPIKey), err
 }
 
-// Delete takes name of the applicationInsightsApiKey and deletes it. Returns an error if one occurs.
-func (c *FakeApplicationInsightsApiKeys) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the applicationInsightsAPIKey and deletes it. Returns an error if one occurs.
+func (c *FakeApplicationInsightsAPIKeys) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(applicationinsightsapikeysResource, name), &v1alpha1.ApplicationInsightsApiKey{})
+		Invokes(testing.NewDeleteAction(applicationinsightsapikeysResource, c.ns, name), &v1alpha1.ApplicationInsightsAPIKey{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeApplicationInsightsApiKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(applicationinsightsapikeysResource, listOptions)
+func (c *FakeApplicationInsightsAPIKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(applicationinsightsapikeysResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.ApplicationInsightsApiKeyList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.ApplicationInsightsAPIKeyList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched applicationInsightsApiKey.
-func (c *FakeApplicationInsightsApiKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApplicationInsightsApiKey, err error) {
+// Patch applies the patch and returns the patched applicationInsightsAPIKey.
+func (c *FakeApplicationInsightsAPIKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApplicationInsightsAPIKey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(applicationinsightsapikeysResource, name, pt, data, subresources...), &v1alpha1.ApplicationInsightsApiKey{})
+		Invokes(testing.NewPatchSubresourceAction(applicationinsightsapikeysResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApplicationInsightsAPIKey{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApplicationInsightsApiKey), err
+	return obj.(*v1alpha1.ApplicationInsightsAPIKey), err
 }

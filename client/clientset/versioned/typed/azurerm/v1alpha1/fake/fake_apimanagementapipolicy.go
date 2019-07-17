@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// FakeApiManagementApiPolicies implements ApiManagementApiPolicyInterface
-type FakeApiManagementApiPolicies struct {
+// FakeApiManagementAPIPolicies implements ApiManagementAPIPolicyInterface
+type FakeApiManagementAPIPolicies struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var apimanagementapipoliciesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "apimanagementapipolicies"}
 
-var apimanagementapipoliciesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "ApiManagementApiPolicy"}
+var apimanagementapipoliciesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "ApiManagementAPIPolicy"}
 
-// Get takes name of the apiManagementApiPolicy, and returns the corresponding apiManagementApiPolicy object, and an error if there is any.
-func (c *FakeApiManagementApiPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementApiPolicy, err error) {
+// Get takes name of the apiManagementAPIPolicy, and returns the corresponding apiManagementAPIPolicy object, and an error if there is any.
+func (c *FakeApiManagementAPIPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementAPIPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apimanagementapipoliciesResource, name), &v1alpha1.ApiManagementApiPolicy{})
+		Invokes(testing.NewGetAction(apimanagementapipoliciesResource, c.ns, name), &v1alpha1.ApiManagementAPIPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiManagementApiPolicy), err
+	return obj.(*v1alpha1.ApiManagementAPIPolicy), err
 }
 
-// List takes label and field selectors, and returns the list of ApiManagementApiPolicies that match those selectors.
-func (c *FakeApiManagementApiPolicies) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementApiPolicyList, err error) {
+// List takes label and field selectors, and returns the list of ApiManagementAPIPolicies that match those selectors.
+func (c *FakeApiManagementAPIPolicies) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementAPIPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apimanagementapipoliciesResource, apimanagementapipoliciesKind, opts), &v1alpha1.ApiManagementApiPolicyList{})
+		Invokes(testing.NewListAction(apimanagementapipoliciesResource, apimanagementapipoliciesKind, c.ns, opts), &v1alpha1.ApiManagementAPIPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeApiManagementApiPolicies) List(opts v1.ListOptions) (result *v1alph
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.ApiManagementApiPolicyList{ListMeta: obj.(*v1alpha1.ApiManagementApiPolicyList).ListMeta}
-	for _, item := range obj.(*v1alpha1.ApiManagementApiPolicyList).Items {
+	list := &v1alpha1.ApiManagementAPIPolicyList{ListMeta: obj.(*v1alpha1.ApiManagementAPIPolicyList).ListMeta}
+	for _, item := range obj.(*v1alpha1.ApiManagementAPIPolicyList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeApiManagementApiPolicies) List(opts v1.ListOptions) (result *v1alph
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested apiManagementApiPolicies.
-func (c *FakeApiManagementApiPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested apiManagementAPIPolicies.
+func (c *FakeApiManagementAPIPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apimanagementapipoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(apimanagementapipoliciesResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a apiManagementApiPolicy and creates it.  Returns the server's representation of the apiManagementApiPolicy, and an error, if there is any.
-func (c *FakeApiManagementApiPolicies) Create(apiManagementApiPolicy *v1alpha1.ApiManagementApiPolicy) (result *v1alpha1.ApiManagementApiPolicy, err error) {
+// Create takes the representation of a apiManagementAPIPolicy and creates it.  Returns the server's representation of the apiManagementAPIPolicy, and an error, if there is any.
+func (c *FakeApiManagementAPIPolicies) Create(apiManagementAPIPolicy *v1alpha1.ApiManagementAPIPolicy) (result *v1alpha1.ApiManagementAPIPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apimanagementapipoliciesResource, apiManagementApiPolicy), &v1alpha1.ApiManagementApiPolicy{})
+		Invokes(testing.NewCreateAction(apimanagementapipoliciesResource, c.ns, apiManagementAPIPolicy), &v1alpha1.ApiManagementAPIPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiManagementApiPolicy), err
+	return obj.(*v1alpha1.ApiManagementAPIPolicy), err
 }
 
-// Update takes the representation of a apiManagementApiPolicy and updates it. Returns the server's representation of the apiManagementApiPolicy, and an error, if there is any.
-func (c *FakeApiManagementApiPolicies) Update(apiManagementApiPolicy *v1alpha1.ApiManagementApiPolicy) (result *v1alpha1.ApiManagementApiPolicy, err error) {
+// Update takes the representation of a apiManagementAPIPolicy and updates it. Returns the server's representation of the apiManagementAPIPolicy, and an error, if there is any.
+func (c *FakeApiManagementAPIPolicies) Update(apiManagementAPIPolicy *v1alpha1.ApiManagementAPIPolicy) (result *v1alpha1.ApiManagementAPIPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apimanagementapipoliciesResource, apiManagementApiPolicy), &v1alpha1.ApiManagementApiPolicy{})
+		Invokes(testing.NewUpdateAction(apimanagementapipoliciesResource, c.ns, apiManagementAPIPolicy), &v1alpha1.ApiManagementAPIPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiManagementApiPolicy), err
+	return obj.(*v1alpha1.ApiManagementAPIPolicy), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeApiManagementApiPolicies) UpdateStatus(apiManagementApiPolicy *v1alpha1.ApiManagementApiPolicy) (*v1alpha1.ApiManagementApiPolicy, error) {
+func (c *FakeApiManagementAPIPolicies) UpdateStatus(apiManagementAPIPolicy *v1alpha1.ApiManagementAPIPolicy) (*v1alpha1.ApiManagementAPIPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apimanagementapipoliciesResource, "status", apiManagementApiPolicy), &v1alpha1.ApiManagementApiPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(apimanagementapipoliciesResource, "status", c.ns, apiManagementAPIPolicy), &v1alpha1.ApiManagementAPIPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiManagementApiPolicy), err
+	return obj.(*v1alpha1.ApiManagementAPIPolicy), err
 }
 
-// Delete takes name of the apiManagementApiPolicy and deletes it. Returns an error if one occurs.
-func (c *FakeApiManagementApiPolicies) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the apiManagementAPIPolicy and deletes it. Returns an error if one occurs.
+func (c *FakeApiManagementAPIPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apimanagementapipoliciesResource, name), &v1alpha1.ApiManagementApiPolicy{})
+		Invokes(testing.NewDeleteAction(apimanagementapipoliciesResource, c.ns, name), &v1alpha1.ApiManagementAPIPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeApiManagementApiPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apimanagementapipoliciesResource, listOptions)
+func (c *FakeApiManagementAPIPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(apimanagementapipoliciesResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.ApiManagementApiPolicyList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.ApiManagementAPIPolicyList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched apiManagementApiPolicy.
-func (c *FakeApiManagementApiPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementApiPolicy, err error) {
+// Patch applies the patch and returns the patched apiManagementAPIPolicy.
+func (c *FakeApiManagementAPIPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementAPIPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apimanagementapipoliciesResource, name, pt, data, subresources...), &v1alpha1.ApiManagementApiPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(apimanagementapipoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiManagementAPIPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiManagementApiPolicy), err
+	return obj.(*v1alpha1.ApiManagementAPIPolicy), err
 }

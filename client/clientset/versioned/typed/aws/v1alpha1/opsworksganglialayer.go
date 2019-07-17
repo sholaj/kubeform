@@ -32,7 +32,7 @@ import (
 // OpsworksGangliaLayersGetter has a method to return a OpsworksGangliaLayerInterface.
 // A group's client should implement this interface.
 type OpsworksGangliaLayersGetter interface {
-	OpsworksGangliaLayers() OpsworksGangliaLayerInterface
+	OpsworksGangliaLayers(namespace string) OpsworksGangliaLayerInterface
 }
 
 // OpsworksGangliaLayerInterface has methods to work with OpsworksGangliaLayer resources.
@@ -52,12 +52,14 @@ type OpsworksGangliaLayerInterface interface {
 // opsworksGangliaLayers implements OpsworksGangliaLayerInterface
 type opsworksGangliaLayers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOpsworksGangliaLayers returns a OpsworksGangliaLayers
-func newOpsworksGangliaLayers(c *AwsV1alpha1Client) *opsworksGangliaLayers {
+func newOpsworksGangliaLayers(c *AwsV1alpha1Client, namespace string) *opsworksGangliaLayers {
 	return &opsworksGangliaLayers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOpsworksGangliaLayers(c *AwsV1alpha1Client) *opsworksGangliaLayers {
 func (c *opsworksGangliaLayers) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksGangliaLayer, err error) {
 	result = &v1alpha1.OpsworksGangliaLayer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksganglialayers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *opsworksGangliaLayers) List(opts v1.ListOptions) (result *v1alpha1.Opsw
 	}
 	result = &v1alpha1.OpsworksGangliaLayerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksganglialayers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *opsworksGangliaLayers) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksganglialayers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *opsworksGangliaLayers) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *opsworksGangliaLayers) Create(opsworksGangliaLayer *v1alpha1.OpsworksGangliaLayer) (result *v1alpha1.OpsworksGangliaLayer, err error) {
 	result = &v1alpha1.OpsworksGangliaLayer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("opsworksganglialayers").
 		Body(opsworksGangliaLayer).
 		Do().
@@ -118,6 +124,7 @@ func (c *opsworksGangliaLayers) Create(opsworksGangliaLayer *v1alpha1.OpsworksGa
 func (c *opsworksGangliaLayers) Update(opsworksGangliaLayer *v1alpha1.OpsworksGangliaLayer) (result *v1alpha1.OpsworksGangliaLayer, err error) {
 	result = &v1alpha1.OpsworksGangliaLayer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksganglialayers").
 		Name(opsworksGangliaLayer.Name).
 		Body(opsworksGangliaLayer).
@@ -132,6 +139,7 @@ func (c *opsworksGangliaLayers) Update(opsworksGangliaLayer *v1alpha1.OpsworksGa
 func (c *opsworksGangliaLayers) UpdateStatus(opsworksGangliaLayer *v1alpha1.OpsworksGangliaLayer) (result *v1alpha1.OpsworksGangliaLayer, err error) {
 	result = &v1alpha1.OpsworksGangliaLayer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksganglialayers").
 		Name(opsworksGangliaLayer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *opsworksGangliaLayers) UpdateStatus(opsworksGangliaLayer *v1alpha1.Opsw
 // Delete takes name of the opsworksGangliaLayer and deletes it. Returns an error if one occurs.
 func (c *opsworksGangliaLayers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksganglialayers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *opsworksGangliaLayers) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksganglialayers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *opsworksGangliaLayers) DeleteCollection(options *v1.DeleteOptions, list
 func (c *opsworksGangliaLayers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksGangliaLayer, err error) {
 	result = &v1alpha1.OpsworksGangliaLayer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("opsworksganglialayers").
 		SubResource(subresources...).
 		Name(name).

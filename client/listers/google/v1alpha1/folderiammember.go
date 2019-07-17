@@ -29,8 +29,8 @@ import (
 type FolderIamMemberLister interface {
 	// List lists all FolderIamMembers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.FolderIamMember, err error)
-	// Get retrieves the FolderIamMember from the index for a given name.
-	Get(name string) (*v1alpha1.FolderIamMember, error)
+	// FolderIamMembers returns an object that can list and get FolderIamMembers.
+	FolderIamMembers(namespace string) FolderIamMemberNamespaceLister
 	FolderIamMemberListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *folderIamMemberLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the FolderIamMember from the index for a given name.
-func (s *folderIamMemberLister) Get(name string) (*v1alpha1.FolderIamMember, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// FolderIamMembers returns an object that can list and get FolderIamMembers.
+func (s *folderIamMemberLister) FolderIamMembers(namespace string) FolderIamMemberNamespaceLister {
+	return folderIamMemberNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// FolderIamMemberNamespaceLister helps list and get FolderIamMembers.
+type FolderIamMemberNamespaceLister interface {
+	// List lists all FolderIamMembers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.FolderIamMember, err error)
+	// Get retrieves the FolderIamMember from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.FolderIamMember, error)
+	FolderIamMemberNamespaceListerExpansion
+}
+
+// folderIamMemberNamespaceLister implements the FolderIamMemberNamespaceLister
+// interface.
+type folderIamMemberNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all FolderIamMembers in the indexer for a given namespace.
+func (s folderIamMemberNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.FolderIamMember, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.FolderIamMember))
+	})
+	return ret, err
+}
+
+// Get retrieves the FolderIamMember from the indexer for a given namespace and name.
+func (s folderIamMemberNamespaceLister) Get(name string) (*v1alpha1.FolderIamMember, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

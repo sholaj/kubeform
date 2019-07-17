@@ -29,8 +29,8 @@ import (
 type BatchPoolLister interface {
 	// List lists all BatchPools in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.BatchPool, err error)
-	// Get retrieves the BatchPool from the index for a given name.
-	Get(name string) (*v1alpha1.BatchPool, error)
+	// BatchPools returns an object that can list and get BatchPools.
+	BatchPools(namespace string) BatchPoolNamespaceLister
 	BatchPoolListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *batchPoolLister) List(selector labels.Selector) (ret []*v1alpha1.BatchP
 	return ret, err
 }
 
-// Get retrieves the BatchPool from the index for a given name.
-func (s *batchPoolLister) Get(name string) (*v1alpha1.BatchPool, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// BatchPools returns an object that can list and get BatchPools.
+func (s *batchPoolLister) BatchPools(namespace string) BatchPoolNamespaceLister {
+	return batchPoolNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// BatchPoolNamespaceLister helps list and get BatchPools.
+type BatchPoolNamespaceLister interface {
+	// List lists all BatchPools in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.BatchPool, err error)
+	// Get retrieves the BatchPool from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.BatchPool, error)
+	BatchPoolNamespaceListerExpansion
+}
+
+// batchPoolNamespaceLister implements the BatchPoolNamespaceLister
+// interface.
+type batchPoolNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all BatchPools in the indexer for a given namespace.
+func (s batchPoolNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.BatchPool, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.BatchPool))
+	})
+	return ret, err
+}
+
+// Get retrieves the BatchPool from the indexer for a given namespace and name.
+func (s batchPoolNamespaceLister) Get(name string) (*v1alpha1.BatchPool, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

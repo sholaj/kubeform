@@ -32,7 +32,7 @@ import (
 // DnsCnameRecordsGetter has a method to return a DnsCnameRecordInterface.
 // A group's client should implement this interface.
 type DnsCnameRecordsGetter interface {
-	DnsCnameRecords() DnsCnameRecordInterface
+	DnsCnameRecords(namespace string) DnsCnameRecordInterface
 }
 
 // DnsCnameRecordInterface has methods to work with DnsCnameRecord resources.
@@ -52,12 +52,14 @@ type DnsCnameRecordInterface interface {
 // dnsCnameRecords implements DnsCnameRecordInterface
 type dnsCnameRecords struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDnsCnameRecords returns a DnsCnameRecords
-func newDnsCnameRecords(c *AzurermV1alpha1Client) *dnsCnameRecords {
+func newDnsCnameRecords(c *AzurermV1alpha1Client, namespace string) *dnsCnameRecords {
 	return &dnsCnameRecords{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDnsCnameRecords(c *AzurermV1alpha1Client) *dnsCnameRecords {
 func (c *dnsCnameRecords) Get(name string, options v1.GetOptions) (result *v1alpha1.DnsCnameRecord, err error) {
 	result = &v1alpha1.DnsCnameRecord{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dnscnamerecords").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dnsCnameRecords) List(opts v1.ListOptions) (result *v1alpha1.DnsCnameRe
 	}
 	result = &v1alpha1.DnsCnameRecordList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dnscnamerecords").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dnsCnameRecords) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dnscnamerecords").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dnsCnameRecords) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dnsCnameRecords) Create(dnsCnameRecord *v1alpha1.DnsCnameRecord) (result *v1alpha1.DnsCnameRecord, err error) {
 	result = &v1alpha1.DnsCnameRecord{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dnscnamerecords").
 		Body(dnsCnameRecord).
 		Do().
@@ -118,6 +124,7 @@ func (c *dnsCnameRecords) Create(dnsCnameRecord *v1alpha1.DnsCnameRecord) (resul
 func (c *dnsCnameRecords) Update(dnsCnameRecord *v1alpha1.DnsCnameRecord) (result *v1alpha1.DnsCnameRecord, err error) {
 	result = &v1alpha1.DnsCnameRecord{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dnscnamerecords").
 		Name(dnsCnameRecord.Name).
 		Body(dnsCnameRecord).
@@ -132,6 +139,7 @@ func (c *dnsCnameRecords) Update(dnsCnameRecord *v1alpha1.DnsCnameRecord) (resul
 func (c *dnsCnameRecords) UpdateStatus(dnsCnameRecord *v1alpha1.DnsCnameRecord) (result *v1alpha1.DnsCnameRecord, err error) {
 	result = &v1alpha1.DnsCnameRecord{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dnscnamerecords").
 		Name(dnsCnameRecord.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dnsCnameRecords) UpdateStatus(dnsCnameRecord *v1alpha1.DnsCnameRecord) 
 // Delete takes name of the dnsCnameRecord and deletes it. Returns an error if one occurs.
 func (c *dnsCnameRecords) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dnscnamerecords").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dnsCnameRecords) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dnscnamerecords").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dnsCnameRecords) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *dnsCnameRecords) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DnsCnameRecord, err error) {
 	result = &v1alpha1.DnsCnameRecord{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dnscnamerecords").
 		SubResource(subresources...).
 		Name(name).

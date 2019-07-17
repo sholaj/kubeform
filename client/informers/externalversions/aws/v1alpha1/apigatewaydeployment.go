@@ -41,32 +41,33 @@ type ApiGatewayDeploymentInformer interface {
 type apiGatewayDeploymentInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewApiGatewayDeploymentInformer constructs a new informer for ApiGatewayDeployment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewApiGatewayDeploymentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredApiGatewayDeploymentInformer(client, resyncPeriod, indexers, nil)
+func NewApiGatewayDeploymentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredApiGatewayDeploymentInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredApiGatewayDeploymentInformer constructs a new informer for ApiGatewayDeployment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredApiGatewayDeploymentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredApiGatewayDeploymentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ApiGatewayDeployments().List(options)
+				return client.AwsV1alpha1().ApiGatewayDeployments(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ApiGatewayDeployments().Watch(options)
+				return client.AwsV1alpha1().ApiGatewayDeployments(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.ApiGatewayDeployment{},
@@ -76,7 +77,7 @@ func NewFilteredApiGatewayDeploymentInformer(client versioned.Interface, resyncP
 }
 
 func (f *apiGatewayDeploymentInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredApiGatewayDeploymentInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredApiGatewayDeploymentInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *apiGatewayDeploymentInformer) Informer() cache.SharedIndexInformer {

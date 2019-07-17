@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,15 +20,16 @@ type EndpointsService struct {
 
 type EndpointsServiceSpec struct {
 	// +optional
-	GrpcConfig string `json:"grpc_config,omitempty"`
+	GrpcConfig string `json:"grpcConfig,omitempty" tf:"grpc_config,omitempty"`
 	// +optional
-	OpenapiConfig string `json:"openapi_config,omitempty"`
+	OpenapiConfig string `json:"openapiConfig,omitempty" tf:"openapi_config,omitempty"`
 	// +optional
 	// Deprecated
-	ProtocOutput string `json:"protoc_output,omitempty"`
+	ProtocOutput string `json:"protocOutput,omitempty" tf:"protoc_output,omitempty"`
 	// +optional
-	ProtocOutputBase64 string `json:"protoc_output_base64,omitempty"`
-	ServiceName        string `json:"service_name"`
+	ProtocOutputBase64 string                    `json:"protocOutputBase64,omitempty" tf:"protoc_output_base64,omitempty"`
+	ServiceName        string                    `json:"serviceName" tf:"service_name"`
+	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type EndpointsServiceStatus struct {
@@ -36,7 +37,9 @@ type EndpointsServiceStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

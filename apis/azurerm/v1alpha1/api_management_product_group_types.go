@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,10 +19,11 @@ type ApiManagementProductGroup struct {
 }
 
 type ApiManagementProductGroupSpec struct {
-	ApiManagementName string `json:"api_management_name"`
-	GroupName         string `json:"group_name"`
-	ProductId         string `json:"product_id"`
-	ResourceGroupName string `json:"resource_group_name"`
+	ApiManagementName string                    `json:"apiManagementName" tf:"api_management_name"`
+	GroupName         string                    `json:"groupName" tf:"group_name"`
+	ProductID         string                    `json:"productID" tf:"product_id"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ApiManagementProductGroupStatus struct {
@@ -30,7 +31,9 @@ type ApiManagementProductGroupStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

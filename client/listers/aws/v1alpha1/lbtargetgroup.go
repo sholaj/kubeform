@@ -29,8 +29,8 @@ import (
 type LbTargetGroupLister interface {
 	// List lists all LbTargetGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LbTargetGroup, err error)
-	// Get retrieves the LbTargetGroup from the index for a given name.
-	Get(name string) (*v1alpha1.LbTargetGroup, error)
+	// LbTargetGroups returns an object that can list and get LbTargetGroups.
+	LbTargetGroups(namespace string) LbTargetGroupNamespaceLister
 	LbTargetGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *lbTargetGroupLister) List(selector labels.Selector) (ret []*v1alpha1.Lb
 	return ret, err
 }
 
-// Get retrieves the LbTargetGroup from the index for a given name.
-func (s *lbTargetGroupLister) Get(name string) (*v1alpha1.LbTargetGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LbTargetGroups returns an object that can list and get LbTargetGroups.
+func (s *lbTargetGroupLister) LbTargetGroups(namespace string) LbTargetGroupNamespaceLister {
+	return lbTargetGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LbTargetGroupNamespaceLister helps list and get LbTargetGroups.
+type LbTargetGroupNamespaceLister interface {
+	// List lists all LbTargetGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LbTargetGroup, err error)
+	// Get retrieves the LbTargetGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LbTargetGroup, error)
+	LbTargetGroupNamespaceListerExpansion
+}
+
+// lbTargetGroupNamespaceLister implements the LbTargetGroupNamespaceLister
+// interface.
+type lbTargetGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LbTargetGroups in the indexer for a given namespace.
+func (s lbTargetGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LbTargetGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LbTargetGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the LbTargetGroup from the indexer for a given namespace and name.
+func (s lbTargetGroupNamespaceLister) Get(name string) (*v1alpha1.LbTargetGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type ComputeProjectMetadataLister interface {
 	// List lists all ComputeProjectMetadatas in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeProjectMetadata, err error)
-	// Get retrieves the ComputeProjectMetadata from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeProjectMetadata, error)
+	// ComputeProjectMetadatas returns an object that can list and get ComputeProjectMetadatas.
+	ComputeProjectMetadatas(namespace string) ComputeProjectMetadataNamespaceLister
 	ComputeProjectMetadataListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeProjectMetadataLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the ComputeProjectMetadata from the index for a given name.
-func (s *computeProjectMetadataLister) Get(name string) (*v1alpha1.ComputeProjectMetadata, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeProjectMetadatas returns an object that can list and get ComputeProjectMetadatas.
+func (s *computeProjectMetadataLister) ComputeProjectMetadatas(namespace string) ComputeProjectMetadataNamespaceLister {
+	return computeProjectMetadataNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeProjectMetadataNamespaceLister helps list and get ComputeProjectMetadatas.
+type ComputeProjectMetadataNamespaceLister interface {
+	// List lists all ComputeProjectMetadatas in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeProjectMetadata, err error)
+	// Get retrieves the ComputeProjectMetadata from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeProjectMetadata, error)
+	ComputeProjectMetadataNamespaceListerExpansion
+}
+
+// computeProjectMetadataNamespaceLister implements the ComputeProjectMetadataNamespaceLister
+// interface.
+type computeProjectMetadataNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeProjectMetadatas in the indexer for a given namespace.
+func (s computeProjectMetadataNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeProjectMetadata, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeProjectMetadata))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeProjectMetadata from the indexer for a given namespace and name.
+func (s computeProjectMetadataNamespaceLister) Get(name string) (*v1alpha1.ComputeProjectMetadata, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

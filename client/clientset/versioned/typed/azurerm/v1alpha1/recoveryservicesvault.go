@@ -32,7 +32,7 @@ import (
 // RecoveryServicesVaultsGetter has a method to return a RecoveryServicesVaultInterface.
 // A group's client should implement this interface.
 type RecoveryServicesVaultsGetter interface {
-	RecoveryServicesVaults() RecoveryServicesVaultInterface
+	RecoveryServicesVaults(namespace string) RecoveryServicesVaultInterface
 }
 
 // RecoveryServicesVaultInterface has methods to work with RecoveryServicesVault resources.
@@ -52,12 +52,14 @@ type RecoveryServicesVaultInterface interface {
 // recoveryServicesVaults implements RecoveryServicesVaultInterface
 type recoveryServicesVaults struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRecoveryServicesVaults returns a RecoveryServicesVaults
-func newRecoveryServicesVaults(c *AzurermV1alpha1Client) *recoveryServicesVaults {
+func newRecoveryServicesVaults(c *AzurermV1alpha1Client, namespace string) *recoveryServicesVaults {
 	return &recoveryServicesVaults{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRecoveryServicesVaults(c *AzurermV1alpha1Client) *recoveryServicesVaults
 func (c *recoveryServicesVaults) Get(name string, options v1.GetOptions) (result *v1alpha1.RecoveryServicesVault, err error) {
 	result = &v1alpha1.RecoveryServicesVault{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("recoveryservicesvaults").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *recoveryServicesVaults) List(opts v1.ListOptions) (result *v1alpha1.Rec
 	}
 	result = &v1alpha1.RecoveryServicesVaultList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("recoveryservicesvaults").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *recoveryServicesVaults) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("recoveryservicesvaults").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *recoveryServicesVaults) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *recoveryServicesVaults) Create(recoveryServicesVault *v1alpha1.RecoveryServicesVault) (result *v1alpha1.RecoveryServicesVault, err error) {
 	result = &v1alpha1.RecoveryServicesVault{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("recoveryservicesvaults").
 		Body(recoveryServicesVault).
 		Do().
@@ -118,6 +124,7 @@ func (c *recoveryServicesVaults) Create(recoveryServicesVault *v1alpha1.Recovery
 func (c *recoveryServicesVaults) Update(recoveryServicesVault *v1alpha1.RecoveryServicesVault) (result *v1alpha1.RecoveryServicesVault, err error) {
 	result = &v1alpha1.RecoveryServicesVault{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("recoveryservicesvaults").
 		Name(recoveryServicesVault.Name).
 		Body(recoveryServicesVault).
@@ -132,6 +139,7 @@ func (c *recoveryServicesVaults) Update(recoveryServicesVault *v1alpha1.Recovery
 func (c *recoveryServicesVaults) UpdateStatus(recoveryServicesVault *v1alpha1.RecoveryServicesVault) (result *v1alpha1.RecoveryServicesVault, err error) {
 	result = &v1alpha1.RecoveryServicesVault{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("recoveryservicesvaults").
 		Name(recoveryServicesVault.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *recoveryServicesVaults) UpdateStatus(recoveryServicesVault *v1alpha1.Re
 // Delete takes name of the recoveryServicesVault and deletes it. Returns an error if one occurs.
 func (c *recoveryServicesVaults) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("recoveryservicesvaults").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *recoveryServicesVaults) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("recoveryservicesvaults").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *recoveryServicesVaults) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *recoveryServicesVaults) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RecoveryServicesVault, err error) {
 	result = &v1alpha1.RecoveryServicesVault{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("recoveryservicesvaults").
 		SubResource(subresources...).
 		Name(name).

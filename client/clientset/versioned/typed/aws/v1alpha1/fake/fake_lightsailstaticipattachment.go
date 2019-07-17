@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// FakeLightsailStaticIpAttachments implements LightsailStaticIpAttachmentInterface
-type FakeLightsailStaticIpAttachments struct {
+// FakeLightsailStaticIPAttachments implements LightsailStaticIPAttachmentInterface
+type FakeLightsailStaticIPAttachments struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var lightsailstaticipattachmentsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "lightsailstaticipattachments"}
 
-var lightsailstaticipattachmentsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "LightsailStaticIpAttachment"}
+var lightsailstaticipattachmentsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "LightsailStaticIPAttachment"}
 
-// Get takes name of the lightsailStaticIpAttachment, and returns the corresponding lightsailStaticIpAttachment object, and an error if there is any.
-func (c *FakeLightsailStaticIpAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.LightsailStaticIpAttachment, err error) {
+// Get takes name of the lightsailStaticIPAttachment, and returns the corresponding lightsailStaticIPAttachment object, and an error if there is any.
+func (c *FakeLightsailStaticIPAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.LightsailStaticIPAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(lightsailstaticipattachmentsResource, name), &v1alpha1.LightsailStaticIpAttachment{})
+		Invokes(testing.NewGetAction(lightsailstaticipattachmentsResource, c.ns, name), &v1alpha1.LightsailStaticIPAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LightsailStaticIpAttachment), err
+	return obj.(*v1alpha1.LightsailStaticIPAttachment), err
 }
 
-// List takes label and field selectors, and returns the list of LightsailStaticIpAttachments that match those selectors.
-func (c *FakeLightsailStaticIpAttachments) List(opts v1.ListOptions) (result *v1alpha1.LightsailStaticIpAttachmentList, err error) {
+// List takes label and field selectors, and returns the list of LightsailStaticIPAttachments that match those selectors.
+func (c *FakeLightsailStaticIPAttachments) List(opts v1.ListOptions) (result *v1alpha1.LightsailStaticIPAttachmentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(lightsailstaticipattachmentsResource, lightsailstaticipattachmentsKind, opts), &v1alpha1.LightsailStaticIpAttachmentList{})
+		Invokes(testing.NewListAction(lightsailstaticipattachmentsResource, lightsailstaticipattachmentsKind, c.ns, opts), &v1alpha1.LightsailStaticIPAttachmentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeLightsailStaticIpAttachments) List(opts v1.ListOptions) (result *v1
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.LightsailStaticIpAttachmentList{ListMeta: obj.(*v1alpha1.LightsailStaticIpAttachmentList).ListMeta}
-	for _, item := range obj.(*v1alpha1.LightsailStaticIpAttachmentList).Items {
+	list := &v1alpha1.LightsailStaticIPAttachmentList{ListMeta: obj.(*v1alpha1.LightsailStaticIPAttachmentList).ListMeta}
+	for _, item := range obj.(*v1alpha1.LightsailStaticIPAttachmentList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeLightsailStaticIpAttachments) List(opts v1.ListOptions) (result *v1
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested lightsailStaticIpAttachments.
-func (c *FakeLightsailStaticIpAttachments) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested lightsailStaticIPAttachments.
+func (c *FakeLightsailStaticIPAttachments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(lightsailstaticipattachmentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(lightsailstaticipattachmentsResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a lightsailStaticIpAttachment and creates it.  Returns the server's representation of the lightsailStaticIpAttachment, and an error, if there is any.
-func (c *FakeLightsailStaticIpAttachments) Create(lightsailStaticIpAttachment *v1alpha1.LightsailStaticIpAttachment) (result *v1alpha1.LightsailStaticIpAttachment, err error) {
+// Create takes the representation of a lightsailStaticIPAttachment and creates it.  Returns the server's representation of the lightsailStaticIPAttachment, and an error, if there is any.
+func (c *FakeLightsailStaticIPAttachments) Create(lightsailStaticIPAttachment *v1alpha1.LightsailStaticIPAttachment) (result *v1alpha1.LightsailStaticIPAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(lightsailstaticipattachmentsResource, lightsailStaticIpAttachment), &v1alpha1.LightsailStaticIpAttachment{})
+		Invokes(testing.NewCreateAction(lightsailstaticipattachmentsResource, c.ns, lightsailStaticIPAttachment), &v1alpha1.LightsailStaticIPAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LightsailStaticIpAttachment), err
+	return obj.(*v1alpha1.LightsailStaticIPAttachment), err
 }
 
-// Update takes the representation of a lightsailStaticIpAttachment and updates it. Returns the server's representation of the lightsailStaticIpAttachment, and an error, if there is any.
-func (c *FakeLightsailStaticIpAttachments) Update(lightsailStaticIpAttachment *v1alpha1.LightsailStaticIpAttachment) (result *v1alpha1.LightsailStaticIpAttachment, err error) {
+// Update takes the representation of a lightsailStaticIPAttachment and updates it. Returns the server's representation of the lightsailStaticIPAttachment, and an error, if there is any.
+func (c *FakeLightsailStaticIPAttachments) Update(lightsailStaticIPAttachment *v1alpha1.LightsailStaticIPAttachment) (result *v1alpha1.LightsailStaticIPAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(lightsailstaticipattachmentsResource, lightsailStaticIpAttachment), &v1alpha1.LightsailStaticIpAttachment{})
+		Invokes(testing.NewUpdateAction(lightsailstaticipattachmentsResource, c.ns, lightsailStaticIPAttachment), &v1alpha1.LightsailStaticIPAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LightsailStaticIpAttachment), err
+	return obj.(*v1alpha1.LightsailStaticIPAttachment), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeLightsailStaticIpAttachments) UpdateStatus(lightsailStaticIpAttachment *v1alpha1.LightsailStaticIpAttachment) (*v1alpha1.LightsailStaticIpAttachment, error) {
+func (c *FakeLightsailStaticIPAttachments) UpdateStatus(lightsailStaticIPAttachment *v1alpha1.LightsailStaticIPAttachment) (*v1alpha1.LightsailStaticIPAttachment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(lightsailstaticipattachmentsResource, "status", lightsailStaticIpAttachment), &v1alpha1.LightsailStaticIpAttachment{})
+		Invokes(testing.NewUpdateSubresourceAction(lightsailstaticipattachmentsResource, "status", c.ns, lightsailStaticIPAttachment), &v1alpha1.LightsailStaticIPAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LightsailStaticIpAttachment), err
+	return obj.(*v1alpha1.LightsailStaticIPAttachment), err
 }
 
-// Delete takes name of the lightsailStaticIpAttachment and deletes it. Returns an error if one occurs.
-func (c *FakeLightsailStaticIpAttachments) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the lightsailStaticIPAttachment and deletes it. Returns an error if one occurs.
+func (c *FakeLightsailStaticIPAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(lightsailstaticipattachmentsResource, name), &v1alpha1.LightsailStaticIpAttachment{})
+		Invokes(testing.NewDeleteAction(lightsailstaticipattachmentsResource, c.ns, name), &v1alpha1.LightsailStaticIPAttachment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeLightsailStaticIpAttachments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(lightsailstaticipattachmentsResource, listOptions)
+func (c *FakeLightsailStaticIPAttachments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(lightsailstaticipattachmentsResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.LightsailStaticIpAttachmentList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.LightsailStaticIPAttachmentList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched lightsailStaticIpAttachment.
-func (c *FakeLightsailStaticIpAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LightsailStaticIpAttachment, err error) {
+// Patch applies the patch and returns the patched lightsailStaticIPAttachment.
+func (c *FakeLightsailStaticIPAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LightsailStaticIPAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(lightsailstaticipattachmentsResource, name, pt, data, subresources...), &v1alpha1.LightsailStaticIpAttachment{})
+		Invokes(testing.NewPatchSubresourceAction(lightsailstaticipattachmentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.LightsailStaticIPAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LightsailStaticIpAttachment), err
+	return obj.(*v1alpha1.LightsailStaticIPAttachment), err
 }

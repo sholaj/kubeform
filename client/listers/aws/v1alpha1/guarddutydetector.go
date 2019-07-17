@@ -29,8 +29,8 @@ import (
 type GuarddutyDetectorLister interface {
 	// List lists all GuarddutyDetectors in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GuarddutyDetector, err error)
-	// Get retrieves the GuarddutyDetector from the index for a given name.
-	Get(name string) (*v1alpha1.GuarddutyDetector, error)
+	// GuarddutyDetectors returns an object that can list and get GuarddutyDetectors.
+	GuarddutyDetectors(namespace string) GuarddutyDetectorNamespaceLister
 	GuarddutyDetectorListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *guarddutyDetectorLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the GuarddutyDetector from the index for a given name.
-func (s *guarddutyDetectorLister) Get(name string) (*v1alpha1.GuarddutyDetector, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GuarddutyDetectors returns an object that can list and get GuarddutyDetectors.
+func (s *guarddutyDetectorLister) GuarddutyDetectors(namespace string) GuarddutyDetectorNamespaceLister {
+	return guarddutyDetectorNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GuarddutyDetectorNamespaceLister helps list and get GuarddutyDetectors.
+type GuarddutyDetectorNamespaceLister interface {
+	// List lists all GuarddutyDetectors in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GuarddutyDetector, err error)
+	// Get retrieves the GuarddutyDetector from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GuarddutyDetector, error)
+	GuarddutyDetectorNamespaceListerExpansion
+}
+
+// guarddutyDetectorNamespaceLister implements the GuarddutyDetectorNamespaceLister
+// interface.
+type guarddutyDetectorNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GuarddutyDetectors in the indexer for a given namespace.
+func (s guarddutyDetectorNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GuarddutyDetector, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GuarddutyDetector))
+	})
+	return ret, err
+}
+
+// Get retrieves the GuarddutyDetector from the indexer for a given namespace and name.
+func (s guarddutyDetectorNamespaceLister) Get(name string) (*v1alpha1.GuarddutyDetector, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

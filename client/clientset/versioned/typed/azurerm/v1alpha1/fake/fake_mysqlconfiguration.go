@@ -31,6 +31,7 @@ import (
 // FakeMysqlConfigurations implements MysqlConfigurationInterface
 type FakeMysqlConfigurations struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var mysqlconfigurationsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "mysqlconfigurations"}
@@ -40,7 +41,8 @@ var mysqlconfigurationsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.c
 // Get takes name of the mysqlConfiguration, and returns the corresponding mysqlConfiguration object, and an error if there is any.
 func (c *FakeMysqlConfigurations) Get(name string, options v1.GetOptions) (result *v1alpha1.MysqlConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(mysqlconfigurationsResource, name), &v1alpha1.MysqlConfiguration{})
+		Invokes(testing.NewGetAction(mysqlconfigurationsResource, c.ns, name), &v1alpha1.MysqlConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMysqlConfigurations) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of MysqlConfigurations that match those selectors.
 func (c *FakeMysqlConfigurations) List(opts v1.ListOptions) (result *v1alpha1.MysqlConfigurationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(mysqlconfigurationsResource, mysqlconfigurationsKind, opts), &v1alpha1.MysqlConfigurationList{})
+		Invokes(testing.NewListAction(mysqlconfigurationsResource, mysqlconfigurationsKind, c.ns, opts), &v1alpha1.MysqlConfigurationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMysqlConfigurations) List(opts v1.ListOptions) (result *v1alpha1.My
 // Watch returns a watch.Interface that watches the requested mysqlConfigurations.
 func (c *FakeMysqlConfigurations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(mysqlconfigurationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(mysqlconfigurationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a mysqlConfiguration and creates it.  Returns the server's representation of the mysqlConfiguration, and an error, if there is any.
 func (c *FakeMysqlConfigurations) Create(mysqlConfiguration *v1alpha1.MysqlConfiguration) (result *v1alpha1.MysqlConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(mysqlconfigurationsResource, mysqlConfiguration), &v1alpha1.MysqlConfiguration{})
+		Invokes(testing.NewCreateAction(mysqlconfigurationsResource, c.ns, mysqlConfiguration), &v1alpha1.MysqlConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMysqlConfigurations) Create(mysqlConfiguration *v1alpha1.MysqlConfi
 // Update takes the representation of a mysqlConfiguration and updates it. Returns the server's representation of the mysqlConfiguration, and an error, if there is any.
 func (c *FakeMysqlConfigurations) Update(mysqlConfiguration *v1alpha1.MysqlConfiguration) (result *v1alpha1.MysqlConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(mysqlconfigurationsResource, mysqlConfiguration), &v1alpha1.MysqlConfiguration{})
+		Invokes(testing.NewUpdateAction(mysqlconfigurationsResource, c.ns, mysqlConfiguration), &v1alpha1.MysqlConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMysqlConfigurations) Update(mysqlConfiguration *v1alpha1.MysqlConfi
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMysqlConfigurations) UpdateStatus(mysqlConfiguration *v1alpha1.MysqlConfiguration) (*v1alpha1.MysqlConfiguration, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(mysqlconfigurationsResource, "status", mysqlConfiguration), &v1alpha1.MysqlConfiguration{})
+		Invokes(testing.NewUpdateSubresourceAction(mysqlconfigurationsResource, "status", c.ns, mysqlConfiguration), &v1alpha1.MysqlConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMysqlConfigurations) UpdateStatus(mysqlConfiguration *v1alpha1.Mysq
 // Delete takes name of the mysqlConfiguration and deletes it. Returns an error if one occurs.
 func (c *FakeMysqlConfigurations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(mysqlconfigurationsResource, name), &v1alpha1.MysqlConfiguration{})
+		Invokes(testing.NewDeleteAction(mysqlconfigurationsResource, c.ns, name), &v1alpha1.MysqlConfiguration{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMysqlConfigurations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(mysqlconfigurationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(mysqlconfigurationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MysqlConfigurationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMysqlConfigurations) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched mysqlConfiguration.
 func (c *FakeMysqlConfigurations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MysqlConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(mysqlconfigurationsResource, name, pt, data, subresources...), &v1alpha1.MysqlConfiguration{})
+		Invokes(testing.NewPatchSubresourceAction(mysqlconfigurationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.MysqlConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}

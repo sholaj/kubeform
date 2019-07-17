@@ -29,8 +29,8 @@ import (
 type EventgridDomainLister interface {
 	// List lists all EventgridDomains in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EventgridDomain, err error)
-	// Get retrieves the EventgridDomain from the index for a given name.
-	Get(name string) (*v1alpha1.EventgridDomain, error)
+	// EventgridDomains returns an object that can list and get EventgridDomains.
+	EventgridDomains(namespace string) EventgridDomainNamespaceLister
 	EventgridDomainListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *eventgridDomainLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the EventgridDomain from the index for a given name.
-func (s *eventgridDomainLister) Get(name string) (*v1alpha1.EventgridDomain, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EventgridDomains returns an object that can list and get EventgridDomains.
+func (s *eventgridDomainLister) EventgridDomains(namespace string) EventgridDomainNamespaceLister {
+	return eventgridDomainNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EventgridDomainNamespaceLister helps list and get EventgridDomains.
+type EventgridDomainNamespaceLister interface {
+	// List lists all EventgridDomains in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EventgridDomain, err error)
+	// Get retrieves the EventgridDomain from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EventgridDomain, error)
+	EventgridDomainNamespaceListerExpansion
+}
+
+// eventgridDomainNamespaceLister implements the EventgridDomainNamespaceLister
+// interface.
+type eventgridDomainNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EventgridDomains in the indexer for a given namespace.
+func (s eventgridDomainNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EventgridDomain, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EventgridDomain))
+	})
+	return ret, err
+}
+
+// Get retrieves the EventgridDomain from the indexer for a given namespace and name.
+func (s eventgridDomainNamespaceLister) Get(name string) (*v1alpha1.EventgridDomain, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

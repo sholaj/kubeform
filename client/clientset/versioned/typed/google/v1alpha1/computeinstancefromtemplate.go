@@ -32,7 +32,7 @@ import (
 // ComputeInstanceFromTemplatesGetter has a method to return a ComputeInstanceFromTemplateInterface.
 // A group's client should implement this interface.
 type ComputeInstanceFromTemplatesGetter interface {
-	ComputeInstanceFromTemplates() ComputeInstanceFromTemplateInterface
+	ComputeInstanceFromTemplates(namespace string) ComputeInstanceFromTemplateInterface
 }
 
 // ComputeInstanceFromTemplateInterface has methods to work with ComputeInstanceFromTemplate resources.
@@ -52,12 +52,14 @@ type ComputeInstanceFromTemplateInterface interface {
 // computeInstanceFromTemplates implements ComputeInstanceFromTemplateInterface
 type computeInstanceFromTemplates struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeInstanceFromTemplates returns a ComputeInstanceFromTemplates
-func newComputeInstanceFromTemplates(c *GoogleV1alpha1Client) *computeInstanceFromTemplates {
+func newComputeInstanceFromTemplates(c *GoogleV1alpha1Client, namespace string) *computeInstanceFromTemplates {
 	return &computeInstanceFromTemplates{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeInstanceFromTemplates(c *GoogleV1alpha1Client) *computeInstanceFr
 func (c *computeInstanceFromTemplates) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeInstanceFromTemplate, err error) {
 	result = &v1alpha1.ComputeInstanceFromTemplate{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeinstancefromtemplates").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeInstanceFromTemplates) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.ComputeInstanceFromTemplateList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeinstancefromtemplates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeInstanceFromTemplates) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computeinstancefromtemplates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeInstanceFromTemplates) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *computeInstanceFromTemplates) Create(computeInstanceFromTemplate *v1alpha1.ComputeInstanceFromTemplate) (result *v1alpha1.ComputeInstanceFromTemplate, err error) {
 	result = &v1alpha1.ComputeInstanceFromTemplate{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computeinstancefromtemplates").
 		Body(computeInstanceFromTemplate).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeInstanceFromTemplates) Create(computeInstanceFromTemplate *v1alp
 func (c *computeInstanceFromTemplates) Update(computeInstanceFromTemplate *v1alpha1.ComputeInstanceFromTemplate) (result *v1alpha1.ComputeInstanceFromTemplate, err error) {
 	result = &v1alpha1.ComputeInstanceFromTemplate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeinstancefromtemplates").
 		Name(computeInstanceFromTemplate.Name).
 		Body(computeInstanceFromTemplate).
@@ -132,6 +139,7 @@ func (c *computeInstanceFromTemplates) Update(computeInstanceFromTemplate *v1alp
 func (c *computeInstanceFromTemplates) UpdateStatus(computeInstanceFromTemplate *v1alpha1.ComputeInstanceFromTemplate) (result *v1alpha1.ComputeInstanceFromTemplate, err error) {
 	result = &v1alpha1.ComputeInstanceFromTemplate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeinstancefromtemplates").
 		Name(computeInstanceFromTemplate.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeInstanceFromTemplates) UpdateStatus(computeInstanceFromTemplate 
 // Delete takes name of the computeInstanceFromTemplate and deletes it. Returns an error if one occurs.
 func (c *computeInstanceFromTemplates) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeinstancefromtemplates").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeInstanceFromTemplates) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeinstancefromtemplates").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeInstanceFromTemplates) DeleteCollection(options *v1.DeleteOption
 func (c *computeInstanceFromTemplates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeInstanceFromTemplate, err error) {
 	result = &v1alpha1.ComputeInstanceFromTemplate{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computeinstancefromtemplates").
 		SubResource(subresources...).
 		Name(name).

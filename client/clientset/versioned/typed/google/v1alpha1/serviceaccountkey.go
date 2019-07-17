@@ -32,7 +32,7 @@ import (
 // ServiceAccountKeysGetter has a method to return a ServiceAccountKeyInterface.
 // A group's client should implement this interface.
 type ServiceAccountKeysGetter interface {
-	ServiceAccountKeys() ServiceAccountKeyInterface
+	ServiceAccountKeys(namespace string) ServiceAccountKeyInterface
 }
 
 // ServiceAccountKeyInterface has methods to work with ServiceAccountKey resources.
@@ -52,12 +52,14 @@ type ServiceAccountKeyInterface interface {
 // serviceAccountKeys implements ServiceAccountKeyInterface
 type serviceAccountKeys struct {
 	client rest.Interface
+	ns     string
 }
 
 // newServiceAccountKeys returns a ServiceAccountKeys
-func newServiceAccountKeys(c *GoogleV1alpha1Client) *serviceAccountKeys {
+func newServiceAccountKeys(c *GoogleV1alpha1Client, namespace string) *serviceAccountKeys {
 	return &serviceAccountKeys{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newServiceAccountKeys(c *GoogleV1alpha1Client) *serviceAccountKeys {
 func (c *serviceAccountKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceAccountKey, err error) {
 	result = &v1alpha1.ServiceAccountKey{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("serviceaccountkeys").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *serviceAccountKeys) List(opts v1.ListOptions) (result *v1alpha1.Service
 	}
 	result = &v1alpha1.ServiceAccountKeyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("serviceaccountkeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *serviceAccountKeys) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("serviceaccountkeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *serviceAccountKeys) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *serviceAccountKeys) Create(serviceAccountKey *v1alpha1.ServiceAccountKey) (result *v1alpha1.ServiceAccountKey, err error) {
 	result = &v1alpha1.ServiceAccountKey{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("serviceaccountkeys").
 		Body(serviceAccountKey).
 		Do().
@@ -118,6 +124,7 @@ func (c *serviceAccountKeys) Create(serviceAccountKey *v1alpha1.ServiceAccountKe
 func (c *serviceAccountKeys) Update(serviceAccountKey *v1alpha1.ServiceAccountKey) (result *v1alpha1.ServiceAccountKey, err error) {
 	result = &v1alpha1.ServiceAccountKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("serviceaccountkeys").
 		Name(serviceAccountKey.Name).
 		Body(serviceAccountKey).
@@ -132,6 +139,7 @@ func (c *serviceAccountKeys) Update(serviceAccountKey *v1alpha1.ServiceAccountKe
 func (c *serviceAccountKeys) UpdateStatus(serviceAccountKey *v1alpha1.ServiceAccountKey) (result *v1alpha1.ServiceAccountKey, err error) {
 	result = &v1alpha1.ServiceAccountKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("serviceaccountkeys").
 		Name(serviceAccountKey.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *serviceAccountKeys) UpdateStatus(serviceAccountKey *v1alpha1.ServiceAcc
 // Delete takes name of the serviceAccountKey and deletes it. Returns an error if one occurs.
 func (c *serviceAccountKeys) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("serviceaccountkeys").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *serviceAccountKeys) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("serviceaccountkeys").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *serviceAccountKeys) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *serviceAccountKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceAccountKey, err error) {
 	result = &v1alpha1.ServiceAccountKey{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("serviceaccountkeys").
 		SubResource(subresources...).
 		Name(name).

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,31 +19,32 @@ type AutomationRunbook struct {
 }
 
 type AutomationRunbookSpecPublishContentLinkHash struct {
-	Algorithm string `json:"algorithm"`
-	Value     string `json:"value"`
+	Algorithm string `json:"algorithm" tf:"algorithm"`
+	Value     string `json:"value" tf:"value"`
 }
 
 type AutomationRunbookSpecPublishContentLink struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Hash *[]AutomationRunbookSpecPublishContentLink `json:"hash,omitempty"`
-	Uri  string                                     `json:"uri"`
+	Hash []AutomationRunbookSpecPublishContentLinkHash `json:"hash,omitempty" tf:"hash,omitempty"`
+	Uri  string                                        `json:"uri" tf:"uri"`
 	// +optional
-	Version string `json:"version,omitempty"`
+	Version string `json:"version,omitempty" tf:"version,omitempty"`
 }
 
 type AutomationRunbookSpec struct {
-	AccountName string `json:"account_name"`
+	AccountName string `json:"accountName" tf:"account_name"`
 	// +optional
-	Description string `json:"description,omitempty"`
-	Location    string `json:"location"`
-	LogProgress bool   `json:"log_progress"`
-	LogVerbose  bool   `json:"log_verbose"`
-	Name        string `json:"name"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
+	Location    string `json:"location" tf:"location"`
+	LogProgress bool   `json:"logProgress" tf:"log_progress"`
+	LogVerbose  bool   `json:"logVerbose" tf:"log_verbose"`
+	Name        string `json:"name" tf:"name"`
 	// +kubebuilder:validation:MaxItems=1
-	PublishContentLink []AutomationRunbookSpec `json:"publish_content_link"`
-	ResourceGroupName  string                  `json:"resource_group_name"`
-	RunbookType        string                  `json:"runbook_type"`
+	PublishContentLink []AutomationRunbookSpecPublishContentLink `json:"publishContentLink" tf:"publish_content_link"`
+	ResourceGroupName  string                                    `json:"resourceGroupName" tf:"resource_group_name"`
+	RunbookType        string                                    `json:"runbookType" tf:"runbook_type"`
+	ProviderRef        core.LocalObjectReference                 `json:"providerRef" tf:"-"`
 }
 
 type AutomationRunbookStatus struct {
@@ -51,7 +52,9 @@ type AutomationRunbookStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

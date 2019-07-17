@@ -32,7 +32,7 @@ import (
 // KmsKeyRingIamBindingsGetter has a method to return a KmsKeyRingIamBindingInterface.
 // A group's client should implement this interface.
 type KmsKeyRingIamBindingsGetter interface {
-	KmsKeyRingIamBindings() KmsKeyRingIamBindingInterface
+	KmsKeyRingIamBindings(namespace string) KmsKeyRingIamBindingInterface
 }
 
 // KmsKeyRingIamBindingInterface has methods to work with KmsKeyRingIamBinding resources.
@@ -52,12 +52,14 @@ type KmsKeyRingIamBindingInterface interface {
 // kmsKeyRingIamBindings implements KmsKeyRingIamBindingInterface
 type kmsKeyRingIamBindings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKmsKeyRingIamBindings returns a KmsKeyRingIamBindings
-func newKmsKeyRingIamBindings(c *GoogleV1alpha1Client) *kmsKeyRingIamBindings {
+func newKmsKeyRingIamBindings(c *GoogleV1alpha1Client, namespace string) *kmsKeyRingIamBindings {
 	return &kmsKeyRingIamBindings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKmsKeyRingIamBindings(c *GoogleV1alpha1Client) *kmsKeyRingIamBindings {
 func (c *kmsKeyRingIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.KmsKeyRingIamBinding, err error) {
 	result = &v1alpha1.KmsKeyRingIamBinding{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmskeyringiambindings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *kmsKeyRingIamBindings) List(opts v1.ListOptions) (result *v1alpha1.KmsK
 	}
 	result = &v1alpha1.KmsKeyRingIamBindingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmskeyringiambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *kmsKeyRingIamBindings) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("kmskeyringiambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *kmsKeyRingIamBindings) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *kmsKeyRingIamBindings) Create(kmsKeyRingIamBinding *v1alpha1.KmsKeyRingIamBinding) (result *v1alpha1.KmsKeyRingIamBinding, err error) {
 	result = &v1alpha1.KmsKeyRingIamBinding{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("kmskeyringiambindings").
 		Body(kmsKeyRingIamBinding).
 		Do().
@@ -118,6 +124,7 @@ func (c *kmsKeyRingIamBindings) Create(kmsKeyRingIamBinding *v1alpha1.KmsKeyRing
 func (c *kmsKeyRingIamBindings) Update(kmsKeyRingIamBinding *v1alpha1.KmsKeyRingIamBinding) (result *v1alpha1.KmsKeyRingIamBinding, err error) {
 	result = &v1alpha1.KmsKeyRingIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmskeyringiambindings").
 		Name(kmsKeyRingIamBinding.Name).
 		Body(kmsKeyRingIamBinding).
@@ -132,6 +139,7 @@ func (c *kmsKeyRingIamBindings) Update(kmsKeyRingIamBinding *v1alpha1.KmsKeyRing
 func (c *kmsKeyRingIamBindings) UpdateStatus(kmsKeyRingIamBinding *v1alpha1.KmsKeyRingIamBinding) (result *v1alpha1.KmsKeyRingIamBinding, err error) {
 	result = &v1alpha1.KmsKeyRingIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmskeyringiambindings").
 		Name(kmsKeyRingIamBinding.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *kmsKeyRingIamBindings) UpdateStatus(kmsKeyRingIamBinding *v1alpha1.KmsK
 // Delete takes name of the kmsKeyRingIamBinding and deletes it. Returns an error if one occurs.
 func (c *kmsKeyRingIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmskeyringiambindings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *kmsKeyRingIamBindings) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmskeyringiambindings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *kmsKeyRingIamBindings) DeleteCollection(options *v1.DeleteOptions, list
 func (c *kmsKeyRingIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KmsKeyRingIamBinding, err error) {
 	result = &v1alpha1.KmsKeyRingIamBinding{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("kmskeyringiambindings").
 		SubResource(subresources...).
 		Name(name).

@@ -41,32 +41,33 @@ type StackscriptInformer interface {
 type stackscriptInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewStackscriptInformer constructs a new informer for Stackscript type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewStackscriptInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredStackscriptInformer(client, resyncPeriod, indexers, nil)
+func NewStackscriptInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredStackscriptInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredStackscriptInformer constructs a new informer for Stackscript type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredStackscriptInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredStackscriptInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.LinodeV1alpha1().Stackscripts().List(options)
+				return client.LinodeV1alpha1().Stackscripts(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.LinodeV1alpha1().Stackscripts().Watch(options)
+				return client.LinodeV1alpha1().Stackscripts(namespace).Watch(options)
 			},
 		},
 		&linodev1alpha1.Stackscript{},
@@ -76,7 +77,7 @@ func NewFilteredStackscriptInformer(client versioned.Interface, resyncPeriod tim
 }
 
 func (f *stackscriptInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredStackscriptInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredStackscriptInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *stackscriptInformer) Informer() cache.SharedIndexInformer {

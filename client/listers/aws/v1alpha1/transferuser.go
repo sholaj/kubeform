@@ -29,8 +29,8 @@ import (
 type TransferUserLister interface {
 	// List lists all TransferUsers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.TransferUser, err error)
-	// Get retrieves the TransferUser from the index for a given name.
-	Get(name string) (*v1alpha1.TransferUser, error)
+	// TransferUsers returns an object that can list and get TransferUsers.
+	TransferUsers(namespace string) TransferUserNamespaceLister
 	TransferUserListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *transferUserLister) List(selector labels.Selector) (ret []*v1alpha1.Tra
 	return ret, err
 }
 
-// Get retrieves the TransferUser from the index for a given name.
-func (s *transferUserLister) Get(name string) (*v1alpha1.TransferUser, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// TransferUsers returns an object that can list and get TransferUsers.
+func (s *transferUserLister) TransferUsers(namespace string) TransferUserNamespaceLister {
+	return transferUserNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// TransferUserNamespaceLister helps list and get TransferUsers.
+type TransferUserNamespaceLister interface {
+	// List lists all TransferUsers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.TransferUser, err error)
+	// Get retrieves the TransferUser from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.TransferUser, error)
+	TransferUserNamespaceListerExpansion
+}
+
+// transferUserNamespaceLister implements the TransferUserNamespaceLister
+// interface.
+type transferUserNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all TransferUsers in the indexer for a given namespace.
+func (s transferUserNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.TransferUser, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.TransferUser))
+	})
+	return ret, err
+}
+
+// Get retrieves the TransferUser from the indexer for a given namespace and name.
+func (s transferUserNamespaceLister) Get(name string) (*v1alpha1.TransferUser, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

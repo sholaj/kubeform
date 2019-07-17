@@ -32,7 +32,7 @@ import (
 // GlueCatalogDatabasesGetter has a method to return a GlueCatalogDatabaseInterface.
 // A group's client should implement this interface.
 type GlueCatalogDatabasesGetter interface {
-	GlueCatalogDatabases() GlueCatalogDatabaseInterface
+	GlueCatalogDatabases(namespace string) GlueCatalogDatabaseInterface
 }
 
 // GlueCatalogDatabaseInterface has methods to work with GlueCatalogDatabase resources.
@@ -52,12 +52,14 @@ type GlueCatalogDatabaseInterface interface {
 // glueCatalogDatabases implements GlueCatalogDatabaseInterface
 type glueCatalogDatabases struct {
 	client rest.Interface
+	ns     string
 }
 
 // newGlueCatalogDatabases returns a GlueCatalogDatabases
-func newGlueCatalogDatabases(c *AwsV1alpha1Client) *glueCatalogDatabases {
+func newGlueCatalogDatabases(c *AwsV1alpha1Client, namespace string) *glueCatalogDatabases {
 	return &glueCatalogDatabases{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newGlueCatalogDatabases(c *AwsV1alpha1Client) *glueCatalogDatabases {
 func (c *glueCatalogDatabases) Get(name string, options v1.GetOptions) (result *v1alpha1.GlueCatalogDatabase, err error) {
 	result = &v1alpha1.GlueCatalogDatabase{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("gluecatalogdatabases").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *glueCatalogDatabases) List(opts v1.ListOptions) (result *v1alpha1.GlueC
 	}
 	result = &v1alpha1.GlueCatalogDatabaseList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("gluecatalogdatabases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *glueCatalogDatabases) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("gluecatalogdatabases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *glueCatalogDatabases) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *glueCatalogDatabases) Create(glueCatalogDatabase *v1alpha1.GlueCatalogDatabase) (result *v1alpha1.GlueCatalogDatabase, err error) {
 	result = &v1alpha1.GlueCatalogDatabase{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("gluecatalogdatabases").
 		Body(glueCatalogDatabase).
 		Do().
@@ -118,6 +124,7 @@ func (c *glueCatalogDatabases) Create(glueCatalogDatabase *v1alpha1.GlueCatalogD
 func (c *glueCatalogDatabases) Update(glueCatalogDatabase *v1alpha1.GlueCatalogDatabase) (result *v1alpha1.GlueCatalogDatabase, err error) {
 	result = &v1alpha1.GlueCatalogDatabase{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("gluecatalogdatabases").
 		Name(glueCatalogDatabase.Name).
 		Body(glueCatalogDatabase).
@@ -132,6 +139,7 @@ func (c *glueCatalogDatabases) Update(glueCatalogDatabase *v1alpha1.GlueCatalogD
 func (c *glueCatalogDatabases) UpdateStatus(glueCatalogDatabase *v1alpha1.GlueCatalogDatabase) (result *v1alpha1.GlueCatalogDatabase, err error) {
 	result = &v1alpha1.GlueCatalogDatabase{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("gluecatalogdatabases").
 		Name(glueCatalogDatabase.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *glueCatalogDatabases) UpdateStatus(glueCatalogDatabase *v1alpha1.GlueCa
 // Delete takes name of the glueCatalogDatabase and deletes it. Returns an error if one occurs.
 func (c *glueCatalogDatabases) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("gluecatalogdatabases").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *glueCatalogDatabases) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("gluecatalogdatabases").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *glueCatalogDatabases) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *glueCatalogDatabases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GlueCatalogDatabase, err error) {
 	result = &v1alpha1.GlueCatalogDatabase{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("gluecatalogdatabases").
 		SubResource(subresources...).
 		Name(name).

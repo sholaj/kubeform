@@ -32,7 +32,7 @@ import (
 // LogicAppTriggerRecurrencesGetter has a method to return a LogicAppTriggerRecurrenceInterface.
 // A group's client should implement this interface.
 type LogicAppTriggerRecurrencesGetter interface {
-	LogicAppTriggerRecurrences() LogicAppTriggerRecurrenceInterface
+	LogicAppTriggerRecurrences(namespace string) LogicAppTriggerRecurrenceInterface
 }
 
 // LogicAppTriggerRecurrenceInterface has methods to work with LogicAppTriggerRecurrence resources.
@@ -52,12 +52,14 @@ type LogicAppTriggerRecurrenceInterface interface {
 // logicAppTriggerRecurrences implements LogicAppTriggerRecurrenceInterface
 type logicAppTriggerRecurrences struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLogicAppTriggerRecurrences returns a LogicAppTriggerRecurrences
-func newLogicAppTriggerRecurrences(c *AzurermV1alpha1Client) *logicAppTriggerRecurrences {
+func newLogicAppTriggerRecurrences(c *AzurermV1alpha1Client, namespace string) *logicAppTriggerRecurrences {
 	return &logicAppTriggerRecurrences{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLogicAppTriggerRecurrences(c *AzurermV1alpha1Client) *logicAppTriggerRec
 func (c *logicAppTriggerRecurrences) Get(name string, options v1.GetOptions) (result *v1alpha1.LogicAppTriggerRecurrence, err error) {
 	result = &v1alpha1.LogicAppTriggerRecurrence{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("logicapptriggerrecurrences").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *logicAppTriggerRecurrences) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.LogicAppTriggerRecurrenceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("logicapptriggerrecurrences").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *logicAppTriggerRecurrences) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("logicapptriggerrecurrences").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *logicAppTriggerRecurrences) Watch(opts v1.ListOptions) (watch.Interface
 func (c *logicAppTriggerRecurrences) Create(logicAppTriggerRecurrence *v1alpha1.LogicAppTriggerRecurrence) (result *v1alpha1.LogicAppTriggerRecurrence, err error) {
 	result = &v1alpha1.LogicAppTriggerRecurrence{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("logicapptriggerrecurrences").
 		Body(logicAppTriggerRecurrence).
 		Do().
@@ -118,6 +124,7 @@ func (c *logicAppTriggerRecurrences) Create(logicAppTriggerRecurrence *v1alpha1.
 func (c *logicAppTriggerRecurrences) Update(logicAppTriggerRecurrence *v1alpha1.LogicAppTriggerRecurrence) (result *v1alpha1.LogicAppTriggerRecurrence, err error) {
 	result = &v1alpha1.LogicAppTriggerRecurrence{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("logicapptriggerrecurrences").
 		Name(logicAppTriggerRecurrence.Name).
 		Body(logicAppTriggerRecurrence).
@@ -132,6 +139,7 @@ func (c *logicAppTriggerRecurrences) Update(logicAppTriggerRecurrence *v1alpha1.
 func (c *logicAppTriggerRecurrences) UpdateStatus(logicAppTriggerRecurrence *v1alpha1.LogicAppTriggerRecurrence) (result *v1alpha1.LogicAppTriggerRecurrence, err error) {
 	result = &v1alpha1.LogicAppTriggerRecurrence{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("logicapptriggerrecurrences").
 		Name(logicAppTriggerRecurrence.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *logicAppTriggerRecurrences) UpdateStatus(logicAppTriggerRecurrence *v1a
 // Delete takes name of the logicAppTriggerRecurrence and deletes it. Returns an error if one occurs.
 func (c *logicAppTriggerRecurrences) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("logicapptriggerrecurrences").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *logicAppTriggerRecurrences) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("logicapptriggerrecurrences").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *logicAppTriggerRecurrences) DeleteCollection(options *v1.DeleteOptions,
 func (c *logicAppTriggerRecurrences) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogicAppTriggerRecurrence, err error) {
 	result = &v1alpha1.LogicAppTriggerRecurrence{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("logicapptriggerrecurrences").
 		SubResource(subresources...).
 		Name(name).

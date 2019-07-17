@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,22 +19,23 @@ type StorageBucketObject struct {
 }
 
 type StorageBucketObjectSpec struct {
-	Bucket string `json:"bucket"`
+	Bucket string `json:"bucket" tf:"bucket"`
 	// +optional
-	CacheControl string `json:"cache_control,omitempty"`
+	CacheControl string `json:"cacheControl,omitempty" tf:"cache_control,omitempty"`
 	// +optional
-	Content string `json:"content,omitempty"`
+	Content string `json:"content,omitempty" tf:"content,omitempty"`
 	// +optional
-	ContentDisposition string `json:"content_disposition,omitempty"`
+	ContentDisposition string `json:"contentDisposition,omitempty" tf:"content_disposition,omitempty"`
 	// +optional
-	ContentEncoding string `json:"content_encoding,omitempty"`
+	ContentEncoding string `json:"contentEncoding,omitempty" tf:"content_encoding,omitempty"`
 	// +optional
-	ContentLanguage string `json:"content_language,omitempty"`
+	ContentLanguage string `json:"contentLanguage,omitempty" tf:"content_language,omitempty"`
 	// +optional
-	DetectMd5hash string `json:"detect_md5hash,omitempty"`
-	Name          string `json:"name"`
+	DetectMd5hash string `json:"detectMd5hash,omitempty" tf:"detect_md5hash,omitempty"`
+	Name          string `json:"name" tf:"name"`
 	// +optional
-	Source string `json:"source,omitempty"`
+	Source      string                    `json:"source,omitempty" tf:"source,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type StorageBucketObjectStatus struct {
@@ -42,7 +43,9 @@ type StorageBucketObjectStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

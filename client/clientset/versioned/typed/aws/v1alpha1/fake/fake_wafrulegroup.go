@@ -31,6 +31,7 @@ import (
 // FakeWafRuleGroups implements WafRuleGroupInterface
 type FakeWafRuleGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var wafrulegroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "wafrulegroups"}
@@ -40,7 +41,8 @@ var wafrulegroupsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Versi
 // Get takes name of the wafRuleGroup, and returns the corresponding wafRuleGroup object, and an error if there is any.
 func (c *FakeWafRuleGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.WafRuleGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(wafrulegroupsResource, name), &v1alpha1.WafRuleGroup{})
+		Invokes(testing.NewGetAction(wafrulegroupsResource, c.ns, name), &v1alpha1.WafRuleGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeWafRuleGroups) Get(name string, options v1.GetOptions) (result *v1a
 // List takes label and field selectors, and returns the list of WafRuleGroups that match those selectors.
 func (c *FakeWafRuleGroups) List(opts v1.ListOptions) (result *v1alpha1.WafRuleGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(wafrulegroupsResource, wafrulegroupsKind, opts), &v1alpha1.WafRuleGroupList{})
+		Invokes(testing.NewListAction(wafrulegroupsResource, wafrulegroupsKind, c.ns, opts), &v1alpha1.WafRuleGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeWafRuleGroups) List(opts v1.ListOptions) (result *v1alpha1.WafRuleG
 // Watch returns a watch.Interface that watches the requested wafRuleGroups.
 func (c *FakeWafRuleGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(wafrulegroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(wafrulegroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a wafRuleGroup and creates it.  Returns the server's representation of the wafRuleGroup, and an error, if there is any.
 func (c *FakeWafRuleGroups) Create(wafRuleGroup *v1alpha1.WafRuleGroup) (result *v1alpha1.WafRuleGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(wafrulegroupsResource, wafRuleGroup), &v1alpha1.WafRuleGroup{})
+		Invokes(testing.NewCreateAction(wafrulegroupsResource, c.ns, wafRuleGroup), &v1alpha1.WafRuleGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeWafRuleGroups) Create(wafRuleGroup *v1alpha1.WafRuleGroup) (result 
 // Update takes the representation of a wafRuleGroup and updates it. Returns the server's representation of the wafRuleGroup, and an error, if there is any.
 func (c *FakeWafRuleGroups) Update(wafRuleGroup *v1alpha1.WafRuleGroup) (result *v1alpha1.WafRuleGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(wafrulegroupsResource, wafRuleGroup), &v1alpha1.WafRuleGroup{})
+		Invokes(testing.NewUpdateAction(wafrulegroupsResource, c.ns, wafRuleGroup), &v1alpha1.WafRuleGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeWafRuleGroups) Update(wafRuleGroup *v1alpha1.WafRuleGroup) (result 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeWafRuleGroups) UpdateStatus(wafRuleGroup *v1alpha1.WafRuleGroup) (*v1alpha1.WafRuleGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(wafrulegroupsResource, "status", wafRuleGroup), &v1alpha1.WafRuleGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(wafrulegroupsResource, "status", c.ns, wafRuleGroup), &v1alpha1.WafRuleGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeWafRuleGroups) UpdateStatus(wafRuleGroup *v1alpha1.WafRuleGroup) (*
 // Delete takes name of the wafRuleGroup and deletes it. Returns an error if one occurs.
 func (c *FakeWafRuleGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(wafrulegroupsResource, name), &v1alpha1.WafRuleGroup{})
+		Invokes(testing.NewDeleteAction(wafrulegroupsResource, c.ns, name), &v1alpha1.WafRuleGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeWafRuleGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(wafrulegroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(wafrulegroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.WafRuleGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeWafRuleGroups) DeleteCollection(options *v1.DeleteOptions, listOpti
 // Patch applies the patch and returns the patched wafRuleGroup.
 func (c *FakeWafRuleGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafRuleGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(wafrulegroupsResource, name, pt, data, subresources...), &v1alpha1.WafRuleGroup{})
+		Invokes(testing.NewPatchSubresourceAction(wafrulegroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.WafRuleGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

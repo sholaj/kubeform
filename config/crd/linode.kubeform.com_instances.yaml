@@ -397,37 +397,81 @@ spec:
           type: object
         spec:
           properties:
-            authorized_keys:
+            authorizedKeys:
               items:
                 type: string
               type: array
-            authorized_users:
+            authorizedUsers:
               items:
                 type: string
               type: array
-            backup_id:
+            backupID:
               type: integer
             config:
-              items: {}
+              items:
+                properties:
+                  comments:
+                    type: string
+                  kernel:
+                    type: string
+                  label:
+                    type: string
+                  memoryLimit:
+                    type: integer
+                  runLevel:
+                    type: string
+                  virtMode:
+                    type: string
+                required:
+                - label
+                type: object
               type: array
             disk:
-              items: {}
+              items:
+                properties:
+                  authorizedKeys:
+                    items:
+                      type: string
+                    type: array
+                  authorizedUsers:
+                    items:
+                      type: string
+                    type: array
+                  label:
+                    type: string
+                  rootPass:
+                    type: string
+                  size:
+                    type: integer
+                required:
+                - label
+                - size
+                type: object
               type: array
             group:
               type: string
             image:
               type: string
-            private_ip:
+            privateIP:
               type: boolean
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             region:
               type: string
-            root_pass:
+            rootPass:
               type: string
-            stackscript_data:
+            stackscriptData:
               additionalProperties:
                 type: string
               type: object
-            stackscript_id:
+            stackscriptID:
               type: integer
             tags:
               items:
@@ -436,9 +480,10 @@ spec:
               uniqueItems: true
             type:
               type: string
-            watchdog_enabled:
+            watchdogEnabled:
               type: boolean
           required:
+          - providerRef
           - region
           type: object
         status:
@@ -450,6 +495,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

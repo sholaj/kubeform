@@ -41,32 +41,33 @@ type BudgetsBudgetInformer interface {
 type budgetsBudgetInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewBudgetsBudgetInformer constructs a new informer for BudgetsBudget type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewBudgetsBudgetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredBudgetsBudgetInformer(client, resyncPeriod, indexers, nil)
+func NewBudgetsBudgetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredBudgetsBudgetInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredBudgetsBudgetInformer constructs a new informer for BudgetsBudget type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredBudgetsBudgetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredBudgetsBudgetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().BudgetsBudgets().List(options)
+				return client.AwsV1alpha1().BudgetsBudgets(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().BudgetsBudgets().Watch(options)
+				return client.AwsV1alpha1().BudgetsBudgets(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.BudgetsBudget{},
@@ -76,7 +77,7 @@ func NewFilteredBudgetsBudgetInformer(client versioned.Interface, resyncPeriod t
 }
 
 func (f *budgetsBudgetInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredBudgetsBudgetInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredBudgetsBudgetInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *budgetsBudgetInformer) Informer() cache.SharedIndexInformer {

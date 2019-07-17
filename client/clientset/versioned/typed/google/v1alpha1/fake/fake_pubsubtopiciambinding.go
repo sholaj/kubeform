@@ -31,6 +31,7 @@ import (
 // FakePubsubTopicIamBindings implements PubsubTopicIamBindingInterface
 type FakePubsubTopicIamBindings struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var pubsubtopiciambindingsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "pubsubtopiciambindings"}
@@ -40,7 +41,8 @@ var pubsubtopiciambindingsKind = schema.GroupVersionKind{Group: "google.kubeform
 // Get takes name of the pubsubTopicIamBinding, and returns the corresponding pubsubTopicIamBinding object, and an error if there is any.
 func (c *FakePubsubTopicIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.PubsubTopicIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(pubsubtopiciambindingsResource, name), &v1alpha1.PubsubTopicIamBinding{})
+		Invokes(testing.NewGetAction(pubsubtopiciambindingsResource, c.ns, name), &v1alpha1.PubsubTopicIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakePubsubTopicIamBindings) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of PubsubTopicIamBindings that match those selectors.
 func (c *FakePubsubTopicIamBindings) List(opts v1.ListOptions) (result *v1alpha1.PubsubTopicIamBindingList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(pubsubtopiciambindingsResource, pubsubtopiciambindingsKind, opts), &v1alpha1.PubsubTopicIamBindingList{})
+		Invokes(testing.NewListAction(pubsubtopiciambindingsResource, pubsubtopiciambindingsKind, c.ns, opts), &v1alpha1.PubsubTopicIamBindingList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakePubsubTopicIamBindings) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested pubsubTopicIamBindings.
 func (c *FakePubsubTopicIamBindings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(pubsubtopiciambindingsResource, opts))
+		InvokesWatch(testing.NewWatchAction(pubsubtopiciambindingsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a pubsubTopicIamBinding and creates it.  Returns the server's representation of the pubsubTopicIamBinding, and an error, if there is any.
 func (c *FakePubsubTopicIamBindings) Create(pubsubTopicIamBinding *v1alpha1.PubsubTopicIamBinding) (result *v1alpha1.PubsubTopicIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(pubsubtopiciambindingsResource, pubsubTopicIamBinding), &v1alpha1.PubsubTopicIamBinding{})
+		Invokes(testing.NewCreateAction(pubsubtopiciambindingsResource, c.ns, pubsubTopicIamBinding), &v1alpha1.PubsubTopicIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakePubsubTopicIamBindings) Create(pubsubTopicIamBinding *v1alpha1.Pubs
 // Update takes the representation of a pubsubTopicIamBinding and updates it. Returns the server's representation of the pubsubTopicIamBinding, and an error, if there is any.
 func (c *FakePubsubTopicIamBindings) Update(pubsubTopicIamBinding *v1alpha1.PubsubTopicIamBinding) (result *v1alpha1.PubsubTopicIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(pubsubtopiciambindingsResource, pubsubTopicIamBinding), &v1alpha1.PubsubTopicIamBinding{})
+		Invokes(testing.NewUpdateAction(pubsubtopiciambindingsResource, c.ns, pubsubTopicIamBinding), &v1alpha1.PubsubTopicIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakePubsubTopicIamBindings) Update(pubsubTopicIamBinding *v1alpha1.Pubs
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakePubsubTopicIamBindings) UpdateStatus(pubsubTopicIamBinding *v1alpha1.PubsubTopicIamBinding) (*v1alpha1.PubsubTopicIamBinding, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(pubsubtopiciambindingsResource, "status", pubsubTopicIamBinding), &v1alpha1.PubsubTopicIamBinding{})
+		Invokes(testing.NewUpdateSubresourceAction(pubsubtopiciambindingsResource, "status", c.ns, pubsubTopicIamBinding), &v1alpha1.PubsubTopicIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakePubsubTopicIamBindings) UpdateStatus(pubsubTopicIamBinding *v1alpha
 // Delete takes name of the pubsubTopicIamBinding and deletes it. Returns an error if one occurs.
 func (c *FakePubsubTopicIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(pubsubtopiciambindingsResource, name), &v1alpha1.PubsubTopicIamBinding{})
+		Invokes(testing.NewDeleteAction(pubsubtopiciambindingsResource, c.ns, name), &v1alpha1.PubsubTopicIamBinding{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakePubsubTopicIamBindings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(pubsubtopiciambindingsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(pubsubtopiciambindingsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PubsubTopicIamBindingList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakePubsubTopicIamBindings) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched pubsubTopicIamBinding.
 func (c *FakePubsubTopicIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PubsubTopicIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(pubsubtopiciambindingsResource, name, pt, data, subresources...), &v1alpha1.PubsubTopicIamBinding{})
+		Invokes(testing.NewPatchSubresourceAction(pubsubtopiciambindingsResource, c.ns, name, pt, data, subresources...), &v1alpha1.PubsubTopicIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}

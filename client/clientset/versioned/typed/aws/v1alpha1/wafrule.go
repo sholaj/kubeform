@@ -32,7 +32,7 @@ import (
 // WafRulesGetter has a method to return a WafRuleInterface.
 // A group's client should implement this interface.
 type WafRulesGetter interface {
-	WafRules() WafRuleInterface
+	WafRules(namespace string) WafRuleInterface
 }
 
 // WafRuleInterface has methods to work with WafRule resources.
@@ -52,12 +52,14 @@ type WafRuleInterface interface {
 // wafRules implements WafRuleInterface
 type wafRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWafRules returns a WafRules
-func newWafRules(c *AwsV1alpha1Client) *wafRules {
+func newWafRules(c *AwsV1alpha1Client, namespace string) *wafRules {
 	return &wafRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWafRules(c *AwsV1alpha1Client) *wafRules {
 func (c *wafRules) Get(name string, options v1.GetOptions) (result *v1alpha1.WafRule, err error) {
 	result = &v1alpha1.WafRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *wafRules) List(opts v1.ListOptions) (result *v1alpha1.WafRuleList, err 
 	}
 	result = &v1alpha1.WafRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *wafRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *wafRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *wafRules) Create(wafRule *v1alpha1.WafRule) (result *v1alpha1.WafRule, err error) {
 	result = &v1alpha1.WafRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafrules").
 		Body(wafRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *wafRules) Create(wafRule *v1alpha1.WafRule) (result *v1alpha1.WafRule, 
 func (c *wafRules) Update(wafRule *v1alpha1.WafRule) (result *v1alpha1.WafRule, err error) {
 	result = &v1alpha1.WafRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafrules").
 		Name(wafRule.Name).
 		Body(wafRule).
@@ -132,6 +139,7 @@ func (c *wafRules) Update(wafRule *v1alpha1.WafRule) (result *v1alpha1.WafRule, 
 func (c *wafRules) UpdateStatus(wafRule *v1alpha1.WafRule) (result *v1alpha1.WafRule, err error) {
 	result = &v1alpha1.WafRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafrules").
 		Name(wafRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *wafRules) UpdateStatus(wafRule *v1alpha1.WafRule) (result *v1alpha1.Waf
 // Delete takes name of the wafRule and deletes it. Returns an error if one occurs.
 func (c *wafRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *wafRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *wafRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 func (c *wafRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafRule, err error) {
 	result = &v1alpha1.WafRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafrules").
 		SubResource(subresources...).
 		Name(name).

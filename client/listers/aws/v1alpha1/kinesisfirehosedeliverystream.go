@@ -29,8 +29,8 @@ import (
 type KinesisFirehoseDeliveryStreamLister interface {
 	// List lists all KinesisFirehoseDeliveryStreams in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KinesisFirehoseDeliveryStream, err error)
-	// Get retrieves the KinesisFirehoseDeliveryStream from the index for a given name.
-	Get(name string) (*v1alpha1.KinesisFirehoseDeliveryStream, error)
+	// KinesisFirehoseDeliveryStreams returns an object that can list and get KinesisFirehoseDeliveryStreams.
+	KinesisFirehoseDeliveryStreams(namespace string) KinesisFirehoseDeliveryStreamNamespaceLister
 	KinesisFirehoseDeliveryStreamListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *kinesisFirehoseDeliveryStreamLister) List(selector labels.Selector) (re
 	return ret, err
 }
 
-// Get retrieves the KinesisFirehoseDeliveryStream from the index for a given name.
-func (s *kinesisFirehoseDeliveryStreamLister) Get(name string) (*v1alpha1.KinesisFirehoseDeliveryStream, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KinesisFirehoseDeliveryStreams returns an object that can list and get KinesisFirehoseDeliveryStreams.
+func (s *kinesisFirehoseDeliveryStreamLister) KinesisFirehoseDeliveryStreams(namespace string) KinesisFirehoseDeliveryStreamNamespaceLister {
+	return kinesisFirehoseDeliveryStreamNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KinesisFirehoseDeliveryStreamNamespaceLister helps list and get KinesisFirehoseDeliveryStreams.
+type KinesisFirehoseDeliveryStreamNamespaceLister interface {
+	// List lists all KinesisFirehoseDeliveryStreams in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KinesisFirehoseDeliveryStream, err error)
+	// Get retrieves the KinesisFirehoseDeliveryStream from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KinesisFirehoseDeliveryStream, error)
+	KinesisFirehoseDeliveryStreamNamespaceListerExpansion
+}
+
+// kinesisFirehoseDeliveryStreamNamespaceLister implements the KinesisFirehoseDeliveryStreamNamespaceLister
+// interface.
+type kinesisFirehoseDeliveryStreamNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KinesisFirehoseDeliveryStreams in the indexer for a given namespace.
+func (s kinesisFirehoseDeliveryStreamNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KinesisFirehoseDeliveryStream, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KinesisFirehoseDeliveryStream))
+	})
+	return ret, err
+}
+
+// Get retrieves the KinesisFirehoseDeliveryStream from the indexer for a given namespace and name.
+func (s kinesisFirehoseDeliveryStreamNamespaceLister) Get(name string) (*v1alpha1.KinesisFirehoseDeliveryStream, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeCosmosdbAccounts implements CosmosdbAccountInterface
 type FakeCosmosdbAccounts struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var cosmosdbaccountsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "cosmosdbaccounts"}
@@ -40,7 +41,8 @@ var cosmosdbaccountsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com"
 // Get takes name of the cosmosdbAccount, and returns the corresponding cosmosdbAccount object, and an error if there is any.
 func (c *FakeCosmosdbAccounts) Get(name string, options v1.GetOptions) (result *v1alpha1.CosmosdbAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cosmosdbaccountsResource, name), &v1alpha1.CosmosdbAccount{})
+		Invokes(testing.NewGetAction(cosmosdbaccountsResource, c.ns, name), &v1alpha1.CosmosdbAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCosmosdbAccounts) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of CosmosdbAccounts that match those selectors.
 func (c *FakeCosmosdbAccounts) List(opts v1.ListOptions) (result *v1alpha1.CosmosdbAccountList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cosmosdbaccountsResource, cosmosdbaccountsKind, opts), &v1alpha1.CosmosdbAccountList{})
+		Invokes(testing.NewListAction(cosmosdbaccountsResource, cosmosdbaccountsKind, c.ns, opts), &v1alpha1.CosmosdbAccountList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCosmosdbAccounts) List(opts v1.ListOptions) (result *v1alpha1.Cosmo
 // Watch returns a watch.Interface that watches the requested cosmosdbAccounts.
 func (c *FakeCosmosdbAccounts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cosmosdbaccountsResource, opts))
+		InvokesWatch(testing.NewWatchAction(cosmosdbaccountsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cosmosdbAccount and creates it.  Returns the server's representation of the cosmosdbAccount, and an error, if there is any.
 func (c *FakeCosmosdbAccounts) Create(cosmosdbAccount *v1alpha1.CosmosdbAccount) (result *v1alpha1.CosmosdbAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cosmosdbaccountsResource, cosmosdbAccount), &v1alpha1.CosmosdbAccount{})
+		Invokes(testing.NewCreateAction(cosmosdbaccountsResource, c.ns, cosmosdbAccount), &v1alpha1.CosmosdbAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCosmosdbAccounts) Create(cosmosdbAccount *v1alpha1.CosmosdbAccount)
 // Update takes the representation of a cosmosdbAccount and updates it. Returns the server's representation of the cosmosdbAccount, and an error, if there is any.
 func (c *FakeCosmosdbAccounts) Update(cosmosdbAccount *v1alpha1.CosmosdbAccount) (result *v1alpha1.CosmosdbAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cosmosdbaccountsResource, cosmosdbAccount), &v1alpha1.CosmosdbAccount{})
+		Invokes(testing.NewUpdateAction(cosmosdbaccountsResource, c.ns, cosmosdbAccount), &v1alpha1.CosmosdbAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCosmosdbAccounts) Update(cosmosdbAccount *v1alpha1.CosmosdbAccount)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCosmosdbAccounts) UpdateStatus(cosmosdbAccount *v1alpha1.CosmosdbAccount) (*v1alpha1.CosmosdbAccount, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cosmosdbaccountsResource, "status", cosmosdbAccount), &v1alpha1.CosmosdbAccount{})
+		Invokes(testing.NewUpdateSubresourceAction(cosmosdbaccountsResource, "status", c.ns, cosmosdbAccount), &v1alpha1.CosmosdbAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCosmosdbAccounts) UpdateStatus(cosmosdbAccount *v1alpha1.CosmosdbAc
 // Delete takes name of the cosmosdbAccount and deletes it. Returns an error if one occurs.
 func (c *FakeCosmosdbAccounts) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cosmosdbaccountsResource, name), &v1alpha1.CosmosdbAccount{})
+		Invokes(testing.NewDeleteAction(cosmosdbaccountsResource, c.ns, name), &v1alpha1.CosmosdbAccount{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCosmosdbAccounts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cosmosdbaccountsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cosmosdbaccountsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CosmosdbAccountList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCosmosdbAccounts) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched cosmosdbAccount.
 func (c *FakeCosmosdbAccounts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CosmosdbAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cosmosdbaccountsResource, name, pt, data, subresources...), &v1alpha1.CosmosdbAccount{})
+		Invokes(testing.NewPatchSubresourceAction(cosmosdbaccountsResource, c.ns, name, pt, data, subresources...), &v1alpha1.CosmosdbAccount{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,58 +19,59 @@ type Route53Record struct {
 }
 
 type Route53RecordSpecAlias struct {
-	EvaluateTargetHealth bool   `json:"evaluate_target_health"`
-	Name                 string `json:"name"`
-	ZoneId               string `json:"zone_id"`
+	EvaluateTargetHealth bool   `json:"evaluateTargetHealth" tf:"evaluate_target_health"`
+	Name                 string `json:"name" tf:"name"`
+	ZoneID               string `json:"zoneID" tf:"zone_id"`
 }
 
 type Route53RecordSpecFailoverRoutingPolicy struct {
-	Type string `json:"type"`
+	Type string `json:"type" tf:"type"`
 }
 
 type Route53RecordSpecGeolocationRoutingPolicy struct {
 	// +optional
-	Continent string `json:"continent,omitempty"`
+	Continent string `json:"continent,omitempty" tf:"continent,omitempty"`
 	// +optional
-	Country string `json:"country,omitempty"`
+	Country string `json:"country,omitempty" tf:"country,omitempty"`
 	// +optional
-	Subdivision string `json:"subdivision,omitempty"`
+	Subdivision string `json:"subdivision,omitempty" tf:"subdivision,omitempty"`
 }
 
 type Route53RecordSpecLatencyRoutingPolicy struct {
-	Region string `json:"region"`
+	Region string `json:"region" tf:"region"`
 }
 
 type Route53RecordSpecWeightedRoutingPolicy struct {
-	Weight int `json:"weight"`
+	Weight int `json:"weight" tf:"weight"`
 }
 
 type Route53RecordSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Alias *[]Route53RecordSpec `json:"alias,omitempty"`
+	Alias []Route53RecordSpecAlias `json:"alias,omitempty" tf:"alias,omitempty"`
 	// +optional
-	FailoverRoutingPolicy *[]Route53RecordSpec `json:"failover_routing_policy,omitempty"`
+	FailoverRoutingPolicy []Route53RecordSpecFailoverRoutingPolicy `json:"failoverRoutingPolicy,omitempty" tf:"failover_routing_policy,omitempty"`
 	// +optional
-	GeolocationRoutingPolicy *[]Route53RecordSpec `json:"geolocation_routing_policy,omitempty"`
+	GeolocationRoutingPolicy []Route53RecordSpecGeolocationRoutingPolicy `json:"geolocationRoutingPolicy,omitempty" tf:"geolocation_routing_policy,omitempty"`
 	// +optional
-	HealthCheckId string `json:"health_check_id,omitempty"`
+	HealthCheckID string `json:"healthCheckID,omitempty" tf:"health_check_id,omitempty"`
 	// +optional
-	LatencyRoutingPolicy *[]Route53RecordSpec `json:"latency_routing_policy,omitempty"`
+	LatencyRoutingPolicy []Route53RecordSpecLatencyRoutingPolicy `json:"latencyRoutingPolicy,omitempty" tf:"latency_routing_policy,omitempty"`
 	// +optional
-	MultivalueAnswerRoutingPolicy bool   `json:"multivalue_answer_routing_policy,omitempty"`
-	Name                          string `json:"name"`
+	MultivalueAnswerRoutingPolicy bool   `json:"multivalueAnswerRoutingPolicy,omitempty" tf:"multivalue_answer_routing_policy,omitempty"`
+	Name                          string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Records []string `json:"records,omitempty"`
+	Records []string `json:"records,omitempty" tf:"records,omitempty"`
 	// +optional
-	SetIdentifier string `json:"set_identifier,omitempty"`
+	SetIdentifier string `json:"setIdentifier,omitempty" tf:"set_identifier,omitempty"`
 	// +optional
-	Ttl  int    `json:"ttl,omitempty"`
-	Type string `json:"type"`
+	Ttl  int    `json:"ttl,omitempty" tf:"ttl,omitempty"`
+	Type string `json:"type" tf:"type"`
 	// +optional
-	WeightedRoutingPolicy *[]Route53RecordSpec `json:"weighted_routing_policy,omitempty"`
-	ZoneId                string               `json:"zone_id"`
+	WeightedRoutingPolicy []Route53RecordSpecWeightedRoutingPolicy `json:"weightedRoutingPolicy,omitempty" tf:"weighted_routing_policy,omitempty"`
+	ZoneID                string                                   `json:"zoneID" tf:"zone_id"`
+	ProviderRef           core.LocalObjectReference                `json:"providerRef" tf:"-"`
 }
 
 type Route53RecordStatus struct {
@@ -78,7 +79,9 @@ type Route53RecordStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

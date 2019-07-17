@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,25 +20,26 @@ type DocdbCluster struct {
 
 type DocdbClusterSpec struct {
 	// +optional
-	BackupRetentionPeriod int `json:"backup_retention_period,omitempty"`
+	BackupRetentionPeriod int `json:"backupRetentionPeriod,omitempty" tf:"backup_retention_period,omitempty"`
 	// +optional
-	EnabledCloudwatchLogsExports []string `json:"enabled_cloudwatch_logs_exports,omitempty"`
+	EnabledCloudwatchLogsExports []string `json:"enabledCloudwatchLogsExports,omitempty" tf:"enabled_cloudwatch_logs_exports,omitempty"`
 	// +optional
-	Engine string `json:"engine,omitempty"`
+	Engine string `json:"engine,omitempty" tf:"engine,omitempty"`
 	// +optional
-	FinalSnapshotIdentifier string `json:"final_snapshot_identifier,omitempty"`
+	FinalSnapshotIdentifier string `json:"finalSnapshotIdentifier,omitempty" tf:"final_snapshot_identifier,omitempty"`
 	// +optional
-	MasterPassword string `json:"master_password,omitempty"`
+	MasterPassword string `json:"masterPassword,omitempty" tf:"master_password,omitempty"`
 	// +optional
-	Port int `json:"port,omitempty"`
+	Port int `json:"port,omitempty" tf:"port,omitempty"`
 	// +optional
-	SkipFinalSnapshot bool `json:"skip_final_snapshot,omitempty"`
+	SkipFinalSnapshot bool `json:"skipFinalSnapshot,omitempty" tf:"skip_final_snapshot,omitempty"`
 	// +optional
-	SnapshotIdentifier string `json:"snapshot_identifier,omitempty"`
+	SnapshotIdentifier string `json:"snapshotIdentifier,omitempty" tf:"snapshot_identifier,omitempty"`
 	// +optional
-	StorageEncrypted bool `json:"storage_encrypted,omitempty"`
+	StorageEncrypted bool `json:"storageEncrypted,omitempty" tf:"storage_encrypted,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DocdbClusterStatus struct {
@@ -46,7 +47,9 @@ type DocdbClusterStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

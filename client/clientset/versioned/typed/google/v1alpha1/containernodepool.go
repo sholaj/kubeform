@@ -32,7 +32,7 @@ import (
 // ContainerNodePoolsGetter has a method to return a ContainerNodePoolInterface.
 // A group's client should implement this interface.
 type ContainerNodePoolsGetter interface {
-	ContainerNodePools() ContainerNodePoolInterface
+	ContainerNodePools(namespace string) ContainerNodePoolInterface
 }
 
 // ContainerNodePoolInterface has methods to work with ContainerNodePool resources.
@@ -52,12 +52,14 @@ type ContainerNodePoolInterface interface {
 // containerNodePools implements ContainerNodePoolInterface
 type containerNodePools struct {
 	client rest.Interface
+	ns     string
 }
 
 // newContainerNodePools returns a ContainerNodePools
-func newContainerNodePools(c *GoogleV1alpha1Client) *containerNodePools {
+func newContainerNodePools(c *GoogleV1alpha1Client, namespace string) *containerNodePools {
 	return &containerNodePools{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newContainerNodePools(c *GoogleV1alpha1Client) *containerNodePools {
 func (c *containerNodePools) Get(name string, options v1.GetOptions) (result *v1alpha1.ContainerNodePool, err error) {
 	result = &v1alpha1.ContainerNodePool{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("containernodepools").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *containerNodePools) List(opts v1.ListOptions) (result *v1alpha1.Contain
 	}
 	result = &v1alpha1.ContainerNodePoolList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("containernodepools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *containerNodePools) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("containernodepools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *containerNodePools) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *containerNodePools) Create(containerNodePool *v1alpha1.ContainerNodePool) (result *v1alpha1.ContainerNodePool, err error) {
 	result = &v1alpha1.ContainerNodePool{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("containernodepools").
 		Body(containerNodePool).
 		Do().
@@ -118,6 +124,7 @@ func (c *containerNodePools) Create(containerNodePool *v1alpha1.ContainerNodePoo
 func (c *containerNodePools) Update(containerNodePool *v1alpha1.ContainerNodePool) (result *v1alpha1.ContainerNodePool, err error) {
 	result = &v1alpha1.ContainerNodePool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("containernodepools").
 		Name(containerNodePool.Name).
 		Body(containerNodePool).
@@ -132,6 +139,7 @@ func (c *containerNodePools) Update(containerNodePool *v1alpha1.ContainerNodePoo
 func (c *containerNodePools) UpdateStatus(containerNodePool *v1alpha1.ContainerNodePool) (result *v1alpha1.ContainerNodePool, err error) {
 	result = &v1alpha1.ContainerNodePool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("containernodepools").
 		Name(containerNodePool.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *containerNodePools) UpdateStatus(containerNodePool *v1alpha1.ContainerN
 // Delete takes name of the containerNodePool and deletes it. Returns an error if one occurs.
 func (c *containerNodePools) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("containernodepools").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *containerNodePools) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("containernodepools").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *containerNodePools) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *containerNodePools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ContainerNodePool, err error) {
 	result = &v1alpha1.ContainerNodePool{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("containernodepools").
 		SubResource(subresources...).
 		Name(name).

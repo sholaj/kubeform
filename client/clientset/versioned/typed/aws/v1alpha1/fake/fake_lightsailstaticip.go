@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// FakeLightsailStaticIps implements LightsailStaticIpInterface
-type FakeLightsailStaticIps struct {
+// FakeLightsailStaticIPs implements LightsailStaticIPInterface
+type FakeLightsailStaticIPs struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var lightsailstaticipsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "lightsailstaticips"}
 
-var lightsailstaticipsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "LightsailStaticIp"}
+var lightsailstaticipsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "LightsailStaticIP"}
 
-// Get takes name of the lightsailStaticIp, and returns the corresponding lightsailStaticIp object, and an error if there is any.
-func (c *FakeLightsailStaticIps) Get(name string, options v1.GetOptions) (result *v1alpha1.LightsailStaticIp, err error) {
+// Get takes name of the lightsailStaticIP, and returns the corresponding lightsailStaticIP object, and an error if there is any.
+func (c *FakeLightsailStaticIPs) Get(name string, options v1.GetOptions) (result *v1alpha1.LightsailStaticIP, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(lightsailstaticipsResource, name), &v1alpha1.LightsailStaticIp{})
+		Invokes(testing.NewGetAction(lightsailstaticipsResource, c.ns, name), &v1alpha1.LightsailStaticIP{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LightsailStaticIp), err
+	return obj.(*v1alpha1.LightsailStaticIP), err
 }
 
-// List takes label and field selectors, and returns the list of LightsailStaticIps that match those selectors.
-func (c *FakeLightsailStaticIps) List(opts v1.ListOptions) (result *v1alpha1.LightsailStaticIpList, err error) {
+// List takes label and field selectors, and returns the list of LightsailStaticIPs that match those selectors.
+func (c *FakeLightsailStaticIPs) List(opts v1.ListOptions) (result *v1alpha1.LightsailStaticIPList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(lightsailstaticipsResource, lightsailstaticipsKind, opts), &v1alpha1.LightsailStaticIpList{})
+		Invokes(testing.NewListAction(lightsailstaticipsResource, lightsailstaticipsKind, c.ns, opts), &v1alpha1.LightsailStaticIPList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeLightsailStaticIps) List(opts v1.ListOptions) (result *v1alpha1.Lig
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.LightsailStaticIpList{ListMeta: obj.(*v1alpha1.LightsailStaticIpList).ListMeta}
-	for _, item := range obj.(*v1alpha1.LightsailStaticIpList).Items {
+	list := &v1alpha1.LightsailStaticIPList{ListMeta: obj.(*v1alpha1.LightsailStaticIPList).ListMeta}
+	for _, item := range obj.(*v1alpha1.LightsailStaticIPList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeLightsailStaticIps) List(opts v1.ListOptions) (result *v1alpha1.Lig
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested lightsailStaticIps.
-func (c *FakeLightsailStaticIps) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested lightsailStaticIPs.
+func (c *FakeLightsailStaticIPs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(lightsailstaticipsResource, opts))
+		InvokesWatch(testing.NewWatchAction(lightsailstaticipsResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a lightsailStaticIp and creates it.  Returns the server's representation of the lightsailStaticIp, and an error, if there is any.
-func (c *FakeLightsailStaticIps) Create(lightsailStaticIp *v1alpha1.LightsailStaticIp) (result *v1alpha1.LightsailStaticIp, err error) {
+// Create takes the representation of a lightsailStaticIP and creates it.  Returns the server's representation of the lightsailStaticIP, and an error, if there is any.
+func (c *FakeLightsailStaticIPs) Create(lightsailStaticIP *v1alpha1.LightsailStaticIP) (result *v1alpha1.LightsailStaticIP, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(lightsailstaticipsResource, lightsailStaticIp), &v1alpha1.LightsailStaticIp{})
+		Invokes(testing.NewCreateAction(lightsailstaticipsResource, c.ns, lightsailStaticIP), &v1alpha1.LightsailStaticIP{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LightsailStaticIp), err
+	return obj.(*v1alpha1.LightsailStaticIP), err
 }
 
-// Update takes the representation of a lightsailStaticIp and updates it. Returns the server's representation of the lightsailStaticIp, and an error, if there is any.
-func (c *FakeLightsailStaticIps) Update(lightsailStaticIp *v1alpha1.LightsailStaticIp) (result *v1alpha1.LightsailStaticIp, err error) {
+// Update takes the representation of a lightsailStaticIP and updates it. Returns the server's representation of the lightsailStaticIP, and an error, if there is any.
+func (c *FakeLightsailStaticIPs) Update(lightsailStaticIP *v1alpha1.LightsailStaticIP) (result *v1alpha1.LightsailStaticIP, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(lightsailstaticipsResource, lightsailStaticIp), &v1alpha1.LightsailStaticIp{})
+		Invokes(testing.NewUpdateAction(lightsailstaticipsResource, c.ns, lightsailStaticIP), &v1alpha1.LightsailStaticIP{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LightsailStaticIp), err
+	return obj.(*v1alpha1.LightsailStaticIP), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeLightsailStaticIps) UpdateStatus(lightsailStaticIp *v1alpha1.LightsailStaticIp) (*v1alpha1.LightsailStaticIp, error) {
+func (c *FakeLightsailStaticIPs) UpdateStatus(lightsailStaticIP *v1alpha1.LightsailStaticIP) (*v1alpha1.LightsailStaticIP, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(lightsailstaticipsResource, "status", lightsailStaticIp), &v1alpha1.LightsailStaticIp{})
+		Invokes(testing.NewUpdateSubresourceAction(lightsailstaticipsResource, "status", c.ns, lightsailStaticIP), &v1alpha1.LightsailStaticIP{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LightsailStaticIp), err
+	return obj.(*v1alpha1.LightsailStaticIP), err
 }
 
-// Delete takes name of the lightsailStaticIp and deletes it. Returns an error if one occurs.
-func (c *FakeLightsailStaticIps) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the lightsailStaticIP and deletes it. Returns an error if one occurs.
+func (c *FakeLightsailStaticIPs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(lightsailstaticipsResource, name), &v1alpha1.LightsailStaticIp{})
+		Invokes(testing.NewDeleteAction(lightsailstaticipsResource, c.ns, name), &v1alpha1.LightsailStaticIP{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeLightsailStaticIps) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(lightsailstaticipsResource, listOptions)
+func (c *FakeLightsailStaticIPs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(lightsailstaticipsResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.LightsailStaticIpList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.LightsailStaticIPList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched lightsailStaticIp.
-func (c *FakeLightsailStaticIps) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LightsailStaticIp, err error) {
+// Patch applies the patch and returns the patched lightsailStaticIP.
+func (c *FakeLightsailStaticIPs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LightsailStaticIP, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(lightsailstaticipsResource, name, pt, data, subresources...), &v1alpha1.LightsailStaticIp{})
+		Invokes(testing.NewPatchSubresourceAction(lightsailstaticipsResource, c.ns, name, pt, data, subresources...), &v1alpha1.LightsailStaticIP{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LightsailStaticIp), err
+	return obj.(*v1alpha1.LightsailStaticIP), err
 }

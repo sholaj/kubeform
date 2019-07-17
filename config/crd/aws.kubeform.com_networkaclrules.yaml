@@ -8,7 +8,7 @@ metadata:
 spec:
   group: aws.kubeform.com
   names:
-    kind: NetworkAclRule
+    kind: NetworkACLRule
     plural: networkaclrules
   scope: ""
   validation:
@@ -397,33 +397,43 @@ spec:
           type: object
         spec:
           properties:
-            cidr_block:
+            cidrBlock:
               type: string
             egress:
               type: boolean
-            from_port:
+            fromPort:
               type: integer
-            icmp_code:
+            icmpCode:
               type: string
-            icmp_type:
+            icmpType:
               type: string
-            ipv6_cidr_block:
+            ipv6CIDRBlock:
               type: string
-            network_acl_id:
+            networkACLID:
               type: string
             protocol:
               type: string
-            rule_action:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            ruleAction:
               type: string
-            rule_number:
+            ruleNumber:
               type: integer
-            to_port:
+            toPort:
               type: integer
           required:
-          - network_acl_id
+          - networkACLID
           - protocol
-          - rule_action
-          - rule_number
+          - providerRef
+          - ruleAction
+          - ruleNumber
           type: object
         status:
           properties:
@@ -434,6 +444,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

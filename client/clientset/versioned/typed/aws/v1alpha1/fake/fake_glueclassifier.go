@@ -31,6 +31,7 @@ import (
 // FakeGlueClassifiers implements GlueClassifierInterface
 type FakeGlueClassifiers struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var glueclassifiersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "glueclassifiers"}
@@ -40,7 +41,8 @@ var glueclassifiersKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ver
 // Get takes name of the glueClassifier, and returns the corresponding glueClassifier object, and an error if there is any.
 func (c *FakeGlueClassifiers) Get(name string, options v1.GetOptions) (result *v1alpha1.GlueClassifier, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(glueclassifiersResource, name), &v1alpha1.GlueClassifier{})
+		Invokes(testing.NewGetAction(glueclassifiersResource, c.ns, name), &v1alpha1.GlueClassifier{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeGlueClassifiers) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of GlueClassifiers that match those selectors.
 func (c *FakeGlueClassifiers) List(opts v1.ListOptions) (result *v1alpha1.GlueClassifierList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(glueclassifiersResource, glueclassifiersKind, opts), &v1alpha1.GlueClassifierList{})
+		Invokes(testing.NewListAction(glueclassifiersResource, glueclassifiersKind, c.ns, opts), &v1alpha1.GlueClassifierList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeGlueClassifiers) List(opts v1.ListOptions) (result *v1alpha1.GlueCl
 // Watch returns a watch.Interface that watches the requested glueClassifiers.
 func (c *FakeGlueClassifiers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(glueclassifiersResource, opts))
+		InvokesWatch(testing.NewWatchAction(glueclassifiersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a glueClassifier and creates it.  Returns the server's representation of the glueClassifier, and an error, if there is any.
 func (c *FakeGlueClassifiers) Create(glueClassifier *v1alpha1.GlueClassifier) (result *v1alpha1.GlueClassifier, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(glueclassifiersResource, glueClassifier), &v1alpha1.GlueClassifier{})
+		Invokes(testing.NewCreateAction(glueclassifiersResource, c.ns, glueClassifier), &v1alpha1.GlueClassifier{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeGlueClassifiers) Create(glueClassifier *v1alpha1.GlueClassifier) (r
 // Update takes the representation of a glueClassifier and updates it. Returns the server's representation of the glueClassifier, and an error, if there is any.
 func (c *FakeGlueClassifiers) Update(glueClassifier *v1alpha1.GlueClassifier) (result *v1alpha1.GlueClassifier, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(glueclassifiersResource, glueClassifier), &v1alpha1.GlueClassifier{})
+		Invokes(testing.NewUpdateAction(glueclassifiersResource, c.ns, glueClassifier), &v1alpha1.GlueClassifier{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeGlueClassifiers) Update(glueClassifier *v1alpha1.GlueClassifier) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeGlueClassifiers) UpdateStatus(glueClassifier *v1alpha1.GlueClassifier) (*v1alpha1.GlueClassifier, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(glueclassifiersResource, "status", glueClassifier), &v1alpha1.GlueClassifier{})
+		Invokes(testing.NewUpdateSubresourceAction(glueclassifiersResource, "status", c.ns, glueClassifier), &v1alpha1.GlueClassifier{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeGlueClassifiers) UpdateStatus(glueClassifier *v1alpha1.GlueClassifi
 // Delete takes name of the glueClassifier and deletes it. Returns an error if one occurs.
 func (c *FakeGlueClassifiers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(glueclassifiersResource, name), &v1alpha1.GlueClassifier{})
+		Invokes(testing.NewDeleteAction(glueclassifiersResource, c.ns, name), &v1alpha1.GlueClassifier{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeGlueClassifiers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(glueclassifiersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(glueclassifiersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.GlueClassifierList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeGlueClassifiers) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched glueClassifier.
 func (c *FakeGlueClassifiers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GlueClassifier, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(glueclassifiersResource, name, pt, data, subresources...), &v1alpha1.GlueClassifier{})
+		Invokes(testing.NewPatchSubresourceAction(glueclassifiersResource, c.ns, name, pt, data, subresources...), &v1alpha1.GlueClassifier{})
+
 	if obj == nil {
 		return nil, err
 	}

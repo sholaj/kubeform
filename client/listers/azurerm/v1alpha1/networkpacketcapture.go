@@ -29,8 +29,8 @@ import (
 type NetworkPacketCaptureLister interface {
 	// List lists all NetworkPacketCaptures in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NetworkPacketCapture, err error)
-	// Get retrieves the NetworkPacketCapture from the index for a given name.
-	Get(name string) (*v1alpha1.NetworkPacketCapture, error)
+	// NetworkPacketCaptures returns an object that can list and get NetworkPacketCaptures.
+	NetworkPacketCaptures(namespace string) NetworkPacketCaptureNamespaceLister
 	NetworkPacketCaptureListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *networkPacketCaptureLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the NetworkPacketCapture from the index for a given name.
-func (s *networkPacketCaptureLister) Get(name string) (*v1alpha1.NetworkPacketCapture, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NetworkPacketCaptures returns an object that can list and get NetworkPacketCaptures.
+func (s *networkPacketCaptureLister) NetworkPacketCaptures(namespace string) NetworkPacketCaptureNamespaceLister {
+	return networkPacketCaptureNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NetworkPacketCaptureNamespaceLister helps list and get NetworkPacketCaptures.
+type NetworkPacketCaptureNamespaceLister interface {
+	// List lists all NetworkPacketCaptures in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NetworkPacketCapture, err error)
+	// Get retrieves the NetworkPacketCapture from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NetworkPacketCapture, error)
+	NetworkPacketCaptureNamespaceListerExpansion
+}
+
+// networkPacketCaptureNamespaceLister implements the NetworkPacketCaptureNamespaceLister
+// interface.
+type networkPacketCaptureNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NetworkPacketCaptures in the indexer for a given namespace.
+func (s networkPacketCaptureNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NetworkPacketCapture, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NetworkPacketCapture))
+	})
+	return ret, err
+}
+
+// Get retrieves the NetworkPacketCapture from the indexer for a given namespace and name.
+func (s networkPacketCaptureNamespaceLister) Get(name string) (*v1alpha1.NetworkPacketCapture, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

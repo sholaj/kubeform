@@ -41,32 +41,33 @@ type EbsDefaultKmsKeyInformer interface {
 type ebsDefaultKmsKeyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewEbsDefaultKmsKeyInformer constructs a new informer for EbsDefaultKmsKey type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewEbsDefaultKmsKeyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredEbsDefaultKmsKeyInformer(client, resyncPeriod, indexers, nil)
+func NewEbsDefaultKmsKeyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredEbsDefaultKmsKeyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredEbsDefaultKmsKeyInformer constructs a new informer for EbsDefaultKmsKey type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredEbsDefaultKmsKeyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredEbsDefaultKmsKeyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().EbsDefaultKmsKeys().List(options)
+				return client.AwsV1alpha1().EbsDefaultKmsKeys(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().EbsDefaultKmsKeys().Watch(options)
+				return client.AwsV1alpha1().EbsDefaultKmsKeys(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.EbsDefaultKmsKey{},
@@ -76,7 +77,7 @@ func NewFilteredEbsDefaultKmsKeyInformer(client versioned.Interface, resyncPerio
 }
 
 func (f *ebsDefaultKmsKeyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredEbsDefaultKmsKeyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredEbsDefaultKmsKeyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *ebsDefaultKmsKeyInformer) Informer() cache.SharedIndexInformer {

@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// CosmosdbSqlDatabasesGetter has a method to return a CosmosdbSqlDatabaseInterface.
+// CosmosdbSQLDatabasesGetter has a method to return a CosmosdbSQLDatabaseInterface.
 // A group's client should implement this interface.
-type CosmosdbSqlDatabasesGetter interface {
-	CosmosdbSqlDatabases() CosmosdbSqlDatabaseInterface
+type CosmosdbSQLDatabasesGetter interface {
+	CosmosdbSQLDatabases(namespace string) CosmosdbSQLDatabaseInterface
 }
 
-// CosmosdbSqlDatabaseInterface has methods to work with CosmosdbSqlDatabase resources.
-type CosmosdbSqlDatabaseInterface interface {
-	Create(*v1alpha1.CosmosdbSqlDatabase) (*v1alpha1.CosmosdbSqlDatabase, error)
-	Update(*v1alpha1.CosmosdbSqlDatabase) (*v1alpha1.CosmosdbSqlDatabase, error)
-	UpdateStatus(*v1alpha1.CosmosdbSqlDatabase) (*v1alpha1.CosmosdbSqlDatabase, error)
+// CosmosdbSQLDatabaseInterface has methods to work with CosmosdbSQLDatabase resources.
+type CosmosdbSQLDatabaseInterface interface {
+	Create(*v1alpha1.CosmosdbSQLDatabase) (*v1alpha1.CosmosdbSQLDatabase, error)
+	Update(*v1alpha1.CosmosdbSQLDatabase) (*v1alpha1.CosmosdbSQLDatabase, error)
+	UpdateStatus(*v1alpha1.CosmosdbSQLDatabase) (*v1alpha1.CosmosdbSQLDatabase, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.CosmosdbSqlDatabase, error)
-	List(opts v1.ListOptions) (*v1alpha1.CosmosdbSqlDatabaseList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.CosmosdbSQLDatabase, error)
+	List(opts v1.ListOptions) (*v1alpha1.CosmosdbSQLDatabaseList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CosmosdbSqlDatabase, err error)
-	CosmosdbSqlDatabaseExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CosmosdbSQLDatabase, err error)
+	CosmosdbSQLDatabaseExpansion
 }
 
-// cosmosdbSqlDatabases implements CosmosdbSqlDatabaseInterface
-type cosmosdbSqlDatabases struct {
+// cosmosdbSQLDatabases implements CosmosdbSQLDatabaseInterface
+type cosmosdbSQLDatabases struct {
 	client rest.Interface
+	ns     string
 }
 
-// newCosmosdbSqlDatabases returns a CosmosdbSqlDatabases
-func newCosmosdbSqlDatabases(c *AzurermV1alpha1Client) *cosmosdbSqlDatabases {
-	return &cosmosdbSqlDatabases{
+// newCosmosdbSQLDatabases returns a CosmosdbSQLDatabases
+func newCosmosdbSQLDatabases(c *AzurermV1alpha1Client, namespace string) *cosmosdbSQLDatabases {
+	return &cosmosdbSQLDatabases{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the cosmosdbSqlDatabase, and returns the corresponding cosmosdbSqlDatabase object, and an error if there is any.
-func (c *cosmosdbSqlDatabases) Get(name string, options v1.GetOptions) (result *v1alpha1.CosmosdbSqlDatabase, err error) {
-	result = &v1alpha1.CosmosdbSqlDatabase{}
+// Get takes name of the cosmosdbSQLDatabase, and returns the corresponding cosmosdbSQLDatabase object, and an error if there is any.
+func (c *cosmosdbSQLDatabases) Get(name string, options v1.GetOptions) (result *v1alpha1.CosmosdbSQLDatabase, err error) {
+	result = &v1alpha1.CosmosdbSQLDatabase{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cosmosdbsqldatabases").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *cosmosdbSqlDatabases) Get(name string, options v1.GetOptions) (result *
 	return
 }
 
-// List takes label and field selectors, and returns the list of CosmosdbSqlDatabases that match those selectors.
-func (c *cosmosdbSqlDatabases) List(opts v1.ListOptions) (result *v1alpha1.CosmosdbSqlDatabaseList, err error) {
+// List takes label and field selectors, and returns the list of CosmosdbSQLDatabases that match those selectors.
+func (c *cosmosdbSQLDatabases) List(opts v1.ListOptions) (result *v1alpha1.CosmosdbSQLDatabaseList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.CosmosdbSqlDatabaseList{}
+	result = &v1alpha1.CosmosdbSQLDatabaseList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cosmosdbsqldatabases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *cosmosdbSqlDatabases) List(opts v1.ListOptions) (result *v1alpha1.Cosmo
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested cosmosdbSqlDatabases.
-func (c *cosmosdbSqlDatabases) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested cosmosdbSQLDatabases.
+func (c *cosmosdbSQLDatabases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cosmosdbsqldatabases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a cosmosdbSqlDatabase and creates it.  Returns the server's representation of the cosmosdbSqlDatabase, and an error, if there is any.
-func (c *cosmosdbSqlDatabases) Create(cosmosdbSqlDatabase *v1alpha1.CosmosdbSqlDatabase) (result *v1alpha1.CosmosdbSqlDatabase, err error) {
-	result = &v1alpha1.CosmosdbSqlDatabase{}
+// Create takes the representation of a cosmosdbSQLDatabase and creates it.  Returns the server's representation of the cosmosdbSQLDatabase, and an error, if there is any.
+func (c *cosmosdbSQLDatabases) Create(cosmosdbSQLDatabase *v1alpha1.CosmosdbSQLDatabase) (result *v1alpha1.CosmosdbSQLDatabase, err error) {
+	result = &v1alpha1.CosmosdbSQLDatabase{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cosmosdbsqldatabases").
-		Body(cosmosdbSqlDatabase).
+		Body(cosmosdbSQLDatabase).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a cosmosdbSqlDatabase and updates it. Returns the server's representation of the cosmosdbSqlDatabase, and an error, if there is any.
-func (c *cosmosdbSqlDatabases) Update(cosmosdbSqlDatabase *v1alpha1.CosmosdbSqlDatabase) (result *v1alpha1.CosmosdbSqlDatabase, err error) {
-	result = &v1alpha1.CosmosdbSqlDatabase{}
+// Update takes the representation of a cosmosdbSQLDatabase and updates it. Returns the server's representation of the cosmosdbSQLDatabase, and an error, if there is any.
+func (c *cosmosdbSQLDatabases) Update(cosmosdbSQLDatabase *v1alpha1.CosmosdbSQLDatabase) (result *v1alpha1.CosmosdbSQLDatabase, err error) {
+	result = &v1alpha1.CosmosdbSQLDatabase{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cosmosdbsqldatabases").
-		Name(cosmosdbSqlDatabase.Name).
-		Body(cosmosdbSqlDatabase).
+		Name(cosmosdbSQLDatabase.Name).
+		Body(cosmosdbSQLDatabase).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *cosmosdbSqlDatabases) Update(cosmosdbSqlDatabase *v1alpha1.CosmosdbSqlD
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *cosmosdbSqlDatabases) UpdateStatus(cosmosdbSqlDatabase *v1alpha1.CosmosdbSqlDatabase) (result *v1alpha1.CosmosdbSqlDatabase, err error) {
-	result = &v1alpha1.CosmosdbSqlDatabase{}
+func (c *cosmosdbSQLDatabases) UpdateStatus(cosmosdbSQLDatabase *v1alpha1.CosmosdbSQLDatabase) (result *v1alpha1.CosmosdbSQLDatabase, err error) {
+	result = &v1alpha1.CosmosdbSQLDatabase{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cosmosdbsqldatabases").
-		Name(cosmosdbSqlDatabase.Name).
+		Name(cosmosdbSQLDatabase.Name).
 		SubResource("status").
-		Body(cosmosdbSqlDatabase).
+		Body(cosmosdbSQLDatabase).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the cosmosdbSqlDatabase and deletes it. Returns an error if one occurs.
-func (c *cosmosdbSqlDatabases) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the cosmosdbSQLDatabase and deletes it. Returns an error if one occurs.
+func (c *cosmosdbSQLDatabases) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cosmosdbsqldatabases").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *cosmosdbSqlDatabases) Delete(name string, options *v1.DeleteOptions) er
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *cosmosdbSqlDatabases) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *cosmosdbSQLDatabases) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cosmosdbsqldatabases").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *cosmosdbSqlDatabases) DeleteCollection(options *v1.DeleteOptions, listO
 		Error()
 }
 
-// Patch applies the patch and returns the patched cosmosdbSqlDatabase.
-func (c *cosmosdbSqlDatabases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CosmosdbSqlDatabase, err error) {
-	result = &v1alpha1.CosmosdbSqlDatabase{}
+// Patch applies the patch and returns the patched cosmosdbSQLDatabase.
+func (c *cosmosdbSQLDatabases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CosmosdbSQLDatabase, err error) {
+	result = &v1alpha1.CosmosdbSQLDatabase{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cosmosdbsqldatabases").
 		SubResource(subresources...).
 		Name(name).

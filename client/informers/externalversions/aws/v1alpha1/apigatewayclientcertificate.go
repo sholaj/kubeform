@@ -41,32 +41,33 @@ type ApiGatewayClientCertificateInformer interface {
 type apiGatewayClientCertificateInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewApiGatewayClientCertificateInformer constructs a new informer for ApiGatewayClientCertificate type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewApiGatewayClientCertificateInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredApiGatewayClientCertificateInformer(client, resyncPeriod, indexers, nil)
+func NewApiGatewayClientCertificateInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredApiGatewayClientCertificateInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredApiGatewayClientCertificateInformer constructs a new informer for ApiGatewayClientCertificate type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredApiGatewayClientCertificateInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredApiGatewayClientCertificateInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ApiGatewayClientCertificates().List(options)
+				return client.AwsV1alpha1().ApiGatewayClientCertificates(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ApiGatewayClientCertificates().Watch(options)
+				return client.AwsV1alpha1().ApiGatewayClientCertificates(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.ApiGatewayClientCertificate{},
@@ -76,7 +77,7 @@ func NewFilteredApiGatewayClientCertificateInformer(client versioned.Interface, 
 }
 
 func (f *apiGatewayClientCertificateInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredApiGatewayClientCertificateInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredApiGatewayClientCertificateInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *apiGatewayClientCertificateInformer) Informer() cache.SharedIndexInformer {

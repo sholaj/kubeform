@@ -29,8 +29,8 @@ import (
 type AppmeshRouteLister interface {
 	// List lists all AppmeshRoutes in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AppmeshRoute, err error)
-	// Get retrieves the AppmeshRoute from the index for a given name.
-	Get(name string) (*v1alpha1.AppmeshRoute, error)
+	// AppmeshRoutes returns an object that can list and get AppmeshRoutes.
+	AppmeshRoutes(namespace string) AppmeshRouteNamespaceLister
 	AppmeshRouteListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *appmeshRouteLister) List(selector labels.Selector) (ret []*v1alpha1.App
 	return ret, err
 }
 
-// Get retrieves the AppmeshRoute from the index for a given name.
-func (s *appmeshRouteLister) Get(name string) (*v1alpha1.AppmeshRoute, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AppmeshRoutes returns an object that can list and get AppmeshRoutes.
+func (s *appmeshRouteLister) AppmeshRoutes(namespace string) AppmeshRouteNamespaceLister {
+	return appmeshRouteNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AppmeshRouteNamespaceLister helps list and get AppmeshRoutes.
+type AppmeshRouteNamespaceLister interface {
+	// List lists all AppmeshRoutes in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AppmeshRoute, err error)
+	// Get retrieves the AppmeshRoute from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AppmeshRoute, error)
+	AppmeshRouteNamespaceListerExpansion
+}
+
+// appmeshRouteNamespaceLister implements the AppmeshRouteNamespaceLister
+// interface.
+type appmeshRouteNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AppmeshRoutes in the indexer for a given namespace.
+func (s appmeshRouteNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AppmeshRoute, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AppmeshRoute))
+	})
+	return ret, err
+}
+
+// Get retrieves the AppmeshRoute from the indexer for a given namespace and name.
+func (s appmeshRouteNamespaceLister) Get(name string) (*v1alpha1.AppmeshRoute, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

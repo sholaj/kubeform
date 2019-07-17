@@ -32,7 +32,7 @@ import (
 // TransferUsersGetter has a method to return a TransferUserInterface.
 // A group's client should implement this interface.
 type TransferUsersGetter interface {
-	TransferUsers() TransferUserInterface
+	TransferUsers(namespace string) TransferUserInterface
 }
 
 // TransferUserInterface has methods to work with TransferUser resources.
@@ -52,12 +52,14 @@ type TransferUserInterface interface {
 // transferUsers implements TransferUserInterface
 type transferUsers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newTransferUsers returns a TransferUsers
-func newTransferUsers(c *AwsV1alpha1Client) *transferUsers {
+func newTransferUsers(c *AwsV1alpha1Client, namespace string) *transferUsers {
 	return &transferUsers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newTransferUsers(c *AwsV1alpha1Client) *transferUsers {
 func (c *transferUsers) Get(name string, options v1.GetOptions) (result *v1alpha1.TransferUser, err error) {
 	result = &v1alpha1.TransferUser{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("transferusers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *transferUsers) List(opts v1.ListOptions) (result *v1alpha1.TransferUser
 	}
 	result = &v1alpha1.TransferUserList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("transferusers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *transferUsers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("transferusers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *transferUsers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *transferUsers) Create(transferUser *v1alpha1.TransferUser) (result *v1alpha1.TransferUser, err error) {
 	result = &v1alpha1.TransferUser{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("transferusers").
 		Body(transferUser).
 		Do().
@@ -118,6 +124,7 @@ func (c *transferUsers) Create(transferUser *v1alpha1.TransferUser) (result *v1a
 func (c *transferUsers) Update(transferUser *v1alpha1.TransferUser) (result *v1alpha1.TransferUser, err error) {
 	result = &v1alpha1.TransferUser{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("transferusers").
 		Name(transferUser.Name).
 		Body(transferUser).
@@ -132,6 +139,7 @@ func (c *transferUsers) Update(transferUser *v1alpha1.TransferUser) (result *v1a
 func (c *transferUsers) UpdateStatus(transferUser *v1alpha1.TransferUser) (result *v1alpha1.TransferUser, err error) {
 	result = &v1alpha1.TransferUser{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("transferusers").
 		Name(transferUser.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *transferUsers) UpdateStatus(transferUser *v1alpha1.TransferUser) (resul
 // Delete takes name of the transferUser and deletes it. Returns an error if one occurs.
 func (c *transferUsers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("transferusers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *transferUsers) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("transferusers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *transferUsers) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *transferUsers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.TransferUser, err error) {
 	result = &v1alpha1.TransferUser{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("transferusers").
 		SubResource(subresources...).
 		Name(name).

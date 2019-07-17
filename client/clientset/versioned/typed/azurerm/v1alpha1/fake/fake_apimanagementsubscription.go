@@ -31,6 +31,7 @@ import (
 // FakeApiManagementSubscriptions implements ApiManagementSubscriptionInterface
 type FakeApiManagementSubscriptions struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var apimanagementsubscriptionsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "apimanagementsubscriptions"}
@@ -40,7 +41,8 @@ var apimanagementsubscriptionsKind = schema.GroupVersionKind{Group: "azurerm.kub
 // Get takes name of the apiManagementSubscription, and returns the corresponding apiManagementSubscription object, and an error if there is any.
 func (c *FakeApiManagementSubscriptions) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apimanagementsubscriptionsResource, name), &v1alpha1.ApiManagementSubscription{})
+		Invokes(testing.NewGetAction(apimanagementsubscriptionsResource, c.ns, name), &v1alpha1.ApiManagementSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApiManagementSubscriptions) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of ApiManagementSubscriptions that match those selectors.
 func (c *FakeApiManagementSubscriptions) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementSubscriptionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apimanagementsubscriptionsResource, apimanagementsubscriptionsKind, opts), &v1alpha1.ApiManagementSubscriptionList{})
+		Invokes(testing.NewListAction(apimanagementsubscriptionsResource, apimanagementsubscriptionsKind, c.ns, opts), &v1alpha1.ApiManagementSubscriptionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApiManagementSubscriptions) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested apiManagementSubscriptions.
 func (c *FakeApiManagementSubscriptions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apimanagementsubscriptionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(apimanagementsubscriptionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a apiManagementSubscription and creates it.  Returns the server's representation of the apiManagementSubscription, and an error, if there is any.
 func (c *FakeApiManagementSubscriptions) Create(apiManagementSubscription *v1alpha1.ApiManagementSubscription) (result *v1alpha1.ApiManagementSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apimanagementsubscriptionsResource, apiManagementSubscription), &v1alpha1.ApiManagementSubscription{})
+		Invokes(testing.NewCreateAction(apimanagementsubscriptionsResource, c.ns, apiManagementSubscription), &v1alpha1.ApiManagementSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApiManagementSubscriptions) Create(apiManagementSubscription *v1alp
 // Update takes the representation of a apiManagementSubscription and updates it. Returns the server's representation of the apiManagementSubscription, and an error, if there is any.
 func (c *FakeApiManagementSubscriptions) Update(apiManagementSubscription *v1alpha1.ApiManagementSubscription) (result *v1alpha1.ApiManagementSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apimanagementsubscriptionsResource, apiManagementSubscription), &v1alpha1.ApiManagementSubscription{})
+		Invokes(testing.NewUpdateAction(apimanagementsubscriptionsResource, c.ns, apiManagementSubscription), &v1alpha1.ApiManagementSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApiManagementSubscriptions) Update(apiManagementSubscription *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApiManagementSubscriptions) UpdateStatus(apiManagementSubscription *v1alpha1.ApiManagementSubscription) (*v1alpha1.ApiManagementSubscription, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apimanagementsubscriptionsResource, "status", apiManagementSubscription), &v1alpha1.ApiManagementSubscription{})
+		Invokes(testing.NewUpdateSubresourceAction(apimanagementsubscriptionsResource, "status", c.ns, apiManagementSubscription), &v1alpha1.ApiManagementSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApiManagementSubscriptions) UpdateStatus(apiManagementSubscription 
 // Delete takes name of the apiManagementSubscription and deletes it. Returns an error if one occurs.
 func (c *FakeApiManagementSubscriptions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apimanagementsubscriptionsResource, name), &v1alpha1.ApiManagementSubscription{})
+		Invokes(testing.NewDeleteAction(apimanagementsubscriptionsResource, c.ns, name), &v1alpha1.ApiManagementSubscription{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApiManagementSubscriptions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apimanagementsubscriptionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(apimanagementsubscriptionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApiManagementSubscriptionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApiManagementSubscriptions) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched apiManagementSubscription.
 func (c *FakeApiManagementSubscriptions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apimanagementsubscriptionsResource, name, pt, data, subresources...), &v1alpha1.ApiManagementSubscription{})
+		Invokes(testing.NewPatchSubresourceAction(apimanagementsubscriptionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiManagementSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}

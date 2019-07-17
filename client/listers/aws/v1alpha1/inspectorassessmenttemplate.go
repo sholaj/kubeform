@@ -29,8 +29,8 @@ import (
 type InspectorAssessmentTemplateLister interface {
 	// List lists all InspectorAssessmentTemplates in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.InspectorAssessmentTemplate, err error)
-	// Get retrieves the InspectorAssessmentTemplate from the index for a given name.
-	Get(name string) (*v1alpha1.InspectorAssessmentTemplate, error)
+	// InspectorAssessmentTemplates returns an object that can list and get InspectorAssessmentTemplates.
+	InspectorAssessmentTemplates(namespace string) InspectorAssessmentTemplateNamespaceLister
 	InspectorAssessmentTemplateListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *inspectorAssessmentTemplateLister) List(selector labels.Selector) (ret 
 	return ret, err
 }
 
-// Get retrieves the InspectorAssessmentTemplate from the index for a given name.
-func (s *inspectorAssessmentTemplateLister) Get(name string) (*v1alpha1.InspectorAssessmentTemplate, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// InspectorAssessmentTemplates returns an object that can list and get InspectorAssessmentTemplates.
+func (s *inspectorAssessmentTemplateLister) InspectorAssessmentTemplates(namespace string) InspectorAssessmentTemplateNamespaceLister {
+	return inspectorAssessmentTemplateNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// InspectorAssessmentTemplateNamespaceLister helps list and get InspectorAssessmentTemplates.
+type InspectorAssessmentTemplateNamespaceLister interface {
+	// List lists all InspectorAssessmentTemplates in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.InspectorAssessmentTemplate, err error)
+	// Get retrieves the InspectorAssessmentTemplate from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.InspectorAssessmentTemplate, error)
+	InspectorAssessmentTemplateNamespaceListerExpansion
+}
+
+// inspectorAssessmentTemplateNamespaceLister implements the InspectorAssessmentTemplateNamespaceLister
+// interface.
+type inspectorAssessmentTemplateNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all InspectorAssessmentTemplates in the indexer for a given namespace.
+func (s inspectorAssessmentTemplateNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.InspectorAssessmentTemplate, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.InspectorAssessmentTemplate))
+	})
+	return ret, err
+}
+
+// Get retrieves the InspectorAssessmentTemplate from the indexer for a given namespace and name.
+func (s inspectorAssessmentTemplateNamespaceLister) Get(name string) (*v1alpha1.InspectorAssessmentTemplate, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

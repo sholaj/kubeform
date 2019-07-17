@@ -31,6 +31,7 @@ import (
 // FakeKeyVaultAccessPolicies implements KeyVaultAccessPolicyInterface
 type FakeKeyVaultAccessPolicies struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var keyvaultaccesspoliciesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "keyvaultaccesspolicies"}
@@ -40,7 +41,8 @@ var keyvaultaccesspoliciesKind = schema.GroupVersionKind{Group: "azurerm.kubefor
 // Get takes name of the keyVaultAccessPolicy, and returns the corresponding keyVaultAccessPolicy object, and an error if there is any.
 func (c *FakeKeyVaultAccessPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.KeyVaultAccessPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(keyvaultaccesspoliciesResource, name), &v1alpha1.KeyVaultAccessPolicy{})
+		Invokes(testing.NewGetAction(keyvaultaccesspoliciesResource, c.ns, name), &v1alpha1.KeyVaultAccessPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeKeyVaultAccessPolicies) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of KeyVaultAccessPolicies that match those selectors.
 func (c *FakeKeyVaultAccessPolicies) List(opts v1.ListOptions) (result *v1alpha1.KeyVaultAccessPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(keyvaultaccesspoliciesResource, keyvaultaccesspoliciesKind, opts), &v1alpha1.KeyVaultAccessPolicyList{})
+		Invokes(testing.NewListAction(keyvaultaccesspoliciesResource, keyvaultaccesspoliciesKind, c.ns, opts), &v1alpha1.KeyVaultAccessPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeKeyVaultAccessPolicies) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested keyVaultAccessPolicies.
 func (c *FakeKeyVaultAccessPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(keyvaultaccesspoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(keyvaultaccesspoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a keyVaultAccessPolicy and creates it.  Returns the server's representation of the keyVaultAccessPolicy, and an error, if there is any.
 func (c *FakeKeyVaultAccessPolicies) Create(keyVaultAccessPolicy *v1alpha1.KeyVaultAccessPolicy) (result *v1alpha1.KeyVaultAccessPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(keyvaultaccesspoliciesResource, keyVaultAccessPolicy), &v1alpha1.KeyVaultAccessPolicy{})
+		Invokes(testing.NewCreateAction(keyvaultaccesspoliciesResource, c.ns, keyVaultAccessPolicy), &v1alpha1.KeyVaultAccessPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeKeyVaultAccessPolicies) Create(keyVaultAccessPolicy *v1alpha1.KeyVa
 // Update takes the representation of a keyVaultAccessPolicy and updates it. Returns the server's representation of the keyVaultAccessPolicy, and an error, if there is any.
 func (c *FakeKeyVaultAccessPolicies) Update(keyVaultAccessPolicy *v1alpha1.KeyVaultAccessPolicy) (result *v1alpha1.KeyVaultAccessPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(keyvaultaccesspoliciesResource, keyVaultAccessPolicy), &v1alpha1.KeyVaultAccessPolicy{})
+		Invokes(testing.NewUpdateAction(keyvaultaccesspoliciesResource, c.ns, keyVaultAccessPolicy), &v1alpha1.KeyVaultAccessPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeKeyVaultAccessPolicies) Update(keyVaultAccessPolicy *v1alpha1.KeyVa
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeKeyVaultAccessPolicies) UpdateStatus(keyVaultAccessPolicy *v1alpha1.KeyVaultAccessPolicy) (*v1alpha1.KeyVaultAccessPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(keyvaultaccesspoliciesResource, "status", keyVaultAccessPolicy), &v1alpha1.KeyVaultAccessPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(keyvaultaccesspoliciesResource, "status", c.ns, keyVaultAccessPolicy), &v1alpha1.KeyVaultAccessPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeKeyVaultAccessPolicies) UpdateStatus(keyVaultAccessPolicy *v1alpha1
 // Delete takes name of the keyVaultAccessPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeKeyVaultAccessPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(keyvaultaccesspoliciesResource, name), &v1alpha1.KeyVaultAccessPolicy{})
+		Invokes(testing.NewDeleteAction(keyvaultaccesspoliciesResource, c.ns, name), &v1alpha1.KeyVaultAccessPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeKeyVaultAccessPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(keyvaultaccesspoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(keyvaultaccesspoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.KeyVaultAccessPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeKeyVaultAccessPolicies) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched keyVaultAccessPolicy.
 func (c *FakeKeyVaultAccessPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KeyVaultAccessPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(keyvaultaccesspoliciesResource, name, pt, data, subresources...), &v1alpha1.KeyVaultAccessPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(keyvaultaccesspoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.KeyVaultAccessPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

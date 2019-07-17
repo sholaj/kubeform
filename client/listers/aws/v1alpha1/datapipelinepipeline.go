@@ -29,8 +29,8 @@ import (
 type DatapipelinePipelineLister interface {
 	// List lists all DatapipelinePipelines in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DatapipelinePipeline, err error)
-	// Get retrieves the DatapipelinePipeline from the index for a given name.
-	Get(name string) (*v1alpha1.DatapipelinePipeline, error)
+	// DatapipelinePipelines returns an object that can list and get DatapipelinePipelines.
+	DatapipelinePipelines(namespace string) DatapipelinePipelineNamespaceLister
 	DatapipelinePipelineListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *datapipelinePipelineLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the DatapipelinePipeline from the index for a given name.
-func (s *datapipelinePipelineLister) Get(name string) (*v1alpha1.DatapipelinePipeline, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DatapipelinePipelines returns an object that can list and get DatapipelinePipelines.
+func (s *datapipelinePipelineLister) DatapipelinePipelines(namespace string) DatapipelinePipelineNamespaceLister {
+	return datapipelinePipelineNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DatapipelinePipelineNamespaceLister helps list and get DatapipelinePipelines.
+type DatapipelinePipelineNamespaceLister interface {
+	// List lists all DatapipelinePipelines in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DatapipelinePipeline, err error)
+	// Get retrieves the DatapipelinePipeline from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DatapipelinePipeline, error)
+	DatapipelinePipelineNamespaceListerExpansion
+}
+
+// datapipelinePipelineNamespaceLister implements the DatapipelinePipelineNamespaceLister
+// interface.
+type datapipelinePipelineNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DatapipelinePipelines in the indexer for a given namespace.
+func (s datapipelinePipelineNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DatapipelinePipeline, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DatapipelinePipeline))
+	})
+	return ret, err
+}
+
+// Get retrieves the DatapipelinePipeline from the indexer for a given namespace and name.
+func (s datapipelinePipelineNamespaceLister) Get(name string) (*v1alpha1.DatapipelinePipeline, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

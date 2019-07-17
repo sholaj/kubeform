@@ -32,7 +32,7 @@ import (
 // SimpledbDomainsGetter has a method to return a SimpledbDomainInterface.
 // A group's client should implement this interface.
 type SimpledbDomainsGetter interface {
-	SimpledbDomains() SimpledbDomainInterface
+	SimpledbDomains(namespace string) SimpledbDomainInterface
 }
 
 // SimpledbDomainInterface has methods to work with SimpledbDomain resources.
@@ -52,12 +52,14 @@ type SimpledbDomainInterface interface {
 // simpledbDomains implements SimpledbDomainInterface
 type simpledbDomains struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSimpledbDomains returns a SimpledbDomains
-func newSimpledbDomains(c *AwsV1alpha1Client) *simpledbDomains {
+func newSimpledbDomains(c *AwsV1alpha1Client, namespace string) *simpledbDomains {
 	return &simpledbDomains{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSimpledbDomains(c *AwsV1alpha1Client) *simpledbDomains {
 func (c *simpledbDomains) Get(name string, options v1.GetOptions) (result *v1alpha1.SimpledbDomain, err error) {
 	result = &v1alpha1.SimpledbDomain{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("simpledbdomains").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *simpledbDomains) List(opts v1.ListOptions) (result *v1alpha1.SimpledbDo
 	}
 	result = &v1alpha1.SimpledbDomainList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("simpledbdomains").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *simpledbDomains) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("simpledbdomains").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *simpledbDomains) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *simpledbDomains) Create(simpledbDomain *v1alpha1.SimpledbDomain) (result *v1alpha1.SimpledbDomain, err error) {
 	result = &v1alpha1.SimpledbDomain{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("simpledbdomains").
 		Body(simpledbDomain).
 		Do().
@@ -118,6 +124,7 @@ func (c *simpledbDomains) Create(simpledbDomain *v1alpha1.SimpledbDomain) (resul
 func (c *simpledbDomains) Update(simpledbDomain *v1alpha1.SimpledbDomain) (result *v1alpha1.SimpledbDomain, err error) {
 	result = &v1alpha1.SimpledbDomain{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("simpledbdomains").
 		Name(simpledbDomain.Name).
 		Body(simpledbDomain).
@@ -132,6 +139,7 @@ func (c *simpledbDomains) Update(simpledbDomain *v1alpha1.SimpledbDomain) (resul
 func (c *simpledbDomains) UpdateStatus(simpledbDomain *v1alpha1.SimpledbDomain) (result *v1alpha1.SimpledbDomain, err error) {
 	result = &v1alpha1.SimpledbDomain{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("simpledbdomains").
 		Name(simpledbDomain.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *simpledbDomains) UpdateStatus(simpledbDomain *v1alpha1.SimpledbDomain) 
 // Delete takes name of the simpledbDomain and deletes it. Returns an error if one occurs.
 func (c *simpledbDomains) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("simpledbdomains").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *simpledbDomains) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("simpledbdomains").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *simpledbDomains) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *simpledbDomains) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SimpledbDomain, err error) {
 	result = &v1alpha1.SimpledbDomain{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("simpledbdomains").
 		SubResource(subresources...).
 		Name(name).

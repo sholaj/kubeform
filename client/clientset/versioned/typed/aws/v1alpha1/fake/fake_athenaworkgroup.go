@@ -31,6 +31,7 @@ import (
 // FakeAthenaWorkgroups implements AthenaWorkgroupInterface
 type FakeAthenaWorkgroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var athenaworkgroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "athenaworkgroups"}
@@ -40,7 +41,8 @@ var athenaworkgroupsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ve
 // Get takes name of the athenaWorkgroup, and returns the corresponding athenaWorkgroup object, and an error if there is any.
 func (c *FakeAthenaWorkgroups) Get(name string, options v1.GetOptions) (result *v1alpha1.AthenaWorkgroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(athenaworkgroupsResource, name), &v1alpha1.AthenaWorkgroup{})
+		Invokes(testing.NewGetAction(athenaworkgroupsResource, c.ns, name), &v1alpha1.AthenaWorkgroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAthenaWorkgroups) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of AthenaWorkgroups that match those selectors.
 func (c *FakeAthenaWorkgroups) List(opts v1.ListOptions) (result *v1alpha1.AthenaWorkgroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(athenaworkgroupsResource, athenaworkgroupsKind, opts), &v1alpha1.AthenaWorkgroupList{})
+		Invokes(testing.NewListAction(athenaworkgroupsResource, athenaworkgroupsKind, c.ns, opts), &v1alpha1.AthenaWorkgroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAthenaWorkgroups) List(opts v1.ListOptions) (result *v1alpha1.Athen
 // Watch returns a watch.Interface that watches the requested athenaWorkgroups.
 func (c *FakeAthenaWorkgroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(athenaworkgroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(athenaworkgroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a athenaWorkgroup and creates it.  Returns the server's representation of the athenaWorkgroup, and an error, if there is any.
 func (c *FakeAthenaWorkgroups) Create(athenaWorkgroup *v1alpha1.AthenaWorkgroup) (result *v1alpha1.AthenaWorkgroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(athenaworkgroupsResource, athenaWorkgroup), &v1alpha1.AthenaWorkgroup{})
+		Invokes(testing.NewCreateAction(athenaworkgroupsResource, c.ns, athenaWorkgroup), &v1alpha1.AthenaWorkgroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAthenaWorkgroups) Create(athenaWorkgroup *v1alpha1.AthenaWorkgroup)
 // Update takes the representation of a athenaWorkgroup and updates it. Returns the server's representation of the athenaWorkgroup, and an error, if there is any.
 func (c *FakeAthenaWorkgroups) Update(athenaWorkgroup *v1alpha1.AthenaWorkgroup) (result *v1alpha1.AthenaWorkgroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(athenaworkgroupsResource, athenaWorkgroup), &v1alpha1.AthenaWorkgroup{})
+		Invokes(testing.NewUpdateAction(athenaworkgroupsResource, c.ns, athenaWorkgroup), &v1alpha1.AthenaWorkgroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAthenaWorkgroups) Update(athenaWorkgroup *v1alpha1.AthenaWorkgroup)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAthenaWorkgroups) UpdateStatus(athenaWorkgroup *v1alpha1.AthenaWorkgroup) (*v1alpha1.AthenaWorkgroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(athenaworkgroupsResource, "status", athenaWorkgroup), &v1alpha1.AthenaWorkgroup{})
+		Invokes(testing.NewUpdateSubresourceAction(athenaworkgroupsResource, "status", c.ns, athenaWorkgroup), &v1alpha1.AthenaWorkgroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAthenaWorkgroups) UpdateStatus(athenaWorkgroup *v1alpha1.AthenaWork
 // Delete takes name of the athenaWorkgroup and deletes it. Returns an error if one occurs.
 func (c *FakeAthenaWorkgroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(athenaworkgroupsResource, name), &v1alpha1.AthenaWorkgroup{})
+		Invokes(testing.NewDeleteAction(athenaworkgroupsResource, c.ns, name), &v1alpha1.AthenaWorkgroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAthenaWorkgroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(athenaworkgroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(athenaworkgroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AthenaWorkgroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAthenaWorkgroups) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched athenaWorkgroup.
 func (c *FakeAthenaWorkgroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AthenaWorkgroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(athenaworkgroupsResource, name, pt, data, subresources...), &v1alpha1.AthenaWorkgroup{})
+		Invokes(testing.NewPatchSubresourceAction(athenaworkgroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.AthenaWorkgroup{})
+
 	if obj == nil {
 		return nil, err
 	}

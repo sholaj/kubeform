@@ -32,7 +32,7 @@ import (
 // AppmeshRoutesGetter has a method to return a AppmeshRouteInterface.
 // A group's client should implement this interface.
 type AppmeshRoutesGetter interface {
-	AppmeshRoutes() AppmeshRouteInterface
+	AppmeshRoutes(namespace string) AppmeshRouteInterface
 }
 
 // AppmeshRouteInterface has methods to work with AppmeshRoute resources.
@@ -52,12 +52,14 @@ type AppmeshRouteInterface interface {
 // appmeshRoutes implements AppmeshRouteInterface
 type appmeshRoutes struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAppmeshRoutes returns a AppmeshRoutes
-func newAppmeshRoutes(c *AwsV1alpha1Client) *appmeshRoutes {
+func newAppmeshRoutes(c *AwsV1alpha1Client, namespace string) *appmeshRoutes {
 	return &appmeshRoutes{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAppmeshRoutes(c *AwsV1alpha1Client) *appmeshRoutes {
 func (c *appmeshRoutes) Get(name string, options v1.GetOptions) (result *v1alpha1.AppmeshRoute, err error) {
 	result = &v1alpha1.AppmeshRoute{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appmeshroutes").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *appmeshRoutes) List(opts v1.ListOptions) (result *v1alpha1.AppmeshRoute
 	}
 	result = &v1alpha1.AppmeshRouteList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appmeshroutes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *appmeshRoutes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("appmeshroutes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *appmeshRoutes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *appmeshRoutes) Create(appmeshRoute *v1alpha1.AppmeshRoute) (result *v1alpha1.AppmeshRoute, err error) {
 	result = &v1alpha1.AppmeshRoute{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("appmeshroutes").
 		Body(appmeshRoute).
 		Do().
@@ -118,6 +124,7 @@ func (c *appmeshRoutes) Create(appmeshRoute *v1alpha1.AppmeshRoute) (result *v1a
 func (c *appmeshRoutes) Update(appmeshRoute *v1alpha1.AppmeshRoute) (result *v1alpha1.AppmeshRoute, err error) {
 	result = &v1alpha1.AppmeshRoute{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appmeshroutes").
 		Name(appmeshRoute.Name).
 		Body(appmeshRoute).
@@ -132,6 +139,7 @@ func (c *appmeshRoutes) Update(appmeshRoute *v1alpha1.AppmeshRoute) (result *v1a
 func (c *appmeshRoutes) UpdateStatus(appmeshRoute *v1alpha1.AppmeshRoute) (result *v1alpha1.AppmeshRoute, err error) {
 	result = &v1alpha1.AppmeshRoute{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appmeshroutes").
 		Name(appmeshRoute.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *appmeshRoutes) UpdateStatus(appmeshRoute *v1alpha1.AppmeshRoute) (resul
 // Delete takes name of the appmeshRoute and deletes it. Returns an error if one occurs.
 func (c *appmeshRoutes) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appmeshroutes").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *appmeshRoutes) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appmeshroutes").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *appmeshRoutes) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *appmeshRoutes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppmeshRoute, err error) {
 	result = &v1alpha1.AppmeshRoute{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("appmeshroutes").
 		SubResource(subresources...).
 		Name(name).

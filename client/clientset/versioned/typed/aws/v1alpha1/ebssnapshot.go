@@ -32,7 +32,7 @@ import (
 // EbsSnapshotsGetter has a method to return a EbsSnapshotInterface.
 // A group's client should implement this interface.
 type EbsSnapshotsGetter interface {
-	EbsSnapshots() EbsSnapshotInterface
+	EbsSnapshots(namespace string) EbsSnapshotInterface
 }
 
 // EbsSnapshotInterface has methods to work with EbsSnapshot resources.
@@ -52,12 +52,14 @@ type EbsSnapshotInterface interface {
 // ebsSnapshots implements EbsSnapshotInterface
 type ebsSnapshots struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEbsSnapshots returns a EbsSnapshots
-func newEbsSnapshots(c *AwsV1alpha1Client) *ebsSnapshots {
+func newEbsSnapshots(c *AwsV1alpha1Client, namespace string) *ebsSnapshots {
 	return &ebsSnapshots{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEbsSnapshots(c *AwsV1alpha1Client) *ebsSnapshots {
 func (c *ebsSnapshots) Get(name string, options v1.GetOptions) (result *v1alpha1.EbsSnapshot, err error) {
 	result = &v1alpha1.EbsSnapshot{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ebssnapshots").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ebsSnapshots) List(opts v1.ListOptions) (result *v1alpha1.EbsSnapshotLi
 	}
 	result = &v1alpha1.EbsSnapshotList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ebssnapshots").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ebsSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ebssnapshots").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ebsSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *ebsSnapshots) Create(ebsSnapshot *v1alpha1.EbsSnapshot) (result *v1alpha1.EbsSnapshot, err error) {
 	result = &v1alpha1.EbsSnapshot{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ebssnapshots").
 		Body(ebsSnapshot).
 		Do().
@@ -118,6 +124,7 @@ func (c *ebsSnapshots) Create(ebsSnapshot *v1alpha1.EbsSnapshot) (result *v1alph
 func (c *ebsSnapshots) Update(ebsSnapshot *v1alpha1.EbsSnapshot) (result *v1alpha1.EbsSnapshot, err error) {
 	result = &v1alpha1.EbsSnapshot{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ebssnapshots").
 		Name(ebsSnapshot.Name).
 		Body(ebsSnapshot).
@@ -132,6 +139,7 @@ func (c *ebsSnapshots) Update(ebsSnapshot *v1alpha1.EbsSnapshot) (result *v1alph
 func (c *ebsSnapshots) UpdateStatus(ebsSnapshot *v1alpha1.EbsSnapshot) (result *v1alpha1.EbsSnapshot, err error) {
 	result = &v1alpha1.EbsSnapshot{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ebssnapshots").
 		Name(ebsSnapshot.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ebsSnapshots) UpdateStatus(ebsSnapshot *v1alpha1.EbsSnapshot) (result *
 // Delete takes name of the ebsSnapshot and deletes it. Returns an error if one occurs.
 func (c *ebsSnapshots) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ebssnapshots").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ebsSnapshots) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ebssnapshots").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ebsSnapshots) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *ebsSnapshots) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EbsSnapshot, err error) {
 	result = &v1alpha1.EbsSnapshot{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ebssnapshots").
 		SubResource(subresources...).
 		Name(name).

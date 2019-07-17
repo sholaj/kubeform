@@ -397,38 +397,48 @@ spec:
           type: object
         spec:
           properties:
-            api_key_required:
+            apiKeyRequired:
               type: boolean
             authorization:
               type: string
-            authorization_scopes:
+            authorizationScopes:
               items:
                 type: string
               type: array
               uniqueItems: true
-            authorizer_id:
+            authorizerID:
               type: string
-            http_method:
+            httpMethod:
               type: string
-            request_models:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            requestModels:
               additionalProperties:
                 type: string
               type: object
-            request_parameters:
+            requestParameters:
               additionalProperties:
                 type: boolean
               type: object
-            request_validator_id:
+            requestValidatorID:
               type: string
-            resource_id:
+            resourceID:
               type: string
-            rest_api_id:
+            restAPIID:
               type: string
           required:
           - authorization
-          - http_method
-          - resource_id
-          - rest_api_id
+          - httpMethod
+          - providerRef
+          - resourceID
+          - restAPIID
           type: object
         status:
           properties:
@@ -439,6 +449,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

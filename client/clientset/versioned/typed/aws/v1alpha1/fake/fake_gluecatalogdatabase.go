@@ -31,6 +31,7 @@ import (
 // FakeGlueCatalogDatabases implements GlueCatalogDatabaseInterface
 type FakeGlueCatalogDatabases struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var gluecatalogdatabasesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "gluecatalogdatabases"}
@@ -40,7 +41,8 @@ var gluecatalogdatabasesKind = schema.GroupVersionKind{Group: "aws.kubeform.com"
 // Get takes name of the glueCatalogDatabase, and returns the corresponding glueCatalogDatabase object, and an error if there is any.
 func (c *FakeGlueCatalogDatabases) Get(name string, options v1.GetOptions) (result *v1alpha1.GlueCatalogDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(gluecatalogdatabasesResource, name), &v1alpha1.GlueCatalogDatabase{})
+		Invokes(testing.NewGetAction(gluecatalogdatabasesResource, c.ns, name), &v1alpha1.GlueCatalogDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeGlueCatalogDatabases) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of GlueCatalogDatabases that match those selectors.
 func (c *FakeGlueCatalogDatabases) List(opts v1.ListOptions) (result *v1alpha1.GlueCatalogDatabaseList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(gluecatalogdatabasesResource, gluecatalogdatabasesKind, opts), &v1alpha1.GlueCatalogDatabaseList{})
+		Invokes(testing.NewListAction(gluecatalogdatabasesResource, gluecatalogdatabasesKind, c.ns, opts), &v1alpha1.GlueCatalogDatabaseList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeGlueCatalogDatabases) List(opts v1.ListOptions) (result *v1alpha1.G
 // Watch returns a watch.Interface that watches the requested glueCatalogDatabases.
 func (c *FakeGlueCatalogDatabases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(gluecatalogdatabasesResource, opts))
+		InvokesWatch(testing.NewWatchAction(gluecatalogdatabasesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a glueCatalogDatabase and creates it.  Returns the server's representation of the glueCatalogDatabase, and an error, if there is any.
 func (c *FakeGlueCatalogDatabases) Create(glueCatalogDatabase *v1alpha1.GlueCatalogDatabase) (result *v1alpha1.GlueCatalogDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(gluecatalogdatabasesResource, glueCatalogDatabase), &v1alpha1.GlueCatalogDatabase{})
+		Invokes(testing.NewCreateAction(gluecatalogdatabasesResource, c.ns, glueCatalogDatabase), &v1alpha1.GlueCatalogDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeGlueCatalogDatabases) Create(glueCatalogDatabase *v1alpha1.GlueCata
 // Update takes the representation of a glueCatalogDatabase and updates it. Returns the server's representation of the glueCatalogDatabase, and an error, if there is any.
 func (c *FakeGlueCatalogDatabases) Update(glueCatalogDatabase *v1alpha1.GlueCatalogDatabase) (result *v1alpha1.GlueCatalogDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(gluecatalogdatabasesResource, glueCatalogDatabase), &v1alpha1.GlueCatalogDatabase{})
+		Invokes(testing.NewUpdateAction(gluecatalogdatabasesResource, c.ns, glueCatalogDatabase), &v1alpha1.GlueCatalogDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeGlueCatalogDatabases) Update(glueCatalogDatabase *v1alpha1.GlueCata
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeGlueCatalogDatabases) UpdateStatus(glueCatalogDatabase *v1alpha1.GlueCatalogDatabase) (*v1alpha1.GlueCatalogDatabase, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(gluecatalogdatabasesResource, "status", glueCatalogDatabase), &v1alpha1.GlueCatalogDatabase{})
+		Invokes(testing.NewUpdateSubresourceAction(gluecatalogdatabasesResource, "status", c.ns, glueCatalogDatabase), &v1alpha1.GlueCatalogDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeGlueCatalogDatabases) UpdateStatus(glueCatalogDatabase *v1alpha1.Gl
 // Delete takes name of the glueCatalogDatabase and deletes it. Returns an error if one occurs.
 func (c *FakeGlueCatalogDatabases) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(gluecatalogdatabasesResource, name), &v1alpha1.GlueCatalogDatabase{})
+		Invokes(testing.NewDeleteAction(gluecatalogdatabasesResource, c.ns, name), &v1alpha1.GlueCatalogDatabase{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeGlueCatalogDatabases) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(gluecatalogdatabasesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(gluecatalogdatabasesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.GlueCatalogDatabaseList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeGlueCatalogDatabases) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched glueCatalogDatabase.
 func (c *FakeGlueCatalogDatabases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GlueCatalogDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(gluecatalogdatabasesResource, name, pt, data, subresources...), &v1alpha1.GlueCatalogDatabase{})
+		Invokes(testing.NewPatchSubresourceAction(gluecatalogdatabasesResource, c.ns, name, pt, data, subresources...), &v1alpha1.GlueCatalogDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}

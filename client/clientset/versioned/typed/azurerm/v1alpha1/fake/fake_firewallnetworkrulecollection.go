@@ -31,6 +31,7 @@ import (
 // FakeFirewallNetworkRuleCollections implements FirewallNetworkRuleCollectionInterface
 type FakeFirewallNetworkRuleCollections struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var firewallnetworkrulecollectionsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "firewallnetworkrulecollections"}
@@ -40,7 +41,8 @@ var firewallnetworkrulecollectionsKind = schema.GroupVersionKind{Group: "azurerm
 // Get takes name of the firewallNetworkRuleCollection, and returns the corresponding firewallNetworkRuleCollection object, and an error if there is any.
 func (c *FakeFirewallNetworkRuleCollections) Get(name string, options v1.GetOptions) (result *v1alpha1.FirewallNetworkRuleCollection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(firewallnetworkrulecollectionsResource, name), &v1alpha1.FirewallNetworkRuleCollection{})
+		Invokes(testing.NewGetAction(firewallnetworkrulecollectionsResource, c.ns, name), &v1alpha1.FirewallNetworkRuleCollection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeFirewallNetworkRuleCollections) Get(name string, options v1.GetOpti
 // List takes label and field selectors, and returns the list of FirewallNetworkRuleCollections that match those selectors.
 func (c *FakeFirewallNetworkRuleCollections) List(opts v1.ListOptions) (result *v1alpha1.FirewallNetworkRuleCollectionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(firewallnetworkrulecollectionsResource, firewallnetworkrulecollectionsKind, opts), &v1alpha1.FirewallNetworkRuleCollectionList{})
+		Invokes(testing.NewListAction(firewallnetworkrulecollectionsResource, firewallnetworkrulecollectionsKind, c.ns, opts), &v1alpha1.FirewallNetworkRuleCollectionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeFirewallNetworkRuleCollections) List(opts v1.ListOptions) (result *
 // Watch returns a watch.Interface that watches the requested firewallNetworkRuleCollections.
 func (c *FakeFirewallNetworkRuleCollections) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(firewallnetworkrulecollectionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(firewallnetworkrulecollectionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a firewallNetworkRuleCollection and creates it.  Returns the server's representation of the firewallNetworkRuleCollection, and an error, if there is any.
 func (c *FakeFirewallNetworkRuleCollections) Create(firewallNetworkRuleCollection *v1alpha1.FirewallNetworkRuleCollection) (result *v1alpha1.FirewallNetworkRuleCollection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(firewallnetworkrulecollectionsResource, firewallNetworkRuleCollection), &v1alpha1.FirewallNetworkRuleCollection{})
+		Invokes(testing.NewCreateAction(firewallnetworkrulecollectionsResource, c.ns, firewallNetworkRuleCollection), &v1alpha1.FirewallNetworkRuleCollection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeFirewallNetworkRuleCollections) Create(firewallNetworkRuleCollectio
 // Update takes the representation of a firewallNetworkRuleCollection and updates it. Returns the server's representation of the firewallNetworkRuleCollection, and an error, if there is any.
 func (c *FakeFirewallNetworkRuleCollections) Update(firewallNetworkRuleCollection *v1alpha1.FirewallNetworkRuleCollection) (result *v1alpha1.FirewallNetworkRuleCollection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(firewallnetworkrulecollectionsResource, firewallNetworkRuleCollection), &v1alpha1.FirewallNetworkRuleCollection{})
+		Invokes(testing.NewUpdateAction(firewallnetworkrulecollectionsResource, c.ns, firewallNetworkRuleCollection), &v1alpha1.FirewallNetworkRuleCollection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeFirewallNetworkRuleCollections) Update(firewallNetworkRuleCollectio
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeFirewallNetworkRuleCollections) UpdateStatus(firewallNetworkRuleCollection *v1alpha1.FirewallNetworkRuleCollection) (*v1alpha1.FirewallNetworkRuleCollection, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(firewallnetworkrulecollectionsResource, "status", firewallNetworkRuleCollection), &v1alpha1.FirewallNetworkRuleCollection{})
+		Invokes(testing.NewUpdateSubresourceAction(firewallnetworkrulecollectionsResource, "status", c.ns, firewallNetworkRuleCollection), &v1alpha1.FirewallNetworkRuleCollection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeFirewallNetworkRuleCollections) UpdateStatus(firewallNetworkRuleCol
 // Delete takes name of the firewallNetworkRuleCollection and deletes it. Returns an error if one occurs.
 func (c *FakeFirewallNetworkRuleCollections) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(firewallnetworkrulecollectionsResource, name), &v1alpha1.FirewallNetworkRuleCollection{})
+		Invokes(testing.NewDeleteAction(firewallnetworkrulecollectionsResource, c.ns, name), &v1alpha1.FirewallNetworkRuleCollection{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeFirewallNetworkRuleCollections) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(firewallnetworkrulecollectionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(firewallnetworkrulecollectionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.FirewallNetworkRuleCollectionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeFirewallNetworkRuleCollections) DeleteCollection(options *v1.Delete
 // Patch applies the patch and returns the patched firewallNetworkRuleCollection.
 func (c *FakeFirewallNetworkRuleCollections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FirewallNetworkRuleCollection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(firewallnetworkrulecollectionsResource, name, pt, data, subresources...), &v1alpha1.FirewallNetworkRuleCollection{})
+		Invokes(testing.NewPatchSubresourceAction(firewallnetworkrulecollectionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.FirewallNetworkRuleCollection{})
+
 	if obj == nil {
 		return nil, err
 	}

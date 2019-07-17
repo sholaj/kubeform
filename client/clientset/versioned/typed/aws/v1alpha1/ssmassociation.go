@@ -32,7 +32,7 @@ import (
 // SsmAssociationsGetter has a method to return a SsmAssociationInterface.
 // A group's client should implement this interface.
 type SsmAssociationsGetter interface {
-	SsmAssociations() SsmAssociationInterface
+	SsmAssociations(namespace string) SsmAssociationInterface
 }
 
 // SsmAssociationInterface has methods to work with SsmAssociation resources.
@@ -52,12 +52,14 @@ type SsmAssociationInterface interface {
 // ssmAssociations implements SsmAssociationInterface
 type ssmAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSsmAssociations returns a SsmAssociations
-func newSsmAssociations(c *AwsV1alpha1Client) *ssmAssociations {
+func newSsmAssociations(c *AwsV1alpha1Client, namespace string) *ssmAssociations {
 	return &ssmAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSsmAssociations(c *AwsV1alpha1Client) *ssmAssociations {
 func (c *ssmAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.SsmAssociation, err error) {
 	result = &v1alpha1.SsmAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ssmAssociations) List(opts v1.ListOptions) (result *v1alpha1.SsmAssocia
 	}
 	result = &v1alpha1.SsmAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ssmAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ssmAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *ssmAssociations) Create(ssmAssociation *v1alpha1.SsmAssociation) (result *v1alpha1.SsmAssociation, err error) {
 	result = &v1alpha1.SsmAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ssmassociations").
 		Body(ssmAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *ssmAssociations) Create(ssmAssociation *v1alpha1.SsmAssociation) (resul
 func (c *ssmAssociations) Update(ssmAssociation *v1alpha1.SsmAssociation) (result *v1alpha1.SsmAssociation, err error) {
 	result = &v1alpha1.SsmAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ssmassociations").
 		Name(ssmAssociation.Name).
 		Body(ssmAssociation).
@@ -132,6 +139,7 @@ func (c *ssmAssociations) Update(ssmAssociation *v1alpha1.SsmAssociation) (resul
 func (c *ssmAssociations) UpdateStatus(ssmAssociation *v1alpha1.SsmAssociation) (result *v1alpha1.SsmAssociation, err error) {
 	result = &v1alpha1.SsmAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ssmassociations").
 		Name(ssmAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ssmAssociations) UpdateStatus(ssmAssociation *v1alpha1.SsmAssociation) 
 // Delete takes name of the ssmAssociation and deletes it. Returns an error if one occurs.
 func (c *ssmAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ssmassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ssmAssociations) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ssmassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ssmAssociations) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *ssmAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SsmAssociation, err error) {
 	result = &v1alpha1.SsmAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ssmassociations").
 		SubResource(subresources...).
 		Name(name).

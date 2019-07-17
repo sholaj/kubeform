@@ -29,8 +29,8 @@ import (
 type NotificationHubAuthorizationRuleLister interface {
 	// List lists all NotificationHubAuthorizationRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NotificationHubAuthorizationRule, err error)
-	// Get retrieves the NotificationHubAuthorizationRule from the index for a given name.
-	Get(name string) (*v1alpha1.NotificationHubAuthorizationRule, error)
+	// NotificationHubAuthorizationRules returns an object that can list and get NotificationHubAuthorizationRules.
+	NotificationHubAuthorizationRules(namespace string) NotificationHubAuthorizationRuleNamespaceLister
 	NotificationHubAuthorizationRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *notificationHubAuthorizationRuleLister) List(selector labels.Selector) 
 	return ret, err
 }
 
-// Get retrieves the NotificationHubAuthorizationRule from the index for a given name.
-func (s *notificationHubAuthorizationRuleLister) Get(name string) (*v1alpha1.NotificationHubAuthorizationRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NotificationHubAuthorizationRules returns an object that can list and get NotificationHubAuthorizationRules.
+func (s *notificationHubAuthorizationRuleLister) NotificationHubAuthorizationRules(namespace string) NotificationHubAuthorizationRuleNamespaceLister {
+	return notificationHubAuthorizationRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NotificationHubAuthorizationRuleNamespaceLister helps list and get NotificationHubAuthorizationRules.
+type NotificationHubAuthorizationRuleNamespaceLister interface {
+	// List lists all NotificationHubAuthorizationRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NotificationHubAuthorizationRule, err error)
+	// Get retrieves the NotificationHubAuthorizationRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NotificationHubAuthorizationRule, error)
+	NotificationHubAuthorizationRuleNamespaceListerExpansion
+}
+
+// notificationHubAuthorizationRuleNamespaceLister implements the NotificationHubAuthorizationRuleNamespaceLister
+// interface.
+type notificationHubAuthorizationRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NotificationHubAuthorizationRules in the indexer for a given namespace.
+func (s notificationHubAuthorizationRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NotificationHubAuthorizationRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NotificationHubAuthorizationRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the NotificationHubAuthorizationRule from the indexer for a given namespace and name.
+func (s notificationHubAuthorizationRuleNamespaceLister) Get(name string) (*v1alpha1.NotificationHubAuthorizationRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

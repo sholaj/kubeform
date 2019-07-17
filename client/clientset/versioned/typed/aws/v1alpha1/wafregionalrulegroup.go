@@ -32,7 +32,7 @@ import (
 // WafregionalRuleGroupsGetter has a method to return a WafregionalRuleGroupInterface.
 // A group's client should implement this interface.
 type WafregionalRuleGroupsGetter interface {
-	WafregionalRuleGroups() WafregionalRuleGroupInterface
+	WafregionalRuleGroups(namespace string) WafregionalRuleGroupInterface
 }
 
 // WafregionalRuleGroupInterface has methods to work with WafregionalRuleGroup resources.
@@ -52,12 +52,14 @@ type WafregionalRuleGroupInterface interface {
 // wafregionalRuleGroups implements WafregionalRuleGroupInterface
 type wafregionalRuleGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWafregionalRuleGroups returns a WafregionalRuleGroups
-func newWafregionalRuleGroups(c *AwsV1alpha1Client) *wafregionalRuleGroups {
+func newWafregionalRuleGroups(c *AwsV1alpha1Client, namespace string) *wafregionalRuleGroups {
 	return &wafregionalRuleGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWafregionalRuleGroups(c *AwsV1alpha1Client) *wafregionalRuleGroups {
 func (c *wafregionalRuleGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalRuleGroup, err error) {
 	result = &v1alpha1.WafregionalRuleGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalrulegroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *wafregionalRuleGroups) List(opts v1.ListOptions) (result *v1alpha1.Wafr
 	}
 	result = &v1alpha1.WafregionalRuleGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalrulegroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *wafregionalRuleGroups) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalrulegroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *wafregionalRuleGroups) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *wafregionalRuleGroups) Create(wafregionalRuleGroup *v1alpha1.WafregionalRuleGroup) (result *v1alpha1.WafregionalRuleGroup, err error) {
 	result = &v1alpha1.WafregionalRuleGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafregionalrulegroups").
 		Body(wafregionalRuleGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *wafregionalRuleGroups) Create(wafregionalRuleGroup *v1alpha1.Wafregiona
 func (c *wafregionalRuleGroups) Update(wafregionalRuleGroup *v1alpha1.WafregionalRuleGroup) (result *v1alpha1.WafregionalRuleGroup, err error) {
 	result = &v1alpha1.WafregionalRuleGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregionalrulegroups").
 		Name(wafregionalRuleGroup.Name).
 		Body(wafregionalRuleGroup).
@@ -132,6 +139,7 @@ func (c *wafregionalRuleGroups) Update(wafregionalRuleGroup *v1alpha1.Wafregiona
 func (c *wafregionalRuleGroups) UpdateStatus(wafregionalRuleGroup *v1alpha1.WafregionalRuleGroup) (result *v1alpha1.WafregionalRuleGroup, err error) {
 	result = &v1alpha1.WafregionalRuleGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregionalrulegroups").
 		Name(wafregionalRuleGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *wafregionalRuleGroups) UpdateStatus(wafregionalRuleGroup *v1alpha1.Wafr
 // Delete takes name of the wafregionalRuleGroup and deletes it. Returns an error if one occurs.
 func (c *wafregionalRuleGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregionalrulegroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *wafregionalRuleGroups) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregionalrulegroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *wafregionalRuleGroups) DeleteCollection(options *v1.DeleteOptions, list
 func (c *wafregionalRuleGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalRuleGroup, err error) {
 	result = &v1alpha1.WafregionalRuleGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafregionalrulegroups").
 		SubResource(subresources...).
 		Name(name).

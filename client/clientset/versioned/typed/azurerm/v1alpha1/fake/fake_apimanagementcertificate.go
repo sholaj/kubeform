@@ -31,6 +31,7 @@ import (
 // FakeApiManagementCertificates implements ApiManagementCertificateInterface
 type FakeApiManagementCertificates struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var apimanagementcertificatesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "apimanagementcertificates"}
@@ -40,7 +41,8 @@ var apimanagementcertificatesKind = schema.GroupVersionKind{Group: "azurerm.kube
 // Get takes name of the apiManagementCertificate, and returns the corresponding apiManagementCertificate object, and an error if there is any.
 func (c *FakeApiManagementCertificates) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apimanagementcertificatesResource, name), &v1alpha1.ApiManagementCertificate{})
+		Invokes(testing.NewGetAction(apimanagementcertificatesResource, c.ns, name), &v1alpha1.ApiManagementCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApiManagementCertificates) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of ApiManagementCertificates that match those selectors.
 func (c *FakeApiManagementCertificates) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementCertificateList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apimanagementcertificatesResource, apimanagementcertificatesKind, opts), &v1alpha1.ApiManagementCertificateList{})
+		Invokes(testing.NewListAction(apimanagementcertificatesResource, apimanagementcertificatesKind, c.ns, opts), &v1alpha1.ApiManagementCertificateList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApiManagementCertificates) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested apiManagementCertificates.
 func (c *FakeApiManagementCertificates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apimanagementcertificatesResource, opts))
+		InvokesWatch(testing.NewWatchAction(apimanagementcertificatesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a apiManagementCertificate and creates it.  Returns the server's representation of the apiManagementCertificate, and an error, if there is any.
 func (c *FakeApiManagementCertificates) Create(apiManagementCertificate *v1alpha1.ApiManagementCertificate) (result *v1alpha1.ApiManagementCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apimanagementcertificatesResource, apiManagementCertificate), &v1alpha1.ApiManagementCertificate{})
+		Invokes(testing.NewCreateAction(apimanagementcertificatesResource, c.ns, apiManagementCertificate), &v1alpha1.ApiManagementCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApiManagementCertificates) Create(apiManagementCertificate *v1alpha
 // Update takes the representation of a apiManagementCertificate and updates it. Returns the server's representation of the apiManagementCertificate, and an error, if there is any.
 func (c *FakeApiManagementCertificates) Update(apiManagementCertificate *v1alpha1.ApiManagementCertificate) (result *v1alpha1.ApiManagementCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apimanagementcertificatesResource, apiManagementCertificate), &v1alpha1.ApiManagementCertificate{})
+		Invokes(testing.NewUpdateAction(apimanagementcertificatesResource, c.ns, apiManagementCertificate), &v1alpha1.ApiManagementCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApiManagementCertificates) Update(apiManagementCertificate *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApiManagementCertificates) UpdateStatus(apiManagementCertificate *v1alpha1.ApiManagementCertificate) (*v1alpha1.ApiManagementCertificate, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apimanagementcertificatesResource, "status", apiManagementCertificate), &v1alpha1.ApiManagementCertificate{})
+		Invokes(testing.NewUpdateSubresourceAction(apimanagementcertificatesResource, "status", c.ns, apiManagementCertificate), &v1alpha1.ApiManagementCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApiManagementCertificates) UpdateStatus(apiManagementCertificate *v
 // Delete takes name of the apiManagementCertificate and deletes it. Returns an error if one occurs.
 func (c *FakeApiManagementCertificates) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apimanagementcertificatesResource, name), &v1alpha1.ApiManagementCertificate{})
+		Invokes(testing.NewDeleteAction(apimanagementcertificatesResource, c.ns, name), &v1alpha1.ApiManagementCertificate{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApiManagementCertificates) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apimanagementcertificatesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(apimanagementcertificatesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApiManagementCertificateList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApiManagementCertificates) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched apiManagementCertificate.
 func (c *FakeApiManagementCertificates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apimanagementcertificatesResource, name, pt, data, subresources...), &v1alpha1.ApiManagementCertificate{})
+		Invokes(testing.NewPatchSubresourceAction(apimanagementcertificatesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiManagementCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}

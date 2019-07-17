@@ -29,8 +29,8 @@ import (
 type ApiGatewayRequestValidatorLister interface {
 	// List lists all ApiGatewayRequestValidators in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayRequestValidator, err error)
-	// Get retrieves the ApiGatewayRequestValidator from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayRequestValidator, error)
+	// ApiGatewayRequestValidators returns an object that can list and get ApiGatewayRequestValidators.
+	ApiGatewayRequestValidators(namespace string) ApiGatewayRequestValidatorNamespaceLister
 	ApiGatewayRequestValidatorListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiGatewayRequestValidatorLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayRequestValidator from the index for a given name.
-func (s *apiGatewayRequestValidatorLister) Get(name string) (*v1alpha1.ApiGatewayRequestValidator, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayRequestValidators returns an object that can list and get ApiGatewayRequestValidators.
+func (s *apiGatewayRequestValidatorLister) ApiGatewayRequestValidators(namespace string) ApiGatewayRequestValidatorNamespaceLister {
+	return apiGatewayRequestValidatorNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayRequestValidatorNamespaceLister helps list and get ApiGatewayRequestValidators.
+type ApiGatewayRequestValidatorNamespaceLister interface {
+	// List lists all ApiGatewayRequestValidators in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayRequestValidator, err error)
+	// Get retrieves the ApiGatewayRequestValidator from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayRequestValidator, error)
+	ApiGatewayRequestValidatorNamespaceListerExpansion
+}
+
+// apiGatewayRequestValidatorNamespaceLister implements the ApiGatewayRequestValidatorNamespaceLister
+// interface.
+type apiGatewayRequestValidatorNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayRequestValidators in the indexer for a given namespace.
+func (s apiGatewayRequestValidatorNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayRequestValidator, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayRequestValidator))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayRequestValidator from the indexer for a given namespace and name.
+func (s apiGatewayRequestValidatorNamespaceLister) Get(name string) (*v1alpha1.ApiGatewayRequestValidator, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

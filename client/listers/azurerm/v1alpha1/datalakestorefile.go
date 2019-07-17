@@ -29,8 +29,8 @@ import (
 type DataLakeStoreFileLister interface {
 	// List lists all DataLakeStoreFiles in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DataLakeStoreFile, err error)
-	// Get retrieves the DataLakeStoreFile from the index for a given name.
-	Get(name string) (*v1alpha1.DataLakeStoreFile, error)
+	// DataLakeStoreFiles returns an object that can list and get DataLakeStoreFiles.
+	DataLakeStoreFiles(namespace string) DataLakeStoreFileNamespaceLister
 	DataLakeStoreFileListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dataLakeStoreFileLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the DataLakeStoreFile from the index for a given name.
-func (s *dataLakeStoreFileLister) Get(name string) (*v1alpha1.DataLakeStoreFile, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DataLakeStoreFiles returns an object that can list and get DataLakeStoreFiles.
+func (s *dataLakeStoreFileLister) DataLakeStoreFiles(namespace string) DataLakeStoreFileNamespaceLister {
+	return dataLakeStoreFileNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DataLakeStoreFileNamespaceLister helps list and get DataLakeStoreFiles.
+type DataLakeStoreFileNamespaceLister interface {
+	// List lists all DataLakeStoreFiles in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DataLakeStoreFile, err error)
+	// Get retrieves the DataLakeStoreFile from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DataLakeStoreFile, error)
+	DataLakeStoreFileNamespaceListerExpansion
+}
+
+// dataLakeStoreFileNamespaceLister implements the DataLakeStoreFileNamespaceLister
+// interface.
+type dataLakeStoreFileNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DataLakeStoreFiles in the indexer for a given namespace.
+func (s dataLakeStoreFileNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DataLakeStoreFile, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DataLakeStoreFile))
+	})
+	return ret, err
+}
+
+// Get retrieves the DataLakeStoreFile from the indexer for a given namespace and name.
+func (s dataLakeStoreFileNamespaceLister) Get(name string) (*v1alpha1.DataLakeStoreFile, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

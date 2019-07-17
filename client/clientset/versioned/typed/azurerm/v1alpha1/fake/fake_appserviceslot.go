@@ -31,6 +31,7 @@ import (
 // FakeAppServiceSlots implements AppServiceSlotInterface
 type FakeAppServiceSlots struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var appserviceslotsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "appserviceslots"}
@@ -40,7 +41,8 @@ var appserviceslotsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com",
 // Get takes name of the appServiceSlot, and returns the corresponding appServiceSlot object, and an error if there is any.
 func (c *FakeAppServiceSlots) Get(name string, options v1.GetOptions) (result *v1alpha1.AppServiceSlot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(appserviceslotsResource, name), &v1alpha1.AppServiceSlot{})
+		Invokes(testing.NewGetAction(appserviceslotsResource, c.ns, name), &v1alpha1.AppServiceSlot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAppServiceSlots) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of AppServiceSlots that match those selectors.
 func (c *FakeAppServiceSlots) List(opts v1.ListOptions) (result *v1alpha1.AppServiceSlotList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(appserviceslotsResource, appserviceslotsKind, opts), &v1alpha1.AppServiceSlotList{})
+		Invokes(testing.NewListAction(appserviceslotsResource, appserviceslotsKind, c.ns, opts), &v1alpha1.AppServiceSlotList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAppServiceSlots) List(opts v1.ListOptions) (result *v1alpha1.AppSer
 // Watch returns a watch.Interface that watches the requested appServiceSlots.
 func (c *FakeAppServiceSlots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(appserviceslotsResource, opts))
+		InvokesWatch(testing.NewWatchAction(appserviceslotsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a appServiceSlot and creates it.  Returns the server's representation of the appServiceSlot, and an error, if there is any.
 func (c *FakeAppServiceSlots) Create(appServiceSlot *v1alpha1.AppServiceSlot) (result *v1alpha1.AppServiceSlot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(appserviceslotsResource, appServiceSlot), &v1alpha1.AppServiceSlot{})
+		Invokes(testing.NewCreateAction(appserviceslotsResource, c.ns, appServiceSlot), &v1alpha1.AppServiceSlot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAppServiceSlots) Create(appServiceSlot *v1alpha1.AppServiceSlot) (r
 // Update takes the representation of a appServiceSlot and updates it. Returns the server's representation of the appServiceSlot, and an error, if there is any.
 func (c *FakeAppServiceSlots) Update(appServiceSlot *v1alpha1.AppServiceSlot) (result *v1alpha1.AppServiceSlot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(appserviceslotsResource, appServiceSlot), &v1alpha1.AppServiceSlot{})
+		Invokes(testing.NewUpdateAction(appserviceslotsResource, c.ns, appServiceSlot), &v1alpha1.AppServiceSlot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAppServiceSlots) Update(appServiceSlot *v1alpha1.AppServiceSlot) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAppServiceSlots) UpdateStatus(appServiceSlot *v1alpha1.AppServiceSlot) (*v1alpha1.AppServiceSlot, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(appserviceslotsResource, "status", appServiceSlot), &v1alpha1.AppServiceSlot{})
+		Invokes(testing.NewUpdateSubresourceAction(appserviceslotsResource, "status", c.ns, appServiceSlot), &v1alpha1.AppServiceSlot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAppServiceSlots) UpdateStatus(appServiceSlot *v1alpha1.AppServiceSl
 // Delete takes name of the appServiceSlot and deletes it. Returns an error if one occurs.
 func (c *FakeAppServiceSlots) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(appserviceslotsResource, name), &v1alpha1.AppServiceSlot{})
+		Invokes(testing.NewDeleteAction(appserviceslotsResource, c.ns, name), &v1alpha1.AppServiceSlot{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAppServiceSlots) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(appserviceslotsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(appserviceslotsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AppServiceSlotList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAppServiceSlots) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched appServiceSlot.
 func (c *FakeAppServiceSlots) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppServiceSlot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(appserviceslotsResource, name, pt, data, subresources...), &v1alpha1.AppServiceSlot{})
+		Invokes(testing.NewPatchSubresourceAction(appserviceslotsResource, c.ns, name, pt, data, subresources...), &v1alpha1.AppServiceSlot{})
+
 	if obj == nil {
 		return nil, err
 	}

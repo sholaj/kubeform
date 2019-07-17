@@ -31,6 +31,7 @@ import (
 // FakeDirectoryServiceLogSubscriptions implements DirectoryServiceLogSubscriptionInterface
 type FakeDirectoryServiceLogSubscriptions struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var directoryservicelogsubscriptionsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "directoryservicelogsubscriptions"}
@@ -40,7 +41,8 @@ var directoryservicelogsubscriptionsKind = schema.GroupVersionKind{Group: "aws.k
 // Get takes name of the directoryServiceLogSubscription, and returns the corresponding directoryServiceLogSubscription object, and an error if there is any.
 func (c *FakeDirectoryServiceLogSubscriptions) Get(name string, options v1.GetOptions) (result *v1alpha1.DirectoryServiceLogSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(directoryservicelogsubscriptionsResource, name), &v1alpha1.DirectoryServiceLogSubscription{})
+		Invokes(testing.NewGetAction(directoryservicelogsubscriptionsResource, c.ns, name), &v1alpha1.DirectoryServiceLogSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDirectoryServiceLogSubscriptions) Get(name string, options v1.GetOp
 // List takes label and field selectors, and returns the list of DirectoryServiceLogSubscriptions that match those selectors.
 func (c *FakeDirectoryServiceLogSubscriptions) List(opts v1.ListOptions) (result *v1alpha1.DirectoryServiceLogSubscriptionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(directoryservicelogsubscriptionsResource, directoryservicelogsubscriptionsKind, opts), &v1alpha1.DirectoryServiceLogSubscriptionList{})
+		Invokes(testing.NewListAction(directoryservicelogsubscriptionsResource, directoryservicelogsubscriptionsKind, c.ns, opts), &v1alpha1.DirectoryServiceLogSubscriptionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDirectoryServiceLogSubscriptions) List(opts v1.ListOptions) (result
 // Watch returns a watch.Interface that watches the requested directoryServiceLogSubscriptions.
 func (c *FakeDirectoryServiceLogSubscriptions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(directoryservicelogsubscriptionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(directoryservicelogsubscriptionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a directoryServiceLogSubscription and creates it.  Returns the server's representation of the directoryServiceLogSubscription, and an error, if there is any.
 func (c *FakeDirectoryServiceLogSubscriptions) Create(directoryServiceLogSubscription *v1alpha1.DirectoryServiceLogSubscription) (result *v1alpha1.DirectoryServiceLogSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(directoryservicelogsubscriptionsResource, directoryServiceLogSubscription), &v1alpha1.DirectoryServiceLogSubscription{})
+		Invokes(testing.NewCreateAction(directoryservicelogsubscriptionsResource, c.ns, directoryServiceLogSubscription), &v1alpha1.DirectoryServiceLogSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDirectoryServiceLogSubscriptions) Create(directoryServiceLogSubscri
 // Update takes the representation of a directoryServiceLogSubscription and updates it. Returns the server's representation of the directoryServiceLogSubscription, and an error, if there is any.
 func (c *FakeDirectoryServiceLogSubscriptions) Update(directoryServiceLogSubscription *v1alpha1.DirectoryServiceLogSubscription) (result *v1alpha1.DirectoryServiceLogSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(directoryservicelogsubscriptionsResource, directoryServiceLogSubscription), &v1alpha1.DirectoryServiceLogSubscription{})
+		Invokes(testing.NewUpdateAction(directoryservicelogsubscriptionsResource, c.ns, directoryServiceLogSubscription), &v1alpha1.DirectoryServiceLogSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDirectoryServiceLogSubscriptions) Update(directoryServiceLogSubscri
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDirectoryServiceLogSubscriptions) UpdateStatus(directoryServiceLogSubscription *v1alpha1.DirectoryServiceLogSubscription) (*v1alpha1.DirectoryServiceLogSubscription, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(directoryservicelogsubscriptionsResource, "status", directoryServiceLogSubscription), &v1alpha1.DirectoryServiceLogSubscription{})
+		Invokes(testing.NewUpdateSubresourceAction(directoryservicelogsubscriptionsResource, "status", c.ns, directoryServiceLogSubscription), &v1alpha1.DirectoryServiceLogSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDirectoryServiceLogSubscriptions) UpdateStatus(directoryServiceLogS
 // Delete takes name of the directoryServiceLogSubscription and deletes it. Returns an error if one occurs.
 func (c *FakeDirectoryServiceLogSubscriptions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(directoryservicelogsubscriptionsResource, name), &v1alpha1.DirectoryServiceLogSubscription{})
+		Invokes(testing.NewDeleteAction(directoryservicelogsubscriptionsResource, c.ns, name), &v1alpha1.DirectoryServiceLogSubscription{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDirectoryServiceLogSubscriptions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(directoryservicelogsubscriptionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(directoryservicelogsubscriptionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DirectoryServiceLogSubscriptionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDirectoryServiceLogSubscriptions) DeleteCollection(options *v1.Dele
 // Patch applies the patch and returns the patched directoryServiceLogSubscription.
 func (c *FakeDirectoryServiceLogSubscriptions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DirectoryServiceLogSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(directoryservicelogsubscriptionsResource, name, pt, data, subresources...), &v1alpha1.DirectoryServiceLogSubscription{})
+		Invokes(testing.NewPatchSubresourceAction(directoryservicelogsubscriptionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DirectoryServiceLogSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}

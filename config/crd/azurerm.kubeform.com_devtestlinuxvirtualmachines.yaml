@@ -397,23 +397,47 @@ spec:
           type: object
         spec:
           properties:
-            allow_claim:
+            allowClaim:
               type: boolean
-            disallow_public_ip_address:
+            disallowPublicIPAddress:
               type: boolean
-            gallery_image_reference:
-              items: {}
+            galleryImageReference:
+              items:
+                properties:
+                  offer:
+                    type: string
+                  publisher:
+                    type: string
+                  sku:
+                    type: string
+                  version:
+                    type: string
+                required:
+                - offer
+                - publisher
+                - sku
+                - version
+                type: object
               maxItems: 1
               type: array
-            inbound_nat_rule:
-              items: {}
+            inboundNATRule:
+              items:
+                properties:
+                  backendPort:
+                    type: integer
+                  protocol:
+                    type: string
+                required:
+                - backendPort
+                - protocol
+                type: object
               type: array
               uniqueItems: true
-            lab_name:
+            labName:
               type: string
-            lab_subnet_name:
+            labSubnetName:
               type: string
-            lab_virtual_network_id:
+            labVirtualNetworkID:
               type: string
             location:
               type: string
@@ -423,26 +447,36 @@ spec:
               type: string
             password:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
             size:
               type: string
-            ssh_key:
+            sshKey:
               type: string
-            storage_type:
+            storageType:
               type: string
             username:
               type: string
           required:
-          - gallery_image_reference
-          - lab_name
-          - lab_subnet_name
-          - lab_virtual_network_id
+          - galleryImageReference
+          - labName
+          - labSubnetName
+          - labVirtualNetworkID
           - location
           - name
-          - resource_group_name
+          - providerRef
+          - resourceGroupName
           - size
-          - storage_type
+          - storageType
           - username
           type: object
         status:
@@ -454,6 +488,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

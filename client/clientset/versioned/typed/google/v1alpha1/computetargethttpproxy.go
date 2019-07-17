@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// ComputeTargetHttpProxiesGetter has a method to return a ComputeTargetHttpProxyInterface.
+// ComputeTargetHTTPProxiesGetter has a method to return a ComputeTargetHTTPProxyInterface.
 // A group's client should implement this interface.
-type ComputeTargetHttpProxiesGetter interface {
-	ComputeTargetHttpProxies() ComputeTargetHttpProxyInterface
+type ComputeTargetHTTPProxiesGetter interface {
+	ComputeTargetHTTPProxies(namespace string) ComputeTargetHTTPProxyInterface
 }
 
-// ComputeTargetHttpProxyInterface has methods to work with ComputeTargetHttpProxy resources.
-type ComputeTargetHttpProxyInterface interface {
-	Create(*v1alpha1.ComputeTargetHttpProxy) (*v1alpha1.ComputeTargetHttpProxy, error)
-	Update(*v1alpha1.ComputeTargetHttpProxy) (*v1alpha1.ComputeTargetHttpProxy, error)
-	UpdateStatus(*v1alpha1.ComputeTargetHttpProxy) (*v1alpha1.ComputeTargetHttpProxy, error)
+// ComputeTargetHTTPProxyInterface has methods to work with ComputeTargetHTTPProxy resources.
+type ComputeTargetHTTPProxyInterface interface {
+	Create(*v1alpha1.ComputeTargetHTTPProxy) (*v1alpha1.ComputeTargetHTTPProxy, error)
+	Update(*v1alpha1.ComputeTargetHTTPProxy) (*v1alpha1.ComputeTargetHTTPProxy, error)
+	UpdateStatus(*v1alpha1.ComputeTargetHTTPProxy) (*v1alpha1.ComputeTargetHTTPProxy, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.ComputeTargetHttpProxy, error)
-	List(opts v1.ListOptions) (*v1alpha1.ComputeTargetHttpProxyList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.ComputeTargetHTTPProxy, error)
+	List(opts v1.ListOptions) (*v1alpha1.ComputeTargetHTTPProxyList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeTargetHttpProxy, err error)
-	ComputeTargetHttpProxyExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeTargetHTTPProxy, err error)
+	ComputeTargetHTTPProxyExpansion
 }
 
-// computeTargetHttpProxies implements ComputeTargetHttpProxyInterface
-type computeTargetHttpProxies struct {
+// computeTargetHTTPProxies implements ComputeTargetHTTPProxyInterface
+type computeTargetHTTPProxies struct {
 	client rest.Interface
+	ns     string
 }
 
-// newComputeTargetHttpProxies returns a ComputeTargetHttpProxies
-func newComputeTargetHttpProxies(c *GoogleV1alpha1Client) *computeTargetHttpProxies {
-	return &computeTargetHttpProxies{
+// newComputeTargetHTTPProxies returns a ComputeTargetHTTPProxies
+func newComputeTargetHTTPProxies(c *GoogleV1alpha1Client, namespace string) *computeTargetHTTPProxies {
+	return &computeTargetHTTPProxies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the computeTargetHttpProxy, and returns the corresponding computeTargetHttpProxy object, and an error if there is any.
-func (c *computeTargetHttpProxies) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeTargetHttpProxy, err error) {
-	result = &v1alpha1.ComputeTargetHttpProxy{}
+// Get takes name of the computeTargetHTTPProxy, and returns the corresponding computeTargetHTTPProxy object, and an error if there is any.
+func (c *computeTargetHTTPProxies) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeTargetHTTPProxy, err error) {
+	result = &v1alpha1.ComputeTargetHTTPProxy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computetargethttpproxies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *computeTargetHttpProxies) Get(name string, options v1.GetOptions) (resu
 	return
 }
 
-// List takes label and field selectors, and returns the list of ComputeTargetHttpProxies that match those selectors.
-func (c *computeTargetHttpProxies) List(opts v1.ListOptions) (result *v1alpha1.ComputeTargetHttpProxyList, err error) {
+// List takes label and field selectors, and returns the list of ComputeTargetHTTPProxies that match those selectors.
+func (c *computeTargetHTTPProxies) List(opts v1.ListOptions) (result *v1alpha1.ComputeTargetHTTPProxyList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.ComputeTargetHttpProxyList{}
+	result = &v1alpha1.ComputeTargetHTTPProxyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computetargethttpproxies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *computeTargetHttpProxies) List(opts v1.ListOptions) (result *v1alpha1.C
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested computeTargetHttpProxies.
-func (c *computeTargetHttpProxies) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested computeTargetHTTPProxies.
+func (c *computeTargetHTTPProxies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computetargethttpproxies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a computeTargetHttpProxy and creates it.  Returns the server's representation of the computeTargetHttpProxy, and an error, if there is any.
-func (c *computeTargetHttpProxies) Create(computeTargetHttpProxy *v1alpha1.ComputeTargetHttpProxy) (result *v1alpha1.ComputeTargetHttpProxy, err error) {
-	result = &v1alpha1.ComputeTargetHttpProxy{}
+// Create takes the representation of a computeTargetHTTPProxy and creates it.  Returns the server's representation of the computeTargetHTTPProxy, and an error, if there is any.
+func (c *computeTargetHTTPProxies) Create(computeTargetHTTPProxy *v1alpha1.ComputeTargetHTTPProxy) (result *v1alpha1.ComputeTargetHTTPProxy, err error) {
+	result = &v1alpha1.ComputeTargetHTTPProxy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computetargethttpproxies").
-		Body(computeTargetHttpProxy).
+		Body(computeTargetHTTPProxy).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a computeTargetHttpProxy and updates it. Returns the server's representation of the computeTargetHttpProxy, and an error, if there is any.
-func (c *computeTargetHttpProxies) Update(computeTargetHttpProxy *v1alpha1.ComputeTargetHttpProxy) (result *v1alpha1.ComputeTargetHttpProxy, err error) {
-	result = &v1alpha1.ComputeTargetHttpProxy{}
+// Update takes the representation of a computeTargetHTTPProxy and updates it. Returns the server's representation of the computeTargetHTTPProxy, and an error, if there is any.
+func (c *computeTargetHTTPProxies) Update(computeTargetHTTPProxy *v1alpha1.ComputeTargetHTTPProxy) (result *v1alpha1.ComputeTargetHTTPProxy, err error) {
+	result = &v1alpha1.ComputeTargetHTTPProxy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computetargethttpproxies").
-		Name(computeTargetHttpProxy.Name).
-		Body(computeTargetHttpProxy).
+		Name(computeTargetHTTPProxy.Name).
+		Body(computeTargetHTTPProxy).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *computeTargetHttpProxies) Update(computeTargetHttpProxy *v1alpha1.Compu
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *computeTargetHttpProxies) UpdateStatus(computeTargetHttpProxy *v1alpha1.ComputeTargetHttpProxy) (result *v1alpha1.ComputeTargetHttpProxy, err error) {
-	result = &v1alpha1.ComputeTargetHttpProxy{}
+func (c *computeTargetHTTPProxies) UpdateStatus(computeTargetHTTPProxy *v1alpha1.ComputeTargetHTTPProxy) (result *v1alpha1.ComputeTargetHTTPProxy, err error) {
+	result = &v1alpha1.ComputeTargetHTTPProxy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computetargethttpproxies").
-		Name(computeTargetHttpProxy.Name).
+		Name(computeTargetHTTPProxy.Name).
 		SubResource("status").
-		Body(computeTargetHttpProxy).
+		Body(computeTargetHTTPProxy).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the computeTargetHttpProxy and deletes it. Returns an error if one occurs.
-func (c *computeTargetHttpProxies) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the computeTargetHTTPProxy and deletes it. Returns an error if one occurs.
+func (c *computeTargetHTTPProxies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computetargethttpproxies").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *computeTargetHttpProxies) Delete(name string, options *v1.DeleteOptions
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *computeTargetHttpProxies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *computeTargetHTTPProxies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computetargethttpproxies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *computeTargetHttpProxies) DeleteCollection(options *v1.DeleteOptions, l
 		Error()
 }
 
-// Patch applies the patch and returns the patched computeTargetHttpProxy.
-func (c *computeTargetHttpProxies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeTargetHttpProxy, err error) {
-	result = &v1alpha1.ComputeTargetHttpProxy{}
+// Patch applies the patch and returns the patched computeTargetHTTPProxy.
+func (c *computeTargetHTTPProxies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeTargetHTTPProxy, err error) {
+	result = &v1alpha1.ComputeTargetHTTPProxy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computetargethttpproxies").
 		SubResource(subresources...).
 		Name(name).

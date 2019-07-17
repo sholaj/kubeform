@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/digitalocean/v1alpha1"
 )
 
-// FloatingIpAssignmentInformer provides access to a shared informer and lister for
-// FloatingIpAssignments.
-type FloatingIpAssignmentInformer interface {
+// FloatingIPAssignmentInformer provides access to a shared informer and lister for
+// FloatingIPAssignments.
+type FloatingIPAssignmentInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.FloatingIpAssignmentLister
+	Lister() v1alpha1.FloatingIPAssignmentLister
 }
 
-type floatingIpAssignmentInformer struct {
+type floatingIPAssignmentInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewFloatingIpAssignmentInformer constructs a new informer for FloatingIpAssignment type.
+// NewFloatingIPAssignmentInformer constructs a new informer for FloatingIPAssignment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFloatingIpAssignmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredFloatingIpAssignmentInformer(client, resyncPeriod, indexers, nil)
+func NewFloatingIPAssignmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredFloatingIPAssignmentInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredFloatingIpAssignmentInformer constructs a new informer for FloatingIpAssignment type.
+// NewFilteredFloatingIPAssignmentInformer constructs a new informer for FloatingIPAssignment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredFloatingIpAssignmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredFloatingIPAssignmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.DigitaloceanV1alpha1().FloatingIpAssignments().List(options)
+				return client.DigitaloceanV1alpha1().FloatingIPAssignments(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.DigitaloceanV1alpha1().FloatingIpAssignments().Watch(options)
+				return client.DigitaloceanV1alpha1().FloatingIPAssignments(namespace).Watch(options)
 			},
 		},
-		&digitaloceanv1alpha1.FloatingIpAssignment{},
+		&digitaloceanv1alpha1.FloatingIPAssignment{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *floatingIpAssignmentInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredFloatingIpAssignmentInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *floatingIPAssignmentInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredFloatingIPAssignmentInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *floatingIpAssignmentInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&digitaloceanv1alpha1.FloatingIpAssignment{}, f.defaultInformer)
+func (f *floatingIPAssignmentInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&digitaloceanv1alpha1.FloatingIPAssignment{}, f.defaultInformer)
 }
 
-func (f *floatingIpAssignmentInformer) Lister() v1alpha1.FloatingIpAssignmentLister {
-	return v1alpha1.NewFloatingIpAssignmentLister(f.Informer().GetIndexer())
+func (f *floatingIPAssignmentInformer) Lister() v1alpha1.FloatingIPAssignmentLister {
+	return v1alpha1.NewFloatingIPAssignmentLister(f.Informer().GetIndexer())
 }

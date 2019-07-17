@@ -397,63 +397,90 @@ spec:
           type: object
         spec:
           properties:
-            allow_major_version_upgrade:
+            allowMajorVersionUpgrade:
               type: boolean
-            auto_minor_version_upgrade:
+            autoMinorVersionUpgrade:
               type: boolean
-            copy_tags_to_snapshot:
+            copyTagsToSnapshot:
               type: boolean
-            deletion_protection:
+            deletionProtection:
               type: boolean
             domain:
               type: string
-            domain_iam_role_name:
+            domainIamRoleName:
               type: string
-            enabled_cloudwatch_logs_exports:
+            enabledCloudwatchLogsExports:
               items:
                 type: string
               type: array
-            final_snapshot_identifier:
+            finalSnapshotIdentifier:
               type: string
-            iam_database_authentication_enabled:
+            iamDatabaseAuthenticationEnabled:
               type: boolean
-            instance_class:
+            instanceClass:
               type: string
             iops:
               type: integer
-            max_allocated_storage:
+            maxAllocatedStorage:
               type: integer
-            monitoring_interval:
+            monitoringInterval:
               type: integer
             password:
               type: string
-            performance_insights_enabled:
+            performanceInsightsEnabled:
               type: boolean
-            publicly_accessible:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            publiclyAccessible:
               type: boolean
-            replicate_source_db:
+            replicateSourceDb:
               type: string
-            s3_import:
-              items: {}
+            s3Import:
+              items:
+                properties:
+                  bucketName:
+                    type: string
+                  bucketPrefix:
+                    type: string
+                  ingestionRole:
+                    type: string
+                  sourceEngine:
+                    type: string
+                  sourceEngineVersion:
+                    type: string
+                required:
+                - bucketName
+                - ingestionRole
+                - sourceEngine
+                - sourceEngineVersion
+                type: object
               maxItems: 1
               type: array
-            security_group_names:
+            securityGroupNames:
               items:
                 type: string
               type: array
               uniqueItems: true
-            skip_final_snapshot:
+            skipFinalSnapshot:
               type: boolean
-            snapshot_identifier:
+            snapshotIdentifier:
               type: string
-            storage_encrypted:
+            storageEncrypted:
               type: boolean
             tags:
               additionalProperties:
                 type: string
               type: object
           required:
-          - instance_class
+          - instanceClass
+          - providerRef
           type: object
         status:
           properties:
@@ -464,6 +491,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

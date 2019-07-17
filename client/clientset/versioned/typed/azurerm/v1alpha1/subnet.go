@@ -32,7 +32,7 @@ import (
 // SubnetsGetter has a method to return a SubnetInterface.
 // A group's client should implement this interface.
 type SubnetsGetter interface {
-	Subnets() SubnetInterface
+	Subnets(namespace string) SubnetInterface
 }
 
 // SubnetInterface has methods to work with Subnet resources.
@@ -52,12 +52,14 @@ type SubnetInterface interface {
 // subnets implements SubnetInterface
 type subnets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSubnets returns a Subnets
-func newSubnets(c *AzurermV1alpha1Client) *subnets {
+func newSubnets(c *AzurermV1alpha1Client, namespace string) *subnets {
 	return &subnets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSubnets(c *AzurermV1alpha1Client) *subnets {
 func (c *subnets) Get(name string, options v1.GetOptions) (result *v1alpha1.Subnet, err error) {
 	result = &v1alpha1.Subnet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("subnets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *subnets) List(opts v1.ListOptions) (result *v1alpha1.SubnetList, err er
 	}
 	result = &v1alpha1.SubnetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("subnets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *subnets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("subnets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *subnets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *subnets) Create(subnet *v1alpha1.Subnet) (result *v1alpha1.Subnet, err error) {
 	result = &v1alpha1.Subnet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("subnets").
 		Body(subnet).
 		Do().
@@ -118,6 +124,7 @@ func (c *subnets) Create(subnet *v1alpha1.Subnet) (result *v1alpha1.Subnet, err 
 func (c *subnets) Update(subnet *v1alpha1.Subnet) (result *v1alpha1.Subnet, err error) {
 	result = &v1alpha1.Subnet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("subnets").
 		Name(subnet.Name).
 		Body(subnet).
@@ -132,6 +139,7 @@ func (c *subnets) Update(subnet *v1alpha1.Subnet) (result *v1alpha1.Subnet, err 
 func (c *subnets) UpdateStatus(subnet *v1alpha1.Subnet) (result *v1alpha1.Subnet, err error) {
 	result = &v1alpha1.Subnet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("subnets").
 		Name(subnet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *subnets) UpdateStatus(subnet *v1alpha1.Subnet) (result *v1alpha1.Subnet
 // Delete takes name of the subnet and deletes it. Returns an error if one occurs.
 func (c *subnets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("subnets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *subnets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("subnets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *subnets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Lis
 func (c *subnets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Subnet, err error) {
 	result = &v1alpha1.Subnet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("subnets").
 		SubResource(subresources...).
 		Name(name).

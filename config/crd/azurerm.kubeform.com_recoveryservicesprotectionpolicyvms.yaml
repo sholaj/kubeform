@@ -398,29 +398,112 @@ spec:
         spec:
           properties:
             backup:
-              items: {}
+              items:
+                properties:
+                  frequency:
+                    type: string
+                  time:
+                    type: string
+                  weekdays:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                required:
+                - frequency
+                - time
+                type: object
               maxItems: 1
               type: array
             name:
               type: string
-            recovery_vault_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            recoveryVaultName:
               type: string
-            resource_group_name:
+            resourceGroupName:
               type: string
-            retention_daily:
-              items: {}
+            retentionDaily:
+              items:
+                properties:
+                  count:
+                    type: integer
+                required:
+                - count
+                type: object
               maxItems: 1
               type: array
-            retention_monthly:
-              items: {}
+            retentionMonthly:
+              items:
+                properties:
+                  count:
+                    type: integer
+                  weekdays:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                  weeks:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                required:
+                - count
+                - weekdays
+                - weeks
+                type: object
               maxItems: 1
               type: array
-            retention_weekly:
-              items: {}
+            retentionWeekly:
+              items:
+                properties:
+                  count:
+                    type: integer
+                  weekdays:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                required:
+                - count
+                - weekdays
+                type: object
               maxItems: 1
               type: array
-            retention_yearly:
-              items: {}
+            retentionYearly:
+              items:
+                properties:
+                  count:
+                    type: integer
+                  months:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                  weekdays:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                  weeks:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                required:
+                - count
+                - months
+                - weekdays
+                - weeks
+                type: object
               maxItems: 1
               type: array
             timezone:
@@ -428,8 +511,9 @@ spec:
           required:
           - backup
           - name
-          - recovery_vault_name
-          - resource_group_name
+          - providerRef
+          - recoveryVaultName
+          - resourceGroupName
           type: object
         status:
           properties:
@@ -440,6 +524,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

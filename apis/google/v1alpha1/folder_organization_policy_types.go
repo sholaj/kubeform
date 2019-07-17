@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,50 +19,51 @@ type FolderOrganizationPolicy struct {
 }
 
 type FolderOrganizationPolicySpecBooleanPolicy struct {
-	Enforced bool `json:"enforced"`
+	Enforced bool `json:"enforced" tf:"enforced"`
 }
 
 type FolderOrganizationPolicySpecListPolicyAllow struct {
 	// +optional
-	All bool `json:"all,omitempty"`
+	All bool `json:"all,omitempty" tf:"all,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Values []string `json:"values,omitempty"`
+	Values []string `json:"values,omitempty" tf:"values,omitempty"`
 }
 
 type FolderOrganizationPolicySpecListPolicyDeny struct {
 	// +optional
-	All bool `json:"all,omitempty"`
+	All bool `json:"all,omitempty" tf:"all,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Values []string `json:"values,omitempty"`
+	Values []string `json:"values,omitempty" tf:"values,omitempty"`
 }
 
 type FolderOrganizationPolicySpecListPolicy struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Allow *[]FolderOrganizationPolicySpecListPolicy `json:"allow,omitempty"`
+	Allow []FolderOrganizationPolicySpecListPolicyAllow `json:"allow,omitempty" tf:"allow,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Deny *[]FolderOrganizationPolicySpecListPolicy `json:"deny,omitempty"`
+	Deny []FolderOrganizationPolicySpecListPolicyDeny `json:"deny,omitempty" tf:"deny,omitempty"`
 }
 
 type FolderOrganizationPolicySpecRestorePolicy struct {
-	Default bool `json:"default"`
+	Default bool `json:"default" tf:"default"`
 }
 
 type FolderOrganizationPolicySpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	BooleanPolicy *[]FolderOrganizationPolicySpec `json:"boolean_policy,omitempty"`
-	Constraint    string                          `json:"constraint"`
-	Folder        string                          `json:"folder"`
+	BooleanPolicy []FolderOrganizationPolicySpecBooleanPolicy `json:"booleanPolicy,omitempty" tf:"boolean_policy,omitempty"`
+	Constraint    string                                      `json:"constraint" tf:"constraint"`
+	Folder        string                                      `json:"folder" tf:"folder"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ListPolicy *[]FolderOrganizationPolicySpec `json:"list_policy,omitempty"`
+	ListPolicy []FolderOrganizationPolicySpecListPolicy `json:"listPolicy,omitempty" tf:"list_policy,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	RestorePolicy *[]FolderOrganizationPolicySpec `json:"restore_policy,omitempty"`
+	RestorePolicy []FolderOrganizationPolicySpecRestorePolicy `json:"restorePolicy,omitempty" tf:"restore_policy,omitempty"`
+	ProviderRef   core.LocalObjectReference                   `json:"providerRef" tf:"-"`
 }
 
 type FolderOrganizationPolicyStatus struct {
@@ -70,7 +71,9 @@ type FolderOrganizationPolicyStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

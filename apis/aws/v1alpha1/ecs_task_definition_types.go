@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,68 +20,69 @@ type EcsTaskDefinition struct {
 
 type EcsTaskDefinitionSpecPlacementConstraints struct {
 	// +optional
-	Expression string `json:"expression,omitempty"`
-	Type       string `json:"type"`
+	Expression string `json:"expression,omitempty" tf:"expression,omitempty"`
+	Type       string `json:"type" tf:"type"`
 }
 
 type EcsTaskDefinitionSpecProxyConfiguration struct {
-	ContainerName string `json:"container_name"`
+	ContainerName string `json:"containerName" tf:"container_name"`
 	// +optional
-	Properties map[string]string `json:"properties,omitempty"`
+	Properties map[string]string `json:"properties,omitempty" tf:"properties,omitempty"`
 	// +optional
-	Type string `json:"type,omitempty"`
+	Type string `json:"type,omitempty" tf:"type,omitempty"`
 }
 
 type EcsTaskDefinitionSpecVolumeDockerVolumeConfiguration struct {
 	// +optional
-	Autoprovision bool `json:"autoprovision,omitempty"`
+	Autoprovision bool `json:"autoprovision,omitempty" tf:"autoprovision,omitempty"`
 	// +optional
-	Driver string `json:"driver,omitempty"`
+	Driver string `json:"driver,omitempty" tf:"driver,omitempty"`
 	// +optional
-	DriverOpts map[string]string `json:"driver_opts,omitempty"`
+	DriverOpts map[string]string `json:"driverOpts,omitempty" tf:"driver_opts,omitempty"`
 	// +optional
-	Labels map[string]string `json:"labels,omitempty"`
+	Labels map[string]string `json:"labels,omitempty" tf:"labels,omitempty"`
 }
 
 type EcsTaskDefinitionSpecVolume struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	DockerVolumeConfiguration *[]EcsTaskDefinitionSpecVolume `json:"docker_volume_configuration,omitempty"`
+	DockerVolumeConfiguration []EcsTaskDefinitionSpecVolumeDockerVolumeConfiguration `json:"dockerVolumeConfiguration,omitempty" tf:"docker_volume_configuration,omitempty"`
 	// +optional
-	HostPath string `json:"host_path,omitempty"`
-	Name     string `json:"name"`
+	HostPath string `json:"hostPath,omitempty" tf:"host_path,omitempty"`
+	Name     string `json:"name" tf:"name"`
 }
 
 type EcsTaskDefinitionSpec struct {
-	ContainerDefinitions string `json:"container_definitions"`
+	ContainerDefinitions string `json:"containerDefinitions" tf:"container_definitions"`
 	// +optional
-	Cpu string `json:"cpu,omitempty"`
+	Cpu string `json:"cpu,omitempty" tf:"cpu,omitempty"`
 	// +optional
-	ExecutionRoleArn string `json:"execution_role_arn,omitempty"`
-	Family           string `json:"family"`
+	ExecutionRoleArn string `json:"executionRoleArn,omitempty" tf:"execution_role_arn,omitempty"`
+	Family           string `json:"family" tf:"family"`
 	// +optional
-	IpcMode string `json:"ipc_mode,omitempty"`
+	IpcMode string `json:"ipcMode,omitempty" tf:"ipc_mode,omitempty"`
 	// +optional
-	Memory string `json:"memory,omitempty"`
+	Memory string `json:"memory,omitempty" tf:"memory,omitempty"`
 	// +optional
-	PidMode string `json:"pid_mode,omitempty"`
+	PidMode string `json:"pidMode,omitempty" tf:"pid_mode,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=10
 	// +kubebuilder:validation:UniqueItems=true
-	PlacementConstraints *[]EcsTaskDefinitionSpec `json:"placement_constraints,omitempty"`
+	PlacementConstraints []EcsTaskDefinitionSpecPlacementConstraints `json:"placementConstraints,omitempty" tf:"placement_constraints,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ProxyConfiguration *[]EcsTaskDefinitionSpec `json:"proxy_configuration,omitempty"`
+	ProxyConfiguration []EcsTaskDefinitionSpecProxyConfiguration `json:"proxyConfiguration,omitempty" tf:"proxy_configuration,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	RequiresCompatibilities []string `json:"requires_compatibilities,omitempty"`
+	RequiresCompatibilities []string `json:"requiresCompatibilities,omitempty" tf:"requires_compatibilities,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	TaskRoleArn string `json:"task_role_arn,omitempty"`
+	TaskRoleArn string `json:"taskRoleArn,omitempty" tf:"task_role_arn,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Volume *[]EcsTaskDefinitionSpec `json:"volume,omitempty"`
+	Volume      []EcsTaskDefinitionSpecVolume `json:"volume,omitempty" tf:"volume,omitempty"`
+	ProviderRef core.LocalObjectReference     `json:"providerRef" tf:"-"`
 }
 
 type EcsTaskDefinitionStatus struct {
@@ -89,7 +90,9 @@ type EcsTaskDefinitionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

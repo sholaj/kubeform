@@ -32,7 +32,7 @@ import (
 // ApiGatewayDocumentationPartsGetter has a method to return a ApiGatewayDocumentationPartInterface.
 // A group's client should implement this interface.
 type ApiGatewayDocumentationPartsGetter interface {
-	ApiGatewayDocumentationParts() ApiGatewayDocumentationPartInterface
+	ApiGatewayDocumentationParts(namespace string) ApiGatewayDocumentationPartInterface
 }
 
 // ApiGatewayDocumentationPartInterface has methods to work with ApiGatewayDocumentationPart resources.
@@ -52,12 +52,14 @@ type ApiGatewayDocumentationPartInterface interface {
 // apiGatewayDocumentationParts implements ApiGatewayDocumentationPartInterface
 type apiGatewayDocumentationParts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiGatewayDocumentationParts returns a ApiGatewayDocumentationParts
-func newApiGatewayDocumentationParts(c *AwsV1alpha1Client) *apiGatewayDocumentationParts {
+func newApiGatewayDocumentationParts(c *AwsV1alpha1Client, namespace string) *apiGatewayDocumentationParts {
 	return &apiGatewayDocumentationParts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiGatewayDocumentationParts(c *AwsV1alpha1Client) *apiGatewayDocumentat
 func (c *apiGatewayDocumentationParts) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayDocumentationPart, err error) {
 	result = &v1alpha1.ApiGatewayDocumentationPart{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaydocumentationparts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiGatewayDocumentationParts) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.ApiGatewayDocumentationPartList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaydocumentationparts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiGatewayDocumentationParts) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaydocumentationparts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiGatewayDocumentationParts) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *apiGatewayDocumentationParts) Create(apiGatewayDocumentationPart *v1alpha1.ApiGatewayDocumentationPart) (result *v1alpha1.ApiGatewayDocumentationPart, err error) {
 	result = &v1alpha1.ApiGatewayDocumentationPart{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apigatewaydocumentationparts").
 		Body(apiGatewayDocumentationPart).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiGatewayDocumentationParts) Create(apiGatewayDocumentationPart *v1alp
 func (c *apiGatewayDocumentationParts) Update(apiGatewayDocumentationPart *v1alpha1.ApiGatewayDocumentationPart) (result *v1alpha1.ApiGatewayDocumentationPart, err error) {
 	result = &v1alpha1.ApiGatewayDocumentationPart{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewaydocumentationparts").
 		Name(apiGatewayDocumentationPart.Name).
 		Body(apiGatewayDocumentationPart).
@@ -132,6 +139,7 @@ func (c *apiGatewayDocumentationParts) Update(apiGatewayDocumentationPart *v1alp
 func (c *apiGatewayDocumentationParts) UpdateStatus(apiGatewayDocumentationPart *v1alpha1.ApiGatewayDocumentationPart) (result *v1alpha1.ApiGatewayDocumentationPart, err error) {
 	result = &v1alpha1.ApiGatewayDocumentationPart{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewaydocumentationparts").
 		Name(apiGatewayDocumentationPart.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiGatewayDocumentationParts) UpdateStatus(apiGatewayDocumentationPart 
 // Delete takes name of the apiGatewayDocumentationPart and deletes it. Returns an error if one occurs.
 func (c *apiGatewayDocumentationParts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewaydocumentationparts").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiGatewayDocumentationParts) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewaydocumentationparts").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiGatewayDocumentationParts) DeleteCollection(options *v1.DeleteOption
 func (c *apiGatewayDocumentationParts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayDocumentationPart, err error) {
 	result = &v1alpha1.ApiGatewayDocumentationPart{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apigatewaydocumentationparts").
 		SubResource(subresources...).
 		Name(name).

@@ -41,32 +41,33 @@ type AppServiceCustomHostnameBindingInformer interface {
 type appServiceCustomHostnameBindingInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewAppServiceCustomHostnameBindingInformer constructs a new informer for AppServiceCustomHostnameBinding type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAppServiceCustomHostnameBindingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAppServiceCustomHostnameBindingInformer(client, resyncPeriod, indexers, nil)
+func NewAppServiceCustomHostnameBindingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAppServiceCustomHostnameBindingInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredAppServiceCustomHostnameBindingInformer constructs a new informer for AppServiceCustomHostnameBinding type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAppServiceCustomHostnameBindingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAppServiceCustomHostnameBindingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().AppServiceCustomHostnameBindings().List(options)
+				return client.AzurermV1alpha1().AppServiceCustomHostnameBindings(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().AppServiceCustomHostnameBindings().Watch(options)
+				return client.AzurermV1alpha1().AppServiceCustomHostnameBindings(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.AppServiceCustomHostnameBinding{},
@@ -76,7 +77,7 @@ func NewFilteredAppServiceCustomHostnameBindingInformer(client versioned.Interfa
 }
 
 func (f *appServiceCustomHostnameBindingInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAppServiceCustomHostnameBindingInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredAppServiceCustomHostnameBindingInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *appServiceCustomHostnameBindingInformer) Informer() cache.SharedIndexInformer {

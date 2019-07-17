@@ -41,32 +41,33 @@ type EmrSecurityConfigurationInformer interface {
 type emrSecurityConfigurationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewEmrSecurityConfigurationInformer constructs a new informer for EmrSecurityConfiguration type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewEmrSecurityConfigurationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredEmrSecurityConfigurationInformer(client, resyncPeriod, indexers, nil)
+func NewEmrSecurityConfigurationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredEmrSecurityConfigurationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredEmrSecurityConfigurationInformer constructs a new informer for EmrSecurityConfiguration type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredEmrSecurityConfigurationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredEmrSecurityConfigurationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().EmrSecurityConfigurations().List(options)
+				return client.AwsV1alpha1().EmrSecurityConfigurations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().EmrSecurityConfigurations().Watch(options)
+				return client.AwsV1alpha1().EmrSecurityConfigurations(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.EmrSecurityConfiguration{},
@@ -76,7 +77,7 @@ func NewFilteredEmrSecurityConfigurationInformer(client versioned.Interface, res
 }
 
 func (f *emrSecurityConfigurationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredEmrSecurityConfigurationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredEmrSecurityConfigurationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *emrSecurityConfigurationInformer) Informer() cache.SharedIndexInformer {

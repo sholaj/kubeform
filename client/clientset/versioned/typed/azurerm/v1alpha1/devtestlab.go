@@ -32,7 +32,7 @@ import (
 // DevTestLabsGetter has a method to return a DevTestLabInterface.
 // A group's client should implement this interface.
 type DevTestLabsGetter interface {
-	DevTestLabs() DevTestLabInterface
+	DevTestLabs(namespace string) DevTestLabInterface
 }
 
 // DevTestLabInterface has methods to work with DevTestLab resources.
@@ -52,12 +52,14 @@ type DevTestLabInterface interface {
 // devTestLabs implements DevTestLabInterface
 type devTestLabs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDevTestLabs returns a DevTestLabs
-func newDevTestLabs(c *AzurermV1alpha1Client) *devTestLabs {
+func newDevTestLabs(c *AzurermV1alpha1Client, namespace string) *devTestLabs {
 	return &devTestLabs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDevTestLabs(c *AzurermV1alpha1Client) *devTestLabs {
 func (c *devTestLabs) Get(name string, options v1.GetOptions) (result *v1alpha1.DevTestLab, err error) {
 	result = &v1alpha1.DevTestLab{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("devtestlabs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *devTestLabs) List(opts v1.ListOptions) (result *v1alpha1.DevTestLabList
 	}
 	result = &v1alpha1.DevTestLabList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("devtestlabs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *devTestLabs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("devtestlabs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *devTestLabs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *devTestLabs) Create(devTestLab *v1alpha1.DevTestLab) (result *v1alpha1.DevTestLab, err error) {
 	result = &v1alpha1.DevTestLab{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("devtestlabs").
 		Body(devTestLab).
 		Do().
@@ -118,6 +124,7 @@ func (c *devTestLabs) Create(devTestLab *v1alpha1.DevTestLab) (result *v1alpha1.
 func (c *devTestLabs) Update(devTestLab *v1alpha1.DevTestLab) (result *v1alpha1.DevTestLab, err error) {
 	result = &v1alpha1.DevTestLab{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("devtestlabs").
 		Name(devTestLab.Name).
 		Body(devTestLab).
@@ -132,6 +139,7 @@ func (c *devTestLabs) Update(devTestLab *v1alpha1.DevTestLab) (result *v1alpha1.
 func (c *devTestLabs) UpdateStatus(devTestLab *v1alpha1.DevTestLab) (result *v1alpha1.DevTestLab, err error) {
 	result = &v1alpha1.DevTestLab{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("devtestlabs").
 		Name(devTestLab.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *devTestLabs) UpdateStatus(devTestLab *v1alpha1.DevTestLab) (result *v1a
 // Delete takes name of the devTestLab and deletes it. Returns an error if one occurs.
 func (c *devTestLabs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("devtestlabs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *devTestLabs) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("devtestlabs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *devTestLabs) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *devTestLabs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DevTestLab, err error) {
 	result = &v1alpha1.DevTestLab{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("devtestlabs").
 		SubResource(subresources...).
 		Name(name).

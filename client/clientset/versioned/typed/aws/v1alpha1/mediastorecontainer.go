@@ -32,7 +32,7 @@ import (
 // MediaStoreContainersGetter has a method to return a MediaStoreContainerInterface.
 // A group's client should implement this interface.
 type MediaStoreContainersGetter interface {
-	MediaStoreContainers() MediaStoreContainerInterface
+	MediaStoreContainers(namespace string) MediaStoreContainerInterface
 }
 
 // MediaStoreContainerInterface has methods to work with MediaStoreContainer resources.
@@ -52,12 +52,14 @@ type MediaStoreContainerInterface interface {
 // mediaStoreContainers implements MediaStoreContainerInterface
 type mediaStoreContainers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMediaStoreContainers returns a MediaStoreContainers
-func newMediaStoreContainers(c *AwsV1alpha1Client) *mediaStoreContainers {
+func newMediaStoreContainers(c *AwsV1alpha1Client, namespace string) *mediaStoreContainers {
 	return &mediaStoreContainers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMediaStoreContainers(c *AwsV1alpha1Client) *mediaStoreContainers {
 func (c *mediaStoreContainers) Get(name string, options v1.GetOptions) (result *v1alpha1.MediaStoreContainer, err error) {
 	result = &v1alpha1.MediaStoreContainer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mediastorecontainers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *mediaStoreContainers) List(opts v1.ListOptions) (result *v1alpha1.Media
 	}
 	result = &v1alpha1.MediaStoreContainerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mediastorecontainers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *mediaStoreContainers) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("mediastorecontainers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *mediaStoreContainers) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *mediaStoreContainers) Create(mediaStoreContainer *v1alpha1.MediaStoreContainer) (result *v1alpha1.MediaStoreContainer, err error) {
 	result = &v1alpha1.MediaStoreContainer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("mediastorecontainers").
 		Body(mediaStoreContainer).
 		Do().
@@ -118,6 +124,7 @@ func (c *mediaStoreContainers) Create(mediaStoreContainer *v1alpha1.MediaStoreCo
 func (c *mediaStoreContainers) Update(mediaStoreContainer *v1alpha1.MediaStoreContainer) (result *v1alpha1.MediaStoreContainer, err error) {
 	result = &v1alpha1.MediaStoreContainer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mediastorecontainers").
 		Name(mediaStoreContainer.Name).
 		Body(mediaStoreContainer).
@@ -132,6 +139,7 @@ func (c *mediaStoreContainers) Update(mediaStoreContainer *v1alpha1.MediaStoreCo
 func (c *mediaStoreContainers) UpdateStatus(mediaStoreContainer *v1alpha1.MediaStoreContainer) (result *v1alpha1.MediaStoreContainer, err error) {
 	result = &v1alpha1.MediaStoreContainer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mediastorecontainers").
 		Name(mediaStoreContainer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *mediaStoreContainers) UpdateStatus(mediaStoreContainer *v1alpha1.MediaS
 // Delete takes name of the mediaStoreContainer and deletes it. Returns an error if one occurs.
 func (c *mediaStoreContainers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mediastorecontainers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *mediaStoreContainers) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mediastorecontainers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *mediaStoreContainers) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *mediaStoreContainers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MediaStoreContainer, err error) {
 	result = &v1alpha1.MediaStoreContainer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("mediastorecontainers").
 		SubResource(subresources...).
 		Name(name).

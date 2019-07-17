@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,11 +19,12 @@ type AppautoscalingTarget struct {
 }
 
 type AppautoscalingTargetSpec struct {
-	MaxCapacity       int    `json:"max_capacity"`
-	MinCapacity       int    `json:"min_capacity"`
-	ResourceId        string `json:"resource_id"`
-	ScalableDimension string `json:"scalable_dimension"`
-	ServiceNamespace  string `json:"service_namespace"`
+	MaxCapacity       int                       `json:"maxCapacity" tf:"max_capacity"`
+	MinCapacity       int                       `json:"minCapacity" tf:"min_capacity"`
+	ResourceID        string                    `json:"resourceID" tf:"resource_id"`
+	ScalableDimension string                    `json:"scalableDimension" tf:"scalable_dimension"`
+	ServiceNamespace  string                    `json:"serviceNamespace" tf:"service_namespace"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type AppautoscalingTargetStatus struct {
@@ -31,7 +32,9 @@ type AppautoscalingTargetStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

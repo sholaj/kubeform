@@ -29,8 +29,8 @@ import (
 type ComputeBackendServiceLister interface {
 	// List lists all ComputeBackendServices in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeBackendService, err error)
-	// Get retrieves the ComputeBackendService from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeBackendService, error)
+	// ComputeBackendServices returns an object that can list and get ComputeBackendServices.
+	ComputeBackendServices(namespace string) ComputeBackendServiceNamespaceLister
 	ComputeBackendServiceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeBackendServiceLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the ComputeBackendService from the index for a given name.
-func (s *computeBackendServiceLister) Get(name string) (*v1alpha1.ComputeBackendService, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeBackendServices returns an object that can list and get ComputeBackendServices.
+func (s *computeBackendServiceLister) ComputeBackendServices(namespace string) ComputeBackendServiceNamespaceLister {
+	return computeBackendServiceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeBackendServiceNamespaceLister helps list and get ComputeBackendServices.
+type ComputeBackendServiceNamespaceLister interface {
+	// List lists all ComputeBackendServices in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeBackendService, err error)
+	// Get retrieves the ComputeBackendService from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeBackendService, error)
+	ComputeBackendServiceNamespaceListerExpansion
+}
+
+// computeBackendServiceNamespaceLister implements the ComputeBackendServiceNamespaceLister
+// interface.
+type computeBackendServiceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeBackendServices in the indexer for a given namespace.
+func (s computeBackendServiceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeBackendService, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeBackendService))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeBackendService from the indexer for a given namespace and name.
+func (s computeBackendServiceNamespaceLister) Get(name string) (*v1alpha1.ComputeBackendService, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

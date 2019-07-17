@@ -32,7 +32,7 @@ import (
 // NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationsGetter has a method to return a NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInterface.
 // A group's client should implement this interface.
 type NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationsGetter interface {
-	NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations() NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInterface
+	NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations(namespace string) NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInterface
 }
 
 // NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInterface has methods to work with NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation resources.
@@ -52,12 +52,14 @@ type NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInterface in
 // networkInterfaceApplicationGatewayBackendAddressPoolAssociations implements NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInterface
 type networkInterfaceApplicationGatewayBackendAddressPoolAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations returns a NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations
-func newNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations(c *AzurermV1alpha1Client) *networkInterfaceApplicationGatewayBackendAddressPoolAssociations {
+func newNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations(c *AzurermV1alpha1Client, namespace string) *networkInterfaceApplicationGatewayBackendAddressPoolAssociations {
 	return &networkInterfaceApplicationGatewayBackendAddressPoolAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations(c *Azur
 func (c *networkInterfaceApplicationGatewayBackendAddressPoolAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation, err error) {
 	result = &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkinterfaceapplicationgatewaybackendaddresspoolassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *networkInterfaceApplicationGatewayBackendAddressPoolAssociations) List(
 	}
 	result = &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkinterfaceapplicationgatewaybackendaddresspoolassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *networkInterfaceApplicationGatewayBackendAddressPoolAssociations) Watch
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("networkinterfaceapplicationgatewaybackendaddresspoolassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *networkInterfaceApplicationGatewayBackendAddressPoolAssociations) Watch
 func (c *networkInterfaceApplicationGatewayBackendAddressPoolAssociations) Create(networkInterfaceApplicationGatewayBackendAddressPoolAssociation *v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation) (result *v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation, err error) {
 	result = &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("networkinterfaceapplicationgatewaybackendaddresspoolassociations").
 		Body(networkInterfaceApplicationGatewayBackendAddressPoolAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *networkInterfaceApplicationGatewayBackendAddressPoolAssociations) Creat
 func (c *networkInterfaceApplicationGatewayBackendAddressPoolAssociations) Update(networkInterfaceApplicationGatewayBackendAddressPoolAssociation *v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation) (result *v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation, err error) {
 	result = &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkinterfaceapplicationgatewaybackendaddresspoolassociations").
 		Name(networkInterfaceApplicationGatewayBackendAddressPoolAssociation.Name).
 		Body(networkInterfaceApplicationGatewayBackendAddressPoolAssociation).
@@ -132,6 +139,7 @@ func (c *networkInterfaceApplicationGatewayBackendAddressPoolAssociations) Updat
 func (c *networkInterfaceApplicationGatewayBackendAddressPoolAssociations) UpdateStatus(networkInterfaceApplicationGatewayBackendAddressPoolAssociation *v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation) (result *v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation, err error) {
 	result = &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkinterfaceapplicationgatewaybackendaddresspoolassociations").
 		Name(networkInterfaceApplicationGatewayBackendAddressPoolAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *networkInterfaceApplicationGatewayBackendAddressPoolAssociations) Updat
 // Delete takes name of the networkInterfaceApplicationGatewayBackendAddressPoolAssociation and deletes it. Returns an error if one occurs.
 func (c *networkInterfaceApplicationGatewayBackendAddressPoolAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkinterfaceapplicationgatewaybackendaddresspoolassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *networkInterfaceApplicationGatewayBackendAddressPoolAssociations) Delet
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkinterfaceapplicationgatewaybackendaddresspoolassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *networkInterfaceApplicationGatewayBackendAddressPoolAssociations) Delet
 func (c *networkInterfaceApplicationGatewayBackendAddressPoolAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation, err error) {
 	result = &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("networkinterfaceapplicationgatewaybackendaddresspoolassociations").
 		SubResource(subresources...).
 		Name(name).

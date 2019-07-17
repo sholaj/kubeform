@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,12 +19,13 @@ type CloudwatchLogSubscriptionFilter struct {
 }
 
 type CloudwatchLogSubscriptionFilterSpec struct {
-	DestinationArn string `json:"destination_arn"`
+	DestinationArn string `json:"destinationArn" tf:"destination_arn"`
 	// +optional
-	Distribution  string `json:"distribution,omitempty"`
-	FilterPattern string `json:"filter_pattern"`
-	LogGroupName  string `json:"log_group_name"`
-	Name          string `json:"name"`
+	Distribution  string                    `json:"distribution,omitempty" tf:"distribution,omitempty"`
+	FilterPattern string                    `json:"filterPattern" tf:"filter_pattern"`
+	LogGroupName  string                    `json:"logGroupName" tf:"log_group_name"`
+	Name          string                    `json:"name" tf:"name"`
+	ProviderRef   core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type CloudwatchLogSubscriptionFilterStatus struct {
@@ -32,7 +33,9 @@ type CloudwatchLogSubscriptionFilterStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

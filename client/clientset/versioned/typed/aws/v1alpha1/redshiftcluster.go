@@ -32,7 +32,7 @@ import (
 // RedshiftClustersGetter has a method to return a RedshiftClusterInterface.
 // A group's client should implement this interface.
 type RedshiftClustersGetter interface {
-	RedshiftClusters() RedshiftClusterInterface
+	RedshiftClusters(namespace string) RedshiftClusterInterface
 }
 
 // RedshiftClusterInterface has methods to work with RedshiftCluster resources.
@@ -52,12 +52,14 @@ type RedshiftClusterInterface interface {
 // redshiftClusters implements RedshiftClusterInterface
 type redshiftClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRedshiftClusters returns a RedshiftClusters
-func newRedshiftClusters(c *AwsV1alpha1Client) *redshiftClusters {
+func newRedshiftClusters(c *AwsV1alpha1Client, namespace string) *redshiftClusters {
 	return &redshiftClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRedshiftClusters(c *AwsV1alpha1Client) *redshiftClusters {
 func (c *redshiftClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.RedshiftCluster, err error) {
 	result = &v1alpha1.RedshiftCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("redshiftclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *redshiftClusters) List(opts v1.ListOptions) (result *v1alpha1.RedshiftC
 	}
 	result = &v1alpha1.RedshiftClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("redshiftclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *redshiftClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("redshiftclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *redshiftClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *redshiftClusters) Create(redshiftCluster *v1alpha1.RedshiftCluster) (result *v1alpha1.RedshiftCluster, err error) {
 	result = &v1alpha1.RedshiftCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("redshiftclusters").
 		Body(redshiftCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *redshiftClusters) Create(redshiftCluster *v1alpha1.RedshiftCluster) (re
 func (c *redshiftClusters) Update(redshiftCluster *v1alpha1.RedshiftCluster) (result *v1alpha1.RedshiftCluster, err error) {
 	result = &v1alpha1.RedshiftCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("redshiftclusters").
 		Name(redshiftCluster.Name).
 		Body(redshiftCluster).
@@ -132,6 +139,7 @@ func (c *redshiftClusters) Update(redshiftCluster *v1alpha1.RedshiftCluster) (re
 func (c *redshiftClusters) UpdateStatus(redshiftCluster *v1alpha1.RedshiftCluster) (result *v1alpha1.RedshiftCluster, err error) {
 	result = &v1alpha1.RedshiftCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("redshiftclusters").
 		Name(redshiftCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *redshiftClusters) UpdateStatus(redshiftCluster *v1alpha1.RedshiftCluste
 // Delete takes name of the redshiftCluster and deletes it. Returns an error if one occurs.
 func (c *redshiftClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("redshiftclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *redshiftClusters) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("redshiftclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *redshiftClusters) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *redshiftClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RedshiftCluster, err error) {
 	result = &v1alpha1.RedshiftCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("redshiftclusters").
 		SubResource(subresources...).
 		Name(name).

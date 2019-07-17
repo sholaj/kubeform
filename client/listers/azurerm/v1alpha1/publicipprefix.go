@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// PublicIpPrefixLister helps list PublicIpPrefixes.
-type PublicIpPrefixLister interface {
-	// List lists all PublicIpPrefixes in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.PublicIpPrefix, err error)
-	// Get retrieves the PublicIpPrefix from the index for a given name.
-	Get(name string) (*v1alpha1.PublicIpPrefix, error)
-	PublicIpPrefixListerExpansion
+// PublicIPPrefixLister helps list PublicIPPrefixes.
+type PublicIPPrefixLister interface {
+	// List lists all PublicIPPrefixes in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.PublicIPPrefix, err error)
+	// PublicIPPrefixes returns an object that can list and get PublicIPPrefixes.
+	PublicIPPrefixes(namespace string) PublicIPPrefixNamespaceLister
+	PublicIPPrefixListerExpansion
 }
 
-// publicIpPrefixLister implements the PublicIpPrefixLister interface.
-type publicIpPrefixLister struct {
+// publicIPPrefixLister implements the PublicIPPrefixLister interface.
+type publicIPPrefixLister struct {
 	indexer cache.Indexer
 }
 
-// NewPublicIpPrefixLister returns a new PublicIpPrefixLister.
-func NewPublicIpPrefixLister(indexer cache.Indexer) PublicIpPrefixLister {
-	return &publicIpPrefixLister{indexer: indexer}
+// NewPublicIPPrefixLister returns a new PublicIPPrefixLister.
+func NewPublicIPPrefixLister(indexer cache.Indexer) PublicIPPrefixLister {
+	return &publicIPPrefixLister{indexer: indexer}
 }
 
-// List lists all PublicIpPrefixes in the indexer.
-func (s *publicIpPrefixLister) List(selector labels.Selector) (ret []*v1alpha1.PublicIpPrefix, err error) {
+// List lists all PublicIPPrefixes in the indexer.
+func (s *publicIPPrefixLister) List(selector labels.Selector) (ret []*v1alpha1.PublicIPPrefix, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.PublicIpPrefix))
+		ret = append(ret, m.(*v1alpha1.PublicIPPrefix))
 	})
 	return ret, err
 }
 
-// Get retrieves the PublicIpPrefix from the index for a given name.
-func (s *publicIpPrefixLister) Get(name string) (*v1alpha1.PublicIpPrefix, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// PublicIPPrefixes returns an object that can list and get PublicIPPrefixes.
+func (s *publicIPPrefixLister) PublicIPPrefixes(namespace string) PublicIPPrefixNamespaceLister {
+	return publicIPPrefixNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// PublicIPPrefixNamespaceLister helps list and get PublicIPPrefixes.
+type PublicIPPrefixNamespaceLister interface {
+	// List lists all PublicIPPrefixes in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.PublicIPPrefix, err error)
+	// Get retrieves the PublicIPPrefix from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.PublicIPPrefix, error)
+	PublicIPPrefixNamespaceListerExpansion
+}
+
+// publicIPPrefixNamespaceLister implements the PublicIPPrefixNamespaceLister
+// interface.
+type publicIPPrefixNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all PublicIPPrefixes in the indexer for a given namespace.
+func (s publicIPPrefixNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.PublicIPPrefix, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.PublicIPPrefix))
+	})
+	return ret, err
+}
+
+// Get retrieves the PublicIPPrefix from the indexer for a given namespace and name.
+func (s publicIPPrefixNamespaceLister) Get(name string) (*v1alpha1.PublicIPPrefix, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("publicipprefix"), name)
 	}
-	return obj.(*v1alpha1.PublicIpPrefix), nil
+	return obj.(*v1alpha1.PublicIPPrefix), nil
 }

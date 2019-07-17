@@ -29,8 +29,8 @@ import (
 type AutoscalingAttachmentLister interface {
 	// List lists all AutoscalingAttachments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AutoscalingAttachment, err error)
-	// Get retrieves the AutoscalingAttachment from the index for a given name.
-	Get(name string) (*v1alpha1.AutoscalingAttachment, error)
+	// AutoscalingAttachments returns an object that can list and get AutoscalingAttachments.
+	AutoscalingAttachments(namespace string) AutoscalingAttachmentNamespaceLister
 	AutoscalingAttachmentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *autoscalingAttachmentLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the AutoscalingAttachment from the index for a given name.
-func (s *autoscalingAttachmentLister) Get(name string) (*v1alpha1.AutoscalingAttachment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AutoscalingAttachments returns an object that can list and get AutoscalingAttachments.
+func (s *autoscalingAttachmentLister) AutoscalingAttachments(namespace string) AutoscalingAttachmentNamespaceLister {
+	return autoscalingAttachmentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AutoscalingAttachmentNamespaceLister helps list and get AutoscalingAttachments.
+type AutoscalingAttachmentNamespaceLister interface {
+	// List lists all AutoscalingAttachments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AutoscalingAttachment, err error)
+	// Get retrieves the AutoscalingAttachment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AutoscalingAttachment, error)
+	AutoscalingAttachmentNamespaceListerExpansion
+}
+
+// autoscalingAttachmentNamespaceLister implements the AutoscalingAttachmentNamespaceLister
+// interface.
+type autoscalingAttachmentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AutoscalingAttachments in the indexer for a given namespace.
+func (s autoscalingAttachmentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AutoscalingAttachment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AutoscalingAttachment))
+	})
+	return ret, err
+}
+
+// Get retrieves the AutoscalingAttachment from the indexer for a given namespace and name.
+func (s autoscalingAttachmentNamespaceLister) Get(name string) (*v1alpha1.AutoscalingAttachment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

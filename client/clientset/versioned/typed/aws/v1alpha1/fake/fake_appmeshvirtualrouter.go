@@ -31,6 +31,7 @@ import (
 // FakeAppmeshVirtualRouters implements AppmeshVirtualRouterInterface
 type FakeAppmeshVirtualRouters struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var appmeshvirtualroutersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "appmeshvirtualrouters"}
@@ -40,7 +41,8 @@ var appmeshvirtualroutersKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the appmeshVirtualRouter, and returns the corresponding appmeshVirtualRouter object, and an error if there is any.
 func (c *FakeAppmeshVirtualRouters) Get(name string, options v1.GetOptions) (result *v1alpha1.AppmeshVirtualRouter, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(appmeshvirtualroutersResource, name), &v1alpha1.AppmeshVirtualRouter{})
+		Invokes(testing.NewGetAction(appmeshvirtualroutersResource, c.ns, name), &v1alpha1.AppmeshVirtualRouter{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAppmeshVirtualRouters) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of AppmeshVirtualRouters that match those selectors.
 func (c *FakeAppmeshVirtualRouters) List(opts v1.ListOptions) (result *v1alpha1.AppmeshVirtualRouterList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(appmeshvirtualroutersResource, appmeshvirtualroutersKind, opts), &v1alpha1.AppmeshVirtualRouterList{})
+		Invokes(testing.NewListAction(appmeshvirtualroutersResource, appmeshvirtualroutersKind, c.ns, opts), &v1alpha1.AppmeshVirtualRouterList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAppmeshVirtualRouters) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested appmeshVirtualRouters.
 func (c *FakeAppmeshVirtualRouters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(appmeshvirtualroutersResource, opts))
+		InvokesWatch(testing.NewWatchAction(appmeshvirtualroutersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a appmeshVirtualRouter and creates it.  Returns the server's representation of the appmeshVirtualRouter, and an error, if there is any.
 func (c *FakeAppmeshVirtualRouters) Create(appmeshVirtualRouter *v1alpha1.AppmeshVirtualRouter) (result *v1alpha1.AppmeshVirtualRouter, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(appmeshvirtualroutersResource, appmeshVirtualRouter), &v1alpha1.AppmeshVirtualRouter{})
+		Invokes(testing.NewCreateAction(appmeshvirtualroutersResource, c.ns, appmeshVirtualRouter), &v1alpha1.AppmeshVirtualRouter{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAppmeshVirtualRouters) Create(appmeshVirtualRouter *v1alpha1.Appmes
 // Update takes the representation of a appmeshVirtualRouter and updates it. Returns the server's representation of the appmeshVirtualRouter, and an error, if there is any.
 func (c *FakeAppmeshVirtualRouters) Update(appmeshVirtualRouter *v1alpha1.AppmeshVirtualRouter) (result *v1alpha1.AppmeshVirtualRouter, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(appmeshvirtualroutersResource, appmeshVirtualRouter), &v1alpha1.AppmeshVirtualRouter{})
+		Invokes(testing.NewUpdateAction(appmeshvirtualroutersResource, c.ns, appmeshVirtualRouter), &v1alpha1.AppmeshVirtualRouter{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAppmeshVirtualRouters) Update(appmeshVirtualRouter *v1alpha1.Appmes
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAppmeshVirtualRouters) UpdateStatus(appmeshVirtualRouter *v1alpha1.AppmeshVirtualRouter) (*v1alpha1.AppmeshVirtualRouter, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(appmeshvirtualroutersResource, "status", appmeshVirtualRouter), &v1alpha1.AppmeshVirtualRouter{})
+		Invokes(testing.NewUpdateSubresourceAction(appmeshvirtualroutersResource, "status", c.ns, appmeshVirtualRouter), &v1alpha1.AppmeshVirtualRouter{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAppmeshVirtualRouters) UpdateStatus(appmeshVirtualRouter *v1alpha1.
 // Delete takes name of the appmeshVirtualRouter and deletes it. Returns an error if one occurs.
 func (c *FakeAppmeshVirtualRouters) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(appmeshvirtualroutersResource, name), &v1alpha1.AppmeshVirtualRouter{})
+		Invokes(testing.NewDeleteAction(appmeshvirtualroutersResource, c.ns, name), &v1alpha1.AppmeshVirtualRouter{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAppmeshVirtualRouters) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(appmeshvirtualroutersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(appmeshvirtualroutersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AppmeshVirtualRouterList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAppmeshVirtualRouters) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched appmeshVirtualRouter.
 func (c *FakeAppmeshVirtualRouters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppmeshVirtualRouter, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(appmeshvirtualroutersResource, name, pt, data, subresources...), &v1alpha1.AppmeshVirtualRouter{})
+		Invokes(testing.NewPatchSubresourceAction(appmeshvirtualroutersResource, c.ns, name, pt, data, subresources...), &v1alpha1.AppmeshVirtualRouter{})
+
 	if obj == nil {
 		return nil, err
 	}

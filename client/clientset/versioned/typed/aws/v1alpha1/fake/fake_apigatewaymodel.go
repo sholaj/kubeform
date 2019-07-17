@@ -31,6 +31,7 @@ import (
 // FakeApiGatewayModels implements ApiGatewayModelInterface
 type FakeApiGatewayModels struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var apigatewaymodelsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "apigatewaymodels"}
@@ -40,7 +41,8 @@ var apigatewaymodelsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ve
 // Get takes name of the apiGatewayModel, and returns the corresponding apiGatewayModel object, and an error if there is any.
 func (c *FakeApiGatewayModels) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayModel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apigatewaymodelsResource, name), &v1alpha1.ApiGatewayModel{})
+		Invokes(testing.NewGetAction(apigatewaymodelsResource, c.ns, name), &v1alpha1.ApiGatewayModel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApiGatewayModels) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of ApiGatewayModels that match those selectors.
 func (c *FakeApiGatewayModels) List(opts v1.ListOptions) (result *v1alpha1.ApiGatewayModelList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apigatewaymodelsResource, apigatewaymodelsKind, opts), &v1alpha1.ApiGatewayModelList{})
+		Invokes(testing.NewListAction(apigatewaymodelsResource, apigatewaymodelsKind, c.ns, opts), &v1alpha1.ApiGatewayModelList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApiGatewayModels) List(opts v1.ListOptions) (result *v1alpha1.ApiGa
 // Watch returns a watch.Interface that watches the requested apiGatewayModels.
 func (c *FakeApiGatewayModels) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apigatewaymodelsResource, opts))
+		InvokesWatch(testing.NewWatchAction(apigatewaymodelsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a apiGatewayModel and creates it.  Returns the server's representation of the apiGatewayModel, and an error, if there is any.
 func (c *FakeApiGatewayModels) Create(apiGatewayModel *v1alpha1.ApiGatewayModel) (result *v1alpha1.ApiGatewayModel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apigatewaymodelsResource, apiGatewayModel), &v1alpha1.ApiGatewayModel{})
+		Invokes(testing.NewCreateAction(apigatewaymodelsResource, c.ns, apiGatewayModel), &v1alpha1.ApiGatewayModel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApiGatewayModels) Create(apiGatewayModel *v1alpha1.ApiGatewayModel)
 // Update takes the representation of a apiGatewayModel and updates it. Returns the server's representation of the apiGatewayModel, and an error, if there is any.
 func (c *FakeApiGatewayModels) Update(apiGatewayModel *v1alpha1.ApiGatewayModel) (result *v1alpha1.ApiGatewayModel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apigatewaymodelsResource, apiGatewayModel), &v1alpha1.ApiGatewayModel{})
+		Invokes(testing.NewUpdateAction(apigatewaymodelsResource, c.ns, apiGatewayModel), &v1alpha1.ApiGatewayModel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApiGatewayModels) Update(apiGatewayModel *v1alpha1.ApiGatewayModel)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApiGatewayModels) UpdateStatus(apiGatewayModel *v1alpha1.ApiGatewayModel) (*v1alpha1.ApiGatewayModel, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apigatewaymodelsResource, "status", apiGatewayModel), &v1alpha1.ApiGatewayModel{})
+		Invokes(testing.NewUpdateSubresourceAction(apigatewaymodelsResource, "status", c.ns, apiGatewayModel), &v1alpha1.ApiGatewayModel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApiGatewayModels) UpdateStatus(apiGatewayModel *v1alpha1.ApiGateway
 // Delete takes name of the apiGatewayModel and deletes it. Returns an error if one occurs.
 func (c *FakeApiGatewayModels) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apigatewaymodelsResource, name), &v1alpha1.ApiGatewayModel{})
+		Invokes(testing.NewDeleteAction(apigatewaymodelsResource, c.ns, name), &v1alpha1.ApiGatewayModel{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApiGatewayModels) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apigatewaymodelsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(apigatewaymodelsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApiGatewayModelList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApiGatewayModels) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched apiGatewayModel.
 func (c *FakeApiGatewayModels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayModel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apigatewaymodelsResource, name, pt, data, subresources...), &v1alpha1.ApiGatewayModel{})
+		Invokes(testing.NewPatchSubresourceAction(apigatewaymodelsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiGatewayModel{})
+
 	if obj == nil {
 		return nil, err
 	}

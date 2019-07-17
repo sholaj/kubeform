@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,20 +20,21 @@ type GlobalacceleratorListener struct {
 
 type GlobalacceleratorListenerSpecPortRange struct {
 	// +optional
-	FromPort int `json:"from_port,omitempty"`
+	FromPort int `json:"fromPort,omitempty" tf:"from_port,omitempty"`
 	// +optional
-	ToPort int `json:"to_port,omitempty"`
+	ToPort int `json:"toPort,omitempty" tf:"to_port,omitempty"`
 }
 
 type GlobalacceleratorListenerSpec struct {
-	AcceleratorArn string `json:"accelerator_arn"`
+	AcceleratorArn string `json:"acceleratorArn" tf:"accelerator_arn"`
 	// +optional
-	ClientAffinity string `json:"client_affinity,omitempty"`
+	ClientAffinity string `json:"clientAffinity,omitempty" tf:"client_affinity,omitempty"`
 	// +kubebuilder:validation:MaxItems=10
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	PortRange []GlobalacceleratorListenerSpec `json:"port_range"`
-	Protocol  string                          `json:"protocol"`
+	PortRange   []GlobalacceleratorListenerSpecPortRange `json:"portRange" tf:"port_range"`
+	Protocol    string                                   `json:"protocol" tf:"protocol"`
+	ProviderRef core.LocalObjectReference                `json:"providerRef" tf:"-"`
 }
 
 type GlobalacceleratorListenerStatus struct {
@@ -41,7 +42,9 @@ type GlobalacceleratorListenerStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

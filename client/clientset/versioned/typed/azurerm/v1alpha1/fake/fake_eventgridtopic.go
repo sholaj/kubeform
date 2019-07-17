@@ -31,6 +31,7 @@ import (
 // FakeEventgridTopics implements EventgridTopicInterface
 type FakeEventgridTopics struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var eventgridtopicsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "eventgridtopics"}
@@ -40,7 +41,8 @@ var eventgridtopicsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com",
 // Get takes name of the eventgridTopic, and returns the corresponding eventgridTopic object, and an error if there is any.
 func (c *FakeEventgridTopics) Get(name string, options v1.GetOptions) (result *v1alpha1.EventgridTopic, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(eventgridtopicsResource, name), &v1alpha1.EventgridTopic{})
+		Invokes(testing.NewGetAction(eventgridtopicsResource, c.ns, name), &v1alpha1.EventgridTopic{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEventgridTopics) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of EventgridTopics that match those selectors.
 func (c *FakeEventgridTopics) List(opts v1.ListOptions) (result *v1alpha1.EventgridTopicList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(eventgridtopicsResource, eventgridtopicsKind, opts), &v1alpha1.EventgridTopicList{})
+		Invokes(testing.NewListAction(eventgridtopicsResource, eventgridtopicsKind, c.ns, opts), &v1alpha1.EventgridTopicList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEventgridTopics) List(opts v1.ListOptions) (result *v1alpha1.Eventg
 // Watch returns a watch.Interface that watches the requested eventgridTopics.
 func (c *FakeEventgridTopics) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(eventgridtopicsResource, opts))
+		InvokesWatch(testing.NewWatchAction(eventgridtopicsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a eventgridTopic and creates it.  Returns the server's representation of the eventgridTopic, and an error, if there is any.
 func (c *FakeEventgridTopics) Create(eventgridTopic *v1alpha1.EventgridTopic) (result *v1alpha1.EventgridTopic, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(eventgridtopicsResource, eventgridTopic), &v1alpha1.EventgridTopic{})
+		Invokes(testing.NewCreateAction(eventgridtopicsResource, c.ns, eventgridTopic), &v1alpha1.EventgridTopic{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEventgridTopics) Create(eventgridTopic *v1alpha1.EventgridTopic) (r
 // Update takes the representation of a eventgridTopic and updates it. Returns the server's representation of the eventgridTopic, and an error, if there is any.
 func (c *FakeEventgridTopics) Update(eventgridTopic *v1alpha1.EventgridTopic) (result *v1alpha1.EventgridTopic, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(eventgridtopicsResource, eventgridTopic), &v1alpha1.EventgridTopic{})
+		Invokes(testing.NewUpdateAction(eventgridtopicsResource, c.ns, eventgridTopic), &v1alpha1.EventgridTopic{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEventgridTopics) Update(eventgridTopic *v1alpha1.EventgridTopic) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEventgridTopics) UpdateStatus(eventgridTopic *v1alpha1.EventgridTopic) (*v1alpha1.EventgridTopic, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(eventgridtopicsResource, "status", eventgridTopic), &v1alpha1.EventgridTopic{})
+		Invokes(testing.NewUpdateSubresourceAction(eventgridtopicsResource, "status", c.ns, eventgridTopic), &v1alpha1.EventgridTopic{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEventgridTopics) UpdateStatus(eventgridTopic *v1alpha1.EventgridTop
 // Delete takes name of the eventgridTopic and deletes it. Returns an error if one occurs.
 func (c *FakeEventgridTopics) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(eventgridtopicsResource, name), &v1alpha1.EventgridTopic{})
+		Invokes(testing.NewDeleteAction(eventgridtopicsResource, c.ns, name), &v1alpha1.EventgridTopic{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEventgridTopics) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(eventgridtopicsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(eventgridtopicsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.EventgridTopicList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEventgridTopics) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched eventgridTopic.
 func (c *FakeEventgridTopics) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EventgridTopic, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(eventgridtopicsResource, name, pt, data, subresources...), &v1alpha1.EventgridTopic{})
+		Invokes(testing.NewPatchSubresourceAction(eventgridtopicsResource, c.ns, name, pt, data, subresources...), &v1alpha1.EventgridTopic{})
+
 	if obj == nil {
 		return nil, err
 	}

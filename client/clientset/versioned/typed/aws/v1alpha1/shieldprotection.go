@@ -32,7 +32,7 @@ import (
 // ShieldProtectionsGetter has a method to return a ShieldProtectionInterface.
 // A group's client should implement this interface.
 type ShieldProtectionsGetter interface {
-	ShieldProtections() ShieldProtectionInterface
+	ShieldProtections(namespace string) ShieldProtectionInterface
 }
 
 // ShieldProtectionInterface has methods to work with ShieldProtection resources.
@@ -52,12 +52,14 @@ type ShieldProtectionInterface interface {
 // shieldProtections implements ShieldProtectionInterface
 type shieldProtections struct {
 	client rest.Interface
+	ns     string
 }
 
 // newShieldProtections returns a ShieldProtections
-func newShieldProtections(c *AwsV1alpha1Client) *shieldProtections {
+func newShieldProtections(c *AwsV1alpha1Client, namespace string) *shieldProtections {
 	return &shieldProtections{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newShieldProtections(c *AwsV1alpha1Client) *shieldProtections {
 func (c *shieldProtections) Get(name string, options v1.GetOptions) (result *v1alpha1.ShieldProtection, err error) {
 	result = &v1alpha1.ShieldProtection{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("shieldprotections").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *shieldProtections) List(opts v1.ListOptions) (result *v1alpha1.ShieldPr
 	}
 	result = &v1alpha1.ShieldProtectionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("shieldprotections").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *shieldProtections) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("shieldprotections").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *shieldProtections) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *shieldProtections) Create(shieldProtection *v1alpha1.ShieldProtection) (result *v1alpha1.ShieldProtection, err error) {
 	result = &v1alpha1.ShieldProtection{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("shieldprotections").
 		Body(shieldProtection).
 		Do().
@@ -118,6 +124,7 @@ func (c *shieldProtections) Create(shieldProtection *v1alpha1.ShieldProtection) 
 func (c *shieldProtections) Update(shieldProtection *v1alpha1.ShieldProtection) (result *v1alpha1.ShieldProtection, err error) {
 	result = &v1alpha1.ShieldProtection{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("shieldprotections").
 		Name(shieldProtection.Name).
 		Body(shieldProtection).
@@ -132,6 +139,7 @@ func (c *shieldProtections) Update(shieldProtection *v1alpha1.ShieldProtection) 
 func (c *shieldProtections) UpdateStatus(shieldProtection *v1alpha1.ShieldProtection) (result *v1alpha1.ShieldProtection, err error) {
 	result = &v1alpha1.ShieldProtection{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("shieldprotections").
 		Name(shieldProtection.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *shieldProtections) UpdateStatus(shieldProtection *v1alpha1.ShieldProtec
 // Delete takes name of the shieldProtection and deletes it. Returns an error if one occurs.
 func (c *shieldProtections) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("shieldprotections").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *shieldProtections) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("shieldprotections").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *shieldProtections) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *shieldProtections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ShieldProtection, err error) {
 	result = &v1alpha1.ShieldProtection{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("shieldprotections").
 		SubResource(subresources...).
 		Name(name).

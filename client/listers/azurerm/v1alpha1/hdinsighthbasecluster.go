@@ -29,8 +29,8 @@ import (
 type HdinsightHbaseClusterLister interface {
 	// List lists all HdinsightHbaseClusters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.HdinsightHbaseCluster, err error)
-	// Get retrieves the HdinsightHbaseCluster from the index for a given name.
-	Get(name string) (*v1alpha1.HdinsightHbaseCluster, error)
+	// HdinsightHbaseClusters returns an object that can list and get HdinsightHbaseClusters.
+	HdinsightHbaseClusters(namespace string) HdinsightHbaseClusterNamespaceLister
 	HdinsightHbaseClusterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *hdinsightHbaseClusterLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the HdinsightHbaseCluster from the index for a given name.
-func (s *hdinsightHbaseClusterLister) Get(name string) (*v1alpha1.HdinsightHbaseCluster, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// HdinsightHbaseClusters returns an object that can list and get HdinsightHbaseClusters.
+func (s *hdinsightHbaseClusterLister) HdinsightHbaseClusters(namespace string) HdinsightHbaseClusterNamespaceLister {
+	return hdinsightHbaseClusterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// HdinsightHbaseClusterNamespaceLister helps list and get HdinsightHbaseClusters.
+type HdinsightHbaseClusterNamespaceLister interface {
+	// List lists all HdinsightHbaseClusters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.HdinsightHbaseCluster, err error)
+	// Get retrieves the HdinsightHbaseCluster from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.HdinsightHbaseCluster, error)
+	HdinsightHbaseClusterNamespaceListerExpansion
+}
+
+// hdinsightHbaseClusterNamespaceLister implements the HdinsightHbaseClusterNamespaceLister
+// interface.
+type hdinsightHbaseClusterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all HdinsightHbaseClusters in the indexer for a given namespace.
+func (s hdinsightHbaseClusterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.HdinsightHbaseCluster, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.HdinsightHbaseCluster))
+	})
+	return ret, err
+}
+
+// Get retrieves the HdinsightHbaseCluster from the indexer for a given namespace and name.
+func (s hdinsightHbaseClusterNamespaceLister) Get(name string) (*v1alpha1.HdinsightHbaseCluster, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

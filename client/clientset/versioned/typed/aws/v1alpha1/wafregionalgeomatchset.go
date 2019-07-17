@@ -32,7 +32,7 @@ import (
 // WafregionalGeoMatchSetsGetter has a method to return a WafregionalGeoMatchSetInterface.
 // A group's client should implement this interface.
 type WafregionalGeoMatchSetsGetter interface {
-	WafregionalGeoMatchSets() WafregionalGeoMatchSetInterface
+	WafregionalGeoMatchSets(namespace string) WafregionalGeoMatchSetInterface
 }
 
 // WafregionalGeoMatchSetInterface has methods to work with WafregionalGeoMatchSet resources.
@@ -52,12 +52,14 @@ type WafregionalGeoMatchSetInterface interface {
 // wafregionalGeoMatchSets implements WafregionalGeoMatchSetInterface
 type wafregionalGeoMatchSets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWafregionalGeoMatchSets returns a WafregionalGeoMatchSets
-func newWafregionalGeoMatchSets(c *AwsV1alpha1Client) *wafregionalGeoMatchSets {
+func newWafregionalGeoMatchSets(c *AwsV1alpha1Client, namespace string) *wafregionalGeoMatchSets {
 	return &wafregionalGeoMatchSets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWafregionalGeoMatchSets(c *AwsV1alpha1Client) *wafregionalGeoMatchSets {
 func (c *wafregionalGeoMatchSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalGeoMatchSet, err error) {
 	result = &v1alpha1.WafregionalGeoMatchSet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalgeomatchsets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *wafregionalGeoMatchSets) List(opts v1.ListOptions) (result *v1alpha1.Wa
 	}
 	result = &v1alpha1.WafregionalGeoMatchSetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalgeomatchsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *wafregionalGeoMatchSets) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalgeomatchsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *wafregionalGeoMatchSets) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *wafregionalGeoMatchSets) Create(wafregionalGeoMatchSet *v1alpha1.WafregionalGeoMatchSet) (result *v1alpha1.WafregionalGeoMatchSet, err error) {
 	result = &v1alpha1.WafregionalGeoMatchSet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafregionalgeomatchsets").
 		Body(wafregionalGeoMatchSet).
 		Do().
@@ -118,6 +124,7 @@ func (c *wafregionalGeoMatchSets) Create(wafregionalGeoMatchSet *v1alpha1.Wafreg
 func (c *wafregionalGeoMatchSets) Update(wafregionalGeoMatchSet *v1alpha1.WafregionalGeoMatchSet) (result *v1alpha1.WafregionalGeoMatchSet, err error) {
 	result = &v1alpha1.WafregionalGeoMatchSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregionalgeomatchsets").
 		Name(wafregionalGeoMatchSet.Name).
 		Body(wafregionalGeoMatchSet).
@@ -132,6 +139,7 @@ func (c *wafregionalGeoMatchSets) Update(wafregionalGeoMatchSet *v1alpha1.Wafreg
 func (c *wafregionalGeoMatchSets) UpdateStatus(wafregionalGeoMatchSet *v1alpha1.WafregionalGeoMatchSet) (result *v1alpha1.WafregionalGeoMatchSet, err error) {
 	result = &v1alpha1.WafregionalGeoMatchSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregionalgeomatchsets").
 		Name(wafregionalGeoMatchSet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *wafregionalGeoMatchSets) UpdateStatus(wafregionalGeoMatchSet *v1alpha1.
 // Delete takes name of the wafregionalGeoMatchSet and deletes it. Returns an error if one occurs.
 func (c *wafregionalGeoMatchSets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregionalgeomatchsets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *wafregionalGeoMatchSets) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregionalgeomatchsets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *wafregionalGeoMatchSets) DeleteCollection(options *v1.DeleteOptions, li
 func (c *wafregionalGeoMatchSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalGeoMatchSet, err error) {
 	result = &v1alpha1.WafregionalGeoMatchSet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafregionalgeomatchsets").
 		SubResource(subresources...).
 		Name(name).

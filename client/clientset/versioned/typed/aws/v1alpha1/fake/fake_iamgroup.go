@@ -31,6 +31,7 @@ import (
 // FakeIamGroups implements IamGroupInterface
 type FakeIamGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var iamgroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "iamgroups"}
@@ -40,7 +41,8 @@ var iamgroupsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: 
 // Get takes name of the iamGroup, and returns the corresponding iamGroup object, and an error if there is any.
 func (c *FakeIamGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.IamGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iamgroupsResource, name), &v1alpha1.IamGroup{})
+		Invokes(testing.NewGetAction(iamgroupsResource, c.ns, name), &v1alpha1.IamGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIamGroups) Get(name string, options v1.GetOptions) (result *v1alpha
 // List takes label and field selectors, and returns the list of IamGroups that match those selectors.
 func (c *FakeIamGroups) List(opts v1.ListOptions) (result *v1alpha1.IamGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iamgroupsResource, iamgroupsKind, opts), &v1alpha1.IamGroupList{})
+		Invokes(testing.NewListAction(iamgroupsResource, iamgroupsKind, c.ns, opts), &v1alpha1.IamGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIamGroups) List(opts v1.ListOptions) (result *v1alpha1.IamGroupList
 // Watch returns a watch.Interface that watches the requested iamGroups.
 func (c *FakeIamGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iamgroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(iamgroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iamGroup and creates it.  Returns the server's representation of the iamGroup, and an error, if there is any.
 func (c *FakeIamGroups) Create(iamGroup *v1alpha1.IamGroup) (result *v1alpha1.IamGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iamgroupsResource, iamGroup), &v1alpha1.IamGroup{})
+		Invokes(testing.NewCreateAction(iamgroupsResource, c.ns, iamGroup), &v1alpha1.IamGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIamGroups) Create(iamGroup *v1alpha1.IamGroup) (result *v1alpha1.Ia
 // Update takes the representation of a iamGroup and updates it. Returns the server's representation of the iamGroup, and an error, if there is any.
 func (c *FakeIamGroups) Update(iamGroup *v1alpha1.IamGroup) (result *v1alpha1.IamGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iamgroupsResource, iamGroup), &v1alpha1.IamGroup{})
+		Invokes(testing.NewUpdateAction(iamgroupsResource, c.ns, iamGroup), &v1alpha1.IamGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIamGroups) Update(iamGroup *v1alpha1.IamGroup) (result *v1alpha1.Ia
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIamGroups) UpdateStatus(iamGroup *v1alpha1.IamGroup) (*v1alpha1.IamGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iamgroupsResource, "status", iamGroup), &v1alpha1.IamGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(iamgroupsResource, "status", c.ns, iamGroup), &v1alpha1.IamGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIamGroups) UpdateStatus(iamGroup *v1alpha1.IamGroup) (*v1alpha1.Iam
 // Delete takes name of the iamGroup and deletes it. Returns an error if one occurs.
 func (c *FakeIamGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iamgroupsResource, name), &v1alpha1.IamGroup{})
+		Invokes(testing.NewDeleteAction(iamgroupsResource, c.ns, name), &v1alpha1.IamGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIamGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iamgroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iamgroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IamGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIamGroups) DeleteCollection(options *v1.DeleteOptions, listOptions 
 // Patch applies the patch and returns the patched iamGroup.
 func (c *FakeIamGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iamgroupsResource, name, pt, data, subresources...), &v1alpha1.IamGroup{})
+		Invokes(testing.NewPatchSubresourceAction(iamgroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.IamGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

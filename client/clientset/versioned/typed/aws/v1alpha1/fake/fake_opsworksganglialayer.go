@@ -31,6 +31,7 @@ import (
 // FakeOpsworksGangliaLayers implements OpsworksGangliaLayerInterface
 type FakeOpsworksGangliaLayers struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var opsworksganglialayersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "opsworksganglialayers"}
@@ -40,7 +41,8 @@ var opsworksganglialayersKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the opsworksGangliaLayer, and returns the corresponding opsworksGangliaLayer object, and an error if there is any.
 func (c *FakeOpsworksGangliaLayers) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksGangliaLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(opsworksganglialayersResource, name), &v1alpha1.OpsworksGangliaLayer{})
+		Invokes(testing.NewGetAction(opsworksganglialayersResource, c.ns, name), &v1alpha1.OpsworksGangliaLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeOpsworksGangliaLayers) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of OpsworksGangliaLayers that match those selectors.
 func (c *FakeOpsworksGangliaLayers) List(opts v1.ListOptions) (result *v1alpha1.OpsworksGangliaLayerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(opsworksganglialayersResource, opsworksganglialayersKind, opts), &v1alpha1.OpsworksGangliaLayerList{})
+		Invokes(testing.NewListAction(opsworksganglialayersResource, opsworksganglialayersKind, c.ns, opts), &v1alpha1.OpsworksGangliaLayerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeOpsworksGangliaLayers) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested opsworksGangliaLayers.
 func (c *FakeOpsworksGangliaLayers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(opsworksganglialayersResource, opts))
+		InvokesWatch(testing.NewWatchAction(opsworksganglialayersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a opsworksGangliaLayer and creates it.  Returns the server's representation of the opsworksGangliaLayer, and an error, if there is any.
 func (c *FakeOpsworksGangliaLayers) Create(opsworksGangliaLayer *v1alpha1.OpsworksGangliaLayer) (result *v1alpha1.OpsworksGangliaLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(opsworksganglialayersResource, opsworksGangliaLayer), &v1alpha1.OpsworksGangliaLayer{})
+		Invokes(testing.NewCreateAction(opsworksganglialayersResource, c.ns, opsworksGangliaLayer), &v1alpha1.OpsworksGangliaLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeOpsworksGangliaLayers) Create(opsworksGangliaLayer *v1alpha1.Opswor
 // Update takes the representation of a opsworksGangliaLayer and updates it. Returns the server's representation of the opsworksGangliaLayer, and an error, if there is any.
 func (c *FakeOpsworksGangliaLayers) Update(opsworksGangliaLayer *v1alpha1.OpsworksGangliaLayer) (result *v1alpha1.OpsworksGangliaLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(opsworksganglialayersResource, opsworksGangliaLayer), &v1alpha1.OpsworksGangliaLayer{})
+		Invokes(testing.NewUpdateAction(opsworksganglialayersResource, c.ns, opsworksGangliaLayer), &v1alpha1.OpsworksGangliaLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeOpsworksGangliaLayers) Update(opsworksGangliaLayer *v1alpha1.Opswor
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeOpsworksGangliaLayers) UpdateStatus(opsworksGangliaLayer *v1alpha1.OpsworksGangliaLayer) (*v1alpha1.OpsworksGangliaLayer, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(opsworksganglialayersResource, "status", opsworksGangliaLayer), &v1alpha1.OpsworksGangliaLayer{})
+		Invokes(testing.NewUpdateSubresourceAction(opsworksganglialayersResource, "status", c.ns, opsworksGangliaLayer), &v1alpha1.OpsworksGangliaLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeOpsworksGangliaLayers) UpdateStatus(opsworksGangliaLayer *v1alpha1.
 // Delete takes name of the opsworksGangliaLayer and deletes it. Returns an error if one occurs.
 func (c *FakeOpsworksGangliaLayers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(opsworksganglialayersResource, name), &v1alpha1.OpsworksGangliaLayer{})
+		Invokes(testing.NewDeleteAction(opsworksganglialayersResource, c.ns, name), &v1alpha1.OpsworksGangliaLayer{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeOpsworksGangliaLayers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(opsworksganglialayersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(opsworksganglialayersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.OpsworksGangliaLayerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeOpsworksGangliaLayers) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched opsworksGangliaLayer.
 func (c *FakeOpsworksGangliaLayers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksGangliaLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(opsworksganglialayersResource, name, pt, data, subresources...), &v1alpha1.OpsworksGangliaLayer{})
+		Invokes(testing.NewPatchSubresourceAction(opsworksganglialayersResource, c.ns, name, pt, data, subresources...), &v1alpha1.OpsworksGangliaLayer{})
+
 	if obj == nil {
 		return nil, err
 	}

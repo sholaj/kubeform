@@ -29,8 +29,8 @@ import (
 type SpacesBucketLister interface {
 	// List lists all SpacesBuckets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SpacesBucket, err error)
-	// Get retrieves the SpacesBucket from the index for a given name.
-	Get(name string) (*v1alpha1.SpacesBucket, error)
+	// SpacesBuckets returns an object that can list and get SpacesBuckets.
+	SpacesBuckets(namespace string) SpacesBucketNamespaceLister
 	SpacesBucketListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *spacesBucketLister) List(selector labels.Selector) (ret []*v1alpha1.Spa
 	return ret, err
 }
 
-// Get retrieves the SpacesBucket from the index for a given name.
-func (s *spacesBucketLister) Get(name string) (*v1alpha1.SpacesBucket, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SpacesBuckets returns an object that can list and get SpacesBuckets.
+func (s *spacesBucketLister) SpacesBuckets(namespace string) SpacesBucketNamespaceLister {
+	return spacesBucketNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SpacesBucketNamespaceLister helps list and get SpacesBuckets.
+type SpacesBucketNamespaceLister interface {
+	// List lists all SpacesBuckets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SpacesBucket, err error)
+	// Get retrieves the SpacesBucket from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SpacesBucket, error)
+	SpacesBucketNamespaceListerExpansion
+}
+
+// spacesBucketNamespaceLister implements the SpacesBucketNamespaceLister
+// interface.
+type spacesBucketNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SpacesBuckets in the indexer for a given namespace.
+func (s spacesBucketNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SpacesBucket, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SpacesBucket))
+	})
+	return ret, err
+}
+
+// Get retrieves the SpacesBucket from the indexer for a given namespace and name.
+func (s spacesBucketNamespaceLister) Get(name string) (*v1alpha1.SpacesBucket, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,27 +19,28 @@ type SharedImage struct {
 }
 
 type SharedImageSpecIdentifier struct {
-	Offer     string `json:"offer"`
-	Publisher string `json:"publisher"`
-	Sku       string `json:"sku"`
+	Offer     string `json:"offer" tf:"offer"`
+	Publisher string `json:"publisher" tf:"publisher"`
+	Sku       string `json:"sku" tf:"sku"`
 }
 
 type SharedImageSpec struct {
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	Eula        string `json:"eula,omitempty"`
-	GalleryName string `json:"gallery_name"`
+	Eula        string `json:"eula,omitempty" tf:"eula,omitempty"`
+	GalleryName string `json:"galleryName" tf:"gallery_name"`
 	// +kubebuilder:validation:MaxItems=1
-	Identifier []SharedImageSpec `json:"identifier"`
-	Location   string            `json:"location"`
-	Name       string            `json:"name"`
-	OsType     string            `json:"os_type"`
+	Identifier []SharedImageSpecIdentifier `json:"identifier" tf:"identifier"`
+	Location   string                      `json:"location" tf:"location"`
+	Name       string                      `json:"name" tf:"name"`
+	OsType     string                      `json:"osType" tf:"os_type"`
 	// +optional
-	PrivacyStatementUri string `json:"privacy_statement_uri,omitempty"`
+	PrivacyStatementURI string `json:"privacyStatementURI,omitempty" tf:"privacy_statement_uri,omitempty"`
 	// +optional
-	ReleaseNoteUri    string `json:"release_note_uri,omitempty"`
-	ResourceGroupName string `json:"resource_group_name"`
+	ReleaseNoteURI    string                    `json:"releaseNoteURI,omitempty" tf:"release_note_uri,omitempty"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SharedImageStatus struct {
@@ -47,7 +48,9 @@ type SharedImageStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

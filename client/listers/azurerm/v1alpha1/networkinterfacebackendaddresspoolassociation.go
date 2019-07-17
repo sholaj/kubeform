@@ -29,8 +29,8 @@ import (
 type NetworkInterfaceBackendAddressPoolAssociationLister interface {
 	// List lists all NetworkInterfaceBackendAddressPoolAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NetworkInterfaceBackendAddressPoolAssociation, err error)
-	// Get retrieves the NetworkInterfaceBackendAddressPoolAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.NetworkInterfaceBackendAddressPoolAssociation, error)
+	// NetworkInterfaceBackendAddressPoolAssociations returns an object that can list and get NetworkInterfaceBackendAddressPoolAssociations.
+	NetworkInterfaceBackendAddressPoolAssociations(namespace string) NetworkInterfaceBackendAddressPoolAssociationNamespaceLister
 	NetworkInterfaceBackendAddressPoolAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *networkInterfaceBackendAddressPoolAssociationLister) List(selector labe
 	return ret, err
 }
 
-// Get retrieves the NetworkInterfaceBackendAddressPoolAssociation from the index for a given name.
-func (s *networkInterfaceBackendAddressPoolAssociationLister) Get(name string) (*v1alpha1.NetworkInterfaceBackendAddressPoolAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NetworkInterfaceBackendAddressPoolAssociations returns an object that can list and get NetworkInterfaceBackendAddressPoolAssociations.
+func (s *networkInterfaceBackendAddressPoolAssociationLister) NetworkInterfaceBackendAddressPoolAssociations(namespace string) NetworkInterfaceBackendAddressPoolAssociationNamespaceLister {
+	return networkInterfaceBackendAddressPoolAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NetworkInterfaceBackendAddressPoolAssociationNamespaceLister helps list and get NetworkInterfaceBackendAddressPoolAssociations.
+type NetworkInterfaceBackendAddressPoolAssociationNamespaceLister interface {
+	// List lists all NetworkInterfaceBackendAddressPoolAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NetworkInterfaceBackendAddressPoolAssociation, err error)
+	// Get retrieves the NetworkInterfaceBackendAddressPoolAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NetworkInterfaceBackendAddressPoolAssociation, error)
+	NetworkInterfaceBackendAddressPoolAssociationNamespaceListerExpansion
+}
+
+// networkInterfaceBackendAddressPoolAssociationNamespaceLister implements the NetworkInterfaceBackendAddressPoolAssociationNamespaceLister
+// interface.
+type networkInterfaceBackendAddressPoolAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NetworkInterfaceBackendAddressPoolAssociations in the indexer for a given namespace.
+func (s networkInterfaceBackendAddressPoolAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NetworkInterfaceBackendAddressPoolAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NetworkInterfaceBackendAddressPoolAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the NetworkInterfaceBackendAddressPoolAssociation from the indexer for a given namespace and name.
+func (s networkInterfaceBackendAddressPoolAssociationNamespaceLister) Get(name string) (*v1alpha1.NetworkInterfaceBackendAddressPoolAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

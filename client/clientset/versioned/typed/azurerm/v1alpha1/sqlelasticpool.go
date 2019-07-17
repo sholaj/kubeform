@@ -32,7 +32,7 @@ import (
 // SqlElasticpoolsGetter has a method to return a SqlElasticpoolInterface.
 // A group's client should implement this interface.
 type SqlElasticpoolsGetter interface {
-	SqlElasticpools() SqlElasticpoolInterface
+	SqlElasticpools(namespace string) SqlElasticpoolInterface
 }
 
 // SqlElasticpoolInterface has methods to work with SqlElasticpool resources.
@@ -52,12 +52,14 @@ type SqlElasticpoolInterface interface {
 // sqlElasticpools implements SqlElasticpoolInterface
 type sqlElasticpools struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSqlElasticpools returns a SqlElasticpools
-func newSqlElasticpools(c *AzurermV1alpha1Client) *sqlElasticpools {
+func newSqlElasticpools(c *AzurermV1alpha1Client, namespace string) *sqlElasticpools {
 	return &sqlElasticpools{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSqlElasticpools(c *AzurermV1alpha1Client) *sqlElasticpools {
 func (c *sqlElasticpools) Get(name string, options v1.GetOptions) (result *v1alpha1.SqlElasticpool, err error) {
 	result = &v1alpha1.SqlElasticpool{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlelasticpools").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sqlElasticpools) List(opts v1.ListOptions) (result *v1alpha1.SqlElastic
 	}
 	result = &v1alpha1.SqlElasticpoolList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlelasticpools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sqlElasticpools) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlelasticpools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sqlElasticpools) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *sqlElasticpools) Create(sqlElasticpool *v1alpha1.SqlElasticpool) (result *v1alpha1.SqlElasticpool, err error) {
 	result = &v1alpha1.SqlElasticpool{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sqlelasticpools").
 		Body(sqlElasticpool).
 		Do().
@@ -118,6 +124,7 @@ func (c *sqlElasticpools) Create(sqlElasticpool *v1alpha1.SqlElasticpool) (resul
 func (c *sqlElasticpools) Update(sqlElasticpool *v1alpha1.SqlElasticpool) (result *v1alpha1.SqlElasticpool, err error) {
 	result = &v1alpha1.SqlElasticpool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqlelasticpools").
 		Name(sqlElasticpool.Name).
 		Body(sqlElasticpool).
@@ -132,6 +139,7 @@ func (c *sqlElasticpools) Update(sqlElasticpool *v1alpha1.SqlElasticpool) (resul
 func (c *sqlElasticpools) UpdateStatus(sqlElasticpool *v1alpha1.SqlElasticpool) (result *v1alpha1.SqlElasticpool, err error) {
 	result = &v1alpha1.SqlElasticpool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqlelasticpools").
 		Name(sqlElasticpool.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sqlElasticpools) UpdateStatus(sqlElasticpool *v1alpha1.SqlElasticpool) 
 // Delete takes name of the sqlElasticpool and deletes it. Returns an error if one occurs.
 func (c *sqlElasticpools) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqlelasticpools").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sqlElasticpools) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqlelasticpools").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sqlElasticpools) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *sqlElasticpools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SqlElasticpool, err error) {
 	result = &v1alpha1.SqlElasticpool{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sqlelasticpools").
 		SubResource(subresources...).
 		Name(name).

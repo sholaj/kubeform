@@ -32,7 +32,7 @@ import (
 // MariadbServersGetter has a method to return a MariadbServerInterface.
 // A group's client should implement this interface.
 type MariadbServersGetter interface {
-	MariadbServers() MariadbServerInterface
+	MariadbServers(namespace string) MariadbServerInterface
 }
 
 // MariadbServerInterface has methods to work with MariadbServer resources.
@@ -52,12 +52,14 @@ type MariadbServerInterface interface {
 // mariadbServers implements MariadbServerInterface
 type mariadbServers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMariadbServers returns a MariadbServers
-func newMariadbServers(c *AzurermV1alpha1Client) *mariadbServers {
+func newMariadbServers(c *AzurermV1alpha1Client, namespace string) *mariadbServers {
 	return &mariadbServers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMariadbServers(c *AzurermV1alpha1Client) *mariadbServers {
 func (c *mariadbServers) Get(name string, options v1.GetOptions) (result *v1alpha1.MariadbServer, err error) {
 	result = &v1alpha1.MariadbServer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mariadbservers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *mariadbServers) List(opts v1.ListOptions) (result *v1alpha1.MariadbServ
 	}
 	result = &v1alpha1.MariadbServerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mariadbservers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *mariadbServers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("mariadbservers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *mariadbServers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *mariadbServers) Create(mariadbServer *v1alpha1.MariadbServer) (result *v1alpha1.MariadbServer, err error) {
 	result = &v1alpha1.MariadbServer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("mariadbservers").
 		Body(mariadbServer).
 		Do().
@@ -118,6 +124,7 @@ func (c *mariadbServers) Create(mariadbServer *v1alpha1.MariadbServer) (result *
 func (c *mariadbServers) Update(mariadbServer *v1alpha1.MariadbServer) (result *v1alpha1.MariadbServer, err error) {
 	result = &v1alpha1.MariadbServer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mariadbservers").
 		Name(mariadbServer.Name).
 		Body(mariadbServer).
@@ -132,6 +139,7 @@ func (c *mariadbServers) Update(mariadbServer *v1alpha1.MariadbServer) (result *
 func (c *mariadbServers) UpdateStatus(mariadbServer *v1alpha1.MariadbServer) (result *v1alpha1.MariadbServer, err error) {
 	result = &v1alpha1.MariadbServer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mariadbservers").
 		Name(mariadbServer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *mariadbServers) UpdateStatus(mariadbServer *v1alpha1.MariadbServer) (re
 // Delete takes name of the mariadbServer and deletes it. Returns an error if one occurs.
 func (c *mariadbServers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mariadbservers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *mariadbServers) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mariadbservers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *mariadbServers) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *mariadbServers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MariadbServer, err error) {
 	result = &v1alpha1.MariadbServer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("mariadbservers").
 		SubResource(subresources...).
 		Name(name).

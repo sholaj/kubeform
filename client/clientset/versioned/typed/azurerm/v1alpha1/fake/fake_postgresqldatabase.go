@@ -31,6 +31,7 @@ import (
 // FakePostgresqlDatabases implements PostgresqlDatabaseInterface
 type FakePostgresqlDatabases struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var postgresqldatabasesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "postgresqldatabases"}
@@ -40,7 +41,8 @@ var postgresqldatabasesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.c
 // Get takes name of the postgresqlDatabase, and returns the corresponding postgresqlDatabase object, and an error if there is any.
 func (c *FakePostgresqlDatabases) Get(name string, options v1.GetOptions) (result *v1alpha1.PostgresqlDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(postgresqldatabasesResource, name), &v1alpha1.PostgresqlDatabase{})
+		Invokes(testing.NewGetAction(postgresqldatabasesResource, c.ns, name), &v1alpha1.PostgresqlDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakePostgresqlDatabases) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of PostgresqlDatabases that match those selectors.
 func (c *FakePostgresqlDatabases) List(opts v1.ListOptions) (result *v1alpha1.PostgresqlDatabaseList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(postgresqldatabasesResource, postgresqldatabasesKind, opts), &v1alpha1.PostgresqlDatabaseList{})
+		Invokes(testing.NewListAction(postgresqldatabasesResource, postgresqldatabasesKind, c.ns, opts), &v1alpha1.PostgresqlDatabaseList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakePostgresqlDatabases) List(opts v1.ListOptions) (result *v1alpha1.Po
 // Watch returns a watch.Interface that watches the requested postgresqlDatabases.
 func (c *FakePostgresqlDatabases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(postgresqldatabasesResource, opts))
+		InvokesWatch(testing.NewWatchAction(postgresqldatabasesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a postgresqlDatabase and creates it.  Returns the server's representation of the postgresqlDatabase, and an error, if there is any.
 func (c *FakePostgresqlDatabases) Create(postgresqlDatabase *v1alpha1.PostgresqlDatabase) (result *v1alpha1.PostgresqlDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(postgresqldatabasesResource, postgresqlDatabase), &v1alpha1.PostgresqlDatabase{})
+		Invokes(testing.NewCreateAction(postgresqldatabasesResource, c.ns, postgresqlDatabase), &v1alpha1.PostgresqlDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakePostgresqlDatabases) Create(postgresqlDatabase *v1alpha1.Postgresql
 // Update takes the representation of a postgresqlDatabase and updates it. Returns the server's representation of the postgresqlDatabase, and an error, if there is any.
 func (c *FakePostgresqlDatabases) Update(postgresqlDatabase *v1alpha1.PostgresqlDatabase) (result *v1alpha1.PostgresqlDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(postgresqldatabasesResource, postgresqlDatabase), &v1alpha1.PostgresqlDatabase{})
+		Invokes(testing.NewUpdateAction(postgresqldatabasesResource, c.ns, postgresqlDatabase), &v1alpha1.PostgresqlDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakePostgresqlDatabases) Update(postgresqlDatabase *v1alpha1.Postgresql
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakePostgresqlDatabases) UpdateStatus(postgresqlDatabase *v1alpha1.PostgresqlDatabase) (*v1alpha1.PostgresqlDatabase, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(postgresqldatabasesResource, "status", postgresqlDatabase), &v1alpha1.PostgresqlDatabase{})
+		Invokes(testing.NewUpdateSubresourceAction(postgresqldatabasesResource, "status", c.ns, postgresqlDatabase), &v1alpha1.PostgresqlDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakePostgresqlDatabases) UpdateStatus(postgresqlDatabase *v1alpha1.Post
 // Delete takes name of the postgresqlDatabase and deletes it. Returns an error if one occurs.
 func (c *FakePostgresqlDatabases) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(postgresqldatabasesResource, name), &v1alpha1.PostgresqlDatabase{})
+		Invokes(testing.NewDeleteAction(postgresqldatabasesResource, c.ns, name), &v1alpha1.PostgresqlDatabase{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakePostgresqlDatabases) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(postgresqldatabasesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(postgresqldatabasesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PostgresqlDatabaseList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakePostgresqlDatabases) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched postgresqlDatabase.
 func (c *FakePostgresqlDatabases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PostgresqlDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(postgresqldatabasesResource, name, pt, data, subresources...), &v1alpha1.PostgresqlDatabase{})
+		Invokes(testing.NewPatchSubresourceAction(postgresqldatabasesResource, c.ns, name, pt, data, subresources...), &v1alpha1.PostgresqlDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,57 +20,48 @@ type KubernetesCluster struct {
 
 type KubernetesClusterSpecAgentPoolProfile struct {
 	// +optional
-	AvailabilityZones []string `json:"availability_zones,omitempty"`
+	Count int    `json:"count,omitempty" tf:"count,omitempty"`
+	Name  string `json:"name" tf:"name"`
 	// +optional
-	Count int `json:"count,omitempty"`
+	OsType string `json:"osType,omitempty" tf:"os_type,omitempty"`
 	// +optional
-	EnableAutoScaling bool `json:"enable_auto_scaling,omitempty"`
+	Type   string `json:"type,omitempty" tf:"type,omitempty"`
+	VmSize string `json:"vmSize" tf:"vm_size"`
 	// +optional
-	MaxCount int `json:"max_count,omitempty"`
-	// +optional
-	MinCount int    `json:"min_count,omitempty"`
-	Name     string `json:"name"`
-	// +optional
-	NodeTaints []string `json:"node_taints,omitempty"`
-	// +optional
-	OsType string `json:"os_type,omitempty"`
-	// +optional
-	Type   string `json:"type,omitempty"`
-	VmSize string `json:"vm_size"`
-	// +optional
-	VnetSubnetId string `json:"vnet_subnet_id,omitempty"`
+	VnetSubnetID string `json:"vnetSubnetID,omitempty" tf:"vnet_subnet_id,omitempty"`
 }
 
 type KubernetesClusterSpecLinuxProfileSshKey struct {
-	KeyData string `json:"key_data"`
+	KeyData string `json:"keyData" tf:"key_data"`
 }
 
 type KubernetesClusterSpecLinuxProfile struct {
-	AdminUsername string `json:"admin_username"`
+	AdminUsername string `json:"adminUsername" tf:"admin_username"`
 	// +kubebuilder:validation:MaxItems=1
-	SshKey []KubernetesClusterSpecLinuxProfile `json:"ssh_key"`
+	SshKey []KubernetesClusterSpecLinuxProfileSshKey `json:"sshKey" tf:"ssh_key"`
 }
 
 type KubernetesClusterSpecServicePrincipal struct {
-	ClientId     string `json:"client_id"`
-	ClientSecret string `json:"client_secret"`
+	ClientID     string `json:"clientID" tf:"client_id"`
+	ClientSecret string `json:"clientSecret" tf:"client_secret"`
 }
 
 type KubernetesClusterSpec struct {
-	AgentPoolProfile []KubernetesClusterSpec `json:"agent_pool_profile"`
+	AgentPoolProfile []KubernetesClusterSpecAgentPoolProfile `json:"agentPoolProfile" tf:"agent_pool_profile"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	ApiServerAuthorizedIpRanges []string `json:"api_server_authorized_ip_ranges,omitempty"`
-	DnsPrefix                   string   `json:"dns_prefix"`
+	ApiServerAuthorizedIPRanges []string `json:"apiServerAuthorizedIPRanges,omitempty" tf:"api_server_authorized_ip_ranges,omitempty"`
+	DnsPrefix                   string   `json:"dnsPrefix" tf:"dns_prefix"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	LinuxProfile      *[]KubernetesClusterSpec `json:"linux_profile,omitempty"`
-	Location          string                   `json:"location"`
-	Name              string                   `json:"name"`
-	ResourceGroupName string                   `json:"resource_group_name"`
+	LinuxProfile      []KubernetesClusterSpecLinuxProfile `json:"linuxProfile,omitempty" tf:"linux_profile,omitempty"`
+	Location          string                              `json:"location" tf:"location"`
+	Name              string                              `json:"name" tf:"name"`
+	ResourceGroupName string                              `json:"resourceGroupName" tf:"resource_group_name"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	ServicePrincipal []KubernetesClusterSpec `json:"service_principal"`
+	ServicePrincipal []KubernetesClusterSpecServicePrincipal `json:"servicePrincipal" tf:"service_principal"`
+	ProviderRef      core.LocalObjectReference               `json:"providerRef" tf:"-"`
 }
 
 type KubernetesClusterStatus struct {
@@ -78,7 +69,9 @@ type KubernetesClusterStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

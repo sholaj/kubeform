@@ -31,6 +31,7 @@ import (
 // FakeDevTestLabs implements DevTestLabInterface
 type FakeDevTestLabs struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var devtestlabsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "devtestlabs"}
@@ -40,7 +41,8 @@ var devtestlabsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Ver
 // Get takes name of the devTestLab, and returns the corresponding devTestLab object, and an error if there is any.
 func (c *FakeDevTestLabs) Get(name string, options v1.GetOptions) (result *v1alpha1.DevTestLab, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(devtestlabsResource, name), &v1alpha1.DevTestLab{})
+		Invokes(testing.NewGetAction(devtestlabsResource, c.ns, name), &v1alpha1.DevTestLab{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDevTestLabs) Get(name string, options v1.GetOptions) (result *v1alp
 // List takes label and field selectors, and returns the list of DevTestLabs that match those selectors.
 func (c *FakeDevTestLabs) List(opts v1.ListOptions) (result *v1alpha1.DevTestLabList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(devtestlabsResource, devtestlabsKind, opts), &v1alpha1.DevTestLabList{})
+		Invokes(testing.NewListAction(devtestlabsResource, devtestlabsKind, c.ns, opts), &v1alpha1.DevTestLabList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDevTestLabs) List(opts v1.ListOptions) (result *v1alpha1.DevTestLab
 // Watch returns a watch.Interface that watches the requested devTestLabs.
 func (c *FakeDevTestLabs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(devtestlabsResource, opts))
+		InvokesWatch(testing.NewWatchAction(devtestlabsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a devTestLab and creates it.  Returns the server's representation of the devTestLab, and an error, if there is any.
 func (c *FakeDevTestLabs) Create(devTestLab *v1alpha1.DevTestLab) (result *v1alpha1.DevTestLab, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(devtestlabsResource, devTestLab), &v1alpha1.DevTestLab{})
+		Invokes(testing.NewCreateAction(devtestlabsResource, c.ns, devTestLab), &v1alpha1.DevTestLab{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDevTestLabs) Create(devTestLab *v1alpha1.DevTestLab) (result *v1alp
 // Update takes the representation of a devTestLab and updates it. Returns the server's representation of the devTestLab, and an error, if there is any.
 func (c *FakeDevTestLabs) Update(devTestLab *v1alpha1.DevTestLab) (result *v1alpha1.DevTestLab, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(devtestlabsResource, devTestLab), &v1alpha1.DevTestLab{})
+		Invokes(testing.NewUpdateAction(devtestlabsResource, c.ns, devTestLab), &v1alpha1.DevTestLab{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDevTestLabs) Update(devTestLab *v1alpha1.DevTestLab) (result *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDevTestLabs) UpdateStatus(devTestLab *v1alpha1.DevTestLab) (*v1alpha1.DevTestLab, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(devtestlabsResource, "status", devTestLab), &v1alpha1.DevTestLab{})
+		Invokes(testing.NewUpdateSubresourceAction(devtestlabsResource, "status", c.ns, devTestLab), &v1alpha1.DevTestLab{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDevTestLabs) UpdateStatus(devTestLab *v1alpha1.DevTestLab) (*v1alph
 // Delete takes name of the devTestLab and deletes it. Returns an error if one occurs.
 func (c *FakeDevTestLabs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(devtestlabsResource, name), &v1alpha1.DevTestLab{})
+		Invokes(testing.NewDeleteAction(devtestlabsResource, c.ns, name), &v1alpha1.DevTestLab{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDevTestLabs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(devtestlabsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(devtestlabsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DevTestLabList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDevTestLabs) DeleteCollection(options *v1.DeleteOptions, listOption
 // Patch applies the patch and returns the patched devTestLab.
 func (c *FakeDevTestLabs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DevTestLab, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(devtestlabsResource, name, pt, data, subresources...), &v1alpha1.DevTestLab{})
+		Invokes(testing.NewPatchSubresourceAction(devtestlabsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DevTestLab{})
+
 	if obj == nil {
 		return nil, err
 	}

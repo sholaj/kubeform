@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,19 +20,20 @@ type CloudwatchEventRule struct {
 
 type CloudwatchEventRuleSpec struct {
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	EventPattern string `json:"event_pattern,omitempty"`
+	EventPattern string `json:"eventPattern,omitempty" tf:"event_pattern,omitempty"`
 	// +optional
-	IsEnabled bool `json:"is_enabled,omitempty"`
+	IsEnabled bool `json:"isEnabled,omitempty" tf:"is_enabled,omitempty"`
 	// +optional
-	NamePrefix string `json:"name_prefix,omitempty"`
+	NamePrefix string `json:"namePrefix,omitempty" tf:"name_prefix,omitempty"`
 	// +optional
-	RoleArn string `json:"role_arn,omitempty"`
+	RoleArn string `json:"roleArn,omitempty" tf:"role_arn,omitempty"`
 	// +optional
-	ScheduleExpression string `json:"schedule_expression,omitempty"`
+	ScheduleExpression string `json:"scheduleExpression,omitempty" tf:"schedule_expression,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type CloudwatchEventRuleStatus struct {
@@ -40,7 +41,9 @@ type CloudwatchEventRuleStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -29,8 +29,8 @@ import (
 type KubernetesNodePoolLister interface {
 	// List lists all KubernetesNodePools in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KubernetesNodePool, err error)
-	// Get retrieves the KubernetesNodePool from the index for a given name.
-	Get(name string) (*v1alpha1.KubernetesNodePool, error)
+	// KubernetesNodePools returns an object that can list and get KubernetesNodePools.
+	KubernetesNodePools(namespace string) KubernetesNodePoolNamespaceLister
 	KubernetesNodePoolListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *kubernetesNodePoolLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the KubernetesNodePool from the index for a given name.
-func (s *kubernetesNodePoolLister) Get(name string) (*v1alpha1.KubernetesNodePool, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KubernetesNodePools returns an object that can list and get KubernetesNodePools.
+func (s *kubernetesNodePoolLister) KubernetesNodePools(namespace string) KubernetesNodePoolNamespaceLister {
+	return kubernetesNodePoolNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KubernetesNodePoolNamespaceLister helps list and get KubernetesNodePools.
+type KubernetesNodePoolNamespaceLister interface {
+	// List lists all KubernetesNodePools in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KubernetesNodePool, err error)
+	// Get retrieves the KubernetesNodePool from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KubernetesNodePool, error)
+	KubernetesNodePoolNamespaceListerExpansion
+}
+
+// kubernetesNodePoolNamespaceLister implements the KubernetesNodePoolNamespaceLister
+// interface.
+type kubernetesNodePoolNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KubernetesNodePools in the indexer for a given namespace.
+func (s kubernetesNodePoolNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KubernetesNodePool, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KubernetesNodePool))
+	})
+	return ret, err
+}
+
+// Get retrieves the KubernetesNodePool from the indexer for a given namespace and name.
+func (s kubernetesNodePoolNamespaceLister) Get(name string) (*v1alpha1.KubernetesNodePool, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

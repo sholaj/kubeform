@@ -32,7 +32,7 @@ import (
 // StoragegatewayGatewaysGetter has a method to return a StoragegatewayGatewayInterface.
 // A group's client should implement this interface.
 type StoragegatewayGatewaysGetter interface {
-	StoragegatewayGateways() StoragegatewayGatewayInterface
+	StoragegatewayGateways(namespace string) StoragegatewayGatewayInterface
 }
 
 // StoragegatewayGatewayInterface has methods to work with StoragegatewayGateway resources.
@@ -52,12 +52,14 @@ type StoragegatewayGatewayInterface interface {
 // storagegatewayGateways implements StoragegatewayGatewayInterface
 type storagegatewayGateways struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStoragegatewayGateways returns a StoragegatewayGateways
-func newStoragegatewayGateways(c *AwsV1alpha1Client) *storagegatewayGateways {
+func newStoragegatewayGateways(c *AwsV1alpha1Client, namespace string) *storagegatewayGateways {
 	return &storagegatewayGateways{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStoragegatewayGateways(c *AwsV1alpha1Client) *storagegatewayGateways {
 func (c *storagegatewayGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.StoragegatewayGateway, err error) {
 	result = &v1alpha1.StoragegatewayGateway{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagegatewaygateways").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *storagegatewayGateways) List(opts v1.ListOptions) (result *v1alpha1.Sto
 	}
 	result = &v1alpha1.StoragegatewayGatewayList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagegatewaygateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *storagegatewayGateways) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storagegatewaygateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *storagegatewayGateways) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *storagegatewayGateways) Create(storagegatewayGateway *v1alpha1.StoragegatewayGateway) (result *v1alpha1.StoragegatewayGateway, err error) {
 	result = &v1alpha1.StoragegatewayGateway{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storagegatewaygateways").
 		Body(storagegatewayGateway).
 		Do().
@@ -118,6 +124,7 @@ func (c *storagegatewayGateways) Create(storagegatewayGateway *v1alpha1.Storageg
 func (c *storagegatewayGateways) Update(storagegatewayGateway *v1alpha1.StoragegatewayGateway) (result *v1alpha1.StoragegatewayGateway, err error) {
 	result = &v1alpha1.StoragegatewayGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagegatewaygateways").
 		Name(storagegatewayGateway.Name).
 		Body(storagegatewayGateway).
@@ -132,6 +139,7 @@ func (c *storagegatewayGateways) Update(storagegatewayGateway *v1alpha1.Storageg
 func (c *storagegatewayGateways) UpdateStatus(storagegatewayGateway *v1alpha1.StoragegatewayGateway) (result *v1alpha1.StoragegatewayGateway, err error) {
 	result = &v1alpha1.StoragegatewayGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagegatewaygateways").
 		Name(storagegatewayGateway.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *storagegatewayGateways) UpdateStatus(storagegatewayGateway *v1alpha1.St
 // Delete takes name of the storagegatewayGateway and deletes it. Returns an error if one occurs.
 func (c *storagegatewayGateways) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagegatewaygateways").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *storagegatewayGateways) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagegatewaygateways").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *storagegatewayGateways) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *storagegatewayGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StoragegatewayGateway, err error) {
 	result = &v1alpha1.StoragegatewayGateway{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storagegatewaygateways").
 		SubResource(subresources...).
 		Name(name).

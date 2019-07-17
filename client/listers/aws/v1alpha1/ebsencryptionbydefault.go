@@ -29,8 +29,8 @@ import (
 type EbsEncryptionByDefaultLister interface {
 	// List lists all EbsEncryptionByDefaults in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EbsEncryptionByDefault, err error)
-	// Get retrieves the EbsEncryptionByDefault from the index for a given name.
-	Get(name string) (*v1alpha1.EbsEncryptionByDefault, error)
+	// EbsEncryptionByDefaults returns an object that can list and get EbsEncryptionByDefaults.
+	EbsEncryptionByDefaults(namespace string) EbsEncryptionByDefaultNamespaceLister
 	EbsEncryptionByDefaultListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ebsEncryptionByDefaultLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the EbsEncryptionByDefault from the index for a given name.
-func (s *ebsEncryptionByDefaultLister) Get(name string) (*v1alpha1.EbsEncryptionByDefault, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EbsEncryptionByDefaults returns an object that can list and get EbsEncryptionByDefaults.
+func (s *ebsEncryptionByDefaultLister) EbsEncryptionByDefaults(namespace string) EbsEncryptionByDefaultNamespaceLister {
+	return ebsEncryptionByDefaultNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EbsEncryptionByDefaultNamespaceLister helps list and get EbsEncryptionByDefaults.
+type EbsEncryptionByDefaultNamespaceLister interface {
+	// List lists all EbsEncryptionByDefaults in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EbsEncryptionByDefault, err error)
+	// Get retrieves the EbsEncryptionByDefault from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EbsEncryptionByDefault, error)
+	EbsEncryptionByDefaultNamespaceListerExpansion
+}
+
+// ebsEncryptionByDefaultNamespaceLister implements the EbsEncryptionByDefaultNamespaceLister
+// interface.
+type ebsEncryptionByDefaultNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EbsEncryptionByDefaults in the indexer for a given namespace.
+func (s ebsEncryptionByDefaultNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EbsEncryptionByDefault, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EbsEncryptionByDefault))
+	})
+	return ret, err
+}
+
+// Get retrieves the EbsEncryptionByDefault from the indexer for a given namespace and name.
+func (s ebsEncryptionByDefaultNamespaceLister) Get(name string) (*v1alpha1.EbsEncryptionByDefault, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

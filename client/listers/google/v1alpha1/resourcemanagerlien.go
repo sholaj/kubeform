@@ -29,8 +29,8 @@ import (
 type ResourceManagerLienLister interface {
 	// List lists all ResourceManagerLiens in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ResourceManagerLien, err error)
-	// Get retrieves the ResourceManagerLien from the index for a given name.
-	Get(name string) (*v1alpha1.ResourceManagerLien, error)
+	// ResourceManagerLiens returns an object that can list and get ResourceManagerLiens.
+	ResourceManagerLiens(namespace string) ResourceManagerLienNamespaceLister
 	ResourceManagerLienListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *resourceManagerLienLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the ResourceManagerLien from the index for a given name.
-func (s *resourceManagerLienLister) Get(name string) (*v1alpha1.ResourceManagerLien, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ResourceManagerLiens returns an object that can list and get ResourceManagerLiens.
+func (s *resourceManagerLienLister) ResourceManagerLiens(namespace string) ResourceManagerLienNamespaceLister {
+	return resourceManagerLienNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ResourceManagerLienNamespaceLister helps list and get ResourceManagerLiens.
+type ResourceManagerLienNamespaceLister interface {
+	// List lists all ResourceManagerLiens in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ResourceManagerLien, err error)
+	// Get retrieves the ResourceManagerLien from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ResourceManagerLien, error)
+	ResourceManagerLienNamespaceListerExpansion
+}
+
+// resourceManagerLienNamespaceLister implements the ResourceManagerLienNamespaceLister
+// interface.
+type resourceManagerLienNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ResourceManagerLiens in the indexer for a given namespace.
+func (s resourceManagerLienNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ResourceManagerLien, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ResourceManagerLien))
+	})
+	return ret, err
+}
+
+// Get retrieves the ResourceManagerLien from the indexer for a given namespace and name.
+func (s resourceManagerLienNamespaceLister) Get(name string) (*v1alpha1.ResourceManagerLien, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

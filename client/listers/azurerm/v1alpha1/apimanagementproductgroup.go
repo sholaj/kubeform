@@ -29,8 +29,8 @@ import (
 type ApiManagementProductGroupLister interface {
 	// List lists all ApiManagementProductGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementProductGroup, err error)
-	// Get retrieves the ApiManagementProductGroup from the index for a given name.
-	Get(name string) (*v1alpha1.ApiManagementProductGroup, error)
+	// ApiManagementProductGroups returns an object that can list and get ApiManagementProductGroups.
+	ApiManagementProductGroups(namespace string) ApiManagementProductGroupNamespaceLister
 	ApiManagementProductGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiManagementProductGroupLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the ApiManagementProductGroup from the index for a given name.
-func (s *apiManagementProductGroupLister) Get(name string) (*v1alpha1.ApiManagementProductGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiManagementProductGroups returns an object that can list and get ApiManagementProductGroups.
+func (s *apiManagementProductGroupLister) ApiManagementProductGroups(namespace string) ApiManagementProductGroupNamespaceLister {
+	return apiManagementProductGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiManagementProductGroupNamespaceLister helps list and get ApiManagementProductGroups.
+type ApiManagementProductGroupNamespaceLister interface {
+	// List lists all ApiManagementProductGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementProductGroup, err error)
+	// Get retrieves the ApiManagementProductGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiManagementProductGroup, error)
+	ApiManagementProductGroupNamespaceListerExpansion
+}
+
+// apiManagementProductGroupNamespaceLister implements the ApiManagementProductGroupNamespaceLister
+// interface.
+type apiManagementProductGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiManagementProductGroups in the indexer for a given namespace.
+func (s apiManagementProductGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementProductGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiManagementProductGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiManagementProductGroup from the indexer for a given namespace and name.
+func (s apiManagementProductGroupNamespaceLister) Get(name string) (*v1alpha1.ApiManagementProductGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

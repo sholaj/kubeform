@@ -41,32 +41,33 @@ type ApiManagementCertificateInformer interface {
 type apiManagementCertificateInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewApiManagementCertificateInformer constructs a new informer for ApiManagementCertificate type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewApiManagementCertificateInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredApiManagementCertificateInformer(client, resyncPeriod, indexers, nil)
+func NewApiManagementCertificateInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredApiManagementCertificateInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredApiManagementCertificateInformer constructs a new informer for ApiManagementCertificate type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredApiManagementCertificateInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredApiManagementCertificateInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ApiManagementCertificates().List(options)
+				return client.AzurermV1alpha1().ApiManagementCertificates(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ApiManagementCertificates().Watch(options)
+				return client.AzurermV1alpha1().ApiManagementCertificates(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.ApiManagementCertificate{},
@@ -76,7 +77,7 @@ func NewFilteredApiManagementCertificateInformer(client versioned.Interface, res
 }
 
 func (f *apiManagementCertificateInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredApiManagementCertificateInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredApiManagementCertificateInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *apiManagementCertificateInformer) Informer() cache.SharedIndexInformer {

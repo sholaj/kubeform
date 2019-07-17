@@ -32,7 +32,7 @@ import (
 // Route53ZonesGetter has a method to return a Route53ZoneInterface.
 // A group's client should implement this interface.
 type Route53ZonesGetter interface {
-	Route53Zones() Route53ZoneInterface
+	Route53Zones(namespace string) Route53ZoneInterface
 }
 
 // Route53ZoneInterface has methods to work with Route53Zone resources.
@@ -52,12 +52,14 @@ type Route53ZoneInterface interface {
 // route53Zones implements Route53ZoneInterface
 type route53Zones struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRoute53Zones returns a Route53Zones
-func newRoute53Zones(c *AwsV1alpha1Client) *route53Zones {
+func newRoute53Zones(c *AwsV1alpha1Client, namespace string) *route53Zones {
 	return &route53Zones{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRoute53Zones(c *AwsV1alpha1Client) *route53Zones {
 func (c *route53Zones) Get(name string, options v1.GetOptions) (result *v1alpha1.Route53Zone, err error) {
 	result = &v1alpha1.Route53Zone{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("route53zones").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *route53Zones) List(opts v1.ListOptions) (result *v1alpha1.Route53ZoneLi
 	}
 	result = &v1alpha1.Route53ZoneList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("route53zones").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *route53Zones) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("route53zones").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *route53Zones) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *route53Zones) Create(route53Zone *v1alpha1.Route53Zone) (result *v1alpha1.Route53Zone, err error) {
 	result = &v1alpha1.Route53Zone{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("route53zones").
 		Body(route53Zone).
 		Do().
@@ -118,6 +124,7 @@ func (c *route53Zones) Create(route53Zone *v1alpha1.Route53Zone) (result *v1alph
 func (c *route53Zones) Update(route53Zone *v1alpha1.Route53Zone) (result *v1alpha1.Route53Zone, err error) {
 	result = &v1alpha1.Route53Zone{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("route53zones").
 		Name(route53Zone.Name).
 		Body(route53Zone).
@@ -132,6 +139,7 @@ func (c *route53Zones) Update(route53Zone *v1alpha1.Route53Zone) (result *v1alph
 func (c *route53Zones) UpdateStatus(route53Zone *v1alpha1.Route53Zone) (result *v1alpha1.Route53Zone, err error) {
 	result = &v1alpha1.Route53Zone{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("route53zones").
 		Name(route53Zone.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *route53Zones) UpdateStatus(route53Zone *v1alpha1.Route53Zone) (result *
 // Delete takes name of the route53Zone and deletes it. Returns an error if one occurs.
 func (c *route53Zones) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("route53zones").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *route53Zones) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("route53zones").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *route53Zones) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *route53Zones) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Route53Zone, err error) {
 	result = &v1alpha1.Route53Zone{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("route53zones").
 		SubResource(subresources...).
 		Name(name).

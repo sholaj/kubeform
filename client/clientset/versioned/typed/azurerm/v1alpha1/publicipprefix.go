@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// PublicIpPrefixesGetter has a method to return a PublicIpPrefixInterface.
+// PublicIPPrefixesGetter has a method to return a PublicIPPrefixInterface.
 // A group's client should implement this interface.
-type PublicIpPrefixesGetter interface {
-	PublicIpPrefixes() PublicIpPrefixInterface
+type PublicIPPrefixesGetter interface {
+	PublicIPPrefixes(namespace string) PublicIPPrefixInterface
 }
 
-// PublicIpPrefixInterface has methods to work with PublicIpPrefix resources.
-type PublicIpPrefixInterface interface {
-	Create(*v1alpha1.PublicIpPrefix) (*v1alpha1.PublicIpPrefix, error)
-	Update(*v1alpha1.PublicIpPrefix) (*v1alpha1.PublicIpPrefix, error)
-	UpdateStatus(*v1alpha1.PublicIpPrefix) (*v1alpha1.PublicIpPrefix, error)
+// PublicIPPrefixInterface has methods to work with PublicIPPrefix resources.
+type PublicIPPrefixInterface interface {
+	Create(*v1alpha1.PublicIPPrefix) (*v1alpha1.PublicIPPrefix, error)
+	Update(*v1alpha1.PublicIPPrefix) (*v1alpha1.PublicIPPrefix, error)
+	UpdateStatus(*v1alpha1.PublicIPPrefix) (*v1alpha1.PublicIPPrefix, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.PublicIpPrefix, error)
-	List(opts v1.ListOptions) (*v1alpha1.PublicIpPrefixList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.PublicIPPrefix, error)
+	List(opts v1.ListOptions) (*v1alpha1.PublicIPPrefixList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PublicIpPrefix, err error)
-	PublicIpPrefixExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PublicIPPrefix, err error)
+	PublicIPPrefixExpansion
 }
 
-// publicIpPrefixes implements PublicIpPrefixInterface
-type publicIpPrefixes struct {
+// publicIPPrefixes implements PublicIPPrefixInterface
+type publicIPPrefixes struct {
 	client rest.Interface
+	ns     string
 }
 
-// newPublicIpPrefixes returns a PublicIpPrefixes
-func newPublicIpPrefixes(c *AzurermV1alpha1Client) *publicIpPrefixes {
-	return &publicIpPrefixes{
+// newPublicIPPrefixes returns a PublicIPPrefixes
+func newPublicIPPrefixes(c *AzurermV1alpha1Client, namespace string) *publicIPPrefixes {
+	return &publicIPPrefixes{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the publicIpPrefix, and returns the corresponding publicIpPrefix object, and an error if there is any.
-func (c *publicIpPrefixes) Get(name string, options v1.GetOptions) (result *v1alpha1.PublicIpPrefix, err error) {
-	result = &v1alpha1.PublicIpPrefix{}
+// Get takes name of the publicIPPrefix, and returns the corresponding publicIPPrefix object, and an error if there is any.
+func (c *publicIPPrefixes) Get(name string, options v1.GetOptions) (result *v1alpha1.PublicIPPrefix, err error) {
+	result = &v1alpha1.PublicIPPrefix{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("publicipprefixes").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *publicIpPrefixes) Get(name string, options v1.GetOptions) (result *v1al
 	return
 }
 
-// List takes label and field selectors, and returns the list of PublicIpPrefixes that match those selectors.
-func (c *publicIpPrefixes) List(opts v1.ListOptions) (result *v1alpha1.PublicIpPrefixList, err error) {
+// List takes label and field selectors, and returns the list of PublicIPPrefixes that match those selectors.
+func (c *publicIPPrefixes) List(opts v1.ListOptions) (result *v1alpha1.PublicIPPrefixList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.PublicIpPrefixList{}
+	result = &v1alpha1.PublicIPPrefixList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("publicipprefixes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *publicIpPrefixes) List(opts v1.ListOptions) (result *v1alpha1.PublicIpP
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested publicIpPrefixes.
-func (c *publicIpPrefixes) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested publicIPPrefixes.
+func (c *publicIPPrefixes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("publicipprefixes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a publicIpPrefix and creates it.  Returns the server's representation of the publicIpPrefix, and an error, if there is any.
-func (c *publicIpPrefixes) Create(publicIpPrefix *v1alpha1.PublicIpPrefix) (result *v1alpha1.PublicIpPrefix, err error) {
-	result = &v1alpha1.PublicIpPrefix{}
+// Create takes the representation of a publicIPPrefix and creates it.  Returns the server's representation of the publicIPPrefix, and an error, if there is any.
+func (c *publicIPPrefixes) Create(publicIPPrefix *v1alpha1.PublicIPPrefix) (result *v1alpha1.PublicIPPrefix, err error) {
+	result = &v1alpha1.PublicIPPrefix{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("publicipprefixes").
-		Body(publicIpPrefix).
+		Body(publicIPPrefix).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a publicIpPrefix and updates it. Returns the server's representation of the publicIpPrefix, and an error, if there is any.
-func (c *publicIpPrefixes) Update(publicIpPrefix *v1alpha1.PublicIpPrefix) (result *v1alpha1.PublicIpPrefix, err error) {
-	result = &v1alpha1.PublicIpPrefix{}
+// Update takes the representation of a publicIPPrefix and updates it. Returns the server's representation of the publicIPPrefix, and an error, if there is any.
+func (c *publicIPPrefixes) Update(publicIPPrefix *v1alpha1.PublicIPPrefix) (result *v1alpha1.PublicIPPrefix, err error) {
+	result = &v1alpha1.PublicIPPrefix{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("publicipprefixes").
-		Name(publicIpPrefix.Name).
-		Body(publicIpPrefix).
+		Name(publicIPPrefix.Name).
+		Body(publicIPPrefix).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *publicIpPrefixes) Update(publicIpPrefix *v1alpha1.PublicIpPrefix) (resu
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *publicIpPrefixes) UpdateStatus(publicIpPrefix *v1alpha1.PublicIpPrefix) (result *v1alpha1.PublicIpPrefix, err error) {
-	result = &v1alpha1.PublicIpPrefix{}
+func (c *publicIPPrefixes) UpdateStatus(publicIPPrefix *v1alpha1.PublicIPPrefix) (result *v1alpha1.PublicIPPrefix, err error) {
+	result = &v1alpha1.PublicIPPrefix{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("publicipprefixes").
-		Name(publicIpPrefix.Name).
+		Name(publicIPPrefix.Name).
 		SubResource("status").
-		Body(publicIpPrefix).
+		Body(publicIPPrefix).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the publicIpPrefix and deletes it. Returns an error if one occurs.
-func (c *publicIpPrefixes) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the publicIPPrefix and deletes it. Returns an error if one occurs.
+func (c *publicIPPrefixes) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("publicipprefixes").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *publicIpPrefixes) Delete(name string, options *v1.DeleteOptions) error 
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *publicIpPrefixes) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *publicIPPrefixes) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("publicipprefixes").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *publicIpPrefixes) DeleteCollection(options *v1.DeleteOptions, listOptio
 		Error()
 }
 
-// Patch applies the patch and returns the patched publicIpPrefix.
-func (c *publicIpPrefixes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PublicIpPrefix, err error) {
-	result = &v1alpha1.PublicIpPrefix{}
+// Patch applies the patch and returns the patched publicIPPrefix.
+func (c *publicIPPrefixes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PublicIPPrefix, err error) {
+	result = &v1alpha1.PublicIPPrefix{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("publicipprefixes").
 		SubResource(subresources...).
 		Name(name).

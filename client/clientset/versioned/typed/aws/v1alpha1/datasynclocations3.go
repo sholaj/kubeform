@@ -32,7 +32,7 @@ import (
 // DatasyncLocationS3sGetter has a method to return a DatasyncLocationS3Interface.
 // A group's client should implement this interface.
 type DatasyncLocationS3sGetter interface {
-	DatasyncLocationS3s() DatasyncLocationS3Interface
+	DatasyncLocationS3s(namespace string) DatasyncLocationS3Interface
 }
 
 // DatasyncLocationS3Interface has methods to work with DatasyncLocationS3 resources.
@@ -52,12 +52,14 @@ type DatasyncLocationS3Interface interface {
 // datasyncLocationS3s implements DatasyncLocationS3Interface
 type datasyncLocationS3s struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDatasyncLocationS3s returns a DatasyncLocationS3s
-func newDatasyncLocationS3s(c *AwsV1alpha1Client) *datasyncLocationS3s {
+func newDatasyncLocationS3s(c *AwsV1alpha1Client, namespace string) *datasyncLocationS3s {
 	return &datasyncLocationS3s{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDatasyncLocationS3s(c *AwsV1alpha1Client) *datasyncLocationS3s {
 func (c *datasyncLocationS3s) Get(name string, options v1.GetOptions) (result *v1alpha1.DatasyncLocationS3, err error) {
 	result = &v1alpha1.DatasyncLocationS3{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datasynclocations3s").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *datasyncLocationS3s) List(opts v1.ListOptions) (result *v1alpha1.Datasy
 	}
 	result = &v1alpha1.DatasyncLocationS3List{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datasynclocations3s").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *datasyncLocationS3s) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("datasynclocations3s").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *datasyncLocationS3s) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *datasyncLocationS3s) Create(datasyncLocationS3 *v1alpha1.DatasyncLocationS3) (result *v1alpha1.DatasyncLocationS3, err error) {
 	result = &v1alpha1.DatasyncLocationS3{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("datasynclocations3s").
 		Body(datasyncLocationS3).
 		Do().
@@ -118,6 +124,7 @@ func (c *datasyncLocationS3s) Create(datasyncLocationS3 *v1alpha1.DatasyncLocati
 func (c *datasyncLocationS3s) Update(datasyncLocationS3 *v1alpha1.DatasyncLocationS3) (result *v1alpha1.DatasyncLocationS3, err error) {
 	result = &v1alpha1.DatasyncLocationS3{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datasynclocations3s").
 		Name(datasyncLocationS3.Name).
 		Body(datasyncLocationS3).
@@ -132,6 +139,7 @@ func (c *datasyncLocationS3s) Update(datasyncLocationS3 *v1alpha1.DatasyncLocati
 func (c *datasyncLocationS3s) UpdateStatus(datasyncLocationS3 *v1alpha1.DatasyncLocationS3) (result *v1alpha1.DatasyncLocationS3, err error) {
 	result = &v1alpha1.DatasyncLocationS3{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datasynclocations3s").
 		Name(datasyncLocationS3.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *datasyncLocationS3s) UpdateStatus(datasyncLocationS3 *v1alpha1.Datasync
 // Delete takes name of the datasyncLocationS3 and deletes it. Returns an error if one occurs.
 func (c *datasyncLocationS3s) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datasynclocations3s").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *datasyncLocationS3s) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datasynclocations3s").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *datasyncLocationS3s) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *datasyncLocationS3s) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DatasyncLocationS3, err error) {
 	result = &v1alpha1.DatasyncLocationS3{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("datasynclocations3s").
 		SubResource(subresources...).
 		Name(name).

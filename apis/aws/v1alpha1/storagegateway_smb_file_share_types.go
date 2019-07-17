@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,30 +20,31 @@ type StoragegatewaySmbFileShare struct {
 
 type StoragegatewaySmbFileShareSpec struct {
 	// +optional
-	Authentication string `json:"authentication,omitempty"`
+	Authentication string `json:"authentication,omitempty" tf:"authentication,omitempty"`
 	// +optional
-	DefaultStorageClass string `json:"default_storage_class,omitempty"`
-	GatewayArn          string `json:"gateway_arn"`
+	DefaultStorageClass string `json:"defaultStorageClass,omitempty" tf:"default_storage_class,omitempty"`
+	GatewayArn          string `json:"gatewayArn" tf:"gateway_arn"`
 	// +optional
-	GuessMimeTypeEnabled bool `json:"guess_mime_type_enabled,omitempty"`
-	// +optional
-	// +kubebuilder:validation:UniqueItems=true
-	InvalidUserList []string `json:"invalid_user_list,omitempty"`
-	// +optional
-	KmsEncrypted bool `json:"kms_encrypted,omitempty"`
-	// +optional
-	KmsKeyArn   string `json:"kms_key_arn,omitempty"`
-	LocationArn string `json:"location_arn"`
-	// +optional
-	ObjectAcl string `json:"object_acl,omitempty"`
-	// +optional
-	ReadOnly bool `json:"read_only,omitempty"`
-	// +optional
-	RequesterPays bool   `json:"requester_pays,omitempty"`
-	RoleArn       string `json:"role_arn"`
+	GuessMimeTypeEnabled bool `json:"guessMimeTypeEnabled,omitempty" tf:"guess_mime_type_enabled,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	ValidUserList []string `json:"valid_user_list,omitempty"`
+	InvalidUserList []string `json:"invalidUserList,omitempty" tf:"invalid_user_list,omitempty"`
+	// +optional
+	KmsEncrypted bool `json:"kmsEncrypted,omitempty" tf:"kms_encrypted,omitempty"`
+	// +optional
+	KmsKeyArn   string `json:"kmsKeyArn,omitempty" tf:"kms_key_arn,omitempty"`
+	LocationArn string `json:"locationArn" tf:"location_arn"`
+	// +optional
+	ObjectACL string `json:"objectACL,omitempty" tf:"object_acl,omitempty"`
+	// +optional
+	ReadOnly bool `json:"readOnly,omitempty" tf:"read_only,omitempty"`
+	// +optional
+	RequesterPays bool   `json:"requesterPays,omitempty" tf:"requester_pays,omitempty"`
+	RoleArn       string `json:"roleArn" tf:"role_arn"`
+	// +optional
+	// +kubebuilder:validation:UniqueItems=true
+	ValidUserList []string                  `json:"validUserList,omitempty" tf:"valid_user_list,omitempty"`
+	ProviderRef   core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type StoragegatewaySmbFileShareStatus struct {
@@ -51,7 +52,9 @@ type StoragegatewaySmbFileShareStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

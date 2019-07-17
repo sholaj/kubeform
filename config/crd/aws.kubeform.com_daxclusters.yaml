@@ -397,25 +397,38 @@ spec:
           type: object
         spec:
           properties:
-            availability_zones:
+            availabilityZones:
               items:
                 type: string
               type: array
               uniqueItems: true
-            cluster_name:
+            clusterName:
               type: string
             description:
               type: string
-            iam_role_arn:
+            iamRoleArn:
               type: string
-            node_type:
+            nodeType:
               type: string
-            notification_topic_arn:
+            notificationTopicArn:
               type: string
-            replication_factor:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            replicationFactor:
               type: integer
-            server_side_encryption:
-              items: {}
+            serverSideEncryption:
+              items:
+                properties:
+                  enabled:
+                    type: boolean
+                type: object
               maxItems: 1
               type: array
             tags:
@@ -423,10 +436,11 @@ spec:
                 type: string
               type: object
           required:
-          - cluster_name
-          - iam_role_arn
-          - node_type
-          - replication_factor
+          - clusterName
+          - iamRoleArn
+          - nodeType
+          - providerRef
+          - replicationFactor
           type: object
         status:
           properties:
@@ -437,6 +451,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

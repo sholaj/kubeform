@@ -31,6 +31,7 @@ import (
 // FakeKeyPairs implements KeyPairInterface
 type FakeKeyPairs struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var keypairsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "keypairs"}
@@ -40,7 +41,8 @@ var keypairsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "
 // Get takes name of the keyPair, and returns the corresponding keyPair object, and an error if there is any.
 func (c *FakeKeyPairs) Get(name string, options v1.GetOptions) (result *v1alpha1.KeyPair, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(keypairsResource, name), &v1alpha1.KeyPair{})
+		Invokes(testing.NewGetAction(keypairsResource, c.ns, name), &v1alpha1.KeyPair{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeKeyPairs) Get(name string, options v1.GetOptions) (result *v1alpha1
 // List takes label and field selectors, and returns the list of KeyPairs that match those selectors.
 func (c *FakeKeyPairs) List(opts v1.ListOptions) (result *v1alpha1.KeyPairList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(keypairsResource, keypairsKind, opts), &v1alpha1.KeyPairList{})
+		Invokes(testing.NewListAction(keypairsResource, keypairsKind, c.ns, opts), &v1alpha1.KeyPairList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeKeyPairs) List(opts v1.ListOptions) (result *v1alpha1.KeyPairList, 
 // Watch returns a watch.Interface that watches the requested keyPairs.
 func (c *FakeKeyPairs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(keypairsResource, opts))
+		InvokesWatch(testing.NewWatchAction(keypairsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a keyPair and creates it.  Returns the server's representation of the keyPair, and an error, if there is any.
 func (c *FakeKeyPairs) Create(keyPair *v1alpha1.KeyPair) (result *v1alpha1.KeyPair, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(keypairsResource, keyPair), &v1alpha1.KeyPair{})
+		Invokes(testing.NewCreateAction(keypairsResource, c.ns, keyPair), &v1alpha1.KeyPair{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeKeyPairs) Create(keyPair *v1alpha1.KeyPair) (result *v1alpha1.KeyPa
 // Update takes the representation of a keyPair and updates it. Returns the server's representation of the keyPair, and an error, if there is any.
 func (c *FakeKeyPairs) Update(keyPair *v1alpha1.KeyPair) (result *v1alpha1.KeyPair, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(keypairsResource, keyPair), &v1alpha1.KeyPair{})
+		Invokes(testing.NewUpdateAction(keypairsResource, c.ns, keyPair), &v1alpha1.KeyPair{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeKeyPairs) Update(keyPair *v1alpha1.KeyPair) (result *v1alpha1.KeyPa
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeKeyPairs) UpdateStatus(keyPair *v1alpha1.KeyPair) (*v1alpha1.KeyPair, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(keypairsResource, "status", keyPair), &v1alpha1.KeyPair{})
+		Invokes(testing.NewUpdateSubresourceAction(keypairsResource, "status", c.ns, keyPair), &v1alpha1.KeyPair{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeKeyPairs) UpdateStatus(keyPair *v1alpha1.KeyPair) (*v1alpha1.KeyPai
 // Delete takes name of the keyPair and deletes it. Returns an error if one occurs.
 func (c *FakeKeyPairs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(keypairsResource, name), &v1alpha1.KeyPair{})
+		Invokes(testing.NewDeleteAction(keypairsResource, c.ns, name), &v1alpha1.KeyPair{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeKeyPairs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(keypairsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(keypairsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.KeyPairList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeKeyPairs) DeleteCollection(options *v1.DeleteOptions, listOptions v
 // Patch applies the patch and returns the patched keyPair.
 func (c *FakeKeyPairs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KeyPair, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(keypairsResource, name, pt, data, subresources...), &v1alpha1.KeyPair{})
+		Invokes(testing.NewPatchSubresourceAction(keypairsResource, c.ns, name, pt, data, subresources...), &v1alpha1.KeyPair{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeKinesisStreams implements KinesisStreamInterface
 type FakeKinesisStreams struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var kinesisstreamsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "kinesisstreams"}
@@ -40,7 +41,8 @@ var kinesisstreamsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Vers
 // Get takes name of the kinesisStream, and returns the corresponding kinesisStream object, and an error if there is any.
 func (c *FakeKinesisStreams) Get(name string, options v1.GetOptions) (result *v1alpha1.KinesisStream, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(kinesisstreamsResource, name), &v1alpha1.KinesisStream{})
+		Invokes(testing.NewGetAction(kinesisstreamsResource, c.ns, name), &v1alpha1.KinesisStream{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeKinesisStreams) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of KinesisStreams that match those selectors.
 func (c *FakeKinesisStreams) List(opts v1.ListOptions) (result *v1alpha1.KinesisStreamList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(kinesisstreamsResource, kinesisstreamsKind, opts), &v1alpha1.KinesisStreamList{})
+		Invokes(testing.NewListAction(kinesisstreamsResource, kinesisstreamsKind, c.ns, opts), &v1alpha1.KinesisStreamList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeKinesisStreams) List(opts v1.ListOptions) (result *v1alpha1.Kinesis
 // Watch returns a watch.Interface that watches the requested kinesisStreams.
 func (c *FakeKinesisStreams) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(kinesisstreamsResource, opts))
+		InvokesWatch(testing.NewWatchAction(kinesisstreamsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a kinesisStream and creates it.  Returns the server's representation of the kinesisStream, and an error, if there is any.
 func (c *FakeKinesisStreams) Create(kinesisStream *v1alpha1.KinesisStream) (result *v1alpha1.KinesisStream, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(kinesisstreamsResource, kinesisStream), &v1alpha1.KinesisStream{})
+		Invokes(testing.NewCreateAction(kinesisstreamsResource, c.ns, kinesisStream), &v1alpha1.KinesisStream{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeKinesisStreams) Create(kinesisStream *v1alpha1.KinesisStream) (resu
 // Update takes the representation of a kinesisStream and updates it. Returns the server's representation of the kinesisStream, and an error, if there is any.
 func (c *FakeKinesisStreams) Update(kinesisStream *v1alpha1.KinesisStream) (result *v1alpha1.KinesisStream, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(kinesisstreamsResource, kinesisStream), &v1alpha1.KinesisStream{})
+		Invokes(testing.NewUpdateAction(kinesisstreamsResource, c.ns, kinesisStream), &v1alpha1.KinesisStream{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeKinesisStreams) Update(kinesisStream *v1alpha1.KinesisStream) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeKinesisStreams) UpdateStatus(kinesisStream *v1alpha1.KinesisStream) (*v1alpha1.KinesisStream, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(kinesisstreamsResource, "status", kinesisStream), &v1alpha1.KinesisStream{})
+		Invokes(testing.NewUpdateSubresourceAction(kinesisstreamsResource, "status", c.ns, kinesisStream), &v1alpha1.KinesisStream{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeKinesisStreams) UpdateStatus(kinesisStream *v1alpha1.KinesisStream)
 // Delete takes name of the kinesisStream and deletes it. Returns an error if one occurs.
 func (c *FakeKinesisStreams) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(kinesisstreamsResource, name), &v1alpha1.KinesisStream{})
+		Invokes(testing.NewDeleteAction(kinesisstreamsResource, c.ns, name), &v1alpha1.KinesisStream{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeKinesisStreams) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(kinesisstreamsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(kinesisstreamsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.KinesisStreamList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeKinesisStreams) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched kinesisStream.
 func (c *FakeKinesisStreams) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KinesisStream, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(kinesisstreamsResource, name, pt, data, subresources...), &v1alpha1.KinesisStream{})
+		Invokes(testing.NewPatchSubresourceAction(kinesisstreamsResource, c.ns, name, pt, data, subresources...), &v1alpha1.KinesisStream{})
+
 	if obj == nil {
 		return nil, err
 	}

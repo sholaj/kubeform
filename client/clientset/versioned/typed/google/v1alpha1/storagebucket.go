@@ -32,7 +32,7 @@ import (
 // StorageBucketsGetter has a method to return a StorageBucketInterface.
 // A group's client should implement this interface.
 type StorageBucketsGetter interface {
-	StorageBuckets() StorageBucketInterface
+	StorageBuckets(namespace string) StorageBucketInterface
 }
 
 // StorageBucketInterface has methods to work with StorageBucket resources.
@@ -52,12 +52,14 @@ type StorageBucketInterface interface {
 // storageBuckets implements StorageBucketInterface
 type storageBuckets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStorageBuckets returns a StorageBuckets
-func newStorageBuckets(c *GoogleV1alpha1Client) *storageBuckets {
+func newStorageBuckets(c *GoogleV1alpha1Client, namespace string) *storageBuckets {
 	return &storageBuckets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStorageBuckets(c *GoogleV1alpha1Client) *storageBuckets {
 func (c *storageBuckets) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageBucket, err error) {
 	result = &v1alpha1.StorageBucket{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagebuckets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *storageBuckets) List(opts v1.ListOptions) (result *v1alpha1.StorageBuck
 	}
 	result = &v1alpha1.StorageBucketList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagebuckets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *storageBuckets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storagebuckets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *storageBuckets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *storageBuckets) Create(storageBucket *v1alpha1.StorageBucket) (result *v1alpha1.StorageBucket, err error) {
 	result = &v1alpha1.StorageBucket{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storagebuckets").
 		Body(storageBucket).
 		Do().
@@ -118,6 +124,7 @@ func (c *storageBuckets) Create(storageBucket *v1alpha1.StorageBucket) (result *
 func (c *storageBuckets) Update(storageBucket *v1alpha1.StorageBucket) (result *v1alpha1.StorageBucket, err error) {
 	result = &v1alpha1.StorageBucket{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagebuckets").
 		Name(storageBucket.Name).
 		Body(storageBucket).
@@ -132,6 +139,7 @@ func (c *storageBuckets) Update(storageBucket *v1alpha1.StorageBucket) (result *
 func (c *storageBuckets) UpdateStatus(storageBucket *v1alpha1.StorageBucket) (result *v1alpha1.StorageBucket, err error) {
 	result = &v1alpha1.StorageBucket{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagebuckets").
 		Name(storageBucket.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *storageBuckets) UpdateStatus(storageBucket *v1alpha1.StorageBucket) (re
 // Delete takes name of the storageBucket and deletes it. Returns an error if one occurs.
 func (c *storageBuckets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagebuckets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *storageBuckets) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagebuckets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *storageBuckets) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *storageBuckets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageBucket, err error) {
 	result = &v1alpha1.StorageBucket{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storagebuckets").
 		SubResource(subresources...).
 		Name(name).

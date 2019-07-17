@@ -32,7 +32,7 @@ import (
 // RouteTableAssociationsGetter has a method to return a RouteTableAssociationInterface.
 // A group's client should implement this interface.
 type RouteTableAssociationsGetter interface {
-	RouteTableAssociations() RouteTableAssociationInterface
+	RouteTableAssociations(namespace string) RouteTableAssociationInterface
 }
 
 // RouteTableAssociationInterface has methods to work with RouteTableAssociation resources.
@@ -52,12 +52,14 @@ type RouteTableAssociationInterface interface {
 // routeTableAssociations implements RouteTableAssociationInterface
 type routeTableAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRouteTableAssociations returns a RouteTableAssociations
-func newRouteTableAssociations(c *AwsV1alpha1Client) *routeTableAssociations {
+func newRouteTableAssociations(c *AwsV1alpha1Client, namespace string) *routeTableAssociations {
 	return &routeTableAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRouteTableAssociations(c *AwsV1alpha1Client) *routeTableAssociations {
 func (c *routeTableAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.RouteTableAssociation, err error) {
 	result = &v1alpha1.RouteTableAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("routetableassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *routeTableAssociations) List(opts v1.ListOptions) (result *v1alpha1.Rou
 	}
 	result = &v1alpha1.RouteTableAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("routetableassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *routeTableAssociations) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("routetableassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *routeTableAssociations) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *routeTableAssociations) Create(routeTableAssociation *v1alpha1.RouteTableAssociation) (result *v1alpha1.RouteTableAssociation, err error) {
 	result = &v1alpha1.RouteTableAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("routetableassociations").
 		Body(routeTableAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *routeTableAssociations) Create(routeTableAssociation *v1alpha1.RouteTab
 func (c *routeTableAssociations) Update(routeTableAssociation *v1alpha1.RouteTableAssociation) (result *v1alpha1.RouteTableAssociation, err error) {
 	result = &v1alpha1.RouteTableAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("routetableassociations").
 		Name(routeTableAssociation.Name).
 		Body(routeTableAssociation).
@@ -132,6 +139,7 @@ func (c *routeTableAssociations) Update(routeTableAssociation *v1alpha1.RouteTab
 func (c *routeTableAssociations) UpdateStatus(routeTableAssociation *v1alpha1.RouteTableAssociation) (result *v1alpha1.RouteTableAssociation, err error) {
 	result = &v1alpha1.RouteTableAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("routetableassociations").
 		Name(routeTableAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *routeTableAssociations) UpdateStatus(routeTableAssociation *v1alpha1.Ro
 // Delete takes name of the routeTableAssociation and deletes it. Returns an error if one occurs.
 func (c *routeTableAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("routetableassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *routeTableAssociations) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("routetableassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *routeTableAssociations) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *routeTableAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RouteTableAssociation, err error) {
 	result = &v1alpha1.RouteTableAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("routetableassociations").
 		SubResource(subresources...).
 		Name(name).

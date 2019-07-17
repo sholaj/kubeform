@@ -32,7 +32,7 @@ import (
 // AutoscalingNotificationsGetter has a method to return a AutoscalingNotificationInterface.
 // A group's client should implement this interface.
 type AutoscalingNotificationsGetter interface {
-	AutoscalingNotifications() AutoscalingNotificationInterface
+	AutoscalingNotifications(namespace string) AutoscalingNotificationInterface
 }
 
 // AutoscalingNotificationInterface has methods to work with AutoscalingNotification resources.
@@ -52,12 +52,14 @@ type AutoscalingNotificationInterface interface {
 // autoscalingNotifications implements AutoscalingNotificationInterface
 type autoscalingNotifications struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAutoscalingNotifications returns a AutoscalingNotifications
-func newAutoscalingNotifications(c *AwsV1alpha1Client) *autoscalingNotifications {
+func newAutoscalingNotifications(c *AwsV1alpha1Client, namespace string) *autoscalingNotifications {
 	return &autoscalingNotifications{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAutoscalingNotifications(c *AwsV1alpha1Client) *autoscalingNotifications
 func (c *autoscalingNotifications) Get(name string, options v1.GetOptions) (result *v1alpha1.AutoscalingNotification, err error) {
 	result = &v1alpha1.AutoscalingNotification{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("autoscalingnotifications").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *autoscalingNotifications) List(opts v1.ListOptions) (result *v1alpha1.A
 	}
 	result = &v1alpha1.AutoscalingNotificationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("autoscalingnotifications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *autoscalingNotifications) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("autoscalingnotifications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *autoscalingNotifications) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *autoscalingNotifications) Create(autoscalingNotification *v1alpha1.AutoscalingNotification) (result *v1alpha1.AutoscalingNotification, err error) {
 	result = &v1alpha1.AutoscalingNotification{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("autoscalingnotifications").
 		Body(autoscalingNotification).
 		Do().
@@ -118,6 +124,7 @@ func (c *autoscalingNotifications) Create(autoscalingNotification *v1alpha1.Auto
 func (c *autoscalingNotifications) Update(autoscalingNotification *v1alpha1.AutoscalingNotification) (result *v1alpha1.AutoscalingNotification, err error) {
 	result = &v1alpha1.AutoscalingNotification{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("autoscalingnotifications").
 		Name(autoscalingNotification.Name).
 		Body(autoscalingNotification).
@@ -132,6 +139,7 @@ func (c *autoscalingNotifications) Update(autoscalingNotification *v1alpha1.Auto
 func (c *autoscalingNotifications) UpdateStatus(autoscalingNotification *v1alpha1.AutoscalingNotification) (result *v1alpha1.AutoscalingNotification, err error) {
 	result = &v1alpha1.AutoscalingNotification{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("autoscalingnotifications").
 		Name(autoscalingNotification.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *autoscalingNotifications) UpdateStatus(autoscalingNotification *v1alpha
 // Delete takes name of the autoscalingNotification and deletes it. Returns an error if one occurs.
 func (c *autoscalingNotifications) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("autoscalingnotifications").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *autoscalingNotifications) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("autoscalingnotifications").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *autoscalingNotifications) DeleteCollection(options *v1.DeleteOptions, l
 func (c *autoscalingNotifications) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AutoscalingNotification, err error) {
 	result = &v1alpha1.AutoscalingNotification{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("autoscalingnotifications").
 		SubResource(subresources...).
 		Name(name).

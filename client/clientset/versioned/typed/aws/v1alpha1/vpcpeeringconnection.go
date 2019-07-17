@@ -32,7 +32,7 @@ import (
 // VpcPeeringConnectionsGetter has a method to return a VpcPeeringConnectionInterface.
 // A group's client should implement this interface.
 type VpcPeeringConnectionsGetter interface {
-	VpcPeeringConnections() VpcPeeringConnectionInterface
+	VpcPeeringConnections(namespace string) VpcPeeringConnectionInterface
 }
 
 // VpcPeeringConnectionInterface has methods to work with VpcPeeringConnection resources.
@@ -52,12 +52,14 @@ type VpcPeeringConnectionInterface interface {
 // vpcPeeringConnections implements VpcPeeringConnectionInterface
 type vpcPeeringConnections struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVpcPeeringConnections returns a VpcPeeringConnections
-func newVpcPeeringConnections(c *AwsV1alpha1Client) *vpcPeeringConnections {
+func newVpcPeeringConnections(c *AwsV1alpha1Client, namespace string) *vpcPeeringConnections {
 	return &vpcPeeringConnections{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVpcPeeringConnections(c *AwsV1alpha1Client) *vpcPeeringConnections {
 func (c *vpcPeeringConnections) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcPeeringConnection, err error) {
 	result = &v1alpha1.VpcPeeringConnection{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcpeeringconnections").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *vpcPeeringConnections) List(opts v1.ListOptions) (result *v1alpha1.VpcP
 	}
 	result = &v1alpha1.VpcPeeringConnectionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcpeeringconnections").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *vpcPeeringConnections) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcpeeringconnections").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *vpcPeeringConnections) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *vpcPeeringConnections) Create(vpcPeeringConnection *v1alpha1.VpcPeeringConnection) (result *v1alpha1.VpcPeeringConnection, err error) {
 	result = &v1alpha1.VpcPeeringConnection{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("vpcpeeringconnections").
 		Body(vpcPeeringConnection).
 		Do().
@@ -118,6 +124,7 @@ func (c *vpcPeeringConnections) Create(vpcPeeringConnection *v1alpha1.VpcPeering
 func (c *vpcPeeringConnections) Update(vpcPeeringConnection *v1alpha1.VpcPeeringConnection) (result *v1alpha1.VpcPeeringConnection, err error) {
 	result = &v1alpha1.VpcPeeringConnection{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcpeeringconnections").
 		Name(vpcPeeringConnection.Name).
 		Body(vpcPeeringConnection).
@@ -132,6 +139,7 @@ func (c *vpcPeeringConnections) Update(vpcPeeringConnection *v1alpha1.VpcPeering
 func (c *vpcPeeringConnections) UpdateStatus(vpcPeeringConnection *v1alpha1.VpcPeeringConnection) (result *v1alpha1.VpcPeeringConnection, err error) {
 	result = &v1alpha1.VpcPeeringConnection{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcpeeringconnections").
 		Name(vpcPeeringConnection.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *vpcPeeringConnections) UpdateStatus(vpcPeeringConnection *v1alpha1.VpcP
 // Delete takes name of the vpcPeeringConnection and deletes it. Returns an error if one occurs.
 func (c *vpcPeeringConnections) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcpeeringconnections").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *vpcPeeringConnections) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcpeeringconnections").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *vpcPeeringConnections) DeleteCollection(options *v1.DeleteOptions, list
 func (c *vpcPeeringConnections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcPeeringConnection, err error) {
 	result = &v1alpha1.VpcPeeringConnection{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("vpcpeeringconnections").
 		SubResource(subresources...).
 		Name(name).

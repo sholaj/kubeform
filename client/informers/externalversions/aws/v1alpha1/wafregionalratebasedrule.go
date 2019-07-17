@@ -41,32 +41,33 @@ type WafregionalRateBasedRuleInformer interface {
 type wafregionalRateBasedRuleInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewWafregionalRateBasedRuleInformer constructs a new informer for WafregionalRateBasedRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewWafregionalRateBasedRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredWafregionalRateBasedRuleInformer(client, resyncPeriod, indexers, nil)
+func NewWafregionalRateBasedRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredWafregionalRateBasedRuleInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredWafregionalRateBasedRuleInformer constructs a new informer for WafregionalRateBasedRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredWafregionalRateBasedRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredWafregionalRateBasedRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafregionalRateBasedRules().List(options)
+				return client.AwsV1alpha1().WafregionalRateBasedRules(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafregionalRateBasedRules().Watch(options)
+				return client.AwsV1alpha1().WafregionalRateBasedRules(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.WafregionalRateBasedRule{},
@@ -76,7 +77,7 @@ func NewFilteredWafregionalRateBasedRuleInformer(client versioned.Interface, res
 }
 
 func (f *wafregionalRateBasedRuleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredWafregionalRateBasedRuleInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredWafregionalRateBasedRuleInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *wafregionalRateBasedRuleInformer) Informer() cache.SharedIndexInformer {

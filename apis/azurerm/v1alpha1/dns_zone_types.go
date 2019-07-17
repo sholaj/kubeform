@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,14 +19,15 @@ type DnsZone struct {
 }
 
 type DnsZoneSpec struct {
-	Name string `json:"name"`
+	Name string `json:"name" tf:"name"`
 	// +optional
-	RegistrationVirtualNetworkIds []string `json:"registration_virtual_network_ids,omitempty"`
+	RegistrationVirtualNetworkIDS []string `json:"registrationVirtualNetworkIDS,omitempty" tf:"registration_virtual_network_ids,omitempty"`
 	// +optional
-	ResolutionVirtualNetworkIds []string `json:"resolution_virtual_network_ids,omitempty"`
-	ResourceGroupName           string   `json:"resource_group_name"`
+	ResolutionVirtualNetworkIDS []string `json:"resolutionVirtualNetworkIDS,omitempty" tf:"resolution_virtual_network_ids,omitempty"`
+	ResourceGroupName           string   `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	ZoneType string `json:"zone_type,omitempty"`
+	ZoneType    string                    `json:"zoneType,omitempty" tf:"zone_type,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DnsZoneStatus struct {
@@ -34,7 +35,9 @@ type DnsZoneStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

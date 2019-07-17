@@ -29,8 +29,8 @@ import (
 type CloudbuildTriggerLister interface {
 	// List lists all CloudbuildTriggers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CloudbuildTrigger, err error)
-	// Get retrieves the CloudbuildTrigger from the index for a given name.
-	Get(name string) (*v1alpha1.CloudbuildTrigger, error)
+	// CloudbuildTriggers returns an object that can list and get CloudbuildTriggers.
+	CloudbuildTriggers(namespace string) CloudbuildTriggerNamespaceLister
 	CloudbuildTriggerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cloudbuildTriggerLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the CloudbuildTrigger from the index for a given name.
-func (s *cloudbuildTriggerLister) Get(name string) (*v1alpha1.CloudbuildTrigger, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CloudbuildTriggers returns an object that can list and get CloudbuildTriggers.
+func (s *cloudbuildTriggerLister) CloudbuildTriggers(namespace string) CloudbuildTriggerNamespaceLister {
+	return cloudbuildTriggerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CloudbuildTriggerNamespaceLister helps list and get CloudbuildTriggers.
+type CloudbuildTriggerNamespaceLister interface {
+	// List lists all CloudbuildTriggers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CloudbuildTrigger, err error)
+	// Get retrieves the CloudbuildTrigger from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CloudbuildTrigger, error)
+	CloudbuildTriggerNamespaceListerExpansion
+}
+
+// cloudbuildTriggerNamespaceLister implements the CloudbuildTriggerNamespaceLister
+// interface.
+type cloudbuildTriggerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CloudbuildTriggers in the indexer for a given namespace.
+func (s cloudbuildTriggerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CloudbuildTrigger, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CloudbuildTrigger))
+	})
+	return ret, err
+}
+
+// Get retrieves the CloudbuildTrigger from the indexer for a given namespace and name.
+func (s cloudbuildTriggerNamespaceLister) Get(name string) (*v1alpha1.CloudbuildTrigger, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

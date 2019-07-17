@@ -29,8 +29,8 @@ import (
 type ComputeRouterPeerLister interface {
 	// List lists all ComputeRouterPeers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeRouterPeer, err error)
-	// Get retrieves the ComputeRouterPeer from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeRouterPeer, error)
+	// ComputeRouterPeers returns an object that can list and get ComputeRouterPeers.
+	ComputeRouterPeers(namespace string) ComputeRouterPeerNamespaceLister
 	ComputeRouterPeerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeRouterPeerLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the ComputeRouterPeer from the index for a given name.
-func (s *computeRouterPeerLister) Get(name string) (*v1alpha1.ComputeRouterPeer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeRouterPeers returns an object that can list and get ComputeRouterPeers.
+func (s *computeRouterPeerLister) ComputeRouterPeers(namespace string) ComputeRouterPeerNamespaceLister {
+	return computeRouterPeerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeRouterPeerNamespaceLister helps list and get ComputeRouterPeers.
+type ComputeRouterPeerNamespaceLister interface {
+	// List lists all ComputeRouterPeers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeRouterPeer, err error)
+	// Get retrieves the ComputeRouterPeer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeRouterPeer, error)
+	ComputeRouterPeerNamespaceListerExpansion
+}
+
+// computeRouterPeerNamespaceLister implements the ComputeRouterPeerNamespaceLister
+// interface.
+type computeRouterPeerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeRouterPeers in the indexer for a given namespace.
+func (s computeRouterPeerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeRouterPeer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeRouterPeer))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeRouterPeer from the indexer for a given namespace and name.
+func (s computeRouterPeerNamespaceLister) Get(name string) (*v1alpha1.ComputeRouterPeer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

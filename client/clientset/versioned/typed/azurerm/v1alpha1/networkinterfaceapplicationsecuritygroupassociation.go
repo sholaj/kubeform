@@ -32,7 +32,7 @@ import (
 // NetworkInterfaceApplicationSecurityGroupAssociationsGetter has a method to return a NetworkInterfaceApplicationSecurityGroupAssociationInterface.
 // A group's client should implement this interface.
 type NetworkInterfaceApplicationSecurityGroupAssociationsGetter interface {
-	NetworkInterfaceApplicationSecurityGroupAssociations() NetworkInterfaceApplicationSecurityGroupAssociationInterface
+	NetworkInterfaceApplicationSecurityGroupAssociations(namespace string) NetworkInterfaceApplicationSecurityGroupAssociationInterface
 }
 
 // NetworkInterfaceApplicationSecurityGroupAssociationInterface has methods to work with NetworkInterfaceApplicationSecurityGroupAssociation resources.
@@ -52,12 +52,14 @@ type NetworkInterfaceApplicationSecurityGroupAssociationInterface interface {
 // networkInterfaceApplicationSecurityGroupAssociations implements NetworkInterfaceApplicationSecurityGroupAssociationInterface
 type networkInterfaceApplicationSecurityGroupAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNetworkInterfaceApplicationSecurityGroupAssociations returns a NetworkInterfaceApplicationSecurityGroupAssociations
-func newNetworkInterfaceApplicationSecurityGroupAssociations(c *AzurermV1alpha1Client) *networkInterfaceApplicationSecurityGroupAssociations {
+func newNetworkInterfaceApplicationSecurityGroupAssociations(c *AzurermV1alpha1Client, namespace string) *networkInterfaceApplicationSecurityGroupAssociations {
 	return &networkInterfaceApplicationSecurityGroupAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNetworkInterfaceApplicationSecurityGroupAssociations(c *AzurermV1alpha1C
 func (c *networkInterfaceApplicationSecurityGroupAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation, err error) {
 	result = &v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkinterfaceapplicationsecuritygroupassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *networkInterfaceApplicationSecurityGroupAssociations) List(opts v1.List
 	}
 	result = &v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkinterfaceapplicationsecuritygroupassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *networkInterfaceApplicationSecurityGroupAssociations) Watch(opts v1.Lis
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("networkinterfaceapplicationsecuritygroupassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *networkInterfaceApplicationSecurityGroupAssociations) Watch(opts v1.Lis
 func (c *networkInterfaceApplicationSecurityGroupAssociations) Create(networkInterfaceApplicationSecurityGroupAssociation *v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation) (result *v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation, err error) {
 	result = &v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("networkinterfaceapplicationsecuritygroupassociations").
 		Body(networkInterfaceApplicationSecurityGroupAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *networkInterfaceApplicationSecurityGroupAssociations) Create(networkInt
 func (c *networkInterfaceApplicationSecurityGroupAssociations) Update(networkInterfaceApplicationSecurityGroupAssociation *v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation) (result *v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation, err error) {
 	result = &v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkinterfaceapplicationsecuritygroupassociations").
 		Name(networkInterfaceApplicationSecurityGroupAssociation.Name).
 		Body(networkInterfaceApplicationSecurityGroupAssociation).
@@ -132,6 +139,7 @@ func (c *networkInterfaceApplicationSecurityGroupAssociations) Update(networkInt
 func (c *networkInterfaceApplicationSecurityGroupAssociations) UpdateStatus(networkInterfaceApplicationSecurityGroupAssociation *v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation) (result *v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation, err error) {
 	result = &v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkinterfaceapplicationsecuritygroupassociations").
 		Name(networkInterfaceApplicationSecurityGroupAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *networkInterfaceApplicationSecurityGroupAssociations) UpdateStatus(netw
 // Delete takes name of the networkInterfaceApplicationSecurityGroupAssociation and deletes it. Returns an error if one occurs.
 func (c *networkInterfaceApplicationSecurityGroupAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkinterfaceapplicationsecuritygroupassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *networkInterfaceApplicationSecurityGroupAssociations) DeleteCollection(
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkinterfaceapplicationsecuritygroupassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *networkInterfaceApplicationSecurityGroupAssociations) DeleteCollection(
 func (c *networkInterfaceApplicationSecurityGroupAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation, err error) {
 	result = &v1alpha1.NetworkInterfaceApplicationSecurityGroupAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("networkinterfaceapplicationsecuritygroupassociations").
 		SubResource(subresources...).
 		Name(name).

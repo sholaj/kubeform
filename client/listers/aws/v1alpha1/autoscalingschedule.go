@@ -29,8 +29,8 @@ import (
 type AutoscalingScheduleLister interface {
 	// List lists all AutoscalingSchedules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AutoscalingSchedule, err error)
-	// Get retrieves the AutoscalingSchedule from the index for a given name.
-	Get(name string) (*v1alpha1.AutoscalingSchedule, error)
+	// AutoscalingSchedules returns an object that can list and get AutoscalingSchedules.
+	AutoscalingSchedules(namespace string) AutoscalingScheduleNamespaceLister
 	AutoscalingScheduleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *autoscalingScheduleLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the AutoscalingSchedule from the index for a given name.
-func (s *autoscalingScheduleLister) Get(name string) (*v1alpha1.AutoscalingSchedule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AutoscalingSchedules returns an object that can list and get AutoscalingSchedules.
+func (s *autoscalingScheduleLister) AutoscalingSchedules(namespace string) AutoscalingScheduleNamespaceLister {
+	return autoscalingScheduleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AutoscalingScheduleNamespaceLister helps list and get AutoscalingSchedules.
+type AutoscalingScheduleNamespaceLister interface {
+	// List lists all AutoscalingSchedules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AutoscalingSchedule, err error)
+	// Get retrieves the AutoscalingSchedule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AutoscalingSchedule, error)
+	AutoscalingScheduleNamespaceListerExpansion
+}
+
+// autoscalingScheduleNamespaceLister implements the AutoscalingScheduleNamespaceLister
+// interface.
+type autoscalingScheduleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AutoscalingSchedules in the indexer for a given namespace.
+func (s autoscalingScheduleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AutoscalingSchedule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AutoscalingSchedule))
+	})
+	return ret, err
+}
+
+// Get retrieves the AutoscalingSchedule from the indexer for a given namespace and name.
+func (s autoscalingScheduleNamespaceLister) Get(name string) (*v1alpha1.AutoscalingSchedule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

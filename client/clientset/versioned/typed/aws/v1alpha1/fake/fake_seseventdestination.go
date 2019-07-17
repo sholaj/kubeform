@@ -31,6 +31,7 @@ import (
 // FakeSesEventDestinations implements SesEventDestinationInterface
 type FakeSesEventDestinations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var seseventdestinationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "seseventdestinations"}
@@ -40,7 +41,8 @@ var seseventdestinationsKind = schema.GroupVersionKind{Group: "aws.kubeform.com"
 // Get takes name of the sesEventDestination, and returns the corresponding sesEventDestination object, and an error if there is any.
 func (c *FakeSesEventDestinations) Get(name string, options v1.GetOptions) (result *v1alpha1.SesEventDestination, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(seseventdestinationsResource, name), &v1alpha1.SesEventDestination{})
+		Invokes(testing.NewGetAction(seseventdestinationsResource, c.ns, name), &v1alpha1.SesEventDestination{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSesEventDestinations) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of SesEventDestinations that match those selectors.
 func (c *FakeSesEventDestinations) List(opts v1.ListOptions) (result *v1alpha1.SesEventDestinationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(seseventdestinationsResource, seseventdestinationsKind, opts), &v1alpha1.SesEventDestinationList{})
+		Invokes(testing.NewListAction(seseventdestinationsResource, seseventdestinationsKind, c.ns, opts), &v1alpha1.SesEventDestinationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSesEventDestinations) List(opts v1.ListOptions) (result *v1alpha1.S
 // Watch returns a watch.Interface that watches the requested sesEventDestinations.
 func (c *FakeSesEventDestinations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(seseventdestinationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(seseventdestinationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sesEventDestination and creates it.  Returns the server's representation of the sesEventDestination, and an error, if there is any.
 func (c *FakeSesEventDestinations) Create(sesEventDestination *v1alpha1.SesEventDestination) (result *v1alpha1.SesEventDestination, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(seseventdestinationsResource, sesEventDestination), &v1alpha1.SesEventDestination{})
+		Invokes(testing.NewCreateAction(seseventdestinationsResource, c.ns, sesEventDestination), &v1alpha1.SesEventDestination{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSesEventDestinations) Create(sesEventDestination *v1alpha1.SesEvent
 // Update takes the representation of a sesEventDestination and updates it. Returns the server's representation of the sesEventDestination, and an error, if there is any.
 func (c *FakeSesEventDestinations) Update(sesEventDestination *v1alpha1.SesEventDestination) (result *v1alpha1.SesEventDestination, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(seseventdestinationsResource, sesEventDestination), &v1alpha1.SesEventDestination{})
+		Invokes(testing.NewUpdateAction(seseventdestinationsResource, c.ns, sesEventDestination), &v1alpha1.SesEventDestination{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSesEventDestinations) Update(sesEventDestination *v1alpha1.SesEvent
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSesEventDestinations) UpdateStatus(sesEventDestination *v1alpha1.SesEventDestination) (*v1alpha1.SesEventDestination, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(seseventdestinationsResource, "status", sesEventDestination), &v1alpha1.SesEventDestination{})
+		Invokes(testing.NewUpdateSubresourceAction(seseventdestinationsResource, "status", c.ns, sesEventDestination), &v1alpha1.SesEventDestination{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSesEventDestinations) UpdateStatus(sesEventDestination *v1alpha1.Se
 // Delete takes name of the sesEventDestination and deletes it. Returns an error if one occurs.
 func (c *FakeSesEventDestinations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(seseventdestinationsResource, name), &v1alpha1.SesEventDestination{})
+		Invokes(testing.NewDeleteAction(seseventdestinationsResource, c.ns, name), &v1alpha1.SesEventDestination{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSesEventDestinations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(seseventdestinationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(seseventdestinationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SesEventDestinationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSesEventDestinations) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched sesEventDestination.
 func (c *FakeSesEventDestinations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesEventDestination, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(seseventdestinationsResource, name, pt, data, subresources...), &v1alpha1.SesEventDestination{})
+		Invokes(testing.NewPatchSubresourceAction(seseventdestinationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SesEventDestination{})
+
 	if obj == nil {
 		return nil, err
 	}

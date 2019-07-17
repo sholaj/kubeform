@@ -32,7 +32,7 @@ import (
 // MonitoringNotificationChannelsGetter has a method to return a MonitoringNotificationChannelInterface.
 // A group's client should implement this interface.
 type MonitoringNotificationChannelsGetter interface {
-	MonitoringNotificationChannels() MonitoringNotificationChannelInterface
+	MonitoringNotificationChannels(namespace string) MonitoringNotificationChannelInterface
 }
 
 // MonitoringNotificationChannelInterface has methods to work with MonitoringNotificationChannel resources.
@@ -52,12 +52,14 @@ type MonitoringNotificationChannelInterface interface {
 // monitoringNotificationChannels implements MonitoringNotificationChannelInterface
 type monitoringNotificationChannels struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMonitoringNotificationChannels returns a MonitoringNotificationChannels
-func newMonitoringNotificationChannels(c *GoogleV1alpha1Client) *monitoringNotificationChannels {
+func newMonitoringNotificationChannels(c *GoogleV1alpha1Client, namespace string) *monitoringNotificationChannels {
 	return &monitoringNotificationChannels{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMonitoringNotificationChannels(c *GoogleV1alpha1Client) *monitoringNotif
 func (c *monitoringNotificationChannels) Get(name string, options v1.GetOptions) (result *v1alpha1.MonitoringNotificationChannel, err error) {
 	result = &v1alpha1.MonitoringNotificationChannel{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitoringnotificationchannels").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *monitoringNotificationChannels) List(opts v1.ListOptions) (result *v1al
 	}
 	result = &v1alpha1.MonitoringNotificationChannelList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitoringnotificationchannels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *monitoringNotificationChannels) Watch(opts v1.ListOptions) (watch.Inter
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("monitoringnotificationchannels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *monitoringNotificationChannels) Watch(opts v1.ListOptions) (watch.Inter
 func (c *monitoringNotificationChannels) Create(monitoringNotificationChannel *v1alpha1.MonitoringNotificationChannel) (result *v1alpha1.MonitoringNotificationChannel, err error) {
 	result = &v1alpha1.MonitoringNotificationChannel{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("monitoringnotificationchannels").
 		Body(monitoringNotificationChannel).
 		Do().
@@ -118,6 +124,7 @@ func (c *monitoringNotificationChannels) Create(monitoringNotificationChannel *v
 func (c *monitoringNotificationChannels) Update(monitoringNotificationChannel *v1alpha1.MonitoringNotificationChannel) (result *v1alpha1.MonitoringNotificationChannel, err error) {
 	result = &v1alpha1.MonitoringNotificationChannel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitoringnotificationchannels").
 		Name(monitoringNotificationChannel.Name).
 		Body(monitoringNotificationChannel).
@@ -132,6 +139,7 @@ func (c *monitoringNotificationChannels) Update(monitoringNotificationChannel *v
 func (c *monitoringNotificationChannels) UpdateStatus(monitoringNotificationChannel *v1alpha1.MonitoringNotificationChannel) (result *v1alpha1.MonitoringNotificationChannel, err error) {
 	result = &v1alpha1.MonitoringNotificationChannel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitoringnotificationchannels").
 		Name(monitoringNotificationChannel.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *monitoringNotificationChannels) UpdateStatus(monitoringNotificationChan
 // Delete takes name of the monitoringNotificationChannel and deletes it. Returns an error if one occurs.
 func (c *monitoringNotificationChannels) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitoringnotificationchannels").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *monitoringNotificationChannels) DeleteCollection(options *v1.DeleteOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitoringnotificationchannels").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *monitoringNotificationChannels) DeleteCollection(options *v1.DeleteOpti
 func (c *monitoringNotificationChannels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MonitoringNotificationChannel, err error) {
 	result = &v1alpha1.MonitoringNotificationChannel{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("monitoringnotificationchannels").
 		SubResource(subresources...).
 		Name(name).

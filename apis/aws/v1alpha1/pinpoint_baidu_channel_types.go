@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,11 +19,12 @@ type PinpointBaiduChannel struct {
 }
 
 type PinpointBaiduChannelSpec struct {
-	ApiKey        string `json:"api_key"`
-	ApplicationId string `json:"application_id"`
+	ApiKey        string `json:"apiKey" tf:"api_key"`
+	ApplicationID string `json:"applicationID" tf:"application_id"`
 	// +optional
-	Enabled   bool   `json:"enabled,omitempty"`
-	SecretKey string `json:"secret_key"`
+	Enabled     bool                      `json:"enabled,omitempty" tf:"enabled,omitempty"`
+	SecretKey   string                    `json:"secretKey" tf:"secret_key"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type PinpointBaiduChannelStatus struct {
@@ -31,7 +32,9 @@ type PinpointBaiduChannelStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -32,7 +32,7 @@ import (
 // MonitorMetricAlertrulesGetter has a method to return a MonitorMetricAlertruleInterface.
 // A group's client should implement this interface.
 type MonitorMetricAlertrulesGetter interface {
-	MonitorMetricAlertrules() MonitorMetricAlertruleInterface
+	MonitorMetricAlertrules(namespace string) MonitorMetricAlertruleInterface
 }
 
 // MonitorMetricAlertruleInterface has methods to work with MonitorMetricAlertrule resources.
@@ -52,12 +52,14 @@ type MonitorMetricAlertruleInterface interface {
 // monitorMetricAlertrules implements MonitorMetricAlertruleInterface
 type monitorMetricAlertrules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMonitorMetricAlertrules returns a MonitorMetricAlertrules
-func newMonitorMetricAlertrules(c *AzurermV1alpha1Client) *monitorMetricAlertrules {
+func newMonitorMetricAlertrules(c *AzurermV1alpha1Client, namespace string) *monitorMetricAlertrules {
 	return &monitorMetricAlertrules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMonitorMetricAlertrules(c *AzurermV1alpha1Client) *monitorMetricAlertrul
 func (c *monitorMetricAlertrules) Get(name string, options v1.GetOptions) (result *v1alpha1.MonitorMetricAlertrule, err error) {
 	result = &v1alpha1.MonitorMetricAlertrule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitormetricalertrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *monitorMetricAlertrules) List(opts v1.ListOptions) (result *v1alpha1.Mo
 	}
 	result = &v1alpha1.MonitorMetricAlertruleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitormetricalertrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *monitorMetricAlertrules) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("monitormetricalertrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *monitorMetricAlertrules) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *monitorMetricAlertrules) Create(monitorMetricAlertrule *v1alpha1.MonitorMetricAlertrule) (result *v1alpha1.MonitorMetricAlertrule, err error) {
 	result = &v1alpha1.MonitorMetricAlertrule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("monitormetricalertrules").
 		Body(monitorMetricAlertrule).
 		Do().
@@ -118,6 +124,7 @@ func (c *monitorMetricAlertrules) Create(monitorMetricAlertrule *v1alpha1.Monito
 func (c *monitorMetricAlertrules) Update(monitorMetricAlertrule *v1alpha1.MonitorMetricAlertrule) (result *v1alpha1.MonitorMetricAlertrule, err error) {
 	result = &v1alpha1.MonitorMetricAlertrule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitormetricalertrules").
 		Name(monitorMetricAlertrule.Name).
 		Body(monitorMetricAlertrule).
@@ -132,6 +139,7 @@ func (c *monitorMetricAlertrules) Update(monitorMetricAlertrule *v1alpha1.Monito
 func (c *monitorMetricAlertrules) UpdateStatus(monitorMetricAlertrule *v1alpha1.MonitorMetricAlertrule) (result *v1alpha1.MonitorMetricAlertrule, err error) {
 	result = &v1alpha1.MonitorMetricAlertrule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitormetricalertrules").
 		Name(monitorMetricAlertrule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *monitorMetricAlertrules) UpdateStatus(monitorMetricAlertrule *v1alpha1.
 // Delete takes name of the monitorMetricAlertrule and deletes it. Returns an error if one occurs.
 func (c *monitorMetricAlertrules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitormetricalertrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *monitorMetricAlertrules) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitormetricalertrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *monitorMetricAlertrules) DeleteCollection(options *v1.DeleteOptions, li
 func (c *monitorMetricAlertrules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MonitorMetricAlertrule, err error) {
 	result = &v1alpha1.MonitorMetricAlertrule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("monitormetricalertrules").
 		SubResource(subresources...).
 		Name(name).

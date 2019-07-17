@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,100 +19,101 @@ type AppmeshVirtualNode struct {
 }
 
 type AppmeshVirtualNodeSpecSpecBackendVirtualService struct {
-	VirtualServiceName string `json:"virtual_service_name"`
+	VirtualServiceName string `json:"virtualServiceName" tf:"virtual_service_name"`
 }
 
 type AppmeshVirtualNodeSpecSpecBackend struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	VirtualService *[]AppmeshVirtualNodeSpecSpecBackend `json:"virtual_service,omitempty"`
+	VirtualService []AppmeshVirtualNodeSpecSpecBackendVirtualService `json:"virtualService,omitempty" tf:"virtual_service,omitempty"`
 }
 
 type AppmeshVirtualNodeSpecSpecListenerHealthCheck struct {
-	HealthyThreshold int `json:"healthy_threshold"`
-	IntervalMillis   int `json:"interval_millis"`
+	HealthyThreshold int `json:"healthyThreshold" tf:"healthy_threshold"`
+	IntervalMillis   int `json:"intervalMillis" tf:"interval_millis"`
 	// +optional
-	Path               string `json:"path,omitempty"`
-	Protocol           string `json:"protocol"`
-	TimeoutMillis      int    `json:"timeout_millis"`
-	UnhealthyThreshold int    `json:"unhealthy_threshold"`
+	Path               string `json:"path,omitempty" tf:"path,omitempty"`
+	Protocol           string `json:"protocol" tf:"protocol"`
+	TimeoutMillis      int    `json:"timeoutMillis" tf:"timeout_millis"`
+	UnhealthyThreshold int    `json:"unhealthyThreshold" tf:"unhealthy_threshold"`
 }
 
 type AppmeshVirtualNodeSpecSpecListenerPortMapping struct {
-	Port     int    `json:"port"`
-	Protocol string `json:"protocol"`
+	Port     int    `json:"port" tf:"port"`
+	Protocol string `json:"protocol" tf:"protocol"`
 }
 
 type AppmeshVirtualNodeSpecSpecListener struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	HealthCheck *[]AppmeshVirtualNodeSpecSpecListener `json:"health_check,omitempty"`
+	HealthCheck []AppmeshVirtualNodeSpecSpecListenerHealthCheck `json:"healthCheck,omitempty" tf:"health_check,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	PortMapping []AppmeshVirtualNodeSpecSpecListener `json:"port_mapping"`
+	PortMapping []AppmeshVirtualNodeSpecSpecListenerPortMapping `json:"portMapping" tf:"port_mapping"`
 }
 
 type AppmeshVirtualNodeSpecSpecLoggingAccessLogFile struct {
-	Path string `json:"path"`
+	Path string `json:"path" tf:"path"`
 }
 
 type AppmeshVirtualNodeSpecSpecLoggingAccessLog struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	File *[]AppmeshVirtualNodeSpecSpecLoggingAccessLog `json:"file,omitempty"`
+	File []AppmeshVirtualNodeSpecSpecLoggingAccessLogFile `json:"file,omitempty" tf:"file,omitempty"`
 }
 
 type AppmeshVirtualNodeSpecSpecLogging struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	AccessLog *[]AppmeshVirtualNodeSpecSpecLogging `json:"access_log,omitempty"`
+	AccessLog []AppmeshVirtualNodeSpecSpecLoggingAccessLog `json:"accessLog,omitempty" tf:"access_log,omitempty"`
 }
 
 type AppmeshVirtualNodeSpecSpecServiceDiscoveryAwsCloudMap struct {
 	// +optional
-	Attributes    map[string]string `json:"attributes,omitempty"`
-	NamespaceName string            `json:"namespace_name"`
-	ServiceName   string            `json:"service_name"`
+	Attributes    map[string]string `json:"attributes,omitempty" tf:"attributes,omitempty"`
+	NamespaceName string            `json:"namespaceName" tf:"namespace_name"`
+	ServiceName   string            `json:"serviceName" tf:"service_name"`
 }
 
 type AppmeshVirtualNodeSpecSpecServiceDiscoveryDns struct {
-	Hostname string `json:"hostname"`
+	Hostname string `json:"hostname" tf:"hostname"`
 }
 
 type AppmeshVirtualNodeSpecSpecServiceDiscovery struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	AwsCloudMap *[]AppmeshVirtualNodeSpecSpecServiceDiscovery `json:"aws_cloud_map,omitempty"`
+	AwsCloudMap []AppmeshVirtualNodeSpecSpecServiceDiscoveryAwsCloudMap `json:"awsCloudMap,omitempty" tf:"aws_cloud_map,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Dns *[]AppmeshVirtualNodeSpecSpecServiceDiscovery `json:"dns,omitempty"`
+	Dns []AppmeshVirtualNodeSpecSpecServiceDiscoveryDns `json:"dns,omitempty" tf:"dns,omitempty"`
 }
 
 type AppmeshVirtualNodeSpecSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=25
 	// +kubebuilder:validation:UniqueItems=true
-	Backend *[]AppmeshVirtualNodeSpecSpec `json:"backend,omitempty"`
+	Backend []AppmeshVirtualNodeSpecSpecBackend `json:"backend,omitempty" tf:"backend,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	Listener *[]AppmeshVirtualNodeSpecSpec `json:"listener,omitempty"`
+	Listener []AppmeshVirtualNodeSpecSpecListener `json:"listener,omitempty" tf:"listener,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Logging *[]AppmeshVirtualNodeSpecSpec `json:"logging,omitempty"`
+	Logging []AppmeshVirtualNodeSpecSpecLogging `json:"logging,omitempty" tf:"logging,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ServiceDiscovery *[]AppmeshVirtualNodeSpecSpec `json:"service_discovery,omitempty"`
+	ServiceDiscovery []AppmeshVirtualNodeSpecSpecServiceDiscovery `json:"serviceDiscovery,omitempty" tf:"service_discovery,omitempty"`
 }
 
 type AppmeshVirtualNodeSpec struct {
-	MeshName string `json:"mesh_name"`
-	Name     string `json:"name"`
+	MeshName string `json:"meshName" tf:"mesh_name"`
+	Name     string `json:"name" tf:"name"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	Spec []AppmeshVirtualNodeSpec `json:"spec"`
+	Spec []AppmeshVirtualNodeSpecSpec `json:"spec" tf:"spec"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type AppmeshVirtualNodeStatus struct {
@@ -120,7 +121,9 @@ type AppmeshVirtualNodeStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

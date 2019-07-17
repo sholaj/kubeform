@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// Ec2ClientVpnEndpointLister helps list Ec2ClientVpnEndpoints.
-type Ec2ClientVpnEndpointLister interface {
-	// List lists all Ec2ClientVpnEndpoints in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.Ec2ClientVpnEndpoint, err error)
-	// Get retrieves the Ec2ClientVpnEndpoint from the index for a given name.
-	Get(name string) (*v1alpha1.Ec2ClientVpnEndpoint, error)
-	Ec2ClientVpnEndpointListerExpansion
+// Ec2ClientVPNEndpointLister helps list Ec2ClientVPNEndpoints.
+type Ec2ClientVPNEndpointLister interface {
+	// List lists all Ec2ClientVPNEndpoints in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.Ec2ClientVPNEndpoint, err error)
+	// Ec2ClientVPNEndpoints returns an object that can list and get Ec2ClientVPNEndpoints.
+	Ec2ClientVPNEndpoints(namespace string) Ec2ClientVPNEndpointNamespaceLister
+	Ec2ClientVPNEndpointListerExpansion
 }
 
-// ec2ClientVpnEndpointLister implements the Ec2ClientVpnEndpointLister interface.
-type ec2ClientVpnEndpointLister struct {
+// ec2ClientVPNEndpointLister implements the Ec2ClientVPNEndpointLister interface.
+type ec2ClientVPNEndpointLister struct {
 	indexer cache.Indexer
 }
 
-// NewEc2ClientVpnEndpointLister returns a new Ec2ClientVpnEndpointLister.
-func NewEc2ClientVpnEndpointLister(indexer cache.Indexer) Ec2ClientVpnEndpointLister {
-	return &ec2ClientVpnEndpointLister{indexer: indexer}
+// NewEc2ClientVPNEndpointLister returns a new Ec2ClientVPNEndpointLister.
+func NewEc2ClientVPNEndpointLister(indexer cache.Indexer) Ec2ClientVPNEndpointLister {
+	return &ec2ClientVPNEndpointLister{indexer: indexer}
 }
 
-// List lists all Ec2ClientVpnEndpoints in the indexer.
-func (s *ec2ClientVpnEndpointLister) List(selector labels.Selector) (ret []*v1alpha1.Ec2ClientVpnEndpoint, err error) {
+// List lists all Ec2ClientVPNEndpoints in the indexer.
+func (s *ec2ClientVPNEndpointLister) List(selector labels.Selector) (ret []*v1alpha1.Ec2ClientVPNEndpoint, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.Ec2ClientVpnEndpoint))
+		ret = append(ret, m.(*v1alpha1.Ec2ClientVPNEndpoint))
 	})
 	return ret, err
 }
 
-// Get retrieves the Ec2ClientVpnEndpoint from the index for a given name.
-func (s *ec2ClientVpnEndpointLister) Get(name string) (*v1alpha1.Ec2ClientVpnEndpoint, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Ec2ClientVPNEndpoints returns an object that can list and get Ec2ClientVPNEndpoints.
+func (s *ec2ClientVPNEndpointLister) Ec2ClientVPNEndpoints(namespace string) Ec2ClientVPNEndpointNamespaceLister {
+	return ec2ClientVPNEndpointNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// Ec2ClientVPNEndpointNamespaceLister helps list and get Ec2ClientVPNEndpoints.
+type Ec2ClientVPNEndpointNamespaceLister interface {
+	// List lists all Ec2ClientVPNEndpoints in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Ec2ClientVPNEndpoint, err error)
+	// Get retrieves the Ec2ClientVPNEndpoint from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Ec2ClientVPNEndpoint, error)
+	Ec2ClientVPNEndpointNamespaceListerExpansion
+}
+
+// ec2ClientVPNEndpointNamespaceLister implements the Ec2ClientVPNEndpointNamespaceLister
+// interface.
+type ec2ClientVPNEndpointNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Ec2ClientVPNEndpoints in the indexer for a given namespace.
+func (s ec2ClientVPNEndpointNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Ec2ClientVPNEndpoint, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Ec2ClientVPNEndpoint))
+	})
+	return ret, err
+}
+
+// Get retrieves the Ec2ClientVPNEndpoint from the indexer for a given namespace and name.
+func (s ec2ClientVPNEndpointNamespaceLister) Get(name string) (*v1alpha1.Ec2ClientVPNEndpoint, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("ec2clientvpnendpoint"), name)
 	}
-	return obj.(*v1alpha1.Ec2ClientVpnEndpoint), nil
+	return obj.(*v1alpha1.Ec2ClientVPNEndpoint), nil
 }

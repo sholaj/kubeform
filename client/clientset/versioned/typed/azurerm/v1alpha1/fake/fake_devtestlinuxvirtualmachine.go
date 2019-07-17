@@ -31,6 +31,7 @@ import (
 // FakeDevTestLinuxVirtualMachines implements DevTestLinuxVirtualMachineInterface
 type FakeDevTestLinuxVirtualMachines struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var devtestlinuxvirtualmachinesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "devtestlinuxvirtualmachines"}
@@ -40,7 +41,8 @@ var devtestlinuxvirtualmachinesKind = schema.GroupVersionKind{Group: "azurerm.ku
 // Get takes name of the devTestLinuxVirtualMachine, and returns the corresponding devTestLinuxVirtualMachine object, and an error if there is any.
 func (c *FakeDevTestLinuxVirtualMachines) Get(name string, options v1.GetOptions) (result *v1alpha1.DevTestLinuxVirtualMachine, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(devtestlinuxvirtualmachinesResource, name), &v1alpha1.DevTestLinuxVirtualMachine{})
+		Invokes(testing.NewGetAction(devtestlinuxvirtualmachinesResource, c.ns, name), &v1alpha1.DevTestLinuxVirtualMachine{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDevTestLinuxVirtualMachines) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of DevTestLinuxVirtualMachines that match those selectors.
 func (c *FakeDevTestLinuxVirtualMachines) List(opts v1.ListOptions) (result *v1alpha1.DevTestLinuxVirtualMachineList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(devtestlinuxvirtualmachinesResource, devtestlinuxvirtualmachinesKind, opts), &v1alpha1.DevTestLinuxVirtualMachineList{})
+		Invokes(testing.NewListAction(devtestlinuxvirtualmachinesResource, devtestlinuxvirtualmachinesKind, c.ns, opts), &v1alpha1.DevTestLinuxVirtualMachineList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDevTestLinuxVirtualMachines) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested devTestLinuxVirtualMachines.
 func (c *FakeDevTestLinuxVirtualMachines) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(devtestlinuxvirtualmachinesResource, opts))
+		InvokesWatch(testing.NewWatchAction(devtestlinuxvirtualmachinesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a devTestLinuxVirtualMachine and creates it.  Returns the server's representation of the devTestLinuxVirtualMachine, and an error, if there is any.
 func (c *FakeDevTestLinuxVirtualMachines) Create(devTestLinuxVirtualMachine *v1alpha1.DevTestLinuxVirtualMachine) (result *v1alpha1.DevTestLinuxVirtualMachine, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(devtestlinuxvirtualmachinesResource, devTestLinuxVirtualMachine), &v1alpha1.DevTestLinuxVirtualMachine{})
+		Invokes(testing.NewCreateAction(devtestlinuxvirtualmachinesResource, c.ns, devTestLinuxVirtualMachine), &v1alpha1.DevTestLinuxVirtualMachine{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDevTestLinuxVirtualMachines) Create(devTestLinuxVirtualMachine *v1a
 // Update takes the representation of a devTestLinuxVirtualMachine and updates it. Returns the server's representation of the devTestLinuxVirtualMachine, and an error, if there is any.
 func (c *FakeDevTestLinuxVirtualMachines) Update(devTestLinuxVirtualMachine *v1alpha1.DevTestLinuxVirtualMachine) (result *v1alpha1.DevTestLinuxVirtualMachine, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(devtestlinuxvirtualmachinesResource, devTestLinuxVirtualMachine), &v1alpha1.DevTestLinuxVirtualMachine{})
+		Invokes(testing.NewUpdateAction(devtestlinuxvirtualmachinesResource, c.ns, devTestLinuxVirtualMachine), &v1alpha1.DevTestLinuxVirtualMachine{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDevTestLinuxVirtualMachines) Update(devTestLinuxVirtualMachine *v1a
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDevTestLinuxVirtualMachines) UpdateStatus(devTestLinuxVirtualMachine *v1alpha1.DevTestLinuxVirtualMachine) (*v1alpha1.DevTestLinuxVirtualMachine, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(devtestlinuxvirtualmachinesResource, "status", devTestLinuxVirtualMachine), &v1alpha1.DevTestLinuxVirtualMachine{})
+		Invokes(testing.NewUpdateSubresourceAction(devtestlinuxvirtualmachinesResource, "status", c.ns, devTestLinuxVirtualMachine), &v1alpha1.DevTestLinuxVirtualMachine{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDevTestLinuxVirtualMachines) UpdateStatus(devTestLinuxVirtualMachin
 // Delete takes name of the devTestLinuxVirtualMachine and deletes it. Returns an error if one occurs.
 func (c *FakeDevTestLinuxVirtualMachines) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(devtestlinuxvirtualmachinesResource, name), &v1alpha1.DevTestLinuxVirtualMachine{})
+		Invokes(testing.NewDeleteAction(devtestlinuxvirtualmachinesResource, c.ns, name), &v1alpha1.DevTestLinuxVirtualMachine{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDevTestLinuxVirtualMachines) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(devtestlinuxvirtualmachinesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(devtestlinuxvirtualmachinesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DevTestLinuxVirtualMachineList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDevTestLinuxVirtualMachines) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched devTestLinuxVirtualMachine.
 func (c *FakeDevTestLinuxVirtualMachines) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DevTestLinuxVirtualMachine, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(devtestlinuxvirtualmachinesResource, name, pt, data, subresources...), &v1alpha1.DevTestLinuxVirtualMachine{})
+		Invokes(testing.NewPatchSubresourceAction(devtestlinuxvirtualmachinesResource, c.ns, name, pt, data, subresources...), &v1alpha1.DevTestLinuxVirtualMachine{})
+
 	if obj == nil {
 		return nil, err
 	}

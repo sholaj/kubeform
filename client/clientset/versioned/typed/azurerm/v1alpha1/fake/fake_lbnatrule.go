@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// FakeLbNatRules implements LbNatRuleInterface
-type FakeLbNatRules struct {
+// FakeLbNATRules implements LbNATRuleInterface
+type FakeLbNATRules struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var lbnatrulesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "lbnatrules"}
 
-var lbnatrulesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "LbNatRule"}
+var lbnatrulesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "LbNATRule"}
 
-// Get takes name of the lbNatRule, and returns the corresponding lbNatRule object, and an error if there is any.
-func (c *FakeLbNatRules) Get(name string, options v1.GetOptions) (result *v1alpha1.LbNatRule, err error) {
+// Get takes name of the lbNATRule, and returns the corresponding lbNATRule object, and an error if there is any.
+func (c *FakeLbNATRules) Get(name string, options v1.GetOptions) (result *v1alpha1.LbNATRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(lbnatrulesResource, name), &v1alpha1.LbNatRule{})
+		Invokes(testing.NewGetAction(lbnatrulesResource, c.ns, name), &v1alpha1.LbNATRule{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LbNatRule), err
+	return obj.(*v1alpha1.LbNATRule), err
 }
 
-// List takes label and field selectors, and returns the list of LbNatRules that match those selectors.
-func (c *FakeLbNatRules) List(opts v1.ListOptions) (result *v1alpha1.LbNatRuleList, err error) {
+// List takes label and field selectors, and returns the list of LbNATRules that match those selectors.
+func (c *FakeLbNATRules) List(opts v1.ListOptions) (result *v1alpha1.LbNATRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(lbnatrulesResource, lbnatrulesKind, opts), &v1alpha1.LbNatRuleList{})
+		Invokes(testing.NewListAction(lbnatrulesResource, lbnatrulesKind, c.ns, opts), &v1alpha1.LbNATRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeLbNatRules) List(opts v1.ListOptions) (result *v1alpha1.LbNatRuleLi
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.LbNatRuleList{ListMeta: obj.(*v1alpha1.LbNatRuleList).ListMeta}
-	for _, item := range obj.(*v1alpha1.LbNatRuleList).Items {
+	list := &v1alpha1.LbNATRuleList{ListMeta: obj.(*v1alpha1.LbNATRuleList).ListMeta}
+	for _, item := range obj.(*v1alpha1.LbNATRuleList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeLbNatRules) List(opts v1.ListOptions) (result *v1alpha1.LbNatRuleLi
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested lbNatRules.
-func (c *FakeLbNatRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested lbNATRules.
+func (c *FakeLbNATRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(lbnatrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(lbnatrulesResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a lbNatRule and creates it.  Returns the server's representation of the lbNatRule, and an error, if there is any.
-func (c *FakeLbNatRules) Create(lbNatRule *v1alpha1.LbNatRule) (result *v1alpha1.LbNatRule, err error) {
+// Create takes the representation of a lbNATRule and creates it.  Returns the server's representation of the lbNATRule, and an error, if there is any.
+func (c *FakeLbNATRules) Create(lbNATRule *v1alpha1.LbNATRule) (result *v1alpha1.LbNATRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(lbnatrulesResource, lbNatRule), &v1alpha1.LbNatRule{})
+		Invokes(testing.NewCreateAction(lbnatrulesResource, c.ns, lbNATRule), &v1alpha1.LbNATRule{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LbNatRule), err
+	return obj.(*v1alpha1.LbNATRule), err
 }
 
-// Update takes the representation of a lbNatRule and updates it. Returns the server's representation of the lbNatRule, and an error, if there is any.
-func (c *FakeLbNatRules) Update(lbNatRule *v1alpha1.LbNatRule) (result *v1alpha1.LbNatRule, err error) {
+// Update takes the representation of a lbNATRule and updates it. Returns the server's representation of the lbNATRule, and an error, if there is any.
+func (c *FakeLbNATRules) Update(lbNATRule *v1alpha1.LbNATRule) (result *v1alpha1.LbNATRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(lbnatrulesResource, lbNatRule), &v1alpha1.LbNatRule{})
+		Invokes(testing.NewUpdateAction(lbnatrulesResource, c.ns, lbNATRule), &v1alpha1.LbNATRule{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LbNatRule), err
+	return obj.(*v1alpha1.LbNATRule), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeLbNatRules) UpdateStatus(lbNatRule *v1alpha1.LbNatRule) (*v1alpha1.LbNatRule, error) {
+func (c *FakeLbNATRules) UpdateStatus(lbNATRule *v1alpha1.LbNATRule) (*v1alpha1.LbNATRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(lbnatrulesResource, "status", lbNatRule), &v1alpha1.LbNatRule{})
+		Invokes(testing.NewUpdateSubresourceAction(lbnatrulesResource, "status", c.ns, lbNATRule), &v1alpha1.LbNATRule{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LbNatRule), err
+	return obj.(*v1alpha1.LbNATRule), err
 }
 
-// Delete takes name of the lbNatRule and deletes it. Returns an error if one occurs.
-func (c *FakeLbNatRules) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the lbNATRule and deletes it. Returns an error if one occurs.
+func (c *FakeLbNATRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(lbnatrulesResource, name), &v1alpha1.LbNatRule{})
+		Invokes(testing.NewDeleteAction(lbnatrulesResource, c.ns, name), &v1alpha1.LbNATRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeLbNatRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(lbnatrulesResource, listOptions)
+func (c *FakeLbNATRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(lbnatrulesResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.LbNatRuleList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.LbNATRuleList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched lbNatRule.
-func (c *FakeLbNatRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbNatRule, err error) {
+// Patch applies the patch and returns the patched lbNATRule.
+func (c *FakeLbNATRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbNATRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(lbnatrulesResource, name, pt, data, subresources...), &v1alpha1.LbNatRule{})
+		Invokes(testing.NewPatchSubresourceAction(lbnatrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.LbNATRule{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LbNatRule), err
+	return obj.(*v1alpha1.LbNATRule), err
 }

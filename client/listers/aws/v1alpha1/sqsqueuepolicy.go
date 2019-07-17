@@ -29,8 +29,8 @@ import (
 type SqsQueuePolicyLister interface {
 	// List lists all SqsQueuePolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SqsQueuePolicy, err error)
-	// Get retrieves the SqsQueuePolicy from the index for a given name.
-	Get(name string) (*v1alpha1.SqsQueuePolicy, error)
+	// SqsQueuePolicies returns an object that can list and get SqsQueuePolicies.
+	SqsQueuePolicies(namespace string) SqsQueuePolicyNamespaceLister
 	SqsQueuePolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sqsQueuePolicyLister) List(selector labels.Selector) (ret []*v1alpha1.S
 	return ret, err
 }
 
-// Get retrieves the SqsQueuePolicy from the index for a given name.
-func (s *sqsQueuePolicyLister) Get(name string) (*v1alpha1.SqsQueuePolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SqsQueuePolicies returns an object that can list and get SqsQueuePolicies.
+func (s *sqsQueuePolicyLister) SqsQueuePolicies(namespace string) SqsQueuePolicyNamespaceLister {
+	return sqsQueuePolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SqsQueuePolicyNamespaceLister helps list and get SqsQueuePolicies.
+type SqsQueuePolicyNamespaceLister interface {
+	// List lists all SqsQueuePolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SqsQueuePolicy, err error)
+	// Get retrieves the SqsQueuePolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SqsQueuePolicy, error)
+	SqsQueuePolicyNamespaceListerExpansion
+}
+
+// sqsQueuePolicyNamespaceLister implements the SqsQueuePolicyNamespaceLister
+// interface.
+type sqsQueuePolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SqsQueuePolicies in the indexer for a given namespace.
+func (s sqsQueuePolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SqsQueuePolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SqsQueuePolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the SqsQueuePolicy from the indexer for a given namespace and name.
+func (s sqsQueuePolicyNamespaceLister) Get(name string) (*v1alpha1.SqsQueuePolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

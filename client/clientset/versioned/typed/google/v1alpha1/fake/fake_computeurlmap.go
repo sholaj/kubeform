@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/google/v1alpha1"
 )
 
-// FakeComputeUrlMaps implements ComputeUrlMapInterface
-type FakeComputeUrlMaps struct {
+// FakeComputeURLMaps implements ComputeURLMapInterface
+type FakeComputeURLMaps struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computeurlmapsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computeurlmaps"}
 
-var computeurlmapsKind = schema.GroupVersionKind{Group: "google.kubeform.com", Version: "v1alpha1", Kind: "ComputeUrlMap"}
+var computeurlmapsKind = schema.GroupVersionKind{Group: "google.kubeform.com", Version: "v1alpha1", Kind: "ComputeURLMap"}
 
-// Get takes name of the computeUrlMap, and returns the corresponding computeUrlMap object, and an error if there is any.
-func (c *FakeComputeUrlMaps) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeUrlMap, err error) {
+// Get takes name of the computeURLMap, and returns the corresponding computeURLMap object, and an error if there is any.
+func (c *FakeComputeURLMaps) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeURLMap, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computeurlmapsResource, name), &v1alpha1.ComputeUrlMap{})
+		Invokes(testing.NewGetAction(computeurlmapsResource, c.ns, name), &v1alpha1.ComputeURLMap{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeUrlMap), err
+	return obj.(*v1alpha1.ComputeURLMap), err
 }
 
-// List takes label and field selectors, and returns the list of ComputeUrlMaps that match those selectors.
-func (c *FakeComputeUrlMaps) List(opts v1.ListOptions) (result *v1alpha1.ComputeUrlMapList, err error) {
+// List takes label and field selectors, and returns the list of ComputeURLMaps that match those selectors.
+func (c *FakeComputeURLMaps) List(opts v1.ListOptions) (result *v1alpha1.ComputeURLMapList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computeurlmapsResource, computeurlmapsKind, opts), &v1alpha1.ComputeUrlMapList{})
+		Invokes(testing.NewListAction(computeurlmapsResource, computeurlmapsKind, c.ns, opts), &v1alpha1.ComputeURLMapList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeComputeUrlMaps) List(opts v1.ListOptions) (result *v1alpha1.Compute
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.ComputeUrlMapList{ListMeta: obj.(*v1alpha1.ComputeUrlMapList).ListMeta}
-	for _, item := range obj.(*v1alpha1.ComputeUrlMapList).Items {
+	list := &v1alpha1.ComputeURLMapList{ListMeta: obj.(*v1alpha1.ComputeURLMapList).ListMeta}
+	for _, item := range obj.(*v1alpha1.ComputeURLMapList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeComputeUrlMaps) List(opts v1.ListOptions) (result *v1alpha1.Compute
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested computeUrlMaps.
-func (c *FakeComputeUrlMaps) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested computeURLMaps.
+func (c *FakeComputeURLMaps) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computeurlmapsResource, opts))
+		InvokesWatch(testing.NewWatchAction(computeurlmapsResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a computeUrlMap and creates it.  Returns the server's representation of the computeUrlMap, and an error, if there is any.
-func (c *FakeComputeUrlMaps) Create(computeUrlMap *v1alpha1.ComputeUrlMap) (result *v1alpha1.ComputeUrlMap, err error) {
+// Create takes the representation of a computeURLMap and creates it.  Returns the server's representation of the computeURLMap, and an error, if there is any.
+func (c *FakeComputeURLMaps) Create(computeURLMap *v1alpha1.ComputeURLMap) (result *v1alpha1.ComputeURLMap, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computeurlmapsResource, computeUrlMap), &v1alpha1.ComputeUrlMap{})
+		Invokes(testing.NewCreateAction(computeurlmapsResource, c.ns, computeURLMap), &v1alpha1.ComputeURLMap{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeUrlMap), err
+	return obj.(*v1alpha1.ComputeURLMap), err
 }
 
-// Update takes the representation of a computeUrlMap and updates it. Returns the server's representation of the computeUrlMap, and an error, if there is any.
-func (c *FakeComputeUrlMaps) Update(computeUrlMap *v1alpha1.ComputeUrlMap) (result *v1alpha1.ComputeUrlMap, err error) {
+// Update takes the representation of a computeURLMap and updates it. Returns the server's representation of the computeURLMap, and an error, if there is any.
+func (c *FakeComputeURLMaps) Update(computeURLMap *v1alpha1.ComputeURLMap) (result *v1alpha1.ComputeURLMap, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computeurlmapsResource, computeUrlMap), &v1alpha1.ComputeUrlMap{})
+		Invokes(testing.NewUpdateAction(computeurlmapsResource, c.ns, computeURLMap), &v1alpha1.ComputeURLMap{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeUrlMap), err
+	return obj.(*v1alpha1.ComputeURLMap), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeComputeUrlMaps) UpdateStatus(computeUrlMap *v1alpha1.ComputeUrlMap) (*v1alpha1.ComputeUrlMap, error) {
+func (c *FakeComputeURLMaps) UpdateStatus(computeURLMap *v1alpha1.ComputeURLMap) (*v1alpha1.ComputeURLMap, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computeurlmapsResource, "status", computeUrlMap), &v1alpha1.ComputeUrlMap{})
+		Invokes(testing.NewUpdateSubresourceAction(computeurlmapsResource, "status", c.ns, computeURLMap), &v1alpha1.ComputeURLMap{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeUrlMap), err
+	return obj.(*v1alpha1.ComputeURLMap), err
 }
 
-// Delete takes name of the computeUrlMap and deletes it. Returns an error if one occurs.
-func (c *FakeComputeUrlMaps) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the computeURLMap and deletes it. Returns an error if one occurs.
+func (c *FakeComputeURLMaps) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computeurlmapsResource, name), &v1alpha1.ComputeUrlMap{})
+		Invokes(testing.NewDeleteAction(computeurlmapsResource, c.ns, name), &v1alpha1.ComputeURLMap{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeComputeUrlMaps) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computeurlmapsResource, listOptions)
+func (c *FakeComputeURLMaps) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(computeurlmapsResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeUrlMapList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeURLMapList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched computeUrlMap.
-func (c *FakeComputeUrlMaps) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeUrlMap, err error) {
+// Patch applies the patch and returns the patched computeURLMap.
+func (c *FakeComputeURLMaps) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeURLMap, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computeurlmapsResource, name, pt, data, subresources...), &v1alpha1.ComputeUrlMap{})
+		Invokes(testing.NewPatchSubresourceAction(computeurlmapsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeURLMap{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeUrlMap), err
+	return obj.(*v1alpha1.ComputeURLMap), err
 }

@@ -32,7 +32,7 @@ import (
 // ContainerGroupsGetter has a method to return a ContainerGroupInterface.
 // A group's client should implement this interface.
 type ContainerGroupsGetter interface {
-	ContainerGroups() ContainerGroupInterface
+	ContainerGroups(namespace string) ContainerGroupInterface
 }
 
 // ContainerGroupInterface has methods to work with ContainerGroup resources.
@@ -52,12 +52,14 @@ type ContainerGroupInterface interface {
 // containerGroups implements ContainerGroupInterface
 type containerGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newContainerGroups returns a ContainerGroups
-func newContainerGroups(c *AzurermV1alpha1Client) *containerGroups {
+func newContainerGroups(c *AzurermV1alpha1Client, namespace string) *containerGroups {
 	return &containerGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newContainerGroups(c *AzurermV1alpha1Client) *containerGroups {
 func (c *containerGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.ContainerGroup, err error) {
 	result = &v1alpha1.ContainerGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("containergroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *containerGroups) List(opts v1.ListOptions) (result *v1alpha1.ContainerG
 	}
 	result = &v1alpha1.ContainerGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("containergroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *containerGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("containergroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *containerGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *containerGroups) Create(containerGroup *v1alpha1.ContainerGroup) (result *v1alpha1.ContainerGroup, err error) {
 	result = &v1alpha1.ContainerGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("containergroups").
 		Body(containerGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *containerGroups) Create(containerGroup *v1alpha1.ContainerGroup) (resul
 func (c *containerGroups) Update(containerGroup *v1alpha1.ContainerGroup) (result *v1alpha1.ContainerGroup, err error) {
 	result = &v1alpha1.ContainerGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("containergroups").
 		Name(containerGroup.Name).
 		Body(containerGroup).
@@ -132,6 +139,7 @@ func (c *containerGroups) Update(containerGroup *v1alpha1.ContainerGroup) (resul
 func (c *containerGroups) UpdateStatus(containerGroup *v1alpha1.ContainerGroup) (result *v1alpha1.ContainerGroup, err error) {
 	result = &v1alpha1.ContainerGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("containergroups").
 		Name(containerGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *containerGroups) UpdateStatus(containerGroup *v1alpha1.ContainerGroup) 
 // Delete takes name of the containerGroup and deletes it. Returns an error if one occurs.
 func (c *containerGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("containergroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *containerGroups) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("containergroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *containerGroups) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *containerGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ContainerGroup, err error) {
 	result = &v1alpha1.ContainerGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("containergroups").
 		SubResource(subresources...).
 		Name(name).

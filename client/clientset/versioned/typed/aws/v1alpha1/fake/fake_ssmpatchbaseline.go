@@ -31,6 +31,7 @@ import (
 // FakeSsmPatchBaselines implements SsmPatchBaselineInterface
 type FakeSsmPatchBaselines struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ssmpatchbaselinesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ssmpatchbaselines"}
@@ -40,7 +41,8 @@ var ssmpatchbaselinesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", V
 // Get takes name of the ssmPatchBaseline, and returns the corresponding ssmPatchBaseline object, and an error if there is any.
 func (c *FakeSsmPatchBaselines) Get(name string, options v1.GetOptions) (result *v1alpha1.SsmPatchBaseline, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ssmpatchbaselinesResource, name), &v1alpha1.SsmPatchBaseline{})
+		Invokes(testing.NewGetAction(ssmpatchbaselinesResource, c.ns, name), &v1alpha1.SsmPatchBaseline{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSsmPatchBaselines) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of SsmPatchBaselines that match those selectors.
 func (c *FakeSsmPatchBaselines) List(opts v1.ListOptions) (result *v1alpha1.SsmPatchBaselineList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ssmpatchbaselinesResource, ssmpatchbaselinesKind, opts), &v1alpha1.SsmPatchBaselineList{})
+		Invokes(testing.NewListAction(ssmpatchbaselinesResource, ssmpatchbaselinesKind, c.ns, opts), &v1alpha1.SsmPatchBaselineList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSsmPatchBaselines) List(opts v1.ListOptions) (result *v1alpha1.SsmP
 // Watch returns a watch.Interface that watches the requested ssmPatchBaselines.
 func (c *FakeSsmPatchBaselines) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ssmpatchbaselinesResource, opts))
+		InvokesWatch(testing.NewWatchAction(ssmpatchbaselinesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ssmPatchBaseline and creates it.  Returns the server's representation of the ssmPatchBaseline, and an error, if there is any.
 func (c *FakeSsmPatchBaselines) Create(ssmPatchBaseline *v1alpha1.SsmPatchBaseline) (result *v1alpha1.SsmPatchBaseline, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ssmpatchbaselinesResource, ssmPatchBaseline), &v1alpha1.SsmPatchBaseline{})
+		Invokes(testing.NewCreateAction(ssmpatchbaselinesResource, c.ns, ssmPatchBaseline), &v1alpha1.SsmPatchBaseline{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSsmPatchBaselines) Create(ssmPatchBaseline *v1alpha1.SsmPatchBaseli
 // Update takes the representation of a ssmPatchBaseline and updates it. Returns the server's representation of the ssmPatchBaseline, and an error, if there is any.
 func (c *FakeSsmPatchBaselines) Update(ssmPatchBaseline *v1alpha1.SsmPatchBaseline) (result *v1alpha1.SsmPatchBaseline, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ssmpatchbaselinesResource, ssmPatchBaseline), &v1alpha1.SsmPatchBaseline{})
+		Invokes(testing.NewUpdateAction(ssmpatchbaselinesResource, c.ns, ssmPatchBaseline), &v1alpha1.SsmPatchBaseline{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSsmPatchBaselines) Update(ssmPatchBaseline *v1alpha1.SsmPatchBaseli
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSsmPatchBaselines) UpdateStatus(ssmPatchBaseline *v1alpha1.SsmPatchBaseline) (*v1alpha1.SsmPatchBaseline, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ssmpatchbaselinesResource, "status", ssmPatchBaseline), &v1alpha1.SsmPatchBaseline{})
+		Invokes(testing.NewUpdateSubresourceAction(ssmpatchbaselinesResource, "status", c.ns, ssmPatchBaseline), &v1alpha1.SsmPatchBaseline{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSsmPatchBaselines) UpdateStatus(ssmPatchBaseline *v1alpha1.SsmPatch
 // Delete takes name of the ssmPatchBaseline and deletes it. Returns an error if one occurs.
 func (c *FakeSsmPatchBaselines) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ssmpatchbaselinesResource, name), &v1alpha1.SsmPatchBaseline{})
+		Invokes(testing.NewDeleteAction(ssmpatchbaselinesResource, c.ns, name), &v1alpha1.SsmPatchBaseline{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSsmPatchBaselines) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ssmpatchbaselinesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ssmpatchbaselinesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SsmPatchBaselineList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSsmPatchBaselines) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched ssmPatchBaseline.
 func (c *FakeSsmPatchBaselines) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SsmPatchBaseline, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ssmpatchbaselinesResource, name, pt, data, subresources...), &v1alpha1.SsmPatchBaseline{})
+		Invokes(testing.NewPatchSubresourceAction(ssmpatchbaselinesResource, c.ns, name, pt, data, subresources...), &v1alpha1.SsmPatchBaseline{})
+
 	if obj == nil {
 		return nil, err
 	}

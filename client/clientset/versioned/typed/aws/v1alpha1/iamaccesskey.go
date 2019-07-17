@@ -32,7 +32,7 @@ import (
 // IamAccessKeysGetter has a method to return a IamAccessKeyInterface.
 // A group's client should implement this interface.
 type IamAccessKeysGetter interface {
-	IamAccessKeys() IamAccessKeyInterface
+	IamAccessKeys(namespace string) IamAccessKeyInterface
 }
 
 // IamAccessKeyInterface has methods to work with IamAccessKey resources.
@@ -52,12 +52,14 @@ type IamAccessKeyInterface interface {
 // iamAccessKeys implements IamAccessKeyInterface
 type iamAccessKeys struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIamAccessKeys returns a IamAccessKeys
-func newIamAccessKeys(c *AwsV1alpha1Client) *iamAccessKeys {
+func newIamAccessKeys(c *AwsV1alpha1Client, namespace string) *iamAccessKeys {
 	return &iamAccessKeys{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIamAccessKeys(c *AwsV1alpha1Client) *iamAccessKeys {
 func (c *iamAccessKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.IamAccessKey, err error) {
 	result = &v1alpha1.IamAccessKey{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamaccesskeys").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iamAccessKeys) List(opts v1.ListOptions) (result *v1alpha1.IamAccessKey
 	}
 	result = &v1alpha1.IamAccessKeyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamaccesskeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iamAccessKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iamaccesskeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iamAccessKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *iamAccessKeys) Create(iamAccessKey *v1alpha1.IamAccessKey) (result *v1alpha1.IamAccessKey, err error) {
 	result = &v1alpha1.IamAccessKey{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iamaccesskeys").
 		Body(iamAccessKey).
 		Do().
@@ -118,6 +124,7 @@ func (c *iamAccessKeys) Create(iamAccessKey *v1alpha1.IamAccessKey) (result *v1a
 func (c *iamAccessKeys) Update(iamAccessKey *v1alpha1.IamAccessKey) (result *v1alpha1.IamAccessKey, err error) {
 	result = &v1alpha1.IamAccessKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamaccesskeys").
 		Name(iamAccessKey.Name).
 		Body(iamAccessKey).
@@ -132,6 +139,7 @@ func (c *iamAccessKeys) Update(iamAccessKey *v1alpha1.IamAccessKey) (result *v1a
 func (c *iamAccessKeys) UpdateStatus(iamAccessKey *v1alpha1.IamAccessKey) (result *v1alpha1.IamAccessKey, err error) {
 	result = &v1alpha1.IamAccessKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamaccesskeys").
 		Name(iamAccessKey.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iamAccessKeys) UpdateStatus(iamAccessKey *v1alpha1.IamAccessKey) (resul
 // Delete takes name of the iamAccessKey and deletes it. Returns an error if one occurs.
 func (c *iamAccessKeys) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamaccesskeys").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iamAccessKeys) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamaccesskeys").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iamAccessKeys) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *iamAccessKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamAccessKey, err error) {
 	result = &v1alpha1.IamAccessKey{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iamaccesskeys").
 		SubResource(subresources...).
 		Name(name).

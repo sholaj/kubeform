@@ -32,7 +32,7 @@ import (
 // AppServicesGetter has a method to return a AppServiceInterface.
 // A group's client should implement this interface.
 type AppServicesGetter interface {
-	AppServices() AppServiceInterface
+	AppServices(namespace string) AppServiceInterface
 }
 
 // AppServiceInterface has methods to work with AppService resources.
@@ -52,12 +52,14 @@ type AppServiceInterface interface {
 // appServices implements AppServiceInterface
 type appServices struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAppServices returns a AppServices
-func newAppServices(c *AzurermV1alpha1Client) *appServices {
+func newAppServices(c *AzurermV1alpha1Client, namespace string) *appServices {
 	return &appServices{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAppServices(c *AzurermV1alpha1Client) *appServices {
 func (c *appServices) Get(name string, options v1.GetOptions) (result *v1alpha1.AppService, err error) {
 	result = &v1alpha1.AppService{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appservices").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *appServices) List(opts v1.ListOptions) (result *v1alpha1.AppServiceList
 	}
 	result = &v1alpha1.AppServiceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *appServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("appservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *appServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *appServices) Create(appService *v1alpha1.AppService) (result *v1alpha1.AppService, err error) {
 	result = &v1alpha1.AppService{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("appservices").
 		Body(appService).
 		Do().
@@ -118,6 +124,7 @@ func (c *appServices) Create(appService *v1alpha1.AppService) (result *v1alpha1.
 func (c *appServices) Update(appService *v1alpha1.AppService) (result *v1alpha1.AppService, err error) {
 	result = &v1alpha1.AppService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appservices").
 		Name(appService.Name).
 		Body(appService).
@@ -132,6 +139,7 @@ func (c *appServices) Update(appService *v1alpha1.AppService) (result *v1alpha1.
 func (c *appServices) UpdateStatus(appService *v1alpha1.AppService) (result *v1alpha1.AppService, err error) {
 	result = &v1alpha1.AppService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appservices").
 		Name(appService.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *appServices) UpdateStatus(appService *v1alpha1.AppService) (result *v1a
 // Delete takes name of the appService and deletes it. Returns an error if one occurs.
 func (c *appServices) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appservices").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *appServices) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appservices").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *appServices) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *appServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppService, err error) {
 	result = &v1alpha1.AppService{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("appservices").
 		SubResource(subresources...).
 		Name(name).

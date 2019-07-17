@@ -31,6 +31,7 @@ import (
 // FakeDatasyncLocationNfses implements DatasyncLocationNfsInterface
 type FakeDatasyncLocationNfses struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var datasynclocationnfsesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "datasynclocationnfses"}
@@ -40,7 +41,8 @@ var datasynclocationnfsesKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the datasyncLocationNfs, and returns the corresponding datasyncLocationNfs object, and an error if there is any.
 func (c *FakeDatasyncLocationNfses) Get(name string, options v1.GetOptions) (result *v1alpha1.DatasyncLocationNfs, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(datasynclocationnfsesResource, name), &v1alpha1.DatasyncLocationNfs{})
+		Invokes(testing.NewGetAction(datasynclocationnfsesResource, c.ns, name), &v1alpha1.DatasyncLocationNfs{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDatasyncLocationNfses) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of DatasyncLocationNfses that match those selectors.
 func (c *FakeDatasyncLocationNfses) List(opts v1.ListOptions) (result *v1alpha1.DatasyncLocationNfsList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(datasynclocationnfsesResource, datasynclocationnfsesKind, opts), &v1alpha1.DatasyncLocationNfsList{})
+		Invokes(testing.NewListAction(datasynclocationnfsesResource, datasynclocationnfsesKind, c.ns, opts), &v1alpha1.DatasyncLocationNfsList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDatasyncLocationNfses) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested datasyncLocationNfses.
 func (c *FakeDatasyncLocationNfses) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(datasynclocationnfsesResource, opts))
+		InvokesWatch(testing.NewWatchAction(datasynclocationnfsesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a datasyncLocationNfs and creates it.  Returns the server's representation of the datasyncLocationNfs, and an error, if there is any.
 func (c *FakeDatasyncLocationNfses) Create(datasyncLocationNfs *v1alpha1.DatasyncLocationNfs) (result *v1alpha1.DatasyncLocationNfs, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(datasynclocationnfsesResource, datasyncLocationNfs), &v1alpha1.DatasyncLocationNfs{})
+		Invokes(testing.NewCreateAction(datasynclocationnfsesResource, c.ns, datasyncLocationNfs), &v1alpha1.DatasyncLocationNfs{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDatasyncLocationNfses) Create(datasyncLocationNfs *v1alpha1.Datasyn
 // Update takes the representation of a datasyncLocationNfs and updates it. Returns the server's representation of the datasyncLocationNfs, and an error, if there is any.
 func (c *FakeDatasyncLocationNfses) Update(datasyncLocationNfs *v1alpha1.DatasyncLocationNfs) (result *v1alpha1.DatasyncLocationNfs, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(datasynclocationnfsesResource, datasyncLocationNfs), &v1alpha1.DatasyncLocationNfs{})
+		Invokes(testing.NewUpdateAction(datasynclocationnfsesResource, c.ns, datasyncLocationNfs), &v1alpha1.DatasyncLocationNfs{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDatasyncLocationNfses) Update(datasyncLocationNfs *v1alpha1.Datasyn
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDatasyncLocationNfses) UpdateStatus(datasyncLocationNfs *v1alpha1.DatasyncLocationNfs) (*v1alpha1.DatasyncLocationNfs, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(datasynclocationnfsesResource, "status", datasyncLocationNfs), &v1alpha1.DatasyncLocationNfs{})
+		Invokes(testing.NewUpdateSubresourceAction(datasynclocationnfsesResource, "status", c.ns, datasyncLocationNfs), &v1alpha1.DatasyncLocationNfs{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDatasyncLocationNfses) UpdateStatus(datasyncLocationNfs *v1alpha1.D
 // Delete takes name of the datasyncLocationNfs and deletes it. Returns an error if one occurs.
 func (c *FakeDatasyncLocationNfses) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(datasynclocationnfsesResource, name), &v1alpha1.DatasyncLocationNfs{})
+		Invokes(testing.NewDeleteAction(datasynclocationnfsesResource, c.ns, name), &v1alpha1.DatasyncLocationNfs{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDatasyncLocationNfses) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(datasynclocationnfsesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(datasynclocationnfsesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DatasyncLocationNfsList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDatasyncLocationNfses) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched datasyncLocationNfs.
 func (c *FakeDatasyncLocationNfses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DatasyncLocationNfs, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(datasynclocationnfsesResource, name, pt, data, subresources...), &v1alpha1.DatasyncLocationNfs{})
+		Invokes(testing.NewPatchSubresourceAction(datasynclocationnfsesResource, c.ns, name, pt, data, subresources...), &v1alpha1.DatasyncLocationNfs{})
+
 	if obj == nil {
 		return nil, err
 	}

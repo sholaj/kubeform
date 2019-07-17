@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,38 +20,39 @@ type GlueSecurityConfiguration struct {
 
 type GlueSecurityConfigurationSpecEncryptionConfigurationCloudwatchEncryption struct {
 	// +optional
-	CloudwatchEncryptionMode string `json:"cloudwatch_encryption_mode,omitempty"`
+	CloudwatchEncryptionMode string `json:"cloudwatchEncryptionMode,omitempty" tf:"cloudwatch_encryption_mode,omitempty"`
 	// +optional
-	KmsKeyArn string `json:"kms_key_arn,omitempty"`
+	KmsKeyArn string `json:"kmsKeyArn,omitempty" tf:"kms_key_arn,omitempty"`
 }
 
 type GlueSecurityConfigurationSpecEncryptionConfigurationJobBookmarksEncryption struct {
 	// +optional
-	JobBookmarksEncryptionMode string `json:"job_bookmarks_encryption_mode,omitempty"`
+	JobBookmarksEncryptionMode string `json:"jobBookmarksEncryptionMode,omitempty" tf:"job_bookmarks_encryption_mode,omitempty"`
 	// +optional
-	KmsKeyArn string `json:"kms_key_arn,omitempty"`
+	KmsKeyArn string `json:"kmsKeyArn,omitempty" tf:"kms_key_arn,omitempty"`
 }
 
 type GlueSecurityConfigurationSpecEncryptionConfigurationS3Encryption struct {
 	// +optional
-	KmsKeyArn string `json:"kms_key_arn,omitempty"`
+	KmsKeyArn string `json:"kmsKeyArn,omitempty" tf:"kms_key_arn,omitempty"`
 	// +optional
-	S3EncryptionMode string `json:"s3_encryption_mode,omitempty"`
+	S3EncryptionMode string `json:"s3EncryptionMode,omitempty" tf:"s3_encryption_mode,omitempty"`
 }
 
 type GlueSecurityConfigurationSpecEncryptionConfiguration struct {
 	// +kubebuilder:validation:MaxItems=1
-	CloudwatchEncryption []GlueSecurityConfigurationSpecEncryptionConfiguration `json:"cloudwatch_encryption"`
+	CloudwatchEncryption []GlueSecurityConfigurationSpecEncryptionConfigurationCloudwatchEncryption `json:"cloudwatchEncryption" tf:"cloudwatch_encryption"`
 	// +kubebuilder:validation:MaxItems=1
-	JobBookmarksEncryption []GlueSecurityConfigurationSpecEncryptionConfiguration `json:"job_bookmarks_encryption"`
+	JobBookmarksEncryption []GlueSecurityConfigurationSpecEncryptionConfigurationJobBookmarksEncryption `json:"jobBookmarksEncryption" tf:"job_bookmarks_encryption"`
 	// +kubebuilder:validation:MaxItems=1
-	S3Encryption []GlueSecurityConfigurationSpecEncryptionConfiguration `json:"s3_encryption"`
+	S3Encryption []GlueSecurityConfigurationSpecEncryptionConfigurationS3Encryption `json:"s3Encryption" tf:"s3_encryption"`
 }
 
 type GlueSecurityConfigurationSpec struct {
 	// +kubebuilder:validation:MaxItems=1
-	EncryptionConfiguration []GlueSecurityConfigurationSpec `json:"encryption_configuration"`
-	Name                    string                          `json:"name"`
+	EncryptionConfiguration []GlueSecurityConfigurationSpecEncryptionConfiguration `json:"encryptionConfiguration" tf:"encryption_configuration"`
+	Name                    string                                                 `json:"name" tf:"name"`
+	ProviderRef             core.LocalObjectReference                              `json:"providerRef" tf:"-"`
 }
 
 type GlueSecurityConfigurationStatus struct {
@@ -59,7 +60,9 @@ type GlueSecurityConfigurationStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -31,6 +31,7 @@ import (
 // FakeDatabricksWorkspaces implements DatabricksWorkspaceInterface
 type FakeDatabricksWorkspaces struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var databricksworkspacesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "databricksworkspaces"}
@@ -40,7 +41,8 @@ var databricksworkspacesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.
 // Get takes name of the databricksWorkspace, and returns the corresponding databricksWorkspace object, and an error if there is any.
 func (c *FakeDatabricksWorkspaces) Get(name string, options v1.GetOptions) (result *v1alpha1.DatabricksWorkspace, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(databricksworkspacesResource, name), &v1alpha1.DatabricksWorkspace{})
+		Invokes(testing.NewGetAction(databricksworkspacesResource, c.ns, name), &v1alpha1.DatabricksWorkspace{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDatabricksWorkspaces) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of DatabricksWorkspaces that match those selectors.
 func (c *FakeDatabricksWorkspaces) List(opts v1.ListOptions) (result *v1alpha1.DatabricksWorkspaceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(databricksworkspacesResource, databricksworkspacesKind, opts), &v1alpha1.DatabricksWorkspaceList{})
+		Invokes(testing.NewListAction(databricksworkspacesResource, databricksworkspacesKind, c.ns, opts), &v1alpha1.DatabricksWorkspaceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDatabricksWorkspaces) List(opts v1.ListOptions) (result *v1alpha1.D
 // Watch returns a watch.Interface that watches the requested databricksWorkspaces.
 func (c *FakeDatabricksWorkspaces) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(databricksworkspacesResource, opts))
+		InvokesWatch(testing.NewWatchAction(databricksworkspacesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a databricksWorkspace and creates it.  Returns the server's representation of the databricksWorkspace, and an error, if there is any.
 func (c *FakeDatabricksWorkspaces) Create(databricksWorkspace *v1alpha1.DatabricksWorkspace) (result *v1alpha1.DatabricksWorkspace, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(databricksworkspacesResource, databricksWorkspace), &v1alpha1.DatabricksWorkspace{})
+		Invokes(testing.NewCreateAction(databricksworkspacesResource, c.ns, databricksWorkspace), &v1alpha1.DatabricksWorkspace{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDatabricksWorkspaces) Create(databricksWorkspace *v1alpha1.Databric
 // Update takes the representation of a databricksWorkspace and updates it. Returns the server's representation of the databricksWorkspace, and an error, if there is any.
 func (c *FakeDatabricksWorkspaces) Update(databricksWorkspace *v1alpha1.DatabricksWorkspace) (result *v1alpha1.DatabricksWorkspace, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(databricksworkspacesResource, databricksWorkspace), &v1alpha1.DatabricksWorkspace{})
+		Invokes(testing.NewUpdateAction(databricksworkspacesResource, c.ns, databricksWorkspace), &v1alpha1.DatabricksWorkspace{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDatabricksWorkspaces) Update(databricksWorkspace *v1alpha1.Databric
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDatabricksWorkspaces) UpdateStatus(databricksWorkspace *v1alpha1.DatabricksWorkspace) (*v1alpha1.DatabricksWorkspace, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(databricksworkspacesResource, "status", databricksWorkspace), &v1alpha1.DatabricksWorkspace{})
+		Invokes(testing.NewUpdateSubresourceAction(databricksworkspacesResource, "status", c.ns, databricksWorkspace), &v1alpha1.DatabricksWorkspace{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDatabricksWorkspaces) UpdateStatus(databricksWorkspace *v1alpha1.Da
 // Delete takes name of the databricksWorkspace and deletes it. Returns an error if one occurs.
 func (c *FakeDatabricksWorkspaces) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(databricksworkspacesResource, name), &v1alpha1.DatabricksWorkspace{})
+		Invokes(testing.NewDeleteAction(databricksworkspacesResource, c.ns, name), &v1alpha1.DatabricksWorkspace{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDatabricksWorkspaces) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(databricksworkspacesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(databricksworkspacesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DatabricksWorkspaceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDatabricksWorkspaces) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched databricksWorkspace.
 func (c *FakeDatabricksWorkspaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DatabricksWorkspace, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(databricksworkspacesResource, name, pt, data, subresources...), &v1alpha1.DatabricksWorkspace{})
+		Invokes(testing.NewPatchSubresourceAction(databricksworkspacesResource, c.ns, name, pt, data, subresources...), &v1alpha1.DatabricksWorkspace{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // Ec2TransitGatewayVpcAttachmentsGetter has a method to return a Ec2TransitGatewayVpcAttachmentInterface.
 // A group's client should implement this interface.
 type Ec2TransitGatewayVpcAttachmentsGetter interface {
-	Ec2TransitGatewayVpcAttachments() Ec2TransitGatewayVpcAttachmentInterface
+	Ec2TransitGatewayVpcAttachments(namespace string) Ec2TransitGatewayVpcAttachmentInterface
 }
 
 // Ec2TransitGatewayVpcAttachmentInterface has methods to work with Ec2TransitGatewayVpcAttachment resources.
@@ -52,12 +52,14 @@ type Ec2TransitGatewayVpcAttachmentInterface interface {
 // ec2TransitGatewayVpcAttachments implements Ec2TransitGatewayVpcAttachmentInterface
 type ec2TransitGatewayVpcAttachments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEc2TransitGatewayVpcAttachments returns a Ec2TransitGatewayVpcAttachments
-func newEc2TransitGatewayVpcAttachments(c *AwsV1alpha1Client) *ec2TransitGatewayVpcAttachments {
+func newEc2TransitGatewayVpcAttachments(c *AwsV1alpha1Client, namespace string) *ec2TransitGatewayVpcAttachments {
 	return &ec2TransitGatewayVpcAttachments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEc2TransitGatewayVpcAttachments(c *AwsV1alpha1Client) *ec2TransitGateway
 func (c *ec2TransitGatewayVpcAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.Ec2TransitGatewayVpcAttachment, err error) {
 	result = &v1alpha1.Ec2TransitGatewayVpcAttachment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ec2transitgatewayvpcattachments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ec2TransitGatewayVpcAttachments) List(opts v1.ListOptions) (result *v1a
 	}
 	result = &v1alpha1.Ec2TransitGatewayVpcAttachmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ec2transitgatewayvpcattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ec2TransitGatewayVpcAttachments) Watch(opts v1.ListOptions) (watch.Inte
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ec2transitgatewayvpcattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ec2TransitGatewayVpcAttachments) Watch(opts v1.ListOptions) (watch.Inte
 func (c *ec2TransitGatewayVpcAttachments) Create(ec2TransitGatewayVpcAttachment *v1alpha1.Ec2TransitGatewayVpcAttachment) (result *v1alpha1.Ec2TransitGatewayVpcAttachment, err error) {
 	result = &v1alpha1.Ec2TransitGatewayVpcAttachment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ec2transitgatewayvpcattachments").
 		Body(ec2TransitGatewayVpcAttachment).
 		Do().
@@ -118,6 +124,7 @@ func (c *ec2TransitGatewayVpcAttachments) Create(ec2TransitGatewayVpcAttachment 
 func (c *ec2TransitGatewayVpcAttachments) Update(ec2TransitGatewayVpcAttachment *v1alpha1.Ec2TransitGatewayVpcAttachment) (result *v1alpha1.Ec2TransitGatewayVpcAttachment, err error) {
 	result = &v1alpha1.Ec2TransitGatewayVpcAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ec2transitgatewayvpcattachments").
 		Name(ec2TransitGatewayVpcAttachment.Name).
 		Body(ec2TransitGatewayVpcAttachment).
@@ -132,6 +139,7 @@ func (c *ec2TransitGatewayVpcAttachments) Update(ec2TransitGatewayVpcAttachment 
 func (c *ec2TransitGatewayVpcAttachments) UpdateStatus(ec2TransitGatewayVpcAttachment *v1alpha1.Ec2TransitGatewayVpcAttachment) (result *v1alpha1.Ec2TransitGatewayVpcAttachment, err error) {
 	result = &v1alpha1.Ec2TransitGatewayVpcAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ec2transitgatewayvpcattachments").
 		Name(ec2TransitGatewayVpcAttachment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ec2TransitGatewayVpcAttachments) UpdateStatus(ec2TransitGatewayVpcAttac
 // Delete takes name of the ec2TransitGatewayVpcAttachment and deletes it. Returns an error if one occurs.
 func (c *ec2TransitGatewayVpcAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ec2transitgatewayvpcattachments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ec2TransitGatewayVpcAttachments) DeleteCollection(options *v1.DeleteOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ec2transitgatewayvpcattachments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ec2TransitGatewayVpcAttachments) DeleteCollection(options *v1.DeleteOpt
 func (c *ec2TransitGatewayVpcAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Ec2TransitGatewayVpcAttachment, err error) {
 	result = &v1alpha1.Ec2TransitGatewayVpcAttachment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ec2transitgatewayvpcattachments").
 		SubResource(subresources...).
 		Name(name).

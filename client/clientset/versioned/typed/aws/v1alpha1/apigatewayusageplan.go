@@ -32,7 +32,7 @@ import (
 // ApiGatewayUsagePlansGetter has a method to return a ApiGatewayUsagePlanInterface.
 // A group's client should implement this interface.
 type ApiGatewayUsagePlansGetter interface {
-	ApiGatewayUsagePlans() ApiGatewayUsagePlanInterface
+	ApiGatewayUsagePlans(namespace string) ApiGatewayUsagePlanInterface
 }
 
 // ApiGatewayUsagePlanInterface has methods to work with ApiGatewayUsagePlan resources.
@@ -52,12 +52,14 @@ type ApiGatewayUsagePlanInterface interface {
 // apiGatewayUsagePlans implements ApiGatewayUsagePlanInterface
 type apiGatewayUsagePlans struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiGatewayUsagePlans returns a ApiGatewayUsagePlans
-func newApiGatewayUsagePlans(c *AwsV1alpha1Client) *apiGatewayUsagePlans {
+func newApiGatewayUsagePlans(c *AwsV1alpha1Client, namespace string) *apiGatewayUsagePlans {
 	return &apiGatewayUsagePlans{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiGatewayUsagePlans(c *AwsV1alpha1Client) *apiGatewayUsagePlans {
 func (c *apiGatewayUsagePlans) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayUsagePlan, err error) {
 	result = &v1alpha1.ApiGatewayUsagePlan{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayusageplans").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiGatewayUsagePlans) List(opts v1.ListOptions) (result *v1alpha1.ApiGa
 	}
 	result = &v1alpha1.ApiGatewayUsagePlanList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayusageplans").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiGatewayUsagePlans) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayusageplans").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiGatewayUsagePlans) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *apiGatewayUsagePlans) Create(apiGatewayUsagePlan *v1alpha1.ApiGatewayUsagePlan) (result *v1alpha1.ApiGatewayUsagePlan, err error) {
 	result = &v1alpha1.ApiGatewayUsagePlan{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apigatewayusageplans").
 		Body(apiGatewayUsagePlan).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiGatewayUsagePlans) Create(apiGatewayUsagePlan *v1alpha1.ApiGatewayUs
 func (c *apiGatewayUsagePlans) Update(apiGatewayUsagePlan *v1alpha1.ApiGatewayUsagePlan) (result *v1alpha1.ApiGatewayUsagePlan, err error) {
 	result = &v1alpha1.ApiGatewayUsagePlan{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewayusageplans").
 		Name(apiGatewayUsagePlan.Name).
 		Body(apiGatewayUsagePlan).
@@ -132,6 +139,7 @@ func (c *apiGatewayUsagePlans) Update(apiGatewayUsagePlan *v1alpha1.ApiGatewayUs
 func (c *apiGatewayUsagePlans) UpdateStatus(apiGatewayUsagePlan *v1alpha1.ApiGatewayUsagePlan) (result *v1alpha1.ApiGatewayUsagePlan, err error) {
 	result = &v1alpha1.ApiGatewayUsagePlan{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewayusageplans").
 		Name(apiGatewayUsagePlan.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiGatewayUsagePlans) UpdateStatus(apiGatewayUsagePlan *v1alpha1.ApiGat
 // Delete takes name of the apiGatewayUsagePlan and deletes it. Returns an error if one occurs.
 func (c *apiGatewayUsagePlans) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewayusageplans").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiGatewayUsagePlans) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewayusageplans").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiGatewayUsagePlans) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *apiGatewayUsagePlans) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayUsagePlan, err error) {
 	result = &v1alpha1.ApiGatewayUsagePlan{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apigatewayusageplans").
 		SubResource(subresources...).
 		Name(name).

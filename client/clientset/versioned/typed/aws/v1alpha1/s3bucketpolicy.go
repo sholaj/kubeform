@@ -32,7 +32,7 @@ import (
 // S3BucketPoliciesGetter has a method to return a S3BucketPolicyInterface.
 // A group's client should implement this interface.
 type S3BucketPoliciesGetter interface {
-	S3BucketPolicies() S3BucketPolicyInterface
+	S3BucketPolicies(namespace string) S3BucketPolicyInterface
 }
 
 // S3BucketPolicyInterface has methods to work with S3BucketPolicy resources.
@@ -52,12 +52,14 @@ type S3BucketPolicyInterface interface {
 // s3BucketPolicies implements S3BucketPolicyInterface
 type s3BucketPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newS3BucketPolicies returns a S3BucketPolicies
-func newS3BucketPolicies(c *AwsV1alpha1Client) *s3BucketPolicies {
+func newS3BucketPolicies(c *AwsV1alpha1Client, namespace string) *s3BucketPolicies {
 	return &s3BucketPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newS3BucketPolicies(c *AwsV1alpha1Client) *s3BucketPolicies {
 func (c *s3BucketPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.S3BucketPolicy, err error) {
 	result = &v1alpha1.S3BucketPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("s3bucketpolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *s3BucketPolicies) List(opts v1.ListOptions) (result *v1alpha1.S3BucketP
 	}
 	result = &v1alpha1.S3BucketPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("s3bucketpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *s3BucketPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("s3bucketpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *s3BucketPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *s3BucketPolicies) Create(s3BucketPolicy *v1alpha1.S3BucketPolicy) (result *v1alpha1.S3BucketPolicy, err error) {
 	result = &v1alpha1.S3BucketPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("s3bucketpolicies").
 		Body(s3BucketPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *s3BucketPolicies) Create(s3BucketPolicy *v1alpha1.S3BucketPolicy) (resu
 func (c *s3BucketPolicies) Update(s3BucketPolicy *v1alpha1.S3BucketPolicy) (result *v1alpha1.S3BucketPolicy, err error) {
 	result = &v1alpha1.S3BucketPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("s3bucketpolicies").
 		Name(s3BucketPolicy.Name).
 		Body(s3BucketPolicy).
@@ -132,6 +139,7 @@ func (c *s3BucketPolicies) Update(s3BucketPolicy *v1alpha1.S3BucketPolicy) (resu
 func (c *s3BucketPolicies) UpdateStatus(s3BucketPolicy *v1alpha1.S3BucketPolicy) (result *v1alpha1.S3BucketPolicy, err error) {
 	result = &v1alpha1.S3BucketPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("s3bucketpolicies").
 		Name(s3BucketPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *s3BucketPolicies) UpdateStatus(s3BucketPolicy *v1alpha1.S3BucketPolicy)
 // Delete takes name of the s3BucketPolicy and deletes it. Returns an error if one occurs.
 func (c *s3BucketPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("s3bucketpolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *s3BucketPolicies) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("s3bucketpolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *s3BucketPolicies) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *s3BucketPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.S3BucketPolicy, err error) {
 	result = &v1alpha1.S3BucketPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("s3bucketpolicies").
 		SubResource(subresources...).
 		Name(name).

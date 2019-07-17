@@ -3,12 +3,12 @@ package v1alpha1
 import (
 	"encoding/json"
 
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -22,17 +22,18 @@ type ComputeTargetPool struct {
 
 type ComputeTargetPoolSpec struct {
 	// +optional
-	BackupPool string `json:"backup_pool,omitempty"`
+	BackupPool string `json:"backupPool,omitempty" tf:"backup_pool,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	FailoverRatio json.Number `json:"failover_ratio,omitempty"`
+	FailoverRatio json.Number `json:"failoverRatio,omitempty" tf:"failover_ratio,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	HealthChecks []string `json:"health_checks,omitempty"`
-	Name         string   `json:"name"`
+	HealthChecks []string `json:"healthChecks,omitempty" tf:"health_checks,omitempty"`
+	Name         string   `json:"name" tf:"name"`
 	// +optional
-	SessionAffinity string `json:"session_affinity,omitempty"`
+	SessionAffinity string                    `json:"sessionAffinity,omitempty" tf:"session_affinity,omitempty"`
+	ProviderRef     core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ComputeTargetPoolStatus struct {
@@ -40,7 +41,9 @@ type ComputeTargetPoolStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

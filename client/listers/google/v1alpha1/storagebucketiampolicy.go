@@ -29,8 +29,8 @@ import (
 type StorageBucketIamPolicyLister interface {
 	// List lists all StorageBucketIamPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StorageBucketIamPolicy, err error)
-	// Get retrieves the StorageBucketIamPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.StorageBucketIamPolicy, error)
+	// StorageBucketIamPolicies returns an object that can list and get StorageBucketIamPolicies.
+	StorageBucketIamPolicies(namespace string) StorageBucketIamPolicyNamespaceLister
 	StorageBucketIamPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *storageBucketIamPolicyLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the StorageBucketIamPolicy from the index for a given name.
-func (s *storageBucketIamPolicyLister) Get(name string) (*v1alpha1.StorageBucketIamPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StorageBucketIamPolicies returns an object that can list and get StorageBucketIamPolicies.
+func (s *storageBucketIamPolicyLister) StorageBucketIamPolicies(namespace string) StorageBucketIamPolicyNamespaceLister {
+	return storageBucketIamPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StorageBucketIamPolicyNamespaceLister helps list and get StorageBucketIamPolicies.
+type StorageBucketIamPolicyNamespaceLister interface {
+	// List lists all StorageBucketIamPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StorageBucketIamPolicy, err error)
+	// Get retrieves the StorageBucketIamPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StorageBucketIamPolicy, error)
+	StorageBucketIamPolicyNamespaceListerExpansion
+}
+
+// storageBucketIamPolicyNamespaceLister implements the StorageBucketIamPolicyNamespaceLister
+// interface.
+type storageBucketIamPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StorageBucketIamPolicies in the indexer for a given namespace.
+func (s storageBucketIamPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StorageBucketIamPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StorageBucketIamPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the StorageBucketIamPolicy from the indexer for a given namespace and name.
+func (s storageBucketIamPolicyNamespaceLister) Get(name string) (*v1alpha1.StorageBucketIamPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

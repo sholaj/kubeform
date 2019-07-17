@@ -32,7 +32,7 @@ import (
 // SsmMaintenanceWindowsGetter has a method to return a SsmMaintenanceWindowInterface.
 // A group's client should implement this interface.
 type SsmMaintenanceWindowsGetter interface {
-	SsmMaintenanceWindows() SsmMaintenanceWindowInterface
+	SsmMaintenanceWindows(namespace string) SsmMaintenanceWindowInterface
 }
 
 // SsmMaintenanceWindowInterface has methods to work with SsmMaintenanceWindow resources.
@@ -52,12 +52,14 @@ type SsmMaintenanceWindowInterface interface {
 // ssmMaintenanceWindows implements SsmMaintenanceWindowInterface
 type ssmMaintenanceWindows struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSsmMaintenanceWindows returns a SsmMaintenanceWindows
-func newSsmMaintenanceWindows(c *AwsV1alpha1Client) *ssmMaintenanceWindows {
+func newSsmMaintenanceWindows(c *AwsV1alpha1Client, namespace string) *ssmMaintenanceWindows {
 	return &ssmMaintenanceWindows{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSsmMaintenanceWindows(c *AwsV1alpha1Client) *ssmMaintenanceWindows {
 func (c *ssmMaintenanceWindows) Get(name string, options v1.GetOptions) (result *v1alpha1.SsmMaintenanceWindow, err error) {
 	result = &v1alpha1.SsmMaintenanceWindow{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmmaintenancewindows").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ssmMaintenanceWindows) List(opts v1.ListOptions) (result *v1alpha1.SsmM
 	}
 	result = &v1alpha1.SsmMaintenanceWindowList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmmaintenancewindows").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ssmMaintenanceWindows) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmmaintenancewindows").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ssmMaintenanceWindows) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *ssmMaintenanceWindows) Create(ssmMaintenanceWindow *v1alpha1.SsmMaintenanceWindow) (result *v1alpha1.SsmMaintenanceWindow, err error) {
 	result = &v1alpha1.SsmMaintenanceWindow{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ssmmaintenancewindows").
 		Body(ssmMaintenanceWindow).
 		Do().
@@ -118,6 +124,7 @@ func (c *ssmMaintenanceWindows) Create(ssmMaintenanceWindow *v1alpha1.SsmMainten
 func (c *ssmMaintenanceWindows) Update(ssmMaintenanceWindow *v1alpha1.SsmMaintenanceWindow) (result *v1alpha1.SsmMaintenanceWindow, err error) {
 	result = &v1alpha1.SsmMaintenanceWindow{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ssmmaintenancewindows").
 		Name(ssmMaintenanceWindow.Name).
 		Body(ssmMaintenanceWindow).
@@ -132,6 +139,7 @@ func (c *ssmMaintenanceWindows) Update(ssmMaintenanceWindow *v1alpha1.SsmMainten
 func (c *ssmMaintenanceWindows) UpdateStatus(ssmMaintenanceWindow *v1alpha1.SsmMaintenanceWindow) (result *v1alpha1.SsmMaintenanceWindow, err error) {
 	result = &v1alpha1.SsmMaintenanceWindow{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ssmmaintenancewindows").
 		Name(ssmMaintenanceWindow.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ssmMaintenanceWindows) UpdateStatus(ssmMaintenanceWindow *v1alpha1.SsmM
 // Delete takes name of the ssmMaintenanceWindow and deletes it. Returns an error if one occurs.
 func (c *ssmMaintenanceWindows) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ssmmaintenancewindows").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ssmMaintenanceWindows) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ssmmaintenancewindows").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ssmMaintenanceWindows) DeleteCollection(options *v1.DeleteOptions, list
 func (c *ssmMaintenanceWindows) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SsmMaintenanceWindow, err error) {
 	result = &v1alpha1.SsmMaintenanceWindow{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ssmmaintenancewindows").
 		SubResource(subresources...).
 		Name(name).

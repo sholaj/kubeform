@@ -32,7 +32,7 @@ import (
 // ApiManagementUsersGetter has a method to return a ApiManagementUserInterface.
 // A group's client should implement this interface.
 type ApiManagementUsersGetter interface {
-	ApiManagementUsers() ApiManagementUserInterface
+	ApiManagementUsers(namespace string) ApiManagementUserInterface
 }
 
 // ApiManagementUserInterface has methods to work with ApiManagementUser resources.
@@ -52,12 +52,14 @@ type ApiManagementUserInterface interface {
 // apiManagementUsers implements ApiManagementUserInterface
 type apiManagementUsers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiManagementUsers returns a ApiManagementUsers
-func newApiManagementUsers(c *AzurermV1alpha1Client) *apiManagementUsers {
+func newApiManagementUsers(c *AzurermV1alpha1Client, namespace string) *apiManagementUsers {
 	return &apiManagementUsers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiManagementUsers(c *AzurermV1alpha1Client) *apiManagementUsers {
 func (c *apiManagementUsers) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementUser, err error) {
 	result = &v1alpha1.ApiManagementUser{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementusers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiManagementUsers) List(opts v1.ListOptions) (result *v1alpha1.ApiMana
 	}
 	result = &v1alpha1.ApiManagementUserList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementusers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiManagementUsers) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementusers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiManagementUsers) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *apiManagementUsers) Create(apiManagementUser *v1alpha1.ApiManagementUser) (result *v1alpha1.ApiManagementUser, err error) {
 	result = &v1alpha1.ApiManagementUser{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apimanagementusers").
 		Body(apiManagementUser).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiManagementUsers) Create(apiManagementUser *v1alpha1.ApiManagementUse
 func (c *apiManagementUsers) Update(apiManagementUser *v1alpha1.ApiManagementUser) (result *v1alpha1.ApiManagementUser, err error) {
 	result = &v1alpha1.ApiManagementUser{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementusers").
 		Name(apiManagementUser.Name).
 		Body(apiManagementUser).
@@ -132,6 +139,7 @@ func (c *apiManagementUsers) Update(apiManagementUser *v1alpha1.ApiManagementUse
 func (c *apiManagementUsers) UpdateStatus(apiManagementUser *v1alpha1.ApiManagementUser) (result *v1alpha1.ApiManagementUser, err error) {
 	result = &v1alpha1.ApiManagementUser{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementusers").
 		Name(apiManagementUser.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiManagementUsers) UpdateStatus(apiManagementUser *v1alpha1.ApiManagem
 // Delete takes name of the apiManagementUser and deletes it. Returns an error if one occurs.
 func (c *apiManagementUsers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementusers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiManagementUsers) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementusers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiManagementUsers) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *apiManagementUsers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementUser, err error) {
 	result = &v1alpha1.ApiManagementUser{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apimanagementusers").
 		SubResource(subresources...).
 		Name(name).

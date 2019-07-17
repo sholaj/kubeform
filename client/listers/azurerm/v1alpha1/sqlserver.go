@@ -29,8 +29,8 @@ import (
 type SqlServerLister interface {
 	// List lists all SqlServers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SqlServer, err error)
-	// Get retrieves the SqlServer from the index for a given name.
-	Get(name string) (*v1alpha1.SqlServer, error)
+	// SqlServers returns an object that can list and get SqlServers.
+	SqlServers(namespace string) SqlServerNamespaceLister
 	SqlServerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sqlServerLister) List(selector labels.Selector) (ret []*v1alpha1.SqlSer
 	return ret, err
 }
 
-// Get retrieves the SqlServer from the index for a given name.
-func (s *sqlServerLister) Get(name string) (*v1alpha1.SqlServer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SqlServers returns an object that can list and get SqlServers.
+func (s *sqlServerLister) SqlServers(namespace string) SqlServerNamespaceLister {
+	return sqlServerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SqlServerNamespaceLister helps list and get SqlServers.
+type SqlServerNamespaceLister interface {
+	// List lists all SqlServers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SqlServer, err error)
+	// Get retrieves the SqlServer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SqlServer, error)
+	SqlServerNamespaceListerExpansion
+}
+
+// sqlServerNamespaceLister implements the SqlServerNamespaceLister
+// interface.
+type sqlServerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SqlServers in the indexer for a given namespace.
+func (s sqlServerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SqlServer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SqlServer))
+	})
+	return ret, err
+}
+
+// Get retrieves the SqlServer from the indexer for a given namespace and name.
+func (s sqlServerNamespaceLister) Get(name string) (*v1alpha1.SqlServer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

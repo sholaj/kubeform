@@ -41,32 +41,33 @@ type CosmosdbAccountInformer interface {
 type cosmosdbAccountInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewCosmosdbAccountInformer constructs a new informer for CosmosdbAccount type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCosmosdbAccountInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCosmosdbAccountInformer(client, resyncPeriod, indexers, nil)
+func NewCosmosdbAccountInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCosmosdbAccountInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredCosmosdbAccountInformer constructs a new informer for CosmosdbAccount type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCosmosdbAccountInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCosmosdbAccountInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().CosmosdbAccounts().List(options)
+				return client.AzurermV1alpha1().CosmosdbAccounts(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().CosmosdbAccounts().Watch(options)
+				return client.AzurermV1alpha1().CosmosdbAccounts(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.CosmosdbAccount{},
@@ -76,7 +77,7 @@ func NewFilteredCosmosdbAccountInformer(client versioned.Interface, resyncPeriod
 }
 
 func (f *cosmosdbAccountInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCosmosdbAccountInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredCosmosdbAccountInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *cosmosdbAccountInformer) Informer() cache.SharedIndexInformer {

@@ -31,6 +31,7 @@ import (
 // FakeAutomationRunbooks implements AutomationRunbookInterface
 type FakeAutomationRunbooks struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var automationrunbooksResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "automationrunbooks"}
@@ -40,7 +41,8 @@ var automationrunbooksKind = schema.GroupVersionKind{Group: "azurerm.kubeform.co
 // Get takes name of the automationRunbook, and returns the corresponding automationRunbook object, and an error if there is any.
 func (c *FakeAutomationRunbooks) Get(name string, options v1.GetOptions) (result *v1alpha1.AutomationRunbook, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(automationrunbooksResource, name), &v1alpha1.AutomationRunbook{})
+		Invokes(testing.NewGetAction(automationrunbooksResource, c.ns, name), &v1alpha1.AutomationRunbook{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAutomationRunbooks) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of AutomationRunbooks that match those selectors.
 func (c *FakeAutomationRunbooks) List(opts v1.ListOptions) (result *v1alpha1.AutomationRunbookList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(automationrunbooksResource, automationrunbooksKind, opts), &v1alpha1.AutomationRunbookList{})
+		Invokes(testing.NewListAction(automationrunbooksResource, automationrunbooksKind, c.ns, opts), &v1alpha1.AutomationRunbookList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAutomationRunbooks) List(opts v1.ListOptions) (result *v1alpha1.Aut
 // Watch returns a watch.Interface that watches the requested automationRunbooks.
 func (c *FakeAutomationRunbooks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(automationrunbooksResource, opts))
+		InvokesWatch(testing.NewWatchAction(automationrunbooksResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a automationRunbook and creates it.  Returns the server's representation of the automationRunbook, and an error, if there is any.
 func (c *FakeAutomationRunbooks) Create(automationRunbook *v1alpha1.AutomationRunbook) (result *v1alpha1.AutomationRunbook, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(automationrunbooksResource, automationRunbook), &v1alpha1.AutomationRunbook{})
+		Invokes(testing.NewCreateAction(automationrunbooksResource, c.ns, automationRunbook), &v1alpha1.AutomationRunbook{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAutomationRunbooks) Create(automationRunbook *v1alpha1.AutomationRu
 // Update takes the representation of a automationRunbook and updates it. Returns the server's representation of the automationRunbook, and an error, if there is any.
 func (c *FakeAutomationRunbooks) Update(automationRunbook *v1alpha1.AutomationRunbook) (result *v1alpha1.AutomationRunbook, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(automationrunbooksResource, automationRunbook), &v1alpha1.AutomationRunbook{})
+		Invokes(testing.NewUpdateAction(automationrunbooksResource, c.ns, automationRunbook), &v1alpha1.AutomationRunbook{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAutomationRunbooks) Update(automationRunbook *v1alpha1.AutomationRu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAutomationRunbooks) UpdateStatus(automationRunbook *v1alpha1.AutomationRunbook) (*v1alpha1.AutomationRunbook, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(automationrunbooksResource, "status", automationRunbook), &v1alpha1.AutomationRunbook{})
+		Invokes(testing.NewUpdateSubresourceAction(automationrunbooksResource, "status", c.ns, automationRunbook), &v1alpha1.AutomationRunbook{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAutomationRunbooks) UpdateStatus(automationRunbook *v1alpha1.Automa
 // Delete takes name of the automationRunbook and deletes it. Returns an error if one occurs.
 func (c *FakeAutomationRunbooks) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(automationrunbooksResource, name), &v1alpha1.AutomationRunbook{})
+		Invokes(testing.NewDeleteAction(automationrunbooksResource, c.ns, name), &v1alpha1.AutomationRunbook{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAutomationRunbooks) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(automationrunbooksResource, listOptions)
+	action := testing.NewDeleteCollectionAction(automationrunbooksResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AutomationRunbookList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAutomationRunbooks) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched automationRunbook.
 func (c *FakeAutomationRunbooks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AutomationRunbook, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(automationrunbooksResource, name, pt, data, subresources...), &v1alpha1.AutomationRunbook{})
+		Invokes(testing.NewPatchSubresourceAction(automationrunbooksResource, c.ns, name, pt, data, subresources...), &v1alpha1.AutomationRunbook{})
+
 	if obj == nil {
 		return nil, err
 	}

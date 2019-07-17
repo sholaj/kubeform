@@ -397,11 +397,20 @@ spec:
           type: object
         spec:
           properties:
-            hsm_type:
+            hsmType:
               type: string
-            source_backup_identifier:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            sourceBackupIdentifier:
               type: string
-            subnet_ids:
+            subnetIDS:
               items:
                 type: string
               type: array
@@ -411,8 +420,9 @@ spec:
                 type: string
               type: object
           required:
-          - hsm_type
-          - subnet_ids
+          - hsmType
+          - providerRef
+          - subnetIDS
           type: object
         status:
           properties:
@@ -423,6 +433,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

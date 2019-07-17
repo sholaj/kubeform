@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,18 +20,19 @@ type GlacierVault struct {
 
 type GlacierVaultSpecNotification struct {
 	// +kubebuilder:validation:UniqueItems=true
-	Events   []string `json:"events"`
-	SnsTopic string   `json:"sns_topic"`
+	Events   []string `json:"events" tf:"events"`
+	SnsTopic string   `json:"snsTopic" tf:"sns_topic"`
 }
 
 type GlacierVaultSpec struct {
 	// +optional
-	AccessPolicy string `json:"access_policy,omitempty"`
-	Name         string `json:"name"`
+	AccessPolicy string `json:"accessPolicy,omitempty" tf:"access_policy,omitempty"`
+	Name         string `json:"name" tf:"name"`
 	// +optional
-	Notification *[]GlacierVaultSpec `json:"notification,omitempty"`
+	Notification []GlacierVaultSpecNotification `json:"notification,omitempty" tf:"notification,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type GlacierVaultStatus struct {
@@ -39,7 +40,9 @@ type GlacierVaultStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

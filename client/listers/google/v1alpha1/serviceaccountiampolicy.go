@@ -29,8 +29,8 @@ import (
 type ServiceAccountIamPolicyLister interface {
 	// List lists all ServiceAccountIamPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ServiceAccountIamPolicy, err error)
-	// Get retrieves the ServiceAccountIamPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.ServiceAccountIamPolicy, error)
+	// ServiceAccountIamPolicies returns an object that can list and get ServiceAccountIamPolicies.
+	ServiceAccountIamPolicies(namespace string) ServiceAccountIamPolicyNamespaceLister
 	ServiceAccountIamPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *serviceAccountIamPolicyLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the ServiceAccountIamPolicy from the index for a given name.
-func (s *serviceAccountIamPolicyLister) Get(name string) (*v1alpha1.ServiceAccountIamPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ServiceAccountIamPolicies returns an object that can list and get ServiceAccountIamPolicies.
+func (s *serviceAccountIamPolicyLister) ServiceAccountIamPolicies(namespace string) ServiceAccountIamPolicyNamespaceLister {
+	return serviceAccountIamPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ServiceAccountIamPolicyNamespaceLister helps list and get ServiceAccountIamPolicies.
+type ServiceAccountIamPolicyNamespaceLister interface {
+	// List lists all ServiceAccountIamPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ServiceAccountIamPolicy, err error)
+	// Get retrieves the ServiceAccountIamPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ServiceAccountIamPolicy, error)
+	ServiceAccountIamPolicyNamespaceListerExpansion
+}
+
+// serviceAccountIamPolicyNamespaceLister implements the ServiceAccountIamPolicyNamespaceLister
+// interface.
+type serviceAccountIamPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ServiceAccountIamPolicies in the indexer for a given namespace.
+func (s serviceAccountIamPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServiceAccountIamPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ServiceAccountIamPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the ServiceAccountIamPolicy from the indexer for a given namespace and name.
+func (s serviceAccountIamPolicyNamespaceLister) Get(name string) (*v1alpha1.ServiceAccountIamPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // VpnConnectionRoutesGetter has a method to return a VpnConnectionRouteInterface.
 // A group's client should implement this interface.
 type VpnConnectionRoutesGetter interface {
-	VpnConnectionRoutes() VpnConnectionRouteInterface
+	VpnConnectionRoutes(namespace string) VpnConnectionRouteInterface
 }
 
 // VpnConnectionRouteInterface has methods to work with VpnConnectionRoute resources.
@@ -52,12 +52,14 @@ type VpnConnectionRouteInterface interface {
 // vpnConnectionRoutes implements VpnConnectionRouteInterface
 type vpnConnectionRoutes struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVpnConnectionRoutes returns a VpnConnectionRoutes
-func newVpnConnectionRoutes(c *AwsV1alpha1Client) *vpnConnectionRoutes {
+func newVpnConnectionRoutes(c *AwsV1alpha1Client, namespace string) *vpnConnectionRoutes {
 	return &vpnConnectionRoutes{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVpnConnectionRoutes(c *AwsV1alpha1Client) *vpnConnectionRoutes {
 func (c *vpnConnectionRoutes) Get(name string, options v1.GetOptions) (result *v1alpha1.VpnConnectionRoute, err error) {
 	result = &v1alpha1.VpnConnectionRoute{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpnconnectionroutes").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *vpnConnectionRoutes) List(opts v1.ListOptions) (result *v1alpha1.VpnCon
 	}
 	result = &v1alpha1.VpnConnectionRouteList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpnconnectionroutes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *vpnConnectionRoutes) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("vpnconnectionroutes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *vpnConnectionRoutes) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *vpnConnectionRoutes) Create(vpnConnectionRoute *v1alpha1.VpnConnectionRoute) (result *v1alpha1.VpnConnectionRoute, err error) {
 	result = &v1alpha1.VpnConnectionRoute{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("vpnconnectionroutes").
 		Body(vpnConnectionRoute).
 		Do().
@@ -118,6 +124,7 @@ func (c *vpnConnectionRoutes) Create(vpnConnectionRoute *v1alpha1.VpnConnectionR
 func (c *vpnConnectionRoutes) Update(vpnConnectionRoute *v1alpha1.VpnConnectionRoute) (result *v1alpha1.VpnConnectionRoute, err error) {
 	result = &v1alpha1.VpnConnectionRoute{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpnconnectionroutes").
 		Name(vpnConnectionRoute.Name).
 		Body(vpnConnectionRoute).
@@ -132,6 +139,7 @@ func (c *vpnConnectionRoutes) Update(vpnConnectionRoute *v1alpha1.VpnConnectionR
 func (c *vpnConnectionRoutes) UpdateStatus(vpnConnectionRoute *v1alpha1.VpnConnectionRoute) (result *v1alpha1.VpnConnectionRoute, err error) {
 	result = &v1alpha1.VpnConnectionRoute{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpnconnectionroutes").
 		Name(vpnConnectionRoute.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *vpnConnectionRoutes) UpdateStatus(vpnConnectionRoute *v1alpha1.VpnConne
 // Delete takes name of the vpnConnectionRoute and deletes it. Returns an error if one occurs.
 func (c *vpnConnectionRoutes) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpnconnectionroutes").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *vpnConnectionRoutes) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpnconnectionroutes").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *vpnConnectionRoutes) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *vpnConnectionRoutes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpnConnectionRoute, err error) {
 	result = &v1alpha1.VpnConnectionRoute{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("vpnconnectionroutes").
 		SubResource(subresources...).
 		Name(name).

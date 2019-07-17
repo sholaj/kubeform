@@ -29,8 +29,8 @@ import (
 type ComputeSubnetworkIamMemberLister interface {
 	// List lists all ComputeSubnetworkIamMembers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeSubnetworkIamMember, err error)
-	// Get retrieves the ComputeSubnetworkIamMember from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeSubnetworkIamMember, error)
+	// ComputeSubnetworkIamMembers returns an object that can list and get ComputeSubnetworkIamMembers.
+	ComputeSubnetworkIamMembers(namespace string) ComputeSubnetworkIamMemberNamespaceLister
 	ComputeSubnetworkIamMemberListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeSubnetworkIamMemberLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the ComputeSubnetworkIamMember from the index for a given name.
-func (s *computeSubnetworkIamMemberLister) Get(name string) (*v1alpha1.ComputeSubnetworkIamMember, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeSubnetworkIamMembers returns an object that can list and get ComputeSubnetworkIamMembers.
+func (s *computeSubnetworkIamMemberLister) ComputeSubnetworkIamMembers(namespace string) ComputeSubnetworkIamMemberNamespaceLister {
+	return computeSubnetworkIamMemberNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeSubnetworkIamMemberNamespaceLister helps list and get ComputeSubnetworkIamMembers.
+type ComputeSubnetworkIamMemberNamespaceLister interface {
+	// List lists all ComputeSubnetworkIamMembers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeSubnetworkIamMember, err error)
+	// Get retrieves the ComputeSubnetworkIamMember from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeSubnetworkIamMember, error)
+	ComputeSubnetworkIamMemberNamespaceListerExpansion
+}
+
+// computeSubnetworkIamMemberNamespaceLister implements the ComputeSubnetworkIamMemberNamespaceLister
+// interface.
+type computeSubnetworkIamMemberNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeSubnetworkIamMembers in the indexer for a given namespace.
+func (s computeSubnetworkIamMemberNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeSubnetworkIamMember, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeSubnetworkIamMember))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeSubnetworkIamMember from the indexer for a given namespace and name.
+func (s computeSubnetworkIamMemberNamespaceLister) Get(name string) (*v1alpha1.ComputeSubnetworkIamMember, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

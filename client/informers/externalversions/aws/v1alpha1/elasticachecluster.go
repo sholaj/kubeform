@@ -41,32 +41,33 @@ type ElasticacheClusterInformer interface {
 type elasticacheClusterInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewElasticacheClusterInformer constructs a new informer for ElasticacheCluster type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewElasticacheClusterInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredElasticacheClusterInformer(client, resyncPeriod, indexers, nil)
+func NewElasticacheClusterInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredElasticacheClusterInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredElasticacheClusterInformer constructs a new informer for ElasticacheCluster type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredElasticacheClusterInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredElasticacheClusterInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ElasticacheClusters().List(options)
+				return client.AwsV1alpha1().ElasticacheClusters(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ElasticacheClusters().Watch(options)
+				return client.AwsV1alpha1().ElasticacheClusters(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.ElasticacheCluster{},
@@ -76,7 +77,7 @@ func NewFilteredElasticacheClusterInformer(client versioned.Interface, resyncPer
 }
 
 func (f *elasticacheClusterInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredElasticacheClusterInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredElasticacheClusterInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *elasticacheClusterInformer) Informer() cache.SharedIndexInformer {

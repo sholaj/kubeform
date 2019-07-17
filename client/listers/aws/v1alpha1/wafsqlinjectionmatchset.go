@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// WafSqlInjectionMatchSetLister helps list WafSqlInjectionMatchSets.
-type WafSqlInjectionMatchSetLister interface {
-	// List lists all WafSqlInjectionMatchSets in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.WafSqlInjectionMatchSet, err error)
-	// Get retrieves the WafSqlInjectionMatchSet from the index for a given name.
-	Get(name string) (*v1alpha1.WafSqlInjectionMatchSet, error)
-	WafSqlInjectionMatchSetListerExpansion
+// WafSQLInjectionMatchSetLister helps list WafSQLInjectionMatchSets.
+type WafSQLInjectionMatchSetLister interface {
+	// List lists all WafSQLInjectionMatchSets in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.WafSQLInjectionMatchSet, err error)
+	// WafSQLInjectionMatchSets returns an object that can list and get WafSQLInjectionMatchSets.
+	WafSQLInjectionMatchSets(namespace string) WafSQLInjectionMatchSetNamespaceLister
+	WafSQLInjectionMatchSetListerExpansion
 }
 
-// wafSqlInjectionMatchSetLister implements the WafSqlInjectionMatchSetLister interface.
-type wafSqlInjectionMatchSetLister struct {
+// wafSQLInjectionMatchSetLister implements the WafSQLInjectionMatchSetLister interface.
+type wafSQLInjectionMatchSetLister struct {
 	indexer cache.Indexer
 }
 
-// NewWafSqlInjectionMatchSetLister returns a new WafSqlInjectionMatchSetLister.
-func NewWafSqlInjectionMatchSetLister(indexer cache.Indexer) WafSqlInjectionMatchSetLister {
-	return &wafSqlInjectionMatchSetLister{indexer: indexer}
+// NewWafSQLInjectionMatchSetLister returns a new WafSQLInjectionMatchSetLister.
+func NewWafSQLInjectionMatchSetLister(indexer cache.Indexer) WafSQLInjectionMatchSetLister {
+	return &wafSQLInjectionMatchSetLister{indexer: indexer}
 }
 
-// List lists all WafSqlInjectionMatchSets in the indexer.
-func (s *wafSqlInjectionMatchSetLister) List(selector labels.Selector) (ret []*v1alpha1.WafSqlInjectionMatchSet, err error) {
+// List lists all WafSQLInjectionMatchSets in the indexer.
+func (s *wafSQLInjectionMatchSetLister) List(selector labels.Selector) (ret []*v1alpha1.WafSQLInjectionMatchSet, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.WafSqlInjectionMatchSet))
+		ret = append(ret, m.(*v1alpha1.WafSQLInjectionMatchSet))
 	})
 	return ret, err
 }
 
-// Get retrieves the WafSqlInjectionMatchSet from the index for a given name.
-func (s *wafSqlInjectionMatchSetLister) Get(name string) (*v1alpha1.WafSqlInjectionMatchSet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafSQLInjectionMatchSets returns an object that can list and get WafSQLInjectionMatchSets.
+func (s *wafSQLInjectionMatchSetLister) WafSQLInjectionMatchSets(namespace string) WafSQLInjectionMatchSetNamespaceLister {
+	return wafSQLInjectionMatchSetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafSQLInjectionMatchSetNamespaceLister helps list and get WafSQLInjectionMatchSets.
+type WafSQLInjectionMatchSetNamespaceLister interface {
+	// List lists all WafSQLInjectionMatchSets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafSQLInjectionMatchSet, err error)
+	// Get retrieves the WafSQLInjectionMatchSet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafSQLInjectionMatchSet, error)
+	WafSQLInjectionMatchSetNamespaceListerExpansion
+}
+
+// wafSQLInjectionMatchSetNamespaceLister implements the WafSQLInjectionMatchSetNamespaceLister
+// interface.
+type wafSQLInjectionMatchSetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafSQLInjectionMatchSets in the indexer for a given namespace.
+func (s wafSQLInjectionMatchSetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafSQLInjectionMatchSet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafSQLInjectionMatchSet))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafSQLInjectionMatchSet from the indexer for a given namespace and name.
+func (s wafSQLInjectionMatchSetNamespaceLister) Get(name string) (*v1alpha1.WafSQLInjectionMatchSet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("wafsqlinjectionmatchset"), name)
 	}
-	return obj.(*v1alpha1.WafSqlInjectionMatchSet), nil
+	return obj.(*v1alpha1.WafSQLInjectionMatchSet), nil
 }

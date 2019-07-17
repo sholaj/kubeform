@@ -29,8 +29,8 @@ import (
 type EipLister interface {
 	// List lists all Eips in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Eip, err error)
-	// Get retrieves the Eip from the index for a given name.
-	Get(name string) (*v1alpha1.Eip, error)
+	// Eips returns an object that can list and get Eips.
+	Eips(namespace string) EipNamespaceLister
 	EipListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *eipLister) List(selector labels.Selector) (ret []*v1alpha1.Eip, err err
 	return ret, err
 }
 
-// Get retrieves the Eip from the index for a given name.
-func (s *eipLister) Get(name string) (*v1alpha1.Eip, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Eips returns an object that can list and get Eips.
+func (s *eipLister) Eips(namespace string) EipNamespaceLister {
+	return eipNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EipNamespaceLister helps list and get Eips.
+type EipNamespaceLister interface {
+	// List lists all Eips in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Eip, err error)
+	// Get retrieves the Eip from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Eip, error)
+	EipNamespaceListerExpansion
+}
+
+// eipNamespaceLister implements the EipNamespaceLister
+// interface.
+type eipNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Eips in the indexer for a given namespace.
+func (s eipNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Eip, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Eip))
+	})
+	return ret, err
+}
+
+// Get retrieves the Eip from the indexer for a given namespace and name.
+func (s eipNamespaceLister) Get(name string) (*v1alpha1.Eip, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

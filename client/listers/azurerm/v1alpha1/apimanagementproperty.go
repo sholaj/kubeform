@@ -29,8 +29,8 @@ import (
 type ApiManagementPropertyLister interface {
 	// List lists all ApiManagementProperties in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementProperty, err error)
-	// Get retrieves the ApiManagementProperty from the index for a given name.
-	Get(name string) (*v1alpha1.ApiManagementProperty, error)
+	// ApiManagementProperties returns an object that can list and get ApiManagementProperties.
+	ApiManagementProperties(namespace string) ApiManagementPropertyNamespaceLister
 	ApiManagementPropertyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiManagementPropertyLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the ApiManagementProperty from the index for a given name.
-func (s *apiManagementPropertyLister) Get(name string) (*v1alpha1.ApiManagementProperty, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiManagementProperties returns an object that can list and get ApiManagementProperties.
+func (s *apiManagementPropertyLister) ApiManagementProperties(namespace string) ApiManagementPropertyNamespaceLister {
+	return apiManagementPropertyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiManagementPropertyNamespaceLister helps list and get ApiManagementProperties.
+type ApiManagementPropertyNamespaceLister interface {
+	// List lists all ApiManagementProperties in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementProperty, err error)
+	// Get retrieves the ApiManagementProperty from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiManagementProperty, error)
+	ApiManagementPropertyNamespaceListerExpansion
+}
+
+// apiManagementPropertyNamespaceLister implements the ApiManagementPropertyNamespaceLister
+// interface.
+type apiManagementPropertyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiManagementProperties in the indexer for a given namespace.
+func (s apiManagementPropertyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementProperty, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiManagementProperty))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiManagementProperty from the indexer for a given namespace and name.
+func (s apiManagementPropertyNamespaceLister) Get(name string) (*v1alpha1.ApiManagementProperty, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

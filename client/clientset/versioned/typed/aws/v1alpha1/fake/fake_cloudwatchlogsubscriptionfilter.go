@@ -31,6 +31,7 @@ import (
 // FakeCloudwatchLogSubscriptionFilters implements CloudwatchLogSubscriptionFilterInterface
 type FakeCloudwatchLogSubscriptionFilters struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var cloudwatchlogsubscriptionfiltersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "cloudwatchlogsubscriptionfilters"}
@@ -40,7 +41,8 @@ var cloudwatchlogsubscriptionfiltersKind = schema.GroupVersionKind{Group: "aws.k
 // Get takes name of the cloudwatchLogSubscriptionFilter, and returns the corresponding cloudwatchLogSubscriptionFilter object, and an error if there is any.
 func (c *FakeCloudwatchLogSubscriptionFilters) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudwatchLogSubscriptionFilter, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cloudwatchlogsubscriptionfiltersResource, name), &v1alpha1.CloudwatchLogSubscriptionFilter{})
+		Invokes(testing.NewGetAction(cloudwatchlogsubscriptionfiltersResource, c.ns, name), &v1alpha1.CloudwatchLogSubscriptionFilter{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCloudwatchLogSubscriptionFilters) Get(name string, options v1.GetOp
 // List takes label and field selectors, and returns the list of CloudwatchLogSubscriptionFilters that match those selectors.
 func (c *FakeCloudwatchLogSubscriptionFilters) List(opts v1.ListOptions) (result *v1alpha1.CloudwatchLogSubscriptionFilterList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cloudwatchlogsubscriptionfiltersResource, cloudwatchlogsubscriptionfiltersKind, opts), &v1alpha1.CloudwatchLogSubscriptionFilterList{})
+		Invokes(testing.NewListAction(cloudwatchlogsubscriptionfiltersResource, cloudwatchlogsubscriptionfiltersKind, c.ns, opts), &v1alpha1.CloudwatchLogSubscriptionFilterList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCloudwatchLogSubscriptionFilters) List(opts v1.ListOptions) (result
 // Watch returns a watch.Interface that watches the requested cloudwatchLogSubscriptionFilters.
 func (c *FakeCloudwatchLogSubscriptionFilters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cloudwatchlogsubscriptionfiltersResource, opts))
+		InvokesWatch(testing.NewWatchAction(cloudwatchlogsubscriptionfiltersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cloudwatchLogSubscriptionFilter and creates it.  Returns the server's representation of the cloudwatchLogSubscriptionFilter, and an error, if there is any.
 func (c *FakeCloudwatchLogSubscriptionFilters) Create(cloudwatchLogSubscriptionFilter *v1alpha1.CloudwatchLogSubscriptionFilter) (result *v1alpha1.CloudwatchLogSubscriptionFilter, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cloudwatchlogsubscriptionfiltersResource, cloudwatchLogSubscriptionFilter), &v1alpha1.CloudwatchLogSubscriptionFilter{})
+		Invokes(testing.NewCreateAction(cloudwatchlogsubscriptionfiltersResource, c.ns, cloudwatchLogSubscriptionFilter), &v1alpha1.CloudwatchLogSubscriptionFilter{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCloudwatchLogSubscriptionFilters) Create(cloudwatchLogSubscriptionF
 // Update takes the representation of a cloudwatchLogSubscriptionFilter and updates it. Returns the server's representation of the cloudwatchLogSubscriptionFilter, and an error, if there is any.
 func (c *FakeCloudwatchLogSubscriptionFilters) Update(cloudwatchLogSubscriptionFilter *v1alpha1.CloudwatchLogSubscriptionFilter) (result *v1alpha1.CloudwatchLogSubscriptionFilter, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cloudwatchlogsubscriptionfiltersResource, cloudwatchLogSubscriptionFilter), &v1alpha1.CloudwatchLogSubscriptionFilter{})
+		Invokes(testing.NewUpdateAction(cloudwatchlogsubscriptionfiltersResource, c.ns, cloudwatchLogSubscriptionFilter), &v1alpha1.CloudwatchLogSubscriptionFilter{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCloudwatchLogSubscriptionFilters) Update(cloudwatchLogSubscriptionF
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCloudwatchLogSubscriptionFilters) UpdateStatus(cloudwatchLogSubscriptionFilter *v1alpha1.CloudwatchLogSubscriptionFilter) (*v1alpha1.CloudwatchLogSubscriptionFilter, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cloudwatchlogsubscriptionfiltersResource, "status", cloudwatchLogSubscriptionFilter), &v1alpha1.CloudwatchLogSubscriptionFilter{})
+		Invokes(testing.NewUpdateSubresourceAction(cloudwatchlogsubscriptionfiltersResource, "status", c.ns, cloudwatchLogSubscriptionFilter), &v1alpha1.CloudwatchLogSubscriptionFilter{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCloudwatchLogSubscriptionFilters) UpdateStatus(cloudwatchLogSubscri
 // Delete takes name of the cloudwatchLogSubscriptionFilter and deletes it. Returns an error if one occurs.
 func (c *FakeCloudwatchLogSubscriptionFilters) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cloudwatchlogsubscriptionfiltersResource, name), &v1alpha1.CloudwatchLogSubscriptionFilter{})
+		Invokes(testing.NewDeleteAction(cloudwatchlogsubscriptionfiltersResource, c.ns, name), &v1alpha1.CloudwatchLogSubscriptionFilter{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCloudwatchLogSubscriptionFilters) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cloudwatchlogsubscriptionfiltersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cloudwatchlogsubscriptionfiltersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CloudwatchLogSubscriptionFilterList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCloudwatchLogSubscriptionFilters) DeleteCollection(options *v1.Dele
 // Patch applies the patch and returns the patched cloudwatchLogSubscriptionFilter.
 func (c *FakeCloudwatchLogSubscriptionFilters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudwatchLogSubscriptionFilter, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cloudwatchlogsubscriptionfiltersResource, name, pt, data, subresources...), &v1alpha1.CloudwatchLogSubscriptionFilter{})
+		Invokes(testing.NewPatchSubresourceAction(cloudwatchlogsubscriptionfiltersResource, c.ns, name, pt, data, subresources...), &v1alpha1.CloudwatchLogSubscriptionFilter{})
+
 	if obj == nil {
 		return nil, err
 	}

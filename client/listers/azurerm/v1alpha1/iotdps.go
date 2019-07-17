@@ -29,8 +29,8 @@ import (
 type IotDpsLister interface {
 	// List lists all IotDpses in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IotDps, err error)
-	// Get retrieves the IotDps from the index for a given name.
-	Get(name string) (*v1alpha1.IotDps, error)
+	// IotDpses returns an object that can list and get IotDpses.
+	IotDpses(namespace string) IotDpsNamespaceLister
 	IotDpsListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iotDpsLister) List(selector labels.Selector) (ret []*v1alpha1.IotDps, e
 	return ret, err
 }
 
-// Get retrieves the IotDps from the index for a given name.
-func (s *iotDpsLister) Get(name string) (*v1alpha1.IotDps, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IotDpses returns an object that can list and get IotDpses.
+func (s *iotDpsLister) IotDpses(namespace string) IotDpsNamespaceLister {
+	return iotDpsNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IotDpsNamespaceLister helps list and get IotDpses.
+type IotDpsNamespaceLister interface {
+	// List lists all IotDpses in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IotDps, err error)
+	// Get retrieves the IotDps from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IotDps, error)
+	IotDpsNamespaceListerExpansion
+}
+
+// iotDpsNamespaceLister implements the IotDpsNamespaceLister
+// interface.
+type iotDpsNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IotDpses in the indexer for a given namespace.
+func (s iotDpsNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IotDps, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IotDps))
+	})
+	return ret, err
+}
+
+// Get retrieves the IotDps from the indexer for a given namespace and name.
+func (s iotDpsNamespaceLister) Get(name string) (*v1alpha1.IotDps, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

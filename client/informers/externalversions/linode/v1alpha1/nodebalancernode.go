@@ -41,32 +41,33 @@ type NodebalancerNodeInformer interface {
 type nodebalancerNodeInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewNodebalancerNodeInformer constructs a new informer for NodebalancerNode type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewNodebalancerNodeInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredNodebalancerNodeInformer(client, resyncPeriod, indexers, nil)
+func NewNodebalancerNodeInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredNodebalancerNodeInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredNodebalancerNodeInformer constructs a new informer for NodebalancerNode type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredNodebalancerNodeInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredNodebalancerNodeInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.LinodeV1alpha1().NodebalancerNodes().List(options)
+				return client.LinodeV1alpha1().NodebalancerNodes(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.LinodeV1alpha1().NodebalancerNodes().Watch(options)
+				return client.LinodeV1alpha1().NodebalancerNodes(namespace).Watch(options)
 			},
 		},
 		&linodev1alpha1.NodebalancerNode{},
@@ -76,7 +77,7 @@ func NewFilteredNodebalancerNodeInformer(client versioned.Interface, resyncPerio
 }
 
 func (f *nodebalancerNodeInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredNodebalancerNodeInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredNodebalancerNodeInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *nodebalancerNodeInformer) Informer() cache.SharedIndexInformer {

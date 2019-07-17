@@ -397,29 +397,57 @@ spec:
           type: object
         spec:
           properties:
-            dataset_id:
+            datasetID:
               type: string
             description:
               type: string
-            friendly_name:
+            friendlyName:
               type: string
             labels:
               additionalProperties:
                 type: string
               type: object
-            table_id:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            tableID:
               type: string
-            time_partitioning:
-              items: {}
+            timePartitioning:
+              items:
+                properties:
+                  expirationMs:
+                    type: integer
+                  field:
+                    type: string
+                  type:
+                    type: string
+                required:
+                - type
+                type: object
               maxItems: 1
               type: array
             view:
-              items: {}
+              items:
+                properties:
+                  query:
+                    type: string
+                  useLegacySQL:
+                    type: boolean
+                required:
+                - query
+                type: object
               maxItems: 1
               type: array
           required:
-          - dataset_id
-          - table_id
+          - datasetID
+          - providerRef
+          - tableID
           type: object
         status:
           properties:
@@ -430,6 +458,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

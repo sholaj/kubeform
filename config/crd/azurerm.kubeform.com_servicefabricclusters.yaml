@@ -397,64 +397,195 @@ spec:
           type: object
         spec:
           properties:
-            add_on_features:
+            addOnFeatures:
               items:
                 type: string
               type: array
               uniqueItems: true
-            azure_active_directory:
-              items: {}
+            azureActiveDirectory:
+              items:
+                properties:
+                  clientApplicationID:
+                    type: string
+                  clusterApplicationID:
+                    type: string
+                  tenantID:
+                    type: string
+                required:
+                - clientApplicationID
+                - clusterApplicationID
+                - tenantID
+                type: object
               maxItems: 1
               type: array
             certificate:
-              items: {}
+              items:
+                properties:
+                  thumbprint:
+                    type: string
+                  thumbprintSecondary:
+                    type: string
+                  x509StoreName:
+                    type: string
+                required:
+                - thumbprint
+                - x509StoreName
+                type: object
               maxItems: 1
               type: array
-            certificate_common_names:
-              items: {}
+            certificateCommonNames:
+              items:
+                properties:
+                  commonNames:
+                    items:
+                      properties:
+                        certificateCommonName:
+                          type: string
+                        certificateIssuerThumbprint:
+                          type: string
+                      required:
+                      - certificateCommonName
+                      type: object
+                    minItems: 1
+                    type: array
+                    uniqueItems: true
+                  x509StoreName:
+                    type: string
+                required:
+                - commonNames
+                - x509StoreName
+                type: object
               maxItems: 1
               type: array
-            client_certificate_thumbprint:
-              items: {}
+            clientCertificateThumbprint:
+              items:
+                properties:
+                  isAdmin:
+                    type: boolean
+                  thumbprint:
+                    type: string
+                required:
+                - isAdmin
+                - thumbprint
+                type: object
               maxItems: 2
               type: array
-            diagnostics_config:
-              items: {}
+            diagnosticsConfig:
+              items:
+                properties:
+                  blobEndpoint:
+                    type: string
+                  protectedAccountKeyName:
+                    type: string
+                  queueEndpoint:
+                    type: string
+                  storageAccountName:
+                    type: string
+                  tableEndpoint:
+                    type: string
+                required:
+                - blobEndpoint
+                - protectedAccountKeyName
+                - queueEndpoint
+                - storageAccountName
+                - tableEndpoint
+                type: object
               maxItems: 1
               type: array
-            fabric_settings:
-              items: {}
+            fabricSettings:
+              items:
+                properties:
+                  name:
+                    type: string
+                  parameters:
+                    additionalProperties:
+                      type: string
+                    type: object
+                required:
+                - name
+                type: object
               type: array
             location:
               type: string
-            management_endpoint:
+            managementEndpoint:
               type: string
             name:
               type: string
-            node_type:
-              items: {}
+            nodeType:
+              items:
+                properties:
+                  capacities:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  clientEndpointPort:
+                    type: integer
+                  durabilityLevel:
+                    type: string
+                  httpEndpointPort:
+                    type: integer
+                  instanceCount:
+                    type: integer
+                  isPrimary:
+                    type: boolean
+                  name:
+                    type: string
+                  placementProperties:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  reverseProxyEndpointPort:
+                    type: integer
+                required:
+                - clientEndpointPort
+                - httpEndpointPort
+                - instanceCount
+                - isPrimary
+                - name
+                type: object
               type: array
-            reliability_level:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            reliabilityLevel:
               type: string
-            resource_group_name:
+            resourceGroupName:
               type: string
-            reverse_proxy_certificate:
-              items: {}
+            reverseProxyCertificate:
+              items:
+                properties:
+                  thumbprint:
+                    type: string
+                  thumbprintSecondary:
+                    type: string
+                  x509StoreName:
+                    type: string
+                required:
+                - thumbprint
+                - x509StoreName
+                type: object
               maxItems: 1
               type: array
-            upgrade_mode:
+            upgradeMode:
               type: string
-            vm_image:
+            vmImage:
               type: string
           required:
           - location
-          - management_endpoint
+          - managementEndpoint
           - name
-          - node_type
-          - reliability_level
-          - resource_group_name
-          - upgrade_mode
-          - vm_image
+          - nodeType
+          - providerRef
+          - reliabilityLevel
+          - resourceGroupName
+          - upgradeMode
+          - vmImage
           type: object
         status:
           properties:
@@ -465,6 +596,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

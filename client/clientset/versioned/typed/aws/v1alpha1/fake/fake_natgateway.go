@@ -31,6 +31,7 @@ import (
 // FakeNatGateways implements NatGatewayInterface
 type FakeNatGateways struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var natgatewaysResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "natgateways"}
@@ -40,7 +41,8 @@ var natgatewaysKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version
 // Get takes name of the natGateway, and returns the corresponding natGateway object, and an error if there is any.
 func (c *FakeNatGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.NatGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(natgatewaysResource, name), &v1alpha1.NatGateway{})
+		Invokes(testing.NewGetAction(natgatewaysResource, c.ns, name), &v1alpha1.NatGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeNatGateways) Get(name string, options v1.GetOptions) (result *v1alp
 // List takes label and field selectors, and returns the list of NatGateways that match those selectors.
 func (c *FakeNatGateways) List(opts v1.ListOptions) (result *v1alpha1.NatGatewayList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(natgatewaysResource, natgatewaysKind, opts), &v1alpha1.NatGatewayList{})
+		Invokes(testing.NewListAction(natgatewaysResource, natgatewaysKind, c.ns, opts), &v1alpha1.NatGatewayList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeNatGateways) List(opts v1.ListOptions) (result *v1alpha1.NatGateway
 // Watch returns a watch.Interface that watches the requested natGateways.
 func (c *FakeNatGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(natgatewaysResource, opts))
+		InvokesWatch(testing.NewWatchAction(natgatewaysResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a natGateway and creates it.  Returns the server's representation of the natGateway, and an error, if there is any.
 func (c *FakeNatGateways) Create(natGateway *v1alpha1.NatGateway) (result *v1alpha1.NatGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(natgatewaysResource, natGateway), &v1alpha1.NatGateway{})
+		Invokes(testing.NewCreateAction(natgatewaysResource, c.ns, natGateway), &v1alpha1.NatGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeNatGateways) Create(natGateway *v1alpha1.NatGateway) (result *v1alp
 // Update takes the representation of a natGateway and updates it. Returns the server's representation of the natGateway, and an error, if there is any.
 func (c *FakeNatGateways) Update(natGateway *v1alpha1.NatGateway) (result *v1alpha1.NatGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(natgatewaysResource, natGateway), &v1alpha1.NatGateway{})
+		Invokes(testing.NewUpdateAction(natgatewaysResource, c.ns, natGateway), &v1alpha1.NatGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeNatGateways) Update(natGateway *v1alpha1.NatGateway) (result *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNatGateways) UpdateStatus(natGateway *v1alpha1.NatGateway) (*v1alpha1.NatGateway, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(natgatewaysResource, "status", natGateway), &v1alpha1.NatGateway{})
+		Invokes(testing.NewUpdateSubresourceAction(natgatewaysResource, "status", c.ns, natGateway), &v1alpha1.NatGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeNatGateways) UpdateStatus(natGateway *v1alpha1.NatGateway) (*v1alph
 // Delete takes name of the natGateway and deletes it. Returns an error if one occurs.
 func (c *FakeNatGateways) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(natgatewaysResource, name), &v1alpha1.NatGateway{})
+		Invokes(testing.NewDeleteAction(natgatewaysResource, c.ns, name), &v1alpha1.NatGateway{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNatGateways) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(natgatewaysResource, listOptions)
+	action := testing.NewDeleteCollectionAction(natgatewaysResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NatGatewayList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeNatGateways) DeleteCollection(options *v1.DeleteOptions, listOption
 // Patch applies the patch and returns the patched natGateway.
 func (c *FakeNatGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NatGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(natgatewaysResource, name, pt, data, subresources...), &v1alpha1.NatGateway{})
+		Invokes(testing.NewPatchSubresourceAction(natgatewaysResource, c.ns, name, pt, data, subresources...), &v1alpha1.NatGateway{})
+
 	if obj == nil {
 		return nil, err
 	}

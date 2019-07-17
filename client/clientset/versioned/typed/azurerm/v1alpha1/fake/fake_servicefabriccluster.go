@@ -31,6 +31,7 @@ import (
 // FakeServiceFabricClusters implements ServiceFabricClusterInterface
 type FakeServiceFabricClusters struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var servicefabricclustersResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "servicefabricclusters"}
@@ -40,7 +41,8 @@ var servicefabricclustersKind = schema.GroupVersionKind{Group: "azurerm.kubeform
 // Get takes name of the serviceFabricCluster, and returns the corresponding serviceFabricCluster object, and an error if there is any.
 func (c *FakeServiceFabricClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceFabricCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(servicefabricclustersResource, name), &v1alpha1.ServiceFabricCluster{})
+		Invokes(testing.NewGetAction(servicefabricclustersResource, c.ns, name), &v1alpha1.ServiceFabricCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeServiceFabricClusters) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of ServiceFabricClusters that match those selectors.
 func (c *FakeServiceFabricClusters) List(opts v1.ListOptions) (result *v1alpha1.ServiceFabricClusterList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(servicefabricclustersResource, servicefabricclustersKind, opts), &v1alpha1.ServiceFabricClusterList{})
+		Invokes(testing.NewListAction(servicefabricclustersResource, servicefabricclustersKind, c.ns, opts), &v1alpha1.ServiceFabricClusterList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeServiceFabricClusters) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested serviceFabricClusters.
 func (c *FakeServiceFabricClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(servicefabricclustersResource, opts))
+		InvokesWatch(testing.NewWatchAction(servicefabricclustersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a serviceFabricCluster and creates it.  Returns the server's representation of the serviceFabricCluster, and an error, if there is any.
 func (c *FakeServiceFabricClusters) Create(serviceFabricCluster *v1alpha1.ServiceFabricCluster) (result *v1alpha1.ServiceFabricCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(servicefabricclustersResource, serviceFabricCluster), &v1alpha1.ServiceFabricCluster{})
+		Invokes(testing.NewCreateAction(servicefabricclustersResource, c.ns, serviceFabricCluster), &v1alpha1.ServiceFabricCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeServiceFabricClusters) Create(serviceFabricCluster *v1alpha1.Servic
 // Update takes the representation of a serviceFabricCluster and updates it. Returns the server's representation of the serviceFabricCluster, and an error, if there is any.
 func (c *FakeServiceFabricClusters) Update(serviceFabricCluster *v1alpha1.ServiceFabricCluster) (result *v1alpha1.ServiceFabricCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(servicefabricclustersResource, serviceFabricCluster), &v1alpha1.ServiceFabricCluster{})
+		Invokes(testing.NewUpdateAction(servicefabricclustersResource, c.ns, serviceFabricCluster), &v1alpha1.ServiceFabricCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeServiceFabricClusters) Update(serviceFabricCluster *v1alpha1.Servic
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeServiceFabricClusters) UpdateStatus(serviceFabricCluster *v1alpha1.ServiceFabricCluster) (*v1alpha1.ServiceFabricCluster, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(servicefabricclustersResource, "status", serviceFabricCluster), &v1alpha1.ServiceFabricCluster{})
+		Invokes(testing.NewUpdateSubresourceAction(servicefabricclustersResource, "status", c.ns, serviceFabricCluster), &v1alpha1.ServiceFabricCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeServiceFabricClusters) UpdateStatus(serviceFabricCluster *v1alpha1.
 // Delete takes name of the serviceFabricCluster and deletes it. Returns an error if one occurs.
 func (c *FakeServiceFabricClusters) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(servicefabricclustersResource, name), &v1alpha1.ServiceFabricCluster{})
+		Invokes(testing.NewDeleteAction(servicefabricclustersResource, c.ns, name), &v1alpha1.ServiceFabricCluster{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeServiceFabricClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(servicefabricclustersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(servicefabricclustersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ServiceFabricClusterList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeServiceFabricClusters) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched serviceFabricCluster.
 func (c *FakeServiceFabricClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceFabricCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(servicefabricclustersResource, name, pt, data, subresources...), &v1alpha1.ServiceFabricCluster{})
+		Invokes(testing.NewPatchSubresourceAction(servicefabricclustersResource, c.ns, name, pt, data, subresources...), &v1alpha1.ServiceFabricCluster{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type SagemakerModelLister interface {
 	// List lists all SagemakerModels in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SagemakerModel, err error)
-	// Get retrieves the SagemakerModel from the index for a given name.
-	Get(name string) (*v1alpha1.SagemakerModel, error)
+	// SagemakerModels returns an object that can list and get SagemakerModels.
+	SagemakerModels(namespace string) SagemakerModelNamespaceLister
 	SagemakerModelListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sagemakerModelLister) List(selector labels.Selector) (ret []*v1alpha1.S
 	return ret, err
 }
 
-// Get retrieves the SagemakerModel from the index for a given name.
-func (s *sagemakerModelLister) Get(name string) (*v1alpha1.SagemakerModel, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SagemakerModels returns an object that can list and get SagemakerModels.
+func (s *sagemakerModelLister) SagemakerModels(namespace string) SagemakerModelNamespaceLister {
+	return sagemakerModelNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SagemakerModelNamespaceLister helps list and get SagemakerModels.
+type SagemakerModelNamespaceLister interface {
+	// List lists all SagemakerModels in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SagemakerModel, err error)
+	// Get retrieves the SagemakerModel from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SagemakerModel, error)
+	SagemakerModelNamespaceListerExpansion
+}
+
+// sagemakerModelNamespaceLister implements the SagemakerModelNamespaceLister
+// interface.
+type sagemakerModelNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SagemakerModels in the indexer for a given namespace.
+func (s sagemakerModelNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SagemakerModel, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SagemakerModel))
+	})
+	return ret, err
+}
+
+// Get retrieves the SagemakerModel from the indexer for a given namespace and name.
+func (s sagemakerModelNamespaceLister) Get(name string) (*v1alpha1.SagemakerModel, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

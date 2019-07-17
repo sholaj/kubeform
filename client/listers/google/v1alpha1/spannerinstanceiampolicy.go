@@ -29,8 +29,8 @@ import (
 type SpannerInstanceIamPolicyLister interface {
 	// List lists all SpannerInstanceIamPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SpannerInstanceIamPolicy, err error)
-	// Get retrieves the SpannerInstanceIamPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.SpannerInstanceIamPolicy, error)
+	// SpannerInstanceIamPolicies returns an object that can list and get SpannerInstanceIamPolicies.
+	SpannerInstanceIamPolicies(namespace string) SpannerInstanceIamPolicyNamespaceLister
 	SpannerInstanceIamPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *spannerInstanceIamPolicyLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the SpannerInstanceIamPolicy from the index for a given name.
-func (s *spannerInstanceIamPolicyLister) Get(name string) (*v1alpha1.SpannerInstanceIamPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SpannerInstanceIamPolicies returns an object that can list and get SpannerInstanceIamPolicies.
+func (s *spannerInstanceIamPolicyLister) SpannerInstanceIamPolicies(namespace string) SpannerInstanceIamPolicyNamespaceLister {
+	return spannerInstanceIamPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SpannerInstanceIamPolicyNamespaceLister helps list and get SpannerInstanceIamPolicies.
+type SpannerInstanceIamPolicyNamespaceLister interface {
+	// List lists all SpannerInstanceIamPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SpannerInstanceIamPolicy, err error)
+	// Get retrieves the SpannerInstanceIamPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SpannerInstanceIamPolicy, error)
+	SpannerInstanceIamPolicyNamespaceListerExpansion
+}
+
+// spannerInstanceIamPolicyNamespaceLister implements the SpannerInstanceIamPolicyNamespaceLister
+// interface.
+type spannerInstanceIamPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SpannerInstanceIamPolicies in the indexer for a given namespace.
+func (s spannerInstanceIamPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SpannerInstanceIamPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SpannerInstanceIamPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the SpannerInstanceIamPolicy from the indexer for a given namespace and name.
+func (s spannerInstanceIamPolicyNamespaceLister) Get(name string) (*v1alpha1.SpannerInstanceIamPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

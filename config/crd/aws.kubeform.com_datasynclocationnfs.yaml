@@ -397,11 +397,29 @@ spec:
           type: object
         spec:
           properties:
-            on_prem_config:
-              items: {}
+            onPremConfig:
+              items:
+                properties:
+                  agentArns:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                required:
+                - agentArns
+                type: object
               maxItems: 1
               type: array
-            server_hostname:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            serverHostname:
               type: string
             subdirectory:
               type: string
@@ -410,8 +428,9 @@ spec:
                 type: string
               type: object
           required:
-          - on_prem_config
-          - server_hostname
+          - onPremConfig
+          - providerRef
+          - serverHostname
           - subdirectory
           type: object
         status:
@@ -423,6 +442,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

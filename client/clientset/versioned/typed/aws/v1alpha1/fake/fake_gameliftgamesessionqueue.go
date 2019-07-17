@@ -31,6 +31,7 @@ import (
 // FakeGameliftGameSessionQueues implements GameliftGameSessionQueueInterface
 type FakeGameliftGameSessionQueues struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var gameliftgamesessionqueuesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "gameliftgamesessionqueues"}
@@ -40,7 +41,8 @@ var gameliftgamesessionqueuesKind = schema.GroupVersionKind{Group: "aws.kubeform
 // Get takes name of the gameliftGameSessionQueue, and returns the corresponding gameliftGameSessionQueue object, and an error if there is any.
 func (c *FakeGameliftGameSessionQueues) Get(name string, options v1.GetOptions) (result *v1alpha1.GameliftGameSessionQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(gameliftgamesessionqueuesResource, name), &v1alpha1.GameliftGameSessionQueue{})
+		Invokes(testing.NewGetAction(gameliftgamesessionqueuesResource, c.ns, name), &v1alpha1.GameliftGameSessionQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeGameliftGameSessionQueues) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of GameliftGameSessionQueues that match those selectors.
 func (c *FakeGameliftGameSessionQueues) List(opts v1.ListOptions) (result *v1alpha1.GameliftGameSessionQueueList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(gameliftgamesessionqueuesResource, gameliftgamesessionqueuesKind, opts), &v1alpha1.GameliftGameSessionQueueList{})
+		Invokes(testing.NewListAction(gameliftgamesessionqueuesResource, gameliftgamesessionqueuesKind, c.ns, opts), &v1alpha1.GameliftGameSessionQueueList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeGameliftGameSessionQueues) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested gameliftGameSessionQueues.
 func (c *FakeGameliftGameSessionQueues) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(gameliftgamesessionqueuesResource, opts))
+		InvokesWatch(testing.NewWatchAction(gameliftgamesessionqueuesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a gameliftGameSessionQueue and creates it.  Returns the server's representation of the gameliftGameSessionQueue, and an error, if there is any.
 func (c *FakeGameliftGameSessionQueues) Create(gameliftGameSessionQueue *v1alpha1.GameliftGameSessionQueue) (result *v1alpha1.GameliftGameSessionQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(gameliftgamesessionqueuesResource, gameliftGameSessionQueue), &v1alpha1.GameliftGameSessionQueue{})
+		Invokes(testing.NewCreateAction(gameliftgamesessionqueuesResource, c.ns, gameliftGameSessionQueue), &v1alpha1.GameliftGameSessionQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeGameliftGameSessionQueues) Create(gameliftGameSessionQueue *v1alpha
 // Update takes the representation of a gameliftGameSessionQueue and updates it. Returns the server's representation of the gameliftGameSessionQueue, and an error, if there is any.
 func (c *FakeGameliftGameSessionQueues) Update(gameliftGameSessionQueue *v1alpha1.GameliftGameSessionQueue) (result *v1alpha1.GameliftGameSessionQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(gameliftgamesessionqueuesResource, gameliftGameSessionQueue), &v1alpha1.GameliftGameSessionQueue{})
+		Invokes(testing.NewUpdateAction(gameliftgamesessionqueuesResource, c.ns, gameliftGameSessionQueue), &v1alpha1.GameliftGameSessionQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeGameliftGameSessionQueues) Update(gameliftGameSessionQueue *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeGameliftGameSessionQueues) UpdateStatus(gameliftGameSessionQueue *v1alpha1.GameliftGameSessionQueue) (*v1alpha1.GameliftGameSessionQueue, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(gameliftgamesessionqueuesResource, "status", gameliftGameSessionQueue), &v1alpha1.GameliftGameSessionQueue{})
+		Invokes(testing.NewUpdateSubresourceAction(gameliftgamesessionqueuesResource, "status", c.ns, gameliftGameSessionQueue), &v1alpha1.GameliftGameSessionQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeGameliftGameSessionQueues) UpdateStatus(gameliftGameSessionQueue *v
 // Delete takes name of the gameliftGameSessionQueue and deletes it. Returns an error if one occurs.
 func (c *FakeGameliftGameSessionQueues) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(gameliftgamesessionqueuesResource, name), &v1alpha1.GameliftGameSessionQueue{})
+		Invokes(testing.NewDeleteAction(gameliftgamesessionqueuesResource, c.ns, name), &v1alpha1.GameliftGameSessionQueue{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeGameliftGameSessionQueues) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(gameliftgamesessionqueuesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(gameliftgamesessionqueuesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.GameliftGameSessionQueueList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeGameliftGameSessionQueues) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched gameliftGameSessionQueue.
 func (c *FakeGameliftGameSessionQueues) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GameliftGameSessionQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(gameliftgamesessionqueuesResource, name, pt, data, subresources...), &v1alpha1.GameliftGameSessionQueue{})
+		Invokes(testing.NewPatchSubresourceAction(gameliftgamesessionqueuesResource, c.ns, name, pt, data, subresources...), &v1alpha1.GameliftGameSessionQueue{})
+
 	if obj == nil {
 		return nil, err
 	}

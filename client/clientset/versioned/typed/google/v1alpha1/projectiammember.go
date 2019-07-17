@@ -32,7 +32,7 @@ import (
 // ProjectIamMembersGetter has a method to return a ProjectIamMemberInterface.
 // A group's client should implement this interface.
 type ProjectIamMembersGetter interface {
-	ProjectIamMembers() ProjectIamMemberInterface
+	ProjectIamMembers(namespace string) ProjectIamMemberInterface
 }
 
 // ProjectIamMemberInterface has methods to work with ProjectIamMember resources.
@@ -52,12 +52,14 @@ type ProjectIamMemberInterface interface {
 // projectIamMembers implements ProjectIamMemberInterface
 type projectIamMembers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newProjectIamMembers returns a ProjectIamMembers
-func newProjectIamMembers(c *GoogleV1alpha1Client) *projectIamMembers {
+func newProjectIamMembers(c *GoogleV1alpha1Client, namespace string) *projectIamMembers {
 	return &projectIamMembers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newProjectIamMembers(c *GoogleV1alpha1Client) *projectIamMembers {
 func (c *projectIamMembers) Get(name string, options v1.GetOptions) (result *v1alpha1.ProjectIamMember, err error) {
 	result = &v1alpha1.ProjectIamMember{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("projectiammembers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *projectIamMembers) List(opts v1.ListOptions) (result *v1alpha1.ProjectI
 	}
 	result = &v1alpha1.ProjectIamMemberList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("projectiammembers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *projectIamMembers) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("projectiammembers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *projectIamMembers) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *projectIamMembers) Create(projectIamMember *v1alpha1.ProjectIamMember) (result *v1alpha1.ProjectIamMember, err error) {
 	result = &v1alpha1.ProjectIamMember{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("projectiammembers").
 		Body(projectIamMember).
 		Do().
@@ -118,6 +124,7 @@ func (c *projectIamMembers) Create(projectIamMember *v1alpha1.ProjectIamMember) 
 func (c *projectIamMembers) Update(projectIamMember *v1alpha1.ProjectIamMember) (result *v1alpha1.ProjectIamMember, err error) {
 	result = &v1alpha1.ProjectIamMember{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("projectiammembers").
 		Name(projectIamMember.Name).
 		Body(projectIamMember).
@@ -132,6 +139,7 @@ func (c *projectIamMembers) Update(projectIamMember *v1alpha1.ProjectIamMember) 
 func (c *projectIamMembers) UpdateStatus(projectIamMember *v1alpha1.ProjectIamMember) (result *v1alpha1.ProjectIamMember, err error) {
 	result = &v1alpha1.ProjectIamMember{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("projectiammembers").
 		Name(projectIamMember.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *projectIamMembers) UpdateStatus(projectIamMember *v1alpha1.ProjectIamMe
 // Delete takes name of the projectIamMember and deletes it. Returns an error if one occurs.
 func (c *projectIamMembers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("projectiammembers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *projectIamMembers) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("projectiammembers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *projectIamMembers) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *projectIamMembers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ProjectIamMember, err error) {
 	result = &v1alpha1.ProjectIamMember{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("projectiammembers").
 		SubResource(subresources...).
 		Name(name).

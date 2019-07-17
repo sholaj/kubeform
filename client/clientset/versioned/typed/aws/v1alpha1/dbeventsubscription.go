@@ -32,7 +32,7 @@ import (
 // DbEventSubscriptionsGetter has a method to return a DbEventSubscriptionInterface.
 // A group's client should implement this interface.
 type DbEventSubscriptionsGetter interface {
-	DbEventSubscriptions() DbEventSubscriptionInterface
+	DbEventSubscriptions(namespace string) DbEventSubscriptionInterface
 }
 
 // DbEventSubscriptionInterface has methods to work with DbEventSubscription resources.
@@ -52,12 +52,14 @@ type DbEventSubscriptionInterface interface {
 // dbEventSubscriptions implements DbEventSubscriptionInterface
 type dbEventSubscriptions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDbEventSubscriptions returns a DbEventSubscriptions
-func newDbEventSubscriptions(c *AwsV1alpha1Client) *dbEventSubscriptions {
+func newDbEventSubscriptions(c *AwsV1alpha1Client, namespace string) *dbEventSubscriptions {
 	return &dbEventSubscriptions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDbEventSubscriptions(c *AwsV1alpha1Client) *dbEventSubscriptions {
 func (c *dbEventSubscriptions) Get(name string, options v1.GetOptions) (result *v1alpha1.DbEventSubscription, err error) {
 	result = &v1alpha1.DbEventSubscription{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dbeventsubscriptions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dbEventSubscriptions) List(opts v1.ListOptions) (result *v1alpha1.DbEve
 	}
 	result = &v1alpha1.DbEventSubscriptionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dbeventsubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dbEventSubscriptions) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dbeventsubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dbEventSubscriptions) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *dbEventSubscriptions) Create(dbEventSubscription *v1alpha1.DbEventSubscription) (result *v1alpha1.DbEventSubscription, err error) {
 	result = &v1alpha1.DbEventSubscription{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dbeventsubscriptions").
 		Body(dbEventSubscription).
 		Do().
@@ -118,6 +124,7 @@ func (c *dbEventSubscriptions) Create(dbEventSubscription *v1alpha1.DbEventSubsc
 func (c *dbEventSubscriptions) Update(dbEventSubscription *v1alpha1.DbEventSubscription) (result *v1alpha1.DbEventSubscription, err error) {
 	result = &v1alpha1.DbEventSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dbeventsubscriptions").
 		Name(dbEventSubscription.Name).
 		Body(dbEventSubscription).
@@ -132,6 +139,7 @@ func (c *dbEventSubscriptions) Update(dbEventSubscription *v1alpha1.DbEventSubsc
 func (c *dbEventSubscriptions) UpdateStatus(dbEventSubscription *v1alpha1.DbEventSubscription) (result *v1alpha1.DbEventSubscription, err error) {
 	result = &v1alpha1.DbEventSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dbeventsubscriptions").
 		Name(dbEventSubscription.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dbEventSubscriptions) UpdateStatus(dbEventSubscription *v1alpha1.DbEven
 // Delete takes name of the dbEventSubscription and deletes it. Returns an error if one occurs.
 func (c *dbEventSubscriptions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dbeventsubscriptions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dbEventSubscriptions) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dbeventsubscriptions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dbEventSubscriptions) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *dbEventSubscriptions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DbEventSubscription, err error) {
 	result = &v1alpha1.DbEventSubscription{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dbeventsubscriptions").
 		SubResource(subresources...).
 		Name(name).

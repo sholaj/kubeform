@@ -32,7 +32,7 @@ import (
 // DatasyncLocationNfsesGetter has a method to return a DatasyncLocationNfsInterface.
 // A group's client should implement this interface.
 type DatasyncLocationNfsesGetter interface {
-	DatasyncLocationNfses() DatasyncLocationNfsInterface
+	DatasyncLocationNfses(namespace string) DatasyncLocationNfsInterface
 }
 
 // DatasyncLocationNfsInterface has methods to work with DatasyncLocationNfs resources.
@@ -52,12 +52,14 @@ type DatasyncLocationNfsInterface interface {
 // datasyncLocationNfses implements DatasyncLocationNfsInterface
 type datasyncLocationNfses struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDatasyncLocationNfses returns a DatasyncLocationNfses
-func newDatasyncLocationNfses(c *AwsV1alpha1Client) *datasyncLocationNfses {
+func newDatasyncLocationNfses(c *AwsV1alpha1Client, namespace string) *datasyncLocationNfses {
 	return &datasyncLocationNfses{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDatasyncLocationNfses(c *AwsV1alpha1Client) *datasyncLocationNfses {
 func (c *datasyncLocationNfses) Get(name string, options v1.GetOptions) (result *v1alpha1.DatasyncLocationNfs, err error) {
 	result = &v1alpha1.DatasyncLocationNfs{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datasynclocationnfses").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *datasyncLocationNfses) List(opts v1.ListOptions) (result *v1alpha1.Data
 	}
 	result = &v1alpha1.DatasyncLocationNfsList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datasynclocationnfses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *datasyncLocationNfses) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("datasynclocationnfses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *datasyncLocationNfses) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *datasyncLocationNfses) Create(datasyncLocationNfs *v1alpha1.DatasyncLocationNfs) (result *v1alpha1.DatasyncLocationNfs, err error) {
 	result = &v1alpha1.DatasyncLocationNfs{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("datasynclocationnfses").
 		Body(datasyncLocationNfs).
 		Do().
@@ -118,6 +124,7 @@ func (c *datasyncLocationNfses) Create(datasyncLocationNfs *v1alpha1.DatasyncLoc
 func (c *datasyncLocationNfses) Update(datasyncLocationNfs *v1alpha1.DatasyncLocationNfs) (result *v1alpha1.DatasyncLocationNfs, err error) {
 	result = &v1alpha1.DatasyncLocationNfs{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datasynclocationnfses").
 		Name(datasyncLocationNfs.Name).
 		Body(datasyncLocationNfs).
@@ -132,6 +139,7 @@ func (c *datasyncLocationNfses) Update(datasyncLocationNfs *v1alpha1.DatasyncLoc
 func (c *datasyncLocationNfses) UpdateStatus(datasyncLocationNfs *v1alpha1.DatasyncLocationNfs) (result *v1alpha1.DatasyncLocationNfs, err error) {
 	result = &v1alpha1.DatasyncLocationNfs{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datasynclocationnfses").
 		Name(datasyncLocationNfs.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *datasyncLocationNfses) UpdateStatus(datasyncLocationNfs *v1alpha1.Datas
 // Delete takes name of the datasyncLocationNfs and deletes it. Returns an error if one occurs.
 func (c *datasyncLocationNfses) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datasynclocationnfses").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *datasyncLocationNfses) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datasynclocationnfses").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *datasyncLocationNfses) DeleteCollection(options *v1.DeleteOptions, list
 func (c *datasyncLocationNfses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DatasyncLocationNfs, err error) {
 	result = &v1alpha1.DatasyncLocationNfs{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("datasynclocationnfses").
 		SubResource(subresources...).
 		Name(name).

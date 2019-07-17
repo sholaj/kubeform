@@ -29,8 +29,8 @@ import (
 type AthenaNamedQueryLister interface {
 	// List lists all AthenaNamedQueries in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AthenaNamedQuery, err error)
-	// Get retrieves the AthenaNamedQuery from the index for a given name.
-	Get(name string) (*v1alpha1.AthenaNamedQuery, error)
+	// AthenaNamedQueries returns an object that can list and get AthenaNamedQueries.
+	AthenaNamedQueries(namespace string) AthenaNamedQueryNamespaceLister
 	AthenaNamedQueryListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *athenaNamedQueryLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the AthenaNamedQuery from the index for a given name.
-func (s *athenaNamedQueryLister) Get(name string) (*v1alpha1.AthenaNamedQuery, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AthenaNamedQueries returns an object that can list and get AthenaNamedQueries.
+func (s *athenaNamedQueryLister) AthenaNamedQueries(namespace string) AthenaNamedQueryNamespaceLister {
+	return athenaNamedQueryNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AthenaNamedQueryNamespaceLister helps list and get AthenaNamedQueries.
+type AthenaNamedQueryNamespaceLister interface {
+	// List lists all AthenaNamedQueries in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AthenaNamedQuery, err error)
+	// Get retrieves the AthenaNamedQuery from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AthenaNamedQuery, error)
+	AthenaNamedQueryNamespaceListerExpansion
+}
+
+// athenaNamedQueryNamespaceLister implements the AthenaNamedQueryNamespaceLister
+// interface.
+type athenaNamedQueryNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AthenaNamedQueries in the indexer for a given namespace.
+func (s athenaNamedQueryNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AthenaNamedQuery, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AthenaNamedQuery))
+	})
+	return ret, err
+}
+
+// Get retrieves the AthenaNamedQuery from the indexer for a given namespace and name.
+func (s athenaNamedQueryNamespaceLister) Get(name string) (*v1alpha1.AthenaNamedQuery, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

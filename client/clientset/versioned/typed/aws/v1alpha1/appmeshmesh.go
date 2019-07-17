@@ -32,7 +32,7 @@ import (
 // AppmeshMeshesGetter has a method to return a AppmeshMeshInterface.
 // A group's client should implement this interface.
 type AppmeshMeshesGetter interface {
-	AppmeshMeshes() AppmeshMeshInterface
+	AppmeshMeshes(namespace string) AppmeshMeshInterface
 }
 
 // AppmeshMeshInterface has methods to work with AppmeshMesh resources.
@@ -52,12 +52,14 @@ type AppmeshMeshInterface interface {
 // appmeshMeshes implements AppmeshMeshInterface
 type appmeshMeshes struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAppmeshMeshes returns a AppmeshMeshes
-func newAppmeshMeshes(c *AwsV1alpha1Client) *appmeshMeshes {
+func newAppmeshMeshes(c *AwsV1alpha1Client, namespace string) *appmeshMeshes {
 	return &appmeshMeshes{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAppmeshMeshes(c *AwsV1alpha1Client) *appmeshMeshes {
 func (c *appmeshMeshes) Get(name string, options v1.GetOptions) (result *v1alpha1.AppmeshMesh, err error) {
 	result = &v1alpha1.AppmeshMesh{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appmeshmeshes").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *appmeshMeshes) List(opts v1.ListOptions) (result *v1alpha1.AppmeshMeshL
 	}
 	result = &v1alpha1.AppmeshMeshList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appmeshmeshes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *appmeshMeshes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("appmeshmeshes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *appmeshMeshes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *appmeshMeshes) Create(appmeshMesh *v1alpha1.AppmeshMesh) (result *v1alpha1.AppmeshMesh, err error) {
 	result = &v1alpha1.AppmeshMesh{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("appmeshmeshes").
 		Body(appmeshMesh).
 		Do().
@@ -118,6 +124,7 @@ func (c *appmeshMeshes) Create(appmeshMesh *v1alpha1.AppmeshMesh) (result *v1alp
 func (c *appmeshMeshes) Update(appmeshMesh *v1alpha1.AppmeshMesh) (result *v1alpha1.AppmeshMesh, err error) {
 	result = &v1alpha1.AppmeshMesh{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appmeshmeshes").
 		Name(appmeshMesh.Name).
 		Body(appmeshMesh).
@@ -132,6 +139,7 @@ func (c *appmeshMeshes) Update(appmeshMesh *v1alpha1.AppmeshMesh) (result *v1alp
 func (c *appmeshMeshes) UpdateStatus(appmeshMesh *v1alpha1.AppmeshMesh) (result *v1alpha1.AppmeshMesh, err error) {
 	result = &v1alpha1.AppmeshMesh{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appmeshmeshes").
 		Name(appmeshMesh.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *appmeshMeshes) UpdateStatus(appmeshMesh *v1alpha1.AppmeshMesh) (result 
 // Delete takes name of the appmeshMesh and deletes it. Returns an error if one occurs.
 func (c *appmeshMeshes) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appmeshmeshes").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *appmeshMeshes) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appmeshmeshes").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *appmeshMeshes) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *appmeshMeshes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppmeshMesh, err error) {
 	result = &v1alpha1.AppmeshMesh{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("appmeshmeshes").
 		SubResource(subresources...).
 		Name(name).

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,21 +20,22 @@ type NeptuneClusterInstance struct {
 
 type NeptuneClusterInstanceSpec struct {
 	// +optional
-	AutoMinorVersionUpgrade bool   `json:"auto_minor_version_upgrade,omitempty"`
-	ClusterIdentifier       string `json:"cluster_identifier"`
+	AutoMinorVersionUpgrade bool   `json:"autoMinorVersionUpgrade,omitempty" tf:"auto_minor_version_upgrade,omitempty"`
+	ClusterIdentifier       string `json:"clusterIdentifier" tf:"cluster_identifier"`
 	// +optional
-	Engine        string `json:"engine,omitempty"`
-	InstanceClass string `json:"instance_class"`
+	Engine        string `json:"engine,omitempty" tf:"engine,omitempty"`
+	InstanceClass string `json:"instanceClass" tf:"instance_class"`
 	// +optional
-	NeptuneParameterGroupName string `json:"neptune_parameter_group_name,omitempty"`
+	NeptuneParameterGroupName string `json:"neptuneParameterGroupName,omitempty" tf:"neptune_parameter_group_name,omitempty"`
 	// +optional
-	Port int `json:"port,omitempty"`
+	Port int `json:"port,omitempty" tf:"port,omitempty"`
 	// +optional
-	PromotionTier int `json:"promotion_tier,omitempty"`
+	PromotionTier int `json:"promotionTier,omitempty" tf:"promotion_tier,omitempty"`
 	// +optional
-	PubliclyAccessible bool `json:"publicly_accessible,omitempty"`
+	PubliclyAccessible bool `json:"publiclyAccessible,omitempty" tf:"publicly_accessible,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type NeptuneClusterInstanceStatus struct {
@@ -42,7 +43,9 @@ type NeptuneClusterInstanceStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

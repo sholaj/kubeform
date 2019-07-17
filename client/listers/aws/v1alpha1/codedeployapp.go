@@ -29,8 +29,8 @@ import (
 type CodedeployAppLister interface {
 	// List lists all CodedeployApps in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CodedeployApp, err error)
-	// Get retrieves the CodedeployApp from the index for a given name.
-	Get(name string) (*v1alpha1.CodedeployApp, error)
+	// CodedeployApps returns an object that can list and get CodedeployApps.
+	CodedeployApps(namespace string) CodedeployAppNamespaceLister
 	CodedeployAppListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *codedeployAppLister) List(selector labels.Selector) (ret []*v1alpha1.Co
 	return ret, err
 }
 
-// Get retrieves the CodedeployApp from the index for a given name.
-func (s *codedeployAppLister) Get(name string) (*v1alpha1.CodedeployApp, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CodedeployApps returns an object that can list and get CodedeployApps.
+func (s *codedeployAppLister) CodedeployApps(namespace string) CodedeployAppNamespaceLister {
+	return codedeployAppNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CodedeployAppNamespaceLister helps list and get CodedeployApps.
+type CodedeployAppNamespaceLister interface {
+	// List lists all CodedeployApps in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CodedeployApp, err error)
+	// Get retrieves the CodedeployApp from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CodedeployApp, error)
+	CodedeployAppNamespaceListerExpansion
+}
+
+// codedeployAppNamespaceLister implements the CodedeployAppNamespaceLister
+// interface.
+type codedeployAppNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CodedeployApps in the indexer for a given namespace.
+func (s codedeployAppNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CodedeployApp, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CodedeployApp))
+	})
+	return ret, err
+}
+
+// Get retrieves the CodedeployApp from the indexer for a given namespace and name.
+func (s codedeployAppNamespaceLister) Get(name string) (*v1alpha1.CodedeployApp, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

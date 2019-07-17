@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,16 +19,17 @@ type DxPublicVirtualInterface struct {
 }
 
 type DxPublicVirtualInterfaceSpec struct {
-	AddressFamily string `json:"address_family"`
-	BgpAsn        int    `json:"bgp_asn"`
-	ConnectionId  string `json:"connection_id"`
-	Name          string `json:"name"`
+	AddressFamily string `json:"addressFamily" tf:"address_family"`
+	BgpAsn        int    `json:"bgpAsn" tf:"bgp_asn"`
+	ConnectionID  string `json:"connectionID" tf:"connection_id"`
+	Name          string `json:"name" tf:"name"`
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	RouteFilterPrefixes []string `json:"route_filter_prefixes"`
+	RouteFilterPrefixes []string `json:"routeFilterPrefixes" tf:"route_filter_prefixes"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
-	Vlan int               `json:"vlan"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	Vlan        int                       `json:"vlan" tf:"vlan"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DxPublicVirtualInterfaceStatus struct {
@@ -36,7 +37,9 @@ type DxPublicVirtualInterfaceStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

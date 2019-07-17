@@ -29,8 +29,8 @@ import (
 type IamUserPolicyAttachmentLister interface {
 	// List lists all IamUserPolicyAttachments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IamUserPolicyAttachment, err error)
-	// Get retrieves the IamUserPolicyAttachment from the index for a given name.
-	Get(name string) (*v1alpha1.IamUserPolicyAttachment, error)
+	// IamUserPolicyAttachments returns an object that can list and get IamUserPolicyAttachments.
+	IamUserPolicyAttachments(namespace string) IamUserPolicyAttachmentNamespaceLister
 	IamUserPolicyAttachmentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iamUserPolicyAttachmentLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the IamUserPolicyAttachment from the index for a given name.
-func (s *iamUserPolicyAttachmentLister) Get(name string) (*v1alpha1.IamUserPolicyAttachment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IamUserPolicyAttachments returns an object that can list and get IamUserPolicyAttachments.
+func (s *iamUserPolicyAttachmentLister) IamUserPolicyAttachments(namespace string) IamUserPolicyAttachmentNamespaceLister {
+	return iamUserPolicyAttachmentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IamUserPolicyAttachmentNamespaceLister helps list and get IamUserPolicyAttachments.
+type IamUserPolicyAttachmentNamespaceLister interface {
+	// List lists all IamUserPolicyAttachments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IamUserPolicyAttachment, err error)
+	// Get retrieves the IamUserPolicyAttachment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IamUserPolicyAttachment, error)
+	IamUserPolicyAttachmentNamespaceListerExpansion
+}
+
+// iamUserPolicyAttachmentNamespaceLister implements the IamUserPolicyAttachmentNamespaceLister
+// interface.
+type iamUserPolicyAttachmentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IamUserPolicyAttachments in the indexer for a given namespace.
+func (s iamUserPolicyAttachmentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IamUserPolicyAttachment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IamUserPolicyAttachment))
+	})
+	return ret, err
+}
+
+// Get retrieves the IamUserPolicyAttachment from the indexer for a given namespace and name.
+func (s iamUserPolicyAttachmentNamespaceLister) Get(name string) (*v1alpha1.IamUserPolicyAttachment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

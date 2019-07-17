@@ -31,6 +31,7 @@ import (
 // FakeComputeRegionAutoscalers implements ComputeRegionAutoscalerInterface
 type FakeComputeRegionAutoscalers struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computeregionautoscalersResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computeregionautoscalers"}
@@ -40,7 +41,8 @@ var computeregionautoscalersKind = schema.GroupVersionKind{Group: "google.kubefo
 // Get takes name of the computeRegionAutoscaler, and returns the corresponding computeRegionAutoscaler object, and an error if there is any.
 func (c *FakeComputeRegionAutoscalers) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeRegionAutoscaler, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computeregionautoscalersResource, name), &v1alpha1.ComputeRegionAutoscaler{})
+		Invokes(testing.NewGetAction(computeregionautoscalersResource, c.ns, name), &v1alpha1.ComputeRegionAutoscaler{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeRegionAutoscalers) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of ComputeRegionAutoscalers that match those selectors.
 func (c *FakeComputeRegionAutoscalers) List(opts v1.ListOptions) (result *v1alpha1.ComputeRegionAutoscalerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computeregionautoscalersResource, computeregionautoscalersKind, opts), &v1alpha1.ComputeRegionAutoscalerList{})
+		Invokes(testing.NewListAction(computeregionautoscalersResource, computeregionautoscalersKind, c.ns, opts), &v1alpha1.ComputeRegionAutoscalerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeRegionAutoscalers) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested computeRegionAutoscalers.
 func (c *FakeComputeRegionAutoscalers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computeregionautoscalersResource, opts))
+		InvokesWatch(testing.NewWatchAction(computeregionautoscalersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeRegionAutoscaler and creates it.  Returns the server's representation of the computeRegionAutoscaler, and an error, if there is any.
 func (c *FakeComputeRegionAutoscalers) Create(computeRegionAutoscaler *v1alpha1.ComputeRegionAutoscaler) (result *v1alpha1.ComputeRegionAutoscaler, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computeregionautoscalersResource, computeRegionAutoscaler), &v1alpha1.ComputeRegionAutoscaler{})
+		Invokes(testing.NewCreateAction(computeregionautoscalersResource, c.ns, computeRegionAutoscaler), &v1alpha1.ComputeRegionAutoscaler{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeRegionAutoscalers) Create(computeRegionAutoscaler *v1alpha1.
 // Update takes the representation of a computeRegionAutoscaler and updates it. Returns the server's representation of the computeRegionAutoscaler, and an error, if there is any.
 func (c *FakeComputeRegionAutoscalers) Update(computeRegionAutoscaler *v1alpha1.ComputeRegionAutoscaler) (result *v1alpha1.ComputeRegionAutoscaler, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computeregionautoscalersResource, computeRegionAutoscaler), &v1alpha1.ComputeRegionAutoscaler{})
+		Invokes(testing.NewUpdateAction(computeregionautoscalersResource, c.ns, computeRegionAutoscaler), &v1alpha1.ComputeRegionAutoscaler{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeRegionAutoscalers) Update(computeRegionAutoscaler *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeRegionAutoscalers) UpdateStatus(computeRegionAutoscaler *v1alpha1.ComputeRegionAutoscaler) (*v1alpha1.ComputeRegionAutoscaler, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computeregionautoscalersResource, "status", computeRegionAutoscaler), &v1alpha1.ComputeRegionAutoscaler{})
+		Invokes(testing.NewUpdateSubresourceAction(computeregionautoscalersResource, "status", c.ns, computeRegionAutoscaler), &v1alpha1.ComputeRegionAutoscaler{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeRegionAutoscalers) UpdateStatus(computeRegionAutoscaler *v1a
 // Delete takes name of the computeRegionAutoscaler and deletes it. Returns an error if one occurs.
 func (c *FakeComputeRegionAutoscalers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computeregionautoscalersResource, name), &v1alpha1.ComputeRegionAutoscaler{})
+		Invokes(testing.NewDeleteAction(computeregionautoscalersResource, c.ns, name), &v1alpha1.ComputeRegionAutoscaler{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeRegionAutoscalers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computeregionautoscalersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computeregionautoscalersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeRegionAutoscalerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeRegionAutoscalers) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched computeRegionAutoscaler.
 func (c *FakeComputeRegionAutoscalers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeRegionAutoscaler, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computeregionautoscalersResource, name, pt, data, subresources...), &v1alpha1.ComputeRegionAutoscaler{})
+		Invokes(testing.NewPatchSubresourceAction(computeregionautoscalersResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeRegionAutoscaler{})
+
 	if obj == nil {
 		return nil, err
 	}

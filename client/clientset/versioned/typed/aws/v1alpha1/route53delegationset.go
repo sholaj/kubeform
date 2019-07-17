@@ -32,7 +32,7 @@ import (
 // Route53DelegationSetsGetter has a method to return a Route53DelegationSetInterface.
 // A group's client should implement this interface.
 type Route53DelegationSetsGetter interface {
-	Route53DelegationSets() Route53DelegationSetInterface
+	Route53DelegationSets(namespace string) Route53DelegationSetInterface
 }
 
 // Route53DelegationSetInterface has methods to work with Route53DelegationSet resources.
@@ -52,12 +52,14 @@ type Route53DelegationSetInterface interface {
 // route53DelegationSets implements Route53DelegationSetInterface
 type route53DelegationSets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRoute53DelegationSets returns a Route53DelegationSets
-func newRoute53DelegationSets(c *AwsV1alpha1Client) *route53DelegationSets {
+func newRoute53DelegationSets(c *AwsV1alpha1Client, namespace string) *route53DelegationSets {
 	return &route53DelegationSets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRoute53DelegationSets(c *AwsV1alpha1Client) *route53DelegationSets {
 func (c *route53DelegationSets) Get(name string, options v1.GetOptions) (result *v1alpha1.Route53DelegationSet, err error) {
 	result = &v1alpha1.Route53DelegationSet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("route53delegationsets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *route53DelegationSets) List(opts v1.ListOptions) (result *v1alpha1.Rout
 	}
 	result = &v1alpha1.Route53DelegationSetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("route53delegationsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *route53DelegationSets) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("route53delegationsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *route53DelegationSets) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *route53DelegationSets) Create(route53DelegationSet *v1alpha1.Route53DelegationSet) (result *v1alpha1.Route53DelegationSet, err error) {
 	result = &v1alpha1.Route53DelegationSet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("route53delegationsets").
 		Body(route53DelegationSet).
 		Do().
@@ -118,6 +124,7 @@ func (c *route53DelegationSets) Create(route53DelegationSet *v1alpha1.Route53Del
 func (c *route53DelegationSets) Update(route53DelegationSet *v1alpha1.Route53DelegationSet) (result *v1alpha1.Route53DelegationSet, err error) {
 	result = &v1alpha1.Route53DelegationSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("route53delegationsets").
 		Name(route53DelegationSet.Name).
 		Body(route53DelegationSet).
@@ -132,6 +139,7 @@ func (c *route53DelegationSets) Update(route53DelegationSet *v1alpha1.Route53Del
 func (c *route53DelegationSets) UpdateStatus(route53DelegationSet *v1alpha1.Route53DelegationSet) (result *v1alpha1.Route53DelegationSet, err error) {
 	result = &v1alpha1.Route53DelegationSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("route53delegationsets").
 		Name(route53DelegationSet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *route53DelegationSets) UpdateStatus(route53DelegationSet *v1alpha1.Rout
 // Delete takes name of the route53DelegationSet and deletes it. Returns an error if one occurs.
 func (c *route53DelegationSets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("route53delegationsets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *route53DelegationSets) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("route53delegationsets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *route53DelegationSets) DeleteCollection(options *v1.DeleteOptions, list
 func (c *route53DelegationSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Route53DelegationSet, err error) {
 	result = &v1alpha1.Route53DelegationSet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("route53delegationsets").
 		SubResource(subresources...).
 		Name(name).

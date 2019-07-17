@@ -32,7 +32,7 @@ import (
 // CloudwatchEventPermissionsGetter has a method to return a CloudwatchEventPermissionInterface.
 // A group's client should implement this interface.
 type CloudwatchEventPermissionsGetter interface {
-	CloudwatchEventPermissions() CloudwatchEventPermissionInterface
+	CloudwatchEventPermissions(namespace string) CloudwatchEventPermissionInterface
 }
 
 // CloudwatchEventPermissionInterface has methods to work with CloudwatchEventPermission resources.
@@ -52,12 +52,14 @@ type CloudwatchEventPermissionInterface interface {
 // cloudwatchEventPermissions implements CloudwatchEventPermissionInterface
 type cloudwatchEventPermissions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCloudwatchEventPermissions returns a CloudwatchEventPermissions
-func newCloudwatchEventPermissions(c *AwsV1alpha1Client) *cloudwatchEventPermissions {
+func newCloudwatchEventPermissions(c *AwsV1alpha1Client, namespace string) *cloudwatchEventPermissions {
 	return &cloudwatchEventPermissions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCloudwatchEventPermissions(c *AwsV1alpha1Client) *cloudwatchEventPermiss
 func (c *cloudwatchEventPermissions) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudwatchEventPermission, err error) {
 	result = &v1alpha1.CloudwatchEventPermission{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatcheventpermissions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cloudwatchEventPermissions) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.CloudwatchEventPermissionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatcheventpermissions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cloudwatchEventPermissions) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatcheventpermissions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cloudwatchEventPermissions) Watch(opts v1.ListOptions) (watch.Interface
 func (c *cloudwatchEventPermissions) Create(cloudwatchEventPermission *v1alpha1.CloudwatchEventPermission) (result *v1alpha1.CloudwatchEventPermission, err error) {
 	result = &v1alpha1.CloudwatchEventPermission{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cloudwatcheventpermissions").
 		Body(cloudwatchEventPermission).
 		Do().
@@ -118,6 +124,7 @@ func (c *cloudwatchEventPermissions) Create(cloudwatchEventPermission *v1alpha1.
 func (c *cloudwatchEventPermissions) Update(cloudwatchEventPermission *v1alpha1.CloudwatchEventPermission) (result *v1alpha1.CloudwatchEventPermission, err error) {
 	result = &v1alpha1.CloudwatchEventPermission{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudwatcheventpermissions").
 		Name(cloudwatchEventPermission.Name).
 		Body(cloudwatchEventPermission).
@@ -132,6 +139,7 @@ func (c *cloudwatchEventPermissions) Update(cloudwatchEventPermission *v1alpha1.
 func (c *cloudwatchEventPermissions) UpdateStatus(cloudwatchEventPermission *v1alpha1.CloudwatchEventPermission) (result *v1alpha1.CloudwatchEventPermission, err error) {
 	result = &v1alpha1.CloudwatchEventPermission{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudwatcheventpermissions").
 		Name(cloudwatchEventPermission.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cloudwatchEventPermissions) UpdateStatus(cloudwatchEventPermission *v1a
 // Delete takes name of the cloudwatchEventPermission and deletes it. Returns an error if one occurs.
 func (c *cloudwatchEventPermissions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudwatcheventpermissions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cloudwatchEventPermissions) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudwatcheventpermissions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cloudwatchEventPermissions) DeleteCollection(options *v1.DeleteOptions,
 func (c *cloudwatchEventPermissions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudwatchEventPermission, err error) {
 	result = &v1alpha1.CloudwatchEventPermission{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cloudwatcheventpermissions").
 		SubResource(subresources...).
 		Name(name).

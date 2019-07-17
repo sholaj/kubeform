@@ -32,7 +32,7 @@ import (
 // CodepipelineWebhooksGetter has a method to return a CodepipelineWebhookInterface.
 // A group's client should implement this interface.
 type CodepipelineWebhooksGetter interface {
-	CodepipelineWebhooks() CodepipelineWebhookInterface
+	CodepipelineWebhooks(namespace string) CodepipelineWebhookInterface
 }
 
 // CodepipelineWebhookInterface has methods to work with CodepipelineWebhook resources.
@@ -52,12 +52,14 @@ type CodepipelineWebhookInterface interface {
 // codepipelineWebhooks implements CodepipelineWebhookInterface
 type codepipelineWebhooks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCodepipelineWebhooks returns a CodepipelineWebhooks
-func newCodepipelineWebhooks(c *AwsV1alpha1Client) *codepipelineWebhooks {
+func newCodepipelineWebhooks(c *AwsV1alpha1Client, namespace string) *codepipelineWebhooks {
 	return &codepipelineWebhooks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCodepipelineWebhooks(c *AwsV1alpha1Client) *codepipelineWebhooks {
 func (c *codepipelineWebhooks) Get(name string, options v1.GetOptions) (result *v1alpha1.CodepipelineWebhook, err error) {
 	result = &v1alpha1.CodepipelineWebhook{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("codepipelinewebhooks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *codepipelineWebhooks) List(opts v1.ListOptions) (result *v1alpha1.Codep
 	}
 	result = &v1alpha1.CodepipelineWebhookList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("codepipelinewebhooks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *codepipelineWebhooks) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("codepipelinewebhooks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *codepipelineWebhooks) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *codepipelineWebhooks) Create(codepipelineWebhook *v1alpha1.CodepipelineWebhook) (result *v1alpha1.CodepipelineWebhook, err error) {
 	result = &v1alpha1.CodepipelineWebhook{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("codepipelinewebhooks").
 		Body(codepipelineWebhook).
 		Do().
@@ -118,6 +124,7 @@ func (c *codepipelineWebhooks) Create(codepipelineWebhook *v1alpha1.Codepipeline
 func (c *codepipelineWebhooks) Update(codepipelineWebhook *v1alpha1.CodepipelineWebhook) (result *v1alpha1.CodepipelineWebhook, err error) {
 	result = &v1alpha1.CodepipelineWebhook{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("codepipelinewebhooks").
 		Name(codepipelineWebhook.Name).
 		Body(codepipelineWebhook).
@@ -132,6 +139,7 @@ func (c *codepipelineWebhooks) Update(codepipelineWebhook *v1alpha1.Codepipeline
 func (c *codepipelineWebhooks) UpdateStatus(codepipelineWebhook *v1alpha1.CodepipelineWebhook) (result *v1alpha1.CodepipelineWebhook, err error) {
 	result = &v1alpha1.CodepipelineWebhook{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("codepipelinewebhooks").
 		Name(codepipelineWebhook.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *codepipelineWebhooks) UpdateStatus(codepipelineWebhook *v1alpha1.Codepi
 // Delete takes name of the codepipelineWebhook and deletes it. Returns an error if one occurs.
 func (c *codepipelineWebhooks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("codepipelinewebhooks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *codepipelineWebhooks) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("codepipelinewebhooks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *codepipelineWebhooks) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *codepipelineWebhooks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CodepipelineWebhook, err error) {
 	result = &v1alpha1.CodepipelineWebhook{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("codepipelinewebhooks").
 		SubResource(subresources...).
 		Name(name).

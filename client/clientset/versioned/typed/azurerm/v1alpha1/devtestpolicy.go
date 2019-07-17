@@ -32,7 +32,7 @@ import (
 // DevTestPoliciesGetter has a method to return a DevTestPolicyInterface.
 // A group's client should implement this interface.
 type DevTestPoliciesGetter interface {
-	DevTestPolicies() DevTestPolicyInterface
+	DevTestPolicies(namespace string) DevTestPolicyInterface
 }
 
 // DevTestPolicyInterface has methods to work with DevTestPolicy resources.
@@ -52,12 +52,14 @@ type DevTestPolicyInterface interface {
 // devTestPolicies implements DevTestPolicyInterface
 type devTestPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDevTestPolicies returns a DevTestPolicies
-func newDevTestPolicies(c *AzurermV1alpha1Client) *devTestPolicies {
+func newDevTestPolicies(c *AzurermV1alpha1Client, namespace string) *devTestPolicies {
 	return &devTestPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDevTestPolicies(c *AzurermV1alpha1Client) *devTestPolicies {
 func (c *devTestPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.DevTestPolicy, err error) {
 	result = &v1alpha1.DevTestPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("devtestpolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *devTestPolicies) List(opts v1.ListOptions) (result *v1alpha1.DevTestPol
 	}
 	result = &v1alpha1.DevTestPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("devtestpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *devTestPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("devtestpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *devTestPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *devTestPolicies) Create(devTestPolicy *v1alpha1.DevTestPolicy) (result *v1alpha1.DevTestPolicy, err error) {
 	result = &v1alpha1.DevTestPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("devtestpolicies").
 		Body(devTestPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *devTestPolicies) Create(devTestPolicy *v1alpha1.DevTestPolicy) (result 
 func (c *devTestPolicies) Update(devTestPolicy *v1alpha1.DevTestPolicy) (result *v1alpha1.DevTestPolicy, err error) {
 	result = &v1alpha1.DevTestPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("devtestpolicies").
 		Name(devTestPolicy.Name).
 		Body(devTestPolicy).
@@ -132,6 +139,7 @@ func (c *devTestPolicies) Update(devTestPolicy *v1alpha1.DevTestPolicy) (result 
 func (c *devTestPolicies) UpdateStatus(devTestPolicy *v1alpha1.DevTestPolicy) (result *v1alpha1.DevTestPolicy, err error) {
 	result = &v1alpha1.DevTestPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("devtestpolicies").
 		Name(devTestPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *devTestPolicies) UpdateStatus(devTestPolicy *v1alpha1.DevTestPolicy) (r
 // Delete takes name of the devTestPolicy and deletes it. Returns an error if one occurs.
 func (c *devTestPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("devtestpolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *devTestPolicies) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("devtestpolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *devTestPolicies) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *devTestPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DevTestPolicy, err error) {
 	result = &v1alpha1.DevTestPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("devtestpolicies").
 		SubResource(subresources...).
 		Name(name).

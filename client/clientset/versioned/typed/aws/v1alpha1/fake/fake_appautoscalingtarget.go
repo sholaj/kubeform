@@ -31,6 +31,7 @@ import (
 // FakeAppautoscalingTargets implements AppautoscalingTargetInterface
 type FakeAppautoscalingTargets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var appautoscalingtargetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "appautoscalingtargets"}
@@ -40,7 +41,8 @@ var appautoscalingtargetsKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the appautoscalingTarget, and returns the corresponding appautoscalingTarget object, and an error if there is any.
 func (c *FakeAppautoscalingTargets) Get(name string, options v1.GetOptions) (result *v1alpha1.AppautoscalingTarget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(appautoscalingtargetsResource, name), &v1alpha1.AppautoscalingTarget{})
+		Invokes(testing.NewGetAction(appautoscalingtargetsResource, c.ns, name), &v1alpha1.AppautoscalingTarget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAppautoscalingTargets) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of AppautoscalingTargets that match those selectors.
 func (c *FakeAppautoscalingTargets) List(opts v1.ListOptions) (result *v1alpha1.AppautoscalingTargetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(appautoscalingtargetsResource, appautoscalingtargetsKind, opts), &v1alpha1.AppautoscalingTargetList{})
+		Invokes(testing.NewListAction(appautoscalingtargetsResource, appautoscalingtargetsKind, c.ns, opts), &v1alpha1.AppautoscalingTargetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAppautoscalingTargets) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested appautoscalingTargets.
 func (c *FakeAppautoscalingTargets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(appautoscalingtargetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(appautoscalingtargetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a appautoscalingTarget and creates it.  Returns the server's representation of the appautoscalingTarget, and an error, if there is any.
 func (c *FakeAppautoscalingTargets) Create(appautoscalingTarget *v1alpha1.AppautoscalingTarget) (result *v1alpha1.AppautoscalingTarget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(appautoscalingtargetsResource, appautoscalingTarget), &v1alpha1.AppautoscalingTarget{})
+		Invokes(testing.NewCreateAction(appautoscalingtargetsResource, c.ns, appautoscalingTarget), &v1alpha1.AppautoscalingTarget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAppautoscalingTargets) Create(appautoscalingTarget *v1alpha1.Appaut
 // Update takes the representation of a appautoscalingTarget and updates it. Returns the server's representation of the appautoscalingTarget, and an error, if there is any.
 func (c *FakeAppautoscalingTargets) Update(appautoscalingTarget *v1alpha1.AppautoscalingTarget) (result *v1alpha1.AppautoscalingTarget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(appautoscalingtargetsResource, appautoscalingTarget), &v1alpha1.AppautoscalingTarget{})
+		Invokes(testing.NewUpdateAction(appautoscalingtargetsResource, c.ns, appautoscalingTarget), &v1alpha1.AppautoscalingTarget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAppautoscalingTargets) Update(appautoscalingTarget *v1alpha1.Appaut
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAppautoscalingTargets) UpdateStatus(appautoscalingTarget *v1alpha1.AppautoscalingTarget) (*v1alpha1.AppautoscalingTarget, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(appautoscalingtargetsResource, "status", appautoscalingTarget), &v1alpha1.AppautoscalingTarget{})
+		Invokes(testing.NewUpdateSubresourceAction(appautoscalingtargetsResource, "status", c.ns, appautoscalingTarget), &v1alpha1.AppautoscalingTarget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAppautoscalingTargets) UpdateStatus(appautoscalingTarget *v1alpha1.
 // Delete takes name of the appautoscalingTarget and deletes it. Returns an error if one occurs.
 func (c *FakeAppautoscalingTargets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(appautoscalingtargetsResource, name), &v1alpha1.AppautoscalingTarget{})
+		Invokes(testing.NewDeleteAction(appautoscalingtargetsResource, c.ns, name), &v1alpha1.AppautoscalingTarget{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAppautoscalingTargets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(appautoscalingtargetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(appautoscalingtargetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AppautoscalingTargetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAppautoscalingTargets) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched appautoscalingTarget.
 func (c *FakeAppautoscalingTargets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppautoscalingTarget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(appautoscalingtargetsResource, name, pt, data, subresources...), &v1alpha1.AppautoscalingTarget{})
+		Invokes(testing.NewPatchSubresourceAction(appautoscalingtargetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.AppautoscalingTarget{})
+
 	if obj == nil {
 		return nil, err
 	}

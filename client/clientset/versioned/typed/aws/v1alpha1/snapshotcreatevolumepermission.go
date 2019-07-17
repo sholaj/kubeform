@@ -32,7 +32,7 @@ import (
 // SnapshotCreateVolumePermissionsGetter has a method to return a SnapshotCreateVolumePermissionInterface.
 // A group's client should implement this interface.
 type SnapshotCreateVolumePermissionsGetter interface {
-	SnapshotCreateVolumePermissions() SnapshotCreateVolumePermissionInterface
+	SnapshotCreateVolumePermissions(namespace string) SnapshotCreateVolumePermissionInterface
 }
 
 // SnapshotCreateVolumePermissionInterface has methods to work with SnapshotCreateVolumePermission resources.
@@ -52,12 +52,14 @@ type SnapshotCreateVolumePermissionInterface interface {
 // snapshotCreateVolumePermissions implements SnapshotCreateVolumePermissionInterface
 type snapshotCreateVolumePermissions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSnapshotCreateVolumePermissions returns a SnapshotCreateVolumePermissions
-func newSnapshotCreateVolumePermissions(c *AwsV1alpha1Client) *snapshotCreateVolumePermissions {
+func newSnapshotCreateVolumePermissions(c *AwsV1alpha1Client, namespace string) *snapshotCreateVolumePermissions {
 	return &snapshotCreateVolumePermissions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSnapshotCreateVolumePermissions(c *AwsV1alpha1Client) *snapshotCreateVol
 func (c *snapshotCreateVolumePermissions) Get(name string, options v1.GetOptions) (result *v1alpha1.SnapshotCreateVolumePermission, err error) {
 	result = &v1alpha1.SnapshotCreateVolumePermission{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("snapshotcreatevolumepermissions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *snapshotCreateVolumePermissions) List(opts v1.ListOptions) (result *v1a
 	}
 	result = &v1alpha1.SnapshotCreateVolumePermissionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("snapshotcreatevolumepermissions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *snapshotCreateVolumePermissions) Watch(opts v1.ListOptions) (watch.Inte
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("snapshotcreatevolumepermissions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *snapshotCreateVolumePermissions) Watch(opts v1.ListOptions) (watch.Inte
 func (c *snapshotCreateVolumePermissions) Create(snapshotCreateVolumePermission *v1alpha1.SnapshotCreateVolumePermission) (result *v1alpha1.SnapshotCreateVolumePermission, err error) {
 	result = &v1alpha1.SnapshotCreateVolumePermission{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("snapshotcreatevolumepermissions").
 		Body(snapshotCreateVolumePermission).
 		Do().
@@ -118,6 +124,7 @@ func (c *snapshotCreateVolumePermissions) Create(snapshotCreateVolumePermission 
 func (c *snapshotCreateVolumePermissions) Update(snapshotCreateVolumePermission *v1alpha1.SnapshotCreateVolumePermission) (result *v1alpha1.SnapshotCreateVolumePermission, err error) {
 	result = &v1alpha1.SnapshotCreateVolumePermission{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("snapshotcreatevolumepermissions").
 		Name(snapshotCreateVolumePermission.Name).
 		Body(snapshotCreateVolumePermission).
@@ -132,6 +139,7 @@ func (c *snapshotCreateVolumePermissions) Update(snapshotCreateVolumePermission 
 func (c *snapshotCreateVolumePermissions) UpdateStatus(snapshotCreateVolumePermission *v1alpha1.SnapshotCreateVolumePermission) (result *v1alpha1.SnapshotCreateVolumePermission, err error) {
 	result = &v1alpha1.SnapshotCreateVolumePermission{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("snapshotcreatevolumepermissions").
 		Name(snapshotCreateVolumePermission.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *snapshotCreateVolumePermissions) UpdateStatus(snapshotCreateVolumePermi
 // Delete takes name of the snapshotCreateVolumePermission and deletes it. Returns an error if one occurs.
 func (c *snapshotCreateVolumePermissions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("snapshotcreatevolumepermissions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *snapshotCreateVolumePermissions) DeleteCollection(options *v1.DeleteOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("snapshotcreatevolumepermissions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *snapshotCreateVolumePermissions) DeleteCollection(options *v1.DeleteOpt
 func (c *snapshotCreateVolumePermissions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SnapshotCreateVolumePermission, err error) {
 	result = &v1alpha1.SnapshotCreateVolumePermission{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("snapshotcreatevolumepermissions").
 		SubResource(subresources...).
 		Name(name).

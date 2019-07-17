@@ -397,42 +397,53 @@ spec:
           type: object
         spec:
           properties:
-            application_failure_feedback_role_arn:
+            applicationFailureFeedbackRoleArn:
               type: string
-            application_success_feedback_role_arn:
+            applicationSuccessFeedbackRoleArn:
               type: string
-            application_success_feedback_sample_rate:
+            applicationSuccessFeedbackSampleRate:
               type: integer
-            delivery_policy:
+            deliveryPolicy:
               type: string
-            display_name:
+            displayName:
               type: string
-            http_failure_feedback_role_arn:
+            httpFailureFeedbackRoleArn:
               type: string
-            http_success_feedback_role_arn:
+            httpSuccessFeedbackRoleArn:
               type: string
-            http_success_feedback_sample_rate:
+            httpSuccessFeedbackSampleRate:
               type: integer
-            kms_master_key_id:
+            kmsMasterKeyID:
               type: string
-            lambda_failure_feedback_role_arn:
+            lambdaFailureFeedbackRoleArn:
               type: string
-            lambda_success_feedback_role_arn:
+            lambdaSuccessFeedbackRoleArn:
               type: string
-            lambda_success_feedback_sample_rate:
+            lambdaSuccessFeedbackSampleRate:
               type: integer
-            name_prefix:
+            namePrefix:
               type: string
-            sqs_failure_feedback_role_arn:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            sqsFailureFeedbackRoleArn:
               type: string
-            sqs_success_feedback_role_arn:
+            sqsSuccessFeedbackRoleArn:
               type: string
-            sqs_success_feedback_sample_rate:
+            sqsSuccessFeedbackSampleRate:
               type: integer
             tags:
               additionalProperties:
                 type: string
               type: object
+          required:
+          - providerRef
           type: object
         status:
           properties:
@@ -443,6 +454,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -41,32 +41,33 @@ type DnsManagedZoneInformer interface {
 type dnsManagedZoneInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDnsManagedZoneInformer constructs a new informer for DnsManagedZone type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDnsManagedZoneInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDnsManagedZoneInformer(client, resyncPeriod, indexers, nil)
+func NewDnsManagedZoneInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDnsManagedZoneInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDnsManagedZoneInformer constructs a new informer for DnsManagedZone type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDnsManagedZoneInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDnsManagedZoneInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().DnsManagedZones().List(options)
+				return client.GoogleV1alpha1().DnsManagedZones(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().DnsManagedZones().Watch(options)
+				return client.GoogleV1alpha1().DnsManagedZones(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.DnsManagedZone{},
@@ -76,7 +77,7 @@ func NewFilteredDnsManagedZoneInformer(client versioned.Interface, resyncPeriod 
 }
 
 func (f *dnsManagedZoneInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDnsManagedZoneInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDnsManagedZoneInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *dnsManagedZoneInformer) Informer() cache.SharedIndexInformer {

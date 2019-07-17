@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// FakePrivateDnsZones implements PrivateDnsZoneInterface
-type FakePrivateDnsZones struct {
+// FakePrivateDNSZones implements PrivateDNSZoneInterface
+type FakePrivateDNSZones struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var privatednszonesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "privatednszones"}
 
-var privatednszonesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "PrivateDnsZone"}
+var privatednszonesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "PrivateDNSZone"}
 
-// Get takes name of the privateDnsZone, and returns the corresponding privateDnsZone object, and an error if there is any.
-func (c *FakePrivateDnsZones) Get(name string, options v1.GetOptions) (result *v1alpha1.PrivateDnsZone, err error) {
+// Get takes name of the privateDNSZone, and returns the corresponding privateDNSZone object, and an error if there is any.
+func (c *FakePrivateDNSZones) Get(name string, options v1.GetOptions) (result *v1alpha1.PrivateDNSZone, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(privatednszonesResource, name), &v1alpha1.PrivateDnsZone{})
+		Invokes(testing.NewGetAction(privatednszonesResource, c.ns, name), &v1alpha1.PrivateDNSZone{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.PrivateDnsZone), err
+	return obj.(*v1alpha1.PrivateDNSZone), err
 }
 
-// List takes label and field selectors, and returns the list of PrivateDnsZones that match those selectors.
-func (c *FakePrivateDnsZones) List(opts v1.ListOptions) (result *v1alpha1.PrivateDnsZoneList, err error) {
+// List takes label and field selectors, and returns the list of PrivateDNSZones that match those selectors.
+func (c *FakePrivateDNSZones) List(opts v1.ListOptions) (result *v1alpha1.PrivateDNSZoneList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(privatednszonesResource, privatednszonesKind, opts), &v1alpha1.PrivateDnsZoneList{})
+		Invokes(testing.NewListAction(privatednszonesResource, privatednszonesKind, c.ns, opts), &v1alpha1.PrivateDNSZoneList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakePrivateDnsZones) List(opts v1.ListOptions) (result *v1alpha1.Privat
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.PrivateDnsZoneList{ListMeta: obj.(*v1alpha1.PrivateDnsZoneList).ListMeta}
-	for _, item := range obj.(*v1alpha1.PrivateDnsZoneList).Items {
+	list := &v1alpha1.PrivateDNSZoneList{ListMeta: obj.(*v1alpha1.PrivateDNSZoneList).ListMeta}
+	for _, item := range obj.(*v1alpha1.PrivateDNSZoneList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakePrivateDnsZones) List(opts v1.ListOptions) (result *v1alpha1.Privat
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested privateDnsZones.
-func (c *FakePrivateDnsZones) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested privateDNSZones.
+func (c *FakePrivateDNSZones) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(privatednszonesResource, opts))
+		InvokesWatch(testing.NewWatchAction(privatednszonesResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a privateDnsZone and creates it.  Returns the server's representation of the privateDnsZone, and an error, if there is any.
-func (c *FakePrivateDnsZones) Create(privateDnsZone *v1alpha1.PrivateDnsZone) (result *v1alpha1.PrivateDnsZone, err error) {
+// Create takes the representation of a privateDNSZone and creates it.  Returns the server's representation of the privateDNSZone, and an error, if there is any.
+func (c *FakePrivateDNSZones) Create(privateDNSZone *v1alpha1.PrivateDNSZone) (result *v1alpha1.PrivateDNSZone, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(privatednszonesResource, privateDnsZone), &v1alpha1.PrivateDnsZone{})
+		Invokes(testing.NewCreateAction(privatednszonesResource, c.ns, privateDNSZone), &v1alpha1.PrivateDNSZone{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.PrivateDnsZone), err
+	return obj.(*v1alpha1.PrivateDNSZone), err
 }
 
-// Update takes the representation of a privateDnsZone and updates it. Returns the server's representation of the privateDnsZone, and an error, if there is any.
-func (c *FakePrivateDnsZones) Update(privateDnsZone *v1alpha1.PrivateDnsZone) (result *v1alpha1.PrivateDnsZone, err error) {
+// Update takes the representation of a privateDNSZone and updates it. Returns the server's representation of the privateDNSZone, and an error, if there is any.
+func (c *FakePrivateDNSZones) Update(privateDNSZone *v1alpha1.PrivateDNSZone) (result *v1alpha1.PrivateDNSZone, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(privatednszonesResource, privateDnsZone), &v1alpha1.PrivateDnsZone{})
+		Invokes(testing.NewUpdateAction(privatednszonesResource, c.ns, privateDNSZone), &v1alpha1.PrivateDNSZone{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.PrivateDnsZone), err
+	return obj.(*v1alpha1.PrivateDNSZone), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakePrivateDnsZones) UpdateStatus(privateDnsZone *v1alpha1.PrivateDnsZone) (*v1alpha1.PrivateDnsZone, error) {
+func (c *FakePrivateDNSZones) UpdateStatus(privateDNSZone *v1alpha1.PrivateDNSZone) (*v1alpha1.PrivateDNSZone, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(privatednszonesResource, "status", privateDnsZone), &v1alpha1.PrivateDnsZone{})
+		Invokes(testing.NewUpdateSubresourceAction(privatednszonesResource, "status", c.ns, privateDNSZone), &v1alpha1.PrivateDNSZone{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.PrivateDnsZone), err
+	return obj.(*v1alpha1.PrivateDNSZone), err
 }
 
-// Delete takes name of the privateDnsZone and deletes it. Returns an error if one occurs.
-func (c *FakePrivateDnsZones) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the privateDNSZone and deletes it. Returns an error if one occurs.
+func (c *FakePrivateDNSZones) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(privatednszonesResource, name), &v1alpha1.PrivateDnsZone{})
+		Invokes(testing.NewDeleteAction(privatednszonesResource, c.ns, name), &v1alpha1.PrivateDNSZone{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakePrivateDnsZones) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(privatednszonesResource, listOptions)
+func (c *FakePrivateDNSZones) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(privatednszonesResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.PrivateDnsZoneList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.PrivateDNSZoneList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched privateDnsZone.
-func (c *FakePrivateDnsZones) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PrivateDnsZone, err error) {
+// Patch applies the patch and returns the patched privateDNSZone.
+func (c *FakePrivateDNSZones) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PrivateDNSZone, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(privatednszonesResource, name, pt, data, subresources...), &v1alpha1.PrivateDnsZone{})
+		Invokes(testing.NewPatchSubresourceAction(privatednszonesResource, c.ns, name, pt, data, subresources...), &v1alpha1.PrivateDNSZone{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.PrivateDnsZone), err
+	return obj.(*v1alpha1.PrivateDNSZone), err
 }

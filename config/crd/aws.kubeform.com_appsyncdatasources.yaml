@@ -397,35 +397,71 @@ spec:
           type: object
         spec:
           properties:
-            api_id:
+            apiID:
               type: string
             description:
               type: string
-            dynamodb_config:
-              items: {}
+            dynamodbConfig:
+              items:
+                properties:
+                  tableName:
+                    type: string
+                  useCallerCredentials:
+                    type: boolean
+                required:
+                - tableName
+                type: object
               maxItems: 1
               type: array
-            elasticsearch_config:
-              items: {}
+            elasticsearchConfig:
+              items:
+                properties:
+                  endpoint:
+                    type: string
+                required:
+                - endpoint
+                type: object
               maxItems: 1
               type: array
-            http_config:
-              items: {}
+            httpConfig:
+              items:
+                properties:
+                  endpoint:
+                    type: string
+                required:
+                - endpoint
+                type: object
               maxItems: 1
               type: array
-            lambda_config:
-              items: {}
+            lambdaConfig:
+              items:
+                properties:
+                  functionArn:
+                    type: string
+                required:
+                - functionArn
+                type: object
               maxItems: 1
               type: array
             name:
               type: string
-            service_role_arn:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            serviceRoleArn:
               type: string
             type:
               type: string
           required:
-          - api_id
+          - apiID
           - name
+          - providerRef
           - type
           type: object
         status:
@@ -437,6 +473,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

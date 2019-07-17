@@ -32,7 +32,7 @@ import (
 // ApplicationGatewaysGetter has a method to return a ApplicationGatewayInterface.
 // A group's client should implement this interface.
 type ApplicationGatewaysGetter interface {
-	ApplicationGateways() ApplicationGatewayInterface
+	ApplicationGateways(namespace string) ApplicationGatewayInterface
 }
 
 // ApplicationGatewayInterface has methods to work with ApplicationGateway resources.
@@ -52,12 +52,14 @@ type ApplicationGatewayInterface interface {
 // applicationGateways implements ApplicationGatewayInterface
 type applicationGateways struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApplicationGateways returns a ApplicationGateways
-func newApplicationGateways(c *AzurermV1alpha1Client) *applicationGateways {
+func newApplicationGateways(c *AzurermV1alpha1Client, namespace string) *applicationGateways {
 	return &applicationGateways{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApplicationGateways(c *AzurermV1alpha1Client) *applicationGateways {
 func (c *applicationGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.ApplicationGateway, err error) {
 	result = &v1alpha1.ApplicationGateway{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("applicationgateways").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *applicationGateways) List(opts v1.ListOptions) (result *v1alpha1.Applic
 	}
 	result = &v1alpha1.ApplicationGatewayList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("applicationgateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *applicationGateways) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("applicationgateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *applicationGateways) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *applicationGateways) Create(applicationGateway *v1alpha1.ApplicationGateway) (result *v1alpha1.ApplicationGateway, err error) {
 	result = &v1alpha1.ApplicationGateway{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("applicationgateways").
 		Body(applicationGateway).
 		Do().
@@ -118,6 +124,7 @@ func (c *applicationGateways) Create(applicationGateway *v1alpha1.ApplicationGat
 func (c *applicationGateways) Update(applicationGateway *v1alpha1.ApplicationGateway) (result *v1alpha1.ApplicationGateway, err error) {
 	result = &v1alpha1.ApplicationGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("applicationgateways").
 		Name(applicationGateway.Name).
 		Body(applicationGateway).
@@ -132,6 +139,7 @@ func (c *applicationGateways) Update(applicationGateway *v1alpha1.ApplicationGat
 func (c *applicationGateways) UpdateStatus(applicationGateway *v1alpha1.ApplicationGateway) (result *v1alpha1.ApplicationGateway, err error) {
 	result = &v1alpha1.ApplicationGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("applicationgateways").
 		Name(applicationGateway.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *applicationGateways) UpdateStatus(applicationGateway *v1alpha1.Applicat
 // Delete takes name of the applicationGateway and deletes it. Returns an error if one occurs.
 func (c *applicationGateways) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("applicationgateways").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *applicationGateways) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("applicationgateways").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *applicationGateways) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *applicationGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApplicationGateway, err error) {
 	result = &v1alpha1.ApplicationGateway{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("applicationgateways").
 		SubResource(subresources...).
 		Name(name).

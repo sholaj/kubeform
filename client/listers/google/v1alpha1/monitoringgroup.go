@@ -29,8 +29,8 @@ import (
 type MonitoringGroupLister interface {
 	// List lists all MonitoringGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MonitoringGroup, err error)
-	// Get retrieves the MonitoringGroup from the index for a given name.
-	Get(name string) (*v1alpha1.MonitoringGroup, error)
+	// MonitoringGroups returns an object that can list and get MonitoringGroups.
+	MonitoringGroups(namespace string) MonitoringGroupNamespaceLister
 	MonitoringGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *monitoringGroupLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the MonitoringGroup from the index for a given name.
-func (s *monitoringGroupLister) Get(name string) (*v1alpha1.MonitoringGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MonitoringGroups returns an object that can list and get MonitoringGroups.
+func (s *monitoringGroupLister) MonitoringGroups(namespace string) MonitoringGroupNamespaceLister {
+	return monitoringGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MonitoringGroupNamespaceLister helps list and get MonitoringGroups.
+type MonitoringGroupNamespaceLister interface {
+	// List lists all MonitoringGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MonitoringGroup, err error)
+	// Get retrieves the MonitoringGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MonitoringGroup, error)
+	MonitoringGroupNamespaceListerExpansion
+}
+
+// monitoringGroupNamespaceLister implements the MonitoringGroupNamespaceLister
+// interface.
+type monitoringGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MonitoringGroups in the indexer for a given namespace.
+func (s monitoringGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MonitoringGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MonitoringGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the MonitoringGroup from the indexer for a given namespace and name.
+func (s monitoringGroupNamespaceLister) Get(name string) (*v1alpha1.MonitoringGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

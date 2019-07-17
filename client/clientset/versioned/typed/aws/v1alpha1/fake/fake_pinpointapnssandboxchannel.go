@@ -31,6 +31,7 @@ import (
 // FakePinpointApnsSandboxChannels implements PinpointApnsSandboxChannelInterface
 type FakePinpointApnsSandboxChannels struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var pinpointapnssandboxchannelsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "pinpointapnssandboxchannels"}
@@ -40,7 +41,8 @@ var pinpointapnssandboxchannelsKind = schema.GroupVersionKind{Group: "aws.kubefo
 // Get takes name of the pinpointApnsSandboxChannel, and returns the corresponding pinpointApnsSandboxChannel object, and an error if there is any.
 func (c *FakePinpointApnsSandboxChannels) Get(name string, options v1.GetOptions) (result *v1alpha1.PinpointApnsSandboxChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(pinpointapnssandboxchannelsResource, name), &v1alpha1.PinpointApnsSandboxChannel{})
+		Invokes(testing.NewGetAction(pinpointapnssandboxchannelsResource, c.ns, name), &v1alpha1.PinpointApnsSandboxChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakePinpointApnsSandboxChannels) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of PinpointApnsSandboxChannels that match those selectors.
 func (c *FakePinpointApnsSandboxChannels) List(opts v1.ListOptions) (result *v1alpha1.PinpointApnsSandboxChannelList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(pinpointapnssandboxchannelsResource, pinpointapnssandboxchannelsKind, opts), &v1alpha1.PinpointApnsSandboxChannelList{})
+		Invokes(testing.NewListAction(pinpointapnssandboxchannelsResource, pinpointapnssandboxchannelsKind, c.ns, opts), &v1alpha1.PinpointApnsSandboxChannelList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakePinpointApnsSandboxChannels) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested pinpointApnsSandboxChannels.
 func (c *FakePinpointApnsSandboxChannels) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(pinpointapnssandboxchannelsResource, opts))
+		InvokesWatch(testing.NewWatchAction(pinpointapnssandboxchannelsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a pinpointApnsSandboxChannel and creates it.  Returns the server's representation of the pinpointApnsSandboxChannel, and an error, if there is any.
 func (c *FakePinpointApnsSandboxChannels) Create(pinpointApnsSandboxChannel *v1alpha1.PinpointApnsSandboxChannel) (result *v1alpha1.PinpointApnsSandboxChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(pinpointapnssandboxchannelsResource, pinpointApnsSandboxChannel), &v1alpha1.PinpointApnsSandboxChannel{})
+		Invokes(testing.NewCreateAction(pinpointapnssandboxchannelsResource, c.ns, pinpointApnsSandboxChannel), &v1alpha1.PinpointApnsSandboxChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakePinpointApnsSandboxChannels) Create(pinpointApnsSandboxChannel *v1a
 // Update takes the representation of a pinpointApnsSandboxChannel and updates it. Returns the server's representation of the pinpointApnsSandboxChannel, and an error, if there is any.
 func (c *FakePinpointApnsSandboxChannels) Update(pinpointApnsSandboxChannel *v1alpha1.PinpointApnsSandboxChannel) (result *v1alpha1.PinpointApnsSandboxChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(pinpointapnssandboxchannelsResource, pinpointApnsSandboxChannel), &v1alpha1.PinpointApnsSandboxChannel{})
+		Invokes(testing.NewUpdateAction(pinpointapnssandboxchannelsResource, c.ns, pinpointApnsSandboxChannel), &v1alpha1.PinpointApnsSandboxChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakePinpointApnsSandboxChannels) Update(pinpointApnsSandboxChannel *v1a
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakePinpointApnsSandboxChannels) UpdateStatus(pinpointApnsSandboxChannel *v1alpha1.PinpointApnsSandboxChannel) (*v1alpha1.PinpointApnsSandboxChannel, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(pinpointapnssandboxchannelsResource, "status", pinpointApnsSandboxChannel), &v1alpha1.PinpointApnsSandboxChannel{})
+		Invokes(testing.NewUpdateSubresourceAction(pinpointapnssandboxchannelsResource, "status", c.ns, pinpointApnsSandboxChannel), &v1alpha1.PinpointApnsSandboxChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakePinpointApnsSandboxChannels) UpdateStatus(pinpointApnsSandboxChanne
 // Delete takes name of the pinpointApnsSandboxChannel and deletes it. Returns an error if one occurs.
 func (c *FakePinpointApnsSandboxChannels) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(pinpointapnssandboxchannelsResource, name), &v1alpha1.PinpointApnsSandboxChannel{})
+		Invokes(testing.NewDeleteAction(pinpointapnssandboxchannelsResource, c.ns, name), &v1alpha1.PinpointApnsSandboxChannel{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakePinpointApnsSandboxChannels) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(pinpointapnssandboxchannelsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(pinpointapnssandboxchannelsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PinpointApnsSandboxChannelList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakePinpointApnsSandboxChannels) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched pinpointApnsSandboxChannel.
 func (c *FakePinpointApnsSandboxChannels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PinpointApnsSandboxChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(pinpointapnssandboxchannelsResource, name, pt, data, subresources...), &v1alpha1.PinpointApnsSandboxChannel{})
+		Invokes(testing.NewPatchSubresourceAction(pinpointapnssandboxchannelsResource, c.ns, name, pt, data, subresources...), &v1alpha1.PinpointApnsSandboxChannel{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // EventgridTopicsGetter has a method to return a EventgridTopicInterface.
 // A group's client should implement this interface.
 type EventgridTopicsGetter interface {
-	EventgridTopics() EventgridTopicInterface
+	EventgridTopics(namespace string) EventgridTopicInterface
 }
 
 // EventgridTopicInterface has methods to work with EventgridTopic resources.
@@ -52,12 +52,14 @@ type EventgridTopicInterface interface {
 // eventgridTopics implements EventgridTopicInterface
 type eventgridTopics struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEventgridTopics returns a EventgridTopics
-func newEventgridTopics(c *AzurermV1alpha1Client) *eventgridTopics {
+func newEventgridTopics(c *AzurermV1alpha1Client, namespace string) *eventgridTopics {
 	return &eventgridTopics{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEventgridTopics(c *AzurermV1alpha1Client) *eventgridTopics {
 func (c *eventgridTopics) Get(name string, options v1.GetOptions) (result *v1alpha1.EventgridTopic, err error) {
 	result = &v1alpha1.EventgridTopic{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eventgridtopics").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *eventgridTopics) List(opts v1.ListOptions) (result *v1alpha1.EventgridT
 	}
 	result = &v1alpha1.EventgridTopicList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eventgridtopics").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *eventgridTopics) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("eventgridtopics").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *eventgridTopics) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *eventgridTopics) Create(eventgridTopic *v1alpha1.EventgridTopic) (result *v1alpha1.EventgridTopic, err error) {
 	result = &v1alpha1.EventgridTopic{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("eventgridtopics").
 		Body(eventgridTopic).
 		Do().
@@ -118,6 +124,7 @@ func (c *eventgridTopics) Create(eventgridTopic *v1alpha1.EventgridTopic) (resul
 func (c *eventgridTopics) Update(eventgridTopic *v1alpha1.EventgridTopic) (result *v1alpha1.EventgridTopic, err error) {
 	result = &v1alpha1.EventgridTopic{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eventgridtopics").
 		Name(eventgridTopic.Name).
 		Body(eventgridTopic).
@@ -132,6 +139,7 @@ func (c *eventgridTopics) Update(eventgridTopic *v1alpha1.EventgridTopic) (resul
 func (c *eventgridTopics) UpdateStatus(eventgridTopic *v1alpha1.EventgridTopic) (result *v1alpha1.EventgridTopic, err error) {
 	result = &v1alpha1.EventgridTopic{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eventgridtopics").
 		Name(eventgridTopic.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *eventgridTopics) UpdateStatus(eventgridTopic *v1alpha1.EventgridTopic) 
 // Delete takes name of the eventgridTopic and deletes it. Returns an error if one occurs.
 func (c *eventgridTopics) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eventgridtopics").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *eventgridTopics) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eventgridtopics").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *eventgridTopics) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *eventgridTopics) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EventgridTopic, err error) {
 	result = &v1alpha1.EventgridTopic{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("eventgridtopics").
 		SubResource(subresources...).
 		Name(name).

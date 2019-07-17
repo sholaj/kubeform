@@ -29,8 +29,8 @@ import (
 type CodebuildWebhookLister interface {
 	// List lists all CodebuildWebhooks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CodebuildWebhook, err error)
-	// Get retrieves the CodebuildWebhook from the index for a given name.
-	Get(name string) (*v1alpha1.CodebuildWebhook, error)
+	// CodebuildWebhooks returns an object that can list and get CodebuildWebhooks.
+	CodebuildWebhooks(namespace string) CodebuildWebhookNamespaceLister
 	CodebuildWebhookListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *codebuildWebhookLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the CodebuildWebhook from the index for a given name.
-func (s *codebuildWebhookLister) Get(name string) (*v1alpha1.CodebuildWebhook, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CodebuildWebhooks returns an object that can list and get CodebuildWebhooks.
+func (s *codebuildWebhookLister) CodebuildWebhooks(namespace string) CodebuildWebhookNamespaceLister {
+	return codebuildWebhookNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CodebuildWebhookNamespaceLister helps list and get CodebuildWebhooks.
+type CodebuildWebhookNamespaceLister interface {
+	// List lists all CodebuildWebhooks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CodebuildWebhook, err error)
+	// Get retrieves the CodebuildWebhook from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CodebuildWebhook, error)
+	CodebuildWebhookNamespaceListerExpansion
+}
+
+// codebuildWebhookNamespaceLister implements the CodebuildWebhookNamespaceLister
+// interface.
+type codebuildWebhookNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CodebuildWebhooks in the indexer for a given namespace.
+func (s codebuildWebhookNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CodebuildWebhook, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CodebuildWebhook))
+	})
+	return ret, err
+}
+
+// Get retrieves the CodebuildWebhook from the indexer for a given namespace and name.
+func (s codebuildWebhookNamespaceLister) Get(name string) (*v1alpha1.CodebuildWebhook, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

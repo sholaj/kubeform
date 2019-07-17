@@ -29,8 +29,8 @@ import (
 type OpsworksMemcachedLayerLister interface {
 	// List lists all OpsworksMemcachedLayers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OpsworksMemcachedLayer, err error)
-	// Get retrieves the OpsworksMemcachedLayer from the index for a given name.
-	Get(name string) (*v1alpha1.OpsworksMemcachedLayer, error)
+	// OpsworksMemcachedLayers returns an object that can list and get OpsworksMemcachedLayers.
+	OpsworksMemcachedLayers(namespace string) OpsworksMemcachedLayerNamespaceLister
 	OpsworksMemcachedLayerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *opsworksMemcachedLayerLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the OpsworksMemcachedLayer from the index for a given name.
-func (s *opsworksMemcachedLayerLister) Get(name string) (*v1alpha1.OpsworksMemcachedLayer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OpsworksMemcachedLayers returns an object that can list and get OpsworksMemcachedLayers.
+func (s *opsworksMemcachedLayerLister) OpsworksMemcachedLayers(namespace string) OpsworksMemcachedLayerNamespaceLister {
+	return opsworksMemcachedLayerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OpsworksMemcachedLayerNamespaceLister helps list and get OpsworksMemcachedLayers.
+type OpsworksMemcachedLayerNamespaceLister interface {
+	// List lists all OpsworksMemcachedLayers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OpsworksMemcachedLayer, err error)
+	// Get retrieves the OpsworksMemcachedLayer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OpsworksMemcachedLayer, error)
+	OpsworksMemcachedLayerNamespaceListerExpansion
+}
+
+// opsworksMemcachedLayerNamespaceLister implements the OpsworksMemcachedLayerNamespaceLister
+// interface.
+type opsworksMemcachedLayerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OpsworksMemcachedLayers in the indexer for a given namespace.
+func (s opsworksMemcachedLayerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OpsworksMemcachedLayer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OpsworksMemcachedLayer))
+	})
+	return ret, err
+}
+
+// Get retrieves the OpsworksMemcachedLayer from the indexer for a given namespace and name.
+func (s opsworksMemcachedLayerNamespaceLister) Get(name string) (*v1alpha1.OpsworksMemcachedLayer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

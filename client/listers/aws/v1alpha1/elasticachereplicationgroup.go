@@ -29,8 +29,8 @@ import (
 type ElasticacheReplicationGroupLister interface {
 	// List lists all ElasticacheReplicationGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ElasticacheReplicationGroup, err error)
-	// Get retrieves the ElasticacheReplicationGroup from the index for a given name.
-	Get(name string) (*v1alpha1.ElasticacheReplicationGroup, error)
+	// ElasticacheReplicationGroups returns an object that can list and get ElasticacheReplicationGroups.
+	ElasticacheReplicationGroups(namespace string) ElasticacheReplicationGroupNamespaceLister
 	ElasticacheReplicationGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *elasticacheReplicationGroupLister) List(selector labels.Selector) (ret 
 	return ret, err
 }
 
-// Get retrieves the ElasticacheReplicationGroup from the index for a given name.
-func (s *elasticacheReplicationGroupLister) Get(name string) (*v1alpha1.ElasticacheReplicationGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ElasticacheReplicationGroups returns an object that can list and get ElasticacheReplicationGroups.
+func (s *elasticacheReplicationGroupLister) ElasticacheReplicationGroups(namespace string) ElasticacheReplicationGroupNamespaceLister {
+	return elasticacheReplicationGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ElasticacheReplicationGroupNamespaceLister helps list and get ElasticacheReplicationGroups.
+type ElasticacheReplicationGroupNamespaceLister interface {
+	// List lists all ElasticacheReplicationGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ElasticacheReplicationGroup, err error)
+	// Get retrieves the ElasticacheReplicationGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ElasticacheReplicationGroup, error)
+	ElasticacheReplicationGroupNamespaceListerExpansion
+}
+
+// elasticacheReplicationGroupNamespaceLister implements the ElasticacheReplicationGroupNamespaceLister
+// interface.
+type elasticacheReplicationGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ElasticacheReplicationGroups in the indexer for a given namespace.
+func (s elasticacheReplicationGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ElasticacheReplicationGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ElasticacheReplicationGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the ElasticacheReplicationGroup from the indexer for a given namespace and name.
+func (s elasticacheReplicationGroupNamespaceLister) Get(name string) (*v1alpha1.ElasticacheReplicationGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

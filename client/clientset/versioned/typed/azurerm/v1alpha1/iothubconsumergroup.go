@@ -32,7 +32,7 @@ import (
 // IothubConsumerGroupsGetter has a method to return a IothubConsumerGroupInterface.
 // A group's client should implement this interface.
 type IothubConsumerGroupsGetter interface {
-	IothubConsumerGroups() IothubConsumerGroupInterface
+	IothubConsumerGroups(namespace string) IothubConsumerGroupInterface
 }
 
 // IothubConsumerGroupInterface has methods to work with IothubConsumerGroup resources.
@@ -52,12 +52,14 @@ type IothubConsumerGroupInterface interface {
 // iothubConsumerGroups implements IothubConsumerGroupInterface
 type iothubConsumerGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIothubConsumerGroups returns a IothubConsumerGroups
-func newIothubConsumerGroups(c *AzurermV1alpha1Client) *iothubConsumerGroups {
+func newIothubConsumerGroups(c *AzurermV1alpha1Client, namespace string) *iothubConsumerGroups {
 	return &iothubConsumerGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIothubConsumerGroups(c *AzurermV1alpha1Client) *iothubConsumerGroups {
 func (c *iothubConsumerGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.IothubConsumerGroup, err error) {
 	result = &v1alpha1.IothubConsumerGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iothubconsumergroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iothubConsumerGroups) List(opts v1.ListOptions) (result *v1alpha1.Iothu
 	}
 	result = &v1alpha1.IothubConsumerGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iothubconsumergroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iothubConsumerGroups) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iothubconsumergroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iothubConsumerGroups) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *iothubConsumerGroups) Create(iothubConsumerGroup *v1alpha1.IothubConsumerGroup) (result *v1alpha1.IothubConsumerGroup, err error) {
 	result = &v1alpha1.IothubConsumerGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iothubconsumergroups").
 		Body(iothubConsumerGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *iothubConsumerGroups) Create(iothubConsumerGroup *v1alpha1.IothubConsum
 func (c *iothubConsumerGroups) Update(iothubConsumerGroup *v1alpha1.IothubConsumerGroup) (result *v1alpha1.IothubConsumerGroup, err error) {
 	result = &v1alpha1.IothubConsumerGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iothubconsumergroups").
 		Name(iothubConsumerGroup.Name).
 		Body(iothubConsumerGroup).
@@ -132,6 +139,7 @@ func (c *iothubConsumerGroups) Update(iothubConsumerGroup *v1alpha1.IothubConsum
 func (c *iothubConsumerGroups) UpdateStatus(iothubConsumerGroup *v1alpha1.IothubConsumerGroup) (result *v1alpha1.IothubConsumerGroup, err error) {
 	result = &v1alpha1.IothubConsumerGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iothubconsumergroups").
 		Name(iothubConsumerGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iothubConsumerGroups) UpdateStatus(iothubConsumerGroup *v1alpha1.Iothub
 // Delete takes name of the iothubConsumerGroup and deletes it. Returns an error if one occurs.
 func (c *iothubConsumerGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iothubconsumergroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iothubConsumerGroups) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iothubconsumergroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iothubConsumerGroups) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *iothubConsumerGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IothubConsumerGroup, err error) {
 	result = &v1alpha1.IothubConsumerGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iothubconsumergroups").
 		SubResource(subresources...).
 		Name(name).

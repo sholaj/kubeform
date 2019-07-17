@@ -29,8 +29,8 @@ import (
 type ComputeSecurityPolicyLister interface {
 	// List lists all ComputeSecurityPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeSecurityPolicy, err error)
-	// Get retrieves the ComputeSecurityPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeSecurityPolicy, error)
+	// ComputeSecurityPolicies returns an object that can list and get ComputeSecurityPolicies.
+	ComputeSecurityPolicies(namespace string) ComputeSecurityPolicyNamespaceLister
 	ComputeSecurityPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeSecurityPolicyLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the ComputeSecurityPolicy from the index for a given name.
-func (s *computeSecurityPolicyLister) Get(name string) (*v1alpha1.ComputeSecurityPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeSecurityPolicies returns an object that can list and get ComputeSecurityPolicies.
+func (s *computeSecurityPolicyLister) ComputeSecurityPolicies(namespace string) ComputeSecurityPolicyNamespaceLister {
+	return computeSecurityPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeSecurityPolicyNamespaceLister helps list and get ComputeSecurityPolicies.
+type ComputeSecurityPolicyNamespaceLister interface {
+	// List lists all ComputeSecurityPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeSecurityPolicy, err error)
+	// Get retrieves the ComputeSecurityPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeSecurityPolicy, error)
+	ComputeSecurityPolicyNamespaceListerExpansion
+}
+
+// computeSecurityPolicyNamespaceLister implements the ComputeSecurityPolicyNamespaceLister
+// interface.
+type computeSecurityPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeSecurityPolicies in the indexer for a given namespace.
+func (s computeSecurityPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeSecurityPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeSecurityPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeSecurityPolicy from the indexer for a given namespace and name.
+func (s computeSecurityPolicyNamespaceLister) Get(name string) (*v1alpha1.ComputeSecurityPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

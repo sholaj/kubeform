@@ -32,7 +32,7 @@ import (
 // EbsSnapshotCopiesGetter has a method to return a EbsSnapshotCopyInterface.
 // A group's client should implement this interface.
 type EbsSnapshotCopiesGetter interface {
-	EbsSnapshotCopies() EbsSnapshotCopyInterface
+	EbsSnapshotCopies(namespace string) EbsSnapshotCopyInterface
 }
 
 // EbsSnapshotCopyInterface has methods to work with EbsSnapshotCopy resources.
@@ -52,12 +52,14 @@ type EbsSnapshotCopyInterface interface {
 // ebsSnapshotCopies implements EbsSnapshotCopyInterface
 type ebsSnapshotCopies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEbsSnapshotCopies returns a EbsSnapshotCopies
-func newEbsSnapshotCopies(c *AwsV1alpha1Client) *ebsSnapshotCopies {
+func newEbsSnapshotCopies(c *AwsV1alpha1Client, namespace string) *ebsSnapshotCopies {
 	return &ebsSnapshotCopies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEbsSnapshotCopies(c *AwsV1alpha1Client) *ebsSnapshotCopies {
 func (c *ebsSnapshotCopies) Get(name string, options v1.GetOptions) (result *v1alpha1.EbsSnapshotCopy, err error) {
 	result = &v1alpha1.EbsSnapshotCopy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ebssnapshotcopies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ebsSnapshotCopies) List(opts v1.ListOptions) (result *v1alpha1.EbsSnaps
 	}
 	result = &v1alpha1.EbsSnapshotCopyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ebssnapshotcopies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ebsSnapshotCopies) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ebssnapshotcopies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ebsSnapshotCopies) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *ebsSnapshotCopies) Create(ebsSnapshotCopy *v1alpha1.EbsSnapshotCopy) (result *v1alpha1.EbsSnapshotCopy, err error) {
 	result = &v1alpha1.EbsSnapshotCopy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ebssnapshotcopies").
 		Body(ebsSnapshotCopy).
 		Do().
@@ -118,6 +124,7 @@ func (c *ebsSnapshotCopies) Create(ebsSnapshotCopy *v1alpha1.EbsSnapshotCopy) (r
 func (c *ebsSnapshotCopies) Update(ebsSnapshotCopy *v1alpha1.EbsSnapshotCopy) (result *v1alpha1.EbsSnapshotCopy, err error) {
 	result = &v1alpha1.EbsSnapshotCopy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ebssnapshotcopies").
 		Name(ebsSnapshotCopy.Name).
 		Body(ebsSnapshotCopy).
@@ -132,6 +139,7 @@ func (c *ebsSnapshotCopies) Update(ebsSnapshotCopy *v1alpha1.EbsSnapshotCopy) (r
 func (c *ebsSnapshotCopies) UpdateStatus(ebsSnapshotCopy *v1alpha1.EbsSnapshotCopy) (result *v1alpha1.EbsSnapshotCopy, err error) {
 	result = &v1alpha1.EbsSnapshotCopy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ebssnapshotcopies").
 		Name(ebsSnapshotCopy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ebsSnapshotCopies) UpdateStatus(ebsSnapshotCopy *v1alpha1.EbsSnapshotCo
 // Delete takes name of the ebsSnapshotCopy and deletes it. Returns an error if one occurs.
 func (c *ebsSnapshotCopies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ebssnapshotcopies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ebsSnapshotCopies) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ebssnapshotcopies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ebsSnapshotCopies) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *ebsSnapshotCopies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EbsSnapshotCopy, err error) {
 	result = &v1alpha1.EbsSnapshotCopy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ebssnapshotcopies").
 		SubResource(subresources...).
 		Name(name).

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,18 +20,19 @@ type SnsTopicSubscription struct {
 
 type SnsTopicSubscriptionSpec struct {
 	// +optional
-	ConfirmationTimeoutInMinutes int `json:"confirmation_timeout_in_minutes,omitempty"`
+	ConfirmationTimeoutInMinutes int `json:"confirmationTimeoutInMinutes,omitempty" tf:"confirmation_timeout_in_minutes,omitempty"`
 	// +optional
-	DeliveryPolicy string `json:"delivery_policy,omitempty"`
-	Endpoint       string `json:"endpoint"`
+	DeliveryPolicy string `json:"deliveryPolicy,omitempty" tf:"delivery_policy,omitempty"`
+	Endpoint       string `json:"endpoint" tf:"endpoint"`
 	// +optional
-	EndpointAutoConfirms bool `json:"endpoint_auto_confirms,omitempty"`
+	EndpointAutoConfirms bool `json:"endpointAutoConfirms,omitempty" tf:"endpoint_auto_confirms,omitempty"`
 	// +optional
-	FilterPolicy string `json:"filter_policy,omitempty"`
-	Protocol     string `json:"protocol"`
+	FilterPolicy string `json:"filterPolicy,omitempty" tf:"filter_policy,omitempty"`
+	Protocol     string `json:"protocol" tf:"protocol"`
 	// +optional
-	RawMessageDelivery bool   `json:"raw_message_delivery,omitempty"`
-	TopicArn           string `json:"topic_arn"`
+	RawMessageDelivery bool                      `json:"rawMessageDelivery,omitempty" tf:"raw_message_delivery,omitempty"`
+	TopicArn           string                    `json:"topicArn" tf:"topic_arn"`
+	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SnsTopicSubscriptionStatus struct {
@@ -39,7 +40,9 @@ type SnsTopicSubscriptionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

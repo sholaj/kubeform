@@ -41,32 +41,33 @@ type ComputeInstanceGroupInformer interface {
 type computeInstanceGroupInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewComputeInstanceGroupInformer constructs a new informer for ComputeInstanceGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewComputeInstanceGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredComputeInstanceGroupInformer(client, resyncPeriod, indexers, nil)
+func NewComputeInstanceGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredComputeInstanceGroupInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredComputeInstanceGroupInformer constructs a new informer for ComputeInstanceGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredComputeInstanceGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredComputeInstanceGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeInstanceGroups().List(options)
+				return client.GoogleV1alpha1().ComputeInstanceGroups(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeInstanceGroups().Watch(options)
+				return client.GoogleV1alpha1().ComputeInstanceGroups(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.ComputeInstanceGroup{},
@@ -76,7 +77,7 @@ func NewFilteredComputeInstanceGroupInformer(client versioned.Interface, resyncP
 }
 
 func (f *computeInstanceGroupInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredComputeInstanceGroupInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredComputeInstanceGroupInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *computeInstanceGroupInformer) Informer() cache.SharedIndexInformer {

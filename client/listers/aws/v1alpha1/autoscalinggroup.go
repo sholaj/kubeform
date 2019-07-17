@@ -29,8 +29,8 @@ import (
 type AutoscalingGroupLister interface {
 	// List lists all AutoscalingGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AutoscalingGroup, err error)
-	// Get retrieves the AutoscalingGroup from the index for a given name.
-	Get(name string) (*v1alpha1.AutoscalingGroup, error)
+	// AutoscalingGroups returns an object that can list and get AutoscalingGroups.
+	AutoscalingGroups(namespace string) AutoscalingGroupNamespaceLister
 	AutoscalingGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *autoscalingGroupLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the AutoscalingGroup from the index for a given name.
-func (s *autoscalingGroupLister) Get(name string) (*v1alpha1.AutoscalingGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AutoscalingGroups returns an object that can list and get AutoscalingGroups.
+func (s *autoscalingGroupLister) AutoscalingGroups(namespace string) AutoscalingGroupNamespaceLister {
+	return autoscalingGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AutoscalingGroupNamespaceLister helps list and get AutoscalingGroups.
+type AutoscalingGroupNamespaceLister interface {
+	// List lists all AutoscalingGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AutoscalingGroup, err error)
+	// Get retrieves the AutoscalingGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AutoscalingGroup, error)
+	AutoscalingGroupNamespaceListerExpansion
+}
+
+// autoscalingGroupNamespaceLister implements the AutoscalingGroupNamespaceLister
+// interface.
+type autoscalingGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AutoscalingGroups in the indexer for a given namespace.
+func (s autoscalingGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AutoscalingGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AutoscalingGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the AutoscalingGroup from the indexer for a given namespace and name.
+func (s autoscalingGroupNamespaceLister) Get(name string) (*v1alpha1.AutoscalingGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

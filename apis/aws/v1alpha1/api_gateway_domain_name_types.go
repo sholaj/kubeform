@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,20 +20,21 @@ type ApiGatewayDomainName struct {
 
 type ApiGatewayDomainNameSpec struct {
 	// +optional
-	CertificateArn string `json:"certificate_arn,omitempty"`
+	CertificateArn string `json:"certificateArn,omitempty" tf:"certificate_arn,omitempty"`
 	// +optional
-	CertificateBody string `json:"certificate_body,omitempty"`
+	CertificateBody string `json:"certificateBody,omitempty" tf:"certificate_body,omitempty"`
 	// +optional
-	CertificateChain string `json:"certificate_chain,omitempty"`
+	CertificateChain string `json:"certificateChain,omitempty" tf:"certificate_chain,omitempty"`
 	// +optional
-	CertificateName string `json:"certificate_name,omitempty"`
+	CertificateName string `json:"certificateName,omitempty" tf:"certificate_name,omitempty"`
 	// +optional
-	CertificatePrivateKey string `json:"certificate_private_key,omitempty"`
-	DomainName            string `json:"domain_name"`
+	CertificatePrivateKey string `json:"certificatePrivateKey,omitempty" tf:"certificate_private_key,omitempty"`
+	DomainName            string `json:"domainName" tf:"domain_name"`
 	// +optional
-	RegionalCertificateArn string `json:"regional_certificate_arn,omitempty"`
+	RegionalCertificateArn string `json:"regionalCertificateArn,omitempty" tf:"regional_certificate_arn,omitempty"`
 	// +optional
-	RegionalCertificateName string `json:"regional_certificate_name,omitempty"`
+	RegionalCertificateName string                    `json:"regionalCertificateName,omitempty" tf:"regional_certificate_name,omitempty"`
+	ProviderRef             core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ApiGatewayDomainNameStatus struct {
@@ -41,7 +42,9 @@ type ApiGatewayDomainNameStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

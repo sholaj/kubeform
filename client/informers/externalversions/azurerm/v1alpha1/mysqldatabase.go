@@ -41,32 +41,33 @@ type MysqlDatabaseInformer interface {
 type mysqlDatabaseInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewMysqlDatabaseInformer constructs a new informer for MysqlDatabase type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewMysqlDatabaseInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredMysqlDatabaseInformer(client, resyncPeriod, indexers, nil)
+func NewMysqlDatabaseInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredMysqlDatabaseInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredMysqlDatabaseInformer constructs a new informer for MysqlDatabase type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredMysqlDatabaseInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredMysqlDatabaseInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().MysqlDatabases().List(options)
+				return client.AzurermV1alpha1().MysqlDatabases(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().MysqlDatabases().Watch(options)
+				return client.AzurermV1alpha1().MysqlDatabases(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.MysqlDatabase{},
@@ -76,7 +77,7 @@ func NewFilteredMysqlDatabaseInformer(client versioned.Interface, resyncPeriod t
 }
 
 func (f *mysqlDatabaseInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredMysqlDatabaseInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredMysqlDatabaseInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *mysqlDatabaseInformer) Informer() cache.SharedIndexInformer {

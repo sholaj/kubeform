@@ -41,32 +41,33 @@ type ElasticacheSecurityGroupInformer interface {
 type elasticacheSecurityGroupInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewElasticacheSecurityGroupInformer constructs a new informer for ElasticacheSecurityGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewElasticacheSecurityGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredElasticacheSecurityGroupInformer(client, resyncPeriod, indexers, nil)
+func NewElasticacheSecurityGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredElasticacheSecurityGroupInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredElasticacheSecurityGroupInformer constructs a new informer for ElasticacheSecurityGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredElasticacheSecurityGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredElasticacheSecurityGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ElasticacheSecurityGroups().List(options)
+				return client.AwsV1alpha1().ElasticacheSecurityGroups(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ElasticacheSecurityGroups().Watch(options)
+				return client.AwsV1alpha1().ElasticacheSecurityGroups(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.ElasticacheSecurityGroup{},
@@ -76,7 +77,7 @@ func NewFilteredElasticacheSecurityGroupInformer(client versioned.Interface, res
 }
 
 func (f *elasticacheSecurityGroupInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredElasticacheSecurityGroupInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredElasticacheSecurityGroupInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *elasticacheSecurityGroupInformer) Informer() cache.SharedIndexInformer {

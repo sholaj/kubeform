@@ -32,7 +32,7 @@ import (
 // AlbListenersGetter has a method to return a AlbListenerInterface.
 // A group's client should implement this interface.
 type AlbListenersGetter interface {
-	AlbListeners() AlbListenerInterface
+	AlbListeners(namespace string) AlbListenerInterface
 }
 
 // AlbListenerInterface has methods to work with AlbListener resources.
@@ -52,12 +52,14 @@ type AlbListenerInterface interface {
 // albListeners implements AlbListenerInterface
 type albListeners struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAlbListeners returns a AlbListeners
-func newAlbListeners(c *AwsV1alpha1Client) *albListeners {
+func newAlbListeners(c *AwsV1alpha1Client, namespace string) *albListeners {
 	return &albListeners{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAlbListeners(c *AwsV1alpha1Client) *albListeners {
 func (c *albListeners) Get(name string, options v1.GetOptions) (result *v1alpha1.AlbListener, err error) {
 	result = &v1alpha1.AlbListener{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("alblisteners").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *albListeners) List(opts v1.ListOptions) (result *v1alpha1.AlbListenerLi
 	}
 	result = &v1alpha1.AlbListenerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("alblisteners").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *albListeners) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("alblisteners").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *albListeners) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *albListeners) Create(albListener *v1alpha1.AlbListener) (result *v1alpha1.AlbListener, err error) {
 	result = &v1alpha1.AlbListener{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("alblisteners").
 		Body(albListener).
 		Do().
@@ -118,6 +124,7 @@ func (c *albListeners) Create(albListener *v1alpha1.AlbListener) (result *v1alph
 func (c *albListeners) Update(albListener *v1alpha1.AlbListener) (result *v1alpha1.AlbListener, err error) {
 	result = &v1alpha1.AlbListener{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("alblisteners").
 		Name(albListener.Name).
 		Body(albListener).
@@ -132,6 +139,7 @@ func (c *albListeners) Update(albListener *v1alpha1.AlbListener) (result *v1alph
 func (c *albListeners) UpdateStatus(albListener *v1alpha1.AlbListener) (result *v1alpha1.AlbListener, err error) {
 	result = &v1alpha1.AlbListener{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("alblisteners").
 		Name(albListener.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *albListeners) UpdateStatus(albListener *v1alpha1.AlbListener) (result *
 // Delete takes name of the albListener and deletes it. Returns an error if one occurs.
 func (c *albListeners) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("alblisteners").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *albListeners) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("alblisteners").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *albListeners) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *albListeners) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AlbListener, err error) {
 	result = &v1alpha1.AlbListener{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("alblisteners").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type AzureadServicePrincipalPasswordLister interface {
 	// List lists all AzureadServicePrincipalPasswords in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AzureadServicePrincipalPassword, err error)
-	// Get retrieves the AzureadServicePrincipalPassword from the index for a given name.
-	Get(name string) (*v1alpha1.AzureadServicePrincipalPassword, error)
+	// AzureadServicePrincipalPasswords returns an object that can list and get AzureadServicePrincipalPasswords.
+	AzureadServicePrincipalPasswords(namespace string) AzureadServicePrincipalPasswordNamespaceLister
 	AzureadServicePrincipalPasswordListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *azureadServicePrincipalPasswordLister) List(selector labels.Selector) (
 	return ret, err
 }
 
-// Get retrieves the AzureadServicePrincipalPassword from the index for a given name.
-func (s *azureadServicePrincipalPasswordLister) Get(name string) (*v1alpha1.AzureadServicePrincipalPassword, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AzureadServicePrincipalPasswords returns an object that can list and get AzureadServicePrincipalPasswords.
+func (s *azureadServicePrincipalPasswordLister) AzureadServicePrincipalPasswords(namespace string) AzureadServicePrincipalPasswordNamespaceLister {
+	return azureadServicePrincipalPasswordNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AzureadServicePrincipalPasswordNamespaceLister helps list and get AzureadServicePrincipalPasswords.
+type AzureadServicePrincipalPasswordNamespaceLister interface {
+	// List lists all AzureadServicePrincipalPasswords in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AzureadServicePrincipalPassword, err error)
+	// Get retrieves the AzureadServicePrincipalPassword from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AzureadServicePrincipalPassword, error)
+	AzureadServicePrincipalPasswordNamespaceListerExpansion
+}
+
+// azureadServicePrincipalPasswordNamespaceLister implements the AzureadServicePrincipalPasswordNamespaceLister
+// interface.
+type azureadServicePrincipalPasswordNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AzureadServicePrincipalPasswords in the indexer for a given namespace.
+func (s azureadServicePrincipalPasswordNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AzureadServicePrincipalPassword, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AzureadServicePrincipalPassword))
+	})
+	return ret, err
+}
+
+// Get retrieves the AzureadServicePrincipalPassword from the indexer for a given namespace and name.
+func (s azureadServicePrincipalPasswordNamespaceLister) Get(name string) (*v1alpha1.AzureadServicePrincipalPassword, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

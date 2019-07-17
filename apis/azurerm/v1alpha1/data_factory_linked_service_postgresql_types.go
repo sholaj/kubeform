@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,19 +20,20 @@ type DataFactoryLinkedServicePostgresql struct {
 
 type DataFactoryLinkedServicePostgresqlSpec struct {
 	// +optional
-	AdditionalProperties map[string]string `json:"additional_properties,omitempty"`
+	AdditionalProperties map[string]string `json:"additionalProperties,omitempty" tf:"additional_properties,omitempty"`
 	// +optional
-	Annotations      []string `json:"annotations,omitempty"`
-	ConnectionString string   `json:"connection_string"`
-	DataFactoryName  string   `json:"data_factory_name"`
+	Annotations      []string `json:"annotations,omitempty" tf:"annotations,omitempty"`
+	ConnectionString string   `json:"connectionString" tf:"connection_string"`
+	DataFactoryName  string   `json:"dataFactoryName" tf:"data_factory_name"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	IntegrationRuntimeName string `json:"integration_runtime_name,omitempty"`
-	Name                   string `json:"name"`
+	IntegrationRuntimeName string `json:"integrationRuntimeName,omitempty" tf:"integration_runtime_name,omitempty"`
+	Name                   string `json:"name" tf:"name"`
 	// +optional
-	Parameters        map[string]string `json:"parameters,omitempty"`
-	ResourceGroupName string            `json:"resource_group_name"`
+	Parameters        map[string]string         `json:"parameters,omitempty" tf:"parameters,omitempty"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DataFactoryLinkedServicePostgresqlStatus struct {
@@ -40,7 +41,9 @@ type DataFactoryLinkedServicePostgresqlStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

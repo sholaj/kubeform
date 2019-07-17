@@ -32,7 +32,7 @@ import (
 // OrganizationsAccountsGetter has a method to return a OrganizationsAccountInterface.
 // A group's client should implement this interface.
 type OrganizationsAccountsGetter interface {
-	OrganizationsAccounts() OrganizationsAccountInterface
+	OrganizationsAccounts(namespace string) OrganizationsAccountInterface
 }
 
 // OrganizationsAccountInterface has methods to work with OrganizationsAccount resources.
@@ -52,12 +52,14 @@ type OrganizationsAccountInterface interface {
 // organizationsAccounts implements OrganizationsAccountInterface
 type organizationsAccounts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOrganizationsAccounts returns a OrganizationsAccounts
-func newOrganizationsAccounts(c *AwsV1alpha1Client) *organizationsAccounts {
+func newOrganizationsAccounts(c *AwsV1alpha1Client, namespace string) *organizationsAccounts {
 	return &organizationsAccounts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOrganizationsAccounts(c *AwsV1alpha1Client) *organizationsAccounts {
 func (c *organizationsAccounts) Get(name string, options v1.GetOptions) (result *v1alpha1.OrganizationsAccount, err error) {
 	result = &v1alpha1.OrganizationsAccount{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationsaccounts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *organizationsAccounts) List(opts v1.ListOptions) (result *v1alpha1.Orga
 	}
 	result = &v1alpha1.OrganizationsAccountList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationsaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *organizationsAccounts) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationsaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *organizationsAccounts) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *organizationsAccounts) Create(organizationsAccount *v1alpha1.OrganizationsAccount) (result *v1alpha1.OrganizationsAccount, err error) {
 	result = &v1alpha1.OrganizationsAccount{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("organizationsaccounts").
 		Body(organizationsAccount).
 		Do().
@@ -118,6 +124,7 @@ func (c *organizationsAccounts) Create(organizationsAccount *v1alpha1.Organizati
 func (c *organizationsAccounts) Update(organizationsAccount *v1alpha1.OrganizationsAccount) (result *v1alpha1.OrganizationsAccount, err error) {
 	result = &v1alpha1.OrganizationsAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("organizationsaccounts").
 		Name(organizationsAccount.Name).
 		Body(organizationsAccount).
@@ -132,6 +139,7 @@ func (c *organizationsAccounts) Update(organizationsAccount *v1alpha1.Organizati
 func (c *organizationsAccounts) UpdateStatus(organizationsAccount *v1alpha1.OrganizationsAccount) (result *v1alpha1.OrganizationsAccount, err error) {
 	result = &v1alpha1.OrganizationsAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("organizationsaccounts").
 		Name(organizationsAccount.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *organizationsAccounts) UpdateStatus(organizationsAccount *v1alpha1.Orga
 // Delete takes name of the organizationsAccount and deletes it. Returns an error if one occurs.
 func (c *organizationsAccounts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("organizationsaccounts").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *organizationsAccounts) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("organizationsaccounts").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *organizationsAccounts) DeleteCollection(options *v1.DeleteOptions, list
 func (c *organizationsAccounts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OrganizationsAccount, err error) {
 	result = &v1alpha1.OrganizationsAccount{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("organizationsaccounts").
 		SubResource(subresources...).
 		Name(name).

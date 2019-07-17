@@ -32,7 +32,7 @@ import (
 // VpcEndpointSubnetAssociationsGetter has a method to return a VpcEndpointSubnetAssociationInterface.
 // A group's client should implement this interface.
 type VpcEndpointSubnetAssociationsGetter interface {
-	VpcEndpointSubnetAssociations() VpcEndpointSubnetAssociationInterface
+	VpcEndpointSubnetAssociations(namespace string) VpcEndpointSubnetAssociationInterface
 }
 
 // VpcEndpointSubnetAssociationInterface has methods to work with VpcEndpointSubnetAssociation resources.
@@ -52,12 +52,14 @@ type VpcEndpointSubnetAssociationInterface interface {
 // vpcEndpointSubnetAssociations implements VpcEndpointSubnetAssociationInterface
 type vpcEndpointSubnetAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVpcEndpointSubnetAssociations returns a VpcEndpointSubnetAssociations
-func newVpcEndpointSubnetAssociations(c *AwsV1alpha1Client) *vpcEndpointSubnetAssociations {
+func newVpcEndpointSubnetAssociations(c *AwsV1alpha1Client, namespace string) *vpcEndpointSubnetAssociations {
 	return &vpcEndpointSubnetAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVpcEndpointSubnetAssociations(c *AwsV1alpha1Client) *vpcEndpointSubnetAs
 func (c *vpcEndpointSubnetAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcEndpointSubnetAssociation, err error) {
 	result = &v1alpha1.VpcEndpointSubnetAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcendpointsubnetassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *vpcEndpointSubnetAssociations) List(opts v1.ListOptions) (result *v1alp
 	}
 	result = &v1alpha1.VpcEndpointSubnetAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcendpointsubnetassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *vpcEndpointSubnetAssociations) Watch(opts v1.ListOptions) (watch.Interf
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcendpointsubnetassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *vpcEndpointSubnetAssociations) Watch(opts v1.ListOptions) (watch.Interf
 func (c *vpcEndpointSubnetAssociations) Create(vpcEndpointSubnetAssociation *v1alpha1.VpcEndpointSubnetAssociation) (result *v1alpha1.VpcEndpointSubnetAssociation, err error) {
 	result = &v1alpha1.VpcEndpointSubnetAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("vpcendpointsubnetassociations").
 		Body(vpcEndpointSubnetAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *vpcEndpointSubnetAssociations) Create(vpcEndpointSubnetAssociation *v1a
 func (c *vpcEndpointSubnetAssociations) Update(vpcEndpointSubnetAssociation *v1alpha1.VpcEndpointSubnetAssociation) (result *v1alpha1.VpcEndpointSubnetAssociation, err error) {
 	result = &v1alpha1.VpcEndpointSubnetAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcendpointsubnetassociations").
 		Name(vpcEndpointSubnetAssociation.Name).
 		Body(vpcEndpointSubnetAssociation).
@@ -132,6 +139,7 @@ func (c *vpcEndpointSubnetAssociations) Update(vpcEndpointSubnetAssociation *v1a
 func (c *vpcEndpointSubnetAssociations) UpdateStatus(vpcEndpointSubnetAssociation *v1alpha1.VpcEndpointSubnetAssociation) (result *v1alpha1.VpcEndpointSubnetAssociation, err error) {
 	result = &v1alpha1.VpcEndpointSubnetAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcendpointsubnetassociations").
 		Name(vpcEndpointSubnetAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *vpcEndpointSubnetAssociations) UpdateStatus(vpcEndpointSubnetAssociatio
 // Delete takes name of the vpcEndpointSubnetAssociation and deletes it. Returns an error if one occurs.
 func (c *vpcEndpointSubnetAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcendpointsubnetassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *vpcEndpointSubnetAssociations) DeleteCollection(options *v1.DeleteOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcendpointsubnetassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *vpcEndpointSubnetAssociations) DeleteCollection(options *v1.DeleteOptio
 func (c *vpcEndpointSubnetAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcEndpointSubnetAssociation, err error) {
 	result = &v1alpha1.VpcEndpointSubnetAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("vpcendpointsubnetassociations").
 		SubResource(subresources...).
 		Name(name).

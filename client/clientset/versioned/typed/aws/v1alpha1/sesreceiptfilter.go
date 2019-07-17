@@ -32,7 +32,7 @@ import (
 // SesReceiptFiltersGetter has a method to return a SesReceiptFilterInterface.
 // A group's client should implement this interface.
 type SesReceiptFiltersGetter interface {
-	SesReceiptFilters() SesReceiptFilterInterface
+	SesReceiptFilters(namespace string) SesReceiptFilterInterface
 }
 
 // SesReceiptFilterInterface has methods to work with SesReceiptFilter resources.
@@ -52,12 +52,14 @@ type SesReceiptFilterInterface interface {
 // sesReceiptFilters implements SesReceiptFilterInterface
 type sesReceiptFilters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSesReceiptFilters returns a SesReceiptFilters
-func newSesReceiptFilters(c *AwsV1alpha1Client) *sesReceiptFilters {
+func newSesReceiptFilters(c *AwsV1alpha1Client, namespace string) *sesReceiptFilters {
 	return &sesReceiptFilters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSesReceiptFilters(c *AwsV1alpha1Client) *sesReceiptFilters {
 func (c *sesReceiptFilters) Get(name string, options v1.GetOptions) (result *v1alpha1.SesReceiptFilter, err error) {
 	result = &v1alpha1.SesReceiptFilter{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sesreceiptfilters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sesReceiptFilters) List(opts v1.ListOptions) (result *v1alpha1.SesRecei
 	}
 	result = &v1alpha1.SesReceiptFilterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sesreceiptfilters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sesReceiptFilters) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sesreceiptfilters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sesReceiptFilters) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *sesReceiptFilters) Create(sesReceiptFilter *v1alpha1.SesReceiptFilter) (result *v1alpha1.SesReceiptFilter, err error) {
 	result = &v1alpha1.SesReceiptFilter{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sesreceiptfilters").
 		Body(sesReceiptFilter).
 		Do().
@@ -118,6 +124,7 @@ func (c *sesReceiptFilters) Create(sesReceiptFilter *v1alpha1.SesReceiptFilter) 
 func (c *sesReceiptFilters) Update(sesReceiptFilter *v1alpha1.SesReceiptFilter) (result *v1alpha1.SesReceiptFilter, err error) {
 	result = &v1alpha1.SesReceiptFilter{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sesreceiptfilters").
 		Name(sesReceiptFilter.Name).
 		Body(sesReceiptFilter).
@@ -132,6 +139,7 @@ func (c *sesReceiptFilters) Update(sesReceiptFilter *v1alpha1.SesReceiptFilter) 
 func (c *sesReceiptFilters) UpdateStatus(sesReceiptFilter *v1alpha1.SesReceiptFilter) (result *v1alpha1.SesReceiptFilter, err error) {
 	result = &v1alpha1.SesReceiptFilter{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sesreceiptfilters").
 		Name(sesReceiptFilter.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sesReceiptFilters) UpdateStatus(sesReceiptFilter *v1alpha1.SesReceiptFi
 // Delete takes name of the sesReceiptFilter and deletes it. Returns an error if one occurs.
 func (c *sesReceiptFilters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sesreceiptfilters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sesReceiptFilters) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sesreceiptfilters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sesReceiptFilters) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *sesReceiptFilters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesReceiptFilter, err error) {
 	result = &v1alpha1.SesReceiptFilter{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sesreceiptfilters").
 		SubResource(subresources...).
 		Name(name).

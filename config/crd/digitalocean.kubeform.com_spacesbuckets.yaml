@@ -399,14 +399,24 @@ spec:
           properties:
             acl:
               type: string
-            force_destroy:
+            forceDestroy:
               type: boolean
             name:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             region:
               type: string
           required:
           - name
+          - providerRef
           type: object
         status:
           properties:
@@ -417,6 +427,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

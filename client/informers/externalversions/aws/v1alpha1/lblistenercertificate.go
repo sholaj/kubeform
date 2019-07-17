@@ -41,32 +41,33 @@ type LbListenerCertificateInformer interface {
 type lbListenerCertificateInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewLbListenerCertificateInformer constructs a new informer for LbListenerCertificate type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLbListenerCertificateInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLbListenerCertificateInformer(client, resyncPeriod, indexers, nil)
+func NewLbListenerCertificateInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLbListenerCertificateInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredLbListenerCertificateInformer constructs a new informer for LbListenerCertificate type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLbListenerCertificateInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLbListenerCertificateInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().LbListenerCertificates().List(options)
+				return client.AwsV1alpha1().LbListenerCertificates(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().LbListenerCertificates().Watch(options)
+				return client.AwsV1alpha1().LbListenerCertificates(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.LbListenerCertificate{},
@@ -76,7 +77,7 @@ func NewFilteredLbListenerCertificateInformer(client versioned.Interface, resync
 }
 
 func (f *lbListenerCertificateInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLbListenerCertificateInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredLbListenerCertificateInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *lbListenerCertificateInformer) Informer() cache.SharedIndexInformer {

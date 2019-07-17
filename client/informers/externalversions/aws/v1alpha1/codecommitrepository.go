@@ -41,32 +41,33 @@ type CodecommitRepositoryInformer interface {
 type codecommitRepositoryInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewCodecommitRepositoryInformer constructs a new informer for CodecommitRepository type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCodecommitRepositoryInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCodecommitRepositoryInformer(client, resyncPeriod, indexers, nil)
+func NewCodecommitRepositoryInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCodecommitRepositoryInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredCodecommitRepositoryInformer constructs a new informer for CodecommitRepository type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCodecommitRepositoryInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCodecommitRepositoryInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CodecommitRepositories().List(options)
+				return client.AwsV1alpha1().CodecommitRepositories(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CodecommitRepositories().Watch(options)
+				return client.AwsV1alpha1().CodecommitRepositories(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.CodecommitRepository{},
@@ -76,7 +77,7 @@ func NewFilteredCodecommitRepositoryInformer(client versioned.Interface, resyncP
 }
 
 func (f *codecommitRepositoryInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCodecommitRepositoryInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredCodecommitRepositoryInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *codecommitRepositoryInformer) Informer() cache.SharedIndexInformer {

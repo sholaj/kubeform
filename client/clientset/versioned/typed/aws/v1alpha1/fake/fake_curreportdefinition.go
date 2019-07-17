@@ -31,6 +31,7 @@ import (
 // FakeCurReportDefinitions implements CurReportDefinitionInterface
 type FakeCurReportDefinitions struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var curreportdefinitionsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "curreportdefinitions"}
@@ -40,7 +41,8 @@ var curreportdefinitionsKind = schema.GroupVersionKind{Group: "aws.kubeform.com"
 // Get takes name of the curReportDefinition, and returns the corresponding curReportDefinition object, and an error if there is any.
 func (c *FakeCurReportDefinitions) Get(name string, options v1.GetOptions) (result *v1alpha1.CurReportDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(curreportdefinitionsResource, name), &v1alpha1.CurReportDefinition{})
+		Invokes(testing.NewGetAction(curreportdefinitionsResource, c.ns, name), &v1alpha1.CurReportDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCurReportDefinitions) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of CurReportDefinitions that match those selectors.
 func (c *FakeCurReportDefinitions) List(opts v1.ListOptions) (result *v1alpha1.CurReportDefinitionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(curreportdefinitionsResource, curreportdefinitionsKind, opts), &v1alpha1.CurReportDefinitionList{})
+		Invokes(testing.NewListAction(curreportdefinitionsResource, curreportdefinitionsKind, c.ns, opts), &v1alpha1.CurReportDefinitionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCurReportDefinitions) List(opts v1.ListOptions) (result *v1alpha1.C
 // Watch returns a watch.Interface that watches the requested curReportDefinitions.
 func (c *FakeCurReportDefinitions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(curreportdefinitionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(curreportdefinitionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a curReportDefinition and creates it.  Returns the server's representation of the curReportDefinition, and an error, if there is any.
 func (c *FakeCurReportDefinitions) Create(curReportDefinition *v1alpha1.CurReportDefinition) (result *v1alpha1.CurReportDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(curreportdefinitionsResource, curReportDefinition), &v1alpha1.CurReportDefinition{})
+		Invokes(testing.NewCreateAction(curreportdefinitionsResource, c.ns, curReportDefinition), &v1alpha1.CurReportDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCurReportDefinitions) Create(curReportDefinition *v1alpha1.CurRepor
 // Update takes the representation of a curReportDefinition and updates it. Returns the server's representation of the curReportDefinition, and an error, if there is any.
 func (c *FakeCurReportDefinitions) Update(curReportDefinition *v1alpha1.CurReportDefinition) (result *v1alpha1.CurReportDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(curreportdefinitionsResource, curReportDefinition), &v1alpha1.CurReportDefinition{})
+		Invokes(testing.NewUpdateAction(curreportdefinitionsResource, c.ns, curReportDefinition), &v1alpha1.CurReportDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCurReportDefinitions) Update(curReportDefinition *v1alpha1.CurRepor
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCurReportDefinitions) UpdateStatus(curReportDefinition *v1alpha1.CurReportDefinition) (*v1alpha1.CurReportDefinition, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(curreportdefinitionsResource, "status", curReportDefinition), &v1alpha1.CurReportDefinition{})
+		Invokes(testing.NewUpdateSubresourceAction(curreportdefinitionsResource, "status", c.ns, curReportDefinition), &v1alpha1.CurReportDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCurReportDefinitions) UpdateStatus(curReportDefinition *v1alpha1.Cu
 // Delete takes name of the curReportDefinition and deletes it. Returns an error if one occurs.
 func (c *FakeCurReportDefinitions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(curreportdefinitionsResource, name), &v1alpha1.CurReportDefinition{})
+		Invokes(testing.NewDeleteAction(curreportdefinitionsResource, c.ns, name), &v1alpha1.CurReportDefinition{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCurReportDefinitions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(curreportdefinitionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(curreportdefinitionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CurReportDefinitionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCurReportDefinitions) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched curReportDefinition.
 func (c *FakeCurReportDefinitions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CurReportDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(curreportdefinitionsResource, name, pt, data, subresources...), &v1alpha1.CurReportDefinition{})
+		Invokes(testing.NewPatchSubresourceAction(curreportdefinitionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.CurReportDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}

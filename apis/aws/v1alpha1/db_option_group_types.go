@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,37 +19,38 @@ type DbOptionGroup struct {
 }
 
 type DbOptionGroupSpecOptionOptionSettings struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
+	Name  string `json:"name" tf:"name"`
+	Value string `json:"value" tf:"value"`
 }
 
 type DbOptionGroupSpecOption struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	DbSecurityGroupMemberships []string `json:"db_security_group_memberships,omitempty"`
-	OptionName                 string   `json:"option_name"`
+	DbSecurityGroupMemberships []string `json:"dbSecurityGroupMemberships,omitempty" tf:"db_security_group_memberships,omitempty"`
+	OptionName                 string   `json:"optionName" tf:"option_name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	OptionSettings *[]DbOptionGroupSpecOption `json:"option_settings,omitempty"`
+	OptionSettings []DbOptionGroupSpecOptionOptionSettings `json:"optionSettings,omitempty" tf:"option_settings,omitempty"`
 	// +optional
-	Port int `json:"port,omitempty"`
+	Port int `json:"port,omitempty" tf:"port,omitempty"`
 	// +optional
-	Version string `json:"version,omitempty"`
+	Version string `json:"version,omitempty" tf:"version,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	VpcSecurityGroupMemberships []string `json:"vpc_security_group_memberships,omitempty"`
+	VpcSecurityGroupMemberships []string `json:"vpcSecurityGroupMemberships,omitempty" tf:"vpc_security_group_memberships,omitempty"`
 }
 
 type DbOptionGroupSpec struct {
-	EngineName         string `json:"engine_name"`
-	MajorEngineVersion string `json:"major_engine_version"`
+	EngineName         string `json:"engineName" tf:"engine_name"`
+	MajorEngineVersion string `json:"majorEngineVersion" tf:"major_engine_version"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Option *[]DbOptionGroupSpec `json:"option,omitempty"`
+	Option []DbOptionGroupSpecOption `json:"option,omitempty" tf:"option,omitempty"`
 	// +optional
-	OptionGroupDescription string `json:"option_group_description,omitempty"`
+	OptionGroupDescription string `json:"optionGroupDescription,omitempty" tf:"option_group_description,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DbOptionGroupStatus struct {
@@ -57,7 +58,9 @@ type DbOptionGroupStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

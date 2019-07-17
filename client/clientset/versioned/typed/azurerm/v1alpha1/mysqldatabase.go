@@ -32,7 +32,7 @@ import (
 // MysqlDatabasesGetter has a method to return a MysqlDatabaseInterface.
 // A group's client should implement this interface.
 type MysqlDatabasesGetter interface {
-	MysqlDatabases() MysqlDatabaseInterface
+	MysqlDatabases(namespace string) MysqlDatabaseInterface
 }
 
 // MysqlDatabaseInterface has methods to work with MysqlDatabase resources.
@@ -52,12 +52,14 @@ type MysqlDatabaseInterface interface {
 // mysqlDatabases implements MysqlDatabaseInterface
 type mysqlDatabases struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMysqlDatabases returns a MysqlDatabases
-func newMysqlDatabases(c *AzurermV1alpha1Client) *mysqlDatabases {
+func newMysqlDatabases(c *AzurermV1alpha1Client, namespace string) *mysqlDatabases {
 	return &mysqlDatabases{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMysqlDatabases(c *AzurermV1alpha1Client) *mysqlDatabases {
 func (c *mysqlDatabases) Get(name string, options v1.GetOptions) (result *v1alpha1.MysqlDatabase, err error) {
 	result = &v1alpha1.MysqlDatabase{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mysqldatabases").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *mysqlDatabases) List(opts v1.ListOptions) (result *v1alpha1.MysqlDataba
 	}
 	result = &v1alpha1.MysqlDatabaseList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mysqldatabases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *mysqlDatabases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("mysqldatabases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *mysqlDatabases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *mysqlDatabases) Create(mysqlDatabase *v1alpha1.MysqlDatabase) (result *v1alpha1.MysqlDatabase, err error) {
 	result = &v1alpha1.MysqlDatabase{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("mysqldatabases").
 		Body(mysqlDatabase).
 		Do().
@@ -118,6 +124,7 @@ func (c *mysqlDatabases) Create(mysqlDatabase *v1alpha1.MysqlDatabase) (result *
 func (c *mysqlDatabases) Update(mysqlDatabase *v1alpha1.MysqlDatabase) (result *v1alpha1.MysqlDatabase, err error) {
 	result = &v1alpha1.MysqlDatabase{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mysqldatabases").
 		Name(mysqlDatabase.Name).
 		Body(mysqlDatabase).
@@ -132,6 +139,7 @@ func (c *mysqlDatabases) Update(mysqlDatabase *v1alpha1.MysqlDatabase) (result *
 func (c *mysqlDatabases) UpdateStatus(mysqlDatabase *v1alpha1.MysqlDatabase) (result *v1alpha1.MysqlDatabase, err error) {
 	result = &v1alpha1.MysqlDatabase{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mysqldatabases").
 		Name(mysqlDatabase.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *mysqlDatabases) UpdateStatus(mysqlDatabase *v1alpha1.MysqlDatabase) (re
 // Delete takes name of the mysqlDatabase and deletes it. Returns an error if one occurs.
 func (c *mysqlDatabases) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mysqldatabases").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *mysqlDatabases) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mysqldatabases").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *mysqlDatabases) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *mysqlDatabases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MysqlDatabase, err error) {
 	result = &v1alpha1.MysqlDatabase{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("mysqldatabases").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type EbsDefaultKmsKeyLister interface {
 	// List lists all EbsDefaultKmsKeys in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EbsDefaultKmsKey, err error)
-	// Get retrieves the EbsDefaultKmsKey from the index for a given name.
-	Get(name string) (*v1alpha1.EbsDefaultKmsKey, error)
+	// EbsDefaultKmsKeys returns an object that can list and get EbsDefaultKmsKeys.
+	EbsDefaultKmsKeys(namespace string) EbsDefaultKmsKeyNamespaceLister
 	EbsDefaultKmsKeyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ebsDefaultKmsKeyLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the EbsDefaultKmsKey from the index for a given name.
-func (s *ebsDefaultKmsKeyLister) Get(name string) (*v1alpha1.EbsDefaultKmsKey, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EbsDefaultKmsKeys returns an object that can list and get EbsDefaultKmsKeys.
+func (s *ebsDefaultKmsKeyLister) EbsDefaultKmsKeys(namespace string) EbsDefaultKmsKeyNamespaceLister {
+	return ebsDefaultKmsKeyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EbsDefaultKmsKeyNamespaceLister helps list and get EbsDefaultKmsKeys.
+type EbsDefaultKmsKeyNamespaceLister interface {
+	// List lists all EbsDefaultKmsKeys in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EbsDefaultKmsKey, err error)
+	// Get retrieves the EbsDefaultKmsKey from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EbsDefaultKmsKey, error)
+	EbsDefaultKmsKeyNamespaceListerExpansion
+}
+
+// ebsDefaultKmsKeyNamespaceLister implements the EbsDefaultKmsKeyNamespaceLister
+// interface.
+type ebsDefaultKmsKeyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EbsDefaultKmsKeys in the indexer for a given namespace.
+func (s ebsDefaultKmsKeyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EbsDefaultKmsKey, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EbsDefaultKmsKey))
+	})
+	return ret, err
+}
+
+// Get retrieves the EbsDefaultKmsKey from the indexer for a given namespace and name.
+func (s ebsDefaultKmsKeyNamespaceLister) Get(name string) (*v1alpha1.EbsDefaultKmsKey, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

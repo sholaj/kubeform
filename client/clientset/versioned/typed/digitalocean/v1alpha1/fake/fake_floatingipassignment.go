@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/digitalocean/v1alpha1"
 )
 
-// FakeFloatingIpAssignments implements FloatingIpAssignmentInterface
-type FakeFloatingIpAssignments struct {
+// FakeFloatingIPAssignments implements FloatingIPAssignmentInterface
+type FakeFloatingIPAssignments struct {
 	Fake *FakeDigitaloceanV1alpha1
+	ns   string
 }
 
 var floatingipassignmentsResource = schema.GroupVersionResource{Group: "digitalocean.kubeform.com", Version: "v1alpha1", Resource: "floatingipassignments"}
 
-var floatingipassignmentsKind = schema.GroupVersionKind{Group: "digitalocean.kubeform.com", Version: "v1alpha1", Kind: "FloatingIpAssignment"}
+var floatingipassignmentsKind = schema.GroupVersionKind{Group: "digitalocean.kubeform.com", Version: "v1alpha1", Kind: "FloatingIPAssignment"}
 
-// Get takes name of the floatingIpAssignment, and returns the corresponding floatingIpAssignment object, and an error if there is any.
-func (c *FakeFloatingIpAssignments) Get(name string, options v1.GetOptions) (result *v1alpha1.FloatingIpAssignment, err error) {
+// Get takes name of the floatingIPAssignment, and returns the corresponding floatingIPAssignment object, and an error if there is any.
+func (c *FakeFloatingIPAssignments) Get(name string, options v1.GetOptions) (result *v1alpha1.FloatingIPAssignment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(floatingipassignmentsResource, name), &v1alpha1.FloatingIpAssignment{})
+		Invokes(testing.NewGetAction(floatingipassignmentsResource, c.ns, name), &v1alpha1.FloatingIPAssignment{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.FloatingIpAssignment), err
+	return obj.(*v1alpha1.FloatingIPAssignment), err
 }
 
-// List takes label and field selectors, and returns the list of FloatingIpAssignments that match those selectors.
-func (c *FakeFloatingIpAssignments) List(opts v1.ListOptions) (result *v1alpha1.FloatingIpAssignmentList, err error) {
+// List takes label and field selectors, and returns the list of FloatingIPAssignments that match those selectors.
+func (c *FakeFloatingIPAssignments) List(opts v1.ListOptions) (result *v1alpha1.FloatingIPAssignmentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(floatingipassignmentsResource, floatingipassignmentsKind, opts), &v1alpha1.FloatingIpAssignmentList{})
+		Invokes(testing.NewListAction(floatingipassignmentsResource, floatingipassignmentsKind, c.ns, opts), &v1alpha1.FloatingIPAssignmentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeFloatingIpAssignments) List(opts v1.ListOptions) (result *v1alpha1.
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.FloatingIpAssignmentList{ListMeta: obj.(*v1alpha1.FloatingIpAssignmentList).ListMeta}
-	for _, item := range obj.(*v1alpha1.FloatingIpAssignmentList).Items {
+	list := &v1alpha1.FloatingIPAssignmentList{ListMeta: obj.(*v1alpha1.FloatingIPAssignmentList).ListMeta}
+	for _, item := range obj.(*v1alpha1.FloatingIPAssignmentList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeFloatingIpAssignments) List(opts v1.ListOptions) (result *v1alpha1.
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested floatingIpAssignments.
-func (c *FakeFloatingIpAssignments) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested floatingIPAssignments.
+func (c *FakeFloatingIPAssignments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(floatingipassignmentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(floatingipassignmentsResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a floatingIpAssignment and creates it.  Returns the server's representation of the floatingIpAssignment, and an error, if there is any.
-func (c *FakeFloatingIpAssignments) Create(floatingIpAssignment *v1alpha1.FloatingIpAssignment) (result *v1alpha1.FloatingIpAssignment, err error) {
+// Create takes the representation of a floatingIPAssignment and creates it.  Returns the server's representation of the floatingIPAssignment, and an error, if there is any.
+func (c *FakeFloatingIPAssignments) Create(floatingIPAssignment *v1alpha1.FloatingIPAssignment) (result *v1alpha1.FloatingIPAssignment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(floatingipassignmentsResource, floatingIpAssignment), &v1alpha1.FloatingIpAssignment{})
+		Invokes(testing.NewCreateAction(floatingipassignmentsResource, c.ns, floatingIPAssignment), &v1alpha1.FloatingIPAssignment{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.FloatingIpAssignment), err
+	return obj.(*v1alpha1.FloatingIPAssignment), err
 }
 
-// Update takes the representation of a floatingIpAssignment and updates it. Returns the server's representation of the floatingIpAssignment, and an error, if there is any.
-func (c *FakeFloatingIpAssignments) Update(floatingIpAssignment *v1alpha1.FloatingIpAssignment) (result *v1alpha1.FloatingIpAssignment, err error) {
+// Update takes the representation of a floatingIPAssignment and updates it. Returns the server's representation of the floatingIPAssignment, and an error, if there is any.
+func (c *FakeFloatingIPAssignments) Update(floatingIPAssignment *v1alpha1.FloatingIPAssignment) (result *v1alpha1.FloatingIPAssignment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(floatingipassignmentsResource, floatingIpAssignment), &v1alpha1.FloatingIpAssignment{})
+		Invokes(testing.NewUpdateAction(floatingipassignmentsResource, c.ns, floatingIPAssignment), &v1alpha1.FloatingIPAssignment{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.FloatingIpAssignment), err
+	return obj.(*v1alpha1.FloatingIPAssignment), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeFloatingIpAssignments) UpdateStatus(floatingIpAssignment *v1alpha1.FloatingIpAssignment) (*v1alpha1.FloatingIpAssignment, error) {
+func (c *FakeFloatingIPAssignments) UpdateStatus(floatingIPAssignment *v1alpha1.FloatingIPAssignment) (*v1alpha1.FloatingIPAssignment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(floatingipassignmentsResource, "status", floatingIpAssignment), &v1alpha1.FloatingIpAssignment{})
+		Invokes(testing.NewUpdateSubresourceAction(floatingipassignmentsResource, "status", c.ns, floatingIPAssignment), &v1alpha1.FloatingIPAssignment{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.FloatingIpAssignment), err
+	return obj.(*v1alpha1.FloatingIPAssignment), err
 }
 
-// Delete takes name of the floatingIpAssignment and deletes it. Returns an error if one occurs.
-func (c *FakeFloatingIpAssignments) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the floatingIPAssignment and deletes it. Returns an error if one occurs.
+func (c *FakeFloatingIPAssignments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(floatingipassignmentsResource, name), &v1alpha1.FloatingIpAssignment{})
+		Invokes(testing.NewDeleteAction(floatingipassignmentsResource, c.ns, name), &v1alpha1.FloatingIPAssignment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeFloatingIpAssignments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(floatingipassignmentsResource, listOptions)
+func (c *FakeFloatingIPAssignments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(floatingipassignmentsResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.FloatingIpAssignmentList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.FloatingIPAssignmentList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched floatingIpAssignment.
-func (c *FakeFloatingIpAssignments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FloatingIpAssignment, err error) {
+// Patch applies the patch and returns the patched floatingIPAssignment.
+func (c *FakeFloatingIPAssignments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FloatingIPAssignment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(floatingipassignmentsResource, name, pt, data, subresources...), &v1alpha1.FloatingIpAssignment{})
+		Invokes(testing.NewPatchSubresourceAction(floatingipassignmentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.FloatingIPAssignment{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.FloatingIpAssignment), err
+	return obj.(*v1alpha1.FloatingIPAssignment), err
 }

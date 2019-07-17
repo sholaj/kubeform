@@ -32,7 +32,7 @@ import (
 // KubernetesNodePoolsGetter has a method to return a KubernetesNodePoolInterface.
 // A group's client should implement this interface.
 type KubernetesNodePoolsGetter interface {
-	KubernetesNodePools() KubernetesNodePoolInterface
+	KubernetesNodePools(namespace string) KubernetesNodePoolInterface
 }
 
 // KubernetesNodePoolInterface has methods to work with KubernetesNodePool resources.
@@ -52,12 +52,14 @@ type KubernetesNodePoolInterface interface {
 // kubernetesNodePools implements KubernetesNodePoolInterface
 type kubernetesNodePools struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKubernetesNodePools returns a KubernetesNodePools
-func newKubernetesNodePools(c *DigitaloceanV1alpha1Client) *kubernetesNodePools {
+func newKubernetesNodePools(c *DigitaloceanV1alpha1Client, namespace string) *kubernetesNodePools {
 	return &kubernetesNodePools{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKubernetesNodePools(c *DigitaloceanV1alpha1Client) *kubernetesNodePools 
 func (c *kubernetesNodePools) Get(name string, options v1.GetOptions) (result *v1alpha1.KubernetesNodePool, err error) {
 	result = &v1alpha1.KubernetesNodePool{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kubernetesnodepools").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *kubernetesNodePools) List(opts v1.ListOptions) (result *v1alpha1.Kubern
 	}
 	result = &v1alpha1.KubernetesNodePoolList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kubernetesnodepools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *kubernetesNodePools) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("kubernetesnodepools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *kubernetesNodePools) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *kubernetesNodePools) Create(kubernetesNodePool *v1alpha1.KubernetesNodePool) (result *v1alpha1.KubernetesNodePool, err error) {
 	result = &v1alpha1.KubernetesNodePool{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("kubernetesnodepools").
 		Body(kubernetesNodePool).
 		Do().
@@ -118,6 +124,7 @@ func (c *kubernetesNodePools) Create(kubernetesNodePool *v1alpha1.KubernetesNode
 func (c *kubernetesNodePools) Update(kubernetesNodePool *v1alpha1.KubernetesNodePool) (result *v1alpha1.KubernetesNodePool, err error) {
 	result = &v1alpha1.KubernetesNodePool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kubernetesnodepools").
 		Name(kubernetesNodePool.Name).
 		Body(kubernetesNodePool).
@@ -132,6 +139,7 @@ func (c *kubernetesNodePools) Update(kubernetesNodePool *v1alpha1.KubernetesNode
 func (c *kubernetesNodePools) UpdateStatus(kubernetesNodePool *v1alpha1.KubernetesNodePool) (result *v1alpha1.KubernetesNodePool, err error) {
 	result = &v1alpha1.KubernetesNodePool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kubernetesnodepools").
 		Name(kubernetesNodePool.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *kubernetesNodePools) UpdateStatus(kubernetesNodePool *v1alpha1.Kubernet
 // Delete takes name of the kubernetesNodePool and deletes it. Returns an error if one occurs.
 func (c *kubernetesNodePools) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kubernetesnodepools").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *kubernetesNodePools) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kubernetesnodepools").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *kubernetesNodePools) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *kubernetesNodePools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KubernetesNodePool, err error) {
 	result = &v1alpha1.KubernetesNodePool{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("kubernetesnodepools").
 		SubResource(subresources...).
 		Name(name).

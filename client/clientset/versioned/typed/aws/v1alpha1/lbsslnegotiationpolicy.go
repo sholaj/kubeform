@@ -32,7 +32,7 @@ import (
 // LbSslNegotiationPoliciesGetter has a method to return a LbSslNegotiationPolicyInterface.
 // A group's client should implement this interface.
 type LbSslNegotiationPoliciesGetter interface {
-	LbSslNegotiationPolicies() LbSslNegotiationPolicyInterface
+	LbSslNegotiationPolicies(namespace string) LbSslNegotiationPolicyInterface
 }
 
 // LbSslNegotiationPolicyInterface has methods to work with LbSslNegotiationPolicy resources.
@@ -52,12 +52,14 @@ type LbSslNegotiationPolicyInterface interface {
 // lbSslNegotiationPolicies implements LbSslNegotiationPolicyInterface
 type lbSslNegotiationPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLbSslNegotiationPolicies returns a LbSslNegotiationPolicies
-func newLbSslNegotiationPolicies(c *AwsV1alpha1Client) *lbSslNegotiationPolicies {
+func newLbSslNegotiationPolicies(c *AwsV1alpha1Client, namespace string) *lbSslNegotiationPolicies {
 	return &lbSslNegotiationPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLbSslNegotiationPolicies(c *AwsV1alpha1Client) *lbSslNegotiationPolicies
 func (c *lbSslNegotiationPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.LbSslNegotiationPolicy, err error) {
 	result = &v1alpha1.LbSslNegotiationPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lbsslnegotiationpolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lbSslNegotiationPolicies) List(opts v1.ListOptions) (result *v1alpha1.L
 	}
 	result = &v1alpha1.LbSslNegotiationPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lbsslnegotiationpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lbSslNegotiationPolicies) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lbsslnegotiationpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lbSslNegotiationPolicies) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *lbSslNegotiationPolicies) Create(lbSslNegotiationPolicy *v1alpha1.LbSslNegotiationPolicy) (result *v1alpha1.LbSslNegotiationPolicy, err error) {
 	result = &v1alpha1.LbSslNegotiationPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lbsslnegotiationpolicies").
 		Body(lbSslNegotiationPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *lbSslNegotiationPolicies) Create(lbSslNegotiationPolicy *v1alpha1.LbSsl
 func (c *lbSslNegotiationPolicies) Update(lbSslNegotiationPolicy *v1alpha1.LbSslNegotiationPolicy) (result *v1alpha1.LbSslNegotiationPolicy, err error) {
 	result = &v1alpha1.LbSslNegotiationPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lbsslnegotiationpolicies").
 		Name(lbSslNegotiationPolicy.Name).
 		Body(lbSslNegotiationPolicy).
@@ -132,6 +139,7 @@ func (c *lbSslNegotiationPolicies) Update(lbSslNegotiationPolicy *v1alpha1.LbSsl
 func (c *lbSslNegotiationPolicies) UpdateStatus(lbSslNegotiationPolicy *v1alpha1.LbSslNegotiationPolicy) (result *v1alpha1.LbSslNegotiationPolicy, err error) {
 	result = &v1alpha1.LbSslNegotiationPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lbsslnegotiationpolicies").
 		Name(lbSslNegotiationPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lbSslNegotiationPolicies) UpdateStatus(lbSslNegotiationPolicy *v1alpha1
 // Delete takes name of the lbSslNegotiationPolicy and deletes it. Returns an error if one occurs.
 func (c *lbSslNegotiationPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lbsslnegotiationpolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lbSslNegotiationPolicies) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lbsslnegotiationpolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lbSslNegotiationPolicies) DeleteCollection(options *v1.DeleteOptions, l
 func (c *lbSslNegotiationPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbSslNegotiationPolicy, err error) {
 	result = &v1alpha1.LbSslNegotiationPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lbsslnegotiationpolicies").
 		SubResource(subresources...).
 		Name(name).

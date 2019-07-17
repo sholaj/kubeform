@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,13 +20,14 @@ type Subnet struct {
 
 type SubnetSpec struct {
 	// +optional
-	AssignIpv6AddressOnCreation bool   `json:"assign_ipv6_address_on_creation,omitempty"`
-	CidrBlock                   string `json:"cidr_block"`
+	AssignIpv6AddressOnCreation bool   `json:"assignIpv6AddressOnCreation,omitempty" tf:"assign_ipv6_address_on_creation,omitempty"`
+	CidrBlock                   string `json:"cidrBlock" tf:"cidr_block"`
 	// +optional
-	MapPublicIpOnLaunch bool `json:"map_public_ip_on_launch,omitempty"`
+	MapPublicIPOnLaunch bool `json:"mapPublicIPOnLaunch,omitempty" tf:"map_public_ip_on_launch,omitempty"`
 	// +optional
-	Tags  map[string]string `json:"tags,omitempty"`
-	VpcId string            `json:"vpc_id"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	VpcID       string                    `json:"vpcID" tf:"vpc_id"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SubnetStatus struct {
@@ -34,7 +35,9 @@ type SubnetStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

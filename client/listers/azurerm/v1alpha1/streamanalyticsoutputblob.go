@@ -29,8 +29,8 @@ import (
 type StreamAnalyticsOutputBlobLister interface {
 	// List lists all StreamAnalyticsOutputBlobs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StreamAnalyticsOutputBlob, err error)
-	// Get retrieves the StreamAnalyticsOutputBlob from the index for a given name.
-	Get(name string) (*v1alpha1.StreamAnalyticsOutputBlob, error)
+	// StreamAnalyticsOutputBlobs returns an object that can list and get StreamAnalyticsOutputBlobs.
+	StreamAnalyticsOutputBlobs(namespace string) StreamAnalyticsOutputBlobNamespaceLister
 	StreamAnalyticsOutputBlobListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *streamAnalyticsOutputBlobLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the StreamAnalyticsOutputBlob from the index for a given name.
-func (s *streamAnalyticsOutputBlobLister) Get(name string) (*v1alpha1.StreamAnalyticsOutputBlob, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StreamAnalyticsOutputBlobs returns an object that can list and get StreamAnalyticsOutputBlobs.
+func (s *streamAnalyticsOutputBlobLister) StreamAnalyticsOutputBlobs(namespace string) StreamAnalyticsOutputBlobNamespaceLister {
+	return streamAnalyticsOutputBlobNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StreamAnalyticsOutputBlobNamespaceLister helps list and get StreamAnalyticsOutputBlobs.
+type StreamAnalyticsOutputBlobNamespaceLister interface {
+	// List lists all StreamAnalyticsOutputBlobs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StreamAnalyticsOutputBlob, err error)
+	// Get retrieves the StreamAnalyticsOutputBlob from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StreamAnalyticsOutputBlob, error)
+	StreamAnalyticsOutputBlobNamespaceListerExpansion
+}
+
+// streamAnalyticsOutputBlobNamespaceLister implements the StreamAnalyticsOutputBlobNamespaceLister
+// interface.
+type streamAnalyticsOutputBlobNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StreamAnalyticsOutputBlobs in the indexer for a given namespace.
+func (s streamAnalyticsOutputBlobNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StreamAnalyticsOutputBlob, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StreamAnalyticsOutputBlob))
+	})
+	return ret, err
+}
+
+// Get retrieves the StreamAnalyticsOutputBlob from the indexer for a given namespace and name.
+func (s streamAnalyticsOutputBlobNamespaceLister) Get(name string) (*v1alpha1.StreamAnalyticsOutputBlob, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

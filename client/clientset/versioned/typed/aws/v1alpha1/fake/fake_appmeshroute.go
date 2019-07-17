@@ -31,6 +31,7 @@ import (
 // FakeAppmeshRoutes implements AppmeshRouteInterface
 type FakeAppmeshRoutes struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var appmeshroutesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "appmeshroutes"}
@@ -40,7 +41,8 @@ var appmeshroutesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Versi
 // Get takes name of the appmeshRoute, and returns the corresponding appmeshRoute object, and an error if there is any.
 func (c *FakeAppmeshRoutes) Get(name string, options v1.GetOptions) (result *v1alpha1.AppmeshRoute, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(appmeshroutesResource, name), &v1alpha1.AppmeshRoute{})
+		Invokes(testing.NewGetAction(appmeshroutesResource, c.ns, name), &v1alpha1.AppmeshRoute{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAppmeshRoutes) Get(name string, options v1.GetOptions) (result *v1a
 // List takes label and field selectors, and returns the list of AppmeshRoutes that match those selectors.
 func (c *FakeAppmeshRoutes) List(opts v1.ListOptions) (result *v1alpha1.AppmeshRouteList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(appmeshroutesResource, appmeshroutesKind, opts), &v1alpha1.AppmeshRouteList{})
+		Invokes(testing.NewListAction(appmeshroutesResource, appmeshroutesKind, c.ns, opts), &v1alpha1.AppmeshRouteList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAppmeshRoutes) List(opts v1.ListOptions) (result *v1alpha1.AppmeshR
 // Watch returns a watch.Interface that watches the requested appmeshRoutes.
 func (c *FakeAppmeshRoutes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(appmeshroutesResource, opts))
+		InvokesWatch(testing.NewWatchAction(appmeshroutesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a appmeshRoute and creates it.  Returns the server's representation of the appmeshRoute, and an error, if there is any.
 func (c *FakeAppmeshRoutes) Create(appmeshRoute *v1alpha1.AppmeshRoute) (result *v1alpha1.AppmeshRoute, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(appmeshroutesResource, appmeshRoute), &v1alpha1.AppmeshRoute{})
+		Invokes(testing.NewCreateAction(appmeshroutesResource, c.ns, appmeshRoute), &v1alpha1.AppmeshRoute{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAppmeshRoutes) Create(appmeshRoute *v1alpha1.AppmeshRoute) (result 
 // Update takes the representation of a appmeshRoute and updates it. Returns the server's representation of the appmeshRoute, and an error, if there is any.
 func (c *FakeAppmeshRoutes) Update(appmeshRoute *v1alpha1.AppmeshRoute) (result *v1alpha1.AppmeshRoute, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(appmeshroutesResource, appmeshRoute), &v1alpha1.AppmeshRoute{})
+		Invokes(testing.NewUpdateAction(appmeshroutesResource, c.ns, appmeshRoute), &v1alpha1.AppmeshRoute{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAppmeshRoutes) Update(appmeshRoute *v1alpha1.AppmeshRoute) (result 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAppmeshRoutes) UpdateStatus(appmeshRoute *v1alpha1.AppmeshRoute) (*v1alpha1.AppmeshRoute, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(appmeshroutesResource, "status", appmeshRoute), &v1alpha1.AppmeshRoute{})
+		Invokes(testing.NewUpdateSubresourceAction(appmeshroutesResource, "status", c.ns, appmeshRoute), &v1alpha1.AppmeshRoute{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAppmeshRoutes) UpdateStatus(appmeshRoute *v1alpha1.AppmeshRoute) (*
 // Delete takes name of the appmeshRoute and deletes it. Returns an error if one occurs.
 func (c *FakeAppmeshRoutes) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(appmeshroutesResource, name), &v1alpha1.AppmeshRoute{})
+		Invokes(testing.NewDeleteAction(appmeshroutesResource, c.ns, name), &v1alpha1.AppmeshRoute{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAppmeshRoutes) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(appmeshroutesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(appmeshroutesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AppmeshRouteList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAppmeshRoutes) DeleteCollection(options *v1.DeleteOptions, listOpti
 // Patch applies the patch and returns the patched appmeshRoute.
 func (c *FakeAppmeshRoutes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppmeshRoute, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(appmeshroutesResource, name, pt, data, subresources...), &v1alpha1.AppmeshRoute{})
+		Invokes(testing.NewPatchSubresourceAction(appmeshroutesResource, c.ns, name, pt, data, subresources...), &v1alpha1.AppmeshRoute{})
+
 	if obj == nil {
 		return nil, err
 	}

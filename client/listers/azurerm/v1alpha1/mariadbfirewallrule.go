@@ -29,8 +29,8 @@ import (
 type MariadbFirewallRuleLister interface {
 	// List lists all MariadbFirewallRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MariadbFirewallRule, err error)
-	// Get retrieves the MariadbFirewallRule from the index for a given name.
-	Get(name string) (*v1alpha1.MariadbFirewallRule, error)
+	// MariadbFirewallRules returns an object that can list and get MariadbFirewallRules.
+	MariadbFirewallRules(namespace string) MariadbFirewallRuleNamespaceLister
 	MariadbFirewallRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *mariadbFirewallRuleLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the MariadbFirewallRule from the index for a given name.
-func (s *mariadbFirewallRuleLister) Get(name string) (*v1alpha1.MariadbFirewallRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MariadbFirewallRules returns an object that can list and get MariadbFirewallRules.
+func (s *mariadbFirewallRuleLister) MariadbFirewallRules(namespace string) MariadbFirewallRuleNamespaceLister {
+	return mariadbFirewallRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MariadbFirewallRuleNamespaceLister helps list and get MariadbFirewallRules.
+type MariadbFirewallRuleNamespaceLister interface {
+	// List lists all MariadbFirewallRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MariadbFirewallRule, err error)
+	// Get retrieves the MariadbFirewallRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MariadbFirewallRule, error)
+	MariadbFirewallRuleNamespaceListerExpansion
+}
+
+// mariadbFirewallRuleNamespaceLister implements the MariadbFirewallRuleNamespaceLister
+// interface.
+type mariadbFirewallRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MariadbFirewallRules in the indexer for a given namespace.
+func (s mariadbFirewallRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MariadbFirewallRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MariadbFirewallRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the MariadbFirewallRule from the indexer for a given namespace and name.
+func (s mariadbFirewallRuleNamespaceLister) Get(name string) (*v1alpha1.MariadbFirewallRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

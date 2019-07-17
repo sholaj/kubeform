@@ -41,32 +41,33 @@ type WorklinkFleetInformer interface {
 type worklinkFleetInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewWorklinkFleetInformer constructs a new informer for WorklinkFleet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewWorklinkFleetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredWorklinkFleetInformer(client, resyncPeriod, indexers, nil)
+func NewWorklinkFleetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredWorklinkFleetInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredWorklinkFleetInformer constructs a new informer for WorklinkFleet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredWorklinkFleetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredWorklinkFleetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WorklinkFleets().List(options)
+				return client.AwsV1alpha1().WorklinkFleets(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WorklinkFleets().Watch(options)
+				return client.AwsV1alpha1().WorklinkFleets(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.WorklinkFleet{},
@@ -76,7 +77,7 @@ func NewFilteredWorklinkFleetInformer(client versioned.Interface, resyncPeriod t
 }
 
 func (f *worklinkFleetInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredWorklinkFleetInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredWorklinkFleetInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *worklinkFleetInformer) Informer() cache.SharedIndexInformer {

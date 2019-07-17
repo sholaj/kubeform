@@ -41,32 +41,33 @@ type ApiManagementOpenidConnectProviderInformer interface {
 type apiManagementOpenidConnectProviderInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewApiManagementOpenidConnectProviderInformer constructs a new informer for ApiManagementOpenidConnectProvider type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewApiManagementOpenidConnectProviderInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredApiManagementOpenidConnectProviderInformer(client, resyncPeriod, indexers, nil)
+func NewApiManagementOpenidConnectProviderInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredApiManagementOpenidConnectProviderInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredApiManagementOpenidConnectProviderInformer constructs a new informer for ApiManagementOpenidConnectProvider type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredApiManagementOpenidConnectProviderInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredApiManagementOpenidConnectProviderInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ApiManagementOpenidConnectProviders().List(options)
+				return client.AzurermV1alpha1().ApiManagementOpenidConnectProviders(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ApiManagementOpenidConnectProviders().Watch(options)
+				return client.AzurermV1alpha1().ApiManagementOpenidConnectProviders(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.ApiManagementOpenidConnectProvider{},
@@ -76,7 +77,7 @@ func NewFilteredApiManagementOpenidConnectProviderInformer(client versioned.Inte
 }
 
 func (f *apiManagementOpenidConnectProviderInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredApiManagementOpenidConnectProviderInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredApiManagementOpenidConnectProviderInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *apiManagementOpenidConnectProviderInformer) Informer() cache.SharedIndexInformer {

@@ -41,32 +41,33 @@ type LoggingBillingAccountSinkInformer interface {
 type loggingBillingAccountSinkInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewLoggingBillingAccountSinkInformer constructs a new informer for LoggingBillingAccountSink type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLoggingBillingAccountSinkInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLoggingBillingAccountSinkInformer(client, resyncPeriod, indexers, nil)
+func NewLoggingBillingAccountSinkInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLoggingBillingAccountSinkInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredLoggingBillingAccountSinkInformer constructs a new informer for LoggingBillingAccountSink type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLoggingBillingAccountSinkInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLoggingBillingAccountSinkInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().LoggingBillingAccountSinks().List(options)
+				return client.GoogleV1alpha1().LoggingBillingAccountSinks(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().LoggingBillingAccountSinks().Watch(options)
+				return client.GoogleV1alpha1().LoggingBillingAccountSinks(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.LoggingBillingAccountSink{},
@@ -76,7 +77,7 @@ func NewFilteredLoggingBillingAccountSinkInformer(client versioned.Interface, re
 }
 
 func (f *loggingBillingAccountSinkInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLoggingBillingAccountSinkInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredLoggingBillingAccountSinkInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *loggingBillingAccountSinkInformer) Informer() cache.SharedIndexInformer {

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -18,25 +18,26 @@ type LbOutboundRule struct {
 	Status            LbOutboundRuleStatus `json:"status,omitempty"`
 }
 
-type LbOutboundRuleSpecFrontendIpConfiguration struct {
-	Name string `json:"name"`
+type LbOutboundRuleSpecFrontendIPConfiguration struct {
+	Name string `json:"name" tf:"name"`
 }
 
 type LbOutboundRuleSpec struct {
 	// +optional
-	AllocatedOutboundPorts int    `json:"allocated_outbound_ports,omitempty"`
-	BackendAddressPoolId   string `json:"backend_address_pool_id"`
+	AllocatedOutboundPorts int    `json:"allocatedOutboundPorts,omitempty" tf:"allocated_outbound_ports,omitempty"`
+	BackendAddressPoolID   string `json:"backendAddressPoolID" tf:"backend_address_pool_id"`
 	// +optional
-	EnableTcpReset bool `json:"enable_tcp_reset,omitempty"`
+	EnableTcpReset bool `json:"enableTcpReset,omitempty" tf:"enable_tcp_reset,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MinItems=1
-	FrontendIpConfiguration *[]LbOutboundRuleSpec `json:"frontend_ip_configuration,omitempty"`
+	FrontendIPConfiguration []LbOutboundRuleSpecFrontendIPConfiguration `json:"frontendIPConfiguration,omitempty" tf:"frontend_ip_configuration,omitempty"`
 	// +optional
-	IdleTimeoutInMinutes int    `json:"idle_timeout_in_minutes,omitempty"`
-	LoadbalancerId       string `json:"loadbalancer_id"`
-	Name                 string `json:"name"`
-	Protocol             string `json:"protocol"`
-	ResourceGroupName    string `json:"resource_group_name"`
+	IdleTimeoutInMinutes int                       `json:"idleTimeoutInMinutes,omitempty" tf:"idle_timeout_in_minutes,omitempty"`
+	LoadbalancerID       string                    `json:"loadbalancerID" tf:"loadbalancer_id"`
+	Name                 string                    `json:"name" tf:"name"`
+	Protocol             string                    `json:"protocol" tf:"protocol"`
+	ResourceGroupName    string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ProviderRef          core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type LbOutboundRuleStatus struct {
@@ -44,7 +45,9 @@ type LbOutboundRuleStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

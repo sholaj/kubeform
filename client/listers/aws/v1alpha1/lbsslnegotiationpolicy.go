@@ -29,8 +29,8 @@ import (
 type LbSslNegotiationPolicyLister interface {
 	// List lists all LbSslNegotiationPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LbSslNegotiationPolicy, err error)
-	// Get retrieves the LbSslNegotiationPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.LbSslNegotiationPolicy, error)
+	// LbSslNegotiationPolicies returns an object that can list and get LbSslNegotiationPolicies.
+	LbSslNegotiationPolicies(namespace string) LbSslNegotiationPolicyNamespaceLister
 	LbSslNegotiationPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *lbSslNegotiationPolicyLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the LbSslNegotiationPolicy from the index for a given name.
-func (s *lbSslNegotiationPolicyLister) Get(name string) (*v1alpha1.LbSslNegotiationPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LbSslNegotiationPolicies returns an object that can list and get LbSslNegotiationPolicies.
+func (s *lbSslNegotiationPolicyLister) LbSslNegotiationPolicies(namespace string) LbSslNegotiationPolicyNamespaceLister {
+	return lbSslNegotiationPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LbSslNegotiationPolicyNamespaceLister helps list and get LbSslNegotiationPolicies.
+type LbSslNegotiationPolicyNamespaceLister interface {
+	// List lists all LbSslNegotiationPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LbSslNegotiationPolicy, err error)
+	// Get retrieves the LbSslNegotiationPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LbSslNegotiationPolicy, error)
+	LbSslNegotiationPolicyNamespaceListerExpansion
+}
+
+// lbSslNegotiationPolicyNamespaceLister implements the LbSslNegotiationPolicyNamespaceLister
+// interface.
+type lbSslNegotiationPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LbSslNegotiationPolicies in the indexer for a given namespace.
+func (s lbSslNegotiationPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LbSslNegotiationPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LbSslNegotiationPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the LbSslNegotiationPolicy from the indexer for a given namespace and name.
+func (s lbSslNegotiationPolicyNamespaceLister) Get(name string) (*v1alpha1.LbSslNegotiationPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

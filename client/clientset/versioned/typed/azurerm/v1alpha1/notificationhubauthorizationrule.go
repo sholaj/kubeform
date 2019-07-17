@@ -32,7 +32,7 @@ import (
 // NotificationHubAuthorizationRulesGetter has a method to return a NotificationHubAuthorizationRuleInterface.
 // A group's client should implement this interface.
 type NotificationHubAuthorizationRulesGetter interface {
-	NotificationHubAuthorizationRules() NotificationHubAuthorizationRuleInterface
+	NotificationHubAuthorizationRules(namespace string) NotificationHubAuthorizationRuleInterface
 }
 
 // NotificationHubAuthorizationRuleInterface has methods to work with NotificationHubAuthorizationRule resources.
@@ -52,12 +52,14 @@ type NotificationHubAuthorizationRuleInterface interface {
 // notificationHubAuthorizationRules implements NotificationHubAuthorizationRuleInterface
 type notificationHubAuthorizationRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNotificationHubAuthorizationRules returns a NotificationHubAuthorizationRules
-func newNotificationHubAuthorizationRules(c *AzurermV1alpha1Client) *notificationHubAuthorizationRules {
+func newNotificationHubAuthorizationRules(c *AzurermV1alpha1Client, namespace string) *notificationHubAuthorizationRules {
 	return &notificationHubAuthorizationRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNotificationHubAuthorizationRules(c *AzurermV1alpha1Client) *notificatio
 func (c *notificationHubAuthorizationRules) Get(name string, options v1.GetOptions) (result *v1alpha1.NotificationHubAuthorizationRule, err error) {
 	result = &v1alpha1.NotificationHubAuthorizationRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("notificationhubauthorizationrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *notificationHubAuthorizationRules) List(opts v1.ListOptions) (result *v
 	}
 	result = &v1alpha1.NotificationHubAuthorizationRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("notificationhubauthorizationrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *notificationHubAuthorizationRules) Watch(opts v1.ListOptions) (watch.In
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("notificationhubauthorizationrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *notificationHubAuthorizationRules) Watch(opts v1.ListOptions) (watch.In
 func (c *notificationHubAuthorizationRules) Create(notificationHubAuthorizationRule *v1alpha1.NotificationHubAuthorizationRule) (result *v1alpha1.NotificationHubAuthorizationRule, err error) {
 	result = &v1alpha1.NotificationHubAuthorizationRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("notificationhubauthorizationrules").
 		Body(notificationHubAuthorizationRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *notificationHubAuthorizationRules) Create(notificationHubAuthorizationR
 func (c *notificationHubAuthorizationRules) Update(notificationHubAuthorizationRule *v1alpha1.NotificationHubAuthorizationRule) (result *v1alpha1.NotificationHubAuthorizationRule, err error) {
 	result = &v1alpha1.NotificationHubAuthorizationRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("notificationhubauthorizationrules").
 		Name(notificationHubAuthorizationRule.Name).
 		Body(notificationHubAuthorizationRule).
@@ -132,6 +139,7 @@ func (c *notificationHubAuthorizationRules) Update(notificationHubAuthorizationR
 func (c *notificationHubAuthorizationRules) UpdateStatus(notificationHubAuthorizationRule *v1alpha1.NotificationHubAuthorizationRule) (result *v1alpha1.NotificationHubAuthorizationRule, err error) {
 	result = &v1alpha1.NotificationHubAuthorizationRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("notificationhubauthorizationrules").
 		Name(notificationHubAuthorizationRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *notificationHubAuthorizationRules) UpdateStatus(notificationHubAuthoriz
 // Delete takes name of the notificationHubAuthorizationRule and deletes it. Returns an error if one occurs.
 func (c *notificationHubAuthorizationRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("notificationhubauthorizationrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *notificationHubAuthorizationRules) DeleteCollection(options *v1.DeleteO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("notificationhubauthorizationrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *notificationHubAuthorizationRules) DeleteCollection(options *v1.DeleteO
 func (c *notificationHubAuthorizationRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NotificationHubAuthorizationRule, err error) {
 	result = &v1alpha1.NotificationHubAuthorizationRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("notificationhubauthorizationrules").
 		SubResource(subresources...).
 		Name(name).

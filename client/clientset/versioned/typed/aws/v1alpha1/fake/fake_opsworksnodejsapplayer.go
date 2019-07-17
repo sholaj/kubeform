@@ -31,6 +31,7 @@ import (
 // FakeOpsworksNodejsAppLayers implements OpsworksNodejsAppLayerInterface
 type FakeOpsworksNodejsAppLayers struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var opsworksnodejsapplayersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "opsworksnodejsapplayers"}
@@ -40,7 +41,8 @@ var opsworksnodejsapplayersKind = schema.GroupVersionKind{Group: "aws.kubeform.c
 // Get takes name of the opsworksNodejsAppLayer, and returns the corresponding opsworksNodejsAppLayer object, and an error if there is any.
 func (c *FakeOpsworksNodejsAppLayers) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksNodejsAppLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(opsworksnodejsapplayersResource, name), &v1alpha1.OpsworksNodejsAppLayer{})
+		Invokes(testing.NewGetAction(opsworksnodejsapplayersResource, c.ns, name), &v1alpha1.OpsworksNodejsAppLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeOpsworksNodejsAppLayers) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of OpsworksNodejsAppLayers that match those selectors.
 func (c *FakeOpsworksNodejsAppLayers) List(opts v1.ListOptions) (result *v1alpha1.OpsworksNodejsAppLayerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(opsworksnodejsapplayersResource, opsworksnodejsapplayersKind, opts), &v1alpha1.OpsworksNodejsAppLayerList{})
+		Invokes(testing.NewListAction(opsworksnodejsapplayersResource, opsworksnodejsapplayersKind, c.ns, opts), &v1alpha1.OpsworksNodejsAppLayerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeOpsworksNodejsAppLayers) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested opsworksNodejsAppLayers.
 func (c *FakeOpsworksNodejsAppLayers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(opsworksnodejsapplayersResource, opts))
+		InvokesWatch(testing.NewWatchAction(opsworksnodejsapplayersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a opsworksNodejsAppLayer and creates it.  Returns the server's representation of the opsworksNodejsAppLayer, and an error, if there is any.
 func (c *FakeOpsworksNodejsAppLayers) Create(opsworksNodejsAppLayer *v1alpha1.OpsworksNodejsAppLayer) (result *v1alpha1.OpsworksNodejsAppLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(opsworksnodejsapplayersResource, opsworksNodejsAppLayer), &v1alpha1.OpsworksNodejsAppLayer{})
+		Invokes(testing.NewCreateAction(opsworksnodejsapplayersResource, c.ns, opsworksNodejsAppLayer), &v1alpha1.OpsworksNodejsAppLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeOpsworksNodejsAppLayers) Create(opsworksNodejsAppLayer *v1alpha1.Op
 // Update takes the representation of a opsworksNodejsAppLayer and updates it. Returns the server's representation of the opsworksNodejsAppLayer, and an error, if there is any.
 func (c *FakeOpsworksNodejsAppLayers) Update(opsworksNodejsAppLayer *v1alpha1.OpsworksNodejsAppLayer) (result *v1alpha1.OpsworksNodejsAppLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(opsworksnodejsapplayersResource, opsworksNodejsAppLayer), &v1alpha1.OpsworksNodejsAppLayer{})
+		Invokes(testing.NewUpdateAction(opsworksnodejsapplayersResource, c.ns, opsworksNodejsAppLayer), &v1alpha1.OpsworksNodejsAppLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeOpsworksNodejsAppLayers) Update(opsworksNodejsAppLayer *v1alpha1.Op
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeOpsworksNodejsAppLayers) UpdateStatus(opsworksNodejsAppLayer *v1alpha1.OpsworksNodejsAppLayer) (*v1alpha1.OpsworksNodejsAppLayer, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(opsworksnodejsapplayersResource, "status", opsworksNodejsAppLayer), &v1alpha1.OpsworksNodejsAppLayer{})
+		Invokes(testing.NewUpdateSubresourceAction(opsworksnodejsapplayersResource, "status", c.ns, opsworksNodejsAppLayer), &v1alpha1.OpsworksNodejsAppLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeOpsworksNodejsAppLayers) UpdateStatus(opsworksNodejsAppLayer *v1alp
 // Delete takes name of the opsworksNodejsAppLayer and deletes it. Returns an error if one occurs.
 func (c *FakeOpsworksNodejsAppLayers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(opsworksnodejsapplayersResource, name), &v1alpha1.OpsworksNodejsAppLayer{})
+		Invokes(testing.NewDeleteAction(opsworksnodejsapplayersResource, c.ns, name), &v1alpha1.OpsworksNodejsAppLayer{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeOpsworksNodejsAppLayers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(opsworksnodejsapplayersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(opsworksnodejsapplayersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.OpsworksNodejsAppLayerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeOpsworksNodejsAppLayers) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched opsworksNodejsAppLayer.
 func (c *FakeOpsworksNodejsAppLayers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksNodejsAppLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(opsworksnodejsapplayersResource, name, pt, data, subresources...), &v1alpha1.OpsworksNodejsAppLayer{})
+		Invokes(testing.NewPatchSubresourceAction(opsworksnodejsapplayersResource, c.ns, name, pt, data, subresources...), &v1alpha1.OpsworksNodejsAppLayer{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type PubsubSubscriptionIamMemberLister interface {
 	// List lists all PubsubSubscriptionIamMembers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.PubsubSubscriptionIamMember, err error)
-	// Get retrieves the PubsubSubscriptionIamMember from the index for a given name.
-	Get(name string) (*v1alpha1.PubsubSubscriptionIamMember, error)
+	// PubsubSubscriptionIamMembers returns an object that can list and get PubsubSubscriptionIamMembers.
+	PubsubSubscriptionIamMembers(namespace string) PubsubSubscriptionIamMemberNamespaceLister
 	PubsubSubscriptionIamMemberListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *pubsubSubscriptionIamMemberLister) List(selector labels.Selector) (ret 
 	return ret, err
 }
 
-// Get retrieves the PubsubSubscriptionIamMember from the index for a given name.
-func (s *pubsubSubscriptionIamMemberLister) Get(name string) (*v1alpha1.PubsubSubscriptionIamMember, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// PubsubSubscriptionIamMembers returns an object that can list and get PubsubSubscriptionIamMembers.
+func (s *pubsubSubscriptionIamMemberLister) PubsubSubscriptionIamMembers(namespace string) PubsubSubscriptionIamMemberNamespaceLister {
+	return pubsubSubscriptionIamMemberNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// PubsubSubscriptionIamMemberNamespaceLister helps list and get PubsubSubscriptionIamMembers.
+type PubsubSubscriptionIamMemberNamespaceLister interface {
+	// List lists all PubsubSubscriptionIamMembers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.PubsubSubscriptionIamMember, err error)
+	// Get retrieves the PubsubSubscriptionIamMember from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.PubsubSubscriptionIamMember, error)
+	PubsubSubscriptionIamMemberNamespaceListerExpansion
+}
+
+// pubsubSubscriptionIamMemberNamespaceLister implements the PubsubSubscriptionIamMemberNamespaceLister
+// interface.
+type pubsubSubscriptionIamMemberNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all PubsubSubscriptionIamMembers in the indexer for a given namespace.
+func (s pubsubSubscriptionIamMemberNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.PubsubSubscriptionIamMember, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.PubsubSubscriptionIamMember))
+	})
+	return ret, err
+}
+
+// Get retrieves the PubsubSubscriptionIamMember from the indexer for a given namespace and name.
+func (s pubsubSubscriptionIamMemberNamespaceLister) Get(name string) (*v1alpha1.PubsubSubscriptionIamMember, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

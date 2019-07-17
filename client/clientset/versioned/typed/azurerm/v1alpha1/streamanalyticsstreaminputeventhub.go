@@ -32,7 +32,7 @@ import (
 // StreamAnalyticsStreamInputEventhubsGetter has a method to return a StreamAnalyticsStreamInputEventhubInterface.
 // A group's client should implement this interface.
 type StreamAnalyticsStreamInputEventhubsGetter interface {
-	StreamAnalyticsStreamInputEventhubs() StreamAnalyticsStreamInputEventhubInterface
+	StreamAnalyticsStreamInputEventhubs(namespace string) StreamAnalyticsStreamInputEventhubInterface
 }
 
 // StreamAnalyticsStreamInputEventhubInterface has methods to work with StreamAnalyticsStreamInputEventhub resources.
@@ -52,12 +52,14 @@ type StreamAnalyticsStreamInputEventhubInterface interface {
 // streamAnalyticsStreamInputEventhubs implements StreamAnalyticsStreamInputEventhubInterface
 type streamAnalyticsStreamInputEventhubs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStreamAnalyticsStreamInputEventhubs returns a StreamAnalyticsStreamInputEventhubs
-func newStreamAnalyticsStreamInputEventhubs(c *AzurermV1alpha1Client) *streamAnalyticsStreamInputEventhubs {
+func newStreamAnalyticsStreamInputEventhubs(c *AzurermV1alpha1Client, namespace string) *streamAnalyticsStreamInputEventhubs {
 	return &streamAnalyticsStreamInputEventhubs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStreamAnalyticsStreamInputEventhubs(c *AzurermV1alpha1Client) *streamAna
 func (c *streamAnalyticsStreamInputEventhubs) Get(name string, options v1.GetOptions) (result *v1alpha1.StreamAnalyticsStreamInputEventhub, err error) {
 	result = &v1alpha1.StreamAnalyticsStreamInputEventhub{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("streamanalyticsstreaminputeventhubs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *streamAnalyticsStreamInputEventhubs) List(opts v1.ListOptions) (result 
 	}
 	result = &v1alpha1.StreamAnalyticsStreamInputEventhubList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("streamanalyticsstreaminputeventhubs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *streamAnalyticsStreamInputEventhubs) Watch(opts v1.ListOptions) (watch.
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("streamanalyticsstreaminputeventhubs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *streamAnalyticsStreamInputEventhubs) Watch(opts v1.ListOptions) (watch.
 func (c *streamAnalyticsStreamInputEventhubs) Create(streamAnalyticsStreamInputEventhub *v1alpha1.StreamAnalyticsStreamInputEventhub) (result *v1alpha1.StreamAnalyticsStreamInputEventhub, err error) {
 	result = &v1alpha1.StreamAnalyticsStreamInputEventhub{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("streamanalyticsstreaminputeventhubs").
 		Body(streamAnalyticsStreamInputEventhub).
 		Do().
@@ -118,6 +124,7 @@ func (c *streamAnalyticsStreamInputEventhubs) Create(streamAnalyticsStreamInputE
 func (c *streamAnalyticsStreamInputEventhubs) Update(streamAnalyticsStreamInputEventhub *v1alpha1.StreamAnalyticsStreamInputEventhub) (result *v1alpha1.StreamAnalyticsStreamInputEventhub, err error) {
 	result = &v1alpha1.StreamAnalyticsStreamInputEventhub{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("streamanalyticsstreaminputeventhubs").
 		Name(streamAnalyticsStreamInputEventhub.Name).
 		Body(streamAnalyticsStreamInputEventhub).
@@ -132,6 +139,7 @@ func (c *streamAnalyticsStreamInputEventhubs) Update(streamAnalyticsStreamInputE
 func (c *streamAnalyticsStreamInputEventhubs) UpdateStatus(streamAnalyticsStreamInputEventhub *v1alpha1.StreamAnalyticsStreamInputEventhub) (result *v1alpha1.StreamAnalyticsStreamInputEventhub, err error) {
 	result = &v1alpha1.StreamAnalyticsStreamInputEventhub{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("streamanalyticsstreaminputeventhubs").
 		Name(streamAnalyticsStreamInputEventhub.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *streamAnalyticsStreamInputEventhubs) UpdateStatus(streamAnalyticsStream
 // Delete takes name of the streamAnalyticsStreamInputEventhub and deletes it. Returns an error if one occurs.
 func (c *streamAnalyticsStreamInputEventhubs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("streamanalyticsstreaminputeventhubs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *streamAnalyticsStreamInputEventhubs) DeleteCollection(options *v1.Delet
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("streamanalyticsstreaminputeventhubs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *streamAnalyticsStreamInputEventhubs) DeleteCollection(options *v1.Delet
 func (c *streamAnalyticsStreamInputEventhubs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StreamAnalyticsStreamInputEventhub, err error) {
 	result = &v1alpha1.StreamAnalyticsStreamInputEventhub{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("streamanalyticsstreaminputeventhubs").
 		SubResource(subresources...).
 		Name(name).

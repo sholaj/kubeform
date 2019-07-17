@@ -398,26 +398,79 @@ spec:
         spec:
           properties:
             container:
-              items: {}
+              items:
+                properties:
+                  containerHostname:
+                    type: string
+                  environment:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  image:
+                    type: string
+                  modelDataURL:
+                    type: string
+                required:
+                - image
+                type: object
               type: array
-            enable_network_isolation:
+            enableNetworkIsolation:
               type: boolean
-            execution_role_arn:
+            executionRoleArn:
               type: string
-            primary_container:
-              items: {}
+            primaryContainer:
+              items:
+                properties:
+                  containerHostname:
+                    type: string
+                  environment:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  image:
+                    type: string
+                  modelDataURL:
+                    type: string
+                required:
+                - image
+                type: object
               maxItems: 1
               type: array
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             tags:
               additionalProperties:
                 type: string
               type: object
-            vpc_config:
-              items: {}
+            vpcConfig:
+              items:
+                properties:
+                  securityGroupIDS:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                  subnets:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                required:
+                - securityGroupIDS
+                - subnets
+                type: object
               maxItems: 1
               type: array
           required:
-          - execution_role_arn
+          - executionRoleArn
+          - providerRef
           type: object
         status:
           properties:
@@ -428,6 +481,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

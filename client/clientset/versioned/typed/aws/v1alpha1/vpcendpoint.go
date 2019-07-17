@@ -32,7 +32,7 @@ import (
 // VpcEndpointsGetter has a method to return a VpcEndpointInterface.
 // A group's client should implement this interface.
 type VpcEndpointsGetter interface {
-	VpcEndpoints() VpcEndpointInterface
+	VpcEndpoints(namespace string) VpcEndpointInterface
 }
 
 // VpcEndpointInterface has methods to work with VpcEndpoint resources.
@@ -52,12 +52,14 @@ type VpcEndpointInterface interface {
 // vpcEndpoints implements VpcEndpointInterface
 type vpcEndpoints struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVpcEndpoints returns a VpcEndpoints
-func newVpcEndpoints(c *AwsV1alpha1Client) *vpcEndpoints {
+func newVpcEndpoints(c *AwsV1alpha1Client, namespace string) *vpcEndpoints {
 	return &vpcEndpoints{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVpcEndpoints(c *AwsV1alpha1Client) *vpcEndpoints {
 func (c *vpcEndpoints) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcEndpoint, err error) {
 	result = &v1alpha1.VpcEndpoint{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcendpoints").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *vpcEndpoints) List(opts v1.ListOptions) (result *v1alpha1.VpcEndpointLi
 	}
 	result = &v1alpha1.VpcEndpointList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcendpoints").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *vpcEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcendpoints").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *vpcEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *vpcEndpoints) Create(vpcEndpoint *v1alpha1.VpcEndpoint) (result *v1alpha1.VpcEndpoint, err error) {
 	result = &v1alpha1.VpcEndpoint{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("vpcendpoints").
 		Body(vpcEndpoint).
 		Do().
@@ -118,6 +124,7 @@ func (c *vpcEndpoints) Create(vpcEndpoint *v1alpha1.VpcEndpoint) (result *v1alph
 func (c *vpcEndpoints) Update(vpcEndpoint *v1alpha1.VpcEndpoint) (result *v1alpha1.VpcEndpoint, err error) {
 	result = &v1alpha1.VpcEndpoint{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcendpoints").
 		Name(vpcEndpoint.Name).
 		Body(vpcEndpoint).
@@ -132,6 +139,7 @@ func (c *vpcEndpoints) Update(vpcEndpoint *v1alpha1.VpcEndpoint) (result *v1alph
 func (c *vpcEndpoints) UpdateStatus(vpcEndpoint *v1alpha1.VpcEndpoint) (result *v1alpha1.VpcEndpoint, err error) {
 	result = &v1alpha1.VpcEndpoint{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcendpoints").
 		Name(vpcEndpoint.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *vpcEndpoints) UpdateStatus(vpcEndpoint *v1alpha1.VpcEndpoint) (result *
 // Delete takes name of the vpcEndpoint and deletes it. Returns an error if one occurs.
 func (c *vpcEndpoints) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcendpoints").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *vpcEndpoints) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcendpoints").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *vpcEndpoints) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *vpcEndpoints) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcEndpoint, err error) {
 	result = &v1alpha1.VpcEndpoint{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("vpcendpoints").
 		SubResource(subresources...).
 		Name(name).

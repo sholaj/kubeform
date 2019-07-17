@@ -397,33 +397,43 @@ spec:
           type: object
         spec:
           properties:
-            api_management_name:
+            apiManagementName:
               type: string
-            approval_required:
+            approvalRequired:
               type: boolean
             description:
               type: string
-            display_name:
+            displayName:
               type: string
-            product_id:
+            productID:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             published:
               type: boolean
-            resource_group_name:
+            resourceGroupName:
               type: string
-            subscription_required:
+            subscriptionRequired:
               type: boolean
-            subscriptions_limit:
+            subscriptionsLimit:
               type: integer
             terms:
               type: string
           required:
-          - api_management_name
-          - display_name
-          - product_id
+          - apiManagementName
+          - displayName
+          - productID
+          - providerRef
           - published
-          - resource_group_name
-          - subscription_required
+          - resourceGroupName
+          - subscriptionRequired
           type: object
         status:
           properties:
@@ -434,6 +444,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -29,8 +29,8 @@ import (
 type LoggingProjectExclusionLister interface {
 	// List lists all LoggingProjectExclusions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LoggingProjectExclusion, err error)
-	// Get retrieves the LoggingProjectExclusion from the index for a given name.
-	Get(name string) (*v1alpha1.LoggingProjectExclusion, error)
+	// LoggingProjectExclusions returns an object that can list and get LoggingProjectExclusions.
+	LoggingProjectExclusions(namespace string) LoggingProjectExclusionNamespaceLister
 	LoggingProjectExclusionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *loggingProjectExclusionLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the LoggingProjectExclusion from the index for a given name.
-func (s *loggingProjectExclusionLister) Get(name string) (*v1alpha1.LoggingProjectExclusion, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LoggingProjectExclusions returns an object that can list and get LoggingProjectExclusions.
+func (s *loggingProjectExclusionLister) LoggingProjectExclusions(namespace string) LoggingProjectExclusionNamespaceLister {
+	return loggingProjectExclusionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LoggingProjectExclusionNamespaceLister helps list and get LoggingProjectExclusions.
+type LoggingProjectExclusionNamespaceLister interface {
+	// List lists all LoggingProjectExclusions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LoggingProjectExclusion, err error)
+	// Get retrieves the LoggingProjectExclusion from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LoggingProjectExclusion, error)
+	LoggingProjectExclusionNamespaceListerExpansion
+}
+
+// loggingProjectExclusionNamespaceLister implements the LoggingProjectExclusionNamespaceLister
+// interface.
+type loggingProjectExclusionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LoggingProjectExclusions in the indexer for a given namespace.
+func (s loggingProjectExclusionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LoggingProjectExclusion, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LoggingProjectExclusion))
+	})
+	return ret, err
+}
+
+// Get retrieves the LoggingProjectExclusion from the indexer for a given namespace and name.
+func (s loggingProjectExclusionNamespaceLister) Get(name string) (*v1alpha1.LoggingProjectExclusion, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

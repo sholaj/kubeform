@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,203 +20,204 @@ type LaunchTemplate struct {
 
 type LaunchTemplateSpecBlockDeviceMappingsEbs struct {
 	// +optional
-	DeleteOnTermination string `json:"delete_on_termination,omitempty"`
+	DeleteOnTermination string `json:"deleteOnTermination,omitempty" tf:"delete_on_termination,omitempty"`
 	// +optional
-	Encrypted string `json:"encrypted,omitempty"`
+	Encrypted string `json:"encrypted,omitempty" tf:"encrypted,omitempty"`
 	// +optional
-	KmsKeyId string `json:"kms_key_id,omitempty"`
+	KmsKeyID string `json:"kmsKeyID,omitempty" tf:"kms_key_id,omitempty"`
 	// +optional
-	SnapshotId string `json:"snapshot_id,omitempty"`
+	SnapshotID string `json:"snapshotID,omitempty" tf:"snapshot_id,omitempty"`
 }
 
 type LaunchTemplateSpecBlockDeviceMappings struct {
 	// +optional
-	DeviceName string `json:"device_name,omitempty"`
+	DeviceName string `json:"deviceName,omitempty" tf:"device_name,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Ebs *[]LaunchTemplateSpecBlockDeviceMappings `json:"ebs,omitempty"`
+	Ebs []LaunchTemplateSpecBlockDeviceMappingsEbs `json:"ebs,omitempty" tf:"ebs,omitempty"`
 	// +optional
-	NoDevice string `json:"no_device,omitempty"`
+	NoDevice string `json:"noDevice,omitempty" tf:"no_device,omitempty"`
 	// +optional
-	VirtualName string `json:"virtual_name,omitempty"`
+	VirtualName string `json:"virtualName,omitempty" tf:"virtual_name,omitempty"`
 }
 
 type LaunchTemplateSpecCapacityReservationSpecificationCapacityReservationTarget struct {
 	// +optional
-	CapacityReservationId string `json:"capacity_reservation_id,omitempty"`
+	CapacityReservationID string `json:"capacityReservationID,omitempty" tf:"capacity_reservation_id,omitempty"`
 }
 
 type LaunchTemplateSpecCapacityReservationSpecification struct {
 	// +optional
-	CapacityReservationPreference string `json:"capacity_reservation_preference,omitempty"`
+	CapacityReservationPreference string `json:"capacityReservationPreference,omitempty" tf:"capacity_reservation_preference,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	CapacityReservationTarget *[]LaunchTemplateSpecCapacityReservationSpecification `json:"capacity_reservation_target,omitempty"`
+	CapacityReservationTarget []LaunchTemplateSpecCapacityReservationSpecificationCapacityReservationTarget `json:"capacityReservationTarget,omitempty" tf:"capacity_reservation_target,omitempty"`
 }
 
 type LaunchTemplateSpecCreditSpecification struct {
 	// +optional
-	CpuCredits string `json:"cpu_credits,omitempty"`
+	CpuCredits string `json:"cpuCredits,omitempty" tf:"cpu_credits,omitempty"`
 }
 
 type LaunchTemplateSpecElasticGpuSpecifications struct {
-	Type string `json:"type"`
+	Type string `json:"type" tf:"type"`
 }
 
 type LaunchTemplateSpecElasticInferenceAccelerator struct {
-	Type string `json:"type"`
+	Type string `json:"type" tf:"type"`
 }
 
 type LaunchTemplateSpecIamInstanceProfile struct {
 	// +optional
-	Arn string `json:"arn,omitempty"`
+	Arn string `json:"arn,omitempty" tf:"arn,omitempty"`
 	// +optional
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" tf:"name,omitempty"`
 }
 
 type LaunchTemplateSpecInstanceMarketOptionsSpotOptions struct {
 	// +optional
-	BlockDurationMinutes int `json:"block_duration_minutes,omitempty"`
+	BlockDurationMinutes int `json:"blockDurationMinutes,omitempty" tf:"block_duration_minutes,omitempty"`
 	// +optional
-	InstanceInterruptionBehavior string `json:"instance_interruption_behavior,omitempty"`
+	InstanceInterruptionBehavior string `json:"instanceInterruptionBehavior,omitempty" tf:"instance_interruption_behavior,omitempty"`
 	// +optional
-	MaxPrice string `json:"max_price,omitempty"`
+	MaxPrice string `json:"maxPrice,omitempty" tf:"max_price,omitempty"`
 	// +optional
-	SpotInstanceType string `json:"spot_instance_type,omitempty"`
+	SpotInstanceType string `json:"spotInstanceType,omitempty" tf:"spot_instance_type,omitempty"`
 }
 
 type LaunchTemplateSpecInstanceMarketOptions struct {
 	// +optional
-	MarketType string `json:"market_type,omitempty"`
+	MarketType string `json:"marketType,omitempty" tf:"market_type,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	SpotOptions *[]LaunchTemplateSpecInstanceMarketOptions `json:"spot_options,omitempty"`
+	SpotOptions []LaunchTemplateSpecInstanceMarketOptionsSpotOptions `json:"spotOptions,omitempty" tf:"spot_options,omitempty"`
 }
 
 type LaunchTemplateSpecLicenseSpecification struct {
-	LicenseConfigurationArn string `json:"license_configuration_arn"`
+	LicenseConfigurationArn string `json:"licenseConfigurationArn" tf:"license_configuration_arn"`
 }
 
 type LaunchTemplateSpecMonitoring struct {
 	// +optional
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
 }
 
 type LaunchTemplateSpecNetworkInterfaces struct {
 	// +optional
-	AssociatePublicIpAddress bool `json:"associate_public_ip_address,omitempty"`
+	AssociatePublicIPAddress bool `json:"associatePublicIPAddress,omitempty" tf:"associate_public_ip_address,omitempty"`
 	// +optional
-	DeleteOnTermination bool `json:"delete_on_termination,omitempty"`
+	DeleteOnTermination bool `json:"deleteOnTermination,omitempty" tf:"delete_on_termination,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	DeviceIndex int `json:"device_index,omitempty"`
+	DeviceIndex int `json:"deviceIndex,omitempty" tf:"device_index,omitempty"`
 	// +optional
-	Ipv4AddressCount int `json:"ipv4_address_count,omitempty"`
-	// +optional
-	// +kubebuilder:validation:UniqueItems=true
-	Ipv4Addresses []string `json:"ipv4_addresses,omitempty"`
-	// +optional
-	Ipv6AddressCount int `json:"ipv6_address_count,omitempty"`
+	Ipv4AddressCount int `json:"ipv4AddressCount,omitempty" tf:"ipv4_address_count,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Ipv6Addresses []string `json:"ipv6_addresses,omitempty"`
+	Ipv4Addresses []string `json:"ipv4Addresses,omitempty" tf:"ipv4_addresses,omitempty"`
 	// +optional
-	NetworkInterfaceId string `json:"network_interface_id,omitempty"`
-	// +optional
-	PrivateIpAddress string `json:"private_ip_address,omitempty"`
+	Ipv6AddressCount int `json:"ipv6AddressCount,omitempty" tf:"ipv6_address_count,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SecurityGroups []string `json:"security_groups,omitempty"`
+	Ipv6Addresses []string `json:"ipv6Addresses,omitempty" tf:"ipv6_addresses,omitempty"`
 	// +optional
-	SubnetId string `json:"subnet_id,omitempty"`
+	NetworkInterfaceID string `json:"networkInterfaceID,omitempty" tf:"network_interface_id,omitempty"`
+	// +optional
+	PrivateIPAddress string `json:"privateIPAddress,omitempty" tf:"private_ip_address,omitempty"`
+	// +optional
+	// +kubebuilder:validation:UniqueItems=true
+	SecurityGroups []string `json:"securityGroups,omitempty" tf:"security_groups,omitempty"`
+	// +optional
+	SubnetID string `json:"subnetID,omitempty" tf:"subnet_id,omitempty"`
 }
 
 type LaunchTemplateSpecPlacement struct {
 	// +optional
-	Affinity string `json:"affinity,omitempty"`
+	Affinity string `json:"affinity,omitempty" tf:"affinity,omitempty"`
 	// +optional
-	AvailabilityZone string `json:"availability_zone,omitempty"`
+	AvailabilityZone string `json:"availabilityZone,omitempty" tf:"availability_zone,omitempty"`
 	// +optional
-	GroupName string `json:"group_name,omitempty"`
+	GroupName string `json:"groupName,omitempty" tf:"group_name,omitempty"`
 	// +optional
-	HostId string `json:"host_id,omitempty"`
+	HostID string `json:"hostID,omitempty" tf:"host_id,omitempty"`
 	// +optional
-	SpreadDomain string `json:"spread_domain,omitempty"`
+	SpreadDomain string `json:"spreadDomain,omitempty" tf:"spread_domain,omitempty"`
 	// +optional
-	Tenancy string `json:"tenancy,omitempty"`
+	Tenancy string `json:"tenancy,omitempty" tf:"tenancy,omitempty"`
 }
 
 type LaunchTemplateSpecTagSpecifications struct {
 	// +optional
-	ResourceType string `json:"resource_type,omitempty"`
+	ResourceType string `json:"resourceType,omitempty" tf:"resource_type,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 }
 
 type LaunchTemplateSpec struct {
 	// +optional
-	BlockDeviceMappings *[]LaunchTemplateSpec `json:"block_device_mappings,omitempty"`
+	BlockDeviceMappings []LaunchTemplateSpecBlockDeviceMappings `json:"blockDeviceMappings,omitempty" tf:"block_device_mappings,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	CapacityReservationSpecification *[]LaunchTemplateSpec `json:"capacity_reservation_specification,omitempty"`
+	CapacityReservationSpecification []LaunchTemplateSpecCapacityReservationSpecification `json:"capacityReservationSpecification,omitempty" tf:"capacity_reservation_specification,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	CreditSpecification *[]LaunchTemplateSpec `json:"credit_specification,omitempty"`
+	CreditSpecification []LaunchTemplateSpecCreditSpecification `json:"creditSpecification,omitempty" tf:"credit_specification,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	DisableApiTermination bool `json:"disable_api_termination,omitempty"`
+	DisableAPITermination bool `json:"disableAPITermination,omitempty" tf:"disable_api_termination,omitempty"`
 	// +optional
-	EbsOptimized string `json:"ebs_optimized,omitempty"`
+	EbsOptimized string `json:"ebsOptimized,omitempty" tf:"ebs_optimized,omitempty"`
 	// +optional
-	ElasticGpuSpecifications *[]LaunchTemplateSpec `json:"elastic_gpu_specifications,omitempty"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	ElasticInferenceAccelerator *[]LaunchTemplateSpec `json:"elastic_inference_accelerator,omitempty"`
+	ElasticGpuSpecifications []LaunchTemplateSpecElasticGpuSpecifications `json:"elasticGpuSpecifications,omitempty" tf:"elastic_gpu_specifications,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	IamInstanceProfile *[]LaunchTemplateSpec `json:"iam_instance_profile,omitempty"`
-	// +optional
-	ImageId string `json:"image_id,omitempty"`
-	// +optional
-	InstanceInitiatedShutdownBehavior string `json:"instance_initiated_shutdown_behavior,omitempty"`
+	ElasticInferenceAccelerator []LaunchTemplateSpecElasticInferenceAccelerator `json:"elasticInferenceAccelerator,omitempty" tf:"elastic_inference_accelerator,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	InstanceMarketOptions *[]LaunchTemplateSpec `json:"instance_market_options,omitempty"`
+	IamInstanceProfile []LaunchTemplateSpecIamInstanceProfile `json:"iamInstanceProfile,omitempty" tf:"iam_instance_profile,omitempty"`
 	// +optional
-	InstanceType string `json:"instance_type,omitempty"`
+	ImageID string `json:"imageID,omitempty" tf:"image_id,omitempty"`
 	// +optional
-	KernelId string `json:"kernel_id,omitempty"`
+	InstanceInitiatedShutdownBehavior string `json:"instanceInitiatedShutdownBehavior,omitempty" tf:"instance_initiated_shutdown_behavior,omitempty"`
 	// +optional
-	KeyName string `json:"key_name,omitempty"`
+	// +kubebuilder:validation:MaxItems=1
+	InstanceMarketOptions []LaunchTemplateSpecInstanceMarketOptions `json:"instanceMarketOptions,omitempty" tf:"instance_market_options,omitempty"`
+	// +optional
+	InstanceType string `json:"instanceType,omitempty" tf:"instance_type,omitempty"`
+	// +optional
+	KernelID string `json:"kernelID,omitempty" tf:"kernel_id,omitempty"`
+	// +optional
+	KeyName string `json:"keyName,omitempty" tf:"key_name,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	LicenseSpecification *[]LaunchTemplateSpec `json:"license_specification,omitempty"`
+	LicenseSpecification []LaunchTemplateSpecLicenseSpecification `json:"licenseSpecification,omitempty" tf:"license_specification,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Monitoring *[]LaunchTemplateSpec `json:"monitoring,omitempty"`
+	Monitoring []LaunchTemplateSpecMonitoring `json:"monitoring,omitempty" tf:"monitoring,omitempty"`
 	// +optional
-	NamePrefix string `json:"name_prefix,omitempty"`
+	NamePrefix string `json:"namePrefix,omitempty" tf:"name_prefix,omitempty"`
 	// +optional
-	NetworkInterfaces *[]LaunchTemplateSpec `json:"network_interfaces,omitempty"`
+	NetworkInterfaces []LaunchTemplateSpecNetworkInterfaces `json:"networkInterfaces,omitempty" tf:"network_interfaces,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Placement *[]LaunchTemplateSpec `json:"placement,omitempty"`
+	Placement []LaunchTemplateSpecPlacement `json:"placement,omitempty" tf:"placement,omitempty"`
 	// +optional
-	RamDiskId string `json:"ram_disk_id,omitempty"`
-	// +optional
-	// +kubebuilder:validation:UniqueItems=true
-	SecurityGroupNames []string `json:"security_group_names,omitempty"`
-	// +optional
-	TagSpecifications *[]LaunchTemplateSpec `json:"tag_specifications,omitempty"`
-	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
-	// +optional
-	UserData string `json:"user_data,omitempty"`
+	RamDiskID string `json:"ramDiskID,omitempty" tf:"ram_disk_id,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	VpcSecurityGroupIds []string `json:"vpc_security_group_ids,omitempty"`
+	SecurityGroupNames []string `json:"securityGroupNames,omitempty" tf:"security_group_names,omitempty"`
+	// +optional
+	TagSpecifications []LaunchTemplateSpecTagSpecifications `json:"tagSpecifications,omitempty" tf:"tag_specifications,omitempty"`
+	// +optional
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
+	// +optional
+	UserData string `json:"userData,omitempty" tf:"user_data,omitempty"`
+	// +optional
+	// +kubebuilder:validation:UniqueItems=true
+	VpcSecurityGroupIDS []string                  `json:"vpcSecurityGroupIDS,omitempty" tf:"vpc_security_group_ids,omitempty"`
+	ProviderRef         core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type LaunchTemplateStatus struct {
@@ -224,7 +225,9 @@ type LaunchTemplateStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

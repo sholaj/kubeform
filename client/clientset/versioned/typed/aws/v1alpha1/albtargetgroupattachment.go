@@ -32,7 +32,7 @@ import (
 // AlbTargetGroupAttachmentsGetter has a method to return a AlbTargetGroupAttachmentInterface.
 // A group's client should implement this interface.
 type AlbTargetGroupAttachmentsGetter interface {
-	AlbTargetGroupAttachments() AlbTargetGroupAttachmentInterface
+	AlbTargetGroupAttachments(namespace string) AlbTargetGroupAttachmentInterface
 }
 
 // AlbTargetGroupAttachmentInterface has methods to work with AlbTargetGroupAttachment resources.
@@ -52,12 +52,14 @@ type AlbTargetGroupAttachmentInterface interface {
 // albTargetGroupAttachments implements AlbTargetGroupAttachmentInterface
 type albTargetGroupAttachments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAlbTargetGroupAttachments returns a AlbTargetGroupAttachments
-func newAlbTargetGroupAttachments(c *AwsV1alpha1Client) *albTargetGroupAttachments {
+func newAlbTargetGroupAttachments(c *AwsV1alpha1Client, namespace string) *albTargetGroupAttachments {
 	return &albTargetGroupAttachments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAlbTargetGroupAttachments(c *AwsV1alpha1Client) *albTargetGroupAttachmen
 func (c *albTargetGroupAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.AlbTargetGroupAttachment, err error) {
 	result = &v1alpha1.AlbTargetGroupAttachment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("albtargetgroupattachments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *albTargetGroupAttachments) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.AlbTargetGroupAttachmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("albtargetgroupattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *albTargetGroupAttachments) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("albtargetgroupattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *albTargetGroupAttachments) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *albTargetGroupAttachments) Create(albTargetGroupAttachment *v1alpha1.AlbTargetGroupAttachment) (result *v1alpha1.AlbTargetGroupAttachment, err error) {
 	result = &v1alpha1.AlbTargetGroupAttachment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("albtargetgroupattachments").
 		Body(albTargetGroupAttachment).
 		Do().
@@ -118,6 +124,7 @@ func (c *albTargetGroupAttachments) Create(albTargetGroupAttachment *v1alpha1.Al
 func (c *albTargetGroupAttachments) Update(albTargetGroupAttachment *v1alpha1.AlbTargetGroupAttachment) (result *v1alpha1.AlbTargetGroupAttachment, err error) {
 	result = &v1alpha1.AlbTargetGroupAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("albtargetgroupattachments").
 		Name(albTargetGroupAttachment.Name).
 		Body(albTargetGroupAttachment).
@@ -132,6 +139,7 @@ func (c *albTargetGroupAttachments) Update(albTargetGroupAttachment *v1alpha1.Al
 func (c *albTargetGroupAttachments) UpdateStatus(albTargetGroupAttachment *v1alpha1.AlbTargetGroupAttachment) (result *v1alpha1.AlbTargetGroupAttachment, err error) {
 	result = &v1alpha1.AlbTargetGroupAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("albtargetgroupattachments").
 		Name(albTargetGroupAttachment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *albTargetGroupAttachments) UpdateStatus(albTargetGroupAttachment *v1alp
 // Delete takes name of the albTargetGroupAttachment and deletes it. Returns an error if one occurs.
 func (c *albTargetGroupAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("albtargetgroupattachments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *albTargetGroupAttachments) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("albtargetgroupattachments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *albTargetGroupAttachments) DeleteCollection(options *v1.DeleteOptions, 
 func (c *albTargetGroupAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AlbTargetGroupAttachment, err error) {
 	result = &v1alpha1.AlbTargetGroupAttachment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("albtargetgroupattachments").
 		SubResource(subresources...).
 		Name(name).

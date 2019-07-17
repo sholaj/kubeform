@@ -29,8 +29,8 @@ import (
 type IamRolePolicyLister interface {
 	// List lists all IamRolePolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IamRolePolicy, err error)
-	// Get retrieves the IamRolePolicy from the index for a given name.
-	Get(name string) (*v1alpha1.IamRolePolicy, error)
+	// IamRolePolicies returns an object that can list and get IamRolePolicies.
+	IamRolePolicies(namespace string) IamRolePolicyNamespaceLister
 	IamRolePolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iamRolePolicyLister) List(selector labels.Selector) (ret []*v1alpha1.Ia
 	return ret, err
 }
 
-// Get retrieves the IamRolePolicy from the index for a given name.
-func (s *iamRolePolicyLister) Get(name string) (*v1alpha1.IamRolePolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IamRolePolicies returns an object that can list and get IamRolePolicies.
+func (s *iamRolePolicyLister) IamRolePolicies(namespace string) IamRolePolicyNamespaceLister {
+	return iamRolePolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IamRolePolicyNamespaceLister helps list and get IamRolePolicies.
+type IamRolePolicyNamespaceLister interface {
+	// List lists all IamRolePolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IamRolePolicy, err error)
+	// Get retrieves the IamRolePolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IamRolePolicy, error)
+	IamRolePolicyNamespaceListerExpansion
+}
+
+// iamRolePolicyNamespaceLister implements the IamRolePolicyNamespaceLister
+// interface.
+type iamRolePolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IamRolePolicies in the indexer for a given namespace.
+func (s iamRolePolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IamRolePolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IamRolePolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the IamRolePolicy from the indexer for a given namespace and name.
+func (s iamRolePolicyNamespaceLister) Get(name string) (*v1alpha1.IamRolePolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

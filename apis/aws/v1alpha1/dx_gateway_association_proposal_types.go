@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,12 +20,13 @@ type DxGatewayAssociationProposal struct {
 
 type DxGatewayAssociationProposalSpec struct {
 	// +optional
-	AssociatedGatewayId     string `json:"associated_gateway_id,omitempty"`
-	DxGatewayId             string `json:"dx_gateway_id"`
-	DxGatewayOwnerAccountId string `json:"dx_gateway_owner_account_id"`
+	AssociatedGatewayID     string `json:"associatedGatewayID,omitempty" tf:"associated_gateway_id,omitempty"`
+	DxGatewayID             string `json:"dxGatewayID" tf:"dx_gateway_id"`
+	DxGatewayOwnerAccountID string `json:"dxGatewayOwnerAccountID" tf:"dx_gateway_owner_account_id"`
 	// +optional
 	// Deprecated
-	VpnGatewayId string `json:"vpn_gateway_id,omitempty"`
+	VpnGatewayID string                    `json:"vpnGatewayID,omitempty" tf:"vpn_gateway_id,omitempty"`
+	ProviderRef  core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DxGatewayAssociationProposalStatus struct {
@@ -33,7 +34,9 @@ type DxGatewayAssociationProposalStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

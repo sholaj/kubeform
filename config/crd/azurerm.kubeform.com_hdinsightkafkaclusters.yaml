@@ -397,40 +397,166 @@ spec:
           type: object
         spec:
           properties:
-            cluster_version:
+            clusterVersion:
               type: string
-            component_version:
-              items: {}
+            componentVersion:
+              items:
+                properties:
+                  kafka:
+                    type: string
+                required:
+                - kafka
+                type: object
               maxItems: 1
               type: array
             gateway:
-              items: {}
+              items:
+                properties:
+                  enabled:
+                    type: boolean
+                  password:
+                    type: string
+                  username:
+                    type: string
+                required:
+                - enabled
+                - password
+                - username
+                type: object
               maxItems: 1
               type: array
             location:
               type: string
             name:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
             roles:
-              items: {}
+              items:
+                properties:
+                  headNode:
+                    items:
+                      properties:
+                        password:
+                          type: string
+                        sshKeys:
+                          items:
+                            type: string
+                          type: array
+                          uniqueItems: true
+                        subnetID:
+                          type: string
+                        username:
+                          type: string
+                        virtualNetworkID:
+                          type: string
+                        vmSize:
+                          type: string
+                      required:
+                      - username
+                      - vmSize
+                      type: object
+                    maxItems: 1
+                    type: array
+                  workerNode:
+                    items:
+                      properties:
+                        minInstanceCount:
+                          type: integer
+                        numberOfDisksPerNode:
+                          type: integer
+                        password:
+                          type: string
+                        sshKeys:
+                          items:
+                            type: string
+                          type: array
+                          uniqueItems: true
+                        subnetID:
+                          type: string
+                        targetInstanceCount:
+                          type: integer
+                        username:
+                          type: string
+                        virtualNetworkID:
+                          type: string
+                        vmSize:
+                          type: string
+                      required:
+                      - numberOfDisksPerNode
+                      - targetInstanceCount
+                      - username
+                      - vmSize
+                      type: object
+                    maxItems: 1
+                    type: array
+                  zookeeperNode:
+                    items:
+                      properties:
+                        password:
+                          type: string
+                        sshKeys:
+                          items:
+                            type: string
+                          type: array
+                          uniqueItems: true
+                        subnetID:
+                          type: string
+                        username:
+                          type: string
+                        virtualNetworkID:
+                          type: string
+                        vmSize:
+                          type: string
+                      required:
+                      - username
+                      - vmSize
+                      type: object
+                    maxItems: 1
+                    type: array
+                required:
+                - headNode
+                - workerNode
+                - zookeeperNode
+                type: object
               maxItems: 1
               type: array
-            storage_account:
-              items: {}
+            storageAccount:
+              items:
+                properties:
+                  isDefault:
+                    type: boolean
+                  storageAccountKey:
+                    type: string
+                  storageContainerID:
+                    type: string
+                required:
+                - isDefault
+                - storageAccountKey
+                - storageContainerID
+                type: object
               type: array
             tier:
               type: string
           required:
-          - cluster_version
-          - component_version
+          - clusterVersion
+          - componentVersion
           - gateway
           - location
           - name
-          - resource_group_name
+          - providerRef
+          - resourceGroupName
           - roles
-          - storage_account
+          - storageAccount
           - tier
           type: object
         status:
@@ -442,6 +568,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

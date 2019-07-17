@@ -31,6 +31,7 @@ import (
 // FakeApiGatewayDomainNames implements ApiGatewayDomainNameInterface
 type FakeApiGatewayDomainNames struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var apigatewaydomainnamesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "apigatewaydomainnames"}
@@ -40,7 +41,8 @@ var apigatewaydomainnamesKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the apiGatewayDomainName, and returns the corresponding apiGatewayDomainName object, and an error if there is any.
 func (c *FakeApiGatewayDomainNames) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayDomainName, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apigatewaydomainnamesResource, name), &v1alpha1.ApiGatewayDomainName{})
+		Invokes(testing.NewGetAction(apigatewaydomainnamesResource, c.ns, name), &v1alpha1.ApiGatewayDomainName{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApiGatewayDomainNames) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of ApiGatewayDomainNames that match those selectors.
 func (c *FakeApiGatewayDomainNames) List(opts v1.ListOptions) (result *v1alpha1.ApiGatewayDomainNameList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apigatewaydomainnamesResource, apigatewaydomainnamesKind, opts), &v1alpha1.ApiGatewayDomainNameList{})
+		Invokes(testing.NewListAction(apigatewaydomainnamesResource, apigatewaydomainnamesKind, c.ns, opts), &v1alpha1.ApiGatewayDomainNameList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApiGatewayDomainNames) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested apiGatewayDomainNames.
 func (c *FakeApiGatewayDomainNames) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apigatewaydomainnamesResource, opts))
+		InvokesWatch(testing.NewWatchAction(apigatewaydomainnamesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a apiGatewayDomainName and creates it.  Returns the server's representation of the apiGatewayDomainName, and an error, if there is any.
 func (c *FakeApiGatewayDomainNames) Create(apiGatewayDomainName *v1alpha1.ApiGatewayDomainName) (result *v1alpha1.ApiGatewayDomainName, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apigatewaydomainnamesResource, apiGatewayDomainName), &v1alpha1.ApiGatewayDomainName{})
+		Invokes(testing.NewCreateAction(apigatewaydomainnamesResource, c.ns, apiGatewayDomainName), &v1alpha1.ApiGatewayDomainName{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApiGatewayDomainNames) Create(apiGatewayDomainName *v1alpha1.ApiGat
 // Update takes the representation of a apiGatewayDomainName and updates it. Returns the server's representation of the apiGatewayDomainName, and an error, if there is any.
 func (c *FakeApiGatewayDomainNames) Update(apiGatewayDomainName *v1alpha1.ApiGatewayDomainName) (result *v1alpha1.ApiGatewayDomainName, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apigatewaydomainnamesResource, apiGatewayDomainName), &v1alpha1.ApiGatewayDomainName{})
+		Invokes(testing.NewUpdateAction(apigatewaydomainnamesResource, c.ns, apiGatewayDomainName), &v1alpha1.ApiGatewayDomainName{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApiGatewayDomainNames) Update(apiGatewayDomainName *v1alpha1.ApiGat
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApiGatewayDomainNames) UpdateStatus(apiGatewayDomainName *v1alpha1.ApiGatewayDomainName) (*v1alpha1.ApiGatewayDomainName, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apigatewaydomainnamesResource, "status", apiGatewayDomainName), &v1alpha1.ApiGatewayDomainName{})
+		Invokes(testing.NewUpdateSubresourceAction(apigatewaydomainnamesResource, "status", c.ns, apiGatewayDomainName), &v1alpha1.ApiGatewayDomainName{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApiGatewayDomainNames) UpdateStatus(apiGatewayDomainName *v1alpha1.
 // Delete takes name of the apiGatewayDomainName and deletes it. Returns an error if one occurs.
 func (c *FakeApiGatewayDomainNames) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apigatewaydomainnamesResource, name), &v1alpha1.ApiGatewayDomainName{})
+		Invokes(testing.NewDeleteAction(apigatewaydomainnamesResource, c.ns, name), &v1alpha1.ApiGatewayDomainName{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApiGatewayDomainNames) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apigatewaydomainnamesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(apigatewaydomainnamesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApiGatewayDomainNameList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApiGatewayDomainNames) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched apiGatewayDomainName.
 func (c *FakeApiGatewayDomainNames) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayDomainName, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apigatewaydomainnamesResource, name, pt, data, subresources...), &v1alpha1.ApiGatewayDomainName{})
+		Invokes(testing.NewPatchSubresourceAction(apigatewaydomainnamesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiGatewayDomainName{})
+
 	if obj == nil {
 		return nil, err
 	}

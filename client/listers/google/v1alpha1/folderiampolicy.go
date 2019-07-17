@@ -29,8 +29,8 @@ import (
 type FolderIamPolicyLister interface {
 	// List lists all FolderIamPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.FolderIamPolicy, err error)
-	// Get retrieves the FolderIamPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.FolderIamPolicy, error)
+	// FolderIamPolicies returns an object that can list and get FolderIamPolicies.
+	FolderIamPolicies(namespace string) FolderIamPolicyNamespaceLister
 	FolderIamPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *folderIamPolicyLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the FolderIamPolicy from the index for a given name.
-func (s *folderIamPolicyLister) Get(name string) (*v1alpha1.FolderIamPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// FolderIamPolicies returns an object that can list and get FolderIamPolicies.
+func (s *folderIamPolicyLister) FolderIamPolicies(namespace string) FolderIamPolicyNamespaceLister {
+	return folderIamPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// FolderIamPolicyNamespaceLister helps list and get FolderIamPolicies.
+type FolderIamPolicyNamespaceLister interface {
+	// List lists all FolderIamPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.FolderIamPolicy, err error)
+	// Get retrieves the FolderIamPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.FolderIamPolicy, error)
+	FolderIamPolicyNamespaceListerExpansion
+}
+
+// folderIamPolicyNamespaceLister implements the FolderIamPolicyNamespaceLister
+// interface.
+type folderIamPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all FolderIamPolicies in the indexer for a given namespace.
+func (s folderIamPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.FolderIamPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.FolderIamPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the FolderIamPolicy from the indexer for a given namespace and name.
+func (s folderIamPolicyNamespaceLister) Get(name string) (*v1alpha1.FolderIamPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

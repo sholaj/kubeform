@@ -29,8 +29,8 @@ import (
 type SubnetNetworkSecurityGroupAssociationLister interface {
 	// List lists all SubnetNetworkSecurityGroupAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SubnetNetworkSecurityGroupAssociation, err error)
-	// Get retrieves the SubnetNetworkSecurityGroupAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.SubnetNetworkSecurityGroupAssociation, error)
+	// SubnetNetworkSecurityGroupAssociations returns an object that can list and get SubnetNetworkSecurityGroupAssociations.
+	SubnetNetworkSecurityGroupAssociations(namespace string) SubnetNetworkSecurityGroupAssociationNamespaceLister
 	SubnetNetworkSecurityGroupAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *subnetNetworkSecurityGroupAssociationLister) List(selector labels.Selec
 	return ret, err
 }
 
-// Get retrieves the SubnetNetworkSecurityGroupAssociation from the index for a given name.
-func (s *subnetNetworkSecurityGroupAssociationLister) Get(name string) (*v1alpha1.SubnetNetworkSecurityGroupAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SubnetNetworkSecurityGroupAssociations returns an object that can list and get SubnetNetworkSecurityGroupAssociations.
+func (s *subnetNetworkSecurityGroupAssociationLister) SubnetNetworkSecurityGroupAssociations(namespace string) SubnetNetworkSecurityGroupAssociationNamespaceLister {
+	return subnetNetworkSecurityGroupAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SubnetNetworkSecurityGroupAssociationNamespaceLister helps list and get SubnetNetworkSecurityGroupAssociations.
+type SubnetNetworkSecurityGroupAssociationNamespaceLister interface {
+	// List lists all SubnetNetworkSecurityGroupAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SubnetNetworkSecurityGroupAssociation, err error)
+	// Get retrieves the SubnetNetworkSecurityGroupAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SubnetNetworkSecurityGroupAssociation, error)
+	SubnetNetworkSecurityGroupAssociationNamespaceListerExpansion
+}
+
+// subnetNetworkSecurityGroupAssociationNamespaceLister implements the SubnetNetworkSecurityGroupAssociationNamespaceLister
+// interface.
+type subnetNetworkSecurityGroupAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SubnetNetworkSecurityGroupAssociations in the indexer for a given namespace.
+func (s subnetNetworkSecurityGroupAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SubnetNetworkSecurityGroupAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SubnetNetworkSecurityGroupAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the SubnetNetworkSecurityGroupAssociation from the indexer for a given namespace and name.
+func (s subnetNetworkSecurityGroupAssociationNamespaceLister) Get(name string) (*v1alpha1.SubnetNetworkSecurityGroupAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeMetricAlertrules implements MetricAlertruleInterface
 type FakeMetricAlertrules struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var metricalertrulesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "metricalertrules"}
@@ -40,7 +41,8 @@ var metricalertrulesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com"
 // Get takes name of the metricAlertrule, and returns the corresponding metricAlertrule object, and an error if there is any.
 func (c *FakeMetricAlertrules) Get(name string, options v1.GetOptions) (result *v1alpha1.MetricAlertrule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(metricalertrulesResource, name), &v1alpha1.MetricAlertrule{})
+		Invokes(testing.NewGetAction(metricalertrulesResource, c.ns, name), &v1alpha1.MetricAlertrule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMetricAlertrules) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of MetricAlertrules that match those selectors.
 func (c *FakeMetricAlertrules) List(opts v1.ListOptions) (result *v1alpha1.MetricAlertruleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(metricalertrulesResource, metricalertrulesKind, opts), &v1alpha1.MetricAlertruleList{})
+		Invokes(testing.NewListAction(metricalertrulesResource, metricalertrulesKind, c.ns, opts), &v1alpha1.MetricAlertruleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMetricAlertrules) List(opts v1.ListOptions) (result *v1alpha1.Metri
 // Watch returns a watch.Interface that watches the requested metricAlertrules.
 func (c *FakeMetricAlertrules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(metricalertrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(metricalertrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a metricAlertrule and creates it.  Returns the server's representation of the metricAlertrule, and an error, if there is any.
 func (c *FakeMetricAlertrules) Create(metricAlertrule *v1alpha1.MetricAlertrule) (result *v1alpha1.MetricAlertrule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(metricalertrulesResource, metricAlertrule), &v1alpha1.MetricAlertrule{})
+		Invokes(testing.NewCreateAction(metricalertrulesResource, c.ns, metricAlertrule), &v1alpha1.MetricAlertrule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMetricAlertrules) Create(metricAlertrule *v1alpha1.MetricAlertrule)
 // Update takes the representation of a metricAlertrule and updates it. Returns the server's representation of the metricAlertrule, and an error, if there is any.
 func (c *FakeMetricAlertrules) Update(metricAlertrule *v1alpha1.MetricAlertrule) (result *v1alpha1.MetricAlertrule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(metricalertrulesResource, metricAlertrule), &v1alpha1.MetricAlertrule{})
+		Invokes(testing.NewUpdateAction(metricalertrulesResource, c.ns, metricAlertrule), &v1alpha1.MetricAlertrule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMetricAlertrules) Update(metricAlertrule *v1alpha1.MetricAlertrule)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMetricAlertrules) UpdateStatus(metricAlertrule *v1alpha1.MetricAlertrule) (*v1alpha1.MetricAlertrule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(metricalertrulesResource, "status", metricAlertrule), &v1alpha1.MetricAlertrule{})
+		Invokes(testing.NewUpdateSubresourceAction(metricalertrulesResource, "status", c.ns, metricAlertrule), &v1alpha1.MetricAlertrule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMetricAlertrules) UpdateStatus(metricAlertrule *v1alpha1.MetricAler
 // Delete takes name of the metricAlertrule and deletes it. Returns an error if one occurs.
 func (c *FakeMetricAlertrules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(metricalertrulesResource, name), &v1alpha1.MetricAlertrule{})
+		Invokes(testing.NewDeleteAction(metricalertrulesResource, c.ns, name), &v1alpha1.MetricAlertrule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMetricAlertrules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(metricalertrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(metricalertrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MetricAlertruleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMetricAlertrules) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched metricAlertrule.
 func (c *FakeMetricAlertrules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MetricAlertrule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(metricalertrulesResource, name, pt, data, subresources...), &v1alpha1.MetricAlertrule{})
+		Invokes(testing.NewPatchSubresourceAction(metricalertrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.MetricAlertrule{})
+
 	if obj == nil {
 		return nil, err
 	}

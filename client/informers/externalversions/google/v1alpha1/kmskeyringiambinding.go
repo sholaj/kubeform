@@ -41,32 +41,33 @@ type KmsKeyRingIamBindingInformer interface {
 type kmsKeyRingIamBindingInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewKmsKeyRingIamBindingInformer constructs a new informer for KmsKeyRingIamBinding type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewKmsKeyRingIamBindingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredKmsKeyRingIamBindingInformer(client, resyncPeriod, indexers, nil)
+func NewKmsKeyRingIamBindingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredKmsKeyRingIamBindingInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredKmsKeyRingIamBindingInformer constructs a new informer for KmsKeyRingIamBinding type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredKmsKeyRingIamBindingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredKmsKeyRingIamBindingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().KmsKeyRingIamBindings().List(options)
+				return client.GoogleV1alpha1().KmsKeyRingIamBindings(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().KmsKeyRingIamBindings().Watch(options)
+				return client.GoogleV1alpha1().KmsKeyRingIamBindings(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.KmsKeyRingIamBinding{},
@@ -76,7 +77,7 @@ func NewFilteredKmsKeyRingIamBindingInformer(client versioned.Interface, resyncP
 }
 
 func (f *kmsKeyRingIamBindingInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredKmsKeyRingIamBindingInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredKmsKeyRingIamBindingInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *kmsKeyRingIamBindingInformer) Informer() cache.SharedIndexInformer {

@@ -397,21 +397,64 @@ spec:
           type: object
         spec:
           properties:
-            admission_whitelist_patterns:
-              items: {}
+            admissionWhitelistPatterns:
+              items:
+                properties:
+                  namePattern:
+                    type: string
+                type: object
               type: array
-            cluster_admission_rules:
-              items: {}
+            clusterAdmissionRules:
+              items:
+                properties:
+                  cluster:
+                    type: string
+                  enforcementMode:
+                    type: string
+                  evaluationMode:
+                    type: string
+                  requireAttestationsBy:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                required:
+                - cluster
+                type: object
               type: array
               uniqueItems: true
-            default_admission_rule:
-              items: {}
+            defaultAdmissionRule:
+              items:
+                properties:
+                  enforcementMode:
+                    type: string
+                  evaluationMode:
+                    type: string
+                  requireAttestationsBy:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                required:
+                - enforcementMode
+                - evaluationMode
+                type: object
               maxItems: 1
               type: array
             description:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
           required:
-          - default_admission_rule
+          - defaultAdmissionRule
+          - providerRef
           type: object
         status:
           properties:
@@ -422,6 +465,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

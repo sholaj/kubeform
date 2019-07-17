@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,33 +20,34 @@ type BigqueryTable struct {
 
 type BigqueryTableSpecTimePartitioning struct {
 	// +optional
-	ExpirationMs int `json:"expiration_ms,omitempty"`
+	ExpirationMs int `json:"expirationMs,omitempty" tf:"expiration_ms,omitempty"`
 	// +optional
-	Field string `json:"field,omitempty"`
-	Type  string `json:"type"`
+	Field string `json:"field,omitempty" tf:"field,omitempty"`
+	Type  string `json:"type" tf:"type"`
 }
 
 type BigqueryTableSpecView struct {
-	Query string `json:"query"`
+	Query string `json:"query" tf:"query"`
 	// +optional
-	UseLegacySql bool `json:"use_legacy_sql,omitempty"`
+	UseLegacySQL bool `json:"useLegacySQL,omitempty" tf:"use_legacy_sql,omitempty"`
 }
 
 type BigqueryTableSpec struct {
-	DatasetId string `json:"dataset_id"`
+	DatasetID string `json:"datasetID" tf:"dataset_id"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	FriendlyName string `json:"friendly_name,omitempty"`
+	FriendlyName string `json:"friendlyName,omitempty" tf:"friendly_name,omitempty"`
 	// +optional
-	Labels  map[string]string `json:"labels,omitempty"`
-	TableId string            `json:"table_id"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	TimePartitioning *[]BigqueryTableSpec `json:"time_partitioning,omitempty"`
+	Labels  map[string]string `json:"labels,omitempty" tf:"labels,omitempty"`
+	TableID string            `json:"tableID" tf:"table_id"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	View *[]BigqueryTableSpec `json:"view,omitempty"`
+	TimePartitioning []BigqueryTableSpecTimePartitioning `json:"timePartitioning,omitempty" tf:"time_partitioning,omitempty"`
+	// +optional
+	// +kubebuilder:validation:MaxItems=1
+	View        []BigqueryTableSpecView   `json:"view,omitempty" tf:"view,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type BigqueryTableStatus struct {
@@ -54,7 +55,9 @@ type BigqueryTableStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

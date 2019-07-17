@@ -32,7 +32,7 @@ import (
 // Route53QueryLogsGetter has a method to return a Route53QueryLogInterface.
 // A group's client should implement this interface.
 type Route53QueryLogsGetter interface {
-	Route53QueryLogs() Route53QueryLogInterface
+	Route53QueryLogs(namespace string) Route53QueryLogInterface
 }
 
 // Route53QueryLogInterface has methods to work with Route53QueryLog resources.
@@ -52,12 +52,14 @@ type Route53QueryLogInterface interface {
 // route53QueryLogs implements Route53QueryLogInterface
 type route53QueryLogs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRoute53QueryLogs returns a Route53QueryLogs
-func newRoute53QueryLogs(c *AwsV1alpha1Client) *route53QueryLogs {
+func newRoute53QueryLogs(c *AwsV1alpha1Client, namespace string) *route53QueryLogs {
 	return &route53QueryLogs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRoute53QueryLogs(c *AwsV1alpha1Client) *route53QueryLogs {
 func (c *route53QueryLogs) Get(name string, options v1.GetOptions) (result *v1alpha1.Route53QueryLog, err error) {
 	result = &v1alpha1.Route53QueryLog{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("route53querylogs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *route53QueryLogs) List(opts v1.ListOptions) (result *v1alpha1.Route53Qu
 	}
 	result = &v1alpha1.Route53QueryLogList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("route53querylogs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *route53QueryLogs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("route53querylogs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *route53QueryLogs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *route53QueryLogs) Create(route53QueryLog *v1alpha1.Route53QueryLog) (result *v1alpha1.Route53QueryLog, err error) {
 	result = &v1alpha1.Route53QueryLog{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("route53querylogs").
 		Body(route53QueryLog).
 		Do().
@@ -118,6 +124,7 @@ func (c *route53QueryLogs) Create(route53QueryLog *v1alpha1.Route53QueryLog) (re
 func (c *route53QueryLogs) Update(route53QueryLog *v1alpha1.Route53QueryLog) (result *v1alpha1.Route53QueryLog, err error) {
 	result = &v1alpha1.Route53QueryLog{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("route53querylogs").
 		Name(route53QueryLog.Name).
 		Body(route53QueryLog).
@@ -132,6 +139,7 @@ func (c *route53QueryLogs) Update(route53QueryLog *v1alpha1.Route53QueryLog) (re
 func (c *route53QueryLogs) UpdateStatus(route53QueryLog *v1alpha1.Route53QueryLog) (result *v1alpha1.Route53QueryLog, err error) {
 	result = &v1alpha1.Route53QueryLog{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("route53querylogs").
 		Name(route53QueryLog.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *route53QueryLogs) UpdateStatus(route53QueryLog *v1alpha1.Route53QueryLo
 // Delete takes name of the route53QueryLog and deletes it. Returns an error if one occurs.
 func (c *route53QueryLogs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("route53querylogs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *route53QueryLogs) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("route53querylogs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *route53QueryLogs) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *route53QueryLogs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Route53QueryLog, err error) {
 	result = &v1alpha1.Route53QueryLog{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("route53querylogs").
 		SubResource(subresources...).
 		Name(name).

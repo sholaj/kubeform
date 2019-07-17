@@ -32,7 +32,7 @@ import (
 // SpannerInstancesGetter has a method to return a SpannerInstanceInterface.
 // A group's client should implement this interface.
 type SpannerInstancesGetter interface {
-	SpannerInstances() SpannerInstanceInterface
+	SpannerInstances(namespace string) SpannerInstanceInterface
 }
 
 // SpannerInstanceInterface has methods to work with SpannerInstance resources.
@@ -52,12 +52,14 @@ type SpannerInstanceInterface interface {
 // spannerInstances implements SpannerInstanceInterface
 type spannerInstances struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSpannerInstances returns a SpannerInstances
-func newSpannerInstances(c *GoogleV1alpha1Client) *spannerInstances {
+func newSpannerInstances(c *GoogleV1alpha1Client, namespace string) *spannerInstances {
 	return &spannerInstances{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSpannerInstances(c *GoogleV1alpha1Client) *spannerInstances {
 func (c *spannerInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.SpannerInstance, err error) {
 	result = &v1alpha1.SpannerInstance{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("spannerinstances").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *spannerInstances) List(opts v1.ListOptions) (result *v1alpha1.SpannerIn
 	}
 	result = &v1alpha1.SpannerInstanceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("spannerinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *spannerInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("spannerinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *spannerInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *spannerInstances) Create(spannerInstance *v1alpha1.SpannerInstance) (result *v1alpha1.SpannerInstance, err error) {
 	result = &v1alpha1.SpannerInstance{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("spannerinstances").
 		Body(spannerInstance).
 		Do().
@@ -118,6 +124,7 @@ func (c *spannerInstances) Create(spannerInstance *v1alpha1.SpannerInstance) (re
 func (c *spannerInstances) Update(spannerInstance *v1alpha1.SpannerInstance) (result *v1alpha1.SpannerInstance, err error) {
 	result = &v1alpha1.SpannerInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("spannerinstances").
 		Name(spannerInstance.Name).
 		Body(spannerInstance).
@@ -132,6 +139,7 @@ func (c *spannerInstances) Update(spannerInstance *v1alpha1.SpannerInstance) (re
 func (c *spannerInstances) UpdateStatus(spannerInstance *v1alpha1.SpannerInstance) (result *v1alpha1.SpannerInstance, err error) {
 	result = &v1alpha1.SpannerInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("spannerinstances").
 		Name(spannerInstance.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *spannerInstances) UpdateStatus(spannerInstance *v1alpha1.SpannerInstanc
 // Delete takes name of the spannerInstance and deletes it. Returns an error if one occurs.
 func (c *spannerInstances) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("spannerinstances").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *spannerInstances) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("spannerinstances").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *spannerInstances) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *spannerInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SpannerInstance, err error) {
 	result = &v1alpha1.SpannerInstance{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("spannerinstances").
 		SubResource(subresources...).
 		Name(name).

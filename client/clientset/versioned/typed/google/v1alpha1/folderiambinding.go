@@ -32,7 +32,7 @@ import (
 // FolderIamBindingsGetter has a method to return a FolderIamBindingInterface.
 // A group's client should implement this interface.
 type FolderIamBindingsGetter interface {
-	FolderIamBindings() FolderIamBindingInterface
+	FolderIamBindings(namespace string) FolderIamBindingInterface
 }
 
 // FolderIamBindingInterface has methods to work with FolderIamBinding resources.
@@ -52,12 +52,14 @@ type FolderIamBindingInterface interface {
 // folderIamBindings implements FolderIamBindingInterface
 type folderIamBindings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newFolderIamBindings returns a FolderIamBindings
-func newFolderIamBindings(c *GoogleV1alpha1Client) *folderIamBindings {
+func newFolderIamBindings(c *GoogleV1alpha1Client, namespace string) *folderIamBindings {
 	return &folderIamBindings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newFolderIamBindings(c *GoogleV1alpha1Client) *folderIamBindings {
 func (c *folderIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.FolderIamBinding, err error) {
 	result = &v1alpha1.FolderIamBinding{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("folderiambindings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *folderIamBindings) List(opts v1.ListOptions) (result *v1alpha1.FolderIa
 	}
 	result = &v1alpha1.FolderIamBindingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("folderiambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *folderIamBindings) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("folderiambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *folderIamBindings) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *folderIamBindings) Create(folderIamBinding *v1alpha1.FolderIamBinding) (result *v1alpha1.FolderIamBinding, err error) {
 	result = &v1alpha1.FolderIamBinding{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("folderiambindings").
 		Body(folderIamBinding).
 		Do().
@@ -118,6 +124,7 @@ func (c *folderIamBindings) Create(folderIamBinding *v1alpha1.FolderIamBinding) 
 func (c *folderIamBindings) Update(folderIamBinding *v1alpha1.FolderIamBinding) (result *v1alpha1.FolderIamBinding, err error) {
 	result = &v1alpha1.FolderIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("folderiambindings").
 		Name(folderIamBinding.Name).
 		Body(folderIamBinding).
@@ -132,6 +139,7 @@ func (c *folderIamBindings) Update(folderIamBinding *v1alpha1.FolderIamBinding) 
 func (c *folderIamBindings) UpdateStatus(folderIamBinding *v1alpha1.FolderIamBinding) (result *v1alpha1.FolderIamBinding, err error) {
 	result = &v1alpha1.FolderIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("folderiambindings").
 		Name(folderIamBinding.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *folderIamBindings) UpdateStatus(folderIamBinding *v1alpha1.FolderIamBin
 // Delete takes name of the folderIamBinding and deletes it. Returns an error if one occurs.
 func (c *folderIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("folderiambindings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *folderIamBindings) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("folderiambindings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *folderIamBindings) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *folderIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FolderIamBinding, err error) {
 	result = &v1alpha1.FolderIamBinding{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("folderiambindings").
 		SubResource(subresources...).
 		Name(name).

@@ -41,32 +41,33 @@ type DataFactoryLinkedServiceMysqlInformer interface {
 type dataFactoryLinkedServiceMysqlInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDataFactoryLinkedServiceMysqlInformer constructs a new informer for DataFactoryLinkedServiceMysql type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDataFactoryLinkedServiceMysqlInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDataFactoryLinkedServiceMysqlInformer(client, resyncPeriod, indexers, nil)
+func NewDataFactoryLinkedServiceMysqlInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDataFactoryLinkedServiceMysqlInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDataFactoryLinkedServiceMysqlInformer constructs a new informer for DataFactoryLinkedServiceMysql type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDataFactoryLinkedServiceMysqlInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDataFactoryLinkedServiceMysqlInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DataFactoryLinkedServiceMysqls().List(options)
+				return client.AzurermV1alpha1().DataFactoryLinkedServiceMysqls(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DataFactoryLinkedServiceMysqls().Watch(options)
+				return client.AzurermV1alpha1().DataFactoryLinkedServiceMysqls(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.DataFactoryLinkedServiceMysql{},
@@ -76,7 +77,7 @@ func NewFilteredDataFactoryLinkedServiceMysqlInformer(client versioned.Interface
 }
 
 func (f *dataFactoryLinkedServiceMysqlInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDataFactoryLinkedServiceMysqlInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDataFactoryLinkedServiceMysqlInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *dataFactoryLinkedServiceMysqlInformer) Informer() cache.SharedIndexInformer {

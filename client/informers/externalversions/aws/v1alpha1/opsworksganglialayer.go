@@ -41,32 +41,33 @@ type OpsworksGangliaLayerInformer interface {
 type opsworksGangliaLayerInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewOpsworksGangliaLayerInformer constructs a new informer for OpsworksGangliaLayer type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewOpsworksGangliaLayerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredOpsworksGangliaLayerInformer(client, resyncPeriod, indexers, nil)
+func NewOpsworksGangliaLayerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredOpsworksGangliaLayerInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredOpsworksGangliaLayerInformer constructs a new informer for OpsworksGangliaLayer type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredOpsworksGangliaLayerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredOpsworksGangliaLayerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().OpsworksGangliaLayers().List(options)
+				return client.AwsV1alpha1().OpsworksGangliaLayers(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().OpsworksGangliaLayers().Watch(options)
+				return client.AwsV1alpha1().OpsworksGangliaLayers(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.OpsworksGangliaLayer{},
@@ -76,7 +77,7 @@ func NewFilteredOpsworksGangliaLayerInformer(client versioned.Interface, resyncP
 }
 
 func (f *opsworksGangliaLayerInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredOpsworksGangliaLayerInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredOpsworksGangliaLayerInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *opsworksGangliaLayerInformer) Informer() cache.SharedIndexInformer {

@@ -31,6 +31,7 @@ import (
 // FakeBatchCertificates implements BatchCertificateInterface
 type FakeBatchCertificates struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var batchcertificatesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "batchcertificates"}
@@ -40,7 +41,8 @@ var batchcertificatesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com
 // Get takes name of the batchCertificate, and returns the corresponding batchCertificate object, and an error if there is any.
 func (c *FakeBatchCertificates) Get(name string, options v1.GetOptions) (result *v1alpha1.BatchCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(batchcertificatesResource, name), &v1alpha1.BatchCertificate{})
+		Invokes(testing.NewGetAction(batchcertificatesResource, c.ns, name), &v1alpha1.BatchCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeBatchCertificates) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of BatchCertificates that match those selectors.
 func (c *FakeBatchCertificates) List(opts v1.ListOptions) (result *v1alpha1.BatchCertificateList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(batchcertificatesResource, batchcertificatesKind, opts), &v1alpha1.BatchCertificateList{})
+		Invokes(testing.NewListAction(batchcertificatesResource, batchcertificatesKind, c.ns, opts), &v1alpha1.BatchCertificateList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeBatchCertificates) List(opts v1.ListOptions) (result *v1alpha1.Batc
 // Watch returns a watch.Interface that watches the requested batchCertificates.
 func (c *FakeBatchCertificates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(batchcertificatesResource, opts))
+		InvokesWatch(testing.NewWatchAction(batchcertificatesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a batchCertificate and creates it.  Returns the server's representation of the batchCertificate, and an error, if there is any.
 func (c *FakeBatchCertificates) Create(batchCertificate *v1alpha1.BatchCertificate) (result *v1alpha1.BatchCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(batchcertificatesResource, batchCertificate), &v1alpha1.BatchCertificate{})
+		Invokes(testing.NewCreateAction(batchcertificatesResource, c.ns, batchCertificate), &v1alpha1.BatchCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeBatchCertificates) Create(batchCertificate *v1alpha1.BatchCertifica
 // Update takes the representation of a batchCertificate and updates it. Returns the server's representation of the batchCertificate, and an error, if there is any.
 func (c *FakeBatchCertificates) Update(batchCertificate *v1alpha1.BatchCertificate) (result *v1alpha1.BatchCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(batchcertificatesResource, batchCertificate), &v1alpha1.BatchCertificate{})
+		Invokes(testing.NewUpdateAction(batchcertificatesResource, c.ns, batchCertificate), &v1alpha1.BatchCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeBatchCertificates) Update(batchCertificate *v1alpha1.BatchCertifica
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeBatchCertificates) UpdateStatus(batchCertificate *v1alpha1.BatchCertificate) (*v1alpha1.BatchCertificate, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(batchcertificatesResource, "status", batchCertificate), &v1alpha1.BatchCertificate{})
+		Invokes(testing.NewUpdateSubresourceAction(batchcertificatesResource, "status", c.ns, batchCertificate), &v1alpha1.BatchCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeBatchCertificates) UpdateStatus(batchCertificate *v1alpha1.BatchCer
 // Delete takes name of the batchCertificate and deletes it. Returns an error if one occurs.
 func (c *FakeBatchCertificates) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(batchcertificatesResource, name), &v1alpha1.BatchCertificate{})
+		Invokes(testing.NewDeleteAction(batchcertificatesResource, c.ns, name), &v1alpha1.BatchCertificate{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeBatchCertificates) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(batchcertificatesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(batchcertificatesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.BatchCertificateList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeBatchCertificates) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched batchCertificate.
 func (c *FakeBatchCertificates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BatchCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(batchcertificatesResource, name, pt, data, subresources...), &v1alpha1.BatchCertificate{})
+		Invokes(testing.NewPatchSubresourceAction(batchcertificatesResource, c.ns, name, pt, data, subresources...), &v1alpha1.BatchCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}

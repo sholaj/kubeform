@@ -397,62 +397,72 @@ spec:
           type: object
         spec:
           properties:
-            allowed_oauth_flows:
+            allowedOauthFlows:
               items:
                 type: string
               maxItems: 3
               type: array
               uniqueItems: true
-            allowed_oauth_flows_user_pool_client:
+            allowedOauthFlowsUserPoolClient:
               type: boolean
-            allowed_oauth_scopes:
+            allowedOauthScopes:
               items:
                 type: string
               maxItems: 25
               type: array
               uniqueItems: true
-            callback_urls:
+            callbackUrls:
               items:
                 type: string
               maxItems: 100
               type: array
-            default_redirect_uri:
+            defaultRedirectURI:
               type: string
-            explicit_auth_flows:
+            explicitAuthFlows:
               items:
                 type: string
               type: array
               uniqueItems: true
-            generate_secret:
+            generateSecret:
               type: boolean
-            logout_urls:
+            logoutUrls:
               items:
                 type: string
               maxItems: 100
               type: array
             name:
               type: string
-            read_attributes:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            readAttributes:
               items:
                 type: string
               type: array
               uniqueItems: true
-            refresh_token_validity:
+            refreshTokenValidity:
               type: integer
-            supported_identity_providers:
+            supportedIdentityProviders:
               items:
                 type: string
               type: array
-            user_pool_id:
+            userPoolID:
               type: string
-            write_attributes:
+            writeAttributes:
               items:
                 type: string
               type: array
               uniqueItems: true
           required:
           - name
-          - user_pool_id
+          - providerRef
+          - userPoolID
           type: object
         status:
           properties:
@@ -463,6 +473,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

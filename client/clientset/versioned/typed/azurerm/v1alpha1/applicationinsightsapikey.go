@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// ApplicationInsightsApiKeysGetter has a method to return a ApplicationInsightsApiKeyInterface.
+// ApplicationInsightsAPIKeysGetter has a method to return a ApplicationInsightsAPIKeyInterface.
 // A group's client should implement this interface.
-type ApplicationInsightsApiKeysGetter interface {
-	ApplicationInsightsApiKeys() ApplicationInsightsApiKeyInterface
+type ApplicationInsightsAPIKeysGetter interface {
+	ApplicationInsightsAPIKeys(namespace string) ApplicationInsightsAPIKeyInterface
 }
 
-// ApplicationInsightsApiKeyInterface has methods to work with ApplicationInsightsApiKey resources.
-type ApplicationInsightsApiKeyInterface interface {
-	Create(*v1alpha1.ApplicationInsightsApiKey) (*v1alpha1.ApplicationInsightsApiKey, error)
-	Update(*v1alpha1.ApplicationInsightsApiKey) (*v1alpha1.ApplicationInsightsApiKey, error)
-	UpdateStatus(*v1alpha1.ApplicationInsightsApiKey) (*v1alpha1.ApplicationInsightsApiKey, error)
+// ApplicationInsightsAPIKeyInterface has methods to work with ApplicationInsightsAPIKey resources.
+type ApplicationInsightsAPIKeyInterface interface {
+	Create(*v1alpha1.ApplicationInsightsAPIKey) (*v1alpha1.ApplicationInsightsAPIKey, error)
+	Update(*v1alpha1.ApplicationInsightsAPIKey) (*v1alpha1.ApplicationInsightsAPIKey, error)
+	UpdateStatus(*v1alpha1.ApplicationInsightsAPIKey) (*v1alpha1.ApplicationInsightsAPIKey, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.ApplicationInsightsApiKey, error)
-	List(opts v1.ListOptions) (*v1alpha1.ApplicationInsightsApiKeyList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.ApplicationInsightsAPIKey, error)
+	List(opts v1.ListOptions) (*v1alpha1.ApplicationInsightsAPIKeyList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApplicationInsightsApiKey, err error)
-	ApplicationInsightsApiKeyExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApplicationInsightsAPIKey, err error)
+	ApplicationInsightsAPIKeyExpansion
 }
 
-// applicationInsightsApiKeys implements ApplicationInsightsApiKeyInterface
-type applicationInsightsApiKeys struct {
+// applicationInsightsAPIKeys implements ApplicationInsightsAPIKeyInterface
+type applicationInsightsAPIKeys struct {
 	client rest.Interface
+	ns     string
 }
 
-// newApplicationInsightsApiKeys returns a ApplicationInsightsApiKeys
-func newApplicationInsightsApiKeys(c *AzurermV1alpha1Client) *applicationInsightsApiKeys {
-	return &applicationInsightsApiKeys{
+// newApplicationInsightsAPIKeys returns a ApplicationInsightsAPIKeys
+func newApplicationInsightsAPIKeys(c *AzurermV1alpha1Client, namespace string) *applicationInsightsAPIKeys {
+	return &applicationInsightsAPIKeys{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the applicationInsightsApiKey, and returns the corresponding applicationInsightsApiKey object, and an error if there is any.
-func (c *applicationInsightsApiKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.ApplicationInsightsApiKey, err error) {
-	result = &v1alpha1.ApplicationInsightsApiKey{}
+// Get takes name of the applicationInsightsAPIKey, and returns the corresponding applicationInsightsAPIKey object, and an error if there is any.
+func (c *applicationInsightsAPIKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.ApplicationInsightsAPIKey, err error) {
+	result = &v1alpha1.ApplicationInsightsAPIKey{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("applicationinsightsapikeys").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *applicationInsightsApiKeys) Get(name string, options v1.GetOptions) (re
 	return
 }
 
-// List takes label and field selectors, and returns the list of ApplicationInsightsApiKeys that match those selectors.
-func (c *applicationInsightsApiKeys) List(opts v1.ListOptions) (result *v1alpha1.ApplicationInsightsApiKeyList, err error) {
+// List takes label and field selectors, and returns the list of ApplicationInsightsAPIKeys that match those selectors.
+func (c *applicationInsightsAPIKeys) List(opts v1.ListOptions) (result *v1alpha1.ApplicationInsightsAPIKeyList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.ApplicationInsightsApiKeyList{}
+	result = &v1alpha1.ApplicationInsightsAPIKeyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("applicationinsightsapikeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *applicationInsightsApiKeys) List(opts v1.ListOptions) (result *v1alpha1
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested applicationInsightsApiKeys.
-func (c *applicationInsightsApiKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested applicationInsightsAPIKeys.
+func (c *applicationInsightsAPIKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("applicationinsightsapikeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a applicationInsightsApiKey and creates it.  Returns the server's representation of the applicationInsightsApiKey, and an error, if there is any.
-func (c *applicationInsightsApiKeys) Create(applicationInsightsApiKey *v1alpha1.ApplicationInsightsApiKey) (result *v1alpha1.ApplicationInsightsApiKey, err error) {
-	result = &v1alpha1.ApplicationInsightsApiKey{}
+// Create takes the representation of a applicationInsightsAPIKey and creates it.  Returns the server's representation of the applicationInsightsAPIKey, and an error, if there is any.
+func (c *applicationInsightsAPIKeys) Create(applicationInsightsAPIKey *v1alpha1.ApplicationInsightsAPIKey) (result *v1alpha1.ApplicationInsightsAPIKey, err error) {
+	result = &v1alpha1.ApplicationInsightsAPIKey{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("applicationinsightsapikeys").
-		Body(applicationInsightsApiKey).
+		Body(applicationInsightsAPIKey).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a applicationInsightsApiKey and updates it. Returns the server's representation of the applicationInsightsApiKey, and an error, if there is any.
-func (c *applicationInsightsApiKeys) Update(applicationInsightsApiKey *v1alpha1.ApplicationInsightsApiKey) (result *v1alpha1.ApplicationInsightsApiKey, err error) {
-	result = &v1alpha1.ApplicationInsightsApiKey{}
+// Update takes the representation of a applicationInsightsAPIKey and updates it. Returns the server's representation of the applicationInsightsAPIKey, and an error, if there is any.
+func (c *applicationInsightsAPIKeys) Update(applicationInsightsAPIKey *v1alpha1.ApplicationInsightsAPIKey) (result *v1alpha1.ApplicationInsightsAPIKey, err error) {
+	result = &v1alpha1.ApplicationInsightsAPIKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("applicationinsightsapikeys").
-		Name(applicationInsightsApiKey.Name).
-		Body(applicationInsightsApiKey).
+		Name(applicationInsightsAPIKey.Name).
+		Body(applicationInsightsAPIKey).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *applicationInsightsApiKeys) Update(applicationInsightsApiKey *v1alpha1.
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *applicationInsightsApiKeys) UpdateStatus(applicationInsightsApiKey *v1alpha1.ApplicationInsightsApiKey) (result *v1alpha1.ApplicationInsightsApiKey, err error) {
-	result = &v1alpha1.ApplicationInsightsApiKey{}
+func (c *applicationInsightsAPIKeys) UpdateStatus(applicationInsightsAPIKey *v1alpha1.ApplicationInsightsAPIKey) (result *v1alpha1.ApplicationInsightsAPIKey, err error) {
+	result = &v1alpha1.ApplicationInsightsAPIKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("applicationinsightsapikeys").
-		Name(applicationInsightsApiKey.Name).
+		Name(applicationInsightsAPIKey.Name).
 		SubResource("status").
-		Body(applicationInsightsApiKey).
+		Body(applicationInsightsAPIKey).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the applicationInsightsApiKey and deletes it. Returns an error if one occurs.
-func (c *applicationInsightsApiKeys) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the applicationInsightsAPIKey and deletes it. Returns an error if one occurs.
+func (c *applicationInsightsAPIKeys) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("applicationinsightsapikeys").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *applicationInsightsApiKeys) Delete(name string, options *v1.DeleteOptio
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *applicationInsightsApiKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *applicationInsightsAPIKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("applicationinsightsapikeys").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *applicationInsightsApiKeys) DeleteCollection(options *v1.DeleteOptions,
 		Error()
 }
 
-// Patch applies the patch and returns the patched applicationInsightsApiKey.
-func (c *applicationInsightsApiKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApplicationInsightsApiKey, err error) {
-	result = &v1alpha1.ApplicationInsightsApiKey{}
+// Patch applies the patch and returns the patched applicationInsightsAPIKey.
+func (c *applicationInsightsAPIKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApplicationInsightsAPIKey, err error) {
+	result = &v1alpha1.ApplicationInsightsAPIKey{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("applicationinsightsapikeys").
 		SubResource(subresources...).
 		Name(name).

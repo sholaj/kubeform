@@ -29,8 +29,8 @@ import (
 type LogicAppTriggerRecurrenceLister interface {
 	// List lists all LogicAppTriggerRecurrences in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LogicAppTriggerRecurrence, err error)
-	// Get retrieves the LogicAppTriggerRecurrence from the index for a given name.
-	Get(name string) (*v1alpha1.LogicAppTriggerRecurrence, error)
+	// LogicAppTriggerRecurrences returns an object that can list and get LogicAppTriggerRecurrences.
+	LogicAppTriggerRecurrences(namespace string) LogicAppTriggerRecurrenceNamespaceLister
 	LogicAppTriggerRecurrenceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *logicAppTriggerRecurrenceLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the LogicAppTriggerRecurrence from the index for a given name.
-func (s *logicAppTriggerRecurrenceLister) Get(name string) (*v1alpha1.LogicAppTriggerRecurrence, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LogicAppTriggerRecurrences returns an object that can list and get LogicAppTriggerRecurrences.
+func (s *logicAppTriggerRecurrenceLister) LogicAppTriggerRecurrences(namespace string) LogicAppTriggerRecurrenceNamespaceLister {
+	return logicAppTriggerRecurrenceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LogicAppTriggerRecurrenceNamespaceLister helps list and get LogicAppTriggerRecurrences.
+type LogicAppTriggerRecurrenceNamespaceLister interface {
+	// List lists all LogicAppTriggerRecurrences in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LogicAppTriggerRecurrence, err error)
+	// Get retrieves the LogicAppTriggerRecurrence from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LogicAppTriggerRecurrence, error)
+	LogicAppTriggerRecurrenceNamespaceListerExpansion
+}
+
+// logicAppTriggerRecurrenceNamespaceLister implements the LogicAppTriggerRecurrenceNamespaceLister
+// interface.
+type logicAppTriggerRecurrenceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LogicAppTriggerRecurrences in the indexer for a given namespace.
+func (s logicAppTriggerRecurrenceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LogicAppTriggerRecurrence, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LogicAppTriggerRecurrence))
+	})
+	return ret, err
+}
+
+// Get retrieves the LogicAppTriggerRecurrence from the indexer for a given namespace and name.
+func (s logicAppTriggerRecurrenceNamespaceLister) Get(name string) (*v1alpha1.LogicAppTriggerRecurrence, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

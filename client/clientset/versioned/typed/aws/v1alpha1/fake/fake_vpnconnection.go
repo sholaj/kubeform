@@ -31,6 +31,7 @@ import (
 // FakeVpnConnections implements VpnConnectionInterface
 type FakeVpnConnections struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var vpnconnectionsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "vpnconnections"}
@@ -40,7 +41,8 @@ var vpnconnectionsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Vers
 // Get takes name of the vpnConnection, and returns the corresponding vpnConnection object, and an error if there is any.
 func (c *FakeVpnConnections) Get(name string, options v1.GetOptions) (result *v1alpha1.VpnConnection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(vpnconnectionsResource, name), &v1alpha1.VpnConnection{})
+		Invokes(testing.NewGetAction(vpnconnectionsResource, c.ns, name), &v1alpha1.VpnConnection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeVpnConnections) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of VpnConnections that match those selectors.
 func (c *FakeVpnConnections) List(opts v1.ListOptions) (result *v1alpha1.VpnConnectionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(vpnconnectionsResource, vpnconnectionsKind, opts), &v1alpha1.VpnConnectionList{})
+		Invokes(testing.NewListAction(vpnconnectionsResource, vpnconnectionsKind, c.ns, opts), &v1alpha1.VpnConnectionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeVpnConnections) List(opts v1.ListOptions) (result *v1alpha1.VpnConn
 // Watch returns a watch.Interface that watches the requested vpnConnections.
 func (c *FakeVpnConnections) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(vpnconnectionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(vpnconnectionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a vpnConnection and creates it.  Returns the server's representation of the vpnConnection, and an error, if there is any.
 func (c *FakeVpnConnections) Create(vpnConnection *v1alpha1.VpnConnection) (result *v1alpha1.VpnConnection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(vpnconnectionsResource, vpnConnection), &v1alpha1.VpnConnection{})
+		Invokes(testing.NewCreateAction(vpnconnectionsResource, c.ns, vpnConnection), &v1alpha1.VpnConnection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeVpnConnections) Create(vpnConnection *v1alpha1.VpnConnection) (resu
 // Update takes the representation of a vpnConnection and updates it. Returns the server's representation of the vpnConnection, and an error, if there is any.
 func (c *FakeVpnConnections) Update(vpnConnection *v1alpha1.VpnConnection) (result *v1alpha1.VpnConnection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(vpnconnectionsResource, vpnConnection), &v1alpha1.VpnConnection{})
+		Invokes(testing.NewUpdateAction(vpnconnectionsResource, c.ns, vpnConnection), &v1alpha1.VpnConnection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeVpnConnections) Update(vpnConnection *v1alpha1.VpnConnection) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeVpnConnections) UpdateStatus(vpnConnection *v1alpha1.VpnConnection) (*v1alpha1.VpnConnection, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(vpnconnectionsResource, "status", vpnConnection), &v1alpha1.VpnConnection{})
+		Invokes(testing.NewUpdateSubresourceAction(vpnconnectionsResource, "status", c.ns, vpnConnection), &v1alpha1.VpnConnection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeVpnConnections) UpdateStatus(vpnConnection *v1alpha1.VpnConnection)
 // Delete takes name of the vpnConnection and deletes it. Returns an error if one occurs.
 func (c *FakeVpnConnections) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(vpnconnectionsResource, name), &v1alpha1.VpnConnection{})
+		Invokes(testing.NewDeleteAction(vpnconnectionsResource, c.ns, name), &v1alpha1.VpnConnection{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeVpnConnections) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(vpnconnectionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(vpnconnectionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.VpnConnectionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeVpnConnections) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched vpnConnection.
 func (c *FakeVpnConnections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpnConnection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(vpnconnectionsResource, name, pt, data, subresources...), &v1alpha1.VpnConnection{})
+		Invokes(testing.NewPatchSubresourceAction(vpnconnectionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.VpnConnection{})
+
 	if obj == nil {
 		return nil, err
 	}

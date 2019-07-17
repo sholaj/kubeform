@@ -398,25 +398,50 @@ spec:
         spec:
           properties:
             capabilities:
-              items: {}
+              items:
+                properties:
+                  name:
+                    type: string
+                required:
+                - name
+                type: object
               type: array
               uniqueItems: true
-            consistency_policy:
-              items: {}
+            consistencyPolicy:
+              items:
+                properties:
+                  consistencyLevel:
+                    type: string
+                  maxIntervalInSeconds:
+                    type: integer
+                  maxStalenessPrefix:
+                    type: integer
+                required:
+                - consistencyLevel
+                type: object
               maxItems: 1
               type: array
-            enable_automatic_failover:
+            enableAutomaticFailover:
               type: boolean
-            enable_multiple_write_locations:
+            enableMultipleWriteLocations:
               type: boolean
-            failover_policy:
+            failoverPolicy:
               description: Deprecated
-              items: {}
+              items:
+                properties:
+                  location:
+                    type: string
+                  priority:
+                    type: integer
+                required:
+                - location
+                - priority
+                type: object
               type: array
               uniqueItems: true
-            ip_range_filter:
+            ipRangeFilter:
               type: string
-            is_virtual_network_filter_enabled:
+            isVirtualNetworkFilterEnabled:
               type: boolean
             kind:
               type: string
@@ -424,20 +449,36 @@ spec:
               type: string
             name:
               type: string
-            offer_type:
+            offerType:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
-            virtual_network_rule:
-              items: {}
+            virtualNetworkRule:
+              items:
+                properties:
+                  ID:
+                    type: string
+                required:
+                - ID
+                type: object
               type: array
               uniqueItems: true
           required:
-          - consistency_policy
+          - consistencyPolicy
           - location
           - name
-          - offer_type
-          - resource_group_name
+          - offerType
+          - providerRef
+          - resourceGroupName
           type: object
         status:
           properties:
@@ -448,6 +489,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

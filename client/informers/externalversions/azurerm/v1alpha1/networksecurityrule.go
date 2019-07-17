@@ -41,32 +41,33 @@ type NetworkSecurityRuleInformer interface {
 type networkSecurityRuleInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewNetworkSecurityRuleInformer constructs a new informer for NetworkSecurityRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewNetworkSecurityRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredNetworkSecurityRuleInformer(client, resyncPeriod, indexers, nil)
+func NewNetworkSecurityRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredNetworkSecurityRuleInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredNetworkSecurityRuleInformer constructs a new informer for NetworkSecurityRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredNetworkSecurityRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredNetworkSecurityRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().NetworkSecurityRules().List(options)
+				return client.AzurermV1alpha1().NetworkSecurityRules(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().NetworkSecurityRules().Watch(options)
+				return client.AzurermV1alpha1().NetworkSecurityRules(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.NetworkSecurityRule{},
@@ -76,7 +77,7 @@ func NewFilteredNetworkSecurityRuleInformer(client versioned.Interface, resyncPe
 }
 
 func (f *networkSecurityRuleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredNetworkSecurityRuleInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredNetworkSecurityRuleInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *networkSecurityRuleInformer) Informer() cache.SharedIndexInformer {

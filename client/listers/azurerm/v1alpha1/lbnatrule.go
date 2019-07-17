@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// LbNatRuleLister helps list LbNatRules.
-type LbNatRuleLister interface {
-	// List lists all LbNatRules in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.LbNatRule, err error)
-	// Get retrieves the LbNatRule from the index for a given name.
-	Get(name string) (*v1alpha1.LbNatRule, error)
-	LbNatRuleListerExpansion
+// LbNATRuleLister helps list LbNATRules.
+type LbNATRuleLister interface {
+	// List lists all LbNATRules in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.LbNATRule, err error)
+	// LbNATRules returns an object that can list and get LbNATRules.
+	LbNATRules(namespace string) LbNATRuleNamespaceLister
+	LbNATRuleListerExpansion
 }
 
-// lbNatRuleLister implements the LbNatRuleLister interface.
-type lbNatRuleLister struct {
+// lbNATRuleLister implements the LbNATRuleLister interface.
+type lbNATRuleLister struct {
 	indexer cache.Indexer
 }
 
-// NewLbNatRuleLister returns a new LbNatRuleLister.
-func NewLbNatRuleLister(indexer cache.Indexer) LbNatRuleLister {
-	return &lbNatRuleLister{indexer: indexer}
+// NewLbNATRuleLister returns a new LbNATRuleLister.
+func NewLbNATRuleLister(indexer cache.Indexer) LbNATRuleLister {
+	return &lbNATRuleLister{indexer: indexer}
 }
 
-// List lists all LbNatRules in the indexer.
-func (s *lbNatRuleLister) List(selector labels.Selector) (ret []*v1alpha1.LbNatRule, err error) {
+// List lists all LbNATRules in the indexer.
+func (s *lbNATRuleLister) List(selector labels.Selector) (ret []*v1alpha1.LbNATRule, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.LbNatRule))
+		ret = append(ret, m.(*v1alpha1.LbNATRule))
 	})
 	return ret, err
 }
 
-// Get retrieves the LbNatRule from the index for a given name.
-func (s *lbNatRuleLister) Get(name string) (*v1alpha1.LbNatRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LbNATRules returns an object that can list and get LbNATRules.
+func (s *lbNATRuleLister) LbNATRules(namespace string) LbNATRuleNamespaceLister {
+	return lbNATRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LbNATRuleNamespaceLister helps list and get LbNATRules.
+type LbNATRuleNamespaceLister interface {
+	// List lists all LbNATRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LbNATRule, err error)
+	// Get retrieves the LbNATRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LbNATRule, error)
+	LbNATRuleNamespaceListerExpansion
+}
+
+// lbNATRuleNamespaceLister implements the LbNATRuleNamespaceLister
+// interface.
+type lbNATRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LbNATRules in the indexer for a given namespace.
+func (s lbNATRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LbNATRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LbNATRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the LbNATRule from the indexer for a given namespace and name.
+func (s lbNATRuleNamespaceLister) Get(name string) (*v1alpha1.LbNATRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("lbnatrule"), name)
 	}
-	return obj.(*v1alpha1.LbNatRule), nil
+	return obj.(*v1alpha1.LbNATRule), nil
 }

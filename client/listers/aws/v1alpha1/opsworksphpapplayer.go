@@ -29,8 +29,8 @@ import (
 type OpsworksPhpAppLayerLister interface {
 	// List lists all OpsworksPhpAppLayers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OpsworksPhpAppLayer, err error)
-	// Get retrieves the OpsworksPhpAppLayer from the index for a given name.
-	Get(name string) (*v1alpha1.OpsworksPhpAppLayer, error)
+	// OpsworksPhpAppLayers returns an object that can list and get OpsworksPhpAppLayers.
+	OpsworksPhpAppLayers(namespace string) OpsworksPhpAppLayerNamespaceLister
 	OpsworksPhpAppLayerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *opsworksPhpAppLayerLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the OpsworksPhpAppLayer from the index for a given name.
-func (s *opsworksPhpAppLayerLister) Get(name string) (*v1alpha1.OpsworksPhpAppLayer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OpsworksPhpAppLayers returns an object that can list and get OpsworksPhpAppLayers.
+func (s *opsworksPhpAppLayerLister) OpsworksPhpAppLayers(namespace string) OpsworksPhpAppLayerNamespaceLister {
+	return opsworksPhpAppLayerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OpsworksPhpAppLayerNamespaceLister helps list and get OpsworksPhpAppLayers.
+type OpsworksPhpAppLayerNamespaceLister interface {
+	// List lists all OpsworksPhpAppLayers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OpsworksPhpAppLayer, err error)
+	// Get retrieves the OpsworksPhpAppLayer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OpsworksPhpAppLayer, error)
+	OpsworksPhpAppLayerNamespaceListerExpansion
+}
+
+// opsworksPhpAppLayerNamespaceLister implements the OpsworksPhpAppLayerNamespaceLister
+// interface.
+type opsworksPhpAppLayerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OpsworksPhpAppLayers in the indexer for a given namespace.
+func (s opsworksPhpAppLayerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OpsworksPhpAppLayer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OpsworksPhpAppLayer))
+	})
+	return ret, err
+}
+
+// Get retrieves the OpsworksPhpAppLayer from the indexer for a given namespace and name.
+func (s opsworksPhpAppLayerNamespaceLister) Get(name string) (*v1alpha1.OpsworksPhpAppLayer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeTags implements TagInterface
 type FakeTags struct {
 	Fake *FakeDigitaloceanV1alpha1
+	ns   string
 }
 
 var tagsResource = schema.GroupVersionResource{Group: "digitalocean.kubeform.com", Version: "v1alpha1", Resource: "tags"}
@@ -40,7 +41,8 @@ var tagsKind = schema.GroupVersionKind{Group: "digitalocean.kubeform.com", Versi
 // Get takes name of the tag, and returns the corresponding tag object, and an error if there is any.
 func (c *FakeTags) Get(name string, options v1.GetOptions) (result *v1alpha1.Tag, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(tagsResource, name), &v1alpha1.Tag{})
+		Invokes(testing.NewGetAction(tagsResource, c.ns, name), &v1alpha1.Tag{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeTags) Get(name string, options v1.GetOptions) (result *v1alpha1.Tag
 // List takes label and field selectors, and returns the list of Tags that match those selectors.
 func (c *FakeTags) List(opts v1.ListOptions) (result *v1alpha1.TagList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(tagsResource, tagsKind, opts), &v1alpha1.TagList{})
+		Invokes(testing.NewListAction(tagsResource, tagsKind, c.ns, opts), &v1alpha1.TagList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeTags) List(opts v1.ListOptions) (result *v1alpha1.TagList, err erro
 // Watch returns a watch.Interface that watches the requested tags.
 func (c *FakeTags) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(tagsResource, opts))
+		InvokesWatch(testing.NewWatchAction(tagsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a tag and creates it.  Returns the server's representation of the tag, and an error, if there is any.
 func (c *FakeTags) Create(tag *v1alpha1.Tag) (result *v1alpha1.Tag, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(tagsResource, tag), &v1alpha1.Tag{})
+		Invokes(testing.NewCreateAction(tagsResource, c.ns, tag), &v1alpha1.Tag{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeTags) Create(tag *v1alpha1.Tag) (result *v1alpha1.Tag, err error) {
 // Update takes the representation of a tag and updates it. Returns the server's representation of the tag, and an error, if there is any.
 func (c *FakeTags) Update(tag *v1alpha1.Tag) (result *v1alpha1.Tag, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(tagsResource, tag), &v1alpha1.Tag{})
+		Invokes(testing.NewUpdateAction(tagsResource, c.ns, tag), &v1alpha1.Tag{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeTags) Update(tag *v1alpha1.Tag) (result *v1alpha1.Tag, err error) {
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeTags) UpdateStatus(tag *v1alpha1.Tag) (*v1alpha1.Tag, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(tagsResource, "status", tag), &v1alpha1.Tag{})
+		Invokes(testing.NewUpdateSubresourceAction(tagsResource, "status", c.ns, tag), &v1alpha1.Tag{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeTags) UpdateStatus(tag *v1alpha1.Tag) (*v1alpha1.Tag, error) {
 // Delete takes name of the tag and deletes it. Returns an error if one occurs.
 func (c *FakeTags) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(tagsResource, name), &v1alpha1.Tag{})
+		Invokes(testing.NewDeleteAction(tagsResource, c.ns, name), &v1alpha1.Tag{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeTags) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(tagsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(tagsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.TagList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeTags) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 // Patch applies the patch and returns the patched tag.
 func (c *FakeTags) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Tag, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(tagsResource, name, pt, data, subresources...), &v1alpha1.Tag{})
+		Invokes(testing.NewPatchSubresourceAction(tagsResource, c.ns, name, pt, data, subresources...), &v1alpha1.Tag{})
+
 	if obj == nil {
 		return nil, err
 	}

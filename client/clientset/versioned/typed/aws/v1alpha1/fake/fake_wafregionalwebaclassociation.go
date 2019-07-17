@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// FakeWafregionalWebAclAssociations implements WafregionalWebAclAssociationInterface
-type FakeWafregionalWebAclAssociations struct {
+// FakeWafregionalWebACLAssociations implements WafregionalWebACLAssociationInterface
+type FakeWafregionalWebACLAssociations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var wafregionalwebaclassociationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "wafregionalwebaclassociations"}
 
-var wafregionalwebaclassociationsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "WafregionalWebAclAssociation"}
+var wafregionalwebaclassociationsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "WafregionalWebACLAssociation"}
 
-// Get takes name of the wafregionalWebAclAssociation, and returns the corresponding wafregionalWebAclAssociation object, and an error if there is any.
-func (c *FakeWafregionalWebAclAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalWebAclAssociation, err error) {
+// Get takes name of the wafregionalWebACLAssociation, and returns the corresponding wafregionalWebACLAssociation object, and an error if there is any.
+func (c *FakeWafregionalWebACLAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalWebACLAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(wafregionalwebaclassociationsResource, name), &v1alpha1.WafregionalWebAclAssociation{})
+		Invokes(testing.NewGetAction(wafregionalwebaclassociationsResource, c.ns, name), &v1alpha1.WafregionalWebACLAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.WafregionalWebAclAssociation), err
+	return obj.(*v1alpha1.WafregionalWebACLAssociation), err
 }
 
-// List takes label and field selectors, and returns the list of WafregionalWebAclAssociations that match those selectors.
-func (c *FakeWafregionalWebAclAssociations) List(opts v1.ListOptions) (result *v1alpha1.WafregionalWebAclAssociationList, err error) {
+// List takes label and field selectors, and returns the list of WafregionalWebACLAssociations that match those selectors.
+func (c *FakeWafregionalWebACLAssociations) List(opts v1.ListOptions) (result *v1alpha1.WafregionalWebACLAssociationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(wafregionalwebaclassociationsResource, wafregionalwebaclassociationsKind, opts), &v1alpha1.WafregionalWebAclAssociationList{})
+		Invokes(testing.NewListAction(wafregionalwebaclassociationsResource, wafregionalwebaclassociationsKind, c.ns, opts), &v1alpha1.WafregionalWebACLAssociationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeWafregionalWebAclAssociations) List(opts v1.ListOptions) (result *v
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.WafregionalWebAclAssociationList{ListMeta: obj.(*v1alpha1.WafregionalWebAclAssociationList).ListMeta}
-	for _, item := range obj.(*v1alpha1.WafregionalWebAclAssociationList).Items {
+	list := &v1alpha1.WafregionalWebACLAssociationList{ListMeta: obj.(*v1alpha1.WafregionalWebACLAssociationList).ListMeta}
+	for _, item := range obj.(*v1alpha1.WafregionalWebACLAssociationList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeWafregionalWebAclAssociations) List(opts v1.ListOptions) (result *v
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested wafregionalWebAclAssociations.
-func (c *FakeWafregionalWebAclAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested wafregionalWebACLAssociations.
+func (c *FakeWafregionalWebACLAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(wafregionalwebaclassociationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(wafregionalwebaclassociationsResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a wafregionalWebAclAssociation and creates it.  Returns the server's representation of the wafregionalWebAclAssociation, and an error, if there is any.
-func (c *FakeWafregionalWebAclAssociations) Create(wafregionalWebAclAssociation *v1alpha1.WafregionalWebAclAssociation) (result *v1alpha1.WafregionalWebAclAssociation, err error) {
+// Create takes the representation of a wafregionalWebACLAssociation and creates it.  Returns the server's representation of the wafregionalWebACLAssociation, and an error, if there is any.
+func (c *FakeWafregionalWebACLAssociations) Create(wafregionalWebACLAssociation *v1alpha1.WafregionalWebACLAssociation) (result *v1alpha1.WafregionalWebACLAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(wafregionalwebaclassociationsResource, wafregionalWebAclAssociation), &v1alpha1.WafregionalWebAclAssociation{})
+		Invokes(testing.NewCreateAction(wafregionalwebaclassociationsResource, c.ns, wafregionalWebACLAssociation), &v1alpha1.WafregionalWebACLAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.WafregionalWebAclAssociation), err
+	return obj.(*v1alpha1.WafregionalWebACLAssociation), err
 }
 
-// Update takes the representation of a wafregionalWebAclAssociation and updates it. Returns the server's representation of the wafregionalWebAclAssociation, and an error, if there is any.
-func (c *FakeWafregionalWebAclAssociations) Update(wafregionalWebAclAssociation *v1alpha1.WafregionalWebAclAssociation) (result *v1alpha1.WafregionalWebAclAssociation, err error) {
+// Update takes the representation of a wafregionalWebACLAssociation and updates it. Returns the server's representation of the wafregionalWebACLAssociation, and an error, if there is any.
+func (c *FakeWafregionalWebACLAssociations) Update(wafregionalWebACLAssociation *v1alpha1.WafregionalWebACLAssociation) (result *v1alpha1.WafregionalWebACLAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(wafregionalwebaclassociationsResource, wafregionalWebAclAssociation), &v1alpha1.WafregionalWebAclAssociation{})
+		Invokes(testing.NewUpdateAction(wafregionalwebaclassociationsResource, c.ns, wafregionalWebACLAssociation), &v1alpha1.WafregionalWebACLAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.WafregionalWebAclAssociation), err
+	return obj.(*v1alpha1.WafregionalWebACLAssociation), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeWafregionalWebAclAssociations) UpdateStatus(wafregionalWebAclAssociation *v1alpha1.WafregionalWebAclAssociation) (*v1alpha1.WafregionalWebAclAssociation, error) {
+func (c *FakeWafregionalWebACLAssociations) UpdateStatus(wafregionalWebACLAssociation *v1alpha1.WafregionalWebACLAssociation) (*v1alpha1.WafregionalWebACLAssociation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(wafregionalwebaclassociationsResource, "status", wafregionalWebAclAssociation), &v1alpha1.WafregionalWebAclAssociation{})
+		Invokes(testing.NewUpdateSubresourceAction(wafregionalwebaclassociationsResource, "status", c.ns, wafregionalWebACLAssociation), &v1alpha1.WafregionalWebACLAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.WafregionalWebAclAssociation), err
+	return obj.(*v1alpha1.WafregionalWebACLAssociation), err
 }
 
-// Delete takes name of the wafregionalWebAclAssociation and deletes it. Returns an error if one occurs.
-func (c *FakeWafregionalWebAclAssociations) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the wafregionalWebACLAssociation and deletes it. Returns an error if one occurs.
+func (c *FakeWafregionalWebACLAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(wafregionalwebaclassociationsResource, name), &v1alpha1.WafregionalWebAclAssociation{})
+		Invokes(testing.NewDeleteAction(wafregionalwebaclassociationsResource, c.ns, name), &v1alpha1.WafregionalWebACLAssociation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeWafregionalWebAclAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(wafregionalwebaclassociationsResource, listOptions)
+func (c *FakeWafregionalWebACLAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(wafregionalwebaclassociationsResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.WafregionalWebAclAssociationList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.WafregionalWebACLAssociationList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched wafregionalWebAclAssociation.
-func (c *FakeWafregionalWebAclAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalWebAclAssociation, err error) {
+// Patch applies the patch and returns the patched wafregionalWebACLAssociation.
+func (c *FakeWafregionalWebACLAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalWebACLAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(wafregionalwebaclassociationsResource, name, pt, data, subresources...), &v1alpha1.WafregionalWebAclAssociation{})
+		Invokes(testing.NewPatchSubresourceAction(wafregionalwebaclassociationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.WafregionalWebACLAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.WafregionalWebAclAssociation), err
+	return obj.(*v1alpha1.WafregionalWebACLAssociation), err
 }

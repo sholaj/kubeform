@@ -31,6 +31,7 @@ import (
 // FakeEmrSecurityConfigurations implements EmrSecurityConfigurationInterface
 type FakeEmrSecurityConfigurations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var emrsecurityconfigurationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "emrsecurityconfigurations"}
@@ -40,7 +41,8 @@ var emrsecurityconfigurationsKind = schema.GroupVersionKind{Group: "aws.kubeform
 // Get takes name of the emrSecurityConfiguration, and returns the corresponding emrSecurityConfiguration object, and an error if there is any.
 func (c *FakeEmrSecurityConfigurations) Get(name string, options v1.GetOptions) (result *v1alpha1.EmrSecurityConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(emrsecurityconfigurationsResource, name), &v1alpha1.EmrSecurityConfiguration{})
+		Invokes(testing.NewGetAction(emrsecurityconfigurationsResource, c.ns, name), &v1alpha1.EmrSecurityConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEmrSecurityConfigurations) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of EmrSecurityConfigurations that match those selectors.
 func (c *FakeEmrSecurityConfigurations) List(opts v1.ListOptions) (result *v1alpha1.EmrSecurityConfigurationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(emrsecurityconfigurationsResource, emrsecurityconfigurationsKind, opts), &v1alpha1.EmrSecurityConfigurationList{})
+		Invokes(testing.NewListAction(emrsecurityconfigurationsResource, emrsecurityconfigurationsKind, c.ns, opts), &v1alpha1.EmrSecurityConfigurationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEmrSecurityConfigurations) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested emrSecurityConfigurations.
 func (c *FakeEmrSecurityConfigurations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(emrsecurityconfigurationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(emrsecurityconfigurationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a emrSecurityConfiguration and creates it.  Returns the server's representation of the emrSecurityConfiguration, and an error, if there is any.
 func (c *FakeEmrSecurityConfigurations) Create(emrSecurityConfiguration *v1alpha1.EmrSecurityConfiguration) (result *v1alpha1.EmrSecurityConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(emrsecurityconfigurationsResource, emrSecurityConfiguration), &v1alpha1.EmrSecurityConfiguration{})
+		Invokes(testing.NewCreateAction(emrsecurityconfigurationsResource, c.ns, emrSecurityConfiguration), &v1alpha1.EmrSecurityConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEmrSecurityConfigurations) Create(emrSecurityConfiguration *v1alpha
 // Update takes the representation of a emrSecurityConfiguration and updates it. Returns the server's representation of the emrSecurityConfiguration, and an error, if there is any.
 func (c *FakeEmrSecurityConfigurations) Update(emrSecurityConfiguration *v1alpha1.EmrSecurityConfiguration) (result *v1alpha1.EmrSecurityConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(emrsecurityconfigurationsResource, emrSecurityConfiguration), &v1alpha1.EmrSecurityConfiguration{})
+		Invokes(testing.NewUpdateAction(emrsecurityconfigurationsResource, c.ns, emrSecurityConfiguration), &v1alpha1.EmrSecurityConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEmrSecurityConfigurations) Update(emrSecurityConfiguration *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEmrSecurityConfigurations) UpdateStatus(emrSecurityConfiguration *v1alpha1.EmrSecurityConfiguration) (*v1alpha1.EmrSecurityConfiguration, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(emrsecurityconfigurationsResource, "status", emrSecurityConfiguration), &v1alpha1.EmrSecurityConfiguration{})
+		Invokes(testing.NewUpdateSubresourceAction(emrsecurityconfigurationsResource, "status", c.ns, emrSecurityConfiguration), &v1alpha1.EmrSecurityConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEmrSecurityConfigurations) UpdateStatus(emrSecurityConfiguration *v
 // Delete takes name of the emrSecurityConfiguration and deletes it. Returns an error if one occurs.
 func (c *FakeEmrSecurityConfigurations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(emrsecurityconfigurationsResource, name), &v1alpha1.EmrSecurityConfiguration{})
+		Invokes(testing.NewDeleteAction(emrsecurityconfigurationsResource, c.ns, name), &v1alpha1.EmrSecurityConfiguration{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEmrSecurityConfigurations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(emrsecurityconfigurationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(emrsecurityconfigurationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.EmrSecurityConfigurationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEmrSecurityConfigurations) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched emrSecurityConfiguration.
 func (c *FakeEmrSecurityConfigurations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EmrSecurityConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(emrsecurityconfigurationsResource, name, pt, data, subresources...), &v1alpha1.EmrSecurityConfiguration{})
+		Invokes(testing.NewPatchSubresourceAction(emrsecurityconfigurationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.EmrSecurityConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}

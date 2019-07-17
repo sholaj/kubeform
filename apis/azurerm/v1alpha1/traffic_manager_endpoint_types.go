@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -18,34 +18,18 @@ type TrafficManagerEndpoint struct {
 	Status            TrafficManagerEndpointStatus `json:"status,omitempty"`
 }
 
-type TrafficManagerEndpointSpecCustomHeader struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
-}
-
-type TrafficManagerEndpointSpecSubnet struct {
-	First string `json:"first"`
-	// +optional
-	Last string `json:"last,omitempty"`
-	// +optional
-	Scope int `json:"scope,omitempty"`
-}
-
 type TrafficManagerEndpointSpec struct {
 	// +optional
-	CustomHeader *[]TrafficManagerEndpointSpec `json:"custom_header,omitempty"`
+	GeoMappings []string `json:"geoMappings,omitempty" tf:"geo_mappings,omitempty"`
 	// +optional
-	GeoMappings []string `json:"geo_mappings,omitempty"`
+	MinChildEndpoints int    `json:"minChildEndpoints,omitempty" tf:"min_child_endpoints,omitempty"`
+	Name              string `json:"name" tf:"name"`
+	ProfileName       string `json:"profileName" tf:"profile_name"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	MinChildEndpoints int    `json:"min_child_endpoints,omitempty"`
-	Name              string `json:"name"`
-	ProfileName       string `json:"profile_name"`
-	ResourceGroupName string `json:"resource_group_name"`
-	// +optional
-	Subnet *[]TrafficManagerEndpointSpec `json:"subnet,omitempty"`
-	// +optional
-	TargetResourceId string `json:"target_resource_id,omitempty"`
-	Type             string `json:"type"`
+	TargetResourceID string                    `json:"targetResourceID,omitempty" tf:"target_resource_id,omitempty"`
+	Type             string                    `json:"type" tf:"type"`
+	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type TrafficManagerEndpointStatus struct {
@@ -53,7 +37,9 @@ type TrafficManagerEndpointStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

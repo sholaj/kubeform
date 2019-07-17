@@ -31,6 +31,7 @@ import (
 // FakeCloudwatchEventTargets implements CloudwatchEventTargetInterface
 type FakeCloudwatchEventTargets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var cloudwatcheventtargetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "cloudwatcheventtargets"}
@@ -40,7 +41,8 @@ var cloudwatcheventtargetsKind = schema.GroupVersionKind{Group: "aws.kubeform.co
 // Get takes name of the cloudwatchEventTarget, and returns the corresponding cloudwatchEventTarget object, and an error if there is any.
 func (c *FakeCloudwatchEventTargets) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudwatchEventTarget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cloudwatcheventtargetsResource, name), &v1alpha1.CloudwatchEventTarget{})
+		Invokes(testing.NewGetAction(cloudwatcheventtargetsResource, c.ns, name), &v1alpha1.CloudwatchEventTarget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCloudwatchEventTargets) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of CloudwatchEventTargets that match those selectors.
 func (c *FakeCloudwatchEventTargets) List(opts v1.ListOptions) (result *v1alpha1.CloudwatchEventTargetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cloudwatcheventtargetsResource, cloudwatcheventtargetsKind, opts), &v1alpha1.CloudwatchEventTargetList{})
+		Invokes(testing.NewListAction(cloudwatcheventtargetsResource, cloudwatcheventtargetsKind, c.ns, opts), &v1alpha1.CloudwatchEventTargetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCloudwatchEventTargets) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested cloudwatchEventTargets.
 func (c *FakeCloudwatchEventTargets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cloudwatcheventtargetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(cloudwatcheventtargetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cloudwatchEventTarget and creates it.  Returns the server's representation of the cloudwatchEventTarget, and an error, if there is any.
 func (c *FakeCloudwatchEventTargets) Create(cloudwatchEventTarget *v1alpha1.CloudwatchEventTarget) (result *v1alpha1.CloudwatchEventTarget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cloudwatcheventtargetsResource, cloudwatchEventTarget), &v1alpha1.CloudwatchEventTarget{})
+		Invokes(testing.NewCreateAction(cloudwatcheventtargetsResource, c.ns, cloudwatchEventTarget), &v1alpha1.CloudwatchEventTarget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCloudwatchEventTargets) Create(cloudwatchEventTarget *v1alpha1.Clou
 // Update takes the representation of a cloudwatchEventTarget and updates it. Returns the server's representation of the cloudwatchEventTarget, and an error, if there is any.
 func (c *FakeCloudwatchEventTargets) Update(cloudwatchEventTarget *v1alpha1.CloudwatchEventTarget) (result *v1alpha1.CloudwatchEventTarget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cloudwatcheventtargetsResource, cloudwatchEventTarget), &v1alpha1.CloudwatchEventTarget{})
+		Invokes(testing.NewUpdateAction(cloudwatcheventtargetsResource, c.ns, cloudwatchEventTarget), &v1alpha1.CloudwatchEventTarget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCloudwatchEventTargets) Update(cloudwatchEventTarget *v1alpha1.Clou
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCloudwatchEventTargets) UpdateStatus(cloudwatchEventTarget *v1alpha1.CloudwatchEventTarget) (*v1alpha1.CloudwatchEventTarget, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cloudwatcheventtargetsResource, "status", cloudwatchEventTarget), &v1alpha1.CloudwatchEventTarget{})
+		Invokes(testing.NewUpdateSubresourceAction(cloudwatcheventtargetsResource, "status", c.ns, cloudwatchEventTarget), &v1alpha1.CloudwatchEventTarget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCloudwatchEventTargets) UpdateStatus(cloudwatchEventTarget *v1alpha
 // Delete takes name of the cloudwatchEventTarget and deletes it. Returns an error if one occurs.
 func (c *FakeCloudwatchEventTargets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cloudwatcheventtargetsResource, name), &v1alpha1.CloudwatchEventTarget{})
+		Invokes(testing.NewDeleteAction(cloudwatcheventtargetsResource, c.ns, name), &v1alpha1.CloudwatchEventTarget{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCloudwatchEventTargets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cloudwatcheventtargetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cloudwatcheventtargetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CloudwatchEventTargetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCloudwatchEventTargets) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched cloudwatchEventTarget.
 func (c *FakeCloudwatchEventTargets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudwatchEventTarget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cloudwatcheventtargetsResource, name, pt, data, subresources...), &v1alpha1.CloudwatchEventTarget{})
+		Invokes(testing.NewPatchSubresourceAction(cloudwatcheventtargetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.CloudwatchEventTarget{})
+
 	if obj == nil {
 		return nil, err
 	}

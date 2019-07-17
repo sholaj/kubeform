@@ -31,6 +31,7 @@ import (
 // FakeComputeSubnetworkIamMembers implements ComputeSubnetworkIamMemberInterface
 type FakeComputeSubnetworkIamMembers struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computesubnetworkiammembersResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computesubnetworkiammembers"}
@@ -40,7 +41,8 @@ var computesubnetworkiammembersKind = schema.GroupVersionKind{Group: "google.kub
 // Get takes name of the computeSubnetworkIamMember, and returns the corresponding computeSubnetworkIamMember object, and an error if there is any.
 func (c *FakeComputeSubnetworkIamMembers) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeSubnetworkIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computesubnetworkiammembersResource, name), &v1alpha1.ComputeSubnetworkIamMember{})
+		Invokes(testing.NewGetAction(computesubnetworkiammembersResource, c.ns, name), &v1alpha1.ComputeSubnetworkIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeSubnetworkIamMembers) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of ComputeSubnetworkIamMembers that match those selectors.
 func (c *FakeComputeSubnetworkIamMembers) List(opts v1.ListOptions) (result *v1alpha1.ComputeSubnetworkIamMemberList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computesubnetworkiammembersResource, computesubnetworkiammembersKind, opts), &v1alpha1.ComputeSubnetworkIamMemberList{})
+		Invokes(testing.NewListAction(computesubnetworkiammembersResource, computesubnetworkiammembersKind, c.ns, opts), &v1alpha1.ComputeSubnetworkIamMemberList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeSubnetworkIamMembers) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested computeSubnetworkIamMembers.
 func (c *FakeComputeSubnetworkIamMembers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computesubnetworkiammembersResource, opts))
+		InvokesWatch(testing.NewWatchAction(computesubnetworkiammembersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeSubnetworkIamMember and creates it.  Returns the server's representation of the computeSubnetworkIamMember, and an error, if there is any.
 func (c *FakeComputeSubnetworkIamMembers) Create(computeSubnetworkIamMember *v1alpha1.ComputeSubnetworkIamMember) (result *v1alpha1.ComputeSubnetworkIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computesubnetworkiammembersResource, computeSubnetworkIamMember), &v1alpha1.ComputeSubnetworkIamMember{})
+		Invokes(testing.NewCreateAction(computesubnetworkiammembersResource, c.ns, computeSubnetworkIamMember), &v1alpha1.ComputeSubnetworkIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeSubnetworkIamMembers) Create(computeSubnetworkIamMember *v1a
 // Update takes the representation of a computeSubnetworkIamMember and updates it. Returns the server's representation of the computeSubnetworkIamMember, and an error, if there is any.
 func (c *FakeComputeSubnetworkIamMembers) Update(computeSubnetworkIamMember *v1alpha1.ComputeSubnetworkIamMember) (result *v1alpha1.ComputeSubnetworkIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computesubnetworkiammembersResource, computeSubnetworkIamMember), &v1alpha1.ComputeSubnetworkIamMember{})
+		Invokes(testing.NewUpdateAction(computesubnetworkiammembersResource, c.ns, computeSubnetworkIamMember), &v1alpha1.ComputeSubnetworkIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeSubnetworkIamMembers) Update(computeSubnetworkIamMember *v1a
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeSubnetworkIamMembers) UpdateStatus(computeSubnetworkIamMember *v1alpha1.ComputeSubnetworkIamMember) (*v1alpha1.ComputeSubnetworkIamMember, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computesubnetworkiammembersResource, "status", computeSubnetworkIamMember), &v1alpha1.ComputeSubnetworkIamMember{})
+		Invokes(testing.NewUpdateSubresourceAction(computesubnetworkiammembersResource, "status", c.ns, computeSubnetworkIamMember), &v1alpha1.ComputeSubnetworkIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeSubnetworkIamMembers) UpdateStatus(computeSubnetworkIamMembe
 // Delete takes name of the computeSubnetworkIamMember and deletes it. Returns an error if one occurs.
 func (c *FakeComputeSubnetworkIamMembers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computesubnetworkiammembersResource, name), &v1alpha1.ComputeSubnetworkIamMember{})
+		Invokes(testing.NewDeleteAction(computesubnetworkiammembersResource, c.ns, name), &v1alpha1.ComputeSubnetworkIamMember{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeSubnetworkIamMembers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computesubnetworkiammembersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computesubnetworkiammembersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeSubnetworkIamMemberList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeSubnetworkIamMembers) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched computeSubnetworkIamMember.
 func (c *FakeComputeSubnetworkIamMembers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeSubnetworkIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computesubnetworkiammembersResource, name, pt, data, subresources...), &v1alpha1.ComputeSubnetworkIamMember{})
+		Invokes(testing.NewPatchSubresourceAction(computesubnetworkiammembersResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeSubnetworkIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}

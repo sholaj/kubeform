@@ -29,8 +29,8 @@ import (
 type FlowLogLister interface {
 	// List lists all FlowLogs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.FlowLog, err error)
-	// Get retrieves the FlowLog from the index for a given name.
-	Get(name string) (*v1alpha1.FlowLog, error)
+	// FlowLogs returns an object that can list and get FlowLogs.
+	FlowLogs(namespace string) FlowLogNamespaceLister
 	FlowLogListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *flowLogLister) List(selector labels.Selector) (ret []*v1alpha1.FlowLog,
 	return ret, err
 }
 
-// Get retrieves the FlowLog from the index for a given name.
-func (s *flowLogLister) Get(name string) (*v1alpha1.FlowLog, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// FlowLogs returns an object that can list and get FlowLogs.
+func (s *flowLogLister) FlowLogs(namespace string) FlowLogNamespaceLister {
+	return flowLogNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// FlowLogNamespaceLister helps list and get FlowLogs.
+type FlowLogNamespaceLister interface {
+	// List lists all FlowLogs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.FlowLog, err error)
+	// Get retrieves the FlowLog from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.FlowLog, error)
+	FlowLogNamespaceListerExpansion
+}
+
+// flowLogNamespaceLister implements the FlowLogNamespaceLister
+// interface.
+type flowLogNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all FlowLogs in the indexer for a given namespace.
+func (s flowLogNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.FlowLog, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.FlowLog))
+	})
+	return ret, err
+}
+
+// Get retrieves the FlowLog from the indexer for a given namespace and name.
+func (s flowLogNamespaceLister) Get(name string) (*v1alpha1.FlowLog, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

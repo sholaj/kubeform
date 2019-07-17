@@ -31,6 +31,7 @@ import (
 // FakeComputeInstanceFromTemplates implements ComputeInstanceFromTemplateInterface
 type FakeComputeInstanceFromTemplates struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computeinstancefromtemplatesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computeinstancefromtemplates"}
@@ -40,7 +41,8 @@ var computeinstancefromtemplatesKind = schema.GroupVersionKind{Group: "google.ku
 // Get takes name of the computeInstanceFromTemplate, and returns the corresponding computeInstanceFromTemplate object, and an error if there is any.
 func (c *FakeComputeInstanceFromTemplates) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeInstanceFromTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computeinstancefromtemplatesResource, name), &v1alpha1.ComputeInstanceFromTemplate{})
+		Invokes(testing.NewGetAction(computeinstancefromtemplatesResource, c.ns, name), &v1alpha1.ComputeInstanceFromTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeInstanceFromTemplates) Get(name string, options v1.GetOption
 // List takes label and field selectors, and returns the list of ComputeInstanceFromTemplates that match those selectors.
 func (c *FakeComputeInstanceFromTemplates) List(opts v1.ListOptions) (result *v1alpha1.ComputeInstanceFromTemplateList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computeinstancefromtemplatesResource, computeinstancefromtemplatesKind, opts), &v1alpha1.ComputeInstanceFromTemplateList{})
+		Invokes(testing.NewListAction(computeinstancefromtemplatesResource, computeinstancefromtemplatesKind, c.ns, opts), &v1alpha1.ComputeInstanceFromTemplateList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeInstanceFromTemplates) List(opts v1.ListOptions) (result *v1
 // Watch returns a watch.Interface that watches the requested computeInstanceFromTemplates.
 func (c *FakeComputeInstanceFromTemplates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computeinstancefromtemplatesResource, opts))
+		InvokesWatch(testing.NewWatchAction(computeinstancefromtemplatesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeInstanceFromTemplate and creates it.  Returns the server's representation of the computeInstanceFromTemplate, and an error, if there is any.
 func (c *FakeComputeInstanceFromTemplates) Create(computeInstanceFromTemplate *v1alpha1.ComputeInstanceFromTemplate) (result *v1alpha1.ComputeInstanceFromTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computeinstancefromtemplatesResource, computeInstanceFromTemplate), &v1alpha1.ComputeInstanceFromTemplate{})
+		Invokes(testing.NewCreateAction(computeinstancefromtemplatesResource, c.ns, computeInstanceFromTemplate), &v1alpha1.ComputeInstanceFromTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeInstanceFromTemplates) Create(computeInstanceFromTemplate *v
 // Update takes the representation of a computeInstanceFromTemplate and updates it. Returns the server's representation of the computeInstanceFromTemplate, and an error, if there is any.
 func (c *FakeComputeInstanceFromTemplates) Update(computeInstanceFromTemplate *v1alpha1.ComputeInstanceFromTemplate) (result *v1alpha1.ComputeInstanceFromTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computeinstancefromtemplatesResource, computeInstanceFromTemplate), &v1alpha1.ComputeInstanceFromTemplate{})
+		Invokes(testing.NewUpdateAction(computeinstancefromtemplatesResource, c.ns, computeInstanceFromTemplate), &v1alpha1.ComputeInstanceFromTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeInstanceFromTemplates) Update(computeInstanceFromTemplate *v
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeInstanceFromTemplates) UpdateStatus(computeInstanceFromTemplate *v1alpha1.ComputeInstanceFromTemplate) (*v1alpha1.ComputeInstanceFromTemplate, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computeinstancefromtemplatesResource, "status", computeInstanceFromTemplate), &v1alpha1.ComputeInstanceFromTemplate{})
+		Invokes(testing.NewUpdateSubresourceAction(computeinstancefromtemplatesResource, "status", c.ns, computeInstanceFromTemplate), &v1alpha1.ComputeInstanceFromTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeInstanceFromTemplates) UpdateStatus(computeInstanceFromTempl
 // Delete takes name of the computeInstanceFromTemplate and deletes it. Returns an error if one occurs.
 func (c *FakeComputeInstanceFromTemplates) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computeinstancefromtemplatesResource, name), &v1alpha1.ComputeInstanceFromTemplate{})
+		Invokes(testing.NewDeleteAction(computeinstancefromtemplatesResource, c.ns, name), &v1alpha1.ComputeInstanceFromTemplate{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeInstanceFromTemplates) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computeinstancefromtemplatesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computeinstancefromtemplatesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeInstanceFromTemplateList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeInstanceFromTemplates) DeleteCollection(options *v1.DeleteOp
 // Patch applies the patch and returns the patched computeInstanceFromTemplate.
 func (c *FakeComputeInstanceFromTemplates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeInstanceFromTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computeinstancefromtemplatesResource, name, pt, data, subresources...), &v1alpha1.ComputeInstanceFromTemplate{})
+		Invokes(testing.NewPatchSubresourceAction(computeinstancefromtemplatesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeInstanceFromTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}

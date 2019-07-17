@@ -31,6 +31,7 @@ import (
 // FakeDbSnapshots implements DbSnapshotInterface
 type FakeDbSnapshots struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var dbsnapshotsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "dbsnapshots"}
@@ -40,7 +41,8 @@ var dbsnapshotsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version
 // Get takes name of the dbSnapshot, and returns the corresponding dbSnapshot object, and an error if there is any.
 func (c *FakeDbSnapshots) Get(name string, options v1.GetOptions) (result *v1alpha1.DbSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(dbsnapshotsResource, name), &v1alpha1.DbSnapshot{})
+		Invokes(testing.NewGetAction(dbsnapshotsResource, c.ns, name), &v1alpha1.DbSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDbSnapshots) Get(name string, options v1.GetOptions) (result *v1alp
 // List takes label and field selectors, and returns the list of DbSnapshots that match those selectors.
 func (c *FakeDbSnapshots) List(opts v1.ListOptions) (result *v1alpha1.DbSnapshotList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(dbsnapshotsResource, dbsnapshotsKind, opts), &v1alpha1.DbSnapshotList{})
+		Invokes(testing.NewListAction(dbsnapshotsResource, dbsnapshotsKind, c.ns, opts), &v1alpha1.DbSnapshotList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDbSnapshots) List(opts v1.ListOptions) (result *v1alpha1.DbSnapshot
 // Watch returns a watch.Interface that watches the requested dbSnapshots.
 func (c *FakeDbSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(dbsnapshotsResource, opts))
+		InvokesWatch(testing.NewWatchAction(dbsnapshotsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dbSnapshot and creates it.  Returns the server's representation of the dbSnapshot, and an error, if there is any.
 func (c *FakeDbSnapshots) Create(dbSnapshot *v1alpha1.DbSnapshot) (result *v1alpha1.DbSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(dbsnapshotsResource, dbSnapshot), &v1alpha1.DbSnapshot{})
+		Invokes(testing.NewCreateAction(dbsnapshotsResource, c.ns, dbSnapshot), &v1alpha1.DbSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDbSnapshots) Create(dbSnapshot *v1alpha1.DbSnapshot) (result *v1alp
 // Update takes the representation of a dbSnapshot and updates it. Returns the server's representation of the dbSnapshot, and an error, if there is any.
 func (c *FakeDbSnapshots) Update(dbSnapshot *v1alpha1.DbSnapshot) (result *v1alpha1.DbSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(dbsnapshotsResource, dbSnapshot), &v1alpha1.DbSnapshot{})
+		Invokes(testing.NewUpdateAction(dbsnapshotsResource, c.ns, dbSnapshot), &v1alpha1.DbSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDbSnapshots) Update(dbSnapshot *v1alpha1.DbSnapshot) (result *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDbSnapshots) UpdateStatus(dbSnapshot *v1alpha1.DbSnapshot) (*v1alpha1.DbSnapshot, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(dbsnapshotsResource, "status", dbSnapshot), &v1alpha1.DbSnapshot{})
+		Invokes(testing.NewUpdateSubresourceAction(dbsnapshotsResource, "status", c.ns, dbSnapshot), &v1alpha1.DbSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDbSnapshots) UpdateStatus(dbSnapshot *v1alpha1.DbSnapshot) (*v1alph
 // Delete takes name of the dbSnapshot and deletes it. Returns an error if one occurs.
 func (c *FakeDbSnapshots) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(dbsnapshotsResource, name), &v1alpha1.DbSnapshot{})
+		Invokes(testing.NewDeleteAction(dbsnapshotsResource, c.ns, name), &v1alpha1.DbSnapshot{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDbSnapshots) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(dbsnapshotsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(dbsnapshotsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DbSnapshotList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDbSnapshots) DeleteCollection(options *v1.DeleteOptions, listOption
 // Patch applies the patch and returns the patched dbSnapshot.
 func (c *FakeDbSnapshots) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DbSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(dbsnapshotsResource, name, pt, data, subresources...), &v1alpha1.DbSnapshot{})
+		Invokes(testing.NewPatchSubresourceAction(dbsnapshotsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DbSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}

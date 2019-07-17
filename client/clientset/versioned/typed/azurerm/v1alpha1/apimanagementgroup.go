@@ -32,7 +32,7 @@ import (
 // ApiManagementGroupsGetter has a method to return a ApiManagementGroupInterface.
 // A group's client should implement this interface.
 type ApiManagementGroupsGetter interface {
-	ApiManagementGroups() ApiManagementGroupInterface
+	ApiManagementGroups(namespace string) ApiManagementGroupInterface
 }
 
 // ApiManagementGroupInterface has methods to work with ApiManagementGroup resources.
@@ -52,12 +52,14 @@ type ApiManagementGroupInterface interface {
 // apiManagementGroups implements ApiManagementGroupInterface
 type apiManagementGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiManagementGroups returns a ApiManagementGroups
-func newApiManagementGroups(c *AzurermV1alpha1Client) *apiManagementGroups {
+func newApiManagementGroups(c *AzurermV1alpha1Client, namespace string) *apiManagementGroups {
 	return &apiManagementGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiManagementGroups(c *AzurermV1alpha1Client) *apiManagementGroups {
 func (c *apiManagementGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementGroup, err error) {
 	result = &v1alpha1.ApiManagementGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementgroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiManagementGroups) List(opts v1.ListOptions) (result *v1alpha1.ApiMan
 	}
 	result = &v1alpha1.ApiManagementGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiManagementGroups) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiManagementGroups) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *apiManagementGroups) Create(apiManagementGroup *v1alpha1.ApiManagementGroup) (result *v1alpha1.ApiManagementGroup, err error) {
 	result = &v1alpha1.ApiManagementGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apimanagementgroups").
 		Body(apiManagementGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiManagementGroups) Create(apiManagementGroup *v1alpha1.ApiManagementG
 func (c *apiManagementGroups) Update(apiManagementGroup *v1alpha1.ApiManagementGroup) (result *v1alpha1.ApiManagementGroup, err error) {
 	result = &v1alpha1.ApiManagementGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementgroups").
 		Name(apiManagementGroup.Name).
 		Body(apiManagementGroup).
@@ -132,6 +139,7 @@ func (c *apiManagementGroups) Update(apiManagementGroup *v1alpha1.ApiManagementG
 func (c *apiManagementGroups) UpdateStatus(apiManagementGroup *v1alpha1.ApiManagementGroup) (result *v1alpha1.ApiManagementGroup, err error) {
 	result = &v1alpha1.ApiManagementGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementgroups").
 		Name(apiManagementGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiManagementGroups) UpdateStatus(apiManagementGroup *v1alpha1.ApiManag
 // Delete takes name of the apiManagementGroup and deletes it. Returns an error if one occurs.
 func (c *apiManagementGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementgroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiManagementGroups) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementgroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiManagementGroups) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *apiManagementGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementGroup, err error) {
 	result = &v1alpha1.ApiManagementGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apimanagementgroups").
 		SubResource(subresources...).
 		Name(name).

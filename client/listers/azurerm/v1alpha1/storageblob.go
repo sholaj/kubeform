@@ -29,8 +29,8 @@ import (
 type StorageBlobLister interface {
 	// List lists all StorageBlobs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StorageBlob, err error)
-	// Get retrieves the StorageBlob from the index for a given name.
-	Get(name string) (*v1alpha1.StorageBlob, error)
+	// StorageBlobs returns an object that can list and get StorageBlobs.
+	StorageBlobs(namespace string) StorageBlobNamespaceLister
 	StorageBlobListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *storageBlobLister) List(selector labels.Selector) (ret []*v1alpha1.Stor
 	return ret, err
 }
 
-// Get retrieves the StorageBlob from the index for a given name.
-func (s *storageBlobLister) Get(name string) (*v1alpha1.StorageBlob, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StorageBlobs returns an object that can list and get StorageBlobs.
+func (s *storageBlobLister) StorageBlobs(namespace string) StorageBlobNamespaceLister {
+	return storageBlobNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StorageBlobNamespaceLister helps list and get StorageBlobs.
+type StorageBlobNamespaceLister interface {
+	// List lists all StorageBlobs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StorageBlob, err error)
+	// Get retrieves the StorageBlob from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StorageBlob, error)
+	StorageBlobNamespaceListerExpansion
+}
+
+// storageBlobNamespaceLister implements the StorageBlobNamespaceLister
+// interface.
+type storageBlobNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StorageBlobs in the indexer for a given namespace.
+func (s storageBlobNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StorageBlob, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StorageBlob))
+	})
+	return ret, err
+}
+
+// Get retrieves the StorageBlob from the indexer for a given namespace and name.
+func (s storageBlobNamespaceLister) Get(name string) (*v1alpha1.StorageBlob, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -41,32 +41,33 @@ type DmsReplicationTaskInformer interface {
 type dmsReplicationTaskInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDmsReplicationTaskInformer constructs a new informer for DmsReplicationTask type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDmsReplicationTaskInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDmsReplicationTaskInformer(client, resyncPeriod, indexers, nil)
+func NewDmsReplicationTaskInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDmsReplicationTaskInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDmsReplicationTaskInformer constructs a new informer for DmsReplicationTask type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDmsReplicationTaskInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDmsReplicationTaskInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DmsReplicationTasks().List(options)
+				return client.AwsV1alpha1().DmsReplicationTasks(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DmsReplicationTasks().Watch(options)
+				return client.AwsV1alpha1().DmsReplicationTasks(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.DmsReplicationTask{},
@@ -76,7 +77,7 @@ func NewFilteredDmsReplicationTaskInformer(client versioned.Interface, resyncPer
 }
 
 func (f *dmsReplicationTaskInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDmsReplicationTaskInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDmsReplicationTaskInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *dmsReplicationTaskInformer) Informer() cache.SharedIndexInformer {

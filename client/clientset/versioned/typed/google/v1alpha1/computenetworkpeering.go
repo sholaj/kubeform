@@ -32,7 +32,7 @@ import (
 // ComputeNetworkPeeringsGetter has a method to return a ComputeNetworkPeeringInterface.
 // A group's client should implement this interface.
 type ComputeNetworkPeeringsGetter interface {
-	ComputeNetworkPeerings() ComputeNetworkPeeringInterface
+	ComputeNetworkPeerings(namespace string) ComputeNetworkPeeringInterface
 }
 
 // ComputeNetworkPeeringInterface has methods to work with ComputeNetworkPeering resources.
@@ -52,12 +52,14 @@ type ComputeNetworkPeeringInterface interface {
 // computeNetworkPeerings implements ComputeNetworkPeeringInterface
 type computeNetworkPeerings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeNetworkPeerings returns a ComputeNetworkPeerings
-func newComputeNetworkPeerings(c *GoogleV1alpha1Client) *computeNetworkPeerings {
+func newComputeNetworkPeerings(c *GoogleV1alpha1Client, namespace string) *computeNetworkPeerings {
 	return &computeNetworkPeerings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeNetworkPeerings(c *GoogleV1alpha1Client) *computeNetworkPeerings 
 func (c *computeNetworkPeerings) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeNetworkPeering, err error) {
 	result = &v1alpha1.ComputeNetworkPeering{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computenetworkpeerings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeNetworkPeerings) List(opts v1.ListOptions) (result *v1alpha1.Com
 	}
 	result = &v1alpha1.ComputeNetworkPeeringList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computenetworkpeerings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeNetworkPeerings) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computenetworkpeerings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeNetworkPeerings) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *computeNetworkPeerings) Create(computeNetworkPeering *v1alpha1.ComputeNetworkPeering) (result *v1alpha1.ComputeNetworkPeering, err error) {
 	result = &v1alpha1.ComputeNetworkPeering{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computenetworkpeerings").
 		Body(computeNetworkPeering).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeNetworkPeerings) Create(computeNetworkPeering *v1alpha1.ComputeN
 func (c *computeNetworkPeerings) Update(computeNetworkPeering *v1alpha1.ComputeNetworkPeering) (result *v1alpha1.ComputeNetworkPeering, err error) {
 	result = &v1alpha1.ComputeNetworkPeering{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computenetworkpeerings").
 		Name(computeNetworkPeering.Name).
 		Body(computeNetworkPeering).
@@ -132,6 +139,7 @@ func (c *computeNetworkPeerings) Update(computeNetworkPeering *v1alpha1.ComputeN
 func (c *computeNetworkPeerings) UpdateStatus(computeNetworkPeering *v1alpha1.ComputeNetworkPeering) (result *v1alpha1.ComputeNetworkPeering, err error) {
 	result = &v1alpha1.ComputeNetworkPeering{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computenetworkpeerings").
 		Name(computeNetworkPeering.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeNetworkPeerings) UpdateStatus(computeNetworkPeering *v1alpha1.Co
 // Delete takes name of the computeNetworkPeering and deletes it. Returns an error if one occurs.
 func (c *computeNetworkPeerings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computenetworkpeerings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeNetworkPeerings) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computenetworkpeerings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeNetworkPeerings) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *computeNetworkPeerings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeNetworkPeering, err error) {
 	result = &v1alpha1.ComputeNetworkPeering{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computenetworkpeerings").
 		SubResource(subresources...).
 		Name(name).

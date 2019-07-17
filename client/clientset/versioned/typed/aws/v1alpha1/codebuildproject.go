@@ -32,7 +32,7 @@ import (
 // CodebuildProjectsGetter has a method to return a CodebuildProjectInterface.
 // A group's client should implement this interface.
 type CodebuildProjectsGetter interface {
-	CodebuildProjects() CodebuildProjectInterface
+	CodebuildProjects(namespace string) CodebuildProjectInterface
 }
 
 // CodebuildProjectInterface has methods to work with CodebuildProject resources.
@@ -52,12 +52,14 @@ type CodebuildProjectInterface interface {
 // codebuildProjects implements CodebuildProjectInterface
 type codebuildProjects struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCodebuildProjects returns a CodebuildProjects
-func newCodebuildProjects(c *AwsV1alpha1Client) *codebuildProjects {
+func newCodebuildProjects(c *AwsV1alpha1Client, namespace string) *codebuildProjects {
 	return &codebuildProjects{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCodebuildProjects(c *AwsV1alpha1Client) *codebuildProjects {
 func (c *codebuildProjects) Get(name string, options v1.GetOptions) (result *v1alpha1.CodebuildProject, err error) {
 	result = &v1alpha1.CodebuildProject{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("codebuildprojects").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *codebuildProjects) List(opts v1.ListOptions) (result *v1alpha1.Codebuil
 	}
 	result = &v1alpha1.CodebuildProjectList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("codebuildprojects").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *codebuildProjects) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("codebuildprojects").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *codebuildProjects) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *codebuildProjects) Create(codebuildProject *v1alpha1.CodebuildProject) (result *v1alpha1.CodebuildProject, err error) {
 	result = &v1alpha1.CodebuildProject{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("codebuildprojects").
 		Body(codebuildProject).
 		Do().
@@ -118,6 +124,7 @@ func (c *codebuildProjects) Create(codebuildProject *v1alpha1.CodebuildProject) 
 func (c *codebuildProjects) Update(codebuildProject *v1alpha1.CodebuildProject) (result *v1alpha1.CodebuildProject, err error) {
 	result = &v1alpha1.CodebuildProject{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("codebuildprojects").
 		Name(codebuildProject.Name).
 		Body(codebuildProject).
@@ -132,6 +139,7 @@ func (c *codebuildProjects) Update(codebuildProject *v1alpha1.CodebuildProject) 
 func (c *codebuildProjects) UpdateStatus(codebuildProject *v1alpha1.CodebuildProject) (result *v1alpha1.CodebuildProject, err error) {
 	result = &v1alpha1.CodebuildProject{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("codebuildprojects").
 		Name(codebuildProject.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *codebuildProjects) UpdateStatus(codebuildProject *v1alpha1.CodebuildPro
 // Delete takes name of the codebuildProject and deletes it. Returns an error if one occurs.
 func (c *codebuildProjects) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("codebuildprojects").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *codebuildProjects) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("codebuildprojects").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *codebuildProjects) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *codebuildProjects) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CodebuildProject, err error) {
 	result = &v1alpha1.CodebuildProject{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("codebuildprojects").
 		SubResource(subresources...).
 		Name(name).

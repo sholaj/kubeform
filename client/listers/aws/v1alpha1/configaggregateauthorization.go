@@ -29,8 +29,8 @@ import (
 type ConfigAggregateAuthorizationLister interface {
 	// List lists all ConfigAggregateAuthorizations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ConfigAggregateAuthorization, err error)
-	// Get retrieves the ConfigAggregateAuthorization from the index for a given name.
-	Get(name string) (*v1alpha1.ConfigAggregateAuthorization, error)
+	// ConfigAggregateAuthorizations returns an object that can list and get ConfigAggregateAuthorizations.
+	ConfigAggregateAuthorizations(namespace string) ConfigAggregateAuthorizationNamespaceLister
 	ConfigAggregateAuthorizationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *configAggregateAuthorizationLister) List(selector labels.Selector) (ret
 	return ret, err
 }
 
-// Get retrieves the ConfigAggregateAuthorization from the index for a given name.
-func (s *configAggregateAuthorizationLister) Get(name string) (*v1alpha1.ConfigAggregateAuthorization, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ConfigAggregateAuthorizations returns an object that can list and get ConfigAggregateAuthorizations.
+func (s *configAggregateAuthorizationLister) ConfigAggregateAuthorizations(namespace string) ConfigAggregateAuthorizationNamespaceLister {
+	return configAggregateAuthorizationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ConfigAggregateAuthorizationNamespaceLister helps list and get ConfigAggregateAuthorizations.
+type ConfigAggregateAuthorizationNamespaceLister interface {
+	// List lists all ConfigAggregateAuthorizations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ConfigAggregateAuthorization, err error)
+	// Get retrieves the ConfigAggregateAuthorization from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ConfigAggregateAuthorization, error)
+	ConfigAggregateAuthorizationNamespaceListerExpansion
+}
+
+// configAggregateAuthorizationNamespaceLister implements the ConfigAggregateAuthorizationNamespaceLister
+// interface.
+type configAggregateAuthorizationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ConfigAggregateAuthorizations in the indexer for a given namespace.
+func (s configAggregateAuthorizationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ConfigAggregateAuthorization, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ConfigAggregateAuthorization))
+	})
+	return ret, err
+}
+
+// Get retrieves the ConfigAggregateAuthorization from the indexer for a given namespace and name.
+func (s configAggregateAuthorizationNamespaceLister) Get(name string) (*v1alpha1.ConfigAggregateAuthorization, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type DefaultSubnetLister interface {
 	// List lists all DefaultSubnets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DefaultSubnet, err error)
-	// Get retrieves the DefaultSubnet from the index for a given name.
-	Get(name string) (*v1alpha1.DefaultSubnet, error)
+	// DefaultSubnets returns an object that can list and get DefaultSubnets.
+	DefaultSubnets(namespace string) DefaultSubnetNamespaceLister
 	DefaultSubnetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *defaultSubnetLister) List(selector labels.Selector) (ret []*v1alpha1.De
 	return ret, err
 }
 
-// Get retrieves the DefaultSubnet from the index for a given name.
-func (s *defaultSubnetLister) Get(name string) (*v1alpha1.DefaultSubnet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DefaultSubnets returns an object that can list and get DefaultSubnets.
+func (s *defaultSubnetLister) DefaultSubnets(namespace string) DefaultSubnetNamespaceLister {
+	return defaultSubnetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DefaultSubnetNamespaceLister helps list and get DefaultSubnets.
+type DefaultSubnetNamespaceLister interface {
+	// List lists all DefaultSubnets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DefaultSubnet, err error)
+	// Get retrieves the DefaultSubnet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DefaultSubnet, error)
+	DefaultSubnetNamespaceListerExpansion
+}
+
+// defaultSubnetNamespaceLister implements the DefaultSubnetNamespaceLister
+// interface.
+type defaultSubnetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DefaultSubnets in the indexer for a given namespace.
+func (s defaultSubnetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DefaultSubnet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DefaultSubnet))
+	})
+	return ret, err
+}
+
+// Get retrieves the DefaultSubnet from the indexer for a given namespace and name.
+func (s defaultSubnetNamespaceLister) Get(name string) (*v1alpha1.DefaultSubnet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

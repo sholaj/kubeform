@@ -31,6 +31,7 @@ import (
 // FakeDxHostedPublicVirtualInterfaces implements DxHostedPublicVirtualInterfaceInterface
 type FakeDxHostedPublicVirtualInterfaces struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var dxhostedpublicvirtualinterfacesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "dxhostedpublicvirtualinterfaces"}
@@ -40,7 +41,8 @@ var dxhostedpublicvirtualinterfacesKind = schema.GroupVersionKind{Group: "aws.ku
 // Get takes name of the dxHostedPublicVirtualInterface, and returns the corresponding dxHostedPublicVirtualInterface object, and an error if there is any.
 func (c *FakeDxHostedPublicVirtualInterfaces) Get(name string, options v1.GetOptions) (result *v1alpha1.DxHostedPublicVirtualInterface, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(dxhostedpublicvirtualinterfacesResource, name), &v1alpha1.DxHostedPublicVirtualInterface{})
+		Invokes(testing.NewGetAction(dxhostedpublicvirtualinterfacesResource, c.ns, name), &v1alpha1.DxHostedPublicVirtualInterface{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDxHostedPublicVirtualInterfaces) Get(name string, options v1.GetOpt
 // List takes label and field selectors, and returns the list of DxHostedPublicVirtualInterfaces that match those selectors.
 func (c *FakeDxHostedPublicVirtualInterfaces) List(opts v1.ListOptions) (result *v1alpha1.DxHostedPublicVirtualInterfaceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(dxhostedpublicvirtualinterfacesResource, dxhostedpublicvirtualinterfacesKind, opts), &v1alpha1.DxHostedPublicVirtualInterfaceList{})
+		Invokes(testing.NewListAction(dxhostedpublicvirtualinterfacesResource, dxhostedpublicvirtualinterfacesKind, c.ns, opts), &v1alpha1.DxHostedPublicVirtualInterfaceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDxHostedPublicVirtualInterfaces) List(opts v1.ListOptions) (result 
 // Watch returns a watch.Interface that watches the requested dxHostedPublicVirtualInterfaces.
 func (c *FakeDxHostedPublicVirtualInterfaces) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(dxhostedpublicvirtualinterfacesResource, opts))
+		InvokesWatch(testing.NewWatchAction(dxhostedpublicvirtualinterfacesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dxHostedPublicVirtualInterface and creates it.  Returns the server's representation of the dxHostedPublicVirtualInterface, and an error, if there is any.
 func (c *FakeDxHostedPublicVirtualInterfaces) Create(dxHostedPublicVirtualInterface *v1alpha1.DxHostedPublicVirtualInterface) (result *v1alpha1.DxHostedPublicVirtualInterface, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(dxhostedpublicvirtualinterfacesResource, dxHostedPublicVirtualInterface), &v1alpha1.DxHostedPublicVirtualInterface{})
+		Invokes(testing.NewCreateAction(dxhostedpublicvirtualinterfacesResource, c.ns, dxHostedPublicVirtualInterface), &v1alpha1.DxHostedPublicVirtualInterface{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDxHostedPublicVirtualInterfaces) Create(dxHostedPublicVirtualInterf
 // Update takes the representation of a dxHostedPublicVirtualInterface and updates it. Returns the server's representation of the dxHostedPublicVirtualInterface, and an error, if there is any.
 func (c *FakeDxHostedPublicVirtualInterfaces) Update(dxHostedPublicVirtualInterface *v1alpha1.DxHostedPublicVirtualInterface) (result *v1alpha1.DxHostedPublicVirtualInterface, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(dxhostedpublicvirtualinterfacesResource, dxHostedPublicVirtualInterface), &v1alpha1.DxHostedPublicVirtualInterface{})
+		Invokes(testing.NewUpdateAction(dxhostedpublicvirtualinterfacesResource, c.ns, dxHostedPublicVirtualInterface), &v1alpha1.DxHostedPublicVirtualInterface{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDxHostedPublicVirtualInterfaces) Update(dxHostedPublicVirtualInterf
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDxHostedPublicVirtualInterfaces) UpdateStatus(dxHostedPublicVirtualInterface *v1alpha1.DxHostedPublicVirtualInterface) (*v1alpha1.DxHostedPublicVirtualInterface, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(dxhostedpublicvirtualinterfacesResource, "status", dxHostedPublicVirtualInterface), &v1alpha1.DxHostedPublicVirtualInterface{})
+		Invokes(testing.NewUpdateSubresourceAction(dxhostedpublicvirtualinterfacesResource, "status", c.ns, dxHostedPublicVirtualInterface), &v1alpha1.DxHostedPublicVirtualInterface{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDxHostedPublicVirtualInterfaces) UpdateStatus(dxHostedPublicVirtual
 // Delete takes name of the dxHostedPublicVirtualInterface and deletes it. Returns an error if one occurs.
 func (c *FakeDxHostedPublicVirtualInterfaces) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(dxhostedpublicvirtualinterfacesResource, name), &v1alpha1.DxHostedPublicVirtualInterface{})
+		Invokes(testing.NewDeleteAction(dxhostedpublicvirtualinterfacesResource, c.ns, name), &v1alpha1.DxHostedPublicVirtualInterface{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDxHostedPublicVirtualInterfaces) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(dxhostedpublicvirtualinterfacesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(dxhostedpublicvirtualinterfacesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DxHostedPublicVirtualInterfaceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDxHostedPublicVirtualInterfaces) DeleteCollection(options *v1.Delet
 // Patch applies the patch and returns the patched dxHostedPublicVirtualInterface.
 func (c *FakeDxHostedPublicVirtualInterfaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DxHostedPublicVirtualInterface, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(dxhostedpublicvirtualinterfacesResource, name, pt, data, subresources...), &v1alpha1.DxHostedPublicVirtualInterface{})
+		Invokes(testing.NewPatchSubresourceAction(dxhostedpublicvirtualinterfacesResource, c.ns, name, pt, data, subresources...), &v1alpha1.DxHostedPublicVirtualInterface{})
+
 	if obj == nil {
 		return nil, err
 	}

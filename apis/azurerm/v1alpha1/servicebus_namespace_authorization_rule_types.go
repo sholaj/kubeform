@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,14 +20,15 @@ type ServicebusNamespaceAuthorizationRule struct {
 
 type ServicebusNamespaceAuthorizationRuleSpec struct {
 	// +optional
-	Listen bool `json:"listen,omitempty"`
+	Listen bool `json:"listen,omitempty" tf:"listen,omitempty"`
 	// +optional
-	Manage            bool   `json:"manage,omitempty"`
-	Name              string `json:"name"`
-	NamespaceName     string `json:"namespace_name"`
-	ResourceGroupName string `json:"resource_group_name"`
+	Manage            bool   `json:"manage,omitempty" tf:"manage,omitempty"`
+	Name              string `json:"name" tf:"name"`
+	NamespaceName     string `json:"namespaceName" tf:"namespace_name"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	Send bool `json:"send,omitempty"`
+	Send        bool                      `json:"send,omitempty" tf:"send,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ServicebusNamespaceAuthorizationRuleStatus struct {
@@ -35,7 +36,9 @@ type ServicebusNamespaceAuthorizationRuleStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

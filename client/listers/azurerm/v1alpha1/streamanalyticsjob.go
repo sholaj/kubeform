@@ -29,8 +29,8 @@ import (
 type StreamAnalyticsJobLister interface {
 	// List lists all StreamAnalyticsJobs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StreamAnalyticsJob, err error)
-	// Get retrieves the StreamAnalyticsJob from the index for a given name.
-	Get(name string) (*v1alpha1.StreamAnalyticsJob, error)
+	// StreamAnalyticsJobs returns an object that can list and get StreamAnalyticsJobs.
+	StreamAnalyticsJobs(namespace string) StreamAnalyticsJobNamespaceLister
 	StreamAnalyticsJobListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *streamAnalyticsJobLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the StreamAnalyticsJob from the index for a given name.
-func (s *streamAnalyticsJobLister) Get(name string) (*v1alpha1.StreamAnalyticsJob, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StreamAnalyticsJobs returns an object that can list and get StreamAnalyticsJobs.
+func (s *streamAnalyticsJobLister) StreamAnalyticsJobs(namespace string) StreamAnalyticsJobNamespaceLister {
+	return streamAnalyticsJobNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StreamAnalyticsJobNamespaceLister helps list and get StreamAnalyticsJobs.
+type StreamAnalyticsJobNamespaceLister interface {
+	// List lists all StreamAnalyticsJobs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StreamAnalyticsJob, err error)
+	// Get retrieves the StreamAnalyticsJob from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StreamAnalyticsJob, error)
+	StreamAnalyticsJobNamespaceListerExpansion
+}
+
+// streamAnalyticsJobNamespaceLister implements the StreamAnalyticsJobNamespaceLister
+// interface.
+type streamAnalyticsJobNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StreamAnalyticsJobs in the indexer for a given namespace.
+func (s streamAnalyticsJobNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StreamAnalyticsJob, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StreamAnalyticsJob))
+	})
+	return ret, err
+}
+
+// Get retrieves the StreamAnalyticsJob from the indexer for a given namespace and name.
+func (s streamAnalyticsJobNamespaceLister) Get(name string) (*v1alpha1.StreamAnalyticsJob, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

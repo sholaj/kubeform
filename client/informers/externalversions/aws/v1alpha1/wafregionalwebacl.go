@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// WafregionalWebAclInformer provides access to a shared informer and lister for
-// WafregionalWebAcls.
-type WafregionalWebAclInformer interface {
+// WafregionalWebACLInformer provides access to a shared informer and lister for
+// WafregionalWebACLs.
+type WafregionalWebACLInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.WafregionalWebAclLister
+	Lister() v1alpha1.WafregionalWebACLLister
 }
 
-type wafregionalWebAclInformer struct {
+type wafregionalWebACLInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewWafregionalWebAclInformer constructs a new informer for WafregionalWebAcl type.
+// NewWafregionalWebACLInformer constructs a new informer for WafregionalWebACL type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewWafregionalWebAclInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredWafregionalWebAclInformer(client, resyncPeriod, indexers, nil)
+func NewWafregionalWebACLInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredWafregionalWebACLInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredWafregionalWebAclInformer constructs a new informer for WafregionalWebAcl type.
+// NewFilteredWafregionalWebACLInformer constructs a new informer for WafregionalWebACL type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredWafregionalWebAclInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredWafregionalWebACLInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafregionalWebAcls().List(options)
+				return client.AwsV1alpha1().WafregionalWebACLs(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafregionalWebAcls().Watch(options)
+				return client.AwsV1alpha1().WafregionalWebACLs(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.WafregionalWebAcl{},
+		&awsv1alpha1.WafregionalWebACL{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *wafregionalWebAclInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredWafregionalWebAclInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *wafregionalWebACLInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredWafregionalWebACLInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *wafregionalWebAclInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.WafregionalWebAcl{}, f.defaultInformer)
+func (f *wafregionalWebACLInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.WafregionalWebACL{}, f.defaultInformer)
 }
 
-func (f *wafregionalWebAclInformer) Lister() v1alpha1.WafregionalWebAclLister {
-	return v1alpha1.NewWafregionalWebAclLister(f.Informer().GetIndexer())
+func (f *wafregionalWebACLInformer) Lister() v1alpha1.WafregionalWebACLLister {
+	return v1alpha1.NewWafregionalWebACLLister(f.Informer().GetIndexer())
 }

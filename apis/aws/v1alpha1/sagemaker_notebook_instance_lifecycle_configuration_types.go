@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,11 +20,12 @@ type SagemakerNotebookInstanceLifecycleConfiguration struct {
 
 type SagemakerNotebookInstanceLifecycleConfigurationSpec struct {
 	// +optional
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" tf:"name,omitempty"`
 	// +optional
-	OnCreate string `json:"on_create,omitempty"`
+	OnCreate string `json:"onCreate,omitempty" tf:"on_create,omitempty"`
 	// +optional
-	OnStart string `json:"on_start,omitempty"`
+	OnStart     string                    `json:"onStart,omitempty" tf:"on_start,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SagemakerNotebookInstanceLifecycleConfigurationStatus struct {
@@ -32,7 +33,9 @@ type SagemakerNotebookInstanceLifecycleConfigurationStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

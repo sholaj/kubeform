@@ -41,32 +41,33 @@ type SpannerDatabaseIamPolicyInformer interface {
 type spannerDatabaseIamPolicyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSpannerDatabaseIamPolicyInformer constructs a new informer for SpannerDatabaseIamPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSpannerDatabaseIamPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSpannerDatabaseIamPolicyInformer(client, resyncPeriod, indexers, nil)
+func NewSpannerDatabaseIamPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSpannerDatabaseIamPolicyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSpannerDatabaseIamPolicyInformer constructs a new informer for SpannerDatabaseIamPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSpannerDatabaseIamPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSpannerDatabaseIamPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().SpannerDatabaseIamPolicies().List(options)
+				return client.GoogleV1alpha1().SpannerDatabaseIamPolicies(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().SpannerDatabaseIamPolicies().Watch(options)
+				return client.GoogleV1alpha1().SpannerDatabaseIamPolicies(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.SpannerDatabaseIamPolicy{},
@@ -76,7 +77,7 @@ func NewFilteredSpannerDatabaseIamPolicyInformer(client versioned.Interface, res
 }
 
 func (f *spannerDatabaseIamPolicyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSpannerDatabaseIamPolicyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSpannerDatabaseIamPolicyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *spannerDatabaseIamPolicyInformer) Informer() cache.SharedIndexInformer {

@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// VpcIpv4CidrBlockAssociationInformer provides access to a shared informer and lister for
-// VpcIpv4CidrBlockAssociations.
-type VpcIpv4CidrBlockAssociationInformer interface {
+// VpcIpv4CIDRBlockAssociationInformer provides access to a shared informer and lister for
+// VpcIpv4CIDRBlockAssociations.
+type VpcIpv4CIDRBlockAssociationInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.VpcIpv4CidrBlockAssociationLister
+	Lister() v1alpha1.VpcIpv4CIDRBlockAssociationLister
 }
 
-type vpcIpv4CidrBlockAssociationInformer struct {
+type vpcIpv4CIDRBlockAssociationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewVpcIpv4CidrBlockAssociationInformer constructs a new informer for VpcIpv4CidrBlockAssociation type.
+// NewVpcIpv4CIDRBlockAssociationInformer constructs a new informer for VpcIpv4CIDRBlockAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewVpcIpv4CidrBlockAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredVpcIpv4CidrBlockAssociationInformer(client, resyncPeriod, indexers, nil)
+func NewVpcIpv4CIDRBlockAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredVpcIpv4CIDRBlockAssociationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredVpcIpv4CidrBlockAssociationInformer constructs a new informer for VpcIpv4CidrBlockAssociation type.
+// NewFilteredVpcIpv4CIDRBlockAssociationInformer constructs a new informer for VpcIpv4CIDRBlockAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredVpcIpv4CidrBlockAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredVpcIpv4CIDRBlockAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().VpcIpv4CidrBlockAssociations().List(options)
+				return client.AwsV1alpha1().VpcIpv4CIDRBlockAssociations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().VpcIpv4CidrBlockAssociations().Watch(options)
+				return client.AwsV1alpha1().VpcIpv4CIDRBlockAssociations(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.VpcIpv4CidrBlockAssociation{},
+		&awsv1alpha1.VpcIpv4CIDRBlockAssociation{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *vpcIpv4CidrBlockAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredVpcIpv4CidrBlockAssociationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *vpcIpv4CIDRBlockAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredVpcIpv4CIDRBlockAssociationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *vpcIpv4CidrBlockAssociationInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.VpcIpv4CidrBlockAssociation{}, f.defaultInformer)
+func (f *vpcIpv4CIDRBlockAssociationInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.VpcIpv4CIDRBlockAssociation{}, f.defaultInformer)
 }
 
-func (f *vpcIpv4CidrBlockAssociationInformer) Lister() v1alpha1.VpcIpv4CidrBlockAssociationLister {
-	return v1alpha1.NewVpcIpv4CidrBlockAssociationLister(f.Informer().GetIndexer())
+func (f *vpcIpv4CIDRBlockAssociationInformer) Lister() v1alpha1.VpcIpv4CIDRBlockAssociationLister {
+	return v1alpha1.NewVpcIpv4CIDRBlockAssociationLister(f.Informer().GetIndexer())
 }

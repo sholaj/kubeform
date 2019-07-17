@@ -32,7 +32,7 @@ import (
 // ElasticBeanstalkEnvironmentsGetter has a method to return a ElasticBeanstalkEnvironmentInterface.
 // A group's client should implement this interface.
 type ElasticBeanstalkEnvironmentsGetter interface {
-	ElasticBeanstalkEnvironments() ElasticBeanstalkEnvironmentInterface
+	ElasticBeanstalkEnvironments(namespace string) ElasticBeanstalkEnvironmentInterface
 }
 
 // ElasticBeanstalkEnvironmentInterface has methods to work with ElasticBeanstalkEnvironment resources.
@@ -52,12 +52,14 @@ type ElasticBeanstalkEnvironmentInterface interface {
 // elasticBeanstalkEnvironments implements ElasticBeanstalkEnvironmentInterface
 type elasticBeanstalkEnvironments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newElasticBeanstalkEnvironments returns a ElasticBeanstalkEnvironments
-func newElasticBeanstalkEnvironments(c *AwsV1alpha1Client) *elasticBeanstalkEnvironments {
+func newElasticBeanstalkEnvironments(c *AwsV1alpha1Client, namespace string) *elasticBeanstalkEnvironments {
 	return &elasticBeanstalkEnvironments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newElasticBeanstalkEnvironments(c *AwsV1alpha1Client) *elasticBeanstalkEnvi
 func (c *elasticBeanstalkEnvironments) Get(name string, options v1.GetOptions) (result *v1alpha1.ElasticBeanstalkEnvironment, err error) {
 	result = &v1alpha1.ElasticBeanstalkEnvironment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkenvironments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *elasticBeanstalkEnvironments) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.ElasticBeanstalkEnvironmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkenvironments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *elasticBeanstalkEnvironments) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkenvironments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *elasticBeanstalkEnvironments) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *elasticBeanstalkEnvironments) Create(elasticBeanstalkEnvironment *v1alpha1.ElasticBeanstalkEnvironment) (result *v1alpha1.ElasticBeanstalkEnvironment, err error) {
 	result = &v1alpha1.ElasticBeanstalkEnvironment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkenvironments").
 		Body(elasticBeanstalkEnvironment).
 		Do().
@@ -118,6 +124,7 @@ func (c *elasticBeanstalkEnvironments) Create(elasticBeanstalkEnvironment *v1alp
 func (c *elasticBeanstalkEnvironments) Update(elasticBeanstalkEnvironment *v1alpha1.ElasticBeanstalkEnvironment) (result *v1alpha1.ElasticBeanstalkEnvironment, err error) {
 	result = &v1alpha1.ElasticBeanstalkEnvironment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkenvironments").
 		Name(elasticBeanstalkEnvironment.Name).
 		Body(elasticBeanstalkEnvironment).
@@ -132,6 +139,7 @@ func (c *elasticBeanstalkEnvironments) Update(elasticBeanstalkEnvironment *v1alp
 func (c *elasticBeanstalkEnvironments) UpdateStatus(elasticBeanstalkEnvironment *v1alpha1.ElasticBeanstalkEnvironment) (result *v1alpha1.ElasticBeanstalkEnvironment, err error) {
 	result = &v1alpha1.ElasticBeanstalkEnvironment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkenvironments").
 		Name(elasticBeanstalkEnvironment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *elasticBeanstalkEnvironments) UpdateStatus(elasticBeanstalkEnvironment 
 // Delete takes name of the elasticBeanstalkEnvironment and deletes it. Returns an error if one occurs.
 func (c *elasticBeanstalkEnvironments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkenvironments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *elasticBeanstalkEnvironments) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkenvironments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *elasticBeanstalkEnvironments) DeleteCollection(options *v1.DeleteOption
 func (c *elasticBeanstalkEnvironments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ElasticBeanstalkEnvironment, err error) {
 	result = &v1alpha1.ElasticBeanstalkEnvironment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("elasticbeanstalkenvironments").
 		SubResource(subresources...).
 		Name(name).

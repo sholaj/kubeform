@@ -1,85 +1,88 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type DefaultNetworkAcl struct {
+type DefaultNetworkACL struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              DefaultNetworkAclSpec   `json:"spec,omitempty"`
-	Status            DefaultNetworkAclStatus `json:"status,omitempty"`
+	Spec              DefaultNetworkACLSpec   `json:"spec,omitempty"`
+	Status            DefaultNetworkACLStatus `json:"status,omitempty"`
 }
 
-type DefaultNetworkAclSpecEgress struct {
-	Action string `json:"action"`
+type DefaultNetworkACLSpecEgress struct {
+	Action string `json:"action" tf:"action"`
 	// +optional
-	CidrBlock string `json:"cidr_block,omitempty"`
-	FromPort  int    `json:"from_port"`
+	CidrBlock string `json:"cidrBlock,omitempty" tf:"cidr_block,omitempty"`
+	FromPort  int    `json:"fromPort" tf:"from_port"`
 	// +optional
-	IcmpCode int `json:"icmp_code,omitempty"`
+	IcmpCode int `json:"icmpCode,omitempty" tf:"icmp_code,omitempty"`
 	// +optional
-	IcmpType int `json:"icmp_type,omitempty"`
+	IcmpType int `json:"icmpType,omitempty" tf:"icmp_type,omitempty"`
 	// +optional
-	Ipv6CidrBlock string `json:"ipv6_cidr_block,omitempty"`
-	Protocol      string `json:"protocol"`
-	RuleNo        int    `json:"rule_no"`
-	ToPort        int    `json:"to_port"`
+	Ipv6CIDRBlock string `json:"ipv6CIDRBlock,omitempty" tf:"ipv6_cidr_block,omitempty"`
+	Protocol      string `json:"protocol" tf:"protocol"`
+	RuleNo        int    `json:"ruleNo" tf:"rule_no"`
+	ToPort        int    `json:"toPort" tf:"to_port"`
 }
 
-type DefaultNetworkAclSpecIngress struct {
-	Action string `json:"action"`
+type DefaultNetworkACLSpecIngress struct {
+	Action string `json:"action" tf:"action"`
 	// +optional
-	CidrBlock string `json:"cidr_block,omitempty"`
-	FromPort  int    `json:"from_port"`
+	CidrBlock string `json:"cidrBlock,omitempty" tf:"cidr_block,omitempty"`
+	FromPort  int    `json:"fromPort" tf:"from_port"`
 	// +optional
-	IcmpCode int `json:"icmp_code,omitempty"`
+	IcmpCode int `json:"icmpCode,omitempty" tf:"icmp_code,omitempty"`
 	// +optional
-	IcmpType int `json:"icmp_type,omitempty"`
+	IcmpType int `json:"icmpType,omitempty" tf:"icmp_type,omitempty"`
 	// +optional
-	Ipv6CidrBlock string `json:"ipv6_cidr_block,omitempty"`
-	Protocol      string `json:"protocol"`
-	RuleNo        int    `json:"rule_no"`
-	ToPort        int    `json:"to_port"`
+	Ipv6CIDRBlock string `json:"ipv6CIDRBlock,omitempty" tf:"ipv6_cidr_block,omitempty"`
+	Protocol      string `json:"protocol" tf:"protocol"`
+	RuleNo        int    `json:"ruleNo" tf:"rule_no"`
+	ToPort        int    `json:"toPort" tf:"to_port"`
 }
 
-type DefaultNetworkAclSpec struct {
-	DefaultNetworkAclId string `json:"default_network_acl_id"`
+type DefaultNetworkACLSpec struct {
+	DefaultNetworkACLID string `json:"defaultNetworkACLID" tf:"default_network_acl_id"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Egress *[]DefaultNetworkAclSpec `json:"egress,omitempty"`
+	Egress []DefaultNetworkACLSpecEgress `json:"egress,omitempty" tf:"egress,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Ingress *[]DefaultNetworkAclSpec `json:"ingress,omitempty"`
+	Ingress []DefaultNetworkACLSpecIngress `json:"ingress,omitempty" tf:"ingress,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SubnetIds []string `json:"subnet_ids,omitempty"`
+	SubnetIDS []string `json:"subnetIDS,omitempty" tf:"subnet_ids,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
-type DefaultNetworkAclStatus struct {
+type DefaultNetworkACLStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// DefaultNetworkAclList is a list of DefaultNetworkAcls
-type DefaultNetworkAclList struct {
+// DefaultNetworkACLList is a list of DefaultNetworkACLs
+type DefaultNetworkACLList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of DefaultNetworkAcl CRD objects
-	Items []DefaultNetworkAcl `json:"items,omitempty"`
+	// Items is a list of DefaultNetworkACL CRD objects
+	Items []DefaultNetworkACL `json:"items,omitempty"`
 }

@@ -29,8 +29,8 @@ import (
 type AutomationCredentialLister interface {
 	// List lists all AutomationCredentials in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AutomationCredential, err error)
-	// Get retrieves the AutomationCredential from the index for a given name.
-	Get(name string) (*v1alpha1.AutomationCredential, error)
+	// AutomationCredentials returns an object that can list and get AutomationCredentials.
+	AutomationCredentials(namespace string) AutomationCredentialNamespaceLister
 	AutomationCredentialListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *automationCredentialLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the AutomationCredential from the index for a given name.
-func (s *automationCredentialLister) Get(name string) (*v1alpha1.AutomationCredential, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AutomationCredentials returns an object that can list and get AutomationCredentials.
+func (s *automationCredentialLister) AutomationCredentials(namespace string) AutomationCredentialNamespaceLister {
+	return automationCredentialNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AutomationCredentialNamespaceLister helps list and get AutomationCredentials.
+type AutomationCredentialNamespaceLister interface {
+	// List lists all AutomationCredentials in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AutomationCredential, err error)
+	// Get retrieves the AutomationCredential from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AutomationCredential, error)
+	AutomationCredentialNamespaceListerExpansion
+}
+
+// automationCredentialNamespaceLister implements the AutomationCredentialNamespaceLister
+// interface.
+type automationCredentialNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AutomationCredentials in the indexer for a given namespace.
+func (s automationCredentialNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AutomationCredential, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AutomationCredential))
+	})
+	return ret, err
+}
+
+// Get retrieves the AutomationCredential from the indexer for a given namespace and name.
+func (s automationCredentialNamespaceLister) Get(name string) (*v1alpha1.AutomationCredential, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

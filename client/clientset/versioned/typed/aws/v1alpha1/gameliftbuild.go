@@ -32,7 +32,7 @@ import (
 // GameliftBuildsGetter has a method to return a GameliftBuildInterface.
 // A group's client should implement this interface.
 type GameliftBuildsGetter interface {
-	GameliftBuilds() GameliftBuildInterface
+	GameliftBuilds(namespace string) GameliftBuildInterface
 }
 
 // GameliftBuildInterface has methods to work with GameliftBuild resources.
@@ -52,12 +52,14 @@ type GameliftBuildInterface interface {
 // gameliftBuilds implements GameliftBuildInterface
 type gameliftBuilds struct {
 	client rest.Interface
+	ns     string
 }
 
 // newGameliftBuilds returns a GameliftBuilds
-func newGameliftBuilds(c *AwsV1alpha1Client) *gameliftBuilds {
+func newGameliftBuilds(c *AwsV1alpha1Client, namespace string) *gameliftBuilds {
 	return &gameliftBuilds{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newGameliftBuilds(c *AwsV1alpha1Client) *gameliftBuilds {
 func (c *gameliftBuilds) Get(name string, options v1.GetOptions) (result *v1alpha1.GameliftBuild, err error) {
 	result = &v1alpha1.GameliftBuild{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("gameliftbuilds").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *gameliftBuilds) List(opts v1.ListOptions) (result *v1alpha1.GameliftBui
 	}
 	result = &v1alpha1.GameliftBuildList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("gameliftbuilds").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *gameliftBuilds) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("gameliftbuilds").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *gameliftBuilds) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *gameliftBuilds) Create(gameliftBuild *v1alpha1.GameliftBuild) (result *v1alpha1.GameliftBuild, err error) {
 	result = &v1alpha1.GameliftBuild{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("gameliftbuilds").
 		Body(gameliftBuild).
 		Do().
@@ -118,6 +124,7 @@ func (c *gameliftBuilds) Create(gameliftBuild *v1alpha1.GameliftBuild) (result *
 func (c *gameliftBuilds) Update(gameliftBuild *v1alpha1.GameliftBuild) (result *v1alpha1.GameliftBuild, err error) {
 	result = &v1alpha1.GameliftBuild{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("gameliftbuilds").
 		Name(gameliftBuild.Name).
 		Body(gameliftBuild).
@@ -132,6 +139,7 @@ func (c *gameliftBuilds) Update(gameliftBuild *v1alpha1.GameliftBuild) (result *
 func (c *gameliftBuilds) UpdateStatus(gameliftBuild *v1alpha1.GameliftBuild) (result *v1alpha1.GameliftBuild, err error) {
 	result = &v1alpha1.GameliftBuild{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("gameliftbuilds").
 		Name(gameliftBuild.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *gameliftBuilds) UpdateStatus(gameliftBuild *v1alpha1.GameliftBuild) (re
 // Delete takes name of the gameliftBuild and deletes it. Returns an error if one occurs.
 func (c *gameliftBuilds) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("gameliftbuilds").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *gameliftBuilds) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("gameliftbuilds").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *gameliftBuilds) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *gameliftBuilds) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GameliftBuild, err error) {
 	result = &v1alpha1.GameliftBuild{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("gameliftbuilds").
 		SubResource(subresources...).
 		Name(name).

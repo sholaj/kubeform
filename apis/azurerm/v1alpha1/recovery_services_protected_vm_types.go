@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,10 +19,11 @@ type RecoveryServicesProtectedVm struct {
 }
 
 type RecoveryServicesProtectedVmSpec struct {
-	BackupPolicyId    string `json:"backup_policy_id"`
-	RecoveryVaultName string `json:"recovery_vault_name"`
-	ResourceGroupName string `json:"resource_group_name"`
-	SourceVmId        string `json:"source_vm_id"`
+	BackupPolicyID    string                    `json:"backupPolicyID" tf:"backup_policy_id"`
+	RecoveryVaultName string                    `json:"recoveryVaultName" tf:"recovery_vault_name"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	SourceVmID        string                    `json:"sourceVmID" tf:"source_vm_id"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type RecoveryServicesProtectedVmStatus struct {
@@ -30,7 +31,9 @@ type RecoveryServicesProtectedVmStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

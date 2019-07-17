@@ -29,8 +29,8 @@ import (
 type DxPrivateVirtualInterfaceLister interface {
 	// List lists all DxPrivateVirtualInterfaces in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DxPrivateVirtualInterface, err error)
-	// Get retrieves the DxPrivateVirtualInterface from the index for a given name.
-	Get(name string) (*v1alpha1.DxPrivateVirtualInterface, error)
+	// DxPrivateVirtualInterfaces returns an object that can list and get DxPrivateVirtualInterfaces.
+	DxPrivateVirtualInterfaces(namespace string) DxPrivateVirtualInterfaceNamespaceLister
 	DxPrivateVirtualInterfaceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dxPrivateVirtualInterfaceLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the DxPrivateVirtualInterface from the index for a given name.
-func (s *dxPrivateVirtualInterfaceLister) Get(name string) (*v1alpha1.DxPrivateVirtualInterface, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DxPrivateVirtualInterfaces returns an object that can list and get DxPrivateVirtualInterfaces.
+func (s *dxPrivateVirtualInterfaceLister) DxPrivateVirtualInterfaces(namespace string) DxPrivateVirtualInterfaceNamespaceLister {
+	return dxPrivateVirtualInterfaceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DxPrivateVirtualInterfaceNamespaceLister helps list and get DxPrivateVirtualInterfaces.
+type DxPrivateVirtualInterfaceNamespaceLister interface {
+	// List lists all DxPrivateVirtualInterfaces in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DxPrivateVirtualInterface, err error)
+	// Get retrieves the DxPrivateVirtualInterface from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DxPrivateVirtualInterface, error)
+	DxPrivateVirtualInterfaceNamespaceListerExpansion
+}
+
+// dxPrivateVirtualInterfaceNamespaceLister implements the DxPrivateVirtualInterfaceNamespaceLister
+// interface.
+type dxPrivateVirtualInterfaceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DxPrivateVirtualInterfaces in the indexer for a given namespace.
+func (s dxPrivateVirtualInterfaceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DxPrivateVirtualInterface, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DxPrivateVirtualInterface))
+	})
+	return ret, err
+}
+
+// Get retrieves the DxPrivateVirtualInterface from the indexer for a given namespace and name.
+func (s dxPrivateVirtualInterfaceNamespaceLister) Get(name string) (*v1alpha1.DxPrivateVirtualInterface, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

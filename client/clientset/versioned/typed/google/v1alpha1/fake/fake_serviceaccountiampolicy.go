@@ -31,6 +31,7 @@ import (
 // FakeServiceAccountIamPolicies implements ServiceAccountIamPolicyInterface
 type FakeServiceAccountIamPolicies struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var serviceaccountiampoliciesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "serviceaccountiampolicies"}
@@ -40,7 +41,8 @@ var serviceaccountiampoliciesKind = schema.GroupVersionKind{Group: "google.kubef
 // Get takes name of the serviceAccountIamPolicy, and returns the corresponding serviceAccountIamPolicy object, and an error if there is any.
 func (c *FakeServiceAccountIamPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceAccountIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(serviceaccountiampoliciesResource, name), &v1alpha1.ServiceAccountIamPolicy{})
+		Invokes(testing.NewGetAction(serviceaccountiampoliciesResource, c.ns, name), &v1alpha1.ServiceAccountIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeServiceAccountIamPolicies) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of ServiceAccountIamPolicies that match those selectors.
 func (c *FakeServiceAccountIamPolicies) List(opts v1.ListOptions) (result *v1alpha1.ServiceAccountIamPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(serviceaccountiampoliciesResource, serviceaccountiampoliciesKind, opts), &v1alpha1.ServiceAccountIamPolicyList{})
+		Invokes(testing.NewListAction(serviceaccountiampoliciesResource, serviceaccountiampoliciesKind, c.ns, opts), &v1alpha1.ServiceAccountIamPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeServiceAccountIamPolicies) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested serviceAccountIamPolicies.
 func (c *FakeServiceAccountIamPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(serviceaccountiampoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(serviceaccountiampoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a serviceAccountIamPolicy and creates it.  Returns the server's representation of the serviceAccountIamPolicy, and an error, if there is any.
 func (c *FakeServiceAccountIamPolicies) Create(serviceAccountIamPolicy *v1alpha1.ServiceAccountIamPolicy) (result *v1alpha1.ServiceAccountIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(serviceaccountiampoliciesResource, serviceAccountIamPolicy), &v1alpha1.ServiceAccountIamPolicy{})
+		Invokes(testing.NewCreateAction(serviceaccountiampoliciesResource, c.ns, serviceAccountIamPolicy), &v1alpha1.ServiceAccountIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeServiceAccountIamPolicies) Create(serviceAccountIamPolicy *v1alpha1
 // Update takes the representation of a serviceAccountIamPolicy and updates it. Returns the server's representation of the serviceAccountIamPolicy, and an error, if there is any.
 func (c *FakeServiceAccountIamPolicies) Update(serviceAccountIamPolicy *v1alpha1.ServiceAccountIamPolicy) (result *v1alpha1.ServiceAccountIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(serviceaccountiampoliciesResource, serviceAccountIamPolicy), &v1alpha1.ServiceAccountIamPolicy{})
+		Invokes(testing.NewUpdateAction(serviceaccountiampoliciesResource, c.ns, serviceAccountIamPolicy), &v1alpha1.ServiceAccountIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeServiceAccountIamPolicies) Update(serviceAccountIamPolicy *v1alpha1
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeServiceAccountIamPolicies) UpdateStatus(serviceAccountIamPolicy *v1alpha1.ServiceAccountIamPolicy) (*v1alpha1.ServiceAccountIamPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(serviceaccountiampoliciesResource, "status", serviceAccountIamPolicy), &v1alpha1.ServiceAccountIamPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(serviceaccountiampoliciesResource, "status", c.ns, serviceAccountIamPolicy), &v1alpha1.ServiceAccountIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeServiceAccountIamPolicies) UpdateStatus(serviceAccountIamPolicy *v1
 // Delete takes name of the serviceAccountIamPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeServiceAccountIamPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(serviceaccountiampoliciesResource, name), &v1alpha1.ServiceAccountIamPolicy{})
+		Invokes(testing.NewDeleteAction(serviceaccountiampoliciesResource, c.ns, name), &v1alpha1.ServiceAccountIamPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeServiceAccountIamPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(serviceaccountiampoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(serviceaccountiampoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ServiceAccountIamPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeServiceAccountIamPolicies) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched serviceAccountIamPolicy.
 func (c *FakeServiceAccountIamPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceAccountIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(serviceaccountiampoliciesResource, name, pt, data, subresources...), &v1alpha1.ServiceAccountIamPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(serviceaccountiampoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ServiceAccountIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

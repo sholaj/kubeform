@@ -41,32 +41,33 @@ type NetworkDdosProtectionPlanInformer interface {
 type networkDdosProtectionPlanInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewNetworkDdosProtectionPlanInformer constructs a new informer for NetworkDdosProtectionPlan type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewNetworkDdosProtectionPlanInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredNetworkDdosProtectionPlanInformer(client, resyncPeriod, indexers, nil)
+func NewNetworkDdosProtectionPlanInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredNetworkDdosProtectionPlanInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredNetworkDdosProtectionPlanInformer constructs a new informer for NetworkDdosProtectionPlan type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredNetworkDdosProtectionPlanInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredNetworkDdosProtectionPlanInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().NetworkDdosProtectionPlans().List(options)
+				return client.AzurermV1alpha1().NetworkDdosProtectionPlans(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().NetworkDdosProtectionPlans().Watch(options)
+				return client.AzurermV1alpha1().NetworkDdosProtectionPlans(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.NetworkDdosProtectionPlan{},
@@ -76,7 +77,7 @@ func NewFilteredNetworkDdosProtectionPlanInformer(client versioned.Interface, re
 }
 
 func (f *networkDdosProtectionPlanInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredNetworkDdosProtectionPlanInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredNetworkDdosProtectionPlanInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *networkDdosProtectionPlanInformer) Informer() cache.SharedIndexInformer {

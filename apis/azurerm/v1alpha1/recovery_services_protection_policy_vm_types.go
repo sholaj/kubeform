@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,61 +19,62 @@ type RecoveryServicesProtectionPolicyVm struct {
 }
 
 type RecoveryServicesProtectionPolicyVmSpecBackup struct {
-	Frequency string `json:"frequency"`
-	Time      string `json:"time"`
+	Frequency string `json:"frequency" tf:"frequency"`
+	Time      string `json:"time" tf:"time"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Weekdays []string `json:"weekdays,omitempty"`
+	Weekdays []string `json:"weekdays,omitempty" tf:"weekdays,omitempty"`
 }
 
 type RecoveryServicesProtectionPolicyVmSpecRetentionDaily struct {
-	Count int `json:"count"`
+	Count int `json:"count" tf:"count"`
 }
 
 type RecoveryServicesProtectionPolicyVmSpecRetentionMonthly struct {
-	Count int `json:"count"`
+	Count int `json:"count" tf:"count"`
 	// +kubebuilder:validation:UniqueItems=true
-	Weekdays []string `json:"weekdays"`
+	Weekdays []string `json:"weekdays" tf:"weekdays"`
 	// +kubebuilder:validation:UniqueItems=true
-	Weeks []string `json:"weeks"`
+	Weeks []string `json:"weeks" tf:"weeks"`
 }
 
 type RecoveryServicesProtectionPolicyVmSpecRetentionWeekly struct {
-	Count int `json:"count"`
+	Count int `json:"count" tf:"count"`
 	// +kubebuilder:validation:UniqueItems=true
-	Weekdays []string `json:"weekdays"`
+	Weekdays []string `json:"weekdays" tf:"weekdays"`
 }
 
 type RecoveryServicesProtectionPolicyVmSpecRetentionYearly struct {
-	Count int `json:"count"`
+	Count int `json:"count" tf:"count"`
 	// +kubebuilder:validation:UniqueItems=true
-	Months []string `json:"months"`
+	Months []string `json:"months" tf:"months"`
 	// +kubebuilder:validation:UniqueItems=true
-	Weekdays []string `json:"weekdays"`
+	Weekdays []string `json:"weekdays" tf:"weekdays"`
 	// +kubebuilder:validation:UniqueItems=true
-	Weeks []string `json:"weeks"`
+	Weeks []string `json:"weeks" tf:"weeks"`
 }
 
 type RecoveryServicesProtectionPolicyVmSpec struct {
 	// +kubebuilder:validation:MaxItems=1
-	Backup            []RecoveryServicesProtectionPolicyVmSpec `json:"backup"`
-	Name              string                                   `json:"name"`
-	RecoveryVaultName string                                   `json:"recovery_vault_name"`
-	ResourceGroupName string                                   `json:"resource_group_name"`
+	Backup            []RecoveryServicesProtectionPolicyVmSpecBackup `json:"backup" tf:"backup"`
+	Name              string                                         `json:"name" tf:"name"`
+	RecoveryVaultName string                                         `json:"recoveryVaultName" tf:"recovery_vault_name"`
+	ResourceGroupName string                                         `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	RetentionDaily *[]RecoveryServicesProtectionPolicyVmSpec `json:"retention_daily,omitempty"`
+	RetentionDaily []RecoveryServicesProtectionPolicyVmSpecRetentionDaily `json:"retentionDaily,omitempty" tf:"retention_daily,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	RetentionMonthly *[]RecoveryServicesProtectionPolicyVmSpec `json:"retention_monthly,omitempty"`
+	RetentionMonthly []RecoveryServicesProtectionPolicyVmSpecRetentionMonthly `json:"retentionMonthly,omitempty" tf:"retention_monthly,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	RetentionWeekly *[]RecoveryServicesProtectionPolicyVmSpec `json:"retention_weekly,omitempty"`
+	RetentionWeekly []RecoveryServicesProtectionPolicyVmSpecRetentionWeekly `json:"retentionWeekly,omitempty" tf:"retention_weekly,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	RetentionYearly *[]RecoveryServicesProtectionPolicyVmSpec `json:"retention_yearly,omitempty"`
+	RetentionYearly []RecoveryServicesProtectionPolicyVmSpecRetentionYearly `json:"retentionYearly,omitempty" tf:"retention_yearly,omitempty"`
 	// +optional
-	Timezone string `json:"timezone,omitempty"`
+	Timezone    string                    `json:"timezone,omitempty" tf:"timezone,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type RecoveryServicesProtectionPolicyVmStatus struct {
@@ -81,7 +82,9 @@ type RecoveryServicesProtectionPolicyVmStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

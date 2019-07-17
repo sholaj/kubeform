@@ -29,8 +29,8 @@ import (
 type KeyVaultKeyLister interface {
 	// List lists all KeyVaultKeys in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KeyVaultKey, err error)
-	// Get retrieves the KeyVaultKey from the index for a given name.
-	Get(name string) (*v1alpha1.KeyVaultKey, error)
+	// KeyVaultKeys returns an object that can list and get KeyVaultKeys.
+	KeyVaultKeys(namespace string) KeyVaultKeyNamespaceLister
 	KeyVaultKeyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *keyVaultKeyLister) List(selector labels.Selector) (ret []*v1alpha1.KeyV
 	return ret, err
 }
 
-// Get retrieves the KeyVaultKey from the index for a given name.
-func (s *keyVaultKeyLister) Get(name string) (*v1alpha1.KeyVaultKey, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KeyVaultKeys returns an object that can list and get KeyVaultKeys.
+func (s *keyVaultKeyLister) KeyVaultKeys(namespace string) KeyVaultKeyNamespaceLister {
+	return keyVaultKeyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KeyVaultKeyNamespaceLister helps list and get KeyVaultKeys.
+type KeyVaultKeyNamespaceLister interface {
+	// List lists all KeyVaultKeys in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KeyVaultKey, err error)
+	// Get retrieves the KeyVaultKey from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KeyVaultKey, error)
+	KeyVaultKeyNamespaceListerExpansion
+}
+
+// keyVaultKeyNamespaceLister implements the KeyVaultKeyNamespaceLister
+// interface.
+type keyVaultKeyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KeyVaultKeys in the indexer for a given namespace.
+func (s keyVaultKeyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KeyVaultKey, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KeyVaultKey))
+	})
+	return ret, err
+}
+
+// Get retrieves the KeyVaultKey from the indexer for a given namespace and name.
+func (s keyVaultKeyNamespaceLister) Get(name string) (*v1alpha1.KeyVaultKey, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

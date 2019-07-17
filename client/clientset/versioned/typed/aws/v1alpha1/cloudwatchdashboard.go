@@ -32,7 +32,7 @@ import (
 // CloudwatchDashboardsGetter has a method to return a CloudwatchDashboardInterface.
 // A group's client should implement this interface.
 type CloudwatchDashboardsGetter interface {
-	CloudwatchDashboards() CloudwatchDashboardInterface
+	CloudwatchDashboards(namespace string) CloudwatchDashboardInterface
 }
 
 // CloudwatchDashboardInterface has methods to work with CloudwatchDashboard resources.
@@ -52,12 +52,14 @@ type CloudwatchDashboardInterface interface {
 // cloudwatchDashboards implements CloudwatchDashboardInterface
 type cloudwatchDashboards struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCloudwatchDashboards returns a CloudwatchDashboards
-func newCloudwatchDashboards(c *AwsV1alpha1Client) *cloudwatchDashboards {
+func newCloudwatchDashboards(c *AwsV1alpha1Client, namespace string) *cloudwatchDashboards {
 	return &cloudwatchDashboards{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCloudwatchDashboards(c *AwsV1alpha1Client) *cloudwatchDashboards {
 func (c *cloudwatchDashboards) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudwatchDashboard, err error) {
 	result = &v1alpha1.CloudwatchDashboard{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatchdashboards").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cloudwatchDashboards) List(opts v1.ListOptions) (result *v1alpha1.Cloud
 	}
 	result = &v1alpha1.CloudwatchDashboardList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatchdashboards").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cloudwatchDashboards) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatchdashboards").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cloudwatchDashboards) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *cloudwatchDashboards) Create(cloudwatchDashboard *v1alpha1.CloudwatchDashboard) (result *v1alpha1.CloudwatchDashboard, err error) {
 	result = &v1alpha1.CloudwatchDashboard{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cloudwatchdashboards").
 		Body(cloudwatchDashboard).
 		Do().
@@ -118,6 +124,7 @@ func (c *cloudwatchDashboards) Create(cloudwatchDashboard *v1alpha1.CloudwatchDa
 func (c *cloudwatchDashboards) Update(cloudwatchDashboard *v1alpha1.CloudwatchDashboard) (result *v1alpha1.CloudwatchDashboard, err error) {
 	result = &v1alpha1.CloudwatchDashboard{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudwatchdashboards").
 		Name(cloudwatchDashboard.Name).
 		Body(cloudwatchDashboard).
@@ -132,6 +139,7 @@ func (c *cloudwatchDashboards) Update(cloudwatchDashboard *v1alpha1.CloudwatchDa
 func (c *cloudwatchDashboards) UpdateStatus(cloudwatchDashboard *v1alpha1.CloudwatchDashboard) (result *v1alpha1.CloudwatchDashboard, err error) {
 	result = &v1alpha1.CloudwatchDashboard{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudwatchdashboards").
 		Name(cloudwatchDashboard.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cloudwatchDashboards) UpdateStatus(cloudwatchDashboard *v1alpha1.Cloudw
 // Delete takes name of the cloudwatchDashboard and deletes it. Returns an error if one occurs.
 func (c *cloudwatchDashboards) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudwatchdashboards").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cloudwatchDashboards) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudwatchdashboards").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cloudwatchDashboards) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *cloudwatchDashboards) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudwatchDashboard, err error) {
 	result = &v1alpha1.CloudwatchDashboard{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cloudwatchdashboards").
 		SubResource(subresources...).
 		Name(name).

@@ -41,32 +41,33 @@ type SqsQueuePolicyInformer interface {
 type sqsQueuePolicyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSqsQueuePolicyInformer constructs a new informer for SqsQueuePolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSqsQueuePolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSqsQueuePolicyInformer(client, resyncPeriod, indexers, nil)
+func NewSqsQueuePolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSqsQueuePolicyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSqsQueuePolicyInformer constructs a new informer for SqsQueuePolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSqsQueuePolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSqsQueuePolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SqsQueuePolicies().List(options)
+				return client.AwsV1alpha1().SqsQueuePolicies(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SqsQueuePolicies().Watch(options)
+				return client.AwsV1alpha1().SqsQueuePolicies(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.SqsQueuePolicy{},
@@ -76,7 +77,7 @@ func NewFilteredSqsQueuePolicyInformer(client versioned.Interface, resyncPeriod 
 }
 
 func (f *sqsQueuePolicyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSqsQueuePolicyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSqsQueuePolicyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *sqsQueuePolicyInformer) Informer() cache.SharedIndexInformer {

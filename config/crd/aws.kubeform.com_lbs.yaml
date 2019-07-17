@@ -397,26 +397,47 @@ spec:
           type: object
         spec:
           properties:
-            access_logs:
-              items: {}
+            accessLogs:
+              items:
+                properties:
+                  bucket:
+                    type: string
+                  enabled:
+                    type: boolean
+                  prefix:
+                    type: string
+                required:
+                - bucket
+                type: object
               maxItems: 1
               type: array
-            enable_cross_zone_load_balancing:
+            enableCrossZoneLoadBalancing:
               type: boolean
-            enable_deletion_protection:
+            enableDeletionProtection:
               type: boolean
-            enable_http2:
+            enableHttp2:
               type: boolean
-            idle_timeout:
+            idleTimeout:
               type: integer
-            load_balancer_type:
+            loadBalancerType:
               type: string
-            name_prefix:
+            namePrefix:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             tags:
               additionalProperties:
                 type: string
               type: object
+          required:
+          - providerRef
           type: object
         status:
           properties:
@@ -427,6 +448,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

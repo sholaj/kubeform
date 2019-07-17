@@ -32,7 +32,7 @@ import (
 // ApiGatewayVpcLinksGetter has a method to return a ApiGatewayVpcLinkInterface.
 // A group's client should implement this interface.
 type ApiGatewayVpcLinksGetter interface {
-	ApiGatewayVpcLinks() ApiGatewayVpcLinkInterface
+	ApiGatewayVpcLinks(namespace string) ApiGatewayVpcLinkInterface
 }
 
 // ApiGatewayVpcLinkInterface has methods to work with ApiGatewayVpcLink resources.
@@ -52,12 +52,14 @@ type ApiGatewayVpcLinkInterface interface {
 // apiGatewayVpcLinks implements ApiGatewayVpcLinkInterface
 type apiGatewayVpcLinks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiGatewayVpcLinks returns a ApiGatewayVpcLinks
-func newApiGatewayVpcLinks(c *AwsV1alpha1Client) *apiGatewayVpcLinks {
+func newApiGatewayVpcLinks(c *AwsV1alpha1Client, namespace string) *apiGatewayVpcLinks {
 	return &apiGatewayVpcLinks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiGatewayVpcLinks(c *AwsV1alpha1Client) *apiGatewayVpcLinks {
 func (c *apiGatewayVpcLinks) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayVpcLink, err error) {
 	result = &v1alpha1.ApiGatewayVpcLink{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayvpclinks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiGatewayVpcLinks) List(opts v1.ListOptions) (result *v1alpha1.ApiGate
 	}
 	result = &v1alpha1.ApiGatewayVpcLinkList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayvpclinks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiGatewayVpcLinks) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayvpclinks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiGatewayVpcLinks) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *apiGatewayVpcLinks) Create(apiGatewayVpcLink *v1alpha1.ApiGatewayVpcLink) (result *v1alpha1.ApiGatewayVpcLink, err error) {
 	result = &v1alpha1.ApiGatewayVpcLink{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apigatewayvpclinks").
 		Body(apiGatewayVpcLink).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiGatewayVpcLinks) Create(apiGatewayVpcLink *v1alpha1.ApiGatewayVpcLin
 func (c *apiGatewayVpcLinks) Update(apiGatewayVpcLink *v1alpha1.ApiGatewayVpcLink) (result *v1alpha1.ApiGatewayVpcLink, err error) {
 	result = &v1alpha1.ApiGatewayVpcLink{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewayvpclinks").
 		Name(apiGatewayVpcLink.Name).
 		Body(apiGatewayVpcLink).
@@ -132,6 +139,7 @@ func (c *apiGatewayVpcLinks) Update(apiGatewayVpcLink *v1alpha1.ApiGatewayVpcLin
 func (c *apiGatewayVpcLinks) UpdateStatus(apiGatewayVpcLink *v1alpha1.ApiGatewayVpcLink) (result *v1alpha1.ApiGatewayVpcLink, err error) {
 	result = &v1alpha1.ApiGatewayVpcLink{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewayvpclinks").
 		Name(apiGatewayVpcLink.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiGatewayVpcLinks) UpdateStatus(apiGatewayVpcLink *v1alpha1.ApiGateway
 // Delete takes name of the apiGatewayVpcLink and deletes it. Returns an error if one occurs.
 func (c *apiGatewayVpcLinks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewayvpclinks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiGatewayVpcLinks) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewayvpclinks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiGatewayVpcLinks) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *apiGatewayVpcLinks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayVpcLink, err error) {
 	result = &v1alpha1.ApiGatewayVpcLink{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apigatewayvpclinks").
 		SubResource(subresources...).
 		Name(name).

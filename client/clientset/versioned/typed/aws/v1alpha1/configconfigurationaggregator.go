@@ -32,7 +32,7 @@ import (
 // ConfigConfigurationAggregatorsGetter has a method to return a ConfigConfigurationAggregatorInterface.
 // A group's client should implement this interface.
 type ConfigConfigurationAggregatorsGetter interface {
-	ConfigConfigurationAggregators() ConfigConfigurationAggregatorInterface
+	ConfigConfigurationAggregators(namespace string) ConfigConfigurationAggregatorInterface
 }
 
 // ConfigConfigurationAggregatorInterface has methods to work with ConfigConfigurationAggregator resources.
@@ -52,12 +52,14 @@ type ConfigConfigurationAggregatorInterface interface {
 // configConfigurationAggregators implements ConfigConfigurationAggregatorInterface
 type configConfigurationAggregators struct {
 	client rest.Interface
+	ns     string
 }
 
 // newConfigConfigurationAggregators returns a ConfigConfigurationAggregators
-func newConfigConfigurationAggregators(c *AwsV1alpha1Client) *configConfigurationAggregators {
+func newConfigConfigurationAggregators(c *AwsV1alpha1Client, namespace string) *configConfigurationAggregators {
 	return &configConfigurationAggregators{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newConfigConfigurationAggregators(c *AwsV1alpha1Client) *configConfiguratio
 func (c *configConfigurationAggregators) Get(name string, options v1.GetOptions) (result *v1alpha1.ConfigConfigurationAggregator, err error) {
 	result = &v1alpha1.ConfigConfigurationAggregator{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("configconfigurationaggregators").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *configConfigurationAggregators) List(opts v1.ListOptions) (result *v1al
 	}
 	result = &v1alpha1.ConfigConfigurationAggregatorList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("configconfigurationaggregators").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *configConfigurationAggregators) Watch(opts v1.ListOptions) (watch.Inter
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("configconfigurationaggregators").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *configConfigurationAggregators) Watch(opts v1.ListOptions) (watch.Inter
 func (c *configConfigurationAggregators) Create(configConfigurationAggregator *v1alpha1.ConfigConfigurationAggregator) (result *v1alpha1.ConfigConfigurationAggregator, err error) {
 	result = &v1alpha1.ConfigConfigurationAggregator{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("configconfigurationaggregators").
 		Body(configConfigurationAggregator).
 		Do().
@@ -118,6 +124,7 @@ func (c *configConfigurationAggregators) Create(configConfigurationAggregator *v
 func (c *configConfigurationAggregators) Update(configConfigurationAggregator *v1alpha1.ConfigConfigurationAggregator) (result *v1alpha1.ConfigConfigurationAggregator, err error) {
 	result = &v1alpha1.ConfigConfigurationAggregator{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("configconfigurationaggregators").
 		Name(configConfigurationAggregator.Name).
 		Body(configConfigurationAggregator).
@@ -132,6 +139,7 @@ func (c *configConfigurationAggregators) Update(configConfigurationAggregator *v
 func (c *configConfigurationAggregators) UpdateStatus(configConfigurationAggregator *v1alpha1.ConfigConfigurationAggregator) (result *v1alpha1.ConfigConfigurationAggregator, err error) {
 	result = &v1alpha1.ConfigConfigurationAggregator{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("configconfigurationaggregators").
 		Name(configConfigurationAggregator.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *configConfigurationAggregators) UpdateStatus(configConfigurationAggrega
 // Delete takes name of the configConfigurationAggregator and deletes it. Returns an error if one occurs.
 func (c *configConfigurationAggregators) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("configconfigurationaggregators").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *configConfigurationAggregators) DeleteCollection(options *v1.DeleteOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("configconfigurationaggregators").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *configConfigurationAggregators) DeleteCollection(options *v1.DeleteOpti
 func (c *configConfigurationAggregators) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ConfigConfigurationAggregator, err error) {
 	result = &v1alpha1.ConfigConfigurationAggregator{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("configconfigurationaggregators").
 		SubResource(subresources...).
 		Name(name).

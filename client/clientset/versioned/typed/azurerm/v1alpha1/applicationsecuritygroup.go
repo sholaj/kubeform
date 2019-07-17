@@ -32,7 +32,7 @@ import (
 // ApplicationSecurityGroupsGetter has a method to return a ApplicationSecurityGroupInterface.
 // A group's client should implement this interface.
 type ApplicationSecurityGroupsGetter interface {
-	ApplicationSecurityGroups() ApplicationSecurityGroupInterface
+	ApplicationSecurityGroups(namespace string) ApplicationSecurityGroupInterface
 }
 
 // ApplicationSecurityGroupInterface has methods to work with ApplicationSecurityGroup resources.
@@ -52,12 +52,14 @@ type ApplicationSecurityGroupInterface interface {
 // applicationSecurityGroups implements ApplicationSecurityGroupInterface
 type applicationSecurityGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApplicationSecurityGroups returns a ApplicationSecurityGroups
-func newApplicationSecurityGroups(c *AzurermV1alpha1Client) *applicationSecurityGroups {
+func newApplicationSecurityGroups(c *AzurermV1alpha1Client, namespace string) *applicationSecurityGroups {
 	return &applicationSecurityGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApplicationSecurityGroups(c *AzurermV1alpha1Client) *applicationSecurity
 func (c *applicationSecurityGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.ApplicationSecurityGroup, err error) {
 	result = &v1alpha1.ApplicationSecurityGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("applicationsecuritygroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *applicationSecurityGroups) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.ApplicationSecurityGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("applicationsecuritygroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *applicationSecurityGroups) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("applicationsecuritygroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *applicationSecurityGroups) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *applicationSecurityGroups) Create(applicationSecurityGroup *v1alpha1.ApplicationSecurityGroup) (result *v1alpha1.ApplicationSecurityGroup, err error) {
 	result = &v1alpha1.ApplicationSecurityGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("applicationsecuritygroups").
 		Body(applicationSecurityGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *applicationSecurityGroups) Create(applicationSecurityGroup *v1alpha1.Ap
 func (c *applicationSecurityGroups) Update(applicationSecurityGroup *v1alpha1.ApplicationSecurityGroup) (result *v1alpha1.ApplicationSecurityGroup, err error) {
 	result = &v1alpha1.ApplicationSecurityGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("applicationsecuritygroups").
 		Name(applicationSecurityGroup.Name).
 		Body(applicationSecurityGroup).
@@ -132,6 +139,7 @@ func (c *applicationSecurityGroups) Update(applicationSecurityGroup *v1alpha1.Ap
 func (c *applicationSecurityGroups) UpdateStatus(applicationSecurityGroup *v1alpha1.ApplicationSecurityGroup) (result *v1alpha1.ApplicationSecurityGroup, err error) {
 	result = &v1alpha1.ApplicationSecurityGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("applicationsecuritygroups").
 		Name(applicationSecurityGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *applicationSecurityGroups) UpdateStatus(applicationSecurityGroup *v1alp
 // Delete takes name of the applicationSecurityGroup and deletes it. Returns an error if one occurs.
 func (c *applicationSecurityGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("applicationsecuritygroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *applicationSecurityGroups) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("applicationsecuritygroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *applicationSecurityGroups) DeleteCollection(options *v1.DeleteOptions, 
 func (c *applicationSecurityGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApplicationSecurityGroup, err error) {
 	result = &v1alpha1.ApplicationSecurityGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("applicationsecuritygroups").
 		SubResource(subresources...).
 		Name(name).

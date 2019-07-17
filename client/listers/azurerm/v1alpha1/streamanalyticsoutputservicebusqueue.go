@@ -29,8 +29,8 @@ import (
 type StreamAnalyticsOutputServicebusQueueLister interface {
 	// List lists all StreamAnalyticsOutputServicebusQueues in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StreamAnalyticsOutputServicebusQueue, err error)
-	// Get retrieves the StreamAnalyticsOutputServicebusQueue from the index for a given name.
-	Get(name string) (*v1alpha1.StreamAnalyticsOutputServicebusQueue, error)
+	// StreamAnalyticsOutputServicebusQueues returns an object that can list and get StreamAnalyticsOutputServicebusQueues.
+	StreamAnalyticsOutputServicebusQueues(namespace string) StreamAnalyticsOutputServicebusQueueNamespaceLister
 	StreamAnalyticsOutputServicebusQueueListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *streamAnalyticsOutputServicebusQueueLister) List(selector labels.Select
 	return ret, err
 }
 
-// Get retrieves the StreamAnalyticsOutputServicebusQueue from the index for a given name.
-func (s *streamAnalyticsOutputServicebusQueueLister) Get(name string) (*v1alpha1.StreamAnalyticsOutputServicebusQueue, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StreamAnalyticsOutputServicebusQueues returns an object that can list and get StreamAnalyticsOutputServicebusQueues.
+func (s *streamAnalyticsOutputServicebusQueueLister) StreamAnalyticsOutputServicebusQueues(namespace string) StreamAnalyticsOutputServicebusQueueNamespaceLister {
+	return streamAnalyticsOutputServicebusQueueNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StreamAnalyticsOutputServicebusQueueNamespaceLister helps list and get StreamAnalyticsOutputServicebusQueues.
+type StreamAnalyticsOutputServicebusQueueNamespaceLister interface {
+	// List lists all StreamAnalyticsOutputServicebusQueues in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StreamAnalyticsOutputServicebusQueue, err error)
+	// Get retrieves the StreamAnalyticsOutputServicebusQueue from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StreamAnalyticsOutputServicebusQueue, error)
+	StreamAnalyticsOutputServicebusQueueNamespaceListerExpansion
+}
+
+// streamAnalyticsOutputServicebusQueueNamespaceLister implements the StreamAnalyticsOutputServicebusQueueNamespaceLister
+// interface.
+type streamAnalyticsOutputServicebusQueueNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StreamAnalyticsOutputServicebusQueues in the indexer for a given namespace.
+func (s streamAnalyticsOutputServicebusQueueNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StreamAnalyticsOutputServicebusQueue, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StreamAnalyticsOutputServicebusQueue))
+	})
+	return ret, err
+}
+
+// Get retrieves the StreamAnalyticsOutputServicebusQueue from the indexer for a given namespace and name.
+func (s streamAnalyticsOutputServicebusQueueNamespaceLister) Get(name string) (*v1alpha1.StreamAnalyticsOutputServicebusQueue, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

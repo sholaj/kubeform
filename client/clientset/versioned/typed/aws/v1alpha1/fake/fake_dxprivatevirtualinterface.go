@@ -31,6 +31,7 @@ import (
 // FakeDxPrivateVirtualInterfaces implements DxPrivateVirtualInterfaceInterface
 type FakeDxPrivateVirtualInterfaces struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var dxprivatevirtualinterfacesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "dxprivatevirtualinterfaces"}
@@ -40,7 +41,8 @@ var dxprivatevirtualinterfacesKind = schema.GroupVersionKind{Group: "aws.kubefor
 // Get takes name of the dxPrivateVirtualInterface, and returns the corresponding dxPrivateVirtualInterface object, and an error if there is any.
 func (c *FakeDxPrivateVirtualInterfaces) Get(name string, options v1.GetOptions) (result *v1alpha1.DxPrivateVirtualInterface, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(dxprivatevirtualinterfacesResource, name), &v1alpha1.DxPrivateVirtualInterface{})
+		Invokes(testing.NewGetAction(dxprivatevirtualinterfacesResource, c.ns, name), &v1alpha1.DxPrivateVirtualInterface{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDxPrivateVirtualInterfaces) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of DxPrivateVirtualInterfaces that match those selectors.
 func (c *FakeDxPrivateVirtualInterfaces) List(opts v1.ListOptions) (result *v1alpha1.DxPrivateVirtualInterfaceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(dxprivatevirtualinterfacesResource, dxprivatevirtualinterfacesKind, opts), &v1alpha1.DxPrivateVirtualInterfaceList{})
+		Invokes(testing.NewListAction(dxprivatevirtualinterfacesResource, dxprivatevirtualinterfacesKind, c.ns, opts), &v1alpha1.DxPrivateVirtualInterfaceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDxPrivateVirtualInterfaces) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested dxPrivateVirtualInterfaces.
 func (c *FakeDxPrivateVirtualInterfaces) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(dxprivatevirtualinterfacesResource, opts))
+		InvokesWatch(testing.NewWatchAction(dxprivatevirtualinterfacesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dxPrivateVirtualInterface and creates it.  Returns the server's representation of the dxPrivateVirtualInterface, and an error, if there is any.
 func (c *FakeDxPrivateVirtualInterfaces) Create(dxPrivateVirtualInterface *v1alpha1.DxPrivateVirtualInterface) (result *v1alpha1.DxPrivateVirtualInterface, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(dxprivatevirtualinterfacesResource, dxPrivateVirtualInterface), &v1alpha1.DxPrivateVirtualInterface{})
+		Invokes(testing.NewCreateAction(dxprivatevirtualinterfacesResource, c.ns, dxPrivateVirtualInterface), &v1alpha1.DxPrivateVirtualInterface{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDxPrivateVirtualInterfaces) Create(dxPrivateVirtualInterface *v1alp
 // Update takes the representation of a dxPrivateVirtualInterface and updates it. Returns the server's representation of the dxPrivateVirtualInterface, and an error, if there is any.
 func (c *FakeDxPrivateVirtualInterfaces) Update(dxPrivateVirtualInterface *v1alpha1.DxPrivateVirtualInterface) (result *v1alpha1.DxPrivateVirtualInterface, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(dxprivatevirtualinterfacesResource, dxPrivateVirtualInterface), &v1alpha1.DxPrivateVirtualInterface{})
+		Invokes(testing.NewUpdateAction(dxprivatevirtualinterfacesResource, c.ns, dxPrivateVirtualInterface), &v1alpha1.DxPrivateVirtualInterface{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDxPrivateVirtualInterfaces) Update(dxPrivateVirtualInterface *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDxPrivateVirtualInterfaces) UpdateStatus(dxPrivateVirtualInterface *v1alpha1.DxPrivateVirtualInterface) (*v1alpha1.DxPrivateVirtualInterface, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(dxprivatevirtualinterfacesResource, "status", dxPrivateVirtualInterface), &v1alpha1.DxPrivateVirtualInterface{})
+		Invokes(testing.NewUpdateSubresourceAction(dxprivatevirtualinterfacesResource, "status", c.ns, dxPrivateVirtualInterface), &v1alpha1.DxPrivateVirtualInterface{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDxPrivateVirtualInterfaces) UpdateStatus(dxPrivateVirtualInterface 
 // Delete takes name of the dxPrivateVirtualInterface and deletes it. Returns an error if one occurs.
 func (c *FakeDxPrivateVirtualInterfaces) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(dxprivatevirtualinterfacesResource, name), &v1alpha1.DxPrivateVirtualInterface{})
+		Invokes(testing.NewDeleteAction(dxprivatevirtualinterfacesResource, c.ns, name), &v1alpha1.DxPrivateVirtualInterface{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDxPrivateVirtualInterfaces) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(dxprivatevirtualinterfacesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(dxprivatevirtualinterfacesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DxPrivateVirtualInterfaceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDxPrivateVirtualInterfaces) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched dxPrivateVirtualInterface.
 func (c *FakeDxPrivateVirtualInterfaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DxPrivateVirtualInterface, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(dxprivatevirtualinterfacesResource, name, pt, data, subresources...), &v1alpha1.DxPrivateVirtualInterface{})
+		Invokes(testing.NewPatchSubresourceAction(dxprivatevirtualinterfacesResource, c.ns, name, pt, data, subresources...), &v1alpha1.DxPrivateVirtualInterface{})
+
 	if obj == nil {
 		return nil, err
 	}

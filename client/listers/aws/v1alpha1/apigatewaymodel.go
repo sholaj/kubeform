@@ -29,8 +29,8 @@ import (
 type ApiGatewayModelLister interface {
 	// List lists all ApiGatewayModels in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayModel, err error)
-	// Get retrieves the ApiGatewayModel from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayModel, error)
+	// ApiGatewayModels returns an object that can list and get ApiGatewayModels.
+	ApiGatewayModels(namespace string) ApiGatewayModelNamespaceLister
 	ApiGatewayModelListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiGatewayModelLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayModel from the index for a given name.
-func (s *apiGatewayModelLister) Get(name string) (*v1alpha1.ApiGatewayModel, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayModels returns an object that can list and get ApiGatewayModels.
+func (s *apiGatewayModelLister) ApiGatewayModels(namespace string) ApiGatewayModelNamespaceLister {
+	return apiGatewayModelNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayModelNamespaceLister helps list and get ApiGatewayModels.
+type ApiGatewayModelNamespaceLister interface {
+	// List lists all ApiGatewayModels in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayModel, err error)
+	// Get retrieves the ApiGatewayModel from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayModel, error)
+	ApiGatewayModelNamespaceListerExpansion
+}
+
+// apiGatewayModelNamespaceLister implements the ApiGatewayModelNamespaceLister
+// interface.
+type apiGatewayModelNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayModels in the indexer for a given namespace.
+func (s apiGatewayModelNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayModel, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayModel))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayModel from the indexer for a given namespace and name.
+func (s apiGatewayModelNamespaceLister) Get(name string) (*v1alpha1.ApiGatewayModel, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

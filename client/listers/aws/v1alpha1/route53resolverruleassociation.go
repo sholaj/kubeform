@@ -29,8 +29,8 @@ import (
 type Route53ResolverRuleAssociationLister interface {
 	// List lists all Route53ResolverRuleAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Route53ResolverRuleAssociation, err error)
-	// Get retrieves the Route53ResolverRuleAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.Route53ResolverRuleAssociation, error)
+	// Route53ResolverRuleAssociations returns an object that can list and get Route53ResolverRuleAssociations.
+	Route53ResolverRuleAssociations(namespace string) Route53ResolverRuleAssociationNamespaceLister
 	Route53ResolverRuleAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *route53ResolverRuleAssociationLister) List(selector labels.Selector) (r
 	return ret, err
 }
 
-// Get retrieves the Route53ResolverRuleAssociation from the index for a given name.
-func (s *route53ResolverRuleAssociationLister) Get(name string) (*v1alpha1.Route53ResolverRuleAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Route53ResolverRuleAssociations returns an object that can list and get Route53ResolverRuleAssociations.
+func (s *route53ResolverRuleAssociationLister) Route53ResolverRuleAssociations(namespace string) Route53ResolverRuleAssociationNamespaceLister {
+	return route53ResolverRuleAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// Route53ResolverRuleAssociationNamespaceLister helps list and get Route53ResolverRuleAssociations.
+type Route53ResolverRuleAssociationNamespaceLister interface {
+	// List lists all Route53ResolverRuleAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Route53ResolverRuleAssociation, err error)
+	// Get retrieves the Route53ResolverRuleAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Route53ResolverRuleAssociation, error)
+	Route53ResolverRuleAssociationNamespaceListerExpansion
+}
+
+// route53ResolverRuleAssociationNamespaceLister implements the Route53ResolverRuleAssociationNamespaceLister
+// interface.
+type route53ResolverRuleAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Route53ResolverRuleAssociations in the indexer for a given namespace.
+func (s route53ResolverRuleAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Route53ResolverRuleAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Route53ResolverRuleAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the Route53ResolverRuleAssociation from the indexer for a given namespace and name.
+func (s route53ResolverRuleAssociationNamespaceLister) Get(name string) (*v1alpha1.Route53ResolverRuleAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

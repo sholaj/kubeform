@@ -31,6 +31,7 @@ import (
 // FakeSpannerDatabaseIamPolicies implements SpannerDatabaseIamPolicyInterface
 type FakeSpannerDatabaseIamPolicies struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var spannerdatabaseiampoliciesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "spannerdatabaseiampolicies"}
@@ -40,7 +41,8 @@ var spannerdatabaseiampoliciesKind = schema.GroupVersionKind{Group: "google.kube
 // Get takes name of the spannerDatabaseIamPolicy, and returns the corresponding spannerDatabaseIamPolicy object, and an error if there is any.
 func (c *FakeSpannerDatabaseIamPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.SpannerDatabaseIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(spannerdatabaseiampoliciesResource, name), &v1alpha1.SpannerDatabaseIamPolicy{})
+		Invokes(testing.NewGetAction(spannerdatabaseiampoliciesResource, c.ns, name), &v1alpha1.SpannerDatabaseIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSpannerDatabaseIamPolicies) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of SpannerDatabaseIamPolicies that match those selectors.
 func (c *FakeSpannerDatabaseIamPolicies) List(opts v1.ListOptions) (result *v1alpha1.SpannerDatabaseIamPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(spannerdatabaseiampoliciesResource, spannerdatabaseiampoliciesKind, opts), &v1alpha1.SpannerDatabaseIamPolicyList{})
+		Invokes(testing.NewListAction(spannerdatabaseiampoliciesResource, spannerdatabaseiampoliciesKind, c.ns, opts), &v1alpha1.SpannerDatabaseIamPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSpannerDatabaseIamPolicies) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested spannerDatabaseIamPolicies.
 func (c *FakeSpannerDatabaseIamPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(spannerdatabaseiampoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(spannerdatabaseiampoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a spannerDatabaseIamPolicy and creates it.  Returns the server's representation of the spannerDatabaseIamPolicy, and an error, if there is any.
 func (c *FakeSpannerDatabaseIamPolicies) Create(spannerDatabaseIamPolicy *v1alpha1.SpannerDatabaseIamPolicy) (result *v1alpha1.SpannerDatabaseIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(spannerdatabaseiampoliciesResource, spannerDatabaseIamPolicy), &v1alpha1.SpannerDatabaseIamPolicy{})
+		Invokes(testing.NewCreateAction(spannerdatabaseiampoliciesResource, c.ns, spannerDatabaseIamPolicy), &v1alpha1.SpannerDatabaseIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSpannerDatabaseIamPolicies) Create(spannerDatabaseIamPolicy *v1alph
 // Update takes the representation of a spannerDatabaseIamPolicy and updates it. Returns the server's representation of the spannerDatabaseIamPolicy, and an error, if there is any.
 func (c *FakeSpannerDatabaseIamPolicies) Update(spannerDatabaseIamPolicy *v1alpha1.SpannerDatabaseIamPolicy) (result *v1alpha1.SpannerDatabaseIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(spannerdatabaseiampoliciesResource, spannerDatabaseIamPolicy), &v1alpha1.SpannerDatabaseIamPolicy{})
+		Invokes(testing.NewUpdateAction(spannerdatabaseiampoliciesResource, c.ns, spannerDatabaseIamPolicy), &v1alpha1.SpannerDatabaseIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSpannerDatabaseIamPolicies) Update(spannerDatabaseIamPolicy *v1alph
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSpannerDatabaseIamPolicies) UpdateStatus(spannerDatabaseIamPolicy *v1alpha1.SpannerDatabaseIamPolicy) (*v1alpha1.SpannerDatabaseIamPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(spannerdatabaseiampoliciesResource, "status", spannerDatabaseIamPolicy), &v1alpha1.SpannerDatabaseIamPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(spannerdatabaseiampoliciesResource, "status", c.ns, spannerDatabaseIamPolicy), &v1alpha1.SpannerDatabaseIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSpannerDatabaseIamPolicies) UpdateStatus(spannerDatabaseIamPolicy *
 // Delete takes name of the spannerDatabaseIamPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeSpannerDatabaseIamPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(spannerdatabaseiampoliciesResource, name), &v1alpha1.SpannerDatabaseIamPolicy{})
+		Invokes(testing.NewDeleteAction(spannerdatabaseiampoliciesResource, c.ns, name), &v1alpha1.SpannerDatabaseIamPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSpannerDatabaseIamPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(spannerdatabaseiampoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(spannerdatabaseiampoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SpannerDatabaseIamPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSpannerDatabaseIamPolicies) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched spannerDatabaseIamPolicy.
 func (c *FakeSpannerDatabaseIamPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SpannerDatabaseIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(spannerdatabaseiampoliciesResource, name, pt, data, subresources...), &v1alpha1.SpannerDatabaseIamPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(spannerdatabaseiampoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.SpannerDatabaseIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

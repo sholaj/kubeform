@@ -31,6 +31,7 @@ import (
 // FakeMysqlDatabases implements MysqlDatabaseInterface
 type FakeMysqlDatabases struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var mysqldatabasesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "mysqldatabases"}
@@ -40,7 +41,8 @@ var mysqldatabasesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", 
 // Get takes name of the mysqlDatabase, and returns the corresponding mysqlDatabase object, and an error if there is any.
 func (c *FakeMysqlDatabases) Get(name string, options v1.GetOptions) (result *v1alpha1.MysqlDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(mysqldatabasesResource, name), &v1alpha1.MysqlDatabase{})
+		Invokes(testing.NewGetAction(mysqldatabasesResource, c.ns, name), &v1alpha1.MysqlDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMysqlDatabases) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of MysqlDatabases that match those selectors.
 func (c *FakeMysqlDatabases) List(opts v1.ListOptions) (result *v1alpha1.MysqlDatabaseList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(mysqldatabasesResource, mysqldatabasesKind, opts), &v1alpha1.MysqlDatabaseList{})
+		Invokes(testing.NewListAction(mysqldatabasesResource, mysqldatabasesKind, c.ns, opts), &v1alpha1.MysqlDatabaseList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMysqlDatabases) List(opts v1.ListOptions) (result *v1alpha1.MysqlDa
 // Watch returns a watch.Interface that watches the requested mysqlDatabases.
 func (c *FakeMysqlDatabases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(mysqldatabasesResource, opts))
+		InvokesWatch(testing.NewWatchAction(mysqldatabasesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a mysqlDatabase and creates it.  Returns the server's representation of the mysqlDatabase, and an error, if there is any.
 func (c *FakeMysqlDatabases) Create(mysqlDatabase *v1alpha1.MysqlDatabase) (result *v1alpha1.MysqlDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(mysqldatabasesResource, mysqlDatabase), &v1alpha1.MysqlDatabase{})
+		Invokes(testing.NewCreateAction(mysqldatabasesResource, c.ns, mysqlDatabase), &v1alpha1.MysqlDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMysqlDatabases) Create(mysqlDatabase *v1alpha1.MysqlDatabase) (resu
 // Update takes the representation of a mysqlDatabase and updates it. Returns the server's representation of the mysqlDatabase, and an error, if there is any.
 func (c *FakeMysqlDatabases) Update(mysqlDatabase *v1alpha1.MysqlDatabase) (result *v1alpha1.MysqlDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(mysqldatabasesResource, mysqlDatabase), &v1alpha1.MysqlDatabase{})
+		Invokes(testing.NewUpdateAction(mysqldatabasesResource, c.ns, mysqlDatabase), &v1alpha1.MysqlDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMysqlDatabases) Update(mysqlDatabase *v1alpha1.MysqlDatabase) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMysqlDatabases) UpdateStatus(mysqlDatabase *v1alpha1.MysqlDatabase) (*v1alpha1.MysqlDatabase, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(mysqldatabasesResource, "status", mysqlDatabase), &v1alpha1.MysqlDatabase{})
+		Invokes(testing.NewUpdateSubresourceAction(mysqldatabasesResource, "status", c.ns, mysqlDatabase), &v1alpha1.MysqlDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMysqlDatabases) UpdateStatus(mysqlDatabase *v1alpha1.MysqlDatabase)
 // Delete takes name of the mysqlDatabase and deletes it. Returns an error if one occurs.
 func (c *FakeMysqlDatabases) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(mysqldatabasesResource, name), &v1alpha1.MysqlDatabase{})
+		Invokes(testing.NewDeleteAction(mysqldatabasesResource, c.ns, name), &v1alpha1.MysqlDatabase{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMysqlDatabases) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(mysqldatabasesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(mysqldatabasesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MysqlDatabaseList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMysqlDatabases) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched mysqlDatabase.
 func (c *FakeMysqlDatabases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MysqlDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(mysqldatabasesResource, name, pt, data, subresources...), &v1alpha1.MysqlDatabase{})
+		Invokes(testing.NewPatchSubresourceAction(mysqldatabasesResource, c.ns, name, pt, data, subresources...), &v1alpha1.MysqlDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}

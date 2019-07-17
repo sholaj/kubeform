@@ -31,6 +31,7 @@ import (
 // FakeServicebusSubscriptions implements ServicebusSubscriptionInterface
 type FakeServicebusSubscriptions struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var servicebussubscriptionsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "servicebussubscriptions"}
@@ -40,7 +41,8 @@ var servicebussubscriptionsKind = schema.GroupVersionKind{Group: "azurerm.kubefo
 // Get takes name of the servicebusSubscription, and returns the corresponding servicebusSubscription object, and an error if there is any.
 func (c *FakeServicebusSubscriptions) Get(name string, options v1.GetOptions) (result *v1alpha1.ServicebusSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(servicebussubscriptionsResource, name), &v1alpha1.ServicebusSubscription{})
+		Invokes(testing.NewGetAction(servicebussubscriptionsResource, c.ns, name), &v1alpha1.ServicebusSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeServicebusSubscriptions) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of ServicebusSubscriptions that match those selectors.
 func (c *FakeServicebusSubscriptions) List(opts v1.ListOptions) (result *v1alpha1.ServicebusSubscriptionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(servicebussubscriptionsResource, servicebussubscriptionsKind, opts), &v1alpha1.ServicebusSubscriptionList{})
+		Invokes(testing.NewListAction(servicebussubscriptionsResource, servicebussubscriptionsKind, c.ns, opts), &v1alpha1.ServicebusSubscriptionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeServicebusSubscriptions) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested servicebusSubscriptions.
 func (c *FakeServicebusSubscriptions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(servicebussubscriptionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(servicebussubscriptionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a servicebusSubscription and creates it.  Returns the server's representation of the servicebusSubscription, and an error, if there is any.
 func (c *FakeServicebusSubscriptions) Create(servicebusSubscription *v1alpha1.ServicebusSubscription) (result *v1alpha1.ServicebusSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(servicebussubscriptionsResource, servicebusSubscription), &v1alpha1.ServicebusSubscription{})
+		Invokes(testing.NewCreateAction(servicebussubscriptionsResource, c.ns, servicebusSubscription), &v1alpha1.ServicebusSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeServicebusSubscriptions) Create(servicebusSubscription *v1alpha1.Se
 // Update takes the representation of a servicebusSubscription and updates it. Returns the server's representation of the servicebusSubscription, and an error, if there is any.
 func (c *FakeServicebusSubscriptions) Update(servicebusSubscription *v1alpha1.ServicebusSubscription) (result *v1alpha1.ServicebusSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(servicebussubscriptionsResource, servicebusSubscription), &v1alpha1.ServicebusSubscription{})
+		Invokes(testing.NewUpdateAction(servicebussubscriptionsResource, c.ns, servicebusSubscription), &v1alpha1.ServicebusSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeServicebusSubscriptions) Update(servicebusSubscription *v1alpha1.Se
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeServicebusSubscriptions) UpdateStatus(servicebusSubscription *v1alpha1.ServicebusSubscription) (*v1alpha1.ServicebusSubscription, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(servicebussubscriptionsResource, "status", servicebusSubscription), &v1alpha1.ServicebusSubscription{})
+		Invokes(testing.NewUpdateSubresourceAction(servicebussubscriptionsResource, "status", c.ns, servicebusSubscription), &v1alpha1.ServicebusSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeServicebusSubscriptions) UpdateStatus(servicebusSubscription *v1alp
 // Delete takes name of the servicebusSubscription and deletes it. Returns an error if one occurs.
 func (c *FakeServicebusSubscriptions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(servicebussubscriptionsResource, name), &v1alpha1.ServicebusSubscription{})
+		Invokes(testing.NewDeleteAction(servicebussubscriptionsResource, c.ns, name), &v1alpha1.ServicebusSubscription{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeServicebusSubscriptions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(servicebussubscriptionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(servicebussubscriptionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ServicebusSubscriptionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeServicebusSubscriptions) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched servicebusSubscription.
 func (c *FakeServicebusSubscriptions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServicebusSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(servicebussubscriptionsResource, name, pt, data, subresources...), &v1alpha1.ServicebusSubscription{})
+		Invokes(testing.NewPatchSubresourceAction(servicebussubscriptionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ServicebusSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}

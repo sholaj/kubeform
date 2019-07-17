@@ -41,32 +41,33 @@ type AutoscalingGroupInformer interface {
 type autoscalingGroupInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewAutoscalingGroupInformer constructs a new informer for AutoscalingGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAutoscalingGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAutoscalingGroupInformer(client, resyncPeriod, indexers, nil)
+func NewAutoscalingGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAutoscalingGroupInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredAutoscalingGroupInformer constructs a new informer for AutoscalingGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAutoscalingGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAutoscalingGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AutoscalingGroups().List(options)
+				return client.AwsV1alpha1().AutoscalingGroups(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AutoscalingGroups().Watch(options)
+				return client.AwsV1alpha1().AutoscalingGroups(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.AutoscalingGroup{},
@@ -76,7 +77,7 @@ func NewFilteredAutoscalingGroupInformer(client versioned.Interface, resyncPerio
 }
 
 func (f *autoscalingGroupInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAutoscalingGroupInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredAutoscalingGroupInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *autoscalingGroupInformer) Informer() cache.SharedIndexInformer {

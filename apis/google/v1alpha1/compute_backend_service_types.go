@@ -3,12 +3,12 @@ package v1alpha1
 import (
 	"encoding/json"
 
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -22,54 +22,55 @@ type ComputeBackendService struct {
 
 type ComputeBackendServiceSpecBackend struct {
 	// +optional
-	BalancingMode string `json:"balancing_mode,omitempty"`
+	BalancingMode string `json:"balancingMode,omitempty" tf:"balancing_mode,omitempty"`
 	// +optional
-	CapacityScaler json.Number `json:"capacity_scaler,omitempty"`
+	CapacityScaler json.Number `json:"capacityScaler,omitempty" tf:"capacity_scaler,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	Group string `json:"group,omitempty"`
+	Group string `json:"group,omitempty" tf:"group,omitempty"`
 	// +optional
-	MaxConnections int `json:"max_connections,omitempty"`
+	MaxConnections int `json:"maxConnections,omitempty" tf:"max_connections,omitempty"`
 	// +optional
-	MaxConnectionsPerInstance int `json:"max_connections_per_instance,omitempty"`
+	MaxConnectionsPerInstance int `json:"maxConnectionsPerInstance,omitempty" tf:"max_connections_per_instance,omitempty"`
 	// +optional
-	MaxRate int `json:"max_rate,omitempty"`
+	MaxRate int `json:"maxRate,omitempty" tf:"max_rate,omitempty"`
 	// +optional
-	MaxRatePerInstance json.Number `json:"max_rate_per_instance,omitempty"`
+	MaxRatePerInstance json.Number `json:"maxRatePerInstance,omitempty" tf:"max_rate_per_instance,omitempty"`
 	// +optional
-	MaxUtilization json.Number `json:"max_utilization,omitempty"`
+	MaxUtilization json.Number `json:"maxUtilization,omitempty" tf:"max_utilization,omitempty"`
 }
 
 type ComputeBackendServiceSpecIap struct {
-	Oauth2ClientId     string `json:"oauth2_client_id"`
-	Oauth2ClientSecret string `json:"oauth2_client_secret"`
+	Oauth2ClientID     string `json:"oauth2ClientID" tf:"oauth2_client_id"`
+	Oauth2ClientSecret string `json:"oauth2ClientSecret" tf:"oauth2_client_secret"`
 }
 
 type ComputeBackendServiceSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Backend *[]ComputeBackendServiceSpec `json:"backend,omitempty"`
+	Backend []ComputeBackendServiceSpecBackend `json:"backend,omitempty" tf:"backend,omitempty"`
 	// +optional
-	ConnectionDrainingTimeoutSec int `json:"connection_draining_timeout_sec,omitempty"`
+	ConnectionDrainingTimeoutSec int `json:"connectionDrainingTimeoutSec,omitempty" tf:"connection_draining_timeout_sec,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
 	// Deprecated
-	CustomRequestHeaders []string `json:"custom_request_headers,omitempty"`
+	CustomRequestHeaders []string `json:"customRequestHeaders,omitempty" tf:"custom_request_headers,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	EnableCdn bool `json:"enable_cdn,omitempty"`
+	EnableCdn bool `json:"enableCdn,omitempty" tf:"enable_cdn,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	HealthChecks []string `json:"health_checks"`
+	HealthChecks []string `json:"healthChecks" tf:"health_checks"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Iap  *[]ComputeBackendServiceSpec `json:"iap,omitempty"`
-	Name string                       `json:"name"`
+	Iap  []ComputeBackendServiceSpecIap `json:"iap,omitempty" tf:"iap,omitempty"`
+	Name string                         `json:"name" tf:"name"`
 	// +optional
-	SecurityPolicy string `json:"security_policy,omitempty"`
+	SecurityPolicy string                    `json:"securityPolicy,omitempty" tf:"security_policy,omitempty"`
+	ProviderRef    core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ComputeBackendServiceStatus struct {
@@ -77,7 +78,9 @@ type ComputeBackendServiceStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

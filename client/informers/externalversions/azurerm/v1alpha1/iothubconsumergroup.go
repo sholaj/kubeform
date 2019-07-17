@@ -41,32 +41,33 @@ type IothubConsumerGroupInformer interface {
 type iothubConsumerGroupInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewIothubConsumerGroupInformer constructs a new informer for IothubConsumerGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewIothubConsumerGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredIothubConsumerGroupInformer(client, resyncPeriod, indexers, nil)
+func NewIothubConsumerGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredIothubConsumerGroupInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredIothubConsumerGroupInformer constructs a new informer for IothubConsumerGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredIothubConsumerGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredIothubConsumerGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().IothubConsumerGroups().List(options)
+				return client.AzurermV1alpha1().IothubConsumerGroups(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().IothubConsumerGroups().Watch(options)
+				return client.AzurermV1alpha1().IothubConsumerGroups(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.IothubConsumerGroup{},
@@ -76,7 +77,7 @@ func NewFilteredIothubConsumerGroupInformer(client versioned.Interface, resyncPe
 }
 
 func (f *iothubConsumerGroupInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredIothubConsumerGroupInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredIothubConsumerGroupInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *iothubConsumerGroupInformer) Informer() cache.SharedIndexInformer {

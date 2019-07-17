@@ -31,6 +31,7 @@ import (
 // FakeEc2CapacityReservations implements Ec2CapacityReservationInterface
 type FakeEc2CapacityReservations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ec2capacityreservationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ec2capacityreservations"}
@@ -40,7 +41,8 @@ var ec2capacityreservationsKind = schema.GroupVersionKind{Group: "aws.kubeform.c
 // Get takes name of the ec2CapacityReservation, and returns the corresponding ec2CapacityReservation object, and an error if there is any.
 func (c *FakeEc2CapacityReservations) Get(name string, options v1.GetOptions) (result *v1alpha1.Ec2CapacityReservation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ec2capacityreservationsResource, name), &v1alpha1.Ec2CapacityReservation{})
+		Invokes(testing.NewGetAction(ec2capacityreservationsResource, c.ns, name), &v1alpha1.Ec2CapacityReservation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEc2CapacityReservations) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of Ec2CapacityReservations that match those selectors.
 func (c *FakeEc2CapacityReservations) List(opts v1.ListOptions) (result *v1alpha1.Ec2CapacityReservationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ec2capacityreservationsResource, ec2capacityreservationsKind, opts), &v1alpha1.Ec2CapacityReservationList{})
+		Invokes(testing.NewListAction(ec2capacityreservationsResource, ec2capacityreservationsKind, c.ns, opts), &v1alpha1.Ec2CapacityReservationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEc2CapacityReservations) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested ec2CapacityReservations.
 func (c *FakeEc2CapacityReservations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ec2capacityreservationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(ec2capacityreservationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ec2CapacityReservation and creates it.  Returns the server's representation of the ec2CapacityReservation, and an error, if there is any.
 func (c *FakeEc2CapacityReservations) Create(ec2CapacityReservation *v1alpha1.Ec2CapacityReservation) (result *v1alpha1.Ec2CapacityReservation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ec2capacityreservationsResource, ec2CapacityReservation), &v1alpha1.Ec2CapacityReservation{})
+		Invokes(testing.NewCreateAction(ec2capacityreservationsResource, c.ns, ec2CapacityReservation), &v1alpha1.Ec2CapacityReservation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEc2CapacityReservations) Create(ec2CapacityReservation *v1alpha1.Ec
 // Update takes the representation of a ec2CapacityReservation and updates it. Returns the server's representation of the ec2CapacityReservation, and an error, if there is any.
 func (c *FakeEc2CapacityReservations) Update(ec2CapacityReservation *v1alpha1.Ec2CapacityReservation) (result *v1alpha1.Ec2CapacityReservation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ec2capacityreservationsResource, ec2CapacityReservation), &v1alpha1.Ec2CapacityReservation{})
+		Invokes(testing.NewUpdateAction(ec2capacityreservationsResource, c.ns, ec2CapacityReservation), &v1alpha1.Ec2CapacityReservation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEc2CapacityReservations) Update(ec2CapacityReservation *v1alpha1.Ec
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEc2CapacityReservations) UpdateStatus(ec2CapacityReservation *v1alpha1.Ec2CapacityReservation) (*v1alpha1.Ec2CapacityReservation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ec2capacityreservationsResource, "status", ec2CapacityReservation), &v1alpha1.Ec2CapacityReservation{})
+		Invokes(testing.NewUpdateSubresourceAction(ec2capacityreservationsResource, "status", c.ns, ec2CapacityReservation), &v1alpha1.Ec2CapacityReservation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEc2CapacityReservations) UpdateStatus(ec2CapacityReservation *v1alp
 // Delete takes name of the ec2CapacityReservation and deletes it. Returns an error if one occurs.
 func (c *FakeEc2CapacityReservations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ec2capacityreservationsResource, name), &v1alpha1.Ec2CapacityReservation{})
+		Invokes(testing.NewDeleteAction(ec2capacityreservationsResource, c.ns, name), &v1alpha1.Ec2CapacityReservation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEc2CapacityReservations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ec2capacityreservationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ec2capacityreservationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.Ec2CapacityReservationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEc2CapacityReservations) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched ec2CapacityReservation.
 func (c *FakeEc2CapacityReservations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Ec2CapacityReservation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ec2capacityreservationsResource, name, pt, data, subresources...), &v1alpha1.Ec2CapacityReservation{})
+		Invokes(testing.NewPatchSubresourceAction(ec2capacityreservationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.Ec2CapacityReservation{})
+
 	if obj == nil {
 		return nil, err
 	}

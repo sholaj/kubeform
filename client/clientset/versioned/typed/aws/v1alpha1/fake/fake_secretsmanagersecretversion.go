@@ -31,6 +31,7 @@ import (
 // FakeSecretsmanagerSecretVersions implements SecretsmanagerSecretVersionInterface
 type FakeSecretsmanagerSecretVersions struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var secretsmanagersecretversionsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "secretsmanagersecretversions"}
@@ -40,7 +41,8 @@ var secretsmanagersecretversionsKind = schema.GroupVersionKind{Group: "aws.kubef
 // Get takes name of the secretsmanagerSecretVersion, and returns the corresponding secretsmanagerSecretVersion object, and an error if there is any.
 func (c *FakeSecretsmanagerSecretVersions) Get(name string, options v1.GetOptions) (result *v1alpha1.SecretsmanagerSecretVersion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(secretsmanagersecretversionsResource, name), &v1alpha1.SecretsmanagerSecretVersion{})
+		Invokes(testing.NewGetAction(secretsmanagersecretversionsResource, c.ns, name), &v1alpha1.SecretsmanagerSecretVersion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSecretsmanagerSecretVersions) Get(name string, options v1.GetOption
 // List takes label and field selectors, and returns the list of SecretsmanagerSecretVersions that match those selectors.
 func (c *FakeSecretsmanagerSecretVersions) List(opts v1.ListOptions) (result *v1alpha1.SecretsmanagerSecretVersionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(secretsmanagersecretversionsResource, secretsmanagersecretversionsKind, opts), &v1alpha1.SecretsmanagerSecretVersionList{})
+		Invokes(testing.NewListAction(secretsmanagersecretversionsResource, secretsmanagersecretversionsKind, c.ns, opts), &v1alpha1.SecretsmanagerSecretVersionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSecretsmanagerSecretVersions) List(opts v1.ListOptions) (result *v1
 // Watch returns a watch.Interface that watches the requested secretsmanagerSecretVersions.
 func (c *FakeSecretsmanagerSecretVersions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(secretsmanagersecretversionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(secretsmanagersecretversionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a secretsmanagerSecretVersion and creates it.  Returns the server's representation of the secretsmanagerSecretVersion, and an error, if there is any.
 func (c *FakeSecretsmanagerSecretVersions) Create(secretsmanagerSecretVersion *v1alpha1.SecretsmanagerSecretVersion) (result *v1alpha1.SecretsmanagerSecretVersion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(secretsmanagersecretversionsResource, secretsmanagerSecretVersion), &v1alpha1.SecretsmanagerSecretVersion{})
+		Invokes(testing.NewCreateAction(secretsmanagersecretversionsResource, c.ns, secretsmanagerSecretVersion), &v1alpha1.SecretsmanagerSecretVersion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSecretsmanagerSecretVersions) Create(secretsmanagerSecretVersion *v
 // Update takes the representation of a secretsmanagerSecretVersion and updates it. Returns the server's representation of the secretsmanagerSecretVersion, and an error, if there is any.
 func (c *FakeSecretsmanagerSecretVersions) Update(secretsmanagerSecretVersion *v1alpha1.SecretsmanagerSecretVersion) (result *v1alpha1.SecretsmanagerSecretVersion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(secretsmanagersecretversionsResource, secretsmanagerSecretVersion), &v1alpha1.SecretsmanagerSecretVersion{})
+		Invokes(testing.NewUpdateAction(secretsmanagersecretversionsResource, c.ns, secretsmanagerSecretVersion), &v1alpha1.SecretsmanagerSecretVersion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSecretsmanagerSecretVersions) Update(secretsmanagerSecretVersion *v
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSecretsmanagerSecretVersions) UpdateStatus(secretsmanagerSecretVersion *v1alpha1.SecretsmanagerSecretVersion) (*v1alpha1.SecretsmanagerSecretVersion, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(secretsmanagersecretversionsResource, "status", secretsmanagerSecretVersion), &v1alpha1.SecretsmanagerSecretVersion{})
+		Invokes(testing.NewUpdateSubresourceAction(secretsmanagersecretversionsResource, "status", c.ns, secretsmanagerSecretVersion), &v1alpha1.SecretsmanagerSecretVersion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSecretsmanagerSecretVersions) UpdateStatus(secretsmanagerSecretVers
 // Delete takes name of the secretsmanagerSecretVersion and deletes it. Returns an error if one occurs.
 func (c *FakeSecretsmanagerSecretVersions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(secretsmanagersecretversionsResource, name), &v1alpha1.SecretsmanagerSecretVersion{})
+		Invokes(testing.NewDeleteAction(secretsmanagersecretversionsResource, c.ns, name), &v1alpha1.SecretsmanagerSecretVersion{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSecretsmanagerSecretVersions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(secretsmanagersecretversionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(secretsmanagersecretversionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SecretsmanagerSecretVersionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSecretsmanagerSecretVersions) DeleteCollection(options *v1.DeleteOp
 // Patch applies the patch and returns the patched secretsmanagerSecretVersion.
 func (c *FakeSecretsmanagerSecretVersions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SecretsmanagerSecretVersion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(secretsmanagersecretversionsResource, name, pt, data, subresources...), &v1alpha1.SecretsmanagerSecretVersion{})
+		Invokes(testing.NewPatchSubresourceAction(secretsmanagersecretversionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SecretsmanagerSecretVersion{})
+
 	if obj == nil {
 		return nil, err
 	}

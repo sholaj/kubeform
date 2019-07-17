@@ -397,34 +397,44 @@ spec:
           type: object
         spec:
           properties:
-            auto_upgrade_minor_version:
+            autoUpgradeMinorVersion:
               type: boolean
             location:
               type: string
             name:
               type: string
-            protected_settings:
+            protectedSettings:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             publisher:
               type: string
-            resource_group_name:
+            resourceGroupName:
               type: string
             settings:
               type: string
             type:
               type: string
-            type_handler_version:
+            typeHandlerVersion:
               type: string
-            virtual_machine_name:
+            virtualMachineName:
               type: string
           required:
           - location
           - name
+          - providerRef
           - publisher
-          - resource_group_name
+          - resourceGroupName
           - type
-          - type_handler_version
-          - virtual_machine_name
+          - typeHandlerVersion
+          - virtualMachineName
           type: object
         status:
           properties:
@@ -435,6 +445,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

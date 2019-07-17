@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// DxBgpPeersGetter has a method to return a DxBgpPeerInterface.
+// DxBGPPeersGetter has a method to return a DxBGPPeerInterface.
 // A group's client should implement this interface.
-type DxBgpPeersGetter interface {
-	DxBgpPeers() DxBgpPeerInterface
+type DxBGPPeersGetter interface {
+	DxBGPPeers(namespace string) DxBGPPeerInterface
 }
 
-// DxBgpPeerInterface has methods to work with DxBgpPeer resources.
-type DxBgpPeerInterface interface {
-	Create(*v1alpha1.DxBgpPeer) (*v1alpha1.DxBgpPeer, error)
-	Update(*v1alpha1.DxBgpPeer) (*v1alpha1.DxBgpPeer, error)
-	UpdateStatus(*v1alpha1.DxBgpPeer) (*v1alpha1.DxBgpPeer, error)
+// DxBGPPeerInterface has methods to work with DxBGPPeer resources.
+type DxBGPPeerInterface interface {
+	Create(*v1alpha1.DxBGPPeer) (*v1alpha1.DxBGPPeer, error)
+	Update(*v1alpha1.DxBGPPeer) (*v1alpha1.DxBGPPeer, error)
+	UpdateStatus(*v1alpha1.DxBGPPeer) (*v1alpha1.DxBGPPeer, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.DxBgpPeer, error)
-	List(opts v1.ListOptions) (*v1alpha1.DxBgpPeerList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.DxBGPPeer, error)
+	List(opts v1.ListOptions) (*v1alpha1.DxBGPPeerList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DxBgpPeer, err error)
-	DxBgpPeerExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DxBGPPeer, err error)
+	DxBGPPeerExpansion
 }
 
-// dxBgpPeers implements DxBgpPeerInterface
-type dxBgpPeers struct {
+// dxBGPPeers implements DxBGPPeerInterface
+type dxBGPPeers struct {
 	client rest.Interface
+	ns     string
 }
 
-// newDxBgpPeers returns a DxBgpPeers
-func newDxBgpPeers(c *AwsV1alpha1Client) *dxBgpPeers {
-	return &dxBgpPeers{
+// newDxBGPPeers returns a DxBGPPeers
+func newDxBGPPeers(c *AwsV1alpha1Client, namespace string) *dxBGPPeers {
+	return &dxBGPPeers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the dxBgpPeer, and returns the corresponding dxBgpPeer object, and an error if there is any.
-func (c *dxBgpPeers) Get(name string, options v1.GetOptions) (result *v1alpha1.DxBgpPeer, err error) {
-	result = &v1alpha1.DxBgpPeer{}
+// Get takes name of the dxBGPPeer, and returns the corresponding dxBGPPeer object, and an error if there is any.
+func (c *dxBGPPeers) Get(name string, options v1.GetOptions) (result *v1alpha1.DxBGPPeer, err error) {
+	result = &v1alpha1.DxBGPPeer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dxbgppeers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *dxBgpPeers) Get(name string, options v1.GetOptions) (result *v1alpha1.D
 	return
 }
 
-// List takes label and field selectors, and returns the list of DxBgpPeers that match those selectors.
-func (c *dxBgpPeers) List(opts v1.ListOptions) (result *v1alpha1.DxBgpPeerList, err error) {
+// List takes label and field selectors, and returns the list of DxBGPPeers that match those selectors.
+func (c *dxBGPPeers) List(opts v1.ListOptions) (result *v1alpha1.DxBGPPeerList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.DxBgpPeerList{}
+	result = &v1alpha1.DxBGPPeerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dxbgppeers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *dxBgpPeers) List(opts v1.ListOptions) (result *v1alpha1.DxBgpPeerList, 
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested dxBgpPeers.
-func (c *dxBgpPeers) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested dxBGPPeers.
+func (c *dxBGPPeers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dxbgppeers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a dxBgpPeer and creates it.  Returns the server's representation of the dxBgpPeer, and an error, if there is any.
-func (c *dxBgpPeers) Create(dxBgpPeer *v1alpha1.DxBgpPeer) (result *v1alpha1.DxBgpPeer, err error) {
-	result = &v1alpha1.DxBgpPeer{}
+// Create takes the representation of a dxBGPPeer and creates it.  Returns the server's representation of the dxBGPPeer, and an error, if there is any.
+func (c *dxBGPPeers) Create(dxBGPPeer *v1alpha1.DxBGPPeer) (result *v1alpha1.DxBGPPeer, err error) {
+	result = &v1alpha1.DxBGPPeer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dxbgppeers").
-		Body(dxBgpPeer).
+		Body(dxBGPPeer).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a dxBgpPeer and updates it. Returns the server's representation of the dxBgpPeer, and an error, if there is any.
-func (c *dxBgpPeers) Update(dxBgpPeer *v1alpha1.DxBgpPeer) (result *v1alpha1.DxBgpPeer, err error) {
-	result = &v1alpha1.DxBgpPeer{}
+// Update takes the representation of a dxBGPPeer and updates it. Returns the server's representation of the dxBGPPeer, and an error, if there is any.
+func (c *dxBGPPeers) Update(dxBGPPeer *v1alpha1.DxBGPPeer) (result *v1alpha1.DxBGPPeer, err error) {
+	result = &v1alpha1.DxBGPPeer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dxbgppeers").
-		Name(dxBgpPeer.Name).
-		Body(dxBgpPeer).
+		Name(dxBGPPeer.Name).
+		Body(dxBGPPeer).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *dxBgpPeers) Update(dxBgpPeer *v1alpha1.DxBgpPeer) (result *v1alpha1.DxB
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *dxBgpPeers) UpdateStatus(dxBgpPeer *v1alpha1.DxBgpPeer) (result *v1alpha1.DxBgpPeer, err error) {
-	result = &v1alpha1.DxBgpPeer{}
+func (c *dxBGPPeers) UpdateStatus(dxBGPPeer *v1alpha1.DxBGPPeer) (result *v1alpha1.DxBGPPeer, err error) {
+	result = &v1alpha1.DxBGPPeer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dxbgppeers").
-		Name(dxBgpPeer.Name).
+		Name(dxBGPPeer.Name).
 		SubResource("status").
-		Body(dxBgpPeer).
+		Body(dxBGPPeer).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the dxBgpPeer and deletes it. Returns an error if one occurs.
-func (c *dxBgpPeers) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the dxBGPPeer and deletes it. Returns an error if one occurs.
+func (c *dxBGPPeers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dxbgppeers").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *dxBgpPeers) Delete(name string, options *v1.DeleteOptions) error {
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *dxBgpPeers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *dxBGPPeers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dxbgppeers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *dxBgpPeers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.
 		Error()
 }
 
-// Patch applies the patch and returns the patched dxBgpPeer.
-func (c *dxBgpPeers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DxBgpPeer, err error) {
-	result = &v1alpha1.DxBgpPeer{}
+// Patch applies the patch and returns the patched dxBGPPeer.
+func (c *dxBGPPeers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DxBGPPeer, err error) {
+	result = &v1alpha1.DxBGPPeer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dxbgppeers").
 		SubResource(subresources...).
 		Name(name).

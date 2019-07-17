@@ -29,8 +29,8 @@ import (
 type EmrInstanceGroupLister interface {
 	// List lists all EmrInstanceGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EmrInstanceGroup, err error)
-	// Get retrieves the EmrInstanceGroup from the index for a given name.
-	Get(name string) (*v1alpha1.EmrInstanceGroup, error)
+	// EmrInstanceGroups returns an object that can list and get EmrInstanceGroups.
+	EmrInstanceGroups(namespace string) EmrInstanceGroupNamespaceLister
 	EmrInstanceGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *emrInstanceGroupLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the EmrInstanceGroup from the index for a given name.
-func (s *emrInstanceGroupLister) Get(name string) (*v1alpha1.EmrInstanceGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EmrInstanceGroups returns an object that can list and get EmrInstanceGroups.
+func (s *emrInstanceGroupLister) EmrInstanceGroups(namespace string) EmrInstanceGroupNamespaceLister {
+	return emrInstanceGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EmrInstanceGroupNamespaceLister helps list and get EmrInstanceGroups.
+type EmrInstanceGroupNamespaceLister interface {
+	// List lists all EmrInstanceGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EmrInstanceGroup, err error)
+	// Get retrieves the EmrInstanceGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EmrInstanceGroup, error)
+	EmrInstanceGroupNamespaceListerExpansion
+}
+
+// emrInstanceGroupNamespaceLister implements the EmrInstanceGroupNamespaceLister
+// interface.
+type emrInstanceGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EmrInstanceGroups in the indexer for a given namespace.
+func (s emrInstanceGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EmrInstanceGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EmrInstanceGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the EmrInstanceGroup from the indexer for a given namespace and name.
+func (s emrInstanceGroupNamespaceLister) Get(name string) (*v1alpha1.EmrInstanceGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

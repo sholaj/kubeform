@@ -29,8 +29,8 @@ import (
 type StackscriptLister interface {
 	// List lists all Stackscripts in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Stackscript, err error)
-	// Get retrieves the Stackscript from the index for a given name.
-	Get(name string) (*v1alpha1.Stackscript, error)
+	// Stackscripts returns an object that can list and get Stackscripts.
+	Stackscripts(namespace string) StackscriptNamespaceLister
 	StackscriptListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *stackscriptLister) List(selector labels.Selector) (ret []*v1alpha1.Stac
 	return ret, err
 }
 
-// Get retrieves the Stackscript from the index for a given name.
-func (s *stackscriptLister) Get(name string) (*v1alpha1.Stackscript, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Stackscripts returns an object that can list and get Stackscripts.
+func (s *stackscriptLister) Stackscripts(namespace string) StackscriptNamespaceLister {
+	return stackscriptNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StackscriptNamespaceLister helps list and get Stackscripts.
+type StackscriptNamespaceLister interface {
+	// List lists all Stackscripts in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Stackscript, err error)
+	// Get retrieves the Stackscript from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Stackscript, error)
+	StackscriptNamespaceListerExpansion
+}
+
+// stackscriptNamespaceLister implements the StackscriptNamespaceLister
+// interface.
+type stackscriptNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Stackscripts in the indexer for a given namespace.
+func (s stackscriptNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Stackscript, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Stackscript))
+	})
+	return ret, err
+}
+
+// Get retrieves the Stackscript from the indexer for a given namespace and name.
+func (s stackscriptNamespaceLister) Get(name string) (*v1alpha1.Stackscript, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

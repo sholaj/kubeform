@@ -29,8 +29,8 @@ import (
 type EventgridEventSubscriptionLister interface {
 	// List lists all EventgridEventSubscriptions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EventgridEventSubscription, err error)
-	// Get retrieves the EventgridEventSubscription from the index for a given name.
-	Get(name string) (*v1alpha1.EventgridEventSubscription, error)
+	// EventgridEventSubscriptions returns an object that can list and get EventgridEventSubscriptions.
+	EventgridEventSubscriptions(namespace string) EventgridEventSubscriptionNamespaceLister
 	EventgridEventSubscriptionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *eventgridEventSubscriptionLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the EventgridEventSubscription from the index for a given name.
-func (s *eventgridEventSubscriptionLister) Get(name string) (*v1alpha1.EventgridEventSubscription, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EventgridEventSubscriptions returns an object that can list and get EventgridEventSubscriptions.
+func (s *eventgridEventSubscriptionLister) EventgridEventSubscriptions(namespace string) EventgridEventSubscriptionNamespaceLister {
+	return eventgridEventSubscriptionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EventgridEventSubscriptionNamespaceLister helps list and get EventgridEventSubscriptions.
+type EventgridEventSubscriptionNamespaceLister interface {
+	// List lists all EventgridEventSubscriptions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EventgridEventSubscription, err error)
+	// Get retrieves the EventgridEventSubscription from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EventgridEventSubscription, error)
+	EventgridEventSubscriptionNamespaceListerExpansion
+}
+
+// eventgridEventSubscriptionNamespaceLister implements the EventgridEventSubscriptionNamespaceLister
+// interface.
+type eventgridEventSubscriptionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EventgridEventSubscriptions in the indexer for a given namespace.
+func (s eventgridEventSubscriptionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EventgridEventSubscription, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EventgridEventSubscription))
+	})
+	return ret, err
+}
+
+// Get retrieves the EventgridEventSubscription from the indexer for a given namespace and name.
+func (s eventgridEventSubscriptionNamespaceLister) Get(name string) (*v1alpha1.EventgridEventSubscription, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

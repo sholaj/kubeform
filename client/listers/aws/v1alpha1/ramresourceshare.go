@@ -29,8 +29,8 @@ import (
 type RamResourceShareLister interface {
 	// List lists all RamResourceShares in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RamResourceShare, err error)
-	// Get retrieves the RamResourceShare from the index for a given name.
-	Get(name string) (*v1alpha1.RamResourceShare, error)
+	// RamResourceShares returns an object that can list and get RamResourceShares.
+	RamResourceShares(namespace string) RamResourceShareNamespaceLister
 	RamResourceShareListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ramResourceShareLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the RamResourceShare from the index for a given name.
-func (s *ramResourceShareLister) Get(name string) (*v1alpha1.RamResourceShare, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RamResourceShares returns an object that can list and get RamResourceShares.
+func (s *ramResourceShareLister) RamResourceShares(namespace string) RamResourceShareNamespaceLister {
+	return ramResourceShareNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RamResourceShareNamespaceLister helps list and get RamResourceShares.
+type RamResourceShareNamespaceLister interface {
+	// List lists all RamResourceShares in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RamResourceShare, err error)
+	// Get retrieves the RamResourceShare from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RamResourceShare, error)
+	RamResourceShareNamespaceListerExpansion
+}
+
+// ramResourceShareNamespaceLister implements the RamResourceShareNamespaceLister
+// interface.
+type ramResourceShareNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RamResourceShares in the indexer for a given namespace.
+func (s ramResourceShareNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RamResourceShare, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RamResourceShare))
+	})
+	return ret, err
+}
+
+// Get retrieves the RamResourceShare from the indexer for a given namespace and name.
+func (s ramResourceShareNamespaceLister) Get(name string) (*v1alpha1.RamResourceShare, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

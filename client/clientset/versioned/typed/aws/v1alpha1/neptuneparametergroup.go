@@ -32,7 +32,7 @@ import (
 // NeptuneParameterGroupsGetter has a method to return a NeptuneParameterGroupInterface.
 // A group's client should implement this interface.
 type NeptuneParameterGroupsGetter interface {
-	NeptuneParameterGroups() NeptuneParameterGroupInterface
+	NeptuneParameterGroups(namespace string) NeptuneParameterGroupInterface
 }
 
 // NeptuneParameterGroupInterface has methods to work with NeptuneParameterGroup resources.
@@ -52,12 +52,14 @@ type NeptuneParameterGroupInterface interface {
 // neptuneParameterGroups implements NeptuneParameterGroupInterface
 type neptuneParameterGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNeptuneParameterGroups returns a NeptuneParameterGroups
-func newNeptuneParameterGroups(c *AwsV1alpha1Client) *neptuneParameterGroups {
+func newNeptuneParameterGroups(c *AwsV1alpha1Client, namespace string) *neptuneParameterGroups {
 	return &neptuneParameterGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNeptuneParameterGroups(c *AwsV1alpha1Client) *neptuneParameterGroups {
 func (c *neptuneParameterGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.NeptuneParameterGroup, err error) {
 	result = &v1alpha1.NeptuneParameterGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("neptuneparametergroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *neptuneParameterGroups) List(opts v1.ListOptions) (result *v1alpha1.Nep
 	}
 	result = &v1alpha1.NeptuneParameterGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("neptuneparametergroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *neptuneParameterGroups) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("neptuneparametergroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *neptuneParameterGroups) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *neptuneParameterGroups) Create(neptuneParameterGroup *v1alpha1.NeptuneParameterGroup) (result *v1alpha1.NeptuneParameterGroup, err error) {
 	result = &v1alpha1.NeptuneParameterGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("neptuneparametergroups").
 		Body(neptuneParameterGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *neptuneParameterGroups) Create(neptuneParameterGroup *v1alpha1.NeptuneP
 func (c *neptuneParameterGroups) Update(neptuneParameterGroup *v1alpha1.NeptuneParameterGroup) (result *v1alpha1.NeptuneParameterGroup, err error) {
 	result = &v1alpha1.NeptuneParameterGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("neptuneparametergroups").
 		Name(neptuneParameterGroup.Name).
 		Body(neptuneParameterGroup).
@@ -132,6 +139,7 @@ func (c *neptuneParameterGroups) Update(neptuneParameterGroup *v1alpha1.NeptuneP
 func (c *neptuneParameterGroups) UpdateStatus(neptuneParameterGroup *v1alpha1.NeptuneParameterGroup) (result *v1alpha1.NeptuneParameterGroup, err error) {
 	result = &v1alpha1.NeptuneParameterGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("neptuneparametergroups").
 		Name(neptuneParameterGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *neptuneParameterGroups) UpdateStatus(neptuneParameterGroup *v1alpha1.Ne
 // Delete takes name of the neptuneParameterGroup and deletes it. Returns an error if one occurs.
 func (c *neptuneParameterGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("neptuneparametergroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *neptuneParameterGroups) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("neptuneparametergroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *neptuneParameterGroups) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *neptuneParameterGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NeptuneParameterGroup, err error) {
 	result = &v1alpha1.NeptuneParameterGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("neptuneparametergroups").
 		SubResource(subresources...).
 		Name(name).

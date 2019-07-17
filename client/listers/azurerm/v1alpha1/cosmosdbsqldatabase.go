@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// CosmosdbSqlDatabaseLister helps list CosmosdbSqlDatabases.
-type CosmosdbSqlDatabaseLister interface {
-	// List lists all CosmosdbSqlDatabases in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.CosmosdbSqlDatabase, err error)
-	// Get retrieves the CosmosdbSqlDatabase from the index for a given name.
-	Get(name string) (*v1alpha1.CosmosdbSqlDatabase, error)
-	CosmosdbSqlDatabaseListerExpansion
+// CosmosdbSQLDatabaseLister helps list CosmosdbSQLDatabases.
+type CosmosdbSQLDatabaseLister interface {
+	// List lists all CosmosdbSQLDatabases in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.CosmosdbSQLDatabase, err error)
+	// CosmosdbSQLDatabases returns an object that can list and get CosmosdbSQLDatabases.
+	CosmosdbSQLDatabases(namespace string) CosmosdbSQLDatabaseNamespaceLister
+	CosmosdbSQLDatabaseListerExpansion
 }
 
-// cosmosdbSqlDatabaseLister implements the CosmosdbSqlDatabaseLister interface.
-type cosmosdbSqlDatabaseLister struct {
+// cosmosdbSQLDatabaseLister implements the CosmosdbSQLDatabaseLister interface.
+type cosmosdbSQLDatabaseLister struct {
 	indexer cache.Indexer
 }
 
-// NewCosmosdbSqlDatabaseLister returns a new CosmosdbSqlDatabaseLister.
-func NewCosmosdbSqlDatabaseLister(indexer cache.Indexer) CosmosdbSqlDatabaseLister {
-	return &cosmosdbSqlDatabaseLister{indexer: indexer}
+// NewCosmosdbSQLDatabaseLister returns a new CosmosdbSQLDatabaseLister.
+func NewCosmosdbSQLDatabaseLister(indexer cache.Indexer) CosmosdbSQLDatabaseLister {
+	return &cosmosdbSQLDatabaseLister{indexer: indexer}
 }
 
-// List lists all CosmosdbSqlDatabases in the indexer.
-func (s *cosmosdbSqlDatabaseLister) List(selector labels.Selector) (ret []*v1alpha1.CosmosdbSqlDatabase, err error) {
+// List lists all CosmosdbSQLDatabases in the indexer.
+func (s *cosmosdbSQLDatabaseLister) List(selector labels.Selector) (ret []*v1alpha1.CosmosdbSQLDatabase, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.CosmosdbSqlDatabase))
+		ret = append(ret, m.(*v1alpha1.CosmosdbSQLDatabase))
 	})
 	return ret, err
 }
 
-// Get retrieves the CosmosdbSqlDatabase from the index for a given name.
-func (s *cosmosdbSqlDatabaseLister) Get(name string) (*v1alpha1.CosmosdbSqlDatabase, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CosmosdbSQLDatabases returns an object that can list and get CosmosdbSQLDatabases.
+func (s *cosmosdbSQLDatabaseLister) CosmosdbSQLDatabases(namespace string) CosmosdbSQLDatabaseNamespaceLister {
+	return cosmosdbSQLDatabaseNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CosmosdbSQLDatabaseNamespaceLister helps list and get CosmosdbSQLDatabases.
+type CosmosdbSQLDatabaseNamespaceLister interface {
+	// List lists all CosmosdbSQLDatabases in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CosmosdbSQLDatabase, err error)
+	// Get retrieves the CosmosdbSQLDatabase from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CosmosdbSQLDatabase, error)
+	CosmosdbSQLDatabaseNamespaceListerExpansion
+}
+
+// cosmosdbSQLDatabaseNamespaceLister implements the CosmosdbSQLDatabaseNamespaceLister
+// interface.
+type cosmosdbSQLDatabaseNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CosmosdbSQLDatabases in the indexer for a given namespace.
+func (s cosmosdbSQLDatabaseNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CosmosdbSQLDatabase, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CosmosdbSQLDatabase))
+	})
+	return ret, err
+}
+
+// Get retrieves the CosmosdbSQLDatabase from the indexer for a given namespace and name.
+func (s cosmosdbSQLDatabaseNamespaceLister) Get(name string) (*v1alpha1.CosmosdbSQLDatabase, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("cosmosdbsqldatabase"), name)
 	}
-	return obj.(*v1alpha1.CosmosdbSqlDatabase), nil
+	return obj.(*v1alpha1.CosmosdbSQLDatabase), nil
 }

@@ -32,7 +32,7 @@ import (
 // DbClusterSnapshotsGetter has a method to return a DbClusterSnapshotInterface.
 // A group's client should implement this interface.
 type DbClusterSnapshotsGetter interface {
-	DbClusterSnapshots() DbClusterSnapshotInterface
+	DbClusterSnapshots(namespace string) DbClusterSnapshotInterface
 }
 
 // DbClusterSnapshotInterface has methods to work with DbClusterSnapshot resources.
@@ -52,12 +52,14 @@ type DbClusterSnapshotInterface interface {
 // dbClusterSnapshots implements DbClusterSnapshotInterface
 type dbClusterSnapshots struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDbClusterSnapshots returns a DbClusterSnapshots
-func newDbClusterSnapshots(c *AwsV1alpha1Client) *dbClusterSnapshots {
+func newDbClusterSnapshots(c *AwsV1alpha1Client, namespace string) *dbClusterSnapshots {
 	return &dbClusterSnapshots{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDbClusterSnapshots(c *AwsV1alpha1Client) *dbClusterSnapshots {
 func (c *dbClusterSnapshots) Get(name string, options v1.GetOptions) (result *v1alpha1.DbClusterSnapshot, err error) {
 	result = &v1alpha1.DbClusterSnapshot{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dbclustersnapshots").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dbClusterSnapshots) List(opts v1.ListOptions) (result *v1alpha1.DbClust
 	}
 	result = &v1alpha1.DbClusterSnapshotList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dbclustersnapshots").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dbClusterSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dbclustersnapshots").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dbClusterSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *dbClusterSnapshots) Create(dbClusterSnapshot *v1alpha1.DbClusterSnapshot) (result *v1alpha1.DbClusterSnapshot, err error) {
 	result = &v1alpha1.DbClusterSnapshot{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dbclustersnapshots").
 		Body(dbClusterSnapshot).
 		Do().
@@ -118,6 +124,7 @@ func (c *dbClusterSnapshots) Create(dbClusterSnapshot *v1alpha1.DbClusterSnapsho
 func (c *dbClusterSnapshots) Update(dbClusterSnapshot *v1alpha1.DbClusterSnapshot) (result *v1alpha1.DbClusterSnapshot, err error) {
 	result = &v1alpha1.DbClusterSnapshot{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dbclustersnapshots").
 		Name(dbClusterSnapshot.Name).
 		Body(dbClusterSnapshot).
@@ -132,6 +139,7 @@ func (c *dbClusterSnapshots) Update(dbClusterSnapshot *v1alpha1.DbClusterSnapsho
 func (c *dbClusterSnapshots) UpdateStatus(dbClusterSnapshot *v1alpha1.DbClusterSnapshot) (result *v1alpha1.DbClusterSnapshot, err error) {
 	result = &v1alpha1.DbClusterSnapshot{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dbclustersnapshots").
 		Name(dbClusterSnapshot.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dbClusterSnapshots) UpdateStatus(dbClusterSnapshot *v1alpha1.DbClusterS
 // Delete takes name of the dbClusterSnapshot and deletes it. Returns an error if one occurs.
 func (c *dbClusterSnapshots) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dbclustersnapshots").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dbClusterSnapshots) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dbclustersnapshots").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dbClusterSnapshots) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *dbClusterSnapshots) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DbClusterSnapshot, err error) {
 	result = &v1alpha1.DbClusterSnapshot{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dbclustersnapshots").
 		SubResource(subresources...).
 		Name(name).

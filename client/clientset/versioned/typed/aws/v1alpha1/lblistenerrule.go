@@ -32,7 +32,7 @@ import (
 // LbListenerRulesGetter has a method to return a LbListenerRuleInterface.
 // A group's client should implement this interface.
 type LbListenerRulesGetter interface {
-	LbListenerRules() LbListenerRuleInterface
+	LbListenerRules(namespace string) LbListenerRuleInterface
 }
 
 // LbListenerRuleInterface has methods to work with LbListenerRule resources.
@@ -52,12 +52,14 @@ type LbListenerRuleInterface interface {
 // lbListenerRules implements LbListenerRuleInterface
 type lbListenerRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLbListenerRules returns a LbListenerRules
-func newLbListenerRules(c *AwsV1alpha1Client) *lbListenerRules {
+func newLbListenerRules(c *AwsV1alpha1Client, namespace string) *lbListenerRules {
 	return &lbListenerRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLbListenerRules(c *AwsV1alpha1Client) *lbListenerRules {
 func (c *lbListenerRules) Get(name string, options v1.GetOptions) (result *v1alpha1.LbListenerRule, err error) {
 	result = &v1alpha1.LbListenerRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lblistenerrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lbListenerRules) List(opts v1.ListOptions) (result *v1alpha1.LbListener
 	}
 	result = &v1alpha1.LbListenerRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lblistenerrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lbListenerRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lblistenerrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lbListenerRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *lbListenerRules) Create(lbListenerRule *v1alpha1.LbListenerRule) (result *v1alpha1.LbListenerRule, err error) {
 	result = &v1alpha1.LbListenerRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lblistenerrules").
 		Body(lbListenerRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *lbListenerRules) Create(lbListenerRule *v1alpha1.LbListenerRule) (resul
 func (c *lbListenerRules) Update(lbListenerRule *v1alpha1.LbListenerRule) (result *v1alpha1.LbListenerRule, err error) {
 	result = &v1alpha1.LbListenerRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lblistenerrules").
 		Name(lbListenerRule.Name).
 		Body(lbListenerRule).
@@ -132,6 +139,7 @@ func (c *lbListenerRules) Update(lbListenerRule *v1alpha1.LbListenerRule) (resul
 func (c *lbListenerRules) UpdateStatus(lbListenerRule *v1alpha1.LbListenerRule) (result *v1alpha1.LbListenerRule, err error) {
 	result = &v1alpha1.LbListenerRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lblistenerrules").
 		Name(lbListenerRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lbListenerRules) UpdateStatus(lbListenerRule *v1alpha1.LbListenerRule) 
 // Delete takes name of the lbListenerRule and deletes it. Returns an error if one occurs.
 func (c *lbListenerRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lblistenerrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lbListenerRules) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lblistenerrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lbListenerRules) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *lbListenerRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbListenerRule, err error) {
 	result = &v1alpha1.LbListenerRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lblistenerrules").
 		SubResource(subresources...).
 		Name(name).

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,23 +19,24 @@ type Route53ResolverEndpoint struct {
 }
 
 type Route53ResolverEndpointSpecIpAddress struct {
-	SubnetId string `json:"subnet_id"`
+	SubnetID string `json:"subnetID" tf:"subnet_id"`
 }
 
 type Route53ResolverEndpointSpec struct {
-	Direction string `json:"direction"`
+	Direction string `json:"direction" tf:"direction"`
 	// +kubebuilder:validation:MaxItems=10
 	// +kubebuilder:validation:MinItems=2
 	// +kubebuilder:validation:UniqueItems=true
-	IpAddress []Route53ResolverEndpointSpec `json:"ip_address"`
+	IpAddress []Route53ResolverEndpointSpecIpAddress `json:"ipAddress" tf:"ip_address"`
 	// +optional
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" tf:"name,omitempty"`
 	// +kubebuilder:validation:MaxItems=64
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	SecurityGroupIds []string `json:"security_group_ids"`
+	SecurityGroupIDS []string `json:"securityGroupIDS" tf:"security_group_ids"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type Route53ResolverEndpointStatus struct {
@@ -43,7 +44,9 @@ type Route53ResolverEndpointStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

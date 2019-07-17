@@ -32,9 +32,9 @@ type DropletSnapshotExpansion interface{}
 
 type FirewallExpansion interface{}
 
-type FloatingIpExpansion interface{}
+type FloatingIPExpansion interface{}
 
-type FloatingIpAssignmentExpansion interface{}
+type FloatingIPAssignmentExpansion interface{}
 
 type KubernetesClusterExpansion interface{}
 

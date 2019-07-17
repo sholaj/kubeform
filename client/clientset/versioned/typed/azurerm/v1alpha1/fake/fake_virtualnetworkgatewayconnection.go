@@ -31,6 +31,7 @@ import (
 // FakeVirtualNetworkGatewayConnections implements VirtualNetworkGatewayConnectionInterface
 type FakeVirtualNetworkGatewayConnections struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var virtualnetworkgatewayconnectionsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "virtualnetworkgatewayconnections"}
@@ -40,7 +41,8 @@ var virtualnetworkgatewayconnectionsKind = schema.GroupVersionKind{Group: "azure
 // Get takes name of the virtualNetworkGatewayConnection, and returns the corresponding virtualNetworkGatewayConnection object, and an error if there is any.
 func (c *FakeVirtualNetworkGatewayConnections) Get(name string, options v1.GetOptions) (result *v1alpha1.VirtualNetworkGatewayConnection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(virtualnetworkgatewayconnectionsResource, name), &v1alpha1.VirtualNetworkGatewayConnection{})
+		Invokes(testing.NewGetAction(virtualnetworkgatewayconnectionsResource, c.ns, name), &v1alpha1.VirtualNetworkGatewayConnection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeVirtualNetworkGatewayConnections) Get(name string, options v1.GetOp
 // List takes label and field selectors, and returns the list of VirtualNetworkGatewayConnections that match those selectors.
 func (c *FakeVirtualNetworkGatewayConnections) List(opts v1.ListOptions) (result *v1alpha1.VirtualNetworkGatewayConnectionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(virtualnetworkgatewayconnectionsResource, virtualnetworkgatewayconnectionsKind, opts), &v1alpha1.VirtualNetworkGatewayConnectionList{})
+		Invokes(testing.NewListAction(virtualnetworkgatewayconnectionsResource, virtualnetworkgatewayconnectionsKind, c.ns, opts), &v1alpha1.VirtualNetworkGatewayConnectionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeVirtualNetworkGatewayConnections) List(opts v1.ListOptions) (result
 // Watch returns a watch.Interface that watches the requested virtualNetworkGatewayConnections.
 func (c *FakeVirtualNetworkGatewayConnections) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(virtualnetworkgatewayconnectionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(virtualnetworkgatewayconnectionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a virtualNetworkGatewayConnection and creates it.  Returns the server's representation of the virtualNetworkGatewayConnection, and an error, if there is any.
 func (c *FakeVirtualNetworkGatewayConnections) Create(virtualNetworkGatewayConnection *v1alpha1.VirtualNetworkGatewayConnection) (result *v1alpha1.VirtualNetworkGatewayConnection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(virtualnetworkgatewayconnectionsResource, virtualNetworkGatewayConnection), &v1alpha1.VirtualNetworkGatewayConnection{})
+		Invokes(testing.NewCreateAction(virtualnetworkgatewayconnectionsResource, c.ns, virtualNetworkGatewayConnection), &v1alpha1.VirtualNetworkGatewayConnection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeVirtualNetworkGatewayConnections) Create(virtualNetworkGatewayConne
 // Update takes the representation of a virtualNetworkGatewayConnection and updates it. Returns the server's representation of the virtualNetworkGatewayConnection, and an error, if there is any.
 func (c *FakeVirtualNetworkGatewayConnections) Update(virtualNetworkGatewayConnection *v1alpha1.VirtualNetworkGatewayConnection) (result *v1alpha1.VirtualNetworkGatewayConnection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(virtualnetworkgatewayconnectionsResource, virtualNetworkGatewayConnection), &v1alpha1.VirtualNetworkGatewayConnection{})
+		Invokes(testing.NewUpdateAction(virtualnetworkgatewayconnectionsResource, c.ns, virtualNetworkGatewayConnection), &v1alpha1.VirtualNetworkGatewayConnection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeVirtualNetworkGatewayConnections) Update(virtualNetworkGatewayConne
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeVirtualNetworkGatewayConnections) UpdateStatus(virtualNetworkGatewayConnection *v1alpha1.VirtualNetworkGatewayConnection) (*v1alpha1.VirtualNetworkGatewayConnection, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(virtualnetworkgatewayconnectionsResource, "status", virtualNetworkGatewayConnection), &v1alpha1.VirtualNetworkGatewayConnection{})
+		Invokes(testing.NewUpdateSubresourceAction(virtualnetworkgatewayconnectionsResource, "status", c.ns, virtualNetworkGatewayConnection), &v1alpha1.VirtualNetworkGatewayConnection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeVirtualNetworkGatewayConnections) UpdateStatus(virtualNetworkGatewa
 // Delete takes name of the virtualNetworkGatewayConnection and deletes it. Returns an error if one occurs.
 func (c *FakeVirtualNetworkGatewayConnections) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(virtualnetworkgatewayconnectionsResource, name), &v1alpha1.VirtualNetworkGatewayConnection{})
+		Invokes(testing.NewDeleteAction(virtualnetworkgatewayconnectionsResource, c.ns, name), &v1alpha1.VirtualNetworkGatewayConnection{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeVirtualNetworkGatewayConnections) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(virtualnetworkgatewayconnectionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(virtualnetworkgatewayconnectionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.VirtualNetworkGatewayConnectionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeVirtualNetworkGatewayConnections) DeleteCollection(options *v1.Dele
 // Patch applies the patch and returns the patched virtualNetworkGatewayConnection.
 func (c *FakeVirtualNetworkGatewayConnections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VirtualNetworkGatewayConnection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(virtualnetworkgatewayconnectionsResource, name, pt, data, subresources...), &v1alpha1.VirtualNetworkGatewayConnection{})
+		Invokes(testing.NewPatchSubresourceAction(virtualnetworkgatewayconnectionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.VirtualNetworkGatewayConnection{})
+
 	if obj == nil {
 		return nil, err
 	}

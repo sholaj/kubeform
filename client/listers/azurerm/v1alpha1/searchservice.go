@@ -29,8 +29,8 @@ import (
 type SearchServiceLister interface {
 	// List lists all SearchServices in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SearchService, err error)
-	// Get retrieves the SearchService from the index for a given name.
-	Get(name string) (*v1alpha1.SearchService, error)
+	// SearchServices returns an object that can list and get SearchServices.
+	SearchServices(namespace string) SearchServiceNamespaceLister
 	SearchServiceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *searchServiceLister) List(selector labels.Selector) (ret []*v1alpha1.Se
 	return ret, err
 }
 
-// Get retrieves the SearchService from the index for a given name.
-func (s *searchServiceLister) Get(name string) (*v1alpha1.SearchService, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SearchServices returns an object that can list and get SearchServices.
+func (s *searchServiceLister) SearchServices(namespace string) SearchServiceNamespaceLister {
+	return searchServiceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SearchServiceNamespaceLister helps list and get SearchServices.
+type SearchServiceNamespaceLister interface {
+	// List lists all SearchServices in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SearchService, err error)
+	// Get retrieves the SearchService from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SearchService, error)
+	SearchServiceNamespaceListerExpansion
+}
+
+// searchServiceNamespaceLister implements the SearchServiceNamespaceLister
+// interface.
+type searchServiceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SearchServices in the indexer for a given namespace.
+func (s searchServiceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SearchService, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SearchService))
+	})
+	return ret, err
+}
+
+// Get retrieves the SearchService from the indexer for a given namespace and name.
+func (s searchServiceNamespaceLister) Get(name string) (*v1alpha1.SearchService, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

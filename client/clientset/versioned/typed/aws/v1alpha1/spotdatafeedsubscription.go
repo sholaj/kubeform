@@ -32,7 +32,7 @@ import (
 // SpotDatafeedSubscriptionsGetter has a method to return a SpotDatafeedSubscriptionInterface.
 // A group's client should implement this interface.
 type SpotDatafeedSubscriptionsGetter interface {
-	SpotDatafeedSubscriptions() SpotDatafeedSubscriptionInterface
+	SpotDatafeedSubscriptions(namespace string) SpotDatafeedSubscriptionInterface
 }
 
 // SpotDatafeedSubscriptionInterface has methods to work with SpotDatafeedSubscription resources.
@@ -52,12 +52,14 @@ type SpotDatafeedSubscriptionInterface interface {
 // spotDatafeedSubscriptions implements SpotDatafeedSubscriptionInterface
 type spotDatafeedSubscriptions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSpotDatafeedSubscriptions returns a SpotDatafeedSubscriptions
-func newSpotDatafeedSubscriptions(c *AwsV1alpha1Client) *spotDatafeedSubscriptions {
+func newSpotDatafeedSubscriptions(c *AwsV1alpha1Client, namespace string) *spotDatafeedSubscriptions {
 	return &spotDatafeedSubscriptions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSpotDatafeedSubscriptions(c *AwsV1alpha1Client) *spotDatafeedSubscriptio
 func (c *spotDatafeedSubscriptions) Get(name string, options v1.GetOptions) (result *v1alpha1.SpotDatafeedSubscription, err error) {
 	result = &v1alpha1.SpotDatafeedSubscription{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("spotdatafeedsubscriptions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *spotDatafeedSubscriptions) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.SpotDatafeedSubscriptionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("spotdatafeedsubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *spotDatafeedSubscriptions) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("spotdatafeedsubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *spotDatafeedSubscriptions) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *spotDatafeedSubscriptions) Create(spotDatafeedSubscription *v1alpha1.SpotDatafeedSubscription) (result *v1alpha1.SpotDatafeedSubscription, err error) {
 	result = &v1alpha1.SpotDatafeedSubscription{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("spotdatafeedsubscriptions").
 		Body(spotDatafeedSubscription).
 		Do().
@@ -118,6 +124,7 @@ func (c *spotDatafeedSubscriptions) Create(spotDatafeedSubscription *v1alpha1.Sp
 func (c *spotDatafeedSubscriptions) Update(spotDatafeedSubscription *v1alpha1.SpotDatafeedSubscription) (result *v1alpha1.SpotDatafeedSubscription, err error) {
 	result = &v1alpha1.SpotDatafeedSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("spotdatafeedsubscriptions").
 		Name(spotDatafeedSubscription.Name).
 		Body(spotDatafeedSubscription).
@@ -132,6 +139,7 @@ func (c *spotDatafeedSubscriptions) Update(spotDatafeedSubscription *v1alpha1.Sp
 func (c *spotDatafeedSubscriptions) UpdateStatus(spotDatafeedSubscription *v1alpha1.SpotDatafeedSubscription) (result *v1alpha1.SpotDatafeedSubscription, err error) {
 	result = &v1alpha1.SpotDatafeedSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("spotdatafeedsubscriptions").
 		Name(spotDatafeedSubscription.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *spotDatafeedSubscriptions) UpdateStatus(spotDatafeedSubscription *v1alp
 // Delete takes name of the spotDatafeedSubscription and deletes it. Returns an error if one occurs.
 func (c *spotDatafeedSubscriptions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("spotdatafeedsubscriptions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *spotDatafeedSubscriptions) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("spotdatafeedsubscriptions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *spotDatafeedSubscriptions) DeleteCollection(options *v1.DeleteOptions, 
 func (c *spotDatafeedSubscriptions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SpotDatafeedSubscription, err error) {
 	result = &v1alpha1.SpotDatafeedSubscription{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("spotdatafeedsubscriptions").
 		SubResource(subresources...).
 		Name(name).

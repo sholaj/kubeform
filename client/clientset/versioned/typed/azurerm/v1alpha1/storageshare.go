@@ -32,7 +32,7 @@ import (
 // StorageSharesGetter has a method to return a StorageShareInterface.
 // A group's client should implement this interface.
 type StorageSharesGetter interface {
-	StorageShares() StorageShareInterface
+	StorageShares(namespace string) StorageShareInterface
 }
 
 // StorageShareInterface has methods to work with StorageShare resources.
@@ -52,12 +52,14 @@ type StorageShareInterface interface {
 // storageShares implements StorageShareInterface
 type storageShares struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStorageShares returns a StorageShares
-func newStorageShares(c *AzurermV1alpha1Client) *storageShares {
+func newStorageShares(c *AzurermV1alpha1Client, namespace string) *storageShares {
 	return &storageShares{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStorageShares(c *AzurermV1alpha1Client) *storageShares {
 func (c *storageShares) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageShare, err error) {
 	result = &v1alpha1.StorageShare{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storageshares").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *storageShares) List(opts v1.ListOptions) (result *v1alpha1.StorageShare
 	}
 	result = &v1alpha1.StorageShareList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storageshares").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *storageShares) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storageshares").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *storageShares) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *storageShares) Create(storageShare *v1alpha1.StorageShare) (result *v1alpha1.StorageShare, err error) {
 	result = &v1alpha1.StorageShare{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storageshares").
 		Body(storageShare).
 		Do().
@@ -118,6 +124,7 @@ func (c *storageShares) Create(storageShare *v1alpha1.StorageShare) (result *v1a
 func (c *storageShares) Update(storageShare *v1alpha1.StorageShare) (result *v1alpha1.StorageShare, err error) {
 	result = &v1alpha1.StorageShare{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storageshares").
 		Name(storageShare.Name).
 		Body(storageShare).
@@ -132,6 +139,7 @@ func (c *storageShares) Update(storageShare *v1alpha1.StorageShare) (result *v1a
 func (c *storageShares) UpdateStatus(storageShare *v1alpha1.StorageShare) (result *v1alpha1.StorageShare, err error) {
 	result = &v1alpha1.StorageShare{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storageshares").
 		Name(storageShare.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *storageShares) UpdateStatus(storageShare *v1alpha1.StorageShare) (resul
 // Delete takes name of the storageShare and deletes it. Returns an error if one occurs.
 func (c *storageShares) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storageshares").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *storageShares) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storageshares").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *storageShares) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *storageShares) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageShare, err error) {
 	result = &v1alpha1.StorageShare{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storageshares").
 		SubResource(subresources...).
 		Name(name).

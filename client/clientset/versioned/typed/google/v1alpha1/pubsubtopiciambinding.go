@@ -32,7 +32,7 @@ import (
 // PubsubTopicIamBindingsGetter has a method to return a PubsubTopicIamBindingInterface.
 // A group's client should implement this interface.
 type PubsubTopicIamBindingsGetter interface {
-	PubsubTopicIamBindings() PubsubTopicIamBindingInterface
+	PubsubTopicIamBindings(namespace string) PubsubTopicIamBindingInterface
 }
 
 // PubsubTopicIamBindingInterface has methods to work with PubsubTopicIamBinding resources.
@@ -52,12 +52,14 @@ type PubsubTopicIamBindingInterface interface {
 // pubsubTopicIamBindings implements PubsubTopicIamBindingInterface
 type pubsubTopicIamBindings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPubsubTopicIamBindings returns a PubsubTopicIamBindings
-func newPubsubTopicIamBindings(c *GoogleV1alpha1Client) *pubsubTopicIamBindings {
+func newPubsubTopicIamBindings(c *GoogleV1alpha1Client, namespace string) *pubsubTopicIamBindings {
 	return &pubsubTopicIamBindings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPubsubTopicIamBindings(c *GoogleV1alpha1Client) *pubsubTopicIamBindings 
 func (c *pubsubTopicIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.PubsubTopicIamBinding, err error) {
 	result = &v1alpha1.PubsubTopicIamBinding{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pubsubtopiciambindings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *pubsubTopicIamBindings) List(opts v1.ListOptions) (result *v1alpha1.Pub
 	}
 	result = &v1alpha1.PubsubTopicIamBindingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pubsubtopiciambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *pubsubTopicIamBindings) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("pubsubtopiciambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *pubsubTopicIamBindings) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *pubsubTopicIamBindings) Create(pubsubTopicIamBinding *v1alpha1.PubsubTopicIamBinding) (result *v1alpha1.PubsubTopicIamBinding, err error) {
 	result = &v1alpha1.PubsubTopicIamBinding{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("pubsubtopiciambindings").
 		Body(pubsubTopicIamBinding).
 		Do().
@@ -118,6 +124,7 @@ func (c *pubsubTopicIamBindings) Create(pubsubTopicIamBinding *v1alpha1.PubsubTo
 func (c *pubsubTopicIamBindings) Update(pubsubTopicIamBinding *v1alpha1.PubsubTopicIamBinding) (result *v1alpha1.PubsubTopicIamBinding, err error) {
 	result = &v1alpha1.PubsubTopicIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pubsubtopiciambindings").
 		Name(pubsubTopicIamBinding.Name).
 		Body(pubsubTopicIamBinding).
@@ -132,6 +139,7 @@ func (c *pubsubTopicIamBindings) Update(pubsubTopicIamBinding *v1alpha1.PubsubTo
 func (c *pubsubTopicIamBindings) UpdateStatus(pubsubTopicIamBinding *v1alpha1.PubsubTopicIamBinding) (result *v1alpha1.PubsubTopicIamBinding, err error) {
 	result = &v1alpha1.PubsubTopicIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pubsubtopiciambindings").
 		Name(pubsubTopicIamBinding.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *pubsubTopicIamBindings) UpdateStatus(pubsubTopicIamBinding *v1alpha1.Pu
 // Delete takes name of the pubsubTopicIamBinding and deletes it. Returns an error if one occurs.
 func (c *pubsubTopicIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pubsubtopiciambindings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *pubsubTopicIamBindings) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pubsubtopiciambindings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *pubsubTopicIamBindings) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *pubsubTopicIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PubsubTopicIamBinding, err error) {
 	result = &v1alpha1.PubsubTopicIamBinding{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("pubsubtopiciambindings").
 		SubResource(subresources...).
 		Name(name).

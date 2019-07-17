@@ -29,8 +29,8 @@ import (
 type LoggingOrganizationExclusionLister interface {
 	// List lists all LoggingOrganizationExclusions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LoggingOrganizationExclusion, err error)
-	// Get retrieves the LoggingOrganizationExclusion from the index for a given name.
-	Get(name string) (*v1alpha1.LoggingOrganizationExclusion, error)
+	// LoggingOrganizationExclusions returns an object that can list and get LoggingOrganizationExclusions.
+	LoggingOrganizationExclusions(namespace string) LoggingOrganizationExclusionNamespaceLister
 	LoggingOrganizationExclusionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *loggingOrganizationExclusionLister) List(selector labels.Selector) (ret
 	return ret, err
 }
 
-// Get retrieves the LoggingOrganizationExclusion from the index for a given name.
-func (s *loggingOrganizationExclusionLister) Get(name string) (*v1alpha1.LoggingOrganizationExclusion, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LoggingOrganizationExclusions returns an object that can list and get LoggingOrganizationExclusions.
+func (s *loggingOrganizationExclusionLister) LoggingOrganizationExclusions(namespace string) LoggingOrganizationExclusionNamespaceLister {
+	return loggingOrganizationExclusionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LoggingOrganizationExclusionNamespaceLister helps list and get LoggingOrganizationExclusions.
+type LoggingOrganizationExclusionNamespaceLister interface {
+	// List lists all LoggingOrganizationExclusions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LoggingOrganizationExclusion, err error)
+	// Get retrieves the LoggingOrganizationExclusion from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LoggingOrganizationExclusion, error)
+	LoggingOrganizationExclusionNamespaceListerExpansion
+}
+
+// loggingOrganizationExclusionNamespaceLister implements the LoggingOrganizationExclusionNamespaceLister
+// interface.
+type loggingOrganizationExclusionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LoggingOrganizationExclusions in the indexer for a given namespace.
+func (s loggingOrganizationExclusionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LoggingOrganizationExclusion, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LoggingOrganizationExclusion))
+	})
+	return ret, err
+}
+
+// Get retrieves the LoggingOrganizationExclusion from the indexer for a given namespace and name.
+func (s loggingOrganizationExclusionNamespaceLister) Get(name string) (*v1alpha1.LoggingOrganizationExclusion, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

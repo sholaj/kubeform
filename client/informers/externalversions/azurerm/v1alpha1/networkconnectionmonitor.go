@@ -41,32 +41,33 @@ type NetworkConnectionMonitorInformer interface {
 type networkConnectionMonitorInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewNetworkConnectionMonitorInformer constructs a new informer for NetworkConnectionMonitor type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewNetworkConnectionMonitorInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredNetworkConnectionMonitorInformer(client, resyncPeriod, indexers, nil)
+func NewNetworkConnectionMonitorInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredNetworkConnectionMonitorInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredNetworkConnectionMonitorInformer constructs a new informer for NetworkConnectionMonitor type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredNetworkConnectionMonitorInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredNetworkConnectionMonitorInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().NetworkConnectionMonitors().List(options)
+				return client.AzurermV1alpha1().NetworkConnectionMonitors(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().NetworkConnectionMonitors().Watch(options)
+				return client.AzurermV1alpha1().NetworkConnectionMonitors(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.NetworkConnectionMonitor{},
@@ -76,7 +77,7 @@ func NewFilteredNetworkConnectionMonitorInformer(client versioned.Interface, res
 }
 
 func (f *networkConnectionMonitorInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredNetworkConnectionMonitorInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredNetworkConnectionMonitorInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *networkConnectionMonitorInformer) Informer() cache.SharedIndexInformer {

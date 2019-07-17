@@ -32,7 +32,7 @@ import (
 // VirtualNetworkGatewayConnectionsGetter has a method to return a VirtualNetworkGatewayConnectionInterface.
 // A group's client should implement this interface.
 type VirtualNetworkGatewayConnectionsGetter interface {
-	VirtualNetworkGatewayConnections() VirtualNetworkGatewayConnectionInterface
+	VirtualNetworkGatewayConnections(namespace string) VirtualNetworkGatewayConnectionInterface
 }
 
 // VirtualNetworkGatewayConnectionInterface has methods to work with VirtualNetworkGatewayConnection resources.
@@ -52,12 +52,14 @@ type VirtualNetworkGatewayConnectionInterface interface {
 // virtualNetworkGatewayConnections implements VirtualNetworkGatewayConnectionInterface
 type virtualNetworkGatewayConnections struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVirtualNetworkGatewayConnections returns a VirtualNetworkGatewayConnections
-func newVirtualNetworkGatewayConnections(c *AzurermV1alpha1Client) *virtualNetworkGatewayConnections {
+func newVirtualNetworkGatewayConnections(c *AzurermV1alpha1Client, namespace string) *virtualNetworkGatewayConnections {
 	return &virtualNetworkGatewayConnections{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVirtualNetworkGatewayConnections(c *AzurermV1alpha1Client) *virtualNetwo
 func (c *virtualNetworkGatewayConnections) Get(name string, options v1.GetOptions) (result *v1alpha1.VirtualNetworkGatewayConnection, err error) {
 	result = &v1alpha1.VirtualNetworkGatewayConnection{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("virtualnetworkgatewayconnections").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *virtualNetworkGatewayConnections) List(opts v1.ListOptions) (result *v1
 	}
 	result = &v1alpha1.VirtualNetworkGatewayConnectionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("virtualnetworkgatewayconnections").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *virtualNetworkGatewayConnections) Watch(opts v1.ListOptions) (watch.Int
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("virtualnetworkgatewayconnections").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *virtualNetworkGatewayConnections) Watch(opts v1.ListOptions) (watch.Int
 func (c *virtualNetworkGatewayConnections) Create(virtualNetworkGatewayConnection *v1alpha1.VirtualNetworkGatewayConnection) (result *v1alpha1.VirtualNetworkGatewayConnection, err error) {
 	result = &v1alpha1.VirtualNetworkGatewayConnection{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("virtualnetworkgatewayconnections").
 		Body(virtualNetworkGatewayConnection).
 		Do().
@@ -118,6 +124,7 @@ func (c *virtualNetworkGatewayConnections) Create(virtualNetworkGatewayConnectio
 func (c *virtualNetworkGatewayConnections) Update(virtualNetworkGatewayConnection *v1alpha1.VirtualNetworkGatewayConnection) (result *v1alpha1.VirtualNetworkGatewayConnection, err error) {
 	result = &v1alpha1.VirtualNetworkGatewayConnection{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("virtualnetworkgatewayconnections").
 		Name(virtualNetworkGatewayConnection.Name).
 		Body(virtualNetworkGatewayConnection).
@@ -132,6 +139,7 @@ func (c *virtualNetworkGatewayConnections) Update(virtualNetworkGatewayConnectio
 func (c *virtualNetworkGatewayConnections) UpdateStatus(virtualNetworkGatewayConnection *v1alpha1.VirtualNetworkGatewayConnection) (result *v1alpha1.VirtualNetworkGatewayConnection, err error) {
 	result = &v1alpha1.VirtualNetworkGatewayConnection{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("virtualnetworkgatewayconnections").
 		Name(virtualNetworkGatewayConnection.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *virtualNetworkGatewayConnections) UpdateStatus(virtualNetworkGatewayCon
 // Delete takes name of the virtualNetworkGatewayConnection and deletes it. Returns an error if one occurs.
 func (c *virtualNetworkGatewayConnections) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("virtualnetworkgatewayconnections").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *virtualNetworkGatewayConnections) DeleteCollection(options *v1.DeleteOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("virtualnetworkgatewayconnections").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *virtualNetworkGatewayConnections) DeleteCollection(options *v1.DeleteOp
 func (c *virtualNetworkGatewayConnections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VirtualNetworkGatewayConnection, err error) {
 	result = &v1alpha1.VirtualNetworkGatewayConnection{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("virtualnetworkgatewayconnections").
 		SubResource(subresources...).
 		Name(name).

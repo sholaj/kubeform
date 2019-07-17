@@ -29,8 +29,8 @@ import (
 type ApplicationGatewayLister interface {
 	// List lists all ApplicationGateways in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApplicationGateway, err error)
-	// Get retrieves the ApplicationGateway from the index for a given name.
-	Get(name string) (*v1alpha1.ApplicationGateway, error)
+	// ApplicationGateways returns an object that can list and get ApplicationGateways.
+	ApplicationGateways(namespace string) ApplicationGatewayNamespaceLister
 	ApplicationGatewayListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *applicationGatewayLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the ApplicationGateway from the index for a given name.
-func (s *applicationGatewayLister) Get(name string) (*v1alpha1.ApplicationGateway, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApplicationGateways returns an object that can list and get ApplicationGateways.
+func (s *applicationGatewayLister) ApplicationGateways(namespace string) ApplicationGatewayNamespaceLister {
+	return applicationGatewayNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApplicationGatewayNamespaceLister helps list and get ApplicationGateways.
+type ApplicationGatewayNamespaceLister interface {
+	// List lists all ApplicationGateways in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApplicationGateway, err error)
+	// Get retrieves the ApplicationGateway from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApplicationGateway, error)
+	ApplicationGatewayNamespaceListerExpansion
+}
+
+// applicationGatewayNamespaceLister implements the ApplicationGatewayNamespaceLister
+// interface.
+type applicationGatewayNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApplicationGateways in the indexer for a given namespace.
+func (s applicationGatewayNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApplicationGateway, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApplicationGateway))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApplicationGateway from the indexer for a given namespace and name.
+func (s applicationGatewayNamespaceLister) Get(name string) (*v1alpha1.ApplicationGateway, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // ServicebusSubscriptionsGetter has a method to return a ServicebusSubscriptionInterface.
 // A group's client should implement this interface.
 type ServicebusSubscriptionsGetter interface {
-	ServicebusSubscriptions() ServicebusSubscriptionInterface
+	ServicebusSubscriptions(namespace string) ServicebusSubscriptionInterface
 }
 
 // ServicebusSubscriptionInterface has methods to work with ServicebusSubscription resources.
@@ -52,12 +52,14 @@ type ServicebusSubscriptionInterface interface {
 // servicebusSubscriptions implements ServicebusSubscriptionInterface
 type servicebusSubscriptions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newServicebusSubscriptions returns a ServicebusSubscriptions
-func newServicebusSubscriptions(c *AzurermV1alpha1Client) *servicebusSubscriptions {
+func newServicebusSubscriptions(c *AzurermV1alpha1Client, namespace string) *servicebusSubscriptions {
 	return &servicebusSubscriptions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newServicebusSubscriptions(c *AzurermV1alpha1Client) *servicebusSubscriptio
 func (c *servicebusSubscriptions) Get(name string, options v1.GetOptions) (result *v1alpha1.ServicebusSubscription, err error) {
 	result = &v1alpha1.ServicebusSubscription{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicebussubscriptions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *servicebusSubscriptions) List(opts v1.ListOptions) (result *v1alpha1.Se
 	}
 	result = &v1alpha1.ServicebusSubscriptionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicebussubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *servicebusSubscriptions) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("servicebussubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *servicebusSubscriptions) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *servicebusSubscriptions) Create(servicebusSubscription *v1alpha1.ServicebusSubscription) (result *v1alpha1.ServicebusSubscription, err error) {
 	result = &v1alpha1.ServicebusSubscription{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("servicebussubscriptions").
 		Body(servicebusSubscription).
 		Do().
@@ -118,6 +124,7 @@ func (c *servicebusSubscriptions) Create(servicebusSubscription *v1alpha1.Servic
 func (c *servicebusSubscriptions) Update(servicebusSubscription *v1alpha1.ServicebusSubscription) (result *v1alpha1.ServicebusSubscription, err error) {
 	result = &v1alpha1.ServicebusSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicebussubscriptions").
 		Name(servicebusSubscription.Name).
 		Body(servicebusSubscription).
@@ -132,6 +139,7 @@ func (c *servicebusSubscriptions) Update(servicebusSubscription *v1alpha1.Servic
 func (c *servicebusSubscriptions) UpdateStatus(servicebusSubscription *v1alpha1.ServicebusSubscription) (result *v1alpha1.ServicebusSubscription, err error) {
 	result = &v1alpha1.ServicebusSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicebussubscriptions").
 		Name(servicebusSubscription.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *servicebusSubscriptions) UpdateStatus(servicebusSubscription *v1alpha1.
 // Delete takes name of the servicebusSubscription and deletes it. Returns an error if one occurs.
 func (c *servicebusSubscriptions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicebussubscriptions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *servicebusSubscriptions) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicebussubscriptions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *servicebusSubscriptions) DeleteCollection(options *v1.DeleteOptions, li
 func (c *servicebusSubscriptions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServicebusSubscription, err error) {
 	result = &v1alpha1.ServicebusSubscription{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("servicebussubscriptions").
 		SubResource(subresources...).
 		Name(name).

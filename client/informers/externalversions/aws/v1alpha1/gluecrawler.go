@@ -41,32 +41,33 @@ type GlueCrawlerInformer interface {
 type glueCrawlerInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewGlueCrawlerInformer constructs a new informer for GlueCrawler type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewGlueCrawlerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredGlueCrawlerInformer(client, resyncPeriod, indexers, nil)
+func NewGlueCrawlerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredGlueCrawlerInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredGlueCrawlerInformer constructs a new informer for GlueCrawler type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredGlueCrawlerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredGlueCrawlerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().GlueCrawlers().List(options)
+				return client.AwsV1alpha1().GlueCrawlers(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().GlueCrawlers().Watch(options)
+				return client.AwsV1alpha1().GlueCrawlers(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.GlueCrawler{},
@@ -76,7 +77,7 @@ func NewFilteredGlueCrawlerInformer(client versioned.Interface, resyncPeriod tim
 }
 
 func (f *glueCrawlerInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredGlueCrawlerInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredGlueCrawlerInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *glueCrawlerInformer) Informer() cache.SharedIndexInformer {

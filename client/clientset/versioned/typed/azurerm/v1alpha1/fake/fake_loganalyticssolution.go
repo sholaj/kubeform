@@ -31,6 +31,7 @@ import (
 // FakeLogAnalyticsSolutions implements LogAnalyticsSolutionInterface
 type FakeLogAnalyticsSolutions struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var loganalyticssolutionsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "loganalyticssolutions"}
@@ -40,7 +41,8 @@ var loganalyticssolutionsKind = schema.GroupVersionKind{Group: "azurerm.kubeform
 // Get takes name of the logAnalyticsSolution, and returns the corresponding logAnalyticsSolution object, and an error if there is any.
 func (c *FakeLogAnalyticsSolutions) Get(name string, options v1.GetOptions) (result *v1alpha1.LogAnalyticsSolution, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(loganalyticssolutionsResource, name), &v1alpha1.LogAnalyticsSolution{})
+		Invokes(testing.NewGetAction(loganalyticssolutionsResource, c.ns, name), &v1alpha1.LogAnalyticsSolution{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLogAnalyticsSolutions) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of LogAnalyticsSolutions that match those selectors.
 func (c *FakeLogAnalyticsSolutions) List(opts v1.ListOptions) (result *v1alpha1.LogAnalyticsSolutionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(loganalyticssolutionsResource, loganalyticssolutionsKind, opts), &v1alpha1.LogAnalyticsSolutionList{})
+		Invokes(testing.NewListAction(loganalyticssolutionsResource, loganalyticssolutionsKind, c.ns, opts), &v1alpha1.LogAnalyticsSolutionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLogAnalyticsSolutions) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested logAnalyticsSolutions.
 func (c *FakeLogAnalyticsSolutions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(loganalyticssolutionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(loganalyticssolutionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a logAnalyticsSolution and creates it.  Returns the server's representation of the logAnalyticsSolution, and an error, if there is any.
 func (c *FakeLogAnalyticsSolutions) Create(logAnalyticsSolution *v1alpha1.LogAnalyticsSolution) (result *v1alpha1.LogAnalyticsSolution, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(loganalyticssolutionsResource, logAnalyticsSolution), &v1alpha1.LogAnalyticsSolution{})
+		Invokes(testing.NewCreateAction(loganalyticssolutionsResource, c.ns, logAnalyticsSolution), &v1alpha1.LogAnalyticsSolution{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLogAnalyticsSolutions) Create(logAnalyticsSolution *v1alpha1.LogAna
 // Update takes the representation of a logAnalyticsSolution and updates it. Returns the server's representation of the logAnalyticsSolution, and an error, if there is any.
 func (c *FakeLogAnalyticsSolutions) Update(logAnalyticsSolution *v1alpha1.LogAnalyticsSolution) (result *v1alpha1.LogAnalyticsSolution, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(loganalyticssolutionsResource, logAnalyticsSolution), &v1alpha1.LogAnalyticsSolution{})
+		Invokes(testing.NewUpdateAction(loganalyticssolutionsResource, c.ns, logAnalyticsSolution), &v1alpha1.LogAnalyticsSolution{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLogAnalyticsSolutions) Update(logAnalyticsSolution *v1alpha1.LogAna
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLogAnalyticsSolutions) UpdateStatus(logAnalyticsSolution *v1alpha1.LogAnalyticsSolution) (*v1alpha1.LogAnalyticsSolution, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(loganalyticssolutionsResource, "status", logAnalyticsSolution), &v1alpha1.LogAnalyticsSolution{})
+		Invokes(testing.NewUpdateSubresourceAction(loganalyticssolutionsResource, "status", c.ns, logAnalyticsSolution), &v1alpha1.LogAnalyticsSolution{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLogAnalyticsSolutions) UpdateStatus(logAnalyticsSolution *v1alpha1.
 // Delete takes name of the logAnalyticsSolution and deletes it. Returns an error if one occurs.
 func (c *FakeLogAnalyticsSolutions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(loganalyticssolutionsResource, name), &v1alpha1.LogAnalyticsSolution{})
+		Invokes(testing.NewDeleteAction(loganalyticssolutionsResource, c.ns, name), &v1alpha1.LogAnalyticsSolution{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLogAnalyticsSolutions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(loganalyticssolutionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(loganalyticssolutionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LogAnalyticsSolutionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLogAnalyticsSolutions) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched logAnalyticsSolution.
 func (c *FakeLogAnalyticsSolutions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogAnalyticsSolution, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(loganalyticssolutionsResource, name, pt, data, subresources...), &v1alpha1.LogAnalyticsSolution{})
+		Invokes(testing.NewPatchSubresourceAction(loganalyticssolutionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.LogAnalyticsSolution{})
+
 	if obj == nil {
 		return nil, err
 	}

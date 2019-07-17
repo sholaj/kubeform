@@ -32,7 +32,7 @@ import (
 // DynamodbTableItemsGetter has a method to return a DynamodbTableItemInterface.
 // A group's client should implement this interface.
 type DynamodbTableItemsGetter interface {
-	DynamodbTableItems() DynamodbTableItemInterface
+	DynamodbTableItems(namespace string) DynamodbTableItemInterface
 }
 
 // DynamodbTableItemInterface has methods to work with DynamodbTableItem resources.
@@ -52,12 +52,14 @@ type DynamodbTableItemInterface interface {
 // dynamodbTableItems implements DynamodbTableItemInterface
 type dynamodbTableItems struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDynamodbTableItems returns a DynamodbTableItems
-func newDynamodbTableItems(c *AwsV1alpha1Client) *dynamodbTableItems {
+func newDynamodbTableItems(c *AwsV1alpha1Client, namespace string) *dynamodbTableItems {
 	return &dynamodbTableItems{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDynamodbTableItems(c *AwsV1alpha1Client) *dynamodbTableItems {
 func (c *dynamodbTableItems) Get(name string, options v1.GetOptions) (result *v1alpha1.DynamodbTableItem, err error) {
 	result = &v1alpha1.DynamodbTableItem{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dynamodbtableitems").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dynamodbTableItems) List(opts v1.ListOptions) (result *v1alpha1.Dynamod
 	}
 	result = &v1alpha1.DynamodbTableItemList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dynamodbtableitems").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dynamodbTableItems) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dynamodbtableitems").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dynamodbTableItems) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *dynamodbTableItems) Create(dynamodbTableItem *v1alpha1.DynamodbTableItem) (result *v1alpha1.DynamodbTableItem, err error) {
 	result = &v1alpha1.DynamodbTableItem{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dynamodbtableitems").
 		Body(dynamodbTableItem).
 		Do().
@@ -118,6 +124,7 @@ func (c *dynamodbTableItems) Create(dynamodbTableItem *v1alpha1.DynamodbTableIte
 func (c *dynamodbTableItems) Update(dynamodbTableItem *v1alpha1.DynamodbTableItem) (result *v1alpha1.DynamodbTableItem, err error) {
 	result = &v1alpha1.DynamodbTableItem{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dynamodbtableitems").
 		Name(dynamodbTableItem.Name).
 		Body(dynamodbTableItem).
@@ -132,6 +139,7 @@ func (c *dynamodbTableItems) Update(dynamodbTableItem *v1alpha1.DynamodbTableIte
 func (c *dynamodbTableItems) UpdateStatus(dynamodbTableItem *v1alpha1.DynamodbTableItem) (result *v1alpha1.DynamodbTableItem, err error) {
 	result = &v1alpha1.DynamodbTableItem{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dynamodbtableitems").
 		Name(dynamodbTableItem.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dynamodbTableItems) UpdateStatus(dynamodbTableItem *v1alpha1.DynamodbTa
 // Delete takes name of the dynamodbTableItem and deletes it. Returns an error if one occurs.
 func (c *dynamodbTableItems) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dynamodbtableitems").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dynamodbTableItems) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dynamodbtableitems").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dynamodbTableItems) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *dynamodbTableItems) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DynamodbTableItem, err error) {
 	result = &v1alpha1.DynamodbTableItem{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dynamodbtableitems").
 		SubResource(subresources...).
 		Name(name).

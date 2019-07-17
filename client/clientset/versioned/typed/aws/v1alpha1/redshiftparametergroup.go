@@ -32,7 +32,7 @@ import (
 // RedshiftParameterGroupsGetter has a method to return a RedshiftParameterGroupInterface.
 // A group's client should implement this interface.
 type RedshiftParameterGroupsGetter interface {
-	RedshiftParameterGroups() RedshiftParameterGroupInterface
+	RedshiftParameterGroups(namespace string) RedshiftParameterGroupInterface
 }
 
 // RedshiftParameterGroupInterface has methods to work with RedshiftParameterGroup resources.
@@ -52,12 +52,14 @@ type RedshiftParameterGroupInterface interface {
 // redshiftParameterGroups implements RedshiftParameterGroupInterface
 type redshiftParameterGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRedshiftParameterGroups returns a RedshiftParameterGroups
-func newRedshiftParameterGroups(c *AwsV1alpha1Client) *redshiftParameterGroups {
+func newRedshiftParameterGroups(c *AwsV1alpha1Client, namespace string) *redshiftParameterGroups {
 	return &redshiftParameterGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRedshiftParameterGroups(c *AwsV1alpha1Client) *redshiftParameterGroups {
 func (c *redshiftParameterGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.RedshiftParameterGroup, err error) {
 	result = &v1alpha1.RedshiftParameterGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("redshiftparametergroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *redshiftParameterGroups) List(opts v1.ListOptions) (result *v1alpha1.Re
 	}
 	result = &v1alpha1.RedshiftParameterGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("redshiftparametergroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *redshiftParameterGroups) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("redshiftparametergroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *redshiftParameterGroups) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *redshiftParameterGroups) Create(redshiftParameterGroup *v1alpha1.RedshiftParameterGroup) (result *v1alpha1.RedshiftParameterGroup, err error) {
 	result = &v1alpha1.RedshiftParameterGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("redshiftparametergroups").
 		Body(redshiftParameterGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *redshiftParameterGroups) Create(redshiftParameterGroup *v1alpha1.Redshi
 func (c *redshiftParameterGroups) Update(redshiftParameterGroup *v1alpha1.RedshiftParameterGroup) (result *v1alpha1.RedshiftParameterGroup, err error) {
 	result = &v1alpha1.RedshiftParameterGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("redshiftparametergroups").
 		Name(redshiftParameterGroup.Name).
 		Body(redshiftParameterGroup).
@@ -132,6 +139,7 @@ func (c *redshiftParameterGroups) Update(redshiftParameterGroup *v1alpha1.Redshi
 func (c *redshiftParameterGroups) UpdateStatus(redshiftParameterGroup *v1alpha1.RedshiftParameterGroup) (result *v1alpha1.RedshiftParameterGroup, err error) {
 	result = &v1alpha1.RedshiftParameterGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("redshiftparametergroups").
 		Name(redshiftParameterGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *redshiftParameterGroups) UpdateStatus(redshiftParameterGroup *v1alpha1.
 // Delete takes name of the redshiftParameterGroup and deletes it. Returns an error if one occurs.
 func (c *redshiftParameterGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("redshiftparametergroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *redshiftParameterGroups) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("redshiftparametergroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *redshiftParameterGroups) DeleteCollection(options *v1.DeleteOptions, li
 func (c *redshiftParameterGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RedshiftParameterGroup, err error) {
 	result = &v1alpha1.RedshiftParameterGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("redshiftparametergroups").
 		SubResource(subresources...).
 		Name(name).

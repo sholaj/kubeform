@@ -31,6 +31,7 @@ import (
 // FakeEfsFileSystems implements EfsFileSystemInterface
 type FakeEfsFileSystems struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var efsfilesystemsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "efsfilesystems"}
@@ -40,7 +41,8 @@ var efsfilesystemsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Vers
 // Get takes name of the efsFileSystem, and returns the corresponding efsFileSystem object, and an error if there is any.
 func (c *FakeEfsFileSystems) Get(name string, options v1.GetOptions) (result *v1alpha1.EfsFileSystem, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(efsfilesystemsResource, name), &v1alpha1.EfsFileSystem{})
+		Invokes(testing.NewGetAction(efsfilesystemsResource, c.ns, name), &v1alpha1.EfsFileSystem{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEfsFileSystems) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of EfsFileSystems that match those selectors.
 func (c *FakeEfsFileSystems) List(opts v1.ListOptions) (result *v1alpha1.EfsFileSystemList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(efsfilesystemsResource, efsfilesystemsKind, opts), &v1alpha1.EfsFileSystemList{})
+		Invokes(testing.NewListAction(efsfilesystemsResource, efsfilesystemsKind, c.ns, opts), &v1alpha1.EfsFileSystemList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEfsFileSystems) List(opts v1.ListOptions) (result *v1alpha1.EfsFile
 // Watch returns a watch.Interface that watches the requested efsFileSystems.
 func (c *FakeEfsFileSystems) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(efsfilesystemsResource, opts))
+		InvokesWatch(testing.NewWatchAction(efsfilesystemsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a efsFileSystem and creates it.  Returns the server's representation of the efsFileSystem, and an error, if there is any.
 func (c *FakeEfsFileSystems) Create(efsFileSystem *v1alpha1.EfsFileSystem) (result *v1alpha1.EfsFileSystem, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(efsfilesystemsResource, efsFileSystem), &v1alpha1.EfsFileSystem{})
+		Invokes(testing.NewCreateAction(efsfilesystemsResource, c.ns, efsFileSystem), &v1alpha1.EfsFileSystem{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEfsFileSystems) Create(efsFileSystem *v1alpha1.EfsFileSystem) (resu
 // Update takes the representation of a efsFileSystem and updates it. Returns the server's representation of the efsFileSystem, and an error, if there is any.
 func (c *FakeEfsFileSystems) Update(efsFileSystem *v1alpha1.EfsFileSystem) (result *v1alpha1.EfsFileSystem, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(efsfilesystemsResource, efsFileSystem), &v1alpha1.EfsFileSystem{})
+		Invokes(testing.NewUpdateAction(efsfilesystemsResource, c.ns, efsFileSystem), &v1alpha1.EfsFileSystem{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEfsFileSystems) Update(efsFileSystem *v1alpha1.EfsFileSystem) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEfsFileSystems) UpdateStatus(efsFileSystem *v1alpha1.EfsFileSystem) (*v1alpha1.EfsFileSystem, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(efsfilesystemsResource, "status", efsFileSystem), &v1alpha1.EfsFileSystem{})
+		Invokes(testing.NewUpdateSubresourceAction(efsfilesystemsResource, "status", c.ns, efsFileSystem), &v1alpha1.EfsFileSystem{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEfsFileSystems) UpdateStatus(efsFileSystem *v1alpha1.EfsFileSystem)
 // Delete takes name of the efsFileSystem and deletes it. Returns an error if one occurs.
 func (c *FakeEfsFileSystems) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(efsfilesystemsResource, name), &v1alpha1.EfsFileSystem{})
+		Invokes(testing.NewDeleteAction(efsfilesystemsResource, c.ns, name), &v1alpha1.EfsFileSystem{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEfsFileSystems) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(efsfilesystemsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(efsfilesystemsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.EfsFileSystemList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEfsFileSystems) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched efsFileSystem.
 func (c *FakeEfsFileSystems) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EfsFileSystem, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(efsfilesystemsResource, name, pt, data, subresources...), &v1alpha1.EfsFileSystem{})
+		Invokes(testing.NewPatchSubresourceAction(efsfilesystemsResource, c.ns, name, pt, data, subresources...), &v1alpha1.EfsFileSystem{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // DevTestVirtualNetworksGetter has a method to return a DevTestVirtualNetworkInterface.
 // A group's client should implement this interface.
 type DevTestVirtualNetworksGetter interface {
-	DevTestVirtualNetworks() DevTestVirtualNetworkInterface
+	DevTestVirtualNetworks(namespace string) DevTestVirtualNetworkInterface
 }
 
 // DevTestVirtualNetworkInterface has methods to work with DevTestVirtualNetwork resources.
@@ -52,12 +52,14 @@ type DevTestVirtualNetworkInterface interface {
 // devTestVirtualNetworks implements DevTestVirtualNetworkInterface
 type devTestVirtualNetworks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDevTestVirtualNetworks returns a DevTestVirtualNetworks
-func newDevTestVirtualNetworks(c *AzurermV1alpha1Client) *devTestVirtualNetworks {
+func newDevTestVirtualNetworks(c *AzurermV1alpha1Client, namespace string) *devTestVirtualNetworks {
 	return &devTestVirtualNetworks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDevTestVirtualNetworks(c *AzurermV1alpha1Client) *devTestVirtualNetworks
 func (c *devTestVirtualNetworks) Get(name string, options v1.GetOptions) (result *v1alpha1.DevTestVirtualNetwork, err error) {
 	result = &v1alpha1.DevTestVirtualNetwork{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("devtestvirtualnetworks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *devTestVirtualNetworks) List(opts v1.ListOptions) (result *v1alpha1.Dev
 	}
 	result = &v1alpha1.DevTestVirtualNetworkList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("devtestvirtualnetworks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *devTestVirtualNetworks) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("devtestvirtualnetworks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *devTestVirtualNetworks) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *devTestVirtualNetworks) Create(devTestVirtualNetwork *v1alpha1.DevTestVirtualNetwork) (result *v1alpha1.DevTestVirtualNetwork, err error) {
 	result = &v1alpha1.DevTestVirtualNetwork{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("devtestvirtualnetworks").
 		Body(devTestVirtualNetwork).
 		Do().
@@ -118,6 +124,7 @@ func (c *devTestVirtualNetworks) Create(devTestVirtualNetwork *v1alpha1.DevTestV
 func (c *devTestVirtualNetworks) Update(devTestVirtualNetwork *v1alpha1.DevTestVirtualNetwork) (result *v1alpha1.DevTestVirtualNetwork, err error) {
 	result = &v1alpha1.DevTestVirtualNetwork{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("devtestvirtualnetworks").
 		Name(devTestVirtualNetwork.Name).
 		Body(devTestVirtualNetwork).
@@ -132,6 +139,7 @@ func (c *devTestVirtualNetworks) Update(devTestVirtualNetwork *v1alpha1.DevTestV
 func (c *devTestVirtualNetworks) UpdateStatus(devTestVirtualNetwork *v1alpha1.DevTestVirtualNetwork) (result *v1alpha1.DevTestVirtualNetwork, err error) {
 	result = &v1alpha1.DevTestVirtualNetwork{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("devtestvirtualnetworks").
 		Name(devTestVirtualNetwork.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *devTestVirtualNetworks) UpdateStatus(devTestVirtualNetwork *v1alpha1.De
 // Delete takes name of the devTestVirtualNetwork and deletes it. Returns an error if one occurs.
 func (c *devTestVirtualNetworks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("devtestvirtualnetworks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *devTestVirtualNetworks) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("devtestvirtualnetworks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *devTestVirtualNetworks) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *devTestVirtualNetworks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DevTestVirtualNetwork, err error) {
 	result = &v1alpha1.DevTestVirtualNetwork{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("devtestvirtualnetworks").
 		SubResource(subresources...).
 		Name(name).

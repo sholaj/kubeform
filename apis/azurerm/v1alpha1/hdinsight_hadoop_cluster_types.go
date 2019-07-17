@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,88 +19,89 @@ type HdinsightHadoopCluster struct {
 }
 
 type HdinsightHadoopClusterSpecComponentVersion struct {
-	Hadoop string `json:"hadoop"`
+	Hadoop string `json:"hadoop" tf:"hadoop"`
 }
 
 type HdinsightHadoopClusterSpecGateway struct {
-	Enabled  bool   `json:"enabled"`
-	Password string `json:"password"`
-	Username string `json:"username"`
+	Enabled  bool   `json:"enabled" tf:"enabled"`
+	Password string `json:"password" tf:"password"`
+	Username string `json:"username" tf:"username"`
 }
 
 type HdinsightHadoopClusterSpecRolesHeadNode struct {
 	// +optional
-	Password string `json:"password,omitempty"`
+	Password string `json:"password,omitempty" tf:"password,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SshKeys []string `json:"ssh_keys,omitempty"`
+	SshKeys []string `json:"sshKeys,omitempty" tf:"ssh_keys,omitempty"`
 	// +optional
-	SubnetId string `json:"subnet_id,omitempty"`
-	Username string `json:"username"`
+	SubnetID string `json:"subnetID,omitempty" tf:"subnet_id,omitempty"`
+	Username string `json:"username" tf:"username"`
 	// +optional
-	VirtualNetworkId string `json:"virtual_network_id,omitempty"`
-	VmSize           string `json:"vm_size"`
+	VirtualNetworkID string `json:"virtualNetworkID,omitempty" tf:"virtual_network_id,omitempty"`
+	VmSize           string `json:"vmSize" tf:"vm_size"`
 }
 
 type HdinsightHadoopClusterSpecRolesWorkerNode struct {
 	// +optional
-	MinInstanceCount int `json:"min_instance_count,omitempty"`
+	MinInstanceCount int `json:"minInstanceCount,omitempty" tf:"min_instance_count,omitempty"`
 	// +optional
-	Password string `json:"password,omitempty"`
+	Password string `json:"password,omitempty" tf:"password,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SshKeys []string `json:"ssh_keys,omitempty"`
+	SshKeys []string `json:"sshKeys,omitempty" tf:"ssh_keys,omitempty"`
 	// +optional
-	SubnetId            string `json:"subnet_id,omitempty"`
-	TargetInstanceCount int    `json:"target_instance_count"`
-	Username            string `json:"username"`
+	SubnetID            string `json:"subnetID,omitempty" tf:"subnet_id,omitempty"`
+	TargetInstanceCount int    `json:"targetInstanceCount" tf:"target_instance_count"`
+	Username            string `json:"username" tf:"username"`
 	// +optional
-	VirtualNetworkId string `json:"virtual_network_id,omitempty"`
-	VmSize           string `json:"vm_size"`
+	VirtualNetworkID string `json:"virtualNetworkID,omitempty" tf:"virtual_network_id,omitempty"`
+	VmSize           string `json:"vmSize" tf:"vm_size"`
 }
 
 type HdinsightHadoopClusterSpecRolesZookeeperNode struct {
 	// +optional
-	Password string `json:"password,omitempty"`
+	Password string `json:"password,omitempty" tf:"password,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SshKeys []string `json:"ssh_keys,omitempty"`
+	SshKeys []string `json:"sshKeys,omitempty" tf:"ssh_keys,omitempty"`
 	// +optional
-	SubnetId string `json:"subnet_id,omitempty"`
-	Username string `json:"username"`
+	SubnetID string `json:"subnetID,omitempty" tf:"subnet_id,omitempty"`
+	Username string `json:"username" tf:"username"`
 	// +optional
-	VirtualNetworkId string `json:"virtual_network_id,omitempty"`
-	VmSize           string `json:"vm_size"`
+	VirtualNetworkID string `json:"virtualNetworkID,omitempty" tf:"virtual_network_id,omitempty"`
+	VmSize           string `json:"vmSize" tf:"vm_size"`
 }
 
 type HdinsightHadoopClusterSpecRoles struct {
 	// +kubebuilder:validation:MaxItems=1
-	HeadNode []HdinsightHadoopClusterSpecRoles `json:"head_node"`
+	HeadNode []HdinsightHadoopClusterSpecRolesHeadNode `json:"headNode" tf:"head_node"`
 	// +kubebuilder:validation:MaxItems=1
-	WorkerNode []HdinsightHadoopClusterSpecRoles `json:"worker_node"`
+	WorkerNode []HdinsightHadoopClusterSpecRolesWorkerNode `json:"workerNode" tf:"worker_node"`
 	// +kubebuilder:validation:MaxItems=1
-	ZookeeperNode []HdinsightHadoopClusterSpecRoles `json:"zookeeper_node"`
+	ZookeeperNode []HdinsightHadoopClusterSpecRolesZookeeperNode `json:"zookeeperNode" tf:"zookeeper_node"`
 }
 
 type HdinsightHadoopClusterSpecStorageAccount struct {
-	IsDefault          bool   `json:"is_default"`
-	StorageAccountKey  string `json:"storage_account_key"`
-	StorageContainerId string `json:"storage_container_id"`
+	IsDefault          bool   `json:"isDefault" tf:"is_default"`
+	StorageAccountKey  string `json:"storageAccountKey" tf:"storage_account_key"`
+	StorageContainerID string `json:"storageContainerID" tf:"storage_container_id"`
 }
 
 type HdinsightHadoopClusterSpec struct {
-	ClusterVersion string `json:"cluster_version"`
+	ClusterVersion string `json:"clusterVersion" tf:"cluster_version"`
 	// +kubebuilder:validation:MaxItems=1
-	ComponentVersion []HdinsightHadoopClusterSpec `json:"component_version"`
+	ComponentVersion []HdinsightHadoopClusterSpecComponentVersion `json:"componentVersion" tf:"component_version"`
 	// +kubebuilder:validation:MaxItems=1
-	Gateway           []HdinsightHadoopClusterSpec `json:"gateway"`
-	Location          string                       `json:"location"`
-	Name              string                       `json:"name"`
-	ResourceGroupName string                       `json:"resource_group_name"`
+	Gateway           []HdinsightHadoopClusterSpecGateway `json:"gateway" tf:"gateway"`
+	Location          string                              `json:"location" tf:"location"`
+	Name              string                              `json:"name" tf:"name"`
+	ResourceGroupName string                              `json:"resourceGroupName" tf:"resource_group_name"`
 	// +kubebuilder:validation:MaxItems=1
-	Roles          []HdinsightHadoopClusterSpec `json:"roles"`
-	StorageAccount []HdinsightHadoopClusterSpec `json:"storage_account"`
-	Tier           string                       `json:"tier"`
+	Roles          []HdinsightHadoopClusterSpecRoles          `json:"roles" tf:"roles"`
+	StorageAccount []HdinsightHadoopClusterSpecStorageAccount `json:"storageAccount" tf:"storage_account"`
+	Tier           string                                     `json:"tier" tf:"tier"`
+	ProviderRef    core.LocalObjectReference                  `json:"providerRef" tf:"-"`
 }
 
 type HdinsightHadoopClusterStatus struct {
@@ -108,7 +109,9 @@ type HdinsightHadoopClusterStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

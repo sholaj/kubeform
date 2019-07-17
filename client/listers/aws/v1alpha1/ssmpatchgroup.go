@@ -29,8 +29,8 @@ import (
 type SsmPatchGroupLister interface {
 	// List lists all SsmPatchGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SsmPatchGroup, err error)
-	// Get retrieves the SsmPatchGroup from the index for a given name.
-	Get(name string) (*v1alpha1.SsmPatchGroup, error)
+	// SsmPatchGroups returns an object that can list and get SsmPatchGroups.
+	SsmPatchGroups(namespace string) SsmPatchGroupNamespaceLister
 	SsmPatchGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ssmPatchGroupLister) List(selector labels.Selector) (ret []*v1alpha1.Ss
 	return ret, err
 }
 
-// Get retrieves the SsmPatchGroup from the index for a given name.
-func (s *ssmPatchGroupLister) Get(name string) (*v1alpha1.SsmPatchGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SsmPatchGroups returns an object that can list and get SsmPatchGroups.
+func (s *ssmPatchGroupLister) SsmPatchGroups(namespace string) SsmPatchGroupNamespaceLister {
+	return ssmPatchGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SsmPatchGroupNamespaceLister helps list and get SsmPatchGroups.
+type SsmPatchGroupNamespaceLister interface {
+	// List lists all SsmPatchGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SsmPatchGroup, err error)
+	// Get retrieves the SsmPatchGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SsmPatchGroup, error)
+	SsmPatchGroupNamespaceListerExpansion
+}
+
+// ssmPatchGroupNamespaceLister implements the SsmPatchGroupNamespaceLister
+// interface.
+type ssmPatchGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SsmPatchGroups in the indexer for a given namespace.
+func (s ssmPatchGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SsmPatchGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SsmPatchGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the SsmPatchGroup from the indexer for a given namespace and name.
+func (s ssmPatchGroupNamespaceLister) Get(name string) (*v1alpha1.SsmPatchGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

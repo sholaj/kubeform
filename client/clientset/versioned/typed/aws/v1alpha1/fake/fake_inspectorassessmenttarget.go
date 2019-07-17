@@ -31,6 +31,7 @@ import (
 // FakeInspectorAssessmentTargets implements InspectorAssessmentTargetInterface
 type FakeInspectorAssessmentTargets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var inspectorassessmenttargetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "inspectorassessmenttargets"}
@@ -40,7 +41,8 @@ var inspectorassessmenttargetsKind = schema.GroupVersionKind{Group: "aws.kubefor
 // Get takes name of the inspectorAssessmentTarget, and returns the corresponding inspectorAssessmentTarget object, and an error if there is any.
 func (c *FakeInspectorAssessmentTargets) Get(name string, options v1.GetOptions) (result *v1alpha1.InspectorAssessmentTarget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(inspectorassessmenttargetsResource, name), &v1alpha1.InspectorAssessmentTarget{})
+		Invokes(testing.NewGetAction(inspectorassessmenttargetsResource, c.ns, name), &v1alpha1.InspectorAssessmentTarget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeInspectorAssessmentTargets) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of InspectorAssessmentTargets that match those selectors.
 func (c *FakeInspectorAssessmentTargets) List(opts v1.ListOptions) (result *v1alpha1.InspectorAssessmentTargetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(inspectorassessmenttargetsResource, inspectorassessmenttargetsKind, opts), &v1alpha1.InspectorAssessmentTargetList{})
+		Invokes(testing.NewListAction(inspectorassessmenttargetsResource, inspectorassessmenttargetsKind, c.ns, opts), &v1alpha1.InspectorAssessmentTargetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeInspectorAssessmentTargets) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested inspectorAssessmentTargets.
 func (c *FakeInspectorAssessmentTargets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(inspectorassessmenttargetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(inspectorassessmenttargetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a inspectorAssessmentTarget and creates it.  Returns the server's representation of the inspectorAssessmentTarget, and an error, if there is any.
 func (c *FakeInspectorAssessmentTargets) Create(inspectorAssessmentTarget *v1alpha1.InspectorAssessmentTarget) (result *v1alpha1.InspectorAssessmentTarget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(inspectorassessmenttargetsResource, inspectorAssessmentTarget), &v1alpha1.InspectorAssessmentTarget{})
+		Invokes(testing.NewCreateAction(inspectorassessmenttargetsResource, c.ns, inspectorAssessmentTarget), &v1alpha1.InspectorAssessmentTarget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeInspectorAssessmentTargets) Create(inspectorAssessmentTarget *v1alp
 // Update takes the representation of a inspectorAssessmentTarget and updates it. Returns the server's representation of the inspectorAssessmentTarget, and an error, if there is any.
 func (c *FakeInspectorAssessmentTargets) Update(inspectorAssessmentTarget *v1alpha1.InspectorAssessmentTarget) (result *v1alpha1.InspectorAssessmentTarget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(inspectorassessmenttargetsResource, inspectorAssessmentTarget), &v1alpha1.InspectorAssessmentTarget{})
+		Invokes(testing.NewUpdateAction(inspectorassessmenttargetsResource, c.ns, inspectorAssessmentTarget), &v1alpha1.InspectorAssessmentTarget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeInspectorAssessmentTargets) Update(inspectorAssessmentTarget *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeInspectorAssessmentTargets) UpdateStatus(inspectorAssessmentTarget *v1alpha1.InspectorAssessmentTarget) (*v1alpha1.InspectorAssessmentTarget, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(inspectorassessmenttargetsResource, "status", inspectorAssessmentTarget), &v1alpha1.InspectorAssessmentTarget{})
+		Invokes(testing.NewUpdateSubresourceAction(inspectorassessmenttargetsResource, "status", c.ns, inspectorAssessmentTarget), &v1alpha1.InspectorAssessmentTarget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeInspectorAssessmentTargets) UpdateStatus(inspectorAssessmentTarget 
 // Delete takes name of the inspectorAssessmentTarget and deletes it. Returns an error if one occurs.
 func (c *FakeInspectorAssessmentTargets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(inspectorassessmenttargetsResource, name), &v1alpha1.InspectorAssessmentTarget{})
+		Invokes(testing.NewDeleteAction(inspectorassessmenttargetsResource, c.ns, name), &v1alpha1.InspectorAssessmentTarget{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeInspectorAssessmentTargets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(inspectorassessmenttargetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(inspectorassessmenttargetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.InspectorAssessmentTargetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeInspectorAssessmentTargets) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched inspectorAssessmentTarget.
 func (c *FakeInspectorAssessmentTargets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.InspectorAssessmentTarget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(inspectorassessmenttargetsResource, name, pt, data, subresources...), &v1alpha1.InspectorAssessmentTarget{})
+		Invokes(testing.NewPatchSubresourceAction(inspectorassessmenttargetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.InspectorAssessmentTarget{})
+
 	if obj == nil {
 		return nil, err
 	}

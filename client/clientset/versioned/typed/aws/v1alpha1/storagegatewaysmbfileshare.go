@@ -32,7 +32,7 @@ import (
 // StoragegatewaySmbFileSharesGetter has a method to return a StoragegatewaySmbFileShareInterface.
 // A group's client should implement this interface.
 type StoragegatewaySmbFileSharesGetter interface {
-	StoragegatewaySmbFileShares() StoragegatewaySmbFileShareInterface
+	StoragegatewaySmbFileShares(namespace string) StoragegatewaySmbFileShareInterface
 }
 
 // StoragegatewaySmbFileShareInterface has methods to work with StoragegatewaySmbFileShare resources.
@@ -52,12 +52,14 @@ type StoragegatewaySmbFileShareInterface interface {
 // storagegatewaySmbFileShares implements StoragegatewaySmbFileShareInterface
 type storagegatewaySmbFileShares struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStoragegatewaySmbFileShares returns a StoragegatewaySmbFileShares
-func newStoragegatewaySmbFileShares(c *AwsV1alpha1Client) *storagegatewaySmbFileShares {
+func newStoragegatewaySmbFileShares(c *AwsV1alpha1Client, namespace string) *storagegatewaySmbFileShares {
 	return &storagegatewaySmbFileShares{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStoragegatewaySmbFileShares(c *AwsV1alpha1Client) *storagegatewaySmbFile
 func (c *storagegatewaySmbFileShares) Get(name string, options v1.GetOptions) (result *v1alpha1.StoragegatewaySmbFileShare, err error) {
 	result = &v1alpha1.StoragegatewaySmbFileShare{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagegatewaysmbfileshares").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *storagegatewaySmbFileShares) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.StoragegatewaySmbFileShareList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagegatewaysmbfileshares").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *storagegatewaySmbFileShares) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storagegatewaysmbfileshares").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *storagegatewaySmbFileShares) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *storagegatewaySmbFileShares) Create(storagegatewaySmbFileShare *v1alpha1.StoragegatewaySmbFileShare) (result *v1alpha1.StoragegatewaySmbFileShare, err error) {
 	result = &v1alpha1.StoragegatewaySmbFileShare{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storagegatewaysmbfileshares").
 		Body(storagegatewaySmbFileShare).
 		Do().
@@ -118,6 +124,7 @@ func (c *storagegatewaySmbFileShares) Create(storagegatewaySmbFileShare *v1alpha
 func (c *storagegatewaySmbFileShares) Update(storagegatewaySmbFileShare *v1alpha1.StoragegatewaySmbFileShare) (result *v1alpha1.StoragegatewaySmbFileShare, err error) {
 	result = &v1alpha1.StoragegatewaySmbFileShare{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagegatewaysmbfileshares").
 		Name(storagegatewaySmbFileShare.Name).
 		Body(storagegatewaySmbFileShare).
@@ -132,6 +139,7 @@ func (c *storagegatewaySmbFileShares) Update(storagegatewaySmbFileShare *v1alpha
 func (c *storagegatewaySmbFileShares) UpdateStatus(storagegatewaySmbFileShare *v1alpha1.StoragegatewaySmbFileShare) (result *v1alpha1.StoragegatewaySmbFileShare, err error) {
 	result = &v1alpha1.StoragegatewaySmbFileShare{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagegatewaysmbfileshares").
 		Name(storagegatewaySmbFileShare.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *storagegatewaySmbFileShares) UpdateStatus(storagegatewaySmbFileShare *v
 // Delete takes name of the storagegatewaySmbFileShare and deletes it. Returns an error if one occurs.
 func (c *storagegatewaySmbFileShares) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagegatewaysmbfileshares").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *storagegatewaySmbFileShares) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagegatewaysmbfileshares").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *storagegatewaySmbFileShares) DeleteCollection(options *v1.DeleteOptions
 func (c *storagegatewaySmbFileShares) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StoragegatewaySmbFileShare, err error) {
 	result = &v1alpha1.StoragegatewaySmbFileShare{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storagegatewaysmbfileshares").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // KmsCiphertextsGetter has a method to return a KmsCiphertextInterface.
 // A group's client should implement this interface.
 type KmsCiphertextsGetter interface {
-	KmsCiphertexts() KmsCiphertextInterface
+	KmsCiphertexts(namespace string) KmsCiphertextInterface
 }
 
 // KmsCiphertextInterface has methods to work with KmsCiphertext resources.
@@ -52,12 +52,14 @@ type KmsCiphertextInterface interface {
 // kmsCiphertexts implements KmsCiphertextInterface
 type kmsCiphertexts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKmsCiphertexts returns a KmsCiphertexts
-func newKmsCiphertexts(c *AwsV1alpha1Client) *kmsCiphertexts {
+func newKmsCiphertexts(c *AwsV1alpha1Client, namespace string) *kmsCiphertexts {
 	return &kmsCiphertexts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKmsCiphertexts(c *AwsV1alpha1Client) *kmsCiphertexts {
 func (c *kmsCiphertexts) Get(name string, options v1.GetOptions) (result *v1alpha1.KmsCiphertext, err error) {
 	result = &v1alpha1.KmsCiphertext{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmsciphertexts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *kmsCiphertexts) List(opts v1.ListOptions) (result *v1alpha1.KmsCipherte
 	}
 	result = &v1alpha1.KmsCiphertextList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmsciphertexts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *kmsCiphertexts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("kmsciphertexts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *kmsCiphertexts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *kmsCiphertexts) Create(kmsCiphertext *v1alpha1.KmsCiphertext) (result *v1alpha1.KmsCiphertext, err error) {
 	result = &v1alpha1.KmsCiphertext{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("kmsciphertexts").
 		Body(kmsCiphertext).
 		Do().
@@ -118,6 +124,7 @@ func (c *kmsCiphertexts) Create(kmsCiphertext *v1alpha1.KmsCiphertext) (result *
 func (c *kmsCiphertexts) Update(kmsCiphertext *v1alpha1.KmsCiphertext) (result *v1alpha1.KmsCiphertext, err error) {
 	result = &v1alpha1.KmsCiphertext{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmsciphertexts").
 		Name(kmsCiphertext.Name).
 		Body(kmsCiphertext).
@@ -132,6 +139,7 @@ func (c *kmsCiphertexts) Update(kmsCiphertext *v1alpha1.KmsCiphertext) (result *
 func (c *kmsCiphertexts) UpdateStatus(kmsCiphertext *v1alpha1.KmsCiphertext) (result *v1alpha1.KmsCiphertext, err error) {
 	result = &v1alpha1.KmsCiphertext{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmsciphertexts").
 		Name(kmsCiphertext.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *kmsCiphertexts) UpdateStatus(kmsCiphertext *v1alpha1.KmsCiphertext) (re
 // Delete takes name of the kmsCiphertext and deletes it. Returns an error if one occurs.
 func (c *kmsCiphertexts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmsciphertexts").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *kmsCiphertexts) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmsciphertexts").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *kmsCiphertexts) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *kmsCiphertexts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KmsCiphertext, err error) {
 	result = &v1alpha1.KmsCiphertext{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("kmsciphertexts").
 		SubResource(subresources...).
 		Name(name).

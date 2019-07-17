@@ -32,7 +32,7 @@ import (
 // BinaryAuthorizationPoliciesGetter has a method to return a BinaryAuthorizationPolicyInterface.
 // A group's client should implement this interface.
 type BinaryAuthorizationPoliciesGetter interface {
-	BinaryAuthorizationPolicies() BinaryAuthorizationPolicyInterface
+	BinaryAuthorizationPolicies(namespace string) BinaryAuthorizationPolicyInterface
 }
 
 // BinaryAuthorizationPolicyInterface has methods to work with BinaryAuthorizationPolicy resources.
@@ -52,12 +52,14 @@ type BinaryAuthorizationPolicyInterface interface {
 // binaryAuthorizationPolicies implements BinaryAuthorizationPolicyInterface
 type binaryAuthorizationPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newBinaryAuthorizationPolicies returns a BinaryAuthorizationPolicies
-func newBinaryAuthorizationPolicies(c *GoogleV1alpha1Client) *binaryAuthorizationPolicies {
+func newBinaryAuthorizationPolicies(c *GoogleV1alpha1Client, namespace string) *binaryAuthorizationPolicies {
 	return &binaryAuthorizationPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newBinaryAuthorizationPolicies(c *GoogleV1alpha1Client) *binaryAuthorizatio
 func (c *binaryAuthorizationPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.BinaryAuthorizationPolicy, err error) {
 	result = &v1alpha1.BinaryAuthorizationPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("binaryauthorizationpolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *binaryAuthorizationPolicies) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.BinaryAuthorizationPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("binaryauthorizationpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *binaryAuthorizationPolicies) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("binaryauthorizationpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *binaryAuthorizationPolicies) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *binaryAuthorizationPolicies) Create(binaryAuthorizationPolicy *v1alpha1.BinaryAuthorizationPolicy) (result *v1alpha1.BinaryAuthorizationPolicy, err error) {
 	result = &v1alpha1.BinaryAuthorizationPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("binaryauthorizationpolicies").
 		Body(binaryAuthorizationPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *binaryAuthorizationPolicies) Create(binaryAuthorizationPolicy *v1alpha1
 func (c *binaryAuthorizationPolicies) Update(binaryAuthorizationPolicy *v1alpha1.BinaryAuthorizationPolicy) (result *v1alpha1.BinaryAuthorizationPolicy, err error) {
 	result = &v1alpha1.BinaryAuthorizationPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("binaryauthorizationpolicies").
 		Name(binaryAuthorizationPolicy.Name).
 		Body(binaryAuthorizationPolicy).
@@ -132,6 +139,7 @@ func (c *binaryAuthorizationPolicies) Update(binaryAuthorizationPolicy *v1alpha1
 func (c *binaryAuthorizationPolicies) UpdateStatus(binaryAuthorizationPolicy *v1alpha1.BinaryAuthorizationPolicy) (result *v1alpha1.BinaryAuthorizationPolicy, err error) {
 	result = &v1alpha1.BinaryAuthorizationPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("binaryauthorizationpolicies").
 		Name(binaryAuthorizationPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *binaryAuthorizationPolicies) UpdateStatus(binaryAuthorizationPolicy *v1
 // Delete takes name of the binaryAuthorizationPolicy and deletes it. Returns an error if one occurs.
 func (c *binaryAuthorizationPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("binaryauthorizationpolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *binaryAuthorizationPolicies) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("binaryauthorizationpolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *binaryAuthorizationPolicies) DeleteCollection(options *v1.DeleteOptions
 func (c *binaryAuthorizationPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BinaryAuthorizationPolicy, err error) {
 	result = &v1alpha1.BinaryAuthorizationPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("binaryauthorizationpolicies").
 		SubResource(subresources...).
 		Name(name).

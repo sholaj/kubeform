@@ -31,6 +31,7 @@ import (
 // FakeKmsAliases implements KmsAliasInterface
 type FakeKmsAliases struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var kmsaliasesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "kmsaliases"}
@@ -40,7 +41,8 @@ var kmsaliasesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version:
 // Get takes name of the kmsAlias, and returns the corresponding kmsAlias object, and an error if there is any.
 func (c *FakeKmsAliases) Get(name string, options v1.GetOptions) (result *v1alpha1.KmsAlias, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(kmsaliasesResource, name), &v1alpha1.KmsAlias{})
+		Invokes(testing.NewGetAction(kmsaliasesResource, c.ns, name), &v1alpha1.KmsAlias{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeKmsAliases) Get(name string, options v1.GetOptions) (result *v1alph
 // List takes label and field selectors, and returns the list of KmsAliases that match those selectors.
 func (c *FakeKmsAliases) List(opts v1.ListOptions) (result *v1alpha1.KmsAliasList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(kmsaliasesResource, kmsaliasesKind, opts), &v1alpha1.KmsAliasList{})
+		Invokes(testing.NewListAction(kmsaliasesResource, kmsaliasesKind, c.ns, opts), &v1alpha1.KmsAliasList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeKmsAliases) List(opts v1.ListOptions) (result *v1alpha1.KmsAliasLis
 // Watch returns a watch.Interface that watches the requested kmsAliases.
 func (c *FakeKmsAliases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(kmsaliasesResource, opts))
+		InvokesWatch(testing.NewWatchAction(kmsaliasesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a kmsAlias and creates it.  Returns the server's representation of the kmsAlias, and an error, if there is any.
 func (c *FakeKmsAliases) Create(kmsAlias *v1alpha1.KmsAlias) (result *v1alpha1.KmsAlias, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(kmsaliasesResource, kmsAlias), &v1alpha1.KmsAlias{})
+		Invokes(testing.NewCreateAction(kmsaliasesResource, c.ns, kmsAlias), &v1alpha1.KmsAlias{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeKmsAliases) Create(kmsAlias *v1alpha1.KmsAlias) (result *v1alpha1.K
 // Update takes the representation of a kmsAlias and updates it. Returns the server's representation of the kmsAlias, and an error, if there is any.
 func (c *FakeKmsAliases) Update(kmsAlias *v1alpha1.KmsAlias) (result *v1alpha1.KmsAlias, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(kmsaliasesResource, kmsAlias), &v1alpha1.KmsAlias{})
+		Invokes(testing.NewUpdateAction(kmsaliasesResource, c.ns, kmsAlias), &v1alpha1.KmsAlias{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeKmsAliases) Update(kmsAlias *v1alpha1.KmsAlias) (result *v1alpha1.K
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeKmsAliases) UpdateStatus(kmsAlias *v1alpha1.KmsAlias) (*v1alpha1.KmsAlias, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(kmsaliasesResource, "status", kmsAlias), &v1alpha1.KmsAlias{})
+		Invokes(testing.NewUpdateSubresourceAction(kmsaliasesResource, "status", c.ns, kmsAlias), &v1alpha1.KmsAlias{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeKmsAliases) UpdateStatus(kmsAlias *v1alpha1.KmsAlias) (*v1alpha1.Km
 // Delete takes name of the kmsAlias and deletes it. Returns an error if one occurs.
 func (c *FakeKmsAliases) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(kmsaliasesResource, name), &v1alpha1.KmsAlias{})
+		Invokes(testing.NewDeleteAction(kmsaliasesResource, c.ns, name), &v1alpha1.KmsAlias{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeKmsAliases) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(kmsaliasesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(kmsaliasesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.KmsAliasList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeKmsAliases) DeleteCollection(options *v1.DeleteOptions, listOptions
 // Patch applies the patch and returns the patched kmsAlias.
 func (c *FakeKmsAliases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KmsAlias, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(kmsaliasesResource, name, pt, data, subresources...), &v1alpha1.KmsAlias{})
+		Invokes(testing.NewPatchSubresourceAction(kmsaliasesResource, c.ns, name, pt, data, subresources...), &v1alpha1.KmsAlias{})
+
 	if obj == nil {
 		return nil, err
 	}

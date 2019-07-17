@@ -29,8 +29,8 @@ import (
 type DocdbClusterLister interface {
 	// List lists all DocdbClusters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DocdbCluster, err error)
-	// Get retrieves the DocdbCluster from the index for a given name.
-	Get(name string) (*v1alpha1.DocdbCluster, error)
+	// DocdbClusters returns an object that can list and get DocdbClusters.
+	DocdbClusters(namespace string) DocdbClusterNamespaceLister
 	DocdbClusterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *docdbClusterLister) List(selector labels.Selector) (ret []*v1alpha1.Doc
 	return ret, err
 }
 
-// Get retrieves the DocdbCluster from the index for a given name.
-func (s *docdbClusterLister) Get(name string) (*v1alpha1.DocdbCluster, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DocdbClusters returns an object that can list and get DocdbClusters.
+func (s *docdbClusterLister) DocdbClusters(namespace string) DocdbClusterNamespaceLister {
+	return docdbClusterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DocdbClusterNamespaceLister helps list and get DocdbClusters.
+type DocdbClusterNamespaceLister interface {
+	// List lists all DocdbClusters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DocdbCluster, err error)
+	// Get retrieves the DocdbCluster from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DocdbCluster, error)
+	DocdbClusterNamespaceListerExpansion
+}
+
+// docdbClusterNamespaceLister implements the DocdbClusterNamespaceLister
+// interface.
+type docdbClusterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DocdbClusters in the indexer for a given namespace.
+func (s docdbClusterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DocdbCluster, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DocdbCluster))
+	})
+	return ret, err
+}
+
+// Get retrieves the DocdbCluster from the indexer for a given namespace and name.
+func (s docdbClusterNamespaceLister) Get(name string) (*v1alpha1.DocdbCluster, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

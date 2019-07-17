@@ -32,7 +32,7 @@ import (
 // SqlDatabaseInstancesGetter has a method to return a SqlDatabaseInstanceInterface.
 // A group's client should implement this interface.
 type SqlDatabaseInstancesGetter interface {
-	SqlDatabaseInstances() SqlDatabaseInstanceInterface
+	SqlDatabaseInstances(namespace string) SqlDatabaseInstanceInterface
 }
 
 // SqlDatabaseInstanceInterface has methods to work with SqlDatabaseInstance resources.
@@ -52,12 +52,14 @@ type SqlDatabaseInstanceInterface interface {
 // sqlDatabaseInstances implements SqlDatabaseInstanceInterface
 type sqlDatabaseInstances struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSqlDatabaseInstances returns a SqlDatabaseInstances
-func newSqlDatabaseInstances(c *GoogleV1alpha1Client) *sqlDatabaseInstances {
+func newSqlDatabaseInstances(c *GoogleV1alpha1Client, namespace string) *sqlDatabaseInstances {
 	return &sqlDatabaseInstances{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSqlDatabaseInstances(c *GoogleV1alpha1Client) *sqlDatabaseInstances {
 func (c *sqlDatabaseInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.SqlDatabaseInstance, err error) {
 	result = &v1alpha1.SqlDatabaseInstance{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqldatabaseinstances").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sqlDatabaseInstances) List(opts v1.ListOptions) (result *v1alpha1.SqlDa
 	}
 	result = &v1alpha1.SqlDatabaseInstanceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqldatabaseinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sqlDatabaseInstances) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sqldatabaseinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sqlDatabaseInstances) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *sqlDatabaseInstances) Create(sqlDatabaseInstance *v1alpha1.SqlDatabaseInstance) (result *v1alpha1.SqlDatabaseInstance, err error) {
 	result = &v1alpha1.SqlDatabaseInstance{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sqldatabaseinstances").
 		Body(sqlDatabaseInstance).
 		Do().
@@ -118,6 +124,7 @@ func (c *sqlDatabaseInstances) Create(sqlDatabaseInstance *v1alpha1.SqlDatabaseI
 func (c *sqlDatabaseInstances) Update(sqlDatabaseInstance *v1alpha1.SqlDatabaseInstance) (result *v1alpha1.SqlDatabaseInstance, err error) {
 	result = &v1alpha1.SqlDatabaseInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqldatabaseinstances").
 		Name(sqlDatabaseInstance.Name).
 		Body(sqlDatabaseInstance).
@@ -132,6 +139,7 @@ func (c *sqlDatabaseInstances) Update(sqlDatabaseInstance *v1alpha1.SqlDatabaseI
 func (c *sqlDatabaseInstances) UpdateStatus(sqlDatabaseInstance *v1alpha1.SqlDatabaseInstance) (result *v1alpha1.SqlDatabaseInstance, err error) {
 	result = &v1alpha1.SqlDatabaseInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqldatabaseinstances").
 		Name(sqlDatabaseInstance.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sqlDatabaseInstances) UpdateStatus(sqlDatabaseInstance *v1alpha1.SqlDat
 // Delete takes name of the sqlDatabaseInstance and deletes it. Returns an error if one occurs.
 func (c *sqlDatabaseInstances) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqldatabaseinstances").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sqlDatabaseInstances) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqldatabaseinstances").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sqlDatabaseInstances) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *sqlDatabaseInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SqlDatabaseInstance, err error) {
 	result = &v1alpha1.SqlDatabaseInstance{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sqldatabaseinstances").
 		SubResource(subresources...).
 		Name(name).

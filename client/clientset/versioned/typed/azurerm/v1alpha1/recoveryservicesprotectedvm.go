@@ -32,7 +32,7 @@ import (
 // RecoveryServicesProtectedVmsGetter has a method to return a RecoveryServicesProtectedVmInterface.
 // A group's client should implement this interface.
 type RecoveryServicesProtectedVmsGetter interface {
-	RecoveryServicesProtectedVms() RecoveryServicesProtectedVmInterface
+	RecoveryServicesProtectedVms(namespace string) RecoveryServicesProtectedVmInterface
 }
 
 // RecoveryServicesProtectedVmInterface has methods to work with RecoveryServicesProtectedVm resources.
@@ -52,12 +52,14 @@ type RecoveryServicesProtectedVmInterface interface {
 // recoveryServicesProtectedVms implements RecoveryServicesProtectedVmInterface
 type recoveryServicesProtectedVms struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRecoveryServicesProtectedVms returns a RecoveryServicesProtectedVms
-func newRecoveryServicesProtectedVms(c *AzurermV1alpha1Client) *recoveryServicesProtectedVms {
+func newRecoveryServicesProtectedVms(c *AzurermV1alpha1Client, namespace string) *recoveryServicesProtectedVms {
 	return &recoveryServicesProtectedVms{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRecoveryServicesProtectedVms(c *AzurermV1alpha1Client) *recoveryServices
 func (c *recoveryServicesProtectedVms) Get(name string, options v1.GetOptions) (result *v1alpha1.RecoveryServicesProtectedVm, err error) {
 	result = &v1alpha1.RecoveryServicesProtectedVm{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("recoveryservicesprotectedvms").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *recoveryServicesProtectedVms) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.RecoveryServicesProtectedVmList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("recoveryservicesprotectedvms").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *recoveryServicesProtectedVms) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("recoveryservicesprotectedvms").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *recoveryServicesProtectedVms) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *recoveryServicesProtectedVms) Create(recoveryServicesProtectedVm *v1alpha1.RecoveryServicesProtectedVm) (result *v1alpha1.RecoveryServicesProtectedVm, err error) {
 	result = &v1alpha1.RecoveryServicesProtectedVm{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("recoveryservicesprotectedvms").
 		Body(recoveryServicesProtectedVm).
 		Do().
@@ -118,6 +124,7 @@ func (c *recoveryServicesProtectedVms) Create(recoveryServicesProtectedVm *v1alp
 func (c *recoveryServicesProtectedVms) Update(recoveryServicesProtectedVm *v1alpha1.RecoveryServicesProtectedVm) (result *v1alpha1.RecoveryServicesProtectedVm, err error) {
 	result = &v1alpha1.RecoveryServicesProtectedVm{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("recoveryservicesprotectedvms").
 		Name(recoveryServicesProtectedVm.Name).
 		Body(recoveryServicesProtectedVm).
@@ -132,6 +139,7 @@ func (c *recoveryServicesProtectedVms) Update(recoveryServicesProtectedVm *v1alp
 func (c *recoveryServicesProtectedVms) UpdateStatus(recoveryServicesProtectedVm *v1alpha1.RecoveryServicesProtectedVm) (result *v1alpha1.RecoveryServicesProtectedVm, err error) {
 	result = &v1alpha1.RecoveryServicesProtectedVm{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("recoveryservicesprotectedvms").
 		Name(recoveryServicesProtectedVm.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *recoveryServicesProtectedVms) UpdateStatus(recoveryServicesProtectedVm 
 // Delete takes name of the recoveryServicesProtectedVm and deletes it. Returns an error if one occurs.
 func (c *recoveryServicesProtectedVms) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("recoveryservicesprotectedvms").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *recoveryServicesProtectedVms) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("recoveryservicesprotectedvms").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *recoveryServicesProtectedVms) DeleteCollection(options *v1.DeleteOption
 func (c *recoveryServicesProtectedVms) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RecoveryServicesProtectedVm, err error) {
 	result = &v1alpha1.RecoveryServicesProtectedVm{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("recoveryservicesprotectedvms").
 		SubResource(subresources...).
 		Name(name).

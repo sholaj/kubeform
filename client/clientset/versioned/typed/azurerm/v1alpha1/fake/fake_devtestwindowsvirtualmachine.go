@@ -31,6 +31,7 @@ import (
 // FakeDevTestWindowsVirtualMachines implements DevTestWindowsVirtualMachineInterface
 type FakeDevTestWindowsVirtualMachines struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var devtestwindowsvirtualmachinesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "devtestwindowsvirtualmachines"}
@@ -40,7 +41,8 @@ var devtestwindowsvirtualmachinesKind = schema.GroupVersionKind{Group: "azurerm.
 // Get takes name of the devTestWindowsVirtualMachine, and returns the corresponding devTestWindowsVirtualMachine object, and an error if there is any.
 func (c *FakeDevTestWindowsVirtualMachines) Get(name string, options v1.GetOptions) (result *v1alpha1.DevTestWindowsVirtualMachine, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(devtestwindowsvirtualmachinesResource, name), &v1alpha1.DevTestWindowsVirtualMachine{})
+		Invokes(testing.NewGetAction(devtestwindowsvirtualmachinesResource, c.ns, name), &v1alpha1.DevTestWindowsVirtualMachine{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDevTestWindowsVirtualMachines) Get(name string, options v1.GetOptio
 // List takes label and field selectors, and returns the list of DevTestWindowsVirtualMachines that match those selectors.
 func (c *FakeDevTestWindowsVirtualMachines) List(opts v1.ListOptions) (result *v1alpha1.DevTestWindowsVirtualMachineList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(devtestwindowsvirtualmachinesResource, devtestwindowsvirtualmachinesKind, opts), &v1alpha1.DevTestWindowsVirtualMachineList{})
+		Invokes(testing.NewListAction(devtestwindowsvirtualmachinesResource, devtestwindowsvirtualmachinesKind, c.ns, opts), &v1alpha1.DevTestWindowsVirtualMachineList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDevTestWindowsVirtualMachines) List(opts v1.ListOptions) (result *v
 // Watch returns a watch.Interface that watches the requested devTestWindowsVirtualMachines.
 func (c *FakeDevTestWindowsVirtualMachines) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(devtestwindowsvirtualmachinesResource, opts))
+		InvokesWatch(testing.NewWatchAction(devtestwindowsvirtualmachinesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a devTestWindowsVirtualMachine and creates it.  Returns the server's representation of the devTestWindowsVirtualMachine, and an error, if there is any.
 func (c *FakeDevTestWindowsVirtualMachines) Create(devTestWindowsVirtualMachine *v1alpha1.DevTestWindowsVirtualMachine) (result *v1alpha1.DevTestWindowsVirtualMachine, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(devtestwindowsvirtualmachinesResource, devTestWindowsVirtualMachine), &v1alpha1.DevTestWindowsVirtualMachine{})
+		Invokes(testing.NewCreateAction(devtestwindowsvirtualmachinesResource, c.ns, devTestWindowsVirtualMachine), &v1alpha1.DevTestWindowsVirtualMachine{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDevTestWindowsVirtualMachines) Create(devTestWindowsVirtualMachine 
 // Update takes the representation of a devTestWindowsVirtualMachine and updates it. Returns the server's representation of the devTestWindowsVirtualMachine, and an error, if there is any.
 func (c *FakeDevTestWindowsVirtualMachines) Update(devTestWindowsVirtualMachine *v1alpha1.DevTestWindowsVirtualMachine) (result *v1alpha1.DevTestWindowsVirtualMachine, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(devtestwindowsvirtualmachinesResource, devTestWindowsVirtualMachine), &v1alpha1.DevTestWindowsVirtualMachine{})
+		Invokes(testing.NewUpdateAction(devtestwindowsvirtualmachinesResource, c.ns, devTestWindowsVirtualMachine), &v1alpha1.DevTestWindowsVirtualMachine{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDevTestWindowsVirtualMachines) Update(devTestWindowsVirtualMachine 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDevTestWindowsVirtualMachines) UpdateStatus(devTestWindowsVirtualMachine *v1alpha1.DevTestWindowsVirtualMachine) (*v1alpha1.DevTestWindowsVirtualMachine, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(devtestwindowsvirtualmachinesResource, "status", devTestWindowsVirtualMachine), &v1alpha1.DevTestWindowsVirtualMachine{})
+		Invokes(testing.NewUpdateSubresourceAction(devtestwindowsvirtualmachinesResource, "status", c.ns, devTestWindowsVirtualMachine), &v1alpha1.DevTestWindowsVirtualMachine{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDevTestWindowsVirtualMachines) UpdateStatus(devTestWindowsVirtualMa
 // Delete takes name of the devTestWindowsVirtualMachine and deletes it. Returns an error if one occurs.
 func (c *FakeDevTestWindowsVirtualMachines) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(devtestwindowsvirtualmachinesResource, name), &v1alpha1.DevTestWindowsVirtualMachine{})
+		Invokes(testing.NewDeleteAction(devtestwindowsvirtualmachinesResource, c.ns, name), &v1alpha1.DevTestWindowsVirtualMachine{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDevTestWindowsVirtualMachines) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(devtestwindowsvirtualmachinesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(devtestwindowsvirtualmachinesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DevTestWindowsVirtualMachineList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDevTestWindowsVirtualMachines) DeleteCollection(options *v1.DeleteO
 // Patch applies the patch and returns the patched devTestWindowsVirtualMachine.
 func (c *FakeDevTestWindowsVirtualMachines) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DevTestWindowsVirtualMachine, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(devtestwindowsvirtualmachinesResource, name, pt, data, subresources...), &v1alpha1.DevTestWindowsVirtualMachine{})
+		Invokes(testing.NewPatchSubresourceAction(devtestwindowsvirtualmachinesResource, c.ns, name, pt, data, subresources...), &v1alpha1.DevTestWindowsVirtualMachine{})
+
 	if obj == nil {
 		return nil, err
 	}

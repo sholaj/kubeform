@@ -32,7 +32,7 @@ import (
 // CodecommitTriggersGetter has a method to return a CodecommitTriggerInterface.
 // A group's client should implement this interface.
 type CodecommitTriggersGetter interface {
-	CodecommitTriggers() CodecommitTriggerInterface
+	CodecommitTriggers(namespace string) CodecommitTriggerInterface
 }
 
 // CodecommitTriggerInterface has methods to work with CodecommitTrigger resources.
@@ -52,12 +52,14 @@ type CodecommitTriggerInterface interface {
 // codecommitTriggers implements CodecommitTriggerInterface
 type codecommitTriggers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCodecommitTriggers returns a CodecommitTriggers
-func newCodecommitTriggers(c *AwsV1alpha1Client) *codecommitTriggers {
+func newCodecommitTriggers(c *AwsV1alpha1Client, namespace string) *codecommitTriggers {
 	return &codecommitTriggers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCodecommitTriggers(c *AwsV1alpha1Client) *codecommitTriggers {
 func (c *codecommitTriggers) Get(name string, options v1.GetOptions) (result *v1alpha1.CodecommitTrigger, err error) {
 	result = &v1alpha1.CodecommitTrigger{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("codecommittriggers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *codecommitTriggers) List(opts v1.ListOptions) (result *v1alpha1.Codecom
 	}
 	result = &v1alpha1.CodecommitTriggerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("codecommittriggers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *codecommitTriggers) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("codecommittriggers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *codecommitTriggers) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *codecommitTriggers) Create(codecommitTrigger *v1alpha1.CodecommitTrigger) (result *v1alpha1.CodecommitTrigger, err error) {
 	result = &v1alpha1.CodecommitTrigger{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("codecommittriggers").
 		Body(codecommitTrigger).
 		Do().
@@ -118,6 +124,7 @@ func (c *codecommitTriggers) Create(codecommitTrigger *v1alpha1.CodecommitTrigge
 func (c *codecommitTriggers) Update(codecommitTrigger *v1alpha1.CodecommitTrigger) (result *v1alpha1.CodecommitTrigger, err error) {
 	result = &v1alpha1.CodecommitTrigger{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("codecommittriggers").
 		Name(codecommitTrigger.Name).
 		Body(codecommitTrigger).
@@ -132,6 +139,7 @@ func (c *codecommitTriggers) Update(codecommitTrigger *v1alpha1.CodecommitTrigge
 func (c *codecommitTriggers) UpdateStatus(codecommitTrigger *v1alpha1.CodecommitTrigger) (result *v1alpha1.CodecommitTrigger, err error) {
 	result = &v1alpha1.CodecommitTrigger{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("codecommittriggers").
 		Name(codecommitTrigger.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *codecommitTriggers) UpdateStatus(codecommitTrigger *v1alpha1.Codecommit
 // Delete takes name of the codecommitTrigger and deletes it. Returns an error if one occurs.
 func (c *codecommitTriggers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("codecommittriggers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *codecommitTriggers) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("codecommittriggers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *codecommitTriggers) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *codecommitTriggers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CodecommitTrigger, err error) {
 	result = &v1alpha1.CodecommitTrigger{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("codecommittriggers").
 		SubResource(subresources...).
 		Name(name).

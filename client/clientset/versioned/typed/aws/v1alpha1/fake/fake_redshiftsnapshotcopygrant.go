@@ -31,6 +31,7 @@ import (
 // FakeRedshiftSnapshotCopyGrants implements RedshiftSnapshotCopyGrantInterface
 type FakeRedshiftSnapshotCopyGrants struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var redshiftsnapshotcopygrantsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "redshiftsnapshotcopygrants"}
@@ -40,7 +41,8 @@ var redshiftsnapshotcopygrantsKind = schema.GroupVersionKind{Group: "aws.kubefor
 // Get takes name of the redshiftSnapshotCopyGrant, and returns the corresponding redshiftSnapshotCopyGrant object, and an error if there is any.
 func (c *FakeRedshiftSnapshotCopyGrants) Get(name string, options v1.GetOptions) (result *v1alpha1.RedshiftSnapshotCopyGrant, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(redshiftsnapshotcopygrantsResource, name), &v1alpha1.RedshiftSnapshotCopyGrant{})
+		Invokes(testing.NewGetAction(redshiftsnapshotcopygrantsResource, c.ns, name), &v1alpha1.RedshiftSnapshotCopyGrant{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRedshiftSnapshotCopyGrants) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of RedshiftSnapshotCopyGrants that match those selectors.
 func (c *FakeRedshiftSnapshotCopyGrants) List(opts v1.ListOptions) (result *v1alpha1.RedshiftSnapshotCopyGrantList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(redshiftsnapshotcopygrantsResource, redshiftsnapshotcopygrantsKind, opts), &v1alpha1.RedshiftSnapshotCopyGrantList{})
+		Invokes(testing.NewListAction(redshiftsnapshotcopygrantsResource, redshiftsnapshotcopygrantsKind, c.ns, opts), &v1alpha1.RedshiftSnapshotCopyGrantList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRedshiftSnapshotCopyGrants) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested redshiftSnapshotCopyGrants.
 func (c *FakeRedshiftSnapshotCopyGrants) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(redshiftsnapshotcopygrantsResource, opts))
+		InvokesWatch(testing.NewWatchAction(redshiftsnapshotcopygrantsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a redshiftSnapshotCopyGrant and creates it.  Returns the server's representation of the redshiftSnapshotCopyGrant, and an error, if there is any.
 func (c *FakeRedshiftSnapshotCopyGrants) Create(redshiftSnapshotCopyGrant *v1alpha1.RedshiftSnapshotCopyGrant) (result *v1alpha1.RedshiftSnapshotCopyGrant, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(redshiftsnapshotcopygrantsResource, redshiftSnapshotCopyGrant), &v1alpha1.RedshiftSnapshotCopyGrant{})
+		Invokes(testing.NewCreateAction(redshiftsnapshotcopygrantsResource, c.ns, redshiftSnapshotCopyGrant), &v1alpha1.RedshiftSnapshotCopyGrant{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRedshiftSnapshotCopyGrants) Create(redshiftSnapshotCopyGrant *v1alp
 // Update takes the representation of a redshiftSnapshotCopyGrant and updates it. Returns the server's representation of the redshiftSnapshotCopyGrant, and an error, if there is any.
 func (c *FakeRedshiftSnapshotCopyGrants) Update(redshiftSnapshotCopyGrant *v1alpha1.RedshiftSnapshotCopyGrant) (result *v1alpha1.RedshiftSnapshotCopyGrant, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(redshiftsnapshotcopygrantsResource, redshiftSnapshotCopyGrant), &v1alpha1.RedshiftSnapshotCopyGrant{})
+		Invokes(testing.NewUpdateAction(redshiftsnapshotcopygrantsResource, c.ns, redshiftSnapshotCopyGrant), &v1alpha1.RedshiftSnapshotCopyGrant{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRedshiftSnapshotCopyGrants) Update(redshiftSnapshotCopyGrant *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRedshiftSnapshotCopyGrants) UpdateStatus(redshiftSnapshotCopyGrant *v1alpha1.RedshiftSnapshotCopyGrant) (*v1alpha1.RedshiftSnapshotCopyGrant, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(redshiftsnapshotcopygrantsResource, "status", redshiftSnapshotCopyGrant), &v1alpha1.RedshiftSnapshotCopyGrant{})
+		Invokes(testing.NewUpdateSubresourceAction(redshiftsnapshotcopygrantsResource, "status", c.ns, redshiftSnapshotCopyGrant), &v1alpha1.RedshiftSnapshotCopyGrant{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRedshiftSnapshotCopyGrants) UpdateStatus(redshiftSnapshotCopyGrant 
 // Delete takes name of the redshiftSnapshotCopyGrant and deletes it. Returns an error if one occurs.
 func (c *FakeRedshiftSnapshotCopyGrants) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(redshiftsnapshotcopygrantsResource, name), &v1alpha1.RedshiftSnapshotCopyGrant{})
+		Invokes(testing.NewDeleteAction(redshiftsnapshotcopygrantsResource, c.ns, name), &v1alpha1.RedshiftSnapshotCopyGrant{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRedshiftSnapshotCopyGrants) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(redshiftsnapshotcopygrantsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(redshiftsnapshotcopygrantsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.RedshiftSnapshotCopyGrantList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRedshiftSnapshotCopyGrants) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched redshiftSnapshotCopyGrant.
 func (c *FakeRedshiftSnapshotCopyGrants) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RedshiftSnapshotCopyGrant, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(redshiftsnapshotcopygrantsResource, name, pt, data, subresources...), &v1alpha1.RedshiftSnapshotCopyGrant{})
+		Invokes(testing.NewPatchSubresourceAction(redshiftsnapshotcopygrantsResource, c.ns, name, pt, data, subresources...), &v1alpha1.RedshiftSnapshotCopyGrant{})
+
 	if obj == nil {
 		return nil, err
 	}

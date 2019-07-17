@@ -29,8 +29,8 @@ import (
 type LaunchConfigurationLister interface {
 	// List lists all LaunchConfigurations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LaunchConfiguration, err error)
-	// Get retrieves the LaunchConfiguration from the index for a given name.
-	Get(name string) (*v1alpha1.LaunchConfiguration, error)
+	// LaunchConfigurations returns an object that can list and get LaunchConfigurations.
+	LaunchConfigurations(namespace string) LaunchConfigurationNamespaceLister
 	LaunchConfigurationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *launchConfigurationLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the LaunchConfiguration from the index for a given name.
-func (s *launchConfigurationLister) Get(name string) (*v1alpha1.LaunchConfiguration, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LaunchConfigurations returns an object that can list and get LaunchConfigurations.
+func (s *launchConfigurationLister) LaunchConfigurations(namespace string) LaunchConfigurationNamespaceLister {
+	return launchConfigurationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LaunchConfigurationNamespaceLister helps list and get LaunchConfigurations.
+type LaunchConfigurationNamespaceLister interface {
+	// List lists all LaunchConfigurations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LaunchConfiguration, err error)
+	// Get retrieves the LaunchConfiguration from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LaunchConfiguration, error)
+	LaunchConfigurationNamespaceListerExpansion
+}
+
+// launchConfigurationNamespaceLister implements the LaunchConfigurationNamespaceLister
+// interface.
+type launchConfigurationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LaunchConfigurations in the indexer for a given namespace.
+func (s launchConfigurationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LaunchConfiguration, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LaunchConfiguration))
+	})
+	return ret, err
+}
+
+// Get retrieves the LaunchConfiguration from the indexer for a given namespace and name.
+func (s launchConfigurationNamespaceLister) Get(name string) (*v1alpha1.LaunchConfiguration, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

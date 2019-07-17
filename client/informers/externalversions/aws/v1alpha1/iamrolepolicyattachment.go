@@ -41,32 +41,33 @@ type IamRolePolicyAttachmentInformer interface {
 type iamRolePolicyAttachmentInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewIamRolePolicyAttachmentInformer constructs a new informer for IamRolePolicyAttachment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewIamRolePolicyAttachmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredIamRolePolicyAttachmentInformer(client, resyncPeriod, indexers, nil)
+func NewIamRolePolicyAttachmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredIamRolePolicyAttachmentInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredIamRolePolicyAttachmentInformer constructs a new informer for IamRolePolicyAttachment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredIamRolePolicyAttachmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredIamRolePolicyAttachmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().IamRolePolicyAttachments().List(options)
+				return client.AwsV1alpha1().IamRolePolicyAttachments(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().IamRolePolicyAttachments().Watch(options)
+				return client.AwsV1alpha1().IamRolePolicyAttachments(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.IamRolePolicyAttachment{},
@@ -76,7 +77,7 @@ func NewFilteredIamRolePolicyAttachmentInformer(client versioned.Interface, resy
 }
 
 func (f *iamRolePolicyAttachmentInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredIamRolePolicyAttachmentInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredIamRolePolicyAttachmentInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *iamRolePolicyAttachmentInformer) Informer() cache.SharedIndexInformer {

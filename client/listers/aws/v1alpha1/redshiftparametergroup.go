@@ -29,8 +29,8 @@ import (
 type RedshiftParameterGroupLister interface {
 	// List lists all RedshiftParameterGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RedshiftParameterGroup, err error)
-	// Get retrieves the RedshiftParameterGroup from the index for a given name.
-	Get(name string) (*v1alpha1.RedshiftParameterGroup, error)
+	// RedshiftParameterGroups returns an object that can list and get RedshiftParameterGroups.
+	RedshiftParameterGroups(namespace string) RedshiftParameterGroupNamespaceLister
 	RedshiftParameterGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *redshiftParameterGroupLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the RedshiftParameterGroup from the index for a given name.
-func (s *redshiftParameterGroupLister) Get(name string) (*v1alpha1.RedshiftParameterGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RedshiftParameterGroups returns an object that can list and get RedshiftParameterGroups.
+func (s *redshiftParameterGroupLister) RedshiftParameterGroups(namespace string) RedshiftParameterGroupNamespaceLister {
+	return redshiftParameterGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RedshiftParameterGroupNamespaceLister helps list and get RedshiftParameterGroups.
+type RedshiftParameterGroupNamespaceLister interface {
+	// List lists all RedshiftParameterGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RedshiftParameterGroup, err error)
+	// Get retrieves the RedshiftParameterGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RedshiftParameterGroup, error)
+	RedshiftParameterGroupNamespaceListerExpansion
+}
+
+// redshiftParameterGroupNamespaceLister implements the RedshiftParameterGroupNamespaceLister
+// interface.
+type redshiftParameterGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RedshiftParameterGroups in the indexer for a given namespace.
+func (s redshiftParameterGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RedshiftParameterGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RedshiftParameterGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the RedshiftParameterGroup from the indexer for a given namespace and name.
+func (s redshiftParameterGroupNamespaceLister) Get(name string) (*v1alpha1.RedshiftParameterGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

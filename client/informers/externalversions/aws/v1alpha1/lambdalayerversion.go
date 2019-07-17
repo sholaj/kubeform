@@ -41,32 +41,33 @@ type LambdaLayerVersionInformer interface {
 type lambdaLayerVersionInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewLambdaLayerVersionInformer constructs a new informer for LambdaLayerVersion type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLambdaLayerVersionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLambdaLayerVersionInformer(client, resyncPeriod, indexers, nil)
+func NewLambdaLayerVersionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLambdaLayerVersionInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredLambdaLayerVersionInformer constructs a new informer for LambdaLayerVersion type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLambdaLayerVersionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLambdaLayerVersionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().LambdaLayerVersions().List(options)
+				return client.AwsV1alpha1().LambdaLayerVersions(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().LambdaLayerVersions().Watch(options)
+				return client.AwsV1alpha1().LambdaLayerVersions(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.LambdaLayerVersion{},
@@ -76,7 +77,7 @@ func NewFilteredLambdaLayerVersionInformer(client versioned.Interface, resyncPer
 }
 
 func (f *lambdaLayerVersionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLambdaLayerVersionInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredLambdaLayerVersionInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *lambdaLayerVersionInformer) Informer() cache.SharedIndexInformer {

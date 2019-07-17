@@ -32,7 +32,7 @@ import (
 // AppEngineApplicationsGetter has a method to return a AppEngineApplicationInterface.
 // A group's client should implement this interface.
 type AppEngineApplicationsGetter interface {
-	AppEngineApplications() AppEngineApplicationInterface
+	AppEngineApplications(namespace string) AppEngineApplicationInterface
 }
 
 // AppEngineApplicationInterface has methods to work with AppEngineApplication resources.
@@ -52,12 +52,14 @@ type AppEngineApplicationInterface interface {
 // appEngineApplications implements AppEngineApplicationInterface
 type appEngineApplications struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAppEngineApplications returns a AppEngineApplications
-func newAppEngineApplications(c *GoogleV1alpha1Client) *appEngineApplications {
+func newAppEngineApplications(c *GoogleV1alpha1Client, namespace string) *appEngineApplications {
 	return &appEngineApplications{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAppEngineApplications(c *GoogleV1alpha1Client) *appEngineApplications {
 func (c *appEngineApplications) Get(name string, options v1.GetOptions) (result *v1alpha1.AppEngineApplication, err error) {
 	result = &v1alpha1.AppEngineApplication{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appengineapplications").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *appEngineApplications) List(opts v1.ListOptions) (result *v1alpha1.AppE
 	}
 	result = &v1alpha1.AppEngineApplicationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appengineapplications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *appEngineApplications) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("appengineapplications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *appEngineApplications) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *appEngineApplications) Create(appEngineApplication *v1alpha1.AppEngineApplication) (result *v1alpha1.AppEngineApplication, err error) {
 	result = &v1alpha1.AppEngineApplication{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("appengineapplications").
 		Body(appEngineApplication).
 		Do().
@@ -118,6 +124,7 @@ func (c *appEngineApplications) Create(appEngineApplication *v1alpha1.AppEngineA
 func (c *appEngineApplications) Update(appEngineApplication *v1alpha1.AppEngineApplication) (result *v1alpha1.AppEngineApplication, err error) {
 	result = &v1alpha1.AppEngineApplication{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appengineapplications").
 		Name(appEngineApplication.Name).
 		Body(appEngineApplication).
@@ -132,6 +139,7 @@ func (c *appEngineApplications) Update(appEngineApplication *v1alpha1.AppEngineA
 func (c *appEngineApplications) UpdateStatus(appEngineApplication *v1alpha1.AppEngineApplication) (result *v1alpha1.AppEngineApplication, err error) {
 	result = &v1alpha1.AppEngineApplication{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appengineapplications").
 		Name(appEngineApplication.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *appEngineApplications) UpdateStatus(appEngineApplication *v1alpha1.AppE
 // Delete takes name of the appEngineApplication and deletes it. Returns an error if one occurs.
 func (c *appEngineApplications) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appengineapplications").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *appEngineApplications) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appengineapplications").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *appEngineApplications) DeleteCollection(options *v1.DeleteOptions, list
 func (c *appEngineApplications) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppEngineApplication, err error) {
 	result = &v1alpha1.AppEngineApplication{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("appengineapplications").
 		SubResource(subresources...).
 		Name(name).

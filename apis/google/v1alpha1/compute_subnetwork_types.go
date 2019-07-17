@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,14 +20,15 @@ type ComputeSubnetwork struct {
 
 type ComputeSubnetworkSpec struct {
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	EnableFlowLogs bool   `json:"enable_flow_logs,omitempty"`
-	IpCidrRange    string `json:"ip_cidr_range"`
-	Name           string `json:"name"`
-	Network        string `json:"network"`
+	EnableFlowLogs bool   `json:"enableFlowLogs,omitempty" tf:"enable_flow_logs,omitempty"`
+	IpCIDRRange    string `json:"ipCIDRRange" tf:"ip_cidr_range"`
+	Name           string `json:"name" tf:"name"`
+	Network        string `json:"network" tf:"network"`
 	// +optional
-	PrivateIpGoogleAccess bool `json:"private_ip_google_access,omitempty"`
+	PrivateIPGoogleAccess bool                      `json:"privateIPGoogleAccess,omitempty" tf:"private_ip_google_access,omitempty"`
+	ProviderRef           core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ComputeSubnetworkStatus struct {
@@ -35,7 +36,9 @@ type ComputeSubnetworkStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

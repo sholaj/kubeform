@@ -31,6 +31,7 @@ import (
 // FakeHdinsightMlServicesClusters implements HdinsightMlServicesClusterInterface
 type FakeHdinsightMlServicesClusters struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var hdinsightmlservicesclustersResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "hdinsightmlservicesclusters"}
@@ -40,7 +41,8 @@ var hdinsightmlservicesclustersKind = schema.GroupVersionKind{Group: "azurerm.ku
 // Get takes name of the hdinsightMlServicesCluster, and returns the corresponding hdinsightMlServicesCluster object, and an error if there is any.
 func (c *FakeHdinsightMlServicesClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.HdinsightMlServicesCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(hdinsightmlservicesclustersResource, name), &v1alpha1.HdinsightMlServicesCluster{})
+		Invokes(testing.NewGetAction(hdinsightmlservicesclustersResource, c.ns, name), &v1alpha1.HdinsightMlServicesCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeHdinsightMlServicesClusters) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of HdinsightMlServicesClusters that match those selectors.
 func (c *FakeHdinsightMlServicesClusters) List(opts v1.ListOptions) (result *v1alpha1.HdinsightMlServicesClusterList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(hdinsightmlservicesclustersResource, hdinsightmlservicesclustersKind, opts), &v1alpha1.HdinsightMlServicesClusterList{})
+		Invokes(testing.NewListAction(hdinsightmlservicesclustersResource, hdinsightmlservicesclustersKind, c.ns, opts), &v1alpha1.HdinsightMlServicesClusterList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeHdinsightMlServicesClusters) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested hdinsightMlServicesClusters.
 func (c *FakeHdinsightMlServicesClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(hdinsightmlservicesclustersResource, opts))
+		InvokesWatch(testing.NewWatchAction(hdinsightmlservicesclustersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a hdinsightMlServicesCluster and creates it.  Returns the server's representation of the hdinsightMlServicesCluster, and an error, if there is any.
 func (c *FakeHdinsightMlServicesClusters) Create(hdinsightMlServicesCluster *v1alpha1.HdinsightMlServicesCluster) (result *v1alpha1.HdinsightMlServicesCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(hdinsightmlservicesclustersResource, hdinsightMlServicesCluster), &v1alpha1.HdinsightMlServicesCluster{})
+		Invokes(testing.NewCreateAction(hdinsightmlservicesclustersResource, c.ns, hdinsightMlServicesCluster), &v1alpha1.HdinsightMlServicesCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeHdinsightMlServicesClusters) Create(hdinsightMlServicesCluster *v1a
 // Update takes the representation of a hdinsightMlServicesCluster and updates it. Returns the server's representation of the hdinsightMlServicesCluster, and an error, if there is any.
 func (c *FakeHdinsightMlServicesClusters) Update(hdinsightMlServicesCluster *v1alpha1.HdinsightMlServicesCluster) (result *v1alpha1.HdinsightMlServicesCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(hdinsightmlservicesclustersResource, hdinsightMlServicesCluster), &v1alpha1.HdinsightMlServicesCluster{})
+		Invokes(testing.NewUpdateAction(hdinsightmlservicesclustersResource, c.ns, hdinsightMlServicesCluster), &v1alpha1.HdinsightMlServicesCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeHdinsightMlServicesClusters) Update(hdinsightMlServicesCluster *v1a
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeHdinsightMlServicesClusters) UpdateStatus(hdinsightMlServicesCluster *v1alpha1.HdinsightMlServicesCluster) (*v1alpha1.HdinsightMlServicesCluster, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(hdinsightmlservicesclustersResource, "status", hdinsightMlServicesCluster), &v1alpha1.HdinsightMlServicesCluster{})
+		Invokes(testing.NewUpdateSubresourceAction(hdinsightmlservicesclustersResource, "status", c.ns, hdinsightMlServicesCluster), &v1alpha1.HdinsightMlServicesCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeHdinsightMlServicesClusters) UpdateStatus(hdinsightMlServicesCluste
 // Delete takes name of the hdinsightMlServicesCluster and deletes it. Returns an error if one occurs.
 func (c *FakeHdinsightMlServicesClusters) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(hdinsightmlservicesclustersResource, name), &v1alpha1.HdinsightMlServicesCluster{})
+		Invokes(testing.NewDeleteAction(hdinsightmlservicesclustersResource, c.ns, name), &v1alpha1.HdinsightMlServicesCluster{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeHdinsightMlServicesClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(hdinsightmlservicesclustersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(hdinsightmlservicesclustersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.HdinsightMlServicesClusterList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeHdinsightMlServicesClusters) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched hdinsightMlServicesCluster.
 func (c *FakeHdinsightMlServicesClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.HdinsightMlServicesCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(hdinsightmlservicesclustersResource, name, pt, data, subresources...), &v1alpha1.HdinsightMlServicesCluster{})
+		Invokes(testing.NewPatchSubresourceAction(hdinsightmlservicesclustersResource, c.ns, name, pt, data, subresources...), &v1alpha1.HdinsightMlServicesCluster{})
+
 	if obj == nil {
 		return nil, err
 	}

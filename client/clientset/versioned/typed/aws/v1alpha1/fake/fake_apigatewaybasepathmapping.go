@@ -31,6 +31,7 @@ import (
 // FakeApiGatewayBasePathMappings implements ApiGatewayBasePathMappingInterface
 type FakeApiGatewayBasePathMappings struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var apigatewaybasepathmappingsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "apigatewaybasepathmappings"}
@@ -40,7 +41,8 @@ var apigatewaybasepathmappingsKind = schema.GroupVersionKind{Group: "aws.kubefor
 // Get takes name of the apiGatewayBasePathMapping, and returns the corresponding apiGatewayBasePathMapping object, and an error if there is any.
 func (c *FakeApiGatewayBasePathMappings) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayBasePathMapping, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apigatewaybasepathmappingsResource, name), &v1alpha1.ApiGatewayBasePathMapping{})
+		Invokes(testing.NewGetAction(apigatewaybasepathmappingsResource, c.ns, name), &v1alpha1.ApiGatewayBasePathMapping{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApiGatewayBasePathMappings) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of ApiGatewayBasePathMappings that match those selectors.
 func (c *FakeApiGatewayBasePathMappings) List(opts v1.ListOptions) (result *v1alpha1.ApiGatewayBasePathMappingList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apigatewaybasepathmappingsResource, apigatewaybasepathmappingsKind, opts), &v1alpha1.ApiGatewayBasePathMappingList{})
+		Invokes(testing.NewListAction(apigatewaybasepathmappingsResource, apigatewaybasepathmappingsKind, c.ns, opts), &v1alpha1.ApiGatewayBasePathMappingList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApiGatewayBasePathMappings) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested apiGatewayBasePathMappings.
 func (c *FakeApiGatewayBasePathMappings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apigatewaybasepathmappingsResource, opts))
+		InvokesWatch(testing.NewWatchAction(apigatewaybasepathmappingsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a apiGatewayBasePathMapping and creates it.  Returns the server's representation of the apiGatewayBasePathMapping, and an error, if there is any.
 func (c *FakeApiGatewayBasePathMappings) Create(apiGatewayBasePathMapping *v1alpha1.ApiGatewayBasePathMapping) (result *v1alpha1.ApiGatewayBasePathMapping, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apigatewaybasepathmappingsResource, apiGatewayBasePathMapping), &v1alpha1.ApiGatewayBasePathMapping{})
+		Invokes(testing.NewCreateAction(apigatewaybasepathmappingsResource, c.ns, apiGatewayBasePathMapping), &v1alpha1.ApiGatewayBasePathMapping{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApiGatewayBasePathMappings) Create(apiGatewayBasePathMapping *v1alp
 // Update takes the representation of a apiGatewayBasePathMapping and updates it. Returns the server's representation of the apiGatewayBasePathMapping, and an error, if there is any.
 func (c *FakeApiGatewayBasePathMappings) Update(apiGatewayBasePathMapping *v1alpha1.ApiGatewayBasePathMapping) (result *v1alpha1.ApiGatewayBasePathMapping, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apigatewaybasepathmappingsResource, apiGatewayBasePathMapping), &v1alpha1.ApiGatewayBasePathMapping{})
+		Invokes(testing.NewUpdateAction(apigatewaybasepathmappingsResource, c.ns, apiGatewayBasePathMapping), &v1alpha1.ApiGatewayBasePathMapping{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApiGatewayBasePathMappings) Update(apiGatewayBasePathMapping *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApiGatewayBasePathMappings) UpdateStatus(apiGatewayBasePathMapping *v1alpha1.ApiGatewayBasePathMapping) (*v1alpha1.ApiGatewayBasePathMapping, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apigatewaybasepathmappingsResource, "status", apiGatewayBasePathMapping), &v1alpha1.ApiGatewayBasePathMapping{})
+		Invokes(testing.NewUpdateSubresourceAction(apigatewaybasepathmappingsResource, "status", c.ns, apiGatewayBasePathMapping), &v1alpha1.ApiGatewayBasePathMapping{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApiGatewayBasePathMappings) UpdateStatus(apiGatewayBasePathMapping 
 // Delete takes name of the apiGatewayBasePathMapping and deletes it. Returns an error if one occurs.
 func (c *FakeApiGatewayBasePathMappings) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apigatewaybasepathmappingsResource, name), &v1alpha1.ApiGatewayBasePathMapping{})
+		Invokes(testing.NewDeleteAction(apigatewaybasepathmappingsResource, c.ns, name), &v1alpha1.ApiGatewayBasePathMapping{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApiGatewayBasePathMappings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apigatewaybasepathmappingsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(apigatewaybasepathmappingsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApiGatewayBasePathMappingList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApiGatewayBasePathMappings) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched apiGatewayBasePathMapping.
 func (c *FakeApiGatewayBasePathMappings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayBasePathMapping, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apigatewaybasepathmappingsResource, name, pt, data, subresources...), &v1alpha1.ApiGatewayBasePathMapping{})
+		Invokes(testing.NewPatchSubresourceAction(apigatewaybasepathmappingsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiGatewayBasePathMapping{})
+
 	if obj == nil {
 		return nil, err
 	}

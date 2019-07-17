@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// LbNatPoolLister helps list LbNatPools.
-type LbNatPoolLister interface {
-	// List lists all LbNatPools in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.LbNatPool, err error)
-	// Get retrieves the LbNatPool from the index for a given name.
-	Get(name string) (*v1alpha1.LbNatPool, error)
-	LbNatPoolListerExpansion
+// LbNATPoolLister helps list LbNATPools.
+type LbNATPoolLister interface {
+	// List lists all LbNATPools in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.LbNATPool, err error)
+	// LbNATPools returns an object that can list and get LbNATPools.
+	LbNATPools(namespace string) LbNATPoolNamespaceLister
+	LbNATPoolListerExpansion
 }
 
-// lbNatPoolLister implements the LbNatPoolLister interface.
-type lbNatPoolLister struct {
+// lbNATPoolLister implements the LbNATPoolLister interface.
+type lbNATPoolLister struct {
 	indexer cache.Indexer
 }
 
-// NewLbNatPoolLister returns a new LbNatPoolLister.
-func NewLbNatPoolLister(indexer cache.Indexer) LbNatPoolLister {
-	return &lbNatPoolLister{indexer: indexer}
+// NewLbNATPoolLister returns a new LbNATPoolLister.
+func NewLbNATPoolLister(indexer cache.Indexer) LbNATPoolLister {
+	return &lbNATPoolLister{indexer: indexer}
 }
 
-// List lists all LbNatPools in the indexer.
-func (s *lbNatPoolLister) List(selector labels.Selector) (ret []*v1alpha1.LbNatPool, err error) {
+// List lists all LbNATPools in the indexer.
+func (s *lbNATPoolLister) List(selector labels.Selector) (ret []*v1alpha1.LbNATPool, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.LbNatPool))
+		ret = append(ret, m.(*v1alpha1.LbNATPool))
 	})
 	return ret, err
 }
 
-// Get retrieves the LbNatPool from the index for a given name.
-func (s *lbNatPoolLister) Get(name string) (*v1alpha1.LbNatPool, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LbNATPools returns an object that can list and get LbNATPools.
+func (s *lbNATPoolLister) LbNATPools(namespace string) LbNATPoolNamespaceLister {
+	return lbNATPoolNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LbNATPoolNamespaceLister helps list and get LbNATPools.
+type LbNATPoolNamespaceLister interface {
+	// List lists all LbNATPools in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LbNATPool, err error)
+	// Get retrieves the LbNATPool from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LbNATPool, error)
+	LbNATPoolNamespaceListerExpansion
+}
+
+// lbNATPoolNamespaceLister implements the LbNATPoolNamespaceLister
+// interface.
+type lbNATPoolNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LbNATPools in the indexer for a given namespace.
+func (s lbNATPoolNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LbNATPool, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LbNATPool))
+	})
+	return ret, err
+}
+
+// Get retrieves the LbNATPool from the indexer for a given namespace and name.
+func (s lbNATPoolNamespaceLister) Get(name string) (*v1alpha1.LbNATPool, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("lbnatpool"), name)
 	}
-	return obj.(*v1alpha1.LbNatPool), nil
+	return obj.(*v1alpha1.LbNATPool), nil
 }

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,20 +19,21 @@ type DatabaseCluster struct {
 }
 
 type DatabaseClusterSpecMaintenanceWindow struct {
-	Day  string `json:"day"`
-	Hour string `json:"hour"`
+	Day  string `json:"day" tf:"day"`
+	Hour string `json:"hour" tf:"hour"`
 }
 
 type DatabaseClusterSpec struct {
-	Engine string `json:"engine"`
+	Engine string `json:"engine" tf:"engine"`
 	// +optional
 	// +kubebuilder:validation:MinItems=1
-	MaintenanceWindow *[]DatabaseClusterSpec `json:"maintenance_window,omitempty"`
-	Name              string                 `json:"name"`
-	NodeCount         int                    `json:"node_count"`
-	Region            string                 `json:"region"`
-	Size              string                 `json:"size"`
-	Version           string                 `json:"version"`
+	MaintenanceWindow []DatabaseClusterSpecMaintenanceWindow `json:"maintenanceWindow,omitempty" tf:"maintenance_window,omitempty"`
+	Name              string                                 `json:"name" tf:"name"`
+	NodeCount         int                                    `json:"nodeCount" tf:"node_count"`
+	Region            string                                 `json:"region" tf:"region"`
+	Size              string                                 `json:"size" tf:"size"`
+	Version           string                                 `json:"version" tf:"version"`
+	ProviderRef       core.LocalObjectReference              `json:"providerRef" tf:"-"`
 }
 
 type DatabaseClusterStatus struct {
@@ -40,7 +41,9 @@ type DatabaseClusterStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

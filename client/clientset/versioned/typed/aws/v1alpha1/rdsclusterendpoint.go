@@ -32,7 +32,7 @@ import (
 // RdsClusterEndpointsGetter has a method to return a RdsClusterEndpointInterface.
 // A group's client should implement this interface.
 type RdsClusterEndpointsGetter interface {
-	RdsClusterEndpoints() RdsClusterEndpointInterface
+	RdsClusterEndpoints(namespace string) RdsClusterEndpointInterface
 }
 
 // RdsClusterEndpointInterface has methods to work with RdsClusterEndpoint resources.
@@ -52,12 +52,14 @@ type RdsClusterEndpointInterface interface {
 // rdsClusterEndpoints implements RdsClusterEndpointInterface
 type rdsClusterEndpoints struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRdsClusterEndpoints returns a RdsClusterEndpoints
-func newRdsClusterEndpoints(c *AwsV1alpha1Client) *rdsClusterEndpoints {
+func newRdsClusterEndpoints(c *AwsV1alpha1Client, namespace string) *rdsClusterEndpoints {
 	return &rdsClusterEndpoints{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRdsClusterEndpoints(c *AwsV1alpha1Client) *rdsClusterEndpoints {
 func (c *rdsClusterEndpoints) Get(name string, options v1.GetOptions) (result *v1alpha1.RdsClusterEndpoint, err error) {
 	result = &v1alpha1.RdsClusterEndpoint{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("rdsclusterendpoints").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *rdsClusterEndpoints) List(opts v1.ListOptions) (result *v1alpha1.RdsClu
 	}
 	result = &v1alpha1.RdsClusterEndpointList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("rdsclusterendpoints").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *rdsClusterEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("rdsclusterendpoints").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *rdsClusterEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *rdsClusterEndpoints) Create(rdsClusterEndpoint *v1alpha1.RdsClusterEndpoint) (result *v1alpha1.RdsClusterEndpoint, err error) {
 	result = &v1alpha1.RdsClusterEndpoint{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("rdsclusterendpoints").
 		Body(rdsClusterEndpoint).
 		Do().
@@ -118,6 +124,7 @@ func (c *rdsClusterEndpoints) Create(rdsClusterEndpoint *v1alpha1.RdsClusterEndp
 func (c *rdsClusterEndpoints) Update(rdsClusterEndpoint *v1alpha1.RdsClusterEndpoint) (result *v1alpha1.RdsClusterEndpoint, err error) {
 	result = &v1alpha1.RdsClusterEndpoint{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("rdsclusterendpoints").
 		Name(rdsClusterEndpoint.Name).
 		Body(rdsClusterEndpoint).
@@ -132,6 +139,7 @@ func (c *rdsClusterEndpoints) Update(rdsClusterEndpoint *v1alpha1.RdsClusterEndp
 func (c *rdsClusterEndpoints) UpdateStatus(rdsClusterEndpoint *v1alpha1.RdsClusterEndpoint) (result *v1alpha1.RdsClusterEndpoint, err error) {
 	result = &v1alpha1.RdsClusterEndpoint{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("rdsclusterendpoints").
 		Name(rdsClusterEndpoint.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *rdsClusterEndpoints) UpdateStatus(rdsClusterEndpoint *v1alpha1.RdsClust
 // Delete takes name of the rdsClusterEndpoint and deletes it. Returns an error if one occurs.
 func (c *rdsClusterEndpoints) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("rdsclusterendpoints").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *rdsClusterEndpoints) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("rdsclusterendpoints").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *rdsClusterEndpoints) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *rdsClusterEndpoints) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RdsClusterEndpoint, err error) {
 	result = &v1alpha1.RdsClusterEndpoint{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("rdsclusterendpoints").
 		SubResource(subresources...).
 		Name(name).

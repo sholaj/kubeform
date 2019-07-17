@@ -31,6 +31,7 @@ import (
 // FakeDnsPtrRecords implements DnsPtrRecordInterface
 type FakeDnsPtrRecords struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var dnsptrrecordsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "dnsptrrecords"}
@@ -40,7 +41,8 @@ var dnsptrrecordsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", V
 // Get takes name of the dnsPtrRecord, and returns the corresponding dnsPtrRecord object, and an error if there is any.
 func (c *FakeDnsPtrRecords) Get(name string, options v1.GetOptions) (result *v1alpha1.DnsPtrRecord, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(dnsptrrecordsResource, name), &v1alpha1.DnsPtrRecord{})
+		Invokes(testing.NewGetAction(dnsptrrecordsResource, c.ns, name), &v1alpha1.DnsPtrRecord{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDnsPtrRecords) Get(name string, options v1.GetOptions) (result *v1a
 // List takes label and field selectors, and returns the list of DnsPtrRecords that match those selectors.
 func (c *FakeDnsPtrRecords) List(opts v1.ListOptions) (result *v1alpha1.DnsPtrRecordList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(dnsptrrecordsResource, dnsptrrecordsKind, opts), &v1alpha1.DnsPtrRecordList{})
+		Invokes(testing.NewListAction(dnsptrrecordsResource, dnsptrrecordsKind, c.ns, opts), &v1alpha1.DnsPtrRecordList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDnsPtrRecords) List(opts v1.ListOptions) (result *v1alpha1.DnsPtrRe
 // Watch returns a watch.Interface that watches the requested dnsPtrRecords.
 func (c *FakeDnsPtrRecords) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(dnsptrrecordsResource, opts))
+		InvokesWatch(testing.NewWatchAction(dnsptrrecordsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dnsPtrRecord and creates it.  Returns the server's representation of the dnsPtrRecord, and an error, if there is any.
 func (c *FakeDnsPtrRecords) Create(dnsPtrRecord *v1alpha1.DnsPtrRecord) (result *v1alpha1.DnsPtrRecord, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(dnsptrrecordsResource, dnsPtrRecord), &v1alpha1.DnsPtrRecord{})
+		Invokes(testing.NewCreateAction(dnsptrrecordsResource, c.ns, dnsPtrRecord), &v1alpha1.DnsPtrRecord{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDnsPtrRecords) Create(dnsPtrRecord *v1alpha1.DnsPtrRecord) (result 
 // Update takes the representation of a dnsPtrRecord and updates it. Returns the server's representation of the dnsPtrRecord, and an error, if there is any.
 func (c *FakeDnsPtrRecords) Update(dnsPtrRecord *v1alpha1.DnsPtrRecord) (result *v1alpha1.DnsPtrRecord, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(dnsptrrecordsResource, dnsPtrRecord), &v1alpha1.DnsPtrRecord{})
+		Invokes(testing.NewUpdateAction(dnsptrrecordsResource, c.ns, dnsPtrRecord), &v1alpha1.DnsPtrRecord{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDnsPtrRecords) Update(dnsPtrRecord *v1alpha1.DnsPtrRecord) (result 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDnsPtrRecords) UpdateStatus(dnsPtrRecord *v1alpha1.DnsPtrRecord) (*v1alpha1.DnsPtrRecord, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(dnsptrrecordsResource, "status", dnsPtrRecord), &v1alpha1.DnsPtrRecord{})
+		Invokes(testing.NewUpdateSubresourceAction(dnsptrrecordsResource, "status", c.ns, dnsPtrRecord), &v1alpha1.DnsPtrRecord{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDnsPtrRecords) UpdateStatus(dnsPtrRecord *v1alpha1.DnsPtrRecord) (*
 // Delete takes name of the dnsPtrRecord and deletes it. Returns an error if one occurs.
 func (c *FakeDnsPtrRecords) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(dnsptrrecordsResource, name), &v1alpha1.DnsPtrRecord{})
+		Invokes(testing.NewDeleteAction(dnsptrrecordsResource, c.ns, name), &v1alpha1.DnsPtrRecord{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDnsPtrRecords) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(dnsptrrecordsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(dnsptrrecordsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DnsPtrRecordList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDnsPtrRecords) DeleteCollection(options *v1.DeleteOptions, listOpti
 // Patch applies the patch and returns the patched dnsPtrRecord.
 func (c *FakeDnsPtrRecords) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DnsPtrRecord, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(dnsptrrecordsResource, name, pt, data, subresources...), &v1alpha1.DnsPtrRecord{})
+		Invokes(testing.NewPatchSubresourceAction(dnsptrrecordsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DnsPtrRecord{})
+
 	if obj == nil {
 		return nil, err
 	}

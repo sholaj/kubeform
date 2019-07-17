@@ -41,32 +41,33 @@ type OpsworksStaticWebLayerInformer interface {
 type opsworksStaticWebLayerInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewOpsworksStaticWebLayerInformer constructs a new informer for OpsworksStaticWebLayer type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewOpsworksStaticWebLayerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredOpsworksStaticWebLayerInformer(client, resyncPeriod, indexers, nil)
+func NewOpsworksStaticWebLayerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredOpsworksStaticWebLayerInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredOpsworksStaticWebLayerInformer constructs a new informer for OpsworksStaticWebLayer type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredOpsworksStaticWebLayerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredOpsworksStaticWebLayerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().OpsworksStaticWebLayers().List(options)
+				return client.AwsV1alpha1().OpsworksStaticWebLayers(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().OpsworksStaticWebLayers().Watch(options)
+				return client.AwsV1alpha1().OpsworksStaticWebLayers(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.OpsworksStaticWebLayer{},
@@ -76,7 +77,7 @@ func NewFilteredOpsworksStaticWebLayerInformer(client versioned.Interface, resyn
 }
 
 func (f *opsworksStaticWebLayerInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredOpsworksStaticWebLayerInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredOpsworksStaticWebLayerInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *opsworksStaticWebLayerInformer) Informer() cache.SharedIndexInformer {

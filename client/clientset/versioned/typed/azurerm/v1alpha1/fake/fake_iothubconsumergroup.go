@@ -31,6 +31,7 @@ import (
 // FakeIothubConsumerGroups implements IothubConsumerGroupInterface
 type FakeIothubConsumerGroups struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var iothubconsumergroupsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "iothubconsumergroups"}
@@ -40,7 +41,8 @@ var iothubconsumergroupsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.
 // Get takes name of the iothubConsumerGroup, and returns the corresponding iothubConsumerGroup object, and an error if there is any.
 func (c *FakeIothubConsumerGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.IothubConsumerGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iothubconsumergroupsResource, name), &v1alpha1.IothubConsumerGroup{})
+		Invokes(testing.NewGetAction(iothubconsumergroupsResource, c.ns, name), &v1alpha1.IothubConsumerGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIothubConsumerGroups) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of IothubConsumerGroups that match those selectors.
 func (c *FakeIothubConsumerGroups) List(opts v1.ListOptions) (result *v1alpha1.IothubConsumerGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iothubconsumergroupsResource, iothubconsumergroupsKind, opts), &v1alpha1.IothubConsumerGroupList{})
+		Invokes(testing.NewListAction(iothubconsumergroupsResource, iothubconsumergroupsKind, c.ns, opts), &v1alpha1.IothubConsumerGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIothubConsumerGroups) List(opts v1.ListOptions) (result *v1alpha1.I
 // Watch returns a watch.Interface that watches the requested iothubConsumerGroups.
 func (c *FakeIothubConsumerGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iothubconsumergroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(iothubconsumergroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iothubConsumerGroup and creates it.  Returns the server's representation of the iothubConsumerGroup, and an error, if there is any.
 func (c *FakeIothubConsumerGroups) Create(iothubConsumerGroup *v1alpha1.IothubConsumerGroup) (result *v1alpha1.IothubConsumerGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iothubconsumergroupsResource, iothubConsumerGroup), &v1alpha1.IothubConsumerGroup{})
+		Invokes(testing.NewCreateAction(iothubconsumergroupsResource, c.ns, iothubConsumerGroup), &v1alpha1.IothubConsumerGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIothubConsumerGroups) Create(iothubConsumerGroup *v1alpha1.IothubCo
 // Update takes the representation of a iothubConsumerGroup and updates it. Returns the server's representation of the iothubConsumerGroup, and an error, if there is any.
 func (c *FakeIothubConsumerGroups) Update(iothubConsumerGroup *v1alpha1.IothubConsumerGroup) (result *v1alpha1.IothubConsumerGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iothubconsumergroupsResource, iothubConsumerGroup), &v1alpha1.IothubConsumerGroup{})
+		Invokes(testing.NewUpdateAction(iothubconsumergroupsResource, c.ns, iothubConsumerGroup), &v1alpha1.IothubConsumerGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIothubConsumerGroups) Update(iothubConsumerGroup *v1alpha1.IothubCo
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIothubConsumerGroups) UpdateStatus(iothubConsumerGroup *v1alpha1.IothubConsumerGroup) (*v1alpha1.IothubConsumerGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iothubconsumergroupsResource, "status", iothubConsumerGroup), &v1alpha1.IothubConsumerGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(iothubconsumergroupsResource, "status", c.ns, iothubConsumerGroup), &v1alpha1.IothubConsumerGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIothubConsumerGroups) UpdateStatus(iothubConsumerGroup *v1alpha1.Io
 // Delete takes name of the iothubConsumerGroup and deletes it. Returns an error if one occurs.
 func (c *FakeIothubConsumerGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iothubconsumergroupsResource, name), &v1alpha1.IothubConsumerGroup{})
+		Invokes(testing.NewDeleteAction(iothubconsumergroupsResource, c.ns, name), &v1alpha1.IothubConsumerGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIothubConsumerGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iothubconsumergroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iothubconsumergroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IothubConsumerGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIothubConsumerGroups) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched iothubConsumerGroup.
 func (c *FakeIothubConsumerGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IothubConsumerGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iothubconsumergroupsResource, name, pt, data, subresources...), &v1alpha1.IothubConsumerGroup{})
+		Invokes(testing.NewPatchSubresourceAction(iothubconsumergroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.IothubConsumerGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

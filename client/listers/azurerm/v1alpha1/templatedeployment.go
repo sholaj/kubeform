@@ -29,8 +29,8 @@ import (
 type TemplateDeploymentLister interface {
 	// List lists all TemplateDeployments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.TemplateDeployment, err error)
-	// Get retrieves the TemplateDeployment from the index for a given name.
-	Get(name string) (*v1alpha1.TemplateDeployment, error)
+	// TemplateDeployments returns an object that can list and get TemplateDeployments.
+	TemplateDeployments(namespace string) TemplateDeploymentNamespaceLister
 	TemplateDeploymentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *templateDeploymentLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the TemplateDeployment from the index for a given name.
-func (s *templateDeploymentLister) Get(name string) (*v1alpha1.TemplateDeployment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// TemplateDeployments returns an object that can list and get TemplateDeployments.
+func (s *templateDeploymentLister) TemplateDeployments(namespace string) TemplateDeploymentNamespaceLister {
+	return templateDeploymentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// TemplateDeploymentNamespaceLister helps list and get TemplateDeployments.
+type TemplateDeploymentNamespaceLister interface {
+	// List lists all TemplateDeployments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.TemplateDeployment, err error)
+	// Get retrieves the TemplateDeployment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.TemplateDeployment, error)
+	TemplateDeploymentNamespaceListerExpansion
+}
+
+// templateDeploymentNamespaceLister implements the TemplateDeploymentNamespaceLister
+// interface.
+type templateDeploymentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all TemplateDeployments in the indexer for a given namespace.
+func (s templateDeploymentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.TemplateDeployment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.TemplateDeployment))
+	})
+	return ret, err
+}
+
+// Get retrieves the TemplateDeployment from the indexer for a given namespace and name.
+func (s templateDeploymentNamespaceLister) Get(name string) (*v1alpha1.TemplateDeployment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type KinesisAnalyticsApplicationLister interface {
 	// List lists all KinesisAnalyticsApplications in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KinesisAnalyticsApplication, err error)
-	// Get retrieves the KinesisAnalyticsApplication from the index for a given name.
-	Get(name string) (*v1alpha1.KinesisAnalyticsApplication, error)
+	// KinesisAnalyticsApplications returns an object that can list and get KinesisAnalyticsApplications.
+	KinesisAnalyticsApplications(namespace string) KinesisAnalyticsApplicationNamespaceLister
 	KinesisAnalyticsApplicationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *kinesisAnalyticsApplicationLister) List(selector labels.Selector) (ret 
 	return ret, err
 }
 
-// Get retrieves the KinesisAnalyticsApplication from the index for a given name.
-func (s *kinesisAnalyticsApplicationLister) Get(name string) (*v1alpha1.KinesisAnalyticsApplication, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KinesisAnalyticsApplications returns an object that can list and get KinesisAnalyticsApplications.
+func (s *kinesisAnalyticsApplicationLister) KinesisAnalyticsApplications(namespace string) KinesisAnalyticsApplicationNamespaceLister {
+	return kinesisAnalyticsApplicationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KinesisAnalyticsApplicationNamespaceLister helps list and get KinesisAnalyticsApplications.
+type KinesisAnalyticsApplicationNamespaceLister interface {
+	// List lists all KinesisAnalyticsApplications in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KinesisAnalyticsApplication, err error)
+	// Get retrieves the KinesisAnalyticsApplication from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KinesisAnalyticsApplication, error)
+	KinesisAnalyticsApplicationNamespaceListerExpansion
+}
+
+// kinesisAnalyticsApplicationNamespaceLister implements the KinesisAnalyticsApplicationNamespaceLister
+// interface.
+type kinesisAnalyticsApplicationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KinesisAnalyticsApplications in the indexer for a given namespace.
+func (s kinesisAnalyticsApplicationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KinesisAnalyticsApplication, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KinesisAnalyticsApplication))
+	})
+	return ret, err
+}
+
+// Get retrieves the KinesisAnalyticsApplication from the indexer for a given namespace and name.
+func (s kinesisAnalyticsApplicationNamespaceLister) Get(name string) (*v1alpha1.KinesisAnalyticsApplication, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

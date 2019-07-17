@@ -29,8 +29,8 @@ import (
 type GlueCatalogDatabaseLister interface {
 	// List lists all GlueCatalogDatabases in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GlueCatalogDatabase, err error)
-	// Get retrieves the GlueCatalogDatabase from the index for a given name.
-	Get(name string) (*v1alpha1.GlueCatalogDatabase, error)
+	// GlueCatalogDatabases returns an object that can list and get GlueCatalogDatabases.
+	GlueCatalogDatabases(namespace string) GlueCatalogDatabaseNamespaceLister
 	GlueCatalogDatabaseListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *glueCatalogDatabaseLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the GlueCatalogDatabase from the index for a given name.
-func (s *glueCatalogDatabaseLister) Get(name string) (*v1alpha1.GlueCatalogDatabase, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GlueCatalogDatabases returns an object that can list and get GlueCatalogDatabases.
+func (s *glueCatalogDatabaseLister) GlueCatalogDatabases(namespace string) GlueCatalogDatabaseNamespaceLister {
+	return glueCatalogDatabaseNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GlueCatalogDatabaseNamespaceLister helps list and get GlueCatalogDatabases.
+type GlueCatalogDatabaseNamespaceLister interface {
+	// List lists all GlueCatalogDatabases in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GlueCatalogDatabase, err error)
+	// Get retrieves the GlueCatalogDatabase from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GlueCatalogDatabase, error)
+	GlueCatalogDatabaseNamespaceListerExpansion
+}
+
+// glueCatalogDatabaseNamespaceLister implements the GlueCatalogDatabaseNamespaceLister
+// interface.
+type glueCatalogDatabaseNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GlueCatalogDatabases in the indexer for a given namespace.
+func (s glueCatalogDatabaseNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GlueCatalogDatabase, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GlueCatalogDatabase))
+	})
+	return ret, err
+}
+
+// Get retrieves the GlueCatalogDatabase from the indexer for a given namespace and name.
+func (s glueCatalogDatabaseNamespaceLister) Get(name string) (*v1alpha1.GlueCatalogDatabase, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

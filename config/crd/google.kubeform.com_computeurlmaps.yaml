@@ -8,7 +8,7 @@ metadata:
 spec:
   group: google.kubeform.com
   names:
-    kind: ComputeUrlMap
+    kind: ComputeURLMap
     plural: computeurlmaps
   scope: ""
   validation:
@@ -397,25 +397,87 @@ spec:
           type: object
         spec:
           properties:
-            default_service:
+            defaultService:
               type: string
             description:
               type: string
-            host_rule:
-              items: {}
+            hostRule:
+              items:
+                properties:
+                  description:
+                    type: string
+                  hosts:
+                    items:
+                      type: string
+                    type: array
+                  pathMatcher:
+                    type: string
+                required:
+                - hosts
+                - pathMatcher
+                type: object
               type: array
               uniqueItems: true
             name:
               type: string
-            path_matcher:
-              items: {}
+            pathMatcher:
+              items:
+                properties:
+                  defaultService:
+                    type: string
+                  description:
+                    type: string
+                  name:
+                    type: string
+                  pathRule:
+                    items:
+                      properties:
+                        paths:
+                          items:
+                            type: string
+                          type: array
+                        service:
+                          type: string
+                      required:
+                      - paths
+                      - service
+                      type: object
+                    type: array
+                required:
+                - defaultService
+                - name
+                type: object
               type: array
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             test:
-              items: {}
+              items:
+                properties:
+                  description:
+                    type: string
+                  host:
+                    type: string
+                  path:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - host
+                - path
+                - service
+                type: object
               type: array
           required:
-          - default_service
+          - defaultService
           - name
+          - providerRef
           type: object
         status:
           properties:
@@ -426,6 +488,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

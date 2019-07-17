@@ -32,7 +32,7 @@ import (
 // ServicebusQueueAuthorizationRulesGetter has a method to return a ServicebusQueueAuthorizationRuleInterface.
 // A group's client should implement this interface.
 type ServicebusQueueAuthorizationRulesGetter interface {
-	ServicebusQueueAuthorizationRules() ServicebusQueueAuthorizationRuleInterface
+	ServicebusQueueAuthorizationRules(namespace string) ServicebusQueueAuthorizationRuleInterface
 }
 
 // ServicebusQueueAuthorizationRuleInterface has methods to work with ServicebusQueueAuthorizationRule resources.
@@ -52,12 +52,14 @@ type ServicebusQueueAuthorizationRuleInterface interface {
 // servicebusQueueAuthorizationRules implements ServicebusQueueAuthorizationRuleInterface
 type servicebusQueueAuthorizationRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newServicebusQueueAuthorizationRules returns a ServicebusQueueAuthorizationRules
-func newServicebusQueueAuthorizationRules(c *AzurermV1alpha1Client) *servicebusQueueAuthorizationRules {
+func newServicebusQueueAuthorizationRules(c *AzurermV1alpha1Client, namespace string) *servicebusQueueAuthorizationRules {
 	return &servicebusQueueAuthorizationRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newServicebusQueueAuthorizationRules(c *AzurermV1alpha1Client) *servicebusQ
 func (c *servicebusQueueAuthorizationRules) Get(name string, options v1.GetOptions) (result *v1alpha1.ServicebusQueueAuthorizationRule, err error) {
 	result = &v1alpha1.ServicebusQueueAuthorizationRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicebusqueueauthorizationrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *servicebusQueueAuthorizationRules) List(opts v1.ListOptions) (result *v
 	}
 	result = &v1alpha1.ServicebusQueueAuthorizationRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicebusqueueauthorizationrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *servicebusQueueAuthorizationRules) Watch(opts v1.ListOptions) (watch.In
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("servicebusqueueauthorizationrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *servicebusQueueAuthorizationRules) Watch(opts v1.ListOptions) (watch.In
 func (c *servicebusQueueAuthorizationRules) Create(servicebusQueueAuthorizationRule *v1alpha1.ServicebusQueueAuthorizationRule) (result *v1alpha1.ServicebusQueueAuthorizationRule, err error) {
 	result = &v1alpha1.ServicebusQueueAuthorizationRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("servicebusqueueauthorizationrules").
 		Body(servicebusQueueAuthorizationRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *servicebusQueueAuthorizationRules) Create(servicebusQueueAuthorizationR
 func (c *servicebusQueueAuthorizationRules) Update(servicebusQueueAuthorizationRule *v1alpha1.ServicebusQueueAuthorizationRule) (result *v1alpha1.ServicebusQueueAuthorizationRule, err error) {
 	result = &v1alpha1.ServicebusQueueAuthorizationRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicebusqueueauthorizationrules").
 		Name(servicebusQueueAuthorizationRule.Name).
 		Body(servicebusQueueAuthorizationRule).
@@ -132,6 +139,7 @@ func (c *servicebusQueueAuthorizationRules) Update(servicebusQueueAuthorizationR
 func (c *servicebusQueueAuthorizationRules) UpdateStatus(servicebusQueueAuthorizationRule *v1alpha1.ServicebusQueueAuthorizationRule) (result *v1alpha1.ServicebusQueueAuthorizationRule, err error) {
 	result = &v1alpha1.ServicebusQueueAuthorizationRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicebusqueueauthorizationrules").
 		Name(servicebusQueueAuthorizationRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *servicebusQueueAuthorizationRules) UpdateStatus(servicebusQueueAuthoriz
 // Delete takes name of the servicebusQueueAuthorizationRule and deletes it. Returns an error if one occurs.
 func (c *servicebusQueueAuthorizationRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicebusqueueauthorizationrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *servicebusQueueAuthorizationRules) DeleteCollection(options *v1.DeleteO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicebusqueueauthorizationrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *servicebusQueueAuthorizationRules) DeleteCollection(options *v1.DeleteO
 func (c *servicebusQueueAuthorizationRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServicebusQueueAuthorizationRule, err error) {
 	result = &v1alpha1.ServicebusQueueAuthorizationRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("servicebusqueueauthorizationrules").
 		SubResource(subresources...).
 		Name(name).

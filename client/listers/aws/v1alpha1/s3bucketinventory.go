@@ -29,8 +29,8 @@ import (
 type S3BucketInventoryLister interface {
 	// List lists all S3BucketInventories in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.S3BucketInventory, err error)
-	// Get retrieves the S3BucketInventory from the index for a given name.
-	Get(name string) (*v1alpha1.S3BucketInventory, error)
+	// S3BucketInventories returns an object that can list and get S3BucketInventories.
+	S3BucketInventories(namespace string) S3BucketInventoryNamespaceLister
 	S3BucketInventoryListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *s3BucketInventoryLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the S3BucketInventory from the index for a given name.
-func (s *s3BucketInventoryLister) Get(name string) (*v1alpha1.S3BucketInventory, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// S3BucketInventories returns an object that can list and get S3BucketInventories.
+func (s *s3BucketInventoryLister) S3BucketInventories(namespace string) S3BucketInventoryNamespaceLister {
+	return s3BucketInventoryNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// S3BucketInventoryNamespaceLister helps list and get S3BucketInventories.
+type S3BucketInventoryNamespaceLister interface {
+	// List lists all S3BucketInventories in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.S3BucketInventory, err error)
+	// Get retrieves the S3BucketInventory from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.S3BucketInventory, error)
+	S3BucketInventoryNamespaceListerExpansion
+}
+
+// s3BucketInventoryNamespaceLister implements the S3BucketInventoryNamespaceLister
+// interface.
+type s3BucketInventoryNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all S3BucketInventories in the indexer for a given namespace.
+func (s s3BucketInventoryNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.S3BucketInventory, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.S3BucketInventory))
+	})
+	return ret, err
+}
+
+// Get retrieves the S3BucketInventory from the indexer for a given namespace and name.
+func (s s3BucketInventoryNamespaceLister) Get(name string) (*v1alpha1.S3BucketInventory, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

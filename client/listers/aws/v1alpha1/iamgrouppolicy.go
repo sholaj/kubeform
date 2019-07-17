@@ -29,8 +29,8 @@ import (
 type IamGroupPolicyLister interface {
 	// List lists all IamGroupPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IamGroupPolicy, err error)
-	// Get retrieves the IamGroupPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.IamGroupPolicy, error)
+	// IamGroupPolicies returns an object that can list and get IamGroupPolicies.
+	IamGroupPolicies(namespace string) IamGroupPolicyNamespaceLister
 	IamGroupPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iamGroupPolicyLister) List(selector labels.Selector) (ret []*v1alpha1.I
 	return ret, err
 }
 
-// Get retrieves the IamGroupPolicy from the index for a given name.
-func (s *iamGroupPolicyLister) Get(name string) (*v1alpha1.IamGroupPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IamGroupPolicies returns an object that can list and get IamGroupPolicies.
+func (s *iamGroupPolicyLister) IamGroupPolicies(namespace string) IamGroupPolicyNamespaceLister {
+	return iamGroupPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IamGroupPolicyNamespaceLister helps list and get IamGroupPolicies.
+type IamGroupPolicyNamespaceLister interface {
+	// List lists all IamGroupPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IamGroupPolicy, err error)
+	// Get retrieves the IamGroupPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IamGroupPolicy, error)
+	IamGroupPolicyNamespaceListerExpansion
+}
+
+// iamGroupPolicyNamespaceLister implements the IamGroupPolicyNamespaceLister
+// interface.
+type iamGroupPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IamGroupPolicies in the indexer for a given namespace.
+func (s iamGroupPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IamGroupPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IamGroupPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the IamGroupPolicy from the indexer for a given namespace and name.
+func (s iamGroupPolicyNamespaceLister) Get(name string) (*v1alpha1.IamGroupPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

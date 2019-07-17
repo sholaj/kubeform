@@ -29,8 +29,8 @@ import (
 type CodecommitTriggerLister interface {
 	// List lists all CodecommitTriggers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CodecommitTrigger, err error)
-	// Get retrieves the CodecommitTrigger from the index for a given name.
-	Get(name string) (*v1alpha1.CodecommitTrigger, error)
+	// CodecommitTriggers returns an object that can list and get CodecommitTriggers.
+	CodecommitTriggers(namespace string) CodecommitTriggerNamespaceLister
 	CodecommitTriggerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *codecommitTriggerLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the CodecommitTrigger from the index for a given name.
-func (s *codecommitTriggerLister) Get(name string) (*v1alpha1.CodecommitTrigger, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CodecommitTriggers returns an object that can list and get CodecommitTriggers.
+func (s *codecommitTriggerLister) CodecommitTriggers(namespace string) CodecommitTriggerNamespaceLister {
+	return codecommitTriggerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CodecommitTriggerNamespaceLister helps list and get CodecommitTriggers.
+type CodecommitTriggerNamespaceLister interface {
+	// List lists all CodecommitTriggers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CodecommitTrigger, err error)
+	// Get retrieves the CodecommitTrigger from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CodecommitTrigger, error)
+	CodecommitTriggerNamespaceListerExpansion
+}
+
+// codecommitTriggerNamespaceLister implements the CodecommitTriggerNamespaceLister
+// interface.
+type codecommitTriggerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CodecommitTriggers in the indexer for a given namespace.
+func (s codecommitTriggerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CodecommitTrigger, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CodecommitTrigger))
+	})
+	return ret, err
+}
+
+// Get retrieves the CodecommitTrigger from the indexer for a given namespace and name.
+func (s codecommitTriggerNamespaceLister) Get(name string) (*v1alpha1.CodecommitTrigger, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

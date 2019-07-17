@@ -397,17 +397,27 @@ spec:
           type: object
         spec:
           properties:
-            allow_self_management:
+            allowSelfManagement:
               type: boolean
-            ssh_public_key:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            sshPublicKey:
               type: string
-            ssh_username:
+            sshUsername:
               type: string
-            user_arn:
+            userArn:
               type: string
           required:
-          - ssh_username
-          - user_arn
+          - providerRef
+          - sshUsername
+          - userArn
           type: object
         status:
           properties:
@@ -418,6 +428,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

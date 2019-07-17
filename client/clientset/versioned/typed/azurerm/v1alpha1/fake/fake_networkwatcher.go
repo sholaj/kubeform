@@ -31,6 +31,7 @@ import (
 // FakeNetworkWatchers implements NetworkWatcherInterface
 type FakeNetworkWatchers struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var networkwatchersResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "networkwatchers"}
@@ -40,7 +41,8 @@ var networkwatchersKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com",
 // Get takes name of the networkWatcher, and returns the corresponding networkWatcher object, and an error if there is any.
 func (c *FakeNetworkWatchers) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkWatcher, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(networkwatchersResource, name), &v1alpha1.NetworkWatcher{})
+		Invokes(testing.NewGetAction(networkwatchersResource, c.ns, name), &v1alpha1.NetworkWatcher{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeNetworkWatchers) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of NetworkWatchers that match those selectors.
 func (c *FakeNetworkWatchers) List(opts v1.ListOptions) (result *v1alpha1.NetworkWatcherList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(networkwatchersResource, networkwatchersKind, opts), &v1alpha1.NetworkWatcherList{})
+		Invokes(testing.NewListAction(networkwatchersResource, networkwatchersKind, c.ns, opts), &v1alpha1.NetworkWatcherList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeNetworkWatchers) List(opts v1.ListOptions) (result *v1alpha1.Networ
 // Watch returns a watch.Interface that watches the requested networkWatchers.
 func (c *FakeNetworkWatchers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(networkwatchersResource, opts))
+		InvokesWatch(testing.NewWatchAction(networkwatchersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a networkWatcher and creates it.  Returns the server's representation of the networkWatcher, and an error, if there is any.
 func (c *FakeNetworkWatchers) Create(networkWatcher *v1alpha1.NetworkWatcher) (result *v1alpha1.NetworkWatcher, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(networkwatchersResource, networkWatcher), &v1alpha1.NetworkWatcher{})
+		Invokes(testing.NewCreateAction(networkwatchersResource, c.ns, networkWatcher), &v1alpha1.NetworkWatcher{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeNetworkWatchers) Create(networkWatcher *v1alpha1.NetworkWatcher) (r
 // Update takes the representation of a networkWatcher and updates it. Returns the server's representation of the networkWatcher, and an error, if there is any.
 func (c *FakeNetworkWatchers) Update(networkWatcher *v1alpha1.NetworkWatcher) (result *v1alpha1.NetworkWatcher, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(networkwatchersResource, networkWatcher), &v1alpha1.NetworkWatcher{})
+		Invokes(testing.NewUpdateAction(networkwatchersResource, c.ns, networkWatcher), &v1alpha1.NetworkWatcher{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeNetworkWatchers) Update(networkWatcher *v1alpha1.NetworkWatcher) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNetworkWatchers) UpdateStatus(networkWatcher *v1alpha1.NetworkWatcher) (*v1alpha1.NetworkWatcher, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(networkwatchersResource, "status", networkWatcher), &v1alpha1.NetworkWatcher{})
+		Invokes(testing.NewUpdateSubresourceAction(networkwatchersResource, "status", c.ns, networkWatcher), &v1alpha1.NetworkWatcher{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeNetworkWatchers) UpdateStatus(networkWatcher *v1alpha1.NetworkWatch
 // Delete takes name of the networkWatcher and deletes it. Returns an error if one occurs.
 func (c *FakeNetworkWatchers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(networkwatchersResource, name), &v1alpha1.NetworkWatcher{})
+		Invokes(testing.NewDeleteAction(networkwatchersResource, c.ns, name), &v1alpha1.NetworkWatcher{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNetworkWatchers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(networkwatchersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(networkwatchersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NetworkWatcherList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeNetworkWatchers) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched networkWatcher.
 func (c *FakeNetworkWatchers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkWatcher, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(networkwatchersResource, name, pt, data, subresources...), &v1alpha1.NetworkWatcher{})
+		Invokes(testing.NewPatchSubresourceAction(networkwatchersResource, c.ns, name, pt, data, subresources...), &v1alpha1.NetworkWatcher{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,71 +20,72 @@ type OpsworksRailsAppLayer struct {
 
 type OpsworksRailsAppLayerSpecEbsVolume struct {
 	// +optional
-	Iops          int    `json:"iops,omitempty"`
-	MountPoint    string `json:"mount_point"`
-	NumberOfDisks int    `json:"number_of_disks"`
+	Iops          int    `json:"iops,omitempty" tf:"iops,omitempty"`
+	MountPoint    string `json:"mountPoint" tf:"mount_point"`
+	NumberOfDisks int    `json:"numberOfDisks" tf:"number_of_disks"`
 	// +optional
-	RaidLevel string `json:"raid_level,omitempty"`
-	Size      int    `json:"size"`
+	RaidLevel string `json:"raidLevel,omitempty" tf:"raid_level,omitempty"`
+	Size      int    `json:"size" tf:"size"`
 	// +optional
-	Type string `json:"type,omitempty"`
+	Type string `json:"type,omitempty" tf:"type,omitempty"`
 }
 
 type OpsworksRailsAppLayerSpec struct {
 	// +optional
-	AppServer string `json:"app_server,omitempty"`
+	AppServer string `json:"appServer,omitempty" tf:"app_server,omitempty"`
 	// +optional
-	AutoAssignElasticIps bool `json:"auto_assign_elastic_ips,omitempty"`
+	AutoAssignElasticIPS bool `json:"autoAssignElasticIPS,omitempty" tf:"auto_assign_elastic_ips,omitempty"`
 	// +optional
-	AutoAssignPublicIps bool `json:"auto_assign_public_ips,omitempty"`
+	AutoAssignPublicIPS bool `json:"autoAssignPublicIPS,omitempty" tf:"auto_assign_public_ips,omitempty"`
 	// +optional
-	AutoHealing bool `json:"auto_healing,omitempty"`
+	AutoHealing bool `json:"autoHealing,omitempty" tf:"auto_healing,omitempty"`
 	// +optional
-	BundlerVersion string `json:"bundler_version,omitempty"`
+	BundlerVersion string `json:"bundlerVersion,omitempty" tf:"bundler_version,omitempty"`
 	// +optional
-	CustomConfigureRecipes []string `json:"custom_configure_recipes,omitempty"`
+	CustomConfigureRecipes []string `json:"customConfigureRecipes,omitempty" tf:"custom_configure_recipes,omitempty"`
 	// +optional
-	CustomDeployRecipes []string `json:"custom_deploy_recipes,omitempty"`
+	CustomDeployRecipes []string `json:"customDeployRecipes,omitempty" tf:"custom_deploy_recipes,omitempty"`
 	// +optional
-	CustomInstanceProfileArn string `json:"custom_instance_profile_arn,omitempty"`
+	CustomInstanceProfileArn string `json:"customInstanceProfileArn,omitempty" tf:"custom_instance_profile_arn,omitempty"`
 	// +optional
-	CustomJson string `json:"custom_json,omitempty"`
-	// +optional
-	// +kubebuilder:validation:UniqueItems=true
-	CustomSecurityGroupIds []string `json:"custom_security_group_ids,omitempty"`
-	// +optional
-	CustomSetupRecipes []string `json:"custom_setup_recipes,omitempty"`
-	// +optional
-	CustomShutdownRecipes []string `json:"custom_shutdown_recipes,omitempty"`
-	// +optional
-	CustomUndeployRecipes []string `json:"custom_undeploy_recipes,omitempty"`
-	// +optional
-	DrainElbOnShutdown bool `json:"drain_elb_on_shutdown,omitempty"`
+	CustomJSON string `json:"customJSON,omitempty" tf:"custom_json,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	EbsVolume *[]OpsworksRailsAppLayerSpec `json:"ebs_volume,omitempty"`
+	CustomSecurityGroupIDS []string `json:"customSecurityGroupIDS,omitempty" tf:"custom_security_group_ids,omitempty"`
 	// +optional
-	ElasticLoadBalancer string `json:"elastic_load_balancer,omitempty"`
+	CustomSetupRecipes []string `json:"customSetupRecipes,omitempty" tf:"custom_setup_recipes,omitempty"`
 	// +optional
-	InstallUpdatesOnBoot bool `json:"install_updates_on_boot,omitempty"`
+	CustomShutdownRecipes []string `json:"customShutdownRecipes,omitempty" tf:"custom_shutdown_recipes,omitempty"`
 	// +optional
-	InstanceShutdownTimeout int `json:"instance_shutdown_timeout,omitempty"`
+	CustomUndeployRecipes []string `json:"customUndeployRecipes,omitempty" tf:"custom_undeploy_recipes,omitempty"`
 	// +optional
-	ManageBundler bool `json:"manage_bundler,omitempty"`
-	// +optional
-	Name string `json:"name,omitempty"`
-	// +optional
-	PassengerVersion string `json:"passenger_version,omitempty"`
-	// +optional
-	RubyVersion string `json:"ruby_version,omitempty"`
-	// +optional
-	RubygemsVersion string `json:"rubygems_version,omitempty"`
-	StackId         string `json:"stack_id"`
+	DrainElbOnShutdown bool `json:"drainElbOnShutdown,omitempty" tf:"drain_elb_on_shutdown,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SystemPackages []string `json:"system_packages,omitempty"`
+	EbsVolume []OpsworksRailsAppLayerSpecEbsVolume `json:"ebsVolume,omitempty" tf:"ebs_volume,omitempty"`
 	// +optional
-	UseEbsOptimizedInstances bool `json:"use_ebs_optimized_instances,omitempty"`
+	ElasticLoadBalancer string `json:"elasticLoadBalancer,omitempty" tf:"elastic_load_balancer,omitempty"`
+	// +optional
+	InstallUpdatesOnBoot bool `json:"installUpdatesOnBoot,omitempty" tf:"install_updates_on_boot,omitempty"`
+	// +optional
+	InstanceShutdownTimeout int `json:"instanceShutdownTimeout,omitempty" tf:"instance_shutdown_timeout,omitempty"`
+	// +optional
+	ManageBundler bool `json:"manageBundler,omitempty" tf:"manage_bundler,omitempty"`
+	// +optional
+	Name string `json:"name,omitempty" tf:"name,omitempty"`
+	// +optional
+	PassengerVersion string `json:"passengerVersion,omitempty" tf:"passenger_version,omitempty"`
+	// +optional
+	RubyVersion string `json:"rubyVersion,omitempty" tf:"ruby_version,omitempty"`
+	// +optional
+	RubygemsVersion string `json:"rubygemsVersion,omitempty" tf:"rubygems_version,omitempty"`
+	StackID         string `json:"stackID" tf:"stack_id"`
+	// +optional
+	// +kubebuilder:validation:UniqueItems=true
+	SystemPackages []string `json:"systemPackages,omitempty" tf:"system_packages,omitempty"`
+	// +optional
+	UseEbsOptimizedInstances bool                      `json:"useEbsOptimizedInstances,omitempty" tf:"use_ebs_optimized_instances,omitempty"`
+	ProviderRef              core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type OpsworksRailsAppLayerStatus struct {
@@ -92,7 +93,9 @@ type OpsworksRailsAppLayerStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

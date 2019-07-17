@@ -32,7 +32,7 @@ import (
 // PubsubSubscriptionIamPoliciesGetter has a method to return a PubsubSubscriptionIamPolicyInterface.
 // A group's client should implement this interface.
 type PubsubSubscriptionIamPoliciesGetter interface {
-	PubsubSubscriptionIamPolicies() PubsubSubscriptionIamPolicyInterface
+	PubsubSubscriptionIamPolicies(namespace string) PubsubSubscriptionIamPolicyInterface
 }
 
 // PubsubSubscriptionIamPolicyInterface has methods to work with PubsubSubscriptionIamPolicy resources.
@@ -52,12 +52,14 @@ type PubsubSubscriptionIamPolicyInterface interface {
 // pubsubSubscriptionIamPolicies implements PubsubSubscriptionIamPolicyInterface
 type pubsubSubscriptionIamPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPubsubSubscriptionIamPolicies returns a PubsubSubscriptionIamPolicies
-func newPubsubSubscriptionIamPolicies(c *GoogleV1alpha1Client) *pubsubSubscriptionIamPolicies {
+func newPubsubSubscriptionIamPolicies(c *GoogleV1alpha1Client, namespace string) *pubsubSubscriptionIamPolicies {
 	return &pubsubSubscriptionIamPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPubsubSubscriptionIamPolicies(c *GoogleV1alpha1Client) *pubsubSubscripti
 func (c *pubsubSubscriptionIamPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.PubsubSubscriptionIamPolicy, err error) {
 	result = &v1alpha1.PubsubSubscriptionIamPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptioniampolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *pubsubSubscriptionIamPolicies) List(opts v1.ListOptions) (result *v1alp
 	}
 	result = &v1alpha1.PubsubSubscriptionIamPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptioniampolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *pubsubSubscriptionIamPolicies) Watch(opts v1.ListOptions) (watch.Interf
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptioniampolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *pubsubSubscriptionIamPolicies) Watch(opts v1.ListOptions) (watch.Interf
 func (c *pubsubSubscriptionIamPolicies) Create(pubsubSubscriptionIamPolicy *v1alpha1.PubsubSubscriptionIamPolicy) (result *v1alpha1.PubsubSubscriptionIamPolicy, err error) {
 	result = &v1alpha1.PubsubSubscriptionIamPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptioniampolicies").
 		Body(pubsubSubscriptionIamPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *pubsubSubscriptionIamPolicies) Create(pubsubSubscriptionIamPolicy *v1al
 func (c *pubsubSubscriptionIamPolicies) Update(pubsubSubscriptionIamPolicy *v1alpha1.PubsubSubscriptionIamPolicy) (result *v1alpha1.PubsubSubscriptionIamPolicy, err error) {
 	result = &v1alpha1.PubsubSubscriptionIamPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptioniampolicies").
 		Name(pubsubSubscriptionIamPolicy.Name).
 		Body(pubsubSubscriptionIamPolicy).
@@ -132,6 +139,7 @@ func (c *pubsubSubscriptionIamPolicies) Update(pubsubSubscriptionIamPolicy *v1al
 func (c *pubsubSubscriptionIamPolicies) UpdateStatus(pubsubSubscriptionIamPolicy *v1alpha1.PubsubSubscriptionIamPolicy) (result *v1alpha1.PubsubSubscriptionIamPolicy, err error) {
 	result = &v1alpha1.PubsubSubscriptionIamPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptioniampolicies").
 		Name(pubsubSubscriptionIamPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *pubsubSubscriptionIamPolicies) UpdateStatus(pubsubSubscriptionIamPolicy
 // Delete takes name of the pubsubSubscriptionIamPolicy and deletes it. Returns an error if one occurs.
 func (c *pubsubSubscriptionIamPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptioniampolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *pubsubSubscriptionIamPolicies) DeleteCollection(options *v1.DeleteOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptioniampolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *pubsubSubscriptionIamPolicies) DeleteCollection(options *v1.DeleteOptio
 func (c *pubsubSubscriptionIamPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PubsubSubscriptionIamPolicy, err error) {
 	result = &v1alpha1.PubsubSubscriptionIamPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("pubsubsubscriptioniampolicies").
 		SubResource(subresources...).
 		Name(name).

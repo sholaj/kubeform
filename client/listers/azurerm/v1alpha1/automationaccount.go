@@ -29,8 +29,8 @@ import (
 type AutomationAccountLister interface {
 	// List lists all AutomationAccounts in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AutomationAccount, err error)
-	// Get retrieves the AutomationAccount from the index for a given name.
-	Get(name string) (*v1alpha1.AutomationAccount, error)
+	// AutomationAccounts returns an object that can list and get AutomationAccounts.
+	AutomationAccounts(namespace string) AutomationAccountNamespaceLister
 	AutomationAccountListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *automationAccountLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the AutomationAccount from the index for a given name.
-func (s *automationAccountLister) Get(name string) (*v1alpha1.AutomationAccount, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AutomationAccounts returns an object that can list and get AutomationAccounts.
+func (s *automationAccountLister) AutomationAccounts(namespace string) AutomationAccountNamespaceLister {
+	return automationAccountNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AutomationAccountNamespaceLister helps list and get AutomationAccounts.
+type AutomationAccountNamespaceLister interface {
+	// List lists all AutomationAccounts in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AutomationAccount, err error)
+	// Get retrieves the AutomationAccount from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AutomationAccount, error)
+	AutomationAccountNamespaceListerExpansion
+}
+
+// automationAccountNamespaceLister implements the AutomationAccountNamespaceLister
+// interface.
+type automationAccountNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AutomationAccounts in the indexer for a given namespace.
+func (s automationAccountNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AutomationAccount, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AutomationAccount))
+	})
+	return ret, err
+}
+
+// Get retrieves the AutomationAccount from the indexer for a given namespace and name.
+func (s automationAccountNamespaceLister) Get(name string) (*v1alpha1.AutomationAccount, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

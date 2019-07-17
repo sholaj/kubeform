@@ -29,8 +29,8 @@ import (
 type StoragegatewayUploadBufferLister interface {
 	// List lists all StoragegatewayUploadBuffers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StoragegatewayUploadBuffer, err error)
-	// Get retrieves the StoragegatewayUploadBuffer from the index for a given name.
-	Get(name string) (*v1alpha1.StoragegatewayUploadBuffer, error)
+	// StoragegatewayUploadBuffers returns an object that can list and get StoragegatewayUploadBuffers.
+	StoragegatewayUploadBuffers(namespace string) StoragegatewayUploadBufferNamespaceLister
 	StoragegatewayUploadBufferListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *storagegatewayUploadBufferLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the StoragegatewayUploadBuffer from the index for a given name.
-func (s *storagegatewayUploadBufferLister) Get(name string) (*v1alpha1.StoragegatewayUploadBuffer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StoragegatewayUploadBuffers returns an object that can list and get StoragegatewayUploadBuffers.
+func (s *storagegatewayUploadBufferLister) StoragegatewayUploadBuffers(namespace string) StoragegatewayUploadBufferNamespaceLister {
+	return storagegatewayUploadBufferNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StoragegatewayUploadBufferNamespaceLister helps list and get StoragegatewayUploadBuffers.
+type StoragegatewayUploadBufferNamespaceLister interface {
+	// List lists all StoragegatewayUploadBuffers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StoragegatewayUploadBuffer, err error)
+	// Get retrieves the StoragegatewayUploadBuffer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StoragegatewayUploadBuffer, error)
+	StoragegatewayUploadBufferNamespaceListerExpansion
+}
+
+// storagegatewayUploadBufferNamespaceLister implements the StoragegatewayUploadBufferNamespaceLister
+// interface.
+type storagegatewayUploadBufferNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StoragegatewayUploadBuffers in the indexer for a given namespace.
+func (s storagegatewayUploadBufferNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StoragegatewayUploadBuffer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StoragegatewayUploadBuffer))
+	})
+	return ret, err
+}
+
+// Get retrieves the StoragegatewayUploadBuffer from the indexer for a given namespace and name.
+func (s storagegatewayUploadBufferNamespaceLister) Get(name string) (*v1alpha1.StoragegatewayUploadBuffer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

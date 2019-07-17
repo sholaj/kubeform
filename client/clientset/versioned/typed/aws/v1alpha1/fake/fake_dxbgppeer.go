@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// FakeDxBgpPeers implements DxBgpPeerInterface
-type FakeDxBgpPeers struct {
+// FakeDxBGPPeers implements DxBGPPeerInterface
+type FakeDxBGPPeers struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var dxbgppeersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "dxbgppeers"}
 
-var dxbgppeersKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "DxBgpPeer"}
+var dxbgppeersKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "DxBGPPeer"}
 
-// Get takes name of the dxBgpPeer, and returns the corresponding dxBgpPeer object, and an error if there is any.
-func (c *FakeDxBgpPeers) Get(name string, options v1.GetOptions) (result *v1alpha1.DxBgpPeer, err error) {
+// Get takes name of the dxBGPPeer, and returns the corresponding dxBGPPeer object, and an error if there is any.
+func (c *FakeDxBGPPeers) Get(name string, options v1.GetOptions) (result *v1alpha1.DxBGPPeer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(dxbgppeersResource, name), &v1alpha1.DxBgpPeer{})
+		Invokes(testing.NewGetAction(dxbgppeersResource, c.ns, name), &v1alpha1.DxBGPPeer{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.DxBgpPeer), err
+	return obj.(*v1alpha1.DxBGPPeer), err
 }
 
-// List takes label and field selectors, and returns the list of DxBgpPeers that match those selectors.
-func (c *FakeDxBgpPeers) List(opts v1.ListOptions) (result *v1alpha1.DxBgpPeerList, err error) {
+// List takes label and field selectors, and returns the list of DxBGPPeers that match those selectors.
+func (c *FakeDxBGPPeers) List(opts v1.ListOptions) (result *v1alpha1.DxBGPPeerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(dxbgppeersResource, dxbgppeersKind, opts), &v1alpha1.DxBgpPeerList{})
+		Invokes(testing.NewListAction(dxbgppeersResource, dxbgppeersKind, c.ns, opts), &v1alpha1.DxBGPPeerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeDxBgpPeers) List(opts v1.ListOptions) (result *v1alpha1.DxBgpPeerLi
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.DxBgpPeerList{ListMeta: obj.(*v1alpha1.DxBgpPeerList).ListMeta}
-	for _, item := range obj.(*v1alpha1.DxBgpPeerList).Items {
+	list := &v1alpha1.DxBGPPeerList{ListMeta: obj.(*v1alpha1.DxBGPPeerList).ListMeta}
+	for _, item := range obj.(*v1alpha1.DxBGPPeerList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeDxBgpPeers) List(opts v1.ListOptions) (result *v1alpha1.DxBgpPeerLi
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested dxBgpPeers.
-func (c *FakeDxBgpPeers) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested dxBGPPeers.
+func (c *FakeDxBGPPeers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(dxbgppeersResource, opts))
+		InvokesWatch(testing.NewWatchAction(dxbgppeersResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a dxBgpPeer and creates it.  Returns the server's representation of the dxBgpPeer, and an error, if there is any.
-func (c *FakeDxBgpPeers) Create(dxBgpPeer *v1alpha1.DxBgpPeer) (result *v1alpha1.DxBgpPeer, err error) {
+// Create takes the representation of a dxBGPPeer and creates it.  Returns the server's representation of the dxBGPPeer, and an error, if there is any.
+func (c *FakeDxBGPPeers) Create(dxBGPPeer *v1alpha1.DxBGPPeer) (result *v1alpha1.DxBGPPeer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(dxbgppeersResource, dxBgpPeer), &v1alpha1.DxBgpPeer{})
+		Invokes(testing.NewCreateAction(dxbgppeersResource, c.ns, dxBGPPeer), &v1alpha1.DxBGPPeer{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.DxBgpPeer), err
+	return obj.(*v1alpha1.DxBGPPeer), err
 }
 
-// Update takes the representation of a dxBgpPeer and updates it. Returns the server's representation of the dxBgpPeer, and an error, if there is any.
-func (c *FakeDxBgpPeers) Update(dxBgpPeer *v1alpha1.DxBgpPeer) (result *v1alpha1.DxBgpPeer, err error) {
+// Update takes the representation of a dxBGPPeer and updates it. Returns the server's representation of the dxBGPPeer, and an error, if there is any.
+func (c *FakeDxBGPPeers) Update(dxBGPPeer *v1alpha1.DxBGPPeer) (result *v1alpha1.DxBGPPeer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(dxbgppeersResource, dxBgpPeer), &v1alpha1.DxBgpPeer{})
+		Invokes(testing.NewUpdateAction(dxbgppeersResource, c.ns, dxBGPPeer), &v1alpha1.DxBGPPeer{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.DxBgpPeer), err
+	return obj.(*v1alpha1.DxBGPPeer), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeDxBgpPeers) UpdateStatus(dxBgpPeer *v1alpha1.DxBgpPeer) (*v1alpha1.DxBgpPeer, error) {
+func (c *FakeDxBGPPeers) UpdateStatus(dxBGPPeer *v1alpha1.DxBGPPeer) (*v1alpha1.DxBGPPeer, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(dxbgppeersResource, "status", dxBgpPeer), &v1alpha1.DxBgpPeer{})
+		Invokes(testing.NewUpdateSubresourceAction(dxbgppeersResource, "status", c.ns, dxBGPPeer), &v1alpha1.DxBGPPeer{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.DxBgpPeer), err
+	return obj.(*v1alpha1.DxBGPPeer), err
 }
 
-// Delete takes name of the dxBgpPeer and deletes it. Returns an error if one occurs.
-func (c *FakeDxBgpPeers) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the dxBGPPeer and deletes it. Returns an error if one occurs.
+func (c *FakeDxBGPPeers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(dxbgppeersResource, name), &v1alpha1.DxBgpPeer{})
+		Invokes(testing.NewDeleteAction(dxbgppeersResource, c.ns, name), &v1alpha1.DxBGPPeer{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeDxBgpPeers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(dxbgppeersResource, listOptions)
+func (c *FakeDxBGPPeers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(dxbgppeersResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.DxBgpPeerList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.DxBGPPeerList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched dxBgpPeer.
-func (c *FakeDxBgpPeers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DxBgpPeer, err error) {
+// Patch applies the patch and returns the patched dxBGPPeer.
+func (c *FakeDxBGPPeers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DxBGPPeer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(dxbgppeersResource, name, pt, data, subresources...), &v1alpha1.DxBgpPeer{})
+		Invokes(testing.NewPatchSubresourceAction(dxbgppeersResource, c.ns, name, pt, data, subresources...), &v1alpha1.DxBGPPeer{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.DxBgpPeer), err
+	return obj.(*v1alpha1.DxBGPPeer), err
 }

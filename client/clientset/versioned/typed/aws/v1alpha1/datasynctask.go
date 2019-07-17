@@ -32,7 +32,7 @@ import (
 // DatasyncTasksGetter has a method to return a DatasyncTaskInterface.
 // A group's client should implement this interface.
 type DatasyncTasksGetter interface {
-	DatasyncTasks() DatasyncTaskInterface
+	DatasyncTasks(namespace string) DatasyncTaskInterface
 }
 
 // DatasyncTaskInterface has methods to work with DatasyncTask resources.
@@ -52,12 +52,14 @@ type DatasyncTaskInterface interface {
 // datasyncTasks implements DatasyncTaskInterface
 type datasyncTasks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDatasyncTasks returns a DatasyncTasks
-func newDatasyncTasks(c *AwsV1alpha1Client) *datasyncTasks {
+func newDatasyncTasks(c *AwsV1alpha1Client, namespace string) *datasyncTasks {
 	return &datasyncTasks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDatasyncTasks(c *AwsV1alpha1Client) *datasyncTasks {
 func (c *datasyncTasks) Get(name string, options v1.GetOptions) (result *v1alpha1.DatasyncTask, err error) {
 	result = &v1alpha1.DatasyncTask{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datasynctasks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *datasyncTasks) List(opts v1.ListOptions) (result *v1alpha1.DatasyncTask
 	}
 	result = &v1alpha1.DatasyncTaskList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datasynctasks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *datasyncTasks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("datasynctasks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *datasyncTasks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *datasyncTasks) Create(datasyncTask *v1alpha1.DatasyncTask) (result *v1alpha1.DatasyncTask, err error) {
 	result = &v1alpha1.DatasyncTask{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("datasynctasks").
 		Body(datasyncTask).
 		Do().
@@ -118,6 +124,7 @@ func (c *datasyncTasks) Create(datasyncTask *v1alpha1.DatasyncTask) (result *v1a
 func (c *datasyncTasks) Update(datasyncTask *v1alpha1.DatasyncTask) (result *v1alpha1.DatasyncTask, err error) {
 	result = &v1alpha1.DatasyncTask{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datasynctasks").
 		Name(datasyncTask.Name).
 		Body(datasyncTask).
@@ -132,6 +139,7 @@ func (c *datasyncTasks) Update(datasyncTask *v1alpha1.DatasyncTask) (result *v1a
 func (c *datasyncTasks) UpdateStatus(datasyncTask *v1alpha1.DatasyncTask) (result *v1alpha1.DatasyncTask, err error) {
 	result = &v1alpha1.DatasyncTask{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datasynctasks").
 		Name(datasyncTask.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *datasyncTasks) UpdateStatus(datasyncTask *v1alpha1.DatasyncTask) (resul
 // Delete takes name of the datasyncTask and deletes it. Returns an error if one occurs.
 func (c *datasyncTasks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datasynctasks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *datasyncTasks) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datasynctasks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *datasyncTasks) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *datasyncTasks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DatasyncTask, err error) {
 	result = &v1alpha1.DatasyncTask{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("datasynctasks").
 		SubResource(subresources...).
 		Name(name).

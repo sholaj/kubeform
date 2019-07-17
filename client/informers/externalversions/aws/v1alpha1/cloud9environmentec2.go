@@ -41,32 +41,33 @@ type Cloud9EnvironmentEc2Informer interface {
 type cloud9EnvironmentEc2Informer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewCloud9EnvironmentEc2Informer constructs a new informer for Cloud9EnvironmentEc2 type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCloud9EnvironmentEc2Informer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCloud9EnvironmentEc2Informer(client, resyncPeriod, indexers, nil)
+func NewCloud9EnvironmentEc2Informer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCloud9EnvironmentEc2Informer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredCloud9EnvironmentEc2Informer constructs a new informer for Cloud9EnvironmentEc2 type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCloud9EnvironmentEc2Informer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCloud9EnvironmentEc2Informer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().Cloud9EnvironmentEc2s().List(options)
+				return client.AwsV1alpha1().Cloud9EnvironmentEc2s(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().Cloud9EnvironmentEc2s().Watch(options)
+				return client.AwsV1alpha1().Cloud9EnvironmentEc2s(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.Cloud9EnvironmentEc2{},
@@ -76,7 +77,7 @@ func NewFilteredCloud9EnvironmentEc2Informer(client versioned.Interface, resyncP
 }
 
 func (f *cloud9EnvironmentEc2Informer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCloud9EnvironmentEc2Informer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredCloud9EnvironmentEc2Informer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *cloud9EnvironmentEc2Informer) Informer() cache.SharedIndexInformer {

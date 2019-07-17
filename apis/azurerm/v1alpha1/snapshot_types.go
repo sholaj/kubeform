@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,39 +19,40 @@ type Snapshot struct {
 }
 
 type SnapshotSpecEncryptionSettingsDiskEncryptionKey struct {
-	SecretUrl     string `json:"secret_url"`
-	SourceVaultId string `json:"source_vault_id"`
+	SecretURL     string `json:"secretURL" tf:"secret_url"`
+	SourceVaultID string `json:"sourceVaultID" tf:"source_vault_id"`
 }
 
 type SnapshotSpecEncryptionSettingsKeyEncryptionKey struct {
-	KeyUrl        string `json:"key_url"`
-	SourceVaultId string `json:"source_vault_id"`
+	KeyURL        string `json:"keyURL" tf:"key_url"`
+	SourceVaultID string `json:"sourceVaultID" tf:"source_vault_id"`
 }
 
 type SnapshotSpecEncryptionSettings struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	DiskEncryptionKey *[]SnapshotSpecEncryptionSettings `json:"disk_encryption_key,omitempty"`
-	Enabled           bool                              `json:"enabled"`
+	DiskEncryptionKey []SnapshotSpecEncryptionSettingsDiskEncryptionKey `json:"diskEncryptionKey,omitempty" tf:"disk_encryption_key,omitempty"`
+	Enabled           bool                                              `json:"enabled" tf:"enabled"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	KeyEncryptionKey *[]SnapshotSpecEncryptionSettings `json:"key_encryption_key,omitempty"`
+	KeyEncryptionKey []SnapshotSpecEncryptionSettingsKeyEncryptionKey `json:"keyEncryptionKey,omitempty" tf:"key_encryption_key,omitempty"`
 }
 
 type SnapshotSpec struct {
-	CreateOption string `json:"create_option"`
+	CreateOption string `json:"createOption" tf:"create_option"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	EncryptionSettings *[]SnapshotSpec `json:"encryption_settings,omitempty"`
-	Location           string          `json:"location"`
-	Name               string          `json:"name"`
-	ResourceGroupName  string          `json:"resource_group_name"`
+	EncryptionSettings []SnapshotSpecEncryptionSettings `json:"encryptionSettings,omitempty" tf:"encryption_settings,omitempty"`
+	Location           string                           `json:"location" tf:"location"`
+	Name               string                           `json:"name" tf:"name"`
+	ResourceGroupName  string                           `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	SourceResourceId string `json:"source_resource_id,omitempty"`
+	SourceResourceID string `json:"sourceResourceID,omitempty" tf:"source_resource_id,omitempty"`
 	// +optional
-	SourceUri string `json:"source_uri,omitempty"`
+	SourceURI string `json:"sourceURI,omitempty" tf:"source_uri,omitempty"`
 	// +optional
-	StorageAccountId string `json:"storage_account_id,omitempty"`
+	StorageAccountID string                    `json:"storageAccountID,omitempty" tf:"storage_account_id,omitempty"`
+	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SnapshotStatus struct {
@@ -59,7 +60,9 @@ type SnapshotStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

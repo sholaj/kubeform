@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,76 +20,77 @@ type ComputeHealthCheck struct {
 
 type ComputeHealthCheckSpecHttpHealthCheck struct {
 	// +optional
-	Host string `json:"host,omitempty"`
+	Host string `json:"host,omitempty" tf:"host,omitempty"`
 	// +optional
-	Port int `json:"port,omitempty"`
+	Port int `json:"port,omitempty" tf:"port,omitempty"`
 	// +optional
-	ProxyHeader string `json:"proxy_header,omitempty"`
+	ProxyHeader string `json:"proxyHeader,omitempty" tf:"proxy_header,omitempty"`
 	// +optional
-	RequestPath string `json:"request_path,omitempty"`
+	RequestPath string `json:"requestPath,omitempty" tf:"request_path,omitempty"`
 	// +optional
-	Response string `json:"response,omitempty"`
+	Response string `json:"response,omitempty" tf:"response,omitempty"`
 }
 
 type ComputeHealthCheckSpecHttpsHealthCheck struct {
 	// +optional
-	Host string `json:"host,omitempty"`
+	Host string `json:"host,omitempty" tf:"host,omitempty"`
 	// +optional
-	Port int `json:"port,omitempty"`
+	Port int `json:"port,omitempty" tf:"port,omitempty"`
 	// +optional
-	ProxyHeader string `json:"proxy_header,omitempty"`
+	ProxyHeader string `json:"proxyHeader,omitempty" tf:"proxy_header,omitempty"`
 	// +optional
-	RequestPath string `json:"request_path,omitempty"`
+	RequestPath string `json:"requestPath,omitempty" tf:"request_path,omitempty"`
 	// +optional
-	Response string `json:"response,omitempty"`
+	Response string `json:"response,omitempty" tf:"response,omitempty"`
 }
 
 type ComputeHealthCheckSpecSslHealthCheck struct {
 	// +optional
-	Port int `json:"port,omitempty"`
+	Port int `json:"port,omitempty" tf:"port,omitempty"`
 	// +optional
-	ProxyHeader string `json:"proxy_header,omitempty"`
+	ProxyHeader string `json:"proxyHeader,omitempty" tf:"proxy_header,omitempty"`
 	// +optional
-	Request string `json:"request,omitempty"`
+	Request string `json:"request,omitempty" tf:"request,omitempty"`
 	// +optional
-	Response string `json:"response,omitempty"`
+	Response string `json:"response,omitempty" tf:"response,omitempty"`
 }
 
 type ComputeHealthCheckSpecTcpHealthCheck struct {
 	// +optional
-	Port int `json:"port,omitempty"`
+	Port int `json:"port,omitempty" tf:"port,omitempty"`
 	// +optional
-	ProxyHeader string `json:"proxy_header,omitempty"`
+	ProxyHeader string `json:"proxyHeader,omitempty" tf:"proxy_header,omitempty"`
 	// +optional
-	Request string `json:"request,omitempty"`
+	Request string `json:"request,omitempty" tf:"request,omitempty"`
 	// +optional
-	Response string `json:"response,omitempty"`
+	Response string `json:"response,omitempty" tf:"response,omitempty"`
 }
 
 type ComputeHealthCheckSpec struct {
 	// +optional
-	CheckIntervalSec int `json:"check_interval_sec,omitempty"`
+	CheckIntervalSec int `json:"checkIntervalSec,omitempty" tf:"check_interval_sec,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	HealthyThreshold int `json:"healthy_threshold,omitempty"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	HttpHealthCheck *[]ComputeHealthCheckSpec `json:"http_health_check,omitempty"`
+	HealthyThreshold int `json:"healthyThreshold,omitempty" tf:"healthy_threshold,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	HttpsHealthCheck *[]ComputeHealthCheckSpec `json:"https_health_check,omitempty"`
-	Name             string                    `json:"name"`
+	HttpHealthCheck []ComputeHealthCheckSpecHttpHealthCheck `json:"httpHealthCheck,omitempty" tf:"http_health_check,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	SslHealthCheck *[]ComputeHealthCheckSpec `json:"ssl_health_check,omitempty"`
+	HttpsHealthCheck []ComputeHealthCheckSpecHttpsHealthCheck `json:"httpsHealthCheck,omitempty" tf:"https_health_check,omitempty"`
+	Name             string                                   `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	TcpHealthCheck *[]ComputeHealthCheckSpec `json:"tcp_health_check,omitempty"`
+	SslHealthCheck []ComputeHealthCheckSpecSslHealthCheck `json:"sslHealthCheck,omitempty" tf:"ssl_health_check,omitempty"`
 	// +optional
-	TimeoutSec int `json:"timeout_sec,omitempty"`
+	// +kubebuilder:validation:MaxItems=1
+	TcpHealthCheck []ComputeHealthCheckSpecTcpHealthCheck `json:"tcpHealthCheck,omitempty" tf:"tcp_health_check,omitempty"`
 	// +optional
-	UnhealthyThreshold int `json:"unhealthy_threshold,omitempty"`
+	TimeoutSec int `json:"timeoutSec,omitempty" tf:"timeout_sec,omitempty"`
+	// +optional
+	UnhealthyThreshold int                       `json:"unhealthyThreshold,omitempty" tf:"unhealthy_threshold,omitempty"`
+	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ComputeHealthCheckStatus struct {
@@ -97,7 +98,9 @@ type ComputeHealthCheckStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

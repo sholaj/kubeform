@@ -29,8 +29,8 @@ import (
 type DevTestLinuxVirtualMachineLister interface {
 	// List lists all DevTestLinuxVirtualMachines in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DevTestLinuxVirtualMachine, err error)
-	// Get retrieves the DevTestLinuxVirtualMachine from the index for a given name.
-	Get(name string) (*v1alpha1.DevTestLinuxVirtualMachine, error)
+	// DevTestLinuxVirtualMachines returns an object that can list and get DevTestLinuxVirtualMachines.
+	DevTestLinuxVirtualMachines(namespace string) DevTestLinuxVirtualMachineNamespaceLister
 	DevTestLinuxVirtualMachineListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *devTestLinuxVirtualMachineLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the DevTestLinuxVirtualMachine from the index for a given name.
-func (s *devTestLinuxVirtualMachineLister) Get(name string) (*v1alpha1.DevTestLinuxVirtualMachine, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DevTestLinuxVirtualMachines returns an object that can list and get DevTestLinuxVirtualMachines.
+func (s *devTestLinuxVirtualMachineLister) DevTestLinuxVirtualMachines(namespace string) DevTestLinuxVirtualMachineNamespaceLister {
+	return devTestLinuxVirtualMachineNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DevTestLinuxVirtualMachineNamespaceLister helps list and get DevTestLinuxVirtualMachines.
+type DevTestLinuxVirtualMachineNamespaceLister interface {
+	// List lists all DevTestLinuxVirtualMachines in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DevTestLinuxVirtualMachine, err error)
+	// Get retrieves the DevTestLinuxVirtualMachine from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DevTestLinuxVirtualMachine, error)
+	DevTestLinuxVirtualMachineNamespaceListerExpansion
+}
+
+// devTestLinuxVirtualMachineNamespaceLister implements the DevTestLinuxVirtualMachineNamespaceLister
+// interface.
+type devTestLinuxVirtualMachineNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DevTestLinuxVirtualMachines in the indexer for a given namespace.
+func (s devTestLinuxVirtualMachineNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DevTestLinuxVirtualMachine, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DevTestLinuxVirtualMachine))
+	})
+	return ret, err
+}
+
+// Get retrieves the DevTestLinuxVirtualMachine from the indexer for a given namespace and name.
+func (s devTestLinuxVirtualMachineNamespaceLister) Get(name string) (*v1alpha1.DevTestLinuxVirtualMachine, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

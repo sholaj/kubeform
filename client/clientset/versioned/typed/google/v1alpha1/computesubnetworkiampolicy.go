@@ -32,7 +32,7 @@ import (
 // ComputeSubnetworkIamPoliciesGetter has a method to return a ComputeSubnetworkIamPolicyInterface.
 // A group's client should implement this interface.
 type ComputeSubnetworkIamPoliciesGetter interface {
-	ComputeSubnetworkIamPolicies() ComputeSubnetworkIamPolicyInterface
+	ComputeSubnetworkIamPolicies(namespace string) ComputeSubnetworkIamPolicyInterface
 }
 
 // ComputeSubnetworkIamPolicyInterface has methods to work with ComputeSubnetworkIamPolicy resources.
@@ -52,12 +52,14 @@ type ComputeSubnetworkIamPolicyInterface interface {
 // computeSubnetworkIamPolicies implements ComputeSubnetworkIamPolicyInterface
 type computeSubnetworkIamPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeSubnetworkIamPolicies returns a ComputeSubnetworkIamPolicies
-func newComputeSubnetworkIamPolicies(c *GoogleV1alpha1Client) *computeSubnetworkIamPolicies {
+func newComputeSubnetworkIamPolicies(c *GoogleV1alpha1Client, namespace string) *computeSubnetworkIamPolicies {
 	return &computeSubnetworkIamPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeSubnetworkIamPolicies(c *GoogleV1alpha1Client) *computeSubnetwork
 func (c *computeSubnetworkIamPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeSubnetworkIamPolicy, err error) {
 	result = &v1alpha1.ComputeSubnetworkIamPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computesubnetworkiampolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeSubnetworkIamPolicies) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.ComputeSubnetworkIamPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computesubnetworkiampolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeSubnetworkIamPolicies) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computesubnetworkiampolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeSubnetworkIamPolicies) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *computeSubnetworkIamPolicies) Create(computeSubnetworkIamPolicy *v1alpha1.ComputeSubnetworkIamPolicy) (result *v1alpha1.ComputeSubnetworkIamPolicy, err error) {
 	result = &v1alpha1.ComputeSubnetworkIamPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computesubnetworkiampolicies").
 		Body(computeSubnetworkIamPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeSubnetworkIamPolicies) Create(computeSubnetworkIamPolicy *v1alph
 func (c *computeSubnetworkIamPolicies) Update(computeSubnetworkIamPolicy *v1alpha1.ComputeSubnetworkIamPolicy) (result *v1alpha1.ComputeSubnetworkIamPolicy, err error) {
 	result = &v1alpha1.ComputeSubnetworkIamPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computesubnetworkiampolicies").
 		Name(computeSubnetworkIamPolicy.Name).
 		Body(computeSubnetworkIamPolicy).
@@ -132,6 +139,7 @@ func (c *computeSubnetworkIamPolicies) Update(computeSubnetworkIamPolicy *v1alph
 func (c *computeSubnetworkIamPolicies) UpdateStatus(computeSubnetworkIamPolicy *v1alpha1.ComputeSubnetworkIamPolicy) (result *v1alpha1.ComputeSubnetworkIamPolicy, err error) {
 	result = &v1alpha1.ComputeSubnetworkIamPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computesubnetworkiampolicies").
 		Name(computeSubnetworkIamPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeSubnetworkIamPolicies) UpdateStatus(computeSubnetworkIamPolicy *
 // Delete takes name of the computeSubnetworkIamPolicy and deletes it. Returns an error if one occurs.
 func (c *computeSubnetworkIamPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computesubnetworkiampolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeSubnetworkIamPolicies) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computesubnetworkiampolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeSubnetworkIamPolicies) DeleteCollection(options *v1.DeleteOption
 func (c *computeSubnetworkIamPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeSubnetworkIamPolicy, err error) {
 	result = &v1alpha1.ComputeSubnetworkIamPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computesubnetworkiampolicies").
 		SubResource(subresources...).
 		Name(name).

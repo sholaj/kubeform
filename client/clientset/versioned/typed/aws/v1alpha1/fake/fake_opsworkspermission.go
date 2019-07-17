@@ -31,6 +31,7 @@ import (
 // FakeOpsworksPermissions implements OpsworksPermissionInterface
 type FakeOpsworksPermissions struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var opsworkspermissionsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "opsworkspermissions"}
@@ -40,7 +41,8 @@ var opsworkspermissionsKind = schema.GroupVersionKind{Group: "aws.kubeform.com",
 // Get takes name of the opsworksPermission, and returns the corresponding opsworksPermission object, and an error if there is any.
 func (c *FakeOpsworksPermissions) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksPermission, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(opsworkspermissionsResource, name), &v1alpha1.OpsworksPermission{})
+		Invokes(testing.NewGetAction(opsworkspermissionsResource, c.ns, name), &v1alpha1.OpsworksPermission{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeOpsworksPermissions) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of OpsworksPermissions that match those selectors.
 func (c *FakeOpsworksPermissions) List(opts v1.ListOptions) (result *v1alpha1.OpsworksPermissionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(opsworkspermissionsResource, opsworkspermissionsKind, opts), &v1alpha1.OpsworksPermissionList{})
+		Invokes(testing.NewListAction(opsworkspermissionsResource, opsworkspermissionsKind, c.ns, opts), &v1alpha1.OpsworksPermissionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeOpsworksPermissions) List(opts v1.ListOptions) (result *v1alpha1.Op
 // Watch returns a watch.Interface that watches the requested opsworksPermissions.
 func (c *FakeOpsworksPermissions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(opsworkspermissionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(opsworkspermissionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a opsworksPermission and creates it.  Returns the server's representation of the opsworksPermission, and an error, if there is any.
 func (c *FakeOpsworksPermissions) Create(opsworksPermission *v1alpha1.OpsworksPermission) (result *v1alpha1.OpsworksPermission, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(opsworkspermissionsResource, opsworksPermission), &v1alpha1.OpsworksPermission{})
+		Invokes(testing.NewCreateAction(opsworkspermissionsResource, c.ns, opsworksPermission), &v1alpha1.OpsworksPermission{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeOpsworksPermissions) Create(opsworksPermission *v1alpha1.OpsworksPe
 // Update takes the representation of a opsworksPermission and updates it. Returns the server's representation of the opsworksPermission, and an error, if there is any.
 func (c *FakeOpsworksPermissions) Update(opsworksPermission *v1alpha1.OpsworksPermission) (result *v1alpha1.OpsworksPermission, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(opsworkspermissionsResource, opsworksPermission), &v1alpha1.OpsworksPermission{})
+		Invokes(testing.NewUpdateAction(opsworkspermissionsResource, c.ns, opsworksPermission), &v1alpha1.OpsworksPermission{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeOpsworksPermissions) Update(opsworksPermission *v1alpha1.OpsworksPe
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeOpsworksPermissions) UpdateStatus(opsworksPermission *v1alpha1.OpsworksPermission) (*v1alpha1.OpsworksPermission, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(opsworkspermissionsResource, "status", opsworksPermission), &v1alpha1.OpsworksPermission{})
+		Invokes(testing.NewUpdateSubresourceAction(opsworkspermissionsResource, "status", c.ns, opsworksPermission), &v1alpha1.OpsworksPermission{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeOpsworksPermissions) UpdateStatus(opsworksPermission *v1alpha1.Opsw
 // Delete takes name of the opsworksPermission and deletes it. Returns an error if one occurs.
 func (c *FakeOpsworksPermissions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(opsworkspermissionsResource, name), &v1alpha1.OpsworksPermission{})
+		Invokes(testing.NewDeleteAction(opsworkspermissionsResource, c.ns, name), &v1alpha1.OpsworksPermission{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeOpsworksPermissions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(opsworkspermissionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(opsworkspermissionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.OpsworksPermissionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeOpsworksPermissions) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched opsworksPermission.
 func (c *FakeOpsworksPermissions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksPermission, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(opsworkspermissionsResource, name, pt, data, subresources...), &v1alpha1.OpsworksPermission{})
+		Invokes(testing.NewPatchSubresourceAction(opsworkspermissionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.OpsworksPermission{})
+
 	if obj == nil {
 		return nil, err
 	}

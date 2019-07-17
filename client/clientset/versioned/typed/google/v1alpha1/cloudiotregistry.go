@@ -32,7 +32,7 @@ import (
 // CloudiotRegistriesGetter has a method to return a CloudiotRegistryInterface.
 // A group's client should implement this interface.
 type CloudiotRegistriesGetter interface {
-	CloudiotRegistries() CloudiotRegistryInterface
+	CloudiotRegistries(namespace string) CloudiotRegistryInterface
 }
 
 // CloudiotRegistryInterface has methods to work with CloudiotRegistry resources.
@@ -52,12 +52,14 @@ type CloudiotRegistryInterface interface {
 // cloudiotRegistries implements CloudiotRegistryInterface
 type cloudiotRegistries struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCloudiotRegistries returns a CloudiotRegistries
-func newCloudiotRegistries(c *GoogleV1alpha1Client) *cloudiotRegistries {
+func newCloudiotRegistries(c *GoogleV1alpha1Client, namespace string) *cloudiotRegistries {
 	return &cloudiotRegistries{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCloudiotRegistries(c *GoogleV1alpha1Client) *cloudiotRegistries {
 func (c *cloudiotRegistries) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudiotRegistry, err error) {
 	result = &v1alpha1.CloudiotRegistry{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudiotregistries").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cloudiotRegistries) List(opts v1.ListOptions) (result *v1alpha1.Cloudio
 	}
 	result = &v1alpha1.CloudiotRegistryList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudiotregistries").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cloudiotRegistries) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudiotregistries").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cloudiotRegistries) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *cloudiotRegistries) Create(cloudiotRegistry *v1alpha1.CloudiotRegistry) (result *v1alpha1.CloudiotRegistry, err error) {
 	result = &v1alpha1.CloudiotRegistry{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cloudiotregistries").
 		Body(cloudiotRegistry).
 		Do().
@@ -118,6 +124,7 @@ func (c *cloudiotRegistries) Create(cloudiotRegistry *v1alpha1.CloudiotRegistry)
 func (c *cloudiotRegistries) Update(cloudiotRegistry *v1alpha1.CloudiotRegistry) (result *v1alpha1.CloudiotRegistry, err error) {
 	result = &v1alpha1.CloudiotRegistry{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudiotregistries").
 		Name(cloudiotRegistry.Name).
 		Body(cloudiotRegistry).
@@ -132,6 +139,7 @@ func (c *cloudiotRegistries) Update(cloudiotRegistry *v1alpha1.CloudiotRegistry)
 func (c *cloudiotRegistries) UpdateStatus(cloudiotRegistry *v1alpha1.CloudiotRegistry) (result *v1alpha1.CloudiotRegistry, err error) {
 	result = &v1alpha1.CloudiotRegistry{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudiotregistries").
 		Name(cloudiotRegistry.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cloudiotRegistries) UpdateStatus(cloudiotRegistry *v1alpha1.CloudiotReg
 // Delete takes name of the cloudiotRegistry and deletes it. Returns an error if one occurs.
 func (c *cloudiotRegistries) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudiotregistries").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cloudiotRegistries) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudiotregistries").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cloudiotRegistries) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *cloudiotRegistries) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudiotRegistry, err error) {
 	result = &v1alpha1.CloudiotRegistry{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cloudiotregistries").
 		SubResource(subresources...).
 		Name(name).

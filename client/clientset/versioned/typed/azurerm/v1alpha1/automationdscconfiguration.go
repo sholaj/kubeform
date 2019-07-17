@@ -32,7 +32,7 @@ import (
 // AutomationDscConfigurationsGetter has a method to return a AutomationDscConfigurationInterface.
 // A group's client should implement this interface.
 type AutomationDscConfigurationsGetter interface {
-	AutomationDscConfigurations() AutomationDscConfigurationInterface
+	AutomationDscConfigurations(namespace string) AutomationDscConfigurationInterface
 }
 
 // AutomationDscConfigurationInterface has methods to work with AutomationDscConfiguration resources.
@@ -52,12 +52,14 @@ type AutomationDscConfigurationInterface interface {
 // automationDscConfigurations implements AutomationDscConfigurationInterface
 type automationDscConfigurations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAutomationDscConfigurations returns a AutomationDscConfigurations
-func newAutomationDscConfigurations(c *AzurermV1alpha1Client) *automationDscConfigurations {
+func newAutomationDscConfigurations(c *AzurermV1alpha1Client, namespace string) *automationDscConfigurations {
 	return &automationDscConfigurations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAutomationDscConfigurations(c *AzurermV1alpha1Client) *automationDscConf
 func (c *automationDscConfigurations) Get(name string, options v1.GetOptions) (result *v1alpha1.AutomationDscConfiguration, err error) {
 	result = &v1alpha1.AutomationDscConfiguration{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("automationdscconfigurations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *automationDscConfigurations) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.AutomationDscConfigurationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("automationdscconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *automationDscConfigurations) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("automationdscconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *automationDscConfigurations) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *automationDscConfigurations) Create(automationDscConfiguration *v1alpha1.AutomationDscConfiguration) (result *v1alpha1.AutomationDscConfiguration, err error) {
 	result = &v1alpha1.AutomationDscConfiguration{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("automationdscconfigurations").
 		Body(automationDscConfiguration).
 		Do().
@@ -118,6 +124,7 @@ func (c *automationDscConfigurations) Create(automationDscConfiguration *v1alpha
 func (c *automationDscConfigurations) Update(automationDscConfiguration *v1alpha1.AutomationDscConfiguration) (result *v1alpha1.AutomationDscConfiguration, err error) {
 	result = &v1alpha1.AutomationDscConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("automationdscconfigurations").
 		Name(automationDscConfiguration.Name).
 		Body(automationDscConfiguration).
@@ -132,6 +139,7 @@ func (c *automationDscConfigurations) Update(automationDscConfiguration *v1alpha
 func (c *automationDscConfigurations) UpdateStatus(automationDscConfiguration *v1alpha1.AutomationDscConfiguration) (result *v1alpha1.AutomationDscConfiguration, err error) {
 	result = &v1alpha1.AutomationDscConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("automationdscconfigurations").
 		Name(automationDscConfiguration.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *automationDscConfigurations) UpdateStatus(automationDscConfiguration *v
 // Delete takes name of the automationDscConfiguration and deletes it. Returns an error if one occurs.
 func (c *automationDscConfigurations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("automationdscconfigurations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *automationDscConfigurations) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("automationdscconfigurations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *automationDscConfigurations) DeleteCollection(options *v1.DeleteOptions
 func (c *automationDscConfigurations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AutomationDscConfiguration, err error) {
 	result = &v1alpha1.AutomationDscConfiguration{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("automationdscconfigurations").
 		SubResource(subresources...).
 		Name(name).

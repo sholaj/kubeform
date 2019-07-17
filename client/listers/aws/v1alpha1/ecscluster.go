@@ -29,8 +29,8 @@ import (
 type EcsClusterLister interface {
 	// List lists all EcsClusters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EcsCluster, err error)
-	// Get retrieves the EcsCluster from the index for a given name.
-	Get(name string) (*v1alpha1.EcsCluster, error)
+	// EcsClusters returns an object that can list and get EcsClusters.
+	EcsClusters(namespace string) EcsClusterNamespaceLister
 	EcsClusterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ecsClusterLister) List(selector labels.Selector) (ret []*v1alpha1.EcsCl
 	return ret, err
 }
 
-// Get retrieves the EcsCluster from the index for a given name.
-func (s *ecsClusterLister) Get(name string) (*v1alpha1.EcsCluster, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EcsClusters returns an object that can list and get EcsClusters.
+func (s *ecsClusterLister) EcsClusters(namespace string) EcsClusterNamespaceLister {
+	return ecsClusterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EcsClusterNamespaceLister helps list and get EcsClusters.
+type EcsClusterNamespaceLister interface {
+	// List lists all EcsClusters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EcsCluster, err error)
+	// Get retrieves the EcsCluster from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EcsCluster, error)
+	EcsClusterNamespaceListerExpansion
+}
+
+// ecsClusterNamespaceLister implements the EcsClusterNamespaceLister
+// interface.
+type ecsClusterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EcsClusters in the indexer for a given namespace.
+func (s ecsClusterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EcsCluster, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EcsCluster))
+	})
+	return ret, err
+}
+
+// Get retrieves the EcsCluster from the indexer for a given namespace and name.
+func (s ecsClusterNamespaceLister) Get(name string) (*v1alpha1.EcsCluster, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

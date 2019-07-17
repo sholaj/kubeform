@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// StorageDefaultObjectAclsGetter has a method to return a StorageDefaultObjectAclInterface.
+// StorageDefaultObjectACLsGetter has a method to return a StorageDefaultObjectACLInterface.
 // A group's client should implement this interface.
-type StorageDefaultObjectAclsGetter interface {
-	StorageDefaultObjectAcls() StorageDefaultObjectAclInterface
+type StorageDefaultObjectACLsGetter interface {
+	StorageDefaultObjectACLs(namespace string) StorageDefaultObjectACLInterface
 }
 
-// StorageDefaultObjectAclInterface has methods to work with StorageDefaultObjectAcl resources.
-type StorageDefaultObjectAclInterface interface {
-	Create(*v1alpha1.StorageDefaultObjectAcl) (*v1alpha1.StorageDefaultObjectAcl, error)
-	Update(*v1alpha1.StorageDefaultObjectAcl) (*v1alpha1.StorageDefaultObjectAcl, error)
-	UpdateStatus(*v1alpha1.StorageDefaultObjectAcl) (*v1alpha1.StorageDefaultObjectAcl, error)
+// StorageDefaultObjectACLInterface has methods to work with StorageDefaultObjectACL resources.
+type StorageDefaultObjectACLInterface interface {
+	Create(*v1alpha1.StorageDefaultObjectACL) (*v1alpha1.StorageDefaultObjectACL, error)
+	Update(*v1alpha1.StorageDefaultObjectACL) (*v1alpha1.StorageDefaultObjectACL, error)
+	UpdateStatus(*v1alpha1.StorageDefaultObjectACL) (*v1alpha1.StorageDefaultObjectACL, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.StorageDefaultObjectAcl, error)
-	List(opts v1.ListOptions) (*v1alpha1.StorageDefaultObjectAclList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.StorageDefaultObjectACL, error)
+	List(opts v1.ListOptions) (*v1alpha1.StorageDefaultObjectACLList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageDefaultObjectAcl, err error)
-	StorageDefaultObjectAclExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageDefaultObjectACL, err error)
+	StorageDefaultObjectACLExpansion
 }
 
-// storageDefaultObjectAcls implements StorageDefaultObjectAclInterface
-type storageDefaultObjectAcls struct {
+// storageDefaultObjectACLs implements StorageDefaultObjectACLInterface
+type storageDefaultObjectACLs struct {
 	client rest.Interface
+	ns     string
 }
 
-// newStorageDefaultObjectAcls returns a StorageDefaultObjectAcls
-func newStorageDefaultObjectAcls(c *GoogleV1alpha1Client) *storageDefaultObjectAcls {
-	return &storageDefaultObjectAcls{
+// newStorageDefaultObjectACLs returns a StorageDefaultObjectACLs
+func newStorageDefaultObjectACLs(c *GoogleV1alpha1Client, namespace string) *storageDefaultObjectACLs {
+	return &storageDefaultObjectACLs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the storageDefaultObjectAcl, and returns the corresponding storageDefaultObjectAcl object, and an error if there is any.
-func (c *storageDefaultObjectAcls) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageDefaultObjectAcl, err error) {
-	result = &v1alpha1.StorageDefaultObjectAcl{}
+// Get takes name of the storageDefaultObjectACL, and returns the corresponding storageDefaultObjectACL object, and an error if there is any.
+func (c *storageDefaultObjectACLs) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageDefaultObjectACL, err error) {
+	result = &v1alpha1.StorageDefaultObjectACL{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagedefaultobjectacls").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *storageDefaultObjectAcls) Get(name string, options v1.GetOptions) (resu
 	return
 }
 
-// List takes label and field selectors, and returns the list of StorageDefaultObjectAcls that match those selectors.
-func (c *storageDefaultObjectAcls) List(opts v1.ListOptions) (result *v1alpha1.StorageDefaultObjectAclList, err error) {
+// List takes label and field selectors, and returns the list of StorageDefaultObjectACLs that match those selectors.
+func (c *storageDefaultObjectACLs) List(opts v1.ListOptions) (result *v1alpha1.StorageDefaultObjectACLList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.StorageDefaultObjectAclList{}
+	result = &v1alpha1.StorageDefaultObjectACLList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagedefaultobjectacls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *storageDefaultObjectAcls) List(opts v1.ListOptions) (result *v1alpha1.S
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested storageDefaultObjectAcls.
-func (c *storageDefaultObjectAcls) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested storageDefaultObjectACLs.
+func (c *storageDefaultObjectACLs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storagedefaultobjectacls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a storageDefaultObjectAcl and creates it.  Returns the server's representation of the storageDefaultObjectAcl, and an error, if there is any.
-func (c *storageDefaultObjectAcls) Create(storageDefaultObjectAcl *v1alpha1.StorageDefaultObjectAcl) (result *v1alpha1.StorageDefaultObjectAcl, err error) {
-	result = &v1alpha1.StorageDefaultObjectAcl{}
+// Create takes the representation of a storageDefaultObjectACL and creates it.  Returns the server's representation of the storageDefaultObjectACL, and an error, if there is any.
+func (c *storageDefaultObjectACLs) Create(storageDefaultObjectACL *v1alpha1.StorageDefaultObjectACL) (result *v1alpha1.StorageDefaultObjectACL, err error) {
+	result = &v1alpha1.StorageDefaultObjectACL{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storagedefaultobjectacls").
-		Body(storageDefaultObjectAcl).
+		Body(storageDefaultObjectACL).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a storageDefaultObjectAcl and updates it. Returns the server's representation of the storageDefaultObjectAcl, and an error, if there is any.
-func (c *storageDefaultObjectAcls) Update(storageDefaultObjectAcl *v1alpha1.StorageDefaultObjectAcl) (result *v1alpha1.StorageDefaultObjectAcl, err error) {
-	result = &v1alpha1.StorageDefaultObjectAcl{}
+// Update takes the representation of a storageDefaultObjectACL and updates it. Returns the server's representation of the storageDefaultObjectACL, and an error, if there is any.
+func (c *storageDefaultObjectACLs) Update(storageDefaultObjectACL *v1alpha1.StorageDefaultObjectACL) (result *v1alpha1.StorageDefaultObjectACL, err error) {
+	result = &v1alpha1.StorageDefaultObjectACL{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagedefaultobjectacls").
-		Name(storageDefaultObjectAcl.Name).
-		Body(storageDefaultObjectAcl).
+		Name(storageDefaultObjectACL.Name).
+		Body(storageDefaultObjectACL).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *storageDefaultObjectAcls) Update(storageDefaultObjectAcl *v1alpha1.Stor
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *storageDefaultObjectAcls) UpdateStatus(storageDefaultObjectAcl *v1alpha1.StorageDefaultObjectAcl) (result *v1alpha1.StorageDefaultObjectAcl, err error) {
-	result = &v1alpha1.StorageDefaultObjectAcl{}
+func (c *storageDefaultObjectACLs) UpdateStatus(storageDefaultObjectACL *v1alpha1.StorageDefaultObjectACL) (result *v1alpha1.StorageDefaultObjectACL, err error) {
+	result = &v1alpha1.StorageDefaultObjectACL{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagedefaultobjectacls").
-		Name(storageDefaultObjectAcl.Name).
+		Name(storageDefaultObjectACL.Name).
 		SubResource("status").
-		Body(storageDefaultObjectAcl).
+		Body(storageDefaultObjectACL).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the storageDefaultObjectAcl and deletes it. Returns an error if one occurs.
-func (c *storageDefaultObjectAcls) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the storageDefaultObjectACL and deletes it. Returns an error if one occurs.
+func (c *storageDefaultObjectACLs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagedefaultobjectacls").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *storageDefaultObjectAcls) Delete(name string, options *v1.DeleteOptions
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *storageDefaultObjectAcls) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *storageDefaultObjectACLs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagedefaultobjectacls").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *storageDefaultObjectAcls) DeleteCollection(options *v1.DeleteOptions, l
 		Error()
 }
 
-// Patch applies the patch and returns the patched storageDefaultObjectAcl.
-func (c *storageDefaultObjectAcls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageDefaultObjectAcl, err error) {
-	result = &v1alpha1.StorageDefaultObjectAcl{}
+// Patch applies the patch and returns the patched storageDefaultObjectACL.
+func (c *storageDefaultObjectACLs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageDefaultObjectACL, err error) {
+	result = &v1alpha1.StorageDefaultObjectACL{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storagedefaultobjectacls").
 		SubResource(subresources...).
 		Name(name).

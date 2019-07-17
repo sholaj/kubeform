@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// NetworkAclInformer provides access to a shared informer and lister for
-// NetworkAcls.
-type NetworkAclInformer interface {
+// NetworkACLInformer provides access to a shared informer and lister for
+// NetworkACLs.
+type NetworkACLInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.NetworkAclLister
+	Lister() v1alpha1.NetworkACLLister
 }
 
-type networkAclInformer struct {
+type networkACLInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewNetworkAclInformer constructs a new informer for NetworkAcl type.
+// NewNetworkACLInformer constructs a new informer for NetworkACL type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewNetworkAclInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredNetworkAclInformer(client, resyncPeriod, indexers, nil)
+func NewNetworkACLInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredNetworkACLInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredNetworkAclInformer constructs a new informer for NetworkAcl type.
+// NewFilteredNetworkACLInformer constructs a new informer for NetworkACL type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredNetworkAclInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredNetworkACLInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().NetworkAcls().List(options)
+				return client.AwsV1alpha1().NetworkACLs(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().NetworkAcls().Watch(options)
+				return client.AwsV1alpha1().NetworkACLs(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.NetworkAcl{},
+		&awsv1alpha1.NetworkACL{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *networkAclInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredNetworkAclInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *networkACLInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredNetworkACLInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *networkAclInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.NetworkAcl{}, f.defaultInformer)
+func (f *networkACLInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.NetworkACL{}, f.defaultInformer)
 }
 
-func (f *networkAclInformer) Lister() v1alpha1.NetworkAclLister {
-	return v1alpha1.NewNetworkAclLister(f.Informer().GetIndexer())
+func (f *networkACLInformer) Lister() v1alpha1.NetworkACLLister {
+	return v1alpha1.NewNetworkACLLister(f.Informer().GetIndexer())
 }

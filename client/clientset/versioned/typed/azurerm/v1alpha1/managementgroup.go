@@ -32,7 +32,7 @@ import (
 // ManagementGroupsGetter has a method to return a ManagementGroupInterface.
 // A group's client should implement this interface.
 type ManagementGroupsGetter interface {
-	ManagementGroups() ManagementGroupInterface
+	ManagementGroups(namespace string) ManagementGroupInterface
 }
 
 // ManagementGroupInterface has methods to work with ManagementGroup resources.
@@ -52,12 +52,14 @@ type ManagementGroupInterface interface {
 // managementGroups implements ManagementGroupInterface
 type managementGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newManagementGroups returns a ManagementGroups
-func newManagementGroups(c *AzurermV1alpha1Client) *managementGroups {
+func newManagementGroups(c *AzurermV1alpha1Client, namespace string) *managementGroups {
 	return &managementGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newManagementGroups(c *AzurermV1alpha1Client) *managementGroups {
 func (c *managementGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.ManagementGroup, err error) {
 	result = &v1alpha1.ManagementGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("managementgroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *managementGroups) List(opts v1.ListOptions) (result *v1alpha1.Managemen
 	}
 	result = &v1alpha1.ManagementGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("managementgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *managementGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("managementgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *managementGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *managementGroups) Create(managementGroup *v1alpha1.ManagementGroup) (result *v1alpha1.ManagementGroup, err error) {
 	result = &v1alpha1.ManagementGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("managementgroups").
 		Body(managementGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *managementGroups) Create(managementGroup *v1alpha1.ManagementGroup) (re
 func (c *managementGroups) Update(managementGroup *v1alpha1.ManagementGroup) (result *v1alpha1.ManagementGroup, err error) {
 	result = &v1alpha1.ManagementGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("managementgroups").
 		Name(managementGroup.Name).
 		Body(managementGroup).
@@ -132,6 +139,7 @@ func (c *managementGroups) Update(managementGroup *v1alpha1.ManagementGroup) (re
 func (c *managementGroups) UpdateStatus(managementGroup *v1alpha1.ManagementGroup) (result *v1alpha1.ManagementGroup, err error) {
 	result = &v1alpha1.ManagementGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("managementgroups").
 		Name(managementGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *managementGroups) UpdateStatus(managementGroup *v1alpha1.ManagementGrou
 // Delete takes name of the managementGroup and deletes it. Returns an error if one occurs.
 func (c *managementGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("managementgroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *managementGroups) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("managementgroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *managementGroups) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *managementGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ManagementGroup, err error) {
 	result = &v1alpha1.ManagementGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("managementgroups").
 		SubResource(subresources...).
 		Name(name).

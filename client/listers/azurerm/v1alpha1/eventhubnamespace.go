@@ -29,8 +29,8 @@ import (
 type EventhubNamespaceLister interface {
 	// List lists all EventhubNamespaces in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EventhubNamespace, err error)
-	// Get retrieves the EventhubNamespace from the index for a given name.
-	Get(name string) (*v1alpha1.EventhubNamespace, error)
+	// EventhubNamespaces returns an object that can list and get EventhubNamespaces.
+	EventhubNamespaces(namespace string) EventhubNamespaceNamespaceLister
 	EventhubNamespaceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *eventhubNamespaceLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the EventhubNamespace from the index for a given name.
-func (s *eventhubNamespaceLister) Get(name string) (*v1alpha1.EventhubNamespace, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EventhubNamespaces returns an object that can list and get EventhubNamespaces.
+func (s *eventhubNamespaceLister) EventhubNamespaces(namespace string) EventhubNamespaceNamespaceLister {
+	return eventhubNamespaceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EventhubNamespaceNamespaceLister helps list and get EventhubNamespaces.
+type EventhubNamespaceNamespaceLister interface {
+	// List lists all EventhubNamespaces in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EventhubNamespace, err error)
+	// Get retrieves the EventhubNamespace from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EventhubNamespace, error)
+	EventhubNamespaceNamespaceListerExpansion
+}
+
+// eventhubNamespaceNamespaceLister implements the EventhubNamespaceNamespaceLister
+// interface.
+type eventhubNamespaceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EventhubNamespaces in the indexer for a given namespace.
+func (s eventhubNamespaceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EventhubNamespace, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EventhubNamespace))
+	})
+	return ret, err
+}
+
+// Get retrieves the EventhubNamespace from the indexer for a given namespace and name.
+func (s eventhubNamespaceNamespaceLister) Get(name string) (*v1alpha1.EventhubNamespace, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // DbInstancesGetter has a method to return a DbInstanceInterface.
 // A group's client should implement this interface.
 type DbInstancesGetter interface {
-	DbInstances() DbInstanceInterface
+	DbInstances(namespace string) DbInstanceInterface
 }
 
 // DbInstanceInterface has methods to work with DbInstance resources.
@@ -52,12 +52,14 @@ type DbInstanceInterface interface {
 // dbInstances implements DbInstanceInterface
 type dbInstances struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDbInstances returns a DbInstances
-func newDbInstances(c *AwsV1alpha1Client) *dbInstances {
+func newDbInstances(c *AwsV1alpha1Client, namespace string) *dbInstances {
 	return &dbInstances{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDbInstances(c *AwsV1alpha1Client) *dbInstances {
 func (c *dbInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.DbInstance, err error) {
 	result = &v1alpha1.DbInstance{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dbinstances").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dbInstances) List(opts v1.ListOptions) (result *v1alpha1.DbInstanceList
 	}
 	result = &v1alpha1.DbInstanceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dbinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dbInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dbinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dbInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dbInstances) Create(dbInstance *v1alpha1.DbInstance) (result *v1alpha1.DbInstance, err error) {
 	result = &v1alpha1.DbInstance{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dbinstances").
 		Body(dbInstance).
 		Do().
@@ -118,6 +124,7 @@ func (c *dbInstances) Create(dbInstance *v1alpha1.DbInstance) (result *v1alpha1.
 func (c *dbInstances) Update(dbInstance *v1alpha1.DbInstance) (result *v1alpha1.DbInstance, err error) {
 	result = &v1alpha1.DbInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dbinstances").
 		Name(dbInstance.Name).
 		Body(dbInstance).
@@ -132,6 +139,7 @@ func (c *dbInstances) Update(dbInstance *v1alpha1.DbInstance) (result *v1alpha1.
 func (c *dbInstances) UpdateStatus(dbInstance *v1alpha1.DbInstance) (result *v1alpha1.DbInstance, err error) {
 	result = &v1alpha1.DbInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dbinstances").
 		Name(dbInstance.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dbInstances) UpdateStatus(dbInstance *v1alpha1.DbInstance) (result *v1a
 // Delete takes name of the dbInstance and deletes it. Returns an error if one occurs.
 func (c *dbInstances) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dbinstances").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dbInstances) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dbinstances").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dbInstances) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *dbInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DbInstance, err error) {
 	result = &v1alpha1.DbInstance{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dbinstances").
 		SubResource(subresources...).
 		Name(name).

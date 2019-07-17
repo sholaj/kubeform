@@ -32,7 +32,7 @@ import (
 // ComputeAttachedDisksGetter has a method to return a ComputeAttachedDiskInterface.
 // A group's client should implement this interface.
 type ComputeAttachedDisksGetter interface {
-	ComputeAttachedDisks() ComputeAttachedDiskInterface
+	ComputeAttachedDisks(namespace string) ComputeAttachedDiskInterface
 }
 
 // ComputeAttachedDiskInterface has methods to work with ComputeAttachedDisk resources.
@@ -52,12 +52,14 @@ type ComputeAttachedDiskInterface interface {
 // computeAttachedDisks implements ComputeAttachedDiskInterface
 type computeAttachedDisks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeAttachedDisks returns a ComputeAttachedDisks
-func newComputeAttachedDisks(c *GoogleV1alpha1Client) *computeAttachedDisks {
+func newComputeAttachedDisks(c *GoogleV1alpha1Client, namespace string) *computeAttachedDisks {
 	return &computeAttachedDisks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeAttachedDisks(c *GoogleV1alpha1Client) *computeAttachedDisks {
 func (c *computeAttachedDisks) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeAttachedDisk, err error) {
 	result = &v1alpha1.ComputeAttachedDisk{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeattacheddisks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeAttachedDisks) List(opts v1.ListOptions) (result *v1alpha1.Compu
 	}
 	result = &v1alpha1.ComputeAttachedDiskList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeattacheddisks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeAttachedDisks) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computeattacheddisks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeAttachedDisks) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *computeAttachedDisks) Create(computeAttachedDisk *v1alpha1.ComputeAttachedDisk) (result *v1alpha1.ComputeAttachedDisk, err error) {
 	result = &v1alpha1.ComputeAttachedDisk{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computeattacheddisks").
 		Body(computeAttachedDisk).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeAttachedDisks) Create(computeAttachedDisk *v1alpha1.ComputeAttac
 func (c *computeAttachedDisks) Update(computeAttachedDisk *v1alpha1.ComputeAttachedDisk) (result *v1alpha1.ComputeAttachedDisk, err error) {
 	result = &v1alpha1.ComputeAttachedDisk{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeattacheddisks").
 		Name(computeAttachedDisk.Name).
 		Body(computeAttachedDisk).
@@ -132,6 +139,7 @@ func (c *computeAttachedDisks) Update(computeAttachedDisk *v1alpha1.ComputeAttac
 func (c *computeAttachedDisks) UpdateStatus(computeAttachedDisk *v1alpha1.ComputeAttachedDisk) (result *v1alpha1.ComputeAttachedDisk, err error) {
 	result = &v1alpha1.ComputeAttachedDisk{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeattacheddisks").
 		Name(computeAttachedDisk.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeAttachedDisks) UpdateStatus(computeAttachedDisk *v1alpha1.Comput
 // Delete takes name of the computeAttachedDisk and deletes it. Returns an error if one occurs.
 func (c *computeAttachedDisks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeattacheddisks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeAttachedDisks) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeattacheddisks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeAttachedDisks) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *computeAttachedDisks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeAttachedDisk, err error) {
 	result = &v1alpha1.ComputeAttachedDisk{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computeattacheddisks").
 		SubResource(subresources...).
 		Name(name).

@@ -41,32 +41,33 @@ type ElasticsearchDomainPolicyInformer interface {
 type elasticsearchDomainPolicyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewElasticsearchDomainPolicyInformer constructs a new informer for ElasticsearchDomainPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewElasticsearchDomainPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredElasticsearchDomainPolicyInformer(client, resyncPeriod, indexers, nil)
+func NewElasticsearchDomainPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredElasticsearchDomainPolicyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredElasticsearchDomainPolicyInformer constructs a new informer for ElasticsearchDomainPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredElasticsearchDomainPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredElasticsearchDomainPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ElasticsearchDomainPolicies().List(options)
+				return client.AwsV1alpha1().ElasticsearchDomainPolicies(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ElasticsearchDomainPolicies().Watch(options)
+				return client.AwsV1alpha1().ElasticsearchDomainPolicies(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.ElasticsearchDomainPolicy{},
@@ -76,7 +77,7 @@ func NewFilteredElasticsearchDomainPolicyInformer(client versioned.Interface, re
 }
 
 func (f *elasticsearchDomainPolicyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredElasticsearchDomainPolicyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredElasticsearchDomainPolicyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *elasticsearchDomainPolicyInformer) Informer() cache.SharedIndexInformer {

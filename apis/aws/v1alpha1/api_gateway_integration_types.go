@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -21,29 +21,30 @@ type ApiGatewayIntegration struct {
 type ApiGatewayIntegrationSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	CacheKeyParameters []string `json:"cache_key_parameters,omitempty"`
+	CacheKeyParameters []string `json:"cacheKeyParameters,omitempty" tf:"cache_key_parameters,omitempty"`
 	// +optional
-	ConnectionId string `json:"connection_id,omitempty"`
+	ConnectionID string `json:"connectionID,omitempty" tf:"connection_id,omitempty"`
 	// +optional
-	ConnectionType string `json:"connection_type,omitempty"`
+	ConnectionType string `json:"connectionType,omitempty" tf:"connection_type,omitempty"`
 	// +optional
-	ContentHandling string `json:"content_handling,omitempty"`
+	ContentHandling string `json:"contentHandling,omitempty" tf:"content_handling,omitempty"`
 	// +optional
-	Credentials string `json:"credentials,omitempty"`
-	HttpMethod  string `json:"http_method"`
+	Credentials string `json:"credentials,omitempty" tf:"credentials,omitempty"`
+	HttpMethod  string `json:"httpMethod" tf:"http_method"`
 	// +optional
-	IntegrationHttpMethod string `json:"integration_http_method,omitempty"`
+	IntegrationHTTPMethod string `json:"integrationHTTPMethod,omitempty" tf:"integration_http_method,omitempty"`
 	// +optional
-	RequestParameters map[string]string `json:"request_parameters,omitempty"`
+	RequestParameters map[string]string `json:"requestParameters,omitempty" tf:"request_parameters,omitempty"`
 	// +optional
-	RequestTemplates map[string]string `json:"request_templates,omitempty"`
-	ResourceId       string            `json:"resource_id"`
-	RestApiId        string            `json:"rest_api_id"`
+	RequestTemplates map[string]string `json:"requestTemplates,omitempty" tf:"request_templates,omitempty"`
+	ResourceID       string            `json:"resourceID" tf:"resource_id"`
+	RestAPIID        string            `json:"restAPIID" tf:"rest_api_id"`
 	// +optional
-	TimeoutMilliseconds int    `json:"timeout_milliseconds,omitempty"`
-	Type                string `json:"type"`
+	TimeoutMilliseconds int    `json:"timeoutMilliseconds,omitempty" tf:"timeout_milliseconds,omitempty"`
+	Type                string `json:"type" tf:"type"`
 	// +optional
-	Uri string `json:"uri,omitempty"`
+	Uri         string                    `json:"uri,omitempty" tf:"uri,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ApiGatewayIntegrationStatus struct {
@@ -51,7 +52,9 @@ type ApiGatewayIntegrationStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

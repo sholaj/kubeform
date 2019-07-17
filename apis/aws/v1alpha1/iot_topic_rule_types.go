@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,129 +19,130 @@ type IotTopicRule struct {
 }
 
 type IotTopicRuleSpecCloudwatchAlarm struct {
-	AlarmName   string `json:"alarm_name"`
-	RoleArn     string `json:"role_arn"`
-	StateReason string `json:"state_reason"`
-	StateValue  string `json:"state_value"`
+	AlarmName   string `json:"alarmName" tf:"alarm_name"`
+	RoleArn     string `json:"roleArn" tf:"role_arn"`
+	StateReason string `json:"stateReason" tf:"state_reason"`
+	StateValue  string `json:"stateValue" tf:"state_value"`
 }
 
 type IotTopicRuleSpecCloudwatchMetric struct {
-	MetricName      string `json:"metric_name"`
-	MetricNamespace string `json:"metric_namespace"`
+	MetricName      string `json:"metricName" tf:"metric_name"`
+	MetricNamespace string `json:"metricNamespace" tf:"metric_namespace"`
 	// +optional
-	MetricTimestamp string `json:"metric_timestamp,omitempty"`
-	MetricUnit      string `json:"metric_unit"`
-	MetricValue     string `json:"metric_value"`
-	RoleArn         string `json:"role_arn"`
+	MetricTimestamp string `json:"metricTimestamp,omitempty" tf:"metric_timestamp,omitempty"`
+	MetricUnit      string `json:"metricUnit" tf:"metric_unit"`
+	MetricValue     string `json:"metricValue" tf:"metric_value"`
+	RoleArn         string `json:"roleArn" tf:"role_arn"`
 }
 
 type IotTopicRuleSpecDynamodb struct {
-	HashKeyField string `json:"hash_key_field"`
+	HashKeyField string `json:"hashKeyField" tf:"hash_key_field"`
 	// +optional
-	HashKeyType  string `json:"hash_key_type,omitempty"`
-	HashKeyValue string `json:"hash_key_value"`
+	HashKeyType  string `json:"hashKeyType,omitempty" tf:"hash_key_type,omitempty"`
+	HashKeyValue string `json:"hashKeyValue" tf:"hash_key_value"`
 	// +optional
-	PayloadField string `json:"payload_field,omitempty"`
+	PayloadField string `json:"payloadField,omitempty" tf:"payload_field,omitempty"`
 	// +optional
-	RangeKeyField string `json:"range_key_field,omitempty"`
+	RangeKeyField string `json:"rangeKeyField,omitempty" tf:"range_key_field,omitempty"`
 	// +optional
-	RangeKeyType string `json:"range_key_type,omitempty"`
+	RangeKeyType string `json:"rangeKeyType,omitempty" tf:"range_key_type,omitempty"`
 	// +optional
-	RangeKeyValue string `json:"range_key_value,omitempty"`
-	RoleArn       string `json:"role_arn"`
-	TableName     string `json:"table_name"`
+	RangeKeyValue string `json:"rangeKeyValue,omitempty" tf:"range_key_value,omitempty"`
+	RoleArn       string `json:"roleArn" tf:"role_arn"`
+	TableName     string `json:"tableName" tf:"table_name"`
 }
 
 type IotTopicRuleSpecElasticsearch struct {
-	Endpoint string `json:"endpoint"`
-	Id       string `json:"id"`
-	Index    string `json:"index"`
-	RoleArn  string `json:"role_arn"`
-	Type     string `json:"type"`
+	Endpoint string `json:"endpoint" tf:"endpoint"`
+	ID       string `json:"ID" tf:"id"`
+	Index    string `json:"index" tf:"index"`
+	RoleArn  string `json:"roleArn" tf:"role_arn"`
+	Type     string `json:"type" tf:"type"`
 }
 
 type IotTopicRuleSpecFirehose struct {
-	DeliveryStreamName string `json:"delivery_stream_name"`
-	RoleArn            string `json:"role_arn"`
+	DeliveryStreamName string `json:"deliveryStreamName" tf:"delivery_stream_name"`
+	RoleArn            string `json:"roleArn" tf:"role_arn"`
 	// +optional
-	Separator string `json:"separator,omitempty"`
+	Separator string `json:"separator,omitempty" tf:"separator,omitempty"`
 }
 
 type IotTopicRuleSpecKinesis struct {
 	// +optional
-	PartitionKey string `json:"partition_key,omitempty"`
-	RoleArn      string `json:"role_arn"`
-	StreamName   string `json:"stream_name"`
+	PartitionKey string `json:"partitionKey,omitempty" tf:"partition_key,omitempty"`
+	RoleArn      string `json:"roleArn" tf:"role_arn"`
+	StreamName   string `json:"streamName" tf:"stream_name"`
 }
 
 type IotTopicRuleSpecLambda struct {
-	FunctionArn string `json:"function_arn"`
+	FunctionArn string `json:"functionArn" tf:"function_arn"`
 }
 
 type IotTopicRuleSpecRepublish struct {
-	RoleArn string `json:"role_arn"`
-	Topic   string `json:"topic"`
+	RoleArn string `json:"roleArn" tf:"role_arn"`
+	Topic   string `json:"topic" tf:"topic"`
 }
 
 type IotTopicRuleSpecS3 struct {
-	BucketName string `json:"bucket_name"`
-	Key        string `json:"key"`
-	RoleArn    string `json:"role_arn"`
+	BucketName string `json:"bucketName" tf:"bucket_name"`
+	Key        string `json:"key" tf:"key"`
+	RoleArn    string `json:"roleArn" tf:"role_arn"`
 }
 
 type IotTopicRuleSpecSns struct {
 	// +optional
-	MessageFormat string `json:"message_format,omitempty"`
-	RoleArn       string `json:"role_arn"`
-	TargetArn     string `json:"target_arn"`
+	MessageFormat string `json:"messageFormat,omitempty" tf:"message_format,omitempty"`
+	RoleArn       string `json:"roleArn" tf:"role_arn"`
+	TargetArn     string `json:"targetArn" tf:"target_arn"`
 }
 
 type IotTopicRuleSpecSqs struct {
-	QueueUrl  string `json:"queue_url"`
-	RoleArn   string `json:"role_arn"`
-	UseBase64 bool   `json:"use_base64"`
+	QueueURL  string `json:"queueURL" tf:"queue_url"`
+	RoleArn   string `json:"roleArn" tf:"role_arn"`
+	UseBase64 bool   `json:"useBase64" tf:"use_base64"`
 }
 
 type IotTopicRuleSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	CloudwatchAlarm *[]IotTopicRuleSpec `json:"cloudwatch_alarm,omitempty"`
+	CloudwatchAlarm []IotTopicRuleSpecCloudwatchAlarm `json:"cloudwatchAlarm,omitempty" tf:"cloudwatch_alarm,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	CloudwatchMetric *[]IotTopicRuleSpec `json:"cloudwatch_metric,omitempty"`
+	CloudwatchMetric []IotTopicRuleSpecCloudwatchMetric `json:"cloudwatchMetric,omitempty" tf:"cloudwatch_metric,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
-	// +optional
-	// +kubebuilder:validation:UniqueItems=true
-	Dynamodb *[]IotTopicRuleSpec `json:"dynamodb,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Elasticsearch *[]IotTopicRuleSpec `json:"elasticsearch,omitempty"`
-	Enabled       bool                `json:"enabled"`
+	Dynamodb []IotTopicRuleSpecDynamodb `json:"dynamodb,omitempty" tf:"dynamodb,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Firehose *[]IotTopicRuleSpec `json:"firehose,omitempty"`
+	Elasticsearch []IotTopicRuleSpecElasticsearch `json:"elasticsearch,omitempty" tf:"elasticsearch,omitempty"`
+	Enabled       bool                            `json:"enabled" tf:"enabled"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Kinesis *[]IotTopicRuleSpec `json:"kinesis,omitempty"`
+	Firehose []IotTopicRuleSpecFirehose `json:"firehose,omitempty" tf:"firehose,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Lambda *[]IotTopicRuleSpec `json:"lambda,omitempty"`
-	Name   string              `json:"name"`
+	Kinesis []IotTopicRuleSpecKinesis `json:"kinesis,omitempty" tf:"kinesis,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Republish *[]IotTopicRuleSpec `json:"republish,omitempty"`
+	Lambda []IotTopicRuleSpecLambda `json:"lambda,omitempty" tf:"lambda,omitempty"`
+	Name   string                   `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	S3 *[]IotTopicRuleSpec `json:"s3,omitempty"`
+	Republish []IotTopicRuleSpecRepublish `json:"republish,omitempty" tf:"republish,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Sns        *[]IotTopicRuleSpec `json:"sns,omitempty"`
-	Sql        string              `json:"sql"`
-	SqlVersion string              `json:"sql_version"`
+	S3 []IotTopicRuleSpecS3 `json:"s3,omitempty" tf:"s3,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Sqs *[]IotTopicRuleSpec `json:"sqs,omitempty"`
+	Sns        []IotTopicRuleSpecSns `json:"sns,omitempty" tf:"sns,omitempty"`
+	Sql        string                `json:"sql" tf:"sql"`
+	SqlVersion string                `json:"sqlVersion" tf:"sql_version"`
+	// +optional
+	// +kubebuilder:validation:UniqueItems=true
+	Sqs         []IotTopicRuleSpecSqs     `json:"sqs,omitempty" tf:"sqs,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type IotTopicRuleStatus struct {
@@ -149,7 +150,9 @@ type IotTopicRuleStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

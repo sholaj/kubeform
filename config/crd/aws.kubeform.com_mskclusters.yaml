@@ -397,39 +397,104 @@ spec:
           type: object
         spec:
           properties:
-            broker_node_group_info:
-              items: {}
+            brokerNodeGroupInfo:
+              items:
+                properties:
+                  azDistribution:
+                    type: string
+                  clientSubnets:
+                    items:
+                      type: string
+                    type: array
+                  ebsVolumeSize:
+                    type: integer
+                  instanceType:
+                    type: string
+                  securityGroups:
+                    items:
+                      type: string
+                    type: array
+                required:
+                - clientSubnets
+                - ebsVolumeSize
+                - instanceType
+                - securityGroups
+                type: object
               maxItems: 1
               type: array
-            client_authentication:
-              items: {}
+            clientAuthentication:
+              items:
+                properties:
+                  tls:
+                    items:
+                      properties:
+                        certificateAuthorityArns:
+                          items:
+                            type: string
+                          type: array
+                          uniqueItems: true
+                      type: object
+                    maxItems: 1
+                    type: array
+                type: object
               maxItems: 1
               type: array
-            cluster_name:
+            clusterName:
               type: string
-            configuration_info:
-              items: {}
+            configurationInfo:
+              items:
+                properties:
+                  arn:
+                    type: string
+                  revision:
+                    type: integer
+                required:
+                - arn
+                - revision
+                type: object
               maxItems: 1
               type: array
-            encryption_info:
-              items: {}
+            encryptionInfo:
+              items:
+                properties:
+                  encryptionInTransit:
+                    items:
+                      properties:
+                        clientBroker:
+                          type: string
+                        inCluster:
+                          type: boolean
+                      type: object
+                    maxItems: 1
+                    type: array
+                type: object
               maxItems: 1
               type: array
-            enhanced_monitoring:
+            enhancedMonitoring:
               type: string
-            kafka_version:
+            kafkaVersion:
               type: string
-            number_of_broker_nodes:
+            numberOfBrokerNodes:
               type: integer
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             tags:
               additionalProperties:
                 type: string
               type: object
           required:
-          - broker_node_group_info
-          - cluster_name
-          - kafka_version
-          - number_of_broker_nodes
+          - brokerNodeGroupInfo
+          - clusterName
+          - kafkaVersion
+          - numberOfBrokerNodes
+          - providerRef
           type: object
         status:
           properties:
@@ -440,6 +505,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

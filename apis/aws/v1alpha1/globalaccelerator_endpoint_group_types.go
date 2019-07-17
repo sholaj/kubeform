@@ -3,12 +3,12 @@ package v1alpha1
 import (
 	"encoding/json"
 
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -22,29 +22,30 @@ type GlobalacceleratorEndpointGroup struct {
 
 type GlobalacceleratorEndpointGroupSpecEndpointConfiguration struct {
 	// +optional
-	EndpointId string `json:"endpoint_id,omitempty"`
+	EndpointID string `json:"endpointID,omitempty" tf:"endpoint_id,omitempty"`
 	// +optional
-	Weight int `json:"weight,omitempty"`
+	Weight int `json:"weight,omitempty" tf:"weight,omitempty"`
 }
 
 type GlobalacceleratorEndpointGroupSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=10
 	// +kubebuilder:validation:UniqueItems=true
-	EndpointConfiguration *[]GlobalacceleratorEndpointGroupSpec `json:"endpoint_configuration,omitempty"`
+	EndpointConfiguration []GlobalacceleratorEndpointGroupSpecEndpointConfiguration `json:"endpointConfiguration,omitempty" tf:"endpoint_configuration,omitempty"`
 	// +optional
-	HealthCheckIntervalSeconds int `json:"health_check_interval_seconds,omitempty"`
+	HealthCheckIntervalSeconds int `json:"healthCheckIntervalSeconds,omitempty" tf:"health_check_interval_seconds,omitempty"`
 	// +optional
-	HealthCheckPath string `json:"health_check_path,omitempty"`
+	HealthCheckPath string `json:"healthCheckPath,omitempty" tf:"health_check_path,omitempty"`
 	// +optional
-	HealthCheckPort int `json:"health_check_port,omitempty"`
+	HealthCheckPort int `json:"healthCheckPort,omitempty" tf:"health_check_port,omitempty"`
 	// +optional
-	HealthCheckProtocol string `json:"health_check_protocol,omitempty"`
-	ListenerArn         string `json:"listener_arn"`
+	HealthCheckProtocol string `json:"healthCheckProtocol,omitempty" tf:"health_check_protocol,omitempty"`
+	ListenerArn         string `json:"listenerArn" tf:"listener_arn"`
 	// +optional
-	ThresholdCount int `json:"threshold_count,omitempty"`
+	ThresholdCount int `json:"thresholdCount,omitempty" tf:"threshold_count,omitempty"`
 	// +optional
-	TrafficDialPercentage json.Number `json:"traffic_dial_percentage,omitempty"`
+	TrafficDialPercentage json.Number               `json:"trafficDialPercentage,omitempty" tf:"traffic_dial_percentage,omitempty"`
+	ProviderRef           core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type GlobalacceleratorEndpointGroupStatus struct {
@@ -52,7 +53,9 @@ type GlobalacceleratorEndpointGroupStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

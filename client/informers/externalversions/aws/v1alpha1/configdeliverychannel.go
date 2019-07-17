@@ -41,32 +41,33 @@ type ConfigDeliveryChannelInformer interface {
 type configDeliveryChannelInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewConfigDeliveryChannelInformer constructs a new informer for ConfigDeliveryChannel type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewConfigDeliveryChannelInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredConfigDeliveryChannelInformer(client, resyncPeriod, indexers, nil)
+func NewConfigDeliveryChannelInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredConfigDeliveryChannelInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredConfigDeliveryChannelInformer constructs a new informer for ConfigDeliveryChannel type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredConfigDeliveryChannelInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredConfigDeliveryChannelInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ConfigDeliveryChannels().List(options)
+				return client.AwsV1alpha1().ConfigDeliveryChannels(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ConfigDeliveryChannels().Watch(options)
+				return client.AwsV1alpha1().ConfigDeliveryChannels(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.ConfigDeliveryChannel{},
@@ -76,7 +77,7 @@ func NewFilteredConfigDeliveryChannelInformer(client versioned.Interface, resync
 }
 
 func (f *configDeliveryChannelInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredConfigDeliveryChannelInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredConfigDeliveryChannelInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *configDeliveryChannelInformer) Informer() cache.SharedIndexInformer {

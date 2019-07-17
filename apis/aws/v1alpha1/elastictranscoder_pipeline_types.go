@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,48 +20,49 @@ type ElastictranscoderPipeline struct {
 
 type ElastictranscoderPipelineSpecContentConfigPermissions struct {
 	// +optional
-	Access []string `json:"access,omitempty"`
+	Access []string `json:"access,omitempty" tf:"access,omitempty"`
 	// +optional
-	Grantee string `json:"grantee,omitempty"`
+	Grantee string `json:"grantee,omitempty" tf:"grantee,omitempty"`
 	// +optional
-	GranteeType string `json:"grantee_type,omitempty"`
+	GranteeType string `json:"granteeType,omitempty" tf:"grantee_type,omitempty"`
 }
 
 type ElastictranscoderPipelineSpecNotifications struct {
 	// +optional
-	Completed string `json:"completed,omitempty"`
+	Completed string `json:"completed,omitempty" tf:"completed,omitempty"`
 	// +optional
-	Error string `json:"error,omitempty"`
+	Error string `json:"error,omitempty" tf:"error,omitempty"`
 	// +optional
-	Progressing string `json:"progressing,omitempty"`
+	Progressing string `json:"progressing,omitempty" tf:"progressing,omitempty"`
 	// +optional
-	Warning string `json:"warning,omitempty"`
+	Warning string `json:"warning,omitempty" tf:"warning,omitempty"`
 }
 
 type ElastictranscoderPipelineSpecThumbnailConfigPermissions struct {
 	// +optional
-	Access []string `json:"access,omitempty"`
+	Access []string `json:"access,omitempty" tf:"access,omitempty"`
 	// +optional
-	Grantee string `json:"grantee,omitempty"`
+	Grantee string `json:"grantee,omitempty" tf:"grantee,omitempty"`
 	// +optional
-	GranteeType string `json:"grantee_type,omitempty"`
+	GranteeType string `json:"granteeType,omitempty" tf:"grantee_type,omitempty"`
 }
 
 type ElastictranscoderPipelineSpec struct {
 	// +optional
-	AwsKmsKeyArn string `json:"aws_kms_key_arn,omitempty"`
+	AwsKmsKeyArn string `json:"awsKmsKeyArn,omitempty" tf:"aws_kms_key_arn,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	ContentConfigPermissions *[]ElastictranscoderPipelineSpec `json:"content_config_permissions,omitempty"`
-	InputBucket              string                           `json:"input_bucket"`
+	ContentConfigPermissions []ElastictranscoderPipelineSpecContentConfigPermissions `json:"contentConfigPermissions,omitempty" tf:"content_config_permissions,omitempty"`
+	InputBucket              string                                                  `json:"inputBucket" tf:"input_bucket"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	Notifications *[]ElastictranscoderPipelineSpec `json:"notifications,omitempty"`
-	Role          string                           `json:"role"`
+	Notifications []ElastictranscoderPipelineSpecNotifications `json:"notifications,omitempty" tf:"notifications,omitempty"`
+	Role          string                                       `json:"role" tf:"role"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	ThumbnailConfigPermissions *[]ElastictranscoderPipelineSpec `json:"thumbnail_config_permissions,omitempty"`
+	ThumbnailConfigPermissions []ElastictranscoderPipelineSpecThumbnailConfigPermissions `json:"thumbnailConfigPermissions,omitempty" tf:"thumbnail_config_permissions,omitempty"`
+	ProviderRef                core.LocalObjectReference                                 `json:"providerRef" tf:"-"`
 }
 
 type ElastictranscoderPipelineStatus struct {
@@ -69,7 +70,9 @@ type ElastictranscoderPipelineStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

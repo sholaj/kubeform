@@ -41,32 +41,33 @@ type DynamodbTableItemInformer interface {
 type dynamodbTableItemInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDynamodbTableItemInformer constructs a new informer for DynamodbTableItem type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDynamodbTableItemInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDynamodbTableItemInformer(client, resyncPeriod, indexers, nil)
+func NewDynamodbTableItemInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDynamodbTableItemInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDynamodbTableItemInformer constructs a new informer for DynamodbTableItem type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDynamodbTableItemInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDynamodbTableItemInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DynamodbTableItems().List(options)
+				return client.AwsV1alpha1().DynamodbTableItems(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DynamodbTableItems().Watch(options)
+				return client.AwsV1alpha1().DynamodbTableItems(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.DynamodbTableItem{},
@@ -76,7 +77,7 @@ func NewFilteredDynamodbTableItemInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *dynamodbTableItemInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDynamodbTableItemInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDynamodbTableItemInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *dynamodbTableItemInformer) Informer() cache.SharedIndexInformer {

@@ -29,8 +29,8 @@ import (
 type NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationLister interface {
 	// List lists all NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation, err error)
-	// Get retrieves the NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation, error)
+	// NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations returns an object that can list and get NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations.
+	NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations(namespace string) NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationNamespaceLister
 	NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *networkInterfaceApplicationGatewayBackendAddressPoolAssociationLister) 
 	return ret, err
 }
 
-// Get retrieves the NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation from the index for a given name.
-func (s *networkInterfaceApplicationGatewayBackendAddressPoolAssociationLister) Get(name string) (*v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations returns an object that can list and get NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations.
+func (s *networkInterfaceApplicationGatewayBackendAddressPoolAssociationLister) NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations(namespace string) NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationNamespaceLister {
+	return networkInterfaceApplicationGatewayBackendAddressPoolAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationNamespaceLister helps list and get NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations.
+type NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationNamespaceLister interface {
+	// List lists all NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation, err error)
+	// Get retrieves the NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation, error)
+	NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationNamespaceListerExpansion
+}
+
+// networkInterfaceApplicationGatewayBackendAddressPoolAssociationNamespaceLister implements the NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationNamespaceLister
+// interface.
+type networkInterfaceApplicationGatewayBackendAddressPoolAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations in the indexer for a given namespace.
+func (s networkInterfaceApplicationGatewayBackendAddressPoolAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation from the indexer for a given namespace and name.
+func (s networkInterfaceApplicationGatewayBackendAddressPoolAssociationNamespaceLister) Get(name string) (*v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

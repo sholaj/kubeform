@@ -29,8 +29,8 @@ import (
 type AppsyncDatasourceLister interface {
 	// List lists all AppsyncDatasources in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AppsyncDatasource, err error)
-	// Get retrieves the AppsyncDatasource from the index for a given name.
-	Get(name string) (*v1alpha1.AppsyncDatasource, error)
+	// AppsyncDatasources returns an object that can list and get AppsyncDatasources.
+	AppsyncDatasources(namespace string) AppsyncDatasourceNamespaceLister
 	AppsyncDatasourceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *appsyncDatasourceLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the AppsyncDatasource from the index for a given name.
-func (s *appsyncDatasourceLister) Get(name string) (*v1alpha1.AppsyncDatasource, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AppsyncDatasources returns an object that can list and get AppsyncDatasources.
+func (s *appsyncDatasourceLister) AppsyncDatasources(namespace string) AppsyncDatasourceNamespaceLister {
+	return appsyncDatasourceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AppsyncDatasourceNamespaceLister helps list and get AppsyncDatasources.
+type AppsyncDatasourceNamespaceLister interface {
+	// List lists all AppsyncDatasources in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AppsyncDatasource, err error)
+	// Get retrieves the AppsyncDatasource from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AppsyncDatasource, error)
+	AppsyncDatasourceNamespaceListerExpansion
+}
+
+// appsyncDatasourceNamespaceLister implements the AppsyncDatasourceNamespaceLister
+// interface.
+type appsyncDatasourceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AppsyncDatasources in the indexer for a given namespace.
+func (s appsyncDatasourceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AppsyncDatasource, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AppsyncDatasource))
+	})
+	return ret, err
+}
+
+// Get retrieves the AppsyncDatasource from the indexer for a given namespace and name.
+func (s appsyncDatasourceNamespaceLister) Get(name string) (*v1alpha1.AppsyncDatasource, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

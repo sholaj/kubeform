@@ -29,8 +29,8 @@ import (
 type ComputeInstanceFromTemplateLister interface {
 	// List lists all ComputeInstanceFromTemplates in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeInstanceFromTemplate, err error)
-	// Get retrieves the ComputeInstanceFromTemplate from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeInstanceFromTemplate, error)
+	// ComputeInstanceFromTemplates returns an object that can list and get ComputeInstanceFromTemplates.
+	ComputeInstanceFromTemplates(namespace string) ComputeInstanceFromTemplateNamespaceLister
 	ComputeInstanceFromTemplateListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeInstanceFromTemplateLister) List(selector labels.Selector) (ret 
 	return ret, err
 }
 
-// Get retrieves the ComputeInstanceFromTemplate from the index for a given name.
-func (s *computeInstanceFromTemplateLister) Get(name string) (*v1alpha1.ComputeInstanceFromTemplate, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeInstanceFromTemplates returns an object that can list and get ComputeInstanceFromTemplates.
+func (s *computeInstanceFromTemplateLister) ComputeInstanceFromTemplates(namespace string) ComputeInstanceFromTemplateNamespaceLister {
+	return computeInstanceFromTemplateNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeInstanceFromTemplateNamespaceLister helps list and get ComputeInstanceFromTemplates.
+type ComputeInstanceFromTemplateNamespaceLister interface {
+	// List lists all ComputeInstanceFromTemplates in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeInstanceFromTemplate, err error)
+	// Get retrieves the ComputeInstanceFromTemplate from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeInstanceFromTemplate, error)
+	ComputeInstanceFromTemplateNamespaceListerExpansion
+}
+
+// computeInstanceFromTemplateNamespaceLister implements the ComputeInstanceFromTemplateNamespaceLister
+// interface.
+type computeInstanceFromTemplateNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeInstanceFromTemplates in the indexer for a given namespace.
+func (s computeInstanceFromTemplateNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeInstanceFromTemplate, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeInstanceFromTemplate))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeInstanceFromTemplate from the indexer for a given namespace and name.
+func (s computeInstanceFromTemplateNamespaceLister) Get(name string) (*v1alpha1.ComputeInstanceFromTemplate, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

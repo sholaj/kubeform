@@ -41,32 +41,33 @@ type CloudhsmV2ClusterInformer interface {
 type cloudhsmV2ClusterInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewCloudhsmV2ClusterInformer constructs a new informer for CloudhsmV2Cluster type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCloudhsmV2ClusterInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCloudhsmV2ClusterInformer(client, resyncPeriod, indexers, nil)
+func NewCloudhsmV2ClusterInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCloudhsmV2ClusterInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredCloudhsmV2ClusterInformer constructs a new informer for CloudhsmV2Cluster type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCloudhsmV2ClusterInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCloudhsmV2ClusterInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CloudhsmV2Clusters().List(options)
+				return client.AwsV1alpha1().CloudhsmV2Clusters(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CloudhsmV2Clusters().Watch(options)
+				return client.AwsV1alpha1().CloudhsmV2Clusters(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.CloudhsmV2Cluster{},
@@ -76,7 +77,7 @@ func NewFilteredCloudhsmV2ClusterInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *cloudhsmV2ClusterInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCloudhsmV2ClusterInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredCloudhsmV2ClusterInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *cloudhsmV2ClusterInformer) Informer() cache.SharedIndexInformer {

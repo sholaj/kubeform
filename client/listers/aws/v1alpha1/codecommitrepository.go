@@ -29,8 +29,8 @@ import (
 type CodecommitRepositoryLister interface {
 	// List lists all CodecommitRepositories in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CodecommitRepository, err error)
-	// Get retrieves the CodecommitRepository from the index for a given name.
-	Get(name string) (*v1alpha1.CodecommitRepository, error)
+	// CodecommitRepositories returns an object that can list and get CodecommitRepositories.
+	CodecommitRepositories(namespace string) CodecommitRepositoryNamespaceLister
 	CodecommitRepositoryListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *codecommitRepositoryLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the CodecommitRepository from the index for a given name.
-func (s *codecommitRepositoryLister) Get(name string) (*v1alpha1.CodecommitRepository, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CodecommitRepositories returns an object that can list and get CodecommitRepositories.
+func (s *codecommitRepositoryLister) CodecommitRepositories(namespace string) CodecommitRepositoryNamespaceLister {
+	return codecommitRepositoryNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CodecommitRepositoryNamespaceLister helps list and get CodecommitRepositories.
+type CodecommitRepositoryNamespaceLister interface {
+	// List lists all CodecommitRepositories in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CodecommitRepository, err error)
+	// Get retrieves the CodecommitRepository from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CodecommitRepository, error)
+	CodecommitRepositoryNamespaceListerExpansion
+}
+
+// codecommitRepositoryNamespaceLister implements the CodecommitRepositoryNamespaceLister
+// interface.
+type codecommitRepositoryNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CodecommitRepositories in the indexer for a given namespace.
+func (s codecommitRepositoryNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CodecommitRepository, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CodecommitRepository))
+	})
+	return ret, err
+}
+
+// Get retrieves the CodecommitRepository from the indexer for a given namespace and name.
+func (s codecommitRepositoryNamespaceLister) Get(name string) (*v1alpha1.CodecommitRepository, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

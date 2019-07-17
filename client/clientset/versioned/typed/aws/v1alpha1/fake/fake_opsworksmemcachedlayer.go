@@ -31,6 +31,7 @@ import (
 // FakeOpsworksMemcachedLayers implements OpsworksMemcachedLayerInterface
 type FakeOpsworksMemcachedLayers struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var opsworksmemcachedlayersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "opsworksmemcachedlayers"}
@@ -40,7 +41,8 @@ var opsworksmemcachedlayersKind = schema.GroupVersionKind{Group: "aws.kubeform.c
 // Get takes name of the opsworksMemcachedLayer, and returns the corresponding opsworksMemcachedLayer object, and an error if there is any.
 func (c *FakeOpsworksMemcachedLayers) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksMemcachedLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(opsworksmemcachedlayersResource, name), &v1alpha1.OpsworksMemcachedLayer{})
+		Invokes(testing.NewGetAction(opsworksmemcachedlayersResource, c.ns, name), &v1alpha1.OpsworksMemcachedLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeOpsworksMemcachedLayers) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of OpsworksMemcachedLayers that match those selectors.
 func (c *FakeOpsworksMemcachedLayers) List(opts v1.ListOptions) (result *v1alpha1.OpsworksMemcachedLayerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(opsworksmemcachedlayersResource, opsworksmemcachedlayersKind, opts), &v1alpha1.OpsworksMemcachedLayerList{})
+		Invokes(testing.NewListAction(opsworksmemcachedlayersResource, opsworksmemcachedlayersKind, c.ns, opts), &v1alpha1.OpsworksMemcachedLayerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeOpsworksMemcachedLayers) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested opsworksMemcachedLayers.
 func (c *FakeOpsworksMemcachedLayers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(opsworksmemcachedlayersResource, opts))
+		InvokesWatch(testing.NewWatchAction(opsworksmemcachedlayersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a opsworksMemcachedLayer and creates it.  Returns the server's representation of the opsworksMemcachedLayer, and an error, if there is any.
 func (c *FakeOpsworksMemcachedLayers) Create(opsworksMemcachedLayer *v1alpha1.OpsworksMemcachedLayer) (result *v1alpha1.OpsworksMemcachedLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(opsworksmemcachedlayersResource, opsworksMemcachedLayer), &v1alpha1.OpsworksMemcachedLayer{})
+		Invokes(testing.NewCreateAction(opsworksmemcachedlayersResource, c.ns, opsworksMemcachedLayer), &v1alpha1.OpsworksMemcachedLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeOpsworksMemcachedLayers) Create(opsworksMemcachedLayer *v1alpha1.Op
 // Update takes the representation of a opsworksMemcachedLayer and updates it. Returns the server's representation of the opsworksMemcachedLayer, and an error, if there is any.
 func (c *FakeOpsworksMemcachedLayers) Update(opsworksMemcachedLayer *v1alpha1.OpsworksMemcachedLayer) (result *v1alpha1.OpsworksMemcachedLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(opsworksmemcachedlayersResource, opsworksMemcachedLayer), &v1alpha1.OpsworksMemcachedLayer{})
+		Invokes(testing.NewUpdateAction(opsworksmemcachedlayersResource, c.ns, opsworksMemcachedLayer), &v1alpha1.OpsworksMemcachedLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeOpsworksMemcachedLayers) Update(opsworksMemcachedLayer *v1alpha1.Op
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeOpsworksMemcachedLayers) UpdateStatus(opsworksMemcachedLayer *v1alpha1.OpsworksMemcachedLayer) (*v1alpha1.OpsworksMemcachedLayer, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(opsworksmemcachedlayersResource, "status", opsworksMemcachedLayer), &v1alpha1.OpsworksMemcachedLayer{})
+		Invokes(testing.NewUpdateSubresourceAction(opsworksmemcachedlayersResource, "status", c.ns, opsworksMemcachedLayer), &v1alpha1.OpsworksMemcachedLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeOpsworksMemcachedLayers) UpdateStatus(opsworksMemcachedLayer *v1alp
 // Delete takes name of the opsworksMemcachedLayer and deletes it. Returns an error if one occurs.
 func (c *FakeOpsworksMemcachedLayers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(opsworksmemcachedlayersResource, name), &v1alpha1.OpsworksMemcachedLayer{})
+		Invokes(testing.NewDeleteAction(opsworksmemcachedlayersResource, c.ns, name), &v1alpha1.OpsworksMemcachedLayer{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeOpsworksMemcachedLayers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(opsworksmemcachedlayersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(opsworksmemcachedlayersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.OpsworksMemcachedLayerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeOpsworksMemcachedLayers) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched opsworksMemcachedLayer.
 func (c *FakeOpsworksMemcachedLayers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksMemcachedLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(opsworksmemcachedlayersResource, name, pt, data, subresources...), &v1alpha1.OpsworksMemcachedLayer{})
+		Invokes(testing.NewPatchSubresourceAction(opsworksmemcachedlayersResource, c.ns, name, pt, data, subresources...), &v1alpha1.OpsworksMemcachedLayer{})
+
 	if obj == nil {
 		return nil, err
 	}

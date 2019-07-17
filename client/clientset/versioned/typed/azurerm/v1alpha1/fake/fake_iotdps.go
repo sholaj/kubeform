@@ -31,6 +31,7 @@ import (
 // FakeIotDpses implements IotDpsInterface
 type FakeIotDpses struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var iotdpsesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "iotdpses"}
@@ -40,7 +41,8 @@ var iotdpsesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Versio
 // Get takes name of the iotDps, and returns the corresponding iotDps object, and an error if there is any.
 func (c *FakeIotDpses) Get(name string, options v1.GetOptions) (result *v1alpha1.IotDps, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iotdpsesResource, name), &v1alpha1.IotDps{})
+		Invokes(testing.NewGetAction(iotdpsesResource, c.ns, name), &v1alpha1.IotDps{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIotDpses) Get(name string, options v1.GetOptions) (result *v1alpha1
 // List takes label and field selectors, and returns the list of IotDpses that match those selectors.
 func (c *FakeIotDpses) List(opts v1.ListOptions) (result *v1alpha1.IotDpsList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iotdpsesResource, iotdpsesKind, opts), &v1alpha1.IotDpsList{})
+		Invokes(testing.NewListAction(iotdpsesResource, iotdpsesKind, c.ns, opts), &v1alpha1.IotDpsList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIotDpses) List(opts v1.ListOptions) (result *v1alpha1.IotDpsList, e
 // Watch returns a watch.Interface that watches the requested iotDpses.
 func (c *FakeIotDpses) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iotdpsesResource, opts))
+		InvokesWatch(testing.NewWatchAction(iotdpsesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iotDps and creates it.  Returns the server's representation of the iotDps, and an error, if there is any.
 func (c *FakeIotDpses) Create(iotDps *v1alpha1.IotDps) (result *v1alpha1.IotDps, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iotdpsesResource, iotDps), &v1alpha1.IotDps{})
+		Invokes(testing.NewCreateAction(iotdpsesResource, c.ns, iotDps), &v1alpha1.IotDps{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIotDpses) Create(iotDps *v1alpha1.IotDps) (result *v1alpha1.IotDps,
 // Update takes the representation of a iotDps and updates it. Returns the server's representation of the iotDps, and an error, if there is any.
 func (c *FakeIotDpses) Update(iotDps *v1alpha1.IotDps) (result *v1alpha1.IotDps, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iotdpsesResource, iotDps), &v1alpha1.IotDps{})
+		Invokes(testing.NewUpdateAction(iotdpsesResource, c.ns, iotDps), &v1alpha1.IotDps{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIotDpses) Update(iotDps *v1alpha1.IotDps) (result *v1alpha1.IotDps,
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIotDpses) UpdateStatus(iotDps *v1alpha1.IotDps) (*v1alpha1.IotDps, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iotdpsesResource, "status", iotDps), &v1alpha1.IotDps{})
+		Invokes(testing.NewUpdateSubresourceAction(iotdpsesResource, "status", c.ns, iotDps), &v1alpha1.IotDps{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIotDpses) UpdateStatus(iotDps *v1alpha1.IotDps) (*v1alpha1.IotDps, 
 // Delete takes name of the iotDps and deletes it. Returns an error if one occurs.
 func (c *FakeIotDpses) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iotdpsesResource, name), &v1alpha1.IotDps{})
+		Invokes(testing.NewDeleteAction(iotdpsesResource, c.ns, name), &v1alpha1.IotDps{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIotDpses) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iotdpsesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iotdpsesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IotDpsList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIotDpses) DeleteCollection(options *v1.DeleteOptions, listOptions v
 // Patch applies the patch and returns the patched iotDps.
 func (c *FakeIotDpses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IotDps, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iotdpsesResource, name, pt, data, subresources...), &v1alpha1.IotDps{})
+		Invokes(testing.NewPatchSubresourceAction(iotdpsesResource, c.ns, name, pt, data, subresources...), &v1alpha1.IotDps{})
+
 	if obj == nil {
 		return nil, err
 	}

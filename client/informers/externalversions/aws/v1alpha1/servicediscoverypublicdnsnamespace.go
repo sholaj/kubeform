@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// ServiceDiscoveryPublicDnsNamespaceInformer provides access to a shared informer and lister for
-// ServiceDiscoveryPublicDnsNamespaces.
-type ServiceDiscoveryPublicDnsNamespaceInformer interface {
+// ServiceDiscoveryPublicDNSNamespaceInformer provides access to a shared informer and lister for
+// ServiceDiscoveryPublicDNSNamespaces.
+type ServiceDiscoveryPublicDNSNamespaceInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.ServiceDiscoveryPublicDnsNamespaceLister
+	Lister() v1alpha1.ServiceDiscoveryPublicDNSNamespaceLister
 }
 
-type serviceDiscoveryPublicDnsNamespaceInformer struct {
+type serviceDiscoveryPublicDNSNamespaceInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewServiceDiscoveryPublicDnsNamespaceInformer constructs a new informer for ServiceDiscoveryPublicDnsNamespace type.
+// NewServiceDiscoveryPublicDNSNamespaceInformer constructs a new informer for ServiceDiscoveryPublicDNSNamespace type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewServiceDiscoveryPublicDnsNamespaceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredServiceDiscoveryPublicDnsNamespaceInformer(client, resyncPeriod, indexers, nil)
+func NewServiceDiscoveryPublicDNSNamespaceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredServiceDiscoveryPublicDNSNamespaceInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredServiceDiscoveryPublicDnsNamespaceInformer constructs a new informer for ServiceDiscoveryPublicDnsNamespace type.
+// NewFilteredServiceDiscoveryPublicDNSNamespaceInformer constructs a new informer for ServiceDiscoveryPublicDNSNamespace type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredServiceDiscoveryPublicDnsNamespaceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredServiceDiscoveryPublicDNSNamespaceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ServiceDiscoveryPublicDnsNamespaces().List(options)
+				return client.AwsV1alpha1().ServiceDiscoveryPublicDNSNamespaces(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ServiceDiscoveryPublicDnsNamespaces().Watch(options)
+				return client.AwsV1alpha1().ServiceDiscoveryPublicDNSNamespaces(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.ServiceDiscoveryPublicDnsNamespace{},
+		&awsv1alpha1.ServiceDiscoveryPublicDNSNamespace{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *serviceDiscoveryPublicDnsNamespaceInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredServiceDiscoveryPublicDnsNamespaceInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *serviceDiscoveryPublicDNSNamespaceInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredServiceDiscoveryPublicDNSNamespaceInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *serviceDiscoveryPublicDnsNamespaceInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.ServiceDiscoveryPublicDnsNamespace{}, f.defaultInformer)
+func (f *serviceDiscoveryPublicDNSNamespaceInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.ServiceDiscoveryPublicDNSNamespace{}, f.defaultInformer)
 }
 
-func (f *serviceDiscoveryPublicDnsNamespaceInformer) Lister() v1alpha1.ServiceDiscoveryPublicDnsNamespaceLister {
-	return v1alpha1.NewServiceDiscoveryPublicDnsNamespaceLister(f.Informer().GetIndexer())
+func (f *serviceDiscoveryPublicDNSNamespaceInformer) Lister() v1alpha1.ServiceDiscoveryPublicDNSNamespaceLister {
+	return v1alpha1.NewServiceDiscoveryPublicDNSNamespaceLister(f.Informer().GetIndexer())
 }

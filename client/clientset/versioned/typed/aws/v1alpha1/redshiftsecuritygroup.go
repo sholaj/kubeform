@@ -32,7 +32,7 @@ import (
 // RedshiftSecurityGroupsGetter has a method to return a RedshiftSecurityGroupInterface.
 // A group's client should implement this interface.
 type RedshiftSecurityGroupsGetter interface {
-	RedshiftSecurityGroups() RedshiftSecurityGroupInterface
+	RedshiftSecurityGroups(namespace string) RedshiftSecurityGroupInterface
 }
 
 // RedshiftSecurityGroupInterface has methods to work with RedshiftSecurityGroup resources.
@@ -52,12 +52,14 @@ type RedshiftSecurityGroupInterface interface {
 // redshiftSecurityGroups implements RedshiftSecurityGroupInterface
 type redshiftSecurityGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRedshiftSecurityGroups returns a RedshiftSecurityGroups
-func newRedshiftSecurityGroups(c *AwsV1alpha1Client) *redshiftSecurityGroups {
+func newRedshiftSecurityGroups(c *AwsV1alpha1Client, namespace string) *redshiftSecurityGroups {
 	return &redshiftSecurityGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRedshiftSecurityGroups(c *AwsV1alpha1Client) *redshiftSecurityGroups {
 func (c *redshiftSecurityGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.RedshiftSecurityGroup, err error) {
 	result = &v1alpha1.RedshiftSecurityGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("redshiftsecuritygroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *redshiftSecurityGroups) List(opts v1.ListOptions) (result *v1alpha1.Red
 	}
 	result = &v1alpha1.RedshiftSecurityGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("redshiftsecuritygroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *redshiftSecurityGroups) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("redshiftsecuritygroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *redshiftSecurityGroups) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *redshiftSecurityGroups) Create(redshiftSecurityGroup *v1alpha1.RedshiftSecurityGroup) (result *v1alpha1.RedshiftSecurityGroup, err error) {
 	result = &v1alpha1.RedshiftSecurityGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("redshiftsecuritygroups").
 		Body(redshiftSecurityGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *redshiftSecurityGroups) Create(redshiftSecurityGroup *v1alpha1.Redshift
 func (c *redshiftSecurityGroups) Update(redshiftSecurityGroup *v1alpha1.RedshiftSecurityGroup) (result *v1alpha1.RedshiftSecurityGroup, err error) {
 	result = &v1alpha1.RedshiftSecurityGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("redshiftsecuritygroups").
 		Name(redshiftSecurityGroup.Name).
 		Body(redshiftSecurityGroup).
@@ -132,6 +139,7 @@ func (c *redshiftSecurityGroups) Update(redshiftSecurityGroup *v1alpha1.Redshift
 func (c *redshiftSecurityGroups) UpdateStatus(redshiftSecurityGroup *v1alpha1.RedshiftSecurityGroup) (result *v1alpha1.RedshiftSecurityGroup, err error) {
 	result = &v1alpha1.RedshiftSecurityGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("redshiftsecuritygroups").
 		Name(redshiftSecurityGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *redshiftSecurityGroups) UpdateStatus(redshiftSecurityGroup *v1alpha1.Re
 // Delete takes name of the redshiftSecurityGroup and deletes it. Returns an error if one occurs.
 func (c *redshiftSecurityGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("redshiftsecuritygroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *redshiftSecurityGroups) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("redshiftsecuritygroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *redshiftSecurityGroups) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *redshiftSecurityGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RedshiftSecurityGroup, err error) {
 	result = &v1alpha1.RedshiftSecurityGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("redshiftsecuritygroups").
 		SubResource(subresources...).
 		Name(name).

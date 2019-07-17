@@ -29,8 +29,8 @@ import (
 type ComputeInstanceGroupManagerLister interface {
 	// List lists all ComputeInstanceGroupManagers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeInstanceGroupManager, err error)
-	// Get retrieves the ComputeInstanceGroupManager from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeInstanceGroupManager, error)
+	// ComputeInstanceGroupManagers returns an object that can list and get ComputeInstanceGroupManagers.
+	ComputeInstanceGroupManagers(namespace string) ComputeInstanceGroupManagerNamespaceLister
 	ComputeInstanceGroupManagerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeInstanceGroupManagerLister) List(selector labels.Selector) (ret 
 	return ret, err
 }
 
-// Get retrieves the ComputeInstanceGroupManager from the index for a given name.
-func (s *computeInstanceGroupManagerLister) Get(name string) (*v1alpha1.ComputeInstanceGroupManager, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeInstanceGroupManagers returns an object that can list and get ComputeInstanceGroupManagers.
+func (s *computeInstanceGroupManagerLister) ComputeInstanceGroupManagers(namespace string) ComputeInstanceGroupManagerNamespaceLister {
+	return computeInstanceGroupManagerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeInstanceGroupManagerNamespaceLister helps list and get ComputeInstanceGroupManagers.
+type ComputeInstanceGroupManagerNamespaceLister interface {
+	// List lists all ComputeInstanceGroupManagers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeInstanceGroupManager, err error)
+	// Get retrieves the ComputeInstanceGroupManager from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeInstanceGroupManager, error)
+	ComputeInstanceGroupManagerNamespaceListerExpansion
+}
+
+// computeInstanceGroupManagerNamespaceLister implements the ComputeInstanceGroupManagerNamespaceLister
+// interface.
+type computeInstanceGroupManagerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeInstanceGroupManagers in the indexer for a given namespace.
+func (s computeInstanceGroupManagerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeInstanceGroupManager, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeInstanceGroupManager))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeInstanceGroupManager from the indexer for a given namespace and name.
+func (s computeInstanceGroupManagerNamespaceLister) Get(name string) (*v1alpha1.ComputeInstanceGroupManager, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

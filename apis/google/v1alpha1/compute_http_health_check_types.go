@@ -1,58 +1,61 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type ComputeHttpHealthCheck struct {
+type ComputeHTTPHealthCheck struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              ComputeHttpHealthCheckSpec   `json:"spec,omitempty"`
-	Status            ComputeHttpHealthCheckStatus `json:"status,omitempty"`
+	Spec              ComputeHTTPHealthCheckSpec   `json:"spec,omitempty"`
+	Status            ComputeHTTPHealthCheckStatus `json:"status,omitempty"`
 }
 
-type ComputeHttpHealthCheckSpec struct {
+type ComputeHTTPHealthCheckSpec struct {
 	// +optional
-	CheckIntervalSec int `json:"check_interval_sec,omitempty"`
+	CheckIntervalSec int `json:"checkIntervalSec,omitempty" tf:"check_interval_sec,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	HealthyThreshold int `json:"healthy_threshold,omitempty"`
+	HealthyThreshold int `json:"healthyThreshold,omitempty" tf:"healthy_threshold,omitempty"`
 	// +optional
-	Host string `json:"host,omitempty"`
-	Name string `json:"name"`
+	Host string `json:"host,omitempty" tf:"host,omitempty"`
+	Name string `json:"name" tf:"name"`
 	// +optional
-	Port int `json:"port,omitempty"`
+	Port int `json:"port,omitempty" tf:"port,omitempty"`
 	// +optional
-	RequestPath string `json:"request_path,omitempty"`
+	RequestPath string `json:"requestPath,omitempty" tf:"request_path,omitempty"`
 	// +optional
-	TimeoutSec int `json:"timeout_sec,omitempty"`
+	TimeoutSec int `json:"timeoutSec,omitempty" tf:"timeout_sec,omitempty"`
 	// +optional
-	UnhealthyThreshold int `json:"unhealthy_threshold,omitempty"`
+	UnhealthyThreshold int                       `json:"unhealthyThreshold,omitempty" tf:"unhealthy_threshold,omitempty"`
+	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
-type ComputeHttpHealthCheckStatus struct {
+type ComputeHTTPHealthCheckStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// ComputeHttpHealthCheckList is a list of ComputeHttpHealthChecks
-type ComputeHttpHealthCheckList struct {
+// ComputeHTTPHealthCheckList is a list of ComputeHTTPHealthChecks
+type ComputeHTTPHealthCheckList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of ComputeHttpHealthCheck CRD objects
-	Items []ComputeHttpHealthCheck `json:"items,omitempty"`
+	// Items is a list of ComputeHTTPHealthCheck CRD objects
+	Items []ComputeHTTPHealthCheck `json:"items,omitempty"`
 }

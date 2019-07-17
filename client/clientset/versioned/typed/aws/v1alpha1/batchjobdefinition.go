@@ -32,7 +32,7 @@ import (
 // BatchJobDefinitionsGetter has a method to return a BatchJobDefinitionInterface.
 // A group's client should implement this interface.
 type BatchJobDefinitionsGetter interface {
-	BatchJobDefinitions() BatchJobDefinitionInterface
+	BatchJobDefinitions(namespace string) BatchJobDefinitionInterface
 }
 
 // BatchJobDefinitionInterface has methods to work with BatchJobDefinition resources.
@@ -52,12 +52,14 @@ type BatchJobDefinitionInterface interface {
 // batchJobDefinitions implements BatchJobDefinitionInterface
 type batchJobDefinitions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newBatchJobDefinitions returns a BatchJobDefinitions
-func newBatchJobDefinitions(c *AwsV1alpha1Client) *batchJobDefinitions {
+func newBatchJobDefinitions(c *AwsV1alpha1Client, namespace string) *batchJobDefinitions {
 	return &batchJobDefinitions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newBatchJobDefinitions(c *AwsV1alpha1Client) *batchJobDefinitions {
 func (c *batchJobDefinitions) Get(name string, options v1.GetOptions) (result *v1alpha1.BatchJobDefinition, err error) {
 	result = &v1alpha1.BatchJobDefinition{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("batchjobdefinitions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *batchJobDefinitions) List(opts v1.ListOptions) (result *v1alpha1.BatchJ
 	}
 	result = &v1alpha1.BatchJobDefinitionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("batchjobdefinitions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *batchJobDefinitions) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("batchjobdefinitions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *batchJobDefinitions) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *batchJobDefinitions) Create(batchJobDefinition *v1alpha1.BatchJobDefinition) (result *v1alpha1.BatchJobDefinition, err error) {
 	result = &v1alpha1.BatchJobDefinition{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("batchjobdefinitions").
 		Body(batchJobDefinition).
 		Do().
@@ -118,6 +124,7 @@ func (c *batchJobDefinitions) Create(batchJobDefinition *v1alpha1.BatchJobDefini
 func (c *batchJobDefinitions) Update(batchJobDefinition *v1alpha1.BatchJobDefinition) (result *v1alpha1.BatchJobDefinition, err error) {
 	result = &v1alpha1.BatchJobDefinition{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("batchjobdefinitions").
 		Name(batchJobDefinition.Name).
 		Body(batchJobDefinition).
@@ -132,6 +139,7 @@ func (c *batchJobDefinitions) Update(batchJobDefinition *v1alpha1.BatchJobDefini
 func (c *batchJobDefinitions) UpdateStatus(batchJobDefinition *v1alpha1.BatchJobDefinition) (result *v1alpha1.BatchJobDefinition, err error) {
 	result = &v1alpha1.BatchJobDefinition{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("batchjobdefinitions").
 		Name(batchJobDefinition.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *batchJobDefinitions) UpdateStatus(batchJobDefinition *v1alpha1.BatchJob
 // Delete takes name of the batchJobDefinition and deletes it. Returns an error if one occurs.
 func (c *batchJobDefinitions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("batchjobdefinitions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *batchJobDefinitions) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("batchjobdefinitions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *batchJobDefinitions) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *batchJobDefinitions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BatchJobDefinition, err error) {
 	result = &v1alpha1.BatchJobDefinition{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("batchjobdefinitions").
 		SubResource(subresources...).
 		Name(name).

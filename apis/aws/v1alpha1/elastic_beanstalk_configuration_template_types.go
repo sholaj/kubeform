@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,14 +19,15 @@ type ElasticBeanstalkConfigurationTemplate struct {
 }
 
 type ElasticBeanstalkConfigurationTemplateSpec struct {
-	Application string `json:"application"`
+	Application string `json:"application" tf:"application"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	EnvironmentId string `json:"environment_id,omitempty"`
-	Name          string `json:"name"`
+	EnvironmentID string `json:"environmentID,omitempty" tf:"environment_id,omitempty"`
+	Name          string `json:"name" tf:"name"`
 	// +optional
-	SolutionStackName string `json:"solution_stack_name,omitempty"`
+	SolutionStackName string                    `json:"solutionStackName,omitempty" tf:"solution_stack_name,omitempty"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ElasticBeanstalkConfigurationTemplateStatus struct {
@@ -34,7 +35,9 @@ type ElasticBeanstalkConfigurationTemplateStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

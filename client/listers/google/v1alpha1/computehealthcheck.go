@@ -29,8 +29,8 @@ import (
 type ComputeHealthCheckLister interface {
 	// List lists all ComputeHealthChecks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeHealthCheck, err error)
-	// Get retrieves the ComputeHealthCheck from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeHealthCheck, error)
+	// ComputeHealthChecks returns an object that can list and get ComputeHealthChecks.
+	ComputeHealthChecks(namespace string) ComputeHealthCheckNamespaceLister
 	ComputeHealthCheckListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeHealthCheckLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the ComputeHealthCheck from the index for a given name.
-func (s *computeHealthCheckLister) Get(name string) (*v1alpha1.ComputeHealthCheck, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeHealthChecks returns an object that can list and get ComputeHealthChecks.
+func (s *computeHealthCheckLister) ComputeHealthChecks(namespace string) ComputeHealthCheckNamespaceLister {
+	return computeHealthCheckNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeHealthCheckNamespaceLister helps list and get ComputeHealthChecks.
+type ComputeHealthCheckNamespaceLister interface {
+	// List lists all ComputeHealthChecks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeHealthCheck, err error)
+	// Get retrieves the ComputeHealthCheck from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeHealthCheck, error)
+	ComputeHealthCheckNamespaceListerExpansion
+}
+
+// computeHealthCheckNamespaceLister implements the ComputeHealthCheckNamespaceLister
+// interface.
+type computeHealthCheckNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeHealthChecks in the indexer for a given namespace.
+func (s computeHealthCheckNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeHealthCheck, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeHealthCheck))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeHealthCheck from the indexer for a given namespace and name.
+func (s computeHealthCheckNamespaceLister) Get(name string) (*v1alpha1.ComputeHealthCheck, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

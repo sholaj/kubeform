@@ -29,8 +29,8 @@ import (
 type NetworkProfileLister interface {
 	// List lists all NetworkProfiles in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NetworkProfile, err error)
-	// Get retrieves the NetworkProfile from the index for a given name.
-	Get(name string) (*v1alpha1.NetworkProfile, error)
+	// NetworkProfiles returns an object that can list and get NetworkProfiles.
+	NetworkProfiles(namespace string) NetworkProfileNamespaceLister
 	NetworkProfileListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *networkProfileLister) List(selector labels.Selector) (ret []*v1alpha1.N
 	return ret, err
 }
 
-// Get retrieves the NetworkProfile from the index for a given name.
-func (s *networkProfileLister) Get(name string) (*v1alpha1.NetworkProfile, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NetworkProfiles returns an object that can list and get NetworkProfiles.
+func (s *networkProfileLister) NetworkProfiles(namespace string) NetworkProfileNamespaceLister {
+	return networkProfileNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NetworkProfileNamespaceLister helps list and get NetworkProfiles.
+type NetworkProfileNamespaceLister interface {
+	// List lists all NetworkProfiles in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NetworkProfile, err error)
+	// Get retrieves the NetworkProfile from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NetworkProfile, error)
+	NetworkProfileNamespaceListerExpansion
+}
+
+// networkProfileNamespaceLister implements the NetworkProfileNamespaceLister
+// interface.
+type networkProfileNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NetworkProfiles in the indexer for a given namespace.
+func (s networkProfileNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NetworkProfile, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NetworkProfile))
+	})
+	return ret, err
+}
+
+// Get retrieves the NetworkProfile from the indexer for a given namespace and name.
+func (s networkProfileNamespaceLister) Get(name string) (*v1alpha1.NetworkProfile, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

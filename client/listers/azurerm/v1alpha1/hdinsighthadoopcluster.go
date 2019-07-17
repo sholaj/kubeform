@@ -29,8 +29,8 @@ import (
 type HdinsightHadoopClusterLister interface {
 	// List lists all HdinsightHadoopClusters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.HdinsightHadoopCluster, err error)
-	// Get retrieves the HdinsightHadoopCluster from the index for a given name.
-	Get(name string) (*v1alpha1.HdinsightHadoopCluster, error)
+	// HdinsightHadoopClusters returns an object that can list and get HdinsightHadoopClusters.
+	HdinsightHadoopClusters(namespace string) HdinsightHadoopClusterNamespaceLister
 	HdinsightHadoopClusterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *hdinsightHadoopClusterLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the HdinsightHadoopCluster from the index for a given name.
-func (s *hdinsightHadoopClusterLister) Get(name string) (*v1alpha1.HdinsightHadoopCluster, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// HdinsightHadoopClusters returns an object that can list and get HdinsightHadoopClusters.
+func (s *hdinsightHadoopClusterLister) HdinsightHadoopClusters(namespace string) HdinsightHadoopClusterNamespaceLister {
+	return hdinsightHadoopClusterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// HdinsightHadoopClusterNamespaceLister helps list and get HdinsightHadoopClusters.
+type HdinsightHadoopClusterNamespaceLister interface {
+	// List lists all HdinsightHadoopClusters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.HdinsightHadoopCluster, err error)
+	// Get retrieves the HdinsightHadoopCluster from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.HdinsightHadoopCluster, error)
+	HdinsightHadoopClusterNamespaceListerExpansion
+}
+
+// hdinsightHadoopClusterNamespaceLister implements the HdinsightHadoopClusterNamespaceLister
+// interface.
+type hdinsightHadoopClusterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all HdinsightHadoopClusters in the indexer for a given namespace.
+func (s hdinsightHadoopClusterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.HdinsightHadoopCluster, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.HdinsightHadoopCluster))
+	})
+	return ret, err
+}
+
+// Get retrieves the HdinsightHadoopCluster from the indexer for a given namespace and name.
+func (s hdinsightHadoopClusterNamespaceLister) Get(name string) (*v1alpha1.HdinsightHadoopCluster, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

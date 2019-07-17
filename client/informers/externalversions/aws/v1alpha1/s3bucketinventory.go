@@ -41,32 +41,33 @@ type S3BucketInventoryInformer interface {
 type s3BucketInventoryInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewS3BucketInventoryInformer constructs a new informer for S3BucketInventory type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewS3BucketInventoryInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredS3BucketInventoryInformer(client, resyncPeriod, indexers, nil)
+func NewS3BucketInventoryInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredS3BucketInventoryInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredS3BucketInventoryInformer constructs a new informer for S3BucketInventory type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredS3BucketInventoryInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredS3BucketInventoryInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().S3BucketInventories().List(options)
+				return client.AwsV1alpha1().S3BucketInventories(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().S3BucketInventories().Watch(options)
+				return client.AwsV1alpha1().S3BucketInventories(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.S3BucketInventory{},
@@ -76,7 +77,7 @@ func NewFilteredS3BucketInventoryInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *s3BucketInventoryInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredS3BucketInventoryInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredS3BucketInventoryInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *s3BucketInventoryInformer) Informer() cache.SharedIndexInformer {

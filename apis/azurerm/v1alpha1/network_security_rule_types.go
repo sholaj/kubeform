@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,43 +19,44 @@ type NetworkSecurityRule struct {
 }
 
 type NetworkSecurityRuleSpec struct {
-	Access string `json:"access"`
+	Access string `json:"access" tf:"access"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	DestinationAddressPrefix string `json:"destination_address_prefix,omitempty"`
+	DestinationAddressPrefix string `json:"destinationAddressPrefix,omitempty" tf:"destination_address_prefix,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	DestinationAddressPrefixes []string `json:"destination_address_prefixes,omitempty"`
+	DestinationAddressPrefixes []string `json:"destinationAddressPrefixes,omitempty" tf:"destination_address_prefixes,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	DestinationApplicationSecurityGroupIds []string `json:"destination_application_security_group_ids,omitempty"`
+	DestinationApplicationSecurityGroupIDS []string `json:"destinationApplicationSecurityGroupIDS,omitempty" tf:"destination_application_security_group_ids,omitempty"`
 	// +optional
-	DestinationPortRange string `json:"destination_port_range,omitempty"`
-	// +optional
-	// +kubebuilder:validation:UniqueItems=true
-	DestinationPortRanges    []string `json:"destination_port_ranges,omitempty"`
-	Direction                string   `json:"direction"`
-	Name                     string   `json:"name"`
-	NetworkSecurityGroupName string   `json:"network_security_group_name"`
-	Priority                 int      `json:"priority"`
-	Protocol                 string   `json:"protocol"`
-	ResourceGroupName        string   `json:"resource_group_name"`
-	// +optional
-	SourceAddressPrefix string `json:"source_address_prefix,omitempty"`
+	DestinationPortRange string `json:"destinationPortRange,omitempty" tf:"destination_port_range,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SourceAddressPrefixes []string `json:"source_address_prefixes,omitempty"`
+	DestinationPortRanges    []string `json:"destinationPortRanges,omitempty" tf:"destination_port_ranges,omitempty"`
+	Direction                string   `json:"direction" tf:"direction"`
+	Name                     string   `json:"name" tf:"name"`
+	NetworkSecurityGroupName string   `json:"networkSecurityGroupName" tf:"network_security_group_name"`
+	Priority                 int      `json:"priority" tf:"priority"`
+	Protocol                 string   `json:"protocol" tf:"protocol"`
+	ResourceGroupName        string   `json:"resourceGroupName" tf:"resource_group_name"`
+	// +optional
+	SourceAddressPrefix string `json:"sourceAddressPrefix,omitempty" tf:"source_address_prefix,omitempty"`
+	// +optional
+	// +kubebuilder:validation:UniqueItems=true
+	SourceAddressPrefixes []string `json:"sourceAddressPrefixes,omitempty" tf:"source_address_prefixes,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	SourceApplicationSecurityGroupIds []string `json:"source_application_security_group_ids,omitempty"`
+	SourceApplicationSecurityGroupIDS []string `json:"sourceApplicationSecurityGroupIDS,omitempty" tf:"source_application_security_group_ids,omitempty"`
 	// +optional
-	SourcePortRange string `json:"source_port_range,omitempty"`
+	SourcePortRange string `json:"sourcePortRange,omitempty" tf:"source_port_range,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SourcePortRanges []string `json:"source_port_ranges,omitempty"`
+	SourcePortRanges []string                  `json:"sourcePortRanges,omitempty" tf:"source_port_ranges,omitempty"`
+	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type NetworkSecurityRuleStatus struct {
@@ -63,7 +64,9 @@ type NetworkSecurityRuleStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

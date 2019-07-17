@@ -32,7 +32,7 @@ import (
 // IamAccountPasswordPoliciesGetter has a method to return a IamAccountPasswordPolicyInterface.
 // A group's client should implement this interface.
 type IamAccountPasswordPoliciesGetter interface {
-	IamAccountPasswordPolicies() IamAccountPasswordPolicyInterface
+	IamAccountPasswordPolicies(namespace string) IamAccountPasswordPolicyInterface
 }
 
 // IamAccountPasswordPolicyInterface has methods to work with IamAccountPasswordPolicy resources.
@@ -52,12 +52,14 @@ type IamAccountPasswordPolicyInterface interface {
 // iamAccountPasswordPolicies implements IamAccountPasswordPolicyInterface
 type iamAccountPasswordPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIamAccountPasswordPolicies returns a IamAccountPasswordPolicies
-func newIamAccountPasswordPolicies(c *AwsV1alpha1Client) *iamAccountPasswordPolicies {
+func newIamAccountPasswordPolicies(c *AwsV1alpha1Client, namespace string) *iamAccountPasswordPolicies {
 	return &iamAccountPasswordPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIamAccountPasswordPolicies(c *AwsV1alpha1Client) *iamAccountPasswordPoli
 func (c *iamAccountPasswordPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.IamAccountPasswordPolicy, err error) {
 	result = &v1alpha1.IamAccountPasswordPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamaccountpasswordpolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iamAccountPasswordPolicies) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.IamAccountPasswordPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamaccountpasswordpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iamAccountPasswordPolicies) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iamaccountpasswordpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iamAccountPasswordPolicies) Watch(opts v1.ListOptions) (watch.Interface
 func (c *iamAccountPasswordPolicies) Create(iamAccountPasswordPolicy *v1alpha1.IamAccountPasswordPolicy) (result *v1alpha1.IamAccountPasswordPolicy, err error) {
 	result = &v1alpha1.IamAccountPasswordPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iamaccountpasswordpolicies").
 		Body(iamAccountPasswordPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *iamAccountPasswordPolicies) Create(iamAccountPasswordPolicy *v1alpha1.I
 func (c *iamAccountPasswordPolicies) Update(iamAccountPasswordPolicy *v1alpha1.IamAccountPasswordPolicy) (result *v1alpha1.IamAccountPasswordPolicy, err error) {
 	result = &v1alpha1.IamAccountPasswordPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamaccountpasswordpolicies").
 		Name(iamAccountPasswordPolicy.Name).
 		Body(iamAccountPasswordPolicy).
@@ -132,6 +139,7 @@ func (c *iamAccountPasswordPolicies) Update(iamAccountPasswordPolicy *v1alpha1.I
 func (c *iamAccountPasswordPolicies) UpdateStatus(iamAccountPasswordPolicy *v1alpha1.IamAccountPasswordPolicy) (result *v1alpha1.IamAccountPasswordPolicy, err error) {
 	result = &v1alpha1.IamAccountPasswordPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamaccountpasswordpolicies").
 		Name(iamAccountPasswordPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iamAccountPasswordPolicies) UpdateStatus(iamAccountPasswordPolicy *v1al
 // Delete takes name of the iamAccountPasswordPolicy and deletes it. Returns an error if one occurs.
 func (c *iamAccountPasswordPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamaccountpasswordpolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iamAccountPasswordPolicies) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamaccountpasswordpolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iamAccountPasswordPolicies) DeleteCollection(options *v1.DeleteOptions,
 func (c *iamAccountPasswordPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamAccountPasswordPolicy, err error) {
 	result = &v1alpha1.IamAccountPasswordPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iamaccountpasswordpolicies").
 		SubResource(subresources...).
 		Name(name).

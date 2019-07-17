@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,61 +19,62 @@ type EventgridEventSubscription struct {
 }
 
 type EventgridEventSubscriptionSpecEventhubEndpoint struct {
-	EventhubId string `json:"eventhub_id"`
+	EventhubID string `json:"eventhubID" tf:"eventhub_id"`
 }
 
 type EventgridEventSubscriptionSpecHybridConnectionEndpoint struct {
-	HybridConnectionId string `json:"hybrid_connection_id"`
+	HybridConnectionID string `json:"hybridConnectionID" tf:"hybrid_connection_id"`
 }
 
 type EventgridEventSubscriptionSpecStorageBlobDeadLetterDestination struct {
-	StorageAccountId         string `json:"storage_account_id"`
-	StorageBlobContainerName string `json:"storage_blob_container_name"`
+	StorageAccountID         string `json:"storageAccountID" tf:"storage_account_id"`
+	StorageBlobContainerName string `json:"storageBlobContainerName" tf:"storage_blob_container_name"`
 }
 
 type EventgridEventSubscriptionSpecStorageQueueEndpoint struct {
-	QueueName        string `json:"queue_name"`
-	StorageAccountId string `json:"storage_account_id"`
+	QueueName        string `json:"queueName" tf:"queue_name"`
+	StorageAccountID string `json:"storageAccountID" tf:"storage_account_id"`
 }
 
 type EventgridEventSubscriptionSpecSubjectFilter struct {
 	// +optional
-	CaseSensitive bool `json:"case_sensitive,omitempty"`
+	CaseSensitive bool `json:"caseSensitive,omitempty" tf:"case_sensitive,omitempty"`
 	// +optional
-	SubjectBeginsWith string `json:"subject_begins_with,omitempty"`
+	SubjectBeginsWith string `json:"subjectBeginsWith,omitempty" tf:"subject_begins_with,omitempty"`
 	// +optional
-	SubjectEndsWith string `json:"subject_ends_with,omitempty"`
+	SubjectEndsWith string `json:"subjectEndsWith,omitempty" tf:"subject_ends_with,omitempty"`
 }
 
 type EventgridEventSubscriptionSpecWebhookEndpoint struct {
-	Url string `json:"url"`
+	Url string `json:"url" tf:"url"`
 }
 
 type EventgridEventSubscriptionSpec struct {
 	// +optional
-	EventDeliverySchema string `json:"event_delivery_schema,omitempty"`
+	EventDeliverySchema string `json:"eventDeliverySchema,omitempty" tf:"event_delivery_schema,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	EventhubEndpoint *[]EventgridEventSubscriptionSpec `json:"eventhub_endpoint,omitempty"`
+	EventhubEndpoint []EventgridEventSubscriptionSpecEventhubEndpoint `json:"eventhubEndpoint,omitempty" tf:"eventhub_endpoint,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	HybridConnectionEndpoint *[]EventgridEventSubscriptionSpec `json:"hybrid_connection_endpoint,omitempty"`
+	HybridConnectionEndpoint []EventgridEventSubscriptionSpecHybridConnectionEndpoint `json:"hybridConnectionEndpoint,omitempty" tf:"hybrid_connection_endpoint,omitempty"`
 	// +optional
-	Labels []string `json:"labels,omitempty"`
-	Name   string   `json:"name"`
-	Scope  string   `json:"scope"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	StorageBlobDeadLetterDestination *[]EventgridEventSubscriptionSpec `json:"storage_blob_dead_letter_destination,omitempty"`
+	Labels []string `json:"labels,omitempty" tf:"labels,omitempty"`
+	Name   string   `json:"name" tf:"name"`
+	Scope  string   `json:"scope" tf:"scope"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	StorageQueueEndpoint *[]EventgridEventSubscriptionSpec `json:"storage_queue_endpoint,omitempty"`
+	StorageBlobDeadLetterDestination []EventgridEventSubscriptionSpecStorageBlobDeadLetterDestination `json:"storageBlobDeadLetterDestination,omitempty" tf:"storage_blob_dead_letter_destination,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	SubjectFilter *[]EventgridEventSubscriptionSpec `json:"subject_filter,omitempty"`
+	StorageQueueEndpoint []EventgridEventSubscriptionSpecStorageQueueEndpoint `json:"storageQueueEndpoint,omitempty" tf:"storage_queue_endpoint,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	WebhookEndpoint *[]EventgridEventSubscriptionSpec `json:"webhook_endpoint,omitempty"`
+	SubjectFilter []EventgridEventSubscriptionSpecSubjectFilter `json:"subjectFilter,omitempty" tf:"subject_filter,omitempty"`
+	// +optional
+	// +kubebuilder:validation:MaxItems=1
+	WebhookEndpoint []EventgridEventSubscriptionSpecWebhookEndpoint `json:"webhookEndpoint,omitempty" tf:"webhook_endpoint,omitempty"`
+	ProviderRef     core.LocalObjectReference                       `json:"providerRef" tf:"-"`
 }
 
 type EventgridEventSubscriptionStatus struct {
@@ -81,7 +82,9 @@ type EventgridEventSubscriptionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

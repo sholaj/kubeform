@@ -397,31 +397,74 @@ spec:
           type: object
         spec:
           properties:
-            connect_settings:
-              items: {}
+            connectSettings:
+              items:
+                properties:
+                  customerDNSIPS:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                  customerUsername:
+                    type: string
+                  subnetIDS:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                  vpcID:
+                    type: string
+                required:
+                - customerDNSIPS
+                - customerUsername
+                - subnetIDS
+                - vpcID
+                type: object
               maxItems: 1
               type: array
             description:
               type: string
-            enable_sso:
+            enableSso:
               type: boolean
             name:
               type: string
             password:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             tags:
               additionalProperties:
                 type: string
               type: object
             type:
               type: string
-            vpc_settings:
-              items: {}
+            vpcSettings:
+              items:
+                properties:
+                  subnetIDS:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                  vpcID:
+                    type: string
+                required:
+                - subnetIDS
+                - vpcID
+                type: object
               maxItems: 1
               type: array
           required:
           - name
           - password
+          - providerRef
           type: object
         status:
           properties:
@@ -432,6 +475,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

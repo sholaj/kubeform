@@ -31,6 +31,7 @@ import (
 // FakeStorageObjectAccessControls implements StorageObjectAccessControlInterface
 type FakeStorageObjectAccessControls struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var storageobjectaccesscontrolsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "storageobjectaccesscontrols"}
@@ -40,7 +41,8 @@ var storageobjectaccesscontrolsKind = schema.GroupVersionKind{Group: "google.kub
 // Get takes name of the storageObjectAccessControl, and returns the corresponding storageObjectAccessControl object, and an error if there is any.
 func (c *FakeStorageObjectAccessControls) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageObjectAccessControl, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(storageobjectaccesscontrolsResource, name), &v1alpha1.StorageObjectAccessControl{})
+		Invokes(testing.NewGetAction(storageobjectaccesscontrolsResource, c.ns, name), &v1alpha1.StorageObjectAccessControl{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeStorageObjectAccessControls) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of StorageObjectAccessControls that match those selectors.
 func (c *FakeStorageObjectAccessControls) List(opts v1.ListOptions) (result *v1alpha1.StorageObjectAccessControlList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(storageobjectaccesscontrolsResource, storageobjectaccesscontrolsKind, opts), &v1alpha1.StorageObjectAccessControlList{})
+		Invokes(testing.NewListAction(storageobjectaccesscontrolsResource, storageobjectaccesscontrolsKind, c.ns, opts), &v1alpha1.StorageObjectAccessControlList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeStorageObjectAccessControls) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested storageObjectAccessControls.
 func (c *FakeStorageObjectAccessControls) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(storageobjectaccesscontrolsResource, opts))
+		InvokesWatch(testing.NewWatchAction(storageobjectaccesscontrolsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a storageObjectAccessControl and creates it.  Returns the server's representation of the storageObjectAccessControl, and an error, if there is any.
 func (c *FakeStorageObjectAccessControls) Create(storageObjectAccessControl *v1alpha1.StorageObjectAccessControl) (result *v1alpha1.StorageObjectAccessControl, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(storageobjectaccesscontrolsResource, storageObjectAccessControl), &v1alpha1.StorageObjectAccessControl{})
+		Invokes(testing.NewCreateAction(storageobjectaccesscontrolsResource, c.ns, storageObjectAccessControl), &v1alpha1.StorageObjectAccessControl{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeStorageObjectAccessControls) Create(storageObjectAccessControl *v1a
 // Update takes the representation of a storageObjectAccessControl and updates it. Returns the server's representation of the storageObjectAccessControl, and an error, if there is any.
 func (c *FakeStorageObjectAccessControls) Update(storageObjectAccessControl *v1alpha1.StorageObjectAccessControl) (result *v1alpha1.StorageObjectAccessControl, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(storageobjectaccesscontrolsResource, storageObjectAccessControl), &v1alpha1.StorageObjectAccessControl{})
+		Invokes(testing.NewUpdateAction(storageobjectaccesscontrolsResource, c.ns, storageObjectAccessControl), &v1alpha1.StorageObjectAccessControl{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeStorageObjectAccessControls) Update(storageObjectAccessControl *v1a
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeStorageObjectAccessControls) UpdateStatus(storageObjectAccessControl *v1alpha1.StorageObjectAccessControl) (*v1alpha1.StorageObjectAccessControl, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(storageobjectaccesscontrolsResource, "status", storageObjectAccessControl), &v1alpha1.StorageObjectAccessControl{})
+		Invokes(testing.NewUpdateSubresourceAction(storageobjectaccesscontrolsResource, "status", c.ns, storageObjectAccessControl), &v1alpha1.StorageObjectAccessControl{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeStorageObjectAccessControls) UpdateStatus(storageObjectAccessContro
 // Delete takes name of the storageObjectAccessControl and deletes it. Returns an error if one occurs.
 func (c *FakeStorageObjectAccessControls) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(storageobjectaccesscontrolsResource, name), &v1alpha1.StorageObjectAccessControl{})
+		Invokes(testing.NewDeleteAction(storageobjectaccesscontrolsResource, c.ns, name), &v1alpha1.StorageObjectAccessControl{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeStorageObjectAccessControls) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(storageobjectaccesscontrolsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(storageobjectaccesscontrolsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.StorageObjectAccessControlList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeStorageObjectAccessControls) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched storageObjectAccessControl.
 func (c *FakeStorageObjectAccessControls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageObjectAccessControl, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(storageobjectaccesscontrolsResource, name, pt, data, subresources...), &v1alpha1.StorageObjectAccessControl{})
+		Invokes(testing.NewPatchSubresourceAction(storageobjectaccesscontrolsResource, c.ns, name, pt, data, subresources...), &v1alpha1.StorageObjectAccessControl{})
+
 	if obj == nil {
 		return nil, err
 	}

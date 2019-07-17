@@ -29,8 +29,8 @@ import (
 type GameliftGameSessionQueueLister interface {
 	// List lists all GameliftGameSessionQueues in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GameliftGameSessionQueue, err error)
-	// Get retrieves the GameliftGameSessionQueue from the index for a given name.
-	Get(name string) (*v1alpha1.GameliftGameSessionQueue, error)
+	// GameliftGameSessionQueues returns an object that can list and get GameliftGameSessionQueues.
+	GameliftGameSessionQueues(namespace string) GameliftGameSessionQueueNamespaceLister
 	GameliftGameSessionQueueListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *gameliftGameSessionQueueLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the GameliftGameSessionQueue from the index for a given name.
-func (s *gameliftGameSessionQueueLister) Get(name string) (*v1alpha1.GameliftGameSessionQueue, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GameliftGameSessionQueues returns an object that can list and get GameliftGameSessionQueues.
+func (s *gameliftGameSessionQueueLister) GameliftGameSessionQueues(namespace string) GameliftGameSessionQueueNamespaceLister {
+	return gameliftGameSessionQueueNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GameliftGameSessionQueueNamespaceLister helps list and get GameliftGameSessionQueues.
+type GameliftGameSessionQueueNamespaceLister interface {
+	// List lists all GameliftGameSessionQueues in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GameliftGameSessionQueue, err error)
+	// Get retrieves the GameliftGameSessionQueue from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GameliftGameSessionQueue, error)
+	GameliftGameSessionQueueNamespaceListerExpansion
+}
+
+// gameliftGameSessionQueueNamespaceLister implements the GameliftGameSessionQueueNamespaceLister
+// interface.
+type gameliftGameSessionQueueNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GameliftGameSessionQueues in the indexer for a given namespace.
+func (s gameliftGameSessionQueueNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GameliftGameSessionQueue, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GameliftGameSessionQueue))
+	})
+	return ret, err
+}
+
+// Get retrieves the GameliftGameSessionQueue from the indexer for a given namespace and name.
+func (s gameliftGameSessionQueueNamespaceLister) Get(name string) (*v1alpha1.GameliftGameSessionQueue, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

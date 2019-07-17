@@ -31,6 +31,7 @@ import (
 // FakeEbsVolumes implements EbsVolumeInterface
 type FakeEbsVolumes struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ebsvolumesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ebsvolumes"}
@@ -40,7 +41,8 @@ var ebsvolumesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version:
 // Get takes name of the ebsVolume, and returns the corresponding ebsVolume object, and an error if there is any.
 func (c *FakeEbsVolumes) Get(name string, options v1.GetOptions) (result *v1alpha1.EbsVolume, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ebsvolumesResource, name), &v1alpha1.EbsVolume{})
+		Invokes(testing.NewGetAction(ebsvolumesResource, c.ns, name), &v1alpha1.EbsVolume{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEbsVolumes) Get(name string, options v1.GetOptions) (result *v1alph
 // List takes label and field selectors, and returns the list of EbsVolumes that match those selectors.
 func (c *FakeEbsVolumes) List(opts v1.ListOptions) (result *v1alpha1.EbsVolumeList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ebsvolumesResource, ebsvolumesKind, opts), &v1alpha1.EbsVolumeList{})
+		Invokes(testing.NewListAction(ebsvolumesResource, ebsvolumesKind, c.ns, opts), &v1alpha1.EbsVolumeList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEbsVolumes) List(opts v1.ListOptions) (result *v1alpha1.EbsVolumeLi
 // Watch returns a watch.Interface that watches the requested ebsVolumes.
 func (c *FakeEbsVolumes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ebsvolumesResource, opts))
+		InvokesWatch(testing.NewWatchAction(ebsvolumesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ebsVolume and creates it.  Returns the server's representation of the ebsVolume, and an error, if there is any.
 func (c *FakeEbsVolumes) Create(ebsVolume *v1alpha1.EbsVolume) (result *v1alpha1.EbsVolume, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ebsvolumesResource, ebsVolume), &v1alpha1.EbsVolume{})
+		Invokes(testing.NewCreateAction(ebsvolumesResource, c.ns, ebsVolume), &v1alpha1.EbsVolume{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEbsVolumes) Create(ebsVolume *v1alpha1.EbsVolume) (result *v1alpha1
 // Update takes the representation of a ebsVolume and updates it. Returns the server's representation of the ebsVolume, and an error, if there is any.
 func (c *FakeEbsVolumes) Update(ebsVolume *v1alpha1.EbsVolume) (result *v1alpha1.EbsVolume, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ebsvolumesResource, ebsVolume), &v1alpha1.EbsVolume{})
+		Invokes(testing.NewUpdateAction(ebsvolumesResource, c.ns, ebsVolume), &v1alpha1.EbsVolume{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEbsVolumes) Update(ebsVolume *v1alpha1.EbsVolume) (result *v1alpha1
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEbsVolumes) UpdateStatus(ebsVolume *v1alpha1.EbsVolume) (*v1alpha1.EbsVolume, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ebsvolumesResource, "status", ebsVolume), &v1alpha1.EbsVolume{})
+		Invokes(testing.NewUpdateSubresourceAction(ebsvolumesResource, "status", c.ns, ebsVolume), &v1alpha1.EbsVolume{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEbsVolumes) UpdateStatus(ebsVolume *v1alpha1.EbsVolume) (*v1alpha1.
 // Delete takes name of the ebsVolume and deletes it. Returns an error if one occurs.
 func (c *FakeEbsVolumes) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ebsvolumesResource, name), &v1alpha1.EbsVolume{})
+		Invokes(testing.NewDeleteAction(ebsvolumesResource, c.ns, name), &v1alpha1.EbsVolume{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEbsVolumes) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ebsvolumesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ebsvolumesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.EbsVolumeList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEbsVolumes) DeleteCollection(options *v1.DeleteOptions, listOptions
 // Patch applies the patch and returns the patched ebsVolume.
 func (c *FakeEbsVolumes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EbsVolume, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ebsvolumesResource, name, pt, data, subresources...), &v1alpha1.EbsVolume{})
+		Invokes(testing.NewPatchSubresourceAction(ebsvolumesResource, c.ns, name, pt, data, subresources...), &v1alpha1.EbsVolume{})
+
 	if obj == nil {
 		return nil, err
 	}

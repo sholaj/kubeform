@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,14 +19,15 @@ type Stackscript struct {
 }
 
 type StackscriptSpec struct {
-	Description string   `json:"description"`
-	Images      []string `json:"images"`
+	Description string   `json:"description" tf:"description"`
+	Images      []string `json:"images" tf:"images"`
 	// +optional
-	IsPublic bool   `json:"is_public,omitempty"`
-	Label    string `json:"label"`
+	IsPublic bool   `json:"isPublic,omitempty" tf:"is_public,omitempty"`
+	Label    string `json:"label" tf:"label"`
 	// +optional
-	RevNote string `json:"rev_note,omitempty"`
-	Script  string `json:"script"`
+	RevNote     string                    `json:"revNote,omitempty" tf:"rev_note,omitempty"`
+	Script      string                    `json:"script" tf:"script"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type StackscriptStatus struct {
@@ -34,7 +35,9 @@ type StackscriptStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

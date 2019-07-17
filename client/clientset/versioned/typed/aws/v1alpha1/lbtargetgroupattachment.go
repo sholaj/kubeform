@@ -32,7 +32,7 @@ import (
 // LbTargetGroupAttachmentsGetter has a method to return a LbTargetGroupAttachmentInterface.
 // A group's client should implement this interface.
 type LbTargetGroupAttachmentsGetter interface {
-	LbTargetGroupAttachments() LbTargetGroupAttachmentInterface
+	LbTargetGroupAttachments(namespace string) LbTargetGroupAttachmentInterface
 }
 
 // LbTargetGroupAttachmentInterface has methods to work with LbTargetGroupAttachment resources.
@@ -52,12 +52,14 @@ type LbTargetGroupAttachmentInterface interface {
 // lbTargetGroupAttachments implements LbTargetGroupAttachmentInterface
 type lbTargetGroupAttachments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLbTargetGroupAttachments returns a LbTargetGroupAttachments
-func newLbTargetGroupAttachments(c *AwsV1alpha1Client) *lbTargetGroupAttachments {
+func newLbTargetGroupAttachments(c *AwsV1alpha1Client, namespace string) *lbTargetGroupAttachments {
 	return &lbTargetGroupAttachments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLbTargetGroupAttachments(c *AwsV1alpha1Client) *lbTargetGroupAttachments
 func (c *lbTargetGroupAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.LbTargetGroupAttachment, err error) {
 	result = &v1alpha1.LbTargetGroupAttachment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lbtargetgroupattachments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lbTargetGroupAttachments) List(opts v1.ListOptions) (result *v1alpha1.L
 	}
 	result = &v1alpha1.LbTargetGroupAttachmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lbtargetgroupattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lbTargetGroupAttachments) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lbtargetgroupattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lbTargetGroupAttachments) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *lbTargetGroupAttachments) Create(lbTargetGroupAttachment *v1alpha1.LbTargetGroupAttachment) (result *v1alpha1.LbTargetGroupAttachment, err error) {
 	result = &v1alpha1.LbTargetGroupAttachment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lbtargetgroupattachments").
 		Body(lbTargetGroupAttachment).
 		Do().
@@ -118,6 +124,7 @@ func (c *lbTargetGroupAttachments) Create(lbTargetGroupAttachment *v1alpha1.LbTa
 func (c *lbTargetGroupAttachments) Update(lbTargetGroupAttachment *v1alpha1.LbTargetGroupAttachment) (result *v1alpha1.LbTargetGroupAttachment, err error) {
 	result = &v1alpha1.LbTargetGroupAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lbtargetgroupattachments").
 		Name(lbTargetGroupAttachment.Name).
 		Body(lbTargetGroupAttachment).
@@ -132,6 +139,7 @@ func (c *lbTargetGroupAttachments) Update(lbTargetGroupAttachment *v1alpha1.LbTa
 func (c *lbTargetGroupAttachments) UpdateStatus(lbTargetGroupAttachment *v1alpha1.LbTargetGroupAttachment) (result *v1alpha1.LbTargetGroupAttachment, err error) {
 	result = &v1alpha1.LbTargetGroupAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lbtargetgroupattachments").
 		Name(lbTargetGroupAttachment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lbTargetGroupAttachments) UpdateStatus(lbTargetGroupAttachment *v1alpha
 // Delete takes name of the lbTargetGroupAttachment and deletes it. Returns an error if one occurs.
 func (c *lbTargetGroupAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lbtargetgroupattachments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lbTargetGroupAttachments) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lbtargetgroupattachments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lbTargetGroupAttachments) DeleteCollection(options *v1.DeleteOptions, l
 func (c *lbTargetGroupAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbTargetGroupAttachment, err error) {
 	result = &v1alpha1.LbTargetGroupAttachment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lbtargetgroupattachments").
 		SubResource(subresources...).
 		Name(name).

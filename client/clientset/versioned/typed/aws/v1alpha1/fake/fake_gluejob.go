@@ -31,6 +31,7 @@ import (
 // FakeGlueJobs implements GlueJobInterface
 type FakeGlueJobs struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var gluejobsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "gluejobs"}
@@ -40,7 +41,8 @@ var gluejobsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "
 // Get takes name of the glueJob, and returns the corresponding glueJob object, and an error if there is any.
 func (c *FakeGlueJobs) Get(name string, options v1.GetOptions) (result *v1alpha1.GlueJob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(gluejobsResource, name), &v1alpha1.GlueJob{})
+		Invokes(testing.NewGetAction(gluejobsResource, c.ns, name), &v1alpha1.GlueJob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeGlueJobs) Get(name string, options v1.GetOptions) (result *v1alpha1
 // List takes label and field selectors, and returns the list of GlueJobs that match those selectors.
 func (c *FakeGlueJobs) List(opts v1.ListOptions) (result *v1alpha1.GlueJobList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(gluejobsResource, gluejobsKind, opts), &v1alpha1.GlueJobList{})
+		Invokes(testing.NewListAction(gluejobsResource, gluejobsKind, c.ns, opts), &v1alpha1.GlueJobList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeGlueJobs) List(opts v1.ListOptions) (result *v1alpha1.GlueJobList, 
 // Watch returns a watch.Interface that watches the requested glueJobs.
 func (c *FakeGlueJobs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(gluejobsResource, opts))
+		InvokesWatch(testing.NewWatchAction(gluejobsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a glueJob and creates it.  Returns the server's representation of the glueJob, and an error, if there is any.
 func (c *FakeGlueJobs) Create(glueJob *v1alpha1.GlueJob) (result *v1alpha1.GlueJob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(gluejobsResource, glueJob), &v1alpha1.GlueJob{})
+		Invokes(testing.NewCreateAction(gluejobsResource, c.ns, glueJob), &v1alpha1.GlueJob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeGlueJobs) Create(glueJob *v1alpha1.GlueJob) (result *v1alpha1.GlueJ
 // Update takes the representation of a glueJob and updates it. Returns the server's representation of the glueJob, and an error, if there is any.
 func (c *FakeGlueJobs) Update(glueJob *v1alpha1.GlueJob) (result *v1alpha1.GlueJob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(gluejobsResource, glueJob), &v1alpha1.GlueJob{})
+		Invokes(testing.NewUpdateAction(gluejobsResource, c.ns, glueJob), &v1alpha1.GlueJob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeGlueJobs) Update(glueJob *v1alpha1.GlueJob) (result *v1alpha1.GlueJ
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeGlueJobs) UpdateStatus(glueJob *v1alpha1.GlueJob) (*v1alpha1.GlueJob, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(gluejobsResource, "status", glueJob), &v1alpha1.GlueJob{})
+		Invokes(testing.NewUpdateSubresourceAction(gluejobsResource, "status", c.ns, glueJob), &v1alpha1.GlueJob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeGlueJobs) UpdateStatus(glueJob *v1alpha1.GlueJob) (*v1alpha1.GlueJo
 // Delete takes name of the glueJob and deletes it. Returns an error if one occurs.
 func (c *FakeGlueJobs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(gluejobsResource, name), &v1alpha1.GlueJob{})
+		Invokes(testing.NewDeleteAction(gluejobsResource, c.ns, name), &v1alpha1.GlueJob{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeGlueJobs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(gluejobsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(gluejobsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.GlueJobList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeGlueJobs) DeleteCollection(options *v1.DeleteOptions, listOptions v
 // Patch applies the patch and returns the patched glueJob.
 func (c *FakeGlueJobs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GlueJob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(gluejobsResource, name, pt, data, subresources...), &v1alpha1.GlueJob{})
+		Invokes(testing.NewPatchSubresourceAction(gluejobsResource, c.ns, name, pt, data, subresources...), &v1alpha1.GlueJob{})
+
 	if obj == nil {
 		return nil, err
 	}

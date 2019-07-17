@@ -32,7 +32,7 @@ import (
 // IamServiceLinkedRolesGetter has a method to return a IamServiceLinkedRoleInterface.
 // A group's client should implement this interface.
 type IamServiceLinkedRolesGetter interface {
-	IamServiceLinkedRoles() IamServiceLinkedRoleInterface
+	IamServiceLinkedRoles(namespace string) IamServiceLinkedRoleInterface
 }
 
 // IamServiceLinkedRoleInterface has methods to work with IamServiceLinkedRole resources.
@@ -52,12 +52,14 @@ type IamServiceLinkedRoleInterface interface {
 // iamServiceLinkedRoles implements IamServiceLinkedRoleInterface
 type iamServiceLinkedRoles struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIamServiceLinkedRoles returns a IamServiceLinkedRoles
-func newIamServiceLinkedRoles(c *AwsV1alpha1Client) *iamServiceLinkedRoles {
+func newIamServiceLinkedRoles(c *AwsV1alpha1Client, namespace string) *iamServiceLinkedRoles {
 	return &iamServiceLinkedRoles{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIamServiceLinkedRoles(c *AwsV1alpha1Client) *iamServiceLinkedRoles {
 func (c *iamServiceLinkedRoles) Get(name string, options v1.GetOptions) (result *v1alpha1.IamServiceLinkedRole, err error) {
 	result = &v1alpha1.IamServiceLinkedRole{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamservicelinkedroles").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iamServiceLinkedRoles) List(opts v1.ListOptions) (result *v1alpha1.IamS
 	}
 	result = &v1alpha1.IamServiceLinkedRoleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamservicelinkedroles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iamServiceLinkedRoles) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iamservicelinkedroles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iamServiceLinkedRoles) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *iamServiceLinkedRoles) Create(iamServiceLinkedRole *v1alpha1.IamServiceLinkedRole) (result *v1alpha1.IamServiceLinkedRole, err error) {
 	result = &v1alpha1.IamServiceLinkedRole{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iamservicelinkedroles").
 		Body(iamServiceLinkedRole).
 		Do().
@@ -118,6 +124,7 @@ func (c *iamServiceLinkedRoles) Create(iamServiceLinkedRole *v1alpha1.IamService
 func (c *iamServiceLinkedRoles) Update(iamServiceLinkedRole *v1alpha1.IamServiceLinkedRole) (result *v1alpha1.IamServiceLinkedRole, err error) {
 	result = &v1alpha1.IamServiceLinkedRole{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamservicelinkedroles").
 		Name(iamServiceLinkedRole.Name).
 		Body(iamServiceLinkedRole).
@@ -132,6 +139,7 @@ func (c *iamServiceLinkedRoles) Update(iamServiceLinkedRole *v1alpha1.IamService
 func (c *iamServiceLinkedRoles) UpdateStatus(iamServiceLinkedRole *v1alpha1.IamServiceLinkedRole) (result *v1alpha1.IamServiceLinkedRole, err error) {
 	result = &v1alpha1.IamServiceLinkedRole{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamservicelinkedroles").
 		Name(iamServiceLinkedRole.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iamServiceLinkedRoles) UpdateStatus(iamServiceLinkedRole *v1alpha1.IamS
 // Delete takes name of the iamServiceLinkedRole and deletes it. Returns an error if one occurs.
 func (c *iamServiceLinkedRoles) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamservicelinkedroles").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iamServiceLinkedRoles) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamservicelinkedroles").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iamServiceLinkedRoles) DeleteCollection(options *v1.DeleteOptions, list
 func (c *iamServiceLinkedRoles) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamServiceLinkedRole, err error) {
 	result = &v1alpha1.IamServiceLinkedRole{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iamservicelinkedroles").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // VpnConnectionsGetter has a method to return a VpnConnectionInterface.
 // A group's client should implement this interface.
 type VpnConnectionsGetter interface {
-	VpnConnections() VpnConnectionInterface
+	VpnConnections(namespace string) VpnConnectionInterface
 }
 
 // VpnConnectionInterface has methods to work with VpnConnection resources.
@@ -52,12 +52,14 @@ type VpnConnectionInterface interface {
 // vpnConnections implements VpnConnectionInterface
 type vpnConnections struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVpnConnections returns a VpnConnections
-func newVpnConnections(c *AwsV1alpha1Client) *vpnConnections {
+func newVpnConnections(c *AwsV1alpha1Client, namespace string) *vpnConnections {
 	return &vpnConnections{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVpnConnections(c *AwsV1alpha1Client) *vpnConnections {
 func (c *vpnConnections) Get(name string, options v1.GetOptions) (result *v1alpha1.VpnConnection, err error) {
 	result = &v1alpha1.VpnConnection{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpnconnections").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *vpnConnections) List(opts v1.ListOptions) (result *v1alpha1.VpnConnecti
 	}
 	result = &v1alpha1.VpnConnectionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpnconnections").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *vpnConnections) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("vpnconnections").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *vpnConnections) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *vpnConnections) Create(vpnConnection *v1alpha1.VpnConnection) (result *v1alpha1.VpnConnection, err error) {
 	result = &v1alpha1.VpnConnection{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("vpnconnections").
 		Body(vpnConnection).
 		Do().
@@ -118,6 +124,7 @@ func (c *vpnConnections) Create(vpnConnection *v1alpha1.VpnConnection) (result *
 func (c *vpnConnections) Update(vpnConnection *v1alpha1.VpnConnection) (result *v1alpha1.VpnConnection, err error) {
 	result = &v1alpha1.VpnConnection{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpnconnections").
 		Name(vpnConnection.Name).
 		Body(vpnConnection).
@@ -132,6 +139,7 @@ func (c *vpnConnections) Update(vpnConnection *v1alpha1.VpnConnection) (result *
 func (c *vpnConnections) UpdateStatus(vpnConnection *v1alpha1.VpnConnection) (result *v1alpha1.VpnConnection, err error) {
 	result = &v1alpha1.VpnConnection{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpnconnections").
 		Name(vpnConnection.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *vpnConnections) UpdateStatus(vpnConnection *v1alpha1.VpnConnection) (re
 // Delete takes name of the vpnConnection and deletes it. Returns an error if one occurs.
 func (c *vpnConnections) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpnconnections").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *vpnConnections) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpnconnections").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *vpnConnections) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *vpnConnections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpnConnection, err error) {
 	result = &v1alpha1.VpnConnection{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("vpnconnections").
 		SubResource(subresources...).
 		Name(name).

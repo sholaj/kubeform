@@ -29,8 +29,8 @@ import (
 type GameliftFleetLister interface {
 	// List lists all GameliftFleets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GameliftFleet, err error)
-	// Get retrieves the GameliftFleet from the index for a given name.
-	Get(name string) (*v1alpha1.GameliftFleet, error)
+	// GameliftFleets returns an object that can list and get GameliftFleets.
+	GameliftFleets(namespace string) GameliftFleetNamespaceLister
 	GameliftFleetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *gameliftFleetLister) List(selector labels.Selector) (ret []*v1alpha1.Ga
 	return ret, err
 }
 
-// Get retrieves the GameliftFleet from the index for a given name.
-func (s *gameliftFleetLister) Get(name string) (*v1alpha1.GameliftFleet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GameliftFleets returns an object that can list and get GameliftFleets.
+func (s *gameliftFleetLister) GameliftFleets(namespace string) GameliftFleetNamespaceLister {
+	return gameliftFleetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GameliftFleetNamespaceLister helps list and get GameliftFleets.
+type GameliftFleetNamespaceLister interface {
+	// List lists all GameliftFleets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GameliftFleet, err error)
+	// Get retrieves the GameliftFleet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GameliftFleet, error)
+	GameliftFleetNamespaceListerExpansion
+}
+
+// gameliftFleetNamespaceLister implements the GameliftFleetNamespaceLister
+// interface.
+type gameliftFleetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GameliftFleets in the indexer for a given namespace.
+func (s gameliftFleetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GameliftFleet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GameliftFleet))
+	})
+	return ret, err
+}
+
+// Get retrieves the GameliftFleet from the indexer for a given namespace and name.
+func (s gameliftFleetNamespaceLister) Get(name string) (*v1alpha1.GameliftFleet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

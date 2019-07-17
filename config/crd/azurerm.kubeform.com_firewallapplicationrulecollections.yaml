@@ -399,24 +399,70 @@ spec:
           properties:
             action:
               type: string
-            azure_firewall_name:
+            azureFirewallName:
               type: string
             name:
               type: string
             priority:
               type: integer
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
             rule:
-              items: {}
+              items:
+                properties:
+                  description:
+                    type: string
+                  fqdnTags:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                  name:
+                    type: string
+                  protocol:
+                    items:
+                      properties:
+                        port:
+                          type: integer
+                        type:
+                          type: string
+                      required:
+                      - type
+                      type: object
+                    minItems: 1
+                    type: array
+                  sourceAddresses:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                  targetFqdns:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                required:
+                - name
+                - sourceAddresses
+                type: object
               minItems: 1
               type: array
           required:
           - action
-          - azure_firewall_name
+          - azureFirewallName
           - name
           - priority
-          - resource_group_name
+          - providerRef
+          - resourceGroupName
           - rule
           type: object
         status:
@@ -428,6 +474,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

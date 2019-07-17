@@ -32,7 +32,7 @@ import (
 // LicensemanagerAssociationsGetter has a method to return a LicensemanagerAssociationInterface.
 // A group's client should implement this interface.
 type LicensemanagerAssociationsGetter interface {
-	LicensemanagerAssociations() LicensemanagerAssociationInterface
+	LicensemanagerAssociations(namespace string) LicensemanagerAssociationInterface
 }
 
 // LicensemanagerAssociationInterface has methods to work with LicensemanagerAssociation resources.
@@ -52,12 +52,14 @@ type LicensemanagerAssociationInterface interface {
 // licensemanagerAssociations implements LicensemanagerAssociationInterface
 type licensemanagerAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLicensemanagerAssociations returns a LicensemanagerAssociations
-func newLicensemanagerAssociations(c *AwsV1alpha1Client) *licensemanagerAssociations {
+func newLicensemanagerAssociations(c *AwsV1alpha1Client, namespace string) *licensemanagerAssociations {
 	return &licensemanagerAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLicensemanagerAssociations(c *AwsV1alpha1Client) *licensemanagerAssociat
 func (c *licensemanagerAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.LicensemanagerAssociation, err error) {
 	result = &v1alpha1.LicensemanagerAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("licensemanagerassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *licensemanagerAssociations) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.LicensemanagerAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("licensemanagerassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *licensemanagerAssociations) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("licensemanagerassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *licensemanagerAssociations) Watch(opts v1.ListOptions) (watch.Interface
 func (c *licensemanagerAssociations) Create(licensemanagerAssociation *v1alpha1.LicensemanagerAssociation) (result *v1alpha1.LicensemanagerAssociation, err error) {
 	result = &v1alpha1.LicensemanagerAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("licensemanagerassociations").
 		Body(licensemanagerAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *licensemanagerAssociations) Create(licensemanagerAssociation *v1alpha1.
 func (c *licensemanagerAssociations) Update(licensemanagerAssociation *v1alpha1.LicensemanagerAssociation) (result *v1alpha1.LicensemanagerAssociation, err error) {
 	result = &v1alpha1.LicensemanagerAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("licensemanagerassociations").
 		Name(licensemanagerAssociation.Name).
 		Body(licensemanagerAssociation).
@@ -132,6 +139,7 @@ func (c *licensemanagerAssociations) Update(licensemanagerAssociation *v1alpha1.
 func (c *licensemanagerAssociations) UpdateStatus(licensemanagerAssociation *v1alpha1.LicensemanagerAssociation) (result *v1alpha1.LicensemanagerAssociation, err error) {
 	result = &v1alpha1.LicensemanagerAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("licensemanagerassociations").
 		Name(licensemanagerAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *licensemanagerAssociations) UpdateStatus(licensemanagerAssociation *v1a
 // Delete takes name of the licensemanagerAssociation and deletes it. Returns an error if one occurs.
 func (c *licensemanagerAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("licensemanagerassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *licensemanagerAssociations) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("licensemanagerassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *licensemanagerAssociations) DeleteCollection(options *v1.DeleteOptions,
 func (c *licensemanagerAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LicensemanagerAssociation, err error) {
 	result = &v1alpha1.LicensemanagerAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("licensemanagerassociations").
 		SubResource(subresources...).
 		Name(name).

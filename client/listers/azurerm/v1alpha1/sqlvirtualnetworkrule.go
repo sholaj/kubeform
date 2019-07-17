@@ -29,8 +29,8 @@ import (
 type SqlVirtualNetworkRuleLister interface {
 	// List lists all SqlVirtualNetworkRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SqlVirtualNetworkRule, err error)
-	// Get retrieves the SqlVirtualNetworkRule from the index for a given name.
-	Get(name string) (*v1alpha1.SqlVirtualNetworkRule, error)
+	// SqlVirtualNetworkRules returns an object that can list and get SqlVirtualNetworkRules.
+	SqlVirtualNetworkRules(namespace string) SqlVirtualNetworkRuleNamespaceLister
 	SqlVirtualNetworkRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sqlVirtualNetworkRuleLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the SqlVirtualNetworkRule from the index for a given name.
-func (s *sqlVirtualNetworkRuleLister) Get(name string) (*v1alpha1.SqlVirtualNetworkRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SqlVirtualNetworkRules returns an object that can list and get SqlVirtualNetworkRules.
+func (s *sqlVirtualNetworkRuleLister) SqlVirtualNetworkRules(namespace string) SqlVirtualNetworkRuleNamespaceLister {
+	return sqlVirtualNetworkRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SqlVirtualNetworkRuleNamespaceLister helps list and get SqlVirtualNetworkRules.
+type SqlVirtualNetworkRuleNamespaceLister interface {
+	// List lists all SqlVirtualNetworkRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SqlVirtualNetworkRule, err error)
+	// Get retrieves the SqlVirtualNetworkRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SqlVirtualNetworkRule, error)
+	SqlVirtualNetworkRuleNamespaceListerExpansion
+}
+
+// sqlVirtualNetworkRuleNamespaceLister implements the SqlVirtualNetworkRuleNamespaceLister
+// interface.
+type sqlVirtualNetworkRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SqlVirtualNetworkRules in the indexer for a given namespace.
+func (s sqlVirtualNetworkRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SqlVirtualNetworkRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SqlVirtualNetworkRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the SqlVirtualNetworkRule from the indexer for a given namespace and name.
+func (s sqlVirtualNetworkRuleNamespaceLister) Get(name string) (*v1alpha1.SqlVirtualNetworkRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

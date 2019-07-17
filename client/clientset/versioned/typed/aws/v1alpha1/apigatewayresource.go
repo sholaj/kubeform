@@ -32,7 +32,7 @@ import (
 // ApiGatewayResourcesGetter has a method to return a ApiGatewayResourceInterface.
 // A group's client should implement this interface.
 type ApiGatewayResourcesGetter interface {
-	ApiGatewayResources() ApiGatewayResourceInterface
+	ApiGatewayResources(namespace string) ApiGatewayResourceInterface
 }
 
 // ApiGatewayResourceInterface has methods to work with ApiGatewayResource resources.
@@ -52,12 +52,14 @@ type ApiGatewayResourceInterface interface {
 // apiGatewayResources implements ApiGatewayResourceInterface
 type apiGatewayResources struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiGatewayResources returns a ApiGatewayResources
-func newApiGatewayResources(c *AwsV1alpha1Client) *apiGatewayResources {
+func newApiGatewayResources(c *AwsV1alpha1Client, namespace string) *apiGatewayResources {
 	return &apiGatewayResources{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiGatewayResources(c *AwsV1alpha1Client) *apiGatewayResources {
 func (c *apiGatewayResources) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayResource, err error) {
 	result = &v1alpha1.ApiGatewayResource{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayresources").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiGatewayResources) List(opts v1.ListOptions) (result *v1alpha1.ApiGat
 	}
 	result = &v1alpha1.ApiGatewayResourceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayresources").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiGatewayResources) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayresources").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiGatewayResources) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *apiGatewayResources) Create(apiGatewayResource *v1alpha1.ApiGatewayResource) (result *v1alpha1.ApiGatewayResource, err error) {
 	result = &v1alpha1.ApiGatewayResource{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apigatewayresources").
 		Body(apiGatewayResource).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiGatewayResources) Create(apiGatewayResource *v1alpha1.ApiGatewayReso
 func (c *apiGatewayResources) Update(apiGatewayResource *v1alpha1.ApiGatewayResource) (result *v1alpha1.ApiGatewayResource, err error) {
 	result = &v1alpha1.ApiGatewayResource{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewayresources").
 		Name(apiGatewayResource.Name).
 		Body(apiGatewayResource).
@@ -132,6 +139,7 @@ func (c *apiGatewayResources) Update(apiGatewayResource *v1alpha1.ApiGatewayReso
 func (c *apiGatewayResources) UpdateStatus(apiGatewayResource *v1alpha1.ApiGatewayResource) (result *v1alpha1.ApiGatewayResource, err error) {
 	result = &v1alpha1.ApiGatewayResource{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewayresources").
 		Name(apiGatewayResource.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiGatewayResources) UpdateStatus(apiGatewayResource *v1alpha1.ApiGatew
 // Delete takes name of the apiGatewayResource and deletes it. Returns an error if one occurs.
 func (c *apiGatewayResources) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewayresources").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiGatewayResources) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewayresources").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiGatewayResources) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *apiGatewayResources) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayResource, err error) {
 	result = &v1alpha1.ApiGatewayResource{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apigatewayresources").
 		SubResource(subresources...).
 		Name(name).

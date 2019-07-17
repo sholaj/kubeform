@@ -29,8 +29,8 @@ import (
 type AlbListenerLister interface {
 	// List lists all AlbListeners in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AlbListener, err error)
-	// Get retrieves the AlbListener from the index for a given name.
-	Get(name string) (*v1alpha1.AlbListener, error)
+	// AlbListeners returns an object that can list and get AlbListeners.
+	AlbListeners(namespace string) AlbListenerNamespaceLister
 	AlbListenerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *albListenerLister) List(selector labels.Selector) (ret []*v1alpha1.AlbL
 	return ret, err
 }
 
-// Get retrieves the AlbListener from the index for a given name.
-func (s *albListenerLister) Get(name string) (*v1alpha1.AlbListener, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AlbListeners returns an object that can list and get AlbListeners.
+func (s *albListenerLister) AlbListeners(namespace string) AlbListenerNamespaceLister {
+	return albListenerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AlbListenerNamespaceLister helps list and get AlbListeners.
+type AlbListenerNamespaceLister interface {
+	// List lists all AlbListeners in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AlbListener, err error)
+	// Get retrieves the AlbListener from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AlbListener, error)
+	AlbListenerNamespaceListerExpansion
+}
+
+// albListenerNamespaceLister implements the AlbListenerNamespaceLister
+// interface.
+type albListenerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AlbListeners in the indexer for a given namespace.
+func (s albListenerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AlbListener, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AlbListener))
+	})
+	return ret, err
+}
+
+// Get retrieves the AlbListener from the indexer for a given namespace and name.
+func (s albListenerNamespaceLister) Get(name string) (*v1alpha1.AlbListener, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeBillingAccountIamBindings implements BillingAccountIamBindingInterface
 type FakeBillingAccountIamBindings struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var billingaccountiambindingsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "billingaccountiambindings"}
@@ -40,7 +41,8 @@ var billingaccountiambindingsKind = schema.GroupVersionKind{Group: "google.kubef
 // Get takes name of the billingAccountIamBinding, and returns the corresponding billingAccountIamBinding object, and an error if there is any.
 func (c *FakeBillingAccountIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.BillingAccountIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(billingaccountiambindingsResource, name), &v1alpha1.BillingAccountIamBinding{})
+		Invokes(testing.NewGetAction(billingaccountiambindingsResource, c.ns, name), &v1alpha1.BillingAccountIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeBillingAccountIamBindings) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of BillingAccountIamBindings that match those selectors.
 func (c *FakeBillingAccountIamBindings) List(opts v1.ListOptions) (result *v1alpha1.BillingAccountIamBindingList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(billingaccountiambindingsResource, billingaccountiambindingsKind, opts), &v1alpha1.BillingAccountIamBindingList{})
+		Invokes(testing.NewListAction(billingaccountiambindingsResource, billingaccountiambindingsKind, c.ns, opts), &v1alpha1.BillingAccountIamBindingList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeBillingAccountIamBindings) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested billingAccountIamBindings.
 func (c *FakeBillingAccountIamBindings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(billingaccountiambindingsResource, opts))
+		InvokesWatch(testing.NewWatchAction(billingaccountiambindingsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a billingAccountIamBinding and creates it.  Returns the server's representation of the billingAccountIamBinding, and an error, if there is any.
 func (c *FakeBillingAccountIamBindings) Create(billingAccountIamBinding *v1alpha1.BillingAccountIamBinding) (result *v1alpha1.BillingAccountIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(billingaccountiambindingsResource, billingAccountIamBinding), &v1alpha1.BillingAccountIamBinding{})
+		Invokes(testing.NewCreateAction(billingaccountiambindingsResource, c.ns, billingAccountIamBinding), &v1alpha1.BillingAccountIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeBillingAccountIamBindings) Create(billingAccountIamBinding *v1alpha
 // Update takes the representation of a billingAccountIamBinding and updates it. Returns the server's representation of the billingAccountIamBinding, and an error, if there is any.
 func (c *FakeBillingAccountIamBindings) Update(billingAccountIamBinding *v1alpha1.BillingAccountIamBinding) (result *v1alpha1.BillingAccountIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(billingaccountiambindingsResource, billingAccountIamBinding), &v1alpha1.BillingAccountIamBinding{})
+		Invokes(testing.NewUpdateAction(billingaccountiambindingsResource, c.ns, billingAccountIamBinding), &v1alpha1.BillingAccountIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeBillingAccountIamBindings) Update(billingAccountIamBinding *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeBillingAccountIamBindings) UpdateStatus(billingAccountIamBinding *v1alpha1.BillingAccountIamBinding) (*v1alpha1.BillingAccountIamBinding, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(billingaccountiambindingsResource, "status", billingAccountIamBinding), &v1alpha1.BillingAccountIamBinding{})
+		Invokes(testing.NewUpdateSubresourceAction(billingaccountiambindingsResource, "status", c.ns, billingAccountIamBinding), &v1alpha1.BillingAccountIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeBillingAccountIamBindings) UpdateStatus(billingAccountIamBinding *v
 // Delete takes name of the billingAccountIamBinding and deletes it. Returns an error if one occurs.
 func (c *FakeBillingAccountIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(billingaccountiambindingsResource, name), &v1alpha1.BillingAccountIamBinding{})
+		Invokes(testing.NewDeleteAction(billingaccountiambindingsResource, c.ns, name), &v1alpha1.BillingAccountIamBinding{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeBillingAccountIamBindings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(billingaccountiambindingsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(billingaccountiambindingsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.BillingAccountIamBindingList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeBillingAccountIamBindings) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched billingAccountIamBinding.
 func (c *FakeBillingAccountIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BillingAccountIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(billingaccountiambindingsResource, name, pt, data, subresources...), &v1alpha1.BillingAccountIamBinding{})
+		Invokes(testing.NewPatchSubresourceAction(billingaccountiambindingsResource, c.ns, name, pt, data, subresources...), &v1alpha1.BillingAccountIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}

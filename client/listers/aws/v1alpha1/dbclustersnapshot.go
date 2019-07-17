@@ -29,8 +29,8 @@ import (
 type DbClusterSnapshotLister interface {
 	// List lists all DbClusterSnapshots in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DbClusterSnapshot, err error)
-	// Get retrieves the DbClusterSnapshot from the index for a given name.
-	Get(name string) (*v1alpha1.DbClusterSnapshot, error)
+	// DbClusterSnapshots returns an object that can list and get DbClusterSnapshots.
+	DbClusterSnapshots(namespace string) DbClusterSnapshotNamespaceLister
 	DbClusterSnapshotListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dbClusterSnapshotLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the DbClusterSnapshot from the index for a given name.
-func (s *dbClusterSnapshotLister) Get(name string) (*v1alpha1.DbClusterSnapshot, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DbClusterSnapshots returns an object that can list and get DbClusterSnapshots.
+func (s *dbClusterSnapshotLister) DbClusterSnapshots(namespace string) DbClusterSnapshotNamespaceLister {
+	return dbClusterSnapshotNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DbClusterSnapshotNamespaceLister helps list and get DbClusterSnapshots.
+type DbClusterSnapshotNamespaceLister interface {
+	// List lists all DbClusterSnapshots in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DbClusterSnapshot, err error)
+	// Get retrieves the DbClusterSnapshot from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DbClusterSnapshot, error)
+	DbClusterSnapshotNamespaceListerExpansion
+}
+
+// dbClusterSnapshotNamespaceLister implements the DbClusterSnapshotNamespaceLister
+// interface.
+type dbClusterSnapshotNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DbClusterSnapshots in the indexer for a given namespace.
+func (s dbClusterSnapshotNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DbClusterSnapshot, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DbClusterSnapshot))
+	})
+	return ret, err
+}
+
+// Get retrieves the DbClusterSnapshot from the indexer for a given namespace and name.
+func (s dbClusterSnapshotNamespaceLister) Get(name string) (*v1alpha1.DbClusterSnapshot, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // ExpressRouteCircuitsGetter has a method to return a ExpressRouteCircuitInterface.
 // A group's client should implement this interface.
 type ExpressRouteCircuitsGetter interface {
-	ExpressRouteCircuits() ExpressRouteCircuitInterface
+	ExpressRouteCircuits(namespace string) ExpressRouteCircuitInterface
 }
 
 // ExpressRouteCircuitInterface has methods to work with ExpressRouteCircuit resources.
@@ -52,12 +52,14 @@ type ExpressRouteCircuitInterface interface {
 // expressRouteCircuits implements ExpressRouteCircuitInterface
 type expressRouteCircuits struct {
 	client rest.Interface
+	ns     string
 }
 
 // newExpressRouteCircuits returns a ExpressRouteCircuits
-func newExpressRouteCircuits(c *AzurermV1alpha1Client) *expressRouteCircuits {
+func newExpressRouteCircuits(c *AzurermV1alpha1Client, namespace string) *expressRouteCircuits {
 	return &expressRouteCircuits{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newExpressRouteCircuits(c *AzurermV1alpha1Client) *expressRouteCircuits {
 func (c *expressRouteCircuits) Get(name string, options v1.GetOptions) (result *v1alpha1.ExpressRouteCircuit, err error) {
 	result = &v1alpha1.ExpressRouteCircuit{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("expressroutecircuits").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *expressRouteCircuits) List(opts v1.ListOptions) (result *v1alpha1.Expre
 	}
 	result = &v1alpha1.ExpressRouteCircuitList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("expressroutecircuits").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *expressRouteCircuits) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("expressroutecircuits").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *expressRouteCircuits) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *expressRouteCircuits) Create(expressRouteCircuit *v1alpha1.ExpressRouteCircuit) (result *v1alpha1.ExpressRouteCircuit, err error) {
 	result = &v1alpha1.ExpressRouteCircuit{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("expressroutecircuits").
 		Body(expressRouteCircuit).
 		Do().
@@ -118,6 +124,7 @@ func (c *expressRouteCircuits) Create(expressRouteCircuit *v1alpha1.ExpressRoute
 func (c *expressRouteCircuits) Update(expressRouteCircuit *v1alpha1.ExpressRouteCircuit) (result *v1alpha1.ExpressRouteCircuit, err error) {
 	result = &v1alpha1.ExpressRouteCircuit{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("expressroutecircuits").
 		Name(expressRouteCircuit.Name).
 		Body(expressRouteCircuit).
@@ -132,6 +139,7 @@ func (c *expressRouteCircuits) Update(expressRouteCircuit *v1alpha1.ExpressRoute
 func (c *expressRouteCircuits) UpdateStatus(expressRouteCircuit *v1alpha1.ExpressRouteCircuit) (result *v1alpha1.ExpressRouteCircuit, err error) {
 	result = &v1alpha1.ExpressRouteCircuit{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("expressroutecircuits").
 		Name(expressRouteCircuit.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *expressRouteCircuits) UpdateStatus(expressRouteCircuit *v1alpha1.Expres
 // Delete takes name of the expressRouteCircuit and deletes it. Returns an error if one occurs.
 func (c *expressRouteCircuits) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("expressroutecircuits").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *expressRouteCircuits) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("expressroutecircuits").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *expressRouteCircuits) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *expressRouteCircuits) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ExpressRouteCircuit, err error) {
 	result = &v1alpha1.ExpressRouteCircuit{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("expressroutecircuits").
 		SubResource(subresources...).
 		Name(name).

@@ -41,32 +41,33 @@ type LoggingFolderSinkInformer interface {
 type loggingFolderSinkInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewLoggingFolderSinkInformer constructs a new informer for LoggingFolderSink type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLoggingFolderSinkInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLoggingFolderSinkInformer(client, resyncPeriod, indexers, nil)
+func NewLoggingFolderSinkInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLoggingFolderSinkInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredLoggingFolderSinkInformer constructs a new informer for LoggingFolderSink type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLoggingFolderSinkInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLoggingFolderSinkInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().LoggingFolderSinks().List(options)
+				return client.GoogleV1alpha1().LoggingFolderSinks(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().LoggingFolderSinks().Watch(options)
+				return client.GoogleV1alpha1().LoggingFolderSinks(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.LoggingFolderSink{},
@@ -76,7 +77,7 @@ func NewFilteredLoggingFolderSinkInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *loggingFolderSinkInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLoggingFolderSinkInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredLoggingFolderSinkInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *loggingFolderSinkInformer) Informer() cache.SharedIndexInformer {

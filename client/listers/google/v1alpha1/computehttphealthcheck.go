@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/google/v1alpha1"
 )
 
-// ComputeHttpHealthCheckLister helps list ComputeHttpHealthChecks.
-type ComputeHttpHealthCheckLister interface {
-	// List lists all ComputeHttpHealthChecks in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.ComputeHttpHealthCheck, err error)
-	// Get retrieves the ComputeHttpHealthCheck from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeHttpHealthCheck, error)
-	ComputeHttpHealthCheckListerExpansion
+// ComputeHTTPHealthCheckLister helps list ComputeHTTPHealthChecks.
+type ComputeHTTPHealthCheckLister interface {
+	// List lists all ComputeHTTPHealthChecks in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeHTTPHealthCheck, err error)
+	// ComputeHTTPHealthChecks returns an object that can list and get ComputeHTTPHealthChecks.
+	ComputeHTTPHealthChecks(namespace string) ComputeHTTPHealthCheckNamespaceLister
+	ComputeHTTPHealthCheckListerExpansion
 }
 
-// computeHttpHealthCheckLister implements the ComputeHttpHealthCheckLister interface.
-type computeHttpHealthCheckLister struct {
+// computeHTTPHealthCheckLister implements the ComputeHTTPHealthCheckLister interface.
+type computeHTTPHealthCheckLister struct {
 	indexer cache.Indexer
 }
 
-// NewComputeHttpHealthCheckLister returns a new ComputeHttpHealthCheckLister.
-func NewComputeHttpHealthCheckLister(indexer cache.Indexer) ComputeHttpHealthCheckLister {
-	return &computeHttpHealthCheckLister{indexer: indexer}
+// NewComputeHTTPHealthCheckLister returns a new ComputeHTTPHealthCheckLister.
+func NewComputeHTTPHealthCheckLister(indexer cache.Indexer) ComputeHTTPHealthCheckLister {
+	return &computeHTTPHealthCheckLister{indexer: indexer}
 }
 
-// List lists all ComputeHttpHealthChecks in the indexer.
-func (s *computeHttpHealthCheckLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeHttpHealthCheck, err error) {
+// List lists all ComputeHTTPHealthChecks in the indexer.
+func (s *computeHTTPHealthCheckLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeHTTPHealthCheck, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ComputeHttpHealthCheck))
+		ret = append(ret, m.(*v1alpha1.ComputeHTTPHealthCheck))
 	})
 	return ret, err
 }
 
-// Get retrieves the ComputeHttpHealthCheck from the index for a given name.
-func (s *computeHttpHealthCheckLister) Get(name string) (*v1alpha1.ComputeHttpHealthCheck, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeHTTPHealthChecks returns an object that can list and get ComputeHTTPHealthChecks.
+func (s *computeHTTPHealthCheckLister) ComputeHTTPHealthChecks(namespace string) ComputeHTTPHealthCheckNamespaceLister {
+	return computeHTTPHealthCheckNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeHTTPHealthCheckNamespaceLister helps list and get ComputeHTTPHealthChecks.
+type ComputeHTTPHealthCheckNamespaceLister interface {
+	// List lists all ComputeHTTPHealthChecks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeHTTPHealthCheck, err error)
+	// Get retrieves the ComputeHTTPHealthCheck from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeHTTPHealthCheck, error)
+	ComputeHTTPHealthCheckNamespaceListerExpansion
+}
+
+// computeHTTPHealthCheckNamespaceLister implements the ComputeHTTPHealthCheckNamespaceLister
+// interface.
+type computeHTTPHealthCheckNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeHTTPHealthChecks in the indexer for a given namespace.
+func (s computeHTTPHealthCheckNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeHTTPHealthCheck, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeHTTPHealthCheck))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeHTTPHealthCheck from the indexer for a given namespace and name.
+func (s computeHTTPHealthCheckNamespaceLister) Get(name string) (*v1alpha1.ComputeHTTPHealthCheck, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("computehttphealthcheck"), name)
 	}
-	return obj.(*v1alpha1.ComputeHttpHealthCheck), nil
+	return obj.(*v1alpha1.ComputeHTTPHealthCheck), nil
 }

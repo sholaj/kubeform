@@ -397,26 +397,56 @@ spec:
           type: object
         spec:
           properties:
-            dns_config:
-              items: {}
+            dnsConfig:
+              items:
+                properties:
+                  relativeName:
+                    type: string
+                  ttl:
+                    type: integer
+                required:
+                - relativeName
+                - ttl
+                type: object
               type: array
               uniqueItems: true
-            monitor_config:
-              items: {}
+            monitorConfig:
+              items:
+                properties:
+                  path:
+                    type: string
+                  port:
+                    type: integer
+                  protocol:
+                    type: string
+                required:
+                - port
+                - protocol
+                type: object
               type: array
               uniqueItems: true
             name:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
-            traffic_routing_method:
+            trafficRoutingMethod:
               type: string
           required:
-          - dns_config
-          - monitor_config
+          - dnsConfig
+          - monitorConfig
           - name
-          - resource_group_name
-          - traffic_routing_method
+          - providerRef
+          - resourceGroupName
+          - trafficRoutingMethod
           type: object
         status:
           properties:
@@ -427,6 +457,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

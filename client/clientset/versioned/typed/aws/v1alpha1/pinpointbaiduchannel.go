@@ -32,7 +32,7 @@ import (
 // PinpointBaiduChannelsGetter has a method to return a PinpointBaiduChannelInterface.
 // A group's client should implement this interface.
 type PinpointBaiduChannelsGetter interface {
-	PinpointBaiduChannels() PinpointBaiduChannelInterface
+	PinpointBaiduChannels(namespace string) PinpointBaiduChannelInterface
 }
 
 // PinpointBaiduChannelInterface has methods to work with PinpointBaiduChannel resources.
@@ -52,12 +52,14 @@ type PinpointBaiduChannelInterface interface {
 // pinpointBaiduChannels implements PinpointBaiduChannelInterface
 type pinpointBaiduChannels struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPinpointBaiduChannels returns a PinpointBaiduChannels
-func newPinpointBaiduChannels(c *AwsV1alpha1Client) *pinpointBaiduChannels {
+func newPinpointBaiduChannels(c *AwsV1alpha1Client, namespace string) *pinpointBaiduChannels {
 	return &pinpointBaiduChannels{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPinpointBaiduChannels(c *AwsV1alpha1Client) *pinpointBaiduChannels {
 func (c *pinpointBaiduChannels) Get(name string, options v1.GetOptions) (result *v1alpha1.PinpointBaiduChannel, err error) {
 	result = &v1alpha1.PinpointBaiduChannel{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointbaiduchannels").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *pinpointBaiduChannels) List(opts v1.ListOptions) (result *v1alpha1.Pinp
 	}
 	result = &v1alpha1.PinpointBaiduChannelList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointbaiduchannels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *pinpointBaiduChannels) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointbaiduchannels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *pinpointBaiduChannels) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *pinpointBaiduChannels) Create(pinpointBaiduChannel *v1alpha1.PinpointBaiduChannel) (result *v1alpha1.PinpointBaiduChannel, err error) {
 	result = &v1alpha1.PinpointBaiduChannel{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("pinpointbaiduchannels").
 		Body(pinpointBaiduChannel).
 		Do().
@@ -118,6 +124,7 @@ func (c *pinpointBaiduChannels) Create(pinpointBaiduChannel *v1alpha1.PinpointBa
 func (c *pinpointBaiduChannels) Update(pinpointBaiduChannel *v1alpha1.PinpointBaiduChannel) (result *v1alpha1.PinpointBaiduChannel, err error) {
 	result = &v1alpha1.PinpointBaiduChannel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pinpointbaiduchannels").
 		Name(pinpointBaiduChannel.Name).
 		Body(pinpointBaiduChannel).
@@ -132,6 +139,7 @@ func (c *pinpointBaiduChannels) Update(pinpointBaiduChannel *v1alpha1.PinpointBa
 func (c *pinpointBaiduChannels) UpdateStatus(pinpointBaiduChannel *v1alpha1.PinpointBaiduChannel) (result *v1alpha1.PinpointBaiduChannel, err error) {
 	result = &v1alpha1.PinpointBaiduChannel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pinpointbaiduchannels").
 		Name(pinpointBaiduChannel.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *pinpointBaiduChannels) UpdateStatus(pinpointBaiduChannel *v1alpha1.Pinp
 // Delete takes name of the pinpointBaiduChannel and deletes it. Returns an error if one occurs.
 func (c *pinpointBaiduChannels) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pinpointbaiduchannels").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *pinpointBaiduChannels) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pinpointbaiduchannels").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *pinpointBaiduChannels) DeleteCollection(options *v1.DeleteOptions, list
 func (c *pinpointBaiduChannels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PinpointBaiduChannel, err error) {
 	result = &v1alpha1.PinpointBaiduChannel{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("pinpointbaiduchannels").
 		SubResource(subresources...).
 		Name(name).

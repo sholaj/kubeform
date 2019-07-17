@@ -41,32 +41,33 @@ type InspectorResourceGroupInformer interface {
 type inspectorResourceGroupInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewInspectorResourceGroupInformer constructs a new informer for InspectorResourceGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewInspectorResourceGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredInspectorResourceGroupInformer(client, resyncPeriod, indexers, nil)
+func NewInspectorResourceGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredInspectorResourceGroupInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredInspectorResourceGroupInformer constructs a new informer for InspectorResourceGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredInspectorResourceGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredInspectorResourceGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().InspectorResourceGroups().List(options)
+				return client.AwsV1alpha1().InspectorResourceGroups(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().InspectorResourceGroups().Watch(options)
+				return client.AwsV1alpha1().InspectorResourceGroups(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.InspectorResourceGroup{},
@@ -76,7 +77,7 @@ func NewFilteredInspectorResourceGroupInformer(client versioned.Interface, resyn
 }
 
 func (f *inspectorResourceGroupInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredInspectorResourceGroupInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredInspectorResourceGroupInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *inspectorResourceGroupInformer) Informer() cache.SharedIndexInformer {

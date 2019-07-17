@@ -29,8 +29,8 @@ import (
 type MysqlServerLister interface {
 	// List lists all MysqlServers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MysqlServer, err error)
-	// Get retrieves the MysqlServer from the index for a given name.
-	Get(name string) (*v1alpha1.MysqlServer, error)
+	// MysqlServers returns an object that can list and get MysqlServers.
+	MysqlServers(namespace string) MysqlServerNamespaceLister
 	MysqlServerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *mysqlServerLister) List(selector labels.Selector) (ret []*v1alpha1.Mysq
 	return ret, err
 }
 
-// Get retrieves the MysqlServer from the index for a given name.
-func (s *mysqlServerLister) Get(name string) (*v1alpha1.MysqlServer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MysqlServers returns an object that can list and get MysqlServers.
+func (s *mysqlServerLister) MysqlServers(namespace string) MysqlServerNamespaceLister {
+	return mysqlServerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MysqlServerNamespaceLister helps list and get MysqlServers.
+type MysqlServerNamespaceLister interface {
+	// List lists all MysqlServers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MysqlServer, err error)
+	// Get retrieves the MysqlServer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MysqlServer, error)
+	MysqlServerNamespaceListerExpansion
+}
+
+// mysqlServerNamespaceLister implements the MysqlServerNamespaceLister
+// interface.
+type mysqlServerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MysqlServers in the indexer for a given namespace.
+func (s mysqlServerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MysqlServer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MysqlServer))
+	})
+	return ret, err
+}
+
+// Get retrieves the MysqlServer from the indexer for a given namespace and name.
+func (s mysqlServerNamespaceLister) Get(name string) (*v1alpha1.MysqlServer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

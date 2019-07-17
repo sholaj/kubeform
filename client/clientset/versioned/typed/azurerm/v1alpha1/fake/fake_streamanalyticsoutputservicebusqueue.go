@@ -31,6 +31,7 @@ import (
 // FakeStreamAnalyticsOutputServicebusQueues implements StreamAnalyticsOutputServicebusQueueInterface
 type FakeStreamAnalyticsOutputServicebusQueues struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var streamanalyticsoutputservicebusqueuesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "streamanalyticsoutputservicebusqueues"}
@@ -40,7 +41,8 @@ var streamanalyticsoutputservicebusqueuesKind = schema.GroupVersionKind{Group: "
 // Get takes name of the streamAnalyticsOutputServicebusQueue, and returns the corresponding streamAnalyticsOutputServicebusQueue object, and an error if there is any.
 func (c *FakeStreamAnalyticsOutputServicebusQueues) Get(name string, options v1.GetOptions) (result *v1alpha1.StreamAnalyticsOutputServicebusQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(streamanalyticsoutputservicebusqueuesResource, name), &v1alpha1.StreamAnalyticsOutputServicebusQueue{})
+		Invokes(testing.NewGetAction(streamanalyticsoutputservicebusqueuesResource, c.ns, name), &v1alpha1.StreamAnalyticsOutputServicebusQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeStreamAnalyticsOutputServicebusQueues) Get(name string, options v1.
 // List takes label and field selectors, and returns the list of StreamAnalyticsOutputServicebusQueues that match those selectors.
 func (c *FakeStreamAnalyticsOutputServicebusQueues) List(opts v1.ListOptions) (result *v1alpha1.StreamAnalyticsOutputServicebusQueueList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(streamanalyticsoutputservicebusqueuesResource, streamanalyticsoutputservicebusqueuesKind, opts), &v1alpha1.StreamAnalyticsOutputServicebusQueueList{})
+		Invokes(testing.NewListAction(streamanalyticsoutputservicebusqueuesResource, streamanalyticsoutputservicebusqueuesKind, c.ns, opts), &v1alpha1.StreamAnalyticsOutputServicebusQueueList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeStreamAnalyticsOutputServicebusQueues) List(opts v1.ListOptions) (r
 // Watch returns a watch.Interface that watches the requested streamAnalyticsOutputServicebusQueues.
 func (c *FakeStreamAnalyticsOutputServicebusQueues) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(streamanalyticsoutputservicebusqueuesResource, opts))
+		InvokesWatch(testing.NewWatchAction(streamanalyticsoutputservicebusqueuesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a streamAnalyticsOutputServicebusQueue and creates it.  Returns the server's representation of the streamAnalyticsOutputServicebusQueue, and an error, if there is any.
 func (c *FakeStreamAnalyticsOutputServicebusQueues) Create(streamAnalyticsOutputServicebusQueue *v1alpha1.StreamAnalyticsOutputServicebusQueue) (result *v1alpha1.StreamAnalyticsOutputServicebusQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(streamanalyticsoutputservicebusqueuesResource, streamAnalyticsOutputServicebusQueue), &v1alpha1.StreamAnalyticsOutputServicebusQueue{})
+		Invokes(testing.NewCreateAction(streamanalyticsoutputservicebusqueuesResource, c.ns, streamAnalyticsOutputServicebusQueue), &v1alpha1.StreamAnalyticsOutputServicebusQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeStreamAnalyticsOutputServicebusQueues) Create(streamAnalyticsOutput
 // Update takes the representation of a streamAnalyticsOutputServicebusQueue and updates it. Returns the server's representation of the streamAnalyticsOutputServicebusQueue, and an error, if there is any.
 func (c *FakeStreamAnalyticsOutputServicebusQueues) Update(streamAnalyticsOutputServicebusQueue *v1alpha1.StreamAnalyticsOutputServicebusQueue) (result *v1alpha1.StreamAnalyticsOutputServicebusQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(streamanalyticsoutputservicebusqueuesResource, streamAnalyticsOutputServicebusQueue), &v1alpha1.StreamAnalyticsOutputServicebusQueue{})
+		Invokes(testing.NewUpdateAction(streamanalyticsoutputservicebusqueuesResource, c.ns, streamAnalyticsOutputServicebusQueue), &v1alpha1.StreamAnalyticsOutputServicebusQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeStreamAnalyticsOutputServicebusQueues) Update(streamAnalyticsOutput
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeStreamAnalyticsOutputServicebusQueues) UpdateStatus(streamAnalyticsOutputServicebusQueue *v1alpha1.StreamAnalyticsOutputServicebusQueue) (*v1alpha1.StreamAnalyticsOutputServicebusQueue, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(streamanalyticsoutputservicebusqueuesResource, "status", streamAnalyticsOutputServicebusQueue), &v1alpha1.StreamAnalyticsOutputServicebusQueue{})
+		Invokes(testing.NewUpdateSubresourceAction(streamanalyticsoutputservicebusqueuesResource, "status", c.ns, streamAnalyticsOutputServicebusQueue), &v1alpha1.StreamAnalyticsOutputServicebusQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeStreamAnalyticsOutputServicebusQueues) UpdateStatus(streamAnalytics
 // Delete takes name of the streamAnalyticsOutputServicebusQueue and deletes it. Returns an error if one occurs.
 func (c *FakeStreamAnalyticsOutputServicebusQueues) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(streamanalyticsoutputservicebusqueuesResource, name), &v1alpha1.StreamAnalyticsOutputServicebusQueue{})
+		Invokes(testing.NewDeleteAction(streamanalyticsoutputservicebusqueuesResource, c.ns, name), &v1alpha1.StreamAnalyticsOutputServicebusQueue{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeStreamAnalyticsOutputServicebusQueues) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(streamanalyticsoutputservicebusqueuesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(streamanalyticsoutputservicebusqueuesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.StreamAnalyticsOutputServicebusQueueList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeStreamAnalyticsOutputServicebusQueues) DeleteCollection(options *v1
 // Patch applies the patch and returns the patched streamAnalyticsOutputServicebusQueue.
 func (c *FakeStreamAnalyticsOutputServicebusQueues) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StreamAnalyticsOutputServicebusQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(streamanalyticsoutputservicebusqueuesResource, name, pt, data, subresources...), &v1alpha1.StreamAnalyticsOutputServicebusQueue{})
+		Invokes(testing.NewPatchSubresourceAction(streamanalyticsoutputservicebusqueuesResource, c.ns, name, pt, data, subresources...), &v1alpha1.StreamAnalyticsOutputServicebusQueue{})
+
 	if obj == nil {
 		return nil, err
 	}

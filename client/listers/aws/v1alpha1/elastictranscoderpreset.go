@@ -29,8 +29,8 @@ import (
 type ElastictranscoderPresetLister interface {
 	// List lists all ElastictranscoderPresets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ElastictranscoderPreset, err error)
-	// Get retrieves the ElastictranscoderPreset from the index for a given name.
-	Get(name string) (*v1alpha1.ElastictranscoderPreset, error)
+	// ElastictranscoderPresets returns an object that can list and get ElastictranscoderPresets.
+	ElastictranscoderPresets(namespace string) ElastictranscoderPresetNamespaceLister
 	ElastictranscoderPresetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *elastictranscoderPresetLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the ElastictranscoderPreset from the index for a given name.
-func (s *elastictranscoderPresetLister) Get(name string) (*v1alpha1.ElastictranscoderPreset, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ElastictranscoderPresets returns an object that can list and get ElastictranscoderPresets.
+func (s *elastictranscoderPresetLister) ElastictranscoderPresets(namespace string) ElastictranscoderPresetNamespaceLister {
+	return elastictranscoderPresetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ElastictranscoderPresetNamespaceLister helps list and get ElastictranscoderPresets.
+type ElastictranscoderPresetNamespaceLister interface {
+	// List lists all ElastictranscoderPresets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ElastictranscoderPreset, err error)
+	// Get retrieves the ElastictranscoderPreset from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ElastictranscoderPreset, error)
+	ElastictranscoderPresetNamespaceListerExpansion
+}
+
+// elastictranscoderPresetNamespaceLister implements the ElastictranscoderPresetNamespaceLister
+// interface.
+type elastictranscoderPresetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ElastictranscoderPresets in the indexer for a given namespace.
+func (s elastictranscoderPresetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ElastictranscoderPreset, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ElastictranscoderPreset))
+	})
+	return ret, err
+}
+
+// Get retrieves the ElastictranscoderPreset from the indexer for a given namespace and name.
+func (s elastictranscoderPresetNamespaceLister) Get(name string) (*v1alpha1.ElastictranscoderPreset, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

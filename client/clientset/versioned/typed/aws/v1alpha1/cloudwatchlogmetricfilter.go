@@ -32,7 +32,7 @@ import (
 // CloudwatchLogMetricFiltersGetter has a method to return a CloudwatchLogMetricFilterInterface.
 // A group's client should implement this interface.
 type CloudwatchLogMetricFiltersGetter interface {
-	CloudwatchLogMetricFilters() CloudwatchLogMetricFilterInterface
+	CloudwatchLogMetricFilters(namespace string) CloudwatchLogMetricFilterInterface
 }
 
 // CloudwatchLogMetricFilterInterface has methods to work with CloudwatchLogMetricFilter resources.
@@ -52,12 +52,14 @@ type CloudwatchLogMetricFilterInterface interface {
 // cloudwatchLogMetricFilters implements CloudwatchLogMetricFilterInterface
 type cloudwatchLogMetricFilters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCloudwatchLogMetricFilters returns a CloudwatchLogMetricFilters
-func newCloudwatchLogMetricFilters(c *AwsV1alpha1Client) *cloudwatchLogMetricFilters {
+func newCloudwatchLogMetricFilters(c *AwsV1alpha1Client, namespace string) *cloudwatchLogMetricFilters {
 	return &cloudwatchLogMetricFilters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCloudwatchLogMetricFilters(c *AwsV1alpha1Client) *cloudwatchLogMetricFil
 func (c *cloudwatchLogMetricFilters) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudwatchLogMetricFilter, err error) {
 	result = &v1alpha1.CloudwatchLogMetricFilter{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatchlogmetricfilters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cloudwatchLogMetricFilters) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.CloudwatchLogMetricFilterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatchlogmetricfilters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cloudwatchLogMetricFilters) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatchlogmetricfilters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cloudwatchLogMetricFilters) Watch(opts v1.ListOptions) (watch.Interface
 func (c *cloudwatchLogMetricFilters) Create(cloudwatchLogMetricFilter *v1alpha1.CloudwatchLogMetricFilter) (result *v1alpha1.CloudwatchLogMetricFilter, err error) {
 	result = &v1alpha1.CloudwatchLogMetricFilter{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cloudwatchlogmetricfilters").
 		Body(cloudwatchLogMetricFilter).
 		Do().
@@ -118,6 +124,7 @@ func (c *cloudwatchLogMetricFilters) Create(cloudwatchLogMetricFilter *v1alpha1.
 func (c *cloudwatchLogMetricFilters) Update(cloudwatchLogMetricFilter *v1alpha1.CloudwatchLogMetricFilter) (result *v1alpha1.CloudwatchLogMetricFilter, err error) {
 	result = &v1alpha1.CloudwatchLogMetricFilter{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudwatchlogmetricfilters").
 		Name(cloudwatchLogMetricFilter.Name).
 		Body(cloudwatchLogMetricFilter).
@@ -132,6 +139,7 @@ func (c *cloudwatchLogMetricFilters) Update(cloudwatchLogMetricFilter *v1alpha1.
 func (c *cloudwatchLogMetricFilters) UpdateStatus(cloudwatchLogMetricFilter *v1alpha1.CloudwatchLogMetricFilter) (result *v1alpha1.CloudwatchLogMetricFilter, err error) {
 	result = &v1alpha1.CloudwatchLogMetricFilter{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudwatchlogmetricfilters").
 		Name(cloudwatchLogMetricFilter.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cloudwatchLogMetricFilters) UpdateStatus(cloudwatchLogMetricFilter *v1a
 // Delete takes name of the cloudwatchLogMetricFilter and deletes it. Returns an error if one occurs.
 func (c *cloudwatchLogMetricFilters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudwatchlogmetricfilters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cloudwatchLogMetricFilters) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudwatchlogmetricfilters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cloudwatchLogMetricFilters) DeleteCollection(options *v1.DeleteOptions,
 func (c *cloudwatchLogMetricFilters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudwatchLogMetricFilter, err error) {
 	result = &v1alpha1.CloudwatchLogMetricFilter{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cloudwatchlogmetricfilters").
 		SubResource(subresources...).
 		Name(name).

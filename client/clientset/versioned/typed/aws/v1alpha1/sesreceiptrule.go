@@ -32,7 +32,7 @@ import (
 // SesReceiptRulesGetter has a method to return a SesReceiptRuleInterface.
 // A group's client should implement this interface.
 type SesReceiptRulesGetter interface {
-	SesReceiptRules() SesReceiptRuleInterface
+	SesReceiptRules(namespace string) SesReceiptRuleInterface
 }
 
 // SesReceiptRuleInterface has methods to work with SesReceiptRule resources.
@@ -52,12 +52,14 @@ type SesReceiptRuleInterface interface {
 // sesReceiptRules implements SesReceiptRuleInterface
 type sesReceiptRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSesReceiptRules returns a SesReceiptRules
-func newSesReceiptRules(c *AwsV1alpha1Client) *sesReceiptRules {
+func newSesReceiptRules(c *AwsV1alpha1Client, namespace string) *sesReceiptRules {
 	return &sesReceiptRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSesReceiptRules(c *AwsV1alpha1Client) *sesReceiptRules {
 func (c *sesReceiptRules) Get(name string, options v1.GetOptions) (result *v1alpha1.SesReceiptRule, err error) {
 	result = &v1alpha1.SesReceiptRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sesreceiptrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sesReceiptRules) List(opts v1.ListOptions) (result *v1alpha1.SesReceipt
 	}
 	result = &v1alpha1.SesReceiptRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sesreceiptrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sesReceiptRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sesreceiptrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sesReceiptRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *sesReceiptRules) Create(sesReceiptRule *v1alpha1.SesReceiptRule) (result *v1alpha1.SesReceiptRule, err error) {
 	result = &v1alpha1.SesReceiptRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sesreceiptrules").
 		Body(sesReceiptRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *sesReceiptRules) Create(sesReceiptRule *v1alpha1.SesReceiptRule) (resul
 func (c *sesReceiptRules) Update(sesReceiptRule *v1alpha1.SesReceiptRule) (result *v1alpha1.SesReceiptRule, err error) {
 	result = &v1alpha1.SesReceiptRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sesreceiptrules").
 		Name(sesReceiptRule.Name).
 		Body(sesReceiptRule).
@@ -132,6 +139,7 @@ func (c *sesReceiptRules) Update(sesReceiptRule *v1alpha1.SesReceiptRule) (resul
 func (c *sesReceiptRules) UpdateStatus(sesReceiptRule *v1alpha1.SesReceiptRule) (result *v1alpha1.SesReceiptRule, err error) {
 	result = &v1alpha1.SesReceiptRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sesreceiptrules").
 		Name(sesReceiptRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sesReceiptRules) UpdateStatus(sesReceiptRule *v1alpha1.SesReceiptRule) 
 // Delete takes name of the sesReceiptRule and deletes it. Returns an error if one occurs.
 func (c *sesReceiptRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sesreceiptrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sesReceiptRules) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sesreceiptrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sesReceiptRules) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *sesReceiptRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesReceiptRule, err error) {
 	result = &v1alpha1.SesReceiptRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sesreceiptrules").
 		SubResource(subresources...).
 		Name(name).

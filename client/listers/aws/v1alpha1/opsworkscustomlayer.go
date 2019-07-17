@@ -29,8 +29,8 @@ import (
 type OpsworksCustomLayerLister interface {
 	// List lists all OpsworksCustomLayers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OpsworksCustomLayer, err error)
-	// Get retrieves the OpsworksCustomLayer from the index for a given name.
-	Get(name string) (*v1alpha1.OpsworksCustomLayer, error)
+	// OpsworksCustomLayers returns an object that can list and get OpsworksCustomLayers.
+	OpsworksCustomLayers(namespace string) OpsworksCustomLayerNamespaceLister
 	OpsworksCustomLayerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *opsworksCustomLayerLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the OpsworksCustomLayer from the index for a given name.
-func (s *opsworksCustomLayerLister) Get(name string) (*v1alpha1.OpsworksCustomLayer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OpsworksCustomLayers returns an object that can list and get OpsworksCustomLayers.
+func (s *opsworksCustomLayerLister) OpsworksCustomLayers(namespace string) OpsworksCustomLayerNamespaceLister {
+	return opsworksCustomLayerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OpsworksCustomLayerNamespaceLister helps list and get OpsworksCustomLayers.
+type OpsworksCustomLayerNamespaceLister interface {
+	// List lists all OpsworksCustomLayers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OpsworksCustomLayer, err error)
+	// Get retrieves the OpsworksCustomLayer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OpsworksCustomLayer, error)
+	OpsworksCustomLayerNamespaceListerExpansion
+}
+
+// opsworksCustomLayerNamespaceLister implements the OpsworksCustomLayerNamespaceLister
+// interface.
+type opsworksCustomLayerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OpsworksCustomLayers in the indexer for a given namespace.
+func (s opsworksCustomLayerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OpsworksCustomLayer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OpsworksCustomLayer))
+	})
+	return ret, err
+}
+
+// Get retrieves the OpsworksCustomLayer from the indexer for a given namespace and name.
+func (s opsworksCustomLayerNamespaceLister) Get(name string) (*v1alpha1.OpsworksCustomLayer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

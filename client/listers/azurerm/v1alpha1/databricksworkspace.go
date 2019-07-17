@@ -29,8 +29,8 @@ import (
 type DatabricksWorkspaceLister interface {
 	// List lists all DatabricksWorkspaces in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DatabricksWorkspace, err error)
-	// Get retrieves the DatabricksWorkspace from the index for a given name.
-	Get(name string) (*v1alpha1.DatabricksWorkspace, error)
+	// DatabricksWorkspaces returns an object that can list and get DatabricksWorkspaces.
+	DatabricksWorkspaces(namespace string) DatabricksWorkspaceNamespaceLister
 	DatabricksWorkspaceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *databricksWorkspaceLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the DatabricksWorkspace from the index for a given name.
-func (s *databricksWorkspaceLister) Get(name string) (*v1alpha1.DatabricksWorkspace, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DatabricksWorkspaces returns an object that can list and get DatabricksWorkspaces.
+func (s *databricksWorkspaceLister) DatabricksWorkspaces(namespace string) DatabricksWorkspaceNamespaceLister {
+	return databricksWorkspaceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DatabricksWorkspaceNamespaceLister helps list and get DatabricksWorkspaces.
+type DatabricksWorkspaceNamespaceLister interface {
+	// List lists all DatabricksWorkspaces in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DatabricksWorkspace, err error)
+	// Get retrieves the DatabricksWorkspace from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DatabricksWorkspace, error)
+	DatabricksWorkspaceNamespaceListerExpansion
+}
+
+// databricksWorkspaceNamespaceLister implements the DatabricksWorkspaceNamespaceLister
+// interface.
+type databricksWorkspaceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DatabricksWorkspaces in the indexer for a given namespace.
+func (s databricksWorkspaceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DatabricksWorkspace, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DatabricksWorkspace))
+	})
+	return ret, err
+}
+
+// Get retrieves the DatabricksWorkspace from the indexer for a given namespace and name.
+func (s databricksWorkspaceNamespaceLister) Get(name string) (*v1alpha1.DatabricksWorkspace, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

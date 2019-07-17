@@ -29,8 +29,8 @@ import (
 type SesIdentityPolicyLister interface {
 	// List lists all SesIdentityPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SesIdentityPolicy, err error)
-	// Get retrieves the SesIdentityPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.SesIdentityPolicy, error)
+	// SesIdentityPolicies returns an object that can list and get SesIdentityPolicies.
+	SesIdentityPolicies(namespace string) SesIdentityPolicyNamespaceLister
 	SesIdentityPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sesIdentityPolicyLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the SesIdentityPolicy from the index for a given name.
-func (s *sesIdentityPolicyLister) Get(name string) (*v1alpha1.SesIdentityPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SesIdentityPolicies returns an object that can list and get SesIdentityPolicies.
+func (s *sesIdentityPolicyLister) SesIdentityPolicies(namespace string) SesIdentityPolicyNamespaceLister {
+	return sesIdentityPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SesIdentityPolicyNamespaceLister helps list and get SesIdentityPolicies.
+type SesIdentityPolicyNamespaceLister interface {
+	// List lists all SesIdentityPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SesIdentityPolicy, err error)
+	// Get retrieves the SesIdentityPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SesIdentityPolicy, error)
+	SesIdentityPolicyNamespaceListerExpansion
+}
+
+// sesIdentityPolicyNamespaceLister implements the SesIdentityPolicyNamespaceLister
+// interface.
+type sesIdentityPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SesIdentityPolicies in the indexer for a given namespace.
+func (s sesIdentityPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SesIdentityPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SesIdentityPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the SesIdentityPolicy from the indexer for a given namespace and name.
+func (s sesIdentityPolicyNamespaceLister) Get(name string) (*v1alpha1.SesIdentityPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

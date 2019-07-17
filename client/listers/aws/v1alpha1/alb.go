@@ -29,8 +29,8 @@ import (
 type AlbLister interface {
 	// List lists all Albs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Alb, err error)
-	// Get retrieves the Alb from the index for a given name.
-	Get(name string) (*v1alpha1.Alb, error)
+	// Albs returns an object that can list and get Albs.
+	Albs(namespace string) AlbNamespaceLister
 	AlbListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *albLister) List(selector labels.Selector) (ret []*v1alpha1.Alb, err err
 	return ret, err
 }
 
-// Get retrieves the Alb from the index for a given name.
-func (s *albLister) Get(name string) (*v1alpha1.Alb, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Albs returns an object that can list and get Albs.
+func (s *albLister) Albs(namespace string) AlbNamespaceLister {
+	return albNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AlbNamespaceLister helps list and get Albs.
+type AlbNamespaceLister interface {
+	// List lists all Albs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Alb, err error)
+	// Get retrieves the Alb from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Alb, error)
+	AlbNamespaceListerExpansion
+}
+
+// albNamespaceLister implements the AlbNamespaceLister
+// interface.
+type albNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Albs in the indexer for a given namespace.
+func (s albNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Alb, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Alb))
+	})
+	return ret, err
+}
+
+// Get retrieves the Alb from the indexer for a given namespace and name.
+func (s albNamespaceLister) Get(name string) (*v1alpha1.Alb, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

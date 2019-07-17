@@ -32,7 +32,7 @@ import (
 // EcsTaskDefinitionsGetter has a method to return a EcsTaskDefinitionInterface.
 // A group's client should implement this interface.
 type EcsTaskDefinitionsGetter interface {
-	EcsTaskDefinitions() EcsTaskDefinitionInterface
+	EcsTaskDefinitions(namespace string) EcsTaskDefinitionInterface
 }
 
 // EcsTaskDefinitionInterface has methods to work with EcsTaskDefinition resources.
@@ -52,12 +52,14 @@ type EcsTaskDefinitionInterface interface {
 // ecsTaskDefinitions implements EcsTaskDefinitionInterface
 type ecsTaskDefinitions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEcsTaskDefinitions returns a EcsTaskDefinitions
-func newEcsTaskDefinitions(c *AwsV1alpha1Client) *ecsTaskDefinitions {
+func newEcsTaskDefinitions(c *AwsV1alpha1Client, namespace string) *ecsTaskDefinitions {
 	return &ecsTaskDefinitions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEcsTaskDefinitions(c *AwsV1alpha1Client) *ecsTaskDefinitions {
 func (c *ecsTaskDefinitions) Get(name string, options v1.GetOptions) (result *v1alpha1.EcsTaskDefinition, err error) {
 	result = &v1alpha1.EcsTaskDefinition{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ecstaskdefinitions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ecsTaskDefinitions) List(opts v1.ListOptions) (result *v1alpha1.EcsTask
 	}
 	result = &v1alpha1.EcsTaskDefinitionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ecstaskdefinitions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ecsTaskDefinitions) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ecstaskdefinitions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ecsTaskDefinitions) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *ecsTaskDefinitions) Create(ecsTaskDefinition *v1alpha1.EcsTaskDefinition) (result *v1alpha1.EcsTaskDefinition, err error) {
 	result = &v1alpha1.EcsTaskDefinition{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ecstaskdefinitions").
 		Body(ecsTaskDefinition).
 		Do().
@@ -118,6 +124,7 @@ func (c *ecsTaskDefinitions) Create(ecsTaskDefinition *v1alpha1.EcsTaskDefinitio
 func (c *ecsTaskDefinitions) Update(ecsTaskDefinition *v1alpha1.EcsTaskDefinition) (result *v1alpha1.EcsTaskDefinition, err error) {
 	result = &v1alpha1.EcsTaskDefinition{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ecstaskdefinitions").
 		Name(ecsTaskDefinition.Name).
 		Body(ecsTaskDefinition).
@@ -132,6 +139,7 @@ func (c *ecsTaskDefinitions) Update(ecsTaskDefinition *v1alpha1.EcsTaskDefinitio
 func (c *ecsTaskDefinitions) UpdateStatus(ecsTaskDefinition *v1alpha1.EcsTaskDefinition) (result *v1alpha1.EcsTaskDefinition, err error) {
 	result = &v1alpha1.EcsTaskDefinition{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ecstaskdefinitions").
 		Name(ecsTaskDefinition.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ecsTaskDefinitions) UpdateStatus(ecsTaskDefinition *v1alpha1.EcsTaskDef
 // Delete takes name of the ecsTaskDefinition and deletes it. Returns an error if one occurs.
 func (c *ecsTaskDefinitions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ecstaskdefinitions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ecsTaskDefinitions) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ecstaskdefinitions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ecsTaskDefinitions) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *ecsTaskDefinitions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EcsTaskDefinition, err error) {
 	result = &v1alpha1.EcsTaskDefinition{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ecstaskdefinitions").
 		SubResource(subresources...).
 		Name(name).

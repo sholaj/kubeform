@@ -32,7 +32,7 @@ import (
 // EcsServicesGetter has a method to return a EcsServiceInterface.
 // A group's client should implement this interface.
 type EcsServicesGetter interface {
-	EcsServices() EcsServiceInterface
+	EcsServices(namespace string) EcsServiceInterface
 }
 
 // EcsServiceInterface has methods to work with EcsService resources.
@@ -52,12 +52,14 @@ type EcsServiceInterface interface {
 // ecsServices implements EcsServiceInterface
 type ecsServices struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEcsServices returns a EcsServices
-func newEcsServices(c *AwsV1alpha1Client) *ecsServices {
+func newEcsServices(c *AwsV1alpha1Client, namespace string) *ecsServices {
 	return &ecsServices{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEcsServices(c *AwsV1alpha1Client) *ecsServices {
 func (c *ecsServices) Get(name string, options v1.GetOptions) (result *v1alpha1.EcsService, err error) {
 	result = &v1alpha1.EcsService{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ecsservices").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ecsServices) List(opts v1.ListOptions) (result *v1alpha1.EcsServiceList
 	}
 	result = &v1alpha1.EcsServiceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ecsservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ecsServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ecsservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ecsServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *ecsServices) Create(ecsService *v1alpha1.EcsService) (result *v1alpha1.EcsService, err error) {
 	result = &v1alpha1.EcsService{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ecsservices").
 		Body(ecsService).
 		Do().
@@ -118,6 +124,7 @@ func (c *ecsServices) Create(ecsService *v1alpha1.EcsService) (result *v1alpha1.
 func (c *ecsServices) Update(ecsService *v1alpha1.EcsService) (result *v1alpha1.EcsService, err error) {
 	result = &v1alpha1.EcsService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ecsservices").
 		Name(ecsService.Name).
 		Body(ecsService).
@@ -132,6 +139,7 @@ func (c *ecsServices) Update(ecsService *v1alpha1.EcsService) (result *v1alpha1.
 func (c *ecsServices) UpdateStatus(ecsService *v1alpha1.EcsService) (result *v1alpha1.EcsService, err error) {
 	result = &v1alpha1.EcsService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ecsservices").
 		Name(ecsService.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ecsServices) UpdateStatus(ecsService *v1alpha1.EcsService) (result *v1a
 // Delete takes name of the ecsService and deletes it. Returns an error if one occurs.
 func (c *ecsServices) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ecsservices").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ecsServices) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ecsservices").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ecsServices) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *ecsServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EcsService, err error) {
 	result = &v1alpha1.EcsService{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ecsservices").
 		SubResource(subresources...).
 		Name(name).

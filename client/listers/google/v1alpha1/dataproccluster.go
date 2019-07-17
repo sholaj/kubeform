@@ -29,8 +29,8 @@ import (
 type DataprocClusterLister interface {
 	// List lists all DataprocClusters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DataprocCluster, err error)
-	// Get retrieves the DataprocCluster from the index for a given name.
-	Get(name string) (*v1alpha1.DataprocCluster, error)
+	// DataprocClusters returns an object that can list and get DataprocClusters.
+	DataprocClusters(namespace string) DataprocClusterNamespaceLister
 	DataprocClusterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dataprocClusterLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the DataprocCluster from the index for a given name.
-func (s *dataprocClusterLister) Get(name string) (*v1alpha1.DataprocCluster, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DataprocClusters returns an object that can list and get DataprocClusters.
+func (s *dataprocClusterLister) DataprocClusters(namespace string) DataprocClusterNamespaceLister {
+	return dataprocClusterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DataprocClusterNamespaceLister helps list and get DataprocClusters.
+type DataprocClusterNamespaceLister interface {
+	// List lists all DataprocClusters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DataprocCluster, err error)
+	// Get retrieves the DataprocCluster from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DataprocCluster, error)
+	DataprocClusterNamespaceListerExpansion
+}
+
+// dataprocClusterNamespaceLister implements the DataprocClusterNamespaceLister
+// interface.
+type dataprocClusterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DataprocClusters in the indexer for a given namespace.
+func (s dataprocClusterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DataprocCluster, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DataprocCluster))
+	})
+	return ret, err
+}
+
+// Get retrieves the DataprocCluster from the indexer for a given namespace and name.
+func (s dataprocClusterNamespaceLister) Get(name string) (*v1alpha1.DataprocCluster, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

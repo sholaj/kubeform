@@ -29,8 +29,8 @@ import (
 type PinpointAdmChannelLister interface {
 	// List lists all PinpointAdmChannels in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.PinpointAdmChannel, err error)
-	// Get retrieves the PinpointAdmChannel from the index for a given name.
-	Get(name string) (*v1alpha1.PinpointAdmChannel, error)
+	// PinpointAdmChannels returns an object that can list and get PinpointAdmChannels.
+	PinpointAdmChannels(namespace string) PinpointAdmChannelNamespaceLister
 	PinpointAdmChannelListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *pinpointAdmChannelLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the PinpointAdmChannel from the index for a given name.
-func (s *pinpointAdmChannelLister) Get(name string) (*v1alpha1.PinpointAdmChannel, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// PinpointAdmChannels returns an object that can list and get PinpointAdmChannels.
+func (s *pinpointAdmChannelLister) PinpointAdmChannels(namespace string) PinpointAdmChannelNamespaceLister {
+	return pinpointAdmChannelNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// PinpointAdmChannelNamespaceLister helps list and get PinpointAdmChannels.
+type PinpointAdmChannelNamespaceLister interface {
+	// List lists all PinpointAdmChannels in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.PinpointAdmChannel, err error)
+	// Get retrieves the PinpointAdmChannel from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.PinpointAdmChannel, error)
+	PinpointAdmChannelNamespaceListerExpansion
+}
+
+// pinpointAdmChannelNamespaceLister implements the PinpointAdmChannelNamespaceLister
+// interface.
+type pinpointAdmChannelNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all PinpointAdmChannels in the indexer for a given namespace.
+func (s pinpointAdmChannelNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.PinpointAdmChannel, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.PinpointAdmChannel))
+	})
+	return ret, err
+}
+
+// Get retrieves the PinpointAdmChannel from the indexer for a given namespace and name.
+func (s pinpointAdmChannelNamespaceLister) Get(name string) (*v1alpha1.PinpointAdmChannel, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

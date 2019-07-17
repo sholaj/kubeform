@@ -397,32 +397,60 @@ spec:
           type: object
         spec:
           properties:
-            auto_start:
+            autoStart:
               type: boolean
             destination:
-              items: {}
+              items:
+                properties:
+                  address:
+                    type: string
+                  port:
+                    type: integer
+                  virtualMachineID:
+                    type: string
+                required:
+                - port
+                type: object
               maxItems: 1
               type: array
-            interval_in_seconds:
+            intervalInSeconds:
               type: integer
             location:
               type: string
             name:
               type: string
-            network_watcher_name:
+            networkWatcherName:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
             source:
-              items: {}
+              items:
+                properties:
+                  port:
+                    type: integer
+                  virtualMachineID:
+                    type: string
+                required:
+                - virtualMachineID
+                type: object
               maxItems: 1
               type: array
           required:
           - destination
           - location
           - name
-          - network_watcher_name
-          - resource_group_name
+          - networkWatcherName
+          - providerRef
+          - resourceGroupName
           - source
           type: object
         status:
@@ -434,6 +462,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

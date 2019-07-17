@@ -32,7 +32,7 @@ import (
 // StorageTablesGetter has a method to return a StorageTableInterface.
 // A group's client should implement this interface.
 type StorageTablesGetter interface {
-	StorageTables() StorageTableInterface
+	StorageTables(namespace string) StorageTableInterface
 }
 
 // StorageTableInterface has methods to work with StorageTable resources.
@@ -52,12 +52,14 @@ type StorageTableInterface interface {
 // storageTables implements StorageTableInterface
 type storageTables struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStorageTables returns a StorageTables
-func newStorageTables(c *AzurermV1alpha1Client) *storageTables {
+func newStorageTables(c *AzurermV1alpha1Client, namespace string) *storageTables {
 	return &storageTables{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStorageTables(c *AzurermV1alpha1Client) *storageTables {
 func (c *storageTables) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageTable, err error) {
 	result = &v1alpha1.StorageTable{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagetables").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *storageTables) List(opts v1.ListOptions) (result *v1alpha1.StorageTable
 	}
 	result = &v1alpha1.StorageTableList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagetables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *storageTables) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storagetables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *storageTables) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *storageTables) Create(storageTable *v1alpha1.StorageTable) (result *v1alpha1.StorageTable, err error) {
 	result = &v1alpha1.StorageTable{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storagetables").
 		Body(storageTable).
 		Do().
@@ -118,6 +124,7 @@ func (c *storageTables) Create(storageTable *v1alpha1.StorageTable) (result *v1a
 func (c *storageTables) Update(storageTable *v1alpha1.StorageTable) (result *v1alpha1.StorageTable, err error) {
 	result = &v1alpha1.StorageTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagetables").
 		Name(storageTable.Name).
 		Body(storageTable).
@@ -132,6 +139,7 @@ func (c *storageTables) Update(storageTable *v1alpha1.StorageTable) (result *v1a
 func (c *storageTables) UpdateStatus(storageTable *v1alpha1.StorageTable) (result *v1alpha1.StorageTable, err error) {
 	result = &v1alpha1.StorageTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagetables").
 		Name(storageTable.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *storageTables) UpdateStatus(storageTable *v1alpha1.StorageTable) (resul
 // Delete takes name of the storageTable and deletes it. Returns an error if one occurs.
 func (c *storageTables) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagetables").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *storageTables) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagetables").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *storageTables) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *storageTables) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageTable, err error) {
 	result = &v1alpha1.StorageTable{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storagetables").
 		SubResource(subresources...).
 		Name(name).

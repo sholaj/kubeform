@@ -32,7 +32,7 @@ import (
 // CloudwatchLogResourcePoliciesGetter has a method to return a CloudwatchLogResourcePolicyInterface.
 // A group's client should implement this interface.
 type CloudwatchLogResourcePoliciesGetter interface {
-	CloudwatchLogResourcePolicies() CloudwatchLogResourcePolicyInterface
+	CloudwatchLogResourcePolicies(namespace string) CloudwatchLogResourcePolicyInterface
 }
 
 // CloudwatchLogResourcePolicyInterface has methods to work with CloudwatchLogResourcePolicy resources.
@@ -52,12 +52,14 @@ type CloudwatchLogResourcePolicyInterface interface {
 // cloudwatchLogResourcePolicies implements CloudwatchLogResourcePolicyInterface
 type cloudwatchLogResourcePolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCloudwatchLogResourcePolicies returns a CloudwatchLogResourcePolicies
-func newCloudwatchLogResourcePolicies(c *AwsV1alpha1Client) *cloudwatchLogResourcePolicies {
+func newCloudwatchLogResourcePolicies(c *AwsV1alpha1Client, namespace string) *cloudwatchLogResourcePolicies {
 	return &cloudwatchLogResourcePolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCloudwatchLogResourcePolicies(c *AwsV1alpha1Client) *cloudwatchLogResour
 func (c *cloudwatchLogResourcePolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudwatchLogResourcePolicy, err error) {
 	result = &v1alpha1.CloudwatchLogResourcePolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatchlogresourcepolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cloudwatchLogResourcePolicies) List(opts v1.ListOptions) (result *v1alp
 	}
 	result = &v1alpha1.CloudwatchLogResourcePolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatchlogresourcepolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cloudwatchLogResourcePolicies) Watch(opts v1.ListOptions) (watch.Interf
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatchlogresourcepolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cloudwatchLogResourcePolicies) Watch(opts v1.ListOptions) (watch.Interf
 func (c *cloudwatchLogResourcePolicies) Create(cloudwatchLogResourcePolicy *v1alpha1.CloudwatchLogResourcePolicy) (result *v1alpha1.CloudwatchLogResourcePolicy, err error) {
 	result = &v1alpha1.CloudwatchLogResourcePolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cloudwatchlogresourcepolicies").
 		Body(cloudwatchLogResourcePolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *cloudwatchLogResourcePolicies) Create(cloudwatchLogResourcePolicy *v1al
 func (c *cloudwatchLogResourcePolicies) Update(cloudwatchLogResourcePolicy *v1alpha1.CloudwatchLogResourcePolicy) (result *v1alpha1.CloudwatchLogResourcePolicy, err error) {
 	result = &v1alpha1.CloudwatchLogResourcePolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudwatchlogresourcepolicies").
 		Name(cloudwatchLogResourcePolicy.Name).
 		Body(cloudwatchLogResourcePolicy).
@@ -132,6 +139,7 @@ func (c *cloudwatchLogResourcePolicies) Update(cloudwatchLogResourcePolicy *v1al
 func (c *cloudwatchLogResourcePolicies) UpdateStatus(cloudwatchLogResourcePolicy *v1alpha1.CloudwatchLogResourcePolicy) (result *v1alpha1.CloudwatchLogResourcePolicy, err error) {
 	result = &v1alpha1.CloudwatchLogResourcePolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudwatchlogresourcepolicies").
 		Name(cloudwatchLogResourcePolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cloudwatchLogResourcePolicies) UpdateStatus(cloudwatchLogResourcePolicy
 // Delete takes name of the cloudwatchLogResourcePolicy and deletes it. Returns an error if one occurs.
 func (c *cloudwatchLogResourcePolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudwatchlogresourcepolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cloudwatchLogResourcePolicies) DeleteCollection(options *v1.DeleteOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudwatchlogresourcepolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cloudwatchLogResourcePolicies) DeleteCollection(options *v1.DeleteOptio
 func (c *cloudwatchLogResourcePolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudwatchLogResourcePolicy, err error) {
 	result = &v1alpha1.CloudwatchLogResourcePolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cloudwatchlogresourcepolicies").
 		SubResource(subresources...).
 		Name(name).

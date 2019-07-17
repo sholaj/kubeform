@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,69 +19,70 @@ type RdsCluster struct {
 }
 
 type RdsClusterSpecS3Import struct {
-	BucketName string `json:"bucket_name"`
+	BucketName string `json:"bucketName" tf:"bucket_name"`
 	// +optional
-	BucketPrefix        string `json:"bucket_prefix,omitempty"`
-	IngestionRole       string `json:"ingestion_role"`
-	SourceEngine        string `json:"source_engine"`
-	SourceEngineVersion string `json:"source_engine_version"`
+	BucketPrefix        string `json:"bucketPrefix,omitempty" tf:"bucket_prefix,omitempty"`
+	IngestionRole       string `json:"ingestionRole" tf:"ingestion_role"`
+	SourceEngine        string `json:"sourceEngine" tf:"source_engine"`
+	SourceEngineVersion string `json:"sourceEngineVersion" tf:"source_engine_version"`
 }
 
 type RdsClusterSpecScalingConfiguration struct {
 	// +optional
-	AutoPause bool `json:"auto_pause,omitempty"`
+	AutoPause bool `json:"autoPause,omitempty" tf:"auto_pause,omitempty"`
 	// +optional
-	MaxCapacity int `json:"max_capacity,omitempty"`
+	MaxCapacity int `json:"maxCapacity,omitempty" tf:"max_capacity,omitempty"`
 	// +optional
-	MinCapacity int `json:"min_capacity,omitempty"`
+	MinCapacity int `json:"minCapacity,omitempty" tf:"min_capacity,omitempty"`
 	// +optional
-	SecondsUntilAutoPause int `json:"seconds_until_auto_pause,omitempty"`
+	SecondsUntilAutoPause int `json:"secondsUntilAutoPause,omitempty" tf:"seconds_until_auto_pause,omitempty"`
 }
 
 type RdsClusterSpec struct {
 	// +optional
-	BacktrackWindow int `json:"backtrack_window,omitempty"`
+	BacktrackWindow int `json:"backtrackWindow,omitempty" tf:"backtrack_window,omitempty"`
 	// +optional
-	BackupRetentionPeriod int `json:"backup_retention_period,omitempty"`
+	BackupRetentionPeriod int `json:"backupRetentionPeriod,omitempty" tf:"backup_retention_period,omitempty"`
 	// +optional
-	CopyTagsToSnapshot bool `json:"copy_tags_to_snapshot,omitempty"`
+	CopyTagsToSnapshot bool `json:"copyTagsToSnapshot,omitempty" tf:"copy_tags_to_snapshot,omitempty"`
 	// +optional
-	DeletionProtection bool `json:"deletion_protection,omitempty"`
+	DeletionProtection bool `json:"deletionProtection,omitempty" tf:"deletion_protection,omitempty"`
 	// +optional
-	EnabledCloudwatchLogsExports []string `json:"enabled_cloudwatch_logs_exports,omitempty"`
+	EnabledCloudwatchLogsExports []string `json:"enabledCloudwatchLogsExports,omitempty" tf:"enabled_cloudwatch_logs_exports,omitempty"`
 	// +optional
-	Engine string `json:"engine,omitempty"`
+	Engine string `json:"engine,omitempty" tf:"engine,omitempty"`
 	// +optional
-	EngineMode string `json:"engine_mode,omitempty"`
+	EngineMode string `json:"engineMode,omitempty" tf:"engine_mode,omitempty"`
 	// +optional
-	FinalSnapshotIdentifier string `json:"final_snapshot_identifier,omitempty"`
+	FinalSnapshotIdentifier string `json:"finalSnapshotIdentifier,omitempty" tf:"final_snapshot_identifier,omitempty"`
 	// +optional
-	GlobalClusterIdentifier string `json:"global_cluster_identifier,omitempty"`
+	GlobalClusterIdentifier string `json:"globalClusterIdentifier,omitempty" tf:"global_cluster_identifier,omitempty"`
 	// +optional
-	IamDatabaseAuthenticationEnabled bool `json:"iam_database_authentication_enabled,omitempty"`
+	IamDatabaseAuthenticationEnabled bool `json:"iamDatabaseAuthenticationEnabled,omitempty" tf:"iam_database_authentication_enabled,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	IamRoles []string `json:"iam_roles,omitempty"`
+	IamRoles []string `json:"iamRoles,omitempty" tf:"iam_roles,omitempty"`
 	// +optional
-	MasterPassword string `json:"master_password,omitempty"`
+	MasterPassword string `json:"masterPassword,omitempty" tf:"master_password,omitempty"`
 	// +optional
-	ReplicationSourceIdentifier string `json:"replication_source_identifier,omitempty"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	S3Import *[]RdsClusterSpec `json:"s3_import,omitempty"`
+	ReplicationSourceIdentifier string `json:"replicationSourceIdentifier,omitempty" tf:"replication_source_identifier,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ScalingConfiguration *[]RdsClusterSpec `json:"scaling_configuration,omitempty"`
+	S3Import []RdsClusterSpecS3Import `json:"s3Import,omitempty" tf:"s3_import,omitempty"`
 	// +optional
-	SkipFinalSnapshot bool `json:"skip_final_snapshot,omitempty"`
+	// +kubebuilder:validation:MaxItems=1
+	ScalingConfiguration []RdsClusterSpecScalingConfiguration `json:"scalingConfiguration,omitempty" tf:"scaling_configuration,omitempty"`
 	// +optional
-	SnapshotIdentifier string `json:"snapshot_identifier,omitempty"`
+	SkipFinalSnapshot bool `json:"skipFinalSnapshot,omitempty" tf:"skip_final_snapshot,omitempty"`
 	// +optional
-	SourceRegion string `json:"source_region,omitempty"`
+	SnapshotIdentifier string `json:"snapshotIdentifier,omitempty" tf:"snapshot_identifier,omitempty"`
 	// +optional
-	StorageEncrypted bool `json:"storage_encrypted,omitempty"`
+	SourceRegion string `json:"sourceRegion,omitempty" tf:"source_region,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	StorageEncrypted bool `json:"storageEncrypted,omitempty" tf:"storage_encrypted,omitempty"`
+	// +optional
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type RdsClusterStatus struct {
@@ -89,7 +90,9 @@ type RdsClusterStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

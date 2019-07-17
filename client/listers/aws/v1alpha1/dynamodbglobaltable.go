@@ -29,8 +29,8 @@ import (
 type DynamodbGlobalTableLister interface {
 	// List lists all DynamodbGlobalTables in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DynamodbGlobalTable, err error)
-	// Get retrieves the DynamodbGlobalTable from the index for a given name.
-	Get(name string) (*v1alpha1.DynamodbGlobalTable, error)
+	// DynamodbGlobalTables returns an object that can list and get DynamodbGlobalTables.
+	DynamodbGlobalTables(namespace string) DynamodbGlobalTableNamespaceLister
 	DynamodbGlobalTableListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dynamodbGlobalTableLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the DynamodbGlobalTable from the index for a given name.
-func (s *dynamodbGlobalTableLister) Get(name string) (*v1alpha1.DynamodbGlobalTable, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DynamodbGlobalTables returns an object that can list and get DynamodbGlobalTables.
+func (s *dynamodbGlobalTableLister) DynamodbGlobalTables(namespace string) DynamodbGlobalTableNamespaceLister {
+	return dynamodbGlobalTableNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DynamodbGlobalTableNamespaceLister helps list and get DynamodbGlobalTables.
+type DynamodbGlobalTableNamespaceLister interface {
+	// List lists all DynamodbGlobalTables in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DynamodbGlobalTable, err error)
+	// Get retrieves the DynamodbGlobalTable from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DynamodbGlobalTable, error)
+	DynamodbGlobalTableNamespaceListerExpansion
+}
+
+// dynamodbGlobalTableNamespaceLister implements the DynamodbGlobalTableNamespaceLister
+// interface.
+type dynamodbGlobalTableNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DynamodbGlobalTables in the indexer for a given namespace.
+func (s dynamodbGlobalTableNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DynamodbGlobalTable, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DynamodbGlobalTable))
+	})
+	return ret, err
+}
+
+// Get retrieves the DynamodbGlobalTable from the indexer for a given namespace and name.
+func (s dynamodbGlobalTableNamespaceLister) Get(name string) (*v1alpha1.DynamodbGlobalTable, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

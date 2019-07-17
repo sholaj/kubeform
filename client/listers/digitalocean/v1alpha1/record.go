@@ -29,8 +29,8 @@ import (
 type RecordLister interface {
 	// List lists all Records in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Record, err error)
-	// Get retrieves the Record from the index for a given name.
-	Get(name string) (*v1alpha1.Record, error)
+	// Records returns an object that can list and get Records.
+	Records(namespace string) RecordNamespaceLister
 	RecordListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *recordLister) List(selector labels.Selector) (ret []*v1alpha1.Record, e
 	return ret, err
 }
 
-// Get retrieves the Record from the index for a given name.
-func (s *recordLister) Get(name string) (*v1alpha1.Record, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Records returns an object that can list and get Records.
+func (s *recordLister) Records(namespace string) RecordNamespaceLister {
+	return recordNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RecordNamespaceLister helps list and get Records.
+type RecordNamespaceLister interface {
+	// List lists all Records in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Record, err error)
+	// Get retrieves the Record from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Record, error)
+	RecordNamespaceListerExpansion
+}
+
+// recordNamespaceLister implements the RecordNamespaceLister
+// interface.
+type recordNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Records in the indexer for a given namespace.
+func (s recordNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Record, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Record))
+	})
+	return ret, err
+}
+
+// Get retrieves the Record from the indexer for a given namespace and name.
+func (s recordNamespaceLister) Get(name string) (*v1alpha1.Record, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

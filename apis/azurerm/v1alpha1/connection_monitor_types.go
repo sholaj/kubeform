@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,31 +20,32 @@ type ConnectionMonitor struct {
 
 type ConnectionMonitorSpecDestination struct {
 	// +optional
-	Address string `json:"address,omitempty"`
-	Port    int    `json:"port"`
+	Address string `json:"address,omitempty" tf:"address,omitempty"`
+	Port    int    `json:"port" tf:"port"`
 	// +optional
-	VirtualMachineId string `json:"virtual_machine_id,omitempty"`
+	VirtualMachineID string `json:"virtualMachineID,omitempty" tf:"virtual_machine_id,omitempty"`
 }
 
 type ConnectionMonitorSpecSource struct {
 	// +optional
-	Port             int    `json:"port,omitempty"`
-	VirtualMachineId string `json:"virtual_machine_id"`
+	Port             int    `json:"port,omitempty" tf:"port,omitempty"`
+	VirtualMachineID string `json:"virtualMachineID" tf:"virtual_machine_id"`
 }
 
 type ConnectionMonitorSpec struct {
 	// +optional
-	AutoStart bool `json:"auto_start,omitempty"`
+	AutoStart bool `json:"autoStart,omitempty" tf:"auto_start,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
-	Destination []ConnectionMonitorSpec `json:"destination"`
+	Destination []ConnectionMonitorSpecDestination `json:"destination" tf:"destination"`
 	// +optional
-	IntervalInSeconds  int    `json:"interval_in_seconds,omitempty"`
-	Location           string `json:"location"`
-	Name               string `json:"name"`
-	NetworkWatcherName string `json:"network_watcher_name"`
-	ResourceGroupName  string `json:"resource_group_name"`
+	IntervalInSeconds  int    `json:"intervalInSeconds,omitempty" tf:"interval_in_seconds,omitempty"`
+	Location           string `json:"location" tf:"location"`
+	Name               string `json:"name" tf:"name"`
+	NetworkWatcherName string `json:"networkWatcherName" tf:"network_watcher_name"`
+	ResourceGroupName  string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +kubebuilder:validation:MaxItems=1
-	Source []ConnectionMonitorSpec `json:"source"`
+	Source      []ConnectionMonitorSpecSource `json:"source" tf:"source"`
+	ProviderRef core.LocalObjectReference     `json:"providerRef" tf:"-"`
 }
 
 type ConnectionMonitorStatus struct {
@@ -52,7 +53,9 @@ type ConnectionMonitorStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

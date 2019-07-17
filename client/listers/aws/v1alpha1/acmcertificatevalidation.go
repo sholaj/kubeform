@@ -29,8 +29,8 @@ import (
 type AcmCertificateValidationLister interface {
 	// List lists all AcmCertificateValidations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AcmCertificateValidation, err error)
-	// Get retrieves the AcmCertificateValidation from the index for a given name.
-	Get(name string) (*v1alpha1.AcmCertificateValidation, error)
+	// AcmCertificateValidations returns an object that can list and get AcmCertificateValidations.
+	AcmCertificateValidations(namespace string) AcmCertificateValidationNamespaceLister
 	AcmCertificateValidationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *acmCertificateValidationLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the AcmCertificateValidation from the index for a given name.
-func (s *acmCertificateValidationLister) Get(name string) (*v1alpha1.AcmCertificateValidation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AcmCertificateValidations returns an object that can list and get AcmCertificateValidations.
+func (s *acmCertificateValidationLister) AcmCertificateValidations(namespace string) AcmCertificateValidationNamespaceLister {
+	return acmCertificateValidationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AcmCertificateValidationNamespaceLister helps list and get AcmCertificateValidations.
+type AcmCertificateValidationNamespaceLister interface {
+	// List lists all AcmCertificateValidations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AcmCertificateValidation, err error)
+	// Get retrieves the AcmCertificateValidation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AcmCertificateValidation, error)
+	AcmCertificateValidationNamespaceListerExpansion
+}
+
+// acmCertificateValidationNamespaceLister implements the AcmCertificateValidationNamespaceLister
+// interface.
+type acmCertificateValidationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AcmCertificateValidations in the indexer for a given namespace.
+func (s acmCertificateValidationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AcmCertificateValidation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AcmCertificateValidation))
+	})
+	return ret, err
+}
+
+// Get retrieves the AcmCertificateValidation from the indexer for a given namespace and name.
+func (s acmCertificateValidationNamespaceLister) Get(name string) (*v1alpha1.AcmCertificateValidation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

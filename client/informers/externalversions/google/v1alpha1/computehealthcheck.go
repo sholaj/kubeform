@@ -41,32 +41,33 @@ type ComputeHealthCheckInformer interface {
 type computeHealthCheckInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewComputeHealthCheckInformer constructs a new informer for ComputeHealthCheck type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewComputeHealthCheckInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredComputeHealthCheckInformer(client, resyncPeriod, indexers, nil)
+func NewComputeHealthCheckInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredComputeHealthCheckInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredComputeHealthCheckInformer constructs a new informer for ComputeHealthCheck type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredComputeHealthCheckInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredComputeHealthCheckInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeHealthChecks().List(options)
+				return client.GoogleV1alpha1().ComputeHealthChecks(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeHealthChecks().Watch(options)
+				return client.GoogleV1alpha1().ComputeHealthChecks(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.ComputeHealthCheck{},
@@ -76,7 +77,7 @@ func NewFilteredComputeHealthCheckInformer(client versioned.Interface, resyncPer
 }
 
 func (f *computeHealthCheckInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredComputeHealthCheckInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredComputeHealthCheckInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *computeHealthCheckInformer) Informer() cache.SharedIndexInformer {

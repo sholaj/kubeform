@@ -29,8 +29,8 @@ import (
 type LoadBalancerPolicyLister interface {
 	// List lists all LoadBalancerPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LoadBalancerPolicy, err error)
-	// Get retrieves the LoadBalancerPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.LoadBalancerPolicy, error)
+	// LoadBalancerPolicies returns an object that can list and get LoadBalancerPolicies.
+	LoadBalancerPolicies(namespace string) LoadBalancerPolicyNamespaceLister
 	LoadBalancerPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *loadBalancerPolicyLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the LoadBalancerPolicy from the index for a given name.
-func (s *loadBalancerPolicyLister) Get(name string) (*v1alpha1.LoadBalancerPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LoadBalancerPolicies returns an object that can list and get LoadBalancerPolicies.
+func (s *loadBalancerPolicyLister) LoadBalancerPolicies(namespace string) LoadBalancerPolicyNamespaceLister {
+	return loadBalancerPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LoadBalancerPolicyNamespaceLister helps list and get LoadBalancerPolicies.
+type LoadBalancerPolicyNamespaceLister interface {
+	// List lists all LoadBalancerPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LoadBalancerPolicy, err error)
+	// Get retrieves the LoadBalancerPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LoadBalancerPolicy, error)
+	LoadBalancerPolicyNamespaceListerExpansion
+}
+
+// loadBalancerPolicyNamespaceLister implements the LoadBalancerPolicyNamespaceLister
+// interface.
+type loadBalancerPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LoadBalancerPolicies in the indexer for a given namespace.
+func (s loadBalancerPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LoadBalancerPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LoadBalancerPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the LoadBalancerPolicy from the indexer for a given namespace and name.
+func (s loadBalancerPolicyNamespaceLister) Get(name string) (*v1alpha1.LoadBalancerPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

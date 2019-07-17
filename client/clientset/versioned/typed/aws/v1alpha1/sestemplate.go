@@ -32,7 +32,7 @@ import (
 // SesTemplatesGetter has a method to return a SesTemplateInterface.
 // A group's client should implement this interface.
 type SesTemplatesGetter interface {
-	SesTemplates() SesTemplateInterface
+	SesTemplates(namespace string) SesTemplateInterface
 }
 
 // SesTemplateInterface has methods to work with SesTemplate resources.
@@ -52,12 +52,14 @@ type SesTemplateInterface interface {
 // sesTemplates implements SesTemplateInterface
 type sesTemplates struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSesTemplates returns a SesTemplates
-func newSesTemplates(c *AwsV1alpha1Client) *sesTemplates {
+func newSesTemplates(c *AwsV1alpha1Client, namespace string) *sesTemplates {
 	return &sesTemplates{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSesTemplates(c *AwsV1alpha1Client) *sesTemplates {
 func (c *sesTemplates) Get(name string, options v1.GetOptions) (result *v1alpha1.SesTemplate, err error) {
 	result = &v1alpha1.SesTemplate{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sestemplates").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sesTemplates) List(opts v1.ListOptions) (result *v1alpha1.SesTemplateLi
 	}
 	result = &v1alpha1.SesTemplateList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sestemplates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sesTemplates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sestemplates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sesTemplates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *sesTemplates) Create(sesTemplate *v1alpha1.SesTemplate) (result *v1alpha1.SesTemplate, err error) {
 	result = &v1alpha1.SesTemplate{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sestemplates").
 		Body(sesTemplate).
 		Do().
@@ -118,6 +124,7 @@ func (c *sesTemplates) Create(sesTemplate *v1alpha1.SesTemplate) (result *v1alph
 func (c *sesTemplates) Update(sesTemplate *v1alpha1.SesTemplate) (result *v1alpha1.SesTemplate, err error) {
 	result = &v1alpha1.SesTemplate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sestemplates").
 		Name(sesTemplate.Name).
 		Body(sesTemplate).
@@ -132,6 +139,7 @@ func (c *sesTemplates) Update(sesTemplate *v1alpha1.SesTemplate) (result *v1alph
 func (c *sesTemplates) UpdateStatus(sesTemplate *v1alpha1.SesTemplate) (result *v1alpha1.SesTemplate, err error) {
 	result = &v1alpha1.SesTemplate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sestemplates").
 		Name(sesTemplate.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sesTemplates) UpdateStatus(sesTemplate *v1alpha1.SesTemplate) (result *
 // Delete takes name of the sesTemplate and deletes it. Returns an error if one occurs.
 func (c *sesTemplates) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sestemplates").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sesTemplates) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sestemplates").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sesTemplates) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *sesTemplates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesTemplate, err error) {
 	result = &v1alpha1.SesTemplate{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sestemplates").
 		SubResource(subresources...).
 		Name(name).

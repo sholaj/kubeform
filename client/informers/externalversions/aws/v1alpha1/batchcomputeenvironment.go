@@ -41,32 +41,33 @@ type BatchComputeEnvironmentInformer interface {
 type batchComputeEnvironmentInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewBatchComputeEnvironmentInformer constructs a new informer for BatchComputeEnvironment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewBatchComputeEnvironmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredBatchComputeEnvironmentInformer(client, resyncPeriod, indexers, nil)
+func NewBatchComputeEnvironmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredBatchComputeEnvironmentInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredBatchComputeEnvironmentInformer constructs a new informer for BatchComputeEnvironment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredBatchComputeEnvironmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredBatchComputeEnvironmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().BatchComputeEnvironments().List(options)
+				return client.AwsV1alpha1().BatchComputeEnvironments(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().BatchComputeEnvironments().Watch(options)
+				return client.AwsV1alpha1().BatchComputeEnvironments(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.BatchComputeEnvironment{},
@@ -76,7 +77,7 @@ func NewFilteredBatchComputeEnvironmentInformer(client versioned.Interface, resy
 }
 
 func (f *batchComputeEnvironmentInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredBatchComputeEnvironmentInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredBatchComputeEnvironmentInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *batchComputeEnvironmentInformer) Informer() cache.SharedIndexInformer {

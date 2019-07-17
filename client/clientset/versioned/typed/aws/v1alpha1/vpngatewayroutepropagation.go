@@ -32,7 +32,7 @@ import (
 // VpnGatewayRoutePropagationsGetter has a method to return a VpnGatewayRoutePropagationInterface.
 // A group's client should implement this interface.
 type VpnGatewayRoutePropagationsGetter interface {
-	VpnGatewayRoutePropagations() VpnGatewayRoutePropagationInterface
+	VpnGatewayRoutePropagations(namespace string) VpnGatewayRoutePropagationInterface
 }
 
 // VpnGatewayRoutePropagationInterface has methods to work with VpnGatewayRoutePropagation resources.
@@ -52,12 +52,14 @@ type VpnGatewayRoutePropagationInterface interface {
 // vpnGatewayRoutePropagations implements VpnGatewayRoutePropagationInterface
 type vpnGatewayRoutePropagations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVpnGatewayRoutePropagations returns a VpnGatewayRoutePropagations
-func newVpnGatewayRoutePropagations(c *AwsV1alpha1Client) *vpnGatewayRoutePropagations {
+func newVpnGatewayRoutePropagations(c *AwsV1alpha1Client, namespace string) *vpnGatewayRoutePropagations {
 	return &vpnGatewayRoutePropagations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVpnGatewayRoutePropagations(c *AwsV1alpha1Client) *vpnGatewayRoutePropag
 func (c *vpnGatewayRoutePropagations) Get(name string, options v1.GetOptions) (result *v1alpha1.VpnGatewayRoutePropagation, err error) {
 	result = &v1alpha1.VpnGatewayRoutePropagation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpngatewayroutepropagations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *vpnGatewayRoutePropagations) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.VpnGatewayRoutePropagationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpngatewayroutepropagations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *vpnGatewayRoutePropagations) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("vpngatewayroutepropagations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *vpnGatewayRoutePropagations) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *vpnGatewayRoutePropagations) Create(vpnGatewayRoutePropagation *v1alpha1.VpnGatewayRoutePropagation) (result *v1alpha1.VpnGatewayRoutePropagation, err error) {
 	result = &v1alpha1.VpnGatewayRoutePropagation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("vpngatewayroutepropagations").
 		Body(vpnGatewayRoutePropagation).
 		Do().
@@ -118,6 +124,7 @@ func (c *vpnGatewayRoutePropagations) Create(vpnGatewayRoutePropagation *v1alpha
 func (c *vpnGatewayRoutePropagations) Update(vpnGatewayRoutePropagation *v1alpha1.VpnGatewayRoutePropagation) (result *v1alpha1.VpnGatewayRoutePropagation, err error) {
 	result = &v1alpha1.VpnGatewayRoutePropagation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpngatewayroutepropagations").
 		Name(vpnGatewayRoutePropagation.Name).
 		Body(vpnGatewayRoutePropagation).
@@ -132,6 +139,7 @@ func (c *vpnGatewayRoutePropagations) Update(vpnGatewayRoutePropagation *v1alpha
 func (c *vpnGatewayRoutePropagations) UpdateStatus(vpnGatewayRoutePropagation *v1alpha1.VpnGatewayRoutePropagation) (result *v1alpha1.VpnGatewayRoutePropagation, err error) {
 	result = &v1alpha1.VpnGatewayRoutePropagation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpngatewayroutepropagations").
 		Name(vpnGatewayRoutePropagation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *vpnGatewayRoutePropagations) UpdateStatus(vpnGatewayRoutePropagation *v
 // Delete takes name of the vpnGatewayRoutePropagation and deletes it. Returns an error if one occurs.
 func (c *vpnGatewayRoutePropagations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpngatewayroutepropagations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *vpnGatewayRoutePropagations) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpngatewayroutepropagations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *vpnGatewayRoutePropagations) DeleteCollection(options *v1.DeleteOptions
 func (c *vpnGatewayRoutePropagations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpnGatewayRoutePropagation, err error) {
 	result = &v1alpha1.VpnGatewayRoutePropagation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("vpngatewayroutepropagations").
 		SubResource(subresources...).
 		Name(name).

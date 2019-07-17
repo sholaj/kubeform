@@ -31,6 +31,7 @@ import (
 // FakeCloudwatchLogMetricFilters implements CloudwatchLogMetricFilterInterface
 type FakeCloudwatchLogMetricFilters struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var cloudwatchlogmetricfiltersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "cloudwatchlogmetricfilters"}
@@ -40,7 +41,8 @@ var cloudwatchlogmetricfiltersKind = schema.GroupVersionKind{Group: "aws.kubefor
 // Get takes name of the cloudwatchLogMetricFilter, and returns the corresponding cloudwatchLogMetricFilter object, and an error if there is any.
 func (c *FakeCloudwatchLogMetricFilters) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudwatchLogMetricFilter, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cloudwatchlogmetricfiltersResource, name), &v1alpha1.CloudwatchLogMetricFilter{})
+		Invokes(testing.NewGetAction(cloudwatchlogmetricfiltersResource, c.ns, name), &v1alpha1.CloudwatchLogMetricFilter{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCloudwatchLogMetricFilters) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of CloudwatchLogMetricFilters that match those selectors.
 func (c *FakeCloudwatchLogMetricFilters) List(opts v1.ListOptions) (result *v1alpha1.CloudwatchLogMetricFilterList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cloudwatchlogmetricfiltersResource, cloudwatchlogmetricfiltersKind, opts), &v1alpha1.CloudwatchLogMetricFilterList{})
+		Invokes(testing.NewListAction(cloudwatchlogmetricfiltersResource, cloudwatchlogmetricfiltersKind, c.ns, opts), &v1alpha1.CloudwatchLogMetricFilterList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCloudwatchLogMetricFilters) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested cloudwatchLogMetricFilters.
 func (c *FakeCloudwatchLogMetricFilters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cloudwatchlogmetricfiltersResource, opts))
+		InvokesWatch(testing.NewWatchAction(cloudwatchlogmetricfiltersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cloudwatchLogMetricFilter and creates it.  Returns the server's representation of the cloudwatchLogMetricFilter, and an error, if there is any.
 func (c *FakeCloudwatchLogMetricFilters) Create(cloudwatchLogMetricFilter *v1alpha1.CloudwatchLogMetricFilter) (result *v1alpha1.CloudwatchLogMetricFilter, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cloudwatchlogmetricfiltersResource, cloudwatchLogMetricFilter), &v1alpha1.CloudwatchLogMetricFilter{})
+		Invokes(testing.NewCreateAction(cloudwatchlogmetricfiltersResource, c.ns, cloudwatchLogMetricFilter), &v1alpha1.CloudwatchLogMetricFilter{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCloudwatchLogMetricFilters) Create(cloudwatchLogMetricFilter *v1alp
 // Update takes the representation of a cloudwatchLogMetricFilter and updates it. Returns the server's representation of the cloudwatchLogMetricFilter, and an error, if there is any.
 func (c *FakeCloudwatchLogMetricFilters) Update(cloudwatchLogMetricFilter *v1alpha1.CloudwatchLogMetricFilter) (result *v1alpha1.CloudwatchLogMetricFilter, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cloudwatchlogmetricfiltersResource, cloudwatchLogMetricFilter), &v1alpha1.CloudwatchLogMetricFilter{})
+		Invokes(testing.NewUpdateAction(cloudwatchlogmetricfiltersResource, c.ns, cloudwatchLogMetricFilter), &v1alpha1.CloudwatchLogMetricFilter{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCloudwatchLogMetricFilters) Update(cloudwatchLogMetricFilter *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCloudwatchLogMetricFilters) UpdateStatus(cloudwatchLogMetricFilter *v1alpha1.CloudwatchLogMetricFilter) (*v1alpha1.CloudwatchLogMetricFilter, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cloudwatchlogmetricfiltersResource, "status", cloudwatchLogMetricFilter), &v1alpha1.CloudwatchLogMetricFilter{})
+		Invokes(testing.NewUpdateSubresourceAction(cloudwatchlogmetricfiltersResource, "status", c.ns, cloudwatchLogMetricFilter), &v1alpha1.CloudwatchLogMetricFilter{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCloudwatchLogMetricFilters) UpdateStatus(cloudwatchLogMetricFilter 
 // Delete takes name of the cloudwatchLogMetricFilter and deletes it. Returns an error if one occurs.
 func (c *FakeCloudwatchLogMetricFilters) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cloudwatchlogmetricfiltersResource, name), &v1alpha1.CloudwatchLogMetricFilter{})
+		Invokes(testing.NewDeleteAction(cloudwatchlogmetricfiltersResource, c.ns, name), &v1alpha1.CloudwatchLogMetricFilter{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCloudwatchLogMetricFilters) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cloudwatchlogmetricfiltersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cloudwatchlogmetricfiltersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CloudwatchLogMetricFilterList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCloudwatchLogMetricFilters) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched cloudwatchLogMetricFilter.
 func (c *FakeCloudwatchLogMetricFilters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudwatchLogMetricFilter, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cloudwatchlogmetricfiltersResource, name, pt, data, subresources...), &v1alpha1.CloudwatchLogMetricFilter{})
+		Invokes(testing.NewPatchSubresourceAction(cloudwatchlogmetricfiltersResource, c.ns, name, pt, data, subresources...), &v1alpha1.CloudwatchLogMetricFilter{})
+
 	if obj == nil {
 		return nil, err
 	}

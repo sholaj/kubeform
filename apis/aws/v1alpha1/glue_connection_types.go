@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,25 +20,26 @@ type GlueConnection struct {
 
 type GlueConnectionSpecPhysicalConnectionRequirements struct {
 	// +optional
-	AvailabilityZone string `json:"availability_zone,omitempty"`
+	AvailabilityZone string `json:"availabilityZone,omitempty" tf:"availability_zone,omitempty"`
 	// +optional
-	SecurityGroupIdList []string `json:"security_group_id_list,omitempty"`
+	SecurityGroupIDList []string `json:"securityGroupIDList,omitempty" tf:"security_group_id_list,omitempty"`
 	// +optional
-	SubnetId string `json:"subnet_id,omitempty"`
+	SubnetID string `json:"subnetID,omitempty" tf:"subnet_id,omitempty"`
 }
 
 type GlueConnectionSpec struct {
-	ConnectionProperties map[string]string `json:"connection_properties"`
+	ConnectionProperties map[string]string `json:"connectionProperties" tf:"connection_properties"`
 	// +optional
-	ConnectionType string `json:"connection_type,omitempty"`
+	ConnectionType string `json:"connectionType,omitempty" tf:"connection_type,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	MatchCriteria []string `json:"match_criteria,omitempty"`
-	Name          string   `json:"name"`
+	MatchCriteria []string `json:"matchCriteria,omitempty" tf:"match_criteria,omitempty"`
+	Name          string   `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	PhysicalConnectionRequirements *[]GlueConnectionSpec `json:"physical_connection_requirements,omitempty"`
+	PhysicalConnectionRequirements []GlueConnectionSpecPhysicalConnectionRequirements `json:"physicalConnectionRequirements,omitempty" tf:"physical_connection_requirements,omitempty"`
+	ProviderRef                    core.LocalObjectReference                          `json:"providerRef" tf:"-"`
 }
 
 type GlueConnectionStatus struct {
@@ -46,7 +47,9 @@ type GlueConnectionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

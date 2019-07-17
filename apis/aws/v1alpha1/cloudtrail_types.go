@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,48 +19,49 @@ type Cloudtrail struct {
 }
 
 type CloudtrailSpecEventSelectorDataResource struct {
-	Type string `json:"type"`
+	Type string `json:"type" tf:"type"`
 	// +kubebuilder:validation:MaxItems=250
-	Values []string `json:"values"`
+	Values []string `json:"values" tf:"values"`
 }
 
 type CloudtrailSpecEventSelector struct {
 	// +optional
-	DataResource *[]CloudtrailSpecEventSelector `json:"data_resource,omitempty"`
+	DataResource []CloudtrailSpecEventSelectorDataResource `json:"dataResource,omitempty" tf:"data_resource,omitempty"`
 	// +optional
-	IncludeManagementEvents bool `json:"include_management_events,omitempty"`
+	IncludeManagementEvents bool `json:"includeManagementEvents,omitempty" tf:"include_management_events,omitempty"`
 	// +optional
-	ReadWriteType string `json:"read_write_type,omitempty"`
+	ReadWriteType string `json:"readWriteType,omitempty" tf:"read_write_type,omitempty"`
 }
 
 type CloudtrailSpec struct {
 	// +optional
-	CloudWatchLogsGroupArn string `json:"cloud_watch_logs_group_arn,omitempty"`
+	CloudWatchLogsGroupArn string `json:"cloudWatchLogsGroupArn,omitempty" tf:"cloud_watch_logs_group_arn,omitempty"`
 	// +optional
-	CloudWatchLogsRoleArn string `json:"cloud_watch_logs_role_arn,omitempty"`
+	CloudWatchLogsRoleArn string `json:"cloudWatchLogsRoleArn,omitempty" tf:"cloud_watch_logs_role_arn,omitempty"`
 	// +optional
-	EnableLogFileValidation bool `json:"enable_log_file_validation,omitempty"`
+	EnableLogFileValidation bool `json:"enableLogFileValidation,omitempty" tf:"enable_log_file_validation,omitempty"`
 	// +optional
-	EnableLogging bool `json:"enable_logging,omitempty"`
+	EnableLogging bool `json:"enableLogging,omitempty" tf:"enable_logging,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=5
-	EventSelector *[]CloudtrailSpec `json:"event_selector,omitempty"`
+	EventSelector []CloudtrailSpecEventSelector `json:"eventSelector,omitempty" tf:"event_selector,omitempty"`
 	// +optional
-	IncludeGlobalServiceEvents bool `json:"include_global_service_events,omitempty"`
+	IncludeGlobalServiceEvents bool `json:"includeGlobalServiceEvents,omitempty" tf:"include_global_service_events,omitempty"`
 	// +optional
-	IsMultiRegionTrail bool `json:"is_multi_region_trail,omitempty"`
+	IsMultiRegionTrail bool `json:"isMultiRegionTrail,omitempty" tf:"is_multi_region_trail,omitempty"`
 	// +optional
-	IsOrganizationTrail bool `json:"is_organization_trail,omitempty"`
+	IsOrganizationTrail bool `json:"isOrganizationTrail,omitempty" tf:"is_organization_trail,omitempty"`
 	// +optional
-	KmsKeyId     string `json:"kms_key_id,omitempty"`
-	Name         string `json:"name"`
-	S3BucketName string `json:"s3_bucket_name"`
+	KmsKeyID     string `json:"kmsKeyID,omitempty" tf:"kms_key_id,omitempty"`
+	Name         string `json:"name" tf:"name"`
+	S3BucketName string `json:"s3BucketName" tf:"s3_bucket_name"`
 	// +optional
-	S3KeyPrefix string `json:"s3_key_prefix,omitempty"`
+	S3KeyPrefix string `json:"s3KeyPrefix,omitempty" tf:"s3_key_prefix,omitempty"`
 	// +optional
-	SnsTopicName string `json:"sns_topic_name,omitempty"`
+	SnsTopicName string `json:"snsTopicName,omitempty" tf:"sns_topic_name,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type CloudtrailStatus struct {
@@ -68,7 +69,9 @@ type CloudtrailStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

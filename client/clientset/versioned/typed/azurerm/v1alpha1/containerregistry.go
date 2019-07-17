@@ -32,7 +32,7 @@ import (
 // ContainerRegistriesGetter has a method to return a ContainerRegistryInterface.
 // A group's client should implement this interface.
 type ContainerRegistriesGetter interface {
-	ContainerRegistries() ContainerRegistryInterface
+	ContainerRegistries(namespace string) ContainerRegistryInterface
 }
 
 // ContainerRegistryInterface has methods to work with ContainerRegistry resources.
@@ -52,12 +52,14 @@ type ContainerRegistryInterface interface {
 // containerRegistries implements ContainerRegistryInterface
 type containerRegistries struct {
 	client rest.Interface
+	ns     string
 }
 
 // newContainerRegistries returns a ContainerRegistries
-func newContainerRegistries(c *AzurermV1alpha1Client) *containerRegistries {
+func newContainerRegistries(c *AzurermV1alpha1Client, namespace string) *containerRegistries {
 	return &containerRegistries{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newContainerRegistries(c *AzurermV1alpha1Client) *containerRegistries {
 func (c *containerRegistries) Get(name string, options v1.GetOptions) (result *v1alpha1.ContainerRegistry, err error) {
 	result = &v1alpha1.ContainerRegistry{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("containerregistries").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *containerRegistries) List(opts v1.ListOptions) (result *v1alpha1.Contai
 	}
 	result = &v1alpha1.ContainerRegistryList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("containerregistries").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *containerRegistries) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("containerregistries").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *containerRegistries) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *containerRegistries) Create(containerRegistry *v1alpha1.ContainerRegistry) (result *v1alpha1.ContainerRegistry, err error) {
 	result = &v1alpha1.ContainerRegistry{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("containerregistries").
 		Body(containerRegistry).
 		Do().
@@ -118,6 +124,7 @@ func (c *containerRegistries) Create(containerRegistry *v1alpha1.ContainerRegist
 func (c *containerRegistries) Update(containerRegistry *v1alpha1.ContainerRegistry) (result *v1alpha1.ContainerRegistry, err error) {
 	result = &v1alpha1.ContainerRegistry{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("containerregistries").
 		Name(containerRegistry.Name).
 		Body(containerRegistry).
@@ -132,6 +139,7 @@ func (c *containerRegistries) Update(containerRegistry *v1alpha1.ContainerRegist
 func (c *containerRegistries) UpdateStatus(containerRegistry *v1alpha1.ContainerRegistry) (result *v1alpha1.ContainerRegistry, err error) {
 	result = &v1alpha1.ContainerRegistry{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("containerregistries").
 		Name(containerRegistry.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *containerRegistries) UpdateStatus(containerRegistry *v1alpha1.Container
 // Delete takes name of the containerRegistry and deletes it. Returns an error if one occurs.
 func (c *containerRegistries) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("containerregistries").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *containerRegistries) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("containerregistries").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *containerRegistries) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *containerRegistries) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ContainerRegistry, err error) {
 	result = &v1alpha1.ContainerRegistry{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("containerregistries").
 		SubResource(subresources...).
 		Name(name).

@@ -31,6 +31,7 @@ import (
 // FakeTransferServers implements TransferServerInterface
 type FakeTransferServers struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var transferserversResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "transferservers"}
@@ -40,7 +41,8 @@ var transferserversKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ver
 // Get takes name of the transferServer, and returns the corresponding transferServer object, and an error if there is any.
 func (c *FakeTransferServers) Get(name string, options v1.GetOptions) (result *v1alpha1.TransferServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(transferserversResource, name), &v1alpha1.TransferServer{})
+		Invokes(testing.NewGetAction(transferserversResource, c.ns, name), &v1alpha1.TransferServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeTransferServers) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of TransferServers that match those selectors.
 func (c *FakeTransferServers) List(opts v1.ListOptions) (result *v1alpha1.TransferServerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(transferserversResource, transferserversKind, opts), &v1alpha1.TransferServerList{})
+		Invokes(testing.NewListAction(transferserversResource, transferserversKind, c.ns, opts), &v1alpha1.TransferServerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeTransferServers) List(opts v1.ListOptions) (result *v1alpha1.Transf
 // Watch returns a watch.Interface that watches the requested transferServers.
 func (c *FakeTransferServers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(transferserversResource, opts))
+		InvokesWatch(testing.NewWatchAction(transferserversResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a transferServer and creates it.  Returns the server's representation of the transferServer, and an error, if there is any.
 func (c *FakeTransferServers) Create(transferServer *v1alpha1.TransferServer) (result *v1alpha1.TransferServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(transferserversResource, transferServer), &v1alpha1.TransferServer{})
+		Invokes(testing.NewCreateAction(transferserversResource, c.ns, transferServer), &v1alpha1.TransferServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeTransferServers) Create(transferServer *v1alpha1.TransferServer) (r
 // Update takes the representation of a transferServer and updates it. Returns the server's representation of the transferServer, and an error, if there is any.
 func (c *FakeTransferServers) Update(transferServer *v1alpha1.TransferServer) (result *v1alpha1.TransferServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(transferserversResource, transferServer), &v1alpha1.TransferServer{})
+		Invokes(testing.NewUpdateAction(transferserversResource, c.ns, transferServer), &v1alpha1.TransferServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeTransferServers) Update(transferServer *v1alpha1.TransferServer) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeTransferServers) UpdateStatus(transferServer *v1alpha1.TransferServer) (*v1alpha1.TransferServer, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(transferserversResource, "status", transferServer), &v1alpha1.TransferServer{})
+		Invokes(testing.NewUpdateSubresourceAction(transferserversResource, "status", c.ns, transferServer), &v1alpha1.TransferServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeTransferServers) UpdateStatus(transferServer *v1alpha1.TransferServ
 // Delete takes name of the transferServer and deletes it. Returns an error if one occurs.
 func (c *FakeTransferServers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(transferserversResource, name), &v1alpha1.TransferServer{})
+		Invokes(testing.NewDeleteAction(transferserversResource, c.ns, name), &v1alpha1.TransferServer{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeTransferServers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(transferserversResource, listOptions)
+	action := testing.NewDeleteCollectionAction(transferserversResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.TransferServerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeTransferServers) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched transferServer.
 func (c *FakeTransferServers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.TransferServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(transferserversResource, name, pt, data, subresources...), &v1alpha1.TransferServer{})
+		Invokes(testing.NewPatchSubresourceAction(transferserversResource, c.ns, name, pt, data, subresources...), &v1alpha1.TransferServer{})
+
 	if obj == nil {
 		return nil, err
 	}

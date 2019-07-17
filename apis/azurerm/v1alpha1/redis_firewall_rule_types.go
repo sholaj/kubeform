@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,11 +19,12 @@ type RedisFirewallRule struct {
 }
 
 type RedisFirewallRuleSpec struct {
-	EndIp             string `json:"end_ip"`
-	Name              string `json:"name"`
-	RedisCacheName    string `json:"redis_cache_name"`
-	ResourceGroupName string `json:"resource_group_name"`
-	StartIp           string `json:"start_ip"`
+	EndIP             string                    `json:"endIP" tf:"end_ip"`
+	Name              string                    `json:"name" tf:"name"`
+	RedisCacheName    string                    `json:"redisCacheName" tf:"redis_cache_name"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	StartIP           string                    `json:"startIP" tf:"start_ip"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type RedisFirewallRuleStatus struct {
@@ -31,7 +32,9 @@ type RedisFirewallRuleStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

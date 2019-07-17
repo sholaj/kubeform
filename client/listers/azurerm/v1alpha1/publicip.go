@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// PublicIpLister helps list PublicIps.
-type PublicIpLister interface {
-	// List lists all PublicIps in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.PublicIp, err error)
-	// Get retrieves the PublicIp from the index for a given name.
-	Get(name string) (*v1alpha1.PublicIp, error)
-	PublicIpListerExpansion
+// PublicIPLister helps list PublicIPs.
+type PublicIPLister interface {
+	// List lists all PublicIPs in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.PublicIP, err error)
+	// PublicIPs returns an object that can list and get PublicIPs.
+	PublicIPs(namespace string) PublicIPNamespaceLister
+	PublicIPListerExpansion
 }
 
-// publicIpLister implements the PublicIpLister interface.
-type publicIpLister struct {
+// publicIPLister implements the PublicIPLister interface.
+type publicIPLister struct {
 	indexer cache.Indexer
 }
 
-// NewPublicIpLister returns a new PublicIpLister.
-func NewPublicIpLister(indexer cache.Indexer) PublicIpLister {
-	return &publicIpLister{indexer: indexer}
+// NewPublicIPLister returns a new PublicIPLister.
+func NewPublicIPLister(indexer cache.Indexer) PublicIPLister {
+	return &publicIPLister{indexer: indexer}
 }
 
-// List lists all PublicIps in the indexer.
-func (s *publicIpLister) List(selector labels.Selector) (ret []*v1alpha1.PublicIp, err error) {
+// List lists all PublicIPs in the indexer.
+func (s *publicIPLister) List(selector labels.Selector) (ret []*v1alpha1.PublicIP, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.PublicIp))
+		ret = append(ret, m.(*v1alpha1.PublicIP))
 	})
 	return ret, err
 }
 
-// Get retrieves the PublicIp from the index for a given name.
-func (s *publicIpLister) Get(name string) (*v1alpha1.PublicIp, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// PublicIPs returns an object that can list and get PublicIPs.
+func (s *publicIPLister) PublicIPs(namespace string) PublicIPNamespaceLister {
+	return publicIPNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// PublicIPNamespaceLister helps list and get PublicIPs.
+type PublicIPNamespaceLister interface {
+	// List lists all PublicIPs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.PublicIP, err error)
+	// Get retrieves the PublicIP from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.PublicIP, error)
+	PublicIPNamespaceListerExpansion
+}
+
+// publicIPNamespaceLister implements the PublicIPNamespaceLister
+// interface.
+type publicIPNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all PublicIPs in the indexer for a given namespace.
+func (s publicIPNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.PublicIP, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.PublicIP))
+	})
+	return ret, err
+}
+
+// Get retrieves the PublicIP from the indexer for a given namespace and name.
+func (s publicIPNamespaceLister) Get(name string) (*v1alpha1.PublicIP, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("publicip"), name)
 	}
-	return obj.(*v1alpha1.PublicIp), nil
+	return obj.(*v1alpha1.PublicIP), nil
 }

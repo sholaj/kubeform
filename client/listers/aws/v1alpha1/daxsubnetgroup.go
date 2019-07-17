@@ -29,8 +29,8 @@ import (
 type DaxSubnetGroupLister interface {
 	// List lists all DaxSubnetGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DaxSubnetGroup, err error)
-	// Get retrieves the DaxSubnetGroup from the index for a given name.
-	Get(name string) (*v1alpha1.DaxSubnetGroup, error)
+	// DaxSubnetGroups returns an object that can list and get DaxSubnetGroups.
+	DaxSubnetGroups(namespace string) DaxSubnetGroupNamespaceLister
 	DaxSubnetGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *daxSubnetGroupLister) List(selector labels.Selector) (ret []*v1alpha1.D
 	return ret, err
 }
 
-// Get retrieves the DaxSubnetGroup from the index for a given name.
-func (s *daxSubnetGroupLister) Get(name string) (*v1alpha1.DaxSubnetGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DaxSubnetGroups returns an object that can list and get DaxSubnetGroups.
+func (s *daxSubnetGroupLister) DaxSubnetGroups(namespace string) DaxSubnetGroupNamespaceLister {
+	return daxSubnetGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DaxSubnetGroupNamespaceLister helps list and get DaxSubnetGroups.
+type DaxSubnetGroupNamespaceLister interface {
+	// List lists all DaxSubnetGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DaxSubnetGroup, err error)
+	// Get retrieves the DaxSubnetGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DaxSubnetGroup, error)
+	DaxSubnetGroupNamespaceListerExpansion
+}
+
+// daxSubnetGroupNamespaceLister implements the DaxSubnetGroupNamespaceLister
+// interface.
+type daxSubnetGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DaxSubnetGroups in the indexer for a given namespace.
+func (s daxSubnetGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DaxSubnetGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DaxSubnetGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the DaxSubnetGroup from the indexer for a given namespace and name.
+func (s daxSubnetGroupNamespaceLister) Get(name string) (*v1alpha1.DaxSubnetGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

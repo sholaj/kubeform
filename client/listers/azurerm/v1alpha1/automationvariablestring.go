@@ -29,8 +29,8 @@ import (
 type AutomationVariableStringLister interface {
 	// List lists all AutomationVariableStrings in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AutomationVariableString, err error)
-	// Get retrieves the AutomationVariableString from the index for a given name.
-	Get(name string) (*v1alpha1.AutomationVariableString, error)
+	// AutomationVariableStrings returns an object that can list and get AutomationVariableStrings.
+	AutomationVariableStrings(namespace string) AutomationVariableStringNamespaceLister
 	AutomationVariableStringListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *automationVariableStringLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the AutomationVariableString from the index for a given name.
-func (s *automationVariableStringLister) Get(name string) (*v1alpha1.AutomationVariableString, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AutomationVariableStrings returns an object that can list and get AutomationVariableStrings.
+func (s *automationVariableStringLister) AutomationVariableStrings(namespace string) AutomationVariableStringNamespaceLister {
+	return automationVariableStringNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AutomationVariableStringNamespaceLister helps list and get AutomationVariableStrings.
+type AutomationVariableStringNamespaceLister interface {
+	// List lists all AutomationVariableStrings in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AutomationVariableString, err error)
+	// Get retrieves the AutomationVariableString from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AutomationVariableString, error)
+	AutomationVariableStringNamespaceListerExpansion
+}
+
+// automationVariableStringNamespaceLister implements the AutomationVariableStringNamespaceLister
+// interface.
+type automationVariableStringNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AutomationVariableStrings in the indexer for a given namespace.
+func (s automationVariableStringNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AutomationVariableString, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AutomationVariableString))
+	})
+	return ret, err
+}
+
+// Get retrieves the AutomationVariableString from the indexer for a given namespace and name.
+func (s automationVariableStringNamespaceLister) Get(name string) (*v1alpha1.AutomationVariableString, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

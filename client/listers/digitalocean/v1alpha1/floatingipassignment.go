@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/digitalocean/v1alpha1"
 )
 
-// FloatingIpAssignmentLister helps list FloatingIpAssignments.
-type FloatingIpAssignmentLister interface {
-	// List lists all FloatingIpAssignments in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.FloatingIpAssignment, err error)
-	// Get retrieves the FloatingIpAssignment from the index for a given name.
-	Get(name string) (*v1alpha1.FloatingIpAssignment, error)
-	FloatingIpAssignmentListerExpansion
+// FloatingIPAssignmentLister helps list FloatingIPAssignments.
+type FloatingIPAssignmentLister interface {
+	// List lists all FloatingIPAssignments in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.FloatingIPAssignment, err error)
+	// FloatingIPAssignments returns an object that can list and get FloatingIPAssignments.
+	FloatingIPAssignments(namespace string) FloatingIPAssignmentNamespaceLister
+	FloatingIPAssignmentListerExpansion
 }
 
-// floatingIpAssignmentLister implements the FloatingIpAssignmentLister interface.
-type floatingIpAssignmentLister struct {
+// floatingIPAssignmentLister implements the FloatingIPAssignmentLister interface.
+type floatingIPAssignmentLister struct {
 	indexer cache.Indexer
 }
 
-// NewFloatingIpAssignmentLister returns a new FloatingIpAssignmentLister.
-func NewFloatingIpAssignmentLister(indexer cache.Indexer) FloatingIpAssignmentLister {
-	return &floatingIpAssignmentLister{indexer: indexer}
+// NewFloatingIPAssignmentLister returns a new FloatingIPAssignmentLister.
+func NewFloatingIPAssignmentLister(indexer cache.Indexer) FloatingIPAssignmentLister {
+	return &floatingIPAssignmentLister{indexer: indexer}
 }
 
-// List lists all FloatingIpAssignments in the indexer.
-func (s *floatingIpAssignmentLister) List(selector labels.Selector) (ret []*v1alpha1.FloatingIpAssignment, err error) {
+// List lists all FloatingIPAssignments in the indexer.
+func (s *floatingIPAssignmentLister) List(selector labels.Selector) (ret []*v1alpha1.FloatingIPAssignment, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.FloatingIpAssignment))
+		ret = append(ret, m.(*v1alpha1.FloatingIPAssignment))
 	})
 	return ret, err
 }
 
-// Get retrieves the FloatingIpAssignment from the index for a given name.
-func (s *floatingIpAssignmentLister) Get(name string) (*v1alpha1.FloatingIpAssignment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// FloatingIPAssignments returns an object that can list and get FloatingIPAssignments.
+func (s *floatingIPAssignmentLister) FloatingIPAssignments(namespace string) FloatingIPAssignmentNamespaceLister {
+	return floatingIPAssignmentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// FloatingIPAssignmentNamespaceLister helps list and get FloatingIPAssignments.
+type FloatingIPAssignmentNamespaceLister interface {
+	// List lists all FloatingIPAssignments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.FloatingIPAssignment, err error)
+	// Get retrieves the FloatingIPAssignment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.FloatingIPAssignment, error)
+	FloatingIPAssignmentNamespaceListerExpansion
+}
+
+// floatingIPAssignmentNamespaceLister implements the FloatingIPAssignmentNamespaceLister
+// interface.
+type floatingIPAssignmentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all FloatingIPAssignments in the indexer for a given namespace.
+func (s floatingIPAssignmentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.FloatingIPAssignment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.FloatingIPAssignment))
+	})
+	return ret, err
+}
+
+// Get retrieves the FloatingIPAssignment from the indexer for a given namespace and name.
+func (s floatingIPAssignmentNamespaceLister) Get(name string) (*v1alpha1.FloatingIPAssignment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("floatingipassignment"), name)
 	}
-	return obj.(*v1alpha1.FloatingIpAssignment), nil
+	return obj.(*v1alpha1.FloatingIPAssignment), nil
 }

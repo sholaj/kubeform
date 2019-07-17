@@ -41,32 +41,33 @@ type DocdbClusterInstanceInformer interface {
 type docdbClusterInstanceInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDocdbClusterInstanceInformer constructs a new informer for DocdbClusterInstance type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDocdbClusterInstanceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDocdbClusterInstanceInformer(client, resyncPeriod, indexers, nil)
+func NewDocdbClusterInstanceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDocdbClusterInstanceInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDocdbClusterInstanceInformer constructs a new informer for DocdbClusterInstance type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDocdbClusterInstanceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDocdbClusterInstanceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DocdbClusterInstances().List(options)
+				return client.AwsV1alpha1().DocdbClusterInstances(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DocdbClusterInstances().Watch(options)
+				return client.AwsV1alpha1().DocdbClusterInstances(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.DocdbClusterInstance{},
@@ -76,7 +77,7 @@ func NewFilteredDocdbClusterInstanceInformer(client versioned.Interface, resyncP
 }
 
 func (f *docdbClusterInstanceInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDocdbClusterInstanceInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDocdbClusterInstanceInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *docdbClusterInstanceInformer) Informer() cache.SharedIndexInformer {

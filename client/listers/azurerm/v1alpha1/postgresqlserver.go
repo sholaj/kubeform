@@ -29,8 +29,8 @@ import (
 type PostgresqlServerLister interface {
 	// List lists all PostgresqlServers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.PostgresqlServer, err error)
-	// Get retrieves the PostgresqlServer from the index for a given name.
-	Get(name string) (*v1alpha1.PostgresqlServer, error)
+	// PostgresqlServers returns an object that can list and get PostgresqlServers.
+	PostgresqlServers(namespace string) PostgresqlServerNamespaceLister
 	PostgresqlServerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *postgresqlServerLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the PostgresqlServer from the index for a given name.
-func (s *postgresqlServerLister) Get(name string) (*v1alpha1.PostgresqlServer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// PostgresqlServers returns an object that can list and get PostgresqlServers.
+func (s *postgresqlServerLister) PostgresqlServers(namespace string) PostgresqlServerNamespaceLister {
+	return postgresqlServerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// PostgresqlServerNamespaceLister helps list and get PostgresqlServers.
+type PostgresqlServerNamespaceLister interface {
+	// List lists all PostgresqlServers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.PostgresqlServer, err error)
+	// Get retrieves the PostgresqlServer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.PostgresqlServer, error)
+	PostgresqlServerNamespaceListerExpansion
+}
+
+// postgresqlServerNamespaceLister implements the PostgresqlServerNamespaceLister
+// interface.
+type postgresqlServerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all PostgresqlServers in the indexer for a given namespace.
+func (s postgresqlServerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.PostgresqlServer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.PostgresqlServer))
+	})
+	return ret, err
+}
+
+// Get retrieves the PostgresqlServer from the indexer for a given namespace and name.
+func (s postgresqlServerNamespaceLister) Get(name string) (*v1alpha1.PostgresqlServer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

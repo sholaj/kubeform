@@ -32,7 +32,7 @@ import (
 // GuarddutyIpsetsGetter has a method to return a GuarddutyIpsetInterface.
 // A group's client should implement this interface.
 type GuarddutyIpsetsGetter interface {
-	GuarddutyIpsets() GuarddutyIpsetInterface
+	GuarddutyIpsets(namespace string) GuarddutyIpsetInterface
 }
 
 // GuarddutyIpsetInterface has methods to work with GuarddutyIpset resources.
@@ -52,12 +52,14 @@ type GuarddutyIpsetInterface interface {
 // guarddutyIpsets implements GuarddutyIpsetInterface
 type guarddutyIpsets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newGuarddutyIpsets returns a GuarddutyIpsets
-func newGuarddutyIpsets(c *AwsV1alpha1Client) *guarddutyIpsets {
+func newGuarddutyIpsets(c *AwsV1alpha1Client, namespace string) *guarddutyIpsets {
 	return &guarddutyIpsets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newGuarddutyIpsets(c *AwsV1alpha1Client) *guarddutyIpsets {
 func (c *guarddutyIpsets) Get(name string, options v1.GetOptions) (result *v1alpha1.GuarddutyIpset, err error) {
 	result = &v1alpha1.GuarddutyIpset{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("guarddutyipsets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *guarddutyIpsets) List(opts v1.ListOptions) (result *v1alpha1.GuarddutyI
 	}
 	result = &v1alpha1.GuarddutyIpsetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("guarddutyipsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *guarddutyIpsets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("guarddutyipsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *guarddutyIpsets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *guarddutyIpsets) Create(guarddutyIpset *v1alpha1.GuarddutyIpset) (result *v1alpha1.GuarddutyIpset, err error) {
 	result = &v1alpha1.GuarddutyIpset{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("guarddutyipsets").
 		Body(guarddutyIpset).
 		Do().
@@ -118,6 +124,7 @@ func (c *guarddutyIpsets) Create(guarddutyIpset *v1alpha1.GuarddutyIpset) (resul
 func (c *guarddutyIpsets) Update(guarddutyIpset *v1alpha1.GuarddutyIpset) (result *v1alpha1.GuarddutyIpset, err error) {
 	result = &v1alpha1.GuarddutyIpset{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("guarddutyipsets").
 		Name(guarddutyIpset.Name).
 		Body(guarddutyIpset).
@@ -132,6 +139,7 @@ func (c *guarddutyIpsets) Update(guarddutyIpset *v1alpha1.GuarddutyIpset) (resul
 func (c *guarddutyIpsets) UpdateStatus(guarddutyIpset *v1alpha1.GuarddutyIpset) (result *v1alpha1.GuarddutyIpset, err error) {
 	result = &v1alpha1.GuarddutyIpset{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("guarddutyipsets").
 		Name(guarddutyIpset.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *guarddutyIpsets) UpdateStatus(guarddutyIpset *v1alpha1.GuarddutyIpset) 
 // Delete takes name of the guarddutyIpset and deletes it. Returns an error if one occurs.
 func (c *guarddutyIpsets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("guarddutyipsets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *guarddutyIpsets) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("guarddutyipsets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *guarddutyIpsets) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *guarddutyIpsets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GuarddutyIpset, err error) {
 	result = &v1alpha1.GuarddutyIpset{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("guarddutyipsets").
 		SubResource(subresources...).
 		Name(name).

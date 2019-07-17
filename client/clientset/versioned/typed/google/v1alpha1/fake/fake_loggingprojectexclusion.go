@@ -31,6 +31,7 @@ import (
 // FakeLoggingProjectExclusions implements LoggingProjectExclusionInterface
 type FakeLoggingProjectExclusions struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var loggingprojectexclusionsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "loggingprojectexclusions"}
@@ -40,7 +41,8 @@ var loggingprojectexclusionsKind = schema.GroupVersionKind{Group: "google.kubefo
 // Get takes name of the loggingProjectExclusion, and returns the corresponding loggingProjectExclusion object, and an error if there is any.
 func (c *FakeLoggingProjectExclusions) Get(name string, options v1.GetOptions) (result *v1alpha1.LoggingProjectExclusion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(loggingprojectexclusionsResource, name), &v1alpha1.LoggingProjectExclusion{})
+		Invokes(testing.NewGetAction(loggingprojectexclusionsResource, c.ns, name), &v1alpha1.LoggingProjectExclusion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLoggingProjectExclusions) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of LoggingProjectExclusions that match those selectors.
 func (c *FakeLoggingProjectExclusions) List(opts v1.ListOptions) (result *v1alpha1.LoggingProjectExclusionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(loggingprojectexclusionsResource, loggingprojectexclusionsKind, opts), &v1alpha1.LoggingProjectExclusionList{})
+		Invokes(testing.NewListAction(loggingprojectexclusionsResource, loggingprojectexclusionsKind, c.ns, opts), &v1alpha1.LoggingProjectExclusionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLoggingProjectExclusions) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested loggingProjectExclusions.
 func (c *FakeLoggingProjectExclusions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(loggingprojectexclusionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(loggingprojectexclusionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a loggingProjectExclusion and creates it.  Returns the server's representation of the loggingProjectExclusion, and an error, if there is any.
 func (c *FakeLoggingProjectExclusions) Create(loggingProjectExclusion *v1alpha1.LoggingProjectExclusion) (result *v1alpha1.LoggingProjectExclusion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(loggingprojectexclusionsResource, loggingProjectExclusion), &v1alpha1.LoggingProjectExclusion{})
+		Invokes(testing.NewCreateAction(loggingprojectexclusionsResource, c.ns, loggingProjectExclusion), &v1alpha1.LoggingProjectExclusion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLoggingProjectExclusions) Create(loggingProjectExclusion *v1alpha1.
 // Update takes the representation of a loggingProjectExclusion and updates it. Returns the server's representation of the loggingProjectExclusion, and an error, if there is any.
 func (c *FakeLoggingProjectExclusions) Update(loggingProjectExclusion *v1alpha1.LoggingProjectExclusion) (result *v1alpha1.LoggingProjectExclusion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(loggingprojectexclusionsResource, loggingProjectExclusion), &v1alpha1.LoggingProjectExclusion{})
+		Invokes(testing.NewUpdateAction(loggingprojectexclusionsResource, c.ns, loggingProjectExclusion), &v1alpha1.LoggingProjectExclusion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLoggingProjectExclusions) Update(loggingProjectExclusion *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLoggingProjectExclusions) UpdateStatus(loggingProjectExclusion *v1alpha1.LoggingProjectExclusion) (*v1alpha1.LoggingProjectExclusion, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(loggingprojectexclusionsResource, "status", loggingProjectExclusion), &v1alpha1.LoggingProjectExclusion{})
+		Invokes(testing.NewUpdateSubresourceAction(loggingprojectexclusionsResource, "status", c.ns, loggingProjectExclusion), &v1alpha1.LoggingProjectExclusion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLoggingProjectExclusions) UpdateStatus(loggingProjectExclusion *v1a
 // Delete takes name of the loggingProjectExclusion and deletes it. Returns an error if one occurs.
 func (c *FakeLoggingProjectExclusions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(loggingprojectexclusionsResource, name), &v1alpha1.LoggingProjectExclusion{})
+		Invokes(testing.NewDeleteAction(loggingprojectexclusionsResource, c.ns, name), &v1alpha1.LoggingProjectExclusion{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLoggingProjectExclusions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(loggingprojectexclusionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(loggingprojectexclusionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LoggingProjectExclusionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLoggingProjectExclusions) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched loggingProjectExclusion.
 func (c *FakeLoggingProjectExclusions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LoggingProjectExclusion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(loggingprojectexclusionsResource, name, pt, data, subresources...), &v1alpha1.LoggingProjectExclusion{})
+		Invokes(testing.NewPatchSubresourceAction(loggingprojectexclusionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.LoggingProjectExclusion{})
+
 	if obj == nil {
 		return nil, err
 	}

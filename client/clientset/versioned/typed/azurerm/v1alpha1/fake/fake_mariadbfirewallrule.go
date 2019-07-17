@@ -31,6 +31,7 @@ import (
 // FakeMariadbFirewallRules implements MariadbFirewallRuleInterface
 type FakeMariadbFirewallRules struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var mariadbfirewallrulesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "mariadbfirewallrules"}
@@ -40,7 +41,8 @@ var mariadbfirewallrulesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.
 // Get takes name of the mariadbFirewallRule, and returns the corresponding mariadbFirewallRule object, and an error if there is any.
 func (c *FakeMariadbFirewallRules) Get(name string, options v1.GetOptions) (result *v1alpha1.MariadbFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(mariadbfirewallrulesResource, name), &v1alpha1.MariadbFirewallRule{})
+		Invokes(testing.NewGetAction(mariadbfirewallrulesResource, c.ns, name), &v1alpha1.MariadbFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMariadbFirewallRules) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of MariadbFirewallRules that match those selectors.
 func (c *FakeMariadbFirewallRules) List(opts v1.ListOptions) (result *v1alpha1.MariadbFirewallRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(mariadbfirewallrulesResource, mariadbfirewallrulesKind, opts), &v1alpha1.MariadbFirewallRuleList{})
+		Invokes(testing.NewListAction(mariadbfirewallrulesResource, mariadbfirewallrulesKind, c.ns, opts), &v1alpha1.MariadbFirewallRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMariadbFirewallRules) List(opts v1.ListOptions) (result *v1alpha1.M
 // Watch returns a watch.Interface that watches the requested mariadbFirewallRules.
 func (c *FakeMariadbFirewallRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(mariadbfirewallrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(mariadbfirewallrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a mariadbFirewallRule and creates it.  Returns the server's representation of the mariadbFirewallRule, and an error, if there is any.
 func (c *FakeMariadbFirewallRules) Create(mariadbFirewallRule *v1alpha1.MariadbFirewallRule) (result *v1alpha1.MariadbFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(mariadbfirewallrulesResource, mariadbFirewallRule), &v1alpha1.MariadbFirewallRule{})
+		Invokes(testing.NewCreateAction(mariadbfirewallrulesResource, c.ns, mariadbFirewallRule), &v1alpha1.MariadbFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMariadbFirewallRules) Create(mariadbFirewallRule *v1alpha1.MariadbF
 // Update takes the representation of a mariadbFirewallRule and updates it. Returns the server's representation of the mariadbFirewallRule, and an error, if there is any.
 func (c *FakeMariadbFirewallRules) Update(mariadbFirewallRule *v1alpha1.MariadbFirewallRule) (result *v1alpha1.MariadbFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(mariadbfirewallrulesResource, mariadbFirewallRule), &v1alpha1.MariadbFirewallRule{})
+		Invokes(testing.NewUpdateAction(mariadbfirewallrulesResource, c.ns, mariadbFirewallRule), &v1alpha1.MariadbFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMariadbFirewallRules) Update(mariadbFirewallRule *v1alpha1.MariadbF
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMariadbFirewallRules) UpdateStatus(mariadbFirewallRule *v1alpha1.MariadbFirewallRule) (*v1alpha1.MariadbFirewallRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(mariadbfirewallrulesResource, "status", mariadbFirewallRule), &v1alpha1.MariadbFirewallRule{})
+		Invokes(testing.NewUpdateSubresourceAction(mariadbfirewallrulesResource, "status", c.ns, mariadbFirewallRule), &v1alpha1.MariadbFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMariadbFirewallRules) UpdateStatus(mariadbFirewallRule *v1alpha1.Ma
 // Delete takes name of the mariadbFirewallRule and deletes it. Returns an error if one occurs.
 func (c *FakeMariadbFirewallRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(mariadbfirewallrulesResource, name), &v1alpha1.MariadbFirewallRule{})
+		Invokes(testing.NewDeleteAction(mariadbfirewallrulesResource, c.ns, name), &v1alpha1.MariadbFirewallRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMariadbFirewallRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(mariadbfirewallrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(mariadbfirewallrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MariadbFirewallRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMariadbFirewallRules) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched mariadbFirewallRule.
 func (c *FakeMariadbFirewallRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MariadbFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(mariadbfirewallrulesResource, name, pt, data, subresources...), &v1alpha1.MariadbFirewallRule{})
+		Invokes(testing.NewPatchSubresourceAction(mariadbfirewallrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.MariadbFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -41,32 +41,33 @@ type RdsClusterEndpointInformer interface {
 type rdsClusterEndpointInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewRdsClusterEndpointInformer constructs a new informer for RdsClusterEndpoint type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewRdsClusterEndpointInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredRdsClusterEndpointInformer(client, resyncPeriod, indexers, nil)
+func NewRdsClusterEndpointInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredRdsClusterEndpointInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredRdsClusterEndpointInformer constructs a new informer for RdsClusterEndpoint type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredRdsClusterEndpointInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredRdsClusterEndpointInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().RdsClusterEndpoints().List(options)
+				return client.AwsV1alpha1().RdsClusterEndpoints(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().RdsClusterEndpoints().Watch(options)
+				return client.AwsV1alpha1().RdsClusterEndpoints(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.RdsClusterEndpoint{},
@@ -76,7 +77,7 @@ func NewFilteredRdsClusterEndpointInformer(client versioned.Interface, resyncPer
 }
 
 func (f *rdsClusterEndpointInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredRdsClusterEndpointInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredRdsClusterEndpointInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *rdsClusterEndpointInformer) Informer() cache.SharedIndexInformer {

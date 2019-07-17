@@ -32,7 +32,7 @@ import (
 // NatGatewaysGetter has a method to return a NatGatewayInterface.
 // A group's client should implement this interface.
 type NatGatewaysGetter interface {
-	NatGateways() NatGatewayInterface
+	NatGateways(namespace string) NatGatewayInterface
 }
 
 // NatGatewayInterface has methods to work with NatGateway resources.
@@ -52,12 +52,14 @@ type NatGatewayInterface interface {
 // natGateways implements NatGatewayInterface
 type natGateways struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNatGateways returns a NatGateways
-func newNatGateways(c *AwsV1alpha1Client) *natGateways {
+func newNatGateways(c *AwsV1alpha1Client, namespace string) *natGateways {
 	return &natGateways{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNatGateways(c *AwsV1alpha1Client) *natGateways {
 func (c *natGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.NatGateway, err error) {
 	result = &v1alpha1.NatGateway{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("natgateways").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *natGateways) List(opts v1.ListOptions) (result *v1alpha1.NatGatewayList
 	}
 	result = &v1alpha1.NatGatewayList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("natgateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *natGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("natgateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *natGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *natGateways) Create(natGateway *v1alpha1.NatGateway) (result *v1alpha1.NatGateway, err error) {
 	result = &v1alpha1.NatGateway{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("natgateways").
 		Body(natGateway).
 		Do().
@@ -118,6 +124,7 @@ func (c *natGateways) Create(natGateway *v1alpha1.NatGateway) (result *v1alpha1.
 func (c *natGateways) Update(natGateway *v1alpha1.NatGateway) (result *v1alpha1.NatGateway, err error) {
 	result = &v1alpha1.NatGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("natgateways").
 		Name(natGateway.Name).
 		Body(natGateway).
@@ -132,6 +139,7 @@ func (c *natGateways) Update(natGateway *v1alpha1.NatGateway) (result *v1alpha1.
 func (c *natGateways) UpdateStatus(natGateway *v1alpha1.NatGateway) (result *v1alpha1.NatGateway, err error) {
 	result = &v1alpha1.NatGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("natgateways").
 		Name(natGateway.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *natGateways) UpdateStatus(natGateway *v1alpha1.NatGateway) (result *v1a
 // Delete takes name of the natGateway and deletes it. Returns an error if one occurs.
 func (c *natGateways) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("natgateways").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *natGateways) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("natgateways").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *natGateways) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *natGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NatGateway, err error) {
 	result = &v1alpha1.NatGateway{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("natgateways").
 		SubResource(subresources...).
 		Name(name).

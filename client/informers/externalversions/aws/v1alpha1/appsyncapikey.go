@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// AppsyncApiKeyInformer provides access to a shared informer and lister for
-// AppsyncApiKeys.
-type AppsyncApiKeyInformer interface {
+// AppsyncAPIKeyInformer provides access to a shared informer and lister for
+// AppsyncAPIKeys.
+type AppsyncAPIKeyInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.AppsyncApiKeyLister
+	Lister() v1alpha1.AppsyncAPIKeyLister
 }
 
-type appsyncApiKeyInformer struct {
+type appsyncAPIKeyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewAppsyncApiKeyInformer constructs a new informer for AppsyncApiKey type.
+// NewAppsyncAPIKeyInformer constructs a new informer for AppsyncAPIKey type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAppsyncApiKeyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAppsyncApiKeyInformer(client, resyncPeriod, indexers, nil)
+func NewAppsyncAPIKeyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAppsyncAPIKeyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredAppsyncApiKeyInformer constructs a new informer for AppsyncApiKey type.
+// NewFilteredAppsyncAPIKeyInformer constructs a new informer for AppsyncAPIKey type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAppsyncApiKeyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAppsyncAPIKeyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AppsyncApiKeys().List(options)
+				return client.AwsV1alpha1().AppsyncAPIKeys(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AppsyncApiKeys().Watch(options)
+				return client.AwsV1alpha1().AppsyncAPIKeys(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.AppsyncApiKey{},
+		&awsv1alpha1.AppsyncAPIKey{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *appsyncApiKeyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAppsyncApiKeyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *appsyncAPIKeyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredAppsyncAPIKeyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *appsyncApiKeyInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.AppsyncApiKey{}, f.defaultInformer)
+func (f *appsyncAPIKeyInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.AppsyncAPIKey{}, f.defaultInformer)
 }
 
-func (f *appsyncApiKeyInformer) Lister() v1alpha1.AppsyncApiKeyLister {
-	return v1alpha1.NewAppsyncApiKeyLister(f.Informer().GetIndexer())
+func (f *appsyncAPIKeyInformer) Lister() v1alpha1.AppsyncAPIKeyLister {
+	return v1alpha1.NewAppsyncAPIKeyLister(f.Informer().GetIndexer())
 }

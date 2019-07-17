@@ -397,28 +397,64 @@ spec:
           type: object
         spec:
           properties:
-            budget_type:
+            budgetType:
               type: string
-            limit_amount:
+            limitAmount:
               type: string
-            limit_unit:
+            limitUnit:
               type: string
             notification:
-              items: {}
+              items:
+                properties:
+                  comparisonOperator:
+                    type: string
+                  notificationType:
+                    type: string
+                  subscriberEmailAddresses:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                  subscriberSnsTopicArns:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                  threshold:
+                    description: A Number represents a JSON number literal.
+                    type: string
+                  thresholdType:
+                    type: string
+                required:
+                - comparisonOperator
+                - notificationType
+                - threshold
+                - thresholdType
+                type: object
               type: array
               uniqueItems: true
-            time_period_end:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            timePeriodEnd:
               type: string
-            time_period_start:
+            timePeriodStart:
               type: string
-            time_unit:
+            timeUnit:
               type: string
           required:
-          - budget_type
-          - limit_amount
-          - limit_unit
-          - time_period_start
-          - time_unit
+          - budgetType
+          - limitAmount
+          - limitUnit
+          - providerRef
+          - timePeriodStart
+          - timeUnit
           type: object
         status:
           properties:
@@ -429,6 +465,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

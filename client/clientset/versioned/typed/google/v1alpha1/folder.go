@@ -32,7 +32,7 @@ import (
 // FoldersGetter has a method to return a FolderInterface.
 // A group's client should implement this interface.
 type FoldersGetter interface {
-	Folders() FolderInterface
+	Folders(namespace string) FolderInterface
 }
 
 // FolderInterface has methods to work with Folder resources.
@@ -52,12 +52,14 @@ type FolderInterface interface {
 // folders implements FolderInterface
 type folders struct {
 	client rest.Interface
+	ns     string
 }
 
 // newFolders returns a Folders
-func newFolders(c *GoogleV1alpha1Client) *folders {
+func newFolders(c *GoogleV1alpha1Client, namespace string) *folders {
 	return &folders{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newFolders(c *GoogleV1alpha1Client) *folders {
 func (c *folders) Get(name string, options v1.GetOptions) (result *v1alpha1.Folder, err error) {
 	result = &v1alpha1.Folder{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("folders").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *folders) List(opts v1.ListOptions) (result *v1alpha1.FolderList, err er
 	}
 	result = &v1alpha1.FolderList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("folders").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *folders) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("folders").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *folders) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *folders) Create(folder *v1alpha1.Folder) (result *v1alpha1.Folder, err error) {
 	result = &v1alpha1.Folder{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("folders").
 		Body(folder).
 		Do().
@@ -118,6 +124,7 @@ func (c *folders) Create(folder *v1alpha1.Folder) (result *v1alpha1.Folder, err 
 func (c *folders) Update(folder *v1alpha1.Folder) (result *v1alpha1.Folder, err error) {
 	result = &v1alpha1.Folder{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("folders").
 		Name(folder.Name).
 		Body(folder).
@@ -132,6 +139,7 @@ func (c *folders) Update(folder *v1alpha1.Folder) (result *v1alpha1.Folder, err 
 func (c *folders) UpdateStatus(folder *v1alpha1.Folder) (result *v1alpha1.Folder, err error) {
 	result = &v1alpha1.Folder{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("folders").
 		Name(folder.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *folders) UpdateStatus(folder *v1alpha1.Folder) (result *v1alpha1.Folder
 // Delete takes name of the folder and deletes it. Returns an error if one occurs.
 func (c *folders) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("folders").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *folders) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("folders").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *folders) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Lis
 func (c *folders) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Folder, err error) {
 	result = &v1alpha1.Folder{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("folders").
 		SubResource(subresources...).
 		Name(name).

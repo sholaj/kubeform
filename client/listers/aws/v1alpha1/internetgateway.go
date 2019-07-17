@@ -29,8 +29,8 @@ import (
 type InternetGatewayLister interface {
 	// List lists all InternetGateways in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.InternetGateway, err error)
-	// Get retrieves the InternetGateway from the index for a given name.
-	Get(name string) (*v1alpha1.InternetGateway, error)
+	// InternetGateways returns an object that can list and get InternetGateways.
+	InternetGateways(namespace string) InternetGatewayNamespaceLister
 	InternetGatewayListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *internetGatewayLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the InternetGateway from the index for a given name.
-func (s *internetGatewayLister) Get(name string) (*v1alpha1.InternetGateway, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// InternetGateways returns an object that can list and get InternetGateways.
+func (s *internetGatewayLister) InternetGateways(namespace string) InternetGatewayNamespaceLister {
+	return internetGatewayNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// InternetGatewayNamespaceLister helps list and get InternetGateways.
+type InternetGatewayNamespaceLister interface {
+	// List lists all InternetGateways in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.InternetGateway, err error)
+	// Get retrieves the InternetGateway from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.InternetGateway, error)
+	InternetGatewayNamespaceListerExpansion
+}
+
+// internetGatewayNamespaceLister implements the InternetGatewayNamespaceLister
+// interface.
+type internetGatewayNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all InternetGateways in the indexer for a given namespace.
+func (s internetGatewayNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.InternetGateway, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.InternetGateway))
+	})
+	return ret, err
+}
+
+// Get retrieves the InternetGateway from the indexer for a given namespace and name.
+func (s internetGatewayNamespaceLister) Get(name string) (*v1alpha1.InternetGateway, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

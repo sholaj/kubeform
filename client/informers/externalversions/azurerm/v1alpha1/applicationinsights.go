@@ -41,32 +41,33 @@ type ApplicationInsightsInformer interface {
 type applicationInsightsInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewApplicationInsightsInformer constructs a new informer for ApplicationInsights type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewApplicationInsightsInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredApplicationInsightsInformer(client, resyncPeriod, indexers, nil)
+func NewApplicationInsightsInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredApplicationInsightsInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredApplicationInsightsInformer constructs a new informer for ApplicationInsights type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredApplicationInsightsInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredApplicationInsightsInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ApplicationInsightses().List(options)
+				return client.AzurermV1alpha1().ApplicationInsightses(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ApplicationInsightses().Watch(options)
+				return client.AzurermV1alpha1().ApplicationInsightses(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.ApplicationInsights{},
@@ -76,7 +77,7 @@ func NewFilteredApplicationInsightsInformer(client versioned.Interface, resyncPe
 }
 
 func (f *applicationInsightsInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredApplicationInsightsInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredApplicationInsightsInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *applicationInsightsInformer) Informer() cache.SharedIndexInformer {

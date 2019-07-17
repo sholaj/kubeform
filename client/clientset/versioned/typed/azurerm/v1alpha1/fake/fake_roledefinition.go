@@ -31,6 +31,7 @@ import (
 // FakeRoleDefinitions implements RoleDefinitionInterface
 type FakeRoleDefinitions struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var roledefinitionsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "roledefinitions"}
@@ -40,7 +41,8 @@ var roledefinitionsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com",
 // Get takes name of the roleDefinition, and returns the corresponding roleDefinition object, and an error if there is any.
 func (c *FakeRoleDefinitions) Get(name string, options v1.GetOptions) (result *v1alpha1.RoleDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(roledefinitionsResource, name), &v1alpha1.RoleDefinition{})
+		Invokes(testing.NewGetAction(roledefinitionsResource, c.ns, name), &v1alpha1.RoleDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRoleDefinitions) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of RoleDefinitions that match those selectors.
 func (c *FakeRoleDefinitions) List(opts v1.ListOptions) (result *v1alpha1.RoleDefinitionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(roledefinitionsResource, roledefinitionsKind, opts), &v1alpha1.RoleDefinitionList{})
+		Invokes(testing.NewListAction(roledefinitionsResource, roledefinitionsKind, c.ns, opts), &v1alpha1.RoleDefinitionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRoleDefinitions) List(opts v1.ListOptions) (result *v1alpha1.RoleDe
 // Watch returns a watch.Interface that watches the requested roleDefinitions.
 func (c *FakeRoleDefinitions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(roledefinitionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(roledefinitionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a roleDefinition and creates it.  Returns the server's representation of the roleDefinition, and an error, if there is any.
 func (c *FakeRoleDefinitions) Create(roleDefinition *v1alpha1.RoleDefinition) (result *v1alpha1.RoleDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(roledefinitionsResource, roleDefinition), &v1alpha1.RoleDefinition{})
+		Invokes(testing.NewCreateAction(roledefinitionsResource, c.ns, roleDefinition), &v1alpha1.RoleDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRoleDefinitions) Create(roleDefinition *v1alpha1.RoleDefinition) (r
 // Update takes the representation of a roleDefinition and updates it. Returns the server's representation of the roleDefinition, and an error, if there is any.
 func (c *FakeRoleDefinitions) Update(roleDefinition *v1alpha1.RoleDefinition) (result *v1alpha1.RoleDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(roledefinitionsResource, roleDefinition), &v1alpha1.RoleDefinition{})
+		Invokes(testing.NewUpdateAction(roledefinitionsResource, c.ns, roleDefinition), &v1alpha1.RoleDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRoleDefinitions) Update(roleDefinition *v1alpha1.RoleDefinition) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRoleDefinitions) UpdateStatus(roleDefinition *v1alpha1.RoleDefinition) (*v1alpha1.RoleDefinition, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(roledefinitionsResource, "status", roleDefinition), &v1alpha1.RoleDefinition{})
+		Invokes(testing.NewUpdateSubresourceAction(roledefinitionsResource, "status", c.ns, roleDefinition), &v1alpha1.RoleDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRoleDefinitions) UpdateStatus(roleDefinition *v1alpha1.RoleDefiniti
 // Delete takes name of the roleDefinition and deletes it. Returns an error if one occurs.
 func (c *FakeRoleDefinitions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(roledefinitionsResource, name), &v1alpha1.RoleDefinition{})
+		Invokes(testing.NewDeleteAction(roledefinitionsResource, c.ns, name), &v1alpha1.RoleDefinition{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRoleDefinitions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(roledefinitionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(roledefinitionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.RoleDefinitionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRoleDefinitions) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched roleDefinition.
 func (c *FakeRoleDefinitions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RoleDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(roledefinitionsResource, name, pt, data, subresources...), &v1alpha1.RoleDefinition{})
+		Invokes(testing.NewPatchSubresourceAction(roledefinitionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.RoleDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}

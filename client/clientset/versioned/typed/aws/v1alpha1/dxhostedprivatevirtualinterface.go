@@ -32,7 +32,7 @@ import (
 // DxHostedPrivateVirtualInterfacesGetter has a method to return a DxHostedPrivateVirtualInterfaceInterface.
 // A group's client should implement this interface.
 type DxHostedPrivateVirtualInterfacesGetter interface {
-	DxHostedPrivateVirtualInterfaces() DxHostedPrivateVirtualInterfaceInterface
+	DxHostedPrivateVirtualInterfaces(namespace string) DxHostedPrivateVirtualInterfaceInterface
 }
 
 // DxHostedPrivateVirtualInterfaceInterface has methods to work with DxHostedPrivateVirtualInterface resources.
@@ -52,12 +52,14 @@ type DxHostedPrivateVirtualInterfaceInterface interface {
 // dxHostedPrivateVirtualInterfaces implements DxHostedPrivateVirtualInterfaceInterface
 type dxHostedPrivateVirtualInterfaces struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDxHostedPrivateVirtualInterfaces returns a DxHostedPrivateVirtualInterfaces
-func newDxHostedPrivateVirtualInterfaces(c *AwsV1alpha1Client) *dxHostedPrivateVirtualInterfaces {
+func newDxHostedPrivateVirtualInterfaces(c *AwsV1alpha1Client, namespace string) *dxHostedPrivateVirtualInterfaces {
 	return &dxHostedPrivateVirtualInterfaces{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDxHostedPrivateVirtualInterfaces(c *AwsV1alpha1Client) *dxHostedPrivateV
 func (c *dxHostedPrivateVirtualInterfaces) Get(name string, options v1.GetOptions) (result *v1alpha1.DxHostedPrivateVirtualInterface, err error) {
 	result = &v1alpha1.DxHostedPrivateVirtualInterface{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dxhostedprivatevirtualinterfaces").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dxHostedPrivateVirtualInterfaces) List(opts v1.ListOptions) (result *v1
 	}
 	result = &v1alpha1.DxHostedPrivateVirtualInterfaceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dxhostedprivatevirtualinterfaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dxHostedPrivateVirtualInterfaces) Watch(opts v1.ListOptions) (watch.Int
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dxhostedprivatevirtualinterfaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dxHostedPrivateVirtualInterfaces) Watch(opts v1.ListOptions) (watch.Int
 func (c *dxHostedPrivateVirtualInterfaces) Create(dxHostedPrivateVirtualInterface *v1alpha1.DxHostedPrivateVirtualInterface) (result *v1alpha1.DxHostedPrivateVirtualInterface, err error) {
 	result = &v1alpha1.DxHostedPrivateVirtualInterface{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dxhostedprivatevirtualinterfaces").
 		Body(dxHostedPrivateVirtualInterface).
 		Do().
@@ -118,6 +124,7 @@ func (c *dxHostedPrivateVirtualInterfaces) Create(dxHostedPrivateVirtualInterfac
 func (c *dxHostedPrivateVirtualInterfaces) Update(dxHostedPrivateVirtualInterface *v1alpha1.DxHostedPrivateVirtualInterface) (result *v1alpha1.DxHostedPrivateVirtualInterface, err error) {
 	result = &v1alpha1.DxHostedPrivateVirtualInterface{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dxhostedprivatevirtualinterfaces").
 		Name(dxHostedPrivateVirtualInterface.Name).
 		Body(dxHostedPrivateVirtualInterface).
@@ -132,6 +139,7 @@ func (c *dxHostedPrivateVirtualInterfaces) Update(dxHostedPrivateVirtualInterfac
 func (c *dxHostedPrivateVirtualInterfaces) UpdateStatus(dxHostedPrivateVirtualInterface *v1alpha1.DxHostedPrivateVirtualInterface) (result *v1alpha1.DxHostedPrivateVirtualInterface, err error) {
 	result = &v1alpha1.DxHostedPrivateVirtualInterface{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dxhostedprivatevirtualinterfaces").
 		Name(dxHostedPrivateVirtualInterface.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dxHostedPrivateVirtualInterfaces) UpdateStatus(dxHostedPrivateVirtualIn
 // Delete takes name of the dxHostedPrivateVirtualInterface and deletes it. Returns an error if one occurs.
 func (c *dxHostedPrivateVirtualInterfaces) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dxhostedprivatevirtualinterfaces").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dxHostedPrivateVirtualInterfaces) DeleteCollection(options *v1.DeleteOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dxhostedprivatevirtualinterfaces").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dxHostedPrivateVirtualInterfaces) DeleteCollection(options *v1.DeleteOp
 func (c *dxHostedPrivateVirtualInterfaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DxHostedPrivateVirtualInterface, err error) {
 	result = &v1alpha1.DxHostedPrivateVirtualInterface{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dxhostedprivatevirtualinterfaces").
 		SubResource(subresources...).
 		Name(name).

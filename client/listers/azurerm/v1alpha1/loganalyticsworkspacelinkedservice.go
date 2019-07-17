@@ -29,8 +29,8 @@ import (
 type LogAnalyticsWorkspaceLinkedServiceLister interface {
 	// List lists all LogAnalyticsWorkspaceLinkedServices in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LogAnalyticsWorkspaceLinkedService, err error)
-	// Get retrieves the LogAnalyticsWorkspaceLinkedService from the index for a given name.
-	Get(name string) (*v1alpha1.LogAnalyticsWorkspaceLinkedService, error)
+	// LogAnalyticsWorkspaceLinkedServices returns an object that can list and get LogAnalyticsWorkspaceLinkedServices.
+	LogAnalyticsWorkspaceLinkedServices(namespace string) LogAnalyticsWorkspaceLinkedServiceNamespaceLister
 	LogAnalyticsWorkspaceLinkedServiceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *logAnalyticsWorkspaceLinkedServiceLister) List(selector labels.Selector
 	return ret, err
 }
 
-// Get retrieves the LogAnalyticsWorkspaceLinkedService from the index for a given name.
-func (s *logAnalyticsWorkspaceLinkedServiceLister) Get(name string) (*v1alpha1.LogAnalyticsWorkspaceLinkedService, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LogAnalyticsWorkspaceLinkedServices returns an object that can list and get LogAnalyticsWorkspaceLinkedServices.
+func (s *logAnalyticsWorkspaceLinkedServiceLister) LogAnalyticsWorkspaceLinkedServices(namespace string) LogAnalyticsWorkspaceLinkedServiceNamespaceLister {
+	return logAnalyticsWorkspaceLinkedServiceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LogAnalyticsWorkspaceLinkedServiceNamespaceLister helps list and get LogAnalyticsWorkspaceLinkedServices.
+type LogAnalyticsWorkspaceLinkedServiceNamespaceLister interface {
+	// List lists all LogAnalyticsWorkspaceLinkedServices in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LogAnalyticsWorkspaceLinkedService, err error)
+	// Get retrieves the LogAnalyticsWorkspaceLinkedService from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LogAnalyticsWorkspaceLinkedService, error)
+	LogAnalyticsWorkspaceLinkedServiceNamespaceListerExpansion
+}
+
+// logAnalyticsWorkspaceLinkedServiceNamespaceLister implements the LogAnalyticsWorkspaceLinkedServiceNamespaceLister
+// interface.
+type logAnalyticsWorkspaceLinkedServiceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LogAnalyticsWorkspaceLinkedServices in the indexer for a given namespace.
+func (s logAnalyticsWorkspaceLinkedServiceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LogAnalyticsWorkspaceLinkedService, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LogAnalyticsWorkspaceLinkedService))
+	})
+	return ret, err
+}
+
+// Get retrieves the LogAnalyticsWorkspaceLinkedService from the indexer for a given namespace and name.
+func (s logAnalyticsWorkspaceLinkedServiceNamespaceLister) Get(name string) (*v1alpha1.LogAnalyticsWorkspaceLinkedService, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

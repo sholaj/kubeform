@@ -41,32 +41,33 @@ type EventgridEventSubscriptionInformer interface {
 type eventgridEventSubscriptionInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewEventgridEventSubscriptionInformer constructs a new informer for EventgridEventSubscription type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewEventgridEventSubscriptionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredEventgridEventSubscriptionInformer(client, resyncPeriod, indexers, nil)
+func NewEventgridEventSubscriptionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredEventgridEventSubscriptionInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredEventgridEventSubscriptionInformer constructs a new informer for EventgridEventSubscription type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredEventgridEventSubscriptionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredEventgridEventSubscriptionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().EventgridEventSubscriptions().List(options)
+				return client.AzurermV1alpha1().EventgridEventSubscriptions(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().EventgridEventSubscriptions().Watch(options)
+				return client.AzurermV1alpha1().EventgridEventSubscriptions(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.EventgridEventSubscription{},
@@ -76,7 +77,7 @@ func NewFilteredEventgridEventSubscriptionInformer(client versioned.Interface, r
 }
 
 func (f *eventgridEventSubscriptionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredEventgridEventSubscriptionInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredEventgridEventSubscriptionInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *eventgridEventSubscriptionInformer) Informer() cache.SharedIndexInformer {

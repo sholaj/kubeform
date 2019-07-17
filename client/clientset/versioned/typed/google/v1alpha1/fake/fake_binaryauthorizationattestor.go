@@ -31,6 +31,7 @@ import (
 // FakeBinaryAuthorizationAttestors implements BinaryAuthorizationAttestorInterface
 type FakeBinaryAuthorizationAttestors struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var binaryauthorizationattestorsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "binaryauthorizationattestors"}
@@ -40,7 +41,8 @@ var binaryauthorizationattestorsKind = schema.GroupVersionKind{Group: "google.ku
 // Get takes name of the binaryAuthorizationAttestor, and returns the corresponding binaryAuthorizationAttestor object, and an error if there is any.
 func (c *FakeBinaryAuthorizationAttestors) Get(name string, options v1.GetOptions) (result *v1alpha1.BinaryAuthorizationAttestor, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(binaryauthorizationattestorsResource, name), &v1alpha1.BinaryAuthorizationAttestor{})
+		Invokes(testing.NewGetAction(binaryauthorizationattestorsResource, c.ns, name), &v1alpha1.BinaryAuthorizationAttestor{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeBinaryAuthorizationAttestors) Get(name string, options v1.GetOption
 // List takes label and field selectors, and returns the list of BinaryAuthorizationAttestors that match those selectors.
 func (c *FakeBinaryAuthorizationAttestors) List(opts v1.ListOptions) (result *v1alpha1.BinaryAuthorizationAttestorList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(binaryauthorizationattestorsResource, binaryauthorizationattestorsKind, opts), &v1alpha1.BinaryAuthorizationAttestorList{})
+		Invokes(testing.NewListAction(binaryauthorizationattestorsResource, binaryauthorizationattestorsKind, c.ns, opts), &v1alpha1.BinaryAuthorizationAttestorList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeBinaryAuthorizationAttestors) List(opts v1.ListOptions) (result *v1
 // Watch returns a watch.Interface that watches the requested binaryAuthorizationAttestors.
 func (c *FakeBinaryAuthorizationAttestors) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(binaryauthorizationattestorsResource, opts))
+		InvokesWatch(testing.NewWatchAction(binaryauthorizationattestorsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a binaryAuthorizationAttestor and creates it.  Returns the server's representation of the binaryAuthorizationAttestor, and an error, if there is any.
 func (c *FakeBinaryAuthorizationAttestors) Create(binaryAuthorizationAttestor *v1alpha1.BinaryAuthorizationAttestor) (result *v1alpha1.BinaryAuthorizationAttestor, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(binaryauthorizationattestorsResource, binaryAuthorizationAttestor), &v1alpha1.BinaryAuthorizationAttestor{})
+		Invokes(testing.NewCreateAction(binaryauthorizationattestorsResource, c.ns, binaryAuthorizationAttestor), &v1alpha1.BinaryAuthorizationAttestor{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeBinaryAuthorizationAttestors) Create(binaryAuthorizationAttestor *v
 // Update takes the representation of a binaryAuthorizationAttestor and updates it. Returns the server's representation of the binaryAuthorizationAttestor, and an error, if there is any.
 func (c *FakeBinaryAuthorizationAttestors) Update(binaryAuthorizationAttestor *v1alpha1.BinaryAuthorizationAttestor) (result *v1alpha1.BinaryAuthorizationAttestor, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(binaryauthorizationattestorsResource, binaryAuthorizationAttestor), &v1alpha1.BinaryAuthorizationAttestor{})
+		Invokes(testing.NewUpdateAction(binaryauthorizationattestorsResource, c.ns, binaryAuthorizationAttestor), &v1alpha1.BinaryAuthorizationAttestor{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeBinaryAuthorizationAttestors) Update(binaryAuthorizationAttestor *v
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeBinaryAuthorizationAttestors) UpdateStatus(binaryAuthorizationAttestor *v1alpha1.BinaryAuthorizationAttestor) (*v1alpha1.BinaryAuthorizationAttestor, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(binaryauthorizationattestorsResource, "status", binaryAuthorizationAttestor), &v1alpha1.BinaryAuthorizationAttestor{})
+		Invokes(testing.NewUpdateSubresourceAction(binaryauthorizationattestorsResource, "status", c.ns, binaryAuthorizationAttestor), &v1alpha1.BinaryAuthorizationAttestor{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeBinaryAuthorizationAttestors) UpdateStatus(binaryAuthorizationAttes
 // Delete takes name of the binaryAuthorizationAttestor and deletes it. Returns an error if one occurs.
 func (c *FakeBinaryAuthorizationAttestors) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(binaryauthorizationattestorsResource, name), &v1alpha1.BinaryAuthorizationAttestor{})
+		Invokes(testing.NewDeleteAction(binaryauthorizationattestorsResource, c.ns, name), &v1alpha1.BinaryAuthorizationAttestor{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeBinaryAuthorizationAttestors) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(binaryauthorizationattestorsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(binaryauthorizationattestorsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.BinaryAuthorizationAttestorList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeBinaryAuthorizationAttestors) DeleteCollection(options *v1.DeleteOp
 // Patch applies the patch and returns the patched binaryAuthorizationAttestor.
 func (c *FakeBinaryAuthorizationAttestors) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BinaryAuthorizationAttestor, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(binaryauthorizationattestorsResource, name, pt, data, subresources...), &v1alpha1.BinaryAuthorizationAttestor{})
+		Invokes(testing.NewPatchSubresourceAction(binaryauthorizationattestorsResource, c.ns, name, pt, data, subresources...), &v1alpha1.BinaryAuthorizationAttestor{})
+
 	if obj == nil {
 		return nil, err
 	}

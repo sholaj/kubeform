@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// FakeServiceDiscoveryPublicDnsNamespaces implements ServiceDiscoveryPublicDnsNamespaceInterface
-type FakeServiceDiscoveryPublicDnsNamespaces struct {
+// FakeServiceDiscoveryPublicDNSNamespaces implements ServiceDiscoveryPublicDNSNamespaceInterface
+type FakeServiceDiscoveryPublicDNSNamespaces struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var servicediscoverypublicdnsnamespacesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "servicediscoverypublicdnsnamespaces"}
 
-var servicediscoverypublicdnsnamespacesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "ServiceDiscoveryPublicDnsNamespace"}
+var servicediscoverypublicdnsnamespacesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "ServiceDiscoveryPublicDNSNamespace"}
 
-// Get takes name of the serviceDiscoveryPublicDnsNamespace, and returns the corresponding serviceDiscoveryPublicDnsNamespace object, and an error if there is any.
-func (c *FakeServiceDiscoveryPublicDnsNamespaces) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceDiscoveryPublicDnsNamespace, err error) {
+// Get takes name of the serviceDiscoveryPublicDNSNamespace, and returns the corresponding serviceDiscoveryPublicDNSNamespace object, and an error if there is any.
+func (c *FakeServiceDiscoveryPublicDNSNamespaces) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceDiscoveryPublicDNSNamespace, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(servicediscoverypublicdnsnamespacesResource, name), &v1alpha1.ServiceDiscoveryPublicDnsNamespace{})
+		Invokes(testing.NewGetAction(servicediscoverypublicdnsnamespacesResource, c.ns, name), &v1alpha1.ServiceDiscoveryPublicDNSNamespace{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ServiceDiscoveryPublicDnsNamespace), err
+	return obj.(*v1alpha1.ServiceDiscoveryPublicDNSNamespace), err
 }
 
-// List takes label and field selectors, and returns the list of ServiceDiscoveryPublicDnsNamespaces that match those selectors.
-func (c *FakeServiceDiscoveryPublicDnsNamespaces) List(opts v1.ListOptions) (result *v1alpha1.ServiceDiscoveryPublicDnsNamespaceList, err error) {
+// List takes label and field selectors, and returns the list of ServiceDiscoveryPublicDNSNamespaces that match those selectors.
+func (c *FakeServiceDiscoveryPublicDNSNamespaces) List(opts v1.ListOptions) (result *v1alpha1.ServiceDiscoveryPublicDNSNamespaceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(servicediscoverypublicdnsnamespacesResource, servicediscoverypublicdnsnamespacesKind, opts), &v1alpha1.ServiceDiscoveryPublicDnsNamespaceList{})
+		Invokes(testing.NewListAction(servicediscoverypublicdnsnamespacesResource, servicediscoverypublicdnsnamespacesKind, c.ns, opts), &v1alpha1.ServiceDiscoveryPublicDNSNamespaceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeServiceDiscoveryPublicDnsNamespaces) List(opts v1.ListOptions) (res
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.ServiceDiscoveryPublicDnsNamespaceList{ListMeta: obj.(*v1alpha1.ServiceDiscoveryPublicDnsNamespaceList).ListMeta}
-	for _, item := range obj.(*v1alpha1.ServiceDiscoveryPublicDnsNamespaceList).Items {
+	list := &v1alpha1.ServiceDiscoveryPublicDNSNamespaceList{ListMeta: obj.(*v1alpha1.ServiceDiscoveryPublicDNSNamespaceList).ListMeta}
+	for _, item := range obj.(*v1alpha1.ServiceDiscoveryPublicDNSNamespaceList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeServiceDiscoveryPublicDnsNamespaces) List(opts v1.ListOptions) (res
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested serviceDiscoveryPublicDnsNamespaces.
-func (c *FakeServiceDiscoveryPublicDnsNamespaces) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested serviceDiscoveryPublicDNSNamespaces.
+func (c *FakeServiceDiscoveryPublicDNSNamespaces) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(servicediscoverypublicdnsnamespacesResource, opts))
+		InvokesWatch(testing.NewWatchAction(servicediscoverypublicdnsnamespacesResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a serviceDiscoveryPublicDnsNamespace and creates it.  Returns the server's representation of the serviceDiscoveryPublicDnsNamespace, and an error, if there is any.
-func (c *FakeServiceDiscoveryPublicDnsNamespaces) Create(serviceDiscoveryPublicDnsNamespace *v1alpha1.ServiceDiscoveryPublicDnsNamespace) (result *v1alpha1.ServiceDiscoveryPublicDnsNamespace, err error) {
+// Create takes the representation of a serviceDiscoveryPublicDNSNamespace and creates it.  Returns the server's representation of the serviceDiscoveryPublicDNSNamespace, and an error, if there is any.
+func (c *FakeServiceDiscoveryPublicDNSNamespaces) Create(serviceDiscoveryPublicDNSNamespace *v1alpha1.ServiceDiscoveryPublicDNSNamespace) (result *v1alpha1.ServiceDiscoveryPublicDNSNamespace, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(servicediscoverypublicdnsnamespacesResource, serviceDiscoveryPublicDnsNamespace), &v1alpha1.ServiceDiscoveryPublicDnsNamespace{})
+		Invokes(testing.NewCreateAction(servicediscoverypublicdnsnamespacesResource, c.ns, serviceDiscoveryPublicDNSNamespace), &v1alpha1.ServiceDiscoveryPublicDNSNamespace{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ServiceDiscoveryPublicDnsNamespace), err
+	return obj.(*v1alpha1.ServiceDiscoveryPublicDNSNamespace), err
 }
 
-// Update takes the representation of a serviceDiscoveryPublicDnsNamespace and updates it. Returns the server's representation of the serviceDiscoveryPublicDnsNamespace, and an error, if there is any.
-func (c *FakeServiceDiscoveryPublicDnsNamespaces) Update(serviceDiscoveryPublicDnsNamespace *v1alpha1.ServiceDiscoveryPublicDnsNamespace) (result *v1alpha1.ServiceDiscoveryPublicDnsNamespace, err error) {
+// Update takes the representation of a serviceDiscoveryPublicDNSNamespace and updates it. Returns the server's representation of the serviceDiscoveryPublicDNSNamespace, and an error, if there is any.
+func (c *FakeServiceDiscoveryPublicDNSNamespaces) Update(serviceDiscoveryPublicDNSNamespace *v1alpha1.ServiceDiscoveryPublicDNSNamespace) (result *v1alpha1.ServiceDiscoveryPublicDNSNamespace, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(servicediscoverypublicdnsnamespacesResource, serviceDiscoveryPublicDnsNamespace), &v1alpha1.ServiceDiscoveryPublicDnsNamespace{})
+		Invokes(testing.NewUpdateAction(servicediscoverypublicdnsnamespacesResource, c.ns, serviceDiscoveryPublicDNSNamespace), &v1alpha1.ServiceDiscoveryPublicDNSNamespace{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ServiceDiscoveryPublicDnsNamespace), err
+	return obj.(*v1alpha1.ServiceDiscoveryPublicDNSNamespace), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeServiceDiscoveryPublicDnsNamespaces) UpdateStatus(serviceDiscoveryPublicDnsNamespace *v1alpha1.ServiceDiscoveryPublicDnsNamespace) (*v1alpha1.ServiceDiscoveryPublicDnsNamespace, error) {
+func (c *FakeServiceDiscoveryPublicDNSNamespaces) UpdateStatus(serviceDiscoveryPublicDNSNamespace *v1alpha1.ServiceDiscoveryPublicDNSNamespace) (*v1alpha1.ServiceDiscoveryPublicDNSNamespace, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(servicediscoverypublicdnsnamespacesResource, "status", serviceDiscoveryPublicDnsNamespace), &v1alpha1.ServiceDiscoveryPublicDnsNamespace{})
+		Invokes(testing.NewUpdateSubresourceAction(servicediscoverypublicdnsnamespacesResource, "status", c.ns, serviceDiscoveryPublicDNSNamespace), &v1alpha1.ServiceDiscoveryPublicDNSNamespace{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ServiceDiscoveryPublicDnsNamespace), err
+	return obj.(*v1alpha1.ServiceDiscoveryPublicDNSNamespace), err
 }
 
-// Delete takes name of the serviceDiscoveryPublicDnsNamespace and deletes it. Returns an error if one occurs.
-func (c *FakeServiceDiscoveryPublicDnsNamespaces) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the serviceDiscoveryPublicDNSNamespace and deletes it. Returns an error if one occurs.
+func (c *FakeServiceDiscoveryPublicDNSNamespaces) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(servicediscoverypublicdnsnamespacesResource, name), &v1alpha1.ServiceDiscoveryPublicDnsNamespace{})
+		Invokes(testing.NewDeleteAction(servicediscoverypublicdnsnamespacesResource, c.ns, name), &v1alpha1.ServiceDiscoveryPublicDNSNamespace{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeServiceDiscoveryPublicDnsNamespaces) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(servicediscoverypublicdnsnamespacesResource, listOptions)
+func (c *FakeServiceDiscoveryPublicDNSNamespaces) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(servicediscoverypublicdnsnamespacesResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.ServiceDiscoveryPublicDnsNamespaceList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.ServiceDiscoveryPublicDNSNamespaceList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched serviceDiscoveryPublicDnsNamespace.
-func (c *FakeServiceDiscoveryPublicDnsNamespaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceDiscoveryPublicDnsNamespace, err error) {
+// Patch applies the patch and returns the patched serviceDiscoveryPublicDNSNamespace.
+func (c *FakeServiceDiscoveryPublicDNSNamespaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceDiscoveryPublicDNSNamespace, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(servicediscoverypublicdnsnamespacesResource, name, pt, data, subresources...), &v1alpha1.ServiceDiscoveryPublicDnsNamespace{})
+		Invokes(testing.NewPatchSubresourceAction(servicediscoverypublicdnsnamespacesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ServiceDiscoveryPublicDNSNamespace{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ServiceDiscoveryPublicDnsNamespace), err
+	return obj.(*v1alpha1.ServiceDiscoveryPublicDNSNamespace), err
 }

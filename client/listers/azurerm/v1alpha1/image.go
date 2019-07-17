@@ -29,8 +29,8 @@ import (
 type ImageLister interface {
 	// List lists all Images in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Image, err error)
-	// Get retrieves the Image from the index for a given name.
-	Get(name string) (*v1alpha1.Image, error)
+	// Images returns an object that can list and get Images.
+	Images(namespace string) ImageNamespaceLister
 	ImageListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *imageLister) List(selector labels.Selector) (ret []*v1alpha1.Image, err
 	return ret, err
 }
 
-// Get retrieves the Image from the index for a given name.
-func (s *imageLister) Get(name string) (*v1alpha1.Image, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Images returns an object that can list and get Images.
+func (s *imageLister) Images(namespace string) ImageNamespaceLister {
+	return imageNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ImageNamespaceLister helps list and get Images.
+type ImageNamespaceLister interface {
+	// List lists all Images in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Image, err error)
+	// Get retrieves the Image from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Image, error)
+	ImageNamespaceListerExpansion
+}
+
+// imageNamespaceLister implements the ImageNamespaceLister
+// interface.
+type imageNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Images in the indexer for a given namespace.
+func (s imageNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Image, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Image))
+	})
+	return ret, err
+}
+
+// Get retrieves the Image from the indexer for a given namespace and name.
+func (s imageNamespaceLister) Get(name string) (*v1alpha1.Image, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

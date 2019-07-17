@@ -32,7 +32,7 @@ import (
 // BackupSelectionsGetter has a method to return a BackupSelectionInterface.
 // A group's client should implement this interface.
 type BackupSelectionsGetter interface {
-	BackupSelections() BackupSelectionInterface
+	BackupSelections(namespace string) BackupSelectionInterface
 }
 
 // BackupSelectionInterface has methods to work with BackupSelection resources.
@@ -52,12 +52,14 @@ type BackupSelectionInterface interface {
 // backupSelections implements BackupSelectionInterface
 type backupSelections struct {
 	client rest.Interface
+	ns     string
 }
 
 // newBackupSelections returns a BackupSelections
-func newBackupSelections(c *AwsV1alpha1Client) *backupSelections {
+func newBackupSelections(c *AwsV1alpha1Client, namespace string) *backupSelections {
 	return &backupSelections{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newBackupSelections(c *AwsV1alpha1Client) *backupSelections {
 func (c *backupSelections) Get(name string, options v1.GetOptions) (result *v1alpha1.BackupSelection, err error) {
 	result = &v1alpha1.BackupSelection{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("backupselections").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *backupSelections) List(opts v1.ListOptions) (result *v1alpha1.BackupSel
 	}
 	result = &v1alpha1.BackupSelectionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("backupselections").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *backupSelections) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("backupselections").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *backupSelections) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *backupSelections) Create(backupSelection *v1alpha1.BackupSelection) (result *v1alpha1.BackupSelection, err error) {
 	result = &v1alpha1.BackupSelection{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("backupselections").
 		Body(backupSelection).
 		Do().
@@ -118,6 +124,7 @@ func (c *backupSelections) Create(backupSelection *v1alpha1.BackupSelection) (re
 func (c *backupSelections) Update(backupSelection *v1alpha1.BackupSelection) (result *v1alpha1.BackupSelection, err error) {
 	result = &v1alpha1.BackupSelection{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("backupselections").
 		Name(backupSelection.Name).
 		Body(backupSelection).
@@ -132,6 +139,7 @@ func (c *backupSelections) Update(backupSelection *v1alpha1.BackupSelection) (re
 func (c *backupSelections) UpdateStatus(backupSelection *v1alpha1.BackupSelection) (result *v1alpha1.BackupSelection, err error) {
 	result = &v1alpha1.BackupSelection{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("backupselections").
 		Name(backupSelection.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *backupSelections) UpdateStatus(backupSelection *v1alpha1.BackupSelectio
 // Delete takes name of the backupSelection and deletes it. Returns an error if one occurs.
 func (c *backupSelections) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("backupselections").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *backupSelections) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("backupselections").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *backupSelections) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *backupSelections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BackupSelection, err error) {
 	result = &v1alpha1.BackupSelection{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("backupselections").
 		SubResource(subresources...).
 		Name(name).

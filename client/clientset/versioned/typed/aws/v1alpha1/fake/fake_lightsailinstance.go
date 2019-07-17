@@ -31,6 +31,7 @@ import (
 // FakeLightsailInstances implements LightsailInstanceInterface
 type FakeLightsailInstances struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var lightsailinstancesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "lightsailinstances"}
@@ -40,7 +41,8 @@ var lightsailinstancesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", 
 // Get takes name of the lightsailInstance, and returns the corresponding lightsailInstance object, and an error if there is any.
 func (c *FakeLightsailInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.LightsailInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(lightsailinstancesResource, name), &v1alpha1.LightsailInstance{})
+		Invokes(testing.NewGetAction(lightsailinstancesResource, c.ns, name), &v1alpha1.LightsailInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLightsailInstances) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of LightsailInstances that match those selectors.
 func (c *FakeLightsailInstances) List(opts v1.ListOptions) (result *v1alpha1.LightsailInstanceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(lightsailinstancesResource, lightsailinstancesKind, opts), &v1alpha1.LightsailInstanceList{})
+		Invokes(testing.NewListAction(lightsailinstancesResource, lightsailinstancesKind, c.ns, opts), &v1alpha1.LightsailInstanceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLightsailInstances) List(opts v1.ListOptions) (result *v1alpha1.Lig
 // Watch returns a watch.Interface that watches the requested lightsailInstances.
 func (c *FakeLightsailInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(lightsailinstancesResource, opts))
+		InvokesWatch(testing.NewWatchAction(lightsailinstancesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a lightsailInstance and creates it.  Returns the server's representation of the lightsailInstance, and an error, if there is any.
 func (c *FakeLightsailInstances) Create(lightsailInstance *v1alpha1.LightsailInstance) (result *v1alpha1.LightsailInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(lightsailinstancesResource, lightsailInstance), &v1alpha1.LightsailInstance{})
+		Invokes(testing.NewCreateAction(lightsailinstancesResource, c.ns, lightsailInstance), &v1alpha1.LightsailInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLightsailInstances) Create(lightsailInstance *v1alpha1.LightsailIns
 // Update takes the representation of a lightsailInstance and updates it. Returns the server's representation of the lightsailInstance, and an error, if there is any.
 func (c *FakeLightsailInstances) Update(lightsailInstance *v1alpha1.LightsailInstance) (result *v1alpha1.LightsailInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(lightsailinstancesResource, lightsailInstance), &v1alpha1.LightsailInstance{})
+		Invokes(testing.NewUpdateAction(lightsailinstancesResource, c.ns, lightsailInstance), &v1alpha1.LightsailInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLightsailInstances) Update(lightsailInstance *v1alpha1.LightsailIns
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLightsailInstances) UpdateStatus(lightsailInstance *v1alpha1.LightsailInstance) (*v1alpha1.LightsailInstance, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(lightsailinstancesResource, "status", lightsailInstance), &v1alpha1.LightsailInstance{})
+		Invokes(testing.NewUpdateSubresourceAction(lightsailinstancesResource, "status", c.ns, lightsailInstance), &v1alpha1.LightsailInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLightsailInstances) UpdateStatus(lightsailInstance *v1alpha1.Lights
 // Delete takes name of the lightsailInstance and deletes it. Returns an error if one occurs.
 func (c *FakeLightsailInstances) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(lightsailinstancesResource, name), &v1alpha1.LightsailInstance{})
+		Invokes(testing.NewDeleteAction(lightsailinstancesResource, c.ns, name), &v1alpha1.LightsailInstance{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLightsailInstances) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(lightsailinstancesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(lightsailinstancesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LightsailInstanceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLightsailInstances) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched lightsailInstance.
 func (c *FakeLightsailInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LightsailInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(lightsailinstancesResource, name, pt, data, subresources...), &v1alpha1.LightsailInstance{})
+		Invokes(testing.NewPatchSubresourceAction(lightsailinstancesResource, c.ns, name, pt, data, subresources...), &v1alpha1.LightsailInstance{})
+
 	if obj == nil {
 		return nil, err
 	}

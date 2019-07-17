@@ -32,7 +32,7 @@ import (
 // NetworkSecurityGroupsGetter has a method to return a NetworkSecurityGroupInterface.
 // A group's client should implement this interface.
 type NetworkSecurityGroupsGetter interface {
-	NetworkSecurityGroups() NetworkSecurityGroupInterface
+	NetworkSecurityGroups(namespace string) NetworkSecurityGroupInterface
 }
 
 // NetworkSecurityGroupInterface has methods to work with NetworkSecurityGroup resources.
@@ -52,12 +52,14 @@ type NetworkSecurityGroupInterface interface {
 // networkSecurityGroups implements NetworkSecurityGroupInterface
 type networkSecurityGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNetworkSecurityGroups returns a NetworkSecurityGroups
-func newNetworkSecurityGroups(c *AzurermV1alpha1Client) *networkSecurityGroups {
+func newNetworkSecurityGroups(c *AzurermV1alpha1Client, namespace string) *networkSecurityGroups {
 	return &networkSecurityGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNetworkSecurityGroups(c *AzurermV1alpha1Client) *networkSecurityGroups {
 func (c *networkSecurityGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkSecurityGroup, err error) {
 	result = &v1alpha1.NetworkSecurityGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networksecuritygroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *networkSecurityGroups) List(opts v1.ListOptions) (result *v1alpha1.Netw
 	}
 	result = &v1alpha1.NetworkSecurityGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networksecuritygroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *networkSecurityGroups) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("networksecuritygroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *networkSecurityGroups) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *networkSecurityGroups) Create(networkSecurityGroup *v1alpha1.NetworkSecurityGroup) (result *v1alpha1.NetworkSecurityGroup, err error) {
 	result = &v1alpha1.NetworkSecurityGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("networksecuritygroups").
 		Body(networkSecurityGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *networkSecurityGroups) Create(networkSecurityGroup *v1alpha1.NetworkSec
 func (c *networkSecurityGroups) Update(networkSecurityGroup *v1alpha1.NetworkSecurityGroup) (result *v1alpha1.NetworkSecurityGroup, err error) {
 	result = &v1alpha1.NetworkSecurityGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networksecuritygroups").
 		Name(networkSecurityGroup.Name).
 		Body(networkSecurityGroup).
@@ -132,6 +139,7 @@ func (c *networkSecurityGroups) Update(networkSecurityGroup *v1alpha1.NetworkSec
 func (c *networkSecurityGroups) UpdateStatus(networkSecurityGroup *v1alpha1.NetworkSecurityGroup) (result *v1alpha1.NetworkSecurityGroup, err error) {
 	result = &v1alpha1.NetworkSecurityGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networksecuritygroups").
 		Name(networkSecurityGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *networkSecurityGroups) UpdateStatus(networkSecurityGroup *v1alpha1.Netw
 // Delete takes name of the networkSecurityGroup and deletes it. Returns an error if one occurs.
 func (c *networkSecurityGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networksecuritygroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *networkSecurityGroups) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networksecuritygroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *networkSecurityGroups) DeleteCollection(options *v1.DeleteOptions, list
 func (c *networkSecurityGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkSecurityGroup, err error) {
 	result = &v1alpha1.NetworkSecurityGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("networksecuritygroups").
 		SubResource(subresources...).
 		Name(name).

@@ -31,6 +31,7 @@ import (
 // FakeComputeSslPolicies implements ComputeSslPolicyInterface
 type FakeComputeSslPolicies struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computesslpoliciesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computesslpolicies"}
@@ -40,7 +41,8 @@ var computesslpoliciesKind = schema.GroupVersionKind{Group: "google.kubeform.com
 // Get takes name of the computeSslPolicy, and returns the corresponding computeSslPolicy object, and an error if there is any.
 func (c *FakeComputeSslPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeSslPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computesslpoliciesResource, name), &v1alpha1.ComputeSslPolicy{})
+		Invokes(testing.NewGetAction(computesslpoliciesResource, c.ns, name), &v1alpha1.ComputeSslPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeSslPolicies) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of ComputeSslPolicies that match those selectors.
 func (c *FakeComputeSslPolicies) List(opts v1.ListOptions) (result *v1alpha1.ComputeSslPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computesslpoliciesResource, computesslpoliciesKind, opts), &v1alpha1.ComputeSslPolicyList{})
+		Invokes(testing.NewListAction(computesslpoliciesResource, computesslpoliciesKind, c.ns, opts), &v1alpha1.ComputeSslPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeSslPolicies) List(opts v1.ListOptions) (result *v1alpha1.Com
 // Watch returns a watch.Interface that watches the requested computeSslPolicies.
 func (c *FakeComputeSslPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computesslpoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(computesslpoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeSslPolicy and creates it.  Returns the server's representation of the computeSslPolicy, and an error, if there is any.
 func (c *FakeComputeSslPolicies) Create(computeSslPolicy *v1alpha1.ComputeSslPolicy) (result *v1alpha1.ComputeSslPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computesslpoliciesResource, computeSslPolicy), &v1alpha1.ComputeSslPolicy{})
+		Invokes(testing.NewCreateAction(computesslpoliciesResource, c.ns, computeSslPolicy), &v1alpha1.ComputeSslPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeSslPolicies) Create(computeSslPolicy *v1alpha1.ComputeSslPol
 // Update takes the representation of a computeSslPolicy and updates it. Returns the server's representation of the computeSslPolicy, and an error, if there is any.
 func (c *FakeComputeSslPolicies) Update(computeSslPolicy *v1alpha1.ComputeSslPolicy) (result *v1alpha1.ComputeSslPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computesslpoliciesResource, computeSslPolicy), &v1alpha1.ComputeSslPolicy{})
+		Invokes(testing.NewUpdateAction(computesslpoliciesResource, c.ns, computeSslPolicy), &v1alpha1.ComputeSslPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeSslPolicies) Update(computeSslPolicy *v1alpha1.ComputeSslPol
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeSslPolicies) UpdateStatus(computeSslPolicy *v1alpha1.ComputeSslPolicy) (*v1alpha1.ComputeSslPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computesslpoliciesResource, "status", computeSslPolicy), &v1alpha1.ComputeSslPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(computesslpoliciesResource, "status", c.ns, computeSslPolicy), &v1alpha1.ComputeSslPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeSslPolicies) UpdateStatus(computeSslPolicy *v1alpha1.Compute
 // Delete takes name of the computeSslPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeComputeSslPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computesslpoliciesResource, name), &v1alpha1.ComputeSslPolicy{})
+		Invokes(testing.NewDeleteAction(computesslpoliciesResource, c.ns, name), &v1alpha1.ComputeSslPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeSslPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computesslpoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computesslpoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeSslPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeSslPolicies) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched computeSslPolicy.
 func (c *FakeComputeSslPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeSslPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computesslpoliciesResource, name, pt, data, subresources...), &v1alpha1.ComputeSslPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(computesslpoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeSslPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

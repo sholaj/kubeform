@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,10 +19,11 @@ type BillingAccountIamBinding struct {
 }
 
 type BillingAccountIamBindingSpec struct {
-	BillingAccountId string `json:"billing_account_id"`
+	BillingAccountID string `json:"billingAccountID" tf:"billing_account_id"`
 	// +kubebuilder:validation:UniqueItems=true
-	Members []string `json:"members"`
-	Role    string   `json:"role"`
+	Members     []string                  `json:"members" tf:"members"`
+	Role        string                    `json:"role" tf:"role"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type BillingAccountIamBindingStatus struct {
@@ -30,7 +31,9 @@ type BillingAccountIamBindingStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

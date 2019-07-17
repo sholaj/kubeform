@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,22 +20,23 @@ type GlobalacceleratorAccelerator struct {
 
 type GlobalacceleratorAcceleratorSpecAttributes struct {
 	// +optional
-	FlowLogsEnabled bool `json:"flow_logs_enabled,omitempty"`
+	FlowLogsEnabled bool `json:"flowLogsEnabled,omitempty" tf:"flow_logs_enabled,omitempty"`
 	// +optional
-	FlowLogsS3Bucket string `json:"flow_logs_s3_bucket,omitempty"`
+	FlowLogsS3Bucket string `json:"flowLogsS3Bucket,omitempty" tf:"flow_logs_s3_bucket,omitempty"`
 	// +optional
-	FlowLogsS3Prefix string `json:"flow_logs_s3_prefix,omitempty"`
+	FlowLogsS3Prefix string `json:"flowLogsS3Prefix,omitempty" tf:"flow_logs_s3_prefix,omitempty"`
 }
 
 type GlobalacceleratorAcceleratorSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Attributes *[]GlobalacceleratorAcceleratorSpec `json:"attributes,omitempty"`
+	Attributes []GlobalacceleratorAcceleratorSpecAttributes `json:"attributes,omitempty" tf:"attributes,omitempty"`
 	// +optional
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
 	// +optional
-	IpAddressType string `json:"ip_address_type,omitempty"`
-	Name          string `json:"name"`
+	IpAddressType string                    `json:"ipAddressType,omitempty" tf:"ip_address_type,omitempty"`
+	Name          string                    `json:"name" tf:"name"`
+	ProviderRef   core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type GlobalacceleratorAcceleratorStatus struct {
@@ -43,7 +44,9 @@ type GlobalacceleratorAcceleratorStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

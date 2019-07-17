@@ -41,32 +41,33 @@ type SqlElasticpoolInformer interface {
 type sqlElasticpoolInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSqlElasticpoolInformer constructs a new informer for SqlElasticpool type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSqlElasticpoolInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSqlElasticpoolInformer(client, resyncPeriod, indexers, nil)
+func NewSqlElasticpoolInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSqlElasticpoolInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSqlElasticpoolInformer constructs a new informer for SqlElasticpool type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSqlElasticpoolInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSqlElasticpoolInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().SqlElasticpools().List(options)
+				return client.AzurermV1alpha1().SqlElasticpools(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().SqlElasticpools().Watch(options)
+				return client.AzurermV1alpha1().SqlElasticpools(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.SqlElasticpool{},
@@ -76,7 +77,7 @@ func NewFilteredSqlElasticpoolInformer(client versioned.Interface, resyncPeriod 
 }
 
 func (f *sqlElasticpoolInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSqlElasticpoolInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSqlElasticpoolInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *sqlElasticpoolInformer) Informer() cache.SharedIndexInformer {

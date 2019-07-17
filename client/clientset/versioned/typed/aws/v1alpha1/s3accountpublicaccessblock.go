@@ -32,7 +32,7 @@ import (
 // S3AccountPublicAccessBlocksGetter has a method to return a S3AccountPublicAccessBlockInterface.
 // A group's client should implement this interface.
 type S3AccountPublicAccessBlocksGetter interface {
-	S3AccountPublicAccessBlocks() S3AccountPublicAccessBlockInterface
+	S3AccountPublicAccessBlocks(namespace string) S3AccountPublicAccessBlockInterface
 }
 
 // S3AccountPublicAccessBlockInterface has methods to work with S3AccountPublicAccessBlock resources.
@@ -52,12 +52,14 @@ type S3AccountPublicAccessBlockInterface interface {
 // s3AccountPublicAccessBlocks implements S3AccountPublicAccessBlockInterface
 type s3AccountPublicAccessBlocks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newS3AccountPublicAccessBlocks returns a S3AccountPublicAccessBlocks
-func newS3AccountPublicAccessBlocks(c *AwsV1alpha1Client) *s3AccountPublicAccessBlocks {
+func newS3AccountPublicAccessBlocks(c *AwsV1alpha1Client, namespace string) *s3AccountPublicAccessBlocks {
 	return &s3AccountPublicAccessBlocks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newS3AccountPublicAccessBlocks(c *AwsV1alpha1Client) *s3AccountPublicAccess
 func (c *s3AccountPublicAccessBlocks) Get(name string, options v1.GetOptions) (result *v1alpha1.S3AccountPublicAccessBlock, err error) {
 	result = &v1alpha1.S3AccountPublicAccessBlock{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("s3accountpublicaccessblocks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *s3AccountPublicAccessBlocks) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.S3AccountPublicAccessBlockList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("s3accountpublicaccessblocks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *s3AccountPublicAccessBlocks) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("s3accountpublicaccessblocks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *s3AccountPublicAccessBlocks) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *s3AccountPublicAccessBlocks) Create(s3AccountPublicAccessBlock *v1alpha1.S3AccountPublicAccessBlock) (result *v1alpha1.S3AccountPublicAccessBlock, err error) {
 	result = &v1alpha1.S3AccountPublicAccessBlock{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("s3accountpublicaccessblocks").
 		Body(s3AccountPublicAccessBlock).
 		Do().
@@ -118,6 +124,7 @@ func (c *s3AccountPublicAccessBlocks) Create(s3AccountPublicAccessBlock *v1alpha
 func (c *s3AccountPublicAccessBlocks) Update(s3AccountPublicAccessBlock *v1alpha1.S3AccountPublicAccessBlock) (result *v1alpha1.S3AccountPublicAccessBlock, err error) {
 	result = &v1alpha1.S3AccountPublicAccessBlock{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("s3accountpublicaccessblocks").
 		Name(s3AccountPublicAccessBlock.Name).
 		Body(s3AccountPublicAccessBlock).
@@ -132,6 +139,7 @@ func (c *s3AccountPublicAccessBlocks) Update(s3AccountPublicAccessBlock *v1alpha
 func (c *s3AccountPublicAccessBlocks) UpdateStatus(s3AccountPublicAccessBlock *v1alpha1.S3AccountPublicAccessBlock) (result *v1alpha1.S3AccountPublicAccessBlock, err error) {
 	result = &v1alpha1.S3AccountPublicAccessBlock{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("s3accountpublicaccessblocks").
 		Name(s3AccountPublicAccessBlock.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *s3AccountPublicAccessBlocks) UpdateStatus(s3AccountPublicAccessBlock *v
 // Delete takes name of the s3AccountPublicAccessBlock and deletes it. Returns an error if one occurs.
 func (c *s3AccountPublicAccessBlocks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("s3accountpublicaccessblocks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *s3AccountPublicAccessBlocks) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("s3accountpublicaccessblocks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *s3AccountPublicAccessBlocks) DeleteCollection(options *v1.DeleteOptions
 func (c *s3AccountPublicAccessBlocks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.S3AccountPublicAccessBlock, err error) {
 	result = &v1alpha1.S3AccountPublicAccessBlock{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("s3accountpublicaccessblocks").
 		SubResource(subresources...).
 		Name(name).

@@ -31,6 +31,7 @@ import (
 // FakeElasticacheSubnetGroups implements ElasticacheSubnetGroupInterface
 type FakeElasticacheSubnetGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var elasticachesubnetgroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "elasticachesubnetgroups"}
@@ -40,7 +41,8 @@ var elasticachesubnetgroupsKind = schema.GroupVersionKind{Group: "aws.kubeform.c
 // Get takes name of the elasticacheSubnetGroup, and returns the corresponding elasticacheSubnetGroup object, and an error if there is any.
 func (c *FakeElasticacheSubnetGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.ElasticacheSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(elasticachesubnetgroupsResource, name), &v1alpha1.ElasticacheSubnetGroup{})
+		Invokes(testing.NewGetAction(elasticachesubnetgroupsResource, c.ns, name), &v1alpha1.ElasticacheSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeElasticacheSubnetGroups) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of ElasticacheSubnetGroups that match those selectors.
 func (c *FakeElasticacheSubnetGroups) List(opts v1.ListOptions) (result *v1alpha1.ElasticacheSubnetGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(elasticachesubnetgroupsResource, elasticachesubnetgroupsKind, opts), &v1alpha1.ElasticacheSubnetGroupList{})
+		Invokes(testing.NewListAction(elasticachesubnetgroupsResource, elasticachesubnetgroupsKind, c.ns, opts), &v1alpha1.ElasticacheSubnetGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeElasticacheSubnetGroups) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested elasticacheSubnetGroups.
 func (c *FakeElasticacheSubnetGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(elasticachesubnetgroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(elasticachesubnetgroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a elasticacheSubnetGroup and creates it.  Returns the server's representation of the elasticacheSubnetGroup, and an error, if there is any.
 func (c *FakeElasticacheSubnetGroups) Create(elasticacheSubnetGroup *v1alpha1.ElasticacheSubnetGroup) (result *v1alpha1.ElasticacheSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(elasticachesubnetgroupsResource, elasticacheSubnetGroup), &v1alpha1.ElasticacheSubnetGroup{})
+		Invokes(testing.NewCreateAction(elasticachesubnetgroupsResource, c.ns, elasticacheSubnetGroup), &v1alpha1.ElasticacheSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeElasticacheSubnetGroups) Create(elasticacheSubnetGroup *v1alpha1.El
 // Update takes the representation of a elasticacheSubnetGroup and updates it. Returns the server's representation of the elasticacheSubnetGroup, and an error, if there is any.
 func (c *FakeElasticacheSubnetGroups) Update(elasticacheSubnetGroup *v1alpha1.ElasticacheSubnetGroup) (result *v1alpha1.ElasticacheSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(elasticachesubnetgroupsResource, elasticacheSubnetGroup), &v1alpha1.ElasticacheSubnetGroup{})
+		Invokes(testing.NewUpdateAction(elasticachesubnetgroupsResource, c.ns, elasticacheSubnetGroup), &v1alpha1.ElasticacheSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeElasticacheSubnetGroups) Update(elasticacheSubnetGroup *v1alpha1.El
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeElasticacheSubnetGroups) UpdateStatus(elasticacheSubnetGroup *v1alpha1.ElasticacheSubnetGroup) (*v1alpha1.ElasticacheSubnetGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(elasticachesubnetgroupsResource, "status", elasticacheSubnetGroup), &v1alpha1.ElasticacheSubnetGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(elasticachesubnetgroupsResource, "status", c.ns, elasticacheSubnetGroup), &v1alpha1.ElasticacheSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeElasticacheSubnetGroups) UpdateStatus(elasticacheSubnetGroup *v1alp
 // Delete takes name of the elasticacheSubnetGroup and deletes it. Returns an error if one occurs.
 func (c *FakeElasticacheSubnetGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(elasticachesubnetgroupsResource, name), &v1alpha1.ElasticacheSubnetGroup{})
+		Invokes(testing.NewDeleteAction(elasticachesubnetgroupsResource, c.ns, name), &v1alpha1.ElasticacheSubnetGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeElasticacheSubnetGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(elasticachesubnetgroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(elasticachesubnetgroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ElasticacheSubnetGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeElasticacheSubnetGroups) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched elasticacheSubnetGroup.
 func (c *FakeElasticacheSubnetGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ElasticacheSubnetGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(elasticachesubnetgroupsResource, name, pt, data, subresources...), &v1alpha1.ElasticacheSubnetGroup{})
+		Invokes(testing.NewPatchSubresourceAction(elasticachesubnetgroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ElasticacheSubnetGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

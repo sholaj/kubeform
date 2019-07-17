@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,28 +20,29 @@ type ComputeImage struct {
 
 type ComputeImageSpecRawDisk struct {
 	// +optional
-	ContainerType string `json:"container_type,omitempty"`
+	ContainerType string `json:"containerType,omitempty" tf:"container_type,omitempty"`
 	// +optional
-	Sha1   string `json:"sha1,omitempty"`
-	Source string `json:"source"`
+	Sha1   string `json:"sha1,omitempty" tf:"sha1,omitempty"`
+	Source string `json:"source" tf:"source"`
 }
 
 type ComputeImageSpec struct {
 	// +optional
 	// Deprecated
-	CreateTimeout int `json:"create_timeout,omitempty"`
+	CreateTimeout int `json:"createTimeout,omitempty" tf:"create_timeout,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	Family string `json:"family,omitempty"`
+	Family string `json:"family,omitempty" tf:"family,omitempty"`
 	// +optional
-	Labels map[string]string `json:"labels,omitempty"`
-	Name   string            `json:"name"`
+	Labels map[string]string `json:"labels,omitempty" tf:"labels,omitempty"`
+	Name   string            `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	RawDisk *[]ComputeImageSpec `json:"raw_disk,omitempty"`
+	RawDisk []ComputeImageSpecRawDisk `json:"rawDisk,omitempty" tf:"raw_disk,omitempty"`
 	// +optional
-	SourceDisk string `json:"source_disk,omitempty"`
+	SourceDisk  string                    `json:"sourceDisk,omitempty" tf:"source_disk,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ComputeImageStatus struct {
@@ -49,7 +50,9 @@ type ComputeImageStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

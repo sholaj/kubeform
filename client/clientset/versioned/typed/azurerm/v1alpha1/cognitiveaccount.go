@@ -32,7 +32,7 @@ import (
 // CognitiveAccountsGetter has a method to return a CognitiveAccountInterface.
 // A group's client should implement this interface.
 type CognitiveAccountsGetter interface {
-	CognitiveAccounts() CognitiveAccountInterface
+	CognitiveAccounts(namespace string) CognitiveAccountInterface
 }
 
 // CognitiveAccountInterface has methods to work with CognitiveAccount resources.
@@ -52,12 +52,14 @@ type CognitiveAccountInterface interface {
 // cognitiveAccounts implements CognitiveAccountInterface
 type cognitiveAccounts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCognitiveAccounts returns a CognitiveAccounts
-func newCognitiveAccounts(c *AzurermV1alpha1Client) *cognitiveAccounts {
+func newCognitiveAccounts(c *AzurermV1alpha1Client, namespace string) *cognitiveAccounts {
 	return &cognitiveAccounts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCognitiveAccounts(c *AzurermV1alpha1Client) *cognitiveAccounts {
 func (c *cognitiveAccounts) Get(name string, options v1.GetOptions) (result *v1alpha1.CognitiveAccount, err error) {
 	result = &v1alpha1.CognitiveAccount{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitiveaccounts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cognitiveAccounts) List(opts v1.ListOptions) (result *v1alpha1.Cognitiv
 	}
 	result = &v1alpha1.CognitiveAccountList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitiveaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cognitiveAccounts) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitiveaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cognitiveAccounts) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *cognitiveAccounts) Create(cognitiveAccount *v1alpha1.CognitiveAccount) (result *v1alpha1.CognitiveAccount, err error) {
 	result = &v1alpha1.CognitiveAccount{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cognitiveaccounts").
 		Body(cognitiveAccount).
 		Do().
@@ -118,6 +124,7 @@ func (c *cognitiveAccounts) Create(cognitiveAccount *v1alpha1.CognitiveAccount) 
 func (c *cognitiveAccounts) Update(cognitiveAccount *v1alpha1.CognitiveAccount) (result *v1alpha1.CognitiveAccount, err error) {
 	result = &v1alpha1.CognitiveAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cognitiveaccounts").
 		Name(cognitiveAccount.Name).
 		Body(cognitiveAccount).
@@ -132,6 +139,7 @@ func (c *cognitiveAccounts) Update(cognitiveAccount *v1alpha1.CognitiveAccount) 
 func (c *cognitiveAccounts) UpdateStatus(cognitiveAccount *v1alpha1.CognitiveAccount) (result *v1alpha1.CognitiveAccount, err error) {
 	result = &v1alpha1.CognitiveAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cognitiveaccounts").
 		Name(cognitiveAccount.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cognitiveAccounts) UpdateStatus(cognitiveAccount *v1alpha1.CognitiveAcc
 // Delete takes name of the cognitiveAccount and deletes it. Returns an error if one occurs.
 func (c *cognitiveAccounts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cognitiveaccounts").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cognitiveAccounts) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cognitiveaccounts").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cognitiveAccounts) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *cognitiveAccounts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CognitiveAccount, err error) {
 	result = &v1alpha1.CognitiveAccount{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cognitiveaccounts").
 		SubResource(subresources...).
 		Name(name).

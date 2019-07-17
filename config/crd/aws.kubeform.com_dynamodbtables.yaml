@@ -398,43 +398,108 @@ spec:
         spec:
           properties:
             attribute:
-              items: {}
+              items:
+                properties:
+                  name:
+                    type: string
+                  type:
+                    type: string
+                required:
+                - name
+                - type
+                type: object
               type: array
               uniqueItems: true
-            billing_mode:
+            billingMode:
               type: string
-            global_secondary_index:
-              items: {}
+            globalSecondaryIndex:
+              items:
+                properties:
+                  hashKey:
+                    type: string
+                  name:
+                    type: string
+                  nonKeyAttributes:
+                    items:
+                      type: string
+                    type: array
+                  projectionType:
+                    type: string
+                  rangeKey:
+                    type: string
+                  readCapacity:
+                    type: integer
+                  writeCapacity:
+                    type: integer
+                required:
+                - hashKey
+                - name
+                - projectionType
+                type: object
               type: array
               uniqueItems: true
-            hash_key:
+            hashKey:
               type: string
-            local_secondary_index:
-              items: {}
+            localSecondaryIndex:
+              items:
+                properties:
+                  name:
+                    type: string
+                  nonKeyAttributes:
+                    items:
+                      type: string
+                    type: array
+                  projectionType:
+                    type: string
+                  rangeKey:
+                    type: string
+                required:
+                - name
+                - projectionType
+                - rangeKey
+                type: object
               type: array
               uniqueItems: true
             name:
               type: string
-            range_key:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            rangeKey:
               type: string
-            read_capacity:
+            readCapacity:
               type: integer
-            stream_enabled:
+            streamEnabled:
               type: boolean
             tags:
               additionalProperties:
                 type: string
               type: object
             ttl:
-              items: {}
+              items:
+                properties:
+                  attributeName:
+                    type: string
+                  enabled:
+                    type: boolean
+                required:
+                - attributeName
+                type: object
               maxItems: 1
               type: array
-            write_capacity:
+            writeCapacity:
               type: integer
           required:
           - attribute
-          - hash_key
+          - hashKey
           - name
+          - providerRef
           type: object
         status:
           properties:
@@ -445,6 +510,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

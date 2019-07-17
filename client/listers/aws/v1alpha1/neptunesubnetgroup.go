@@ -29,8 +29,8 @@ import (
 type NeptuneSubnetGroupLister interface {
 	// List lists all NeptuneSubnetGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NeptuneSubnetGroup, err error)
-	// Get retrieves the NeptuneSubnetGroup from the index for a given name.
-	Get(name string) (*v1alpha1.NeptuneSubnetGroup, error)
+	// NeptuneSubnetGroups returns an object that can list and get NeptuneSubnetGroups.
+	NeptuneSubnetGroups(namespace string) NeptuneSubnetGroupNamespaceLister
 	NeptuneSubnetGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *neptuneSubnetGroupLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the NeptuneSubnetGroup from the index for a given name.
-func (s *neptuneSubnetGroupLister) Get(name string) (*v1alpha1.NeptuneSubnetGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NeptuneSubnetGroups returns an object that can list and get NeptuneSubnetGroups.
+func (s *neptuneSubnetGroupLister) NeptuneSubnetGroups(namespace string) NeptuneSubnetGroupNamespaceLister {
+	return neptuneSubnetGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NeptuneSubnetGroupNamespaceLister helps list and get NeptuneSubnetGroups.
+type NeptuneSubnetGroupNamespaceLister interface {
+	// List lists all NeptuneSubnetGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NeptuneSubnetGroup, err error)
+	// Get retrieves the NeptuneSubnetGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NeptuneSubnetGroup, error)
+	NeptuneSubnetGroupNamespaceListerExpansion
+}
+
+// neptuneSubnetGroupNamespaceLister implements the NeptuneSubnetGroupNamespaceLister
+// interface.
+type neptuneSubnetGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NeptuneSubnetGroups in the indexer for a given namespace.
+func (s neptuneSubnetGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NeptuneSubnetGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NeptuneSubnetGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the NeptuneSubnetGroup from the indexer for a given namespace and name.
+func (s neptuneSubnetGroupNamespaceLister) Get(name string) (*v1alpha1.NeptuneSubnetGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

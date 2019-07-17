@@ -29,8 +29,8 @@ import (
 type OpsworksApplicationLister interface {
 	// List lists all OpsworksApplications in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OpsworksApplication, err error)
-	// Get retrieves the OpsworksApplication from the index for a given name.
-	Get(name string) (*v1alpha1.OpsworksApplication, error)
+	// OpsworksApplications returns an object that can list and get OpsworksApplications.
+	OpsworksApplications(namespace string) OpsworksApplicationNamespaceLister
 	OpsworksApplicationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *opsworksApplicationLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the OpsworksApplication from the index for a given name.
-func (s *opsworksApplicationLister) Get(name string) (*v1alpha1.OpsworksApplication, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OpsworksApplications returns an object that can list and get OpsworksApplications.
+func (s *opsworksApplicationLister) OpsworksApplications(namespace string) OpsworksApplicationNamespaceLister {
+	return opsworksApplicationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OpsworksApplicationNamespaceLister helps list and get OpsworksApplications.
+type OpsworksApplicationNamespaceLister interface {
+	// List lists all OpsworksApplications in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OpsworksApplication, err error)
+	// Get retrieves the OpsworksApplication from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OpsworksApplication, error)
+	OpsworksApplicationNamespaceListerExpansion
+}
+
+// opsworksApplicationNamespaceLister implements the OpsworksApplicationNamespaceLister
+// interface.
+type opsworksApplicationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OpsworksApplications in the indexer for a given namespace.
+func (s opsworksApplicationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OpsworksApplication, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OpsworksApplication))
+	})
+	return ret, err
+}
+
+// Get retrieves the OpsworksApplication from the indexer for a given namespace and name.
+func (s opsworksApplicationNamespaceLister) Get(name string) (*v1alpha1.OpsworksApplication, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,25 +20,26 @@ type OpsworksInstance struct {
 
 type OpsworksInstanceSpec struct {
 	// +optional
-	AgentVersion string `json:"agent_version,omitempty"`
+	AgentVersion string `json:"agentVersion,omitempty" tf:"agent_version,omitempty"`
 	// +optional
-	Architecture string `json:"architecture,omitempty"`
+	Architecture string `json:"architecture,omitempty" tf:"architecture,omitempty"`
 	// +optional
-	AutoScalingType string `json:"auto_scaling_type,omitempty"`
+	AutoScalingType string `json:"autoScalingType,omitempty" tf:"auto_scaling_type,omitempty"`
 	// +optional
-	DeleteEbs bool `json:"delete_ebs,omitempty"`
+	DeleteEbs bool `json:"deleteEbs,omitempty" tf:"delete_ebs,omitempty"`
 	// +optional
-	DeleteEip bool `json:"delete_eip,omitempty"`
+	DeleteEip bool `json:"deleteEip,omitempty" tf:"delete_eip,omitempty"`
 	// +optional
-	EbsOptimized bool `json:"ebs_optimized,omitempty"`
+	EbsOptimized bool `json:"ebsOptimized,omitempty" tf:"ebs_optimized,omitempty"`
 	// +optional
-	InstallUpdatesOnBoot bool `json:"install_updates_on_boot,omitempty"`
+	InstallUpdatesOnBoot bool `json:"installUpdatesOnBoot,omitempty" tf:"install_updates_on_boot,omitempty"`
 	// +optional
-	InstanceType string   `json:"instance_type,omitempty"`
-	LayerIds     []string `json:"layer_ids"`
-	StackId      string   `json:"stack_id"`
+	InstanceType string   `json:"instanceType,omitempty" tf:"instance_type,omitempty"`
+	LayerIDS     []string `json:"layerIDS" tf:"layer_ids"`
+	StackID      string   `json:"stackID" tf:"stack_id"`
 	// +optional
-	State string `json:"state,omitempty"`
+	State       string                    `json:"state,omitempty" tf:"state,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type OpsworksInstanceStatus struct {
@@ -46,7 +47,9 @@ type OpsworksInstanceStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

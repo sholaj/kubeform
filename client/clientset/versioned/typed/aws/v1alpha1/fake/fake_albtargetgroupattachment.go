@@ -31,6 +31,7 @@ import (
 // FakeAlbTargetGroupAttachments implements AlbTargetGroupAttachmentInterface
 type FakeAlbTargetGroupAttachments struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var albtargetgroupattachmentsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "albtargetgroupattachments"}
@@ -40,7 +41,8 @@ var albtargetgroupattachmentsKind = schema.GroupVersionKind{Group: "aws.kubeform
 // Get takes name of the albTargetGroupAttachment, and returns the corresponding albTargetGroupAttachment object, and an error if there is any.
 func (c *FakeAlbTargetGroupAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.AlbTargetGroupAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(albtargetgroupattachmentsResource, name), &v1alpha1.AlbTargetGroupAttachment{})
+		Invokes(testing.NewGetAction(albtargetgroupattachmentsResource, c.ns, name), &v1alpha1.AlbTargetGroupAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAlbTargetGroupAttachments) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of AlbTargetGroupAttachments that match those selectors.
 func (c *FakeAlbTargetGroupAttachments) List(opts v1.ListOptions) (result *v1alpha1.AlbTargetGroupAttachmentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(albtargetgroupattachmentsResource, albtargetgroupattachmentsKind, opts), &v1alpha1.AlbTargetGroupAttachmentList{})
+		Invokes(testing.NewListAction(albtargetgroupattachmentsResource, albtargetgroupattachmentsKind, c.ns, opts), &v1alpha1.AlbTargetGroupAttachmentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAlbTargetGroupAttachments) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested albTargetGroupAttachments.
 func (c *FakeAlbTargetGroupAttachments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(albtargetgroupattachmentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(albtargetgroupattachmentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a albTargetGroupAttachment and creates it.  Returns the server's representation of the albTargetGroupAttachment, and an error, if there is any.
 func (c *FakeAlbTargetGroupAttachments) Create(albTargetGroupAttachment *v1alpha1.AlbTargetGroupAttachment) (result *v1alpha1.AlbTargetGroupAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(albtargetgroupattachmentsResource, albTargetGroupAttachment), &v1alpha1.AlbTargetGroupAttachment{})
+		Invokes(testing.NewCreateAction(albtargetgroupattachmentsResource, c.ns, albTargetGroupAttachment), &v1alpha1.AlbTargetGroupAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAlbTargetGroupAttachments) Create(albTargetGroupAttachment *v1alpha
 // Update takes the representation of a albTargetGroupAttachment and updates it. Returns the server's representation of the albTargetGroupAttachment, and an error, if there is any.
 func (c *FakeAlbTargetGroupAttachments) Update(albTargetGroupAttachment *v1alpha1.AlbTargetGroupAttachment) (result *v1alpha1.AlbTargetGroupAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(albtargetgroupattachmentsResource, albTargetGroupAttachment), &v1alpha1.AlbTargetGroupAttachment{})
+		Invokes(testing.NewUpdateAction(albtargetgroupattachmentsResource, c.ns, albTargetGroupAttachment), &v1alpha1.AlbTargetGroupAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAlbTargetGroupAttachments) Update(albTargetGroupAttachment *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAlbTargetGroupAttachments) UpdateStatus(albTargetGroupAttachment *v1alpha1.AlbTargetGroupAttachment) (*v1alpha1.AlbTargetGroupAttachment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(albtargetgroupattachmentsResource, "status", albTargetGroupAttachment), &v1alpha1.AlbTargetGroupAttachment{})
+		Invokes(testing.NewUpdateSubresourceAction(albtargetgroupattachmentsResource, "status", c.ns, albTargetGroupAttachment), &v1alpha1.AlbTargetGroupAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAlbTargetGroupAttachments) UpdateStatus(albTargetGroupAttachment *v
 // Delete takes name of the albTargetGroupAttachment and deletes it. Returns an error if one occurs.
 func (c *FakeAlbTargetGroupAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(albtargetgroupattachmentsResource, name), &v1alpha1.AlbTargetGroupAttachment{})
+		Invokes(testing.NewDeleteAction(albtargetgroupattachmentsResource, c.ns, name), &v1alpha1.AlbTargetGroupAttachment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAlbTargetGroupAttachments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(albtargetgroupattachmentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(albtargetgroupattachmentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AlbTargetGroupAttachmentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAlbTargetGroupAttachments) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched albTargetGroupAttachment.
 func (c *FakeAlbTargetGroupAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AlbTargetGroupAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(albtargetgroupattachmentsResource, name, pt, data, subresources...), &v1alpha1.AlbTargetGroupAttachment{})
+		Invokes(testing.NewPatchSubresourceAction(albtargetgroupattachmentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.AlbTargetGroupAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}

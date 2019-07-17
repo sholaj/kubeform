@@ -32,7 +32,7 @@ import (
 // PostgresqlDatabasesGetter has a method to return a PostgresqlDatabaseInterface.
 // A group's client should implement this interface.
 type PostgresqlDatabasesGetter interface {
-	PostgresqlDatabases() PostgresqlDatabaseInterface
+	PostgresqlDatabases(namespace string) PostgresqlDatabaseInterface
 }
 
 // PostgresqlDatabaseInterface has methods to work with PostgresqlDatabase resources.
@@ -52,12 +52,14 @@ type PostgresqlDatabaseInterface interface {
 // postgresqlDatabases implements PostgresqlDatabaseInterface
 type postgresqlDatabases struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPostgresqlDatabases returns a PostgresqlDatabases
-func newPostgresqlDatabases(c *AzurermV1alpha1Client) *postgresqlDatabases {
+func newPostgresqlDatabases(c *AzurermV1alpha1Client, namespace string) *postgresqlDatabases {
 	return &postgresqlDatabases{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPostgresqlDatabases(c *AzurermV1alpha1Client) *postgresqlDatabases {
 func (c *postgresqlDatabases) Get(name string, options v1.GetOptions) (result *v1alpha1.PostgresqlDatabase, err error) {
 	result = &v1alpha1.PostgresqlDatabase{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("postgresqldatabases").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *postgresqlDatabases) List(opts v1.ListOptions) (result *v1alpha1.Postgr
 	}
 	result = &v1alpha1.PostgresqlDatabaseList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("postgresqldatabases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *postgresqlDatabases) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("postgresqldatabases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *postgresqlDatabases) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *postgresqlDatabases) Create(postgresqlDatabase *v1alpha1.PostgresqlDatabase) (result *v1alpha1.PostgresqlDatabase, err error) {
 	result = &v1alpha1.PostgresqlDatabase{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("postgresqldatabases").
 		Body(postgresqlDatabase).
 		Do().
@@ -118,6 +124,7 @@ func (c *postgresqlDatabases) Create(postgresqlDatabase *v1alpha1.PostgresqlData
 func (c *postgresqlDatabases) Update(postgresqlDatabase *v1alpha1.PostgresqlDatabase) (result *v1alpha1.PostgresqlDatabase, err error) {
 	result = &v1alpha1.PostgresqlDatabase{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("postgresqldatabases").
 		Name(postgresqlDatabase.Name).
 		Body(postgresqlDatabase).
@@ -132,6 +139,7 @@ func (c *postgresqlDatabases) Update(postgresqlDatabase *v1alpha1.PostgresqlData
 func (c *postgresqlDatabases) UpdateStatus(postgresqlDatabase *v1alpha1.PostgresqlDatabase) (result *v1alpha1.PostgresqlDatabase, err error) {
 	result = &v1alpha1.PostgresqlDatabase{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("postgresqldatabases").
 		Name(postgresqlDatabase.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *postgresqlDatabases) UpdateStatus(postgresqlDatabase *v1alpha1.Postgres
 // Delete takes name of the postgresqlDatabase and deletes it. Returns an error if one occurs.
 func (c *postgresqlDatabases) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("postgresqldatabases").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *postgresqlDatabases) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("postgresqldatabases").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *postgresqlDatabases) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *postgresqlDatabases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PostgresqlDatabase, err error) {
 	result = &v1alpha1.PostgresqlDatabase{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("postgresqldatabases").
 		SubResource(subresources...).
 		Name(name).

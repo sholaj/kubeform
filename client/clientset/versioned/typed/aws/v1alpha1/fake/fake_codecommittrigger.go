@@ -31,6 +31,7 @@ import (
 // FakeCodecommitTriggers implements CodecommitTriggerInterface
 type FakeCodecommitTriggers struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var codecommittriggersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "codecommittriggers"}
@@ -40,7 +41,8 @@ var codecommittriggersKind = schema.GroupVersionKind{Group: "aws.kubeform.com", 
 // Get takes name of the codecommitTrigger, and returns the corresponding codecommitTrigger object, and an error if there is any.
 func (c *FakeCodecommitTriggers) Get(name string, options v1.GetOptions) (result *v1alpha1.CodecommitTrigger, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(codecommittriggersResource, name), &v1alpha1.CodecommitTrigger{})
+		Invokes(testing.NewGetAction(codecommittriggersResource, c.ns, name), &v1alpha1.CodecommitTrigger{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCodecommitTriggers) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of CodecommitTriggers that match those selectors.
 func (c *FakeCodecommitTriggers) List(opts v1.ListOptions) (result *v1alpha1.CodecommitTriggerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(codecommittriggersResource, codecommittriggersKind, opts), &v1alpha1.CodecommitTriggerList{})
+		Invokes(testing.NewListAction(codecommittriggersResource, codecommittriggersKind, c.ns, opts), &v1alpha1.CodecommitTriggerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCodecommitTriggers) List(opts v1.ListOptions) (result *v1alpha1.Cod
 // Watch returns a watch.Interface that watches the requested codecommitTriggers.
 func (c *FakeCodecommitTriggers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(codecommittriggersResource, opts))
+		InvokesWatch(testing.NewWatchAction(codecommittriggersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a codecommitTrigger and creates it.  Returns the server's representation of the codecommitTrigger, and an error, if there is any.
 func (c *FakeCodecommitTriggers) Create(codecommitTrigger *v1alpha1.CodecommitTrigger) (result *v1alpha1.CodecommitTrigger, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(codecommittriggersResource, codecommitTrigger), &v1alpha1.CodecommitTrigger{})
+		Invokes(testing.NewCreateAction(codecommittriggersResource, c.ns, codecommitTrigger), &v1alpha1.CodecommitTrigger{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCodecommitTriggers) Create(codecommitTrigger *v1alpha1.CodecommitTr
 // Update takes the representation of a codecommitTrigger and updates it. Returns the server's representation of the codecommitTrigger, and an error, if there is any.
 func (c *FakeCodecommitTriggers) Update(codecommitTrigger *v1alpha1.CodecommitTrigger) (result *v1alpha1.CodecommitTrigger, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(codecommittriggersResource, codecommitTrigger), &v1alpha1.CodecommitTrigger{})
+		Invokes(testing.NewUpdateAction(codecommittriggersResource, c.ns, codecommitTrigger), &v1alpha1.CodecommitTrigger{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCodecommitTriggers) Update(codecommitTrigger *v1alpha1.CodecommitTr
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCodecommitTriggers) UpdateStatus(codecommitTrigger *v1alpha1.CodecommitTrigger) (*v1alpha1.CodecommitTrigger, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(codecommittriggersResource, "status", codecommitTrigger), &v1alpha1.CodecommitTrigger{})
+		Invokes(testing.NewUpdateSubresourceAction(codecommittriggersResource, "status", c.ns, codecommitTrigger), &v1alpha1.CodecommitTrigger{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCodecommitTriggers) UpdateStatus(codecommitTrigger *v1alpha1.Codeco
 // Delete takes name of the codecommitTrigger and deletes it. Returns an error if one occurs.
 func (c *FakeCodecommitTriggers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(codecommittriggersResource, name), &v1alpha1.CodecommitTrigger{})
+		Invokes(testing.NewDeleteAction(codecommittriggersResource, c.ns, name), &v1alpha1.CodecommitTrigger{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCodecommitTriggers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(codecommittriggersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(codecommittriggersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CodecommitTriggerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCodecommitTriggers) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched codecommitTrigger.
 func (c *FakeCodecommitTriggers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CodecommitTrigger, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(codecommittriggersResource, name, pt, data, subresources...), &v1alpha1.CodecommitTrigger{})
+		Invokes(testing.NewPatchSubresourceAction(codecommittriggersResource, c.ns, name, pt, data, subresources...), &v1alpha1.CodecommitTrigger{})
+
 	if obj == nil {
 		return nil, err
 	}

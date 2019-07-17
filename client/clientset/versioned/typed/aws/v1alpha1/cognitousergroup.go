@@ -32,7 +32,7 @@ import (
 // CognitoUserGroupsGetter has a method to return a CognitoUserGroupInterface.
 // A group's client should implement this interface.
 type CognitoUserGroupsGetter interface {
-	CognitoUserGroups() CognitoUserGroupInterface
+	CognitoUserGroups(namespace string) CognitoUserGroupInterface
 }
 
 // CognitoUserGroupInterface has methods to work with CognitoUserGroup resources.
@@ -52,12 +52,14 @@ type CognitoUserGroupInterface interface {
 // cognitoUserGroups implements CognitoUserGroupInterface
 type cognitoUserGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCognitoUserGroups returns a CognitoUserGroups
-func newCognitoUserGroups(c *AwsV1alpha1Client) *cognitoUserGroups {
+func newCognitoUserGroups(c *AwsV1alpha1Client, namespace string) *cognitoUserGroups {
 	return &cognitoUserGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCognitoUserGroups(c *AwsV1alpha1Client) *cognitoUserGroups {
 func (c *cognitoUserGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.CognitoUserGroup, err error) {
 	result = &v1alpha1.CognitoUserGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitousergroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cognitoUserGroups) List(opts v1.ListOptions) (result *v1alpha1.CognitoU
 	}
 	result = &v1alpha1.CognitoUserGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitousergroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cognitoUserGroups) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitousergroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cognitoUserGroups) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *cognitoUserGroups) Create(cognitoUserGroup *v1alpha1.CognitoUserGroup) (result *v1alpha1.CognitoUserGroup, err error) {
 	result = &v1alpha1.CognitoUserGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cognitousergroups").
 		Body(cognitoUserGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *cognitoUserGroups) Create(cognitoUserGroup *v1alpha1.CognitoUserGroup) 
 func (c *cognitoUserGroups) Update(cognitoUserGroup *v1alpha1.CognitoUserGroup) (result *v1alpha1.CognitoUserGroup, err error) {
 	result = &v1alpha1.CognitoUserGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cognitousergroups").
 		Name(cognitoUserGroup.Name).
 		Body(cognitoUserGroup).
@@ -132,6 +139,7 @@ func (c *cognitoUserGroups) Update(cognitoUserGroup *v1alpha1.CognitoUserGroup) 
 func (c *cognitoUserGroups) UpdateStatus(cognitoUserGroup *v1alpha1.CognitoUserGroup) (result *v1alpha1.CognitoUserGroup, err error) {
 	result = &v1alpha1.CognitoUserGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cognitousergroups").
 		Name(cognitoUserGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cognitoUserGroups) UpdateStatus(cognitoUserGroup *v1alpha1.CognitoUserG
 // Delete takes name of the cognitoUserGroup and deletes it. Returns an error if one occurs.
 func (c *cognitoUserGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cognitousergroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cognitoUserGroups) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cognitousergroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cognitoUserGroups) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *cognitoUserGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CognitoUserGroup, err error) {
 	result = &v1alpha1.CognitoUserGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cognitousergroups").
 		SubResource(subresources...).
 		Name(name).

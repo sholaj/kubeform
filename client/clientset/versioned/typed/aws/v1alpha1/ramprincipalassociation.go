@@ -32,7 +32,7 @@ import (
 // RamPrincipalAssociationsGetter has a method to return a RamPrincipalAssociationInterface.
 // A group's client should implement this interface.
 type RamPrincipalAssociationsGetter interface {
-	RamPrincipalAssociations() RamPrincipalAssociationInterface
+	RamPrincipalAssociations(namespace string) RamPrincipalAssociationInterface
 }
 
 // RamPrincipalAssociationInterface has methods to work with RamPrincipalAssociation resources.
@@ -52,12 +52,14 @@ type RamPrincipalAssociationInterface interface {
 // ramPrincipalAssociations implements RamPrincipalAssociationInterface
 type ramPrincipalAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRamPrincipalAssociations returns a RamPrincipalAssociations
-func newRamPrincipalAssociations(c *AwsV1alpha1Client) *ramPrincipalAssociations {
+func newRamPrincipalAssociations(c *AwsV1alpha1Client, namespace string) *ramPrincipalAssociations {
 	return &ramPrincipalAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRamPrincipalAssociations(c *AwsV1alpha1Client) *ramPrincipalAssociations
 func (c *ramPrincipalAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.RamPrincipalAssociation, err error) {
 	result = &v1alpha1.RamPrincipalAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ramprincipalassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ramPrincipalAssociations) List(opts v1.ListOptions) (result *v1alpha1.R
 	}
 	result = &v1alpha1.RamPrincipalAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ramprincipalassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ramPrincipalAssociations) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ramprincipalassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ramPrincipalAssociations) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *ramPrincipalAssociations) Create(ramPrincipalAssociation *v1alpha1.RamPrincipalAssociation) (result *v1alpha1.RamPrincipalAssociation, err error) {
 	result = &v1alpha1.RamPrincipalAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ramprincipalassociations").
 		Body(ramPrincipalAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *ramPrincipalAssociations) Create(ramPrincipalAssociation *v1alpha1.RamP
 func (c *ramPrincipalAssociations) Update(ramPrincipalAssociation *v1alpha1.RamPrincipalAssociation) (result *v1alpha1.RamPrincipalAssociation, err error) {
 	result = &v1alpha1.RamPrincipalAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ramprincipalassociations").
 		Name(ramPrincipalAssociation.Name).
 		Body(ramPrincipalAssociation).
@@ -132,6 +139,7 @@ func (c *ramPrincipalAssociations) Update(ramPrincipalAssociation *v1alpha1.RamP
 func (c *ramPrincipalAssociations) UpdateStatus(ramPrincipalAssociation *v1alpha1.RamPrincipalAssociation) (result *v1alpha1.RamPrincipalAssociation, err error) {
 	result = &v1alpha1.RamPrincipalAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ramprincipalassociations").
 		Name(ramPrincipalAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ramPrincipalAssociations) UpdateStatus(ramPrincipalAssociation *v1alpha
 // Delete takes name of the ramPrincipalAssociation and deletes it. Returns an error if one occurs.
 func (c *ramPrincipalAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ramprincipalassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ramPrincipalAssociations) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ramprincipalassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ramPrincipalAssociations) DeleteCollection(options *v1.DeleteOptions, l
 func (c *ramPrincipalAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RamPrincipalAssociation, err error) {
 	result = &v1alpha1.RamPrincipalAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ramprincipalassociations").
 		SubResource(subresources...).
 		Name(name).

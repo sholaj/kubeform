@@ -41,32 +41,33 @@ type InspectorAssessmentTemplateInformer interface {
 type inspectorAssessmentTemplateInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewInspectorAssessmentTemplateInformer constructs a new informer for InspectorAssessmentTemplate type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewInspectorAssessmentTemplateInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredInspectorAssessmentTemplateInformer(client, resyncPeriod, indexers, nil)
+func NewInspectorAssessmentTemplateInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredInspectorAssessmentTemplateInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredInspectorAssessmentTemplateInformer constructs a new informer for InspectorAssessmentTemplate type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredInspectorAssessmentTemplateInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredInspectorAssessmentTemplateInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().InspectorAssessmentTemplates().List(options)
+				return client.AwsV1alpha1().InspectorAssessmentTemplates(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().InspectorAssessmentTemplates().Watch(options)
+				return client.AwsV1alpha1().InspectorAssessmentTemplates(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.InspectorAssessmentTemplate{},
@@ -76,7 +77,7 @@ func NewFilteredInspectorAssessmentTemplateInformer(client versioned.Interface, 
 }
 
 func (f *inspectorAssessmentTemplateInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredInspectorAssessmentTemplateInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredInspectorAssessmentTemplateInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *inspectorAssessmentTemplateInformer) Informer() cache.SharedIndexInformer {

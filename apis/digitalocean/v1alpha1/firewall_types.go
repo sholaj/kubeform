@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,54 +20,55 @@ type Firewall struct {
 
 type FirewallSpecInboundRule struct {
 	// +optional
-	PortRange string `json:"port_range,omitempty"`
-	Protocol  string `json:"protocol"`
+	PortRange string `json:"portRange,omitempty" tf:"port_range,omitempty"`
+	Protocol  string `json:"protocol" tf:"protocol"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SourceAddresses []string `json:"source_addresses,omitempty"`
+	SourceAddresses []string `json:"sourceAddresses,omitempty" tf:"source_addresses,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SourceDropletIds []int64 `json:"source_droplet_ids,omitempty"`
+	SourceDropletIDS []int64 `json:"sourceDropletIDS,omitempty" tf:"source_droplet_ids,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SourceLoadBalancerUids []string `json:"source_load_balancer_uids,omitempty"`
+	SourceLoadBalancerUids []string `json:"sourceLoadBalancerUids,omitempty" tf:"source_load_balancer_uids,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SourceTags []string `json:"source_tags,omitempty"`
+	SourceTags []string `json:"sourceTags,omitempty" tf:"source_tags,omitempty"`
 }
 
 type FirewallSpecOutboundRule struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	DestinationAddresses []string `json:"destination_addresses,omitempty"`
+	DestinationAddresses []string `json:"destinationAddresses,omitempty" tf:"destination_addresses,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	DestinationDropletIds []int64 `json:"destination_droplet_ids,omitempty"`
+	DestinationDropletIDS []int64 `json:"destinationDropletIDS,omitempty" tf:"destination_droplet_ids,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	DestinationLoadBalancerUids []string `json:"destination_load_balancer_uids,omitempty"`
+	DestinationLoadBalancerUids []string `json:"destinationLoadBalancerUids,omitempty" tf:"destination_load_balancer_uids,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	DestinationTags []string `json:"destination_tags,omitempty"`
+	DestinationTags []string `json:"destinationTags,omitempty" tf:"destination_tags,omitempty"`
 	// +optional
-	PortRange string `json:"port_range,omitempty"`
-	Protocol  string `json:"protocol"`
+	PortRange string `json:"portRange,omitempty" tf:"port_range,omitempty"`
+	Protocol  string `json:"protocol" tf:"protocol"`
 }
 
 type FirewallSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	DropletIds []int64 `json:"droplet_ids,omitempty"`
+	DropletIDS []int64 `json:"dropletIDS,omitempty" tf:"droplet_ids,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	InboundRule *[]FirewallSpec `json:"inbound_rule,omitempty"`
-	Name        string          `json:"name"`
+	InboundRule []FirewallSpecInboundRule `json:"inboundRule,omitempty" tf:"inbound_rule,omitempty"`
+	Name        string                    `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	OutboundRule *[]FirewallSpec `json:"outbound_rule,omitempty"`
+	OutboundRule []FirewallSpecOutboundRule `json:"outboundRule,omitempty" tf:"outbound_rule,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Tags []string `json:"tags,omitempty"`
+	Tags        []string                  `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type FirewallStatus struct {
@@ -75,7 +76,9 @@ type FirewallStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

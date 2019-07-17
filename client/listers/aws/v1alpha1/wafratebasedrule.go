@@ -29,8 +29,8 @@ import (
 type WafRateBasedRuleLister interface {
 	// List lists all WafRateBasedRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.WafRateBasedRule, err error)
-	// Get retrieves the WafRateBasedRule from the index for a given name.
-	Get(name string) (*v1alpha1.WafRateBasedRule, error)
+	// WafRateBasedRules returns an object that can list and get WafRateBasedRules.
+	WafRateBasedRules(namespace string) WafRateBasedRuleNamespaceLister
 	WafRateBasedRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *wafRateBasedRuleLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the WafRateBasedRule from the index for a given name.
-func (s *wafRateBasedRuleLister) Get(name string) (*v1alpha1.WafRateBasedRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafRateBasedRules returns an object that can list and get WafRateBasedRules.
+func (s *wafRateBasedRuleLister) WafRateBasedRules(namespace string) WafRateBasedRuleNamespaceLister {
+	return wafRateBasedRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafRateBasedRuleNamespaceLister helps list and get WafRateBasedRules.
+type WafRateBasedRuleNamespaceLister interface {
+	// List lists all WafRateBasedRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafRateBasedRule, err error)
+	// Get retrieves the WafRateBasedRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafRateBasedRule, error)
+	WafRateBasedRuleNamespaceListerExpansion
+}
+
+// wafRateBasedRuleNamespaceLister implements the WafRateBasedRuleNamespaceLister
+// interface.
+type wafRateBasedRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafRateBasedRules in the indexer for a given namespace.
+func (s wafRateBasedRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafRateBasedRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafRateBasedRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafRateBasedRule from the indexer for a given namespace and name.
+func (s wafRateBasedRuleNamespaceLister) Get(name string) (*v1alpha1.WafRateBasedRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

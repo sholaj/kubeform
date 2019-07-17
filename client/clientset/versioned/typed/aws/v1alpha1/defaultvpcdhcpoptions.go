@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// DefaultVpcDhcpOptionsesGetter has a method to return a DefaultVpcDhcpOptionsInterface.
+// DefaultVpcDHCPOptionsesGetter has a method to return a DefaultVpcDHCPOptionsInterface.
 // A group's client should implement this interface.
-type DefaultVpcDhcpOptionsesGetter interface {
-	DefaultVpcDhcpOptionses() DefaultVpcDhcpOptionsInterface
+type DefaultVpcDHCPOptionsesGetter interface {
+	DefaultVpcDHCPOptionses(namespace string) DefaultVpcDHCPOptionsInterface
 }
 
-// DefaultVpcDhcpOptionsInterface has methods to work with DefaultVpcDhcpOptions resources.
-type DefaultVpcDhcpOptionsInterface interface {
-	Create(*v1alpha1.DefaultVpcDhcpOptions) (*v1alpha1.DefaultVpcDhcpOptions, error)
-	Update(*v1alpha1.DefaultVpcDhcpOptions) (*v1alpha1.DefaultVpcDhcpOptions, error)
-	UpdateStatus(*v1alpha1.DefaultVpcDhcpOptions) (*v1alpha1.DefaultVpcDhcpOptions, error)
+// DefaultVpcDHCPOptionsInterface has methods to work with DefaultVpcDHCPOptions resources.
+type DefaultVpcDHCPOptionsInterface interface {
+	Create(*v1alpha1.DefaultVpcDHCPOptions) (*v1alpha1.DefaultVpcDHCPOptions, error)
+	Update(*v1alpha1.DefaultVpcDHCPOptions) (*v1alpha1.DefaultVpcDHCPOptions, error)
+	UpdateStatus(*v1alpha1.DefaultVpcDHCPOptions) (*v1alpha1.DefaultVpcDHCPOptions, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.DefaultVpcDhcpOptions, error)
-	List(opts v1.ListOptions) (*v1alpha1.DefaultVpcDhcpOptionsList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.DefaultVpcDHCPOptions, error)
+	List(opts v1.ListOptions) (*v1alpha1.DefaultVpcDHCPOptionsList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DefaultVpcDhcpOptions, err error)
-	DefaultVpcDhcpOptionsExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DefaultVpcDHCPOptions, err error)
+	DefaultVpcDHCPOptionsExpansion
 }
 
-// defaultVpcDhcpOptionses implements DefaultVpcDhcpOptionsInterface
-type defaultVpcDhcpOptionses struct {
+// defaultVpcDHCPOptionses implements DefaultVpcDHCPOptionsInterface
+type defaultVpcDHCPOptionses struct {
 	client rest.Interface
+	ns     string
 }
 
-// newDefaultVpcDhcpOptionses returns a DefaultVpcDhcpOptionses
-func newDefaultVpcDhcpOptionses(c *AwsV1alpha1Client) *defaultVpcDhcpOptionses {
-	return &defaultVpcDhcpOptionses{
+// newDefaultVpcDHCPOptionses returns a DefaultVpcDHCPOptionses
+func newDefaultVpcDHCPOptionses(c *AwsV1alpha1Client, namespace string) *defaultVpcDHCPOptionses {
+	return &defaultVpcDHCPOptionses{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the defaultVpcDhcpOptions, and returns the corresponding defaultVpcDhcpOptions object, and an error if there is any.
-func (c *defaultVpcDhcpOptionses) Get(name string, options v1.GetOptions) (result *v1alpha1.DefaultVpcDhcpOptions, err error) {
-	result = &v1alpha1.DefaultVpcDhcpOptions{}
+// Get takes name of the defaultVpcDHCPOptions, and returns the corresponding defaultVpcDHCPOptions object, and an error if there is any.
+func (c *defaultVpcDHCPOptionses) Get(name string, options v1.GetOptions) (result *v1alpha1.DefaultVpcDHCPOptions, err error) {
+	result = &v1alpha1.DefaultVpcDHCPOptions{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("defaultvpcdhcpoptionses").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *defaultVpcDhcpOptionses) Get(name string, options v1.GetOptions) (resul
 	return
 }
 
-// List takes label and field selectors, and returns the list of DefaultVpcDhcpOptionses that match those selectors.
-func (c *defaultVpcDhcpOptionses) List(opts v1.ListOptions) (result *v1alpha1.DefaultVpcDhcpOptionsList, err error) {
+// List takes label and field selectors, and returns the list of DefaultVpcDHCPOptionses that match those selectors.
+func (c *defaultVpcDHCPOptionses) List(opts v1.ListOptions) (result *v1alpha1.DefaultVpcDHCPOptionsList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.DefaultVpcDhcpOptionsList{}
+	result = &v1alpha1.DefaultVpcDHCPOptionsList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("defaultvpcdhcpoptionses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *defaultVpcDhcpOptionses) List(opts v1.ListOptions) (result *v1alpha1.De
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested defaultVpcDhcpOptionses.
-func (c *defaultVpcDhcpOptionses) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested defaultVpcDHCPOptionses.
+func (c *defaultVpcDHCPOptionses) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("defaultvpcdhcpoptionses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a defaultVpcDhcpOptions and creates it.  Returns the server's representation of the defaultVpcDhcpOptions, and an error, if there is any.
-func (c *defaultVpcDhcpOptionses) Create(defaultVpcDhcpOptions *v1alpha1.DefaultVpcDhcpOptions) (result *v1alpha1.DefaultVpcDhcpOptions, err error) {
-	result = &v1alpha1.DefaultVpcDhcpOptions{}
+// Create takes the representation of a defaultVpcDHCPOptions and creates it.  Returns the server's representation of the defaultVpcDHCPOptions, and an error, if there is any.
+func (c *defaultVpcDHCPOptionses) Create(defaultVpcDHCPOptions *v1alpha1.DefaultVpcDHCPOptions) (result *v1alpha1.DefaultVpcDHCPOptions, err error) {
+	result = &v1alpha1.DefaultVpcDHCPOptions{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("defaultvpcdhcpoptionses").
-		Body(defaultVpcDhcpOptions).
+		Body(defaultVpcDHCPOptions).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a defaultVpcDhcpOptions and updates it. Returns the server's representation of the defaultVpcDhcpOptions, and an error, if there is any.
-func (c *defaultVpcDhcpOptionses) Update(defaultVpcDhcpOptions *v1alpha1.DefaultVpcDhcpOptions) (result *v1alpha1.DefaultVpcDhcpOptions, err error) {
-	result = &v1alpha1.DefaultVpcDhcpOptions{}
+// Update takes the representation of a defaultVpcDHCPOptions and updates it. Returns the server's representation of the defaultVpcDHCPOptions, and an error, if there is any.
+func (c *defaultVpcDHCPOptionses) Update(defaultVpcDHCPOptions *v1alpha1.DefaultVpcDHCPOptions) (result *v1alpha1.DefaultVpcDHCPOptions, err error) {
+	result = &v1alpha1.DefaultVpcDHCPOptions{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("defaultvpcdhcpoptionses").
-		Name(defaultVpcDhcpOptions.Name).
-		Body(defaultVpcDhcpOptions).
+		Name(defaultVpcDHCPOptions.Name).
+		Body(defaultVpcDHCPOptions).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *defaultVpcDhcpOptionses) Update(defaultVpcDhcpOptions *v1alpha1.Default
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *defaultVpcDhcpOptionses) UpdateStatus(defaultVpcDhcpOptions *v1alpha1.DefaultVpcDhcpOptions) (result *v1alpha1.DefaultVpcDhcpOptions, err error) {
-	result = &v1alpha1.DefaultVpcDhcpOptions{}
+func (c *defaultVpcDHCPOptionses) UpdateStatus(defaultVpcDHCPOptions *v1alpha1.DefaultVpcDHCPOptions) (result *v1alpha1.DefaultVpcDHCPOptions, err error) {
+	result = &v1alpha1.DefaultVpcDHCPOptions{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("defaultvpcdhcpoptionses").
-		Name(defaultVpcDhcpOptions.Name).
+		Name(defaultVpcDHCPOptions.Name).
 		SubResource("status").
-		Body(defaultVpcDhcpOptions).
+		Body(defaultVpcDHCPOptions).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the defaultVpcDhcpOptions and deletes it. Returns an error if one occurs.
-func (c *defaultVpcDhcpOptionses) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the defaultVpcDHCPOptions and deletes it. Returns an error if one occurs.
+func (c *defaultVpcDHCPOptionses) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("defaultvpcdhcpoptionses").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *defaultVpcDhcpOptionses) Delete(name string, options *v1.DeleteOptions)
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *defaultVpcDhcpOptionses) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *defaultVpcDHCPOptionses) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("defaultvpcdhcpoptionses").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *defaultVpcDhcpOptionses) DeleteCollection(options *v1.DeleteOptions, li
 		Error()
 }
 
-// Patch applies the patch and returns the patched defaultVpcDhcpOptions.
-func (c *defaultVpcDhcpOptionses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DefaultVpcDhcpOptions, err error) {
-	result = &v1alpha1.DefaultVpcDhcpOptions{}
+// Patch applies the patch and returns the patched defaultVpcDHCPOptions.
+func (c *defaultVpcDHCPOptionses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DefaultVpcDHCPOptions, err error) {
+	result = &v1alpha1.DefaultVpcDHCPOptions{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("defaultvpcdhcpoptionses").
 		SubResource(subresources...).
 		Name(name).

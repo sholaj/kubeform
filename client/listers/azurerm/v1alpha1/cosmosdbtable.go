@@ -29,8 +29,8 @@ import (
 type CosmosdbTableLister interface {
 	// List lists all CosmosdbTables in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CosmosdbTable, err error)
-	// Get retrieves the CosmosdbTable from the index for a given name.
-	Get(name string) (*v1alpha1.CosmosdbTable, error)
+	// CosmosdbTables returns an object that can list and get CosmosdbTables.
+	CosmosdbTables(namespace string) CosmosdbTableNamespaceLister
 	CosmosdbTableListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cosmosdbTableLister) List(selector labels.Selector) (ret []*v1alpha1.Co
 	return ret, err
 }
 
-// Get retrieves the CosmosdbTable from the index for a given name.
-func (s *cosmosdbTableLister) Get(name string) (*v1alpha1.CosmosdbTable, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CosmosdbTables returns an object that can list and get CosmosdbTables.
+func (s *cosmosdbTableLister) CosmosdbTables(namespace string) CosmosdbTableNamespaceLister {
+	return cosmosdbTableNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CosmosdbTableNamespaceLister helps list and get CosmosdbTables.
+type CosmosdbTableNamespaceLister interface {
+	// List lists all CosmosdbTables in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CosmosdbTable, err error)
+	// Get retrieves the CosmosdbTable from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CosmosdbTable, error)
+	CosmosdbTableNamespaceListerExpansion
+}
+
+// cosmosdbTableNamespaceLister implements the CosmosdbTableNamespaceLister
+// interface.
+type cosmosdbTableNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CosmosdbTables in the indexer for a given namespace.
+func (s cosmosdbTableNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CosmosdbTable, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CosmosdbTable))
+	})
+	return ret, err
+}
+
+// Get retrieves the CosmosdbTable from the indexer for a given namespace and name.
+func (s cosmosdbTableNamespaceLister) Get(name string) (*v1alpha1.CosmosdbTable, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeBinaryAuthorizationPolicies implements BinaryAuthorizationPolicyInterface
 type FakeBinaryAuthorizationPolicies struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var binaryauthorizationpoliciesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "binaryauthorizationpolicies"}
@@ -40,7 +41,8 @@ var binaryauthorizationpoliciesKind = schema.GroupVersionKind{Group: "google.kub
 // Get takes name of the binaryAuthorizationPolicy, and returns the corresponding binaryAuthorizationPolicy object, and an error if there is any.
 func (c *FakeBinaryAuthorizationPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.BinaryAuthorizationPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(binaryauthorizationpoliciesResource, name), &v1alpha1.BinaryAuthorizationPolicy{})
+		Invokes(testing.NewGetAction(binaryauthorizationpoliciesResource, c.ns, name), &v1alpha1.BinaryAuthorizationPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeBinaryAuthorizationPolicies) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of BinaryAuthorizationPolicies that match those selectors.
 func (c *FakeBinaryAuthorizationPolicies) List(opts v1.ListOptions) (result *v1alpha1.BinaryAuthorizationPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(binaryauthorizationpoliciesResource, binaryauthorizationpoliciesKind, opts), &v1alpha1.BinaryAuthorizationPolicyList{})
+		Invokes(testing.NewListAction(binaryauthorizationpoliciesResource, binaryauthorizationpoliciesKind, c.ns, opts), &v1alpha1.BinaryAuthorizationPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeBinaryAuthorizationPolicies) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested binaryAuthorizationPolicies.
 func (c *FakeBinaryAuthorizationPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(binaryauthorizationpoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(binaryauthorizationpoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a binaryAuthorizationPolicy and creates it.  Returns the server's representation of the binaryAuthorizationPolicy, and an error, if there is any.
 func (c *FakeBinaryAuthorizationPolicies) Create(binaryAuthorizationPolicy *v1alpha1.BinaryAuthorizationPolicy) (result *v1alpha1.BinaryAuthorizationPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(binaryauthorizationpoliciesResource, binaryAuthorizationPolicy), &v1alpha1.BinaryAuthorizationPolicy{})
+		Invokes(testing.NewCreateAction(binaryauthorizationpoliciesResource, c.ns, binaryAuthorizationPolicy), &v1alpha1.BinaryAuthorizationPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeBinaryAuthorizationPolicies) Create(binaryAuthorizationPolicy *v1al
 // Update takes the representation of a binaryAuthorizationPolicy and updates it. Returns the server's representation of the binaryAuthorizationPolicy, and an error, if there is any.
 func (c *FakeBinaryAuthorizationPolicies) Update(binaryAuthorizationPolicy *v1alpha1.BinaryAuthorizationPolicy) (result *v1alpha1.BinaryAuthorizationPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(binaryauthorizationpoliciesResource, binaryAuthorizationPolicy), &v1alpha1.BinaryAuthorizationPolicy{})
+		Invokes(testing.NewUpdateAction(binaryauthorizationpoliciesResource, c.ns, binaryAuthorizationPolicy), &v1alpha1.BinaryAuthorizationPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeBinaryAuthorizationPolicies) Update(binaryAuthorizationPolicy *v1al
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeBinaryAuthorizationPolicies) UpdateStatus(binaryAuthorizationPolicy *v1alpha1.BinaryAuthorizationPolicy) (*v1alpha1.BinaryAuthorizationPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(binaryauthorizationpoliciesResource, "status", binaryAuthorizationPolicy), &v1alpha1.BinaryAuthorizationPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(binaryauthorizationpoliciesResource, "status", c.ns, binaryAuthorizationPolicy), &v1alpha1.BinaryAuthorizationPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeBinaryAuthorizationPolicies) UpdateStatus(binaryAuthorizationPolicy
 // Delete takes name of the binaryAuthorizationPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeBinaryAuthorizationPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(binaryauthorizationpoliciesResource, name), &v1alpha1.BinaryAuthorizationPolicy{})
+		Invokes(testing.NewDeleteAction(binaryauthorizationpoliciesResource, c.ns, name), &v1alpha1.BinaryAuthorizationPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeBinaryAuthorizationPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(binaryauthorizationpoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(binaryauthorizationpoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.BinaryAuthorizationPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeBinaryAuthorizationPolicies) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched binaryAuthorizationPolicy.
 func (c *FakeBinaryAuthorizationPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BinaryAuthorizationPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(binaryauthorizationpoliciesResource, name, pt, data, subresources...), &v1alpha1.BinaryAuthorizationPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(binaryauthorizationpoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.BinaryAuthorizationPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

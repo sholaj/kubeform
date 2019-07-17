@@ -31,6 +31,7 @@ import (
 // FakeDefaultSubnets implements DefaultSubnetInterface
 type FakeDefaultSubnets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var defaultsubnetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "defaultsubnets"}
@@ -40,7 +41,8 @@ var defaultsubnetsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Vers
 // Get takes name of the defaultSubnet, and returns the corresponding defaultSubnet object, and an error if there is any.
 func (c *FakeDefaultSubnets) Get(name string, options v1.GetOptions) (result *v1alpha1.DefaultSubnet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(defaultsubnetsResource, name), &v1alpha1.DefaultSubnet{})
+		Invokes(testing.NewGetAction(defaultsubnetsResource, c.ns, name), &v1alpha1.DefaultSubnet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDefaultSubnets) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of DefaultSubnets that match those selectors.
 func (c *FakeDefaultSubnets) List(opts v1.ListOptions) (result *v1alpha1.DefaultSubnetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(defaultsubnetsResource, defaultsubnetsKind, opts), &v1alpha1.DefaultSubnetList{})
+		Invokes(testing.NewListAction(defaultsubnetsResource, defaultsubnetsKind, c.ns, opts), &v1alpha1.DefaultSubnetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDefaultSubnets) List(opts v1.ListOptions) (result *v1alpha1.Default
 // Watch returns a watch.Interface that watches the requested defaultSubnets.
 func (c *FakeDefaultSubnets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(defaultsubnetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(defaultsubnetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a defaultSubnet and creates it.  Returns the server's representation of the defaultSubnet, and an error, if there is any.
 func (c *FakeDefaultSubnets) Create(defaultSubnet *v1alpha1.DefaultSubnet) (result *v1alpha1.DefaultSubnet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(defaultsubnetsResource, defaultSubnet), &v1alpha1.DefaultSubnet{})
+		Invokes(testing.NewCreateAction(defaultsubnetsResource, c.ns, defaultSubnet), &v1alpha1.DefaultSubnet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDefaultSubnets) Create(defaultSubnet *v1alpha1.DefaultSubnet) (resu
 // Update takes the representation of a defaultSubnet and updates it. Returns the server's representation of the defaultSubnet, and an error, if there is any.
 func (c *FakeDefaultSubnets) Update(defaultSubnet *v1alpha1.DefaultSubnet) (result *v1alpha1.DefaultSubnet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(defaultsubnetsResource, defaultSubnet), &v1alpha1.DefaultSubnet{})
+		Invokes(testing.NewUpdateAction(defaultsubnetsResource, c.ns, defaultSubnet), &v1alpha1.DefaultSubnet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDefaultSubnets) Update(defaultSubnet *v1alpha1.DefaultSubnet) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDefaultSubnets) UpdateStatus(defaultSubnet *v1alpha1.DefaultSubnet) (*v1alpha1.DefaultSubnet, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(defaultsubnetsResource, "status", defaultSubnet), &v1alpha1.DefaultSubnet{})
+		Invokes(testing.NewUpdateSubresourceAction(defaultsubnetsResource, "status", c.ns, defaultSubnet), &v1alpha1.DefaultSubnet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDefaultSubnets) UpdateStatus(defaultSubnet *v1alpha1.DefaultSubnet)
 // Delete takes name of the defaultSubnet and deletes it. Returns an error if one occurs.
 func (c *FakeDefaultSubnets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(defaultsubnetsResource, name), &v1alpha1.DefaultSubnet{})
+		Invokes(testing.NewDeleteAction(defaultsubnetsResource, c.ns, name), &v1alpha1.DefaultSubnet{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDefaultSubnets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(defaultsubnetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(defaultsubnetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DefaultSubnetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDefaultSubnets) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched defaultSubnet.
 func (c *FakeDefaultSubnets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DefaultSubnet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(defaultsubnetsResource, name, pt, data, subresources...), &v1alpha1.DefaultSubnet{})
+		Invokes(testing.NewPatchSubresourceAction(defaultsubnetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DefaultSubnet{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // Route53HealthChecksGetter has a method to return a Route53HealthCheckInterface.
 // A group's client should implement this interface.
 type Route53HealthChecksGetter interface {
-	Route53HealthChecks() Route53HealthCheckInterface
+	Route53HealthChecks(namespace string) Route53HealthCheckInterface
 }
 
 // Route53HealthCheckInterface has methods to work with Route53HealthCheck resources.
@@ -52,12 +52,14 @@ type Route53HealthCheckInterface interface {
 // route53HealthChecks implements Route53HealthCheckInterface
 type route53HealthChecks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRoute53HealthChecks returns a Route53HealthChecks
-func newRoute53HealthChecks(c *AwsV1alpha1Client) *route53HealthChecks {
+func newRoute53HealthChecks(c *AwsV1alpha1Client, namespace string) *route53HealthChecks {
 	return &route53HealthChecks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRoute53HealthChecks(c *AwsV1alpha1Client) *route53HealthChecks {
 func (c *route53HealthChecks) Get(name string, options v1.GetOptions) (result *v1alpha1.Route53HealthCheck, err error) {
 	result = &v1alpha1.Route53HealthCheck{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("route53healthchecks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *route53HealthChecks) List(opts v1.ListOptions) (result *v1alpha1.Route5
 	}
 	result = &v1alpha1.Route53HealthCheckList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("route53healthchecks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *route53HealthChecks) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("route53healthchecks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *route53HealthChecks) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *route53HealthChecks) Create(route53HealthCheck *v1alpha1.Route53HealthCheck) (result *v1alpha1.Route53HealthCheck, err error) {
 	result = &v1alpha1.Route53HealthCheck{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("route53healthchecks").
 		Body(route53HealthCheck).
 		Do().
@@ -118,6 +124,7 @@ func (c *route53HealthChecks) Create(route53HealthCheck *v1alpha1.Route53HealthC
 func (c *route53HealthChecks) Update(route53HealthCheck *v1alpha1.Route53HealthCheck) (result *v1alpha1.Route53HealthCheck, err error) {
 	result = &v1alpha1.Route53HealthCheck{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("route53healthchecks").
 		Name(route53HealthCheck.Name).
 		Body(route53HealthCheck).
@@ -132,6 +139,7 @@ func (c *route53HealthChecks) Update(route53HealthCheck *v1alpha1.Route53HealthC
 func (c *route53HealthChecks) UpdateStatus(route53HealthCheck *v1alpha1.Route53HealthCheck) (result *v1alpha1.Route53HealthCheck, err error) {
 	result = &v1alpha1.Route53HealthCheck{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("route53healthchecks").
 		Name(route53HealthCheck.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *route53HealthChecks) UpdateStatus(route53HealthCheck *v1alpha1.Route53H
 // Delete takes name of the route53HealthCheck and deletes it. Returns an error if one occurs.
 func (c *route53HealthChecks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("route53healthchecks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *route53HealthChecks) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("route53healthchecks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *route53HealthChecks) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *route53HealthChecks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Route53HealthCheck, err error) {
 	result = &v1alpha1.Route53HealthCheck{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("route53healthchecks").
 		SubResource(subresources...).
 		Name(name).

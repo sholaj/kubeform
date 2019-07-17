@@ -32,7 +32,7 @@ import (
 // SpannerDatabaseIamMembersGetter has a method to return a SpannerDatabaseIamMemberInterface.
 // A group's client should implement this interface.
 type SpannerDatabaseIamMembersGetter interface {
-	SpannerDatabaseIamMembers() SpannerDatabaseIamMemberInterface
+	SpannerDatabaseIamMembers(namespace string) SpannerDatabaseIamMemberInterface
 }
 
 // SpannerDatabaseIamMemberInterface has methods to work with SpannerDatabaseIamMember resources.
@@ -52,12 +52,14 @@ type SpannerDatabaseIamMemberInterface interface {
 // spannerDatabaseIamMembers implements SpannerDatabaseIamMemberInterface
 type spannerDatabaseIamMembers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSpannerDatabaseIamMembers returns a SpannerDatabaseIamMembers
-func newSpannerDatabaseIamMembers(c *GoogleV1alpha1Client) *spannerDatabaseIamMembers {
+func newSpannerDatabaseIamMembers(c *GoogleV1alpha1Client, namespace string) *spannerDatabaseIamMembers {
 	return &spannerDatabaseIamMembers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSpannerDatabaseIamMembers(c *GoogleV1alpha1Client) *spannerDatabaseIamMe
 func (c *spannerDatabaseIamMembers) Get(name string, options v1.GetOptions) (result *v1alpha1.SpannerDatabaseIamMember, err error) {
 	result = &v1alpha1.SpannerDatabaseIamMember{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("spannerdatabaseiammembers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *spannerDatabaseIamMembers) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.SpannerDatabaseIamMemberList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("spannerdatabaseiammembers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *spannerDatabaseIamMembers) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("spannerdatabaseiammembers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *spannerDatabaseIamMembers) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *spannerDatabaseIamMembers) Create(spannerDatabaseIamMember *v1alpha1.SpannerDatabaseIamMember) (result *v1alpha1.SpannerDatabaseIamMember, err error) {
 	result = &v1alpha1.SpannerDatabaseIamMember{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("spannerdatabaseiammembers").
 		Body(spannerDatabaseIamMember).
 		Do().
@@ -118,6 +124,7 @@ func (c *spannerDatabaseIamMembers) Create(spannerDatabaseIamMember *v1alpha1.Sp
 func (c *spannerDatabaseIamMembers) Update(spannerDatabaseIamMember *v1alpha1.SpannerDatabaseIamMember) (result *v1alpha1.SpannerDatabaseIamMember, err error) {
 	result = &v1alpha1.SpannerDatabaseIamMember{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("spannerdatabaseiammembers").
 		Name(spannerDatabaseIamMember.Name).
 		Body(spannerDatabaseIamMember).
@@ -132,6 +139,7 @@ func (c *spannerDatabaseIamMembers) Update(spannerDatabaseIamMember *v1alpha1.Sp
 func (c *spannerDatabaseIamMembers) UpdateStatus(spannerDatabaseIamMember *v1alpha1.SpannerDatabaseIamMember) (result *v1alpha1.SpannerDatabaseIamMember, err error) {
 	result = &v1alpha1.SpannerDatabaseIamMember{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("spannerdatabaseiammembers").
 		Name(spannerDatabaseIamMember.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *spannerDatabaseIamMembers) UpdateStatus(spannerDatabaseIamMember *v1alp
 // Delete takes name of the spannerDatabaseIamMember and deletes it. Returns an error if one occurs.
 func (c *spannerDatabaseIamMembers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("spannerdatabaseiammembers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *spannerDatabaseIamMembers) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("spannerdatabaseiammembers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *spannerDatabaseIamMembers) DeleteCollection(options *v1.DeleteOptions, 
 func (c *spannerDatabaseIamMembers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SpannerDatabaseIamMember, err error) {
 	result = &v1alpha1.SpannerDatabaseIamMember{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("spannerdatabaseiammembers").
 		SubResource(subresources...).
 		Name(name).

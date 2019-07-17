@@ -32,7 +32,7 @@ import (
 // ComputeInstanceGroupManagersGetter has a method to return a ComputeInstanceGroupManagerInterface.
 // A group's client should implement this interface.
 type ComputeInstanceGroupManagersGetter interface {
-	ComputeInstanceGroupManagers() ComputeInstanceGroupManagerInterface
+	ComputeInstanceGroupManagers(namespace string) ComputeInstanceGroupManagerInterface
 }
 
 // ComputeInstanceGroupManagerInterface has methods to work with ComputeInstanceGroupManager resources.
@@ -52,12 +52,14 @@ type ComputeInstanceGroupManagerInterface interface {
 // computeInstanceGroupManagers implements ComputeInstanceGroupManagerInterface
 type computeInstanceGroupManagers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeInstanceGroupManagers returns a ComputeInstanceGroupManagers
-func newComputeInstanceGroupManagers(c *GoogleV1alpha1Client) *computeInstanceGroupManagers {
+func newComputeInstanceGroupManagers(c *GoogleV1alpha1Client, namespace string) *computeInstanceGroupManagers {
 	return &computeInstanceGroupManagers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeInstanceGroupManagers(c *GoogleV1alpha1Client) *computeInstanceGr
 func (c *computeInstanceGroupManagers) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeInstanceGroupManager, err error) {
 	result = &v1alpha1.ComputeInstanceGroupManager{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeinstancegroupmanagers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeInstanceGroupManagers) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.ComputeInstanceGroupManagerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeinstancegroupmanagers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeInstanceGroupManagers) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computeinstancegroupmanagers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeInstanceGroupManagers) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *computeInstanceGroupManagers) Create(computeInstanceGroupManager *v1alpha1.ComputeInstanceGroupManager) (result *v1alpha1.ComputeInstanceGroupManager, err error) {
 	result = &v1alpha1.ComputeInstanceGroupManager{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computeinstancegroupmanagers").
 		Body(computeInstanceGroupManager).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeInstanceGroupManagers) Create(computeInstanceGroupManager *v1alp
 func (c *computeInstanceGroupManagers) Update(computeInstanceGroupManager *v1alpha1.ComputeInstanceGroupManager) (result *v1alpha1.ComputeInstanceGroupManager, err error) {
 	result = &v1alpha1.ComputeInstanceGroupManager{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeinstancegroupmanagers").
 		Name(computeInstanceGroupManager.Name).
 		Body(computeInstanceGroupManager).
@@ -132,6 +139,7 @@ func (c *computeInstanceGroupManagers) Update(computeInstanceGroupManager *v1alp
 func (c *computeInstanceGroupManagers) UpdateStatus(computeInstanceGroupManager *v1alpha1.ComputeInstanceGroupManager) (result *v1alpha1.ComputeInstanceGroupManager, err error) {
 	result = &v1alpha1.ComputeInstanceGroupManager{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeinstancegroupmanagers").
 		Name(computeInstanceGroupManager.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeInstanceGroupManagers) UpdateStatus(computeInstanceGroupManager 
 // Delete takes name of the computeInstanceGroupManager and deletes it. Returns an error if one occurs.
 func (c *computeInstanceGroupManagers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeinstancegroupmanagers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeInstanceGroupManagers) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeinstancegroupmanagers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeInstanceGroupManagers) DeleteCollection(options *v1.DeleteOption
 func (c *computeInstanceGroupManagers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeInstanceGroupManager, err error) {
 	result = &v1alpha1.ComputeInstanceGroupManager{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computeinstancegroupmanagers").
 		SubResource(subresources...).
 		Name(name).

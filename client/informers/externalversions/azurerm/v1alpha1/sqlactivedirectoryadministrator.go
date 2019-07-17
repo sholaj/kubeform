@@ -41,32 +41,33 @@ type SqlActiveDirectoryAdministratorInformer interface {
 type sqlActiveDirectoryAdministratorInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSqlActiveDirectoryAdministratorInformer constructs a new informer for SqlActiveDirectoryAdministrator type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSqlActiveDirectoryAdministratorInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSqlActiveDirectoryAdministratorInformer(client, resyncPeriod, indexers, nil)
+func NewSqlActiveDirectoryAdministratorInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSqlActiveDirectoryAdministratorInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSqlActiveDirectoryAdministratorInformer constructs a new informer for SqlActiveDirectoryAdministrator type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSqlActiveDirectoryAdministratorInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSqlActiveDirectoryAdministratorInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().SqlActiveDirectoryAdministrators().List(options)
+				return client.AzurermV1alpha1().SqlActiveDirectoryAdministrators(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().SqlActiveDirectoryAdministrators().Watch(options)
+				return client.AzurermV1alpha1().SqlActiveDirectoryAdministrators(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.SqlActiveDirectoryAdministrator{},
@@ -76,7 +77,7 @@ func NewFilteredSqlActiveDirectoryAdministratorInformer(client versioned.Interfa
 }
 
 func (f *sqlActiveDirectoryAdministratorInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSqlActiveDirectoryAdministratorInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSqlActiveDirectoryAdministratorInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *sqlActiveDirectoryAdministratorInformer) Informer() cache.SharedIndexInformer {

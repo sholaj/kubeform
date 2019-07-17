@@ -41,32 +41,33 @@ type MediaPackageChannelInformer interface {
 type mediaPackageChannelInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewMediaPackageChannelInformer constructs a new informer for MediaPackageChannel type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewMediaPackageChannelInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredMediaPackageChannelInformer(client, resyncPeriod, indexers, nil)
+func NewMediaPackageChannelInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredMediaPackageChannelInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredMediaPackageChannelInformer constructs a new informer for MediaPackageChannel type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredMediaPackageChannelInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredMediaPackageChannelInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().MediaPackageChannels().List(options)
+				return client.AwsV1alpha1().MediaPackageChannels(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().MediaPackageChannels().Watch(options)
+				return client.AwsV1alpha1().MediaPackageChannels(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.MediaPackageChannel{},
@@ -76,7 +77,7 @@ func NewFilteredMediaPackageChannelInformer(client versioned.Interface, resyncPe
 }
 
 func (f *mediaPackageChannelInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredMediaPackageChannelInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredMediaPackageChannelInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *mediaPackageChannelInformer) Informer() cache.SharedIndexInformer {

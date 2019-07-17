@@ -32,7 +32,7 @@ import (
 // SecurityCenterSubscriptionPricingsGetter has a method to return a SecurityCenterSubscriptionPricingInterface.
 // A group's client should implement this interface.
 type SecurityCenterSubscriptionPricingsGetter interface {
-	SecurityCenterSubscriptionPricings() SecurityCenterSubscriptionPricingInterface
+	SecurityCenterSubscriptionPricings(namespace string) SecurityCenterSubscriptionPricingInterface
 }
 
 // SecurityCenterSubscriptionPricingInterface has methods to work with SecurityCenterSubscriptionPricing resources.
@@ -52,12 +52,14 @@ type SecurityCenterSubscriptionPricingInterface interface {
 // securityCenterSubscriptionPricings implements SecurityCenterSubscriptionPricingInterface
 type securityCenterSubscriptionPricings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSecurityCenterSubscriptionPricings returns a SecurityCenterSubscriptionPricings
-func newSecurityCenterSubscriptionPricings(c *AzurermV1alpha1Client) *securityCenterSubscriptionPricings {
+func newSecurityCenterSubscriptionPricings(c *AzurermV1alpha1Client, namespace string) *securityCenterSubscriptionPricings {
 	return &securityCenterSubscriptionPricings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSecurityCenterSubscriptionPricings(c *AzurermV1alpha1Client) *securityCe
 func (c *securityCenterSubscriptionPricings) Get(name string, options v1.GetOptions) (result *v1alpha1.SecurityCenterSubscriptionPricing, err error) {
 	result = &v1alpha1.SecurityCenterSubscriptionPricing{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("securitycentersubscriptionpricings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *securityCenterSubscriptionPricings) List(opts v1.ListOptions) (result *
 	}
 	result = &v1alpha1.SecurityCenterSubscriptionPricingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("securitycentersubscriptionpricings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *securityCenterSubscriptionPricings) Watch(opts v1.ListOptions) (watch.I
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("securitycentersubscriptionpricings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *securityCenterSubscriptionPricings) Watch(opts v1.ListOptions) (watch.I
 func (c *securityCenterSubscriptionPricings) Create(securityCenterSubscriptionPricing *v1alpha1.SecurityCenterSubscriptionPricing) (result *v1alpha1.SecurityCenterSubscriptionPricing, err error) {
 	result = &v1alpha1.SecurityCenterSubscriptionPricing{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("securitycentersubscriptionpricings").
 		Body(securityCenterSubscriptionPricing).
 		Do().
@@ -118,6 +124,7 @@ func (c *securityCenterSubscriptionPricings) Create(securityCenterSubscriptionPr
 func (c *securityCenterSubscriptionPricings) Update(securityCenterSubscriptionPricing *v1alpha1.SecurityCenterSubscriptionPricing) (result *v1alpha1.SecurityCenterSubscriptionPricing, err error) {
 	result = &v1alpha1.SecurityCenterSubscriptionPricing{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("securitycentersubscriptionpricings").
 		Name(securityCenterSubscriptionPricing.Name).
 		Body(securityCenterSubscriptionPricing).
@@ -132,6 +139,7 @@ func (c *securityCenterSubscriptionPricings) Update(securityCenterSubscriptionPr
 func (c *securityCenterSubscriptionPricings) UpdateStatus(securityCenterSubscriptionPricing *v1alpha1.SecurityCenterSubscriptionPricing) (result *v1alpha1.SecurityCenterSubscriptionPricing, err error) {
 	result = &v1alpha1.SecurityCenterSubscriptionPricing{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("securitycentersubscriptionpricings").
 		Name(securityCenterSubscriptionPricing.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *securityCenterSubscriptionPricings) UpdateStatus(securityCenterSubscrip
 // Delete takes name of the securityCenterSubscriptionPricing and deletes it. Returns an error if one occurs.
 func (c *securityCenterSubscriptionPricings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("securitycentersubscriptionpricings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *securityCenterSubscriptionPricings) DeleteCollection(options *v1.Delete
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("securitycentersubscriptionpricings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *securityCenterSubscriptionPricings) DeleteCollection(options *v1.Delete
 func (c *securityCenterSubscriptionPricings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SecurityCenterSubscriptionPricing, err error) {
 	result = &v1alpha1.SecurityCenterSubscriptionPricing{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("securitycentersubscriptionpricings").
 		SubResource(subresources...).
 		Name(name).

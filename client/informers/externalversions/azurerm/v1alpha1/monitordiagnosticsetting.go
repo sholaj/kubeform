@@ -41,32 +41,33 @@ type MonitorDiagnosticSettingInformer interface {
 type monitorDiagnosticSettingInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewMonitorDiagnosticSettingInformer constructs a new informer for MonitorDiagnosticSetting type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewMonitorDiagnosticSettingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredMonitorDiagnosticSettingInformer(client, resyncPeriod, indexers, nil)
+func NewMonitorDiagnosticSettingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredMonitorDiagnosticSettingInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredMonitorDiagnosticSettingInformer constructs a new informer for MonitorDiagnosticSetting type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredMonitorDiagnosticSettingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredMonitorDiagnosticSettingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().MonitorDiagnosticSettings().List(options)
+				return client.AzurermV1alpha1().MonitorDiagnosticSettings(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().MonitorDiagnosticSettings().Watch(options)
+				return client.AzurermV1alpha1().MonitorDiagnosticSettings(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.MonitorDiagnosticSetting{},
@@ -76,7 +77,7 @@ func NewFilteredMonitorDiagnosticSettingInformer(client versioned.Interface, res
 }
 
 func (f *monitorDiagnosticSettingInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredMonitorDiagnosticSettingInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredMonitorDiagnosticSettingInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *monitorDiagnosticSettingInformer) Informer() cache.SharedIndexInformer {

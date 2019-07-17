@@ -32,7 +32,7 @@ import (
 // SwfDomainsGetter has a method to return a SwfDomainInterface.
 // A group's client should implement this interface.
 type SwfDomainsGetter interface {
-	SwfDomains() SwfDomainInterface
+	SwfDomains(namespace string) SwfDomainInterface
 }
 
 // SwfDomainInterface has methods to work with SwfDomain resources.
@@ -52,12 +52,14 @@ type SwfDomainInterface interface {
 // swfDomains implements SwfDomainInterface
 type swfDomains struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSwfDomains returns a SwfDomains
-func newSwfDomains(c *AwsV1alpha1Client) *swfDomains {
+func newSwfDomains(c *AwsV1alpha1Client, namespace string) *swfDomains {
 	return &swfDomains{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSwfDomains(c *AwsV1alpha1Client) *swfDomains {
 func (c *swfDomains) Get(name string, options v1.GetOptions) (result *v1alpha1.SwfDomain, err error) {
 	result = &v1alpha1.SwfDomain{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("swfdomains").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *swfDomains) List(opts v1.ListOptions) (result *v1alpha1.SwfDomainList, 
 	}
 	result = &v1alpha1.SwfDomainList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("swfdomains").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *swfDomains) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("swfdomains").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *swfDomains) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *swfDomains) Create(swfDomain *v1alpha1.SwfDomain) (result *v1alpha1.SwfDomain, err error) {
 	result = &v1alpha1.SwfDomain{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("swfdomains").
 		Body(swfDomain).
 		Do().
@@ -118,6 +124,7 @@ func (c *swfDomains) Create(swfDomain *v1alpha1.SwfDomain) (result *v1alpha1.Swf
 func (c *swfDomains) Update(swfDomain *v1alpha1.SwfDomain) (result *v1alpha1.SwfDomain, err error) {
 	result = &v1alpha1.SwfDomain{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("swfdomains").
 		Name(swfDomain.Name).
 		Body(swfDomain).
@@ -132,6 +139,7 @@ func (c *swfDomains) Update(swfDomain *v1alpha1.SwfDomain) (result *v1alpha1.Swf
 func (c *swfDomains) UpdateStatus(swfDomain *v1alpha1.SwfDomain) (result *v1alpha1.SwfDomain, err error) {
 	result = &v1alpha1.SwfDomain{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("swfdomains").
 		Name(swfDomain.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *swfDomains) UpdateStatus(swfDomain *v1alpha1.SwfDomain) (result *v1alph
 // Delete takes name of the swfDomain and deletes it. Returns an error if one occurs.
 func (c *swfDomains) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("swfdomains").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *swfDomains) DeleteCollection(options *v1.DeleteOptions, listOptions v1.
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("swfdomains").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *swfDomains) DeleteCollection(options *v1.DeleteOptions, listOptions v1.
 func (c *swfDomains) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SwfDomain, err error) {
 	result = &v1alpha1.SwfDomain{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("swfdomains").
 		SubResource(subresources...).
 		Name(name).

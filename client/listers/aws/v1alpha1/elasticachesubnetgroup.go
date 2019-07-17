@@ -29,8 +29,8 @@ import (
 type ElasticacheSubnetGroupLister interface {
 	// List lists all ElasticacheSubnetGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ElasticacheSubnetGroup, err error)
-	// Get retrieves the ElasticacheSubnetGroup from the index for a given name.
-	Get(name string) (*v1alpha1.ElasticacheSubnetGroup, error)
+	// ElasticacheSubnetGroups returns an object that can list and get ElasticacheSubnetGroups.
+	ElasticacheSubnetGroups(namespace string) ElasticacheSubnetGroupNamespaceLister
 	ElasticacheSubnetGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *elasticacheSubnetGroupLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the ElasticacheSubnetGroup from the index for a given name.
-func (s *elasticacheSubnetGroupLister) Get(name string) (*v1alpha1.ElasticacheSubnetGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ElasticacheSubnetGroups returns an object that can list and get ElasticacheSubnetGroups.
+func (s *elasticacheSubnetGroupLister) ElasticacheSubnetGroups(namespace string) ElasticacheSubnetGroupNamespaceLister {
+	return elasticacheSubnetGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ElasticacheSubnetGroupNamespaceLister helps list and get ElasticacheSubnetGroups.
+type ElasticacheSubnetGroupNamespaceLister interface {
+	// List lists all ElasticacheSubnetGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ElasticacheSubnetGroup, err error)
+	// Get retrieves the ElasticacheSubnetGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ElasticacheSubnetGroup, error)
+	ElasticacheSubnetGroupNamespaceListerExpansion
+}
+
+// elasticacheSubnetGroupNamespaceLister implements the ElasticacheSubnetGroupNamespaceLister
+// interface.
+type elasticacheSubnetGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ElasticacheSubnetGroups in the indexer for a given namespace.
+func (s elasticacheSubnetGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ElasticacheSubnetGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ElasticacheSubnetGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the ElasticacheSubnetGroup from the indexer for a given namespace and name.
+func (s elasticacheSubnetGroupNamespaceLister) Get(name string) (*v1alpha1.ElasticacheSubnetGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

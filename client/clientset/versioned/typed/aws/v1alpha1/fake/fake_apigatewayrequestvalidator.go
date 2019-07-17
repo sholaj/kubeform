@@ -31,6 +31,7 @@ import (
 // FakeApiGatewayRequestValidators implements ApiGatewayRequestValidatorInterface
 type FakeApiGatewayRequestValidators struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var apigatewayrequestvalidatorsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "apigatewayrequestvalidators"}
@@ -40,7 +41,8 @@ var apigatewayrequestvalidatorsKind = schema.GroupVersionKind{Group: "aws.kubefo
 // Get takes name of the apiGatewayRequestValidator, and returns the corresponding apiGatewayRequestValidator object, and an error if there is any.
 func (c *FakeApiGatewayRequestValidators) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayRequestValidator, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apigatewayrequestvalidatorsResource, name), &v1alpha1.ApiGatewayRequestValidator{})
+		Invokes(testing.NewGetAction(apigatewayrequestvalidatorsResource, c.ns, name), &v1alpha1.ApiGatewayRequestValidator{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApiGatewayRequestValidators) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of ApiGatewayRequestValidators that match those selectors.
 func (c *FakeApiGatewayRequestValidators) List(opts v1.ListOptions) (result *v1alpha1.ApiGatewayRequestValidatorList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apigatewayrequestvalidatorsResource, apigatewayrequestvalidatorsKind, opts), &v1alpha1.ApiGatewayRequestValidatorList{})
+		Invokes(testing.NewListAction(apigatewayrequestvalidatorsResource, apigatewayrequestvalidatorsKind, c.ns, opts), &v1alpha1.ApiGatewayRequestValidatorList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApiGatewayRequestValidators) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested apiGatewayRequestValidators.
 func (c *FakeApiGatewayRequestValidators) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apigatewayrequestvalidatorsResource, opts))
+		InvokesWatch(testing.NewWatchAction(apigatewayrequestvalidatorsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a apiGatewayRequestValidator and creates it.  Returns the server's representation of the apiGatewayRequestValidator, and an error, if there is any.
 func (c *FakeApiGatewayRequestValidators) Create(apiGatewayRequestValidator *v1alpha1.ApiGatewayRequestValidator) (result *v1alpha1.ApiGatewayRequestValidator, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apigatewayrequestvalidatorsResource, apiGatewayRequestValidator), &v1alpha1.ApiGatewayRequestValidator{})
+		Invokes(testing.NewCreateAction(apigatewayrequestvalidatorsResource, c.ns, apiGatewayRequestValidator), &v1alpha1.ApiGatewayRequestValidator{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApiGatewayRequestValidators) Create(apiGatewayRequestValidator *v1a
 // Update takes the representation of a apiGatewayRequestValidator and updates it. Returns the server's representation of the apiGatewayRequestValidator, and an error, if there is any.
 func (c *FakeApiGatewayRequestValidators) Update(apiGatewayRequestValidator *v1alpha1.ApiGatewayRequestValidator) (result *v1alpha1.ApiGatewayRequestValidator, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apigatewayrequestvalidatorsResource, apiGatewayRequestValidator), &v1alpha1.ApiGatewayRequestValidator{})
+		Invokes(testing.NewUpdateAction(apigatewayrequestvalidatorsResource, c.ns, apiGatewayRequestValidator), &v1alpha1.ApiGatewayRequestValidator{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApiGatewayRequestValidators) Update(apiGatewayRequestValidator *v1a
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApiGatewayRequestValidators) UpdateStatus(apiGatewayRequestValidator *v1alpha1.ApiGatewayRequestValidator) (*v1alpha1.ApiGatewayRequestValidator, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apigatewayrequestvalidatorsResource, "status", apiGatewayRequestValidator), &v1alpha1.ApiGatewayRequestValidator{})
+		Invokes(testing.NewUpdateSubresourceAction(apigatewayrequestvalidatorsResource, "status", c.ns, apiGatewayRequestValidator), &v1alpha1.ApiGatewayRequestValidator{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApiGatewayRequestValidators) UpdateStatus(apiGatewayRequestValidato
 // Delete takes name of the apiGatewayRequestValidator and deletes it. Returns an error if one occurs.
 func (c *FakeApiGatewayRequestValidators) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apigatewayrequestvalidatorsResource, name), &v1alpha1.ApiGatewayRequestValidator{})
+		Invokes(testing.NewDeleteAction(apigatewayrequestvalidatorsResource, c.ns, name), &v1alpha1.ApiGatewayRequestValidator{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApiGatewayRequestValidators) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apigatewayrequestvalidatorsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(apigatewayrequestvalidatorsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApiGatewayRequestValidatorList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApiGatewayRequestValidators) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched apiGatewayRequestValidator.
 func (c *FakeApiGatewayRequestValidators) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayRequestValidator, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apigatewayrequestvalidatorsResource, name, pt, data, subresources...), &v1alpha1.ApiGatewayRequestValidator{})
+		Invokes(testing.NewPatchSubresourceAction(apigatewayrequestvalidatorsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiGatewayRequestValidator{})
+
 	if obj == nil {
 		return nil, err
 	}

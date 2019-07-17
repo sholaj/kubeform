@@ -29,8 +29,8 @@ import (
 type DaxClusterLister interface {
 	// List lists all DaxClusters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DaxCluster, err error)
-	// Get retrieves the DaxCluster from the index for a given name.
-	Get(name string) (*v1alpha1.DaxCluster, error)
+	// DaxClusters returns an object that can list and get DaxClusters.
+	DaxClusters(namespace string) DaxClusterNamespaceLister
 	DaxClusterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *daxClusterLister) List(selector labels.Selector) (ret []*v1alpha1.DaxCl
 	return ret, err
 }
 
-// Get retrieves the DaxCluster from the index for a given name.
-func (s *daxClusterLister) Get(name string) (*v1alpha1.DaxCluster, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DaxClusters returns an object that can list and get DaxClusters.
+func (s *daxClusterLister) DaxClusters(namespace string) DaxClusterNamespaceLister {
+	return daxClusterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DaxClusterNamespaceLister helps list and get DaxClusters.
+type DaxClusterNamespaceLister interface {
+	// List lists all DaxClusters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DaxCluster, err error)
+	// Get retrieves the DaxCluster from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DaxCluster, error)
+	DaxClusterNamespaceListerExpansion
+}
+
+// daxClusterNamespaceLister implements the DaxClusterNamespaceLister
+// interface.
+type daxClusterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DaxClusters in the indexer for a given namespace.
+func (s daxClusterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DaxCluster, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DaxCluster))
+	})
+	return ret, err
+}
+
+// Get retrieves the DaxCluster from the indexer for a given namespace and name.
+func (s daxClusterNamespaceLister) Get(name string) (*v1alpha1.DaxCluster, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,26 +20,27 @@ type EksCluster struct {
 
 type EksClusterSpecVpcConfig struct {
 	// +optional
-	EndpointPrivateAccess bool `json:"endpoint_private_access,omitempty"`
+	EndpointPrivateAccess bool `json:"endpointPrivateAccess,omitempty" tf:"endpoint_private_access,omitempty"`
 	// +optional
-	EndpointPublicAccess bool `json:"endpoint_public_access,omitempty"`
+	EndpointPublicAccess bool `json:"endpointPublicAccess,omitempty" tf:"endpoint_public_access,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SecurityGroupIds []string `json:"security_group_ids,omitempty"`
+	SecurityGroupIDS []string `json:"securityGroupIDS,omitempty" tf:"security_group_ids,omitempty"`
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	SubnetIds []string `json:"subnet_ids"`
+	SubnetIDS []string `json:"subnetIDS" tf:"subnet_ids"`
 }
 
 type EksClusterSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	EnabledClusterLogTypes []string `json:"enabled_cluster_log_types,omitempty"`
-	Name                   string   `json:"name"`
-	RoleArn                string   `json:"role_arn"`
+	EnabledClusterLogTypes []string `json:"enabledClusterLogTypes,omitempty" tf:"enabled_cluster_log_types,omitempty"`
+	Name                   string   `json:"name" tf:"name"`
+	RoleArn                string   `json:"roleArn" tf:"role_arn"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	VpcConfig []EksClusterSpec `json:"vpc_config"`
+	VpcConfig   []EksClusterSpecVpcConfig `json:"vpcConfig" tf:"vpc_config"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type EksClusterStatus struct {
@@ -47,7 +48,9 @@ type EksClusterStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

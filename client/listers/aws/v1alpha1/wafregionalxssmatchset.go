@@ -29,8 +29,8 @@ import (
 type WafregionalXssMatchSetLister interface {
 	// List lists all WafregionalXssMatchSets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.WafregionalXssMatchSet, err error)
-	// Get retrieves the WafregionalXssMatchSet from the index for a given name.
-	Get(name string) (*v1alpha1.WafregionalXssMatchSet, error)
+	// WafregionalXssMatchSets returns an object that can list and get WafregionalXssMatchSets.
+	WafregionalXssMatchSets(namespace string) WafregionalXssMatchSetNamespaceLister
 	WafregionalXssMatchSetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *wafregionalXssMatchSetLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the WafregionalXssMatchSet from the index for a given name.
-func (s *wafregionalXssMatchSetLister) Get(name string) (*v1alpha1.WafregionalXssMatchSet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafregionalXssMatchSets returns an object that can list and get WafregionalXssMatchSets.
+func (s *wafregionalXssMatchSetLister) WafregionalXssMatchSets(namespace string) WafregionalXssMatchSetNamespaceLister {
+	return wafregionalXssMatchSetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafregionalXssMatchSetNamespaceLister helps list and get WafregionalXssMatchSets.
+type WafregionalXssMatchSetNamespaceLister interface {
+	// List lists all WafregionalXssMatchSets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafregionalXssMatchSet, err error)
+	// Get retrieves the WafregionalXssMatchSet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafregionalXssMatchSet, error)
+	WafregionalXssMatchSetNamespaceListerExpansion
+}
+
+// wafregionalXssMatchSetNamespaceLister implements the WafregionalXssMatchSetNamespaceLister
+// interface.
+type wafregionalXssMatchSetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafregionalXssMatchSets in the indexer for a given namespace.
+func (s wafregionalXssMatchSetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafregionalXssMatchSet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafregionalXssMatchSet))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafregionalXssMatchSet from the indexer for a given namespace and name.
+func (s wafregionalXssMatchSetNamespaceLister) Get(name string) (*v1alpha1.WafregionalXssMatchSet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

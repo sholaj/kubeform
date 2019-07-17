@@ -32,7 +32,7 @@ import (
 // ApiManagementGroupUsersGetter has a method to return a ApiManagementGroupUserInterface.
 // A group's client should implement this interface.
 type ApiManagementGroupUsersGetter interface {
-	ApiManagementGroupUsers() ApiManagementGroupUserInterface
+	ApiManagementGroupUsers(namespace string) ApiManagementGroupUserInterface
 }
 
 // ApiManagementGroupUserInterface has methods to work with ApiManagementGroupUser resources.
@@ -52,12 +52,14 @@ type ApiManagementGroupUserInterface interface {
 // apiManagementGroupUsers implements ApiManagementGroupUserInterface
 type apiManagementGroupUsers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiManagementGroupUsers returns a ApiManagementGroupUsers
-func newApiManagementGroupUsers(c *AzurermV1alpha1Client) *apiManagementGroupUsers {
+func newApiManagementGroupUsers(c *AzurermV1alpha1Client, namespace string) *apiManagementGroupUsers {
 	return &apiManagementGroupUsers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiManagementGroupUsers(c *AzurermV1alpha1Client) *apiManagementGroupUse
 func (c *apiManagementGroupUsers) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementGroupUser, err error) {
 	result = &v1alpha1.ApiManagementGroupUser{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementgroupusers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiManagementGroupUsers) List(opts v1.ListOptions) (result *v1alpha1.Ap
 	}
 	result = &v1alpha1.ApiManagementGroupUserList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementgroupusers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiManagementGroupUsers) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementgroupusers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiManagementGroupUsers) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *apiManagementGroupUsers) Create(apiManagementGroupUser *v1alpha1.ApiManagementGroupUser) (result *v1alpha1.ApiManagementGroupUser, err error) {
 	result = &v1alpha1.ApiManagementGroupUser{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apimanagementgroupusers").
 		Body(apiManagementGroupUser).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiManagementGroupUsers) Create(apiManagementGroupUser *v1alpha1.ApiMan
 func (c *apiManagementGroupUsers) Update(apiManagementGroupUser *v1alpha1.ApiManagementGroupUser) (result *v1alpha1.ApiManagementGroupUser, err error) {
 	result = &v1alpha1.ApiManagementGroupUser{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementgroupusers").
 		Name(apiManagementGroupUser.Name).
 		Body(apiManagementGroupUser).
@@ -132,6 +139,7 @@ func (c *apiManagementGroupUsers) Update(apiManagementGroupUser *v1alpha1.ApiMan
 func (c *apiManagementGroupUsers) UpdateStatus(apiManagementGroupUser *v1alpha1.ApiManagementGroupUser) (result *v1alpha1.ApiManagementGroupUser, err error) {
 	result = &v1alpha1.ApiManagementGroupUser{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementgroupusers").
 		Name(apiManagementGroupUser.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiManagementGroupUsers) UpdateStatus(apiManagementGroupUser *v1alpha1.
 // Delete takes name of the apiManagementGroupUser and deletes it. Returns an error if one occurs.
 func (c *apiManagementGroupUsers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementgroupusers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiManagementGroupUsers) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementgroupusers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiManagementGroupUsers) DeleteCollection(options *v1.DeleteOptions, li
 func (c *apiManagementGroupUsers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementGroupUser, err error) {
 	result = &v1alpha1.ApiManagementGroupUser{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apimanagementgroupusers").
 		SubResource(subresources...).
 		Name(name).

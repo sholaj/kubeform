@@ -41,32 +41,33 @@ type EventhubNamespaceAuthorizationRuleInformer interface {
 type eventhubNamespaceAuthorizationRuleInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewEventhubNamespaceAuthorizationRuleInformer constructs a new informer for EventhubNamespaceAuthorizationRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewEventhubNamespaceAuthorizationRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredEventhubNamespaceAuthorizationRuleInformer(client, resyncPeriod, indexers, nil)
+func NewEventhubNamespaceAuthorizationRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredEventhubNamespaceAuthorizationRuleInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredEventhubNamespaceAuthorizationRuleInformer constructs a new informer for EventhubNamespaceAuthorizationRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredEventhubNamespaceAuthorizationRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredEventhubNamespaceAuthorizationRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().EventhubNamespaceAuthorizationRules().List(options)
+				return client.AzurermV1alpha1().EventhubNamespaceAuthorizationRules(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().EventhubNamespaceAuthorizationRules().Watch(options)
+				return client.AzurermV1alpha1().EventhubNamespaceAuthorizationRules(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.EventhubNamespaceAuthorizationRule{},
@@ -76,7 +77,7 @@ func NewFilteredEventhubNamespaceAuthorizationRuleInformer(client versioned.Inte
 }
 
 func (f *eventhubNamespaceAuthorizationRuleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredEventhubNamespaceAuthorizationRuleInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredEventhubNamespaceAuthorizationRuleInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *eventhubNamespaceAuthorizationRuleInformer) Informer() cache.SharedIndexInformer {

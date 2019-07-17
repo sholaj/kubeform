@@ -32,7 +32,7 @@ import (
 // ServiceAccountsGetter has a method to return a ServiceAccountInterface.
 // A group's client should implement this interface.
 type ServiceAccountsGetter interface {
-	ServiceAccounts() ServiceAccountInterface
+	ServiceAccounts(namespace string) ServiceAccountInterface
 }
 
 // ServiceAccountInterface has methods to work with ServiceAccount resources.
@@ -52,12 +52,14 @@ type ServiceAccountInterface interface {
 // serviceAccounts implements ServiceAccountInterface
 type serviceAccounts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newServiceAccounts returns a ServiceAccounts
-func newServiceAccounts(c *GoogleV1alpha1Client) *serviceAccounts {
+func newServiceAccounts(c *GoogleV1alpha1Client, namespace string) *serviceAccounts {
 	return &serviceAccounts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newServiceAccounts(c *GoogleV1alpha1Client) *serviceAccounts {
 func (c *serviceAccounts) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceAccount, err error) {
 	result = &v1alpha1.ServiceAccount{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("serviceaccounts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *serviceAccounts) List(opts v1.ListOptions) (result *v1alpha1.ServiceAcc
 	}
 	result = &v1alpha1.ServiceAccountList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("serviceaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *serviceAccounts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("serviceaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *serviceAccounts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *serviceAccounts) Create(serviceAccount *v1alpha1.ServiceAccount) (result *v1alpha1.ServiceAccount, err error) {
 	result = &v1alpha1.ServiceAccount{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("serviceaccounts").
 		Body(serviceAccount).
 		Do().
@@ -118,6 +124,7 @@ func (c *serviceAccounts) Create(serviceAccount *v1alpha1.ServiceAccount) (resul
 func (c *serviceAccounts) Update(serviceAccount *v1alpha1.ServiceAccount) (result *v1alpha1.ServiceAccount, err error) {
 	result = &v1alpha1.ServiceAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("serviceaccounts").
 		Name(serviceAccount.Name).
 		Body(serviceAccount).
@@ -132,6 +139,7 @@ func (c *serviceAccounts) Update(serviceAccount *v1alpha1.ServiceAccount) (resul
 func (c *serviceAccounts) UpdateStatus(serviceAccount *v1alpha1.ServiceAccount) (result *v1alpha1.ServiceAccount, err error) {
 	result = &v1alpha1.ServiceAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("serviceaccounts").
 		Name(serviceAccount.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *serviceAccounts) UpdateStatus(serviceAccount *v1alpha1.ServiceAccount) 
 // Delete takes name of the serviceAccount and deletes it. Returns an error if one occurs.
 func (c *serviceAccounts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("serviceaccounts").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *serviceAccounts) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("serviceaccounts").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *serviceAccounts) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *serviceAccounts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceAccount, err error) {
 	result = &v1alpha1.ServiceAccount{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("serviceaccounts").
 		SubResource(subresources...).
 		Name(name).

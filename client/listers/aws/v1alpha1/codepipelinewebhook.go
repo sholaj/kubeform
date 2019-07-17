@@ -29,8 +29,8 @@ import (
 type CodepipelineWebhookLister interface {
 	// List lists all CodepipelineWebhooks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CodepipelineWebhook, err error)
-	// Get retrieves the CodepipelineWebhook from the index for a given name.
-	Get(name string) (*v1alpha1.CodepipelineWebhook, error)
+	// CodepipelineWebhooks returns an object that can list and get CodepipelineWebhooks.
+	CodepipelineWebhooks(namespace string) CodepipelineWebhookNamespaceLister
 	CodepipelineWebhookListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *codepipelineWebhookLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the CodepipelineWebhook from the index for a given name.
-func (s *codepipelineWebhookLister) Get(name string) (*v1alpha1.CodepipelineWebhook, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CodepipelineWebhooks returns an object that can list and get CodepipelineWebhooks.
+func (s *codepipelineWebhookLister) CodepipelineWebhooks(namespace string) CodepipelineWebhookNamespaceLister {
+	return codepipelineWebhookNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CodepipelineWebhookNamespaceLister helps list and get CodepipelineWebhooks.
+type CodepipelineWebhookNamespaceLister interface {
+	// List lists all CodepipelineWebhooks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CodepipelineWebhook, err error)
+	// Get retrieves the CodepipelineWebhook from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CodepipelineWebhook, error)
+	CodepipelineWebhookNamespaceListerExpansion
+}
+
+// codepipelineWebhookNamespaceLister implements the CodepipelineWebhookNamespaceLister
+// interface.
+type codepipelineWebhookNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CodepipelineWebhooks in the indexer for a given namespace.
+func (s codepipelineWebhookNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CodepipelineWebhook, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CodepipelineWebhook))
+	})
+	return ret, err
+}
+
+// Get retrieves the CodepipelineWebhook from the indexer for a given namespace and name.
+func (s codepipelineWebhookNamespaceLister) Get(name string) (*v1alpha1.CodepipelineWebhook, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

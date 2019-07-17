@@ -32,7 +32,7 @@ import (
 // AppsyncDatasourcesGetter has a method to return a AppsyncDatasourceInterface.
 // A group's client should implement this interface.
 type AppsyncDatasourcesGetter interface {
-	AppsyncDatasources() AppsyncDatasourceInterface
+	AppsyncDatasources(namespace string) AppsyncDatasourceInterface
 }
 
 // AppsyncDatasourceInterface has methods to work with AppsyncDatasource resources.
@@ -52,12 +52,14 @@ type AppsyncDatasourceInterface interface {
 // appsyncDatasources implements AppsyncDatasourceInterface
 type appsyncDatasources struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAppsyncDatasources returns a AppsyncDatasources
-func newAppsyncDatasources(c *AwsV1alpha1Client) *appsyncDatasources {
+func newAppsyncDatasources(c *AwsV1alpha1Client, namespace string) *appsyncDatasources {
 	return &appsyncDatasources{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAppsyncDatasources(c *AwsV1alpha1Client) *appsyncDatasources {
 func (c *appsyncDatasources) Get(name string, options v1.GetOptions) (result *v1alpha1.AppsyncDatasource, err error) {
 	result = &v1alpha1.AppsyncDatasource{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appsyncdatasources").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *appsyncDatasources) List(opts v1.ListOptions) (result *v1alpha1.Appsync
 	}
 	result = &v1alpha1.AppsyncDatasourceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appsyncdatasources").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *appsyncDatasources) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("appsyncdatasources").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *appsyncDatasources) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *appsyncDatasources) Create(appsyncDatasource *v1alpha1.AppsyncDatasource) (result *v1alpha1.AppsyncDatasource, err error) {
 	result = &v1alpha1.AppsyncDatasource{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("appsyncdatasources").
 		Body(appsyncDatasource).
 		Do().
@@ -118,6 +124,7 @@ func (c *appsyncDatasources) Create(appsyncDatasource *v1alpha1.AppsyncDatasourc
 func (c *appsyncDatasources) Update(appsyncDatasource *v1alpha1.AppsyncDatasource) (result *v1alpha1.AppsyncDatasource, err error) {
 	result = &v1alpha1.AppsyncDatasource{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appsyncdatasources").
 		Name(appsyncDatasource.Name).
 		Body(appsyncDatasource).
@@ -132,6 +139,7 @@ func (c *appsyncDatasources) Update(appsyncDatasource *v1alpha1.AppsyncDatasourc
 func (c *appsyncDatasources) UpdateStatus(appsyncDatasource *v1alpha1.AppsyncDatasource) (result *v1alpha1.AppsyncDatasource, err error) {
 	result = &v1alpha1.AppsyncDatasource{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appsyncdatasources").
 		Name(appsyncDatasource.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *appsyncDatasources) UpdateStatus(appsyncDatasource *v1alpha1.AppsyncDat
 // Delete takes name of the appsyncDatasource and deletes it. Returns an error if one occurs.
 func (c *appsyncDatasources) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appsyncdatasources").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *appsyncDatasources) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appsyncdatasources").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *appsyncDatasources) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *appsyncDatasources) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppsyncDatasource, err error) {
 	result = &v1alpha1.AppsyncDatasource{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("appsyncdatasources").
 		SubResource(subresources...).
 		Name(name).

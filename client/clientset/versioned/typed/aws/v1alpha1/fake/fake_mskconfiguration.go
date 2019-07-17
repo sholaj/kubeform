@@ -31,6 +31,7 @@ import (
 // FakeMskConfigurations implements MskConfigurationInterface
 type FakeMskConfigurations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var mskconfigurationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "mskconfigurations"}
@@ -40,7 +41,8 @@ var mskconfigurationsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", V
 // Get takes name of the mskConfiguration, and returns the corresponding mskConfiguration object, and an error if there is any.
 func (c *FakeMskConfigurations) Get(name string, options v1.GetOptions) (result *v1alpha1.MskConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(mskconfigurationsResource, name), &v1alpha1.MskConfiguration{})
+		Invokes(testing.NewGetAction(mskconfigurationsResource, c.ns, name), &v1alpha1.MskConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMskConfigurations) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of MskConfigurations that match those selectors.
 func (c *FakeMskConfigurations) List(opts v1.ListOptions) (result *v1alpha1.MskConfigurationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(mskconfigurationsResource, mskconfigurationsKind, opts), &v1alpha1.MskConfigurationList{})
+		Invokes(testing.NewListAction(mskconfigurationsResource, mskconfigurationsKind, c.ns, opts), &v1alpha1.MskConfigurationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMskConfigurations) List(opts v1.ListOptions) (result *v1alpha1.MskC
 // Watch returns a watch.Interface that watches the requested mskConfigurations.
 func (c *FakeMskConfigurations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(mskconfigurationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(mskconfigurationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a mskConfiguration and creates it.  Returns the server's representation of the mskConfiguration, and an error, if there is any.
 func (c *FakeMskConfigurations) Create(mskConfiguration *v1alpha1.MskConfiguration) (result *v1alpha1.MskConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(mskconfigurationsResource, mskConfiguration), &v1alpha1.MskConfiguration{})
+		Invokes(testing.NewCreateAction(mskconfigurationsResource, c.ns, mskConfiguration), &v1alpha1.MskConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMskConfigurations) Create(mskConfiguration *v1alpha1.MskConfigurati
 // Update takes the representation of a mskConfiguration and updates it. Returns the server's representation of the mskConfiguration, and an error, if there is any.
 func (c *FakeMskConfigurations) Update(mskConfiguration *v1alpha1.MskConfiguration) (result *v1alpha1.MskConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(mskconfigurationsResource, mskConfiguration), &v1alpha1.MskConfiguration{})
+		Invokes(testing.NewUpdateAction(mskconfigurationsResource, c.ns, mskConfiguration), &v1alpha1.MskConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMskConfigurations) Update(mskConfiguration *v1alpha1.MskConfigurati
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMskConfigurations) UpdateStatus(mskConfiguration *v1alpha1.MskConfiguration) (*v1alpha1.MskConfiguration, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(mskconfigurationsResource, "status", mskConfiguration), &v1alpha1.MskConfiguration{})
+		Invokes(testing.NewUpdateSubresourceAction(mskconfigurationsResource, "status", c.ns, mskConfiguration), &v1alpha1.MskConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMskConfigurations) UpdateStatus(mskConfiguration *v1alpha1.MskConfi
 // Delete takes name of the mskConfiguration and deletes it. Returns an error if one occurs.
 func (c *FakeMskConfigurations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(mskconfigurationsResource, name), &v1alpha1.MskConfiguration{})
+		Invokes(testing.NewDeleteAction(mskconfigurationsResource, c.ns, name), &v1alpha1.MskConfiguration{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMskConfigurations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(mskconfigurationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(mskconfigurationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MskConfigurationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMskConfigurations) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched mskConfiguration.
 func (c *FakeMskConfigurations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MskConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(mskconfigurationsResource, name, pt, data, subresources...), &v1alpha1.MskConfiguration{})
+		Invokes(testing.NewPatchSubresourceAction(mskconfigurationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.MskConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}

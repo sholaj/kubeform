@@ -29,8 +29,8 @@ import (
 type CosmosdbMongoCollectionLister interface {
 	// List lists all CosmosdbMongoCollections in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CosmosdbMongoCollection, err error)
-	// Get retrieves the CosmosdbMongoCollection from the index for a given name.
-	Get(name string) (*v1alpha1.CosmosdbMongoCollection, error)
+	// CosmosdbMongoCollections returns an object that can list and get CosmosdbMongoCollections.
+	CosmosdbMongoCollections(namespace string) CosmosdbMongoCollectionNamespaceLister
 	CosmosdbMongoCollectionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cosmosdbMongoCollectionLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the CosmosdbMongoCollection from the index for a given name.
-func (s *cosmosdbMongoCollectionLister) Get(name string) (*v1alpha1.CosmosdbMongoCollection, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CosmosdbMongoCollections returns an object that can list and get CosmosdbMongoCollections.
+func (s *cosmosdbMongoCollectionLister) CosmosdbMongoCollections(namespace string) CosmosdbMongoCollectionNamespaceLister {
+	return cosmosdbMongoCollectionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CosmosdbMongoCollectionNamespaceLister helps list and get CosmosdbMongoCollections.
+type CosmosdbMongoCollectionNamespaceLister interface {
+	// List lists all CosmosdbMongoCollections in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CosmosdbMongoCollection, err error)
+	// Get retrieves the CosmosdbMongoCollection from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CosmosdbMongoCollection, error)
+	CosmosdbMongoCollectionNamespaceListerExpansion
+}
+
+// cosmosdbMongoCollectionNamespaceLister implements the CosmosdbMongoCollectionNamespaceLister
+// interface.
+type cosmosdbMongoCollectionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CosmosdbMongoCollections in the indexer for a given namespace.
+func (s cosmosdbMongoCollectionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CosmosdbMongoCollection, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CosmosdbMongoCollection))
+	})
+	return ret, err
+}
+
+// Get retrieves the CosmosdbMongoCollection from the indexer for a given namespace and name.
+func (s cosmosdbMongoCollectionNamespaceLister) Get(name string) (*v1alpha1.CosmosdbMongoCollection, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

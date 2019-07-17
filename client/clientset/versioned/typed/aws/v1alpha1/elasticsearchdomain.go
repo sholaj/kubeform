@@ -32,7 +32,7 @@ import (
 // ElasticsearchDomainsGetter has a method to return a ElasticsearchDomainInterface.
 // A group's client should implement this interface.
 type ElasticsearchDomainsGetter interface {
-	ElasticsearchDomains() ElasticsearchDomainInterface
+	ElasticsearchDomains(namespace string) ElasticsearchDomainInterface
 }
 
 // ElasticsearchDomainInterface has methods to work with ElasticsearchDomain resources.
@@ -52,12 +52,14 @@ type ElasticsearchDomainInterface interface {
 // elasticsearchDomains implements ElasticsearchDomainInterface
 type elasticsearchDomains struct {
 	client rest.Interface
+	ns     string
 }
 
 // newElasticsearchDomains returns a ElasticsearchDomains
-func newElasticsearchDomains(c *AwsV1alpha1Client) *elasticsearchDomains {
+func newElasticsearchDomains(c *AwsV1alpha1Client, namespace string) *elasticsearchDomains {
 	return &elasticsearchDomains{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newElasticsearchDomains(c *AwsV1alpha1Client) *elasticsearchDomains {
 func (c *elasticsearchDomains) Get(name string, options v1.GetOptions) (result *v1alpha1.ElasticsearchDomain, err error) {
 	result = &v1alpha1.ElasticsearchDomain{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticsearchdomains").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *elasticsearchDomains) List(opts v1.ListOptions) (result *v1alpha1.Elast
 	}
 	result = &v1alpha1.ElasticsearchDomainList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticsearchdomains").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *elasticsearchDomains) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticsearchdomains").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *elasticsearchDomains) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *elasticsearchDomains) Create(elasticsearchDomain *v1alpha1.ElasticsearchDomain) (result *v1alpha1.ElasticsearchDomain, err error) {
 	result = &v1alpha1.ElasticsearchDomain{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("elasticsearchdomains").
 		Body(elasticsearchDomain).
 		Do().
@@ -118,6 +124,7 @@ func (c *elasticsearchDomains) Create(elasticsearchDomain *v1alpha1.Elasticsearc
 func (c *elasticsearchDomains) Update(elasticsearchDomain *v1alpha1.ElasticsearchDomain) (result *v1alpha1.ElasticsearchDomain, err error) {
 	result = &v1alpha1.ElasticsearchDomain{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elasticsearchdomains").
 		Name(elasticsearchDomain.Name).
 		Body(elasticsearchDomain).
@@ -132,6 +139,7 @@ func (c *elasticsearchDomains) Update(elasticsearchDomain *v1alpha1.Elasticsearc
 func (c *elasticsearchDomains) UpdateStatus(elasticsearchDomain *v1alpha1.ElasticsearchDomain) (result *v1alpha1.ElasticsearchDomain, err error) {
 	result = &v1alpha1.ElasticsearchDomain{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elasticsearchdomains").
 		Name(elasticsearchDomain.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *elasticsearchDomains) UpdateStatus(elasticsearchDomain *v1alpha1.Elasti
 // Delete takes name of the elasticsearchDomain and deletes it. Returns an error if one occurs.
 func (c *elasticsearchDomains) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elasticsearchdomains").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *elasticsearchDomains) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elasticsearchdomains").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *elasticsearchDomains) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *elasticsearchDomains) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ElasticsearchDomain, err error) {
 	result = &v1alpha1.ElasticsearchDomain{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("elasticsearchdomains").
 		SubResource(subresources...).
 		Name(name).

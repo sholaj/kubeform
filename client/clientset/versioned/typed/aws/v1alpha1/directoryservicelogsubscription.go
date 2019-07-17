@@ -32,7 +32,7 @@ import (
 // DirectoryServiceLogSubscriptionsGetter has a method to return a DirectoryServiceLogSubscriptionInterface.
 // A group's client should implement this interface.
 type DirectoryServiceLogSubscriptionsGetter interface {
-	DirectoryServiceLogSubscriptions() DirectoryServiceLogSubscriptionInterface
+	DirectoryServiceLogSubscriptions(namespace string) DirectoryServiceLogSubscriptionInterface
 }
 
 // DirectoryServiceLogSubscriptionInterface has methods to work with DirectoryServiceLogSubscription resources.
@@ -52,12 +52,14 @@ type DirectoryServiceLogSubscriptionInterface interface {
 // directoryServiceLogSubscriptions implements DirectoryServiceLogSubscriptionInterface
 type directoryServiceLogSubscriptions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDirectoryServiceLogSubscriptions returns a DirectoryServiceLogSubscriptions
-func newDirectoryServiceLogSubscriptions(c *AwsV1alpha1Client) *directoryServiceLogSubscriptions {
+func newDirectoryServiceLogSubscriptions(c *AwsV1alpha1Client, namespace string) *directoryServiceLogSubscriptions {
 	return &directoryServiceLogSubscriptions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDirectoryServiceLogSubscriptions(c *AwsV1alpha1Client) *directoryService
 func (c *directoryServiceLogSubscriptions) Get(name string, options v1.GetOptions) (result *v1alpha1.DirectoryServiceLogSubscription, err error) {
 	result = &v1alpha1.DirectoryServiceLogSubscription{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("directoryservicelogsubscriptions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *directoryServiceLogSubscriptions) List(opts v1.ListOptions) (result *v1
 	}
 	result = &v1alpha1.DirectoryServiceLogSubscriptionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("directoryservicelogsubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *directoryServiceLogSubscriptions) Watch(opts v1.ListOptions) (watch.Int
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("directoryservicelogsubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *directoryServiceLogSubscriptions) Watch(opts v1.ListOptions) (watch.Int
 func (c *directoryServiceLogSubscriptions) Create(directoryServiceLogSubscription *v1alpha1.DirectoryServiceLogSubscription) (result *v1alpha1.DirectoryServiceLogSubscription, err error) {
 	result = &v1alpha1.DirectoryServiceLogSubscription{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("directoryservicelogsubscriptions").
 		Body(directoryServiceLogSubscription).
 		Do().
@@ -118,6 +124,7 @@ func (c *directoryServiceLogSubscriptions) Create(directoryServiceLogSubscriptio
 func (c *directoryServiceLogSubscriptions) Update(directoryServiceLogSubscription *v1alpha1.DirectoryServiceLogSubscription) (result *v1alpha1.DirectoryServiceLogSubscription, err error) {
 	result = &v1alpha1.DirectoryServiceLogSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("directoryservicelogsubscriptions").
 		Name(directoryServiceLogSubscription.Name).
 		Body(directoryServiceLogSubscription).
@@ -132,6 +139,7 @@ func (c *directoryServiceLogSubscriptions) Update(directoryServiceLogSubscriptio
 func (c *directoryServiceLogSubscriptions) UpdateStatus(directoryServiceLogSubscription *v1alpha1.DirectoryServiceLogSubscription) (result *v1alpha1.DirectoryServiceLogSubscription, err error) {
 	result = &v1alpha1.DirectoryServiceLogSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("directoryservicelogsubscriptions").
 		Name(directoryServiceLogSubscription.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *directoryServiceLogSubscriptions) UpdateStatus(directoryServiceLogSubsc
 // Delete takes name of the directoryServiceLogSubscription and deletes it. Returns an error if one occurs.
 func (c *directoryServiceLogSubscriptions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("directoryservicelogsubscriptions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *directoryServiceLogSubscriptions) DeleteCollection(options *v1.DeleteOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("directoryservicelogsubscriptions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *directoryServiceLogSubscriptions) DeleteCollection(options *v1.DeleteOp
 func (c *directoryServiceLogSubscriptions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DirectoryServiceLogSubscription, err error) {
 	result = &v1alpha1.DirectoryServiceLogSubscription{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("directoryservicelogsubscriptions").
 		SubResource(subresources...).
 		Name(name).

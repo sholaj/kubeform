@@ -31,6 +31,7 @@ import (
 // FakeGlobalacceleratorListeners implements GlobalacceleratorListenerInterface
 type FakeGlobalacceleratorListeners struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var globalacceleratorlistenersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "globalacceleratorlisteners"}
@@ -40,7 +41,8 @@ var globalacceleratorlistenersKind = schema.GroupVersionKind{Group: "aws.kubefor
 // Get takes name of the globalacceleratorListener, and returns the corresponding globalacceleratorListener object, and an error if there is any.
 func (c *FakeGlobalacceleratorListeners) Get(name string, options v1.GetOptions) (result *v1alpha1.GlobalacceleratorListener, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(globalacceleratorlistenersResource, name), &v1alpha1.GlobalacceleratorListener{})
+		Invokes(testing.NewGetAction(globalacceleratorlistenersResource, c.ns, name), &v1alpha1.GlobalacceleratorListener{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeGlobalacceleratorListeners) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of GlobalacceleratorListeners that match those selectors.
 func (c *FakeGlobalacceleratorListeners) List(opts v1.ListOptions) (result *v1alpha1.GlobalacceleratorListenerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(globalacceleratorlistenersResource, globalacceleratorlistenersKind, opts), &v1alpha1.GlobalacceleratorListenerList{})
+		Invokes(testing.NewListAction(globalacceleratorlistenersResource, globalacceleratorlistenersKind, c.ns, opts), &v1alpha1.GlobalacceleratorListenerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeGlobalacceleratorListeners) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested globalacceleratorListeners.
 func (c *FakeGlobalacceleratorListeners) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(globalacceleratorlistenersResource, opts))
+		InvokesWatch(testing.NewWatchAction(globalacceleratorlistenersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a globalacceleratorListener and creates it.  Returns the server's representation of the globalacceleratorListener, and an error, if there is any.
 func (c *FakeGlobalacceleratorListeners) Create(globalacceleratorListener *v1alpha1.GlobalacceleratorListener) (result *v1alpha1.GlobalacceleratorListener, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(globalacceleratorlistenersResource, globalacceleratorListener), &v1alpha1.GlobalacceleratorListener{})
+		Invokes(testing.NewCreateAction(globalacceleratorlistenersResource, c.ns, globalacceleratorListener), &v1alpha1.GlobalacceleratorListener{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeGlobalacceleratorListeners) Create(globalacceleratorListener *v1alp
 // Update takes the representation of a globalacceleratorListener and updates it. Returns the server's representation of the globalacceleratorListener, and an error, if there is any.
 func (c *FakeGlobalacceleratorListeners) Update(globalacceleratorListener *v1alpha1.GlobalacceleratorListener) (result *v1alpha1.GlobalacceleratorListener, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(globalacceleratorlistenersResource, globalacceleratorListener), &v1alpha1.GlobalacceleratorListener{})
+		Invokes(testing.NewUpdateAction(globalacceleratorlistenersResource, c.ns, globalacceleratorListener), &v1alpha1.GlobalacceleratorListener{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeGlobalacceleratorListeners) Update(globalacceleratorListener *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeGlobalacceleratorListeners) UpdateStatus(globalacceleratorListener *v1alpha1.GlobalacceleratorListener) (*v1alpha1.GlobalacceleratorListener, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(globalacceleratorlistenersResource, "status", globalacceleratorListener), &v1alpha1.GlobalacceleratorListener{})
+		Invokes(testing.NewUpdateSubresourceAction(globalacceleratorlistenersResource, "status", c.ns, globalacceleratorListener), &v1alpha1.GlobalacceleratorListener{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeGlobalacceleratorListeners) UpdateStatus(globalacceleratorListener 
 // Delete takes name of the globalacceleratorListener and deletes it. Returns an error if one occurs.
 func (c *FakeGlobalacceleratorListeners) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(globalacceleratorlistenersResource, name), &v1alpha1.GlobalacceleratorListener{})
+		Invokes(testing.NewDeleteAction(globalacceleratorlistenersResource, c.ns, name), &v1alpha1.GlobalacceleratorListener{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeGlobalacceleratorListeners) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(globalacceleratorlistenersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(globalacceleratorlistenersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.GlobalacceleratorListenerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeGlobalacceleratorListeners) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched globalacceleratorListener.
 func (c *FakeGlobalacceleratorListeners) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GlobalacceleratorListener, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(globalacceleratorlistenersResource, name, pt, data, subresources...), &v1alpha1.GlobalacceleratorListener{})
+		Invokes(testing.NewPatchSubresourceAction(globalacceleratorlistenersResource, c.ns, name, pt, data, subresources...), &v1alpha1.GlobalacceleratorListener{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeWafregionalRegexPatternSets implements WafregionalRegexPatternSetInterface
 type FakeWafregionalRegexPatternSets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var wafregionalregexpatternsetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "wafregionalregexpatternsets"}
@@ -40,7 +41,8 @@ var wafregionalregexpatternsetsKind = schema.GroupVersionKind{Group: "aws.kubefo
 // Get takes name of the wafregionalRegexPatternSet, and returns the corresponding wafregionalRegexPatternSet object, and an error if there is any.
 func (c *FakeWafregionalRegexPatternSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalRegexPatternSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(wafregionalregexpatternsetsResource, name), &v1alpha1.WafregionalRegexPatternSet{})
+		Invokes(testing.NewGetAction(wafregionalregexpatternsetsResource, c.ns, name), &v1alpha1.WafregionalRegexPatternSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeWafregionalRegexPatternSets) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of WafregionalRegexPatternSets that match those selectors.
 func (c *FakeWafregionalRegexPatternSets) List(opts v1.ListOptions) (result *v1alpha1.WafregionalRegexPatternSetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(wafregionalregexpatternsetsResource, wafregionalregexpatternsetsKind, opts), &v1alpha1.WafregionalRegexPatternSetList{})
+		Invokes(testing.NewListAction(wafregionalregexpatternsetsResource, wafregionalregexpatternsetsKind, c.ns, opts), &v1alpha1.WafregionalRegexPatternSetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeWafregionalRegexPatternSets) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested wafregionalRegexPatternSets.
 func (c *FakeWafregionalRegexPatternSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(wafregionalregexpatternsetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(wafregionalregexpatternsetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a wafregionalRegexPatternSet and creates it.  Returns the server's representation of the wafregionalRegexPatternSet, and an error, if there is any.
 func (c *FakeWafregionalRegexPatternSets) Create(wafregionalRegexPatternSet *v1alpha1.WafregionalRegexPatternSet) (result *v1alpha1.WafregionalRegexPatternSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(wafregionalregexpatternsetsResource, wafregionalRegexPatternSet), &v1alpha1.WafregionalRegexPatternSet{})
+		Invokes(testing.NewCreateAction(wafregionalregexpatternsetsResource, c.ns, wafregionalRegexPatternSet), &v1alpha1.WafregionalRegexPatternSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeWafregionalRegexPatternSets) Create(wafregionalRegexPatternSet *v1a
 // Update takes the representation of a wafregionalRegexPatternSet and updates it. Returns the server's representation of the wafregionalRegexPatternSet, and an error, if there is any.
 func (c *FakeWafregionalRegexPatternSets) Update(wafregionalRegexPatternSet *v1alpha1.WafregionalRegexPatternSet) (result *v1alpha1.WafregionalRegexPatternSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(wafregionalregexpatternsetsResource, wafregionalRegexPatternSet), &v1alpha1.WafregionalRegexPatternSet{})
+		Invokes(testing.NewUpdateAction(wafregionalregexpatternsetsResource, c.ns, wafregionalRegexPatternSet), &v1alpha1.WafregionalRegexPatternSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeWafregionalRegexPatternSets) Update(wafregionalRegexPatternSet *v1a
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeWafregionalRegexPatternSets) UpdateStatus(wafregionalRegexPatternSet *v1alpha1.WafregionalRegexPatternSet) (*v1alpha1.WafregionalRegexPatternSet, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(wafregionalregexpatternsetsResource, "status", wafregionalRegexPatternSet), &v1alpha1.WafregionalRegexPatternSet{})
+		Invokes(testing.NewUpdateSubresourceAction(wafregionalregexpatternsetsResource, "status", c.ns, wafregionalRegexPatternSet), &v1alpha1.WafregionalRegexPatternSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeWafregionalRegexPatternSets) UpdateStatus(wafregionalRegexPatternSe
 // Delete takes name of the wafregionalRegexPatternSet and deletes it. Returns an error if one occurs.
 func (c *FakeWafregionalRegexPatternSets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(wafregionalregexpatternsetsResource, name), &v1alpha1.WafregionalRegexPatternSet{})
+		Invokes(testing.NewDeleteAction(wafregionalregexpatternsetsResource, c.ns, name), &v1alpha1.WafregionalRegexPatternSet{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeWafregionalRegexPatternSets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(wafregionalregexpatternsetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(wafregionalregexpatternsetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.WafregionalRegexPatternSetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeWafregionalRegexPatternSets) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched wafregionalRegexPatternSet.
 func (c *FakeWafregionalRegexPatternSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalRegexPatternSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(wafregionalregexpatternsetsResource, name, pt, data, subresources...), &v1alpha1.WafregionalRegexPatternSet{})
+		Invokes(testing.NewPatchSubresourceAction(wafregionalregexpatternsetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.WafregionalRegexPatternSet{})
+
 	if obj == nil {
 		return nil, err
 	}

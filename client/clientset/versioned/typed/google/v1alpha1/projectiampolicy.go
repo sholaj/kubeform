@@ -32,7 +32,7 @@ import (
 // ProjectIamPoliciesGetter has a method to return a ProjectIamPolicyInterface.
 // A group's client should implement this interface.
 type ProjectIamPoliciesGetter interface {
-	ProjectIamPolicies() ProjectIamPolicyInterface
+	ProjectIamPolicies(namespace string) ProjectIamPolicyInterface
 }
 
 // ProjectIamPolicyInterface has methods to work with ProjectIamPolicy resources.
@@ -52,12 +52,14 @@ type ProjectIamPolicyInterface interface {
 // projectIamPolicies implements ProjectIamPolicyInterface
 type projectIamPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newProjectIamPolicies returns a ProjectIamPolicies
-func newProjectIamPolicies(c *GoogleV1alpha1Client) *projectIamPolicies {
+func newProjectIamPolicies(c *GoogleV1alpha1Client, namespace string) *projectIamPolicies {
 	return &projectIamPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newProjectIamPolicies(c *GoogleV1alpha1Client) *projectIamPolicies {
 func (c *projectIamPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.ProjectIamPolicy, err error) {
 	result = &v1alpha1.ProjectIamPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("projectiampolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *projectIamPolicies) List(opts v1.ListOptions) (result *v1alpha1.Project
 	}
 	result = &v1alpha1.ProjectIamPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("projectiampolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *projectIamPolicies) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("projectiampolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *projectIamPolicies) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *projectIamPolicies) Create(projectIamPolicy *v1alpha1.ProjectIamPolicy) (result *v1alpha1.ProjectIamPolicy, err error) {
 	result = &v1alpha1.ProjectIamPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("projectiampolicies").
 		Body(projectIamPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *projectIamPolicies) Create(projectIamPolicy *v1alpha1.ProjectIamPolicy)
 func (c *projectIamPolicies) Update(projectIamPolicy *v1alpha1.ProjectIamPolicy) (result *v1alpha1.ProjectIamPolicy, err error) {
 	result = &v1alpha1.ProjectIamPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("projectiampolicies").
 		Name(projectIamPolicy.Name).
 		Body(projectIamPolicy).
@@ -132,6 +139,7 @@ func (c *projectIamPolicies) Update(projectIamPolicy *v1alpha1.ProjectIamPolicy)
 func (c *projectIamPolicies) UpdateStatus(projectIamPolicy *v1alpha1.ProjectIamPolicy) (result *v1alpha1.ProjectIamPolicy, err error) {
 	result = &v1alpha1.ProjectIamPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("projectiampolicies").
 		Name(projectIamPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *projectIamPolicies) UpdateStatus(projectIamPolicy *v1alpha1.ProjectIamP
 // Delete takes name of the projectIamPolicy and deletes it. Returns an error if one occurs.
 func (c *projectIamPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("projectiampolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *projectIamPolicies) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("projectiampolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *projectIamPolicies) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *projectIamPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ProjectIamPolicy, err error) {
 	result = &v1alpha1.ProjectIamPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("projectiampolicies").
 		SubResource(subresources...).
 		Name(name).

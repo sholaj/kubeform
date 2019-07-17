@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,13 +19,14 @@ type Route struct {
 }
 
 type RouteSpec struct {
-	AddressPrefix string `json:"address_prefix"`
-	Name          string `json:"name"`
+	AddressPrefix string `json:"addressPrefix" tf:"address_prefix"`
+	Name          string `json:"name" tf:"name"`
 	// +optional
-	NextHopInIpAddress string `json:"next_hop_in_ip_address,omitempty"`
-	NextHopType        string `json:"next_hop_type"`
-	ResourceGroupName  string `json:"resource_group_name"`
-	RouteTableName     string `json:"route_table_name"`
+	NextHopInIPAddress string                    `json:"nextHopInIPAddress,omitempty" tf:"next_hop_in_ip_address,omitempty"`
+	NextHopType        string                    `json:"nextHopType" tf:"next_hop_type"`
+	ResourceGroupName  string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	RouteTableName     string                    `json:"routeTableName" tf:"route_table_name"`
+	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type RouteStatus struct {
@@ -33,7 +34,9 @@ type RouteStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

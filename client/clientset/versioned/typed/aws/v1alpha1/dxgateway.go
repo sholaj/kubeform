@@ -32,7 +32,7 @@ import (
 // DxGatewaysGetter has a method to return a DxGatewayInterface.
 // A group's client should implement this interface.
 type DxGatewaysGetter interface {
-	DxGateways() DxGatewayInterface
+	DxGateways(namespace string) DxGatewayInterface
 }
 
 // DxGatewayInterface has methods to work with DxGateway resources.
@@ -52,12 +52,14 @@ type DxGatewayInterface interface {
 // dxGateways implements DxGatewayInterface
 type dxGateways struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDxGateways returns a DxGateways
-func newDxGateways(c *AwsV1alpha1Client) *dxGateways {
+func newDxGateways(c *AwsV1alpha1Client, namespace string) *dxGateways {
 	return &dxGateways{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDxGateways(c *AwsV1alpha1Client) *dxGateways {
 func (c *dxGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.DxGateway, err error) {
 	result = &v1alpha1.DxGateway{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dxgateways").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dxGateways) List(opts v1.ListOptions) (result *v1alpha1.DxGatewayList, 
 	}
 	result = &v1alpha1.DxGatewayList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dxgateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dxGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dxgateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dxGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dxGateways) Create(dxGateway *v1alpha1.DxGateway) (result *v1alpha1.DxGateway, err error) {
 	result = &v1alpha1.DxGateway{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dxgateways").
 		Body(dxGateway).
 		Do().
@@ -118,6 +124,7 @@ func (c *dxGateways) Create(dxGateway *v1alpha1.DxGateway) (result *v1alpha1.DxG
 func (c *dxGateways) Update(dxGateway *v1alpha1.DxGateway) (result *v1alpha1.DxGateway, err error) {
 	result = &v1alpha1.DxGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dxgateways").
 		Name(dxGateway.Name).
 		Body(dxGateway).
@@ -132,6 +139,7 @@ func (c *dxGateways) Update(dxGateway *v1alpha1.DxGateway) (result *v1alpha1.DxG
 func (c *dxGateways) UpdateStatus(dxGateway *v1alpha1.DxGateway) (result *v1alpha1.DxGateway, err error) {
 	result = &v1alpha1.DxGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dxgateways").
 		Name(dxGateway.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dxGateways) UpdateStatus(dxGateway *v1alpha1.DxGateway) (result *v1alph
 // Delete takes name of the dxGateway and deletes it. Returns an error if one occurs.
 func (c *dxGateways) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dxgateways").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dxGateways) DeleteCollection(options *v1.DeleteOptions, listOptions v1.
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dxgateways").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dxGateways) DeleteCollection(options *v1.DeleteOptions, listOptions v1.
 func (c *dxGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DxGateway, err error) {
 	result = &v1alpha1.DxGateway{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dxgateways").
 		SubResource(subresources...).
 		Name(name).

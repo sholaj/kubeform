@@ -29,8 +29,8 @@ import (
 type LbOutboundRuleLister interface {
 	// List lists all LbOutboundRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LbOutboundRule, err error)
-	// Get retrieves the LbOutboundRule from the index for a given name.
-	Get(name string) (*v1alpha1.LbOutboundRule, error)
+	// LbOutboundRules returns an object that can list and get LbOutboundRules.
+	LbOutboundRules(namespace string) LbOutboundRuleNamespaceLister
 	LbOutboundRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *lbOutboundRuleLister) List(selector labels.Selector) (ret []*v1alpha1.L
 	return ret, err
 }
 
-// Get retrieves the LbOutboundRule from the index for a given name.
-func (s *lbOutboundRuleLister) Get(name string) (*v1alpha1.LbOutboundRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LbOutboundRules returns an object that can list and get LbOutboundRules.
+func (s *lbOutboundRuleLister) LbOutboundRules(namespace string) LbOutboundRuleNamespaceLister {
+	return lbOutboundRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LbOutboundRuleNamespaceLister helps list and get LbOutboundRules.
+type LbOutboundRuleNamespaceLister interface {
+	// List lists all LbOutboundRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LbOutboundRule, err error)
+	// Get retrieves the LbOutboundRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LbOutboundRule, error)
+	LbOutboundRuleNamespaceListerExpansion
+}
+
+// lbOutboundRuleNamespaceLister implements the LbOutboundRuleNamespaceLister
+// interface.
+type lbOutboundRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LbOutboundRules in the indexer for a given namespace.
+func (s lbOutboundRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LbOutboundRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LbOutboundRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the LbOutboundRule from the indexer for a given namespace and name.
+func (s lbOutboundRuleNamespaceLister) Get(name string) (*v1alpha1.LbOutboundRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

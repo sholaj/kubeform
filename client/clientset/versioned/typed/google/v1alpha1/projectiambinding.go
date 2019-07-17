@@ -32,7 +32,7 @@ import (
 // ProjectIamBindingsGetter has a method to return a ProjectIamBindingInterface.
 // A group's client should implement this interface.
 type ProjectIamBindingsGetter interface {
-	ProjectIamBindings() ProjectIamBindingInterface
+	ProjectIamBindings(namespace string) ProjectIamBindingInterface
 }
 
 // ProjectIamBindingInterface has methods to work with ProjectIamBinding resources.
@@ -52,12 +52,14 @@ type ProjectIamBindingInterface interface {
 // projectIamBindings implements ProjectIamBindingInterface
 type projectIamBindings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newProjectIamBindings returns a ProjectIamBindings
-func newProjectIamBindings(c *GoogleV1alpha1Client) *projectIamBindings {
+func newProjectIamBindings(c *GoogleV1alpha1Client, namespace string) *projectIamBindings {
 	return &projectIamBindings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newProjectIamBindings(c *GoogleV1alpha1Client) *projectIamBindings {
 func (c *projectIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.ProjectIamBinding, err error) {
 	result = &v1alpha1.ProjectIamBinding{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("projectiambindings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *projectIamBindings) List(opts v1.ListOptions) (result *v1alpha1.Project
 	}
 	result = &v1alpha1.ProjectIamBindingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("projectiambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *projectIamBindings) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("projectiambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *projectIamBindings) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *projectIamBindings) Create(projectIamBinding *v1alpha1.ProjectIamBinding) (result *v1alpha1.ProjectIamBinding, err error) {
 	result = &v1alpha1.ProjectIamBinding{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("projectiambindings").
 		Body(projectIamBinding).
 		Do().
@@ -118,6 +124,7 @@ func (c *projectIamBindings) Create(projectIamBinding *v1alpha1.ProjectIamBindin
 func (c *projectIamBindings) Update(projectIamBinding *v1alpha1.ProjectIamBinding) (result *v1alpha1.ProjectIamBinding, err error) {
 	result = &v1alpha1.ProjectIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("projectiambindings").
 		Name(projectIamBinding.Name).
 		Body(projectIamBinding).
@@ -132,6 +139,7 @@ func (c *projectIamBindings) Update(projectIamBinding *v1alpha1.ProjectIamBindin
 func (c *projectIamBindings) UpdateStatus(projectIamBinding *v1alpha1.ProjectIamBinding) (result *v1alpha1.ProjectIamBinding, err error) {
 	result = &v1alpha1.ProjectIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("projectiambindings").
 		Name(projectIamBinding.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *projectIamBindings) UpdateStatus(projectIamBinding *v1alpha1.ProjectIam
 // Delete takes name of the projectIamBinding and deletes it. Returns an error if one occurs.
 func (c *projectIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("projectiambindings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *projectIamBindings) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("projectiambindings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *projectIamBindings) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *projectIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ProjectIamBinding, err error) {
 	result = &v1alpha1.ProjectIamBinding{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("projectiambindings").
 		SubResource(subresources...).
 		Name(name).

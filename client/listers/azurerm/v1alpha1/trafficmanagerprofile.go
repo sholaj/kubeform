@@ -29,8 +29,8 @@ import (
 type TrafficManagerProfileLister interface {
 	// List lists all TrafficManagerProfiles in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.TrafficManagerProfile, err error)
-	// Get retrieves the TrafficManagerProfile from the index for a given name.
-	Get(name string) (*v1alpha1.TrafficManagerProfile, error)
+	// TrafficManagerProfiles returns an object that can list and get TrafficManagerProfiles.
+	TrafficManagerProfiles(namespace string) TrafficManagerProfileNamespaceLister
 	TrafficManagerProfileListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *trafficManagerProfileLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the TrafficManagerProfile from the index for a given name.
-func (s *trafficManagerProfileLister) Get(name string) (*v1alpha1.TrafficManagerProfile, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// TrafficManagerProfiles returns an object that can list and get TrafficManagerProfiles.
+func (s *trafficManagerProfileLister) TrafficManagerProfiles(namespace string) TrafficManagerProfileNamespaceLister {
+	return trafficManagerProfileNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// TrafficManagerProfileNamespaceLister helps list and get TrafficManagerProfiles.
+type TrafficManagerProfileNamespaceLister interface {
+	// List lists all TrafficManagerProfiles in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.TrafficManagerProfile, err error)
+	// Get retrieves the TrafficManagerProfile from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.TrafficManagerProfile, error)
+	TrafficManagerProfileNamespaceListerExpansion
+}
+
+// trafficManagerProfileNamespaceLister implements the TrafficManagerProfileNamespaceLister
+// interface.
+type trafficManagerProfileNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all TrafficManagerProfiles in the indexer for a given namespace.
+func (s trafficManagerProfileNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.TrafficManagerProfile, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.TrafficManagerProfile))
+	})
+	return ret, err
+}
+
+// Get retrieves the TrafficManagerProfile from the indexer for a given namespace and name.
+func (s trafficManagerProfileNamespaceLister) Get(name string) (*v1alpha1.TrafficManagerProfile, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

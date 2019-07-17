@@ -41,32 +41,33 @@ type RedshiftEventSubscriptionInformer interface {
 type redshiftEventSubscriptionInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewRedshiftEventSubscriptionInformer constructs a new informer for RedshiftEventSubscription type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewRedshiftEventSubscriptionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredRedshiftEventSubscriptionInformer(client, resyncPeriod, indexers, nil)
+func NewRedshiftEventSubscriptionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredRedshiftEventSubscriptionInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredRedshiftEventSubscriptionInformer constructs a new informer for RedshiftEventSubscription type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredRedshiftEventSubscriptionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredRedshiftEventSubscriptionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().RedshiftEventSubscriptions().List(options)
+				return client.AwsV1alpha1().RedshiftEventSubscriptions(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().RedshiftEventSubscriptions().Watch(options)
+				return client.AwsV1alpha1().RedshiftEventSubscriptions(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.RedshiftEventSubscription{},
@@ -76,7 +77,7 @@ func NewFilteredRedshiftEventSubscriptionInformer(client versioned.Interface, re
 }
 
 func (f *redshiftEventSubscriptionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredRedshiftEventSubscriptionInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredRedshiftEventSubscriptionInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *redshiftEventSubscriptionInformer) Informer() cache.SharedIndexInformer {

@@ -29,8 +29,8 @@ import (
 type ServiceAccountIamBindingLister interface {
 	// List lists all ServiceAccountIamBindings in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ServiceAccountIamBinding, err error)
-	// Get retrieves the ServiceAccountIamBinding from the index for a given name.
-	Get(name string) (*v1alpha1.ServiceAccountIamBinding, error)
+	// ServiceAccountIamBindings returns an object that can list and get ServiceAccountIamBindings.
+	ServiceAccountIamBindings(namespace string) ServiceAccountIamBindingNamespaceLister
 	ServiceAccountIamBindingListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *serviceAccountIamBindingLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the ServiceAccountIamBinding from the index for a given name.
-func (s *serviceAccountIamBindingLister) Get(name string) (*v1alpha1.ServiceAccountIamBinding, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ServiceAccountIamBindings returns an object that can list and get ServiceAccountIamBindings.
+func (s *serviceAccountIamBindingLister) ServiceAccountIamBindings(namespace string) ServiceAccountIamBindingNamespaceLister {
+	return serviceAccountIamBindingNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ServiceAccountIamBindingNamespaceLister helps list and get ServiceAccountIamBindings.
+type ServiceAccountIamBindingNamespaceLister interface {
+	// List lists all ServiceAccountIamBindings in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ServiceAccountIamBinding, err error)
+	// Get retrieves the ServiceAccountIamBinding from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ServiceAccountIamBinding, error)
+	ServiceAccountIamBindingNamespaceListerExpansion
+}
+
+// serviceAccountIamBindingNamespaceLister implements the ServiceAccountIamBindingNamespaceLister
+// interface.
+type serviceAccountIamBindingNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ServiceAccountIamBindings in the indexer for a given namespace.
+func (s serviceAccountIamBindingNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServiceAccountIamBinding, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ServiceAccountIamBinding))
+	})
+	return ret, err
+}
+
+// Get retrieves the ServiceAccountIamBinding from the indexer for a given namespace and name.
+func (s serviceAccountIamBindingNamespaceLister) Get(name string) (*v1alpha1.ServiceAccountIamBinding, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

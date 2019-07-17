@@ -29,8 +29,8 @@ import (
 type StreamAnalyticsStreamInputEventhubLister interface {
 	// List lists all StreamAnalyticsStreamInputEventhubs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StreamAnalyticsStreamInputEventhub, err error)
-	// Get retrieves the StreamAnalyticsStreamInputEventhub from the index for a given name.
-	Get(name string) (*v1alpha1.StreamAnalyticsStreamInputEventhub, error)
+	// StreamAnalyticsStreamInputEventhubs returns an object that can list and get StreamAnalyticsStreamInputEventhubs.
+	StreamAnalyticsStreamInputEventhubs(namespace string) StreamAnalyticsStreamInputEventhubNamespaceLister
 	StreamAnalyticsStreamInputEventhubListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *streamAnalyticsStreamInputEventhubLister) List(selector labels.Selector
 	return ret, err
 }
 
-// Get retrieves the StreamAnalyticsStreamInputEventhub from the index for a given name.
-func (s *streamAnalyticsStreamInputEventhubLister) Get(name string) (*v1alpha1.StreamAnalyticsStreamInputEventhub, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StreamAnalyticsStreamInputEventhubs returns an object that can list and get StreamAnalyticsStreamInputEventhubs.
+func (s *streamAnalyticsStreamInputEventhubLister) StreamAnalyticsStreamInputEventhubs(namespace string) StreamAnalyticsStreamInputEventhubNamespaceLister {
+	return streamAnalyticsStreamInputEventhubNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StreamAnalyticsStreamInputEventhubNamespaceLister helps list and get StreamAnalyticsStreamInputEventhubs.
+type StreamAnalyticsStreamInputEventhubNamespaceLister interface {
+	// List lists all StreamAnalyticsStreamInputEventhubs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StreamAnalyticsStreamInputEventhub, err error)
+	// Get retrieves the StreamAnalyticsStreamInputEventhub from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StreamAnalyticsStreamInputEventhub, error)
+	StreamAnalyticsStreamInputEventhubNamespaceListerExpansion
+}
+
+// streamAnalyticsStreamInputEventhubNamespaceLister implements the StreamAnalyticsStreamInputEventhubNamespaceLister
+// interface.
+type streamAnalyticsStreamInputEventhubNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StreamAnalyticsStreamInputEventhubs in the indexer for a given namespace.
+func (s streamAnalyticsStreamInputEventhubNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StreamAnalyticsStreamInputEventhub, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StreamAnalyticsStreamInputEventhub))
+	})
+	return ret, err
+}
+
+// Get retrieves the StreamAnalyticsStreamInputEventhub from the indexer for a given namespace and name.
+func (s streamAnalyticsStreamInputEventhubNamespaceLister) Get(name string) (*v1alpha1.StreamAnalyticsStreamInputEventhub, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

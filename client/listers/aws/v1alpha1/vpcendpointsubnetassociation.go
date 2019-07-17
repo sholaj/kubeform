@@ -29,8 +29,8 @@ import (
 type VpcEndpointSubnetAssociationLister interface {
 	// List lists all VpcEndpointSubnetAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.VpcEndpointSubnetAssociation, err error)
-	// Get retrieves the VpcEndpointSubnetAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.VpcEndpointSubnetAssociation, error)
+	// VpcEndpointSubnetAssociations returns an object that can list and get VpcEndpointSubnetAssociations.
+	VpcEndpointSubnetAssociations(namespace string) VpcEndpointSubnetAssociationNamespaceLister
 	VpcEndpointSubnetAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *vpcEndpointSubnetAssociationLister) List(selector labels.Selector) (ret
 	return ret, err
 }
 
-// Get retrieves the VpcEndpointSubnetAssociation from the index for a given name.
-func (s *vpcEndpointSubnetAssociationLister) Get(name string) (*v1alpha1.VpcEndpointSubnetAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VpcEndpointSubnetAssociations returns an object that can list and get VpcEndpointSubnetAssociations.
+func (s *vpcEndpointSubnetAssociationLister) VpcEndpointSubnetAssociations(namespace string) VpcEndpointSubnetAssociationNamespaceLister {
+	return vpcEndpointSubnetAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VpcEndpointSubnetAssociationNamespaceLister helps list and get VpcEndpointSubnetAssociations.
+type VpcEndpointSubnetAssociationNamespaceLister interface {
+	// List lists all VpcEndpointSubnetAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VpcEndpointSubnetAssociation, err error)
+	// Get retrieves the VpcEndpointSubnetAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VpcEndpointSubnetAssociation, error)
+	VpcEndpointSubnetAssociationNamespaceListerExpansion
+}
+
+// vpcEndpointSubnetAssociationNamespaceLister implements the VpcEndpointSubnetAssociationNamespaceLister
+// interface.
+type vpcEndpointSubnetAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VpcEndpointSubnetAssociations in the indexer for a given namespace.
+func (s vpcEndpointSubnetAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VpcEndpointSubnetAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VpcEndpointSubnetAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the VpcEndpointSubnetAssociation from the indexer for a given namespace and name.
+func (s vpcEndpointSubnetAssociationNamespaceLister) Get(name string) (*v1alpha1.VpcEndpointSubnetAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

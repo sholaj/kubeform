@@ -31,6 +31,7 @@ import (
 // FakeAlbListenerRules implements AlbListenerRuleInterface
 type FakeAlbListenerRules struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var alblistenerrulesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "alblistenerrules"}
@@ -40,7 +41,8 @@ var alblistenerrulesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ve
 // Get takes name of the albListenerRule, and returns the corresponding albListenerRule object, and an error if there is any.
 func (c *FakeAlbListenerRules) Get(name string, options v1.GetOptions) (result *v1alpha1.AlbListenerRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(alblistenerrulesResource, name), &v1alpha1.AlbListenerRule{})
+		Invokes(testing.NewGetAction(alblistenerrulesResource, c.ns, name), &v1alpha1.AlbListenerRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAlbListenerRules) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of AlbListenerRules that match those selectors.
 func (c *FakeAlbListenerRules) List(opts v1.ListOptions) (result *v1alpha1.AlbListenerRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(alblistenerrulesResource, alblistenerrulesKind, opts), &v1alpha1.AlbListenerRuleList{})
+		Invokes(testing.NewListAction(alblistenerrulesResource, alblistenerrulesKind, c.ns, opts), &v1alpha1.AlbListenerRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAlbListenerRules) List(opts v1.ListOptions) (result *v1alpha1.AlbLi
 // Watch returns a watch.Interface that watches the requested albListenerRules.
 func (c *FakeAlbListenerRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(alblistenerrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(alblistenerrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a albListenerRule and creates it.  Returns the server's representation of the albListenerRule, and an error, if there is any.
 func (c *FakeAlbListenerRules) Create(albListenerRule *v1alpha1.AlbListenerRule) (result *v1alpha1.AlbListenerRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(alblistenerrulesResource, albListenerRule), &v1alpha1.AlbListenerRule{})
+		Invokes(testing.NewCreateAction(alblistenerrulesResource, c.ns, albListenerRule), &v1alpha1.AlbListenerRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAlbListenerRules) Create(albListenerRule *v1alpha1.AlbListenerRule)
 // Update takes the representation of a albListenerRule and updates it. Returns the server's representation of the albListenerRule, and an error, if there is any.
 func (c *FakeAlbListenerRules) Update(albListenerRule *v1alpha1.AlbListenerRule) (result *v1alpha1.AlbListenerRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(alblistenerrulesResource, albListenerRule), &v1alpha1.AlbListenerRule{})
+		Invokes(testing.NewUpdateAction(alblistenerrulesResource, c.ns, albListenerRule), &v1alpha1.AlbListenerRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAlbListenerRules) Update(albListenerRule *v1alpha1.AlbListenerRule)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAlbListenerRules) UpdateStatus(albListenerRule *v1alpha1.AlbListenerRule) (*v1alpha1.AlbListenerRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(alblistenerrulesResource, "status", albListenerRule), &v1alpha1.AlbListenerRule{})
+		Invokes(testing.NewUpdateSubresourceAction(alblistenerrulesResource, "status", c.ns, albListenerRule), &v1alpha1.AlbListenerRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAlbListenerRules) UpdateStatus(albListenerRule *v1alpha1.AlbListene
 // Delete takes name of the albListenerRule and deletes it. Returns an error if one occurs.
 func (c *FakeAlbListenerRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(alblistenerrulesResource, name), &v1alpha1.AlbListenerRule{})
+		Invokes(testing.NewDeleteAction(alblistenerrulesResource, c.ns, name), &v1alpha1.AlbListenerRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAlbListenerRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(alblistenerrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(alblistenerrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AlbListenerRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAlbListenerRules) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched albListenerRule.
 func (c *FakeAlbListenerRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AlbListenerRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(alblistenerrulesResource, name, pt, data, subresources...), &v1alpha1.AlbListenerRule{})
+		Invokes(testing.NewPatchSubresourceAction(alblistenerrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.AlbListenerRule{})
+
 	if obj == nil {
 		return nil, err
 	}

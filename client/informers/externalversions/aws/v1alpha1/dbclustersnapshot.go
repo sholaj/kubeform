@@ -41,32 +41,33 @@ type DbClusterSnapshotInformer interface {
 type dbClusterSnapshotInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDbClusterSnapshotInformer constructs a new informer for DbClusterSnapshot type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDbClusterSnapshotInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDbClusterSnapshotInformer(client, resyncPeriod, indexers, nil)
+func NewDbClusterSnapshotInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDbClusterSnapshotInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDbClusterSnapshotInformer constructs a new informer for DbClusterSnapshot type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDbClusterSnapshotInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDbClusterSnapshotInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DbClusterSnapshots().List(options)
+				return client.AwsV1alpha1().DbClusterSnapshots(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DbClusterSnapshots().Watch(options)
+				return client.AwsV1alpha1().DbClusterSnapshots(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.DbClusterSnapshot{},
@@ -76,7 +77,7 @@ func NewFilteredDbClusterSnapshotInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *dbClusterSnapshotInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDbClusterSnapshotInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDbClusterSnapshotInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *dbClusterSnapshotInformer) Informer() cache.SharedIndexInformer {

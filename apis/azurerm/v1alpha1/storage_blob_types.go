@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,23 +20,26 @@ type StorageBlob struct {
 
 type StorageBlobSpec struct {
 	// +optional
-	Attempts int `json:"attempts,omitempty"`
+	Attempts int `json:"attempts,omitempty" tf:"attempts,omitempty"`
 	// +optional
-	ContentType string `json:"content_type,omitempty"`
-	Name        string `json:"name"`
+	ContentType string `json:"contentType,omitempty" tf:"content_type,omitempty"`
 	// +optional
-	Parallelism       int    `json:"parallelism,omitempty"`
-	ResourceGroupName string `json:"resource_group_name"`
+	Metadata map[string]string `json:"metadata,omitempty" tf:"metadata,omitempty"`
+	Name     string            `json:"name" tf:"name"`
 	// +optional
-	Size int `json:"size,omitempty"`
+	Parallelism       int    `json:"parallelism,omitempty" tf:"parallelism,omitempty"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	Source string `json:"source,omitempty"`
+	Size int `json:"size,omitempty" tf:"size,omitempty"`
 	// +optional
-	SourceUri            string `json:"source_uri,omitempty"`
-	StorageAccountName   string `json:"storage_account_name"`
-	StorageContainerName string `json:"storage_container_name"`
+	Source string `json:"source,omitempty" tf:"source,omitempty"`
 	// +optional
-	Type string `json:"type,omitempty"`
+	SourceURI            string `json:"sourceURI,omitempty" tf:"source_uri,omitempty"`
+	StorageAccountName   string `json:"storageAccountName" tf:"storage_account_name"`
+	StorageContainerName string `json:"storageContainerName" tf:"storage_container_name"`
+	// +optional
+	Type        string                    `json:"type,omitempty" tf:"type,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type StorageBlobStatus struct {
@@ -44,7 +47,9 @@ type StorageBlobStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

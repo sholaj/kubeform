@@ -32,7 +32,7 @@ import (
 // StorageBucketIamPoliciesGetter has a method to return a StorageBucketIamPolicyInterface.
 // A group's client should implement this interface.
 type StorageBucketIamPoliciesGetter interface {
-	StorageBucketIamPolicies() StorageBucketIamPolicyInterface
+	StorageBucketIamPolicies(namespace string) StorageBucketIamPolicyInterface
 }
 
 // StorageBucketIamPolicyInterface has methods to work with StorageBucketIamPolicy resources.
@@ -52,12 +52,14 @@ type StorageBucketIamPolicyInterface interface {
 // storageBucketIamPolicies implements StorageBucketIamPolicyInterface
 type storageBucketIamPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStorageBucketIamPolicies returns a StorageBucketIamPolicies
-func newStorageBucketIamPolicies(c *GoogleV1alpha1Client) *storageBucketIamPolicies {
+func newStorageBucketIamPolicies(c *GoogleV1alpha1Client, namespace string) *storageBucketIamPolicies {
 	return &storageBucketIamPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStorageBucketIamPolicies(c *GoogleV1alpha1Client) *storageBucketIamPolic
 func (c *storageBucketIamPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageBucketIamPolicy, err error) {
 	result = &v1alpha1.StorageBucketIamPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagebucketiampolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *storageBucketIamPolicies) List(opts v1.ListOptions) (result *v1alpha1.S
 	}
 	result = &v1alpha1.StorageBucketIamPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagebucketiampolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *storageBucketIamPolicies) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storagebucketiampolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *storageBucketIamPolicies) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *storageBucketIamPolicies) Create(storageBucketIamPolicy *v1alpha1.StorageBucketIamPolicy) (result *v1alpha1.StorageBucketIamPolicy, err error) {
 	result = &v1alpha1.StorageBucketIamPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storagebucketiampolicies").
 		Body(storageBucketIamPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *storageBucketIamPolicies) Create(storageBucketIamPolicy *v1alpha1.Stora
 func (c *storageBucketIamPolicies) Update(storageBucketIamPolicy *v1alpha1.StorageBucketIamPolicy) (result *v1alpha1.StorageBucketIamPolicy, err error) {
 	result = &v1alpha1.StorageBucketIamPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagebucketiampolicies").
 		Name(storageBucketIamPolicy.Name).
 		Body(storageBucketIamPolicy).
@@ -132,6 +139,7 @@ func (c *storageBucketIamPolicies) Update(storageBucketIamPolicy *v1alpha1.Stora
 func (c *storageBucketIamPolicies) UpdateStatus(storageBucketIamPolicy *v1alpha1.StorageBucketIamPolicy) (result *v1alpha1.StorageBucketIamPolicy, err error) {
 	result = &v1alpha1.StorageBucketIamPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagebucketiampolicies").
 		Name(storageBucketIamPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *storageBucketIamPolicies) UpdateStatus(storageBucketIamPolicy *v1alpha1
 // Delete takes name of the storageBucketIamPolicy and deletes it. Returns an error if one occurs.
 func (c *storageBucketIamPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagebucketiampolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *storageBucketIamPolicies) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagebucketiampolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *storageBucketIamPolicies) DeleteCollection(options *v1.DeleteOptions, l
 func (c *storageBucketIamPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageBucketIamPolicy, err error) {
 	result = &v1alpha1.StorageBucketIamPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storagebucketiampolicies").
 		SubResource(subresources...).
 		Name(name).

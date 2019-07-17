@@ -32,7 +32,7 @@ import (
 // DataprocClustersGetter has a method to return a DataprocClusterInterface.
 // A group's client should implement this interface.
 type DataprocClustersGetter interface {
-	DataprocClusters() DataprocClusterInterface
+	DataprocClusters(namespace string) DataprocClusterInterface
 }
 
 // DataprocClusterInterface has methods to work with DataprocCluster resources.
@@ -52,12 +52,14 @@ type DataprocClusterInterface interface {
 // dataprocClusters implements DataprocClusterInterface
 type dataprocClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDataprocClusters returns a DataprocClusters
-func newDataprocClusters(c *GoogleV1alpha1Client) *dataprocClusters {
+func newDataprocClusters(c *GoogleV1alpha1Client, namespace string) *dataprocClusters {
 	return &dataprocClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDataprocClusters(c *GoogleV1alpha1Client) *dataprocClusters {
 func (c *dataprocClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.DataprocCluster, err error) {
 	result = &v1alpha1.DataprocCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dataprocclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dataprocClusters) List(opts v1.ListOptions) (result *v1alpha1.DataprocC
 	}
 	result = &v1alpha1.DataprocClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dataprocclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dataprocClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dataprocclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dataprocClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dataprocClusters) Create(dataprocCluster *v1alpha1.DataprocCluster) (result *v1alpha1.DataprocCluster, err error) {
 	result = &v1alpha1.DataprocCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dataprocclusters").
 		Body(dataprocCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *dataprocClusters) Create(dataprocCluster *v1alpha1.DataprocCluster) (re
 func (c *dataprocClusters) Update(dataprocCluster *v1alpha1.DataprocCluster) (result *v1alpha1.DataprocCluster, err error) {
 	result = &v1alpha1.DataprocCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dataprocclusters").
 		Name(dataprocCluster.Name).
 		Body(dataprocCluster).
@@ -132,6 +139,7 @@ func (c *dataprocClusters) Update(dataprocCluster *v1alpha1.DataprocCluster) (re
 func (c *dataprocClusters) UpdateStatus(dataprocCluster *v1alpha1.DataprocCluster) (result *v1alpha1.DataprocCluster, err error) {
 	result = &v1alpha1.DataprocCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dataprocclusters").
 		Name(dataprocCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dataprocClusters) UpdateStatus(dataprocCluster *v1alpha1.DataprocCluste
 // Delete takes name of the dataprocCluster and deletes it. Returns an error if one occurs.
 func (c *dataprocClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dataprocclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dataprocClusters) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dataprocclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dataprocClusters) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *dataprocClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataprocCluster, err error) {
 	result = &v1alpha1.DataprocCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dataprocclusters").
 		SubResource(subresources...).
 		Name(name).

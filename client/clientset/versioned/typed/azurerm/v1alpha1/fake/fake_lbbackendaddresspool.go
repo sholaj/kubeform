@@ -31,6 +31,7 @@ import (
 // FakeLbBackendAddressPools implements LbBackendAddressPoolInterface
 type FakeLbBackendAddressPools struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var lbbackendaddresspoolsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "lbbackendaddresspools"}
@@ -40,7 +41,8 @@ var lbbackendaddresspoolsKind = schema.GroupVersionKind{Group: "azurerm.kubeform
 // Get takes name of the lbBackendAddressPool, and returns the corresponding lbBackendAddressPool object, and an error if there is any.
 func (c *FakeLbBackendAddressPools) Get(name string, options v1.GetOptions) (result *v1alpha1.LbBackendAddressPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(lbbackendaddresspoolsResource, name), &v1alpha1.LbBackendAddressPool{})
+		Invokes(testing.NewGetAction(lbbackendaddresspoolsResource, c.ns, name), &v1alpha1.LbBackendAddressPool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLbBackendAddressPools) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of LbBackendAddressPools that match those selectors.
 func (c *FakeLbBackendAddressPools) List(opts v1.ListOptions) (result *v1alpha1.LbBackendAddressPoolList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(lbbackendaddresspoolsResource, lbbackendaddresspoolsKind, opts), &v1alpha1.LbBackendAddressPoolList{})
+		Invokes(testing.NewListAction(lbbackendaddresspoolsResource, lbbackendaddresspoolsKind, c.ns, opts), &v1alpha1.LbBackendAddressPoolList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLbBackendAddressPools) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested lbBackendAddressPools.
 func (c *FakeLbBackendAddressPools) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(lbbackendaddresspoolsResource, opts))
+		InvokesWatch(testing.NewWatchAction(lbbackendaddresspoolsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a lbBackendAddressPool and creates it.  Returns the server's representation of the lbBackendAddressPool, and an error, if there is any.
 func (c *FakeLbBackendAddressPools) Create(lbBackendAddressPool *v1alpha1.LbBackendAddressPool) (result *v1alpha1.LbBackendAddressPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(lbbackendaddresspoolsResource, lbBackendAddressPool), &v1alpha1.LbBackendAddressPool{})
+		Invokes(testing.NewCreateAction(lbbackendaddresspoolsResource, c.ns, lbBackendAddressPool), &v1alpha1.LbBackendAddressPool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLbBackendAddressPools) Create(lbBackendAddressPool *v1alpha1.LbBack
 // Update takes the representation of a lbBackendAddressPool and updates it. Returns the server's representation of the lbBackendAddressPool, and an error, if there is any.
 func (c *FakeLbBackendAddressPools) Update(lbBackendAddressPool *v1alpha1.LbBackendAddressPool) (result *v1alpha1.LbBackendAddressPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(lbbackendaddresspoolsResource, lbBackendAddressPool), &v1alpha1.LbBackendAddressPool{})
+		Invokes(testing.NewUpdateAction(lbbackendaddresspoolsResource, c.ns, lbBackendAddressPool), &v1alpha1.LbBackendAddressPool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLbBackendAddressPools) Update(lbBackendAddressPool *v1alpha1.LbBack
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLbBackendAddressPools) UpdateStatus(lbBackendAddressPool *v1alpha1.LbBackendAddressPool) (*v1alpha1.LbBackendAddressPool, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(lbbackendaddresspoolsResource, "status", lbBackendAddressPool), &v1alpha1.LbBackendAddressPool{})
+		Invokes(testing.NewUpdateSubresourceAction(lbbackendaddresspoolsResource, "status", c.ns, lbBackendAddressPool), &v1alpha1.LbBackendAddressPool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLbBackendAddressPools) UpdateStatus(lbBackendAddressPool *v1alpha1.
 // Delete takes name of the lbBackendAddressPool and deletes it. Returns an error if one occurs.
 func (c *FakeLbBackendAddressPools) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(lbbackendaddresspoolsResource, name), &v1alpha1.LbBackendAddressPool{})
+		Invokes(testing.NewDeleteAction(lbbackendaddresspoolsResource, c.ns, name), &v1alpha1.LbBackendAddressPool{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLbBackendAddressPools) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(lbbackendaddresspoolsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(lbbackendaddresspoolsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LbBackendAddressPoolList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLbBackendAddressPools) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched lbBackendAddressPool.
 func (c *FakeLbBackendAddressPools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbBackendAddressPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(lbbackendaddresspoolsResource, name, pt, data, subresources...), &v1alpha1.LbBackendAddressPool{})
+		Invokes(testing.NewPatchSubresourceAction(lbbackendaddresspoolsResource, c.ns, name, pt, data, subresources...), &v1alpha1.LbBackendAddressPool{})
+
 	if obj == nil {
 		return nil, err
 	}

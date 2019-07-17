@@ -29,8 +29,8 @@ import (
 type ManagementGroupLister interface {
 	// List lists all ManagementGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ManagementGroup, err error)
-	// Get retrieves the ManagementGroup from the index for a given name.
-	Get(name string) (*v1alpha1.ManagementGroup, error)
+	// ManagementGroups returns an object that can list and get ManagementGroups.
+	ManagementGroups(namespace string) ManagementGroupNamespaceLister
 	ManagementGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *managementGroupLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the ManagementGroup from the index for a given name.
-func (s *managementGroupLister) Get(name string) (*v1alpha1.ManagementGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ManagementGroups returns an object that can list and get ManagementGroups.
+func (s *managementGroupLister) ManagementGroups(namespace string) ManagementGroupNamespaceLister {
+	return managementGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ManagementGroupNamespaceLister helps list and get ManagementGroups.
+type ManagementGroupNamespaceLister interface {
+	// List lists all ManagementGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ManagementGroup, err error)
+	// Get retrieves the ManagementGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ManagementGroup, error)
+	ManagementGroupNamespaceListerExpansion
+}
+
+// managementGroupNamespaceLister implements the ManagementGroupNamespaceLister
+// interface.
+type managementGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ManagementGroups in the indexer for a given namespace.
+func (s managementGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ManagementGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ManagementGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the ManagementGroup from the indexer for a given namespace and name.
+func (s managementGroupNamespaceLister) Get(name string) (*v1alpha1.ManagementGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

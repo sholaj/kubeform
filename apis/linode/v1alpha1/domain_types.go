@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -21,29 +21,30 @@ type Domain struct {
 type DomainSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	AxfrIps []string `json:"axfr_ips,omitempty"`
+	AxfrIPS []string `json:"axfrIPS,omitempty" tf:"axfr_ips,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
-	Domain      string `json:"domain"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
+	Domain      string `json:"domain" tf:"domain"`
 	// +optional
-	ExpireSec int `json:"expire_sec,omitempty"`
+	ExpireSec int `json:"expireSec,omitempty" tf:"expire_sec,omitempty"`
 	// +optional
-	Group string `json:"group,omitempty"`
-	// +optional
-	// +kubebuilder:validation:UniqueItems=true
-	MasterIps []string `json:"master_ips,omitempty"`
-	// +optional
-	RefreshSec int `json:"refresh_sec,omitempty"`
-	// +optional
-	RetrySec int `json:"retry_sec,omitempty"`
-	// +optional
-	SoaEmail string `json:"soa_email,omitempty"`
+	Group string `json:"group,omitempty" tf:"group,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Tags []string `json:"tags,omitempty"`
+	MasterIPS []string `json:"masterIPS,omitempty" tf:"master_ips,omitempty"`
 	// +optional
-	TtlSec int    `json:"ttl_sec,omitempty"`
-	Type   string `json:"type"`
+	RefreshSec int `json:"refreshSec,omitempty" tf:"refresh_sec,omitempty"`
+	// +optional
+	RetrySec int `json:"retrySec,omitempty" tf:"retry_sec,omitempty"`
+	// +optional
+	SoaEmail string `json:"soaEmail,omitempty" tf:"soa_email,omitempty"`
+	// +optional
+	// +kubebuilder:validation:UniqueItems=true
+	Tags []string `json:"tags,omitempty" tf:"tags,omitempty"`
+	// +optional
+	TtlSec      int                       `json:"ttlSec,omitempty" tf:"ttl_sec,omitempty"`
+	Type        string                    `json:"type" tf:"type"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DomainStatus struct {
@@ -51,7 +52,9 @@ type DomainStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

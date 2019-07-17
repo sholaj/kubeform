@@ -32,7 +32,7 @@ import (
 // NetworkInterfaceAttachmentsGetter has a method to return a NetworkInterfaceAttachmentInterface.
 // A group's client should implement this interface.
 type NetworkInterfaceAttachmentsGetter interface {
-	NetworkInterfaceAttachments() NetworkInterfaceAttachmentInterface
+	NetworkInterfaceAttachments(namespace string) NetworkInterfaceAttachmentInterface
 }
 
 // NetworkInterfaceAttachmentInterface has methods to work with NetworkInterfaceAttachment resources.
@@ -52,12 +52,14 @@ type NetworkInterfaceAttachmentInterface interface {
 // networkInterfaceAttachments implements NetworkInterfaceAttachmentInterface
 type networkInterfaceAttachments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNetworkInterfaceAttachments returns a NetworkInterfaceAttachments
-func newNetworkInterfaceAttachments(c *AwsV1alpha1Client) *networkInterfaceAttachments {
+func newNetworkInterfaceAttachments(c *AwsV1alpha1Client, namespace string) *networkInterfaceAttachments {
 	return &networkInterfaceAttachments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNetworkInterfaceAttachments(c *AwsV1alpha1Client) *networkInterfaceAttac
 func (c *networkInterfaceAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkInterfaceAttachment, err error) {
 	result = &v1alpha1.NetworkInterfaceAttachment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkinterfaceattachments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *networkInterfaceAttachments) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.NetworkInterfaceAttachmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkinterfaceattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *networkInterfaceAttachments) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("networkinterfaceattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *networkInterfaceAttachments) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *networkInterfaceAttachments) Create(networkInterfaceAttachment *v1alpha1.NetworkInterfaceAttachment) (result *v1alpha1.NetworkInterfaceAttachment, err error) {
 	result = &v1alpha1.NetworkInterfaceAttachment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("networkinterfaceattachments").
 		Body(networkInterfaceAttachment).
 		Do().
@@ -118,6 +124,7 @@ func (c *networkInterfaceAttachments) Create(networkInterfaceAttachment *v1alpha
 func (c *networkInterfaceAttachments) Update(networkInterfaceAttachment *v1alpha1.NetworkInterfaceAttachment) (result *v1alpha1.NetworkInterfaceAttachment, err error) {
 	result = &v1alpha1.NetworkInterfaceAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkinterfaceattachments").
 		Name(networkInterfaceAttachment.Name).
 		Body(networkInterfaceAttachment).
@@ -132,6 +139,7 @@ func (c *networkInterfaceAttachments) Update(networkInterfaceAttachment *v1alpha
 func (c *networkInterfaceAttachments) UpdateStatus(networkInterfaceAttachment *v1alpha1.NetworkInterfaceAttachment) (result *v1alpha1.NetworkInterfaceAttachment, err error) {
 	result = &v1alpha1.NetworkInterfaceAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkinterfaceattachments").
 		Name(networkInterfaceAttachment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *networkInterfaceAttachments) UpdateStatus(networkInterfaceAttachment *v
 // Delete takes name of the networkInterfaceAttachment and deletes it. Returns an error if one occurs.
 func (c *networkInterfaceAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkinterfaceattachments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *networkInterfaceAttachments) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkinterfaceattachments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *networkInterfaceAttachments) DeleteCollection(options *v1.DeleteOptions
 func (c *networkInterfaceAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkInterfaceAttachment, err error) {
 	result = &v1alpha1.NetworkInterfaceAttachment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("networkinterfaceattachments").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // NeptuneEventSubscriptionsGetter has a method to return a NeptuneEventSubscriptionInterface.
 // A group's client should implement this interface.
 type NeptuneEventSubscriptionsGetter interface {
-	NeptuneEventSubscriptions() NeptuneEventSubscriptionInterface
+	NeptuneEventSubscriptions(namespace string) NeptuneEventSubscriptionInterface
 }
 
 // NeptuneEventSubscriptionInterface has methods to work with NeptuneEventSubscription resources.
@@ -52,12 +52,14 @@ type NeptuneEventSubscriptionInterface interface {
 // neptuneEventSubscriptions implements NeptuneEventSubscriptionInterface
 type neptuneEventSubscriptions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNeptuneEventSubscriptions returns a NeptuneEventSubscriptions
-func newNeptuneEventSubscriptions(c *AwsV1alpha1Client) *neptuneEventSubscriptions {
+func newNeptuneEventSubscriptions(c *AwsV1alpha1Client, namespace string) *neptuneEventSubscriptions {
 	return &neptuneEventSubscriptions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNeptuneEventSubscriptions(c *AwsV1alpha1Client) *neptuneEventSubscriptio
 func (c *neptuneEventSubscriptions) Get(name string, options v1.GetOptions) (result *v1alpha1.NeptuneEventSubscription, err error) {
 	result = &v1alpha1.NeptuneEventSubscription{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("neptuneeventsubscriptions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *neptuneEventSubscriptions) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.NeptuneEventSubscriptionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("neptuneeventsubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *neptuneEventSubscriptions) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("neptuneeventsubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *neptuneEventSubscriptions) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *neptuneEventSubscriptions) Create(neptuneEventSubscription *v1alpha1.NeptuneEventSubscription) (result *v1alpha1.NeptuneEventSubscription, err error) {
 	result = &v1alpha1.NeptuneEventSubscription{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("neptuneeventsubscriptions").
 		Body(neptuneEventSubscription).
 		Do().
@@ -118,6 +124,7 @@ func (c *neptuneEventSubscriptions) Create(neptuneEventSubscription *v1alpha1.Ne
 func (c *neptuneEventSubscriptions) Update(neptuneEventSubscription *v1alpha1.NeptuneEventSubscription) (result *v1alpha1.NeptuneEventSubscription, err error) {
 	result = &v1alpha1.NeptuneEventSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("neptuneeventsubscriptions").
 		Name(neptuneEventSubscription.Name).
 		Body(neptuneEventSubscription).
@@ -132,6 +139,7 @@ func (c *neptuneEventSubscriptions) Update(neptuneEventSubscription *v1alpha1.Ne
 func (c *neptuneEventSubscriptions) UpdateStatus(neptuneEventSubscription *v1alpha1.NeptuneEventSubscription) (result *v1alpha1.NeptuneEventSubscription, err error) {
 	result = &v1alpha1.NeptuneEventSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("neptuneeventsubscriptions").
 		Name(neptuneEventSubscription.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *neptuneEventSubscriptions) UpdateStatus(neptuneEventSubscription *v1alp
 // Delete takes name of the neptuneEventSubscription and deletes it. Returns an error if one occurs.
 func (c *neptuneEventSubscriptions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("neptuneeventsubscriptions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *neptuneEventSubscriptions) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("neptuneeventsubscriptions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *neptuneEventSubscriptions) DeleteCollection(options *v1.DeleteOptions, 
 func (c *neptuneEventSubscriptions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NeptuneEventSubscription, err error) {
 	result = &v1alpha1.NeptuneEventSubscription{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("neptuneeventsubscriptions").
 		SubResource(subresources...).
 		Name(name).

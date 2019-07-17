@@ -32,7 +32,7 @@ import (
 // PinpointEmailChannelsGetter has a method to return a PinpointEmailChannelInterface.
 // A group's client should implement this interface.
 type PinpointEmailChannelsGetter interface {
-	PinpointEmailChannels() PinpointEmailChannelInterface
+	PinpointEmailChannels(namespace string) PinpointEmailChannelInterface
 }
 
 // PinpointEmailChannelInterface has methods to work with PinpointEmailChannel resources.
@@ -52,12 +52,14 @@ type PinpointEmailChannelInterface interface {
 // pinpointEmailChannels implements PinpointEmailChannelInterface
 type pinpointEmailChannels struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPinpointEmailChannels returns a PinpointEmailChannels
-func newPinpointEmailChannels(c *AwsV1alpha1Client) *pinpointEmailChannels {
+func newPinpointEmailChannels(c *AwsV1alpha1Client, namespace string) *pinpointEmailChannels {
 	return &pinpointEmailChannels{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPinpointEmailChannels(c *AwsV1alpha1Client) *pinpointEmailChannels {
 func (c *pinpointEmailChannels) Get(name string, options v1.GetOptions) (result *v1alpha1.PinpointEmailChannel, err error) {
 	result = &v1alpha1.PinpointEmailChannel{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointemailchannels").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *pinpointEmailChannels) List(opts v1.ListOptions) (result *v1alpha1.Pinp
 	}
 	result = &v1alpha1.PinpointEmailChannelList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointemailchannels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *pinpointEmailChannels) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointemailchannels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *pinpointEmailChannels) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *pinpointEmailChannels) Create(pinpointEmailChannel *v1alpha1.PinpointEmailChannel) (result *v1alpha1.PinpointEmailChannel, err error) {
 	result = &v1alpha1.PinpointEmailChannel{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("pinpointemailchannels").
 		Body(pinpointEmailChannel).
 		Do().
@@ -118,6 +124,7 @@ func (c *pinpointEmailChannels) Create(pinpointEmailChannel *v1alpha1.PinpointEm
 func (c *pinpointEmailChannels) Update(pinpointEmailChannel *v1alpha1.PinpointEmailChannel) (result *v1alpha1.PinpointEmailChannel, err error) {
 	result = &v1alpha1.PinpointEmailChannel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pinpointemailchannels").
 		Name(pinpointEmailChannel.Name).
 		Body(pinpointEmailChannel).
@@ -132,6 +139,7 @@ func (c *pinpointEmailChannels) Update(pinpointEmailChannel *v1alpha1.PinpointEm
 func (c *pinpointEmailChannels) UpdateStatus(pinpointEmailChannel *v1alpha1.PinpointEmailChannel) (result *v1alpha1.PinpointEmailChannel, err error) {
 	result = &v1alpha1.PinpointEmailChannel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pinpointemailchannels").
 		Name(pinpointEmailChannel.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *pinpointEmailChannels) UpdateStatus(pinpointEmailChannel *v1alpha1.Pinp
 // Delete takes name of the pinpointEmailChannel and deletes it. Returns an error if one occurs.
 func (c *pinpointEmailChannels) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pinpointemailchannels").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *pinpointEmailChannels) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pinpointemailchannels").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *pinpointEmailChannels) DeleteCollection(options *v1.DeleteOptions, list
 func (c *pinpointEmailChannels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PinpointEmailChannel, err error) {
 	result = &v1alpha1.PinpointEmailChannel{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("pinpointemailchannels").
 		SubResource(subresources...).
 		Name(name).

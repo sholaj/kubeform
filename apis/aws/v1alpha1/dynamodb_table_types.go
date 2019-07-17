@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,64 +19,65 @@ type DynamodbTable struct {
 }
 
 type DynamodbTableSpecAttribute struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
+	Name string `json:"name" tf:"name"`
+	Type string `json:"type" tf:"type"`
 }
 
 type DynamodbTableSpecGlobalSecondaryIndex struct {
-	HashKey string `json:"hash_key"`
-	Name    string `json:"name"`
+	HashKey string `json:"hashKey" tf:"hash_key"`
+	Name    string `json:"name" tf:"name"`
 	// +optional
-	NonKeyAttributes []string `json:"non_key_attributes,omitempty"`
-	ProjectionType   string   `json:"projection_type"`
+	NonKeyAttributes []string `json:"nonKeyAttributes,omitempty" tf:"non_key_attributes,omitempty"`
+	ProjectionType   string   `json:"projectionType" tf:"projection_type"`
 	// +optional
-	RangeKey string `json:"range_key,omitempty"`
+	RangeKey string `json:"rangeKey,omitempty" tf:"range_key,omitempty"`
 	// +optional
-	ReadCapacity int `json:"read_capacity,omitempty"`
+	ReadCapacity int `json:"readCapacity,omitempty" tf:"read_capacity,omitempty"`
 	// +optional
-	WriteCapacity int `json:"write_capacity,omitempty"`
+	WriteCapacity int `json:"writeCapacity,omitempty" tf:"write_capacity,omitempty"`
 }
 
 type DynamodbTableSpecLocalSecondaryIndex struct {
-	Name string `json:"name"`
+	Name string `json:"name" tf:"name"`
 	// +optional
-	NonKeyAttributes []string `json:"non_key_attributes,omitempty"`
-	ProjectionType   string   `json:"projection_type"`
-	RangeKey         string   `json:"range_key"`
+	NonKeyAttributes []string `json:"nonKeyAttributes,omitempty" tf:"non_key_attributes,omitempty"`
+	ProjectionType   string   `json:"projectionType" tf:"projection_type"`
+	RangeKey         string   `json:"rangeKey" tf:"range_key"`
 }
 
 type DynamodbTableSpecTtl struct {
-	AttributeName string `json:"attribute_name"`
+	AttributeName string `json:"attributeName" tf:"attribute_name"`
 	// +optional
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
 }
 
 type DynamodbTableSpec struct {
 	// +kubebuilder:validation:UniqueItems=true
-	Attribute []DynamodbTableSpec `json:"attribute"`
+	Attribute []DynamodbTableSpecAttribute `json:"attribute" tf:"attribute"`
 	// +optional
-	BillingMode string `json:"billing_mode,omitempty"`
-	// +optional
-	// +kubebuilder:validation:UniqueItems=true
-	GlobalSecondaryIndex *[]DynamodbTableSpec `json:"global_secondary_index,omitempty"`
-	HashKey              string               `json:"hash_key"`
+	BillingMode string `json:"billingMode,omitempty" tf:"billing_mode,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	LocalSecondaryIndex *[]DynamodbTableSpec `json:"local_secondary_index,omitempty"`
-	Name                string               `json:"name"`
+	GlobalSecondaryIndex []DynamodbTableSpecGlobalSecondaryIndex `json:"globalSecondaryIndex,omitempty" tf:"global_secondary_index,omitempty"`
+	HashKey              string                                  `json:"hashKey" tf:"hash_key"`
 	// +optional
-	RangeKey string `json:"range_key,omitempty"`
+	// +kubebuilder:validation:UniqueItems=true
+	LocalSecondaryIndex []DynamodbTableSpecLocalSecondaryIndex `json:"localSecondaryIndex,omitempty" tf:"local_secondary_index,omitempty"`
+	Name                string                                 `json:"name" tf:"name"`
 	// +optional
-	ReadCapacity int `json:"read_capacity,omitempty"`
+	RangeKey string `json:"rangeKey,omitempty" tf:"range_key,omitempty"`
 	// +optional
-	StreamEnabled bool `json:"stream_enabled,omitempty"`
+	ReadCapacity int `json:"readCapacity,omitempty" tf:"read_capacity,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	StreamEnabled bool `json:"streamEnabled,omitempty" tf:"stream_enabled,omitempty"`
+	// +optional
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Ttl *[]DynamodbTableSpec `json:"ttl,omitempty"`
+	Ttl []DynamodbTableSpecTtl `json:"ttl,omitempty" tf:"ttl,omitempty"`
 	// +optional
-	WriteCapacity int `json:"write_capacity,omitempty"`
+	WriteCapacity int                       `json:"writeCapacity,omitempty" tf:"write_capacity,omitempty"`
+	ProviderRef   core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DynamodbTableStatus struct {
@@ -84,7 +85,9 @@ type DynamodbTableStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

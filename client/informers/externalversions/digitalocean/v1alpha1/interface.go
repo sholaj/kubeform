@@ -38,10 +38,10 @@ type Interface interface {
 	DropletSnapshots() DropletSnapshotInformer
 	// Firewalls returns a FirewallInformer.
 	Firewalls() FirewallInformer
-	// FloatingIps returns a FloatingIpInformer.
-	FloatingIps() FloatingIpInformer
-	// FloatingIpAssignments returns a FloatingIpAssignmentInformer.
-	FloatingIpAssignments() FloatingIpAssignmentInformer
+	// FloatingIPs returns a FloatingIPInformer.
+	FloatingIPs() FloatingIPInformer
+	// FloatingIPAssignments returns a FloatingIPAssignmentInformer.
+	FloatingIPAssignments() FloatingIPAssignmentInformer
 	// KubernetesClusters returns a KubernetesClusterInformer.
 	KubernetesClusters() KubernetesClusterInformer
 	// KubernetesNodePools returns a KubernetesNodePoolInformer.
@@ -79,100 +79,100 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 
 // Cdns returns a CdnInformer.
 func (v *version) Cdns() CdnInformer {
-	return &cdnInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &cdnInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Certificates returns a CertificateInformer.
 func (v *version) Certificates() CertificateInformer {
-	return &certificateInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &certificateInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DatabaseClusters returns a DatabaseClusterInformer.
 func (v *version) DatabaseClusters() DatabaseClusterInformer {
-	return &databaseClusterInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &databaseClusterInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Domains returns a DomainInformer.
 func (v *version) Domains() DomainInformer {
-	return &domainInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &domainInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Droplets returns a DropletInformer.
 func (v *version) Droplets() DropletInformer {
-	return &dropletInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dropletInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DropletSnapshots returns a DropletSnapshotInformer.
 func (v *version) DropletSnapshots() DropletSnapshotInformer {
-	return &dropletSnapshotInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dropletSnapshotInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Firewalls returns a FirewallInformer.
 func (v *version) Firewalls() FirewallInformer {
-	return &firewallInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &firewallInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// FloatingIps returns a FloatingIpInformer.
-func (v *version) FloatingIps() FloatingIpInformer {
-	return &floatingIpInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// FloatingIPs returns a FloatingIPInformer.
+func (v *version) FloatingIPs() FloatingIPInformer {
+	return &floatingIPInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// FloatingIpAssignments returns a FloatingIpAssignmentInformer.
-func (v *version) FloatingIpAssignments() FloatingIpAssignmentInformer {
-	return &floatingIpAssignmentInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// FloatingIPAssignments returns a FloatingIPAssignmentInformer.
+func (v *version) FloatingIPAssignments() FloatingIPAssignmentInformer {
+	return &floatingIPAssignmentInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // KubernetesClusters returns a KubernetesClusterInformer.
 func (v *version) KubernetesClusters() KubernetesClusterInformer {
-	return &kubernetesClusterInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &kubernetesClusterInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // KubernetesNodePools returns a KubernetesNodePoolInformer.
 func (v *version) KubernetesNodePools() KubernetesNodePoolInformer {
-	return &kubernetesNodePoolInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &kubernetesNodePoolInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Loadbalancers returns a LoadbalancerInformer.
 func (v *version) Loadbalancers() LoadbalancerInformer {
-	return &loadbalancerInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &loadbalancerInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Projects returns a ProjectInformer.
 func (v *version) Projects() ProjectInformer {
-	return &projectInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &projectInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Records returns a RecordInformer.
 func (v *version) Records() RecordInformer {
-	return &recordInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &recordInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SpacesBuckets returns a SpacesBucketInformer.
 func (v *version) SpacesBuckets() SpacesBucketInformer {
-	return &spacesBucketInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &spacesBucketInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SshKeys returns a SshKeyInformer.
 func (v *version) SshKeys() SshKeyInformer {
-	return &sshKeyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &sshKeyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Tags returns a TagInformer.
 func (v *version) Tags() TagInformer {
-	return &tagInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &tagInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Volumes returns a VolumeInformer.
 func (v *version) Volumes() VolumeInformer {
-	return &volumeInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &volumeInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // VolumeAttachments returns a VolumeAttachmentInformer.
 func (v *version) VolumeAttachments() VolumeAttachmentInformer {
-	return &volumeAttachmentInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &volumeAttachmentInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // VolumeSnapshots returns a VolumeSnapshotInformer.
 func (v *version) VolumeSnapshots() VolumeSnapshotInformer {
-	return &volumeSnapshotInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &volumeSnapshotInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }

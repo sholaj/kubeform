@@ -29,8 +29,8 @@ import (
 type ElasticBeanstalkConfigurationTemplateLister interface {
 	// List lists all ElasticBeanstalkConfigurationTemplates in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ElasticBeanstalkConfigurationTemplate, err error)
-	// Get retrieves the ElasticBeanstalkConfigurationTemplate from the index for a given name.
-	Get(name string) (*v1alpha1.ElasticBeanstalkConfigurationTemplate, error)
+	// ElasticBeanstalkConfigurationTemplates returns an object that can list and get ElasticBeanstalkConfigurationTemplates.
+	ElasticBeanstalkConfigurationTemplates(namespace string) ElasticBeanstalkConfigurationTemplateNamespaceLister
 	ElasticBeanstalkConfigurationTemplateListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *elasticBeanstalkConfigurationTemplateLister) List(selector labels.Selec
 	return ret, err
 }
 
-// Get retrieves the ElasticBeanstalkConfigurationTemplate from the index for a given name.
-func (s *elasticBeanstalkConfigurationTemplateLister) Get(name string) (*v1alpha1.ElasticBeanstalkConfigurationTemplate, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ElasticBeanstalkConfigurationTemplates returns an object that can list and get ElasticBeanstalkConfigurationTemplates.
+func (s *elasticBeanstalkConfigurationTemplateLister) ElasticBeanstalkConfigurationTemplates(namespace string) ElasticBeanstalkConfigurationTemplateNamespaceLister {
+	return elasticBeanstalkConfigurationTemplateNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ElasticBeanstalkConfigurationTemplateNamespaceLister helps list and get ElasticBeanstalkConfigurationTemplates.
+type ElasticBeanstalkConfigurationTemplateNamespaceLister interface {
+	// List lists all ElasticBeanstalkConfigurationTemplates in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ElasticBeanstalkConfigurationTemplate, err error)
+	// Get retrieves the ElasticBeanstalkConfigurationTemplate from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ElasticBeanstalkConfigurationTemplate, error)
+	ElasticBeanstalkConfigurationTemplateNamespaceListerExpansion
+}
+
+// elasticBeanstalkConfigurationTemplateNamespaceLister implements the ElasticBeanstalkConfigurationTemplateNamespaceLister
+// interface.
+type elasticBeanstalkConfigurationTemplateNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ElasticBeanstalkConfigurationTemplates in the indexer for a given namespace.
+func (s elasticBeanstalkConfigurationTemplateNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ElasticBeanstalkConfigurationTemplate, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ElasticBeanstalkConfigurationTemplate))
+	})
+	return ret, err
+}
+
+// Get retrieves the ElasticBeanstalkConfigurationTemplate from the indexer for a given namespace and name.
+func (s elasticBeanstalkConfigurationTemplateNamespaceLister) Get(name string) (*v1alpha1.ElasticBeanstalkConfigurationTemplate, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

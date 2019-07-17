@@ -31,6 +31,7 @@ import (
 // FakeFolders implements FolderInterface
 type FakeFolders struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var foldersResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "folders"}
@@ -40,7 +41,8 @@ var foldersKind = schema.GroupVersionKind{Group: "google.kubeform.com", Version:
 // Get takes name of the folder, and returns the corresponding folder object, and an error if there is any.
 func (c *FakeFolders) Get(name string, options v1.GetOptions) (result *v1alpha1.Folder, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(foldersResource, name), &v1alpha1.Folder{})
+		Invokes(testing.NewGetAction(foldersResource, c.ns, name), &v1alpha1.Folder{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeFolders) Get(name string, options v1.GetOptions) (result *v1alpha1.
 // List takes label and field selectors, and returns the list of Folders that match those selectors.
 func (c *FakeFolders) List(opts v1.ListOptions) (result *v1alpha1.FolderList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(foldersResource, foldersKind, opts), &v1alpha1.FolderList{})
+		Invokes(testing.NewListAction(foldersResource, foldersKind, c.ns, opts), &v1alpha1.FolderList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeFolders) List(opts v1.ListOptions) (result *v1alpha1.FolderList, er
 // Watch returns a watch.Interface that watches the requested folders.
 func (c *FakeFolders) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(foldersResource, opts))
+		InvokesWatch(testing.NewWatchAction(foldersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a folder and creates it.  Returns the server's representation of the folder, and an error, if there is any.
 func (c *FakeFolders) Create(folder *v1alpha1.Folder) (result *v1alpha1.Folder, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(foldersResource, folder), &v1alpha1.Folder{})
+		Invokes(testing.NewCreateAction(foldersResource, c.ns, folder), &v1alpha1.Folder{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeFolders) Create(folder *v1alpha1.Folder) (result *v1alpha1.Folder, 
 // Update takes the representation of a folder and updates it. Returns the server's representation of the folder, and an error, if there is any.
 func (c *FakeFolders) Update(folder *v1alpha1.Folder) (result *v1alpha1.Folder, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(foldersResource, folder), &v1alpha1.Folder{})
+		Invokes(testing.NewUpdateAction(foldersResource, c.ns, folder), &v1alpha1.Folder{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeFolders) Update(folder *v1alpha1.Folder) (result *v1alpha1.Folder, 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeFolders) UpdateStatus(folder *v1alpha1.Folder) (*v1alpha1.Folder, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(foldersResource, "status", folder), &v1alpha1.Folder{})
+		Invokes(testing.NewUpdateSubresourceAction(foldersResource, "status", c.ns, folder), &v1alpha1.Folder{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeFolders) UpdateStatus(folder *v1alpha1.Folder) (*v1alpha1.Folder, e
 // Delete takes name of the folder and deletes it. Returns an error if one occurs.
 func (c *FakeFolders) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(foldersResource, name), &v1alpha1.Folder{})
+		Invokes(testing.NewDeleteAction(foldersResource, c.ns, name), &v1alpha1.Folder{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeFolders) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(foldersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(foldersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.FolderList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeFolders) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 // Patch applies the patch and returns the patched folder.
 func (c *FakeFolders) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Folder, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(foldersResource, name, pt, data, subresources...), &v1alpha1.Folder{})
+		Invokes(testing.NewPatchSubresourceAction(foldersResource, c.ns, name, pt, data, subresources...), &v1alpha1.Folder{})
+
 	if obj == nil {
 		return nil, err
 	}

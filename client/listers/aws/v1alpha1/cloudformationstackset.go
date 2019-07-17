@@ -29,8 +29,8 @@ import (
 type CloudformationStackSetLister interface {
 	// List lists all CloudformationStackSets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CloudformationStackSet, err error)
-	// Get retrieves the CloudformationStackSet from the index for a given name.
-	Get(name string) (*v1alpha1.CloudformationStackSet, error)
+	// CloudformationStackSets returns an object that can list and get CloudformationStackSets.
+	CloudformationStackSets(namespace string) CloudformationStackSetNamespaceLister
 	CloudformationStackSetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cloudformationStackSetLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the CloudformationStackSet from the index for a given name.
-func (s *cloudformationStackSetLister) Get(name string) (*v1alpha1.CloudformationStackSet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CloudformationStackSets returns an object that can list and get CloudformationStackSets.
+func (s *cloudformationStackSetLister) CloudformationStackSets(namespace string) CloudformationStackSetNamespaceLister {
+	return cloudformationStackSetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CloudformationStackSetNamespaceLister helps list and get CloudformationStackSets.
+type CloudformationStackSetNamespaceLister interface {
+	// List lists all CloudformationStackSets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CloudformationStackSet, err error)
+	// Get retrieves the CloudformationStackSet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CloudformationStackSet, error)
+	CloudformationStackSetNamespaceListerExpansion
+}
+
+// cloudformationStackSetNamespaceLister implements the CloudformationStackSetNamespaceLister
+// interface.
+type cloudformationStackSetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CloudformationStackSets in the indexer for a given namespace.
+func (s cloudformationStackSetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CloudformationStackSet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CloudformationStackSet))
+	})
+	return ret, err
+}
+
+// Get retrieves the CloudformationStackSet from the indexer for a given namespace and name.
+func (s cloudformationStackSetNamespaceLister) Get(name string) (*v1alpha1.CloudformationStackSet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeSecretsmanagerSecrets implements SecretsmanagerSecretInterface
 type FakeSecretsmanagerSecrets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var secretsmanagersecretsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "secretsmanagersecrets"}
@@ -40,7 +41,8 @@ var secretsmanagersecretsKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the secretsmanagerSecret, and returns the corresponding secretsmanagerSecret object, and an error if there is any.
 func (c *FakeSecretsmanagerSecrets) Get(name string, options v1.GetOptions) (result *v1alpha1.SecretsmanagerSecret, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(secretsmanagersecretsResource, name), &v1alpha1.SecretsmanagerSecret{})
+		Invokes(testing.NewGetAction(secretsmanagersecretsResource, c.ns, name), &v1alpha1.SecretsmanagerSecret{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSecretsmanagerSecrets) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of SecretsmanagerSecrets that match those selectors.
 func (c *FakeSecretsmanagerSecrets) List(opts v1.ListOptions) (result *v1alpha1.SecretsmanagerSecretList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(secretsmanagersecretsResource, secretsmanagersecretsKind, opts), &v1alpha1.SecretsmanagerSecretList{})
+		Invokes(testing.NewListAction(secretsmanagersecretsResource, secretsmanagersecretsKind, c.ns, opts), &v1alpha1.SecretsmanagerSecretList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSecretsmanagerSecrets) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested secretsmanagerSecrets.
 func (c *FakeSecretsmanagerSecrets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(secretsmanagersecretsResource, opts))
+		InvokesWatch(testing.NewWatchAction(secretsmanagersecretsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a secretsmanagerSecret and creates it.  Returns the server's representation of the secretsmanagerSecret, and an error, if there is any.
 func (c *FakeSecretsmanagerSecrets) Create(secretsmanagerSecret *v1alpha1.SecretsmanagerSecret) (result *v1alpha1.SecretsmanagerSecret, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(secretsmanagersecretsResource, secretsmanagerSecret), &v1alpha1.SecretsmanagerSecret{})
+		Invokes(testing.NewCreateAction(secretsmanagersecretsResource, c.ns, secretsmanagerSecret), &v1alpha1.SecretsmanagerSecret{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSecretsmanagerSecrets) Create(secretsmanagerSecret *v1alpha1.Secret
 // Update takes the representation of a secretsmanagerSecret and updates it. Returns the server's representation of the secretsmanagerSecret, and an error, if there is any.
 func (c *FakeSecretsmanagerSecrets) Update(secretsmanagerSecret *v1alpha1.SecretsmanagerSecret) (result *v1alpha1.SecretsmanagerSecret, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(secretsmanagersecretsResource, secretsmanagerSecret), &v1alpha1.SecretsmanagerSecret{})
+		Invokes(testing.NewUpdateAction(secretsmanagersecretsResource, c.ns, secretsmanagerSecret), &v1alpha1.SecretsmanagerSecret{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSecretsmanagerSecrets) Update(secretsmanagerSecret *v1alpha1.Secret
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSecretsmanagerSecrets) UpdateStatus(secretsmanagerSecret *v1alpha1.SecretsmanagerSecret) (*v1alpha1.SecretsmanagerSecret, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(secretsmanagersecretsResource, "status", secretsmanagerSecret), &v1alpha1.SecretsmanagerSecret{})
+		Invokes(testing.NewUpdateSubresourceAction(secretsmanagersecretsResource, "status", c.ns, secretsmanagerSecret), &v1alpha1.SecretsmanagerSecret{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSecretsmanagerSecrets) UpdateStatus(secretsmanagerSecret *v1alpha1.
 // Delete takes name of the secretsmanagerSecret and deletes it. Returns an error if one occurs.
 func (c *FakeSecretsmanagerSecrets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(secretsmanagersecretsResource, name), &v1alpha1.SecretsmanagerSecret{})
+		Invokes(testing.NewDeleteAction(secretsmanagersecretsResource, c.ns, name), &v1alpha1.SecretsmanagerSecret{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSecretsmanagerSecrets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(secretsmanagersecretsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(secretsmanagersecretsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SecretsmanagerSecretList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSecretsmanagerSecrets) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched secretsmanagerSecret.
 func (c *FakeSecretsmanagerSecrets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SecretsmanagerSecret, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(secretsmanagersecretsResource, name, pt, data, subresources...), &v1alpha1.SecretsmanagerSecret{})
+		Invokes(testing.NewPatchSubresourceAction(secretsmanagersecretsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SecretsmanagerSecret{})
+
 	if obj == nil {
 		return nil, err
 	}

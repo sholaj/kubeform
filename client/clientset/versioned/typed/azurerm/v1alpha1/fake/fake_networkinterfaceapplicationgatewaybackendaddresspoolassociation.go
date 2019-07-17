@@ -31,6 +31,7 @@ import (
 // FakeNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations implements NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInterface
 type FakeNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "networkinterfaceapplicationgatewaybackendaddresspoolassociations"}
@@ -40,7 +41,8 @@ var networkinterfaceapplicationgatewaybackendaddresspoolassociationsKind = schem
 // Get takes name of the networkInterfaceApplicationGatewayBackendAddressPoolAssociation, and returns the corresponding networkInterfaceApplicationGatewayBackendAddressPoolAssociation object, and an error if there is any.
 func (c *FakeNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource, name), &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation{})
+		Invokes(testing.NewGetAction(networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource, c.ns, name), &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations) G
 // List takes label and field selectors, and returns the list of NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations that match those selectors.
 func (c *FakeNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations) List(opts v1.ListOptions) (result *v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource, networkinterfaceapplicationgatewaybackendaddresspoolassociationsKind, opts), &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationList{})
+		Invokes(testing.NewListAction(networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource, networkinterfaceapplicationgatewaybackendaddresspoolassociationsKind, c.ns, opts), &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations) L
 // Watch returns a watch.Interface that watches the requested networkInterfaceApplicationGatewayBackendAddressPoolAssociations.
 func (c *FakeNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a networkInterfaceApplicationGatewayBackendAddressPoolAssociation and creates it.  Returns the server's representation of the networkInterfaceApplicationGatewayBackendAddressPoolAssociation, and an error, if there is any.
 func (c *FakeNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations) Create(networkInterfaceApplicationGatewayBackendAddressPoolAssociation *v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation) (result *v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource, networkInterfaceApplicationGatewayBackendAddressPoolAssociation), &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation{})
+		Invokes(testing.NewCreateAction(networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource, c.ns, networkInterfaceApplicationGatewayBackendAddressPoolAssociation), &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations) C
 // Update takes the representation of a networkInterfaceApplicationGatewayBackendAddressPoolAssociation and updates it. Returns the server's representation of the networkInterfaceApplicationGatewayBackendAddressPoolAssociation, and an error, if there is any.
 func (c *FakeNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations) Update(networkInterfaceApplicationGatewayBackendAddressPoolAssociation *v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation) (result *v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource, networkInterfaceApplicationGatewayBackendAddressPoolAssociation), &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation{})
+		Invokes(testing.NewUpdateAction(networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource, c.ns, networkInterfaceApplicationGatewayBackendAddressPoolAssociation), &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations) U
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations) UpdateStatus(networkInterfaceApplicationGatewayBackendAddressPoolAssociation *v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation) (*v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource, "status", networkInterfaceApplicationGatewayBackendAddressPoolAssociation), &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation{})
+		Invokes(testing.NewUpdateSubresourceAction(networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource, "status", c.ns, networkInterfaceApplicationGatewayBackendAddressPoolAssociation), &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations) U
 // Delete takes name of the networkInterfaceApplicationGatewayBackendAddressPoolAssociation and deletes it. Returns an error if one occurs.
 func (c *FakeNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource, name), &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation{})
+		Invokes(testing.NewDeleteAction(networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource, c.ns, name), &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations) D
 // Patch applies the patch and returns the patched networkInterfaceApplicationGatewayBackendAddressPoolAssociation.
 func (c *FakeNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource, name, pt, data, subresources...), &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation{})
+		Invokes(testing.NewPatchSubresourceAction(networkinterfaceapplicationgatewaybackendaddresspoolassociationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}

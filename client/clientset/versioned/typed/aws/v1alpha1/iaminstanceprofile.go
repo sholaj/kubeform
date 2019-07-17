@@ -32,7 +32,7 @@ import (
 // IamInstanceProfilesGetter has a method to return a IamInstanceProfileInterface.
 // A group's client should implement this interface.
 type IamInstanceProfilesGetter interface {
-	IamInstanceProfiles() IamInstanceProfileInterface
+	IamInstanceProfiles(namespace string) IamInstanceProfileInterface
 }
 
 // IamInstanceProfileInterface has methods to work with IamInstanceProfile resources.
@@ -52,12 +52,14 @@ type IamInstanceProfileInterface interface {
 // iamInstanceProfiles implements IamInstanceProfileInterface
 type iamInstanceProfiles struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIamInstanceProfiles returns a IamInstanceProfiles
-func newIamInstanceProfiles(c *AwsV1alpha1Client) *iamInstanceProfiles {
+func newIamInstanceProfiles(c *AwsV1alpha1Client, namespace string) *iamInstanceProfiles {
 	return &iamInstanceProfiles{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIamInstanceProfiles(c *AwsV1alpha1Client) *iamInstanceProfiles {
 func (c *iamInstanceProfiles) Get(name string, options v1.GetOptions) (result *v1alpha1.IamInstanceProfile, err error) {
 	result = &v1alpha1.IamInstanceProfile{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iaminstanceprofiles").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iamInstanceProfiles) List(opts v1.ListOptions) (result *v1alpha1.IamIns
 	}
 	result = &v1alpha1.IamInstanceProfileList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iaminstanceprofiles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iamInstanceProfiles) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iaminstanceprofiles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iamInstanceProfiles) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *iamInstanceProfiles) Create(iamInstanceProfile *v1alpha1.IamInstanceProfile) (result *v1alpha1.IamInstanceProfile, err error) {
 	result = &v1alpha1.IamInstanceProfile{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iaminstanceprofiles").
 		Body(iamInstanceProfile).
 		Do().
@@ -118,6 +124,7 @@ func (c *iamInstanceProfiles) Create(iamInstanceProfile *v1alpha1.IamInstancePro
 func (c *iamInstanceProfiles) Update(iamInstanceProfile *v1alpha1.IamInstanceProfile) (result *v1alpha1.IamInstanceProfile, err error) {
 	result = &v1alpha1.IamInstanceProfile{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iaminstanceprofiles").
 		Name(iamInstanceProfile.Name).
 		Body(iamInstanceProfile).
@@ -132,6 +139,7 @@ func (c *iamInstanceProfiles) Update(iamInstanceProfile *v1alpha1.IamInstancePro
 func (c *iamInstanceProfiles) UpdateStatus(iamInstanceProfile *v1alpha1.IamInstanceProfile) (result *v1alpha1.IamInstanceProfile, err error) {
 	result = &v1alpha1.IamInstanceProfile{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iaminstanceprofiles").
 		Name(iamInstanceProfile.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iamInstanceProfiles) UpdateStatus(iamInstanceProfile *v1alpha1.IamInsta
 // Delete takes name of the iamInstanceProfile and deletes it. Returns an error if one occurs.
 func (c *iamInstanceProfiles) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iaminstanceprofiles").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iamInstanceProfiles) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iaminstanceprofiles").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iamInstanceProfiles) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *iamInstanceProfiles) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamInstanceProfile, err error) {
 	result = &v1alpha1.IamInstanceProfile{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iaminstanceprofiles").
 		SubResource(subresources...).
 		Name(name).

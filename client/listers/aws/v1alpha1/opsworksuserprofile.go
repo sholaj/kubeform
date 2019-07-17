@@ -29,8 +29,8 @@ import (
 type OpsworksUserProfileLister interface {
 	// List lists all OpsworksUserProfiles in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OpsworksUserProfile, err error)
-	// Get retrieves the OpsworksUserProfile from the index for a given name.
-	Get(name string) (*v1alpha1.OpsworksUserProfile, error)
+	// OpsworksUserProfiles returns an object that can list and get OpsworksUserProfiles.
+	OpsworksUserProfiles(namespace string) OpsworksUserProfileNamespaceLister
 	OpsworksUserProfileListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *opsworksUserProfileLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the OpsworksUserProfile from the index for a given name.
-func (s *opsworksUserProfileLister) Get(name string) (*v1alpha1.OpsworksUserProfile, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OpsworksUserProfiles returns an object that can list and get OpsworksUserProfiles.
+func (s *opsworksUserProfileLister) OpsworksUserProfiles(namespace string) OpsworksUserProfileNamespaceLister {
+	return opsworksUserProfileNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OpsworksUserProfileNamespaceLister helps list and get OpsworksUserProfiles.
+type OpsworksUserProfileNamespaceLister interface {
+	// List lists all OpsworksUserProfiles in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OpsworksUserProfile, err error)
+	// Get retrieves the OpsworksUserProfile from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OpsworksUserProfile, error)
+	OpsworksUserProfileNamespaceListerExpansion
+}
+
+// opsworksUserProfileNamespaceLister implements the OpsworksUserProfileNamespaceLister
+// interface.
+type opsworksUserProfileNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OpsworksUserProfiles in the indexer for a given namespace.
+func (s opsworksUserProfileNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OpsworksUserProfile, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OpsworksUserProfile))
+	})
+	return ret, err
+}
+
+// Get retrieves the OpsworksUserProfile from the indexer for a given namespace and name.
+func (s opsworksUserProfileNamespaceLister) Get(name string) (*v1alpha1.OpsworksUserProfile, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

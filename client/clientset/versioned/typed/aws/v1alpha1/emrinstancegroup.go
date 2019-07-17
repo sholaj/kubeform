@@ -32,7 +32,7 @@ import (
 // EmrInstanceGroupsGetter has a method to return a EmrInstanceGroupInterface.
 // A group's client should implement this interface.
 type EmrInstanceGroupsGetter interface {
-	EmrInstanceGroups() EmrInstanceGroupInterface
+	EmrInstanceGroups(namespace string) EmrInstanceGroupInterface
 }
 
 // EmrInstanceGroupInterface has methods to work with EmrInstanceGroup resources.
@@ -52,12 +52,14 @@ type EmrInstanceGroupInterface interface {
 // emrInstanceGroups implements EmrInstanceGroupInterface
 type emrInstanceGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEmrInstanceGroups returns a EmrInstanceGroups
-func newEmrInstanceGroups(c *AwsV1alpha1Client) *emrInstanceGroups {
+func newEmrInstanceGroups(c *AwsV1alpha1Client, namespace string) *emrInstanceGroups {
 	return &emrInstanceGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEmrInstanceGroups(c *AwsV1alpha1Client) *emrInstanceGroups {
 func (c *emrInstanceGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.EmrInstanceGroup, err error) {
 	result = &v1alpha1.EmrInstanceGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("emrinstancegroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *emrInstanceGroups) List(opts v1.ListOptions) (result *v1alpha1.EmrInsta
 	}
 	result = &v1alpha1.EmrInstanceGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("emrinstancegroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *emrInstanceGroups) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("emrinstancegroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *emrInstanceGroups) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *emrInstanceGroups) Create(emrInstanceGroup *v1alpha1.EmrInstanceGroup) (result *v1alpha1.EmrInstanceGroup, err error) {
 	result = &v1alpha1.EmrInstanceGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("emrinstancegroups").
 		Body(emrInstanceGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *emrInstanceGroups) Create(emrInstanceGroup *v1alpha1.EmrInstanceGroup) 
 func (c *emrInstanceGroups) Update(emrInstanceGroup *v1alpha1.EmrInstanceGroup) (result *v1alpha1.EmrInstanceGroup, err error) {
 	result = &v1alpha1.EmrInstanceGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("emrinstancegroups").
 		Name(emrInstanceGroup.Name).
 		Body(emrInstanceGroup).
@@ -132,6 +139,7 @@ func (c *emrInstanceGroups) Update(emrInstanceGroup *v1alpha1.EmrInstanceGroup) 
 func (c *emrInstanceGroups) UpdateStatus(emrInstanceGroup *v1alpha1.EmrInstanceGroup) (result *v1alpha1.EmrInstanceGroup, err error) {
 	result = &v1alpha1.EmrInstanceGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("emrinstancegroups").
 		Name(emrInstanceGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *emrInstanceGroups) UpdateStatus(emrInstanceGroup *v1alpha1.EmrInstanceG
 // Delete takes name of the emrInstanceGroup and deletes it. Returns an error if one occurs.
 func (c *emrInstanceGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("emrinstancegroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *emrInstanceGroups) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("emrinstancegroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *emrInstanceGroups) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *emrInstanceGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EmrInstanceGroup, err error) {
 	result = &v1alpha1.EmrInstanceGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("emrinstancegroups").
 		SubResource(subresources...).
 		Name(name).

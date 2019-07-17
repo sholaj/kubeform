@@ -29,8 +29,8 @@ import (
 type VpnGatewayAttachmentLister interface {
 	// List lists all VpnGatewayAttachments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.VpnGatewayAttachment, err error)
-	// Get retrieves the VpnGatewayAttachment from the index for a given name.
-	Get(name string) (*v1alpha1.VpnGatewayAttachment, error)
+	// VpnGatewayAttachments returns an object that can list and get VpnGatewayAttachments.
+	VpnGatewayAttachments(namespace string) VpnGatewayAttachmentNamespaceLister
 	VpnGatewayAttachmentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *vpnGatewayAttachmentLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the VpnGatewayAttachment from the index for a given name.
-func (s *vpnGatewayAttachmentLister) Get(name string) (*v1alpha1.VpnGatewayAttachment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VpnGatewayAttachments returns an object that can list and get VpnGatewayAttachments.
+func (s *vpnGatewayAttachmentLister) VpnGatewayAttachments(namespace string) VpnGatewayAttachmentNamespaceLister {
+	return vpnGatewayAttachmentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VpnGatewayAttachmentNamespaceLister helps list and get VpnGatewayAttachments.
+type VpnGatewayAttachmentNamespaceLister interface {
+	// List lists all VpnGatewayAttachments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VpnGatewayAttachment, err error)
+	// Get retrieves the VpnGatewayAttachment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VpnGatewayAttachment, error)
+	VpnGatewayAttachmentNamespaceListerExpansion
+}
+
+// vpnGatewayAttachmentNamespaceLister implements the VpnGatewayAttachmentNamespaceLister
+// interface.
+type vpnGatewayAttachmentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VpnGatewayAttachments in the indexer for a given namespace.
+func (s vpnGatewayAttachmentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VpnGatewayAttachment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VpnGatewayAttachment))
+	})
+	return ret, err
+}
+
+// Get retrieves the VpnGatewayAttachment from the indexer for a given namespace and name.
+func (s vpnGatewayAttachmentNamespaceLister) Get(name string) (*v1alpha1.VpnGatewayAttachment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

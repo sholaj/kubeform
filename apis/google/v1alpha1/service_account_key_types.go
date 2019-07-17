@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,14 +20,15 @@ type ServiceAccountKey struct {
 
 type ServiceAccountKeySpec struct {
 	// +optional
-	KeyAlgorithm string `json:"key_algorithm,omitempty"`
+	KeyAlgorithm string `json:"keyAlgorithm,omitempty" tf:"key_algorithm,omitempty"`
 	// +optional
-	PgpKey string `json:"pgp_key,omitempty"`
+	PgpKey string `json:"pgpKey,omitempty" tf:"pgp_key,omitempty"`
 	// +optional
-	PrivateKeyType string `json:"private_key_type,omitempty"`
+	PrivateKeyType string `json:"privateKeyType,omitempty" tf:"private_key_type,omitempty"`
 	// +optional
-	PublicKeyType    string `json:"public_key_type,omitempty"`
-	ServiceAccountId string `json:"service_account_id"`
+	PublicKeyType    string                    `json:"publicKeyType,omitempty" tf:"public_key_type,omitempty"`
+	ServiceAccountID string                    `json:"serviceAccountID" tf:"service_account_id"`
+	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ServiceAccountKeyStatus struct {
@@ -35,7 +36,9 @@ type ServiceAccountKeyStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

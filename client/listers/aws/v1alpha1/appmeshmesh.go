@@ -29,8 +29,8 @@ import (
 type AppmeshMeshLister interface {
 	// List lists all AppmeshMeshes in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AppmeshMesh, err error)
-	// Get retrieves the AppmeshMesh from the index for a given name.
-	Get(name string) (*v1alpha1.AppmeshMesh, error)
+	// AppmeshMeshes returns an object that can list and get AppmeshMeshes.
+	AppmeshMeshes(namespace string) AppmeshMeshNamespaceLister
 	AppmeshMeshListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *appmeshMeshLister) List(selector labels.Selector) (ret []*v1alpha1.Appm
 	return ret, err
 }
 
-// Get retrieves the AppmeshMesh from the index for a given name.
-func (s *appmeshMeshLister) Get(name string) (*v1alpha1.AppmeshMesh, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AppmeshMeshes returns an object that can list and get AppmeshMeshes.
+func (s *appmeshMeshLister) AppmeshMeshes(namespace string) AppmeshMeshNamespaceLister {
+	return appmeshMeshNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AppmeshMeshNamespaceLister helps list and get AppmeshMeshes.
+type AppmeshMeshNamespaceLister interface {
+	// List lists all AppmeshMeshes in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AppmeshMesh, err error)
+	// Get retrieves the AppmeshMesh from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AppmeshMesh, error)
+	AppmeshMeshNamespaceListerExpansion
+}
+
+// appmeshMeshNamespaceLister implements the AppmeshMeshNamespaceLister
+// interface.
+type appmeshMeshNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AppmeshMeshes in the indexer for a given namespace.
+func (s appmeshMeshNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AppmeshMesh, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AppmeshMesh))
+	})
+	return ret, err
+}
+
+// Get retrieves the AppmeshMesh from the indexer for a given namespace and name.
+func (s appmeshMeshNamespaceLister) Get(name string) (*v1alpha1.AppmeshMesh, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

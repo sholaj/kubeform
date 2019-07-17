@@ -32,7 +32,7 @@ import (
 // CloudfrontDistributionsGetter has a method to return a CloudfrontDistributionInterface.
 // A group's client should implement this interface.
 type CloudfrontDistributionsGetter interface {
-	CloudfrontDistributions() CloudfrontDistributionInterface
+	CloudfrontDistributions(namespace string) CloudfrontDistributionInterface
 }
 
 // CloudfrontDistributionInterface has methods to work with CloudfrontDistribution resources.
@@ -52,12 +52,14 @@ type CloudfrontDistributionInterface interface {
 // cloudfrontDistributions implements CloudfrontDistributionInterface
 type cloudfrontDistributions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCloudfrontDistributions returns a CloudfrontDistributions
-func newCloudfrontDistributions(c *AwsV1alpha1Client) *cloudfrontDistributions {
+func newCloudfrontDistributions(c *AwsV1alpha1Client, namespace string) *cloudfrontDistributions {
 	return &cloudfrontDistributions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCloudfrontDistributions(c *AwsV1alpha1Client) *cloudfrontDistributions {
 func (c *cloudfrontDistributions) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudfrontDistribution, err error) {
 	result = &v1alpha1.CloudfrontDistribution{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudfrontdistributions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cloudfrontDistributions) List(opts v1.ListOptions) (result *v1alpha1.Cl
 	}
 	result = &v1alpha1.CloudfrontDistributionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudfrontdistributions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cloudfrontDistributions) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudfrontdistributions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cloudfrontDistributions) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *cloudfrontDistributions) Create(cloudfrontDistribution *v1alpha1.CloudfrontDistribution) (result *v1alpha1.CloudfrontDistribution, err error) {
 	result = &v1alpha1.CloudfrontDistribution{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cloudfrontdistributions").
 		Body(cloudfrontDistribution).
 		Do().
@@ -118,6 +124,7 @@ func (c *cloudfrontDistributions) Create(cloudfrontDistribution *v1alpha1.Cloudf
 func (c *cloudfrontDistributions) Update(cloudfrontDistribution *v1alpha1.CloudfrontDistribution) (result *v1alpha1.CloudfrontDistribution, err error) {
 	result = &v1alpha1.CloudfrontDistribution{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudfrontdistributions").
 		Name(cloudfrontDistribution.Name).
 		Body(cloudfrontDistribution).
@@ -132,6 +139,7 @@ func (c *cloudfrontDistributions) Update(cloudfrontDistribution *v1alpha1.Cloudf
 func (c *cloudfrontDistributions) UpdateStatus(cloudfrontDistribution *v1alpha1.CloudfrontDistribution) (result *v1alpha1.CloudfrontDistribution, err error) {
 	result = &v1alpha1.CloudfrontDistribution{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudfrontdistributions").
 		Name(cloudfrontDistribution.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cloudfrontDistributions) UpdateStatus(cloudfrontDistribution *v1alpha1.
 // Delete takes name of the cloudfrontDistribution and deletes it. Returns an error if one occurs.
 func (c *cloudfrontDistributions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudfrontdistributions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cloudfrontDistributions) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudfrontdistributions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cloudfrontDistributions) DeleteCollection(options *v1.DeleteOptions, li
 func (c *cloudfrontDistributions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudfrontDistribution, err error) {
 	result = &v1alpha1.CloudfrontDistribution{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cloudfrontdistributions").
 		SubResource(subresources...).
 		Name(name).

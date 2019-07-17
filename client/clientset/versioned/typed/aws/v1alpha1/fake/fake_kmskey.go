@@ -31,6 +31,7 @@ import (
 // FakeKmsKeys implements KmsKeyInterface
 type FakeKmsKeys struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var kmskeysResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "kmskeys"}
@@ -40,7 +41,8 @@ var kmskeysKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v
 // Get takes name of the kmsKey, and returns the corresponding kmsKey object, and an error if there is any.
 func (c *FakeKmsKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.KmsKey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(kmskeysResource, name), &v1alpha1.KmsKey{})
+		Invokes(testing.NewGetAction(kmskeysResource, c.ns, name), &v1alpha1.KmsKey{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeKmsKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.
 // List takes label and field selectors, and returns the list of KmsKeys that match those selectors.
 func (c *FakeKmsKeys) List(opts v1.ListOptions) (result *v1alpha1.KmsKeyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(kmskeysResource, kmskeysKind, opts), &v1alpha1.KmsKeyList{})
+		Invokes(testing.NewListAction(kmskeysResource, kmskeysKind, c.ns, opts), &v1alpha1.KmsKeyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeKmsKeys) List(opts v1.ListOptions) (result *v1alpha1.KmsKeyList, er
 // Watch returns a watch.Interface that watches the requested kmsKeys.
 func (c *FakeKmsKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(kmskeysResource, opts))
+		InvokesWatch(testing.NewWatchAction(kmskeysResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a kmsKey and creates it.  Returns the server's representation of the kmsKey, and an error, if there is any.
 func (c *FakeKmsKeys) Create(kmsKey *v1alpha1.KmsKey) (result *v1alpha1.KmsKey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(kmskeysResource, kmsKey), &v1alpha1.KmsKey{})
+		Invokes(testing.NewCreateAction(kmskeysResource, c.ns, kmsKey), &v1alpha1.KmsKey{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeKmsKeys) Create(kmsKey *v1alpha1.KmsKey) (result *v1alpha1.KmsKey, 
 // Update takes the representation of a kmsKey and updates it. Returns the server's representation of the kmsKey, and an error, if there is any.
 func (c *FakeKmsKeys) Update(kmsKey *v1alpha1.KmsKey) (result *v1alpha1.KmsKey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(kmskeysResource, kmsKey), &v1alpha1.KmsKey{})
+		Invokes(testing.NewUpdateAction(kmskeysResource, c.ns, kmsKey), &v1alpha1.KmsKey{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeKmsKeys) Update(kmsKey *v1alpha1.KmsKey) (result *v1alpha1.KmsKey, 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeKmsKeys) UpdateStatus(kmsKey *v1alpha1.KmsKey) (*v1alpha1.KmsKey, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(kmskeysResource, "status", kmsKey), &v1alpha1.KmsKey{})
+		Invokes(testing.NewUpdateSubresourceAction(kmskeysResource, "status", c.ns, kmsKey), &v1alpha1.KmsKey{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeKmsKeys) UpdateStatus(kmsKey *v1alpha1.KmsKey) (*v1alpha1.KmsKey, e
 // Delete takes name of the kmsKey and deletes it. Returns an error if one occurs.
 func (c *FakeKmsKeys) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(kmskeysResource, name), &v1alpha1.KmsKey{})
+		Invokes(testing.NewDeleteAction(kmskeysResource, c.ns, name), &v1alpha1.KmsKey{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeKmsKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(kmskeysResource, listOptions)
+	action := testing.NewDeleteCollectionAction(kmskeysResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.KmsKeyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeKmsKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 // Patch applies the patch and returns the patched kmsKey.
 func (c *FakeKmsKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KmsKey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(kmskeysResource, name, pt, data, subresources...), &v1alpha1.KmsKey{})
+		Invokes(testing.NewPatchSubresourceAction(kmskeysResource, c.ns, name, pt, data, subresources...), &v1alpha1.KmsKey{})
+
 	if obj == nil {
 		return nil, err
 	}

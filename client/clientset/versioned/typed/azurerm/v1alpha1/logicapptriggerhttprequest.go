@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// LogicAppTriggerHttpRequestsGetter has a method to return a LogicAppTriggerHttpRequestInterface.
+// LogicAppTriggerHTTPRequestsGetter has a method to return a LogicAppTriggerHTTPRequestInterface.
 // A group's client should implement this interface.
-type LogicAppTriggerHttpRequestsGetter interface {
-	LogicAppTriggerHttpRequests() LogicAppTriggerHttpRequestInterface
+type LogicAppTriggerHTTPRequestsGetter interface {
+	LogicAppTriggerHTTPRequests(namespace string) LogicAppTriggerHTTPRequestInterface
 }
 
-// LogicAppTriggerHttpRequestInterface has methods to work with LogicAppTriggerHttpRequest resources.
-type LogicAppTriggerHttpRequestInterface interface {
-	Create(*v1alpha1.LogicAppTriggerHttpRequest) (*v1alpha1.LogicAppTriggerHttpRequest, error)
-	Update(*v1alpha1.LogicAppTriggerHttpRequest) (*v1alpha1.LogicAppTriggerHttpRequest, error)
-	UpdateStatus(*v1alpha1.LogicAppTriggerHttpRequest) (*v1alpha1.LogicAppTriggerHttpRequest, error)
+// LogicAppTriggerHTTPRequestInterface has methods to work with LogicAppTriggerHTTPRequest resources.
+type LogicAppTriggerHTTPRequestInterface interface {
+	Create(*v1alpha1.LogicAppTriggerHTTPRequest) (*v1alpha1.LogicAppTriggerHTTPRequest, error)
+	Update(*v1alpha1.LogicAppTriggerHTTPRequest) (*v1alpha1.LogicAppTriggerHTTPRequest, error)
+	UpdateStatus(*v1alpha1.LogicAppTriggerHTTPRequest) (*v1alpha1.LogicAppTriggerHTTPRequest, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.LogicAppTriggerHttpRequest, error)
-	List(opts v1.ListOptions) (*v1alpha1.LogicAppTriggerHttpRequestList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.LogicAppTriggerHTTPRequest, error)
+	List(opts v1.ListOptions) (*v1alpha1.LogicAppTriggerHTTPRequestList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogicAppTriggerHttpRequest, err error)
-	LogicAppTriggerHttpRequestExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogicAppTriggerHTTPRequest, err error)
+	LogicAppTriggerHTTPRequestExpansion
 }
 
-// logicAppTriggerHttpRequests implements LogicAppTriggerHttpRequestInterface
-type logicAppTriggerHttpRequests struct {
+// logicAppTriggerHTTPRequests implements LogicAppTriggerHTTPRequestInterface
+type logicAppTriggerHTTPRequests struct {
 	client rest.Interface
+	ns     string
 }
 
-// newLogicAppTriggerHttpRequests returns a LogicAppTriggerHttpRequests
-func newLogicAppTriggerHttpRequests(c *AzurermV1alpha1Client) *logicAppTriggerHttpRequests {
-	return &logicAppTriggerHttpRequests{
+// newLogicAppTriggerHTTPRequests returns a LogicAppTriggerHTTPRequests
+func newLogicAppTriggerHTTPRequests(c *AzurermV1alpha1Client, namespace string) *logicAppTriggerHTTPRequests {
+	return &logicAppTriggerHTTPRequests{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the logicAppTriggerHttpRequest, and returns the corresponding logicAppTriggerHttpRequest object, and an error if there is any.
-func (c *logicAppTriggerHttpRequests) Get(name string, options v1.GetOptions) (result *v1alpha1.LogicAppTriggerHttpRequest, err error) {
-	result = &v1alpha1.LogicAppTriggerHttpRequest{}
+// Get takes name of the logicAppTriggerHTTPRequest, and returns the corresponding logicAppTriggerHTTPRequest object, and an error if there is any.
+func (c *logicAppTriggerHTTPRequests) Get(name string, options v1.GetOptions) (result *v1alpha1.LogicAppTriggerHTTPRequest, err error) {
+	result = &v1alpha1.LogicAppTriggerHTTPRequest{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("logicapptriggerhttprequests").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *logicAppTriggerHttpRequests) Get(name string, options v1.GetOptions) (r
 	return
 }
 
-// List takes label and field selectors, and returns the list of LogicAppTriggerHttpRequests that match those selectors.
-func (c *logicAppTriggerHttpRequests) List(opts v1.ListOptions) (result *v1alpha1.LogicAppTriggerHttpRequestList, err error) {
+// List takes label and field selectors, and returns the list of LogicAppTriggerHTTPRequests that match those selectors.
+func (c *logicAppTriggerHTTPRequests) List(opts v1.ListOptions) (result *v1alpha1.LogicAppTriggerHTTPRequestList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.LogicAppTriggerHttpRequestList{}
+	result = &v1alpha1.LogicAppTriggerHTTPRequestList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("logicapptriggerhttprequests").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *logicAppTriggerHttpRequests) List(opts v1.ListOptions) (result *v1alpha
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested logicAppTriggerHttpRequests.
-func (c *logicAppTriggerHttpRequests) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested logicAppTriggerHTTPRequests.
+func (c *logicAppTriggerHTTPRequests) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("logicapptriggerhttprequests").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a logicAppTriggerHttpRequest and creates it.  Returns the server's representation of the logicAppTriggerHttpRequest, and an error, if there is any.
-func (c *logicAppTriggerHttpRequests) Create(logicAppTriggerHttpRequest *v1alpha1.LogicAppTriggerHttpRequest) (result *v1alpha1.LogicAppTriggerHttpRequest, err error) {
-	result = &v1alpha1.LogicAppTriggerHttpRequest{}
+// Create takes the representation of a logicAppTriggerHTTPRequest and creates it.  Returns the server's representation of the logicAppTriggerHTTPRequest, and an error, if there is any.
+func (c *logicAppTriggerHTTPRequests) Create(logicAppTriggerHTTPRequest *v1alpha1.LogicAppTriggerHTTPRequest) (result *v1alpha1.LogicAppTriggerHTTPRequest, err error) {
+	result = &v1alpha1.LogicAppTriggerHTTPRequest{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("logicapptriggerhttprequests").
-		Body(logicAppTriggerHttpRequest).
+		Body(logicAppTriggerHTTPRequest).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a logicAppTriggerHttpRequest and updates it. Returns the server's representation of the logicAppTriggerHttpRequest, and an error, if there is any.
-func (c *logicAppTriggerHttpRequests) Update(logicAppTriggerHttpRequest *v1alpha1.LogicAppTriggerHttpRequest) (result *v1alpha1.LogicAppTriggerHttpRequest, err error) {
-	result = &v1alpha1.LogicAppTriggerHttpRequest{}
+// Update takes the representation of a logicAppTriggerHTTPRequest and updates it. Returns the server's representation of the logicAppTriggerHTTPRequest, and an error, if there is any.
+func (c *logicAppTriggerHTTPRequests) Update(logicAppTriggerHTTPRequest *v1alpha1.LogicAppTriggerHTTPRequest) (result *v1alpha1.LogicAppTriggerHTTPRequest, err error) {
+	result = &v1alpha1.LogicAppTriggerHTTPRequest{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("logicapptriggerhttprequests").
-		Name(logicAppTriggerHttpRequest.Name).
-		Body(logicAppTriggerHttpRequest).
+		Name(logicAppTriggerHTTPRequest.Name).
+		Body(logicAppTriggerHTTPRequest).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *logicAppTriggerHttpRequests) Update(logicAppTriggerHttpRequest *v1alpha
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *logicAppTriggerHttpRequests) UpdateStatus(logicAppTriggerHttpRequest *v1alpha1.LogicAppTriggerHttpRequest) (result *v1alpha1.LogicAppTriggerHttpRequest, err error) {
-	result = &v1alpha1.LogicAppTriggerHttpRequest{}
+func (c *logicAppTriggerHTTPRequests) UpdateStatus(logicAppTriggerHTTPRequest *v1alpha1.LogicAppTriggerHTTPRequest) (result *v1alpha1.LogicAppTriggerHTTPRequest, err error) {
+	result = &v1alpha1.LogicAppTriggerHTTPRequest{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("logicapptriggerhttprequests").
-		Name(logicAppTriggerHttpRequest.Name).
+		Name(logicAppTriggerHTTPRequest.Name).
 		SubResource("status").
-		Body(logicAppTriggerHttpRequest).
+		Body(logicAppTriggerHTTPRequest).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the logicAppTriggerHttpRequest and deletes it. Returns an error if one occurs.
-func (c *logicAppTriggerHttpRequests) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the logicAppTriggerHTTPRequest and deletes it. Returns an error if one occurs.
+func (c *logicAppTriggerHTTPRequests) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("logicapptriggerhttprequests").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *logicAppTriggerHttpRequests) Delete(name string, options *v1.DeleteOpti
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *logicAppTriggerHttpRequests) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *logicAppTriggerHTTPRequests) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("logicapptriggerhttprequests").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *logicAppTriggerHttpRequests) DeleteCollection(options *v1.DeleteOptions
 		Error()
 }
 
-// Patch applies the patch and returns the patched logicAppTriggerHttpRequest.
-func (c *logicAppTriggerHttpRequests) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogicAppTriggerHttpRequest, err error) {
-	result = &v1alpha1.LogicAppTriggerHttpRequest{}
+// Patch applies the patch and returns the patched logicAppTriggerHTTPRequest.
+func (c *logicAppTriggerHTTPRequests) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogicAppTriggerHTTPRequest, err error) {
+	result = &v1alpha1.LogicAppTriggerHTTPRequest{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("logicapptriggerhttprequests").
 		SubResource(subresources...).
 		Name(name).

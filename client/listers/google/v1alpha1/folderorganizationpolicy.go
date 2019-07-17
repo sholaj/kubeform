@@ -29,8 +29,8 @@ import (
 type FolderOrganizationPolicyLister interface {
 	// List lists all FolderOrganizationPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.FolderOrganizationPolicy, err error)
-	// Get retrieves the FolderOrganizationPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.FolderOrganizationPolicy, error)
+	// FolderOrganizationPolicies returns an object that can list and get FolderOrganizationPolicies.
+	FolderOrganizationPolicies(namespace string) FolderOrganizationPolicyNamespaceLister
 	FolderOrganizationPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *folderOrganizationPolicyLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the FolderOrganizationPolicy from the index for a given name.
-func (s *folderOrganizationPolicyLister) Get(name string) (*v1alpha1.FolderOrganizationPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// FolderOrganizationPolicies returns an object that can list and get FolderOrganizationPolicies.
+func (s *folderOrganizationPolicyLister) FolderOrganizationPolicies(namespace string) FolderOrganizationPolicyNamespaceLister {
+	return folderOrganizationPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// FolderOrganizationPolicyNamespaceLister helps list and get FolderOrganizationPolicies.
+type FolderOrganizationPolicyNamespaceLister interface {
+	// List lists all FolderOrganizationPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.FolderOrganizationPolicy, err error)
+	// Get retrieves the FolderOrganizationPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.FolderOrganizationPolicy, error)
+	FolderOrganizationPolicyNamespaceListerExpansion
+}
+
+// folderOrganizationPolicyNamespaceLister implements the FolderOrganizationPolicyNamespaceLister
+// interface.
+type folderOrganizationPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all FolderOrganizationPolicies in the indexer for a given namespace.
+func (s folderOrganizationPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.FolderOrganizationPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.FolderOrganizationPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the FolderOrganizationPolicy from the indexer for a given namespace and name.
+func (s folderOrganizationPolicyNamespaceLister) Get(name string) (*v1alpha1.FolderOrganizationPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

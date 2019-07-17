@@ -31,6 +31,7 @@ import (
 // FakeDefaultSecurityGroups implements DefaultSecurityGroupInterface
 type FakeDefaultSecurityGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var defaultsecuritygroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "defaultsecuritygroups"}
@@ -40,7 +41,8 @@ var defaultsecuritygroupsKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the defaultSecurityGroup, and returns the corresponding defaultSecurityGroup object, and an error if there is any.
 func (c *FakeDefaultSecurityGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.DefaultSecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(defaultsecuritygroupsResource, name), &v1alpha1.DefaultSecurityGroup{})
+		Invokes(testing.NewGetAction(defaultsecuritygroupsResource, c.ns, name), &v1alpha1.DefaultSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDefaultSecurityGroups) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of DefaultSecurityGroups that match those selectors.
 func (c *FakeDefaultSecurityGroups) List(opts v1.ListOptions) (result *v1alpha1.DefaultSecurityGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(defaultsecuritygroupsResource, defaultsecuritygroupsKind, opts), &v1alpha1.DefaultSecurityGroupList{})
+		Invokes(testing.NewListAction(defaultsecuritygroupsResource, defaultsecuritygroupsKind, c.ns, opts), &v1alpha1.DefaultSecurityGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDefaultSecurityGroups) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested defaultSecurityGroups.
 func (c *FakeDefaultSecurityGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(defaultsecuritygroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(defaultsecuritygroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a defaultSecurityGroup and creates it.  Returns the server's representation of the defaultSecurityGroup, and an error, if there is any.
 func (c *FakeDefaultSecurityGroups) Create(defaultSecurityGroup *v1alpha1.DefaultSecurityGroup) (result *v1alpha1.DefaultSecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(defaultsecuritygroupsResource, defaultSecurityGroup), &v1alpha1.DefaultSecurityGroup{})
+		Invokes(testing.NewCreateAction(defaultsecuritygroupsResource, c.ns, defaultSecurityGroup), &v1alpha1.DefaultSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDefaultSecurityGroups) Create(defaultSecurityGroup *v1alpha1.Defaul
 // Update takes the representation of a defaultSecurityGroup and updates it. Returns the server's representation of the defaultSecurityGroup, and an error, if there is any.
 func (c *FakeDefaultSecurityGroups) Update(defaultSecurityGroup *v1alpha1.DefaultSecurityGroup) (result *v1alpha1.DefaultSecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(defaultsecuritygroupsResource, defaultSecurityGroup), &v1alpha1.DefaultSecurityGroup{})
+		Invokes(testing.NewUpdateAction(defaultsecuritygroupsResource, c.ns, defaultSecurityGroup), &v1alpha1.DefaultSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDefaultSecurityGroups) Update(defaultSecurityGroup *v1alpha1.Defaul
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDefaultSecurityGroups) UpdateStatus(defaultSecurityGroup *v1alpha1.DefaultSecurityGroup) (*v1alpha1.DefaultSecurityGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(defaultsecuritygroupsResource, "status", defaultSecurityGroup), &v1alpha1.DefaultSecurityGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(defaultsecuritygroupsResource, "status", c.ns, defaultSecurityGroup), &v1alpha1.DefaultSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDefaultSecurityGroups) UpdateStatus(defaultSecurityGroup *v1alpha1.
 // Delete takes name of the defaultSecurityGroup and deletes it. Returns an error if one occurs.
 func (c *FakeDefaultSecurityGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(defaultsecuritygroupsResource, name), &v1alpha1.DefaultSecurityGroup{})
+		Invokes(testing.NewDeleteAction(defaultsecuritygroupsResource, c.ns, name), &v1alpha1.DefaultSecurityGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDefaultSecurityGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(defaultsecuritygroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(defaultsecuritygroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DefaultSecurityGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDefaultSecurityGroups) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched defaultSecurityGroup.
 func (c *FakeDefaultSecurityGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DefaultSecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(defaultsecuritygroupsResource, name, pt, data, subresources...), &v1alpha1.DefaultSecurityGroup{})
+		Invokes(testing.NewPatchSubresourceAction(defaultsecuritygroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DefaultSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type WorklinkWebsiteCertificateAuthorityAssociationLister interface {
 	// List lists all WorklinkWebsiteCertificateAuthorityAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation, err error)
-	// Get retrieves the WorklinkWebsiteCertificateAuthorityAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation, error)
+	// WorklinkWebsiteCertificateAuthorityAssociations returns an object that can list and get WorklinkWebsiteCertificateAuthorityAssociations.
+	WorklinkWebsiteCertificateAuthorityAssociations(namespace string) WorklinkWebsiteCertificateAuthorityAssociationNamespaceLister
 	WorklinkWebsiteCertificateAuthorityAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *worklinkWebsiteCertificateAuthorityAssociationLister) List(selector lab
 	return ret, err
 }
 
-// Get retrieves the WorklinkWebsiteCertificateAuthorityAssociation from the index for a given name.
-func (s *worklinkWebsiteCertificateAuthorityAssociationLister) Get(name string) (*v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WorklinkWebsiteCertificateAuthorityAssociations returns an object that can list and get WorklinkWebsiteCertificateAuthorityAssociations.
+func (s *worklinkWebsiteCertificateAuthorityAssociationLister) WorklinkWebsiteCertificateAuthorityAssociations(namespace string) WorklinkWebsiteCertificateAuthorityAssociationNamespaceLister {
+	return worklinkWebsiteCertificateAuthorityAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WorklinkWebsiteCertificateAuthorityAssociationNamespaceLister helps list and get WorklinkWebsiteCertificateAuthorityAssociations.
+type WorklinkWebsiteCertificateAuthorityAssociationNamespaceLister interface {
+	// List lists all WorklinkWebsiteCertificateAuthorityAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation, err error)
+	// Get retrieves the WorklinkWebsiteCertificateAuthorityAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation, error)
+	WorklinkWebsiteCertificateAuthorityAssociationNamespaceListerExpansion
+}
+
+// worklinkWebsiteCertificateAuthorityAssociationNamespaceLister implements the WorklinkWebsiteCertificateAuthorityAssociationNamespaceLister
+// interface.
+type worklinkWebsiteCertificateAuthorityAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WorklinkWebsiteCertificateAuthorityAssociations in the indexer for a given namespace.
+func (s worklinkWebsiteCertificateAuthorityAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the WorklinkWebsiteCertificateAuthorityAssociation from the indexer for a given namespace and name.
+func (s worklinkWebsiteCertificateAuthorityAssociationNamespaceLister) Get(name string) (*v1alpha1.WorklinkWebsiteCertificateAuthorityAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

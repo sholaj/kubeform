@@ -31,6 +31,7 @@ import (
 // FakeEcsTaskDefinitions implements EcsTaskDefinitionInterface
 type FakeEcsTaskDefinitions struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ecstaskdefinitionsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ecstaskdefinitions"}
@@ -40,7 +41,8 @@ var ecstaskdefinitionsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", 
 // Get takes name of the ecsTaskDefinition, and returns the corresponding ecsTaskDefinition object, and an error if there is any.
 func (c *FakeEcsTaskDefinitions) Get(name string, options v1.GetOptions) (result *v1alpha1.EcsTaskDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ecstaskdefinitionsResource, name), &v1alpha1.EcsTaskDefinition{})
+		Invokes(testing.NewGetAction(ecstaskdefinitionsResource, c.ns, name), &v1alpha1.EcsTaskDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEcsTaskDefinitions) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of EcsTaskDefinitions that match those selectors.
 func (c *FakeEcsTaskDefinitions) List(opts v1.ListOptions) (result *v1alpha1.EcsTaskDefinitionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ecstaskdefinitionsResource, ecstaskdefinitionsKind, opts), &v1alpha1.EcsTaskDefinitionList{})
+		Invokes(testing.NewListAction(ecstaskdefinitionsResource, ecstaskdefinitionsKind, c.ns, opts), &v1alpha1.EcsTaskDefinitionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEcsTaskDefinitions) List(opts v1.ListOptions) (result *v1alpha1.Ecs
 // Watch returns a watch.Interface that watches the requested ecsTaskDefinitions.
 func (c *FakeEcsTaskDefinitions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ecstaskdefinitionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(ecstaskdefinitionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ecsTaskDefinition and creates it.  Returns the server's representation of the ecsTaskDefinition, and an error, if there is any.
 func (c *FakeEcsTaskDefinitions) Create(ecsTaskDefinition *v1alpha1.EcsTaskDefinition) (result *v1alpha1.EcsTaskDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ecstaskdefinitionsResource, ecsTaskDefinition), &v1alpha1.EcsTaskDefinition{})
+		Invokes(testing.NewCreateAction(ecstaskdefinitionsResource, c.ns, ecsTaskDefinition), &v1alpha1.EcsTaskDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEcsTaskDefinitions) Create(ecsTaskDefinition *v1alpha1.EcsTaskDefin
 // Update takes the representation of a ecsTaskDefinition and updates it. Returns the server's representation of the ecsTaskDefinition, and an error, if there is any.
 func (c *FakeEcsTaskDefinitions) Update(ecsTaskDefinition *v1alpha1.EcsTaskDefinition) (result *v1alpha1.EcsTaskDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ecstaskdefinitionsResource, ecsTaskDefinition), &v1alpha1.EcsTaskDefinition{})
+		Invokes(testing.NewUpdateAction(ecstaskdefinitionsResource, c.ns, ecsTaskDefinition), &v1alpha1.EcsTaskDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEcsTaskDefinitions) Update(ecsTaskDefinition *v1alpha1.EcsTaskDefin
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEcsTaskDefinitions) UpdateStatus(ecsTaskDefinition *v1alpha1.EcsTaskDefinition) (*v1alpha1.EcsTaskDefinition, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ecstaskdefinitionsResource, "status", ecsTaskDefinition), &v1alpha1.EcsTaskDefinition{})
+		Invokes(testing.NewUpdateSubresourceAction(ecstaskdefinitionsResource, "status", c.ns, ecsTaskDefinition), &v1alpha1.EcsTaskDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEcsTaskDefinitions) UpdateStatus(ecsTaskDefinition *v1alpha1.EcsTas
 // Delete takes name of the ecsTaskDefinition and deletes it. Returns an error if one occurs.
 func (c *FakeEcsTaskDefinitions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ecstaskdefinitionsResource, name), &v1alpha1.EcsTaskDefinition{})
+		Invokes(testing.NewDeleteAction(ecstaskdefinitionsResource, c.ns, name), &v1alpha1.EcsTaskDefinition{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEcsTaskDefinitions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ecstaskdefinitionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ecstaskdefinitionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.EcsTaskDefinitionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEcsTaskDefinitions) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched ecsTaskDefinition.
 func (c *FakeEcsTaskDefinitions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EcsTaskDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ecstaskdefinitionsResource, name, pt, data, subresources...), &v1alpha1.EcsTaskDefinition{})
+		Invokes(testing.NewPatchSubresourceAction(ecstaskdefinitionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.EcsTaskDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}

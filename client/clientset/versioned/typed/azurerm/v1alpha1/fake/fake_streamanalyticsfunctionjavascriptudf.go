@@ -31,6 +31,7 @@ import (
 // FakeStreamAnalyticsFunctionJavascriptUdves implements StreamAnalyticsFunctionJavascriptUdfInterface
 type FakeStreamAnalyticsFunctionJavascriptUdves struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var streamanalyticsfunctionjavascriptudvesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "streamanalyticsfunctionjavascriptudves"}
@@ -40,7 +41,8 @@ var streamanalyticsfunctionjavascriptudvesKind = schema.GroupVersionKind{Group: 
 // Get takes name of the streamAnalyticsFunctionJavascriptUdf, and returns the corresponding streamAnalyticsFunctionJavascriptUdf object, and an error if there is any.
 func (c *FakeStreamAnalyticsFunctionJavascriptUdves) Get(name string, options v1.GetOptions) (result *v1alpha1.StreamAnalyticsFunctionJavascriptUdf, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(streamanalyticsfunctionjavascriptudvesResource, name), &v1alpha1.StreamAnalyticsFunctionJavascriptUdf{})
+		Invokes(testing.NewGetAction(streamanalyticsfunctionjavascriptudvesResource, c.ns, name), &v1alpha1.StreamAnalyticsFunctionJavascriptUdf{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeStreamAnalyticsFunctionJavascriptUdves) Get(name string, options v1
 // List takes label and field selectors, and returns the list of StreamAnalyticsFunctionJavascriptUdves that match those selectors.
 func (c *FakeStreamAnalyticsFunctionJavascriptUdves) List(opts v1.ListOptions) (result *v1alpha1.StreamAnalyticsFunctionJavascriptUdfList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(streamanalyticsfunctionjavascriptudvesResource, streamanalyticsfunctionjavascriptudvesKind, opts), &v1alpha1.StreamAnalyticsFunctionJavascriptUdfList{})
+		Invokes(testing.NewListAction(streamanalyticsfunctionjavascriptudvesResource, streamanalyticsfunctionjavascriptudvesKind, c.ns, opts), &v1alpha1.StreamAnalyticsFunctionJavascriptUdfList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeStreamAnalyticsFunctionJavascriptUdves) List(opts v1.ListOptions) (
 // Watch returns a watch.Interface that watches the requested streamAnalyticsFunctionJavascriptUdves.
 func (c *FakeStreamAnalyticsFunctionJavascriptUdves) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(streamanalyticsfunctionjavascriptudvesResource, opts))
+		InvokesWatch(testing.NewWatchAction(streamanalyticsfunctionjavascriptudvesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a streamAnalyticsFunctionJavascriptUdf and creates it.  Returns the server's representation of the streamAnalyticsFunctionJavascriptUdf, and an error, if there is any.
 func (c *FakeStreamAnalyticsFunctionJavascriptUdves) Create(streamAnalyticsFunctionJavascriptUdf *v1alpha1.StreamAnalyticsFunctionJavascriptUdf) (result *v1alpha1.StreamAnalyticsFunctionJavascriptUdf, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(streamanalyticsfunctionjavascriptudvesResource, streamAnalyticsFunctionJavascriptUdf), &v1alpha1.StreamAnalyticsFunctionJavascriptUdf{})
+		Invokes(testing.NewCreateAction(streamanalyticsfunctionjavascriptudvesResource, c.ns, streamAnalyticsFunctionJavascriptUdf), &v1alpha1.StreamAnalyticsFunctionJavascriptUdf{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeStreamAnalyticsFunctionJavascriptUdves) Create(streamAnalyticsFunct
 // Update takes the representation of a streamAnalyticsFunctionJavascriptUdf and updates it. Returns the server's representation of the streamAnalyticsFunctionJavascriptUdf, and an error, if there is any.
 func (c *FakeStreamAnalyticsFunctionJavascriptUdves) Update(streamAnalyticsFunctionJavascriptUdf *v1alpha1.StreamAnalyticsFunctionJavascriptUdf) (result *v1alpha1.StreamAnalyticsFunctionJavascriptUdf, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(streamanalyticsfunctionjavascriptudvesResource, streamAnalyticsFunctionJavascriptUdf), &v1alpha1.StreamAnalyticsFunctionJavascriptUdf{})
+		Invokes(testing.NewUpdateAction(streamanalyticsfunctionjavascriptudvesResource, c.ns, streamAnalyticsFunctionJavascriptUdf), &v1alpha1.StreamAnalyticsFunctionJavascriptUdf{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeStreamAnalyticsFunctionJavascriptUdves) Update(streamAnalyticsFunct
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeStreamAnalyticsFunctionJavascriptUdves) UpdateStatus(streamAnalyticsFunctionJavascriptUdf *v1alpha1.StreamAnalyticsFunctionJavascriptUdf) (*v1alpha1.StreamAnalyticsFunctionJavascriptUdf, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(streamanalyticsfunctionjavascriptudvesResource, "status", streamAnalyticsFunctionJavascriptUdf), &v1alpha1.StreamAnalyticsFunctionJavascriptUdf{})
+		Invokes(testing.NewUpdateSubresourceAction(streamanalyticsfunctionjavascriptudvesResource, "status", c.ns, streamAnalyticsFunctionJavascriptUdf), &v1alpha1.StreamAnalyticsFunctionJavascriptUdf{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeStreamAnalyticsFunctionJavascriptUdves) UpdateStatus(streamAnalytic
 // Delete takes name of the streamAnalyticsFunctionJavascriptUdf and deletes it. Returns an error if one occurs.
 func (c *FakeStreamAnalyticsFunctionJavascriptUdves) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(streamanalyticsfunctionjavascriptudvesResource, name), &v1alpha1.StreamAnalyticsFunctionJavascriptUdf{})
+		Invokes(testing.NewDeleteAction(streamanalyticsfunctionjavascriptudvesResource, c.ns, name), &v1alpha1.StreamAnalyticsFunctionJavascriptUdf{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeStreamAnalyticsFunctionJavascriptUdves) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(streamanalyticsfunctionjavascriptudvesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(streamanalyticsfunctionjavascriptudvesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.StreamAnalyticsFunctionJavascriptUdfList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeStreamAnalyticsFunctionJavascriptUdves) DeleteCollection(options *v
 // Patch applies the patch and returns the patched streamAnalyticsFunctionJavascriptUdf.
 func (c *FakeStreamAnalyticsFunctionJavascriptUdves) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StreamAnalyticsFunctionJavascriptUdf, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(streamanalyticsfunctionjavascriptudvesResource, name, pt, data, subresources...), &v1alpha1.StreamAnalyticsFunctionJavascriptUdf{})
+		Invokes(testing.NewPatchSubresourceAction(streamanalyticsfunctionjavascriptudvesResource, c.ns, name, pt, data, subresources...), &v1alpha1.StreamAnalyticsFunctionJavascriptUdf{})
+
 	if obj == nil {
 		return nil, err
 	}

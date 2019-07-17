@@ -32,7 +32,7 @@ import (
 // EksClustersGetter has a method to return a EksClusterInterface.
 // A group's client should implement this interface.
 type EksClustersGetter interface {
-	EksClusters() EksClusterInterface
+	EksClusters(namespace string) EksClusterInterface
 }
 
 // EksClusterInterface has methods to work with EksCluster resources.
@@ -52,12 +52,14 @@ type EksClusterInterface interface {
 // eksClusters implements EksClusterInterface
 type eksClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEksClusters returns a EksClusters
-func newEksClusters(c *AwsV1alpha1Client) *eksClusters {
+func newEksClusters(c *AwsV1alpha1Client, namespace string) *eksClusters {
 	return &eksClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEksClusters(c *AwsV1alpha1Client) *eksClusters {
 func (c *eksClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.EksCluster, err error) {
 	result = &v1alpha1.EksCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eksclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *eksClusters) List(opts v1.ListOptions) (result *v1alpha1.EksClusterList
 	}
 	result = &v1alpha1.EksClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eksclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *eksClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("eksclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *eksClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *eksClusters) Create(eksCluster *v1alpha1.EksCluster) (result *v1alpha1.EksCluster, err error) {
 	result = &v1alpha1.EksCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("eksclusters").
 		Body(eksCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *eksClusters) Create(eksCluster *v1alpha1.EksCluster) (result *v1alpha1.
 func (c *eksClusters) Update(eksCluster *v1alpha1.EksCluster) (result *v1alpha1.EksCluster, err error) {
 	result = &v1alpha1.EksCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eksclusters").
 		Name(eksCluster.Name).
 		Body(eksCluster).
@@ -132,6 +139,7 @@ func (c *eksClusters) Update(eksCluster *v1alpha1.EksCluster) (result *v1alpha1.
 func (c *eksClusters) UpdateStatus(eksCluster *v1alpha1.EksCluster) (result *v1alpha1.EksCluster, err error) {
 	result = &v1alpha1.EksCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eksclusters").
 		Name(eksCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *eksClusters) UpdateStatus(eksCluster *v1alpha1.EksCluster) (result *v1a
 // Delete takes name of the eksCluster and deletes it. Returns an error if one occurs.
 func (c *eksClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eksclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *eksClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eksclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *eksClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *eksClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EksCluster, err error) {
 	result = &v1alpha1.EksCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("eksclusters").
 		SubResource(subresources...).
 		Name(name).

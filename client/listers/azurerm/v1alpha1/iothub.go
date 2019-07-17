@@ -29,8 +29,8 @@ import (
 type IothubLister interface {
 	// List lists all Iothubs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Iothub, err error)
-	// Get retrieves the Iothub from the index for a given name.
-	Get(name string) (*v1alpha1.Iothub, error)
+	// Iothubs returns an object that can list and get Iothubs.
+	Iothubs(namespace string) IothubNamespaceLister
 	IothubListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iothubLister) List(selector labels.Selector) (ret []*v1alpha1.Iothub, e
 	return ret, err
 }
 
-// Get retrieves the Iothub from the index for a given name.
-func (s *iothubLister) Get(name string) (*v1alpha1.Iothub, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Iothubs returns an object that can list and get Iothubs.
+func (s *iothubLister) Iothubs(namespace string) IothubNamespaceLister {
+	return iothubNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IothubNamespaceLister helps list and get Iothubs.
+type IothubNamespaceLister interface {
+	// List lists all Iothubs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Iothub, err error)
+	// Get retrieves the Iothub from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Iothub, error)
+	IothubNamespaceListerExpansion
+}
+
+// iothubNamespaceLister implements the IothubNamespaceLister
+// interface.
+type iothubNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Iothubs in the indexer for a given namespace.
+func (s iothubNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Iothub, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Iothub))
+	})
+	return ret, err
+}
+
+// Get retrieves the Iothub from the indexer for a given namespace and name.
+func (s iothubNamespaceLister) Get(name string) (*v1alpha1.Iothub, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

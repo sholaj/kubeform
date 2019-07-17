@@ -41,32 +41,33 @@ type OrganizationIamCustomRoleInformer interface {
 type organizationIamCustomRoleInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewOrganizationIamCustomRoleInformer constructs a new informer for OrganizationIamCustomRole type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewOrganizationIamCustomRoleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredOrganizationIamCustomRoleInformer(client, resyncPeriod, indexers, nil)
+func NewOrganizationIamCustomRoleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredOrganizationIamCustomRoleInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredOrganizationIamCustomRoleInformer constructs a new informer for OrganizationIamCustomRole type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredOrganizationIamCustomRoleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredOrganizationIamCustomRoleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().OrganizationIamCustomRoles().List(options)
+				return client.GoogleV1alpha1().OrganizationIamCustomRoles(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().OrganizationIamCustomRoles().Watch(options)
+				return client.GoogleV1alpha1().OrganizationIamCustomRoles(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.OrganizationIamCustomRole{},
@@ -76,7 +77,7 @@ func NewFilteredOrganizationIamCustomRoleInformer(client versioned.Interface, re
 }
 
 func (f *organizationIamCustomRoleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredOrganizationIamCustomRoleInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredOrganizationIamCustomRoleInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *organizationIamCustomRoleInformer) Informer() cache.SharedIndexInformer {

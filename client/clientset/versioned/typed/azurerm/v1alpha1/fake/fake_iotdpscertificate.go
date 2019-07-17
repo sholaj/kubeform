@@ -31,6 +31,7 @@ import (
 // FakeIotDpsCertificates implements IotDpsCertificateInterface
 type FakeIotDpsCertificates struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var iotdpscertificatesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "iotdpscertificates"}
@@ -40,7 +41,8 @@ var iotdpscertificatesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.co
 // Get takes name of the iotDpsCertificate, and returns the corresponding iotDpsCertificate object, and an error if there is any.
 func (c *FakeIotDpsCertificates) Get(name string, options v1.GetOptions) (result *v1alpha1.IotDpsCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iotdpscertificatesResource, name), &v1alpha1.IotDpsCertificate{})
+		Invokes(testing.NewGetAction(iotdpscertificatesResource, c.ns, name), &v1alpha1.IotDpsCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIotDpsCertificates) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of IotDpsCertificates that match those selectors.
 func (c *FakeIotDpsCertificates) List(opts v1.ListOptions) (result *v1alpha1.IotDpsCertificateList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iotdpscertificatesResource, iotdpscertificatesKind, opts), &v1alpha1.IotDpsCertificateList{})
+		Invokes(testing.NewListAction(iotdpscertificatesResource, iotdpscertificatesKind, c.ns, opts), &v1alpha1.IotDpsCertificateList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIotDpsCertificates) List(opts v1.ListOptions) (result *v1alpha1.Iot
 // Watch returns a watch.Interface that watches the requested iotDpsCertificates.
 func (c *FakeIotDpsCertificates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iotdpscertificatesResource, opts))
+		InvokesWatch(testing.NewWatchAction(iotdpscertificatesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iotDpsCertificate and creates it.  Returns the server's representation of the iotDpsCertificate, and an error, if there is any.
 func (c *FakeIotDpsCertificates) Create(iotDpsCertificate *v1alpha1.IotDpsCertificate) (result *v1alpha1.IotDpsCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iotdpscertificatesResource, iotDpsCertificate), &v1alpha1.IotDpsCertificate{})
+		Invokes(testing.NewCreateAction(iotdpscertificatesResource, c.ns, iotDpsCertificate), &v1alpha1.IotDpsCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIotDpsCertificates) Create(iotDpsCertificate *v1alpha1.IotDpsCertif
 // Update takes the representation of a iotDpsCertificate and updates it. Returns the server's representation of the iotDpsCertificate, and an error, if there is any.
 func (c *FakeIotDpsCertificates) Update(iotDpsCertificate *v1alpha1.IotDpsCertificate) (result *v1alpha1.IotDpsCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iotdpscertificatesResource, iotDpsCertificate), &v1alpha1.IotDpsCertificate{})
+		Invokes(testing.NewUpdateAction(iotdpscertificatesResource, c.ns, iotDpsCertificate), &v1alpha1.IotDpsCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIotDpsCertificates) Update(iotDpsCertificate *v1alpha1.IotDpsCertif
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIotDpsCertificates) UpdateStatus(iotDpsCertificate *v1alpha1.IotDpsCertificate) (*v1alpha1.IotDpsCertificate, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iotdpscertificatesResource, "status", iotDpsCertificate), &v1alpha1.IotDpsCertificate{})
+		Invokes(testing.NewUpdateSubresourceAction(iotdpscertificatesResource, "status", c.ns, iotDpsCertificate), &v1alpha1.IotDpsCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIotDpsCertificates) UpdateStatus(iotDpsCertificate *v1alpha1.IotDps
 // Delete takes name of the iotDpsCertificate and deletes it. Returns an error if one occurs.
 func (c *FakeIotDpsCertificates) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iotdpscertificatesResource, name), &v1alpha1.IotDpsCertificate{})
+		Invokes(testing.NewDeleteAction(iotdpscertificatesResource, c.ns, name), &v1alpha1.IotDpsCertificate{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIotDpsCertificates) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iotdpscertificatesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iotdpscertificatesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IotDpsCertificateList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIotDpsCertificates) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched iotDpsCertificate.
 func (c *FakeIotDpsCertificates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IotDpsCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iotdpscertificatesResource, name, pt, data, subresources...), &v1alpha1.IotDpsCertificate{})
+		Invokes(testing.NewPatchSubresourceAction(iotdpscertificatesResource, c.ns, name, pt, data, subresources...), &v1alpha1.IotDpsCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}

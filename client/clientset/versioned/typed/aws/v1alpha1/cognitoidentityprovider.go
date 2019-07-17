@@ -32,7 +32,7 @@ import (
 // CognitoIdentityProvidersGetter has a method to return a CognitoIdentityProviderInterface.
 // A group's client should implement this interface.
 type CognitoIdentityProvidersGetter interface {
-	CognitoIdentityProviders() CognitoIdentityProviderInterface
+	CognitoIdentityProviders(namespace string) CognitoIdentityProviderInterface
 }
 
 // CognitoIdentityProviderInterface has methods to work with CognitoIdentityProvider resources.
@@ -52,12 +52,14 @@ type CognitoIdentityProviderInterface interface {
 // cognitoIdentityProviders implements CognitoIdentityProviderInterface
 type cognitoIdentityProviders struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCognitoIdentityProviders returns a CognitoIdentityProviders
-func newCognitoIdentityProviders(c *AwsV1alpha1Client) *cognitoIdentityProviders {
+func newCognitoIdentityProviders(c *AwsV1alpha1Client, namespace string) *cognitoIdentityProviders {
 	return &cognitoIdentityProviders{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCognitoIdentityProviders(c *AwsV1alpha1Client) *cognitoIdentityProviders
 func (c *cognitoIdentityProviders) Get(name string, options v1.GetOptions) (result *v1alpha1.CognitoIdentityProvider, err error) {
 	result = &v1alpha1.CognitoIdentityProvider{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitoidentityproviders").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cognitoIdentityProviders) List(opts v1.ListOptions) (result *v1alpha1.C
 	}
 	result = &v1alpha1.CognitoIdentityProviderList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitoidentityproviders").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cognitoIdentityProviders) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitoidentityproviders").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cognitoIdentityProviders) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *cognitoIdentityProviders) Create(cognitoIdentityProvider *v1alpha1.CognitoIdentityProvider) (result *v1alpha1.CognitoIdentityProvider, err error) {
 	result = &v1alpha1.CognitoIdentityProvider{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cognitoidentityproviders").
 		Body(cognitoIdentityProvider).
 		Do().
@@ -118,6 +124,7 @@ func (c *cognitoIdentityProviders) Create(cognitoIdentityProvider *v1alpha1.Cogn
 func (c *cognitoIdentityProviders) Update(cognitoIdentityProvider *v1alpha1.CognitoIdentityProvider) (result *v1alpha1.CognitoIdentityProvider, err error) {
 	result = &v1alpha1.CognitoIdentityProvider{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cognitoidentityproviders").
 		Name(cognitoIdentityProvider.Name).
 		Body(cognitoIdentityProvider).
@@ -132,6 +139,7 @@ func (c *cognitoIdentityProviders) Update(cognitoIdentityProvider *v1alpha1.Cogn
 func (c *cognitoIdentityProviders) UpdateStatus(cognitoIdentityProvider *v1alpha1.CognitoIdentityProvider) (result *v1alpha1.CognitoIdentityProvider, err error) {
 	result = &v1alpha1.CognitoIdentityProvider{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cognitoidentityproviders").
 		Name(cognitoIdentityProvider.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cognitoIdentityProviders) UpdateStatus(cognitoIdentityProvider *v1alpha
 // Delete takes name of the cognitoIdentityProvider and deletes it. Returns an error if one occurs.
 func (c *cognitoIdentityProviders) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cognitoidentityproviders").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cognitoIdentityProviders) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cognitoidentityproviders").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cognitoIdentityProviders) DeleteCollection(options *v1.DeleteOptions, l
 func (c *cognitoIdentityProviders) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CognitoIdentityProvider, err error) {
 	result = &v1alpha1.CognitoIdentityProvider{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cognitoidentityproviders").
 		SubResource(subresources...).
 		Name(name).

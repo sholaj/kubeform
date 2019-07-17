@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,8 +19,9 @@ type VpnGatewayAttachment struct {
 }
 
 type VpnGatewayAttachmentSpec struct {
-	VpcId        string `json:"vpc_id"`
-	VpnGatewayId string `json:"vpn_gateway_id"`
+	VpcID        string                    `json:"vpcID" tf:"vpc_id"`
+	VpnGatewayID string                    `json:"vpnGatewayID" tf:"vpn_gateway_id"`
+	ProviderRef  core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type VpnGatewayAttachmentStatus struct {
@@ -28,7 +29,9 @@ type VpnGatewayAttachmentStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

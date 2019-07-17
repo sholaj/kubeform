@@ -397,32 +397,36 @@ spec:
           type: object
         spec:
           properties:
-            custom_header:
-              items: {}
-              type: array
-            geo_mappings:
+            geoMappings:
               items:
                 type: string
               type: array
-            min_child_endpoints:
+            minChildEndpoints:
               type: integer
             name:
               type: string
-            profile_name:
+            profileName:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
-            subnet:
-              items: {}
-              type: array
-            target_resource_id:
+            targetResourceID:
               type: string
             type:
               type: string
           required:
           - name
-          - profile_name
-          - resource_group_name
+          - profileName
+          - providerRef
+          - resourceGroupName
           - type
           type: object
         status:
@@ -434,6 +438,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

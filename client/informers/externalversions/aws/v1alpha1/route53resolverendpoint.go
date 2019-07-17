@@ -41,32 +41,33 @@ type Route53ResolverEndpointInformer interface {
 type route53ResolverEndpointInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewRoute53ResolverEndpointInformer constructs a new informer for Route53ResolverEndpoint type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewRoute53ResolverEndpointInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredRoute53ResolverEndpointInformer(client, resyncPeriod, indexers, nil)
+func NewRoute53ResolverEndpointInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredRoute53ResolverEndpointInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredRoute53ResolverEndpointInformer constructs a new informer for Route53ResolverEndpoint type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredRoute53ResolverEndpointInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredRoute53ResolverEndpointInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().Route53ResolverEndpoints().List(options)
+				return client.AwsV1alpha1().Route53ResolverEndpoints(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().Route53ResolverEndpoints().Watch(options)
+				return client.AwsV1alpha1().Route53ResolverEndpoints(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.Route53ResolverEndpoint{},
@@ -76,7 +77,7 @@ func NewFilteredRoute53ResolverEndpointInformer(client versioned.Interface, resy
 }
 
 func (f *route53ResolverEndpointInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredRoute53ResolverEndpointInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredRoute53ResolverEndpointInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *route53ResolverEndpointInformer) Informer() cache.SharedIndexInformer {

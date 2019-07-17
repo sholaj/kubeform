@@ -32,7 +32,7 @@ import (
 // LbProbesGetter has a method to return a LbProbeInterface.
 // A group's client should implement this interface.
 type LbProbesGetter interface {
-	LbProbes() LbProbeInterface
+	LbProbes(namespace string) LbProbeInterface
 }
 
 // LbProbeInterface has methods to work with LbProbe resources.
@@ -52,12 +52,14 @@ type LbProbeInterface interface {
 // lbProbes implements LbProbeInterface
 type lbProbes struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLbProbes returns a LbProbes
-func newLbProbes(c *AzurermV1alpha1Client) *lbProbes {
+func newLbProbes(c *AzurermV1alpha1Client, namespace string) *lbProbes {
 	return &lbProbes{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLbProbes(c *AzurermV1alpha1Client) *lbProbes {
 func (c *lbProbes) Get(name string, options v1.GetOptions) (result *v1alpha1.LbProbe, err error) {
 	result = &v1alpha1.LbProbe{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lbprobes").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lbProbes) List(opts v1.ListOptions) (result *v1alpha1.LbProbeList, err 
 	}
 	result = &v1alpha1.LbProbeList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lbprobes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lbProbes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lbprobes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lbProbes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *lbProbes) Create(lbProbe *v1alpha1.LbProbe) (result *v1alpha1.LbProbe, err error) {
 	result = &v1alpha1.LbProbe{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lbprobes").
 		Body(lbProbe).
 		Do().
@@ -118,6 +124,7 @@ func (c *lbProbes) Create(lbProbe *v1alpha1.LbProbe) (result *v1alpha1.LbProbe, 
 func (c *lbProbes) Update(lbProbe *v1alpha1.LbProbe) (result *v1alpha1.LbProbe, err error) {
 	result = &v1alpha1.LbProbe{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lbprobes").
 		Name(lbProbe.Name).
 		Body(lbProbe).
@@ -132,6 +139,7 @@ func (c *lbProbes) Update(lbProbe *v1alpha1.LbProbe) (result *v1alpha1.LbProbe, 
 func (c *lbProbes) UpdateStatus(lbProbe *v1alpha1.LbProbe) (result *v1alpha1.LbProbe, err error) {
 	result = &v1alpha1.LbProbe{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lbprobes").
 		Name(lbProbe.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lbProbes) UpdateStatus(lbProbe *v1alpha1.LbProbe) (result *v1alpha1.LbP
 // Delete takes name of the lbProbe and deletes it. Returns an error if one occurs.
 func (c *lbProbes) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lbprobes").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lbProbes) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lbprobes").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lbProbes) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 func (c *lbProbes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbProbe, err error) {
 	result = &v1alpha1.LbProbe{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lbprobes").
 		SubResource(subresources...).
 		Name(name).

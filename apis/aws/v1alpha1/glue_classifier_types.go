@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,32 +19,33 @@ type GlueClassifier struct {
 }
 
 type GlueClassifierSpecGrokClassifier struct {
-	Classification string `json:"classification"`
+	Classification string `json:"classification" tf:"classification"`
 	// +optional
-	CustomPatterns string `json:"custom_patterns,omitempty"`
-	GrokPattern    string `json:"grok_pattern"`
+	CustomPatterns string `json:"customPatterns,omitempty" tf:"custom_patterns,omitempty"`
+	GrokPattern    string `json:"grokPattern" tf:"grok_pattern"`
 }
 
 type GlueClassifierSpecJsonClassifier struct {
-	JsonPath string `json:"json_path"`
+	JsonPath string `json:"jsonPath" tf:"json_path"`
 }
 
 type GlueClassifierSpecXmlClassifier struct {
-	Classification string `json:"classification"`
-	RowTag         string `json:"row_tag"`
+	Classification string `json:"classification" tf:"classification"`
+	RowTag         string `json:"rowTag" tf:"row_tag"`
 }
 
 type GlueClassifierSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	GrokClassifier *[]GlueClassifierSpec `json:"grok_classifier,omitempty"`
+	GrokClassifier []GlueClassifierSpecGrokClassifier `json:"grokClassifier,omitempty" tf:"grok_classifier,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	JsonClassifier *[]GlueClassifierSpec `json:"json_classifier,omitempty"`
-	Name           string                `json:"name"`
+	JsonClassifier []GlueClassifierSpecJsonClassifier `json:"jsonClassifier,omitempty" tf:"json_classifier,omitempty"`
+	Name           string                             `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	XmlClassifier *[]GlueClassifierSpec `json:"xml_classifier,omitempty"`
+	XmlClassifier []GlueClassifierSpecXmlClassifier `json:"xmlClassifier,omitempty" tf:"xml_classifier,omitempty"`
+	ProviderRef   core.LocalObjectReference         `json:"providerRef" tf:"-"`
 }
 
 type GlueClassifierStatus struct {
@@ -52,7 +53,9 @@ type GlueClassifierStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

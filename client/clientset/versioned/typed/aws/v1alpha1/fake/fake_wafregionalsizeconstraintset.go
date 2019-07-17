@@ -31,6 +31,7 @@ import (
 // FakeWafregionalSizeConstraintSets implements WafregionalSizeConstraintSetInterface
 type FakeWafregionalSizeConstraintSets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var wafregionalsizeconstraintsetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "wafregionalsizeconstraintsets"}
@@ -40,7 +41,8 @@ var wafregionalsizeconstraintsetsKind = schema.GroupVersionKind{Group: "aws.kube
 // Get takes name of the wafregionalSizeConstraintSet, and returns the corresponding wafregionalSizeConstraintSet object, and an error if there is any.
 func (c *FakeWafregionalSizeConstraintSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalSizeConstraintSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(wafregionalsizeconstraintsetsResource, name), &v1alpha1.WafregionalSizeConstraintSet{})
+		Invokes(testing.NewGetAction(wafregionalsizeconstraintsetsResource, c.ns, name), &v1alpha1.WafregionalSizeConstraintSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeWafregionalSizeConstraintSets) Get(name string, options v1.GetOptio
 // List takes label and field selectors, and returns the list of WafregionalSizeConstraintSets that match those selectors.
 func (c *FakeWafregionalSizeConstraintSets) List(opts v1.ListOptions) (result *v1alpha1.WafregionalSizeConstraintSetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(wafregionalsizeconstraintsetsResource, wafregionalsizeconstraintsetsKind, opts), &v1alpha1.WafregionalSizeConstraintSetList{})
+		Invokes(testing.NewListAction(wafregionalsizeconstraintsetsResource, wafregionalsizeconstraintsetsKind, c.ns, opts), &v1alpha1.WafregionalSizeConstraintSetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeWafregionalSizeConstraintSets) List(opts v1.ListOptions) (result *v
 // Watch returns a watch.Interface that watches the requested wafregionalSizeConstraintSets.
 func (c *FakeWafregionalSizeConstraintSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(wafregionalsizeconstraintsetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(wafregionalsizeconstraintsetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a wafregionalSizeConstraintSet and creates it.  Returns the server's representation of the wafregionalSizeConstraintSet, and an error, if there is any.
 func (c *FakeWafregionalSizeConstraintSets) Create(wafregionalSizeConstraintSet *v1alpha1.WafregionalSizeConstraintSet) (result *v1alpha1.WafregionalSizeConstraintSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(wafregionalsizeconstraintsetsResource, wafregionalSizeConstraintSet), &v1alpha1.WafregionalSizeConstraintSet{})
+		Invokes(testing.NewCreateAction(wafregionalsizeconstraintsetsResource, c.ns, wafregionalSizeConstraintSet), &v1alpha1.WafregionalSizeConstraintSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeWafregionalSizeConstraintSets) Create(wafregionalSizeConstraintSet 
 // Update takes the representation of a wafregionalSizeConstraintSet and updates it. Returns the server's representation of the wafregionalSizeConstraintSet, and an error, if there is any.
 func (c *FakeWafregionalSizeConstraintSets) Update(wafregionalSizeConstraintSet *v1alpha1.WafregionalSizeConstraintSet) (result *v1alpha1.WafregionalSizeConstraintSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(wafregionalsizeconstraintsetsResource, wafregionalSizeConstraintSet), &v1alpha1.WafregionalSizeConstraintSet{})
+		Invokes(testing.NewUpdateAction(wafregionalsizeconstraintsetsResource, c.ns, wafregionalSizeConstraintSet), &v1alpha1.WafregionalSizeConstraintSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeWafregionalSizeConstraintSets) Update(wafregionalSizeConstraintSet 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeWafregionalSizeConstraintSets) UpdateStatus(wafregionalSizeConstraintSet *v1alpha1.WafregionalSizeConstraintSet) (*v1alpha1.WafregionalSizeConstraintSet, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(wafregionalsizeconstraintsetsResource, "status", wafregionalSizeConstraintSet), &v1alpha1.WafregionalSizeConstraintSet{})
+		Invokes(testing.NewUpdateSubresourceAction(wafregionalsizeconstraintsetsResource, "status", c.ns, wafregionalSizeConstraintSet), &v1alpha1.WafregionalSizeConstraintSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeWafregionalSizeConstraintSets) UpdateStatus(wafregionalSizeConstrai
 // Delete takes name of the wafregionalSizeConstraintSet and deletes it. Returns an error if one occurs.
 func (c *FakeWafregionalSizeConstraintSets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(wafregionalsizeconstraintsetsResource, name), &v1alpha1.WafregionalSizeConstraintSet{})
+		Invokes(testing.NewDeleteAction(wafregionalsizeconstraintsetsResource, c.ns, name), &v1alpha1.WafregionalSizeConstraintSet{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeWafregionalSizeConstraintSets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(wafregionalsizeconstraintsetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(wafregionalsizeconstraintsetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.WafregionalSizeConstraintSetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeWafregionalSizeConstraintSets) DeleteCollection(options *v1.DeleteO
 // Patch applies the patch and returns the patched wafregionalSizeConstraintSet.
 func (c *FakeWafregionalSizeConstraintSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalSizeConstraintSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(wafregionalsizeconstraintsetsResource, name, pt, data, subresources...), &v1alpha1.WafregionalSizeConstraintSet{})
+		Invokes(testing.NewPatchSubresourceAction(wafregionalsizeconstraintsetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.WafregionalSizeConstraintSet{})
+
 	if obj == nil {
 		return nil, err
 	}

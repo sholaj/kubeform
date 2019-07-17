@@ -29,8 +29,8 @@ import (
 type GlobalacceleratorListenerLister interface {
 	// List lists all GlobalacceleratorListeners in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GlobalacceleratorListener, err error)
-	// Get retrieves the GlobalacceleratorListener from the index for a given name.
-	Get(name string) (*v1alpha1.GlobalacceleratorListener, error)
+	// GlobalacceleratorListeners returns an object that can list and get GlobalacceleratorListeners.
+	GlobalacceleratorListeners(namespace string) GlobalacceleratorListenerNamespaceLister
 	GlobalacceleratorListenerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *globalacceleratorListenerLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the GlobalacceleratorListener from the index for a given name.
-func (s *globalacceleratorListenerLister) Get(name string) (*v1alpha1.GlobalacceleratorListener, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GlobalacceleratorListeners returns an object that can list and get GlobalacceleratorListeners.
+func (s *globalacceleratorListenerLister) GlobalacceleratorListeners(namespace string) GlobalacceleratorListenerNamespaceLister {
+	return globalacceleratorListenerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GlobalacceleratorListenerNamespaceLister helps list and get GlobalacceleratorListeners.
+type GlobalacceleratorListenerNamespaceLister interface {
+	// List lists all GlobalacceleratorListeners in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GlobalacceleratorListener, err error)
+	// Get retrieves the GlobalacceleratorListener from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GlobalacceleratorListener, error)
+	GlobalacceleratorListenerNamespaceListerExpansion
+}
+
+// globalacceleratorListenerNamespaceLister implements the GlobalacceleratorListenerNamespaceLister
+// interface.
+type globalacceleratorListenerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GlobalacceleratorListeners in the indexer for a given namespace.
+func (s globalacceleratorListenerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GlobalacceleratorListener, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GlobalacceleratorListener))
+	})
+	return ret, err
+}
+
+// Get retrieves the GlobalacceleratorListener from the indexer for a given namespace and name.
+func (s globalacceleratorListenerNamespaceLister) Get(name string) (*v1alpha1.GlobalacceleratorListener, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

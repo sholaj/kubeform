@@ -29,8 +29,8 @@ import (
 type MqBrokerLister interface {
 	// List lists all MqBrokers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MqBroker, err error)
-	// Get retrieves the MqBroker from the index for a given name.
-	Get(name string) (*v1alpha1.MqBroker, error)
+	// MqBrokers returns an object that can list and get MqBrokers.
+	MqBrokers(namespace string) MqBrokerNamespaceLister
 	MqBrokerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *mqBrokerLister) List(selector labels.Selector) (ret []*v1alpha1.MqBroke
 	return ret, err
 }
 
-// Get retrieves the MqBroker from the index for a given name.
-func (s *mqBrokerLister) Get(name string) (*v1alpha1.MqBroker, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MqBrokers returns an object that can list and get MqBrokers.
+func (s *mqBrokerLister) MqBrokers(namespace string) MqBrokerNamespaceLister {
+	return mqBrokerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MqBrokerNamespaceLister helps list and get MqBrokers.
+type MqBrokerNamespaceLister interface {
+	// List lists all MqBrokers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MqBroker, err error)
+	// Get retrieves the MqBroker from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MqBroker, error)
+	MqBrokerNamespaceListerExpansion
+}
+
+// mqBrokerNamespaceLister implements the MqBrokerNamespaceLister
+// interface.
+type mqBrokerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MqBrokers in the indexer for a given namespace.
+func (s mqBrokerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MqBroker, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MqBroker))
+	})
+	return ret, err
+}
+
+// Get retrieves the MqBroker from the indexer for a given namespace and name.
+func (s mqBrokerNamespaceLister) Get(name string) (*v1alpha1.MqBroker, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

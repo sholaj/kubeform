@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,25 +19,26 @@ type StoragegatewayGateway struct {
 }
 
 type StoragegatewayGatewaySpecSmbActiveDirectorySettings struct {
-	DomainName string `json:"domain_name"`
-	Password   string `json:"password"`
-	Username   string `json:"username"`
+	DomainName string `json:"domainName" tf:"domain_name"`
+	Password   string `json:"password" tf:"password"`
+	Username   string `json:"username" tf:"username"`
 }
 
 type StoragegatewayGatewaySpec struct {
-	GatewayName     string `json:"gateway_name"`
-	GatewayTimezone string `json:"gateway_timezone"`
+	GatewayName     string `json:"gatewayName" tf:"gateway_name"`
+	GatewayTimezone string `json:"gatewayTimezone" tf:"gateway_timezone"`
 	// +optional
-	GatewayType string `json:"gateway_type,omitempty"`
+	GatewayType string `json:"gatewayType,omitempty" tf:"gateway_type,omitempty"`
 	// +optional
-	MediumChangerType string `json:"medium_changer_type,omitempty"`
+	MediumChangerType string `json:"mediumChangerType,omitempty" tf:"medium_changer_type,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	SmbActiveDirectorySettings *[]StoragegatewayGatewaySpec `json:"smb_active_directory_settings,omitempty"`
+	SmbActiveDirectorySettings []StoragegatewayGatewaySpecSmbActiveDirectorySettings `json:"smbActiveDirectorySettings,omitempty" tf:"smb_active_directory_settings,omitempty"`
 	// +optional
-	SmbGuestPassword string `json:"smb_guest_password,omitempty"`
+	SmbGuestPassword string `json:"smbGuestPassword,omitempty" tf:"smb_guest_password,omitempty"`
 	// +optional
-	TapeDriveType string `json:"tape_drive_type,omitempty"`
+	TapeDriveType string                    `json:"tapeDriveType,omitempty" tf:"tape_drive_type,omitempty"`
+	ProviderRef   core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type StoragegatewayGatewayStatus struct {
@@ -45,7 +46,9 @@ type StoragegatewayGatewayStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

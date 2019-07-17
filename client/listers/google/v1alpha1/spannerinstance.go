@@ -29,8 +29,8 @@ import (
 type SpannerInstanceLister interface {
 	// List lists all SpannerInstances in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SpannerInstance, err error)
-	// Get retrieves the SpannerInstance from the index for a given name.
-	Get(name string) (*v1alpha1.SpannerInstance, error)
+	// SpannerInstances returns an object that can list and get SpannerInstances.
+	SpannerInstances(namespace string) SpannerInstanceNamespaceLister
 	SpannerInstanceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *spannerInstanceLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the SpannerInstance from the index for a given name.
-func (s *spannerInstanceLister) Get(name string) (*v1alpha1.SpannerInstance, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SpannerInstances returns an object that can list and get SpannerInstances.
+func (s *spannerInstanceLister) SpannerInstances(namespace string) SpannerInstanceNamespaceLister {
+	return spannerInstanceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SpannerInstanceNamespaceLister helps list and get SpannerInstances.
+type SpannerInstanceNamespaceLister interface {
+	// List lists all SpannerInstances in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SpannerInstance, err error)
+	// Get retrieves the SpannerInstance from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SpannerInstance, error)
+	SpannerInstanceNamespaceListerExpansion
+}
+
+// spannerInstanceNamespaceLister implements the SpannerInstanceNamespaceLister
+// interface.
+type spannerInstanceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SpannerInstances in the indexer for a given namespace.
+func (s spannerInstanceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SpannerInstance, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SpannerInstance))
+	})
+	return ret, err
+}
+
+// Get retrieves the SpannerInstance from the indexer for a given namespace and name.
+func (s spannerInstanceNamespaceLister) Get(name string) (*v1alpha1.SpannerInstance, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

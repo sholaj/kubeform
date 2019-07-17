@@ -41,32 +41,33 @@ type SubnetRouteTableAssociationInformer interface {
 type subnetRouteTableAssociationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSubnetRouteTableAssociationInformer constructs a new informer for SubnetRouteTableAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSubnetRouteTableAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSubnetRouteTableAssociationInformer(client, resyncPeriod, indexers, nil)
+func NewSubnetRouteTableAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSubnetRouteTableAssociationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSubnetRouteTableAssociationInformer constructs a new informer for SubnetRouteTableAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSubnetRouteTableAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSubnetRouteTableAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().SubnetRouteTableAssociations().List(options)
+				return client.AzurermV1alpha1().SubnetRouteTableAssociations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().SubnetRouteTableAssociations().Watch(options)
+				return client.AzurermV1alpha1().SubnetRouteTableAssociations(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.SubnetRouteTableAssociation{},
@@ -76,7 +77,7 @@ func NewFilteredSubnetRouteTableAssociationInformer(client versioned.Interface, 
 }
 
 func (f *subnetRouteTableAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSubnetRouteTableAssociationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSubnetRouteTableAssociationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *subnetRouteTableAssociationInformer) Informer() cache.SharedIndexInformer {

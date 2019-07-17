@@ -31,6 +31,7 @@ import (
 // FakeTrafficManagerEndpoints implements TrafficManagerEndpointInterface
 type FakeTrafficManagerEndpoints struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var trafficmanagerendpointsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "trafficmanagerendpoints"}
@@ -40,7 +41,8 @@ var trafficmanagerendpointsKind = schema.GroupVersionKind{Group: "azurerm.kubefo
 // Get takes name of the trafficManagerEndpoint, and returns the corresponding trafficManagerEndpoint object, and an error if there is any.
 func (c *FakeTrafficManagerEndpoints) Get(name string, options v1.GetOptions) (result *v1alpha1.TrafficManagerEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(trafficmanagerendpointsResource, name), &v1alpha1.TrafficManagerEndpoint{})
+		Invokes(testing.NewGetAction(trafficmanagerendpointsResource, c.ns, name), &v1alpha1.TrafficManagerEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeTrafficManagerEndpoints) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of TrafficManagerEndpoints that match those selectors.
 func (c *FakeTrafficManagerEndpoints) List(opts v1.ListOptions) (result *v1alpha1.TrafficManagerEndpointList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(trafficmanagerendpointsResource, trafficmanagerendpointsKind, opts), &v1alpha1.TrafficManagerEndpointList{})
+		Invokes(testing.NewListAction(trafficmanagerendpointsResource, trafficmanagerendpointsKind, c.ns, opts), &v1alpha1.TrafficManagerEndpointList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeTrafficManagerEndpoints) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested trafficManagerEndpoints.
 func (c *FakeTrafficManagerEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(trafficmanagerendpointsResource, opts))
+		InvokesWatch(testing.NewWatchAction(trafficmanagerendpointsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a trafficManagerEndpoint and creates it.  Returns the server's representation of the trafficManagerEndpoint, and an error, if there is any.
 func (c *FakeTrafficManagerEndpoints) Create(trafficManagerEndpoint *v1alpha1.TrafficManagerEndpoint) (result *v1alpha1.TrafficManagerEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(trafficmanagerendpointsResource, trafficManagerEndpoint), &v1alpha1.TrafficManagerEndpoint{})
+		Invokes(testing.NewCreateAction(trafficmanagerendpointsResource, c.ns, trafficManagerEndpoint), &v1alpha1.TrafficManagerEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeTrafficManagerEndpoints) Create(trafficManagerEndpoint *v1alpha1.Tr
 // Update takes the representation of a trafficManagerEndpoint and updates it. Returns the server's representation of the trafficManagerEndpoint, and an error, if there is any.
 func (c *FakeTrafficManagerEndpoints) Update(trafficManagerEndpoint *v1alpha1.TrafficManagerEndpoint) (result *v1alpha1.TrafficManagerEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(trafficmanagerendpointsResource, trafficManagerEndpoint), &v1alpha1.TrafficManagerEndpoint{})
+		Invokes(testing.NewUpdateAction(trafficmanagerendpointsResource, c.ns, trafficManagerEndpoint), &v1alpha1.TrafficManagerEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeTrafficManagerEndpoints) Update(trafficManagerEndpoint *v1alpha1.Tr
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeTrafficManagerEndpoints) UpdateStatus(trafficManagerEndpoint *v1alpha1.TrafficManagerEndpoint) (*v1alpha1.TrafficManagerEndpoint, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(trafficmanagerendpointsResource, "status", trafficManagerEndpoint), &v1alpha1.TrafficManagerEndpoint{})
+		Invokes(testing.NewUpdateSubresourceAction(trafficmanagerendpointsResource, "status", c.ns, trafficManagerEndpoint), &v1alpha1.TrafficManagerEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeTrafficManagerEndpoints) UpdateStatus(trafficManagerEndpoint *v1alp
 // Delete takes name of the trafficManagerEndpoint and deletes it. Returns an error if one occurs.
 func (c *FakeTrafficManagerEndpoints) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(trafficmanagerendpointsResource, name), &v1alpha1.TrafficManagerEndpoint{})
+		Invokes(testing.NewDeleteAction(trafficmanagerendpointsResource, c.ns, name), &v1alpha1.TrafficManagerEndpoint{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeTrafficManagerEndpoints) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(trafficmanagerendpointsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(trafficmanagerendpointsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.TrafficManagerEndpointList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeTrafficManagerEndpoints) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched trafficManagerEndpoint.
 func (c *FakeTrafficManagerEndpoints) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.TrafficManagerEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(trafficmanagerendpointsResource, name, pt, data, subresources...), &v1alpha1.TrafficManagerEndpoint{})
+		Invokes(testing.NewPatchSubresourceAction(trafficmanagerendpointsResource, c.ns, name, pt, data, subresources...), &v1alpha1.TrafficManagerEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}

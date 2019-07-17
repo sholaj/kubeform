@@ -29,8 +29,8 @@ import (
 type OpsworksPermissionLister interface {
 	// List lists all OpsworksPermissions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OpsworksPermission, err error)
-	// Get retrieves the OpsworksPermission from the index for a given name.
-	Get(name string) (*v1alpha1.OpsworksPermission, error)
+	// OpsworksPermissions returns an object that can list and get OpsworksPermissions.
+	OpsworksPermissions(namespace string) OpsworksPermissionNamespaceLister
 	OpsworksPermissionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *opsworksPermissionLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the OpsworksPermission from the index for a given name.
-func (s *opsworksPermissionLister) Get(name string) (*v1alpha1.OpsworksPermission, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OpsworksPermissions returns an object that can list and get OpsworksPermissions.
+func (s *opsworksPermissionLister) OpsworksPermissions(namespace string) OpsworksPermissionNamespaceLister {
+	return opsworksPermissionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OpsworksPermissionNamespaceLister helps list and get OpsworksPermissions.
+type OpsworksPermissionNamespaceLister interface {
+	// List lists all OpsworksPermissions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OpsworksPermission, err error)
+	// Get retrieves the OpsworksPermission from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OpsworksPermission, error)
+	OpsworksPermissionNamespaceListerExpansion
+}
+
+// opsworksPermissionNamespaceLister implements the OpsworksPermissionNamespaceLister
+// interface.
+type opsworksPermissionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OpsworksPermissions in the indexer for a given namespace.
+func (s opsworksPermissionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OpsworksPermission, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OpsworksPermission))
+	})
+	return ret, err
+}
+
+// Get retrieves the OpsworksPermission from the indexer for a given namespace and name.
+func (s opsworksPermissionNamespaceLister) Get(name string) (*v1alpha1.OpsworksPermission, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,17 +19,18 @@ type MediaServicesAccount struct {
 }
 
 type MediaServicesAccountSpecStorageAccount struct {
-	Id string `json:"id"`
+	ID string `json:"ID" tf:"id"`
 	// +optional
-	IsPrimary bool `json:"is_primary,omitempty"`
+	IsPrimary bool `json:"isPrimary,omitempty" tf:"is_primary,omitempty"`
 }
 
 type MediaServicesAccountSpec struct {
-	Location          string `json:"location"`
-	Name              string `json:"name"`
-	ResourceGroupName string `json:"resource_group_name"`
+	Location          string `json:"location" tf:"location"`
+	Name              string `json:"name" tf:"name"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +kubebuilder:validation:UniqueItems=true
-	StorageAccount []MediaServicesAccountSpec `json:"storage_account"`
+	StorageAccount []MediaServicesAccountSpecStorageAccount `json:"storageAccount" tf:"storage_account"`
+	ProviderRef    core.LocalObjectReference                `json:"providerRef" tf:"-"`
 }
 
 type MediaServicesAccountStatus struct {
@@ -37,7 +38,9 @@ type MediaServicesAccountStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

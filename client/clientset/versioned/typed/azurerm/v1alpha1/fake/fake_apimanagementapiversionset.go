@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// FakeApiManagementApiVersionSets implements ApiManagementApiVersionSetInterface
-type FakeApiManagementApiVersionSets struct {
+// FakeApiManagementAPIVersionSets implements ApiManagementAPIVersionSetInterface
+type FakeApiManagementAPIVersionSets struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var apimanagementapiversionsetsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "apimanagementapiversionsets"}
 
-var apimanagementapiversionsetsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "ApiManagementApiVersionSet"}
+var apimanagementapiversionsetsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "ApiManagementAPIVersionSet"}
 
-// Get takes name of the apiManagementApiVersionSet, and returns the corresponding apiManagementApiVersionSet object, and an error if there is any.
-func (c *FakeApiManagementApiVersionSets) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementApiVersionSet, err error) {
+// Get takes name of the apiManagementAPIVersionSet, and returns the corresponding apiManagementAPIVersionSet object, and an error if there is any.
+func (c *FakeApiManagementAPIVersionSets) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementAPIVersionSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apimanagementapiversionsetsResource, name), &v1alpha1.ApiManagementApiVersionSet{})
+		Invokes(testing.NewGetAction(apimanagementapiversionsetsResource, c.ns, name), &v1alpha1.ApiManagementAPIVersionSet{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiManagementApiVersionSet), err
+	return obj.(*v1alpha1.ApiManagementAPIVersionSet), err
 }
 
-// List takes label and field selectors, and returns the list of ApiManagementApiVersionSets that match those selectors.
-func (c *FakeApiManagementApiVersionSets) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementApiVersionSetList, err error) {
+// List takes label and field selectors, and returns the list of ApiManagementAPIVersionSets that match those selectors.
+func (c *FakeApiManagementAPIVersionSets) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementAPIVersionSetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apimanagementapiversionsetsResource, apimanagementapiversionsetsKind, opts), &v1alpha1.ApiManagementApiVersionSetList{})
+		Invokes(testing.NewListAction(apimanagementapiversionsetsResource, apimanagementapiversionsetsKind, c.ns, opts), &v1alpha1.ApiManagementAPIVersionSetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeApiManagementApiVersionSets) List(opts v1.ListOptions) (result *v1a
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.ApiManagementApiVersionSetList{ListMeta: obj.(*v1alpha1.ApiManagementApiVersionSetList).ListMeta}
-	for _, item := range obj.(*v1alpha1.ApiManagementApiVersionSetList).Items {
+	list := &v1alpha1.ApiManagementAPIVersionSetList{ListMeta: obj.(*v1alpha1.ApiManagementAPIVersionSetList).ListMeta}
+	for _, item := range obj.(*v1alpha1.ApiManagementAPIVersionSetList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeApiManagementApiVersionSets) List(opts v1.ListOptions) (result *v1a
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested apiManagementApiVersionSets.
-func (c *FakeApiManagementApiVersionSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested apiManagementAPIVersionSets.
+func (c *FakeApiManagementAPIVersionSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apimanagementapiversionsetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(apimanagementapiversionsetsResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a apiManagementApiVersionSet and creates it.  Returns the server's representation of the apiManagementApiVersionSet, and an error, if there is any.
-func (c *FakeApiManagementApiVersionSets) Create(apiManagementApiVersionSet *v1alpha1.ApiManagementApiVersionSet) (result *v1alpha1.ApiManagementApiVersionSet, err error) {
+// Create takes the representation of a apiManagementAPIVersionSet and creates it.  Returns the server's representation of the apiManagementAPIVersionSet, and an error, if there is any.
+func (c *FakeApiManagementAPIVersionSets) Create(apiManagementAPIVersionSet *v1alpha1.ApiManagementAPIVersionSet) (result *v1alpha1.ApiManagementAPIVersionSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apimanagementapiversionsetsResource, apiManagementApiVersionSet), &v1alpha1.ApiManagementApiVersionSet{})
+		Invokes(testing.NewCreateAction(apimanagementapiversionsetsResource, c.ns, apiManagementAPIVersionSet), &v1alpha1.ApiManagementAPIVersionSet{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiManagementApiVersionSet), err
+	return obj.(*v1alpha1.ApiManagementAPIVersionSet), err
 }
 
-// Update takes the representation of a apiManagementApiVersionSet and updates it. Returns the server's representation of the apiManagementApiVersionSet, and an error, if there is any.
-func (c *FakeApiManagementApiVersionSets) Update(apiManagementApiVersionSet *v1alpha1.ApiManagementApiVersionSet) (result *v1alpha1.ApiManagementApiVersionSet, err error) {
+// Update takes the representation of a apiManagementAPIVersionSet and updates it. Returns the server's representation of the apiManagementAPIVersionSet, and an error, if there is any.
+func (c *FakeApiManagementAPIVersionSets) Update(apiManagementAPIVersionSet *v1alpha1.ApiManagementAPIVersionSet) (result *v1alpha1.ApiManagementAPIVersionSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apimanagementapiversionsetsResource, apiManagementApiVersionSet), &v1alpha1.ApiManagementApiVersionSet{})
+		Invokes(testing.NewUpdateAction(apimanagementapiversionsetsResource, c.ns, apiManagementAPIVersionSet), &v1alpha1.ApiManagementAPIVersionSet{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiManagementApiVersionSet), err
+	return obj.(*v1alpha1.ApiManagementAPIVersionSet), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeApiManagementApiVersionSets) UpdateStatus(apiManagementApiVersionSet *v1alpha1.ApiManagementApiVersionSet) (*v1alpha1.ApiManagementApiVersionSet, error) {
+func (c *FakeApiManagementAPIVersionSets) UpdateStatus(apiManagementAPIVersionSet *v1alpha1.ApiManagementAPIVersionSet) (*v1alpha1.ApiManagementAPIVersionSet, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apimanagementapiversionsetsResource, "status", apiManagementApiVersionSet), &v1alpha1.ApiManagementApiVersionSet{})
+		Invokes(testing.NewUpdateSubresourceAction(apimanagementapiversionsetsResource, "status", c.ns, apiManagementAPIVersionSet), &v1alpha1.ApiManagementAPIVersionSet{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiManagementApiVersionSet), err
+	return obj.(*v1alpha1.ApiManagementAPIVersionSet), err
 }
 
-// Delete takes name of the apiManagementApiVersionSet and deletes it. Returns an error if one occurs.
-func (c *FakeApiManagementApiVersionSets) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the apiManagementAPIVersionSet and deletes it. Returns an error if one occurs.
+func (c *FakeApiManagementAPIVersionSets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apimanagementapiversionsetsResource, name), &v1alpha1.ApiManagementApiVersionSet{})
+		Invokes(testing.NewDeleteAction(apimanagementapiversionsetsResource, c.ns, name), &v1alpha1.ApiManagementAPIVersionSet{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeApiManagementApiVersionSets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apimanagementapiversionsetsResource, listOptions)
+func (c *FakeApiManagementAPIVersionSets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(apimanagementapiversionsetsResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.ApiManagementApiVersionSetList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.ApiManagementAPIVersionSetList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched apiManagementApiVersionSet.
-func (c *FakeApiManagementApiVersionSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementApiVersionSet, err error) {
+// Patch applies the patch and returns the patched apiManagementAPIVersionSet.
+func (c *FakeApiManagementAPIVersionSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementAPIVersionSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apimanagementapiversionsetsResource, name, pt, data, subresources...), &v1alpha1.ApiManagementApiVersionSet{})
+		Invokes(testing.NewPatchSubresourceAction(apimanagementapiversionsetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiManagementAPIVersionSet{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiManagementApiVersionSet), err
+	return obj.(*v1alpha1.ApiManagementAPIVersionSet), err
 }

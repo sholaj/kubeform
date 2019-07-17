@@ -397,68 +397,96 @@ spec:
           type: object
         spec:
           properties:
-            allocated_memory:
+            allocatedMemory:
               type: integer
-            auto_assign_elastic_ips:
+            autoAssignElasticIPS:
               type: boolean
-            auto_assign_public_ips:
+            autoAssignPublicIPS:
               type: boolean
-            auto_healing:
+            autoHealing:
               type: boolean
-            custom_configure_recipes:
+            customConfigureRecipes:
               items:
                 type: string
               type: array
-            custom_deploy_recipes:
+            customDeployRecipes:
               items:
                 type: string
               type: array
-            custom_instance_profile_arn:
+            customInstanceProfileArn:
               type: string
-            custom_json:
+            customJSON:
               type: string
-            custom_security_group_ids:
+            customSecurityGroupIDS:
               items:
                 type: string
               type: array
               uniqueItems: true
-            custom_setup_recipes:
+            customSetupRecipes:
               items:
                 type: string
               type: array
-            custom_shutdown_recipes:
+            customShutdownRecipes:
               items:
                 type: string
               type: array
-            custom_undeploy_recipes:
+            customUndeployRecipes:
               items:
                 type: string
               type: array
-            drain_elb_on_shutdown:
+            drainElbOnShutdown:
               type: boolean
-            ebs_volume:
-              items: {}
+            ebsVolume:
+              items:
+                properties:
+                  iops:
+                    type: integer
+                  mountPoint:
+                    type: string
+                  numberOfDisks:
+                    type: integer
+                  raidLevel:
+                    type: string
+                  size:
+                    type: integer
+                  type:
+                    type: string
+                required:
+                - mountPoint
+                - numberOfDisks
+                - size
+                type: object
               type: array
               uniqueItems: true
-            elastic_load_balancer:
+            elasticLoadBalancer:
               type: string
-            install_updates_on_boot:
+            installUpdatesOnBoot:
               type: boolean
-            instance_shutdown_timeout:
+            instanceShutdownTimeout:
               type: integer
             name:
               type: string
-            stack_id:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            stackID:
               type: string
-            system_packages:
+            systemPackages:
               items:
                 type: string
               type: array
               uniqueItems: true
-            use_ebs_optimized_instances:
+            useEbsOptimizedInstances:
               type: boolean
           required:
-          - stack_id
+          - providerRef
+          - stackID
           type: object
         status:
           properties:
@@ -469,6 +497,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

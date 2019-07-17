@@ -29,8 +29,8 @@ import (
 type KmsCryptoKeyIamMemberLister interface {
 	// List lists all KmsCryptoKeyIamMembers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KmsCryptoKeyIamMember, err error)
-	// Get retrieves the KmsCryptoKeyIamMember from the index for a given name.
-	Get(name string) (*v1alpha1.KmsCryptoKeyIamMember, error)
+	// KmsCryptoKeyIamMembers returns an object that can list and get KmsCryptoKeyIamMembers.
+	KmsCryptoKeyIamMembers(namespace string) KmsCryptoKeyIamMemberNamespaceLister
 	KmsCryptoKeyIamMemberListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *kmsCryptoKeyIamMemberLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the KmsCryptoKeyIamMember from the index for a given name.
-func (s *kmsCryptoKeyIamMemberLister) Get(name string) (*v1alpha1.KmsCryptoKeyIamMember, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KmsCryptoKeyIamMembers returns an object that can list and get KmsCryptoKeyIamMembers.
+func (s *kmsCryptoKeyIamMemberLister) KmsCryptoKeyIamMembers(namespace string) KmsCryptoKeyIamMemberNamespaceLister {
+	return kmsCryptoKeyIamMemberNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KmsCryptoKeyIamMemberNamespaceLister helps list and get KmsCryptoKeyIamMembers.
+type KmsCryptoKeyIamMemberNamespaceLister interface {
+	// List lists all KmsCryptoKeyIamMembers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KmsCryptoKeyIamMember, err error)
+	// Get retrieves the KmsCryptoKeyIamMember from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KmsCryptoKeyIamMember, error)
+	KmsCryptoKeyIamMemberNamespaceListerExpansion
+}
+
+// kmsCryptoKeyIamMemberNamespaceLister implements the KmsCryptoKeyIamMemberNamespaceLister
+// interface.
+type kmsCryptoKeyIamMemberNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KmsCryptoKeyIamMembers in the indexer for a given namespace.
+func (s kmsCryptoKeyIamMemberNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KmsCryptoKeyIamMember, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KmsCryptoKeyIamMember))
+	})
+	return ret, err
+}
+
+// Get retrieves the KmsCryptoKeyIamMember from the indexer for a given namespace and name.
+func (s kmsCryptoKeyIamMemberNamespaceLister) Get(name string) (*v1alpha1.KmsCryptoKeyIamMember, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

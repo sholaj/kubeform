@@ -32,7 +32,7 @@ import (
 // StorageContainersGetter has a method to return a StorageContainerInterface.
 // A group's client should implement this interface.
 type StorageContainersGetter interface {
-	StorageContainers() StorageContainerInterface
+	StorageContainers(namespace string) StorageContainerInterface
 }
 
 // StorageContainerInterface has methods to work with StorageContainer resources.
@@ -52,12 +52,14 @@ type StorageContainerInterface interface {
 // storageContainers implements StorageContainerInterface
 type storageContainers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStorageContainers returns a StorageContainers
-func newStorageContainers(c *AzurermV1alpha1Client) *storageContainers {
+func newStorageContainers(c *AzurermV1alpha1Client, namespace string) *storageContainers {
 	return &storageContainers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStorageContainers(c *AzurermV1alpha1Client) *storageContainers {
 func (c *storageContainers) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageContainer, err error) {
 	result = &v1alpha1.StorageContainer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagecontainers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *storageContainers) List(opts v1.ListOptions) (result *v1alpha1.StorageC
 	}
 	result = &v1alpha1.StorageContainerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagecontainers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *storageContainers) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storagecontainers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *storageContainers) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *storageContainers) Create(storageContainer *v1alpha1.StorageContainer) (result *v1alpha1.StorageContainer, err error) {
 	result = &v1alpha1.StorageContainer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storagecontainers").
 		Body(storageContainer).
 		Do().
@@ -118,6 +124,7 @@ func (c *storageContainers) Create(storageContainer *v1alpha1.StorageContainer) 
 func (c *storageContainers) Update(storageContainer *v1alpha1.StorageContainer) (result *v1alpha1.StorageContainer, err error) {
 	result = &v1alpha1.StorageContainer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagecontainers").
 		Name(storageContainer.Name).
 		Body(storageContainer).
@@ -132,6 +139,7 @@ func (c *storageContainers) Update(storageContainer *v1alpha1.StorageContainer) 
 func (c *storageContainers) UpdateStatus(storageContainer *v1alpha1.StorageContainer) (result *v1alpha1.StorageContainer, err error) {
 	result = &v1alpha1.StorageContainer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagecontainers").
 		Name(storageContainer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *storageContainers) UpdateStatus(storageContainer *v1alpha1.StorageConta
 // Delete takes name of the storageContainer and deletes it. Returns an error if one occurs.
 func (c *storageContainers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagecontainers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *storageContainers) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagecontainers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *storageContainers) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *storageContainers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageContainer, err error) {
 	result = &v1alpha1.StorageContainer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storagecontainers").
 		SubResource(subresources...).
 		Name(name).

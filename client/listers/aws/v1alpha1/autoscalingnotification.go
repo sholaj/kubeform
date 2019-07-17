@@ -29,8 +29,8 @@ import (
 type AutoscalingNotificationLister interface {
 	// List lists all AutoscalingNotifications in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AutoscalingNotification, err error)
-	// Get retrieves the AutoscalingNotification from the index for a given name.
-	Get(name string) (*v1alpha1.AutoscalingNotification, error)
+	// AutoscalingNotifications returns an object that can list and get AutoscalingNotifications.
+	AutoscalingNotifications(namespace string) AutoscalingNotificationNamespaceLister
 	AutoscalingNotificationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *autoscalingNotificationLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the AutoscalingNotification from the index for a given name.
-func (s *autoscalingNotificationLister) Get(name string) (*v1alpha1.AutoscalingNotification, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AutoscalingNotifications returns an object that can list and get AutoscalingNotifications.
+func (s *autoscalingNotificationLister) AutoscalingNotifications(namespace string) AutoscalingNotificationNamespaceLister {
+	return autoscalingNotificationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AutoscalingNotificationNamespaceLister helps list and get AutoscalingNotifications.
+type AutoscalingNotificationNamespaceLister interface {
+	// List lists all AutoscalingNotifications in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AutoscalingNotification, err error)
+	// Get retrieves the AutoscalingNotification from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AutoscalingNotification, error)
+	AutoscalingNotificationNamespaceListerExpansion
+}
+
+// autoscalingNotificationNamespaceLister implements the AutoscalingNotificationNamespaceLister
+// interface.
+type autoscalingNotificationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AutoscalingNotifications in the indexer for a given namespace.
+func (s autoscalingNotificationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AutoscalingNotification, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AutoscalingNotification))
+	})
+	return ret, err
+}
+
+// Get retrieves the AutoscalingNotification from the indexer for a given namespace and name.
+func (s autoscalingNotificationNamespaceLister) Get(name string) (*v1alpha1.AutoscalingNotification, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

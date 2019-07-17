@@ -32,7 +32,7 @@ import (
 // IotPoliciesGetter has a method to return a IotPolicyInterface.
 // A group's client should implement this interface.
 type IotPoliciesGetter interface {
-	IotPolicies() IotPolicyInterface
+	IotPolicies(namespace string) IotPolicyInterface
 }
 
 // IotPolicyInterface has methods to work with IotPolicy resources.
@@ -52,12 +52,14 @@ type IotPolicyInterface interface {
 // iotPolicies implements IotPolicyInterface
 type iotPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIotPolicies returns a IotPolicies
-func newIotPolicies(c *AwsV1alpha1Client) *iotPolicies {
+func newIotPolicies(c *AwsV1alpha1Client, namespace string) *iotPolicies {
 	return &iotPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIotPolicies(c *AwsV1alpha1Client) *iotPolicies {
 func (c *iotPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.IotPolicy, err error) {
 	result = &v1alpha1.IotPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iotpolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iotPolicies) List(opts v1.ListOptions) (result *v1alpha1.IotPolicyList,
 	}
 	result = &v1alpha1.IotPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iotpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iotPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iotpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iotPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *iotPolicies) Create(iotPolicy *v1alpha1.IotPolicy) (result *v1alpha1.IotPolicy, err error) {
 	result = &v1alpha1.IotPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iotpolicies").
 		Body(iotPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *iotPolicies) Create(iotPolicy *v1alpha1.IotPolicy) (result *v1alpha1.Io
 func (c *iotPolicies) Update(iotPolicy *v1alpha1.IotPolicy) (result *v1alpha1.IotPolicy, err error) {
 	result = &v1alpha1.IotPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iotpolicies").
 		Name(iotPolicy.Name).
 		Body(iotPolicy).
@@ -132,6 +139,7 @@ func (c *iotPolicies) Update(iotPolicy *v1alpha1.IotPolicy) (result *v1alpha1.Io
 func (c *iotPolicies) UpdateStatus(iotPolicy *v1alpha1.IotPolicy) (result *v1alpha1.IotPolicy, err error) {
 	result = &v1alpha1.IotPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iotpolicies").
 		Name(iotPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iotPolicies) UpdateStatus(iotPolicy *v1alpha1.IotPolicy) (result *v1alp
 // Delete takes name of the iotPolicy and deletes it. Returns an error if one occurs.
 func (c *iotPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iotpolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iotPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iotpolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iotPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *iotPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IotPolicy, err error) {
 	result = &v1alpha1.IotPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iotpolicies").
 		SubResource(subresources...).
 		Name(name).

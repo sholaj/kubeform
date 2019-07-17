@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// DataFactoryLinkedServiceSqlServerLister helps list DataFactoryLinkedServiceSqlServers.
-type DataFactoryLinkedServiceSqlServerLister interface {
-	// List lists all DataFactoryLinkedServiceSqlServers in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.DataFactoryLinkedServiceSqlServer, err error)
-	// Get retrieves the DataFactoryLinkedServiceSqlServer from the index for a given name.
-	Get(name string) (*v1alpha1.DataFactoryLinkedServiceSqlServer, error)
-	DataFactoryLinkedServiceSqlServerListerExpansion
+// DataFactoryLinkedServiceSQLServerLister helps list DataFactoryLinkedServiceSQLServers.
+type DataFactoryLinkedServiceSQLServerLister interface {
+	// List lists all DataFactoryLinkedServiceSQLServers in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.DataFactoryLinkedServiceSQLServer, err error)
+	// DataFactoryLinkedServiceSQLServers returns an object that can list and get DataFactoryLinkedServiceSQLServers.
+	DataFactoryLinkedServiceSQLServers(namespace string) DataFactoryLinkedServiceSQLServerNamespaceLister
+	DataFactoryLinkedServiceSQLServerListerExpansion
 }
 
-// dataFactoryLinkedServiceSqlServerLister implements the DataFactoryLinkedServiceSqlServerLister interface.
-type dataFactoryLinkedServiceSqlServerLister struct {
+// dataFactoryLinkedServiceSQLServerLister implements the DataFactoryLinkedServiceSQLServerLister interface.
+type dataFactoryLinkedServiceSQLServerLister struct {
 	indexer cache.Indexer
 }
 
-// NewDataFactoryLinkedServiceSqlServerLister returns a new DataFactoryLinkedServiceSqlServerLister.
-func NewDataFactoryLinkedServiceSqlServerLister(indexer cache.Indexer) DataFactoryLinkedServiceSqlServerLister {
-	return &dataFactoryLinkedServiceSqlServerLister{indexer: indexer}
+// NewDataFactoryLinkedServiceSQLServerLister returns a new DataFactoryLinkedServiceSQLServerLister.
+func NewDataFactoryLinkedServiceSQLServerLister(indexer cache.Indexer) DataFactoryLinkedServiceSQLServerLister {
+	return &dataFactoryLinkedServiceSQLServerLister{indexer: indexer}
 }
 
-// List lists all DataFactoryLinkedServiceSqlServers in the indexer.
-func (s *dataFactoryLinkedServiceSqlServerLister) List(selector labels.Selector) (ret []*v1alpha1.DataFactoryLinkedServiceSqlServer, err error) {
+// List lists all DataFactoryLinkedServiceSQLServers in the indexer.
+func (s *dataFactoryLinkedServiceSQLServerLister) List(selector labels.Selector) (ret []*v1alpha1.DataFactoryLinkedServiceSQLServer, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.DataFactoryLinkedServiceSqlServer))
+		ret = append(ret, m.(*v1alpha1.DataFactoryLinkedServiceSQLServer))
 	})
 	return ret, err
 }
 
-// Get retrieves the DataFactoryLinkedServiceSqlServer from the index for a given name.
-func (s *dataFactoryLinkedServiceSqlServerLister) Get(name string) (*v1alpha1.DataFactoryLinkedServiceSqlServer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DataFactoryLinkedServiceSQLServers returns an object that can list and get DataFactoryLinkedServiceSQLServers.
+func (s *dataFactoryLinkedServiceSQLServerLister) DataFactoryLinkedServiceSQLServers(namespace string) DataFactoryLinkedServiceSQLServerNamespaceLister {
+	return dataFactoryLinkedServiceSQLServerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DataFactoryLinkedServiceSQLServerNamespaceLister helps list and get DataFactoryLinkedServiceSQLServers.
+type DataFactoryLinkedServiceSQLServerNamespaceLister interface {
+	// List lists all DataFactoryLinkedServiceSQLServers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DataFactoryLinkedServiceSQLServer, err error)
+	// Get retrieves the DataFactoryLinkedServiceSQLServer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DataFactoryLinkedServiceSQLServer, error)
+	DataFactoryLinkedServiceSQLServerNamespaceListerExpansion
+}
+
+// dataFactoryLinkedServiceSQLServerNamespaceLister implements the DataFactoryLinkedServiceSQLServerNamespaceLister
+// interface.
+type dataFactoryLinkedServiceSQLServerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DataFactoryLinkedServiceSQLServers in the indexer for a given namespace.
+func (s dataFactoryLinkedServiceSQLServerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DataFactoryLinkedServiceSQLServer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DataFactoryLinkedServiceSQLServer))
+	})
+	return ret, err
+}
+
+// Get retrieves the DataFactoryLinkedServiceSQLServer from the indexer for a given namespace and name.
+func (s dataFactoryLinkedServiceSQLServerNamespaceLister) Get(name string) (*v1alpha1.DataFactoryLinkedServiceSQLServer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("datafactorylinkedservicesqlserver"), name)
 	}
-	return obj.(*v1alpha1.DataFactoryLinkedServiceSqlServer), nil
+	return obj.(*v1alpha1.DataFactoryLinkedServiceSQLServer), nil
 }

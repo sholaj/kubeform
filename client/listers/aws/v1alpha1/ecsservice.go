@@ -29,8 +29,8 @@ import (
 type EcsServiceLister interface {
 	// List lists all EcsServices in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EcsService, err error)
-	// Get retrieves the EcsService from the index for a given name.
-	Get(name string) (*v1alpha1.EcsService, error)
+	// EcsServices returns an object that can list and get EcsServices.
+	EcsServices(namespace string) EcsServiceNamespaceLister
 	EcsServiceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ecsServiceLister) List(selector labels.Selector) (ret []*v1alpha1.EcsSe
 	return ret, err
 }
 
-// Get retrieves the EcsService from the index for a given name.
-func (s *ecsServiceLister) Get(name string) (*v1alpha1.EcsService, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EcsServices returns an object that can list and get EcsServices.
+func (s *ecsServiceLister) EcsServices(namespace string) EcsServiceNamespaceLister {
+	return ecsServiceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EcsServiceNamespaceLister helps list and get EcsServices.
+type EcsServiceNamespaceLister interface {
+	// List lists all EcsServices in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EcsService, err error)
+	// Get retrieves the EcsService from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EcsService, error)
+	EcsServiceNamespaceListerExpansion
+}
+
+// ecsServiceNamespaceLister implements the EcsServiceNamespaceLister
+// interface.
+type ecsServiceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EcsServices in the indexer for a given namespace.
+func (s ecsServiceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EcsService, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EcsService))
+	})
+	return ret, err
+}
+
+// Get retrieves the EcsService from the indexer for a given namespace and name.
+func (s ecsServiceNamespaceLister) Get(name string) (*v1alpha1.EcsService, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

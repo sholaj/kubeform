@@ -41,32 +41,33 @@ type DaxParameterGroupInformer interface {
 type daxParameterGroupInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDaxParameterGroupInformer constructs a new informer for DaxParameterGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDaxParameterGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDaxParameterGroupInformer(client, resyncPeriod, indexers, nil)
+func NewDaxParameterGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDaxParameterGroupInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDaxParameterGroupInformer constructs a new informer for DaxParameterGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDaxParameterGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDaxParameterGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DaxParameterGroups().List(options)
+				return client.AwsV1alpha1().DaxParameterGroups(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DaxParameterGroups().Watch(options)
+				return client.AwsV1alpha1().DaxParameterGroups(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.DaxParameterGroup{},
@@ -76,7 +77,7 @@ func NewFilteredDaxParameterGroupInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *daxParameterGroupInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDaxParameterGroupInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDaxParameterGroupInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *daxParameterGroupInformer) Informer() cache.SharedIndexInformer {

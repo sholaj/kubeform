@@ -41,32 +41,33 @@ type VpcEndpointSubnetAssociationInformer interface {
 type vpcEndpointSubnetAssociationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewVpcEndpointSubnetAssociationInformer constructs a new informer for VpcEndpointSubnetAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewVpcEndpointSubnetAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredVpcEndpointSubnetAssociationInformer(client, resyncPeriod, indexers, nil)
+func NewVpcEndpointSubnetAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredVpcEndpointSubnetAssociationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredVpcEndpointSubnetAssociationInformer constructs a new informer for VpcEndpointSubnetAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredVpcEndpointSubnetAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredVpcEndpointSubnetAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().VpcEndpointSubnetAssociations().List(options)
+				return client.AwsV1alpha1().VpcEndpointSubnetAssociations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().VpcEndpointSubnetAssociations().Watch(options)
+				return client.AwsV1alpha1().VpcEndpointSubnetAssociations(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.VpcEndpointSubnetAssociation{},
@@ -76,7 +77,7 @@ func NewFilteredVpcEndpointSubnetAssociationInformer(client versioned.Interface,
 }
 
 func (f *vpcEndpointSubnetAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredVpcEndpointSubnetAssociationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredVpcEndpointSubnetAssociationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *vpcEndpointSubnetAssociationInformer) Informer() cache.SharedIndexInformer {

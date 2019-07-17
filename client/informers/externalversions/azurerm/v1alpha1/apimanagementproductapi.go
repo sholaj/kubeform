@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/azurerm/v1alpha1"
 )
 
-// ApiManagementProductApiInformer provides access to a shared informer and lister for
-// ApiManagementProductApis.
-type ApiManagementProductApiInformer interface {
+// ApiManagementProductAPIInformer provides access to a shared informer and lister for
+// ApiManagementProductAPIs.
+type ApiManagementProductAPIInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.ApiManagementProductApiLister
+	Lister() v1alpha1.ApiManagementProductAPILister
 }
 
-type apiManagementProductApiInformer struct {
+type apiManagementProductAPIInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewApiManagementProductApiInformer constructs a new informer for ApiManagementProductApi type.
+// NewApiManagementProductAPIInformer constructs a new informer for ApiManagementProductAPI type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewApiManagementProductApiInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredApiManagementProductApiInformer(client, resyncPeriod, indexers, nil)
+func NewApiManagementProductAPIInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredApiManagementProductAPIInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredApiManagementProductApiInformer constructs a new informer for ApiManagementProductApi type.
+// NewFilteredApiManagementProductAPIInformer constructs a new informer for ApiManagementProductAPI type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredApiManagementProductApiInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredApiManagementProductAPIInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ApiManagementProductApis().List(options)
+				return client.AzurermV1alpha1().ApiManagementProductAPIs(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ApiManagementProductApis().Watch(options)
+				return client.AzurermV1alpha1().ApiManagementProductAPIs(namespace).Watch(options)
 			},
 		},
-		&azurermv1alpha1.ApiManagementProductApi{},
+		&azurermv1alpha1.ApiManagementProductAPI{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *apiManagementProductApiInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredApiManagementProductApiInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *apiManagementProductAPIInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredApiManagementProductAPIInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *apiManagementProductApiInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&azurermv1alpha1.ApiManagementProductApi{}, f.defaultInformer)
+func (f *apiManagementProductAPIInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&azurermv1alpha1.ApiManagementProductAPI{}, f.defaultInformer)
 }
 
-func (f *apiManagementProductApiInformer) Lister() v1alpha1.ApiManagementProductApiLister {
-	return v1alpha1.NewApiManagementProductApiLister(f.Informer().GetIndexer())
+func (f *apiManagementProductAPIInformer) Lister() v1alpha1.ApiManagementProductAPILister {
+	return v1alpha1.NewApiManagementProductAPILister(f.Informer().GetIndexer())
 }

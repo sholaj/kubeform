@@ -32,7 +32,7 @@ import (
 // CosmosdbMongoCollectionsGetter has a method to return a CosmosdbMongoCollectionInterface.
 // A group's client should implement this interface.
 type CosmosdbMongoCollectionsGetter interface {
-	CosmosdbMongoCollections() CosmosdbMongoCollectionInterface
+	CosmosdbMongoCollections(namespace string) CosmosdbMongoCollectionInterface
 }
 
 // CosmosdbMongoCollectionInterface has methods to work with CosmosdbMongoCollection resources.
@@ -52,12 +52,14 @@ type CosmosdbMongoCollectionInterface interface {
 // cosmosdbMongoCollections implements CosmosdbMongoCollectionInterface
 type cosmosdbMongoCollections struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCosmosdbMongoCollections returns a CosmosdbMongoCollections
-func newCosmosdbMongoCollections(c *AzurermV1alpha1Client) *cosmosdbMongoCollections {
+func newCosmosdbMongoCollections(c *AzurermV1alpha1Client, namespace string) *cosmosdbMongoCollections {
 	return &cosmosdbMongoCollections{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCosmosdbMongoCollections(c *AzurermV1alpha1Client) *cosmosdbMongoCollect
 func (c *cosmosdbMongoCollections) Get(name string, options v1.GetOptions) (result *v1alpha1.CosmosdbMongoCollection, err error) {
 	result = &v1alpha1.CosmosdbMongoCollection{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cosmosdbmongocollections").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cosmosdbMongoCollections) List(opts v1.ListOptions) (result *v1alpha1.C
 	}
 	result = &v1alpha1.CosmosdbMongoCollectionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cosmosdbmongocollections").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cosmosdbMongoCollections) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cosmosdbmongocollections").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cosmosdbMongoCollections) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *cosmosdbMongoCollections) Create(cosmosdbMongoCollection *v1alpha1.CosmosdbMongoCollection) (result *v1alpha1.CosmosdbMongoCollection, err error) {
 	result = &v1alpha1.CosmosdbMongoCollection{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cosmosdbmongocollections").
 		Body(cosmosdbMongoCollection).
 		Do().
@@ -118,6 +124,7 @@ func (c *cosmosdbMongoCollections) Create(cosmosdbMongoCollection *v1alpha1.Cosm
 func (c *cosmosdbMongoCollections) Update(cosmosdbMongoCollection *v1alpha1.CosmosdbMongoCollection) (result *v1alpha1.CosmosdbMongoCollection, err error) {
 	result = &v1alpha1.CosmosdbMongoCollection{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cosmosdbmongocollections").
 		Name(cosmosdbMongoCollection.Name).
 		Body(cosmosdbMongoCollection).
@@ -132,6 +139,7 @@ func (c *cosmosdbMongoCollections) Update(cosmosdbMongoCollection *v1alpha1.Cosm
 func (c *cosmosdbMongoCollections) UpdateStatus(cosmosdbMongoCollection *v1alpha1.CosmosdbMongoCollection) (result *v1alpha1.CosmosdbMongoCollection, err error) {
 	result = &v1alpha1.CosmosdbMongoCollection{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cosmosdbmongocollections").
 		Name(cosmosdbMongoCollection.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cosmosdbMongoCollections) UpdateStatus(cosmosdbMongoCollection *v1alpha
 // Delete takes name of the cosmosdbMongoCollection and deletes it. Returns an error if one occurs.
 func (c *cosmosdbMongoCollections) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cosmosdbmongocollections").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cosmosdbMongoCollections) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cosmosdbmongocollections").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cosmosdbMongoCollections) DeleteCollection(options *v1.DeleteOptions, l
 func (c *cosmosdbMongoCollections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CosmosdbMongoCollection, err error) {
 	result = &v1alpha1.CosmosdbMongoCollection{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cosmosdbmongocollections").
 		SubResource(subresources...).
 		Name(name).

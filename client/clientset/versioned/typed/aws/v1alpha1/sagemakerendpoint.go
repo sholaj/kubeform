@@ -32,7 +32,7 @@ import (
 // SagemakerEndpointsGetter has a method to return a SagemakerEndpointInterface.
 // A group's client should implement this interface.
 type SagemakerEndpointsGetter interface {
-	SagemakerEndpoints() SagemakerEndpointInterface
+	SagemakerEndpoints(namespace string) SagemakerEndpointInterface
 }
 
 // SagemakerEndpointInterface has methods to work with SagemakerEndpoint resources.
@@ -52,12 +52,14 @@ type SagemakerEndpointInterface interface {
 // sagemakerEndpoints implements SagemakerEndpointInterface
 type sagemakerEndpoints struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSagemakerEndpoints returns a SagemakerEndpoints
-func newSagemakerEndpoints(c *AwsV1alpha1Client) *sagemakerEndpoints {
+func newSagemakerEndpoints(c *AwsV1alpha1Client, namespace string) *sagemakerEndpoints {
 	return &sagemakerEndpoints{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSagemakerEndpoints(c *AwsV1alpha1Client) *sagemakerEndpoints {
 func (c *sagemakerEndpoints) Get(name string, options v1.GetOptions) (result *v1alpha1.SagemakerEndpoint, err error) {
 	result = &v1alpha1.SagemakerEndpoint{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sagemakerendpoints").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sagemakerEndpoints) List(opts v1.ListOptions) (result *v1alpha1.Sagemak
 	}
 	result = &v1alpha1.SagemakerEndpointList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sagemakerendpoints").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sagemakerEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sagemakerendpoints").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sagemakerEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *sagemakerEndpoints) Create(sagemakerEndpoint *v1alpha1.SagemakerEndpoint) (result *v1alpha1.SagemakerEndpoint, err error) {
 	result = &v1alpha1.SagemakerEndpoint{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sagemakerendpoints").
 		Body(sagemakerEndpoint).
 		Do().
@@ -118,6 +124,7 @@ func (c *sagemakerEndpoints) Create(sagemakerEndpoint *v1alpha1.SagemakerEndpoin
 func (c *sagemakerEndpoints) Update(sagemakerEndpoint *v1alpha1.SagemakerEndpoint) (result *v1alpha1.SagemakerEndpoint, err error) {
 	result = &v1alpha1.SagemakerEndpoint{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sagemakerendpoints").
 		Name(sagemakerEndpoint.Name).
 		Body(sagemakerEndpoint).
@@ -132,6 +139,7 @@ func (c *sagemakerEndpoints) Update(sagemakerEndpoint *v1alpha1.SagemakerEndpoin
 func (c *sagemakerEndpoints) UpdateStatus(sagemakerEndpoint *v1alpha1.SagemakerEndpoint) (result *v1alpha1.SagemakerEndpoint, err error) {
 	result = &v1alpha1.SagemakerEndpoint{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sagemakerendpoints").
 		Name(sagemakerEndpoint.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sagemakerEndpoints) UpdateStatus(sagemakerEndpoint *v1alpha1.SagemakerE
 // Delete takes name of the sagemakerEndpoint and deletes it. Returns an error if one occurs.
 func (c *sagemakerEndpoints) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sagemakerendpoints").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sagemakerEndpoints) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sagemakerendpoints").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sagemakerEndpoints) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *sagemakerEndpoints) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SagemakerEndpoint, err error) {
 	result = &v1alpha1.SagemakerEndpoint{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sagemakerendpoints").
 		SubResource(subresources...).
 		Name(name).

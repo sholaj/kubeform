@@ -32,7 +32,7 @@ import (
 // CloudfrontOriginAccessIdentitiesGetter has a method to return a CloudfrontOriginAccessIdentityInterface.
 // A group's client should implement this interface.
 type CloudfrontOriginAccessIdentitiesGetter interface {
-	CloudfrontOriginAccessIdentities() CloudfrontOriginAccessIdentityInterface
+	CloudfrontOriginAccessIdentities(namespace string) CloudfrontOriginAccessIdentityInterface
 }
 
 // CloudfrontOriginAccessIdentityInterface has methods to work with CloudfrontOriginAccessIdentity resources.
@@ -52,12 +52,14 @@ type CloudfrontOriginAccessIdentityInterface interface {
 // cloudfrontOriginAccessIdentities implements CloudfrontOriginAccessIdentityInterface
 type cloudfrontOriginAccessIdentities struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCloudfrontOriginAccessIdentities returns a CloudfrontOriginAccessIdentities
-func newCloudfrontOriginAccessIdentities(c *AwsV1alpha1Client) *cloudfrontOriginAccessIdentities {
+func newCloudfrontOriginAccessIdentities(c *AwsV1alpha1Client, namespace string) *cloudfrontOriginAccessIdentities {
 	return &cloudfrontOriginAccessIdentities{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCloudfrontOriginAccessIdentities(c *AwsV1alpha1Client) *cloudfrontOrigin
 func (c *cloudfrontOriginAccessIdentities) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudfrontOriginAccessIdentity, err error) {
 	result = &v1alpha1.CloudfrontOriginAccessIdentity{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudfrontoriginaccessidentities").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cloudfrontOriginAccessIdentities) List(opts v1.ListOptions) (result *v1
 	}
 	result = &v1alpha1.CloudfrontOriginAccessIdentityList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudfrontoriginaccessidentities").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cloudfrontOriginAccessIdentities) Watch(opts v1.ListOptions) (watch.Int
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudfrontoriginaccessidentities").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cloudfrontOriginAccessIdentities) Watch(opts v1.ListOptions) (watch.Int
 func (c *cloudfrontOriginAccessIdentities) Create(cloudfrontOriginAccessIdentity *v1alpha1.CloudfrontOriginAccessIdentity) (result *v1alpha1.CloudfrontOriginAccessIdentity, err error) {
 	result = &v1alpha1.CloudfrontOriginAccessIdentity{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cloudfrontoriginaccessidentities").
 		Body(cloudfrontOriginAccessIdentity).
 		Do().
@@ -118,6 +124,7 @@ func (c *cloudfrontOriginAccessIdentities) Create(cloudfrontOriginAccessIdentity
 func (c *cloudfrontOriginAccessIdentities) Update(cloudfrontOriginAccessIdentity *v1alpha1.CloudfrontOriginAccessIdentity) (result *v1alpha1.CloudfrontOriginAccessIdentity, err error) {
 	result = &v1alpha1.CloudfrontOriginAccessIdentity{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudfrontoriginaccessidentities").
 		Name(cloudfrontOriginAccessIdentity.Name).
 		Body(cloudfrontOriginAccessIdentity).
@@ -132,6 +139,7 @@ func (c *cloudfrontOriginAccessIdentities) Update(cloudfrontOriginAccessIdentity
 func (c *cloudfrontOriginAccessIdentities) UpdateStatus(cloudfrontOriginAccessIdentity *v1alpha1.CloudfrontOriginAccessIdentity) (result *v1alpha1.CloudfrontOriginAccessIdentity, err error) {
 	result = &v1alpha1.CloudfrontOriginAccessIdentity{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudfrontoriginaccessidentities").
 		Name(cloudfrontOriginAccessIdentity.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cloudfrontOriginAccessIdentities) UpdateStatus(cloudfrontOriginAccessId
 // Delete takes name of the cloudfrontOriginAccessIdentity and deletes it. Returns an error if one occurs.
 func (c *cloudfrontOriginAccessIdentities) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudfrontoriginaccessidentities").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cloudfrontOriginAccessIdentities) DeleteCollection(options *v1.DeleteOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudfrontoriginaccessidentities").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cloudfrontOriginAccessIdentities) DeleteCollection(options *v1.DeleteOp
 func (c *cloudfrontOriginAccessIdentities) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudfrontOriginAccessIdentity, err error) {
 	result = &v1alpha1.CloudfrontOriginAccessIdentity{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cloudfrontoriginaccessidentities").
 		SubResource(subresources...).
 		Name(name).

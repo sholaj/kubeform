@@ -29,8 +29,8 @@ import (
 type ComputeAttachedDiskLister interface {
 	// List lists all ComputeAttachedDisks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeAttachedDisk, err error)
-	// Get retrieves the ComputeAttachedDisk from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeAttachedDisk, error)
+	// ComputeAttachedDisks returns an object that can list and get ComputeAttachedDisks.
+	ComputeAttachedDisks(namespace string) ComputeAttachedDiskNamespaceLister
 	ComputeAttachedDiskListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeAttachedDiskLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the ComputeAttachedDisk from the index for a given name.
-func (s *computeAttachedDiskLister) Get(name string) (*v1alpha1.ComputeAttachedDisk, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeAttachedDisks returns an object that can list and get ComputeAttachedDisks.
+func (s *computeAttachedDiskLister) ComputeAttachedDisks(namespace string) ComputeAttachedDiskNamespaceLister {
+	return computeAttachedDiskNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeAttachedDiskNamespaceLister helps list and get ComputeAttachedDisks.
+type ComputeAttachedDiskNamespaceLister interface {
+	// List lists all ComputeAttachedDisks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeAttachedDisk, err error)
+	// Get retrieves the ComputeAttachedDisk from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeAttachedDisk, error)
+	ComputeAttachedDiskNamespaceListerExpansion
+}
+
+// computeAttachedDiskNamespaceLister implements the ComputeAttachedDiskNamespaceLister
+// interface.
+type computeAttachedDiskNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeAttachedDisks in the indexer for a given namespace.
+func (s computeAttachedDiskNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeAttachedDisk, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeAttachedDisk))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeAttachedDisk from the indexer for a given namespace and name.
+func (s computeAttachedDiskNamespaceLister) Get(name string) (*v1alpha1.ComputeAttachedDisk, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // BatchComputeEnvironmentsGetter has a method to return a BatchComputeEnvironmentInterface.
 // A group's client should implement this interface.
 type BatchComputeEnvironmentsGetter interface {
-	BatchComputeEnvironments() BatchComputeEnvironmentInterface
+	BatchComputeEnvironments(namespace string) BatchComputeEnvironmentInterface
 }
 
 // BatchComputeEnvironmentInterface has methods to work with BatchComputeEnvironment resources.
@@ -52,12 +52,14 @@ type BatchComputeEnvironmentInterface interface {
 // batchComputeEnvironments implements BatchComputeEnvironmentInterface
 type batchComputeEnvironments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newBatchComputeEnvironments returns a BatchComputeEnvironments
-func newBatchComputeEnvironments(c *AwsV1alpha1Client) *batchComputeEnvironments {
+func newBatchComputeEnvironments(c *AwsV1alpha1Client, namespace string) *batchComputeEnvironments {
 	return &batchComputeEnvironments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newBatchComputeEnvironments(c *AwsV1alpha1Client) *batchComputeEnvironments
 func (c *batchComputeEnvironments) Get(name string, options v1.GetOptions) (result *v1alpha1.BatchComputeEnvironment, err error) {
 	result = &v1alpha1.BatchComputeEnvironment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("batchcomputeenvironments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *batchComputeEnvironments) List(opts v1.ListOptions) (result *v1alpha1.B
 	}
 	result = &v1alpha1.BatchComputeEnvironmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("batchcomputeenvironments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *batchComputeEnvironments) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("batchcomputeenvironments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *batchComputeEnvironments) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *batchComputeEnvironments) Create(batchComputeEnvironment *v1alpha1.BatchComputeEnvironment) (result *v1alpha1.BatchComputeEnvironment, err error) {
 	result = &v1alpha1.BatchComputeEnvironment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("batchcomputeenvironments").
 		Body(batchComputeEnvironment).
 		Do().
@@ -118,6 +124,7 @@ func (c *batchComputeEnvironments) Create(batchComputeEnvironment *v1alpha1.Batc
 func (c *batchComputeEnvironments) Update(batchComputeEnvironment *v1alpha1.BatchComputeEnvironment) (result *v1alpha1.BatchComputeEnvironment, err error) {
 	result = &v1alpha1.BatchComputeEnvironment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("batchcomputeenvironments").
 		Name(batchComputeEnvironment.Name).
 		Body(batchComputeEnvironment).
@@ -132,6 +139,7 @@ func (c *batchComputeEnvironments) Update(batchComputeEnvironment *v1alpha1.Batc
 func (c *batchComputeEnvironments) UpdateStatus(batchComputeEnvironment *v1alpha1.BatchComputeEnvironment) (result *v1alpha1.BatchComputeEnvironment, err error) {
 	result = &v1alpha1.BatchComputeEnvironment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("batchcomputeenvironments").
 		Name(batchComputeEnvironment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *batchComputeEnvironments) UpdateStatus(batchComputeEnvironment *v1alpha
 // Delete takes name of the batchComputeEnvironment and deletes it. Returns an error if one occurs.
 func (c *batchComputeEnvironments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("batchcomputeenvironments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *batchComputeEnvironments) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("batchcomputeenvironments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *batchComputeEnvironments) DeleteCollection(options *v1.DeleteOptions, l
 func (c *batchComputeEnvironments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BatchComputeEnvironment, err error) {
 	result = &v1alpha1.BatchComputeEnvironment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("batchcomputeenvironments").
 		SubResource(subresources...).
 		Name(name).

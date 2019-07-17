@@ -31,6 +31,7 @@ import (
 // FakeAmis implements AmiInterface
 type FakeAmis struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var amisResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "amis"}
@@ -40,7 +41,8 @@ var amisKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1al
 // Get takes name of the ami, and returns the corresponding ami object, and an error if there is any.
 func (c *FakeAmis) Get(name string, options v1.GetOptions) (result *v1alpha1.Ami, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(amisResource, name), &v1alpha1.Ami{})
+		Invokes(testing.NewGetAction(amisResource, c.ns, name), &v1alpha1.Ami{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAmis) Get(name string, options v1.GetOptions) (result *v1alpha1.Ami
 // List takes label and field selectors, and returns the list of Amis that match those selectors.
 func (c *FakeAmis) List(opts v1.ListOptions) (result *v1alpha1.AmiList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(amisResource, amisKind, opts), &v1alpha1.AmiList{})
+		Invokes(testing.NewListAction(amisResource, amisKind, c.ns, opts), &v1alpha1.AmiList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAmis) List(opts v1.ListOptions) (result *v1alpha1.AmiList, err erro
 // Watch returns a watch.Interface that watches the requested amis.
 func (c *FakeAmis) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(amisResource, opts))
+		InvokesWatch(testing.NewWatchAction(amisResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ami and creates it.  Returns the server's representation of the ami, and an error, if there is any.
 func (c *FakeAmis) Create(ami *v1alpha1.Ami) (result *v1alpha1.Ami, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(amisResource, ami), &v1alpha1.Ami{})
+		Invokes(testing.NewCreateAction(amisResource, c.ns, ami), &v1alpha1.Ami{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAmis) Create(ami *v1alpha1.Ami) (result *v1alpha1.Ami, err error) {
 // Update takes the representation of a ami and updates it. Returns the server's representation of the ami, and an error, if there is any.
 func (c *FakeAmis) Update(ami *v1alpha1.Ami) (result *v1alpha1.Ami, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(amisResource, ami), &v1alpha1.Ami{})
+		Invokes(testing.NewUpdateAction(amisResource, c.ns, ami), &v1alpha1.Ami{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAmis) Update(ami *v1alpha1.Ami) (result *v1alpha1.Ami, err error) {
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAmis) UpdateStatus(ami *v1alpha1.Ami) (*v1alpha1.Ami, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(amisResource, "status", ami), &v1alpha1.Ami{})
+		Invokes(testing.NewUpdateSubresourceAction(amisResource, "status", c.ns, ami), &v1alpha1.Ami{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAmis) UpdateStatus(ami *v1alpha1.Ami) (*v1alpha1.Ami, error) {
 // Delete takes name of the ami and deletes it. Returns an error if one occurs.
 func (c *FakeAmis) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(amisResource, name), &v1alpha1.Ami{})
+		Invokes(testing.NewDeleteAction(amisResource, c.ns, name), &v1alpha1.Ami{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAmis) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(amisResource, listOptions)
+	action := testing.NewDeleteCollectionAction(amisResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AmiList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAmis) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 // Patch applies the patch and returns the patched ami.
 func (c *FakeAmis) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Ami, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(amisResource, name, pt, data, subresources...), &v1alpha1.Ami{})
+		Invokes(testing.NewPatchSubresourceAction(amisResource, c.ns, name, pt, data, subresources...), &v1alpha1.Ami{})
+
 	if obj == nil {
 		return nil, err
 	}

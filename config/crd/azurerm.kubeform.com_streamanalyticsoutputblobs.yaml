@@ -397,39 +397,61 @@ spec:
           type: object
         spec:
           properties:
-            date_format:
+            dateFormat:
               type: string
             name:
               type: string
-            path_pattern:
+            pathPattern:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
             serialization:
-              items: {}
+              items:
+                properties:
+                  encoding:
+                    type: string
+                  fieldDelimiter:
+                    type: string
+                  format:
+                    type: string
+                  type:
+                    type: string
+                required:
+                - type
+                type: object
               maxItems: 1
               type: array
-            storage_account_key:
+            storageAccountKey:
               type: string
-            storage_account_name:
+            storageAccountName:
               type: string
-            storage_container_name:
+            storageContainerName:
               type: string
-            stream_analytics_job_name:
+            streamAnalyticsJobName:
               type: string
-            time_format:
+            timeFormat:
               type: string
           required:
-          - date_format
+          - dateFormat
           - name
-          - path_pattern
-          - resource_group_name
+          - pathPattern
+          - providerRef
+          - resourceGroupName
           - serialization
-          - storage_account_key
-          - storage_account_name
-          - storage_container_name
-          - stream_analytics_job_name
-          - time_format
+          - storageAccountKey
+          - storageAccountName
+          - storageContainerName
+          - streamAnalyticsJobName
+          - timeFormat
           type: object
         status:
           properties:
@@ -440,6 +462,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

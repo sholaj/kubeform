@@ -29,8 +29,8 @@ import (
 type DataflowJobLister interface {
 	// List lists all DataflowJobs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DataflowJob, err error)
-	// Get retrieves the DataflowJob from the index for a given name.
-	Get(name string) (*v1alpha1.DataflowJob, error)
+	// DataflowJobs returns an object that can list and get DataflowJobs.
+	DataflowJobs(namespace string) DataflowJobNamespaceLister
 	DataflowJobListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dataflowJobLister) List(selector labels.Selector) (ret []*v1alpha1.Data
 	return ret, err
 }
 
-// Get retrieves the DataflowJob from the index for a given name.
-func (s *dataflowJobLister) Get(name string) (*v1alpha1.DataflowJob, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DataflowJobs returns an object that can list and get DataflowJobs.
+func (s *dataflowJobLister) DataflowJobs(namespace string) DataflowJobNamespaceLister {
+	return dataflowJobNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DataflowJobNamespaceLister helps list and get DataflowJobs.
+type DataflowJobNamespaceLister interface {
+	// List lists all DataflowJobs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DataflowJob, err error)
+	// Get retrieves the DataflowJob from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DataflowJob, error)
+	DataflowJobNamespaceListerExpansion
+}
+
+// dataflowJobNamespaceLister implements the DataflowJobNamespaceLister
+// interface.
+type dataflowJobNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DataflowJobs in the indexer for a given namespace.
+func (s dataflowJobNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DataflowJob, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DataflowJob))
+	})
+	return ret, err
+}
+
+// Get retrieves the DataflowJob from the indexer for a given namespace and name.
+func (s dataflowJobNamespaceLister) Get(name string) (*v1alpha1.DataflowJob, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

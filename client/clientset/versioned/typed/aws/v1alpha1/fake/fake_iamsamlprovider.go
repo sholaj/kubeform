@@ -31,6 +31,7 @@ import (
 // FakeIamSamlProviders implements IamSamlProviderInterface
 type FakeIamSamlProviders struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var iamsamlprovidersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "iamsamlproviders"}
@@ -40,7 +41,8 @@ var iamsamlprovidersKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ve
 // Get takes name of the iamSamlProvider, and returns the corresponding iamSamlProvider object, and an error if there is any.
 func (c *FakeIamSamlProviders) Get(name string, options v1.GetOptions) (result *v1alpha1.IamSamlProvider, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iamsamlprovidersResource, name), &v1alpha1.IamSamlProvider{})
+		Invokes(testing.NewGetAction(iamsamlprovidersResource, c.ns, name), &v1alpha1.IamSamlProvider{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIamSamlProviders) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of IamSamlProviders that match those selectors.
 func (c *FakeIamSamlProviders) List(opts v1.ListOptions) (result *v1alpha1.IamSamlProviderList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iamsamlprovidersResource, iamsamlprovidersKind, opts), &v1alpha1.IamSamlProviderList{})
+		Invokes(testing.NewListAction(iamsamlprovidersResource, iamsamlprovidersKind, c.ns, opts), &v1alpha1.IamSamlProviderList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIamSamlProviders) List(opts v1.ListOptions) (result *v1alpha1.IamSa
 // Watch returns a watch.Interface that watches the requested iamSamlProviders.
 func (c *FakeIamSamlProviders) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iamsamlprovidersResource, opts))
+		InvokesWatch(testing.NewWatchAction(iamsamlprovidersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iamSamlProvider and creates it.  Returns the server's representation of the iamSamlProvider, and an error, if there is any.
 func (c *FakeIamSamlProviders) Create(iamSamlProvider *v1alpha1.IamSamlProvider) (result *v1alpha1.IamSamlProvider, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iamsamlprovidersResource, iamSamlProvider), &v1alpha1.IamSamlProvider{})
+		Invokes(testing.NewCreateAction(iamsamlprovidersResource, c.ns, iamSamlProvider), &v1alpha1.IamSamlProvider{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIamSamlProviders) Create(iamSamlProvider *v1alpha1.IamSamlProvider)
 // Update takes the representation of a iamSamlProvider and updates it. Returns the server's representation of the iamSamlProvider, and an error, if there is any.
 func (c *FakeIamSamlProviders) Update(iamSamlProvider *v1alpha1.IamSamlProvider) (result *v1alpha1.IamSamlProvider, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iamsamlprovidersResource, iamSamlProvider), &v1alpha1.IamSamlProvider{})
+		Invokes(testing.NewUpdateAction(iamsamlprovidersResource, c.ns, iamSamlProvider), &v1alpha1.IamSamlProvider{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIamSamlProviders) Update(iamSamlProvider *v1alpha1.IamSamlProvider)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIamSamlProviders) UpdateStatus(iamSamlProvider *v1alpha1.IamSamlProvider) (*v1alpha1.IamSamlProvider, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iamsamlprovidersResource, "status", iamSamlProvider), &v1alpha1.IamSamlProvider{})
+		Invokes(testing.NewUpdateSubresourceAction(iamsamlprovidersResource, "status", c.ns, iamSamlProvider), &v1alpha1.IamSamlProvider{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIamSamlProviders) UpdateStatus(iamSamlProvider *v1alpha1.IamSamlPro
 // Delete takes name of the iamSamlProvider and deletes it. Returns an error if one occurs.
 func (c *FakeIamSamlProviders) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iamsamlprovidersResource, name), &v1alpha1.IamSamlProvider{})
+		Invokes(testing.NewDeleteAction(iamsamlprovidersResource, c.ns, name), &v1alpha1.IamSamlProvider{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIamSamlProviders) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iamsamlprovidersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iamsamlprovidersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IamSamlProviderList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIamSamlProviders) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched iamSamlProvider.
 func (c *FakeIamSamlProviders) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamSamlProvider, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iamsamlprovidersResource, name, pt, data, subresources...), &v1alpha1.IamSamlProvider{})
+		Invokes(testing.NewPatchSubresourceAction(iamsamlprovidersResource, c.ns, name, pt, data, subresources...), &v1alpha1.IamSamlProvider{})
+
 	if obj == nil {
 		return nil, err
 	}

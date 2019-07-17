@@ -29,8 +29,8 @@ import (
 type AppmeshVirtualNodeLister interface {
 	// List lists all AppmeshVirtualNodes in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AppmeshVirtualNode, err error)
-	// Get retrieves the AppmeshVirtualNode from the index for a given name.
-	Get(name string) (*v1alpha1.AppmeshVirtualNode, error)
+	// AppmeshVirtualNodes returns an object that can list and get AppmeshVirtualNodes.
+	AppmeshVirtualNodes(namespace string) AppmeshVirtualNodeNamespaceLister
 	AppmeshVirtualNodeListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *appmeshVirtualNodeLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the AppmeshVirtualNode from the index for a given name.
-func (s *appmeshVirtualNodeLister) Get(name string) (*v1alpha1.AppmeshVirtualNode, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AppmeshVirtualNodes returns an object that can list and get AppmeshVirtualNodes.
+func (s *appmeshVirtualNodeLister) AppmeshVirtualNodes(namespace string) AppmeshVirtualNodeNamespaceLister {
+	return appmeshVirtualNodeNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AppmeshVirtualNodeNamespaceLister helps list and get AppmeshVirtualNodes.
+type AppmeshVirtualNodeNamespaceLister interface {
+	// List lists all AppmeshVirtualNodes in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AppmeshVirtualNode, err error)
+	// Get retrieves the AppmeshVirtualNode from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AppmeshVirtualNode, error)
+	AppmeshVirtualNodeNamespaceListerExpansion
+}
+
+// appmeshVirtualNodeNamespaceLister implements the AppmeshVirtualNodeNamespaceLister
+// interface.
+type appmeshVirtualNodeNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AppmeshVirtualNodes in the indexer for a given namespace.
+func (s appmeshVirtualNodeNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AppmeshVirtualNode, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AppmeshVirtualNode))
+	})
+	return ret, err
+}
+
+// Get retrieves the AppmeshVirtualNode from the indexer for a given namespace and name.
+func (s appmeshVirtualNodeNamespaceLister) Get(name string) (*v1alpha1.AppmeshVirtualNode, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

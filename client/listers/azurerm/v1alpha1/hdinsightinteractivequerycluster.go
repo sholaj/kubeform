@@ -29,8 +29,8 @@ import (
 type HdinsightInteractiveQueryClusterLister interface {
 	// List lists all HdinsightInteractiveQueryClusters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.HdinsightInteractiveQueryCluster, err error)
-	// Get retrieves the HdinsightInteractiveQueryCluster from the index for a given name.
-	Get(name string) (*v1alpha1.HdinsightInteractiveQueryCluster, error)
+	// HdinsightInteractiveQueryClusters returns an object that can list and get HdinsightInteractiveQueryClusters.
+	HdinsightInteractiveQueryClusters(namespace string) HdinsightInteractiveQueryClusterNamespaceLister
 	HdinsightInteractiveQueryClusterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *hdinsightInteractiveQueryClusterLister) List(selector labels.Selector) 
 	return ret, err
 }
 
-// Get retrieves the HdinsightInteractiveQueryCluster from the index for a given name.
-func (s *hdinsightInteractiveQueryClusterLister) Get(name string) (*v1alpha1.HdinsightInteractiveQueryCluster, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// HdinsightInteractiveQueryClusters returns an object that can list and get HdinsightInteractiveQueryClusters.
+func (s *hdinsightInteractiveQueryClusterLister) HdinsightInteractiveQueryClusters(namespace string) HdinsightInteractiveQueryClusterNamespaceLister {
+	return hdinsightInteractiveQueryClusterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// HdinsightInteractiveQueryClusterNamespaceLister helps list and get HdinsightInteractiveQueryClusters.
+type HdinsightInteractiveQueryClusterNamespaceLister interface {
+	// List lists all HdinsightInteractiveQueryClusters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.HdinsightInteractiveQueryCluster, err error)
+	// Get retrieves the HdinsightInteractiveQueryCluster from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.HdinsightInteractiveQueryCluster, error)
+	HdinsightInteractiveQueryClusterNamespaceListerExpansion
+}
+
+// hdinsightInteractiveQueryClusterNamespaceLister implements the HdinsightInteractiveQueryClusterNamespaceLister
+// interface.
+type hdinsightInteractiveQueryClusterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all HdinsightInteractiveQueryClusters in the indexer for a given namespace.
+func (s hdinsightInteractiveQueryClusterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.HdinsightInteractiveQueryCluster, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.HdinsightInteractiveQueryCluster))
+	})
+	return ret, err
+}
+
+// Get retrieves the HdinsightInteractiveQueryCluster from the indexer for a given namespace and name.
+func (s hdinsightInteractiveQueryClusterNamespaceLister) Get(name string) (*v1alpha1.HdinsightInteractiveQueryCluster, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

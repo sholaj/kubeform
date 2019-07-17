@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// VpcIpv4CidrBlockAssociationsGetter has a method to return a VpcIpv4CidrBlockAssociationInterface.
+// VpcIpv4CIDRBlockAssociationsGetter has a method to return a VpcIpv4CIDRBlockAssociationInterface.
 // A group's client should implement this interface.
-type VpcIpv4CidrBlockAssociationsGetter interface {
-	VpcIpv4CidrBlockAssociations() VpcIpv4CidrBlockAssociationInterface
+type VpcIpv4CIDRBlockAssociationsGetter interface {
+	VpcIpv4CIDRBlockAssociations(namespace string) VpcIpv4CIDRBlockAssociationInterface
 }
 
-// VpcIpv4CidrBlockAssociationInterface has methods to work with VpcIpv4CidrBlockAssociation resources.
-type VpcIpv4CidrBlockAssociationInterface interface {
-	Create(*v1alpha1.VpcIpv4CidrBlockAssociation) (*v1alpha1.VpcIpv4CidrBlockAssociation, error)
-	Update(*v1alpha1.VpcIpv4CidrBlockAssociation) (*v1alpha1.VpcIpv4CidrBlockAssociation, error)
-	UpdateStatus(*v1alpha1.VpcIpv4CidrBlockAssociation) (*v1alpha1.VpcIpv4CidrBlockAssociation, error)
+// VpcIpv4CIDRBlockAssociationInterface has methods to work with VpcIpv4CIDRBlockAssociation resources.
+type VpcIpv4CIDRBlockAssociationInterface interface {
+	Create(*v1alpha1.VpcIpv4CIDRBlockAssociation) (*v1alpha1.VpcIpv4CIDRBlockAssociation, error)
+	Update(*v1alpha1.VpcIpv4CIDRBlockAssociation) (*v1alpha1.VpcIpv4CIDRBlockAssociation, error)
+	UpdateStatus(*v1alpha1.VpcIpv4CIDRBlockAssociation) (*v1alpha1.VpcIpv4CIDRBlockAssociation, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.VpcIpv4CidrBlockAssociation, error)
-	List(opts v1.ListOptions) (*v1alpha1.VpcIpv4CidrBlockAssociationList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.VpcIpv4CIDRBlockAssociation, error)
+	List(opts v1.ListOptions) (*v1alpha1.VpcIpv4CIDRBlockAssociationList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcIpv4CidrBlockAssociation, err error)
-	VpcIpv4CidrBlockAssociationExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcIpv4CIDRBlockAssociation, err error)
+	VpcIpv4CIDRBlockAssociationExpansion
 }
 
-// vpcIpv4CidrBlockAssociations implements VpcIpv4CidrBlockAssociationInterface
-type vpcIpv4CidrBlockAssociations struct {
+// vpcIpv4CIDRBlockAssociations implements VpcIpv4CIDRBlockAssociationInterface
+type vpcIpv4CIDRBlockAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
-// newVpcIpv4CidrBlockAssociations returns a VpcIpv4CidrBlockAssociations
-func newVpcIpv4CidrBlockAssociations(c *AwsV1alpha1Client) *vpcIpv4CidrBlockAssociations {
-	return &vpcIpv4CidrBlockAssociations{
+// newVpcIpv4CIDRBlockAssociations returns a VpcIpv4CIDRBlockAssociations
+func newVpcIpv4CIDRBlockAssociations(c *AwsV1alpha1Client, namespace string) *vpcIpv4CIDRBlockAssociations {
+	return &vpcIpv4CIDRBlockAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the vpcIpv4CidrBlockAssociation, and returns the corresponding vpcIpv4CidrBlockAssociation object, and an error if there is any.
-func (c *vpcIpv4CidrBlockAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcIpv4CidrBlockAssociation, err error) {
-	result = &v1alpha1.VpcIpv4CidrBlockAssociation{}
+// Get takes name of the vpcIpv4CIDRBlockAssociation, and returns the corresponding vpcIpv4CIDRBlockAssociation object, and an error if there is any.
+func (c *vpcIpv4CIDRBlockAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcIpv4CIDRBlockAssociation, err error) {
+	result = &v1alpha1.VpcIpv4CIDRBlockAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcipv4cidrblockassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *vpcIpv4CidrBlockAssociations) Get(name string, options v1.GetOptions) (
 	return
 }
 
-// List takes label and field selectors, and returns the list of VpcIpv4CidrBlockAssociations that match those selectors.
-func (c *vpcIpv4CidrBlockAssociations) List(opts v1.ListOptions) (result *v1alpha1.VpcIpv4CidrBlockAssociationList, err error) {
+// List takes label and field selectors, and returns the list of VpcIpv4CIDRBlockAssociations that match those selectors.
+func (c *vpcIpv4CIDRBlockAssociations) List(opts v1.ListOptions) (result *v1alpha1.VpcIpv4CIDRBlockAssociationList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.VpcIpv4CidrBlockAssociationList{}
+	result = &v1alpha1.VpcIpv4CIDRBlockAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcipv4cidrblockassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *vpcIpv4CidrBlockAssociations) List(opts v1.ListOptions) (result *v1alph
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested vpcIpv4CidrBlockAssociations.
-func (c *vpcIpv4CidrBlockAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested vpcIpv4CIDRBlockAssociations.
+func (c *vpcIpv4CIDRBlockAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcipv4cidrblockassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a vpcIpv4CidrBlockAssociation and creates it.  Returns the server's representation of the vpcIpv4CidrBlockAssociation, and an error, if there is any.
-func (c *vpcIpv4CidrBlockAssociations) Create(vpcIpv4CidrBlockAssociation *v1alpha1.VpcIpv4CidrBlockAssociation) (result *v1alpha1.VpcIpv4CidrBlockAssociation, err error) {
-	result = &v1alpha1.VpcIpv4CidrBlockAssociation{}
+// Create takes the representation of a vpcIpv4CIDRBlockAssociation and creates it.  Returns the server's representation of the vpcIpv4CIDRBlockAssociation, and an error, if there is any.
+func (c *vpcIpv4CIDRBlockAssociations) Create(vpcIpv4CIDRBlockAssociation *v1alpha1.VpcIpv4CIDRBlockAssociation) (result *v1alpha1.VpcIpv4CIDRBlockAssociation, err error) {
+	result = &v1alpha1.VpcIpv4CIDRBlockAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("vpcipv4cidrblockassociations").
-		Body(vpcIpv4CidrBlockAssociation).
+		Body(vpcIpv4CIDRBlockAssociation).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a vpcIpv4CidrBlockAssociation and updates it. Returns the server's representation of the vpcIpv4CidrBlockAssociation, and an error, if there is any.
-func (c *vpcIpv4CidrBlockAssociations) Update(vpcIpv4CidrBlockAssociation *v1alpha1.VpcIpv4CidrBlockAssociation) (result *v1alpha1.VpcIpv4CidrBlockAssociation, err error) {
-	result = &v1alpha1.VpcIpv4CidrBlockAssociation{}
+// Update takes the representation of a vpcIpv4CIDRBlockAssociation and updates it. Returns the server's representation of the vpcIpv4CIDRBlockAssociation, and an error, if there is any.
+func (c *vpcIpv4CIDRBlockAssociations) Update(vpcIpv4CIDRBlockAssociation *v1alpha1.VpcIpv4CIDRBlockAssociation) (result *v1alpha1.VpcIpv4CIDRBlockAssociation, err error) {
+	result = &v1alpha1.VpcIpv4CIDRBlockAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcipv4cidrblockassociations").
-		Name(vpcIpv4CidrBlockAssociation.Name).
-		Body(vpcIpv4CidrBlockAssociation).
+		Name(vpcIpv4CIDRBlockAssociation.Name).
+		Body(vpcIpv4CIDRBlockAssociation).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *vpcIpv4CidrBlockAssociations) Update(vpcIpv4CidrBlockAssociation *v1alp
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *vpcIpv4CidrBlockAssociations) UpdateStatus(vpcIpv4CidrBlockAssociation *v1alpha1.VpcIpv4CidrBlockAssociation) (result *v1alpha1.VpcIpv4CidrBlockAssociation, err error) {
-	result = &v1alpha1.VpcIpv4CidrBlockAssociation{}
+func (c *vpcIpv4CIDRBlockAssociations) UpdateStatus(vpcIpv4CIDRBlockAssociation *v1alpha1.VpcIpv4CIDRBlockAssociation) (result *v1alpha1.VpcIpv4CIDRBlockAssociation, err error) {
+	result = &v1alpha1.VpcIpv4CIDRBlockAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcipv4cidrblockassociations").
-		Name(vpcIpv4CidrBlockAssociation.Name).
+		Name(vpcIpv4CIDRBlockAssociation.Name).
 		SubResource("status").
-		Body(vpcIpv4CidrBlockAssociation).
+		Body(vpcIpv4CIDRBlockAssociation).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the vpcIpv4CidrBlockAssociation and deletes it. Returns an error if one occurs.
-func (c *vpcIpv4CidrBlockAssociations) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the vpcIpv4CIDRBlockAssociation and deletes it. Returns an error if one occurs.
+func (c *vpcIpv4CIDRBlockAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcipv4cidrblockassociations").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *vpcIpv4CidrBlockAssociations) Delete(name string, options *v1.DeleteOpt
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *vpcIpv4CidrBlockAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *vpcIpv4CIDRBlockAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcipv4cidrblockassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *vpcIpv4CidrBlockAssociations) DeleteCollection(options *v1.DeleteOption
 		Error()
 }
 
-// Patch applies the patch and returns the patched vpcIpv4CidrBlockAssociation.
-func (c *vpcIpv4CidrBlockAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcIpv4CidrBlockAssociation, err error) {
-	result = &v1alpha1.VpcIpv4CidrBlockAssociation{}
+// Patch applies the patch and returns the patched vpcIpv4CIDRBlockAssociation.
+func (c *vpcIpv4CIDRBlockAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcIpv4CIDRBlockAssociation, err error) {
+	result = &v1alpha1.VpcIpv4CIDRBlockAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("vpcipv4cidrblockassociations").
 		SubResource(subresources...).
 		Name(name).

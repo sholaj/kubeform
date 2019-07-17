@@ -29,8 +29,8 @@ import (
 type StoragegatewayCachedIscsiVolumeLister interface {
 	// List lists all StoragegatewayCachedIscsiVolumes in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StoragegatewayCachedIscsiVolume, err error)
-	// Get retrieves the StoragegatewayCachedIscsiVolume from the index for a given name.
-	Get(name string) (*v1alpha1.StoragegatewayCachedIscsiVolume, error)
+	// StoragegatewayCachedIscsiVolumes returns an object that can list and get StoragegatewayCachedIscsiVolumes.
+	StoragegatewayCachedIscsiVolumes(namespace string) StoragegatewayCachedIscsiVolumeNamespaceLister
 	StoragegatewayCachedIscsiVolumeListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *storagegatewayCachedIscsiVolumeLister) List(selector labels.Selector) (
 	return ret, err
 }
 
-// Get retrieves the StoragegatewayCachedIscsiVolume from the index for a given name.
-func (s *storagegatewayCachedIscsiVolumeLister) Get(name string) (*v1alpha1.StoragegatewayCachedIscsiVolume, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StoragegatewayCachedIscsiVolumes returns an object that can list and get StoragegatewayCachedIscsiVolumes.
+func (s *storagegatewayCachedIscsiVolumeLister) StoragegatewayCachedIscsiVolumes(namespace string) StoragegatewayCachedIscsiVolumeNamespaceLister {
+	return storagegatewayCachedIscsiVolumeNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StoragegatewayCachedIscsiVolumeNamespaceLister helps list and get StoragegatewayCachedIscsiVolumes.
+type StoragegatewayCachedIscsiVolumeNamespaceLister interface {
+	// List lists all StoragegatewayCachedIscsiVolumes in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StoragegatewayCachedIscsiVolume, err error)
+	// Get retrieves the StoragegatewayCachedIscsiVolume from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StoragegatewayCachedIscsiVolume, error)
+	StoragegatewayCachedIscsiVolumeNamespaceListerExpansion
+}
+
+// storagegatewayCachedIscsiVolumeNamespaceLister implements the StoragegatewayCachedIscsiVolumeNamespaceLister
+// interface.
+type storagegatewayCachedIscsiVolumeNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StoragegatewayCachedIscsiVolumes in the indexer for a given namespace.
+func (s storagegatewayCachedIscsiVolumeNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StoragegatewayCachedIscsiVolume, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StoragegatewayCachedIscsiVolume))
+	})
+	return ret, err
+}
+
+// Get retrieves the StoragegatewayCachedIscsiVolume from the indexer for a given namespace and name.
+func (s storagegatewayCachedIscsiVolumeNamespaceLister) Get(name string) (*v1alpha1.StoragegatewayCachedIscsiVolume, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

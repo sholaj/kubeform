@@ -397,31 +397,49 @@ spec:
           type: object
         spec:
           properties:
-            express_route_circuit_name:
+            expressRouteCircuitName:
               type: string
-            microsoft_peering_config:
-              items: {}
+            microsoftPeeringConfig:
+              items:
+                properties:
+                  advertisedPublicPrefixes:
+                    items:
+                      type: string
+                    type: array
+                required:
+                - advertisedPublicPrefixes
+                type: object
               maxItems: 1
               type: array
-            peering_type:
+            peeringType:
               type: string
-            primary_peer_address_prefix:
+            primaryPeerAddressPrefix:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
-            secondary_peer_address_prefix:
+            secondaryPeerAddressPrefix:
               type: string
-            shared_key:
+            sharedKey:
               type: string
-            vlan_id:
+            vlanID:
               type: integer
           required:
-          - express_route_circuit_name
-          - peering_type
-          - primary_peer_address_prefix
-          - resource_group_name
-          - secondary_peer_address_prefix
-          - vlan_id
+          - expressRouteCircuitName
+          - peeringType
+          - primaryPeerAddressPrefix
+          - providerRef
+          - resourceGroupName
+          - secondaryPeerAddressPrefix
+          - vlanID
           type: object
         status:
           properties:
@@ -432,6 +450,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

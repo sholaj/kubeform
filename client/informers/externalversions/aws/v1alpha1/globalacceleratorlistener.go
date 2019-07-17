@@ -41,32 +41,33 @@ type GlobalacceleratorListenerInformer interface {
 type globalacceleratorListenerInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewGlobalacceleratorListenerInformer constructs a new informer for GlobalacceleratorListener type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewGlobalacceleratorListenerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredGlobalacceleratorListenerInformer(client, resyncPeriod, indexers, nil)
+func NewGlobalacceleratorListenerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredGlobalacceleratorListenerInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredGlobalacceleratorListenerInformer constructs a new informer for GlobalacceleratorListener type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredGlobalacceleratorListenerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredGlobalacceleratorListenerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().GlobalacceleratorListeners().List(options)
+				return client.AwsV1alpha1().GlobalacceleratorListeners(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().GlobalacceleratorListeners().Watch(options)
+				return client.AwsV1alpha1().GlobalacceleratorListeners(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.GlobalacceleratorListener{},
@@ -76,7 +77,7 @@ func NewFilteredGlobalacceleratorListenerInformer(client versioned.Interface, re
 }
 
 func (f *globalacceleratorListenerInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredGlobalacceleratorListenerInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredGlobalacceleratorListenerInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *globalacceleratorListenerInformer) Informer() cache.SharedIndexInformer {

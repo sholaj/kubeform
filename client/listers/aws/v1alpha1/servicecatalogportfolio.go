@@ -29,8 +29,8 @@ import (
 type ServicecatalogPortfolioLister interface {
 	// List lists all ServicecatalogPortfolios in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ServicecatalogPortfolio, err error)
-	// Get retrieves the ServicecatalogPortfolio from the index for a given name.
-	Get(name string) (*v1alpha1.ServicecatalogPortfolio, error)
+	// ServicecatalogPortfolios returns an object that can list and get ServicecatalogPortfolios.
+	ServicecatalogPortfolios(namespace string) ServicecatalogPortfolioNamespaceLister
 	ServicecatalogPortfolioListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *servicecatalogPortfolioLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the ServicecatalogPortfolio from the index for a given name.
-func (s *servicecatalogPortfolioLister) Get(name string) (*v1alpha1.ServicecatalogPortfolio, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ServicecatalogPortfolios returns an object that can list and get ServicecatalogPortfolios.
+func (s *servicecatalogPortfolioLister) ServicecatalogPortfolios(namespace string) ServicecatalogPortfolioNamespaceLister {
+	return servicecatalogPortfolioNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ServicecatalogPortfolioNamespaceLister helps list and get ServicecatalogPortfolios.
+type ServicecatalogPortfolioNamespaceLister interface {
+	// List lists all ServicecatalogPortfolios in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ServicecatalogPortfolio, err error)
+	// Get retrieves the ServicecatalogPortfolio from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ServicecatalogPortfolio, error)
+	ServicecatalogPortfolioNamespaceListerExpansion
+}
+
+// servicecatalogPortfolioNamespaceLister implements the ServicecatalogPortfolioNamespaceLister
+// interface.
+type servicecatalogPortfolioNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ServicecatalogPortfolios in the indexer for a given namespace.
+func (s servicecatalogPortfolioNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServicecatalogPortfolio, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ServicecatalogPortfolio))
+	})
+	return ret, err
+}
+
+// Get retrieves the ServicecatalogPortfolio from the indexer for a given namespace and name.
+func (s servicecatalogPortfolioNamespaceLister) Get(name string) (*v1alpha1.ServicecatalogPortfolio, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

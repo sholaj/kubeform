@@ -32,7 +32,7 @@ import (
 // BillingAccountIamMembersGetter has a method to return a BillingAccountIamMemberInterface.
 // A group's client should implement this interface.
 type BillingAccountIamMembersGetter interface {
-	BillingAccountIamMembers() BillingAccountIamMemberInterface
+	BillingAccountIamMembers(namespace string) BillingAccountIamMemberInterface
 }
 
 // BillingAccountIamMemberInterface has methods to work with BillingAccountIamMember resources.
@@ -52,12 +52,14 @@ type BillingAccountIamMemberInterface interface {
 // billingAccountIamMembers implements BillingAccountIamMemberInterface
 type billingAccountIamMembers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newBillingAccountIamMembers returns a BillingAccountIamMembers
-func newBillingAccountIamMembers(c *GoogleV1alpha1Client) *billingAccountIamMembers {
+func newBillingAccountIamMembers(c *GoogleV1alpha1Client, namespace string) *billingAccountIamMembers {
 	return &billingAccountIamMembers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newBillingAccountIamMembers(c *GoogleV1alpha1Client) *billingAccountIamMemb
 func (c *billingAccountIamMembers) Get(name string, options v1.GetOptions) (result *v1alpha1.BillingAccountIamMember, err error) {
 	result = &v1alpha1.BillingAccountIamMember{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("billingaccountiammembers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *billingAccountIamMembers) List(opts v1.ListOptions) (result *v1alpha1.B
 	}
 	result = &v1alpha1.BillingAccountIamMemberList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("billingaccountiammembers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *billingAccountIamMembers) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("billingaccountiammembers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *billingAccountIamMembers) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *billingAccountIamMembers) Create(billingAccountIamMember *v1alpha1.BillingAccountIamMember) (result *v1alpha1.BillingAccountIamMember, err error) {
 	result = &v1alpha1.BillingAccountIamMember{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("billingaccountiammembers").
 		Body(billingAccountIamMember).
 		Do().
@@ -118,6 +124,7 @@ func (c *billingAccountIamMembers) Create(billingAccountIamMember *v1alpha1.Bill
 func (c *billingAccountIamMembers) Update(billingAccountIamMember *v1alpha1.BillingAccountIamMember) (result *v1alpha1.BillingAccountIamMember, err error) {
 	result = &v1alpha1.BillingAccountIamMember{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("billingaccountiammembers").
 		Name(billingAccountIamMember.Name).
 		Body(billingAccountIamMember).
@@ -132,6 +139,7 @@ func (c *billingAccountIamMembers) Update(billingAccountIamMember *v1alpha1.Bill
 func (c *billingAccountIamMembers) UpdateStatus(billingAccountIamMember *v1alpha1.BillingAccountIamMember) (result *v1alpha1.BillingAccountIamMember, err error) {
 	result = &v1alpha1.BillingAccountIamMember{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("billingaccountiammembers").
 		Name(billingAccountIamMember.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *billingAccountIamMembers) UpdateStatus(billingAccountIamMember *v1alpha
 // Delete takes name of the billingAccountIamMember and deletes it. Returns an error if one occurs.
 func (c *billingAccountIamMembers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("billingaccountiammembers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *billingAccountIamMembers) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("billingaccountiammembers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *billingAccountIamMembers) DeleteCollection(options *v1.DeleteOptions, l
 func (c *billingAccountIamMembers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BillingAccountIamMember, err error) {
 	result = &v1alpha1.BillingAccountIamMember{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("billingaccountiammembers").
 		SubResource(subresources...).
 		Name(name).

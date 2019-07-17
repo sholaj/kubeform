@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,30 +19,31 @@ type KeyVault struct {
 }
 
 type KeyVaultSpecNetworkAcls struct {
-	Bypass        string `json:"bypass"`
-	DefaultAction string `json:"default_action"`
+	Bypass        string `json:"bypass" tf:"bypass"`
+	DefaultAction string `json:"defaultAction" tf:"default_action"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	IpRules []string `json:"ip_rules,omitempty"`
+	IpRules []string `json:"ipRules,omitempty" tf:"ip_rules,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	VirtualNetworkSubnetIds []string `json:"virtual_network_subnet_ids,omitempty"`
+	VirtualNetworkSubnetIDS []string `json:"virtualNetworkSubnetIDS,omitempty" tf:"virtual_network_subnet_ids,omitempty"`
 }
 
 type KeyVaultSpec struct {
 	// +optional
-	EnabledForDeployment bool `json:"enabled_for_deployment,omitempty"`
+	EnabledForDeployment bool `json:"enabledForDeployment,omitempty" tf:"enabled_for_deployment,omitempty"`
 	// +optional
-	EnabledForDiskEncryption bool `json:"enabled_for_disk_encryption,omitempty"`
+	EnabledForDiskEncryption bool `json:"enabledForDiskEncryption,omitempty" tf:"enabled_for_disk_encryption,omitempty"`
 	// +optional
-	EnabledForTemplateDeployment bool   `json:"enabled_for_template_deployment,omitempty"`
-	Location                     string `json:"location"`
-	Name                         string `json:"name"`
+	EnabledForTemplateDeployment bool   `json:"enabledForTemplateDeployment,omitempty" tf:"enabled_for_template_deployment,omitempty"`
+	Location                     string `json:"location" tf:"location"`
+	Name                         string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	NetworkAcls       *[]KeyVaultSpec `json:"network_acls,omitempty"`
-	ResourceGroupName string          `json:"resource_group_name"`
-	TenantId          string          `json:"tenant_id"`
+	NetworkAcls       []KeyVaultSpecNetworkAcls `json:"networkAcls,omitempty" tf:"network_acls,omitempty"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	TenantID          string                    `json:"tenantID" tf:"tenant_id"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type KeyVaultStatus struct {
@@ -50,7 +51,9 @@ type KeyVaultStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

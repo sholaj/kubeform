@@ -29,8 +29,8 @@ import (
 type DevTestLabLister interface {
 	// List lists all DevTestLabs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DevTestLab, err error)
-	// Get retrieves the DevTestLab from the index for a given name.
-	Get(name string) (*v1alpha1.DevTestLab, error)
+	// DevTestLabs returns an object that can list and get DevTestLabs.
+	DevTestLabs(namespace string) DevTestLabNamespaceLister
 	DevTestLabListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *devTestLabLister) List(selector labels.Selector) (ret []*v1alpha1.DevTe
 	return ret, err
 }
 
-// Get retrieves the DevTestLab from the index for a given name.
-func (s *devTestLabLister) Get(name string) (*v1alpha1.DevTestLab, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DevTestLabs returns an object that can list and get DevTestLabs.
+func (s *devTestLabLister) DevTestLabs(namespace string) DevTestLabNamespaceLister {
+	return devTestLabNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DevTestLabNamespaceLister helps list and get DevTestLabs.
+type DevTestLabNamespaceLister interface {
+	// List lists all DevTestLabs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DevTestLab, err error)
+	// Get retrieves the DevTestLab from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DevTestLab, error)
+	DevTestLabNamespaceListerExpansion
+}
+
+// devTestLabNamespaceLister implements the DevTestLabNamespaceLister
+// interface.
+type devTestLabNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DevTestLabs in the indexer for a given namespace.
+func (s devTestLabNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DevTestLab, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DevTestLab))
+	})
+	return ret, err
+}
+
+// Get retrieves the DevTestLab from the indexer for a given namespace and name.
+func (s devTestLabNamespaceLister) Get(name string) (*v1alpha1.DevTestLab, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

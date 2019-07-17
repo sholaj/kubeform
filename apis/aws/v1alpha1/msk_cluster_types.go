@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,62 +20,63 @@ type MskCluster struct {
 
 type MskClusterSpecBrokerNodeGroupInfo struct {
 	// +optional
-	AzDistribution string   `json:"az_distribution,omitempty"`
-	ClientSubnets  []string `json:"client_subnets"`
-	EbsVolumeSize  int      `json:"ebs_volume_size"`
-	InstanceType   string   `json:"instance_type"`
-	SecurityGroups []string `json:"security_groups"`
+	AzDistribution string   `json:"azDistribution,omitempty" tf:"az_distribution,omitempty"`
+	ClientSubnets  []string `json:"clientSubnets" tf:"client_subnets"`
+	EbsVolumeSize  int      `json:"ebsVolumeSize" tf:"ebs_volume_size"`
+	InstanceType   string   `json:"instanceType" tf:"instance_type"`
+	SecurityGroups []string `json:"securityGroups" tf:"security_groups"`
 }
 
 type MskClusterSpecClientAuthenticationTls struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	CertificateAuthorityArns []string `json:"certificate_authority_arns,omitempty"`
+	CertificateAuthorityArns []string `json:"certificateAuthorityArns,omitempty" tf:"certificate_authority_arns,omitempty"`
 }
 
 type MskClusterSpecClientAuthentication struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Tls *[]MskClusterSpecClientAuthentication `json:"tls,omitempty"`
+	Tls []MskClusterSpecClientAuthenticationTls `json:"tls,omitempty" tf:"tls,omitempty"`
 }
 
 type MskClusterSpecConfigurationInfo struct {
-	Arn      string `json:"arn"`
-	Revision int    `json:"revision"`
+	Arn      string `json:"arn" tf:"arn"`
+	Revision int    `json:"revision" tf:"revision"`
 }
 
 type MskClusterSpecEncryptionInfoEncryptionInTransit struct {
 	// +optional
-	ClientBroker string `json:"client_broker,omitempty"`
+	ClientBroker string `json:"clientBroker,omitempty" tf:"client_broker,omitempty"`
 	// +optional
-	InCluster bool `json:"in_cluster,omitempty"`
+	InCluster bool `json:"inCluster,omitempty" tf:"in_cluster,omitempty"`
 }
 
 type MskClusterSpecEncryptionInfo struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	EncryptionInTransit *[]MskClusterSpecEncryptionInfo `json:"encryption_in_transit,omitempty"`
+	EncryptionInTransit []MskClusterSpecEncryptionInfoEncryptionInTransit `json:"encryptionInTransit,omitempty" tf:"encryption_in_transit,omitempty"`
 }
 
 type MskClusterSpec struct {
 	// +kubebuilder:validation:MaxItems=1
-	BrokerNodeGroupInfo []MskClusterSpec `json:"broker_node_group_info"`
+	BrokerNodeGroupInfo []MskClusterSpecBrokerNodeGroupInfo `json:"brokerNodeGroupInfo" tf:"broker_node_group_info"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ClientAuthentication *[]MskClusterSpec `json:"client_authentication,omitempty"`
-	ClusterName          string            `json:"cluster_name"`
+	ClientAuthentication []MskClusterSpecClientAuthentication `json:"clientAuthentication,omitempty" tf:"client_authentication,omitempty"`
+	ClusterName          string                               `json:"clusterName" tf:"cluster_name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ConfigurationInfo *[]MskClusterSpec `json:"configuration_info,omitempty"`
+	ConfigurationInfo []MskClusterSpecConfigurationInfo `json:"configurationInfo,omitempty" tf:"configuration_info,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	EncryptionInfo *[]MskClusterSpec `json:"encryption_info,omitempty"`
+	EncryptionInfo []MskClusterSpecEncryptionInfo `json:"encryptionInfo,omitempty" tf:"encryption_info,omitempty"`
 	// +optional
-	EnhancedMonitoring  string `json:"enhanced_monitoring,omitempty"`
-	KafkaVersion        string `json:"kafka_version"`
-	NumberOfBrokerNodes int    `json:"number_of_broker_nodes"`
+	EnhancedMonitoring  string `json:"enhancedMonitoring,omitempty" tf:"enhanced_monitoring,omitempty"`
+	KafkaVersion        string `json:"kafkaVersion" tf:"kafka_version"`
+	NumberOfBrokerNodes int    `json:"numberOfBrokerNodes" tf:"number_of_broker_nodes"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type MskClusterStatus struct {
@@ -83,7 +84,9 @@ type MskClusterStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

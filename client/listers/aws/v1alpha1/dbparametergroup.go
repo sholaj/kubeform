@@ -29,8 +29,8 @@ import (
 type DbParameterGroupLister interface {
 	// List lists all DbParameterGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DbParameterGroup, err error)
-	// Get retrieves the DbParameterGroup from the index for a given name.
-	Get(name string) (*v1alpha1.DbParameterGroup, error)
+	// DbParameterGroups returns an object that can list and get DbParameterGroups.
+	DbParameterGroups(namespace string) DbParameterGroupNamespaceLister
 	DbParameterGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dbParameterGroupLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the DbParameterGroup from the index for a given name.
-func (s *dbParameterGroupLister) Get(name string) (*v1alpha1.DbParameterGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DbParameterGroups returns an object that can list and get DbParameterGroups.
+func (s *dbParameterGroupLister) DbParameterGroups(namespace string) DbParameterGroupNamespaceLister {
+	return dbParameterGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DbParameterGroupNamespaceLister helps list and get DbParameterGroups.
+type DbParameterGroupNamespaceLister interface {
+	// List lists all DbParameterGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DbParameterGroup, err error)
+	// Get retrieves the DbParameterGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DbParameterGroup, error)
+	DbParameterGroupNamespaceListerExpansion
+}
+
+// dbParameterGroupNamespaceLister implements the DbParameterGroupNamespaceLister
+// interface.
+type dbParameterGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DbParameterGroups in the indexer for a given namespace.
+func (s dbParameterGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DbParameterGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DbParameterGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the DbParameterGroup from the indexer for a given namespace and name.
+func (s dbParameterGroupNamespaceLister) Get(name string) (*v1alpha1.DbParameterGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeFolderOrganizationPolicies implements FolderOrganizationPolicyInterface
 type FakeFolderOrganizationPolicies struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var folderorganizationpoliciesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "folderorganizationpolicies"}
@@ -40,7 +41,8 @@ var folderorganizationpoliciesKind = schema.GroupVersionKind{Group: "google.kube
 // Get takes name of the folderOrganizationPolicy, and returns the corresponding folderOrganizationPolicy object, and an error if there is any.
 func (c *FakeFolderOrganizationPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.FolderOrganizationPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(folderorganizationpoliciesResource, name), &v1alpha1.FolderOrganizationPolicy{})
+		Invokes(testing.NewGetAction(folderorganizationpoliciesResource, c.ns, name), &v1alpha1.FolderOrganizationPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeFolderOrganizationPolicies) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of FolderOrganizationPolicies that match those selectors.
 func (c *FakeFolderOrganizationPolicies) List(opts v1.ListOptions) (result *v1alpha1.FolderOrganizationPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(folderorganizationpoliciesResource, folderorganizationpoliciesKind, opts), &v1alpha1.FolderOrganizationPolicyList{})
+		Invokes(testing.NewListAction(folderorganizationpoliciesResource, folderorganizationpoliciesKind, c.ns, opts), &v1alpha1.FolderOrganizationPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeFolderOrganizationPolicies) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested folderOrganizationPolicies.
 func (c *FakeFolderOrganizationPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(folderorganizationpoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(folderorganizationpoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a folderOrganizationPolicy and creates it.  Returns the server's representation of the folderOrganizationPolicy, and an error, if there is any.
 func (c *FakeFolderOrganizationPolicies) Create(folderOrganizationPolicy *v1alpha1.FolderOrganizationPolicy) (result *v1alpha1.FolderOrganizationPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(folderorganizationpoliciesResource, folderOrganizationPolicy), &v1alpha1.FolderOrganizationPolicy{})
+		Invokes(testing.NewCreateAction(folderorganizationpoliciesResource, c.ns, folderOrganizationPolicy), &v1alpha1.FolderOrganizationPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeFolderOrganizationPolicies) Create(folderOrganizationPolicy *v1alph
 // Update takes the representation of a folderOrganizationPolicy and updates it. Returns the server's representation of the folderOrganizationPolicy, and an error, if there is any.
 func (c *FakeFolderOrganizationPolicies) Update(folderOrganizationPolicy *v1alpha1.FolderOrganizationPolicy) (result *v1alpha1.FolderOrganizationPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(folderorganizationpoliciesResource, folderOrganizationPolicy), &v1alpha1.FolderOrganizationPolicy{})
+		Invokes(testing.NewUpdateAction(folderorganizationpoliciesResource, c.ns, folderOrganizationPolicy), &v1alpha1.FolderOrganizationPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeFolderOrganizationPolicies) Update(folderOrganizationPolicy *v1alph
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeFolderOrganizationPolicies) UpdateStatus(folderOrganizationPolicy *v1alpha1.FolderOrganizationPolicy) (*v1alpha1.FolderOrganizationPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(folderorganizationpoliciesResource, "status", folderOrganizationPolicy), &v1alpha1.FolderOrganizationPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(folderorganizationpoliciesResource, "status", c.ns, folderOrganizationPolicy), &v1alpha1.FolderOrganizationPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeFolderOrganizationPolicies) UpdateStatus(folderOrganizationPolicy *
 // Delete takes name of the folderOrganizationPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeFolderOrganizationPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(folderorganizationpoliciesResource, name), &v1alpha1.FolderOrganizationPolicy{})
+		Invokes(testing.NewDeleteAction(folderorganizationpoliciesResource, c.ns, name), &v1alpha1.FolderOrganizationPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeFolderOrganizationPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(folderorganizationpoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(folderorganizationpoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.FolderOrganizationPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeFolderOrganizationPolicies) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched folderOrganizationPolicy.
 func (c *FakeFolderOrganizationPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FolderOrganizationPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(folderorganizationpoliciesResource, name, pt, data, subresources...), &v1alpha1.FolderOrganizationPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(folderorganizationpoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.FolderOrganizationPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

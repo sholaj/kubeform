@@ -397,25 +397,43 @@ spec:
           type: object
         spec:
           properties:
-            access_log_settings:
-              items: {}
+            accessLogSettings:
+              items:
+                properties:
+                  destinationArn:
+                    type: string
+                  format:
+                    type: string
+                required:
+                - destinationArn
+                - format
+                type: object
               maxItems: 1
               type: array
-            cache_cluster_enabled:
+            cacheClusterEnabled:
               type: boolean
-            cache_cluster_size:
+            cacheClusterSize:
               type: string
-            client_certificate_id:
+            clientCertificateID:
               type: string
-            deployment_id:
+            deploymentID:
               type: string
             description:
               type: string
-            documentation_version:
+            documentationVersion:
               type: string
-            rest_api_id:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            restAPIID:
               type: string
-            stage_name:
+            stageName:
               type: string
             tags:
               additionalProperties:
@@ -425,12 +443,13 @@ spec:
               additionalProperties:
                 type: string
               type: object
-            xray_tracing_enabled:
+            xrayTracingEnabled:
               type: boolean
           required:
-          - deployment_id
-          - rest_api_id
-          - stage_name
+          - deploymentID
+          - providerRef
+          - restAPIID
+          - stageName
           type: object
         status:
           properties:
@@ -441,6 +460,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

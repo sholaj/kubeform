@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// FakeServiceDiscoveryHttpNamespaces implements ServiceDiscoveryHttpNamespaceInterface
-type FakeServiceDiscoveryHttpNamespaces struct {
+// FakeServiceDiscoveryHTTPNamespaces implements ServiceDiscoveryHTTPNamespaceInterface
+type FakeServiceDiscoveryHTTPNamespaces struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var servicediscoveryhttpnamespacesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "servicediscoveryhttpnamespaces"}
 
-var servicediscoveryhttpnamespacesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "ServiceDiscoveryHttpNamespace"}
+var servicediscoveryhttpnamespacesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "ServiceDiscoveryHTTPNamespace"}
 
-// Get takes name of the serviceDiscoveryHttpNamespace, and returns the corresponding serviceDiscoveryHttpNamespace object, and an error if there is any.
-func (c *FakeServiceDiscoveryHttpNamespaces) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceDiscoveryHttpNamespace, err error) {
+// Get takes name of the serviceDiscoveryHTTPNamespace, and returns the corresponding serviceDiscoveryHTTPNamespace object, and an error if there is any.
+func (c *FakeServiceDiscoveryHTTPNamespaces) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceDiscoveryHTTPNamespace, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(servicediscoveryhttpnamespacesResource, name), &v1alpha1.ServiceDiscoveryHttpNamespace{})
+		Invokes(testing.NewGetAction(servicediscoveryhttpnamespacesResource, c.ns, name), &v1alpha1.ServiceDiscoveryHTTPNamespace{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ServiceDiscoveryHttpNamespace), err
+	return obj.(*v1alpha1.ServiceDiscoveryHTTPNamespace), err
 }
 
-// List takes label and field selectors, and returns the list of ServiceDiscoveryHttpNamespaces that match those selectors.
-func (c *FakeServiceDiscoveryHttpNamespaces) List(opts v1.ListOptions) (result *v1alpha1.ServiceDiscoveryHttpNamespaceList, err error) {
+// List takes label and field selectors, and returns the list of ServiceDiscoveryHTTPNamespaces that match those selectors.
+func (c *FakeServiceDiscoveryHTTPNamespaces) List(opts v1.ListOptions) (result *v1alpha1.ServiceDiscoveryHTTPNamespaceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(servicediscoveryhttpnamespacesResource, servicediscoveryhttpnamespacesKind, opts), &v1alpha1.ServiceDiscoveryHttpNamespaceList{})
+		Invokes(testing.NewListAction(servicediscoveryhttpnamespacesResource, servicediscoveryhttpnamespacesKind, c.ns, opts), &v1alpha1.ServiceDiscoveryHTTPNamespaceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeServiceDiscoveryHttpNamespaces) List(opts v1.ListOptions) (result *
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.ServiceDiscoveryHttpNamespaceList{ListMeta: obj.(*v1alpha1.ServiceDiscoveryHttpNamespaceList).ListMeta}
-	for _, item := range obj.(*v1alpha1.ServiceDiscoveryHttpNamespaceList).Items {
+	list := &v1alpha1.ServiceDiscoveryHTTPNamespaceList{ListMeta: obj.(*v1alpha1.ServiceDiscoveryHTTPNamespaceList).ListMeta}
+	for _, item := range obj.(*v1alpha1.ServiceDiscoveryHTTPNamespaceList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeServiceDiscoveryHttpNamespaces) List(opts v1.ListOptions) (result *
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested serviceDiscoveryHttpNamespaces.
-func (c *FakeServiceDiscoveryHttpNamespaces) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested serviceDiscoveryHTTPNamespaces.
+func (c *FakeServiceDiscoveryHTTPNamespaces) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(servicediscoveryhttpnamespacesResource, opts))
+		InvokesWatch(testing.NewWatchAction(servicediscoveryhttpnamespacesResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a serviceDiscoveryHttpNamespace and creates it.  Returns the server's representation of the serviceDiscoveryHttpNamespace, and an error, if there is any.
-func (c *FakeServiceDiscoveryHttpNamespaces) Create(serviceDiscoveryHttpNamespace *v1alpha1.ServiceDiscoveryHttpNamespace) (result *v1alpha1.ServiceDiscoveryHttpNamespace, err error) {
+// Create takes the representation of a serviceDiscoveryHTTPNamespace and creates it.  Returns the server's representation of the serviceDiscoveryHTTPNamespace, and an error, if there is any.
+func (c *FakeServiceDiscoveryHTTPNamespaces) Create(serviceDiscoveryHTTPNamespace *v1alpha1.ServiceDiscoveryHTTPNamespace) (result *v1alpha1.ServiceDiscoveryHTTPNamespace, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(servicediscoveryhttpnamespacesResource, serviceDiscoveryHttpNamespace), &v1alpha1.ServiceDiscoveryHttpNamespace{})
+		Invokes(testing.NewCreateAction(servicediscoveryhttpnamespacesResource, c.ns, serviceDiscoveryHTTPNamespace), &v1alpha1.ServiceDiscoveryHTTPNamespace{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ServiceDiscoveryHttpNamespace), err
+	return obj.(*v1alpha1.ServiceDiscoveryHTTPNamespace), err
 }
 
-// Update takes the representation of a serviceDiscoveryHttpNamespace and updates it. Returns the server's representation of the serviceDiscoveryHttpNamespace, and an error, if there is any.
-func (c *FakeServiceDiscoveryHttpNamespaces) Update(serviceDiscoveryHttpNamespace *v1alpha1.ServiceDiscoveryHttpNamespace) (result *v1alpha1.ServiceDiscoveryHttpNamespace, err error) {
+// Update takes the representation of a serviceDiscoveryHTTPNamespace and updates it. Returns the server's representation of the serviceDiscoveryHTTPNamespace, and an error, if there is any.
+func (c *FakeServiceDiscoveryHTTPNamespaces) Update(serviceDiscoveryHTTPNamespace *v1alpha1.ServiceDiscoveryHTTPNamespace) (result *v1alpha1.ServiceDiscoveryHTTPNamespace, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(servicediscoveryhttpnamespacesResource, serviceDiscoveryHttpNamespace), &v1alpha1.ServiceDiscoveryHttpNamespace{})
+		Invokes(testing.NewUpdateAction(servicediscoveryhttpnamespacesResource, c.ns, serviceDiscoveryHTTPNamespace), &v1alpha1.ServiceDiscoveryHTTPNamespace{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ServiceDiscoveryHttpNamespace), err
+	return obj.(*v1alpha1.ServiceDiscoveryHTTPNamespace), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeServiceDiscoveryHttpNamespaces) UpdateStatus(serviceDiscoveryHttpNamespace *v1alpha1.ServiceDiscoveryHttpNamespace) (*v1alpha1.ServiceDiscoveryHttpNamespace, error) {
+func (c *FakeServiceDiscoveryHTTPNamespaces) UpdateStatus(serviceDiscoveryHTTPNamespace *v1alpha1.ServiceDiscoveryHTTPNamespace) (*v1alpha1.ServiceDiscoveryHTTPNamespace, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(servicediscoveryhttpnamespacesResource, "status", serviceDiscoveryHttpNamespace), &v1alpha1.ServiceDiscoveryHttpNamespace{})
+		Invokes(testing.NewUpdateSubresourceAction(servicediscoveryhttpnamespacesResource, "status", c.ns, serviceDiscoveryHTTPNamespace), &v1alpha1.ServiceDiscoveryHTTPNamespace{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ServiceDiscoveryHttpNamespace), err
+	return obj.(*v1alpha1.ServiceDiscoveryHTTPNamespace), err
 }
 
-// Delete takes name of the serviceDiscoveryHttpNamespace and deletes it. Returns an error if one occurs.
-func (c *FakeServiceDiscoveryHttpNamespaces) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the serviceDiscoveryHTTPNamespace and deletes it. Returns an error if one occurs.
+func (c *FakeServiceDiscoveryHTTPNamespaces) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(servicediscoveryhttpnamespacesResource, name), &v1alpha1.ServiceDiscoveryHttpNamespace{})
+		Invokes(testing.NewDeleteAction(servicediscoveryhttpnamespacesResource, c.ns, name), &v1alpha1.ServiceDiscoveryHTTPNamespace{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeServiceDiscoveryHttpNamespaces) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(servicediscoveryhttpnamespacesResource, listOptions)
+func (c *FakeServiceDiscoveryHTTPNamespaces) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(servicediscoveryhttpnamespacesResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.ServiceDiscoveryHttpNamespaceList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.ServiceDiscoveryHTTPNamespaceList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched serviceDiscoveryHttpNamespace.
-func (c *FakeServiceDiscoveryHttpNamespaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceDiscoveryHttpNamespace, err error) {
+// Patch applies the patch and returns the patched serviceDiscoveryHTTPNamespace.
+func (c *FakeServiceDiscoveryHTTPNamespaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceDiscoveryHTTPNamespace, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(servicediscoveryhttpnamespacesResource, name, pt, data, subresources...), &v1alpha1.ServiceDiscoveryHttpNamespace{})
+		Invokes(testing.NewPatchSubresourceAction(servicediscoveryhttpnamespacesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ServiceDiscoveryHTTPNamespace{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ServiceDiscoveryHttpNamespace), err
+	return obj.(*v1alpha1.ServiceDiscoveryHTTPNamespace), err
 }

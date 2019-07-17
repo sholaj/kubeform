@@ -32,7 +32,7 @@ import (
 // DdosProtectionPlansGetter has a method to return a DdosProtectionPlanInterface.
 // A group's client should implement this interface.
 type DdosProtectionPlansGetter interface {
-	DdosProtectionPlans() DdosProtectionPlanInterface
+	DdosProtectionPlans(namespace string) DdosProtectionPlanInterface
 }
 
 // DdosProtectionPlanInterface has methods to work with DdosProtectionPlan resources.
@@ -52,12 +52,14 @@ type DdosProtectionPlanInterface interface {
 // ddosProtectionPlans implements DdosProtectionPlanInterface
 type ddosProtectionPlans struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDdosProtectionPlans returns a DdosProtectionPlans
-func newDdosProtectionPlans(c *AzurermV1alpha1Client) *ddosProtectionPlans {
+func newDdosProtectionPlans(c *AzurermV1alpha1Client, namespace string) *ddosProtectionPlans {
 	return &ddosProtectionPlans{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDdosProtectionPlans(c *AzurermV1alpha1Client) *ddosProtectionPlans {
 func (c *ddosProtectionPlans) Get(name string, options v1.GetOptions) (result *v1alpha1.DdosProtectionPlan, err error) {
 	result = &v1alpha1.DdosProtectionPlan{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ddosprotectionplans").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ddosProtectionPlans) List(opts v1.ListOptions) (result *v1alpha1.DdosPr
 	}
 	result = &v1alpha1.DdosProtectionPlanList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ddosprotectionplans").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ddosProtectionPlans) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ddosprotectionplans").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ddosProtectionPlans) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *ddosProtectionPlans) Create(ddosProtectionPlan *v1alpha1.DdosProtectionPlan) (result *v1alpha1.DdosProtectionPlan, err error) {
 	result = &v1alpha1.DdosProtectionPlan{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ddosprotectionplans").
 		Body(ddosProtectionPlan).
 		Do().
@@ -118,6 +124,7 @@ func (c *ddosProtectionPlans) Create(ddosProtectionPlan *v1alpha1.DdosProtection
 func (c *ddosProtectionPlans) Update(ddosProtectionPlan *v1alpha1.DdosProtectionPlan) (result *v1alpha1.DdosProtectionPlan, err error) {
 	result = &v1alpha1.DdosProtectionPlan{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ddosprotectionplans").
 		Name(ddosProtectionPlan.Name).
 		Body(ddosProtectionPlan).
@@ -132,6 +139,7 @@ func (c *ddosProtectionPlans) Update(ddosProtectionPlan *v1alpha1.DdosProtection
 func (c *ddosProtectionPlans) UpdateStatus(ddosProtectionPlan *v1alpha1.DdosProtectionPlan) (result *v1alpha1.DdosProtectionPlan, err error) {
 	result = &v1alpha1.DdosProtectionPlan{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ddosprotectionplans").
 		Name(ddosProtectionPlan.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ddosProtectionPlans) UpdateStatus(ddosProtectionPlan *v1alpha1.DdosProt
 // Delete takes name of the ddosProtectionPlan and deletes it. Returns an error if one occurs.
 func (c *ddosProtectionPlans) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ddosprotectionplans").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ddosProtectionPlans) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ddosprotectionplans").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ddosProtectionPlans) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *ddosProtectionPlans) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DdosProtectionPlan, err error) {
 	result = &v1alpha1.DdosProtectionPlan{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ddosprotectionplans").
 		SubResource(subresources...).
 		Name(name).

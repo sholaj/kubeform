@@ -41,32 +41,33 @@ type GuarddutyMemberInformer interface {
 type guarddutyMemberInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewGuarddutyMemberInformer constructs a new informer for GuarddutyMember type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewGuarddutyMemberInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredGuarddutyMemberInformer(client, resyncPeriod, indexers, nil)
+func NewGuarddutyMemberInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredGuarddutyMemberInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredGuarddutyMemberInformer constructs a new informer for GuarddutyMember type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredGuarddutyMemberInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredGuarddutyMemberInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().GuarddutyMembers().List(options)
+				return client.AwsV1alpha1().GuarddutyMembers(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().GuarddutyMembers().Watch(options)
+				return client.AwsV1alpha1().GuarddutyMembers(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.GuarddutyMember{},
@@ -76,7 +77,7 @@ func NewFilteredGuarddutyMemberInformer(client versioned.Interface, resyncPeriod
 }
 
 func (f *guarddutyMemberInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredGuarddutyMemberInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredGuarddutyMemberInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *guarddutyMemberInformer) Informer() cache.SharedIndexInformer {

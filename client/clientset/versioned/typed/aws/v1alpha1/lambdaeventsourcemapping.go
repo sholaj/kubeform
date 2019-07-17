@@ -32,7 +32,7 @@ import (
 // LambdaEventSourceMappingsGetter has a method to return a LambdaEventSourceMappingInterface.
 // A group's client should implement this interface.
 type LambdaEventSourceMappingsGetter interface {
-	LambdaEventSourceMappings() LambdaEventSourceMappingInterface
+	LambdaEventSourceMappings(namespace string) LambdaEventSourceMappingInterface
 }
 
 // LambdaEventSourceMappingInterface has methods to work with LambdaEventSourceMapping resources.
@@ -52,12 +52,14 @@ type LambdaEventSourceMappingInterface interface {
 // lambdaEventSourceMappings implements LambdaEventSourceMappingInterface
 type lambdaEventSourceMappings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLambdaEventSourceMappings returns a LambdaEventSourceMappings
-func newLambdaEventSourceMappings(c *AwsV1alpha1Client) *lambdaEventSourceMappings {
+func newLambdaEventSourceMappings(c *AwsV1alpha1Client, namespace string) *lambdaEventSourceMappings {
 	return &lambdaEventSourceMappings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLambdaEventSourceMappings(c *AwsV1alpha1Client) *lambdaEventSourceMappin
 func (c *lambdaEventSourceMappings) Get(name string, options v1.GetOptions) (result *v1alpha1.LambdaEventSourceMapping, err error) {
 	result = &v1alpha1.LambdaEventSourceMapping{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lambdaeventsourcemappings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lambdaEventSourceMappings) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.LambdaEventSourceMappingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lambdaeventsourcemappings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lambdaEventSourceMappings) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lambdaeventsourcemappings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lambdaEventSourceMappings) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *lambdaEventSourceMappings) Create(lambdaEventSourceMapping *v1alpha1.LambdaEventSourceMapping) (result *v1alpha1.LambdaEventSourceMapping, err error) {
 	result = &v1alpha1.LambdaEventSourceMapping{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lambdaeventsourcemappings").
 		Body(lambdaEventSourceMapping).
 		Do().
@@ -118,6 +124,7 @@ func (c *lambdaEventSourceMappings) Create(lambdaEventSourceMapping *v1alpha1.La
 func (c *lambdaEventSourceMappings) Update(lambdaEventSourceMapping *v1alpha1.LambdaEventSourceMapping) (result *v1alpha1.LambdaEventSourceMapping, err error) {
 	result = &v1alpha1.LambdaEventSourceMapping{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lambdaeventsourcemappings").
 		Name(lambdaEventSourceMapping.Name).
 		Body(lambdaEventSourceMapping).
@@ -132,6 +139,7 @@ func (c *lambdaEventSourceMappings) Update(lambdaEventSourceMapping *v1alpha1.La
 func (c *lambdaEventSourceMappings) UpdateStatus(lambdaEventSourceMapping *v1alpha1.LambdaEventSourceMapping) (result *v1alpha1.LambdaEventSourceMapping, err error) {
 	result = &v1alpha1.LambdaEventSourceMapping{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lambdaeventsourcemappings").
 		Name(lambdaEventSourceMapping.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lambdaEventSourceMappings) UpdateStatus(lambdaEventSourceMapping *v1alp
 // Delete takes name of the lambdaEventSourceMapping and deletes it. Returns an error if one occurs.
 func (c *lambdaEventSourceMappings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lambdaeventsourcemappings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lambdaEventSourceMappings) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lambdaeventsourcemappings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lambdaEventSourceMappings) DeleteCollection(options *v1.DeleteOptions, 
 func (c *lambdaEventSourceMappings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LambdaEventSourceMapping, err error) {
 	result = &v1alpha1.LambdaEventSourceMapping{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lambdaeventsourcemappings").
 		SubResource(subresources...).
 		Name(name).

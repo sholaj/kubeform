@@ -31,6 +31,7 @@ import (
 // FakeDbClusterSnapshots implements DbClusterSnapshotInterface
 type FakeDbClusterSnapshots struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var dbclustersnapshotsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "dbclustersnapshots"}
@@ -40,7 +41,8 @@ var dbclustersnapshotsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", 
 // Get takes name of the dbClusterSnapshot, and returns the corresponding dbClusterSnapshot object, and an error if there is any.
 func (c *FakeDbClusterSnapshots) Get(name string, options v1.GetOptions) (result *v1alpha1.DbClusterSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(dbclustersnapshotsResource, name), &v1alpha1.DbClusterSnapshot{})
+		Invokes(testing.NewGetAction(dbclustersnapshotsResource, c.ns, name), &v1alpha1.DbClusterSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDbClusterSnapshots) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of DbClusterSnapshots that match those selectors.
 func (c *FakeDbClusterSnapshots) List(opts v1.ListOptions) (result *v1alpha1.DbClusterSnapshotList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(dbclustersnapshotsResource, dbclustersnapshotsKind, opts), &v1alpha1.DbClusterSnapshotList{})
+		Invokes(testing.NewListAction(dbclustersnapshotsResource, dbclustersnapshotsKind, c.ns, opts), &v1alpha1.DbClusterSnapshotList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDbClusterSnapshots) List(opts v1.ListOptions) (result *v1alpha1.DbC
 // Watch returns a watch.Interface that watches the requested dbClusterSnapshots.
 func (c *FakeDbClusterSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(dbclustersnapshotsResource, opts))
+		InvokesWatch(testing.NewWatchAction(dbclustersnapshotsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dbClusterSnapshot and creates it.  Returns the server's representation of the dbClusterSnapshot, and an error, if there is any.
 func (c *FakeDbClusterSnapshots) Create(dbClusterSnapshot *v1alpha1.DbClusterSnapshot) (result *v1alpha1.DbClusterSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(dbclustersnapshotsResource, dbClusterSnapshot), &v1alpha1.DbClusterSnapshot{})
+		Invokes(testing.NewCreateAction(dbclustersnapshotsResource, c.ns, dbClusterSnapshot), &v1alpha1.DbClusterSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDbClusterSnapshots) Create(dbClusterSnapshot *v1alpha1.DbClusterSna
 // Update takes the representation of a dbClusterSnapshot and updates it. Returns the server's representation of the dbClusterSnapshot, and an error, if there is any.
 func (c *FakeDbClusterSnapshots) Update(dbClusterSnapshot *v1alpha1.DbClusterSnapshot) (result *v1alpha1.DbClusterSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(dbclustersnapshotsResource, dbClusterSnapshot), &v1alpha1.DbClusterSnapshot{})
+		Invokes(testing.NewUpdateAction(dbclustersnapshotsResource, c.ns, dbClusterSnapshot), &v1alpha1.DbClusterSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDbClusterSnapshots) Update(dbClusterSnapshot *v1alpha1.DbClusterSna
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDbClusterSnapshots) UpdateStatus(dbClusterSnapshot *v1alpha1.DbClusterSnapshot) (*v1alpha1.DbClusterSnapshot, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(dbclustersnapshotsResource, "status", dbClusterSnapshot), &v1alpha1.DbClusterSnapshot{})
+		Invokes(testing.NewUpdateSubresourceAction(dbclustersnapshotsResource, "status", c.ns, dbClusterSnapshot), &v1alpha1.DbClusterSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDbClusterSnapshots) UpdateStatus(dbClusterSnapshot *v1alpha1.DbClus
 // Delete takes name of the dbClusterSnapshot and deletes it. Returns an error if one occurs.
 func (c *FakeDbClusterSnapshots) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(dbclustersnapshotsResource, name), &v1alpha1.DbClusterSnapshot{})
+		Invokes(testing.NewDeleteAction(dbclustersnapshotsResource, c.ns, name), &v1alpha1.DbClusterSnapshot{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDbClusterSnapshots) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(dbclustersnapshotsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(dbclustersnapshotsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DbClusterSnapshotList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDbClusterSnapshots) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched dbClusterSnapshot.
 func (c *FakeDbClusterSnapshots) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DbClusterSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(dbclustersnapshotsResource, name, pt, data, subresources...), &v1alpha1.DbClusterSnapshot{})
+		Invokes(testing.NewPatchSubresourceAction(dbclustersnapshotsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DbClusterSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -397,27 +397,73 @@ spec:
           type: object
         spec:
           properties:
-            approval_rule:
-              items: {}
+            approvalRule:
+              items:
+                properties:
+                  approveAfterDays:
+                    type: integer
+                  complianceLevel:
+                    type: string
+                  enableNonSecurity:
+                    type: boolean
+                  patchFilter:
+                    items:
+                      properties:
+                        key:
+                          type: string
+                        values:
+                          items:
+                            type: string
+                          type: array
+                      required:
+                      - key
+                      - values
+                      type: object
+                    maxItems: 10
+                    type: array
+                required:
+                - approveAfterDays
+                - patchFilter
+                type: object
               type: array
-            approved_patches:
+            approvedPatches:
               items:
                 type: string
               type: array
               uniqueItems: true
-            approved_patches_compliance_level:
+            approvedPatchesComplianceLevel:
               type: string
             description:
               type: string
-            global_filter:
-              items: {}
+            globalFilter:
+              items:
+                properties:
+                  key:
+                    type: string
+                  values:
+                    items:
+                      type: string
+                    type: array
+                required:
+                - key
+                - values
+                type: object
               maxItems: 4
               type: array
             name:
               type: string
-            operating_system:
+            operatingSystem:
               type: string
-            rejected_patches:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            rejectedPatches:
               items:
                 type: string
               type: array
@@ -428,6 +474,7 @@ spec:
               type: object
           required:
           - name
+          - providerRef
           type: object
         status:
           properties:
@@ -438,6 +485,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

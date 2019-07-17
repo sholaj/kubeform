@@ -32,7 +32,7 @@ import (
 // HdinsightHbaseClustersGetter has a method to return a HdinsightHbaseClusterInterface.
 // A group's client should implement this interface.
 type HdinsightHbaseClustersGetter interface {
-	HdinsightHbaseClusters() HdinsightHbaseClusterInterface
+	HdinsightHbaseClusters(namespace string) HdinsightHbaseClusterInterface
 }
 
 // HdinsightHbaseClusterInterface has methods to work with HdinsightHbaseCluster resources.
@@ -52,12 +52,14 @@ type HdinsightHbaseClusterInterface interface {
 // hdinsightHbaseClusters implements HdinsightHbaseClusterInterface
 type hdinsightHbaseClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newHdinsightHbaseClusters returns a HdinsightHbaseClusters
-func newHdinsightHbaseClusters(c *AzurermV1alpha1Client) *hdinsightHbaseClusters {
+func newHdinsightHbaseClusters(c *AzurermV1alpha1Client, namespace string) *hdinsightHbaseClusters {
 	return &hdinsightHbaseClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newHdinsightHbaseClusters(c *AzurermV1alpha1Client) *hdinsightHbaseClusters
 func (c *hdinsightHbaseClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.HdinsightHbaseCluster, err error) {
 	result = &v1alpha1.HdinsightHbaseCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("hdinsighthbaseclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *hdinsightHbaseClusters) List(opts v1.ListOptions) (result *v1alpha1.Hdi
 	}
 	result = &v1alpha1.HdinsightHbaseClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("hdinsighthbaseclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *hdinsightHbaseClusters) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("hdinsighthbaseclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *hdinsightHbaseClusters) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *hdinsightHbaseClusters) Create(hdinsightHbaseCluster *v1alpha1.HdinsightHbaseCluster) (result *v1alpha1.HdinsightHbaseCluster, err error) {
 	result = &v1alpha1.HdinsightHbaseCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("hdinsighthbaseclusters").
 		Body(hdinsightHbaseCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *hdinsightHbaseClusters) Create(hdinsightHbaseCluster *v1alpha1.Hdinsigh
 func (c *hdinsightHbaseClusters) Update(hdinsightHbaseCluster *v1alpha1.HdinsightHbaseCluster) (result *v1alpha1.HdinsightHbaseCluster, err error) {
 	result = &v1alpha1.HdinsightHbaseCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("hdinsighthbaseclusters").
 		Name(hdinsightHbaseCluster.Name).
 		Body(hdinsightHbaseCluster).
@@ -132,6 +139,7 @@ func (c *hdinsightHbaseClusters) Update(hdinsightHbaseCluster *v1alpha1.Hdinsigh
 func (c *hdinsightHbaseClusters) UpdateStatus(hdinsightHbaseCluster *v1alpha1.HdinsightHbaseCluster) (result *v1alpha1.HdinsightHbaseCluster, err error) {
 	result = &v1alpha1.HdinsightHbaseCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("hdinsighthbaseclusters").
 		Name(hdinsightHbaseCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *hdinsightHbaseClusters) UpdateStatus(hdinsightHbaseCluster *v1alpha1.Hd
 // Delete takes name of the hdinsightHbaseCluster and deletes it. Returns an error if one occurs.
 func (c *hdinsightHbaseClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("hdinsighthbaseclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *hdinsightHbaseClusters) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("hdinsighthbaseclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *hdinsightHbaseClusters) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *hdinsightHbaseClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.HdinsightHbaseCluster, err error) {
 	result = &v1alpha1.HdinsightHbaseCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("hdinsighthbaseclusters").
 		SubResource(subresources...).
 		Name(name).

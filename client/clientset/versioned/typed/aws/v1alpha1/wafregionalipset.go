@@ -32,7 +32,7 @@ import (
 // WafregionalIpsetsGetter has a method to return a WafregionalIpsetInterface.
 // A group's client should implement this interface.
 type WafregionalIpsetsGetter interface {
-	WafregionalIpsets() WafregionalIpsetInterface
+	WafregionalIpsets(namespace string) WafregionalIpsetInterface
 }
 
 // WafregionalIpsetInterface has methods to work with WafregionalIpset resources.
@@ -52,12 +52,14 @@ type WafregionalIpsetInterface interface {
 // wafregionalIpsets implements WafregionalIpsetInterface
 type wafregionalIpsets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWafregionalIpsets returns a WafregionalIpsets
-func newWafregionalIpsets(c *AwsV1alpha1Client) *wafregionalIpsets {
+func newWafregionalIpsets(c *AwsV1alpha1Client, namespace string) *wafregionalIpsets {
 	return &wafregionalIpsets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWafregionalIpsets(c *AwsV1alpha1Client) *wafregionalIpsets {
 func (c *wafregionalIpsets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalIpset, err error) {
 	result = &v1alpha1.WafregionalIpset{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalipsets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *wafregionalIpsets) List(opts v1.ListOptions) (result *v1alpha1.Wafregio
 	}
 	result = &v1alpha1.WafregionalIpsetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalipsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *wafregionalIpsets) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalipsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *wafregionalIpsets) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *wafregionalIpsets) Create(wafregionalIpset *v1alpha1.WafregionalIpset) (result *v1alpha1.WafregionalIpset, err error) {
 	result = &v1alpha1.WafregionalIpset{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafregionalipsets").
 		Body(wafregionalIpset).
 		Do().
@@ -118,6 +124,7 @@ func (c *wafregionalIpsets) Create(wafregionalIpset *v1alpha1.WafregionalIpset) 
 func (c *wafregionalIpsets) Update(wafregionalIpset *v1alpha1.WafregionalIpset) (result *v1alpha1.WafregionalIpset, err error) {
 	result = &v1alpha1.WafregionalIpset{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregionalipsets").
 		Name(wafregionalIpset.Name).
 		Body(wafregionalIpset).
@@ -132,6 +139,7 @@ func (c *wafregionalIpsets) Update(wafregionalIpset *v1alpha1.WafregionalIpset) 
 func (c *wafregionalIpsets) UpdateStatus(wafregionalIpset *v1alpha1.WafregionalIpset) (result *v1alpha1.WafregionalIpset, err error) {
 	result = &v1alpha1.WafregionalIpset{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregionalipsets").
 		Name(wafregionalIpset.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *wafregionalIpsets) UpdateStatus(wafregionalIpset *v1alpha1.WafregionalI
 // Delete takes name of the wafregionalIpset and deletes it. Returns an error if one occurs.
 func (c *wafregionalIpsets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregionalipsets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *wafregionalIpsets) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregionalipsets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *wafregionalIpsets) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *wafregionalIpsets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalIpset, err error) {
 	result = &v1alpha1.WafregionalIpset{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafregionalipsets").
 		SubResource(subresources...).
 		Name(name).

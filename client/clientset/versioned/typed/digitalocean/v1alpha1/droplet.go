@@ -32,7 +32,7 @@ import (
 // DropletsGetter has a method to return a DropletInterface.
 // A group's client should implement this interface.
 type DropletsGetter interface {
-	Droplets() DropletInterface
+	Droplets(namespace string) DropletInterface
 }
 
 // DropletInterface has methods to work with Droplet resources.
@@ -52,12 +52,14 @@ type DropletInterface interface {
 // droplets implements DropletInterface
 type droplets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDroplets returns a Droplets
-func newDroplets(c *DigitaloceanV1alpha1Client) *droplets {
+func newDroplets(c *DigitaloceanV1alpha1Client, namespace string) *droplets {
 	return &droplets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDroplets(c *DigitaloceanV1alpha1Client) *droplets {
 func (c *droplets) Get(name string, options v1.GetOptions) (result *v1alpha1.Droplet, err error) {
 	result = &v1alpha1.Droplet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("droplets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *droplets) List(opts v1.ListOptions) (result *v1alpha1.DropletList, err 
 	}
 	result = &v1alpha1.DropletList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("droplets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *droplets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("droplets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *droplets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *droplets) Create(droplet *v1alpha1.Droplet) (result *v1alpha1.Droplet, err error) {
 	result = &v1alpha1.Droplet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("droplets").
 		Body(droplet).
 		Do().
@@ -118,6 +124,7 @@ func (c *droplets) Create(droplet *v1alpha1.Droplet) (result *v1alpha1.Droplet, 
 func (c *droplets) Update(droplet *v1alpha1.Droplet) (result *v1alpha1.Droplet, err error) {
 	result = &v1alpha1.Droplet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("droplets").
 		Name(droplet.Name).
 		Body(droplet).
@@ -132,6 +139,7 @@ func (c *droplets) Update(droplet *v1alpha1.Droplet) (result *v1alpha1.Droplet, 
 func (c *droplets) UpdateStatus(droplet *v1alpha1.Droplet) (result *v1alpha1.Droplet, err error) {
 	result = &v1alpha1.Droplet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("droplets").
 		Name(droplet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *droplets) UpdateStatus(droplet *v1alpha1.Droplet) (result *v1alpha1.Dro
 // Delete takes name of the droplet and deletes it. Returns an error if one occurs.
 func (c *droplets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("droplets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *droplets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("droplets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *droplets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 func (c *droplets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Droplet, err error) {
 	result = &v1alpha1.Droplet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("droplets").
 		SubResource(subresources...).
 		Name(name).

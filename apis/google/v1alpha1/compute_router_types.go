@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -18,31 +18,32 @@ type ComputeRouter struct {
 	Status            ComputeRouterStatus `json:"status,omitempty"`
 }
 
-type ComputeRouterSpecBgpAdvertisedIpRanges struct {
+type ComputeRouterSpecBgpAdvertisedIPRanges struct {
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	Range string `json:"range,omitempty"`
+	Range string `json:"range,omitempty" tf:"range,omitempty"`
 }
 
 type ComputeRouterSpecBgp struct {
 	// +optional
-	AdvertiseMode string `json:"advertise_mode,omitempty"`
+	AdvertiseMode string `json:"advertiseMode,omitempty" tf:"advertise_mode,omitempty"`
 	// +optional
-	AdvertisedGroups []string `json:"advertised_groups,omitempty"`
+	AdvertisedGroups []string `json:"advertisedGroups,omitempty" tf:"advertised_groups,omitempty"`
 	// +optional
-	AdvertisedIpRanges *[]ComputeRouterSpecBgp `json:"advertised_ip_ranges,omitempty"`
-	Asn                int                     `json:"asn"`
+	AdvertisedIPRanges []ComputeRouterSpecBgpAdvertisedIPRanges `json:"advertisedIPRanges,omitempty" tf:"advertised_ip_ranges,omitempty"`
+	Asn                int                                      `json:"asn" tf:"asn"`
 }
 
 type ComputeRouterSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Bgp *[]ComputeRouterSpec `json:"bgp,omitempty"`
+	Bgp []ComputeRouterSpecBgp `json:"bgp,omitempty" tf:"bgp,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
-	Name        string `json:"name"`
-	Network     string `json:"network"`
+	Description string                    `json:"description,omitempty" tf:"description,omitempty"`
+	Name        string                    `json:"name" tf:"name"`
+	Network     string                    `json:"network" tf:"network"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ComputeRouterStatus struct {
@@ -50,7 +51,9 @@ type ComputeRouterStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

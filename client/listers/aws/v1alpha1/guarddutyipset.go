@@ -29,8 +29,8 @@ import (
 type GuarddutyIpsetLister interface {
 	// List lists all GuarddutyIpsets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GuarddutyIpset, err error)
-	// Get retrieves the GuarddutyIpset from the index for a given name.
-	Get(name string) (*v1alpha1.GuarddutyIpset, error)
+	// GuarddutyIpsets returns an object that can list and get GuarddutyIpsets.
+	GuarddutyIpsets(namespace string) GuarddutyIpsetNamespaceLister
 	GuarddutyIpsetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *guarddutyIpsetLister) List(selector labels.Selector) (ret []*v1alpha1.G
 	return ret, err
 }
 
-// Get retrieves the GuarddutyIpset from the index for a given name.
-func (s *guarddutyIpsetLister) Get(name string) (*v1alpha1.GuarddutyIpset, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GuarddutyIpsets returns an object that can list and get GuarddutyIpsets.
+func (s *guarddutyIpsetLister) GuarddutyIpsets(namespace string) GuarddutyIpsetNamespaceLister {
+	return guarddutyIpsetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GuarddutyIpsetNamespaceLister helps list and get GuarddutyIpsets.
+type GuarddutyIpsetNamespaceLister interface {
+	// List lists all GuarddutyIpsets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GuarddutyIpset, err error)
+	// Get retrieves the GuarddutyIpset from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GuarddutyIpset, error)
+	GuarddutyIpsetNamespaceListerExpansion
+}
+
+// guarddutyIpsetNamespaceLister implements the GuarddutyIpsetNamespaceLister
+// interface.
+type guarddutyIpsetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GuarddutyIpsets in the indexer for a given namespace.
+func (s guarddutyIpsetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GuarddutyIpset, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GuarddutyIpset))
+	})
+	return ret, err
+}
+
+// Get retrieves the GuarddutyIpset from the indexer for a given namespace and name.
+func (s guarddutyIpsetNamespaceLister) Get(name string) (*v1alpha1.GuarddutyIpset, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

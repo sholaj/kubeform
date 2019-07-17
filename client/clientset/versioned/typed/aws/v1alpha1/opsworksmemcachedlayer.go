@@ -32,7 +32,7 @@ import (
 // OpsworksMemcachedLayersGetter has a method to return a OpsworksMemcachedLayerInterface.
 // A group's client should implement this interface.
 type OpsworksMemcachedLayersGetter interface {
-	OpsworksMemcachedLayers() OpsworksMemcachedLayerInterface
+	OpsworksMemcachedLayers(namespace string) OpsworksMemcachedLayerInterface
 }
 
 // OpsworksMemcachedLayerInterface has methods to work with OpsworksMemcachedLayer resources.
@@ -52,12 +52,14 @@ type OpsworksMemcachedLayerInterface interface {
 // opsworksMemcachedLayers implements OpsworksMemcachedLayerInterface
 type opsworksMemcachedLayers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOpsworksMemcachedLayers returns a OpsworksMemcachedLayers
-func newOpsworksMemcachedLayers(c *AwsV1alpha1Client) *opsworksMemcachedLayers {
+func newOpsworksMemcachedLayers(c *AwsV1alpha1Client, namespace string) *opsworksMemcachedLayers {
 	return &opsworksMemcachedLayers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOpsworksMemcachedLayers(c *AwsV1alpha1Client) *opsworksMemcachedLayers {
 func (c *opsworksMemcachedLayers) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksMemcachedLayer, err error) {
 	result = &v1alpha1.OpsworksMemcachedLayer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksmemcachedlayers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *opsworksMemcachedLayers) List(opts v1.ListOptions) (result *v1alpha1.Op
 	}
 	result = &v1alpha1.OpsworksMemcachedLayerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksmemcachedlayers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *opsworksMemcachedLayers) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksmemcachedlayers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *opsworksMemcachedLayers) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *opsworksMemcachedLayers) Create(opsworksMemcachedLayer *v1alpha1.OpsworksMemcachedLayer) (result *v1alpha1.OpsworksMemcachedLayer, err error) {
 	result = &v1alpha1.OpsworksMemcachedLayer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("opsworksmemcachedlayers").
 		Body(opsworksMemcachedLayer).
 		Do().
@@ -118,6 +124,7 @@ func (c *opsworksMemcachedLayers) Create(opsworksMemcachedLayer *v1alpha1.Opswor
 func (c *opsworksMemcachedLayers) Update(opsworksMemcachedLayer *v1alpha1.OpsworksMemcachedLayer) (result *v1alpha1.OpsworksMemcachedLayer, err error) {
 	result = &v1alpha1.OpsworksMemcachedLayer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksmemcachedlayers").
 		Name(opsworksMemcachedLayer.Name).
 		Body(opsworksMemcachedLayer).
@@ -132,6 +139,7 @@ func (c *opsworksMemcachedLayers) Update(opsworksMemcachedLayer *v1alpha1.Opswor
 func (c *opsworksMemcachedLayers) UpdateStatus(opsworksMemcachedLayer *v1alpha1.OpsworksMemcachedLayer) (result *v1alpha1.OpsworksMemcachedLayer, err error) {
 	result = &v1alpha1.OpsworksMemcachedLayer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksmemcachedlayers").
 		Name(opsworksMemcachedLayer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *opsworksMemcachedLayers) UpdateStatus(opsworksMemcachedLayer *v1alpha1.
 // Delete takes name of the opsworksMemcachedLayer and deletes it. Returns an error if one occurs.
 func (c *opsworksMemcachedLayers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksmemcachedlayers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *opsworksMemcachedLayers) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksmemcachedlayers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *opsworksMemcachedLayers) DeleteCollection(options *v1.DeleteOptions, li
 func (c *opsworksMemcachedLayers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksMemcachedLayer, err error) {
 	result = &v1alpha1.OpsworksMemcachedLayer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("opsworksmemcachedlayers").
 		SubResource(subresources...).
 		Name(name).

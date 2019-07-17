@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// FakeApiManagementProductApis implements ApiManagementProductApiInterface
-type FakeApiManagementProductApis struct {
+// FakeApiManagementProductAPIs implements ApiManagementProductAPIInterface
+type FakeApiManagementProductAPIs struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var apimanagementproductapisResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "apimanagementproductapis"}
 
-var apimanagementproductapisKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "ApiManagementProductApi"}
+var apimanagementproductapisKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "ApiManagementProductAPI"}
 
-// Get takes name of the apiManagementProductApi, and returns the corresponding apiManagementProductApi object, and an error if there is any.
-func (c *FakeApiManagementProductApis) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementProductApi, err error) {
+// Get takes name of the apiManagementProductAPI, and returns the corresponding apiManagementProductAPI object, and an error if there is any.
+func (c *FakeApiManagementProductAPIs) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementProductAPI, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apimanagementproductapisResource, name), &v1alpha1.ApiManagementProductApi{})
+		Invokes(testing.NewGetAction(apimanagementproductapisResource, c.ns, name), &v1alpha1.ApiManagementProductAPI{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiManagementProductApi), err
+	return obj.(*v1alpha1.ApiManagementProductAPI), err
 }
 
-// List takes label and field selectors, and returns the list of ApiManagementProductApis that match those selectors.
-func (c *FakeApiManagementProductApis) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementProductApiList, err error) {
+// List takes label and field selectors, and returns the list of ApiManagementProductAPIs that match those selectors.
+func (c *FakeApiManagementProductAPIs) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementProductAPIList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apimanagementproductapisResource, apimanagementproductapisKind, opts), &v1alpha1.ApiManagementProductApiList{})
+		Invokes(testing.NewListAction(apimanagementproductapisResource, apimanagementproductapisKind, c.ns, opts), &v1alpha1.ApiManagementProductAPIList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeApiManagementProductApis) List(opts v1.ListOptions) (result *v1alph
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.ApiManagementProductApiList{ListMeta: obj.(*v1alpha1.ApiManagementProductApiList).ListMeta}
-	for _, item := range obj.(*v1alpha1.ApiManagementProductApiList).Items {
+	list := &v1alpha1.ApiManagementProductAPIList{ListMeta: obj.(*v1alpha1.ApiManagementProductAPIList).ListMeta}
+	for _, item := range obj.(*v1alpha1.ApiManagementProductAPIList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeApiManagementProductApis) List(opts v1.ListOptions) (result *v1alph
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested apiManagementProductApis.
-func (c *FakeApiManagementProductApis) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested apiManagementProductAPIs.
+func (c *FakeApiManagementProductAPIs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apimanagementproductapisResource, opts))
+		InvokesWatch(testing.NewWatchAction(apimanagementproductapisResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a apiManagementProductApi and creates it.  Returns the server's representation of the apiManagementProductApi, and an error, if there is any.
-func (c *FakeApiManagementProductApis) Create(apiManagementProductApi *v1alpha1.ApiManagementProductApi) (result *v1alpha1.ApiManagementProductApi, err error) {
+// Create takes the representation of a apiManagementProductAPI and creates it.  Returns the server's representation of the apiManagementProductAPI, and an error, if there is any.
+func (c *FakeApiManagementProductAPIs) Create(apiManagementProductAPI *v1alpha1.ApiManagementProductAPI) (result *v1alpha1.ApiManagementProductAPI, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apimanagementproductapisResource, apiManagementProductApi), &v1alpha1.ApiManagementProductApi{})
+		Invokes(testing.NewCreateAction(apimanagementproductapisResource, c.ns, apiManagementProductAPI), &v1alpha1.ApiManagementProductAPI{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiManagementProductApi), err
+	return obj.(*v1alpha1.ApiManagementProductAPI), err
 }
 
-// Update takes the representation of a apiManagementProductApi and updates it. Returns the server's representation of the apiManagementProductApi, and an error, if there is any.
-func (c *FakeApiManagementProductApis) Update(apiManagementProductApi *v1alpha1.ApiManagementProductApi) (result *v1alpha1.ApiManagementProductApi, err error) {
+// Update takes the representation of a apiManagementProductAPI and updates it. Returns the server's representation of the apiManagementProductAPI, and an error, if there is any.
+func (c *FakeApiManagementProductAPIs) Update(apiManagementProductAPI *v1alpha1.ApiManagementProductAPI) (result *v1alpha1.ApiManagementProductAPI, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apimanagementproductapisResource, apiManagementProductApi), &v1alpha1.ApiManagementProductApi{})
+		Invokes(testing.NewUpdateAction(apimanagementproductapisResource, c.ns, apiManagementProductAPI), &v1alpha1.ApiManagementProductAPI{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiManagementProductApi), err
+	return obj.(*v1alpha1.ApiManagementProductAPI), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeApiManagementProductApis) UpdateStatus(apiManagementProductApi *v1alpha1.ApiManagementProductApi) (*v1alpha1.ApiManagementProductApi, error) {
+func (c *FakeApiManagementProductAPIs) UpdateStatus(apiManagementProductAPI *v1alpha1.ApiManagementProductAPI) (*v1alpha1.ApiManagementProductAPI, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apimanagementproductapisResource, "status", apiManagementProductApi), &v1alpha1.ApiManagementProductApi{})
+		Invokes(testing.NewUpdateSubresourceAction(apimanagementproductapisResource, "status", c.ns, apiManagementProductAPI), &v1alpha1.ApiManagementProductAPI{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiManagementProductApi), err
+	return obj.(*v1alpha1.ApiManagementProductAPI), err
 }
 
-// Delete takes name of the apiManagementProductApi and deletes it. Returns an error if one occurs.
-func (c *FakeApiManagementProductApis) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the apiManagementProductAPI and deletes it. Returns an error if one occurs.
+func (c *FakeApiManagementProductAPIs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apimanagementproductapisResource, name), &v1alpha1.ApiManagementProductApi{})
+		Invokes(testing.NewDeleteAction(apimanagementproductapisResource, c.ns, name), &v1alpha1.ApiManagementProductAPI{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeApiManagementProductApis) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apimanagementproductapisResource, listOptions)
+func (c *FakeApiManagementProductAPIs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(apimanagementproductapisResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.ApiManagementProductApiList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.ApiManagementProductAPIList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched apiManagementProductApi.
-func (c *FakeApiManagementProductApis) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementProductApi, err error) {
+// Patch applies the patch and returns the patched apiManagementProductAPI.
+func (c *FakeApiManagementProductAPIs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementProductAPI, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apimanagementproductapisResource, name, pt, data, subresources...), &v1alpha1.ApiManagementProductApi{})
+		Invokes(testing.NewPatchSubresourceAction(apimanagementproductapisResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiManagementProductAPI{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiManagementProductApi), err
+	return obj.(*v1alpha1.ApiManagementProductAPI), err
 }

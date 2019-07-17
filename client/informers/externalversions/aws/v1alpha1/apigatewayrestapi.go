@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// ApiGatewayRestApiInformer provides access to a shared informer and lister for
-// ApiGatewayRestApis.
-type ApiGatewayRestApiInformer interface {
+// ApiGatewayRestAPIInformer provides access to a shared informer and lister for
+// ApiGatewayRestAPIs.
+type ApiGatewayRestAPIInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.ApiGatewayRestApiLister
+	Lister() v1alpha1.ApiGatewayRestAPILister
 }
 
-type apiGatewayRestApiInformer struct {
+type apiGatewayRestAPIInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewApiGatewayRestApiInformer constructs a new informer for ApiGatewayRestApi type.
+// NewApiGatewayRestAPIInformer constructs a new informer for ApiGatewayRestAPI type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewApiGatewayRestApiInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredApiGatewayRestApiInformer(client, resyncPeriod, indexers, nil)
+func NewApiGatewayRestAPIInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredApiGatewayRestAPIInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredApiGatewayRestApiInformer constructs a new informer for ApiGatewayRestApi type.
+// NewFilteredApiGatewayRestAPIInformer constructs a new informer for ApiGatewayRestAPI type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredApiGatewayRestApiInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredApiGatewayRestAPIInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ApiGatewayRestApis().List(options)
+				return client.AwsV1alpha1().ApiGatewayRestAPIs(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ApiGatewayRestApis().Watch(options)
+				return client.AwsV1alpha1().ApiGatewayRestAPIs(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.ApiGatewayRestApi{},
+		&awsv1alpha1.ApiGatewayRestAPI{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *apiGatewayRestApiInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredApiGatewayRestApiInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *apiGatewayRestAPIInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredApiGatewayRestAPIInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *apiGatewayRestApiInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.ApiGatewayRestApi{}, f.defaultInformer)
+func (f *apiGatewayRestAPIInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.ApiGatewayRestAPI{}, f.defaultInformer)
 }
 
-func (f *apiGatewayRestApiInformer) Lister() v1alpha1.ApiGatewayRestApiLister {
-	return v1alpha1.NewApiGatewayRestApiLister(f.Informer().GetIndexer())
+func (f *apiGatewayRestAPIInformer) Lister() v1alpha1.ApiGatewayRestAPILister {
+	return v1alpha1.NewApiGatewayRestAPILister(f.Informer().GetIndexer())
 }

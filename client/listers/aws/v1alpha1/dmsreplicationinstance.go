@@ -29,8 +29,8 @@ import (
 type DmsReplicationInstanceLister interface {
 	// List lists all DmsReplicationInstances in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DmsReplicationInstance, err error)
-	// Get retrieves the DmsReplicationInstance from the index for a given name.
-	Get(name string) (*v1alpha1.DmsReplicationInstance, error)
+	// DmsReplicationInstances returns an object that can list and get DmsReplicationInstances.
+	DmsReplicationInstances(namespace string) DmsReplicationInstanceNamespaceLister
 	DmsReplicationInstanceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dmsReplicationInstanceLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the DmsReplicationInstance from the index for a given name.
-func (s *dmsReplicationInstanceLister) Get(name string) (*v1alpha1.DmsReplicationInstance, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DmsReplicationInstances returns an object that can list and get DmsReplicationInstances.
+func (s *dmsReplicationInstanceLister) DmsReplicationInstances(namespace string) DmsReplicationInstanceNamespaceLister {
+	return dmsReplicationInstanceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DmsReplicationInstanceNamespaceLister helps list and get DmsReplicationInstances.
+type DmsReplicationInstanceNamespaceLister interface {
+	// List lists all DmsReplicationInstances in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DmsReplicationInstance, err error)
+	// Get retrieves the DmsReplicationInstance from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DmsReplicationInstance, error)
+	DmsReplicationInstanceNamespaceListerExpansion
+}
+
+// dmsReplicationInstanceNamespaceLister implements the DmsReplicationInstanceNamespaceLister
+// interface.
+type dmsReplicationInstanceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DmsReplicationInstances in the indexer for a given namespace.
+func (s dmsReplicationInstanceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DmsReplicationInstance, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DmsReplicationInstance))
+	})
+	return ret, err
+}
+
+// Get retrieves the DmsReplicationInstance from the indexer for a given namespace and name.
+func (s dmsReplicationInstanceNamespaceLister) Get(name string) (*v1alpha1.DmsReplicationInstance, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

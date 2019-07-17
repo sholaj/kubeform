@@ -29,8 +29,8 @@ import (
 type ApiGatewayStageLister interface {
 	// List lists all ApiGatewayStages in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayStage, err error)
-	// Get retrieves the ApiGatewayStage from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayStage, error)
+	// ApiGatewayStages returns an object that can list and get ApiGatewayStages.
+	ApiGatewayStages(namespace string) ApiGatewayStageNamespaceLister
 	ApiGatewayStageListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiGatewayStageLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayStage from the index for a given name.
-func (s *apiGatewayStageLister) Get(name string) (*v1alpha1.ApiGatewayStage, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayStages returns an object that can list and get ApiGatewayStages.
+func (s *apiGatewayStageLister) ApiGatewayStages(namespace string) ApiGatewayStageNamespaceLister {
+	return apiGatewayStageNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayStageNamespaceLister helps list and get ApiGatewayStages.
+type ApiGatewayStageNamespaceLister interface {
+	// List lists all ApiGatewayStages in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayStage, err error)
+	// Get retrieves the ApiGatewayStage from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayStage, error)
+	ApiGatewayStageNamespaceListerExpansion
+}
+
+// apiGatewayStageNamespaceLister implements the ApiGatewayStageNamespaceLister
+// interface.
+type apiGatewayStageNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayStages in the indexer for a given namespace.
+func (s apiGatewayStageNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayStage, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayStage))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayStage from the indexer for a given namespace and name.
+func (s apiGatewayStageNamespaceLister) Get(name string) (*v1alpha1.ApiGatewayStage, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -1,53 +1,56 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type ComputeVpnTunnel struct {
+type ComputeVPNTunnel struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              ComputeVpnTunnelSpec   `json:"spec,omitempty"`
-	Status            ComputeVpnTunnelStatus `json:"status,omitempty"`
+	Spec              ComputeVPNTunnelSpec   `json:"spec,omitempty"`
+	Status            ComputeVPNTunnelStatus `json:"status,omitempty"`
 }
 
-type ComputeVpnTunnelSpec struct {
+type ComputeVPNTunnelSpec struct {
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	IkeVersion int `json:"ike_version,omitempty"`
+	IkeVersion int `json:"ikeVersion,omitempty" tf:"ike_version,omitempty"`
 	// +optional
-	Labels map[string]string `json:"labels,omitempty"`
-	Name   string            `json:"name"`
-	PeerIp string            `json:"peer_ip"`
+	Labels map[string]string `json:"labels,omitempty" tf:"labels,omitempty"`
+	Name   string            `json:"name" tf:"name"`
+	PeerIP string            `json:"peerIP" tf:"peer_ip"`
 	// +optional
-	Router           string `json:"router,omitempty"`
-	SharedSecret     string `json:"shared_secret"`
-	TargetVpnGateway string `json:"target_vpn_gateway"`
+	Router           string                    `json:"router,omitempty" tf:"router,omitempty"`
+	SharedSecret     string                    `json:"sharedSecret" tf:"shared_secret"`
+	TargetVPNGateway string                    `json:"targetVPNGateway" tf:"target_vpn_gateway"`
+	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
-type ComputeVpnTunnelStatus struct {
+type ComputeVPNTunnelStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// ComputeVpnTunnelList is a list of ComputeVpnTunnels
-type ComputeVpnTunnelList struct {
+// ComputeVPNTunnelList is a list of ComputeVPNTunnels
+type ComputeVPNTunnelList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of ComputeVpnTunnel CRD objects
-	Items []ComputeVpnTunnel `json:"items,omitempty"`
+	// Items is a list of ComputeVPNTunnel CRD objects
+	Items []ComputeVPNTunnel `json:"items,omitempty"`
 }

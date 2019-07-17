@@ -31,6 +31,7 @@ import (
 // FakeOrganizationIamCustomRoles implements OrganizationIamCustomRoleInterface
 type FakeOrganizationIamCustomRoles struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var organizationiamcustomrolesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "organizationiamcustomroles"}
@@ -40,7 +41,8 @@ var organizationiamcustomrolesKind = schema.GroupVersionKind{Group: "google.kube
 // Get takes name of the organizationIamCustomRole, and returns the corresponding organizationIamCustomRole object, and an error if there is any.
 func (c *FakeOrganizationIamCustomRoles) Get(name string, options v1.GetOptions) (result *v1alpha1.OrganizationIamCustomRole, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(organizationiamcustomrolesResource, name), &v1alpha1.OrganizationIamCustomRole{})
+		Invokes(testing.NewGetAction(organizationiamcustomrolesResource, c.ns, name), &v1alpha1.OrganizationIamCustomRole{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeOrganizationIamCustomRoles) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of OrganizationIamCustomRoles that match those selectors.
 func (c *FakeOrganizationIamCustomRoles) List(opts v1.ListOptions) (result *v1alpha1.OrganizationIamCustomRoleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(organizationiamcustomrolesResource, organizationiamcustomrolesKind, opts), &v1alpha1.OrganizationIamCustomRoleList{})
+		Invokes(testing.NewListAction(organizationiamcustomrolesResource, organizationiamcustomrolesKind, c.ns, opts), &v1alpha1.OrganizationIamCustomRoleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeOrganizationIamCustomRoles) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested organizationIamCustomRoles.
 func (c *FakeOrganizationIamCustomRoles) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(organizationiamcustomrolesResource, opts))
+		InvokesWatch(testing.NewWatchAction(organizationiamcustomrolesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a organizationIamCustomRole and creates it.  Returns the server's representation of the organizationIamCustomRole, and an error, if there is any.
 func (c *FakeOrganizationIamCustomRoles) Create(organizationIamCustomRole *v1alpha1.OrganizationIamCustomRole) (result *v1alpha1.OrganizationIamCustomRole, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(organizationiamcustomrolesResource, organizationIamCustomRole), &v1alpha1.OrganizationIamCustomRole{})
+		Invokes(testing.NewCreateAction(organizationiamcustomrolesResource, c.ns, organizationIamCustomRole), &v1alpha1.OrganizationIamCustomRole{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeOrganizationIamCustomRoles) Create(organizationIamCustomRole *v1alp
 // Update takes the representation of a organizationIamCustomRole and updates it. Returns the server's representation of the organizationIamCustomRole, and an error, if there is any.
 func (c *FakeOrganizationIamCustomRoles) Update(organizationIamCustomRole *v1alpha1.OrganizationIamCustomRole) (result *v1alpha1.OrganizationIamCustomRole, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(organizationiamcustomrolesResource, organizationIamCustomRole), &v1alpha1.OrganizationIamCustomRole{})
+		Invokes(testing.NewUpdateAction(organizationiamcustomrolesResource, c.ns, organizationIamCustomRole), &v1alpha1.OrganizationIamCustomRole{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeOrganizationIamCustomRoles) Update(organizationIamCustomRole *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeOrganizationIamCustomRoles) UpdateStatus(organizationIamCustomRole *v1alpha1.OrganizationIamCustomRole) (*v1alpha1.OrganizationIamCustomRole, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(organizationiamcustomrolesResource, "status", organizationIamCustomRole), &v1alpha1.OrganizationIamCustomRole{})
+		Invokes(testing.NewUpdateSubresourceAction(organizationiamcustomrolesResource, "status", c.ns, organizationIamCustomRole), &v1alpha1.OrganizationIamCustomRole{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeOrganizationIamCustomRoles) UpdateStatus(organizationIamCustomRole 
 // Delete takes name of the organizationIamCustomRole and deletes it. Returns an error if one occurs.
 func (c *FakeOrganizationIamCustomRoles) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(organizationiamcustomrolesResource, name), &v1alpha1.OrganizationIamCustomRole{})
+		Invokes(testing.NewDeleteAction(organizationiamcustomrolesResource, c.ns, name), &v1alpha1.OrganizationIamCustomRole{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeOrganizationIamCustomRoles) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(organizationiamcustomrolesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(organizationiamcustomrolesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.OrganizationIamCustomRoleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeOrganizationIamCustomRoles) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched organizationIamCustomRole.
 func (c *FakeOrganizationIamCustomRoles) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OrganizationIamCustomRole, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(organizationiamcustomrolesResource, name, pt, data, subresources...), &v1alpha1.OrganizationIamCustomRole{})
+		Invokes(testing.NewPatchSubresourceAction(organizationiamcustomrolesResource, c.ns, name, pt, data, subresources...), &v1alpha1.OrganizationIamCustomRole{})
+
 	if obj == nil {
 		return nil, err
 	}

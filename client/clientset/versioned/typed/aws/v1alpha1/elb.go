@@ -32,7 +32,7 @@ import (
 // ElbsGetter has a method to return a ElbInterface.
 // A group's client should implement this interface.
 type ElbsGetter interface {
-	Elbs() ElbInterface
+	Elbs(namespace string) ElbInterface
 }
 
 // ElbInterface has methods to work with Elb resources.
@@ -52,12 +52,14 @@ type ElbInterface interface {
 // elbs implements ElbInterface
 type elbs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newElbs returns a Elbs
-func newElbs(c *AwsV1alpha1Client) *elbs {
+func newElbs(c *AwsV1alpha1Client, namespace string) *elbs {
 	return &elbs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newElbs(c *AwsV1alpha1Client) *elbs {
 func (c *elbs) Get(name string, options v1.GetOptions) (result *v1alpha1.Elb, err error) {
 	result = &v1alpha1.Elb{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elbs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *elbs) List(opts v1.ListOptions) (result *v1alpha1.ElbList, err error) {
 	}
 	result = &v1alpha1.ElbList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elbs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *elbs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("elbs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *elbs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *elbs) Create(elb *v1alpha1.Elb) (result *v1alpha1.Elb, err error) {
 	result = &v1alpha1.Elb{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("elbs").
 		Body(elb).
 		Do().
@@ -118,6 +124,7 @@ func (c *elbs) Create(elb *v1alpha1.Elb) (result *v1alpha1.Elb, err error) {
 func (c *elbs) Update(elb *v1alpha1.Elb) (result *v1alpha1.Elb, err error) {
 	result = &v1alpha1.Elb{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elbs").
 		Name(elb.Name).
 		Body(elb).
@@ -132,6 +139,7 @@ func (c *elbs) Update(elb *v1alpha1.Elb) (result *v1alpha1.Elb, err error) {
 func (c *elbs) UpdateStatus(elb *v1alpha1.Elb) (result *v1alpha1.Elb, err error) {
 	result = &v1alpha1.Elb{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elbs").
 		Name(elb.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *elbs) UpdateStatus(elb *v1alpha1.Elb) (result *v1alpha1.Elb, err error)
 // Delete takes name of the elb and deletes it. Returns an error if one occurs.
 func (c *elbs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elbs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *elbs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elbs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *elbs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOp
 func (c *elbs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Elb, err error) {
 	result = &v1alpha1.Elb{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("elbs").
 		SubResource(subresources...).
 		Name(name).

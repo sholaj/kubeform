@@ -29,8 +29,8 @@ import (
 type ElasticBeanstalkEnvironmentLister interface {
 	// List lists all ElasticBeanstalkEnvironments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ElasticBeanstalkEnvironment, err error)
-	// Get retrieves the ElasticBeanstalkEnvironment from the index for a given name.
-	Get(name string) (*v1alpha1.ElasticBeanstalkEnvironment, error)
+	// ElasticBeanstalkEnvironments returns an object that can list and get ElasticBeanstalkEnvironments.
+	ElasticBeanstalkEnvironments(namespace string) ElasticBeanstalkEnvironmentNamespaceLister
 	ElasticBeanstalkEnvironmentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *elasticBeanstalkEnvironmentLister) List(selector labels.Selector) (ret 
 	return ret, err
 }
 
-// Get retrieves the ElasticBeanstalkEnvironment from the index for a given name.
-func (s *elasticBeanstalkEnvironmentLister) Get(name string) (*v1alpha1.ElasticBeanstalkEnvironment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ElasticBeanstalkEnvironments returns an object that can list and get ElasticBeanstalkEnvironments.
+func (s *elasticBeanstalkEnvironmentLister) ElasticBeanstalkEnvironments(namespace string) ElasticBeanstalkEnvironmentNamespaceLister {
+	return elasticBeanstalkEnvironmentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ElasticBeanstalkEnvironmentNamespaceLister helps list and get ElasticBeanstalkEnvironments.
+type ElasticBeanstalkEnvironmentNamespaceLister interface {
+	// List lists all ElasticBeanstalkEnvironments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ElasticBeanstalkEnvironment, err error)
+	// Get retrieves the ElasticBeanstalkEnvironment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ElasticBeanstalkEnvironment, error)
+	ElasticBeanstalkEnvironmentNamespaceListerExpansion
+}
+
+// elasticBeanstalkEnvironmentNamespaceLister implements the ElasticBeanstalkEnvironmentNamespaceLister
+// interface.
+type elasticBeanstalkEnvironmentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ElasticBeanstalkEnvironments in the indexer for a given namespace.
+func (s elasticBeanstalkEnvironmentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ElasticBeanstalkEnvironment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ElasticBeanstalkEnvironment))
+	})
+	return ret, err
+}
+
+// Get retrieves the ElasticBeanstalkEnvironment from the indexer for a given namespace and name.
+func (s elasticBeanstalkEnvironmentNamespaceLister) Get(name string) (*v1alpha1.ElasticBeanstalkEnvironment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

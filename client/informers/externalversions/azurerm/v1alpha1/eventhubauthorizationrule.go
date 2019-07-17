@@ -41,32 +41,33 @@ type EventhubAuthorizationRuleInformer interface {
 type eventhubAuthorizationRuleInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewEventhubAuthorizationRuleInformer constructs a new informer for EventhubAuthorizationRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewEventhubAuthorizationRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredEventhubAuthorizationRuleInformer(client, resyncPeriod, indexers, nil)
+func NewEventhubAuthorizationRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredEventhubAuthorizationRuleInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredEventhubAuthorizationRuleInformer constructs a new informer for EventhubAuthorizationRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredEventhubAuthorizationRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredEventhubAuthorizationRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().EventhubAuthorizationRules().List(options)
+				return client.AzurermV1alpha1().EventhubAuthorizationRules(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().EventhubAuthorizationRules().Watch(options)
+				return client.AzurermV1alpha1().EventhubAuthorizationRules(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.EventhubAuthorizationRule{},
@@ -76,7 +77,7 @@ func NewFilteredEventhubAuthorizationRuleInformer(client versioned.Interface, re
 }
 
 func (f *eventhubAuthorizationRuleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredEventhubAuthorizationRuleInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredEventhubAuthorizationRuleInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *eventhubAuthorizationRuleInformer) Informer() cache.SharedIndexInformer {

@@ -32,7 +32,7 @@ import (
 // LocalNetworkGatewaysGetter has a method to return a LocalNetworkGatewayInterface.
 // A group's client should implement this interface.
 type LocalNetworkGatewaysGetter interface {
-	LocalNetworkGateways() LocalNetworkGatewayInterface
+	LocalNetworkGateways(namespace string) LocalNetworkGatewayInterface
 }
 
 // LocalNetworkGatewayInterface has methods to work with LocalNetworkGateway resources.
@@ -52,12 +52,14 @@ type LocalNetworkGatewayInterface interface {
 // localNetworkGateways implements LocalNetworkGatewayInterface
 type localNetworkGateways struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLocalNetworkGateways returns a LocalNetworkGateways
-func newLocalNetworkGateways(c *AzurermV1alpha1Client) *localNetworkGateways {
+func newLocalNetworkGateways(c *AzurermV1alpha1Client, namespace string) *localNetworkGateways {
 	return &localNetworkGateways{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLocalNetworkGateways(c *AzurermV1alpha1Client) *localNetworkGateways {
 func (c *localNetworkGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.LocalNetworkGateway, err error) {
 	result = &v1alpha1.LocalNetworkGateway{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("localnetworkgateways").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *localNetworkGateways) List(opts v1.ListOptions) (result *v1alpha1.Local
 	}
 	result = &v1alpha1.LocalNetworkGatewayList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("localnetworkgateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *localNetworkGateways) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("localnetworkgateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *localNetworkGateways) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *localNetworkGateways) Create(localNetworkGateway *v1alpha1.LocalNetworkGateway) (result *v1alpha1.LocalNetworkGateway, err error) {
 	result = &v1alpha1.LocalNetworkGateway{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("localnetworkgateways").
 		Body(localNetworkGateway).
 		Do().
@@ -118,6 +124,7 @@ func (c *localNetworkGateways) Create(localNetworkGateway *v1alpha1.LocalNetwork
 func (c *localNetworkGateways) Update(localNetworkGateway *v1alpha1.LocalNetworkGateway) (result *v1alpha1.LocalNetworkGateway, err error) {
 	result = &v1alpha1.LocalNetworkGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("localnetworkgateways").
 		Name(localNetworkGateway.Name).
 		Body(localNetworkGateway).
@@ -132,6 +139,7 @@ func (c *localNetworkGateways) Update(localNetworkGateway *v1alpha1.LocalNetwork
 func (c *localNetworkGateways) UpdateStatus(localNetworkGateway *v1alpha1.LocalNetworkGateway) (result *v1alpha1.LocalNetworkGateway, err error) {
 	result = &v1alpha1.LocalNetworkGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("localnetworkgateways").
 		Name(localNetworkGateway.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *localNetworkGateways) UpdateStatus(localNetworkGateway *v1alpha1.LocalN
 // Delete takes name of the localNetworkGateway and deletes it. Returns an error if one occurs.
 func (c *localNetworkGateways) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("localnetworkgateways").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *localNetworkGateways) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("localnetworkgateways").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *localNetworkGateways) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *localNetworkGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LocalNetworkGateway, err error) {
 	result = &v1alpha1.LocalNetworkGateway{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("localnetworkgateways").
 		SubResource(subresources...).
 		Name(name).

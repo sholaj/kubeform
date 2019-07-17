@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// AppsyncApiKeysGetter has a method to return a AppsyncApiKeyInterface.
+// AppsyncAPIKeysGetter has a method to return a AppsyncAPIKeyInterface.
 // A group's client should implement this interface.
-type AppsyncApiKeysGetter interface {
-	AppsyncApiKeys() AppsyncApiKeyInterface
+type AppsyncAPIKeysGetter interface {
+	AppsyncAPIKeys(namespace string) AppsyncAPIKeyInterface
 }
 
-// AppsyncApiKeyInterface has methods to work with AppsyncApiKey resources.
-type AppsyncApiKeyInterface interface {
-	Create(*v1alpha1.AppsyncApiKey) (*v1alpha1.AppsyncApiKey, error)
-	Update(*v1alpha1.AppsyncApiKey) (*v1alpha1.AppsyncApiKey, error)
-	UpdateStatus(*v1alpha1.AppsyncApiKey) (*v1alpha1.AppsyncApiKey, error)
+// AppsyncAPIKeyInterface has methods to work with AppsyncAPIKey resources.
+type AppsyncAPIKeyInterface interface {
+	Create(*v1alpha1.AppsyncAPIKey) (*v1alpha1.AppsyncAPIKey, error)
+	Update(*v1alpha1.AppsyncAPIKey) (*v1alpha1.AppsyncAPIKey, error)
+	UpdateStatus(*v1alpha1.AppsyncAPIKey) (*v1alpha1.AppsyncAPIKey, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.AppsyncApiKey, error)
-	List(opts v1.ListOptions) (*v1alpha1.AppsyncApiKeyList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.AppsyncAPIKey, error)
+	List(opts v1.ListOptions) (*v1alpha1.AppsyncAPIKeyList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppsyncApiKey, err error)
-	AppsyncApiKeyExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppsyncAPIKey, err error)
+	AppsyncAPIKeyExpansion
 }
 
-// appsyncApiKeys implements AppsyncApiKeyInterface
-type appsyncApiKeys struct {
+// appsyncAPIKeys implements AppsyncAPIKeyInterface
+type appsyncAPIKeys struct {
 	client rest.Interface
+	ns     string
 }
 
-// newAppsyncApiKeys returns a AppsyncApiKeys
-func newAppsyncApiKeys(c *AwsV1alpha1Client) *appsyncApiKeys {
-	return &appsyncApiKeys{
+// newAppsyncAPIKeys returns a AppsyncAPIKeys
+func newAppsyncAPIKeys(c *AwsV1alpha1Client, namespace string) *appsyncAPIKeys {
+	return &appsyncAPIKeys{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the appsyncApiKey, and returns the corresponding appsyncApiKey object, and an error if there is any.
-func (c *appsyncApiKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.AppsyncApiKey, err error) {
-	result = &v1alpha1.AppsyncApiKey{}
+// Get takes name of the appsyncAPIKey, and returns the corresponding appsyncAPIKey object, and an error if there is any.
+func (c *appsyncAPIKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.AppsyncAPIKey, err error) {
+	result = &v1alpha1.AppsyncAPIKey{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appsyncapikeys").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *appsyncApiKeys) Get(name string, options v1.GetOptions) (result *v1alph
 	return
 }
 
-// List takes label and field selectors, and returns the list of AppsyncApiKeys that match those selectors.
-func (c *appsyncApiKeys) List(opts v1.ListOptions) (result *v1alpha1.AppsyncApiKeyList, err error) {
+// List takes label and field selectors, and returns the list of AppsyncAPIKeys that match those selectors.
+func (c *appsyncAPIKeys) List(opts v1.ListOptions) (result *v1alpha1.AppsyncAPIKeyList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.AppsyncApiKeyList{}
+	result = &v1alpha1.AppsyncAPIKeyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appsyncapikeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *appsyncApiKeys) List(opts v1.ListOptions) (result *v1alpha1.AppsyncApiK
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested appsyncApiKeys.
-func (c *appsyncApiKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested appsyncAPIKeys.
+func (c *appsyncAPIKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("appsyncapikeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a appsyncApiKey and creates it.  Returns the server's representation of the appsyncApiKey, and an error, if there is any.
-func (c *appsyncApiKeys) Create(appsyncApiKey *v1alpha1.AppsyncApiKey) (result *v1alpha1.AppsyncApiKey, err error) {
-	result = &v1alpha1.AppsyncApiKey{}
+// Create takes the representation of a appsyncAPIKey and creates it.  Returns the server's representation of the appsyncAPIKey, and an error, if there is any.
+func (c *appsyncAPIKeys) Create(appsyncAPIKey *v1alpha1.AppsyncAPIKey) (result *v1alpha1.AppsyncAPIKey, err error) {
+	result = &v1alpha1.AppsyncAPIKey{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("appsyncapikeys").
-		Body(appsyncApiKey).
+		Body(appsyncAPIKey).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a appsyncApiKey and updates it. Returns the server's representation of the appsyncApiKey, and an error, if there is any.
-func (c *appsyncApiKeys) Update(appsyncApiKey *v1alpha1.AppsyncApiKey) (result *v1alpha1.AppsyncApiKey, err error) {
-	result = &v1alpha1.AppsyncApiKey{}
+// Update takes the representation of a appsyncAPIKey and updates it. Returns the server's representation of the appsyncAPIKey, and an error, if there is any.
+func (c *appsyncAPIKeys) Update(appsyncAPIKey *v1alpha1.AppsyncAPIKey) (result *v1alpha1.AppsyncAPIKey, err error) {
+	result = &v1alpha1.AppsyncAPIKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appsyncapikeys").
-		Name(appsyncApiKey.Name).
-		Body(appsyncApiKey).
+		Name(appsyncAPIKey.Name).
+		Body(appsyncAPIKey).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *appsyncApiKeys) Update(appsyncApiKey *v1alpha1.AppsyncApiKey) (result *
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *appsyncApiKeys) UpdateStatus(appsyncApiKey *v1alpha1.AppsyncApiKey) (result *v1alpha1.AppsyncApiKey, err error) {
-	result = &v1alpha1.AppsyncApiKey{}
+func (c *appsyncAPIKeys) UpdateStatus(appsyncAPIKey *v1alpha1.AppsyncAPIKey) (result *v1alpha1.AppsyncAPIKey, err error) {
+	result = &v1alpha1.AppsyncAPIKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appsyncapikeys").
-		Name(appsyncApiKey.Name).
+		Name(appsyncAPIKey.Name).
 		SubResource("status").
-		Body(appsyncApiKey).
+		Body(appsyncAPIKey).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the appsyncApiKey and deletes it. Returns an error if one occurs.
-func (c *appsyncApiKeys) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the appsyncAPIKey and deletes it. Returns an error if one occurs.
+func (c *appsyncAPIKeys) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appsyncapikeys").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *appsyncApiKeys) Delete(name string, options *v1.DeleteOptions) error {
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *appsyncApiKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *appsyncAPIKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appsyncapikeys").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *appsyncApiKeys) DeleteCollection(options *v1.DeleteOptions, listOptions
 		Error()
 }
 
-// Patch applies the patch and returns the patched appsyncApiKey.
-func (c *appsyncApiKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppsyncApiKey, err error) {
-	result = &v1alpha1.AppsyncApiKey{}
+// Patch applies the patch and returns the patched appsyncAPIKey.
+func (c *appsyncAPIKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppsyncAPIKey, err error) {
+	result = &v1alpha1.AppsyncAPIKey{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("appsyncapikeys").
 		SubResource(subresources...).
 		Name(name).

@@ -397,45 +397,64 @@ spec:
           type: object
         spec:
           properties:
-            associate_public_ip_address:
+            associatePublicIPAddress:
               type: boolean
-            enable_monitoring:
+            enableMonitoring:
               type: boolean
-            ephemeral_block_device:
-              items: {}
+            ephemeralBlockDevice:
+              items:
+                properties:
+                  deviceName:
+                    type: string
+                  virtualName:
+                    type: string
+                required:
+                - deviceName
+                - virtualName
+                type: object
               type: array
               uniqueItems: true
-            iam_instance_profile:
+            iamInstanceProfile:
               type: string
-            image_id:
+            imageID:
               type: string
-            instance_type:
+            instanceType:
               type: string
-            name_prefix:
+            namePrefix:
               type: string
-            placement_tenancy:
+            placementTenancy:
               type: string
-            security_groups:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            securityGroups:
               items:
                 type: string
               type: array
               uniqueItems: true
-            spot_price:
+            spotPrice:
               type: string
-            user_data:
+            userData:
               type: string
-            user_data_base64:
+            userDataBase64:
               type: string
-            vpc_classic_link_id:
+            vpcClassicLinkID:
               type: string
-            vpc_classic_link_security_groups:
+            vpcClassicLinkSecurityGroups:
               items:
                 type: string
               type: array
               uniqueItems: true
           required:
-          - image_id
-          - instance_type
+          - imageID
+          - instanceType
+          - providerRef
           type: object
         status:
           properties:
@@ -446,6 +465,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

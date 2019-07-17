@@ -41,32 +41,33 @@ type S3AccountPublicAccessBlockInformer interface {
 type s3AccountPublicAccessBlockInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewS3AccountPublicAccessBlockInformer constructs a new informer for S3AccountPublicAccessBlock type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewS3AccountPublicAccessBlockInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredS3AccountPublicAccessBlockInformer(client, resyncPeriod, indexers, nil)
+func NewS3AccountPublicAccessBlockInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredS3AccountPublicAccessBlockInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredS3AccountPublicAccessBlockInformer constructs a new informer for S3AccountPublicAccessBlock type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredS3AccountPublicAccessBlockInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredS3AccountPublicAccessBlockInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().S3AccountPublicAccessBlocks().List(options)
+				return client.AwsV1alpha1().S3AccountPublicAccessBlocks(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().S3AccountPublicAccessBlocks().Watch(options)
+				return client.AwsV1alpha1().S3AccountPublicAccessBlocks(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.S3AccountPublicAccessBlock{},
@@ -76,7 +77,7 @@ func NewFilteredS3AccountPublicAccessBlockInformer(client versioned.Interface, r
 }
 
 func (f *s3AccountPublicAccessBlockInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredS3AccountPublicAccessBlockInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredS3AccountPublicAccessBlockInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *s3AccountPublicAccessBlockInformer) Informer() cache.SharedIndexInformer {

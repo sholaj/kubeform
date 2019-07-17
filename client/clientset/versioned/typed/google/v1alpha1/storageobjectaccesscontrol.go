@@ -32,7 +32,7 @@ import (
 // StorageObjectAccessControlsGetter has a method to return a StorageObjectAccessControlInterface.
 // A group's client should implement this interface.
 type StorageObjectAccessControlsGetter interface {
-	StorageObjectAccessControls() StorageObjectAccessControlInterface
+	StorageObjectAccessControls(namespace string) StorageObjectAccessControlInterface
 }
 
 // StorageObjectAccessControlInterface has methods to work with StorageObjectAccessControl resources.
@@ -52,12 +52,14 @@ type StorageObjectAccessControlInterface interface {
 // storageObjectAccessControls implements StorageObjectAccessControlInterface
 type storageObjectAccessControls struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStorageObjectAccessControls returns a StorageObjectAccessControls
-func newStorageObjectAccessControls(c *GoogleV1alpha1Client) *storageObjectAccessControls {
+func newStorageObjectAccessControls(c *GoogleV1alpha1Client, namespace string) *storageObjectAccessControls {
 	return &storageObjectAccessControls{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStorageObjectAccessControls(c *GoogleV1alpha1Client) *storageObjectAcces
 func (c *storageObjectAccessControls) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageObjectAccessControl, err error) {
 	result = &v1alpha1.StorageObjectAccessControl{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storageobjectaccesscontrols").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *storageObjectAccessControls) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.StorageObjectAccessControlList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storageobjectaccesscontrols").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *storageObjectAccessControls) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storageobjectaccesscontrols").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *storageObjectAccessControls) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *storageObjectAccessControls) Create(storageObjectAccessControl *v1alpha1.StorageObjectAccessControl) (result *v1alpha1.StorageObjectAccessControl, err error) {
 	result = &v1alpha1.StorageObjectAccessControl{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storageobjectaccesscontrols").
 		Body(storageObjectAccessControl).
 		Do().
@@ -118,6 +124,7 @@ func (c *storageObjectAccessControls) Create(storageObjectAccessControl *v1alpha
 func (c *storageObjectAccessControls) Update(storageObjectAccessControl *v1alpha1.StorageObjectAccessControl) (result *v1alpha1.StorageObjectAccessControl, err error) {
 	result = &v1alpha1.StorageObjectAccessControl{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storageobjectaccesscontrols").
 		Name(storageObjectAccessControl.Name).
 		Body(storageObjectAccessControl).
@@ -132,6 +139,7 @@ func (c *storageObjectAccessControls) Update(storageObjectAccessControl *v1alpha
 func (c *storageObjectAccessControls) UpdateStatus(storageObjectAccessControl *v1alpha1.StorageObjectAccessControl) (result *v1alpha1.StorageObjectAccessControl, err error) {
 	result = &v1alpha1.StorageObjectAccessControl{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storageobjectaccesscontrols").
 		Name(storageObjectAccessControl.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *storageObjectAccessControls) UpdateStatus(storageObjectAccessControl *v
 // Delete takes name of the storageObjectAccessControl and deletes it. Returns an error if one occurs.
 func (c *storageObjectAccessControls) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storageobjectaccesscontrols").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *storageObjectAccessControls) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storageobjectaccesscontrols").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *storageObjectAccessControls) DeleteCollection(options *v1.DeleteOptions
 func (c *storageObjectAccessControls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageObjectAccessControl, err error) {
 	result = &v1alpha1.StorageObjectAccessControl{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storageobjectaccesscontrols").
 		SubResource(subresources...).
 		Name(name).

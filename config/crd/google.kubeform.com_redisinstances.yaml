@@ -397,25 +397,35 @@ spec:
           type: object
         spec:
           properties:
-            display_name:
+            displayName:
               type: string
             labels:
               additionalProperties:
                 type: string
               type: object
-            memory_size_gb:
+            memorySizeGb:
               type: integer
             name:
               type: string
-            redis_configs:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            redisConfigs:
               additionalProperties:
                 type: string
               type: object
             tier:
               type: string
           required:
-          - memory_size_gb
+          - memorySizeGb
           - name
+          - providerRef
           type: object
         status:
           properties:
@@ -426,6 +436,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,66 +20,55 @@ type Iothub struct {
 
 type IothubSpecEndpoint struct {
 	// +optional
-	BatchFrequencyInSeconds int    `json:"batch_frequency_in_seconds,omitempty"`
-	ConnectionString        string `json:"connection_string"`
+	BatchFrequencyInSeconds int    `json:"batchFrequencyInSeconds,omitempty" tf:"batch_frequency_in_seconds,omitempty"`
+	ConnectionString        string `json:"connectionString" tf:"connection_string"`
 	// +optional
-	ContainerName string `json:"container_name,omitempty"`
+	ContainerName string `json:"containerName,omitempty" tf:"container_name,omitempty"`
 	// +optional
-	Encoding string `json:"encoding,omitempty"`
+	Encoding string `json:"encoding,omitempty" tf:"encoding,omitempty"`
 	// +optional
-	FileNameFormat string `json:"file_name_format,omitempty"`
+	FileNameFormat string `json:"fileNameFormat,omitempty" tf:"file_name_format,omitempty"`
 	// +optional
-	MaxChunkSizeInBytes int    `json:"max_chunk_size_in_bytes,omitempty"`
-	Name                string `json:"name"`
-	Type                string `json:"type"`
-}
-
-type IothubSpecFileUpload struct {
-	ConnectionString string `json:"connection_string"`
-	ContainerName    string `json:"container_name"`
-	// +optional
-	MaxDeliveryCount int `json:"max_delivery_count,omitempty"`
-	// +optional
-	Notifications bool `json:"notifications,omitempty"`
+	MaxChunkSizeInBytes int    `json:"maxChunkSizeInBytes,omitempty" tf:"max_chunk_size_in_bytes,omitempty"`
+	Name                string `json:"name" tf:"name"`
+	Type                string `json:"type" tf:"type"`
 }
 
 type IothubSpecIpFilterRule struct {
-	Action string `json:"action"`
-	IpMask string `json:"ip_mask"`
-	Name   string `json:"name"`
+	Action string `json:"action" tf:"action"`
+	IpMask string `json:"ipMask" tf:"ip_mask"`
+	Name   string `json:"name" tf:"name"`
 }
 
 type IothubSpecRoute struct {
 	// +optional
-	Condition     string   `json:"condition,omitempty"`
-	Enabled       bool     `json:"enabled"`
-	EndpointNames []string `json:"endpoint_names"`
-	Name          string   `json:"name"`
-	Source        string   `json:"source"`
+	Condition     string   `json:"condition,omitempty" tf:"condition,omitempty"`
+	Enabled       bool     `json:"enabled" tf:"enabled"`
+	EndpointNames []string `json:"endpointNames" tf:"endpoint_names"`
+	Name          string   `json:"name" tf:"name"`
+	Source        string   `json:"source" tf:"source"`
 }
 
 type IothubSpecSku struct {
-	Capacity int    `json:"capacity"`
-	Name     string `json:"name"`
-	Tier     string `json:"tier"`
+	Capacity int    `json:"capacity" tf:"capacity"`
+	Name     string `json:"name" tf:"name"`
+	Tier     string `json:"tier" tf:"tier"`
 }
 
 type IothubSpec struct {
 	// +optional
-	Endpoint *[]IothubSpec `json:"endpoint,omitempty"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	FileUpload *[]IothubSpec `json:"file_upload,omitempty"`
+	Endpoint []IothubSpecEndpoint `json:"endpoint,omitempty" tf:"endpoint,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	IpFilterRule      *[]IothubSpec `json:"ip_filter_rule,omitempty"`
-	Location          string        `json:"location"`
-	Name              string        `json:"name"`
-	ResourceGroupName string        `json:"resource_group_name"`
+	IpFilterRule      []IothubSpecIpFilterRule `json:"ipFilterRule,omitempty" tf:"ip_filter_rule,omitempty"`
+	Location          string                   `json:"location" tf:"location"`
+	Name              string                   `json:"name" tf:"name"`
+	ResourceGroupName string                   `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	Route *[]IothubSpec `json:"route,omitempty"`
+	Route []IothubSpecRoute `json:"route,omitempty" tf:"route,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
-	Sku []IothubSpec `json:"sku"`
+	Sku         []IothubSpecSku           `json:"sku" tf:"sku"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type IothubStatus struct {
@@ -87,7 +76,9 @@ type IothubStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

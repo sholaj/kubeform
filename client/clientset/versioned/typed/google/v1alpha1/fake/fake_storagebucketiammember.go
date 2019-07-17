@@ -31,6 +31,7 @@ import (
 // FakeStorageBucketIamMembers implements StorageBucketIamMemberInterface
 type FakeStorageBucketIamMembers struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var storagebucketiammembersResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "storagebucketiammembers"}
@@ -40,7 +41,8 @@ var storagebucketiammembersKind = schema.GroupVersionKind{Group: "google.kubefor
 // Get takes name of the storageBucketIamMember, and returns the corresponding storageBucketIamMember object, and an error if there is any.
 func (c *FakeStorageBucketIamMembers) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageBucketIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(storagebucketiammembersResource, name), &v1alpha1.StorageBucketIamMember{})
+		Invokes(testing.NewGetAction(storagebucketiammembersResource, c.ns, name), &v1alpha1.StorageBucketIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeStorageBucketIamMembers) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of StorageBucketIamMembers that match those selectors.
 func (c *FakeStorageBucketIamMembers) List(opts v1.ListOptions) (result *v1alpha1.StorageBucketIamMemberList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(storagebucketiammembersResource, storagebucketiammembersKind, opts), &v1alpha1.StorageBucketIamMemberList{})
+		Invokes(testing.NewListAction(storagebucketiammembersResource, storagebucketiammembersKind, c.ns, opts), &v1alpha1.StorageBucketIamMemberList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeStorageBucketIamMembers) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested storageBucketIamMembers.
 func (c *FakeStorageBucketIamMembers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(storagebucketiammembersResource, opts))
+		InvokesWatch(testing.NewWatchAction(storagebucketiammembersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a storageBucketIamMember and creates it.  Returns the server's representation of the storageBucketIamMember, and an error, if there is any.
 func (c *FakeStorageBucketIamMembers) Create(storageBucketIamMember *v1alpha1.StorageBucketIamMember) (result *v1alpha1.StorageBucketIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(storagebucketiammembersResource, storageBucketIamMember), &v1alpha1.StorageBucketIamMember{})
+		Invokes(testing.NewCreateAction(storagebucketiammembersResource, c.ns, storageBucketIamMember), &v1alpha1.StorageBucketIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeStorageBucketIamMembers) Create(storageBucketIamMember *v1alpha1.St
 // Update takes the representation of a storageBucketIamMember and updates it. Returns the server's representation of the storageBucketIamMember, and an error, if there is any.
 func (c *FakeStorageBucketIamMembers) Update(storageBucketIamMember *v1alpha1.StorageBucketIamMember) (result *v1alpha1.StorageBucketIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(storagebucketiammembersResource, storageBucketIamMember), &v1alpha1.StorageBucketIamMember{})
+		Invokes(testing.NewUpdateAction(storagebucketiammembersResource, c.ns, storageBucketIamMember), &v1alpha1.StorageBucketIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeStorageBucketIamMembers) Update(storageBucketIamMember *v1alpha1.St
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeStorageBucketIamMembers) UpdateStatus(storageBucketIamMember *v1alpha1.StorageBucketIamMember) (*v1alpha1.StorageBucketIamMember, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(storagebucketiammembersResource, "status", storageBucketIamMember), &v1alpha1.StorageBucketIamMember{})
+		Invokes(testing.NewUpdateSubresourceAction(storagebucketiammembersResource, "status", c.ns, storageBucketIamMember), &v1alpha1.StorageBucketIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeStorageBucketIamMembers) UpdateStatus(storageBucketIamMember *v1alp
 // Delete takes name of the storageBucketIamMember and deletes it. Returns an error if one occurs.
 func (c *FakeStorageBucketIamMembers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(storagebucketiammembersResource, name), &v1alpha1.StorageBucketIamMember{})
+		Invokes(testing.NewDeleteAction(storagebucketiammembersResource, c.ns, name), &v1alpha1.StorageBucketIamMember{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeStorageBucketIamMembers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(storagebucketiammembersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(storagebucketiammembersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.StorageBucketIamMemberList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeStorageBucketIamMembers) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched storageBucketIamMember.
 func (c *FakeStorageBucketIamMembers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageBucketIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(storagebucketiammembersResource, name, pt, data, subresources...), &v1alpha1.StorageBucketIamMember{})
+		Invokes(testing.NewPatchSubresourceAction(storagebucketiammembersResource, c.ns, name, pt, data, subresources...), &v1alpha1.StorageBucketIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // LoadBalancerPoliciesGetter has a method to return a LoadBalancerPolicyInterface.
 // A group's client should implement this interface.
 type LoadBalancerPoliciesGetter interface {
-	LoadBalancerPolicies() LoadBalancerPolicyInterface
+	LoadBalancerPolicies(namespace string) LoadBalancerPolicyInterface
 }
 
 // LoadBalancerPolicyInterface has methods to work with LoadBalancerPolicy resources.
@@ -52,12 +52,14 @@ type LoadBalancerPolicyInterface interface {
 // loadBalancerPolicies implements LoadBalancerPolicyInterface
 type loadBalancerPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLoadBalancerPolicies returns a LoadBalancerPolicies
-func newLoadBalancerPolicies(c *AwsV1alpha1Client) *loadBalancerPolicies {
+func newLoadBalancerPolicies(c *AwsV1alpha1Client, namespace string) *loadBalancerPolicies {
 	return &loadBalancerPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLoadBalancerPolicies(c *AwsV1alpha1Client) *loadBalancerPolicies {
 func (c *loadBalancerPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.LoadBalancerPolicy, err error) {
 	result = &v1alpha1.LoadBalancerPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loadbalancerpolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *loadBalancerPolicies) List(opts v1.ListOptions) (result *v1alpha1.LoadB
 	}
 	result = &v1alpha1.LoadBalancerPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loadbalancerpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *loadBalancerPolicies) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("loadbalancerpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *loadBalancerPolicies) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *loadBalancerPolicies) Create(loadBalancerPolicy *v1alpha1.LoadBalancerPolicy) (result *v1alpha1.LoadBalancerPolicy, err error) {
 	result = &v1alpha1.LoadBalancerPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("loadbalancerpolicies").
 		Body(loadBalancerPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *loadBalancerPolicies) Create(loadBalancerPolicy *v1alpha1.LoadBalancerP
 func (c *loadBalancerPolicies) Update(loadBalancerPolicy *v1alpha1.LoadBalancerPolicy) (result *v1alpha1.LoadBalancerPolicy, err error) {
 	result = &v1alpha1.LoadBalancerPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loadbalancerpolicies").
 		Name(loadBalancerPolicy.Name).
 		Body(loadBalancerPolicy).
@@ -132,6 +139,7 @@ func (c *loadBalancerPolicies) Update(loadBalancerPolicy *v1alpha1.LoadBalancerP
 func (c *loadBalancerPolicies) UpdateStatus(loadBalancerPolicy *v1alpha1.LoadBalancerPolicy) (result *v1alpha1.LoadBalancerPolicy, err error) {
 	result = &v1alpha1.LoadBalancerPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loadbalancerpolicies").
 		Name(loadBalancerPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *loadBalancerPolicies) UpdateStatus(loadBalancerPolicy *v1alpha1.LoadBal
 // Delete takes name of the loadBalancerPolicy and deletes it. Returns an error if one occurs.
 func (c *loadBalancerPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loadbalancerpolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *loadBalancerPolicies) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loadbalancerpolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *loadBalancerPolicies) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *loadBalancerPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LoadBalancerPolicy, err error) {
 	result = &v1alpha1.LoadBalancerPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("loadbalancerpolicies").
 		SubResource(subresources...).
 		Name(name).

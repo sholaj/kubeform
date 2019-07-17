@@ -31,6 +31,7 @@ import (
 // FakeApplicationInsightsWebTests implements ApplicationInsightsWebTestInterface
 type FakeApplicationInsightsWebTests struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var applicationinsightswebtestsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "applicationinsightswebtests"}
@@ -40,7 +41,8 @@ var applicationinsightswebtestsKind = schema.GroupVersionKind{Group: "azurerm.ku
 // Get takes name of the applicationInsightsWebTest, and returns the corresponding applicationInsightsWebTest object, and an error if there is any.
 func (c *FakeApplicationInsightsWebTests) Get(name string, options v1.GetOptions) (result *v1alpha1.ApplicationInsightsWebTest, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(applicationinsightswebtestsResource, name), &v1alpha1.ApplicationInsightsWebTest{})
+		Invokes(testing.NewGetAction(applicationinsightswebtestsResource, c.ns, name), &v1alpha1.ApplicationInsightsWebTest{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApplicationInsightsWebTests) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of ApplicationInsightsWebTests that match those selectors.
 func (c *FakeApplicationInsightsWebTests) List(opts v1.ListOptions) (result *v1alpha1.ApplicationInsightsWebTestList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(applicationinsightswebtestsResource, applicationinsightswebtestsKind, opts), &v1alpha1.ApplicationInsightsWebTestList{})
+		Invokes(testing.NewListAction(applicationinsightswebtestsResource, applicationinsightswebtestsKind, c.ns, opts), &v1alpha1.ApplicationInsightsWebTestList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApplicationInsightsWebTests) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested applicationInsightsWebTests.
 func (c *FakeApplicationInsightsWebTests) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(applicationinsightswebtestsResource, opts))
+		InvokesWatch(testing.NewWatchAction(applicationinsightswebtestsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a applicationInsightsWebTest and creates it.  Returns the server's representation of the applicationInsightsWebTest, and an error, if there is any.
 func (c *FakeApplicationInsightsWebTests) Create(applicationInsightsWebTest *v1alpha1.ApplicationInsightsWebTest) (result *v1alpha1.ApplicationInsightsWebTest, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(applicationinsightswebtestsResource, applicationInsightsWebTest), &v1alpha1.ApplicationInsightsWebTest{})
+		Invokes(testing.NewCreateAction(applicationinsightswebtestsResource, c.ns, applicationInsightsWebTest), &v1alpha1.ApplicationInsightsWebTest{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApplicationInsightsWebTests) Create(applicationInsightsWebTest *v1a
 // Update takes the representation of a applicationInsightsWebTest and updates it. Returns the server's representation of the applicationInsightsWebTest, and an error, if there is any.
 func (c *FakeApplicationInsightsWebTests) Update(applicationInsightsWebTest *v1alpha1.ApplicationInsightsWebTest) (result *v1alpha1.ApplicationInsightsWebTest, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(applicationinsightswebtestsResource, applicationInsightsWebTest), &v1alpha1.ApplicationInsightsWebTest{})
+		Invokes(testing.NewUpdateAction(applicationinsightswebtestsResource, c.ns, applicationInsightsWebTest), &v1alpha1.ApplicationInsightsWebTest{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApplicationInsightsWebTests) Update(applicationInsightsWebTest *v1a
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApplicationInsightsWebTests) UpdateStatus(applicationInsightsWebTest *v1alpha1.ApplicationInsightsWebTest) (*v1alpha1.ApplicationInsightsWebTest, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(applicationinsightswebtestsResource, "status", applicationInsightsWebTest), &v1alpha1.ApplicationInsightsWebTest{})
+		Invokes(testing.NewUpdateSubresourceAction(applicationinsightswebtestsResource, "status", c.ns, applicationInsightsWebTest), &v1alpha1.ApplicationInsightsWebTest{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApplicationInsightsWebTests) UpdateStatus(applicationInsightsWebTes
 // Delete takes name of the applicationInsightsWebTest and deletes it. Returns an error if one occurs.
 func (c *FakeApplicationInsightsWebTests) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(applicationinsightswebtestsResource, name), &v1alpha1.ApplicationInsightsWebTest{})
+		Invokes(testing.NewDeleteAction(applicationinsightswebtestsResource, c.ns, name), &v1alpha1.ApplicationInsightsWebTest{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApplicationInsightsWebTests) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(applicationinsightswebtestsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(applicationinsightswebtestsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApplicationInsightsWebTestList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApplicationInsightsWebTests) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched applicationInsightsWebTest.
 func (c *FakeApplicationInsightsWebTests) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApplicationInsightsWebTest, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(applicationinsightswebtestsResource, name, pt, data, subresources...), &v1alpha1.ApplicationInsightsWebTest{})
+		Invokes(testing.NewPatchSubresourceAction(applicationinsightswebtestsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApplicationInsightsWebTest{})
+
 	if obj == nil {
 		return nil, err
 	}

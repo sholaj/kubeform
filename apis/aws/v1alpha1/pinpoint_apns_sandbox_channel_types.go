@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,23 +19,24 @@ type PinpointApnsSandboxChannel struct {
 }
 
 type PinpointApnsSandboxChannelSpec struct {
-	ApplicationId string `json:"application_id"`
+	ApplicationID string `json:"applicationID" tf:"application_id"`
 	// +optional
-	BundleId string `json:"bundle_id,omitempty"`
+	BundleID string `json:"bundleID,omitempty" tf:"bundle_id,omitempty"`
 	// +optional
-	Certificate string `json:"certificate,omitempty"`
+	Certificate string `json:"certificate,omitempty" tf:"certificate,omitempty"`
 	// +optional
-	DefaultAuthenticationMethod string `json:"default_authentication_method,omitempty"`
+	DefaultAuthenticationMethod string `json:"defaultAuthenticationMethod,omitempty" tf:"default_authentication_method,omitempty"`
 	// +optional
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
 	// +optional
-	PrivateKey string `json:"private_key,omitempty"`
+	PrivateKey string `json:"privateKey,omitempty" tf:"private_key,omitempty"`
 	// +optional
-	TeamId string `json:"team_id,omitempty"`
+	TeamID string `json:"teamID,omitempty" tf:"team_id,omitempty"`
 	// +optional
-	TokenKey string `json:"token_key,omitempty"`
+	TokenKey string `json:"tokenKey,omitempty" tf:"token_key,omitempty"`
 	// +optional
-	TokenKeyId string `json:"token_key_id,omitempty"`
+	TokenKeyID  string                    `json:"tokenKeyID,omitempty" tf:"token_key_id,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type PinpointApnsSandboxChannelStatus struct {
@@ -43,7 +44,9 @@ type PinpointApnsSandboxChannelStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -32,7 +32,7 @@ import (
 // FolderIamPoliciesGetter has a method to return a FolderIamPolicyInterface.
 // A group's client should implement this interface.
 type FolderIamPoliciesGetter interface {
-	FolderIamPolicies() FolderIamPolicyInterface
+	FolderIamPolicies(namespace string) FolderIamPolicyInterface
 }
 
 // FolderIamPolicyInterface has methods to work with FolderIamPolicy resources.
@@ -52,12 +52,14 @@ type FolderIamPolicyInterface interface {
 // folderIamPolicies implements FolderIamPolicyInterface
 type folderIamPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newFolderIamPolicies returns a FolderIamPolicies
-func newFolderIamPolicies(c *GoogleV1alpha1Client) *folderIamPolicies {
+func newFolderIamPolicies(c *GoogleV1alpha1Client, namespace string) *folderIamPolicies {
 	return &folderIamPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newFolderIamPolicies(c *GoogleV1alpha1Client) *folderIamPolicies {
 func (c *folderIamPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.FolderIamPolicy, err error) {
 	result = &v1alpha1.FolderIamPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("folderiampolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *folderIamPolicies) List(opts v1.ListOptions) (result *v1alpha1.FolderIa
 	}
 	result = &v1alpha1.FolderIamPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("folderiampolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *folderIamPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("folderiampolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *folderIamPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *folderIamPolicies) Create(folderIamPolicy *v1alpha1.FolderIamPolicy) (result *v1alpha1.FolderIamPolicy, err error) {
 	result = &v1alpha1.FolderIamPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("folderiampolicies").
 		Body(folderIamPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *folderIamPolicies) Create(folderIamPolicy *v1alpha1.FolderIamPolicy) (r
 func (c *folderIamPolicies) Update(folderIamPolicy *v1alpha1.FolderIamPolicy) (result *v1alpha1.FolderIamPolicy, err error) {
 	result = &v1alpha1.FolderIamPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("folderiampolicies").
 		Name(folderIamPolicy.Name).
 		Body(folderIamPolicy).
@@ -132,6 +139,7 @@ func (c *folderIamPolicies) Update(folderIamPolicy *v1alpha1.FolderIamPolicy) (r
 func (c *folderIamPolicies) UpdateStatus(folderIamPolicy *v1alpha1.FolderIamPolicy) (result *v1alpha1.FolderIamPolicy, err error) {
 	result = &v1alpha1.FolderIamPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("folderiampolicies").
 		Name(folderIamPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *folderIamPolicies) UpdateStatus(folderIamPolicy *v1alpha1.FolderIamPoli
 // Delete takes name of the folderIamPolicy and deletes it. Returns an error if one occurs.
 func (c *folderIamPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("folderiampolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *folderIamPolicies) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("folderiampolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *folderIamPolicies) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *folderIamPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FolderIamPolicy, err error) {
 	result = &v1alpha1.FolderIamPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("folderiampolicies").
 		SubResource(subresources...).
 		Name(name).

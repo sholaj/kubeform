@@ -29,8 +29,8 @@ import (
 type Route53RecordLister interface {
 	// List lists all Route53Records in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Route53Record, err error)
-	// Get retrieves the Route53Record from the index for a given name.
-	Get(name string) (*v1alpha1.Route53Record, error)
+	// Route53Records returns an object that can list and get Route53Records.
+	Route53Records(namespace string) Route53RecordNamespaceLister
 	Route53RecordListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *route53RecordLister) List(selector labels.Selector) (ret []*v1alpha1.Ro
 	return ret, err
 }
 
-// Get retrieves the Route53Record from the index for a given name.
-func (s *route53RecordLister) Get(name string) (*v1alpha1.Route53Record, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Route53Records returns an object that can list and get Route53Records.
+func (s *route53RecordLister) Route53Records(namespace string) Route53RecordNamespaceLister {
+	return route53RecordNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// Route53RecordNamespaceLister helps list and get Route53Records.
+type Route53RecordNamespaceLister interface {
+	// List lists all Route53Records in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Route53Record, err error)
+	// Get retrieves the Route53Record from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Route53Record, error)
+	Route53RecordNamespaceListerExpansion
+}
+
+// route53RecordNamespaceLister implements the Route53RecordNamespaceLister
+// interface.
+type route53RecordNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Route53Records in the indexer for a given namespace.
+func (s route53RecordNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Route53Record, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Route53Record))
+	})
+	return ret, err
+}
+
+// Get retrieves the Route53Record from the indexer for a given namespace and name.
+func (s route53RecordNamespaceLister) Get(name string) (*v1alpha1.Route53Record, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

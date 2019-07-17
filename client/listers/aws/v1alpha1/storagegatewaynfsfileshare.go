@@ -29,8 +29,8 @@ import (
 type StoragegatewayNfsFileShareLister interface {
 	// List lists all StoragegatewayNfsFileShares in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StoragegatewayNfsFileShare, err error)
-	// Get retrieves the StoragegatewayNfsFileShare from the index for a given name.
-	Get(name string) (*v1alpha1.StoragegatewayNfsFileShare, error)
+	// StoragegatewayNfsFileShares returns an object that can list and get StoragegatewayNfsFileShares.
+	StoragegatewayNfsFileShares(namespace string) StoragegatewayNfsFileShareNamespaceLister
 	StoragegatewayNfsFileShareListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *storagegatewayNfsFileShareLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the StoragegatewayNfsFileShare from the index for a given name.
-func (s *storagegatewayNfsFileShareLister) Get(name string) (*v1alpha1.StoragegatewayNfsFileShare, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StoragegatewayNfsFileShares returns an object that can list and get StoragegatewayNfsFileShares.
+func (s *storagegatewayNfsFileShareLister) StoragegatewayNfsFileShares(namespace string) StoragegatewayNfsFileShareNamespaceLister {
+	return storagegatewayNfsFileShareNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StoragegatewayNfsFileShareNamespaceLister helps list and get StoragegatewayNfsFileShares.
+type StoragegatewayNfsFileShareNamespaceLister interface {
+	// List lists all StoragegatewayNfsFileShares in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StoragegatewayNfsFileShare, err error)
+	// Get retrieves the StoragegatewayNfsFileShare from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StoragegatewayNfsFileShare, error)
+	StoragegatewayNfsFileShareNamespaceListerExpansion
+}
+
+// storagegatewayNfsFileShareNamespaceLister implements the StoragegatewayNfsFileShareNamespaceLister
+// interface.
+type storagegatewayNfsFileShareNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StoragegatewayNfsFileShares in the indexer for a given namespace.
+func (s storagegatewayNfsFileShareNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StoragegatewayNfsFileShare, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StoragegatewayNfsFileShare))
+	})
+	return ret, err
+}
+
+// Get retrieves the StoragegatewayNfsFileShare from the indexer for a given namespace and name.
+func (s storagegatewayNfsFileShareNamespaceLister) Get(name string) (*v1alpha1.StoragegatewayNfsFileShare, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

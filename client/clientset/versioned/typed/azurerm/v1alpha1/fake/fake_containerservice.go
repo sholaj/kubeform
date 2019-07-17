@@ -31,6 +31,7 @@ import (
 // FakeContainerServices implements ContainerServiceInterface
 type FakeContainerServices struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var containerservicesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "containerservices"}
@@ -40,7 +41,8 @@ var containerservicesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com
 // Get takes name of the containerService, and returns the corresponding containerService object, and an error if there is any.
 func (c *FakeContainerServices) Get(name string, options v1.GetOptions) (result *v1alpha1.ContainerService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(containerservicesResource, name), &v1alpha1.ContainerService{})
+		Invokes(testing.NewGetAction(containerservicesResource, c.ns, name), &v1alpha1.ContainerService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeContainerServices) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of ContainerServices that match those selectors.
 func (c *FakeContainerServices) List(opts v1.ListOptions) (result *v1alpha1.ContainerServiceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(containerservicesResource, containerservicesKind, opts), &v1alpha1.ContainerServiceList{})
+		Invokes(testing.NewListAction(containerservicesResource, containerservicesKind, c.ns, opts), &v1alpha1.ContainerServiceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeContainerServices) List(opts v1.ListOptions) (result *v1alpha1.Cont
 // Watch returns a watch.Interface that watches the requested containerServices.
 func (c *FakeContainerServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(containerservicesResource, opts))
+		InvokesWatch(testing.NewWatchAction(containerservicesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a containerService and creates it.  Returns the server's representation of the containerService, and an error, if there is any.
 func (c *FakeContainerServices) Create(containerService *v1alpha1.ContainerService) (result *v1alpha1.ContainerService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(containerservicesResource, containerService), &v1alpha1.ContainerService{})
+		Invokes(testing.NewCreateAction(containerservicesResource, c.ns, containerService), &v1alpha1.ContainerService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeContainerServices) Create(containerService *v1alpha1.ContainerServi
 // Update takes the representation of a containerService and updates it. Returns the server's representation of the containerService, and an error, if there is any.
 func (c *FakeContainerServices) Update(containerService *v1alpha1.ContainerService) (result *v1alpha1.ContainerService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(containerservicesResource, containerService), &v1alpha1.ContainerService{})
+		Invokes(testing.NewUpdateAction(containerservicesResource, c.ns, containerService), &v1alpha1.ContainerService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeContainerServices) Update(containerService *v1alpha1.ContainerServi
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeContainerServices) UpdateStatus(containerService *v1alpha1.ContainerService) (*v1alpha1.ContainerService, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(containerservicesResource, "status", containerService), &v1alpha1.ContainerService{})
+		Invokes(testing.NewUpdateSubresourceAction(containerservicesResource, "status", c.ns, containerService), &v1alpha1.ContainerService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeContainerServices) UpdateStatus(containerService *v1alpha1.Containe
 // Delete takes name of the containerService and deletes it. Returns an error if one occurs.
 func (c *FakeContainerServices) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(containerservicesResource, name), &v1alpha1.ContainerService{})
+		Invokes(testing.NewDeleteAction(containerservicesResource, c.ns, name), &v1alpha1.ContainerService{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeContainerServices) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(containerservicesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(containerservicesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ContainerServiceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeContainerServices) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched containerService.
 func (c *FakeContainerServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ContainerService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(containerservicesResource, name, pt, data, subresources...), &v1alpha1.ContainerService{})
+		Invokes(testing.NewPatchSubresourceAction(containerservicesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ContainerService{})
+
 	if obj == nil {
 		return nil, err
 	}

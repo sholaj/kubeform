@@ -29,8 +29,8 @@ import (
 type PubsubSubscriptionLister interface {
 	// List lists all PubsubSubscriptions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.PubsubSubscription, err error)
-	// Get retrieves the PubsubSubscription from the index for a given name.
-	Get(name string) (*v1alpha1.PubsubSubscription, error)
+	// PubsubSubscriptions returns an object that can list and get PubsubSubscriptions.
+	PubsubSubscriptions(namespace string) PubsubSubscriptionNamespaceLister
 	PubsubSubscriptionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *pubsubSubscriptionLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the PubsubSubscription from the index for a given name.
-func (s *pubsubSubscriptionLister) Get(name string) (*v1alpha1.PubsubSubscription, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// PubsubSubscriptions returns an object that can list and get PubsubSubscriptions.
+func (s *pubsubSubscriptionLister) PubsubSubscriptions(namespace string) PubsubSubscriptionNamespaceLister {
+	return pubsubSubscriptionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// PubsubSubscriptionNamespaceLister helps list and get PubsubSubscriptions.
+type PubsubSubscriptionNamespaceLister interface {
+	// List lists all PubsubSubscriptions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.PubsubSubscription, err error)
+	// Get retrieves the PubsubSubscription from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.PubsubSubscription, error)
+	PubsubSubscriptionNamespaceListerExpansion
+}
+
+// pubsubSubscriptionNamespaceLister implements the PubsubSubscriptionNamespaceLister
+// interface.
+type pubsubSubscriptionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all PubsubSubscriptions in the indexer for a given namespace.
+func (s pubsubSubscriptionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.PubsubSubscription, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.PubsubSubscription))
+	})
+	return ret, err
+}
+
+// Get retrieves the PubsubSubscription from the indexer for a given namespace and name.
+func (s pubsubSubscriptionNamespaceLister) Get(name string) (*v1alpha1.PubsubSubscription, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type EbsSnapshotCopyLister interface {
 	// List lists all EbsSnapshotCopies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EbsSnapshotCopy, err error)
-	// Get retrieves the EbsSnapshotCopy from the index for a given name.
-	Get(name string) (*v1alpha1.EbsSnapshotCopy, error)
+	// EbsSnapshotCopies returns an object that can list and get EbsSnapshotCopies.
+	EbsSnapshotCopies(namespace string) EbsSnapshotCopyNamespaceLister
 	EbsSnapshotCopyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ebsSnapshotCopyLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the EbsSnapshotCopy from the index for a given name.
-func (s *ebsSnapshotCopyLister) Get(name string) (*v1alpha1.EbsSnapshotCopy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EbsSnapshotCopies returns an object that can list and get EbsSnapshotCopies.
+func (s *ebsSnapshotCopyLister) EbsSnapshotCopies(namespace string) EbsSnapshotCopyNamespaceLister {
+	return ebsSnapshotCopyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EbsSnapshotCopyNamespaceLister helps list and get EbsSnapshotCopies.
+type EbsSnapshotCopyNamespaceLister interface {
+	// List lists all EbsSnapshotCopies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EbsSnapshotCopy, err error)
+	// Get retrieves the EbsSnapshotCopy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EbsSnapshotCopy, error)
+	EbsSnapshotCopyNamespaceListerExpansion
+}
+
+// ebsSnapshotCopyNamespaceLister implements the EbsSnapshotCopyNamespaceLister
+// interface.
+type ebsSnapshotCopyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EbsSnapshotCopies in the indexer for a given namespace.
+func (s ebsSnapshotCopyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EbsSnapshotCopy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EbsSnapshotCopy))
+	})
+	return ret, err
+}
+
+// Get retrieves the EbsSnapshotCopy from the indexer for a given namespace and name.
+func (s ebsSnapshotCopyNamespaceLister) Get(name string) (*v1alpha1.EbsSnapshotCopy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type SecurityhubProductSubscriptionLister interface {
 	// List lists all SecurityhubProductSubscriptions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SecurityhubProductSubscription, err error)
-	// Get retrieves the SecurityhubProductSubscription from the index for a given name.
-	Get(name string) (*v1alpha1.SecurityhubProductSubscription, error)
+	// SecurityhubProductSubscriptions returns an object that can list and get SecurityhubProductSubscriptions.
+	SecurityhubProductSubscriptions(namespace string) SecurityhubProductSubscriptionNamespaceLister
 	SecurityhubProductSubscriptionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *securityhubProductSubscriptionLister) List(selector labels.Selector) (r
 	return ret, err
 }
 
-// Get retrieves the SecurityhubProductSubscription from the index for a given name.
-func (s *securityhubProductSubscriptionLister) Get(name string) (*v1alpha1.SecurityhubProductSubscription, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SecurityhubProductSubscriptions returns an object that can list and get SecurityhubProductSubscriptions.
+func (s *securityhubProductSubscriptionLister) SecurityhubProductSubscriptions(namespace string) SecurityhubProductSubscriptionNamespaceLister {
+	return securityhubProductSubscriptionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SecurityhubProductSubscriptionNamespaceLister helps list and get SecurityhubProductSubscriptions.
+type SecurityhubProductSubscriptionNamespaceLister interface {
+	// List lists all SecurityhubProductSubscriptions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SecurityhubProductSubscription, err error)
+	// Get retrieves the SecurityhubProductSubscription from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SecurityhubProductSubscription, error)
+	SecurityhubProductSubscriptionNamespaceListerExpansion
+}
+
+// securityhubProductSubscriptionNamespaceLister implements the SecurityhubProductSubscriptionNamespaceLister
+// interface.
+type securityhubProductSubscriptionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SecurityhubProductSubscriptions in the indexer for a given namespace.
+func (s securityhubProductSubscriptionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SecurityhubProductSubscription, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SecurityhubProductSubscription))
+	})
+	return ret, err
+}
+
+// Get retrieves the SecurityhubProductSubscription from the indexer for a given namespace and name.
+func (s securityhubProductSubscriptionNamespaceLister) Get(name string) (*v1alpha1.SecurityhubProductSubscription, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

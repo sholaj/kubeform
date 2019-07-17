@@ -397,25 +397,75 @@ spec:
           type: object
         spec:
           properties:
-            boolean_policy:
-              items: {}
+            booleanPolicy:
+              items:
+                properties:
+                  enforced:
+                    type: boolean
+                required:
+                - enforced
+                type: object
               maxItems: 1
               type: array
             constraint:
               type: string
             folder:
               type: string
-            list_policy:
-              items: {}
+            listPolicy:
+              items:
+                properties:
+                  allow:
+                    items:
+                      properties:
+                        all:
+                          type: boolean
+                        values:
+                          items:
+                            type: string
+                          type: array
+                          uniqueItems: true
+                      type: object
+                    maxItems: 1
+                    type: array
+                  deny:
+                    items:
+                      properties:
+                        all:
+                          type: boolean
+                        values:
+                          items:
+                            type: string
+                          type: array
+                          uniqueItems: true
+                      type: object
+                    maxItems: 1
+                    type: array
+                type: object
               maxItems: 1
               type: array
-            restore_policy:
-              items: {}
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            restorePolicy:
+              items:
+                properties:
+                  default:
+                    type: boolean
+                required:
+                - default
+                type: object
               maxItems: 1
               type: array
           required:
           - constraint
           - folder
+          - providerRef
           type: object
         status:
           properties:
@@ -426,6 +476,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

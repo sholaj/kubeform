@@ -32,7 +32,7 @@ import (
 // KeyVaultsGetter has a method to return a KeyVaultInterface.
 // A group's client should implement this interface.
 type KeyVaultsGetter interface {
-	KeyVaults() KeyVaultInterface
+	KeyVaults(namespace string) KeyVaultInterface
 }
 
 // KeyVaultInterface has methods to work with KeyVault resources.
@@ -52,12 +52,14 @@ type KeyVaultInterface interface {
 // keyVaults implements KeyVaultInterface
 type keyVaults struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKeyVaults returns a KeyVaults
-func newKeyVaults(c *AzurermV1alpha1Client) *keyVaults {
+func newKeyVaults(c *AzurermV1alpha1Client, namespace string) *keyVaults {
 	return &keyVaults{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKeyVaults(c *AzurermV1alpha1Client) *keyVaults {
 func (c *keyVaults) Get(name string, options v1.GetOptions) (result *v1alpha1.KeyVault, err error) {
 	result = &v1alpha1.KeyVault{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("keyvaults").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *keyVaults) List(opts v1.ListOptions) (result *v1alpha1.KeyVaultList, er
 	}
 	result = &v1alpha1.KeyVaultList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("keyvaults").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *keyVaults) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("keyvaults").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *keyVaults) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *keyVaults) Create(keyVault *v1alpha1.KeyVault) (result *v1alpha1.KeyVault, err error) {
 	result = &v1alpha1.KeyVault{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("keyvaults").
 		Body(keyVault).
 		Do().
@@ -118,6 +124,7 @@ func (c *keyVaults) Create(keyVault *v1alpha1.KeyVault) (result *v1alpha1.KeyVau
 func (c *keyVaults) Update(keyVault *v1alpha1.KeyVault) (result *v1alpha1.KeyVault, err error) {
 	result = &v1alpha1.KeyVault{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("keyvaults").
 		Name(keyVault.Name).
 		Body(keyVault).
@@ -132,6 +139,7 @@ func (c *keyVaults) Update(keyVault *v1alpha1.KeyVault) (result *v1alpha1.KeyVau
 func (c *keyVaults) UpdateStatus(keyVault *v1alpha1.KeyVault) (result *v1alpha1.KeyVault, err error) {
 	result = &v1alpha1.KeyVault{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("keyvaults").
 		Name(keyVault.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *keyVaults) UpdateStatus(keyVault *v1alpha1.KeyVault) (result *v1alpha1.
 // Delete takes name of the keyVault and deletes it. Returns an error if one occurs.
 func (c *keyVaults) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("keyvaults").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *keyVaults) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("keyvaults").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *keyVaults) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 func (c *keyVaults) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KeyVault, err error) {
 	result = &v1alpha1.KeyVault{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("keyvaults").
 		SubResource(subresources...).
 		Name(name).

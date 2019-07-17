@@ -29,8 +29,8 @@ import (
 type MacieMemberAccountAssociationLister interface {
 	// List lists all MacieMemberAccountAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MacieMemberAccountAssociation, err error)
-	// Get retrieves the MacieMemberAccountAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.MacieMemberAccountAssociation, error)
+	// MacieMemberAccountAssociations returns an object that can list and get MacieMemberAccountAssociations.
+	MacieMemberAccountAssociations(namespace string) MacieMemberAccountAssociationNamespaceLister
 	MacieMemberAccountAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *macieMemberAccountAssociationLister) List(selector labels.Selector) (re
 	return ret, err
 }
 
-// Get retrieves the MacieMemberAccountAssociation from the index for a given name.
-func (s *macieMemberAccountAssociationLister) Get(name string) (*v1alpha1.MacieMemberAccountAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MacieMemberAccountAssociations returns an object that can list and get MacieMemberAccountAssociations.
+func (s *macieMemberAccountAssociationLister) MacieMemberAccountAssociations(namespace string) MacieMemberAccountAssociationNamespaceLister {
+	return macieMemberAccountAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MacieMemberAccountAssociationNamespaceLister helps list and get MacieMemberAccountAssociations.
+type MacieMemberAccountAssociationNamespaceLister interface {
+	// List lists all MacieMemberAccountAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MacieMemberAccountAssociation, err error)
+	// Get retrieves the MacieMemberAccountAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MacieMemberAccountAssociation, error)
+	MacieMemberAccountAssociationNamespaceListerExpansion
+}
+
+// macieMemberAccountAssociationNamespaceLister implements the MacieMemberAccountAssociationNamespaceLister
+// interface.
+type macieMemberAccountAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MacieMemberAccountAssociations in the indexer for a given namespace.
+func (s macieMemberAccountAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MacieMemberAccountAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MacieMemberAccountAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the MacieMemberAccountAssociation from the indexer for a given namespace and name.
+func (s macieMemberAccountAssociationNamespaceLister) Get(name string) (*v1alpha1.MacieMemberAccountAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

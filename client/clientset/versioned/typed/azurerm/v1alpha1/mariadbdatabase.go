@@ -32,7 +32,7 @@ import (
 // MariadbDatabasesGetter has a method to return a MariadbDatabaseInterface.
 // A group's client should implement this interface.
 type MariadbDatabasesGetter interface {
-	MariadbDatabases() MariadbDatabaseInterface
+	MariadbDatabases(namespace string) MariadbDatabaseInterface
 }
 
 // MariadbDatabaseInterface has methods to work with MariadbDatabase resources.
@@ -52,12 +52,14 @@ type MariadbDatabaseInterface interface {
 // mariadbDatabases implements MariadbDatabaseInterface
 type mariadbDatabases struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMariadbDatabases returns a MariadbDatabases
-func newMariadbDatabases(c *AzurermV1alpha1Client) *mariadbDatabases {
+func newMariadbDatabases(c *AzurermV1alpha1Client, namespace string) *mariadbDatabases {
 	return &mariadbDatabases{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMariadbDatabases(c *AzurermV1alpha1Client) *mariadbDatabases {
 func (c *mariadbDatabases) Get(name string, options v1.GetOptions) (result *v1alpha1.MariadbDatabase, err error) {
 	result = &v1alpha1.MariadbDatabase{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mariadbdatabases").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *mariadbDatabases) List(opts v1.ListOptions) (result *v1alpha1.MariadbDa
 	}
 	result = &v1alpha1.MariadbDatabaseList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mariadbdatabases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *mariadbDatabases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("mariadbdatabases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *mariadbDatabases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *mariadbDatabases) Create(mariadbDatabase *v1alpha1.MariadbDatabase) (result *v1alpha1.MariadbDatabase, err error) {
 	result = &v1alpha1.MariadbDatabase{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("mariadbdatabases").
 		Body(mariadbDatabase).
 		Do().
@@ -118,6 +124,7 @@ func (c *mariadbDatabases) Create(mariadbDatabase *v1alpha1.MariadbDatabase) (re
 func (c *mariadbDatabases) Update(mariadbDatabase *v1alpha1.MariadbDatabase) (result *v1alpha1.MariadbDatabase, err error) {
 	result = &v1alpha1.MariadbDatabase{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mariadbdatabases").
 		Name(mariadbDatabase.Name).
 		Body(mariadbDatabase).
@@ -132,6 +139,7 @@ func (c *mariadbDatabases) Update(mariadbDatabase *v1alpha1.MariadbDatabase) (re
 func (c *mariadbDatabases) UpdateStatus(mariadbDatabase *v1alpha1.MariadbDatabase) (result *v1alpha1.MariadbDatabase, err error) {
 	result = &v1alpha1.MariadbDatabase{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mariadbdatabases").
 		Name(mariadbDatabase.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *mariadbDatabases) UpdateStatus(mariadbDatabase *v1alpha1.MariadbDatabas
 // Delete takes name of the mariadbDatabase and deletes it. Returns an error if one occurs.
 func (c *mariadbDatabases) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mariadbdatabases").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *mariadbDatabases) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mariadbdatabases").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *mariadbDatabases) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *mariadbDatabases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MariadbDatabase, err error) {
 	result = &v1alpha1.MariadbDatabase{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("mariadbdatabases").
 		SubResource(subresources...).
 		Name(name).

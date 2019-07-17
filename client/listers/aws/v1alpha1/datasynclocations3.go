@@ -29,8 +29,8 @@ import (
 type DatasyncLocationS3Lister interface {
 	// List lists all DatasyncLocationS3s in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DatasyncLocationS3, err error)
-	// Get retrieves the DatasyncLocationS3 from the index for a given name.
-	Get(name string) (*v1alpha1.DatasyncLocationS3, error)
+	// DatasyncLocationS3s returns an object that can list and get DatasyncLocationS3s.
+	DatasyncLocationS3s(namespace string) DatasyncLocationS3NamespaceLister
 	DatasyncLocationS3ListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *datasyncLocationS3Lister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the DatasyncLocationS3 from the index for a given name.
-func (s *datasyncLocationS3Lister) Get(name string) (*v1alpha1.DatasyncLocationS3, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DatasyncLocationS3s returns an object that can list and get DatasyncLocationS3s.
+func (s *datasyncLocationS3Lister) DatasyncLocationS3s(namespace string) DatasyncLocationS3NamespaceLister {
+	return datasyncLocationS3NamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DatasyncLocationS3NamespaceLister helps list and get DatasyncLocationS3s.
+type DatasyncLocationS3NamespaceLister interface {
+	// List lists all DatasyncLocationS3s in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DatasyncLocationS3, err error)
+	// Get retrieves the DatasyncLocationS3 from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DatasyncLocationS3, error)
+	DatasyncLocationS3NamespaceListerExpansion
+}
+
+// datasyncLocationS3NamespaceLister implements the DatasyncLocationS3NamespaceLister
+// interface.
+type datasyncLocationS3NamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DatasyncLocationS3s in the indexer for a given namespace.
+func (s datasyncLocationS3NamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DatasyncLocationS3, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DatasyncLocationS3))
+	})
+	return ret, err
+}
+
+// Get retrieves the DatasyncLocationS3 from the indexer for a given namespace and name.
+func (s datasyncLocationS3NamespaceLister) Get(name string) (*v1alpha1.DatasyncLocationS3, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

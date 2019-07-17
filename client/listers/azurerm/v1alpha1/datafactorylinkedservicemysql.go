@@ -29,8 +29,8 @@ import (
 type DataFactoryLinkedServiceMysqlLister interface {
 	// List lists all DataFactoryLinkedServiceMysqls in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DataFactoryLinkedServiceMysql, err error)
-	// Get retrieves the DataFactoryLinkedServiceMysql from the index for a given name.
-	Get(name string) (*v1alpha1.DataFactoryLinkedServiceMysql, error)
+	// DataFactoryLinkedServiceMysqls returns an object that can list and get DataFactoryLinkedServiceMysqls.
+	DataFactoryLinkedServiceMysqls(namespace string) DataFactoryLinkedServiceMysqlNamespaceLister
 	DataFactoryLinkedServiceMysqlListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dataFactoryLinkedServiceMysqlLister) List(selector labels.Selector) (re
 	return ret, err
 }
 
-// Get retrieves the DataFactoryLinkedServiceMysql from the index for a given name.
-func (s *dataFactoryLinkedServiceMysqlLister) Get(name string) (*v1alpha1.DataFactoryLinkedServiceMysql, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DataFactoryLinkedServiceMysqls returns an object that can list and get DataFactoryLinkedServiceMysqls.
+func (s *dataFactoryLinkedServiceMysqlLister) DataFactoryLinkedServiceMysqls(namespace string) DataFactoryLinkedServiceMysqlNamespaceLister {
+	return dataFactoryLinkedServiceMysqlNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DataFactoryLinkedServiceMysqlNamespaceLister helps list and get DataFactoryLinkedServiceMysqls.
+type DataFactoryLinkedServiceMysqlNamespaceLister interface {
+	// List lists all DataFactoryLinkedServiceMysqls in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DataFactoryLinkedServiceMysql, err error)
+	// Get retrieves the DataFactoryLinkedServiceMysql from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DataFactoryLinkedServiceMysql, error)
+	DataFactoryLinkedServiceMysqlNamespaceListerExpansion
+}
+
+// dataFactoryLinkedServiceMysqlNamespaceLister implements the DataFactoryLinkedServiceMysqlNamespaceLister
+// interface.
+type dataFactoryLinkedServiceMysqlNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DataFactoryLinkedServiceMysqls in the indexer for a given namespace.
+func (s dataFactoryLinkedServiceMysqlNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DataFactoryLinkedServiceMysql, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DataFactoryLinkedServiceMysql))
+	})
+	return ret, err
+}
+
+// Get retrieves the DataFactoryLinkedServiceMysql from the indexer for a given namespace and name.
+func (s dataFactoryLinkedServiceMysqlNamespaceLister) Get(name string) (*v1alpha1.DataFactoryLinkedServiceMysql, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

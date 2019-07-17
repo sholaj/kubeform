@@ -31,6 +31,7 @@ import (
 // FakeTrafficManagerProfiles implements TrafficManagerProfileInterface
 type FakeTrafficManagerProfiles struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var trafficmanagerprofilesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "trafficmanagerprofiles"}
@@ -40,7 +41,8 @@ var trafficmanagerprofilesKind = schema.GroupVersionKind{Group: "azurerm.kubefor
 // Get takes name of the trafficManagerProfile, and returns the corresponding trafficManagerProfile object, and an error if there is any.
 func (c *FakeTrafficManagerProfiles) Get(name string, options v1.GetOptions) (result *v1alpha1.TrafficManagerProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(trafficmanagerprofilesResource, name), &v1alpha1.TrafficManagerProfile{})
+		Invokes(testing.NewGetAction(trafficmanagerprofilesResource, c.ns, name), &v1alpha1.TrafficManagerProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeTrafficManagerProfiles) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of TrafficManagerProfiles that match those selectors.
 func (c *FakeTrafficManagerProfiles) List(opts v1.ListOptions) (result *v1alpha1.TrafficManagerProfileList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(trafficmanagerprofilesResource, trafficmanagerprofilesKind, opts), &v1alpha1.TrafficManagerProfileList{})
+		Invokes(testing.NewListAction(trafficmanagerprofilesResource, trafficmanagerprofilesKind, c.ns, opts), &v1alpha1.TrafficManagerProfileList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeTrafficManagerProfiles) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested trafficManagerProfiles.
 func (c *FakeTrafficManagerProfiles) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(trafficmanagerprofilesResource, opts))
+		InvokesWatch(testing.NewWatchAction(trafficmanagerprofilesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a trafficManagerProfile and creates it.  Returns the server's representation of the trafficManagerProfile, and an error, if there is any.
 func (c *FakeTrafficManagerProfiles) Create(trafficManagerProfile *v1alpha1.TrafficManagerProfile) (result *v1alpha1.TrafficManagerProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(trafficmanagerprofilesResource, trafficManagerProfile), &v1alpha1.TrafficManagerProfile{})
+		Invokes(testing.NewCreateAction(trafficmanagerprofilesResource, c.ns, trafficManagerProfile), &v1alpha1.TrafficManagerProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeTrafficManagerProfiles) Create(trafficManagerProfile *v1alpha1.Traf
 // Update takes the representation of a trafficManagerProfile and updates it. Returns the server's representation of the trafficManagerProfile, and an error, if there is any.
 func (c *FakeTrafficManagerProfiles) Update(trafficManagerProfile *v1alpha1.TrafficManagerProfile) (result *v1alpha1.TrafficManagerProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(trafficmanagerprofilesResource, trafficManagerProfile), &v1alpha1.TrafficManagerProfile{})
+		Invokes(testing.NewUpdateAction(trafficmanagerprofilesResource, c.ns, trafficManagerProfile), &v1alpha1.TrafficManagerProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeTrafficManagerProfiles) Update(trafficManagerProfile *v1alpha1.Traf
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeTrafficManagerProfiles) UpdateStatus(trafficManagerProfile *v1alpha1.TrafficManagerProfile) (*v1alpha1.TrafficManagerProfile, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(trafficmanagerprofilesResource, "status", trafficManagerProfile), &v1alpha1.TrafficManagerProfile{})
+		Invokes(testing.NewUpdateSubresourceAction(trafficmanagerprofilesResource, "status", c.ns, trafficManagerProfile), &v1alpha1.TrafficManagerProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeTrafficManagerProfiles) UpdateStatus(trafficManagerProfile *v1alpha
 // Delete takes name of the trafficManagerProfile and deletes it. Returns an error if one occurs.
 func (c *FakeTrafficManagerProfiles) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(trafficmanagerprofilesResource, name), &v1alpha1.TrafficManagerProfile{})
+		Invokes(testing.NewDeleteAction(trafficmanagerprofilesResource, c.ns, name), &v1alpha1.TrafficManagerProfile{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeTrafficManagerProfiles) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(trafficmanagerprofilesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(trafficmanagerprofilesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.TrafficManagerProfileList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeTrafficManagerProfiles) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched trafficManagerProfile.
 func (c *FakeTrafficManagerProfiles) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.TrafficManagerProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(trafficmanagerprofilesResource, name, pt, data, subresources...), &v1alpha1.TrafficManagerProfile{})
+		Invokes(testing.NewPatchSubresourceAction(trafficmanagerprofilesResource, c.ns, name, pt, data, subresources...), &v1alpha1.TrafficManagerProfile{})
+
 	if obj == nil {
 		return nil, err
 	}

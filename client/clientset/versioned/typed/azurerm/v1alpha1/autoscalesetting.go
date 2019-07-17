@@ -32,7 +32,7 @@ import (
 // AutoscaleSettingsGetter has a method to return a AutoscaleSettingInterface.
 // A group's client should implement this interface.
 type AutoscaleSettingsGetter interface {
-	AutoscaleSettings() AutoscaleSettingInterface
+	AutoscaleSettings(namespace string) AutoscaleSettingInterface
 }
 
 // AutoscaleSettingInterface has methods to work with AutoscaleSetting resources.
@@ -52,12 +52,14 @@ type AutoscaleSettingInterface interface {
 // autoscaleSettings implements AutoscaleSettingInterface
 type autoscaleSettings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAutoscaleSettings returns a AutoscaleSettings
-func newAutoscaleSettings(c *AzurermV1alpha1Client) *autoscaleSettings {
+func newAutoscaleSettings(c *AzurermV1alpha1Client, namespace string) *autoscaleSettings {
 	return &autoscaleSettings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAutoscaleSettings(c *AzurermV1alpha1Client) *autoscaleSettings {
 func (c *autoscaleSettings) Get(name string, options v1.GetOptions) (result *v1alpha1.AutoscaleSetting, err error) {
 	result = &v1alpha1.AutoscaleSetting{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("autoscalesettings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *autoscaleSettings) List(opts v1.ListOptions) (result *v1alpha1.Autoscal
 	}
 	result = &v1alpha1.AutoscaleSettingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("autoscalesettings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *autoscaleSettings) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("autoscalesettings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *autoscaleSettings) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *autoscaleSettings) Create(autoscaleSetting *v1alpha1.AutoscaleSetting) (result *v1alpha1.AutoscaleSetting, err error) {
 	result = &v1alpha1.AutoscaleSetting{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("autoscalesettings").
 		Body(autoscaleSetting).
 		Do().
@@ -118,6 +124,7 @@ func (c *autoscaleSettings) Create(autoscaleSetting *v1alpha1.AutoscaleSetting) 
 func (c *autoscaleSettings) Update(autoscaleSetting *v1alpha1.AutoscaleSetting) (result *v1alpha1.AutoscaleSetting, err error) {
 	result = &v1alpha1.AutoscaleSetting{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("autoscalesettings").
 		Name(autoscaleSetting.Name).
 		Body(autoscaleSetting).
@@ -132,6 +139,7 @@ func (c *autoscaleSettings) Update(autoscaleSetting *v1alpha1.AutoscaleSetting) 
 func (c *autoscaleSettings) UpdateStatus(autoscaleSetting *v1alpha1.AutoscaleSetting) (result *v1alpha1.AutoscaleSetting, err error) {
 	result = &v1alpha1.AutoscaleSetting{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("autoscalesettings").
 		Name(autoscaleSetting.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *autoscaleSettings) UpdateStatus(autoscaleSetting *v1alpha1.AutoscaleSet
 // Delete takes name of the autoscaleSetting and deletes it. Returns an error if one occurs.
 func (c *autoscaleSettings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("autoscalesettings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *autoscaleSettings) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("autoscalesettings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *autoscaleSettings) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *autoscaleSettings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AutoscaleSetting, err error) {
 	result = &v1alpha1.AutoscaleSetting{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("autoscalesettings").
 		SubResource(subresources...).
 		Name(name).

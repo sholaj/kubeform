@@ -32,7 +32,7 @@ import (
 // SpannerDatabaseIamBindingsGetter has a method to return a SpannerDatabaseIamBindingInterface.
 // A group's client should implement this interface.
 type SpannerDatabaseIamBindingsGetter interface {
-	SpannerDatabaseIamBindings() SpannerDatabaseIamBindingInterface
+	SpannerDatabaseIamBindings(namespace string) SpannerDatabaseIamBindingInterface
 }
 
 // SpannerDatabaseIamBindingInterface has methods to work with SpannerDatabaseIamBinding resources.
@@ -52,12 +52,14 @@ type SpannerDatabaseIamBindingInterface interface {
 // spannerDatabaseIamBindings implements SpannerDatabaseIamBindingInterface
 type spannerDatabaseIamBindings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSpannerDatabaseIamBindings returns a SpannerDatabaseIamBindings
-func newSpannerDatabaseIamBindings(c *GoogleV1alpha1Client) *spannerDatabaseIamBindings {
+func newSpannerDatabaseIamBindings(c *GoogleV1alpha1Client, namespace string) *spannerDatabaseIamBindings {
 	return &spannerDatabaseIamBindings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSpannerDatabaseIamBindings(c *GoogleV1alpha1Client) *spannerDatabaseIamB
 func (c *spannerDatabaseIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.SpannerDatabaseIamBinding, err error) {
 	result = &v1alpha1.SpannerDatabaseIamBinding{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("spannerdatabaseiambindings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *spannerDatabaseIamBindings) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.SpannerDatabaseIamBindingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("spannerdatabaseiambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *spannerDatabaseIamBindings) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("spannerdatabaseiambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *spannerDatabaseIamBindings) Watch(opts v1.ListOptions) (watch.Interface
 func (c *spannerDatabaseIamBindings) Create(spannerDatabaseIamBinding *v1alpha1.SpannerDatabaseIamBinding) (result *v1alpha1.SpannerDatabaseIamBinding, err error) {
 	result = &v1alpha1.SpannerDatabaseIamBinding{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("spannerdatabaseiambindings").
 		Body(spannerDatabaseIamBinding).
 		Do().
@@ -118,6 +124,7 @@ func (c *spannerDatabaseIamBindings) Create(spannerDatabaseIamBinding *v1alpha1.
 func (c *spannerDatabaseIamBindings) Update(spannerDatabaseIamBinding *v1alpha1.SpannerDatabaseIamBinding) (result *v1alpha1.SpannerDatabaseIamBinding, err error) {
 	result = &v1alpha1.SpannerDatabaseIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("spannerdatabaseiambindings").
 		Name(spannerDatabaseIamBinding.Name).
 		Body(spannerDatabaseIamBinding).
@@ -132,6 +139,7 @@ func (c *spannerDatabaseIamBindings) Update(spannerDatabaseIamBinding *v1alpha1.
 func (c *spannerDatabaseIamBindings) UpdateStatus(spannerDatabaseIamBinding *v1alpha1.SpannerDatabaseIamBinding) (result *v1alpha1.SpannerDatabaseIamBinding, err error) {
 	result = &v1alpha1.SpannerDatabaseIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("spannerdatabaseiambindings").
 		Name(spannerDatabaseIamBinding.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *spannerDatabaseIamBindings) UpdateStatus(spannerDatabaseIamBinding *v1a
 // Delete takes name of the spannerDatabaseIamBinding and deletes it. Returns an error if one occurs.
 func (c *spannerDatabaseIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("spannerdatabaseiambindings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *spannerDatabaseIamBindings) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("spannerdatabaseiambindings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *spannerDatabaseIamBindings) DeleteCollection(options *v1.DeleteOptions,
 func (c *spannerDatabaseIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SpannerDatabaseIamBinding, err error) {
 	result = &v1alpha1.SpannerDatabaseIamBinding{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("spannerdatabaseiambindings").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type PolicyDefinitionLister interface {
 	// List lists all PolicyDefinitions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.PolicyDefinition, err error)
-	// Get retrieves the PolicyDefinition from the index for a given name.
-	Get(name string) (*v1alpha1.PolicyDefinition, error)
+	// PolicyDefinitions returns an object that can list and get PolicyDefinitions.
+	PolicyDefinitions(namespace string) PolicyDefinitionNamespaceLister
 	PolicyDefinitionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *policyDefinitionLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the PolicyDefinition from the index for a given name.
-func (s *policyDefinitionLister) Get(name string) (*v1alpha1.PolicyDefinition, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// PolicyDefinitions returns an object that can list and get PolicyDefinitions.
+func (s *policyDefinitionLister) PolicyDefinitions(namespace string) PolicyDefinitionNamespaceLister {
+	return policyDefinitionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// PolicyDefinitionNamespaceLister helps list and get PolicyDefinitions.
+type PolicyDefinitionNamespaceLister interface {
+	// List lists all PolicyDefinitions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.PolicyDefinition, err error)
+	// Get retrieves the PolicyDefinition from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.PolicyDefinition, error)
+	PolicyDefinitionNamespaceListerExpansion
+}
+
+// policyDefinitionNamespaceLister implements the PolicyDefinitionNamespaceLister
+// interface.
+type policyDefinitionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all PolicyDefinitions in the indexer for a given namespace.
+func (s policyDefinitionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.PolicyDefinition, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.PolicyDefinition))
+	})
+	return ret, err
+}
+
+// Get retrieves the PolicyDefinition from the indexer for a given namespace and name.
+func (s policyDefinitionNamespaceLister) Get(name string) (*v1alpha1.PolicyDefinition, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeNotificationHubAuthorizationRules implements NotificationHubAuthorizationRuleInterface
 type FakeNotificationHubAuthorizationRules struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var notificationhubauthorizationrulesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "notificationhubauthorizationrules"}
@@ -40,7 +41,8 @@ var notificationhubauthorizationrulesKind = schema.GroupVersionKind{Group: "azur
 // Get takes name of the notificationHubAuthorizationRule, and returns the corresponding notificationHubAuthorizationRule object, and an error if there is any.
 func (c *FakeNotificationHubAuthorizationRules) Get(name string, options v1.GetOptions) (result *v1alpha1.NotificationHubAuthorizationRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(notificationhubauthorizationrulesResource, name), &v1alpha1.NotificationHubAuthorizationRule{})
+		Invokes(testing.NewGetAction(notificationhubauthorizationrulesResource, c.ns, name), &v1alpha1.NotificationHubAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeNotificationHubAuthorizationRules) Get(name string, options v1.GetO
 // List takes label and field selectors, and returns the list of NotificationHubAuthorizationRules that match those selectors.
 func (c *FakeNotificationHubAuthorizationRules) List(opts v1.ListOptions) (result *v1alpha1.NotificationHubAuthorizationRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(notificationhubauthorizationrulesResource, notificationhubauthorizationrulesKind, opts), &v1alpha1.NotificationHubAuthorizationRuleList{})
+		Invokes(testing.NewListAction(notificationhubauthorizationrulesResource, notificationhubauthorizationrulesKind, c.ns, opts), &v1alpha1.NotificationHubAuthorizationRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeNotificationHubAuthorizationRules) List(opts v1.ListOptions) (resul
 // Watch returns a watch.Interface that watches the requested notificationHubAuthorizationRules.
 func (c *FakeNotificationHubAuthorizationRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(notificationhubauthorizationrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(notificationhubauthorizationrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a notificationHubAuthorizationRule and creates it.  Returns the server's representation of the notificationHubAuthorizationRule, and an error, if there is any.
 func (c *FakeNotificationHubAuthorizationRules) Create(notificationHubAuthorizationRule *v1alpha1.NotificationHubAuthorizationRule) (result *v1alpha1.NotificationHubAuthorizationRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(notificationhubauthorizationrulesResource, notificationHubAuthorizationRule), &v1alpha1.NotificationHubAuthorizationRule{})
+		Invokes(testing.NewCreateAction(notificationhubauthorizationrulesResource, c.ns, notificationHubAuthorizationRule), &v1alpha1.NotificationHubAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeNotificationHubAuthorizationRules) Create(notificationHubAuthorizat
 // Update takes the representation of a notificationHubAuthorizationRule and updates it. Returns the server's representation of the notificationHubAuthorizationRule, and an error, if there is any.
 func (c *FakeNotificationHubAuthorizationRules) Update(notificationHubAuthorizationRule *v1alpha1.NotificationHubAuthorizationRule) (result *v1alpha1.NotificationHubAuthorizationRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(notificationhubauthorizationrulesResource, notificationHubAuthorizationRule), &v1alpha1.NotificationHubAuthorizationRule{})
+		Invokes(testing.NewUpdateAction(notificationhubauthorizationrulesResource, c.ns, notificationHubAuthorizationRule), &v1alpha1.NotificationHubAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeNotificationHubAuthorizationRules) Update(notificationHubAuthorizat
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNotificationHubAuthorizationRules) UpdateStatus(notificationHubAuthorizationRule *v1alpha1.NotificationHubAuthorizationRule) (*v1alpha1.NotificationHubAuthorizationRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(notificationhubauthorizationrulesResource, "status", notificationHubAuthorizationRule), &v1alpha1.NotificationHubAuthorizationRule{})
+		Invokes(testing.NewUpdateSubresourceAction(notificationhubauthorizationrulesResource, "status", c.ns, notificationHubAuthorizationRule), &v1alpha1.NotificationHubAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeNotificationHubAuthorizationRules) UpdateStatus(notificationHubAuth
 // Delete takes name of the notificationHubAuthorizationRule and deletes it. Returns an error if one occurs.
 func (c *FakeNotificationHubAuthorizationRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(notificationhubauthorizationrulesResource, name), &v1alpha1.NotificationHubAuthorizationRule{})
+		Invokes(testing.NewDeleteAction(notificationhubauthorizationrulesResource, c.ns, name), &v1alpha1.NotificationHubAuthorizationRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNotificationHubAuthorizationRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(notificationhubauthorizationrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(notificationhubauthorizationrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NotificationHubAuthorizationRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeNotificationHubAuthorizationRules) DeleteCollection(options *v1.Del
 // Patch applies the patch and returns the patched notificationHubAuthorizationRule.
 func (c *FakeNotificationHubAuthorizationRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NotificationHubAuthorizationRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(notificationhubauthorizationrulesResource, name, pt, data, subresources...), &v1alpha1.NotificationHubAuthorizationRule{})
+		Invokes(testing.NewPatchSubresourceAction(notificationhubauthorizationrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.NotificationHubAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}

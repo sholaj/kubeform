@@ -29,8 +29,8 @@ import (
 type ApiGatewayBasePathMappingLister interface {
 	// List lists all ApiGatewayBasePathMappings in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayBasePathMapping, err error)
-	// Get retrieves the ApiGatewayBasePathMapping from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayBasePathMapping, error)
+	// ApiGatewayBasePathMappings returns an object that can list and get ApiGatewayBasePathMappings.
+	ApiGatewayBasePathMappings(namespace string) ApiGatewayBasePathMappingNamespaceLister
 	ApiGatewayBasePathMappingListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiGatewayBasePathMappingLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayBasePathMapping from the index for a given name.
-func (s *apiGatewayBasePathMappingLister) Get(name string) (*v1alpha1.ApiGatewayBasePathMapping, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayBasePathMappings returns an object that can list and get ApiGatewayBasePathMappings.
+func (s *apiGatewayBasePathMappingLister) ApiGatewayBasePathMappings(namespace string) ApiGatewayBasePathMappingNamespaceLister {
+	return apiGatewayBasePathMappingNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayBasePathMappingNamespaceLister helps list and get ApiGatewayBasePathMappings.
+type ApiGatewayBasePathMappingNamespaceLister interface {
+	// List lists all ApiGatewayBasePathMappings in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayBasePathMapping, err error)
+	// Get retrieves the ApiGatewayBasePathMapping from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayBasePathMapping, error)
+	ApiGatewayBasePathMappingNamespaceListerExpansion
+}
+
+// apiGatewayBasePathMappingNamespaceLister implements the ApiGatewayBasePathMappingNamespaceLister
+// interface.
+type apiGatewayBasePathMappingNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayBasePathMappings in the indexer for a given namespace.
+func (s apiGatewayBasePathMappingNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayBasePathMapping, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayBasePathMapping))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayBasePathMapping from the indexer for a given namespace and name.
+func (s apiGatewayBasePathMappingNamespaceLister) Get(name string) (*v1alpha1.ApiGatewayBasePathMapping, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -41,32 +41,33 @@ type MonitorAutoscaleSettingInformer interface {
 type monitorAutoscaleSettingInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewMonitorAutoscaleSettingInformer constructs a new informer for MonitorAutoscaleSetting type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewMonitorAutoscaleSettingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredMonitorAutoscaleSettingInformer(client, resyncPeriod, indexers, nil)
+func NewMonitorAutoscaleSettingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredMonitorAutoscaleSettingInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredMonitorAutoscaleSettingInformer constructs a new informer for MonitorAutoscaleSetting type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredMonitorAutoscaleSettingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredMonitorAutoscaleSettingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().MonitorAutoscaleSettings().List(options)
+				return client.AzurermV1alpha1().MonitorAutoscaleSettings(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().MonitorAutoscaleSettings().Watch(options)
+				return client.AzurermV1alpha1().MonitorAutoscaleSettings(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.MonitorAutoscaleSetting{},
@@ -76,7 +77,7 @@ func NewFilteredMonitorAutoscaleSettingInformer(client versioned.Interface, resy
 }
 
 func (f *monitorAutoscaleSettingInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredMonitorAutoscaleSettingInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredMonitorAutoscaleSettingInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *monitorAutoscaleSettingInformer) Informer() cache.SharedIndexInformer {

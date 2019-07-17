@@ -29,8 +29,8 @@ import (
 type MskClusterLister interface {
 	// List lists all MskClusters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MskCluster, err error)
-	// Get retrieves the MskCluster from the index for a given name.
-	Get(name string) (*v1alpha1.MskCluster, error)
+	// MskClusters returns an object that can list and get MskClusters.
+	MskClusters(namespace string) MskClusterNamespaceLister
 	MskClusterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *mskClusterLister) List(selector labels.Selector) (ret []*v1alpha1.MskCl
 	return ret, err
 }
 
-// Get retrieves the MskCluster from the index for a given name.
-func (s *mskClusterLister) Get(name string) (*v1alpha1.MskCluster, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MskClusters returns an object that can list and get MskClusters.
+func (s *mskClusterLister) MskClusters(namespace string) MskClusterNamespaceLister {
+	return mskClusterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MskClusterNamespaceLister helps list and get MskClusters.
+type MskClusterNamespaceLister interface {
+	// List lists all MskClusters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MskCluster, err error)
+	// Get retrieves the MskCluster from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MskCluster, error)
+	MskClusterNamespaceListerExpansion
+}
+
+// mskClusterNamespaceLister implements the MskClusterNamespaceLister
+// interface.
+type mskClusterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MskClusters in the indexer for a given namespace.
+func (s mskClusterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MskCluster, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MskCluster))
+	})
+	return ret, err
+}
+
+// Get retrieves the MskCluster from the indexer for a given namespace and name.
+func (s mskClusterNamespaceLister) Get(name string) (*v1alpha1.MskCluster, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

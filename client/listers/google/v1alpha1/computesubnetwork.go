@@ -29,8 +29,8 @@ import (
 type ComputeSubnetworkLister interface {
 	// List lists all ComputeSubnetworks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeSubnetwork, err error)
-	// Get retrieves the ComputeSubnetwork from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeSubnetwork, error)
+	// ComputeSubnetworks returns an object that can list and get ComputeSubnetworks.
+	ComputeSubnetworks(namespace string) ComputeSubnetworkNamespaceLister
 	ComputeSubnetworkListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeSubnetworkLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the ComputeSubnetwork from the index for a given name.
-func (s *computeSubnetworkLister) Get(name string) (*v1alpha1.ComputeSubnetwork, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeSubnetworks returns an object that can list and get ComputeSubnetworks.
+func (s *computeSubnetworkLister) ComputeSubnetworks(namespace string) ComputeSubnetworkNamespaceLister {
+	return computeSubnetworkNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeSubnetworkNamespaceLister helps list and get ComputeSubnetworks.
+type ComputeSubnetworkNamespaceLister interface {
+	// List lists all ComputeSubnetworks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeSubnetwork, err error)
+	// Get retrieves the ComputeSubnetwork from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeSubnetwork, error)
+	ComputeSubnetworkNamespaceListerExpansion
+}
+
+// computeSubnetworkNamespaceLister implements the ComputeSubnetworkNamespaceLister
+// interface.
+type computeSubnetworkNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeSubnetworks in the indexer for a given namespace.
+func (s computeSubnetworkNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeSubnetwork, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeSubnetwork))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeSubnetwork from the indexer for a given namespace and name.
+func (s computeSubnetworkNamespaceLister) Get(name string) (*v1alpha1.ComputeSubnetwork, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

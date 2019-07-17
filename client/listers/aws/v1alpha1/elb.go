@@ -29,8 +29,8 @@ import (
 type ElbLister interface {
 	// List lists all Elbs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Elb, err error)
-	// Get retrieves the Elb from the index for a given name.
-	Get(name string) (*v1alpha1.Elb, error)
+	// Elbs returns an object that can list and get Elbs.
+	Elbs(namespace string) ElbNamespaceLister
 	ElbListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *elbLister) List(selector labels.Selector) (ret []*v1alpha1.Elb, err err
 	return ret, err
 }
 
-// Get retrieves the Elb from the index for a given name.
-func (s *elbLister) Get(name string) (*v1alpha1.Elb, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Elbs returns an object that can list and get Elbs.
+func (s *elbLister) Elbs(namespace string) ElbNamespaceLister {
+	return elbNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ElbNamespaceLister helps list and get Elbs.
+type ElbNamespaceLister interface {
+	// List lists all Elbs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Elb, err error)
+	// Get retrieves the Elb from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Elb, error)
+	ElbNamespaceListerExpansion
+}
+
+// elbNamespaceLister implements the ElbNamespaceLister
+// interface.
+type elbNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Elbs in the indexer for a given namespace.
+func (s elbNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Elb, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Elb))
+	})
+	return ret, err
+}
+
+// Get retrieves the Elb from the indexer for a given namespace and name.
+func (s elbNamespaceLister) Get(name string) (*v1alpha1.Elb, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

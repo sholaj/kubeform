@@ -32,7 +32,7 @@ import (
 // VirtualMachinesGetter has a method to return a VirtualMachineInterface.
 // A group's client should implement this interface.
 type VirtualMachinesGetter interface {
-	VirtualMachines() VirtualMachineInterface
+	VirtualMachines(namespace string) VirtualMachineInterface
 }
 
 // VirtualMachineInterface has methods to work with VirtualMachine resources.
@@ -52,12 +52,14 @@ type VirtualMachineInterface interface {
 // virtualMachines implements VirtualMachineInterface
 type virtualMachines struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVirtualMachines returns a VirtualMachines
-func newVirtualMachines(c *AzurermV1alpha1Client) *virtualMachines {
+func newVirtualMachines(c *AzurermV1alpha1Client, namespace string) *virtualMachines {
 	return &virtualMachines{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVirtualMachines(c *AzurermV1alpha1Client) *virtualMachines {
 func (c *virtualMachines) Get(name string, options v1.GetOptions) (result *v1alpha1.VirtualMachine, err error) {
 	result = &v1alpha1.VirtualMachine{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("virtualmachines").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *virtualMachines) List(opts v1.ListOptions) (result *v1alpha1.VirtualMac
 	}
 	result = &v1alpha1.VirtualMachineList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("virtualmachines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *virtualMachines) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("virtualmachines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *virtualMachines) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *virtualMachines) Create(virtualMachine *v1alpha1.VirtualMachine) (result *v1alpha1.VirtualMachine, err error) {
 	result = &v1alpha1.VirtualMachine{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("virtualmachines").
 		Body(virtualMachine).
 		Do().
@@ -118,6 +124,7 @@ func (c *virtualMachines) Create(virtualMachine *v1alpha1.VirtualMachine) (resul
 func (c *virtualMachines) Update(virtualMachine *v1alpha1.VirtualMachine) (result *v1alpha1.VirtualMachine, err error) {
 	result = &v1alpha1.VirtualMachine{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("virtualmachines").
 		Name(virtualMachine.Name).
 		Body(virtualMachine).
@@ -132,6 +139,7 @@ func (c *virtualMachines) Update(virtualMachine *v1alpha1.VirtualMachine) (resul
 func (c *virtualMachines) UpdateStatus(virtualMachine *v1alpha1.VirtualMachine) (result *v1alpha1.VirtualMachine, err error) {
 	result = &v1alpha1.VirtualMachine{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("virtualmachines").
 		Name(virtualMachine.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *virtualMachines) UpdateStatus(virtualMachine *v1alpha1.VirtualMachine) 
 // Delete takes name of the virtualMachine and deletes it. Returns an error if one occurs.
 func (c *virtualMachines) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("virtualmachines").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *virtualMachines) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("virtualmachines").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *virtualMachines) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *virtualMachines) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VirtualMachine, err error) {
 	result = &v1alpha1.VirtualMachine{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("virtualmachines").
 		SubResource(subresources...).
 		Name(name).

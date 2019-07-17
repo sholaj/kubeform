@@ -29,8 +29,8 @@ import (
 type AcmCertificateLister interface {
 	// List lists all AcmCertificates in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AcmCertificate, err error)
-	// Get retrieves the AcmCertificate from the index for a given name.
-	Get(name string) (*v1alpha1.AcmCertificate, error)
+	// AcmCertificates returns an object that can list and get AcmCertificates.
+	AcmCertificates(namespace string) AcmCertificateNamespaceLister
 	AcmCertificateListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *acmCertificateLister) List(selector labels.Selector) (ret []*v1alpha1.A
 	return ret, err
 }
 
-// Get retrieves the AcmCertificate from the index for a given name.
-func (s *acmCertificateLister) Get(name string) (*v1alpha1.AcmCertificate, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AcmCertificates returns an object that can list and get AcmCertificates.
+func (s *acmCertificateLister) AcmCertificates(namespace string) AcmCertificateNamespaceLister {
+	return acmCertificateNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AcmCertificateNamespaceLister helps list and get AcmCertificates.
+type AcmCertificateNamespaceLister interface {
+	// List lists all AcmCertificates in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AcmCertificate, err error)
+	// Get retrieves the AcmCertificate from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AcmCertificate, error)
+	AcmCertificateNamespaceListerExpansion
+}
+
+// acmCertificateNamespaceLister implements the AcmCertificateNamespaceLister
+// interface.
+type acmCertificateNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AcmCertificates in the indexer for a given namespace.
+func (s acmCertificateNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AcmCertificate, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AcmCertificate))
+	})
+	return ret, err
+}
+
+// Get retrieves the AcmCertificate from the indexer for a given namespace and name.
+func (s acmCertificateNamespaceLister) Get(name string) (*v1alpha1.AcmCertificate, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

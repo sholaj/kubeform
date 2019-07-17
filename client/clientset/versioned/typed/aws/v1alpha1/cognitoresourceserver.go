@@ -32,7 +32,7 @@ import (
 // CognitoResourceServersGetter has a method to return a CognitoResourceServerInterface.
 // A group's client should implement this interface.
 type CognitoResourceServersGetter interface {
-	CognitoResourceServers() CognitoResourceServerInterface
+	CognitoResourceServers(namespace string) CognitoResourceServerInterface
 }
 
 // CognitoResourceServerInterface has methods to work with CognitoResourceServer resources.
@@ -52,12 +52,14 @@ type CognitoResourceServerInterface interface {
 // cognitoResourceServers implements CognitoResourceServerInterface
 type cognitoResourceServers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCognitoResourceServers returns a CognitoResourceServers
-func newCognitoResourceServers(c *AwsV1alpha1Client) *cognitoResourceServers {
+func newCognitoResourceServers(c *AwsV1alpha1Client, namespace string) *cognitoResourceServers {
 	return &cognitoResourceServers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCognitoResourceServers(c *AwsV1alpha1Client) *cognitoResourceServers {
 func (c *cognitoResourceServers) Get(name string, options v1.GetOptions) (result *v1alpha1.CognitoResourceServer, err error) {
 	result = &v1alpha1.CognitoResourceServer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitoresourceservers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cognitoResourceServers) List(opts v1.ListOptions) (result *v1alpha1.Cog
 	}
 	result = &v1alpha1.CognitoResourceServerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitoresourceservers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cognitoResourceServers) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitoresourceservers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cognitoResourceServers) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *cognitoResourceServers) Create(cognitoResourceServer *v1alpha1.CognitoResourceServer) (result *v1alpha1.CognitoResourceServer, err error) {
 	result = &v1alpha1.CognitoResourceServer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cognitoresourceservers").
 		Body(cognitoResourceServer).
 		Do().
@@ -118,6 +124,7 @@ func (c *cognitoResourceServers) Create(cognitoResourceServer *v1alpha1.CognitoR
 func (c *cognitoResourceServers) Update(cognitoResourceServer *v1alpha1.CognitoResourceServer) (result *v1alpha1.CognitoResourceServer, err error) {
 	result = &v1alpha1.CognitoResourceServer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cognitoresourceservers").
 		Name(cognitoResourceServer.Name).
 		Body(cognitoResourceServer).
@@ -132,6 +139,7 @@ func (c *cognitoResourceServers) Update(cognitoResourceServer *v1alpha1.CognitoR
 func (c *cognitoResourceServers) UpdateStatus(cognitoResourceServer *v1alpha1.CognitoResourceServer) (result *v1alpha1.CognitoResourceServer, err error) {
 	result = &v1alpha1.CognitoResourceServer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cognitoresourceservers").
 		Name(cognitoResourceServer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cognitoResourceServers) UpdateStatus(cognitoResourceServer *v1alpha1.Co
 // Delete takes name of the cognitoResourceServer and deletes it. Returns an error if one occurs.
 func (c *cognitoResourceServers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cognitoresourceservers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cognitoResourceServers) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cognitoresourceservers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cognitoResourceServers) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *cognitoResourceServers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CognitoResourceServer, err error) {
 	result = &v1alpha1.CognitoResourceServer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cognitoresourceservers").
 		SubResource(subresources...).
 		Name(name).

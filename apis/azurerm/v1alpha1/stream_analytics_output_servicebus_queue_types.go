@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,24 +20,25 @@ type StreamAnalyticsOutputServicebusQueue struct {
 
 type StreamAnalyticsOutputServicebusQueueSpecSerialization struct {
 	// +optional
-	Encoding string `json:"encoding,omitempty"`
+	Encoding string `json:"encoding,omitempty" tf:"encoding,omitempty"`
 	// +optional
-	FieldDelimiter string `json:"field_delimiter,omitempty"`
+	FieldDelimiter string `json:"fieldDelimiter,omitempty" tf:"field_delimiter,omitempty"`
 	// +optional
-	Format string `json:"format,omitempty"`
-	Type   string `json:"type"`
+	Format string `json:"format,omitempty" tf:"format,omitempty"`
+	Type   string `json:"type" tf:"type"`
 }
 
 type StreamAnalyticsOutputServicebusQueueSpec struct {
-	Name              string `json:"name"`
-	QueueName         string `json:"queue_name"`
-	ResourceGroupName string `json:"resource_group_name"`
+	Name              string `json:"name" tf:"name"`
+	QueueName         string `json:"queueName" tf:"queue_name"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +kubebuilder:validation:MaxItems=1
-	Serialization          []StreamAnalyticsOutputServicebusQueueSpec `json:"serialization"`
-	ServicebusNamespace    string                                     `json:"servicebus_namespace"`
-	SharedAccessPolicyKey  string                                     `json:"shared_access_policy_key"`
-	SharedAccessPolicyName string                                     `json:"shared_access_policy_name"`
-	StreamAnalyticsJobName string                                     `json:"stream_analytics_job_name"`
+	Serialization          []StreamAnalyticsOutputServicebusQueueSpecSerialization `json:"serialization" tf:"serialization"`
+	ServicebusNamespace    string                                                  `json:"servicebusNamespace" tf:"servicebus_namespace"`
+	SharedAccessPolicyKey  string                                                  `json:"sharedAccessPolicyKey" tf:"shared_access_policy_key"`
+	SharedAccessPolicyName string                                                  `json:"sharedAccessPolicyName" tf:"shared_access_policy_name"`
+	StreamAnalyticsJobName string                                                  `json:"streamAnalyticsJobName" tf:"stream_analytics_job_name"`
+	ProviderRef            core.LocalObjectReference                               `json:"providerRef" tf:"-"`
 }
 
 type StreamAnalyticsOutputServicebusQueueStatus struct {
@@ -45,7 +46,9 @@ type StreamAnalyticsOutputServicebusQueueStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

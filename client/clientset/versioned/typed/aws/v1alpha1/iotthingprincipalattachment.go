@@ -32,7 +32,7 @@ import (
 // IotThingPrincipalAttachmentsGetter has a method to return a IotThingPrincipalAttachmentInterface.
 // A group's client should implement this interface.
 type IotThingPrincipalAttachmentsGetter interface {
-	IotThingPrincipalAttachments() IotThingPrincipalAttachmentInterface
+	IotThingPrincipalAttachments(namespace string) IotThingPrincipalAttachmentInterface
 }
 
 // IotThingPrincipalAttachmentInterface has methods to work with IotThingPrincipalAttachment resources.
@@ -52,12 +52,14 @@ type IotThingPrincipalAttachmentInterface interface {
 // iotThingPrincipalAttachments implements IotThingPrincipalAttachmentInterface
 type iotThingPrincipalAttachments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIotThingPrincipalAttachments returns a IotThingPrincipalAttachments
-func newIotThingPrincipalAttachments(c *AwsV1alpha1Client) *iotThingPrincipalAttachments {
+func newIotThingPrincipalAttachments(c *AwsV1alpha1Client, namespace string) *iotThingPrincipalAttachments {
 	return &iotThingPrincipalAttachments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIotThingPrincipalAttachments(c *AwsV1alpha1Client) *iotThingPrincipalAtt
 func (c *iotThingPrincipalAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.IotThingPrincipalAttachment, err error) {
 	result = &v1alpha1.IotThingPrincipalAttachment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iotthingprincipalattachments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iotThingPrincipalAttachments) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.IotThingPrincipalAttachmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iotthingprincipalattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iotThingPrincipalAttachments) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iotthingprincipalattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iotThingPrincipalAttachments) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *iotThingPrincipalAttachments) Create(iotThingPrincipalAttachment *v1alpha1.IotThingPrincipalAttachment) (result *v1alpha1.IotThingPrincipalAttachment, err error) {
 	result = &v1alpha1.IotThingPrincipalAttachment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iotthingprincipalattachments").
 		Body(iotThingPrincipalAttachment).
 		Do().
@@ -118,6 +124,7 @@ func (c *iotThingPrincipalAttachments) Create(iotThingPrincipalAttachment *v1alp
 func (c *iotThingPrincipalAttachments) Update(iotThingPrincipalAttachment *v1alpha1.IotThingPrincipalAttachment) (result *v1alpha1.IotThingPrincipalAttachment, err error) {
 	result = &v1alpha1.IotThingPrincipalAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iotthingprincipalattachments").
 		Name(iotThingPrincipalAttachment.Name).
 		Body(iotThingPrincipalAttachment).
@@ -132,6 +139,7 @@ func (c *iotThingPrincipalAttachments) Update(iotThingPrincipalAttachment *v1alp
 func (c *iotThingPrincipalAttachments) UpdateStatus(iotThingPrincipalAttachment *v1alpha1.IotThingPrincipalAttachment) (result *v1alpha1.IotThingPrincipalAttachment, err error) {
 	result = &v1alpha1.IotThingPrincipalAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iotthingprincipalattachments").
 		Name(iotThingPrincipalAttachment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iotThingPrincipalAttachments) UpdateStatus(iotThingPrincipalAttachment 
 // Delete takes name of the iotThingPrincipalAttachment and deletes it. Returns an error if one occurs.
 func (c *iotThingPrincipalAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iotthingprincipalattachments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iotThingPrincipalAttachments) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iotthingprincipalattachments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iotThingPrincipalAttachments) DeleteCollection(options *v1.DeleteOption
 func (c *iotThingPrincipalAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IotThingPrincipalAttachment, err error) {
 	result = &v1alpha1.IotThingPrincipalAttachment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iotthingprincipalattachments").
 		SubResource(subresources...).
 		Name(name).

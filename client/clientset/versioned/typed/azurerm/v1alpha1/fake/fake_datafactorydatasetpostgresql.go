@@ -31,6 +31,7 @@ import (
 // FakeDataFactoryDatasetPostgresqls implements DataFactoryDatasetPostgresqlInterface
 type FakeDataFactoryDatasetPostgresqls struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var datafactorydatasetpostgresqlsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "datafactorydatasetpostgresqls"}
@@ -40,7 +41,8 @@ var datafactorydatasetpostgresqlsKind = schema.GroupVersionKind{Group: "azurerm.
 // Get takes name of the dataFactoryDatasetPostgresql, and returns the corresponding dataFactoryDatasetPostgresql object, and an error if there is any.
 func (c *FakeDataFactoryDatasetPostgresqls) Get(name string, options v1.GetOptions) (result *v1alpha1.DataFactoryDatasetPostgresql, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(datafactorydatasetpostgresqlsResource, name), &v1alpha1.DataFactoryDatasetPostgresql{})
+		Invokes(testing.NewGetAction(datafactorydatasetpostgresqlsResource, c.ns, name), &v1alpha1.DataFactoryDatasetPostgresql{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDataFactoryDatasetPostgresqls) Get(name string, options v1.GetOptio
 // List takes label and field selectors, and returns the list of DataFactoryDatasetPostgresqls that match those selectors.
 func (c *FakeDataFactoryDatasetPostgresqls) List(opts v1.ListOptions) (result *v1alpha1.DataFactoryDatasetPostgresqlList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(datafactorydatasetpostgresqlsResource, datafactorydatasetpostgresqlsKind, opts), &v1alpha1.DataFactoryDatasetPostgresqlList{})
+		Invokes(testing.NewListAction(datafactorydatasetpostgresqlsResource, datafactorydatasetpostgresqlsKind, c.ns, opts), &v1alpha1.DataFactoryDatasetPostgresqlList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDataFactoryDatasetPostgresqls) List(opts v1.ListOptions) (result *v
 // Watch returns a watch.Interface that watches the requested dataFactoryDatasetPostgresqls.
 func (c *FakeDataFactoryDatasetPostgresqls) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(datafactorydatasetpostgresqlsResource, opts))
+		InvokesWatch(testing.NewWatchAction(datafactorydatasetpostgresqlsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dataFactoryDatasetPostgresql and creates it.  Returns the server's representation of the dataFactoryDatasetPostgresql, and an error, if there is any.
 func (c *FakeDataFactoryDatasetPostgresqls) Create(dataFactoryDatasetPostgresql *v1alpha1.DataFactoryDatasetPostgresql) (result *v1alpha1.DataFactoryDatasetPostgresql, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(datafactorydatasetpostgresqlsResource, dataFactoryDatasetPostgresql), &v1alpha1.DataFactoryDatasetPostgresql{})
+		Invokes(testing.NewCreateAction(datafactorydatasetpostgresqlsResource, c.ns, dataFactoryDatasetPostgresql), &v1alpha1.DataFactoryDatasetPostgresql{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDataFactoryDatasetPostgresqls) Create(dataFactoryDatasetPostgresql 
 // Update takes the representation of a dataFactoryDatasetPostgresql and updates it. Returns the server's representation of the dataFactoryDatasetPostgresql, and an error, if there is any.
 func (c *FakeDataFactoryDatasetPostgresqls) Update(dataFactoryDatasetPostgresql *v1alpha1.DataFactoryDatasetPostgresql) (result *v1alpha1.DataFactoryDatasetPostgresql, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(datafactorydatasetpostgresqlsResource, dataFactoryDatasetPostgresql), &v1alpha1.DataFactoryDatasetPostgresql{})
+		Invokes(testing.NewUpdateAction(datafactorydatasetpostgresqlsResource, c.ns, dataFactoryDatasetPostgresql), &v1alpha1.DataFactoryDatasetPostgresql{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDataFactoryDatasetPostgresqls) Update(dataFactoryDatasetPostgresql 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDataFactoryDatasetPostgresqls) UpdateStatus(dataFactoryDatasetPostgresql *v1alpha1.DataFactoryDatasetPostgresql) (*v1alpha1.DataFactoryDatasetPostgresql, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(datafactorydatasetpostgresqlsResource, "status", dataFactoryDatasetPostgresql), &v1alpha1.DataFactoryDatasetPostgresql{})
+		Invokes(testing.NewUpdateSubresourceAction(datafactorydatasetpostgresqlsResource, "status", c.ns, dataFactoryDatasetPostgresql), &v1alpha1.DataFactoryDatasetPostgresql{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDataFactoryDatasetPostgresqls) UpdateStatus(dataFactoryDatasetPostg
 // Delete takes name of the dataFactoryDatasetPostgresql and deletes it. Returns an error if one occurs.
 func (c *FakeDataFactoryDatasetPostgresqls) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(datafactorydatasetpostgresqlsResource, name), &v1alpha1.DataFactoryDatasetPostgresql{})
+		Invokes(testing.NewDeleteAction(datafactorydatasetpostgresqlsResource, c.ns, name), &v1alpha1.DataFactoryDatasetPostgresql{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDataFactoryDatasetPostgresqls) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(datafactorydatasetpostgresqlsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(datafactorydatasetpostgresqlsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DataFactoryDatasetPostgresqlList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDataFactoryDatasetPostgresqls) DeleteCollection(options *v1.DeleteO
 // Patch applies the patch and returns the patched dataFactoryDatasetPostgresql.
 func (c *FakeDataFactoryDatasetPostgresqls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataFactoryDatasetPostgresql, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(datafactorydatasetpostgresqlsResource, name, pt, data, subresources...), &v1alpha1.DataFactoryDatasetPostgresql{})
+		Invokes(testing.NewPatchSubresourceAction(datafactorydatasetpostgresqlsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DataFactoryDatasetPostgresql{})
+
 	if obj == nil {
 		return nil, err
 	}

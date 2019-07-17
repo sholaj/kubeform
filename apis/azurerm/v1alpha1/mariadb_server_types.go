@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,32 +19,33 @@ type MariadbServer struct {
 }
 
 type MariadbServerSpecSku struct {
-	Capacity int    `json:"capacity"`
-	Family   string `json:"family"`
-	Name     string `json:"name"`
-	Tier     string `json:"tier"`
+	Capacity int    `json:"capacity" tf:"capacity"`
+	Family   string `json:"family" tf:"family"`
+	Name     string `json:"name" tf:"name"`
+	Tier     string `json:"tier" tf:"tier"`
 }
 
 type MariadbServerSpecStorageProfile struct {
 	// +optional
-	BackupRetentionDays int `json:"backup_retention_days,omitempty"`
+	BackupRetentionDays int `json:"backupRetentionDays,omitempty" tf:"backup_retention_days,omitempty"`
 	// +optional
-	GeoRedundantBackup string `json:"geo_redundant_backup,omitempty"`
-	StorageMb          int    `json:"storage_mb"`
+	GeoRedundantBackup string `json:"geoRedundantBackup,omitempty" tf:"geo_redundant_backup,omitempty"`
+	StorageMb          int    `json:"storageMb" tf:"storage_mb"`
 }
 
 type MariadbServerSpec struct {
-	AdministratorLogin         string `json:"administrator_login"`
-	AdministratorLoginPassword string `json:"administrator_login_password"`
-	Location                   string `json:"location"`
-	Name                       string `json:"name"`
-	ResourceGroupName          string `json:"resource_group_name"`
+	AdministratorLogin         string `json:"administratorLogin" tf:"administrator_login"`
+	AdministratorLoginPassword string `json:"administratorLoginPassword" tf:"administrator_login_password"`
+	Location                   string `json:"location" tf:"location"`
+	Name                       string `json:"name" tf:"name"`
+	ResourceGroupName          string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +kubebuilder:validation:MaxItems=1
-	Sku            []MariadbServerSpec `json:"sku"`
-	SslEnforcement string              `json:"ssl_enforcement"`
+	Sku            []MariadbServerSpecSku `json:"sku" tf:"sku"`
+	SslEnforcement string                 `json:"sslEnforcement" tf:"ssl_enforcement"`
 	// +kubebuilder:validation:MaxItems=1
-	StorageProfile []MariadbServerSpec `json:"storage_profile"`
-	Version        string              `json:"version"`
+	StorageProfile []MariadbServerSpecStorageProfile `json:"storageProfile" tf:"storage_profile"`
+	Version        string                            `json:"version" tf:"version"`
+	ProviderRef    core.LocalObjectReference         `json:"providerRef" tf:"-"`
 }
 
 type MariadbServerStatus struct {
@@ -52,7 +53,9 @@ type MariadbServerStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

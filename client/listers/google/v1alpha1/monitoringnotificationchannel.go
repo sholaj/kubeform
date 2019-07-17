@@ -29,8 +29,8 @@ import (
 type MonitoringNotificationChannelLister interface {
 	// List lists all MonitoringNotificationChannels in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MonitoringNotificationChannel, err error)
-	// Get retrieves the MonitoringNotificationChannel from the index for a given name.
-	Get(name string) (*v1alpha1.MonitoringNotificationChannel, error)
+	// MonitoringNotificationChannels returns an object that can list and get MonitoringNotificationChannels.
+	MonitoringNotificationChannels(namespace string) MonitoringNotificationChannelNamespaceLister
 	MonitoringNotificationChannelListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *monitoringNotificationChannelLister) List(selector labels.Selector) (re
 	return ret, err
 }
 
-// Get retrieves the MonitoringNotificationChannel from the index for a given name.
-func (s *monitoringNotificationChannelLister) Get(name string) (*v1alpha1.MonitoringNotificationChannel, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MonitoringNotificationChannels returns an object that can list and get MonitoringNotificationChannels.
+func (s *monitoringNotificationChannelLister) MonitoringNotificationChannels(namespace string) MonitoringNotificationChannelNamespaceLister {
+	return monitoringNotificationChannelNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MonitoringNotificationChannelNamespaceLister helps list and get MonitoringNotificationChannels.
+type MonitoringNotificationChannelNamespaceLister interface {
+	// List lists all MonitoringNotificationChannels in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MonitoringNotificationChannel, err error)
+	// Get retrieves the MonitoringNotificationChannel from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MonitoringNotificationChannel, error)
+	MonitoringNotificationChannelNamespaceListerExpansion
+}
+
+// monitoringNotificationChannelNamespaceLister implements the MonitoringNotificationChannelNamespaceLister
+// interface.
+type monitoringNotificationChannelNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MonitoringNotificationChannels in the indexer for a given namespace.
+func (s monitoringNotificationChannelNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MonitoringNotificationChannel, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MonitoringNotificationChannel))
+	})
+	return ret, err
+}
+
+// Get retrieves the MonitoringNotificationChannel from the indexer for a given namespace and name.
+func (s monitoringNotificationChannelNamespaceLister) Get(name string) (*v1alpha1.MonitoringNotificationChannel, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

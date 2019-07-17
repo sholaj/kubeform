@@ -32,7 +32,7 @@ import (
 // MysqlServersGetter has a method to return a MysqlServerInterface.
 // A group's client should implement this interface.
 type MysqlServersGetter interface {
-	MysqlServers() MysqlServerInterface
+	MysqlServers(namespace string) MysqlServerInterface
 }
 
 // MysqlServerInterface has methods to work with MysqlServer resources.
@@ -52,12 +52,14 @@ type MysqlServerInterface interface {
 // mysqlServers implements MysqlServerInterface
 type mysqlServers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMysqlServers returns a MysqlServers
-func newMysqlServers(c *AzurermV1alpha1Client) *mysqlServers {
+func newMysqlServers(c *AzurermV1alpha1Client, namespace string) *mysqlServers {
 	return &mysqlServers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMysqlServers(c *AzurermV1alpha1Client) *mysqlServers {
 func (c *mysqlServers) Get(name string, options v1.GetOptions) (result *v1alpha1.MysqlServer, err error) {
 	result = &v1alpha1.MysqlServer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mysqlservers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *mysqlServers) List(opts v1.ListOptions) (result *v1alpha1.MysqlServerLi
 	}
 	result = &v1alpha1.MysqlServerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mysqlservers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *mysqlServers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("mysqlservers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *mysqlServers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *mysqlServers) Create(mysqlServer *v1alpha1.MysqlServer) (result *v1alpha1.MysqlServer, err error) {
 	result = &v1alpha1.MysqlServer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("mysqlservers").
 		Body(mysqlServer).
 		Do().
@@ -118,6 +124,7 @@ func (c *mysqlServers) Create(mysqlServer *v1alpha1.MysqlServer) (result *v1alph
 func (c *mysqlServers) Update(mysqlServer *v1alpha1.MysqlServer) (result *v1alpha1.MysqlServer, err error) {
 	result = &v1alpha1.MysqlServer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mysqlservers").
 		Name(mysqlServer.Name).
 		Body(mysqlServer).
@@ -132,6 +139,7 @@ func (c *mysqlServers) Update(mysqlServer *v1alpha1.MysqlServer) (result *v1alph
 func (c *mysqlServers) UpdateStatus(mysqlServer *v1alpha1.MysqlServer) (result *v1alpha1.MysqlServer, err error) {
 	result = &v1alpha1.MysqlServer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mysqlservers").
 		Name(mysqlServer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *mysqlServers) UpdateStatus(mysqlServer *v1alpha1.MysqlServer) (result *
 // Delete takes name of the mysqlServer and deletes it. Returns an error if one occurs.
 func (c *mysqlServers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mysqlservers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *mysqlServers) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mysqlservers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *mysqlServers) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *mysqlServers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MysqlServer, err error) {
 	result = &v1alpha1.MysqlServer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("mysqlservers").
 		SubResource(subresources...).
 		Name(name).

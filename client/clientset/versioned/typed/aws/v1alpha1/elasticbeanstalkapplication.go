@@ -32,7 +32,7 @@ import (
 // ElasticBeanstalkApplicationsGetter has a method to return a ElasticBeanstalkApplicationInterface.
 // A group's client should implement this interface.
 type ElasticBeanstalkApplicationsGetter interface {
-	ElasticBeanstalkApplications() ElasticBeanstalkApplicationInterface
+	ElasticBeanstalkApplications(namespace string) ElasticBeanstalkApplicationInterface
 }
 
 // ElasticBeanstalkApplicationInterface has methods to work with ElasticBeanstalkApplication resources.
@@ -52,12 +52,14 @@ type ElasticBeanstalkApplicationInterface interface {
 // elasticBeanstalkApplications implements ElasticBeanstalkApplicationInterface
 type elasticBeanstalkApplications struct {
 	client rest.Interface
+	ns     string
 }
 
 // newElasticBeanstalkApplications returns a ElasticBeanstalkApplications
-func newElasticBeanstalkApplications(c *AwsV1alpha1Client) *elasticBeanstalkApplications {
+func newElasticBeanstalkApplications(c *AwsV1alpha1Client, namespace string) *elasticBeanstalkApplications {
 	return &elasticBeanstalkApplications{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newElasticBeanstalkApplications(c *AwsV1alpha1Client) *elasticBeanstalkAppl
 func (c *elasticBeanstalkApplications) Get(name string, options v1.GetOptions) (result *v1alpha1.ElasticBeanstalkApplication, err error) {
 	result = &v1alpha1.ElasticBeanstalkApplication{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkapplications").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *elasticBeanstalkApplications) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.ElasticBeanstalkApplicationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkapplications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *elasticBeanstalkApplications) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkapplications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *elasticBeanstalkApplications) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *elasticBeanstalkApplications) Create(elasticBeanstalkApplication *v1alpha1.ElasticBeanstalkApplication) (result *v1alpha1.ElasticBeanstalkApplication, err error) {
 	result = &v1alpha1.ElasticBeanstalkApplication{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkapplications").
 		Body(elasticBeanstalkApplication).
 		Do().
@@ -118,6 +124,7 @@ func (c *elasticBeanstalkApplications) Create(elasticBeanstalkApplication *v1alp
 func (c *elasticBeanstalkApplications) Update(elasticBeanstalkApplication *v1alpha1.ElasticBeanstalkApplication) (result *v1alpha1.ElasticBeanstalkApplication, err error) {
 	result = &v1alpha1.ElasticBeanstalkApplication{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkapplications").
 		Name(elasticBeanstalkApplication.Name).
 		Body(elasticBeanstalkApplication).
@@ -132,6 +139,7 @@ func (c *elasticBeanstalkApplications) Update(elasticBeanstalkApplication *v1alp
 func (c *elasticBeanstalkApplications) UpdateStatus(elasticBeanstalkApplication *v1alpha1.ElasticBeanstalkApplication) (result *v1alpha1.ElasticBeanstalkApplication, err error) {
 	result = &v1alpha1.ElasticBeanstalkApplication{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkapplications").
 		Name(elasticBeanstalkApplication.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *elasticBeanstalkApplications) UpdateStatus(elasticBeanstalkApplication 
 // Delete takes name of the elasticBeanstalkApplication and deletes it. Returns an error if one occurs.
 func (c *elasticBeanstalkApplications) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkapplications").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *elasticBeanstalkApplications) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkapplications").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *elasticBeanstalkApplications) DeleteCollection(options *v1.DeleteOption
 func (c *elasticBeanstalkApplications) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ElasticBeanstalkApplication, err error) {
 	result = &v1alpha1.ElasticBeanstalkApplication{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("elasticbeanstalkapplications").
 		SubResource(subresources...).
 		Name(name).

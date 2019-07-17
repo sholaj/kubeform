@@ -29,8 +29,8 @@ import (
 type DocdbClusterInstanceLister interface {
 	// List lists all DocdbClusterInstances in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DocdbClusterInstance, err error)
-	// Get retrieves the DocdbClusterInstance from the index for a given name.
-	Get(name string) (*v1alpha1.DocdbClusterInstance, error)
+	// DocdbClusterInstances returns an object that can list and get DocdbClusterInstances.
+	DocdbClusterInstances(namespace string) DocdbClusterInstanceNamespaceLister
 	DocdbClusterInstanceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *docdbClusterInstanceLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the DocdbClusterInstance from the index for a given name.
-func (s *docdbClusterInstanceLister) Get(name string) (*v1alpha1.DocdbClusterInstance, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DocdbClusterInstances returns an object that can list and get DocdbClusterInstances.
+func (s *docdbClusterInstanceLister) DocdbClusterInstances(namespace string) DocdbClusterInstanceNamespaceLister {
+	return docdbClusterInstanceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DocdbClusterInstanceNamespaceLister helps list and get DocdbClusterInstances.
+type DocdbClusterInstanceNamespaceLister interface {
+	// List lists all DocdbClusterInstances in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DocdbClusterInstance, err error)
+	// Get retrieves the DocdbClusterInstance from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DocdbClusterInstance, error)
+	DocdbClusterInstanceNamespaceListerExpansion
+}
+
+// docdbClusterInstanceNamespaceLister implements the DocdbClusterInstanceNamespaceLister
+// interface.
+type docdbClusterInstanceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DocdbClusterInstances in the indexer for a given namespace.
+func (s docdbClusterInstanceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DocdbClusterInstance, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DocdbClusterInstance))
+	})
+	return ret, err
+}
+
+// Get retrieves the DocdbClusterInstance from the indexer for a given namespace and name.
+func (s docdbClusterInstanceNamespaceLister) Get(name string) (*v1alpha1.DocdbClusterInstance, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

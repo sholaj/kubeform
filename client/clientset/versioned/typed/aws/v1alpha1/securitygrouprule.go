@@ -32,7 +32,7 @@ import (
 // SecurityGroupRulesGetter has a method to return a SecurityGroupRuleInterface.
 // A group's client should implement this interface.
 type SecurityGroupRulesGetter interface {
-	SecurityGroupRules() SecurityGroupRuleInterface
+	SecurityGroupRules(namespace string) SecurityGroupRuleInterface
 }
 
 // SecurityGroupRuleInterface has methods to work with SecurityGroupRule resources.
@@ -52,12 +52,14 @@ type SecurityGroupRuleInterface interface {
 // securityGroupRules implements SecurityGroupRuleInterface
 type securityGroupRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSecurityGroupRules returns a SecurityGroupRules
-func newSecurityGroupRules(c *AwsV1alpha1Client) *securityGroupRules {
+func newSecurityGroupRules(c *AwsV1alpha1Client, namespace string) *securityGroupRules {
 	return &securityGroupRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSecurityGroupRules(c *AwsV1alpha1Client) *securityGroupRules {
 func (c *securityGroupRules) Get(name string, options v1.GetOptions) (result *v1alpha1.SecurityGroupRule, err error) {
 	result = &v1alpha1.SecurityGroupRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("securitygrouprules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *securityGroupRules) List(opts v1.ListOptions) (result *v1alpha1.Securit
 	}
 	result = &v1alpha1.SecurityGroupRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("securitygrouprules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *securityGroupRules) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("securitygrouprules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *securityGroupRules) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *securityGroupRules) Create(securityGroupRule *v1alpha1.SecurityGroupRule) (result *v1alpha1.SecurityGroupRule, err error) {
 	result = &v1alpha1.SecurityGroupRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("securitygrouprules").
 		Body(securityGroupRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *securityGroupRules) Create(securityGroupRule *v1alpha1.SecurityGroupRul
 func (c *securityGroupRules) Update(securityGroupRule *v1alpha1.SecurityGroupRule) (result *v1alpha1.SecurityGroupRule, err error) {
 	result = &v1alpha1.SecurityGroupRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("securitygrouprules").
 		Name(securityGroupRule.Name).
 		Body(securityGroupRule).
@@ -132,6 +139,7 @@ func (c *securityGroupRules) Update(securityGroupRule *v1alpha1.SecurityGroupRul
 func (c *securityGroupRules) UpdateStatus(securityGroupRule *v1alpha1.SecurityGroupRule) (result *v1alpha1.SecurityGroupRule, err error) {
 	result = &v1alpha1.SecurityGroupRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("securitygrouprules").
 		Name(securityGroupRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *securityGroupRules) UpdateStatus(securityGroupRule *v1alpha1.SecurityGr
 // Delete takes name of the securityGroupRule and deletes it. Returns an error if one occurs.
 func (c *securityGroupRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("securitygrouprules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *securityGroupRules) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("securitygrouprules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *securityGroupRules) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *securityGroupRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SecurityGroupRule, err error) {
 	result = &v1alpha1.SecurityGroupRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("securitygrouprules").
 		SubResource(subresources...).
 		Name(name).

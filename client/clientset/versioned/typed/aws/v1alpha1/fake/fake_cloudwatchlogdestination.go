@@ -31,6 +31,7 @@ import (
 // FakeCloudwatchLogDestinations implements CloudwatchLogDestinationInterface
 type FakeCloudwatchLogDestinations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var cloudwatchlogdestinationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "cloudwatchlogdestinations"}
@@ -40,7 +41,8 @@ var cloudwatchlogdestinationsKind = schema.GroupVersionKind{Group: "aws.kubeform
 // Get takes name of the cloudwatchLogDestination, and returns the corresponding cloudwatchLogDestination object, and an error if there is any.
 func (c *FakeCloudwatchLogDestinations) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudwatchLogDestination, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cloudwatchlogdestinationsResource, name), &v1alpha1.CloudwatchLogDestination{})
+		Invokes(testing.NewGetAction(cloudwatchlogdestinationsResource, c.ns, name), &v1alpha1.CloudwatchLogDestination{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCloudwatchLogDestinations) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of CloudwatchLogDestinations that match those selectors.
 func (c *FakeCloudwatchLogDestinations) List(opts v1.ListOptions) (result *v1alpha1.CloudwatchLogDestinationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cloudwatchlogdestinationsResource, cloudwatchlogdestinationsKind, opts), &v1alpha1.CloudwatchLogDestinationList{})
+		Invokes(testing.NewListAction(cloudwatchlogdestinationsResource, cloudwatchlogdestinationsKind, c.ns, opts), &v1alpha1.CloudwatchLogDestinationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCloudwatchLogDestinations) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested cloudwatchLogDestinations.
 func (c *FakeCloudwatchLogDestinations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cloudwatchlogdestinationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(cloudwatchlogdestinationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cloudwatchLogDestination and creates it.  Returns the server's representation of the cloudwatchLogDestination, and an error, if there is any.
 func (c *FakeCloudwatchLogDestinations) Create(cloudwatchLogDestination *v1alpha1.CloudwatchLogDestination) (result *v1alpha1.CloudwatchLogDestination, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cloudwatchlogdestinationsResource, cloudwatchLogDestination), &v1alpha1.CloudwatchLogDestination{})
+		Invokes(testing.NewCreateAction(cloudwatchlogdestinationsResource, c.ns, cloudwatchLogDestination), &v1alpha1.CloudwatchLogDestination{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCloudwatchLogDestinations) Create(cloudwatchLogDestination *v1alpha
 // Update takes the representation of a cloudwatchLogDestination and updates it. Returns the server's representation of the cloudwatchLogDestination, and an error, if there is any.
 func (c *FakeCloudwatchLogDestinations) Update(cloudwatchLogDestination *v1alpha1.CloudwatchLogDestination) (result *v1alpha1.CloudwatchLogDestination, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cloudwatchlogdestinationsResource, cloudwatchLogDestination), &v1alpha1.CloudwatchLogDestination{})
+		Invokes(testing.NewUpdateAction(cloudwatchlogdestinationsResource, c.ns, cloudwatchLogDestination), &v1alpha1.CloudwatchLogDestination{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCloudwatchLogDestinations) Update(cloudwatchLogDestination *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCloudwatchLogDestinations) UpdateStatus(cloudwatchLogDestination *v1alpha1.CloudwatchLogDestination) (*v1alpha1.CloudwatchLogDestination, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cloudwatchlogdestinationsResource, "status", cloudwatchLogDestination), &v1alpha1.CloudwatchLogDestination{})
+		Invokes(testing.NewUpdateSubresourceAction(cloudwatchlogdestinationsResource, "status", c.ns, cloudwatchLogDestination), &v1alpha1.CloudwatchLogDestination{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCloudwatchLogDestinations) UpdateStatus(cloudwatchLogDestination *v
 // Delete takes name of the cloudwatchLogDestination and deletes it. Returns an error if one occurs.
 func (c *FakeCloudwatchLogDestinations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cloudwatchlogdestinationsResource, name), &v1alpha1.CloudwatchLogDestination{})
+		Invokes(testing.NewDeleteAction(cloudwatchlogdestinationsResource, c.ns, name), &v1alpha1.CloudwatchLogDestination{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCloudwatchLogDestinations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cloudwatchlogdestinationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cloudwatchlogdestinationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CloudwatchLogDestinationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCloudwatchLogDestinations) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched cloudwatchLogDestination.
 func (c *FakeCloudwatchLogDestinations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudwatchLogDestination, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cloudwatchlogdestinationsResource, name, pt, data, subresources...), &v1alpha1.CloudwatchLogDestination{})
+		Invokes(testing.NewPatchSubresourceAction(cloudwatchlogdestinationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.CloudwatchLogDestination{})
+
 	if obj == nil {
 		return nil, err
 	}

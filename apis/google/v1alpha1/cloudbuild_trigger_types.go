@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,48 +20,49 @@ type CloudbuildTrigger struct {
 
 type CloudbuildTriggerSpecBuildStep struct {
 	// +optional
-	Args string `json:"args,omitempty"`
+	Args string `json:"args,omitempty" tf:"args,omitempty"`
 	// +optional
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" tf:"name,omitempty"`
 }
 
 type CloudbuildTriggerSpecBuild struct {
 	// +optional
-	Images []string `json:"images,omitempty"`
+	Images []string `json:"images,omitempty" tf:"images,omitempty"`
 	// +optional
-	Step *[]CloudbuildTriggerSpecBuild `json:"step,omitempty"`
+	Step []CloudbuildTriggerSpecBuildStep `json:"step,omitempty" tf:"step,omitempty"`
 	// +optional
-	Tags []string `json:"tags,omitempty"`
+	Tags []string `json:"tags,omitempty" tf:"tags,omitempty"`
 }
 
 type CloudbuildTriggerSpecTriggerTemplate struct {
 	// +optional
-	BranchName string `json:"branch_name,omitempty"`
+	BranchName string `json:"branchName,omitempty" tf:"branch_name,omitempty"`
 	// +optional
-	CommitSha string `json:"commit_sha,omitempty"`
+	CommitSha string `json:"commitSha,omitempty" tf:"commit_sha,omitempty"`
 	// +optional
-	Dir string `json:"dir,omitempty"`
+	Dir string `json:"dir,omitempty" tf:"dir,omitempty"`
 	// +optional
-	Project string `json:"project,omitempty"`
+	Project string `json:"project,omitempty" tf:"project,omitempty"`
 	// +optional
-	RepoName string `json:"repo_name,omitempty"`
+	RepoName string `json:"repoName,omitempty" tf:"repo_name,omitempty"`
 	// +optional
-	TagName string `json:"tag_name,omitempty"`
+	TagName string `json:"tagName,omitempty" tf:"tag_name,omitempty"`
 }
 
 type CloudbuildTriggerSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Build *[]CloudbuildTriggerSpec `json:"build,omitempty"`
+	Build []CloudbuildTriggerSpecBuild `json:"build,omitempty" tf:"build,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	Filename string `json:"filename,omitempty"`
+	Filename string `json:"filename,omitempty" tf:"filename,omitempty"`
 	// +optional
-	Substitutions map[string]string `json:"substitutions,omitempty"`
+	Substitutions map[string]string `json:"substitutions,omitempty" tf:"substitutions,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	TriggerTemplate *[]CloudbuildTriggerSpec `json:"trigger_template,omitempty"`
+	TriggerTemplate []CloudbuildTriggerSpecTriggerTemplate `json:"triggerTemplate,omitempty" tf:"trigger_template,omitempty"`
+	ProviderRef     core.LocalObjectReference              `json:"providerRef" tf:"-"`
 }
 
 type CloudbuildTriggerStatus struct {
@@ -69,7 +70,9 @@ type CloudbuildTriggerStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

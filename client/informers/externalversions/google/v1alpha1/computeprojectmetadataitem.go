@@ -41,32 +41,33 @@ type ComputeProjectMetadataItemInformer interface {
 type computeProjectMetadataItemInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewComputeProjectMetadataItemInformer constructs a new informer for ComputeProjectMetadataItem type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewComputeProjectMetadataItemInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredComputeProjectMetadataItemInformer(client, resyncPeriod, indexers, nil)
+func NewComputeProjectMetadataItemInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredComputeProjectMetadataItemInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredComputeProjectMetadataItemInformer constructs a new informer for ComputeProjectMetadataItem type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredComputeProjectMetadataItemInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredComputeProjectMetadataItemInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeProjectMetadataItems().List(options)
+				return client.GoogleV1alpha1().ComputeProjectMetadataItems(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeProjectMetadataItems().Watch(options)
+				return client.GoogleV1alpha1().ComputeProjectMetadataItems(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.ComputeProjectMetadataItem{},
@@ -76,7 +77,7 @@ func NewFilteredComputeProjectMetadataItemInformer(client versioned.Interface, r
 }
 
 func (f *computeProjectMetadataItemInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredComputeProjectMetadataItemInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredComputeProjectMetadataItemInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *computeProjectMetadataItemInformer) Informer() cache.SharedIndexInformer {

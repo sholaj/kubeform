@@ -32,7 +32,7 @@ import (
 // AutomationVariableIntsGetter has a method to return a AutomationVariableIntInterface.
 // A group's client should implement this interface.
 type AutomationVariableIntsGetter interface {
-	AutomationVariableInts() AutomationVariableIntInterface
+	AutomationVariableInts(namespace string) AutomationVariableIntInterface
 }
 
 // AutomationVariableIntInterface has methods to work with AutomationVariableInt resources.
@@ -52,12 +52,14 @@ type AutomationVariableIntInterface interface {
 // automationVariableInts implements AutomationVariableIntInterface
 type automationVariableInts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAutomationVariableInts returns a AutomationVariableInts
-func newAutomationVariableInts(c *AzurermV1alpha1Client) *automationVariableInts {
+func newAutomationVariableInts(c *AzurermV1alpha1Client, namespace string) *automationVariableInts {
 	return &automationVariableInts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAutomationVariableInts(c *AzurermV1alpha1Client) *automationVariableInts
 func (c *automationVariableInts) Get(name string, options v1.GetOptions) (result *v1alpha1.AutomationVariableInt, err error) {
 	result = &v1alpha1.AutomationVariableInt{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("automationvariableints").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *automationVariableInts) List(opts v1.ListOptions) (result *v1alpha1.Aut
 	}
 	result = &v1alpha1.AutomationVariableIntList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("automationvariableints").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *automationVariableInts) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("automationvariableints").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *automationVariableInts) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *automationVariableInts) Create(automationVariableInt *v1alpha1.AutomationVariableInt) (result *v1alpha1.AutomationVariableInt, err error) {
 	result = &v1alpha1.AutomationVariableInt{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("automationvariableints").
 		Body(automationVariableInt).
 		Do().
@@ -118,6 +124,7 @@ func (c *automationVariableInts) Create(automationVariableInt *v1alpha1.Automati
 func (c *automationVariableInts) Update(automationVariableInt *v1alpha1.AutomationVariableInt) (result *v1alpha1.AutomationVariableInt, err error) {
 	result = &v1alpha1.AutomationVariableInt{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("automationvariableints").
 		Name(automationVariableInt.Name).
 		Body(automationVariableInt).
@@ -132,6 +139,7 @@ func (c *automationVariableInts) Update(automationVariableInt *v1alpha1.Automati
 func (c *automationVariableInts) UpdateStatus(automationVariableInt *v1alpha1.AutomationVariableInt) (result *v1alpha1.AutomationVariableInt, err error) {
 	result = &v1alpha1.AutomationVariableInt{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("automationvariableints").
 		Name(automationVariableInt.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *automationVariableInts) UpdateStatus(automationVariableInt *v1alpha1.Au
 // Delete takes name of the automationVariableInt and deletes it. Returns an error if one occurs.
 func (c *automationVariableInts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("automationvariableints").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *automationVariableInts) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("automationvariableints").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *automationVariableInts) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *automationVariableInts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AutomationVariableInt, err error) {
 	result = &v1alpha1.AutomationVariableInt{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("automationvariableints").
 		SubResource(subresources...).
 		Name(name).

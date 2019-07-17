@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,20 +19,21 @@ type LbRule struct {
 }
 
 type LbRuleSpec struct {
-	BackendPort int `json:"backend_port"`
+	BackendPort int `json:"backendPort" tf:"backend_port"`
 	// +optional
-	DisableOutboundSnat bool `json:"disable_outbound_snat,omitempty"`
+	DisableOutboundSnat bool `json:"disableOutboundSnat,omitempty" tf:"disable_outbound_snat,omitempty"`
 	// +optional
-	EnableFloatingIp            bool   `json:"enable_floating_ip,omitempty"`
-	FrontendIpConfigurationName string `json:"frontend_ip_configuration_name"`
-	FrontendPort                int    `json:"frontend_port"`
-	LoadbalancerId              string `json:"loadbalancer_id"`
+	EnableFloatingIP            bool   `json:"enableFloatingIP,omitempty" tf:"enable_floating_ip,omitempty"`
+	FrontendIPConfigurationName string `json:"frontendIPConfigurationName" tf:"frontend_ip_configuration_name"`
+	FrontendPort                int    `json:"frontendPort" tf:"frontend_port"`
+	LoadbalancerID              string `json:"loadbalancerID" tf:"loadbalancer_id"`
 	// +optional
 	// Deprecated
-	Location          string `json:"location,omitempty"`
-	Name              string `json:"name"`
-	Protocol          string `json:"protocol"`
-	ResourceGroupName string `json:"resource_group_name"`
+	Location          string                    `json:"location,omitempty" tf:"location,omitempty"`
+	Name              string                    `json:"name" tf:"name"`
+	Protocol          string                    `json:"protocol" tf:"protocol"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type LbRuleStatus struct {
@@ -40,7 +41,9 @@ type LbRuleStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

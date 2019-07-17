@@ -29,8 +29,8 @@ import (
 type SesReceiptFilterLister interface {
 	// List lists all SesReceiptFilters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SesReceiptFilter, err error)
-	// Get retrieves the SesReceiptFilter from the index for a given name.
-	Get(name string) (*v1alpha1.SesReceiptFilter, error)
+	// SesReceiptFilters returns an object that can list and get SesReceiptFilters.
+	SesReceiptFilters(namespace string) SesReceiptFilterNamespaceLister
 	SesReceiptFilterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sesReceiptFilterLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the SesReceiptFilter from the index for a given name.
-func (s *sesReceiptFilterLister) Get(name string) (*v1alpha1.SesReceiptFilter, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SesReceiptFilters returns an object that can list and get SesReceiptFilters.
+func (s *sesReceiptFilterLister) SesReceiptFilters(namespace string) SesReceiptFilterNamespaceLister {
+	return sesReceiptFilterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SesReceiptFilterNamespaceLister helps list and get SesReceiptFilters.
+type SesReceiptFilterNamespaceLister interface {
+	// List lists all SesReceiptFilters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SesReceiptFilter, err error)
+	// Get retrieves the SesReceiptFilter from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SesReceiptFilter, error)
+	SesReceiptFilterNamespaceListerExpansion
+}
+
+// sesReceiptFilterNamespaceLister implements the SesReceiptFilterNamespaceLister
+// interface.
+type sesReceiptFilterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SesReceiptFilters in the indexer for a given namespace.
+func (s sesReceiptFilterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SesReceiptFilter, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SesReceiptFilter))
+	})
+	return ret, err
+}
+
+// Get retrieves the SesReceiptFilter from the indexer for a given namespace and name.
+func (s sesReceiptFilterNamespaceLister) Get(name string) (*v1alpha1.SesReceiptFilter, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

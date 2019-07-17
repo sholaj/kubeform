@@ -29,8 +29,8 @@ import (
 type ConnectionMonitorLister interface {
 	// List lists all ConnectionMonitors in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ConnectionMonitor, err error)
-	// Get retrieves the ConnectionMonitor from the index for a given name.
-	Get(name string) (*v1alpha1.ConnectionMonitor, error)
+	// ConnectionMonitors returns an object that can list and get ConnectionMonitors.
+	ConnectionMonitors(namespace string) ConnectionMonitorNamespaceLister
 	ConnectionMonitorListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *connectionMonitorLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the ConnectionMonitor from the index for a given name.
-func (s *connectionMonitorLister) Get(name string) (*v1alpha1.ConnectionMonitor, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ConnectionMonitors returns an object that can list and get ConnectionMonitors.
+func (s *connectionMonitorLister) ConnectionMonitors(namespace string) ConnectionMonitorNamespaceLister {
+	return connectionMonitorNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ConnectionMonitorNamespaceLister helps list and get ConnectionMonitors.
+type ConnectionMonitorNamespaceLister interface {
+	// List lists all ConnectionMonitors in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ConnectionMonitor, err error)
+	// Get retrieves the ConnectionMonitor from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ConnectionMonitor, error)
+	ConnectionMonitorNamespaceListerExpansion
+}
+
+// connectionMonitorNamespaceLister implements the ConnectionMonitorNamespaceLister
+// interface.
+type connectionMonitorNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ConnectionMonitors in the indexer for a given namespace.
+func (s connectionMonitorNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ConnectionMonitor, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ConnectionMonitor))
+	})
+	return ret, err
+}
+
+// Get retrieves the ConnectionMonitor from the indexer for a given namespace and name.
+func (s connectionMonitorNamespaceLister) Get(name string) (*v1alpha1.ConnectionMonitor, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

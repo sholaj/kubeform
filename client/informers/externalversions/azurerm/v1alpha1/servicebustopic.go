@@ -41,32 +41,33 @@ type ServicebusTopicInformer interface {
 type servicebusTopicInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewServicebusTopicInformer constructs a new informer for ServicebusTopic type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewServicebusTopicInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredServicebusTopicInformer(client, resyncPeriod, indexers, nil)
+func NewServicebusTopicInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredServicebusTopicInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredServicebusTopicInformer constructs a new informer for ServicebusTopic type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredServicebusTopicInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredServicebusTopicInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ServicebusTopics().List(options)
+				return client.AzurermV1alpha1().ServicebusTopics(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ServicebusTopics().Watch(options)
+				return client.AzurermV1alpha1().ServicebusTopics(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.ServicebusTopic{},
@@ -76,7 +77,7 @@ func NewFilteredServicebusTopicInformer(client versioned.Interface, resyncPeriod
 }
 
 func (f *servicebusTopicInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredServicebusTopicInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredServicebusTopicInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *servicebusTopicInformer) Informer() cache.SharedIndexInformer {

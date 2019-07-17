@@ -29,8 +29,8 @@ import (
 type DnsAaaaRecordLister interface {
 	// List lists all DnsAaaaRecords in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DnsAaaaRecord, err error)
-	// Get retrieves the DnsAaaaRecord from the index for a given name.
-	Get(name string) (*v1alpha1.DnsAaaaRecord, error)
+	// DnsAaaaRecords returns an object that can list and get DnsAaaaRecords.
+	DnsAaaaRecords(namespace string) DnsAaaaRecordNamespaceLister
 	DnsAaaaRecordListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dnsAaaaRecordLister) List(selector labels.Selector) (ret []*v1alpha1.Dn
 	return ret, err
 }
 
-// Get retrieves the DnsAaaaRecord from the index for a given name.
-func (s *dnsAaaaRecordLister) Get(name string) (*v1alpha1.DnsAaaaRecord, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DnsAaaaRecords returns an object that can list and get DnsAaaaRecords.
+func (s *dnsAaaaRecordLister) DnsAaaaRecords(namespace string) DnsAaaaRecordNamespaceLister {
+	return dnsAaaaRecordNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DnsAaaaRecordNamespaceLister helps list and get DnsAaaaRecords.
+type DnsAaaaRecordNamespaceLister interface {
+	// List lists all DnsAaaaRecords in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DnsAaaaRecord, err error)
+	// Get retrieves the DnsAaaaRecord from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DnsAaaaRecord, error)
+	DnsAaaaRecordNamespaceListerExpansion
+}
+
+// dnsAaaaRecordNamespaceLister implements the DnsAaaaRecordNamespaceLister
+// interface.
+type dnsAaaaRecordNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DnsAaaaRecords in the indexer for a given namespace.
+func (s dnsAaaaRecordNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DnsAaaaRecord, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DnsAaaaRecord))
+	})
+	return ret, err
+}
+
+// Get retrieves the DnsAaaaRecord from the indexer for a given namespace and name.
+func (s dnsAaaaRecordNamespaceLister) Get(name string) (*v1alpha1.DnsAaaaRecord, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

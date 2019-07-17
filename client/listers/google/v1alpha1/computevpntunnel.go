@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/google/v1alpha1"
 )
 
-// ComputeVpnTunnelLister helps list ComputeVpnTunnels.
-type ComputeVpnTunnelLister interface {
-	// List lists all ComputeVpnTunnels in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.ComputeVpnTunnel, err error)
-	// Get retrieves the ComputeVpnTunnel from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeVpnTunnel, error)
-	ComputeVpnTunnelListerExpansion
+// ComputeVPNTunnelLister helps list ComputeVPNTunnels.
+type ComputeVPNTunnelLister interface {
+	// List lists all ComputeVPNTunnels in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeVPNTunnel, err error)
+	// ComputeVPNTunnels returns an object that can list and get ComputeVPNTunnels.
+	ComputeVPNTunnels(namespace string) ComputeVPNTunnelNamespaceLister
+	ComputeVPNTunnelListerExpansion
 }
 
-// computeVpnTunnelLister implements the ComputeVpnTunnelLister interface.
-type computeVpnTunnelLister struct {
+// computeVPNTunnelLister implements the ComputeVPNTunnelLister interface.
+type computeVPNTunnelLister struct {
 	indexer cache.Indexer
 }
 
-// NewComputeVpnTunnelLister returns a new ComputeVpnTunnelLister.
-func NewComputeVpnTunnelLister(indexer cache.Indexer) ComputeVpnTunnelLister {
-	return &computeVpnTunnelLister{indexer: indexer}
+// NewComputeVPNTunnelLister returns a new ComputeVPNTunnelLister.
+func NewComputeVPNTunnelLister(indexer cache.Indexer) ComputeVPNTunnelLister {
+	return &computeVPNTunnelLister{indexer: indexer}
 }
 
-// List lists all ComputeVpnTunnels in the indexer.
-func (s *computeVpnTunnelLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeVpnTunnel, err error) {
+// List lists all ComputeVPNTunnels in the indexer.
+func (s *computeVPNTunnelLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeVPNTunnel, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ComputeVpnTunnel))
+		ret = append(ret, m.(*v1alpha1.ComputeVPNTunnel))
 	})
 	return ret, err
 }
 
-// Get retrieves the ComputeVpnTunnel from the index for a given name.
-func (s *computeVpnTunnelLister) Get(name string) (*v1alpha1.ComputeVpnTunnel, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeVPNTunnels returns an object that can list and get ComputeVPNTunnels.
+func (s *computeVPNTunnelLister) ComputeVPNTunnels(namespace string) ComputeVPNTunnelNamespaceLister {
+	return computeVPNTunnelNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeVPNTunnelNamespaceLister helps list and get ComputeVPNTunnels.
+type ComputeVPNTunnelNamespaceLister interface {
+	// List lists all ComputeVPNTunnels in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeVPNTunnel, err error)
+	// Get retrieves the ComputeVPNTunnel from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeVPNTunnel, error)
+	ComputeVPNTunnelNamespaceListerExpansion
+}
+
+// computeVPNTunnelNamespaceLister implements the ComputeVPNTunnelNamespaceLister
+// interface.
+type computeVPNTunnelNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeVPNTunnels in the indexer for a given namespace.
+func (s computeVPNTunnelNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeVPNTunnel, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeVPNTunnel))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeVPNTunnel from the indexer for a given namespace and name.
+func (s computeVPNTunnelNamespaceLister) Get(name string) (*v1alpha1.ComputeVPNTunnel, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("computevpntunnel"), name)
 	}
-	return obj.(*v1alpha1.ComputeVpnTunnel), nil
+	return obj.(*v1alpha1.ComputeVPNTunnel), nil
 }

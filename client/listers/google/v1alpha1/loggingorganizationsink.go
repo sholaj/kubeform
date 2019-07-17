@@ -29,8 +29,8 @@ import (
 type LoggingOrganizationSinkLister interface {
 	// List lists all LoggingOrganizationSinks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LoggingOrganizationSink, err error)
-	// Get retrieves the LoggingOrganizationSink from the index for a given name.
-	Get(name string) (*v1alpha1.LoggingOrganizationSink, error)
+	// LoggingOrganizationSinks returns an object that can list and get LoggingOrganizationSinks.
+	LoggingOrganizationSinks(namespace string) LoggingOrganizationSinkNamespaceLister
 	LoggingOrganizationSinkListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *loggingOrganizationSinkLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the LoggingOrganizationSink from the index for a given name.
-func (s *loggingOrganizationSinkLister) Get(name string) (*v1alpha1.LoggingOrganizationSink, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LoggingOrganizationSinks returns an object that can list and get LoggingOrganizationSinks.
+func (s *loggingOrganizationSinkLister) LoggingOrganizationSinks(namespace string) LoggingOrganizationSinkNamespaceLister {
+	return loggingOrganizationSinkNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LoggingOrganizationSinkNamespaceLister helps list and get LoggingOrganizationSinks.
+type LoggingOrganizationSinkNamespaceLister interface {
+	// List lists all LoggingOrganizationSinks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LoggingOrganizationSink, err error)
+	// Get retrieves the LoggingOrganizationSink from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LoggingOrganizationSink, error)
+	LoggingOrganizationSinkNamespaceListerExpansion
+}
+
+// loggingOrganizationSinkNamespaceLister implements the LoggingOrganizationSinkNamespaceLister
+// interface.
+type loggingOrganizationSinkNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LoggingOrganizationSinks in the indexer for a given namespace.
+func (s loggingOrganizationSinkNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LoggingOrganizationSink, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LoggingOrganizationSink))
+	})
+	return ret, err
+}
+
+// Get retrieves the LoggingOrganizationSink from the indexer for a given namespace and name.
+func (s loggingOrganizationSinkNamespaceLister) Get(name string) (*v1alpha1.LoggingOrganizationSink, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

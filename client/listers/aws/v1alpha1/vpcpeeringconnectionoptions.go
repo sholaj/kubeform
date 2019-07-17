@@ -29,8 +29,8 @@ import (
 type VpcPeeringConnectionOptionsLister interface {
 	// List lists all VpcPeeringConnectionOptionses in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.VpcPeeringConnectionOptions, err error)
-	// Get retrieves the VpcPeeringConnectionOptions from the index for a given name.
-	Get(name string) (*v1alpha1.VpcPeeringConnectionOptions, error)
+	// VpcPeeringConnectionOptionses returns an object that can list and get VpcPeeringConnectionOptionses.
+	VpcPeeringConnectionOptionses(namespace string) VpcPeeringConnectionOptionsNamespaceLister
 	VpcPeeringConnectionOptionsListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *vpcPeeringConnectionOptionsLister) List(selector labels.Selector) (ret 
 	return ret, err
 }
 
-// Get retrieves the VpcPeeringConnectionOptions from the index for a given name.
-func (s *vpcPeeringConnectionOptionsLister) Get(name string) (*v1alpha1.VpcPeeringConnectionOptions, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VpcPeeringConnectionOptionses returns an object that can list and get VpcPeeringConnectionOptionses.
+func (s *vpcPeeringConnectionOptionsLister) VpcPeeringConnectionOptionses(namespace string) VpcPeeringConnectionOptionsNamespaceLister {
+	return vpcPeeringConnectionOptionsNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VpcPeeringConnectionOptionsNamespaceLister helps list and get VpcPeeringConnectionOptionses.
+type VpcPeeringConnectionOptionsNamespaceLister interface {
+	// List lists all VpcPeeringConnectionOptionses in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VpcPeeringConnectionOptions, err error)
+	// Get retrieves the VpcPeeringConnectionOptions from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VpcPeeringConnectionOptions, error)
+	VpcPeeringConnectionOptionsNamespaceListerExpansion
+}
+
+// vpcPeeringConnectionOptionsNamespaceLister implements the VpcPeeringConnectionOptionsNamespaceLister
+// interface.
+type vpcPeeringConnectionOptionsNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VpcPeeringConnectionOptionses in the indexer for a given namespace.
+func (s vpcPeeringConnectionOptionsNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VpcPeeringConnectionOptions, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VpcPeeringConnectionOptions))
+	})
+	return ret, err
+}
+
+// Get retrieves the VpcPeeringConnectionOptions from the indexer for a given namespace and name.
+func (s vpcPeeringConnectionOptionsNamespaceLister) Get(name string) (*v1alpha1.VpcPeeringConnectionOptions, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

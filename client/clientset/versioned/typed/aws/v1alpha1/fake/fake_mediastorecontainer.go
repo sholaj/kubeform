@@ -31,6 +31,7 @@ import (
 // FakeMediaStoreContainers implements MediaStoreContainerInterface
 type FakeMediaStoreContainers struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var mediastorecontainersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "mediastorecontainers"}
@@ -40,7 +41,8 @@ var mediastorecontainersKind = schema.GroupVersionKind{Group: "aws.kubeform.com"
 // Get takes name of the mediaStoreContainer, and returns the corresponding mediaStoreContainer object, and an error if there is any.
 func (c *FakeMediaStoreContainers) Get(name string, options v1.GetOptions) (result *v1alpha1.MediaStoreContainer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(mediastorecontainersResource, name), &v1alpha1.MediaStoreContainer{})
+		Invokes(testing.NewGetAction(mediastorecontainersResource, c.ns, name), &v1alpha1.MediaStoreContainer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMediaStoreContainers) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of MediaStoreContainers that match those selectors.
 func (c *FakeMediaStoreContainers) List(opts v1.ListOptions) (result *v1alpha1.MediaStoreContainerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(mediastorecontainersResource, mediastorecontainersKind, opts), &v1alpha1.MediaStoreContainerList{})
+		Invokes(testing.NewListAction(mediastorecontainersResource, mediastorecontainersKind, c.ns, opts), &v1alpha1.MediaStoreContainerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMediaStoreContainers) List(opts v1.ListOptions) (result *v1alpha1.M
 // Watch returns a watch.Interface that watches the requested mediaStoreContainers.
 func (c *FakeMediaStoreContainers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(mediastorecontainersResource, opts))
+		InvokesWatch(testing.NewWatchAction(mediastorecontainersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a mediaStoreContainer and creates it.  Returns the server's representation of the mediaStoreContainer, and an error, if there is any.
 func (c *FakeMediaStoreContainers) Create(mediaStoreContainer *v1alpha1.MediaStoreContainer) (result *v1alpha1.MediaStoreContainer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(mediastorecontainersResource, mediaStoreContainer), &v1alpha1.MediaStoreContainer{})
+		Invokes(testing.NewCreateAction(mediastorecontainersResource, c.ns, mediaStoreContainer), &v1alpha1.MediaStoreContainer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMediaStoreContainers) Create(mediaStoreContainer *v1alpha1.MediaSto
 // Update takes the representation of a mediaStoreContainer and updates it. Returns the server's representation of the mediaStoreContainer, and an error, if there is any.
 func (c *FakeMediaStoreContainers) Update(mediaStoreContainer *v1alpha1.MediaStoreContainer) (result *v1alpha1.MediaStoreContainer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(mediastorecontainersResource, mediaStoreContainer), &v1alpha1.MediaStoreContainer{})
+		Invokes(testing.NewUpdateAction(mediastorecontainersResource, c.ns, mediaStoreContainer), &v1alpha1.MediaStoreContainer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMediaStoreContainers) Update(mediaStoreContainer *v1alpha1.MediaSto
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMediaStoreContainers) UpdateStatus(mediaStoreContainer *v1alpha1.MediaStoreContainer) (*v1alpha1.MediaStoreContainer, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(mediastorecontainersResource, "status", mediaStoreContainer), &v1alpha1.MediaStoreContainer{})
+		Invokes(testing.NewUpdateSubresourceAction(mediastorecontainersResource, "status", c.ns, mediaStoreContainer), &v1alpha1.MediaStoreContainer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMediaStoreContainers) UpdateStatus(mediaStoreContainer *v1alpha1.Me
 // Delete takes name of the mediaStoreContainer and deletes it. Returns an error if one occurs.
 func (c *FakeMediaStoreContainers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(mediastorecontainersResource, name), &v1alpha1.MediaStoreContainer{})
+		Invokes(testing.NewDeleteAction(mediastorecontainersResource, c.ns, name), &v1alpha1.MediaStoreContainer{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMediaStoreContainers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(mediastorecontainersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(mediastorecontainersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MediaStoreContainerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMediaStoreContainers) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched mediaStoreContainer.
 func (c *FakeMediaStoreContainers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MediaStoreContainer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(mediastorecontainersResource, name, pt, data, subresources...), &v1alpha1.MediaStoreContainer{})
+		Invokes(testing.NewPatchSubresourceAction(mediastorecontainersResource, c.ns, name, pt, data, subresources...), &v1alpha1.MediaStoreContainer{})
+
 	if obj == nil {
 		return nil, err
 	}

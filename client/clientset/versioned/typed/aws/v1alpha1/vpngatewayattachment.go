@@ -32,7 +32,7 @@ import (
 // VpnGatewayAttachmentsGetter has a method to return a VpnGatewayAttachmentInterface.
 // A group's client should implement this interface.
 type VpnGatewayAttachmentsGetter interface {
-	VpnGatewayAttachments() VpnGatewayAttachmentInterface
+	VpnGatewayAttachments(namespace string) VpnGatewayAttachmentInterface
 }
 
 // VpnGatewayAttachmentInterface has methods to work with VpnGatewayAttachment resources.
@@ -52,12 +52,14 @@ type VpnGatewayAttachmentInterface interface {
 // vpnGatewayAttachments implements VpnGatewayAttachmentInterface
 type vpnGatewayAttachments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVpnGatewayAttachments returns a VpnGatewayAttachments
-func newVpnGatewayAttachments(c *AwsV1alpha1Client) *vpnGatewayAttachments {
+func newVpnGatewayAttachments(c *AwsV1alpha1Client, namespace string) *vpnGatewayAttachments {
 	return &vpnGatewayAttachments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVpnGatewayAttachments(c *AwsV1alpha1Client) *vpnGatewayAttachments {
 func (c *vpnGatewayAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.VpnGatewayAttachment, err error) {
 	result = &v1alpha1.VpnGatewayAttachment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpngatewayattachments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *vpnGatewayAttachments) List(opts v1.ListOptions) (result *v1alpha1.VpnG
 	}
 	result = &v1alpha1.VpnGatewayAttachmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpngatewayattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *vpnGatewayAttachments) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("vpngatewayattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *vpnGatewayAttachments) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *vpnGatewayAttachments) Create(vpnGatewayAttachment *v1alpha1.VpnGatewayAttachment) (result *v1alpha1.VpnGatewayAttachment, err error) {
 	result = &v1alpha1.VpnGatewayAttachment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("vpngatewayattachments").
 		Body(vpnGatewayAttachment).
 		Do().
@@ -118,6 +124,7 @@ func (c *vpnGatewayAttachments) Create(vpnGatewayAttachment *v1alpha1.VpnGateway
 func (c *vpnGatewayAttachments) Update(vpnGatewayAttachment *v1alpha1.VpnGatewayAttachment) (result *v1alpha1.VpnGatewayAttachment, err error) {
 	result = &v1alpha1.VpnGatewayAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpngatewayattachments").
 		Name(vpnGatewayAttachment.Name).
 		Body(vpnGatewayAttachment).
@@ -132,6 +139,7 @@ func (c *vpnGatewayAttachments) Update(vpnGatewayAttachment *v1alpha1.VpnGateway
 func (c *vpnGatewayAttachments) UpdateStatus(vpnGatewayAttachment *v1alpha1.VpnGatewayAttachment) (result *v1alpha1.VpnGatewayAttachment, err error) {
 	result = &v1alpha1.VpnGatewayAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpngatewayattachments").
 		Name(vpnGatewayAttachment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *vpnGatewayAttachments) UpdateStatus(vpnGatewayAttachment *v1alpha1.VpnG
 // Delete takes name of the vpnGatewayAttachment and deletes it. Returns an error if one occurs.
 func (c *vpnGatewayAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpngatewayattachments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *vpnGatewayAttachments) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpngatewayattachments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *vpnGatewayAttachments) DeleteCollection(options *v1.DeleteOptions, list
 func (c *vpnGatewayAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpnGatewayAttachment, err error) {
 	result = &v1alpha1.VpnGatewayAttachment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("vpngatewayattachments").
 		SubResource(subresources...).
 		Name(name).

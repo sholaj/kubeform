@@ -31,6 +31,7 @@ import (
 // FakeSnsTopics implements SnsTopicInterface
 type FakeSnsTopics struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var snstopicsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "snstopics"}
@@ -40,7 +41,8 @@ var snstopicsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: 
 // Get takes name of the snsTopic, and returns the corresponding snsTopic object, and an error if there is any.
 func (c *FakeSnsTopics) Get(name string, options v1.GetOptions) (result *v1alpha1.SnsTopic, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(snstopicsResource, name), &v1alpha1.SnsTopic{})
+		Invokes(testing.NewGetAction(snstopicsResource, c.ns, name), &v1alpha1.SnsTopic{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSnsTopics) Get(name string, options v1.GetOptions) (result *v1alpha
 // List takes label and field selectors, and returns the list of SnsTopics that match those selectors.
 func (c *FakeSnsTopics) List(opts v1.ListOptions) (result *v1alpha1.SnsTopicList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(snstopicsResource, snstopicsKind, opts), &v1alpha1.SnsTopicList{})
+		Invokes(testing.NewListAction(snstopicsResource, snstopicsKind, c.ns, opts), &v1alpha1.SnsTopicList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSnsTopics) List(opts v1.ListOptions) (result *v1alpha1.SnsTopicList
 // Watch returns a watch.Interface that watches the requested snsTopics.
 func (c *FakeSnsTopics) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(snstopicsResource, opts))
+		InvokesWatch(testing.NewWatchAction(snstopicsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a snsTopic and creates it.  Returns the server's representation of the snsTopic, and an error, if there is any.
 func (c *FakeSnsTopics) Create(snsTopic *v1alpha1.SnsTopic) (result *v1alpha1.SnsTopic, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(snstopicsResource, snsTopic), &v1alpha1.SnsTopic{})
+		Invokes(testing.NewCreateAction(snstopicsResource, c.ns, snsTopic), &v1alpha1.SnsTopic{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSnsTopics) Create(snsTopic *v1alpha1.SnsTopic) (result *v1alpha1.Sn
 // Update takes the representation of a snsTopic and updates it. Returns the server's representation of the snsTopic, and an error, if there is any.
 func (c *FakeSnsTopics) Update(snsTopic *v1alpha1.SnsTopic) (result *v1alpha1.SnsTopic, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(snstopicsResource, snsTopic), &v1alpha1.SnsTopic{})
+		Invokes(testing.NewUpdateAction(snstopicsResource, c.ns, snsTopic), &v1alpha1.SnsTopic{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSnsTopics) Update(snsTopic *v1alpha1.SnsTopic) (result *v1alpha1.Sn
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSnsTopics) UpdateStatus(snsTopic *v1alpha1.SnsTopic) (*v1alpha1.SnsTopic, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(snstopicsResource, "status", snsTopic), &v1alpha1.SnsTopic{})
+		Invokes(testing.NewUpdateSubresourceAction(snstopicsResource, "status", c.ns, snsTopic), &v1alpha1.SnsTopic{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSnsTopics) UpdateStatus(snsTopic *v1alpha1.SnsTopic) (*v1alpha1.Sns
 // Delete takes name of the snsTopic and deletes it. Returns an error if one occurs.
 func (c *FakeSnsTopics) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(snstopicsResource, name), &v1alpha1.SnsTopic{})
+		Invokes(testing.NewDeleteAction(snstopicsResource, c.ns, name), &v1alpha1.SnsTopic{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSnsTopics) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(snstopicsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(snstopicsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SnsTopicList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSnsTopics) DeleteCollection(options *v1.DeleteOptions, listOptions 
 // Patch applies the patch and returns the patched snsTopic.
 func (c *FakeSnsTopics) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SnsTopic, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(snstopicsResource, name, pt, data, subresources...), &v1alpha1.SnsTopic{})
+		Invokes(testing.NewPatchSubresourceAction(snstopicsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SnsTopic{})
+
 	if obj == nil {
 		return nil, err
 	}

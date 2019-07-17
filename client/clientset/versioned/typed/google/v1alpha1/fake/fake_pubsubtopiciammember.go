@@ -31,6 +31,7 @@ import (
 // FakePubsubTopicIamMembers implements PubsubTopicIamMemberInterface
 type FakePubsubTopicIamMembers struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var pubsubtopiciammembersResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "pubsubtopiciammembers"}
@@ -40,7 +41,8 @@ var pubsubtopiciammembersKind = schema.GroupVersionKind{Group: "google.kubeform.
 // Get takes name of the pubsubTopicIamMember, and returns the corresponding pubsubTopicIamMember object, and an error if there is any.
 func (c *FakePubsubTopicIamMembers) Get(name string, options v1.GetOptions) (result *v1alpha1.PubsubTopicIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(pubsubtopiciammembersResource, name), &v1alpha1.PubsubTopicIamMember{})
+		Invokes(testing.NewGetAction(pubsubtopiciammembersResource, c.ns, name), &v1alpha1.PubsubTopicIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakePubsubTopicIamMembers) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of PubsubTopicIamMembers that match those selectors.
 func (c *FakePubsubTopicIamMembers) List(opts v1.ListOptions) (result *v1alpha1.PubsubTopicIamMemberList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(pubsubtopiciammembersResource, pubsubtopiciammembersKind, opts), &v1alpha1.PubsubTopicIamMemberList{})
+		Invokes(testing.NewListAction(pubsubtopiciammembersResource, pubsubtopiciammembersKind, c.ns, opts), &v1alpha1.PubsubTopicIamMemberList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakePubsubTopicIamMembers) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested pubsubTopicIamMembers.
 func (c *FakePubsubTopicIamMembers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(pubsubtopiciammembersResource, opts))
+		InvokesWatch(testing.NewWatchAction(pubsubtopiciammembersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a pubsubTopicIamMember and creates it.  Returns the server's representation of the pubsubTopicIamMember, and an error, if there is any.
 func (c *FakePubsubTopicIamMembers) Create(pubsubTopicIamMember *v1alpha1.PubsubTopicIamMember) (result *v1alpha1.PubsubTopicIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(pubsubtopiciammembersResource, pubsubTopicIamMember), &v1alpha1.PubsubTopicIamMember{})
+		Invokes(testing.NewCreateAction(pubsubtopiciammembersResource, c.ns, pubsubTopicIamMember), &v1alpha1.PubsubTopicIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakePubsubTopicIamMembers) Create(pubsubTopicIamMember *v1alpha1.Pubsub
 // Update takes the representation of a pubsubTopicIamMember and updates it. Returns the server's representation of the pubsubTopicIamMember, and an error, if there is any.
 func (c *FakePubsubTopicIamMembers) Update(pubsubTopicIamMember *v1alpha1.PubsubTopicIamMember) (result *v1alpha1.PubsubTopicIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(pubsubtopiciammembersResource, pubsubTopicIamMember), &v1alpha1.PubsubTopicIamMember{})
+		Invokes(testing.NewUpdateAction(pubsubtopiciammembersResource, c.ns, pubsubTopicIamMember), &v1alpha1.PubsubTopicIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakePubsubTopicIamMembers) Update(pubsubTopicIamMember *v1alpha1.Pubsub
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakePubsubTopicIamMembers) UpdateStatus(pubsubTopicIamMember *v1alpha1.PubsubTopicIamMember) (*v1alpha1.PubsubTopicIamMember, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(pubsubtopiciammembersResource, "status", pubsubTopicIamMember), &v1alpha1.PubsubTopicIamMember{})
+		Invokes(testing.NewUpdateSubresourceAction(pubsubtopiciammembersResource, "status", c.ns, pubsubTopicIamMember), &v1alpha1.PubsubTopicIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakePubsubTopicIamMembers) UpdateStatus(pubsubTopicIamMember *v1alpha1.
 // Delete takes name of the pubsubTopicIamMember and deletes it. Returns an error if one occurs.
 func (c *FakePubsubTopicIamMembers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(pubsubtopiciammembersResource, name), &v1alpha1.PubsubTopicIamMember{})
+		Invokes(testing.NewDeleteAction(pubsubtopiciammembersResource, c.ns, name), &v1alpha1.PubsubTopicIamMember{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakePubsubTopicIamMembers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(pubsubtopiciammembersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(pubsubtopiciammembersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PubsubTopicIamMemberList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakePubsubTopicIamMembers) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched pubsubTopicIamMember.
 func (c *FakePubsubTopicIamMembers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PubsubTopicIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(pubsubtopiciammembersResource, name, pt, data, subresources...), &v1alpha1.PubsubTopicIamMember{})
+		Invokes(testing.NewPatchSubresourceAction(pubsubtopiciammembersResource, c.ns, name, pt, data, subresources...), &v1alpha1.PubsubTopicIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}

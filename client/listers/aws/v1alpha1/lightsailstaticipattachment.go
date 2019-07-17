@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// LightsailStaticIpAttachmentLister helps list LightsailStaticIpAttachments.
-type LightsailStaticIpAttachmentLister interface {
-	// List lists all LightsailStaticIpAttachments in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.LightsailStaticIpAttachment, err error)
-	// Get retrieves the LightsailStaticIpAttachment from the index for a given name.
-	Get(name string) (*v1alpha1.LightsailStaticIpAttachment, error)
-	LightsailStaticIpAttachmentListerExpansion
+// LightsailStaticIPAttachmentLister helps list LightsailStaticIPAttachments.
+type LightsailStaticIPAttachmentLister interface {
+	// List lists all LightsailStaticIPAttachments in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.LightsailStaticIPAttachment, err error)
+	// LightsailStaticIPAttachments returns an object that can list and get LightsailStaticIPAttachments.
+	LightsailStaticIPAttachments(namespace string) LightsailStaticIPAttachmentNamespaceLister
+	LightsailStaticIPAttachmentListerExpansion
 }
 
-// lightsailStaticIpAttachmentLister implements the LightsailStaticIpAttachmentLister interface.
-type lightsailStaticIpAttachmentLister struct {
+// lightsailStaticIPAttachmentLister implements the LightsailStaticIPAttachmentLister interface.
+type lightsailStaticIPAttachmentLister struct {
 	indexer cache.Indexer
 }
 
-// NewLightsailStaticIpAttachmentLister returns a new LightsailStaticIpAttachmentLister.
-func NewLightsailStaticIpAttachmentLister(indexer cache.Indexer) LightsailStaticIpAttachmentLister {
-	return &lightsailStaticIpAttachmentLister{indexer: indexer}
+// NewLightsailStaticIPAttachmentLister returns a new LightsailStaticIPAttachmentLister.
+func NewLightsailStaticIPAttachmentLister(indexer cache.Indexer) LightsailStaticIPAttachmentLister {
+	return &lightsailStaticIPAttachmentLister{indexer: indexer}
 }
 
-// List lists all LightsailStaticIpAttachments in the indexer.
-func (s *lightsailStaticIpAttachmentLister) List(selector labels.Selector) (ret []*v1alpha1.LightsailStaticIpAttachment, err error) {
+// List lists all LightsailStaticIPAttachments in the indexer.
+func (s *lightsailStaticIPAttachmentLister) List(selector labels.Selector) (ret []*v1alpha1.LightsailStaticIPAttachment, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.LightsailStaticIpAttachment))
+		ret = append(ret, m.(*v1alpha1.LightsailStaticIPAttachment))
 	})
 	return ret, err
 }
 
-// Get retrieves the LightsailStaticIpAttachment from the index for a given name.
-func (s *lightsailStaticIpAttachmentLister) Get(name string) (*v1alpha1.LightsailStaticIpAttachment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LightsailStaticIPAttachments returns an object that can list and get LightsailStaticIPAttachments.
+func (s *lightsailStaticIPAttachmentLister) LightsailStaticIPAttachments(namespace string) LightsailStaticIPAttachmentNamespaceLister {
+	return lightsailStaticIPAttachmentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LightsailStaticIPAttachmentNamespaceLister helps list and get LightsailStaticIPAttachments.
+type LightsailStaticIPAttachmentNamespaceLister interface {
+	// List lists all LightsailStaticIPAttachments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LightsailStaticIPAttachment, err error)
+	// Get retrieves the LightsailStaticIPAttachment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LightsailStaticIPAttachment, error)
+	LightsailStaticIPAttachmentNamespaceListerExpansion
+}
+
+// lightsailStaticIPAttachmentNamespaceLister implements the LightsailStaticIPAttachmentNamespaceLister
+// interface.
+type lightsailStaticIPAttachmentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LightsailStaticIPAttachments in the indexer for a given namespace.
+func (s lightsailStaticIPAttachmentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LightsailStaticIPAttachment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LightsailStaticIPAttachment))
+	})
+	return ret, err
+}
+
+// Get retrieves the LightsailStaticIPAttachment from the indexer for a given namespace and name.
+func (s lightsailStaticIPAttachmentNamespaceLister) Get(name string) (*v1alpha1.LightsailStaticIPAttachment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("lightsailstaticipattachment"), name)
 	}
-	return obj.(*v1alpha1.LightsailStaticIpAttachment), nil
+	return obj.(*v1alpha1.LightsailStaticIPAttachment), nil
 }

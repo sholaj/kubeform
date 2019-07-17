@@ -29,8 +29,8 @@ import (
 type BatchCertificateLister interface {
 	// List lists all BatchCertificates in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.BatchCertificate, err error)
-	// Get retrieves the BatchCertificate from the index for a given name.
-	Get(name string) (*v1alpha1.BatchCertificate, error)
+	// BatchCertificates returns an object that can list and get BatchCertificates.
+	BatchCertificates(namespace string) BatchCertificateNamespaceLister
 	BatchCertificateListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *batchCertificateLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the BatchCertificate from the index for a given name.
-func (s *batchCertificateLister) Get(name string) (*v1alpha1.BatchCertificate, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// BatchCertificates returns an object that can list and get BatchCertificates.
+func (s *batchCertificateLister) BatchCertificates(namespace string) BatchCertificateNamespaceLister {
+	return batchCertificateNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// BatchCertificateNamespaceLister helps list and get BatchCertificates.
+type BatchCertificateNamespaceLister interface {
+	// List lists all BatchCertificates in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.BatchCertificate, err error)
+	// Get retrieves the BatchCertificate from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.BatchCertificate, error)
+	BatchCertificateNamespaceListerExpansion
+}
+
+// batchCertificateNamespaceLister implements the BatchCertificateNamespaceLister
+// interface.
+type batchCertificateNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all BatchCertificates in the indexer for a given namespace.
+func (s batchCertificateNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.BatchCertificate, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.BatchCertificate))
+	})
+	return ret, err
+}
+
+// Get retrieves the BatchCertificate from the indexer for a given namespace and name.
+func (s batchCertificateNamespaceLister) Get(name string) (*v1alpha1.BatchCertificate, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

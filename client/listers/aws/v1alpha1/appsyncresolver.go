@@ -29,8 +29,8 @@ import (
 type AppsyncResolverLister interface {
 	// List lists all AppsyncResolvers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AppsyncResolver, err error)
-	// Get retrieves the AppsyncResolver from the index for a given name.
-	Get(name string) (*v1alpha1.AppsyncResolver, error)
+	// AppsyncResolvers returns an object that can list and get AppsyncResolvers.
+	AppsyncResolvers(namespace string) AppsyncResolverNamespaceLister
 	AppsyncResolverListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *appsyncResolverLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the AppsyncResolver from the index for a given name.
-func (s *appsyncResolverLister) Get(name string) (*v1alpha1.AppsyncResolver, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AppsyncResolvers returns an object that can list and get AppsyncResolvers.
+func (s *appsyncResolverLister) AppsyncResolvers(namespace string) AppsyncResolverNamespaceLister {
+	return appsyncResolverNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AppsyncResolverNamespaceLister helps list and get AppsyncResolvers.
+type AppsyncResolverNamespaceLister interface {
+	// List lists all AppsyncResolvers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AppsyncResolver, err error)
+	// Get retrieves the AppsyncResolver from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AppsyncResolver, error)
+	AppsyncResolverNamespaceListerExpansion
+}
+
+// appsyncResolverNamespaceLister implements the AppsyncResolverNamespaceLister
+// interface.
+type appsyncResolverNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AppsyncResolvers in the indexer for a given namespace.
+func (s appsyncResolverNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AppsyncResolver, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AppsyncResolver))
+	})
+	return ret, err
+}
+
+// Get retrieves the AppsyncResolver from the indexer for a given namespace and name.
+func (s appsyncResolverNamespaceLister) Get(name string) (*v1alpha1.AppsyncResolver, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // AutomationRunbooksGetter has a method to return a AutomationRunbookInterface.
 // A group's client should implement this interface.
 type AutomationRunbooksGetter interface {
-	AutomationRunbooks() AutomationRunbookInterface
+	AutomationRunbooks(namespace string) AutomationRunbookInterface
 }
 
 // AutomationRunbookInterface has methods to work with AutomationRunbook resources.
@@ -52,12 +52,14 @@ type AutomationRunbookInterface interface {
 // automationRunbooks implements AutomationRunbookInterface
 type automationRunbooks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAutomationRunbooks returns a AutomationRunbooks
-func newAutomationRunbooks(c *AzurermV1alpha1Client) *automationRunbooks {
+func newAutomationRunbooks(c *AzurermV1alpha1Client, namespace string) *automationRunbooks {
 	return &automationRunbooks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAutomationRunbooks(c *AzurermV1alpha1Client) *automationRunbooks {
 func (c *automationRunbooks) Get(name string, options v1.GetOptions) (result *v1alpha1.AutomationRunbook, err error) {
 	result = &v1alpha1.AutomationRunbook{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("automationrunbooks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *automationRunbooks) List(opts v1.ListOptions) (result *v1alpha1.Automat
 	}
 	result = &v1alpha1.AutomationRunbookList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("automationrunbooks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *automationRunbooks) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("automationrunbooks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *automationRunbooks) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *automationRunbooks) Create(automationRunbook *v1alpha1.AutomationRunbook) (result *v1alpha1.AutomationRunbook, err error) {
 	result = &v1alpha1.AutomationRunbook{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("automationrunbooks").
 		Body(automationRunbook).
 		Do().
@@ -118,6 +124,7 @@ func (c *automationRunbooks) Create(automationRunbook *v1alpha1.AutomationRunboo
 func (c *automationRunbooks) Update(automationRunbook *v1alpha1.AutomationRunbook) (result *v1alpha1.AutomationRunbook, err error) {
 	result = &v1alpha1.AutomationRunbook{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("automationrunbooks").
 		Name(automationRunbook.Name).
 		Body(automationRunbook).
@@ -132,6 +139,7 @@ func (c *automationRunbooks) Update(automationRunbook *v1alpha1.AutomationRunboo
 func (c *automationRunbooks) UpdateStatus(automationRunbook *v1alpha1.AutomationRunbook) (result *v1alpha1.AutomationRunbook, err error) {
 	result = &v1alpha1.AutomationRunbook{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("automationrunbooks").
 		Name(automationRunbook.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *automationRunbooks) UpdateStatus(automationRunbook *v1alpha1.Automation
 // Delete takes name of the automationRunbook and deletes it. Returns an error if one occurs.
 func (c *automationRunbooks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("automationrunbooks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *automationRunbooks) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("automationrunbooks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *automationRunbooks) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *automationRunbooks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AutomationRunbook, err error) {
 	result = &v1alpha1.AutomationRunbook{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("automationrunbooks").
 		SubResource(subresources...).
 		Name(name).

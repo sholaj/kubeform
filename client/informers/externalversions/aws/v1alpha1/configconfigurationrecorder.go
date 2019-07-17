@@ -41,32 +41,33 @@ type ConfigConfigurationRecorderInformer interface {
 type configConfigurationRecorderInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewConfigConfigurationRecorderInformer constructs a new informer for ConfigConfigurationRecorder type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewConfigConfigurationRecorderInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredConfigConfigurationRecorderInformer(client, resyncPeriod, indexers, nil)
+func NewConfigConfigurationRecorderInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredConfigConfigurationRecorderInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredConfigConfigurationRecorderInformer constructs a new informer for ConfigConfigurationRecorder type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredConfigConfigurationRecorderInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredConfigConfigurationRecorderInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ConfigConfigurationRecorders().List(options)
+				return client.AwsV1alpha1().ConfigConfigurationRecorders(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ConfigConfigurationRecorders().Watch(options)
+				return client.AwsV1alpha1().ConfigConfigurationRecorders(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.ConfigConfigurationRecorder{},
@@ -76,7 +77,7 @@ func NewFilteredConfigConfigurationRecorderInformer(client versioned.Interface, 
 }
 
 func (f *configConfigurationRecorderInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredConfigConfigurationRecorderInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredConfigConfigurationRecorderInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *configConfigurationRecorderInformer) Informer() cache.SharedIndexInformer {

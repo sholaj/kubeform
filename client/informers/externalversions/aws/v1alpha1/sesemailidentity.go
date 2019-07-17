@@ -41,32 +41,33 @@ type SesEmailIdentityInformer interface {
 type sesEmailIdentityInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSesEmailIdentityInformer constructs a new informer for SesEmailIdentity type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSesEmailIdentityInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSesEmailIdentityInformer(client, resyncPeriod, indexers, nil)
+func NewSesEmailIdentityInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSesEmailIdentityInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSesEmailIdentityInformer constructs a new informer for SesEmailIdentity type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSesEmailIdentityInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSesEmailIdentityInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SesEmailIdentities().List(options)
+				return client.AwsV1alpha1().SesEmailIdentities(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SesEmailIdentities().Watch(options)
+				return client.AwsV1alpha1().SesEmailIdentities(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.SesEmailIdentity{},
@@ -76,7 +77,7 @@ func NewFilteredSesEmailIdentityInformer(client versioned.Interface, resyncPerio
 }
 
 func (f *sesEmailIdentityInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSesEmailIdentityInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSesEmailIdentityInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *sesEmailIdentityInformer) Informer() cache.SharedIndexInformer {

@@ -32,7 +32,7 @@ import (
 // GlueTriggersGetter has a method to return a GlueTriggerInterface.
 // A group's client should implement this interface.
 type GlueTriggersGetter interface {
-	GlueTriggers() GlueTriggerInterface
+	GlueTriggers(namespace string) GlueTriggerInterface
 }
 
 // GlueTriggerInterface has methods to work with GlueTrigger resources.
@@ -52,12 +52,14 @@ type GlueTriggerInterface interface {
 // glueTriggers implements GlueTriggerInterface
 type glueTriggers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newGlueTriggers returns a GlueTriggers
-func newGlueTriggers(c *AwsV1alpha1Client) *glueTriggers {
+func newGlueTriggers(c *AwsV1alpha1Client, namespace string) *glueTriggers {
 	return &glueTriggers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newGlueTriggers(c *AwsV1alpha1Client) *glueTriggers {
 func (c *glueTriggers) Get(name string, options v1.GetOptions) (result *v1alpha1.GlueTrigger, err error) {
 	result = &v1alpha1.GlueTrigger{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("gluetriggers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *glueTriggers) List(opts v1.ListOptions) (result *v1alpha1.GlueTriggerLi
 	}
 	result = &v1alpha1.GlueTriggerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("gluetriggers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *glueTriggers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("gluetriggers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *glueTriggers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *glueTriggers) Create(glueTrigger *v1alpha1.GlueTrigger) (result *v1alpha1.GlueTrigger, err error) {
 	result = &v1alpha1.GlueTrigger{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("gluetriggers").
 		Body(glueTrigger).
 		Do().
@@ -118,6 +124,7 @@ func (c *glueTriggers) Create(glueTrigger *v1alpha1.GlueTrigger) (result *v1alph
 func (c *glueTriggers) Update(glueTrigger *v1alpha1.GlueTrigger) (result *v1alpha1.GlueTrigger, err error) {
 	result = &v1alpha1.GlueTrigger{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("gluetriggers").
 		Name(glueTrigger.Name).
 		Body(glueTrigger).
@@ -132,6 +139,7 @@ func (c *glueTriggers) Update(glueTrigger *v1alpha1.GlueTrigger) (result *v1alph
 func (c *glueTriggers) UpdateStatus(glueTrigger *v1alpha1.GlueTrigger) (result *v1alpha1.GlueTrigger, err error) {
 	result = &v1alpha1.GlueTrigger{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("gluetriggers").
 		Name(glueTrigger.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *glueTriggers) UpdateStatus(glueTrigger *v1alpha1.GlueTrigger) (result *
 // Delete takes name of the glueTrigger and deletes it. Returns an error if one occurs.
 func (c *glueTriggers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("gluetriggers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *glueTriggers) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("gluetriggers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *glueTriggers) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *glueTriggers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GlueTrigger, err error) {
 	result = &v1alpha1.GlueTrigger{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("gluetriggers").
 		SubResource(subresources...).
 		Name(name).

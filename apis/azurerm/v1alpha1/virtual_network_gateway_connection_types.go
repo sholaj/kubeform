@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,33 +19,34 @@ type VirtualNetworkGatewayConnection struct {
 }
 
 type VirtualNetworkGatewayConnectionSpecIpsecPolicy struct {
-	DhGroup         string `json:"dh_group"`
-	IkeEncryption   string `json:"ike_encryption"`
-	IkeIntegrity    string `json:"ike_integrity"`
-	IpsecEncryption string `json:"ipsec_encryption"`
-	IpsecIntegrity  string `json:"ipsec_integrity"`
-	PfsGroup        string `json:"pfs_group"`
+	DhGroup         string `json:"dhGroup" tf:"dh_group"`
+	IkeEncryption   string `json:"ikeEncryption" tf:"ike_encryption"`
+	IkeIntegrity    string `json:"ikeIntegrity" tf:"ike_integrity"`
+	IpsecEncryption string `json:"ipsecEncryption" tf:"ipsec_encryption"`
+	IpsecIntegrity  string `json:"ipsecIntegrity" tf:"ipsec_integrity"`
+	PfsGroup        string `json:"pfsGroup" tf:"pfs_group"`
 }
 
 type VirtualNetworkGatewayConnectionSpec struct {
 	// +optional
-	AuthorizationKey string `json:"authorization_key,omitempty"`
+	AuthorizationKey string `json:"authorizationKey,omitempty" tf:"authorization_key,omitempty"`
 	// +optional
-	ExpressRouteCircuitId string `json:"express_route_circuit_id,omitempty"`
+	ExpressRouteCircuitID string `json:"expressRouteCircuitID,omitempty" tf:"express_route_circuit_id,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	IpsecPolicy *[]VirtualNetworkGatewayConnectionSpec `json:"ipsec_policy,omitempty"`
+	IpsecPolicy []VirtualNetworkGatewayConnectionSpecIpsecPolicy `json:"ipsecPolicy,omitempty" tf:"ipsec_policy,omitempty"`
 	// +optional
-	LocalNetworkGatewayId string `json:"local_network_gateway_id,omitempty"`
-	Location              string `json:"location"`
-	Name                  string `json:"name"`
+	LocalNetworkGatewayID string `json:"localNetworkGatewayID,omitempty" tf:"local_network_gateway_id,omitempty"`
+	Location              string `json:"location" tf:"location"`
+	Name                  string `json:"name" tf:"name"`
 	// +optional
-	PeerVirtualNetworkGatewayId string `json:"peer_virtual_network_gateway_id,omitempty"`
-	ResourceGroupName           string `json:"resource_group_name"`
+	PeerVirtualNetworkGatewayID string `json:"peerVirtualNetworkGatewayID,omitempty" tf:"peer_virtual_network_gateway_id,omitempty"`
+	ResourceGroupName           string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	SharedKey               string `json:"shared_key,omitempty"`
-	Type                    string `json:"type"`
-	VirtualNetworkGatewayId string `json:"virtual_network_gateway_id"`
+	SharedKey               string                    `json:"sharedKey,omitempty" tf:"shared_key,omitempty"`
+	Type                    string                    `json:"type" tf:"type"`
+	VirtualNetworkGatewayID string                    `json:"virtualNetworkGatewayID" tf:"virtual_network_gateway_id"`
+	ProviderRef             core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type VirtualNetworkGatewayConnectionStatus struct {
@@ -53,7 +54,9 @@ type VirtualNetworkGatewayConnectionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

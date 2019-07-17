@@ -32,7 +32,7 @@ import (
 // KmsAliasesGetter has a method to return a KmsAliasInterface.
 // A group's client should implement this interface.
 type KmsAliasesGetter interface {
-	KmsAliases() KmsAliasInterface
+	KmsAliases(namespace string) KmsAliasInterface
 }
 
 // KmsAliasInterface has methods to work with KmsAlias resources.
@@ -52,12 +52,14 @@ type KmsAliasInterface interface {
 // kmsAliases implements KmsAliasInterface
 type kmsAliases struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKmsAliases returns a KmsAliases
-func newKmsAliases(c *AwsV1alpha1Client) *kmsAliases {
+func newKmsAliases(c *AwsV1alpha1Client, namespace string) *kmsAliases {
 	return &kmsAliases{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKmsAliases(c *AwsV1alpha1Client) *kmsAliases {
 func (c *kmsAliases) Get(name string, options v1.GetOptions) (result *v1alpha1.KmsAlias, err error) {
 	result = &v1alpha1.KmsAlias{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmsaliases").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *kmsAliases) List(opts v1.ListOptions) (result *v1alpha1.KmsAliasList, e
 	}
 	result = &v1alpha1.KmsAliasList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmsaliases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *kmsAliases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("kmsaliases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *kmsAliases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *kmsAliases) Create(kmsAlias *v1alpha1.KmsAlias) (result *v1alpha1.KmsAlias, err error) {
 	result = &v1alpha1.KmsAlias{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("kmsaliases").
 		Body(kmsAlias).
 		Do().
@@ -118,6 +124,7 @@ func (c *kmsAliases) Create(kmsAlias *v1alpha1.KmsAlias) (result *v1alpha1.KmsAl
 func (c *kmsAliases) Update(kmsAlias *v1alpha1.KmsAlias) (result *v1alpha1.KmsAlias, err error) {
 	result = &v1alpha1.KmsAlias{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmsaliases").
 		Name(kmsAlias.Name).
 		Body(kmsAlias).
@@ -132,6 +139,7 @@ func (c *kmsAliases) Update(kmsAlias *v1alpha1.KmsAlias) (result *v1alpha1.KmsAl
 func (c *kmsAliases) UpdateStatus(kmsAlias *v1alpha1.KmsAlias) (result *v1alpha1.KmsAlias, err error) {
 	result = &v1alpha1.KmsAlias{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmsaliases").
 		Name(kmsAlias.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *kmsAliases) UpdateStatus(kmsAlias *v1alpha1.KmsAlias) (result *v1alpha1
 // Delete takes name of the kmsAlias and deletes it. Returns an error if one occurs.
 func (c *kmsAliases) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmsaliases").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *kmsAliases) DeleteCollection(options *v1.DeleteOptions, listOptions v1.
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmsaliases").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *kmsAliases) DeleteCollection(options *v1.DeleteOptions, listOptions v1.
 func (c *kmsAliases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KmsAlias, err error) {
 	result = &v1alpha1.KmsAlias{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("kmsaliases").
 		SubResource(subresources...).
 		Name(name).

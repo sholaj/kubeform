@@ -31,6 +31,7 @@ import (
 // FakeFolderIamBindings implements FolderIamBindingInterface
 type FakeFolderIamBindings struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var folderiambindingsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "folderiambindings"}
@@ -40,7 +41,8 @@ var folderiambindingsKind = schema.GroupVersionKind{Group: "google.kubeform.com"
 // Get takes name of the folderIamBinding, and returns the corresponding folderIamBinding object, and an error if there is any.
 func (c *FakeFolderIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.FolderIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(folderiambindingsResource, name), &v1alpha1.FolderIamBinding{})
+		Invokes(testing.NewGetAction(folderiambindingsResource, c.ns, name), &v1alpha1.FolderIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeFolderIamBindings) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of FolderIamBindings that match those selectors.
 func (c *FakeFolderIamBindings) List(opts v1.ListOptions) (result *v1alpha1.FolderIamBindingList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(folderiambindingsResource, folderiambindingsKind, opts), &v1alpha1.FolderIamBindingList{})
+		Invokes(testing.NewListAction(folderiambindingsResource, folderiambindingsKind, c.ns, opts), &v1alpha1.FolderIamBindingList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeFolderIamBindings) List(opts v1.ListOptions) (result *v1alpha1.Fold
 // Watch returns a watch.Interface that watches the requested folderIamBindings.
 func (c *FakeFolderIamBindings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(folderiambindingsResource, opts))
+		InvokesWatch(testing.NewWatchAction(folderiambindingsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a folderIamBinding and creates it.  Returns the server's representation of the folderIamBinding, and an error, if there is any.
 func (c *FakeFolderIamBindings) Create(folderIamBinding *v1alpha1.FolderIamBinding) (result *v1alpha1.FolderIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(folderiambindingsResource, folderIamBinding), &v1alpha1.FolderIamBinding{})
+		Invokes(testing.NewCreateAction(folderiambindingsResource, c.ns, folderIamBinding), &v1alpha1.FolderIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeFolderIamBindings) Create(folderIamBinding *v1alpha1.FolderIamBindi
 // Update takes the representation of a folderIamBinding and updates it. Returns the server's representation of the folderIamBinding, and an error, if there is any.
 func (c *FakeFolderIamBindings) Update(folderIamBinding *v1alpha1.FolderIamBinding) (result *v1alpha1.FolderIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(folderiambindingsResource, folderIamBinding), &v1alpha1.FolderIamBinding{})
+		Invokes(testing.NewUpdateAction(folderiambindingsResource, c.ns, folderIamBinding), &v1alpha1.FolderIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeFolderIamBindings) Update(folderIamBinding *v1alpha1.FolderIamBindi
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeFolderIamBindings) UpdateStatus(folderIamBinding *v1alpha1.FolderIamBinding) (*v1alpha1.FolderIamBinding, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(folderiambindingsResource, "status", folderIamBinding), &v1alpha1.FolderIamBinding{})
+		Invokes(testing.NewUpdateSubresourceAction(folderiambindingsResource, "status", c.ns, folderIamBinding), &v1alpha1.FolderIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeFolderIamBindings) UpdateStatus(folderIamBinding *v1alpha1.FolderIa
 // Delete takes name of the folderIamBinding and deletes it. Returns an error if one occurs.
 func (c *FakeFolderIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(folderiambindingsResource, name), &v1alpha1.FolderIamBinding{})
+		Invokes(testing.NewDeleteAction(folderiambindingsResource, c.ns, name), &v1alpha1.FolderIamBinding{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeFolderIamBindings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(folderiambindingsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(folderiambindingsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.FolderIamBindingList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeFolderIamBindings) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched folderIamBinding.
 func (c *FakeFolderIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FolderIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(folderiambindingsResource, name, pt, data, subresources...), &v1alpha1.FolderIamBinding{})
+		Invokes(testing.NewPatchSubresourceAction(folderiambindingsResource, c.ns, name, pt, data, subresources...), &v1alpha1.FolderIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}

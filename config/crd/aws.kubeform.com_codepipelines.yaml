@@ -397,16 +397,89 @@ spec:
           type: object
         spec:
           properties:
-            artifact_store:
-              items: {}
+            artifactStore:
+              items:
+                properties:
+                  encryptionKey:
+                    items:
+                      properties:
+                        ID:
+                          type: string
+                        type:
+                          type: string
+                      required:
+                      - ID
+                      - type
+                      type: object
+                    maxItems: 1
+                    type: array
+                  location:
+                    type: string
+                  type:
+                    type: string
+                required:
+                - location
+                - type
+                type: object
               maxItems: 1
               type: array
             name:
               type: string
-            role_arn:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            roleArn:
               type: string
             stage:
-              items: {}
+              items:
+                properties:
+                  action:
+                    items:
+                      properties:
+                        category:
+                          type: string
+                        configuration:
+                          additionalProperties:
+                            type: string
+                          type: object
+                        inputArtifacts:
+                          items:
+                            type: string
+                          type: array
+                        name:
+                          type: string
+                        outputArtifacts:
+                          items:
+                            type: string
+                          type: array
+                        owner:
+                          type: string
+                        provider:
+                          type: string
+                        roleArn:
+                          type: string
+                        version:
+                          type: string
+                      required:
+                      - category
+                      - name
+                      - owner
+                      - provider
+                      - version
+                      type: object
+                    type: array
+                  name:
+                    type: string
+                required:
+                - action
+                - name
+                type: object
               minItems: 2
               type: array
             tags:
@@ -414,9 +487,10 @@ spec:
                 type: string
               type: object
           required:
-          - artifact_store
+          - artifactStore
           - name
-          - role_arn
+          - providerRef
+          - roleArn
           - stage
           type: object
         status:
@@ -428,6 +502,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

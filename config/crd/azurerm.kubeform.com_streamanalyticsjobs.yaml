@@ -397,40 +397,50 @@ spec:
           type: object
         spec:
           properties:
-            compatibility_level:
+            compatibilityLevel:
               type: string
-            data_locale:
+            dataLocale:
               type: string
-            events_late_arrival_max_delay_in_seconds:
+            eventsLateArrivalMaxDelayInSeconds:
               type: integer
-            events_out_of_order_max_delay_in_seconds:
+            eventsOutOfOrderMaxDelayInSeconds:
               type: integer
-            events_out_of_order_policy:
+            eventsOutOfOrderPolicy:
               type: string
             location:
               type: string
             name:
               type: string
-            output_error_policy:
+            outputErrorPolicy:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
-            streaming_units:
+            streamingUnits:
               type: integer
-            transformation_query:
+            transformationQuery:
               type: string
           required:
-          - compatibility_level
-          - data_locale
-          - events_late_arrival_max_delay_in_seconds
-          - events_out_of_order_max_delay_in_seconds
-          - events_out_of_order_policy
+          - compatibilityLevel
+          - dataLocale
+          - eventsLateArrivalMaxDelayInSeconds
+          - eventsOutOfOrderMaxDelayInSeconds
+          - eventsOutOfOrderPolicy
           - location
           - name
-          - output_error_policy
-          - resource_group_name
-          - streaming_units
-          - transformation_query
+          - outputErrorPolicy
+          - providerRef
+          - resourceGroupName
+          - streamingUnits
+          - transformationQuery
           type: object
         status:
           properties:
@@ -441,6 +451,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

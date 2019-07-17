@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/azurerm/v1alpha1"
 )
 
-// ApiManagementApiVersionSetInformer provides access to a shared informer and lister for
-// ApiManagementApiVersionSets.
-type ApiManagementApiVersionSetInformer interface {
+// ApiManagementAPIVersionSetInformer provides access to a shared informer and lister for
+// ApiManagementAPIVersionSets.
+type ApiManagementAPIVersionSetInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.ApiManagementApiVersionSetLister
+	Lister() v1alpha1.ApiManagementAPIVersionSetLister
 }
 
-type apiManagementApiVersionSetInformer struct {
+type apiManagementAPIVersionSetInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewApiManagementApiVersionSetInformer constructs a new informer for ApiManagementApiVersionSet type.
+// NewApiManagementAPIVersionSetInformer constructs a new informer for ApiManagementAPIVersionSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewApiManagementApiVersionSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredApiManagementApiVersionSetInformer(client, resyncPeriod, indexers, nil)
+func NewApiManagementAPIVersionSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredApiManagementAPIVersionSetInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredApiManagementApiVersionSetInformer constructs a new informer for ApiManagementApiVersionSet type.
+// NewFilteredApiManagementAPIVersionSetInformer constructs a new informer for ApiManagementAPIVersionSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredApiManagementApiVersionSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredApiManagementAPIVersionSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ApiManagementApiVersionSets().List(options)
+				return client.AzurermV1alpha1().ApiManagementAPIVersionSets(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ApiManagementApiVersionSets().Watch(options)
+				return client.AzurermV1alpha1().ApiManagementAPIVersionSets(namespace).Watch(options)
 			},
 		},
-		&azurermv1alpha1.ApiManagementApiVersionSet{},
+		&azurermv1alpha1.ApiManagementAPIVersionSet{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *apiManagementApiVersionSetInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredApiManagementApiVersionSetInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *apiManagementAPIVersionSetInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredApiManagementAPIVersionSetInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *apiManagementApiVersionSetInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&azurermv1alpha1.ApiManagementApiVersionSet{}, f.defaultInformer)
+func (f *apiManagementAPIVersionSetInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&azurermv1alpha1.ApiManagementAPIVersionSet{}, f.defaultInformer)
 }
 
-func (f *apiManagementApiVersionSetInformer) Lister() v1alpha1.ApiManagementApiVersionSetLister {
-	return v1alpha1.NewApiManagementApiVersionSetLister(f.Informer().GetIndexer())
+func (f *apiManagementAPIVersionSetInformer) Lister() v1alpha1.ApiManagementAPIVersionSetLister {
+	return v1alpha1.NewApiManagementAPIVersionSetLister(f.Informer().GetIndexer())
 }

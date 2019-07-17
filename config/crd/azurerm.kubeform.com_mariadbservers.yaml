@@ -397,37 +397,72 @@ spec:
           type: object
         spec:
           properties:
-            administrator_login:
+            administratorLogin:
               type: string
-            administrator_login_password:
+            administratorLoginPassword:
               type: string
             location:
               type: string
             name:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
             sku:
-              items: {}
+              items:
+                properties:
+                  capacity:
+                    type: integer
+                  family:
+                    type: string
+                  name:
+                    type: string
+                  tier:
+                    type: string
+                required:
+                - capacity
+                - family
+                - name
+                - tier
+                type: object
               maxItems: 1
               type: array
-            ssl_enforcement:
+            sslEnforcement:
               type: string
-            storage_profile:
-              items: {}
+            storageProfile:
+              items:
+                properties:
+                  backupRetentionDays:
+                    type: integer
+                  geoRedundantBackup:
+                    type: string
+                  storageMb:
+                    type: integer
+                required:
+                - storageMb
+                type: object
               maxItems: 1
               type: array
             version:
               type: string
           required:
-          - administrator_login
-          - administrator_login_password
+          - administratorLogin
+          - administratorLoginPassword
           - location
           - name
-          - resource_group_name
+          - providerRef
+          - resourceGroupName
           - sku
-          - ssl_enforcement
-          - storage_profile
+          - sslEnforcement
+          - storageProfile
           - version
           type: object
         status:
@@ -439,6 +474,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

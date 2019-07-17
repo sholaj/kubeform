@@ -32,7 +32,7 @@ import (
 // AzureadServicePrincipalPasswordsGetter has a method to return a AzureadServicePrincipalPasswordInterface.
 // A group's client should implement this interface.
 type AzureadServicePrincipalPasswordsGetter interface {
-	AzureadServicePrincipalPasswords() AzureadServicePrincipalPasswordInterface
+	AzureadServicePrincipalPasswords(namespace string) AzureadServicePrincipalPasswordInterface
 }
 
 // AzureadServicePrincipalPasswordInterface has methods to work with AzureadServicePrincipalPassword resources.
@@ -52,12 +52,14 @@ type AzureadServicePrincipalPasswordInterface interface {
 // azureadServicePrincipalPasswords implements AzureadServicePrincipalPasswordInterface
 type azureadServicePrincipalPasswords struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAzureadServicePrincipalPasswords returns a AzureadServicePrincipalPasswords
-func newAzureadServicePrincipalPasswords(c *AzurermV1alpha1Client) *azureadServicePrincipalPasswords {
+func newAzureadServicePrincipalPasswords(c *AzurermV1alpha1Client, namespace string) *azureadServicePrincipalPasswords {
 	return &azureadServicePrincipalPasswords{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAzureadServicePrincipalPasswords(c *AzurermV1alpha1Client) *azureadServi
 func (c *azureadServicePrincipalPasswords) Get(name string, options v1.GetOptions) (result *v1alpha1.AzureadServicePrincipalPassword, err error) {
 	result = &v1alpha1.AzureadServicePrincipalPassword{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("azureadserviceprincipalpasswords").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *azureadServicePrincipalPasswords) List(opts v1.ListOptions) (result *v1
 	}
 	result = &v1alpha1.AzureadServicePrincipalPasswordList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("azureadserviceprincipalpasswords").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *azureadServicePrincipalPasswords) Watch(opts v1.ListOptions) (watch.Int
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("azureadserviceprincipalpasswords").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *azureadServicePrincipalPasswords) Watch(opts v1.ListOptions) (watch.Int
 func (c *azureadServicePrincipalPasswords) Create(azureadServicePrincipalPassword *v1alpha1.AzureadServicePrincipalPassword) (result *v1alpha1.AzureadServicePrincipalPassword, err error) {
 	result = &v1alpha1.AzureadServicePrincipalPassword{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("azureadserviceprincipalpasswords").
 		Body(azureadServicePrincipalPassword).
 		Do().
@@ -118,6 +124,7 @@ func (c *azureadServicePrincipalPasswords) Create(azureadServicePrincipalPasswor
 func (c *azureadServicePrincipalPasswords) Update(azureadServicePrincipalPassword *v1alpha1.AzureadServicePrincipalPassword) (result *v1alpha1.AzureadServicePrincipalPassword, err error) {
 	result = &v1alpha1.AzureadServicePrincipalPassword{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("azureadserviceprincipalpasswords").
 		Name(azureadServicePrincipalPassword.Name).
 		Body(azureadServicePrincipalPassword).
@@ -132,6 +139,7 @@ func (c *azureadServicePrincipalPasswords) Update(azureadServicePrincipalPasswor
 func (c *azureadServicePrincipalPasswords) UpdateStatus(azureadServicePrincipalPassword *v1alpha1.AzureadServicePrincipalPassword) (result *v1alpha1.AzureadServicePrincipalPassword, err error) {
 	result = &v1alpha1.AzureadServicePrincipalPassword{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("azureadserviceprincipalpasswords").
 		Name(azureadServicePrincipalPassword.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *azureadServicePrincipalPasswords) UpdateStatus(azureadServicePrincipalP
 // Delete takes name of the azureadServicePrincipalPassword and deletes it. Returns an error if one occurs.
 func (c *azureadServicePrincipalPasswords) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("azureadserviceprincipalpasswords").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *azureadServicePrincipalPasswords) DeleteCollection(options *v1.DeleteOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("azureadserviceprincipalpasswords").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *azureadServicePrincipalPasswords) DeleteCollection(options *v1.DeleteOp
 func (c *azureadServicePrincipalPasswords) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AzureadServicePrincipalPassword, err error) {
 	result = &v1alpha1.AzureadServicePrincipalPassword{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("azureadserviceprincipalpasswords").
 		SubResource(subresources...).
 		Name(name).

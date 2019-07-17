@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// ApiManagementApisGetter has a method to return a ApiManagementApiInterface.
+// ApiManagementAPIsGetter has a method to return a ApiManagementAPIInterface.
 // A group's client should implement this interface.
-type ApiManagementApisGetter interface {
-	ApiManagementApis() ApiManagementApiInterface
+type ApiManagementAPIsGetter interface {
+	ApiManagementAPIs(namespace string) ApiManagementAPIInterface
 }
 
-// ApiManagementApiInterface has methods to work with ApiManagementApi resources.
-type ApiManagementApiInterface interface {
-	Create(*v1alpha1.ApiManagementApi) (*v1alpha1.ApiManagementApi, error)
-	Update(*v1alpha1.ApiManagementApi) (*v1alpha1.ApiManagementApi, error)
-	UpdateStatus(*v1alpha1.ApiManagementApi) (*v1alpha1.ApiManagementApi, error)
+// ApiManagementAPIInterface has methods to work with ApiManagementAPI resources.
+type ApiManagementAPIInterface interface {
+	Create(*v1alpha1.ApiManagementAPI) (*v1alpha1.ApiManagementAPI, error)
+	Update(*v1alpha1.ApiManagementAPI) (*v1alpha1.ApiManagementAPI, error)
+	UpdateStatus(*v1alpha1.ApiManagementAPI) (*v1alpha1.ApiManagementAPI, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.ApiManagementApi, error)
-	List(opts v1.ListOptions) (*v1alpha1.ApiManagementApiList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.ApiManagementAPI, error)
+	List(opts v1.ListOptions) (*v1alpha1.ApiManagementAPIList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementApi, err error)
-	ApiManagementApiExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementAPI, err error)
+	ApiManagementAPIExpansion
 }
 
-// apiManagementApis implements ApiManagementApiInterface
-type apiManagementApis struct {
+// apiManagementAPIs implements ApiManagementAPIInterface
+type apiManagementAPIs struct {
 	client rest.Interface
+	ns     string
 }
 
-// newApiManagementApis returns a ApiManagementApis
-func newApiManagementApis(c *AzurermV1alpha1Client) *apiManagementApis {
-	return &apiManagementApis{
+// newApiManagementAPIs returns a ApiManagementAPIs
+func newApiManagementAPIs(c *AzurermV1alpha1Client, namespace string) *apiManagementAPIs {
+	return &apiManagementAPIs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the apiManagementApi, and returns the corresponding apiManagementApi object, and an error if there is any.
-func (c *apiManagementApis) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementApi, err error) {
-	result = &v1alpha1.ApiManagementApi{}
+// Get takes name of the apiManagementAPI, and returns the corresponding apiManagementAPI object, and an error if there is any.
+func (c *apiManagementAPIs) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementAPI, err error) {
+	result = &v1alpha1.ApiManagementAPI{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementapis").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *apiManagementApis) Get(name string, options v1.GetOptions) (result *v1a
 	return
 }
 
-// List takes label and field selectors, and returns the list of ApiManagementApis that match those selectors.
-func (c *apiManagementApis) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementApiList, err error) {
+// List takes label and field selectors, and returns the list of ApiManagementAPIs that match those selectors.
+func (c *apiManagementAPIs) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementAPIList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.ApiManagementApiList{}
+	result = &v1alpha1.ApiManagementAPIList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementapis").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *apiManagementApis) List(opts v1.ListOptions) (result *v1alpha1.ApiManag
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested apiManagementApis.
-func (c *apiManagementApis) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested apiManagementAPIs.
+func (c *apiManagementAPIs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementapis").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a apiManagementApi and creates it.  Returns the server's representation of the apiManagementApi, and an error, if there is any.
-func (c *apiManagementApis) Create(apiManagementApi *v1alpha1.ApiManagementApi) (result *v1alpha1.ApiManagementApi, err error) {
-	result = &v1alpha1.ApiManagementApi{}
+// Create takes the representation of a apiManagementAPI and creates it.  Returns the server's representation of the apiManagementAPI, and an error, if there is any.
+func (c *apiManagementAPIs) Create(apiManagementAPI *v1alpha1.ApiManagementAPI) (result *v1alpha1.ApiManagementAPI, err error) {
+	result = &v1alpha1.ApiManagementAPI{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apimanagementapis").
-		Body(apiManagementApi).
+		Body(apiManagementAPI).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a apiManagementApi and updates it. Returns the server's representation of the apiManagementApi, and an error, if there is any.
-func (c *apiManagementApis) Update(apiManagementApi *v1alpha1.ApiManagementApi) (result *v1alpha1.ApiManagementApi, err error) {
-	result = &v1alpha1.ApiManagementApi{}
+// Update takes the representation of a apiManagementAPI and updates it. Returns the server's representation of the apiManagementAPI, and an error, if there is any.
+func (c *apiManagementAPIs) Update(apiManagementAPI *v1alpha1.ApiManagementAPI) (result *v1alpha1.ApiManagementAPI, err error) {
+	result = &v1alpha1.ApiManagementAPI{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementapis").
-		Name(apiManagementApi.Name).
-		Body(apiManagementApi).
+		Name(apiManagementAPI.Name).
+		Body(apiManagementAPI).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *apiManagementApis) Update(apiManagementApi *v1alpha1.ApiManagementApi) 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *apiManagementApis) UpdateStatus(apiManagementApi *v1alpha1.ApiManagementApi) (result *v1alpha1.ApiManagementApi, err error) {
-	result = &v1alpha1.ApiManagementApi{}
+func (c *apiManagementAPIs) UpdateStatus(apiManagementAPI *v1alpha1.ApiManagementAPI) (result *v1alpha1.ApiManagementAPI, err error) {
+	result = &v1alpha1.ApiManagementAPI{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementapis").
-		Name(apiManagementApi.Name).
+		Name(apiManagementAPI.Name).
 		SubResource("status").
-		Body(apiManagementApi).
+		Body(apiManagementAPI).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the apiManagementApi and deletes it. Returns an error if one occurs.
-func (c *apiManagementApis) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the apiManagementAPI and deletes it. Returns an error if one occurs.
+func (c *apiManagementAPIs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementapis").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *apiManagementApis) Delete(name string, options *v1.DeleteOptions) error
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *apiManagementApis) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *apiManagementAPIs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementapis").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *apiManagementApis) DeleteCollection(options *v1.DeleteOptions, listOpti
 		Error()
 }
 
-// Patch applies the patch and returns the patched apiManagementApi.
-func (c *apiManagementApis) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementApi, err error) {
-	result = &v1alpha1.ApiManagementApi{}
+// Patch applies the patch and returns the patched apiManagementAPI.
+func (c *apiManagementAPIs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementAPI, err error) {
+	result = &v1alpha1.ApiManagementAPI{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apimanagementapis").
 		SubResource(subresources...).
 		Name(name).

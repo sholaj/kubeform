@@ -29,8 +29,8 @@ import (
 type SagemakerNotebookInstanceLister interface {
 	// List lists all SagemakerNotebookInstances in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SagemakerNotebookInstance, err error)
-	// Get retrieves the SagemakerNotebookInstance from the index for a given name.
-	Get(name string) (*v1alpha1.SagemakerNotebookInstance, error)
+	// SagemakerNotebookInstances returns an object that can list and get SagemakerNotebookInstances.
+	SagemakerNotebookInstances(namespace string) SagemakerNotebookInstanceNamespaceLister
 	SagemakerNotebookInstanceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sagemakerNotebookInstanceLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the SagemakerNotebookInstance from the index for a given name.
-func (s *sagemakerNotebookInstanceLister) Get(name string) (*v1alpha1.SagemakerNotebookInstance, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SagemakerNotebookInstances returns an object that can list and get SagemakerNotebookInstances.
+func (s *sagemakerNotebookInstanceLister) SagemakerNotebookInstances(namespace string) SagemakerNotebookInstanceNamespaceLister {
+	return sagemakerNotebookInstanceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SagemakerNotebookInstanceNamespaceLister helps list and get SagemakerNotebookInstances.
+type SagemakerNotebookInstanceNamespaceLister interface {
+	// List lists all SagemakerNotebookInstances in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SagemakerNotebookInstance, err error)
+	// Get retrieves the SagemakerNotebookInstance from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SagemakerNotebookInstance, error)
+	SagemakerNotebookInstanceNamespaceListerExpansion
+}
+
+// sagemakerNotebookInstanceNamespaceLister implements the SagemakerNotebookInstanceNamespaceLister
+// interface.
+type sagemakerNotebookInstanceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SagemakerNotebookInstances in the indexer for a given namespace.
+func (s sagemakerNotebookInstanceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SagemakerNotebookInstance, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SagemakerNotebookInstance))
+	})
+	return ret, err
+}
+
+// Get retrieves the SagemakerNotebookInstance from the indexer for a given namespace and name.
+func (s sagemakerNotebookInstanceNamespaceLister) Get(name string) (*v1alpha1.SagemakerNotebookInstance, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

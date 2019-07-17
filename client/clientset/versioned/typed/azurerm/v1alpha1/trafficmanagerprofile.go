@@ -32,7 +32,7 @@ import (
 // TrafficManagerProfilesGetter has a method to return a TrafficManagerProfileInterface.
 // A group's client should implement this interface.
 type TrafficManagerProfilesGetter interface {
-	TrafficManagerProfiles() TrafficManagerProfileInterface
+	TrafficManagerProfiles(namespace string) TrafficManagerProfileInterface
 }
 
 // TrafficManagerProfileInterface has methods to work with TrafficManagerProfile resources.
@@ -52,12 +52,14 @@ type TrafficManagerProfileInterface interface {
 // trafficManagerProfiles implements TrafficManagerProfileInterface
 type trafficManagerProfiles struct {
 	client rest.Interface
+	ns     string
 }
 
 // newTrafficManagerProfiles returns a TrafficManagerProfiles
-func newTrafficManagerProfiles(c *AzurermV1alpha1Client) *trafficManagerProfiles {
+func newTrafficManagerProfiles(c *AzurermV1alpha1Client, namespace string) *trafficManagerProfiles {
 	return &trafficManagerProfiles{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newTrafficManagerProfiles(c *AzurermV1alpha1Client) *trafficManagerProfiles
 func (c *trafficManagerProfiles) Get(name string, options v1.GetOptions) (result *v1alpha1.TrafficManagerProfile, err error) {
 	result = &v1alpha1.TrafficManagerProfile{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("trafficmanagerprofiles").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *trafficManagerProfiles) List(opts v1.ListOptions) (result *v1alpha1.Tra
 	}
 	result = &v1alpha1.TrafficManagerProfileList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("trafficmanagerprofiles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *trafficManagerProfiles) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("trafficmanagerprofiles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *trafficManagerProfiles) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *trafficManagerProfiles) Create(trafficManagerProfile *v1alpha1.TrafficManagerProfile) (result *v1alpha1.TrafficManagerProfile, err error) {
 	result = &v1alpha1.TrafficManagerProfile{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("trafficmanagerprofiles").
 		Body(trafficManagerProfile).
 		Do().
@@ -118,6 +124,7 @@ func (c *trafficManagerProfiles) Create(trafficManagerProfile *v1alpha1.TrafficM
 func (c *trafficManagerProfiles) Update(trafficManagerProfile *v1alpha1.TrafficManagerProfile) (result *v1alpha1.TrafficManagerProfile, err error) {
 	result = &v1alpha1.TrafficManagerProfile{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("trafficmanagerprofiles").
 		Name(trafficManagerProfile.Name).
 		Body(trafficManagerProfile).
@@ -132,6 +139,7 @@ func (c *trafficManagerProfiles) Update(trafficManagerProfile *v1alpha1.TrafficM
 func (c *trafficManagerProfiles) UpdateStatus(trafficManagerProfile *v1alpha1.TrafficManagerProfile) (result *v1alpha1.TrafficManagerProfile, err error) {
 	result = &v1alpha1.TrafficManagerProfile{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("trafficmanagerprofiles").
 		Name(trafficManagerProfile.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *trafficManagerProfiles) UpdateStatus(trafficManagerProfile *v1alpha1.Tr
 // Delete takes name of the trafficManagerProfile and deletes it. Returns an error if one occurs.
 func (c *trafficManagerProfiles) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("trafficmanagerprofiles").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *trafficManagerProfiles) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("trafficmanagerprofiles").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *trafficManagerProfiles) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *trafficManagerProfiles) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.TrafficManagerProfile, err error) {
 	result = &v1alpha1.TrafficManagerProfile{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("trafficmanagerprofiles").
 		SubResource(subresources...).
 		Name(name).

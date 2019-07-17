@@ -32,7 +32,7 @@ import (
 // SharedImageVersionsGetter has a method to return a SharedImageVersionInterface.
 // A group's client should implement this interface.
 type SharedImageVersionsGetter interface {
-	SharedImageVersions() SharedImageVersionInterface
+	SharedImageVersions(namespace string) SharedImageVersionInterface
 }
 
 // SharedImageVersionInterface has methods to work with SharedImageVersion resources.
@@ -52,12 +52,14 @@ type SharedImageVersionInterface interface {
 // sharedImageVersions implements SharedImageVersionInterface
 type sharedImageVersions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSharedImageVersions returns a SharedImageVersions
-func newSharedImageVersions(c *AzurermV1alpha1Client) *sharedImageVersions {
+func newSharedImageVersions(c *AzurermV1alpha1Client, namespace string) *sharedImageVersions {
 	return &sharedImageVersions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSharedImageVersions(c *AzurermV1alpha1Client) *sharedImageVersions {
 func (c *sharedImageVersions) Get(name string, options v1.GetOptions) (result *v1alpha1.SharedImageVersion, err error) {
 	result = &v1alpha1.SharedImageVersion{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sharedimageversions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sharedImageVersions) List(opts v1.ListOptions) (result *v1alpha1.Shared
 	}
 	result = &v1alpha1.SharedImageVersionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sharedimageversions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sharedImageVersions) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sharedimageversions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sharedImageVersions) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *sharedImageVersions) Create(sharedImageVersion *v1alpha1.SharedImageVersion) (result *v1alpha1.SharedImageVersion, err error) {
 	result = &v1alpha1.SharedImageVersion{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sharedimageversions").
 		Body(sharedImageVersion).
 		Do().
@@ -118,6 +124,7 @@ func (c *sharedImageVersions) Create(sharedImageVersion *v1alpha1.SharedImageVer
 func (c *sharedImageVersions) Update(sharedImageVersion *v1alpha1.SharedImageVersion) (result *v1alpha1.SharedImageVersion, err error) {
 	result = &v1alpha1.SharedImageVersion{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sharedimageversions").
 		Name(sharedImageVersion.Name).
 		Body(sharedImageVersion).
@@ -132,6 +139,7 @@ func (c *sharedImageVersions) Update(sharedImageVersion *v1alpha1.SharedImageVer
 func (c *sharedImageVersions) UpdateStatus(sharedImageVersion *v1alpha1.SharedImageVersion) (result *v1alpha1.SharedImageVersion, err error) {
 	result = &v1alpha1.SharedImageVersion{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sharedimageversions").
 		Name(sharedImageVersion.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sharedImageVersions) UpdateStatus(sharedImageVersion *v1alpha1.SharedIm
 // Delete takes name of the sharedImageVersion and deletes it. Returns an error if one occurs.
 func (c *sharedImageVersions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sharedimageversions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sharedImageVersions) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sharedimageversions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sharedImageVersions) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *sharedImageVersions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SharedImageVersion, err error) {
 	result = &v1alpha1.SharedImageVersion{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sharedimageversions").
 		SubResource(subresources...).
 		Name(name).

@@ -41,32 +41,33 @@ type LoggingFolderExclusionInformer interface {
 type loggingFolderExclusionInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewLoggingFolderExclusionInformer constructs a new informer for LoggingFolderExclusion type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLoggingFolderExclusionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLoggingFolderExclusionInformer(client, resyncPeriod, indexers, nil)
+func NewLoggingFolderExclusionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLoggingFolderExclusionInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredLoggingFolderExclusionInformer constructs a new informer for LoggingFolderExclusion type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLoggingFolderExclusionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLoggingFolderExclusionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().LoggingFolderExclusions().List(options)
+				return client.GoogleV1alpha1().LoggingFolderExclusions(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().LoggingFolderExclusions().Watch(options)
+				return client.GoogleV1alpha1().LoggingFolderExclusions(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.LoggingFolderExclusion{},
@@ -76,7 +77,7 @@ func NewFilteredLoggingFolderExclusionInformer(client versioned.Interface, resyn
 }
 
 func (f *loggingFolderExclusionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLoggingFolderExclusionInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredLoggingFolderExclusionInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *loggingFolderExclusionInformer) Informer() cache.SharedIndexInformer {

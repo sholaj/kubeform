@@ -32,7 +32,7 @@ import (
 // ResourceManagerLiensGetter has a method to return a ResourceManagerLienInterface.
 // A group's client should implement this interface.
 type ResourceManagerLiensGetter interface {
-	ResourceManagerLiens() ResourceManagerLienInterface
+	ResourceManagerLiens(namespace string) ResourceManagerLienInterface
 }
 
 // ResourceManagerLienInterface has methods to work with ResourceManagerLien resources.
@@ -52,12 +52,14 @@ type ResourceManagerLienInterface interface {
 // resourceManagerLiens implements ResourceManagerLienInterface
 type resourceManagerLiens struct {
 	client rest.Interface
+	ns     string
 }
 
 // newResourceManagerLiens returns a ResourceManagerLiens
-func newResourceManagerLiens(c *GoogleV1alpha1Client) *resourceManagerLiens {
+func newResourceManagerLiens(c *GoogleV1alpha1Client, namespace string) *resourceManagerLiens {
 	return &resourceManagerLiens{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newResourceManagerLiens(c *GoogleV1alpha1Client) *resourceManagerLiens {
 func (c *resourceManagerLiens) Get(name string, options v1.GetOptions) (result *v1alpha1.ResourceManagerLien, err error) {
 	result = &v1alpha1.ResourceManagerLien{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("resourcemanagerliens").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *resourceManagerLiens) List(opts v1.ListOptions) (result *v1alpha1.Resou
 	}
 	result = &v1alpha1.ResourceManagerLienList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("resourcemanagerliens").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *resourceManagerLiens) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("resourcemanagerliens").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *resourceManagerLiens) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *resourceManagerLiens) Create(resourceManagerLien *v1alpha1.ResourceManagerLien) (result *v1alpha1.ResourceManagerLien, err error) {
 	result = &v1alpha1.ResourceManagerLien{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("resourcemanagerliens").
 		Body(resourceManagerLien).
 		Do().
@@ -118,6 +124,7 @@ func (c *resourceManagerLiens) Create(resourceManagerLien *v1alpha1.ResourceMana
 func (c *resourceManagerLiens) Update(resourceManagerLien *v1alpha1.ResourceManagerLien) (result *v1alpha1.ResourceManagerLien, err error) {
 	result = &v1alpha1.ResourceManagerLien{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("resourcemanagerliens").
 		Name(resourceManagerLien.Name).
 		Body(resourceManagerLien).
@@ -132,6 +139,7 @@ func (c *resourceManagerLiens) Update(resourceManagerLien *v1alpha1.ResourceMana
 func (c *resourceManagerLiens) UpdateStatus(resourceManagerLien *v1alpha1.ResourceManagerLien) (result *v1alpha1.ResourceManagerLien, err error) {
 	result = &v1alpha1.ResourceManagerLien{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("resourcemanagerliens").
 		Name(resourceManagerLien.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *resourceManagerLiens) UpdateStatus(resourceManagerLien *v1alpha1.Resour
 // Delete takes name of the resourceManagerLien and deletes it. Returns an error if one occurs.
 func (c *resourceManagerLiens) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("resourcemanagerliens").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *resourceManagerLiens) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("resourcemanagerliens").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *resourceManagerLiens) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *resourceManagerLiens) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ResourceManagerLien, err error) {
 	result = &v1alpha1.ResourceManagerLien{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("resourcemanagerliens").
 		SubResource(subresources...).
 		Name(name).

@@ -41,32 +41,33 @@ type VpcEndpointServiceAllowedPrincipalInformer interface {
 type vpcEndpointServiceAllowedPrincipalInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewVpcEndpointServiceAllowedPrincipalInformer constructs a new informer for VpcEndpointServiceAllowedPrincipal type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewVpcEndpointServiceAllowedPrincipalInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredVpcEndpointServiceAllowedPrincipalInformer(client, resyncPeriod, indexers, nil)
+func NewVpcEndpointServiceAllowedPrincipalInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredVpcEndpointServiceAllowedPrincipalInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredVpcEndpointServiceAllowedPrincipalInformer constructs a new informer for VpcEndpointServiceAllowedPrincipal type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredVpcEndpointServiceAllowedPrincipalInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredVpcEndpointServiceAllowedPrincipalInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().VpcEndpointServiceAllowedPrincipals().List(options)
+				return client.AwsV1alpha1().VpcEndpointServiceAllowedPrincipals(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().VpcEndpointServiceAllowedPrincipals().Watch(options)
+				return client.AwsV1alpha1().VpcEndpointServiceAllowedPrincipals(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.VpcEndpointServiceAllowedPrincipal{},
@@ -76,7 +77,7 @@ func NewFilteredVpcEndpointServiceAllowedPrincipalInformer(client versioned.Inte
 }
 
 func (f *vpcEndpointServiceAllowedPrincipalInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredVpcEndpointServiceAllowedPrincipalInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredVpcEndpointServiceAllowedPrincipalInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *vpcEndpointServiceAllowedPrincipalInformer) Informer() cache.SharedIndexInformer {

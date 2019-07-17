@@ -41,32 +41,33 @@ type DataFactoryLinkedServicePostgresqlInformer interface {
 type dataFactoryLinkedServicePostgresqlInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDataFactoryLinkedServicePostgresqlInformer constructs a new informer for DataFactoryLinkedServicePostgresql type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDataFactoryLinkedServicePostgresqlInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDataFactoryLinkedServicePostgresqlInformer(client, resyncPeriod, indexers, nil)
+func NewDataFactoryLinkedServicePostgresqlInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDataFactoryLinkedServicePostgresqlInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDataFactoryLinkedServicePostgresqlInformer constructs a new informer for DataFactoryLinkedServicePostgresql type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDataFactoryLinkedServicePostgresqlInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDataFactoryLinkedServicePostgresqlInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DataFactoryLinkedServicePostgresqls().List(options)
+				return client.AzurermV1alpha1().DataFactoryLinkedServicePostgresqls(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DataFactoryLinkedServicePostgresqls().Watch(options)
+				return client.AzurermV1alpha1().DataFactoryLinkedServicePostgresqls(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.DataFactoryLinkedServicePostgresql{},
@@ -76,7 +77,7 @@ func NewFilteredDataFactoryLinkedServicePostgresqlInformer(client versioned.Inte
 }
 
 func (f *dataFactoryLinkedServicePostgresqlInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDataFactoryLinkedServicePostgresqlInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDataFactoryLinkedServicePostgresqlInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *dataFactoryLinkedServicePostgresqlInformer) Informer() cache.SharedIndexInformer {

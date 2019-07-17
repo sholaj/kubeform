@@ -1,52 +1,55 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type LbNatPool struct {
+type LbNATPool struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              LbNatPoolSpec   `json:"spec,omitempty"`
-	Status            LbNatPoolStatus `json:"status,omitempty"`
+	Spec              LbNATPoolSpec   `json:"spec,omitempty"`
+	Status            LbNATPoolStatus `json:"status,omitempty"`
 }
 
-type LbNatPoolSpec struct {
-	BackendPort                 int    `json:"backend_port"`
-	FrontendIpConfigurationName string `json:"frontend_ip_configuration_name"`
-	FrontendPortEnd             int    `json:"frontend_port_end"`
-	FrontendPortStart           int    `json:"frontend_port_start"`
-	LoadbalancerId              string `json:"loadbalancer_id"`
+type LbNATPoolSpec struct {
+	BackendPort                 int    `json:"backendPort" tf:"backend_port"`
+	FrontendIPConfigurationName string `json:"frontendIPConfigurationName" tf:"frontend_ip_configuration_name"`
+	FrontendPortEnd             int    `json:"frontendPortEnd" tf:"frontend_port_end"`
+	FrontendPortStart           int    `json:"frontendPortStart" tf:"frontend_port_start"`
+	LoadbalancerID              string `json:"loadbalancerID" tf:"loadbalancer_id"`
 	// +optional
 	// Deprecated
-	Location          string `json:"location,omitempty"`
-	Name              string `json:"name"`
-	Protocol          string `json:"protocol"`
-	ResourceGroupName string `json:"resource_group_name"`
+	Location          string                    `json:"location,omitempty" tf:"location,omitempty"`
+	Name              string                    `json:"name" tf:"name"`
+	Protocol          string                    `json:"protocol" tf:"protocol"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
-type LbNatPoolStatus struct {
+type LbNATPoolStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// LbNatPoolList is a list of LbNatPools
-type LbNatPoolList struct {
+// LbNATPoolList is a list of LbNATPools
+type LbNATPoolList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of LbNatPool CRD objects
-	Items []LbNatPool `json:"items,omitempty"`
+	// Items is a list of LbNATPool CRD objects
+	Items []LbNATPool `json:"items,omitempty"`
 }

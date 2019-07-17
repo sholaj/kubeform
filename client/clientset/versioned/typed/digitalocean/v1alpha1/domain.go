@@ -32,7 +32,7 @@ import (
 // DomainsGetter has a method to return a DomainInterface.
 // A group's client should implement this interface.
 type DomainsGetter interface {
-	Domains() DomainInterface
+	Domains(namespace string) DomainInterface
 }
 
 // DomainInterface has methods to work with Domain resources.
@@ -52,12 +52,14 @@ type DomainInterface interface {
 // domains implements DomainInterface
 type domains struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDomains returns a Domains
-func newDomains(c *DigitaloceanV1alpha1Client) *domains {
+func newDomains(c *DigitaloceanV1alpha1Client, namespace string) *domains {
 	return &domains{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDomains(c *DigitaloceanV1alpha1Client) *domains {
 func (c *domains) Get(name string, options v1.GetOptions) (result *v1alpha1.Domain, err error) {
 	result = &v1alpha1.Domain{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("domains").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *domains) List(opts v1.ListOptions) (result *v1alpha1.DomainList, err er
 	}
 	result = &v1alpha1.DomainList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("domains").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *domains) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("domains").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *domains) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *domains) Create(domain *v1alpha1.Domain) (result *v1alpha1.Domain, err error) {
 	result = &v1alpha1.Domain{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("domains").
 		Body(domain).
 		Do().
@@ -118,6 +124,7 @@ func (c *domains) Create(domain *v1alpha1.Domain) (result *v1alpha1.Domain, err 
 func (c *domains) Update(domain *v1alpha1.Domain) (result *v1alpha1.Domain, err error) {
 	result = &v1alpha1.Domain{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("domains").
 		Name(domain.Name).
 		Body(domain).
@@ -132,6 +139,7 @@ func (c *domains) Update(domain *v1alpha1.Domain) (result *v1alpha1.Domain, err 
 func (c *domains) UpdateStatus(domain *v1alpha1.Domain) (result *v1alpha1.Domain, err error) {
 	result = &v1alpha1.Domain{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("domains").
 		Name(domain.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *domains) UpdateStatus(domain *v1alpha1.Domain) (result *v1alpha1.Domain
 // Delete takes name of the domain and deletes it. Returns an error if one occurs.
 func (c *domains) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("domains").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *domains) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("domains").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *domains) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Lis
 func (c *domains) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Domain, err error) {
 	result = &v1alpha1.Domain{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("domains").
 		SubResource(subresources...).
 		Name(name).

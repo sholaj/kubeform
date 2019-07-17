@@ -32,7 +32,7 @@ import (
 // CognitoIdentityPoolRolesAttachmentsGetter has a method to return a CognitoIdentityPoolRolesAttachmentInterface.
 // A group's client should implement this interface.
 type CognitoIdentityPoolRolesAttachmentsGetter interface {
-	CognitoIdentityPoolRolesAttachments() CognitoIdentityPoolRolesAttachmentInterface
+	CognitoIdentityPoolRolesAttachments(namespace string) CognitoIdentityPoolRolesAttachmentInterface
 }
 
 // CognitoIdentityPoolRolesAttachmentInterface has methods to work with CognitoIdentityPoolRolesAttachment resources.
@@ -52,12 +52,14 @@ type CognitoIdentityPoolRolesAttachmentInterface interface {
 // cognitoIdentityPoolRolesAttachments implements CognitoIdentityPoolRolesAttachmentInterface
 type cognitoIdentityPoolRolesAttachments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCognitoIdentityPoolRolesAttachments returns a CognitoIdentityPoolRolesAttachments
-func newCognitoIdentityPoolRolesAttachments(c *AwsV1alpha1Client) *cognitoIdentityPoolRolesAttachments {
+func newCognitoIdentityPoolRolesAttachments(c *AwsV1alpha1Client, namespace string) *cognitoIdentityPoolRolesAttachments {
 	return &cognitoIdentityPoolRolesAttachments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCognitoIdentityPoolRolesAttachments(c *AwsV1alpha1Client) *cognitoIdenti
 func (c *cognitoIdentityPoolRolesAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.CognitoIdentityPoolRolesAttachment, err error) {
 	result = &v1alpha1.CognitoIdentityPoolRolesAttachment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitoidentitypoolrolesattachments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cognitoIdentityPoolRolesAttachments) List(opts v1.ListOptions) (result 
 	}
 	result = &v1alpha1.CognitoIdentityPoolRolesAttachmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitoidentitypoolrolesattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cognitoIdentityPoolRolesAttachments) Watch(opts v1.ListOptions) (watch.
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitoidentitypoolrolesattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cognitoIdentityPoolRolesAttachments) Watch(opts v1.ListOptions) (watch.
 func (c *cognitoIdentityPoolRolesAttachments) Create(cognitoIdentityPoolRolesAttachment *v1alpha1.CognitoIdentityPoolRolesAttachment) (result *v1alpha1.CognitoIdentityPoolRolesAttachment, err error) {
 	result = &v1alpha1.CognitoIdentityPoolRolesAttachment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cognitoidentitypoolrolesattachments").
 		Body(cognitoIdentityPoolRolesAttachment).
 		Do().
@@ -118,6 +124,7 @@ func (c *cognitoIdentityPoolRolesAttachments) Create(cognitoIdentityPoolRolesAtt
 func (c *cognitoIdentityPoolRolesAttachments) Update(cognitoIdentityPoolRolesAttachment *v1alpha1.CognitoIdentityPoolRolesAttachment) (result *v1alpha1.CognitoIdentityPoolRolesAttachment, err error) {
 	result = &v1alpha1.CognitoIdentityPoolRolesAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cognitoidentitypoolrolesattachments").
 		Name(cognitoIdentityPoolRolesAttachment.Name).
 		Body(cognitoIdentityPoolRolesAttachment).
@@ -132,6 +139,7 @@ func (c *cognitoIdentityPoolRolesAttachments) Update(cognitoIdentityPoolRolesAtt
 func (c *cognitoIdentityPoolRolesAttachments) UpdateStatus(cognitoIdentityPoolRolesAttachment *v1alpha1.CognitoIdentityPoolRolesAttachment) (result *v1alpha1.CognitoIdentityPoolRolesAttachment, err error) {
 	result = &v1alpha1.CognitoIdentityPoolRolesAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cognitoidentitypoolrolesattachments").
 		Name(cognitoIdentityPoolRolesAttachment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cognitoIdentityPoolRolesAttachments) UpdateStatus(cognitoIdentityPoolRo
 // Delete takes name of the cognitoIdentityPoolRolesAttachment and deletes it. Returns an error if one occurs.
 func (c *cognitoIdentityPoolRolesAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cognitoidentitypoolrolesattachments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cognitoIdentityPoolRolesAttachments) DeleteCollection(options *v1.Delet
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cognitoidentitypoolrolesattachments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cognitoIdentityPoolRolesAttachments) DeleteCollection(options *v1.Delet
 func (c *cognitoIdentityPoolRolesAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CognitoIdentityPoolRolesAttachment, err error) {
 	result = &v1alpha1.CognitoIdentityPoolRolesAttachment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cognitoidentitypoolrolesattachments").
 		SubResource(subresources...).
 		Name(name).

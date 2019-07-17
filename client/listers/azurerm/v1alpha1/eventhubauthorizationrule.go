@@ -29,8 +29,8 @@ import (
 type EventhubAuthorizationRuleLister interface {
 	// List lists all EventhubAuthorizationRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EventhubAuthorizationRule, err error)
-	// Get retrieves the EventhubAuthorizationRule from the index for a given name.
-	Get(name string) (*v1alpha1.EventhubAuthorizationRule, error)
+	// EventhubAuthorizationRules returns an object that can list and get EventhubAuthorizationRules.
+	EventhubAuthorizationRules(namespace string) EventhubAuthorizationRuleNamespaceLister
 	EventhubAuthorizationRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *eventhubAuthorizationRuleLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the EventhubAuthorizationRule from the index for a given name.
-func (s *eventhubAuthorizationRuleLister) Get(name string) (*v1alpha1.EventhubAuthorizationRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EventhubAuthorizationRules returns an object that can list and get EventhubAuthorizationRules.
+func (s *eventhubAuthorizationRuleLister) EventhubAuthorizationRules(namespace string) EventhubAuthorizationRuleNamespaceLister {
+	return eventhubAuthorizationRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EventhubAuthorizationRuleNamespaceLister helps list and get EventhubAuthorizationRules.
+type EventhubAuthorizationRuleNamespaceLister interface {
+	// List lists all EventhubAuthorizationRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EventhubAuthorizationRule, err error)
+	// Get retrieves the EventhubAuthorizationRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EventhubAuthorizationRule, error)
+	EventhubAuthorizationRuleNamespaceListerExpansion
+}
+
+// eventhubAuthorizationRuleNamespaceLister implements the EventhubAuthorizationRuleNamespaceLister
+// interface.
+type eventhubAuthorizationRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EventhubAuthorizationRules in the indexer for a given namespace.
+func (s eventhubAuthorizationRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EventhubAuthorizationRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EventhubAuthorizationRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the EventhubAuthorizationRule from the indexer for a given namespace and name.
+func (s eventhubAuthorizationRuleNamespaceLister) Get(name string) (*v1alpha1.EventhubAuthorizationRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

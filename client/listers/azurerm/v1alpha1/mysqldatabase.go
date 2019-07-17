@@ -29,8 +29,8 @@ import (
 type MysqlDatabaseLister interface {
 	// List lists all MysqlDatabases in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MysqlDatabase, err error)
-	// Get retrieves the MysqlDatabase from the index for a given name.
-	Get(name string) (*v1alpha1.MysqlDatabase, error)
+	// MysqlDatabases returns an object that can list and get MysqlDatabases.
+	MysqlDatabases(namespace string) MysqlDatabaseNamespaceLister
 	MysqlDatabaseListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *mysqlDatabaseLister) List(selector labels.Selector) (ret []*v1alpha1.My
 	return ret, err
 }
 
-// Get retrieves the MysqlDatabase from the index for a given name.
-func (s *mysqlDatabaseLister) Get(name string) (*v1alpha1.MysqlDatabase, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MysqlDatabases returns an object that can list and get MysqlDatabases.
+func (s *mysqlDatabaseLister) MysqlDatabases(namespace string) MysqlDatabaseNamespaceLister {
+	return mysqlDatabaseNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MysqlDatabaseNamespaceLister helps list and get MysqlDatabases.
+type MysqlDatabaseNamespaceLister interface {
+	// List lists all MysqlDatabases in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MysqlDatabase, err error)
+	// Get retrieves the MysqlDatabase from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MysqlDatabase, error)
+	MysqlDatabaseNamespaceListerExpansion
+}
+
+// mysqlDatabaseNamespaceLister implements the MysqlDatabaseNamespaceLister
+// interface.
+type mysqlDatabaseNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MysqlDatabases in the indexer for a given namespace.
+func (s mysqlDatabaseNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MysqlDatabase, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MysqlDatabase))
+	})
+	return ret, err
+}
+
+// Get retrieves the MysqlDatabase from the indexer for a given namespace and name.
+func (s mysqlDatabaseNamespaceLister) Get(name string) (*v1alpha1.MysqlDatabase, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

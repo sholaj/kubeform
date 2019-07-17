@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,10 +19,11 @@ type BigtableTable struct {
 }
 
 type BigtableTableSpec struct {
-	InstanceName string `json:"instance_name"`
-	Name         string `json:"name"`
+	InstanceName string `json:"instanceName" tf:"instance_name"`
+	Name         string `json:"name" tf:"name"`
 	// +optional
-	SplitKeys []string `json:"split_keys,omitempty"`
+	SplitKeys   []string                  `json:"splitKeys,omitempty" tf:"split_keys,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type BigtableTableStatus struct {
@@ -30,7 +31,9 @@ type BigtableTableStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

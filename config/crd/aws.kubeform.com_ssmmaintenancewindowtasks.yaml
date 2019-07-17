@@ -399,40 +399,83 @@ spec:
           properties:
             description:
               type: string
-            logging_info:
-              items: {}
+            loggingInfo:
+              items:
+                properties:
+                  s3BucketName:
+                    type: string
+                  s3BucketPrefix:
+                    type: string
+                  s3Region:
+                    type: string
+                required:
+                - s3BucketName
+                - s3Region
+                type: object
               maxItems: 1
               type: array
-            max_concurrency:
+            maxConcurrency:
               type: string
-            max_errors:
+            maxErrors:
               type: string
             name:
               type: string
             priority:
               type: integer
-            service_role_arn:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            serviceRoleArn:
               type: string
             targets:
-              items: {}
+              items:
+                properties:
+                  key:
+                    type: string
+                  values:
+                    items:
+                      type: string
+                    type: array
+                required:
+                - key
+                - values
+                type: object
               type: array
-            task_arn:
+            taskArn:
               type: string
-            task_parameters:
-              items: {}
+            taskParameters:
+              items:
+                properties:
+                  name:
+                    type: string
+                  values:
+                    items:
+                      type: string
+                    type: array
+                required:
+                - name
+                - values
+                type: object
               type: array
-            task_type:
+            taskType:
               type: string
-            window_id:
+            windowID:
               type: string
           required:
-          - max_concurrency
-          - max_errors
-          - service_role_arn
+          - maxConcurrency
+          - maxErrors
+          - providerRef
+          - serviceRoleArn
           - targets
-          - task_arn
-          - task_type
-          - window_id
+          - taskArn
+          - taskType
+          - windowID
           type: object
         status:
           properties:
@@ -443,6 +486,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

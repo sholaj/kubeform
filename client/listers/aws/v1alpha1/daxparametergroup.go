@@ -29,8 +29,8 @@ import (
 type DaxParameterGroupLister interface {
 	// List lists all DaxParameterGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DaxParameterGroup, err error)
-	// Get retrieves the DaxParameterGroup from the index for a given name.
-	Get(name string) (*v1alpha1.DaxParameterGroup, error)
+	// DaxParameterGroups returns an object that can list and get DaxParameterGroups.
+	DaxParameterGroups(namespace string) DaxParameterGroupNamespaceLister
 	DaxParameterGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *daxParameterGroupLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the DaxParameterGroup from the index for a given name.
-func (s *daxParameterGroupLister) Get(name string) (*v1alpha1.DaxParameterGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DaxParameterGroups returns an object that can list and get DaxParameterGroups.
+func (s *daxParameterGroupLister) DaxParameterGroups(namespace string) DaxParameterGroupNamespaceLister {
+	return daxParameterGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DaxParameterGroupNamespaceLister helps list and get DaxParameterGroups.
+type DaxParameterGroupNamespaceLister interface {
+	// List lists all DaxParameterGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DaxParameterGroup, err error)
+	// Get retrieves the DaxParameterGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DaxParameterGroup, error)
+	DaxParameterGroupNamespaceListerExpansion
+}
+
+// daxParameterGroupNamespaceLister implements the DaxParameterGroupNamespaceLister
+// interface.
+type daxParameterGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DaxParameterGroups in the indexer for a given namespace.
+func (s daxParameterGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DaxParameterGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DaxParameterGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the DaxParameterGroup from the indexer for a given namespace and name.
+func (s daxParameterGroupNamespaceLister) Get(name string) (*v1alpha1.DaxParameterGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // LambdaFunctionsGetter has a method to return a LambdaFunctionInterface.
 // A group's client should implement this interface.
 type LambdaFunctionsGetter interface {
-	LambdaFunctions() LambdaFunctionInterface
+	LambdaFunctions(namespace string) LambdaFunctionInterface
 }
 
 // LambdaFunctionInterface has methods to work with LambdaFunction resources.
@@ -52,12 +52,14 @@ type LambdaFunctionInterface interface {
 // lambdaFunctions implements LambdaFunctionInterface
 type lambdaFunctions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLambdaFunctions returns a LambdaFunctions
-func newLambdaFunctions(c *AwsV1alpha1Client) *lambdaFunctions {
+func newLambdaFunctions(c *AwsV1alpha1Client, namespace string) *lambdaFunctions {
 	return &lambdaFunctions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLambdaFunctions(c *AwsV1alpha1Client) *lambdaFunctions {
 func (c *lambdaFunctions) Get(name string, options v1.GetOptions) (result *v1alpha1.LambdaFunction, err error) {
 	result = &v1alpha1.LambdaFunction{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lambdafunctions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lambdaFunctions) List(opts v1.ListOptions) (result *v1alpha1.LambdaFunc
 	}
 	result = &v1alpha1.LambdaFunctionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lambdafunctions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lambdaFunctions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lambdafunctions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lambdaFunctions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *lambdaFunctions) Create(lambdaFunction *v1alpha1.LambdaFunction) (result *v1alpha1.LambdaFunction, err error) {
 	result = &v1alpha1.LambdaFunction{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lambdafunctions").
 		Body(lambdaFunction).
 		Do().
@@ -118,6 +124,7 @@ func (c *lambdaFunctions) Create(lambdaFunction *v1alpha1.LambdaFunction) (resul
 func (c *lambdaFunctions) Update(lambdaFunction *v1alpha1.LambdaFunction) (result *v1alpha1.LambdaFunction, err error) {
 	result = &v1alpha1.LambdaFunction{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lambdafunctions").
 		Name(lambdaFunction.Name).
 		Body(lambdaFunction).
@@ -132,6 +139,7 @@ func (c *lambdaFunctions) Update(lambdaFunction *v1alpha1.LambdaFunction) (resul
 func (c *lambdaFunctions) UpdateStatus(lambdaFunction *v1alpha1.LambdaFunction) (result *v1alpha1.LambdaFunction, err error) {
 	result = &v1alpha1.LambdaFunction{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lambdafunctions").
 		Name(lambdaFunction.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lambdaFunctions) UpdateStatus(lambdaFunction *v1alpha1.LambdaFunction) 
 // Delete takes name of the lambdaFunction and deletes it. Returns an error if one occurs.
 func (c *lambdaFunctions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lambdafunctions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lambdaFunctions) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lambdafunctions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lambdaFunctions) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *lambdaFunctions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LambdaFunction, err error) {
 	result = &v1alpha1.LambdaFunction{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lambdafunctions").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type IamSamlProviderLister interface {
 	// List lists all IamSamlProviders in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IamSamlProvider, err error)
-	// Get retrieves the IamSamlProvider from the index for a given name.
-	Get(name string) (*v1alpha1.IamSamlProvider, error)
+	// IamSamlProviders returns an object that can list and get IamSamlProviders.
+	IamSamlProviders(namespace string) IamSamlProviderNamespaceLister
 	IamSamlProviderListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iamSamlProviderLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the IamSamlProvider from the index for a given name.
-func (s *iamSamlProviderLister) Get(name string) (*v1alpha1.IamSamlProvider, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IamSamlProviders returns an object that can list and get IamSamlProviders.
+func (s *iamSamlProviderLister) IamSamlProviders(namespace string) IamSamlProviderNamespaceLister {
+	return iamSamlProviderNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IamSamlProviderNamespaceLister helps list and get IamSamlProviders.
+type IamSamlProviderNamespaceLister interface {
+	// List lists all IamSamlProviders in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IamSamlProvider, err error)
+	// Get retrieves the IamSamlProvider from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IamSamlProvider, error)
+	IamSamlProviderNamespaceListerExpansion
+}
+
+// iamSamlProviderNamespaceLister implements the IamSamlProviderNamespaceLister
+// interface.
+type iamSamlProviderNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IamSamlProviders in the indexer for a given namespace.
+func (s iamSamlProviderNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IamSamlProvider, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IamSamlProvider))
+	})
+	return ret, err
+}
+
+// Get retrieves the IamSamlProvider from the indexer for a given namespace and name.
+func (s iamSamlProviderNamespaceLister) Get(name string) (*v1alpha1.IamSamlProvider, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

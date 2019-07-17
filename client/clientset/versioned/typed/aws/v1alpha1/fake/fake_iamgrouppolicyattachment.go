@@ -31,6 +31,7 @@ import (
 // FakeIamGroupPolicyAttachments implements IamGroupPolicyAttachmentInterface
 type FakeIamGroupPolicyAttachments struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var iamgrouppolicyattachmentsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "iamgrouppolicyattachments"}
@@ -40,7 +41,8 @@ var iamgrouppolicyattachmentsKind = schema.GroupVersionKind{Group: "aws.kubeform
 // Get takes name of the iamGroupPolicyAttachment, and returns the corresponding iamGroupPolicyAttachment object, and an error if there is any.
 func (c *FakeIamGroupPolicyAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.IamGroupPolicyAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iamgrouppolicyattachmentsResource, name), &v1alpha1.IamGroupPolicyAttachment{})
+		Invokes(testing.NewGetAction(iamgrouppolicyattachmentsResource, c.ns, name), &v1alpha1.IamGroupPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIamGroupPolicyAttachments) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of IamGroupPolicyAttachments that match those selectors.
 func (c *FakeIamGroupPolicyAttachments) List(opts v1.ListOptions) (result *v1alpha1.IamGroupPolicyAttachmentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iamgrouppolicyattachmentsResource, iamgrouppolicyattachmentsKind, opts), &v1alpha1.IamGroupPolicyAttachmentList{})
+		Invokes(testing.NewListAction(iamgrouppolicyattachmentsResource, iamgrouppolicyattachmentsKind, c.ns, opts), &v1alpha1.IamGroupPolicyAttachmentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIamGroupPolicyAttachments) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested iamGroupPolicyAttachments.
 func (c *FakeIamGroupPolicyAttachments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iamgrouppolicyattachmentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(iamgrouppolicyattachmentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iamGroupPolicyAttachment and creates it.  Returns the server's representation of the iamGroupPolicyAttachment, and an error, if there is any.
 func (c *FakeIamGroupPolicyAttachments) Create(iamGroupPolicyAttachment *v1alpha1.IamGroupPolicyAttachment) (result *v1alpha1.IamGroupPolicyAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iamgrouppolicyattachmentsResource, iamGroupPolicyAttachment), &v1alpha1.IamGroupPolicyAttachment{})
+		Invokes(testing.NewCreateAction(iamgrouppolicyattachmentsResource, c.ns, iamGroupPolicyAttachment), &v1alpha1.IamGroupPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIamGroupPolicyAttachments) Create(iamGroupPolicyAttachment *v1alpha
 // Update takes the representation of a iamGroupPolicyAttachment and updates it. Returns the server's representation of the iamGroupPolicyAttachment, and an error, if there is any.
 func (c *FakeIamGroupPolicyAttachments) Update(iamGroupPolicyAttachment *v1alpha1.IamGroupPolicyAttachment) (result *v1alpha1.IamGroupPolicyAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iamgrouppolicyattachmentsResource, iamGroupPolicyAttachment), &v1alpha1.IamGroupPolicyAttachment{})
+		Invokes(testing.NewUpdateAction(iamgrouppolicyattachmentsResource, c.ns, iamGroupPolicyAttachment), &v1alpha1.IamGroupPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIamGroupPolicyAttachments) Update(iamGroupPolicyAttachment *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIamGroupPolicyAttachments) UpdateStatus(iamGroupPolicyAttachment *v1alpha1.IamGroupPolicyAttachment) (*v1alpha1.IamGroupPolicyAttachment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iamgrouppolicyattachmentsResource, "status", iamGroupPolicyAttachment), &v1alpha1.IamGroupPolicyAttachment{})
+		Invokes(testing.NewUpdateSubresourceAction(iamgrouppolicyattachmentsResource, "status", c.ns, iamGroupPolicyAttachment), &v1alpha1.IamGroupPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIamGroupPolicyAttachments) UpdateStatus(iamGroupPolicyAttachment *v
 // Delete takes name of the iamGroupPolicyAttachment and deletes it. Returns an error if one occurs.
 func (c *FakeIamGroupPolicyAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iamgrouppolicyattachmentsResource, name), &v1alpha1.IamGroupPolicyAttachment{})
+		Invokes(testing.NewDeleteAction(iamgrouppolicyattachmentsResource, c.ns, name), &v1alpha1.IamGroupPolicyAttachment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIamGroupPolicyAttachments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iamgrouppolicyattachmentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iamgrouppolicyattachmentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IamGroupPolicyAttachmentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIamGroupPolicyAttachments) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched iamGroupPolicyAttachment.
 func (c *FakeIamGroupPolicyAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamGroupPolicyAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iamgrouppolicyattachmentsResource, name, pt, data, subresources...), &v1alpha1.IamGroupPolicyAttachment{})
+		Invokes(testing.NewPatchSubresourceAction(iamgrouppolicyattachmentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.IamGroupPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}

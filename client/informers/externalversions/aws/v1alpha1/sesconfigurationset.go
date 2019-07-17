@@ -41,32 +41,33 @@ type SesConfigurationSetInformer interface {
 type sesConfigurationSetInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSesConfigurationSetInformer constructs a new informer for SesConfigurationSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSesConfigurationSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSesConfigurationSetInformer(client, resyncPeriod, indexers, nil)
+func NewSesConfigurationSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSesConfigurationSetInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSesConfigurationSetInformer constructs a new informer for SesConfigurationSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSesConfigurationSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSesConfigurationSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SesConfigurationSets().List(options)
+				return client.AwsV1alpha1().SesConfigurationSets(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SesConfigurationSets().Watch(options)
+				return client.AwsV1alpha1().SesConfigurationSets(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.SesConfigurationSet{},
@@ -76,7 +77,7 @@ func NewFilteredSesConfigurationSetInformer(client versioned.Interface, resyncPe
 }
 
 func (f *sesConfigurationSetInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSesConfigurationSetInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSesConfigurationSetInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *sesConfigurationSetInformer) Informer() cache.SharedIndexInformer {

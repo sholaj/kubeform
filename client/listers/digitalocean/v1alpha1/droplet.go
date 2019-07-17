@@ -29,8 +29,8 @@ import (
 type DropletLister interface {
 	// List lists all Droplets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Droplet, err error)
-	// Get retrieves the Droplet from the index for a given name.
-	Get(name string) (*v1alpha1.Droplet, error)
+	// Droplets returns an object that can list and get Droplets.
+	Droplets(namespace string) DropletNamespaceLister
 	DropletListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dropletLister) List(selector labels.Selector) (ret []*v1alpha1.Droplet,
 	return ret, err
 }
 
-// Get retrieves the Droplet from the index for a given name.
-func (s *dropletLister) Get(name string) (*v1alpha1.Droplet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Droplets returns an object that can list and get Droplets.
+func (s *dropletLister) Droplets(namespace string) DropletNamespaceLister {
+	return dropletNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DropletNamespaceLister helps list and get Droplets.
+type DropletNamespaceLister interface {
+	// List lists all Droplets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Droplet, err error)
+	// Get retrieves the Droplet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Droplet, error)
+	DropletNamespaceListerExpansion
+}
+
+// dropletNamespaceLister implements the DropletNamespaceLister
+// interface.
+type dropletNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Droplets in the indexer for a given namespace.
+func (s dropletNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Droplet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Droplet))
+	})
+	return ret, err
+}
+
+// Get retrieves the Droplet from the indexer for a given namespace and name.
+func (s dropletNamespaceLister) Get(name string) (*v1alpha1.Droplet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

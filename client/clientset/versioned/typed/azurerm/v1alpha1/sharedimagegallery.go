@@ -32,7 +32,7 @@ import (
 // SharedImageGalleriesGetter has a method to return a SharedImageGalleryInterface.
 // A group's client should implement this interface.
 type SharedImageGalleriesGetter interface {
-	SharedImageGalleries() SharedImageGalleryInterface
+	SharedImageGalleries(namespace string) SharedImageGalleryInterface
 }
 
 // SharedImageGalleryInterface has methods to work with SharedImageGallery resources.
@@ -52,12 +52,14 @@ type SharedImageGalleryInterface interface {
 // sharedImageGalleries implements SharedImageGalleryInterface
 type sharedImageGalleries struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSharedImageGalleries returns a SharedImageGalleries
-func newSharedImageGalleries(c *AzurermV1alpha1Client) *sharedImageGalleries {
+func newSharedImageGalleries(c *AzurermV1alpha1Client, namespace string) *sharedImageGalleries {
 	return &sharedImageGalleries{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSharedImageGalleries(c *AzurermV1alpha1Client) *sharedImageGalleries {
 func (c *sharedImageGalleries) Get(name string, options v1.GetOptions) (result *v1alpha1.SharedImageGallery, err error) {
 	result = &v1alpha1.SharedImageGallery{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sharedimagegalleries").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sharedImageGalleries) List(opts v1.ListOptions) (result *v1alpha1.Share
 	}
 	result = &v1alpha1.SharedImageGalleryList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sharedimagegalleries").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sharedImageGalleries) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sharedimagegalleries").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sharedImageGalleries) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *sharedImageGalleries) Create(sharedImageGallery *v1alpha1.SharedImageGallery) (result *v1alpha1.SharedImageGallery, err error) {
 	result = &v1alpha1.SharedImageGallery{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sharedimagegalleries").
 		Body(sharedImageGallery).
 		Do().
@@ -118,6 +124,7 @@ func (c *sharedImageGalleries) Create(sharedImageGallery *v1alpha1.SharedImageGa
 func (c *sharedImageGalleries) Update(sharedImageGallery *v1alpha1.SharedImageGallery) (result *v1alpha1.SharedImageGallery, err error) {
 	result = &v1alpha1.SharedImageGallery{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sharedimagegalleries").
 		Name(sharedImageGallery.Name).
 		Body(sharedImageGallery).
@@ -132,6 +139,7 @@ func (c *sharedImageGalleries) Update(sharedImageGallery *v1alpha1.SharedImageGa
 func (c *sharedImageGalleries) UpdateStatus(sharedImageGallery *v1alpha1.SharedImageGallery) (result *v1alpha1.SharedImageGallery, err error) {
 	result = &v1alpha1.SharedImageGallery{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sharedimagegalleries").
 		Name(sharedImageGallery.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sharedImageGalleries) UpdateStatus(sharedImageGallery *v1alpha1.SharedI
 // Delete takes name of the sharedImageGallery and deletes it. Returns an error if one occurs.
 func (c *sharedImageGalleries) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sharedimagegalleries").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sharedImageGalleries) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sharedimagegalleries").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sharedImageGalleries) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *sharedImageGalleries) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SharedImageGallery, err error) {
 	result = &v1alpha1.SharedImageGallery{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sharedimagegalleries").
 		SubResource(subresources...).
 		Name(name).

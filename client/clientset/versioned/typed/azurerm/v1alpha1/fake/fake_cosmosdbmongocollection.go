@@ -31,6 +31,7 @@ import (
 // FakeCosmosdbMongoCollections implements CosmosdbMongoCollectionInterface
 type FakeCosmosdbMongoCollections struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var cosmosdbmongocollectionsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "cosmosdbmongocollections"}
@@ -40,7 +41,8 @@ var cosmosdbmongocollectionsKind = schema.GroupVersionKind{Group: "azurerm.kubef
 // Get takes name of the cosmosdbMongoCollection, and returns the corresponding cosmosdbMongoCollection object, and an error if there is any.
 func (c *FakeCosmosdbMongoCollections) Get(name string, options v1.GetOptions) (result *v1alpha1.CosmosdbMongoCollection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cosmosdbmongocollectionsResource, name), &v1alpha1.CosmosdbMongoCollection{})
+		Invokes(testing.NewGetAction(cosmosdbmongocollectionsResource, c.ns, name), &v1alpha1.CosmosdbMongoCollection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCosmosdbMongoCollections) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of CosmosdbMongoCollections that match those selectors.
 func (c *FakeCosmosdbMongoCollections) List(opts v1.ListOptions) (result *v1alpha1.CosmosdbMongoCollectionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cosmosdbmongocollectionsResource, cosmosdbmongocollectionsKind, opts), &v1alpha1.CosmosdbMongoCollectionList{})
+		Invokes(testing.NewListAction(cosmosdbmongocollectionsResource, cosmosdbmongocollectionsKind, c.ns, opts), &v1alpha1.CosmosdbMongoCollectionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCosmosdbMongoCollections) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested cosmosdbMongoCollections.
 func (c *FakeCosmosdbMongoCollections) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cosmosdbmongocollectionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(cosmosdbmongocollectionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cosmosdbMongoCollection and creates it.  Returns the server's representation of the cosmosdbMongoCollection, and an error, if there is any.
 func (c *FakeCosmosdbMongoCollections) Create(cosmosdbMongoCollection *v1alpha1.CosmosdbMongoCollection) (result *v1alpha1.CosmosdbMongoCollection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cosmosdbmongocollectionsResource, cosmosdbMongoCollection), &v1alpha1.CosmosdbMongoCollection{})
+		Invokes(testing.NewCreateAction(cosmosdbmongocollectionsResource, c.ns, cosmosdbMongoCollection), &v1alpha1.CosmosdbMongoCollection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCosmosdbMongoCollections) Create(cosmosdbMongoCollection *v1alpha1.
 // Update takes the representation of a cosmosdbMongoCollection and updates it. Returns the server's representation of the cosmosdbMongoCollection, and an error, if there is any.
 func (c *FakeCosmosdbMongoCollections) Update(cosmosdbMongoCollection *v1alpha1.CosmosdbMongoCollection) (result *v1alpha1.CosmosdbMongoCollection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cosmosdbmongocollectionsResource, cosmosdbMongoCollection), &v1alpha1.CosmosdbMongoCollection{})
+		Invokes(testing.NewUpdateAction(cosmosdbmongocollectionsResource, c.ns, cosmosdbMongoCollection), &v1alpha1.CosmosdbMongoCollection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCosmosdbMongoCollections) Update(cosmosdbMongoCollection *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCosmosdbMongoCollections) UpdateStatus(cosmosdbMongoCollection *v1alpha1.CosmosdbMongoCollection) (*v1alpha1.CosmosdbMongoCollection, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cosmosdbmongocollectionsResource, "status", cosmosdbMongoCollection), &v1alpha1.CosmosdbMongoCollection{})
+		Invokes(testing.NewUpdateSubresourceAction(cosmosdbmongocollectionsResource, "status", c.ns, cosmosdbMongoCollection), &v1alpha1.CosmosdbMongoCollection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCosmosdbMongoCollections) UpdateStatus(cosmosdbMongoCollection *v1a
 // Delete takes name of the cosmosdbMongoCollection and deletes it. Returns an error if one occurs.
 func (c *FakeCosmosdbMongoCollections) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cosmosdbmongocollectionsResource, name), &v1alpha1.CosmosdbMongoCollection{})
+		Invokes(testing.NewDeleteAction(cosmosdbmongocollectionsResource, c.ns, name), &v1alpha1.CosmosdbMongoCollection{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCosmosdbMongoCollections) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cosmosdbmongocollectionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cosmosdbmongocollectionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CosmosdbMongoCollectionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCosmosdbMongoCollections) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched cosmosdbMongoCollection.
 func (c *FakeCosmosdbMongoCollections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CosmosdbMongoCollection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cosmosdbmongocollectionsResource, name, pt, data, subresources...), &v1alpha1.CosmosdbMongoCollection{})
+		Invokes(testing.NewPatchSubresourceAction(cosmosdbmongocollectionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.CosmosdbMongoCollection{})
+
 	if obj == nil {
 		return nil, err
 	}

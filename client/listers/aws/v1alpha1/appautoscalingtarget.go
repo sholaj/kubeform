@@ -29,8 +29,8 @@ import (
 type AppautoscalingTargetLister interface {
 	// List lists all AppautoscalingTargets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AppautoscalingTarget, err error)
-	// Get retrieves the AppautoscalingTarget from the index for a given name.
-	Get(name string) (*v1alpha1.AppautoscalingTarget, error)
+	// AppautoscalingTargets returns an object that can list and get AppautoscalingTargets.
+	AppautoscalingTargets(namespace string) AppautoscalingTargetNamespaceLister
 	AppautoscalingTargetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *appautoscalingTargetLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the AppautoscalingTarget from the index for a given name.
-func (s *appautoscalingTargetLister) Get(name string) (*v1alpha1.AppautoscalingTarget, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AppautoscalingTargets returns an object that can list and get AppautoscalingTargets.
+func (s *appautoscalingTargetLister) AppautoscalingTargets(namespace string) AppautoscalingTargetNamespaceLister {
+	return appautoscalingTargetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AppautoscalingTargetNamespaceLister helps list and get AppautoscalingTargets.
+type AppautoscalingTargetNamespaceLister interface {
+	// List lists all AppautoscalingTargets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AppautoscalingTarget, err error)
+	// Get retrieves the AppautoscalingTarget from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AppautoscalingTarget, error)
+	AppautoscalingTargetNamespaceListerExpansion
+}
+
+// appautoscalingTargetNamespaceLister implements the AppautoscalingTargetNamespaceLister
+// interface.
+type appautoscalingTargetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AppautoscalingTargets in the indexer for a given namespace.
+func (s appautoscalingTargetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AppautoscalingTarget, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AppautoscalingTarget))
+	})
+	return ret, err
+}
+
+// Get retrieves the AppautoscalingTarget from the indexer for a given namespace and name.
+func (s appautoscalingTargetNamespaceLister) Get(name string) (*v1alpha1.AppautoscalingTarget, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

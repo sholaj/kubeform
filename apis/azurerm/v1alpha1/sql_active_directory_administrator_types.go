@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,11 +19,12 @@ type SqlActiveDirectoryAdministrator struct {
 }
 
 type SqlActiveDirectoryAdministratorSpec struct {
-	Login             string `json:"login"`
-	ObjectId          string `json:"object_id"`
-	ResourceGroupName string `json:"resource_group_name"`
-	ServerName        string `json:"server_name"`
-	TenantId          string `json:"tenant_id"`
+	Login             string                    `json:"login" tf:"login"`
+	ObjectID          string                    `json:"objectID" tf:"object_id"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ServerName        string                    `json:"serverName" tf:"server_name"`
+	TenantID          string                    `json:"tenantID" tf:"tenant_id"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SqlActiveDirectoryAdministratorStatus struct {
@@ -31,7 +32,9 @@ type SqlActiveDirectoryAdministratorStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

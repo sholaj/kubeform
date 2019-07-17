@@ -32,7 +32,7 @@ import (
 // OpsworksRailsAppLayersGetter has a method to return a OpsworksRailsAppLayerInterface.
 // A group's client should implement this interface.
 type OpsworksRailsAppLayersGetter interface {
-	OpsworksRailsAppLayers() OpsworksRailsAppLayerInterface
+	OpsworksRailsAppLayers(namespace string) OpsworksRailsAppLayerInterface
 }
 
 // OpsworksRailsAppLayerInterface has methods to work with OpsworksRailsAppLayer resources.
@@ -52,12 +52,14 @@ type OpsworksRailsAppLayerInterface interface {
 // opsworksRailsAppLayers implements OpsworksRailsAppLayerInterface
 type opsworksRailsAppLayers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOpsworksRailsAppLayers returns a OpsworksRailsAppLayers
-func newOpsworksRailsAppLayers(c *AwsV1alpha1Client) *opsworksRailsAppLayers {
+func newOpsworksRailsAppLayers(c *AwsV1alpha1Client, namespace string) *opsworksRailsAppLayers {
 	return &opsworksRailsAppLayers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOpsworksRailsAppLayers(c *AwsV1alpha1Client) *opsworksRailsAppLayers {
 func (c *opsworksRailsAppLayers) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksRailsAppLayer, err error) {
 	result = &v1alpha1.OpsworksRailsAppLayer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksrailsapplayers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *opsworksRailsAppLayers) List(opts v1.ListOptions) (result *v1alpha1.Ops
 	}
 	result = &v1alpha1.OpsworksRailsAppLayerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksrailsapplayers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *opsworksRailsAppLayers) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksrailsapplayers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *opsworksRailsAppLayers) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *opsworksRailsAppLayers) Create(opsworksRailsAppLayer *v1alpha1.OpsworksRailsAppLayer) (result *v1alpha1.OpsworksRailsAppLayer, err error) {
 	result = &v1alpha1.OpsworksRailsAppLayer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("opsworksrailsapplayers").
 		Body(opsworksRailsAppLayer).
 		Do().
@@ -118,6 +124,7 @@ func (c *opsworksRailsAppLayers) Create(opsworksRailsAppLayer *v1alpha1.Opsworks
 func (c *opsworksRailsAppLayers) Update(opsworksRailsAppLayer *v1alpha1.OpsworksRailsAppLayer) (result *v1alpha1.OpsworksRailsAppLayer, err error) {
 	result = &v1alpha1.OpsworksRailsAppLayer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksrailsapplayers").
 		Name(opsworksRailsAppLayer.Name).
 		Body(opsworksRailsAppLayer).
@@ -132,6 +139,7 @@ func (c *opsworksRailsAppLayers) Update(opsworksRailsAppLayer *v1alpha1.Opsworks
 func (c *opsworksRailsAppLayers) UpdateStatus(opsworksRailsAppLayer *v1alpha1.OpsworksRailsAppLayer) (result *v1alpha1.OpsworksRailsAppLayer, err error) {
 	result = &v1alpha1.OpsworksRailsAppLayer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksrailsapplayers").
 		Name(opsworksRailsAppLayer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *opsworksRailsAppLayers) UpdateStatus(opsworksRailsAppLayer *v1alpha1.Op
 // Delete takes name of the opsworksRailsAppLayer and deletes it. Returns an error if one occurs.
 func (c *opsworksRailsAppLayers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksrailsapplayers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *opsworksRailsAppLayers) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksrailsapplayers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *opsworksRailsAppLayers) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *opsworksRailsAppLayers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksRailsAppLayer, err error) {
 	result = &v1alpha1.OpsworksRailsAppLayer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("opsworksrailsapplayers").
 		SubResource(subresources...).
 		Name(name).

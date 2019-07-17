@@ -31,6 +31,7 @@ import (
 // FakeDefaultVpcs implements DefaultVpcInterface
 type FakeDefaultVpcs struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var defaultvpcsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "defaultvpcs"}
@@ -40,7 +41,8 @@ var defaultvpcsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version
 // Get takes name of the defaultVpc, and returns the corresponding defaultVpc object, and an error if there is any.
 func (c *FakeDefaultVpcs) Get(name string, options v1.GetOptions) (result *v1alpha1.DefaultVpc, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(defaultvpcsResource, name), &v1alpha1.DefaultVpc{})
+		Invokes(testing.NewGetAction(defaultvpcsResource, c.ns, name), &v1alpha1.DefaultVpc{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDefaultVpcs) Get(name string, options v1.GetOptions) (result *v1alp
 // List takes label and field selectors, and returns the list of DefaultVpcs that match those selectors.
 func (c *FakeDefaultVpcs) List(opts v1.ListOptions) (result *v1alpha1.DefaultVpcList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(defaultvpcsResource, defaultvpcsKind, opts), &v1alpha1.DefaultVpcList{})
+		Invokes(testing.NewListAction(defaultvpcsResource, defaultvpcsKind, c.ns, opts), &v1alpha1.DefaultVpcList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDefaultVpcs) List(opts v1.ListOptions) (result *v1alpha1.DefaultVpc
 // Watch returns a watch.Interface that watches the requested defaultVpcs.
 func (c *FakeDefaultVpcs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(defaultvpcsResource, opts))
+		InvokesWatch(testing.NewWatchAction(defaultvpcsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a defaultVpc and creates it.  Returns the server's representation of the defaultVpc, and an error, if there is any.
 func (c *FakeDefaultVpcs) Create(defaultVpc *v1alpha1.DefaultVpc) (result *v1alpha1.DefaultVpc, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(defaultvpcsResource, defaultVpc), &v1alpha1.DefaultVpc{})
+		Invokes(testing.NewCreateAction(defaultvpcsResource, c.ns, defaultVpc), &v1alpha1.DefaultVpc{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDefaultVpcs) Create(defaultVpc *v1alpha1.DefaultVpc) (result *v1alp
 // Update takes the representation of a defaultVpc and updates it. Returns the server's representation of the defaultVpc, and an error, if there is any.
 func (c *FakeDefaultVpcs) Update(defaultVpc *v1alpha1.DefaultVpc) (result *v1alpha1.DefaultVpc, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(defaultvpcsResource, defaultVpc), &v1alpha1.DefaultVpc{})
+		Invokes(testing.NewUpdateAction(defaultvpcsResource, c.ns, defaultVpc), &v1alpha1.DefaultVpc{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDefaultVpcs) Update(defaultVpc *v1alpha1.DefaultVpc) (result *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDefaultVpcs) UpdateStatus(defaultVpc *v1alpha1.DefaultVpc) (*v1alpha1.DefaultVpc, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(defaultvpcsResource, "status", defaultVpc), &v1alpha1.DefaultVpc{})
+		Invokes(testing.NewUpdateSubresourceAction(defaultvpcsResource, "status", c.ns, defaultVpc), &v1alpha1.DefaultVpc{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDefaultVpcs) UpdateStatus(defaultVpc *v1alpha1.DefaultVpc) (*v1alph
 // Delete takes name of the defaultVpc and deletes it. Returns an error if one occurs.
 func (c *FakeDefaultVpcs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(defaultvpcsResource, name), &v1alpha1.DefaultVpc{})
+		Invokes(testing.NewDeleteAction(defaultvpcsResource, c.ns, name), &v1alpha1.DefaultVpc{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDefaultVpcs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(defaultvpcsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(defaultvpcsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DefaultVpcList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDefaultVpcs) DeleteCollection(options *v1.DeleteOptions, listOption
 // Patch applies the patch and returns the patched defaultVpc.
 func (c *FakeDefaultVpcs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DefaultVpc, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(defaultvpcsResource, name, pt, data, subresources...), &v1alpha1.DefaultVpc{})
+		Invokes(testing.NewPatchSubresourceAction(defaultvpcsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DefaultVpc{})
+
 	if obj == nil {
 		return nil, err
 	}

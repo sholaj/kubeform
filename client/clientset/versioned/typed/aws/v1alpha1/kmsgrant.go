@@ -32,7 +32,7 @@ import (
 // KmsGrantsGetter has a method to return a KmsGrantInterface.
 // A group's client should implement this interface.
 type KmsGrantsGetter interface {
-	KmsGrants() KmsGrantInterface
+	KmsGrants(namespace string) KmsGrantInterface
 }
 
 // KmsGrantInterface has methods to work with KmsGrant resources.
@@ -52,12 +52,14 @@ type KmsGrantInterface interface {
 // kmsGrants implements KmsGrantInterface
 type kmsGrants struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKmsGrants returns a KmsGrants
-func newKmsGrants(c *AwsV1alpha1Client) *kmsGrants {
+func newKmsGrants(c *AwsV1alpha1Client, namespace string) *kmsGrants {
 	return &kmsGrants{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKmsGrants(c *AwsV1alpha1Client) *kmsGrants {
 func (c *kmsGrants) Get(name string, options v1.GetOptions) (result *v1alpha1.KmsGrant, err error) {
 	result = &v1alpha1.KmsGrant{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmsgrants").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *kmsGrants) List(opts v1.ListOptions) (result *v1alpha1.KmsGrantList, er
 	}
 	result = &v1alpha1.KmsGrantList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmsgrants").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *kmsGrants) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("kmsgrants").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *kmsGrants) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *kmsGrants) Create(kmsGrant *v1alpha1.KmsGrant) (result *v1alpha1.KmsGrant, err error) {
 	result = &v1alpha1.KmsGrant{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("kmsgrants").
 		Body(kmsGrant).
 		Do().
@@ -118,6 +124,7 @@ func (c *kmsGrants) Create(kmsGrant *v1alpha1.KmsGrant) (result *v1alpha1.KmsGra
 func (c *kmsGrants) Update(kmsGrant *v1alpha1.KmsGrant) (result *v1alpha1.KmsGrant, err error) {
 	result = &v1alpha1.KmsGrant{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmsgrants").
 		Name(kmsGrant.Name).
 		Body(kmsGrant).
@@ -132,6 +139,7 @@ func (c *kmsGrants) Update(kmsGrant *v1alpha1.KmsGrant) (result *v1alpha1.KmsGra
 func (c *kmsGrants) UpdateStatus(kmsGrant *v1alpha1.KmsGrant) (result *v1alpha1.KmsGrant, err error) {
 	result = &v1alpha1.KmsGrant{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmsgrants").
 		Name(kmsGrant.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *kmsGrants) UpdateStatus(kmsGrant *v1alpha1.KmsGrant) (result *v1alpha1.
 // Delete takes name of the kmsGrant and deletes it. Returns an error if one occurs.
 func (c *kmsGrants) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmsgrants").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *kmsGrants) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmsgrants").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *kmsGrants) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 func (c *kmsGrants) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KmsGrant, err error) {
 	result = &v1alpha1.KmsGrant{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("kmsgrants").
 		SubResource(subresources...).
 		Name(name).

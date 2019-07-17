@@ -29,8 +29,8 @@ import (
 type EventgridTopicLister interface {
 	// List lists all EventgridTopics in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EventgridTopic, err error)
-	// Get retrieves the EventgridTopic from the index for a given name.
-	Get(name string) (*v1alpha1.EventgridTopic, error)
+	// EventgridTopics returns an object that can list and get EventgridTopics.
+	EventgridTopics(namespace string) EventgridTopicNamespaceLister
 	EventgridTopicListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *eventgridTopicLister) List(selector labels.Selector) (ret []*v1alpha1.E
 	return ret, err
 }
 
-// Get retrieves the EventgridTopic from the index for a given name.
-func (s *eventgridTopicLister) Get(name string) (*v1alpha1.EventgridTopic, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EventgridTopics returns an object that can list and get EventgridTopics.
+func (s *eventgridTopicLister) EventgridTopics(namespace string) EventgridTopicNamespaceLister {
+	return eventgridTopicNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EventgridTopicNamespaceLister helps list and get EventgridTopics.
+type EventgridTopicNamespaceLister interface {
+	// List lists all EventgridTopics in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EventgridTopic, err error)
+	// Get retrieves the EventgridTopic from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EventgridTopic, error)
+	EventgridTopicNamespaceListerExpansion
+}
+
+// eventgridTopicNamespaceLister implements the EventgridTopicNamespaceLister
+// interface.
+type eventgridTopicNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EventgridTopics in the indexer for a given namespace.
+func (s eventgridTopicNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EventgridTopic, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EventgridTopic))
+	})
+	return ret, err
+}
+
+// Get retrieves the EventgridTopic from the indexer for a given namespace and name.
+func (s eventgridTopicNamespaceLister) Get(name string) (*v1alpha1.EventgridTopic, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

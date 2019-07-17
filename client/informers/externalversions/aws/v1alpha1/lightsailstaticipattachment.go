@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// LightsailStaticIpAttachmentInformer provides access to a shared informer and lister for
-// LightsailStaticIpAttachments.
-type LightsailStaticIpAttachmentInformer interface {
+// LightsailStaticIPAttachmentInformer provides access to a shared informer and lister for
+// LightsailStaticIPAttachments.
+type LightsailStaticIPAttachmentInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.LightsailStaticIpAttachmentLister
+	Lister() v1alpha1.LightsailStaticIPAttachmentLister
 }
 
-type lightsailStaticIpAttachmentInformer struct {
+type lightsailStaticIPAttachmentInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewLightsailStaticIpAttachmentInformer constructs a new informer for LightsailStaticIpAttachment type.
+// NewLightsailStaticIPAttachmentInformer constructs a new informer for LightsailStaticIPAttachment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLightsailStaticIpAttachmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLightsailStaticIpAttachmentInformer(client, resyncPeriod, indexers, nil)
+func NewLightsailStaticIPAttachmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLightsailStaticIPAttachmentInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredLightsailStaticIpAttachmentInformer constructs a new informer for LightsailStaticIpAttachment type.
+// NewFilteredLightsailStaticIPAttachmentInformer constructs a new informer for LightsailStaticIPAttachment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLightsailStaticIpAttachmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLightsailStaticIPAttachmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().LightsailStaticIpAttachments().List(options)
+				return client.AwsV1alpha1().LightsailStaticIPAttachments(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().LightsailStaticIpAttachments().Watch(options)
+				return client.AwsV1alpha1().LightsailStaticIPAttachments(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.LightsailStaticIpAttachment{},
+		&awsv1alpha1.LightsailStaticIPAttachment{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *lightsailStaticIpAttachmentInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLightsailStaticIpAttachmentInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *lightsailStaticIPAttachmentInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredLightsailStaticIPAttachmentInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *lightsailStaticIpAttachmentInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.LightsailStaticIpAttachment{}, f.defaultInformer)
+func (f *lightsailStaticIPAttachmentInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.LightsailStaticIPAttachment{}, f.defaultInformer)
 }
 
-func (f *lightsailStaticIpAttachmentInformer) Lister() v1alpha1.LightsailStaticIpAttachmentLister {
-	return v1alpha1.NewLightsailStaticIpAttachmentLister(f.Informer().GetIndexer())
+func (f *lightsailStaticIPAttachmentInformer) Lister() v1alpha1.LightsailStaticIPAttachmentLister {
+	return v1alpha1.NewLightsailStaticIPAttachmentLister(f.Informer().GetIndexer())
 }

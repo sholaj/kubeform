@@ -29,8 +29,8 @@ import (
 type AutomationVariableDatetimeLister interface {
 	// List lists all AutomationVariableDatetimes in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AutomationVariableDatetime, err error)
-	// Get retrieves the AutomationVariableDatetime from the index for a given name.
-	Get(name string) (*v1alpha1.AutomationVariableDatetime, error)
+	// AutomationVariableDatetimes returns an object that can list and get AutomationVariableDatetimes.
+	AutomationVariableDatetimes(namespace string) AutomationVariableDatetimeNamespaceLister
 	AutomationVariableDatetimeListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *automationVariableDatetimeLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the AutomationVariableDatetime from the index for a given name.
-func (s *automationVariableDatetimeLister) Get(name string) (*v1alpha1.AutomationVariableDatetime, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AutomationVariableDatetimes returns an object that can list and get AutomationVariableDatetimes.
+func (s *automationVariableDatetimeLister) AutomationVariableDatetimes(namespace string) AutomationVariableDatetimeNamespaceLister {
+	return automationVariableDatetimeNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AutomationVariableDatetimeNamespaceLister helps list and get AutomationVariableDatetimes.
+type AutomationVariableDatetimeNamespaceLister interface {
+	// List lists all AutomationVariableDatetimes in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AutomationVariableDatetime, err error)
+	// Get retrieves the AutomationVariableDatetime from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AutomationVariableDatetime, error)
+	AutomationVariableDatetimeNamespaceListerExpansion
+}
+
+// automationVariableDatetimeNamespaceLister implements the AutomationVariableDatetimeNamespaceLister
+// interface.
+type automationVariableDatetimeNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AutomationVariableDatetimes in the indexer for a given namespace.
+func (s automationVariableDatetimeNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AutomationVariableDatetime, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AutomationVariableDatetime))
+	})
+	return ret, err
+}
+
+// Get retrieves the AutomationVariableDatetime from the indexer for a given namespace and name.
+func (s automationVariableDatetimeNamespaceLister) Get(name string) (*v1alpha1.AutomationVariableDatetime, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

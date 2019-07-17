@@ -32,7 +32,7 @@ import (
 // CustomerGatewaysGetter has a method to return a CustomerGatewayInterface.
 // A group's client should implement this interface.
 type CustomerGatewaysGetter interface {
-	CustomerGateways() CustomerGatewayInterface
+	CustomerGateways(namespace string) CustomerGatewayInterface
 }
 
 // CustomerGatewayInterface has methods to work with CustomerGateway resources.
@@ -52,12 +52,14 @@ type CustomerGatewayInterface interface {
 // customerGateways implements CustomerGatewayInterface
 type customerGateways struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCustomerGateways returns a CustomerGateways
-func newCustomerGateways(c *AwsV1alpha1Client) *customerGateways {
+func newCustomerGateways(c *AwsV1alpha1Client, namespace string) *customerGateways {
 	return &customerGateways{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCustomerGateways(c *AwsV1alpha1Client) *customerGateways {
 func (c *customerGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.CustomerGateway, err error) {
 	result = &v1alpha1.CustomerGateway{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("customergateways").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *customerGateways) List(opts v1.ListOptions) (result *v1alpha1.CustomerG
 	}
 	result = &v1alpha1.CustomerGatewayList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("customergateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *customerGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("customergateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *customerGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *customerGateways) Create(customerGateway *v1alpha1.CustomerGateway) (result *v1alpha1.CustomerGateway, err error) {
 	result = &v1alpha1.CustomerGateway{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("customergateways").
 		Body(customerGateway).
 		Do().
@@ -118,6 +124,7 @@ func (c *customerGateways) Create(customerGateway *v1alpha1.CustomerGateway) (re
 func (c *customerGateways) Update(customerGateway *v1alpha1.CustomerGateway) (result *v1alpha1.CustomerGateway, err error) {
 	result = &v1alpha1.CustomerGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("customergateways").
 		Name(customerGateway.Name).
 		Body(customerGateway).
@@ -132,6 +139,7 @@ func (c *customerGateways) Update(customerGateway *v1alpha1.CustomerGateway) (re
 func (c *customerGateways) UpdateStatus(customerGateway *v1alpha1.CustomerGateway) (result *v1alpha1.CustomerGateway, err error) {
 	result = &v1alpha1.CustomerGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("customergateways").
 		Name(customerGateway.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *customerGateways) UpdateStatus(customerGateway *v1alpha1.CustomerGatewa
 // Delete takes name of the customerGateway and deletes it. Returns an error if one occurs.
 func (c *customerGateways) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("customergateways").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *customerGateways) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("customergateways").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *customerGateways) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *customerGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CustomerGateway, err error) {
 	result = &v1alpha1.CustomerGateway{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("customergateways").
 		SubResource(subresources...).
 		Name(name).

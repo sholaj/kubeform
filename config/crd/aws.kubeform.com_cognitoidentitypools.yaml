@@ -397,30 +397,48 @@ spec:
           type: object
         spec:
           properties:
-            allow_unauthenticated_identities:
+            allowUnauthenticatedIdentities:
               type: boolean
-            cognito_identity_providers:
-              items: {}
+            cognitoIdentityProviders:
+              items:
+                properties:
+                  clientID:
+                    type: string
+                  providerName:
+                    type: string
+                  serverSideTokenCheck:
+                    type: boolean
+                type: object
               type: array
               uniqueItems: true
-            developer_provider_name:
+            developerProviderName:
               type: string
-            identity_pool_name:
+            identityPoolName:
               type: string
-            openid_connect_provider_arns:
+            openidConnectProviderArns:
               items:
                 type: string
               type: array
-            saml_provider_arns:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            samlProviderArns:
               items:
                 type: string
               type: array
-            supported_login_providers:
+            supportedLoginProviders:
               additionalProperties:
                 type: string
               type: object
           required:
-          - identity_pool_name
+          - identityPoolName
+          - providerRef
           type: object
         status:
           properties:
@@ -431,6 +449,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

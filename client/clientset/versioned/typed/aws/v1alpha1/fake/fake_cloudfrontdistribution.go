@@ -31,6 +31,7 @@ import (
 // FakeCloudfrontDistributions implements CloudfrontDistributionInterface
 type FakeCloudfrontDistributions struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var cloudfrontdistributionsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "cloudfrontdistributions"}
@@ -40,7 +41,8 @@ var cloudfrontdistributionsKind = schema.GroupVersionKind{Group: "aws.kubeform.c
 // Get takes name of the cloudfrontDistribution, and returns the corresponding cloudfrontDistribution object, and an error if there is any.
 func (c *FakeCloudfrontDistributions) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudfrontDistribution, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cloudfrontdistributionsResource, name), &v1alpha1.CloudfrontDistribution{})
+		Invokes(testing.NewGetAction(cloudfrontdistributionsResource, c.ns, name), &v1alpha1.CloudfrontDistribution{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCloudfrontDistributions) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of CloudfrontDistributions that match those selectors.
 func (c *FakeCloudfrontDistributions) List(opts v1.ListOptions) (result *v1alpha1.CloudfrontDistributionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cloudfrontdistributionsResource, cloudfrontdistributionsKind, opts), &v1alpha1.CloudfrontDistributionList{})
+		Invokes(testing.NewListAction(cloudfrontdistributionsResource, cloudfrontdistributionsKind, c.ns, opts), &v1alpha1.CloudfrontDistributionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCloudfrontDistributions) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested cloudfrontDistributions.
 func (c *FakeCloudfrontDistributions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cloudfrontdistributionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(cloudfrontdistributionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cloudfrontDistribution and creates it.  Returns the server's representation of the cloudfrontDistribution, and an error, if there is any.
 func (c *FakeCloudfrontDistributions) Create(cloudfrontDistribution *v1alpha1.CloudfrontDistribution) (result *v1alpha1.CloudfrontDistribution, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cloudfrontdistributionsResource, cloudfrontDistribution), &v1alpha1.CloudfrontDistribution{})
+		Invokes(testing.NewCreateAction(cloudfrontdistributionsResource, c.ns, cloudfrontDistribution), &v1alpha1.CloudfrontDistribution{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCloudfrontDistributions) Create(cloudfrontDistribution *v1alpha1.Cl
 // Update takes the representation of a cloudfrontDistribution and updates it. Returns the server's representation of the cloudfrontDistribution, and an error, if there is any.
 func (c *FakeCloudfrontDistributions) Update(cloudfrontDistribution *v1alpha1.CloudfrontDistribution) (result *v1alpha1.CloudfrontDistribution, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cloudfrontdistributionsResource, cloudfrontDistribution), &v1alpha1.CloudfrontDistribution{})
+		Invokes(testing.NewUpdateAction(cloudfrontdistributionsResource, c.ns, cloudfrontDistribution), &v1alpha1.CloudfrontDistribution{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCloudfrontDistributions) Update(cloudfrontDistribution *v1alpha1.Cl
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCloudfrontDistributions) UpdateStatus(cloudfrontDistribution *v1alpha1.CloudfrontDistribution) (*v1alpha1.CloudfrontDistribution, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cloudfrontdistributionsResource, "status", cloudfrontDistribution), &v1alpha1.CloudfrontDistribution{})
+		Invokes(testing.NewUpdateSubresourceAction(cloudfrontdistributionsResource, "status", c.ns, cloudfrontDistribution), &v1alpha1.CloudfrontDistribution{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCloudfrontDistributions) UpdateStatus(cloudfrontDistribution *v1alp
 // Delete takes name of the cloudfrontDistribution and deletes it. Returns an error if one occurs.
 func (c *FakeCloudfrontDistributions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cloudfrontdistributionsResource, name), &v1alpha1.CloudfrontDistribution{})
+		Invokes(testing.NewDeleteAction(cloudfrontdistributionsResource, c.ns, name), &v1alpha1.CloudfrontDistribution{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCloudfrontDistributions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cloudfrontdistributionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cloudfrontdistributionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CloudfrontDistributionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCloudfrontDistributions) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched cloudfrontDistribution.
 func (c *FakeCloudfrontDistributions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudfrontDistribution, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cloudfrontdistributionsResource, name, pt, data, subresources...), &v1alpha1.CloudfrontDistribution{})
+		Invokes(testing.NewPatchSubresourceAction(cloudfrontdistributionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.CloudfrontDistribution{})
+
 	if obj == nil {
 		return nil, err
 	}

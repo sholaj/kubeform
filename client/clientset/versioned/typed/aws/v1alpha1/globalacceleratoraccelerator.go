@@ -32,7 +32,7 @@ import (
 // GlobalacceleratorAcceleratorsGetter has a method to return a GlobalacceleratorAcceleratorInterface.
 // A group's client should implement this interface.
 type GlobalacceleratorAcceleratorsGetter interface {
-	GlobalacceleratorAccelerators() GlobalacceleratorAcceleratorInterface
+	GlobalacceleratorAccelerators(namespace string) GlobalacceleratorAcceleratorInterface
 }
 
 // GlobalacceleratorAcceleratorInterface has methods to work with GlobalacceleratorAccelerator resources.
@@ -52,12 +52,14 @@ type GlobalacceleratorAcceleratorInterface interface {
 // globalacceleratorAccelerators implements GlobalacceleratorAcceleratorInterface
 type globalacceleratorAccelerators struct {
 	client rest.Interface
+	ns     string
 }
 
 // newGlobalacceleratorAccelerators returns a GlobalacceleratorAccelerators
-func newGlobalacceleratorAccelerators(c *AwsV1alpha1Client) *globalacceleratorAccelerators {
+func newGlobalacceleratorAccelerators(c *AwsV1alpha1Client, namespace string) *globalacceleratorAccelerators {
 	return &globalacceleratorAccelerators{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newGlobalacceleratorAccelerators(c *AwsV1alpha1Client) *globalacceleratorAc
 func (c *globalacceleratorAccelerators) Get(name string, options v1.GetOptions) (result *v1alpha1.GlobalacceleratorAccelerator, err error) {
 	result = &v1alpha1.GlobalacceleratorAccelerator{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("globalacceleratoraccelerators").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *globalacceleratorAccelerators) List(opts v1.ListOptions) (result *v1alp
 	}
 	result = &v1alpha1.GlobalacceleratorAcceleratorList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("globalacceleratoraccelerators").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *globalacceleratorAccelerators) Watch(opts v1.ListOptions) (watch.Interf
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("globalacceleratoraccelerators").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *globalacceleratorAccelerators) Watch(opts v1.ListOptions) (watch.Interf
 func (c *globalacceleratorAccelerators) Create(globalacceleratorAccelerator *v1alpha1.GlobalacceleratorAccelerator) (result *v1alpha1.GlobalacceleratorAccelerator, err error) {
 	result = &v1alpha1.GlobalacceleratorAccelerator{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("globalacceleratoraccelerators").
 		Body(globalacceleratorAccelerator).
 		Do().
@@ -118,6 +124,7 @@ func (c *globalacceleratorAccelerators) Create(globalacceleratorAccelerator *v1a
 func (c *globalacceleratorAccelerators) Update(globalacceleratorAccelerator *v1alpha1.GlobalacceleratorAccelerator) (result *v1alpha1.GlobalacceleratorAccelerator, err error) {
 	result = &v1alpha1.GlobalacceleratorAccelerator{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("globalacceleratoraccelerators").
 		Name(globalacceleratorAccelerator.Name).
 		Body(globalacceleratorAccelerator).
@@ -132,6 +139,7 @@ func (c *globalacceleratorAccelerators) Update(globalacceleratorAccelerator *v1a
 func (c *globalacceleratorAccelerators) UpdateStatus(globalacceleratorAccelerator *v1alpha1.GlobalacceleratorAccelerator) (result *v1alpha1.GlobalacceleratorAccelerator, err error) {
 	result = &v1alpha1.GlobalacceleratorAccelerator{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("globalacceleratoraccelerators").
 		Name(globalacceleratorAccelerator.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *globalacceleratorAccelerators) UpdateStatus(globalacceleratorAccelerato
 // Delete takes name of the globalacceleratorAccelerator and deletes it. Returns an error if one occurs.
 func (c *globalacceleratorAccelerators) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("globalacceleratoraccelerators").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *globalacceleratorAccelerators) DeleteCollection(options *v1.DeleteOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("globalacceleratoraccelerators").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *globalacceleratorAccelerators) DeleteCollection(options *v1.DeleteOptio
 func (c *globalacceleratorAccelerators) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GlobalacceleratorAccelerator, err error) {
 	result = &v1alpha1.GlobalacceleratorAccelerator{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("globalacceleratoraccelerators").
 		SubResource(subresources...).
 		Name(name).

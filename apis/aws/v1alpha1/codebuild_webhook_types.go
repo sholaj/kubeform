@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,23 +20,24 @@ type CodebuildWebhook struct {
 
 type CodebuildWebhookSpecFilterGroupFilter struct {
 	// +optional
-	ExcludeMatchedPattern bool   `json:"exclude_matched_pattern,omitempty"`
-	Pattern               string `json:"pattern"`
-	Type                  string `json:"type"`
+	ExcludeMatchedPattern bool   `json:"excludeMatchedPattern,omitempty" tf:"exclude_matched_pattern,omitempty"`
+	Pattern               string `json:"pattern" tf:"pattern"`
+	Type                  string `json:"type" tf:"type"`
 }
 
 type CodebuildWebhookSpecFilterGroup struct {
 	// +optional
-	Filter *[]CodebuildWebhookSpecFilterGroup `json:"filter,omitempty"`
+	Filter []CodebuildWebhookSpecFilterGroupFilter `json:"filter,omitempty" tf:"filter,omitempty"`
 }
 
 type CodebuildWebhookSpec struct {
 	// +optional
-	BranchFilter string `json:"branch_filter,omitempty"`
+	BranchFilter string `json:"branchFilter,omitempty" tf:"branch_filter,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	FilterGroup *[]CodebuildWebhookSpec `json:"filter_group,omitempty"`
-	ProjectName string                  `json:"project_name"`
+	FilterGroup []CodebuildWebhookSpecFilterGroup `json:"filterGroup,omitempty" tf:"filter_group,omitempty"`
+	ProjectName string                            `json:"projectName" tf:"project_name"`
+	ProviderRef core.LocalObjectReference         `json:"providerRef" tf:"-"`
 }
 
 type CodebuildWebhookStatus struct {
@@ -44,7 +45,9 @@ type CodebuildWebhookStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

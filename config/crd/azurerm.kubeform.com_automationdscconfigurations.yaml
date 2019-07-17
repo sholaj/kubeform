@@ -397,26 +397,36 @@ spec:
           type: object
         spec:
           properties:
-            automation_account_name:
+            automationAccountName:
               type: string
-            content_embedded:
+            contentEmbedded:
               type: string
             description:
               type: string
             location:
               type: string
-            log_verbose:
+            logVerbose:
               type: boolean
             name:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
           required:
-          - automation_account_name
-          - content_embedded
+          - automationAccountName
+          - contentEmbedded
           - location
           - name
-          - resource_group_name
+          - providerRef
+          - resourceGroupName
           type: object
         status:
           properties:
@@ -427,6 +437,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

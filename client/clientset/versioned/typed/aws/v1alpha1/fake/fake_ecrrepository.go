@@ -31,6 +31,7 @@ import (
 // FakeEcrRepositories implements EcrRepositoryInterface
 type FakeEcrRepositories struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ecrrepositoriesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ecrrepositories"}
@@ -40,7 +41,8 @@ var ecrrepositoriesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ver
 // Get takes name of the ecrRepository, and returns the corresponding ecrRepository object, and an error if there is any.
 func (c *FakeEcrRepositories) Get(name string, options v1.GetOptions) (result *v1alpha1.EcrRepository, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ecrrepositoriesResource, name), &v1alpha1.EcrRepository{})
+		Invokes(testing.NewGetAction(ecrrepositoriesResource, c.ns, name), &v1alpha1.EcrRepository{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEcrRepositories) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of EcrRepositories that match those selectors.
 func (c *FakeEcrRepositories) List(opts v1.ListOptions) (result *v1alpha1.EcrRepositoryList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ecrrepositoriesResource, ecrrepositoriesKind, opts), &v1alpha1.EcrRepositoryList{})
+		Invokes(testing.NewListAction(ecrrepositoriesResource, ecrrepositoriesKind, c.ns, opts), &v1alpha1.EcrRepositoryList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEcrRepositories) List(opts v1.ListOptions) (result *v1alpha1.EcrRep
 // Watch returns a watch.Interface that watches the requested ecrRepositories.
 func (c *FakeEcrRepositories) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ecrrepositoriesResource, opts))
+		InvokesWatch(testing.NewWatchAction(ecrrepositoriesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ecrRepository and creates it.  Returns the server's representation of the ecrRepository, and an error, if there is any.
 func (c *FakeEcrRepositories) Create(ecrRepository *v1alpha1.EcrRepository) (result *v1alpha1.EcrRepository, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ecrrepositoriesResource, ecrRepository), &v1alpha1.EcrRepository{})
+		Invokes(testing.NewCreateAction(ecrrepositoriesResource, c.ns, ecrRepository), &v1alpha1.EcrRepository{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEcrRepositories) Create(ecrRepository *v1alpha1.EcrRepository) (res
 // Update takes the representation of a ecrRepository and updates it. Returns the server's representation of the ecrRepository, and an error, if there is any.
 func (c *FakeEcrRepositories) Update(ecrRepository *v1alpha1.EcrRepository) (result *v1alpha1.EcrRepository, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ecrrepositoriesResource, ecrRepository), &v1alpha1.EcrRepository{})
+		Invokes(testing.NewUpdateAction(ecrrepositoriesResource, c.ns, ecrRepository), &v1alpha1.EcrRepository{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEcrRepositories) Update(ecrRepository *v1alpha1.EcrRepository) (res
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEcrRepositories) UpdateStatus(ecrRepository *v1alpha1.EcrRepository) (*v1alpha1.EcrRepository, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ecrrepositoriesResource, "status", ecrRepository), &v1alpha1.EcrRepository{})
+		Invokes(testing.NewUpdateSubresourceAction(ecrrepositoriesResource, "status", c.ns, ecrRepository), &v1alpha1.EcrRepository{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEcrRepositories) UpdateStatus(ecrRepository *v1alpha1.EcrRepository
 // Delete takes name of the ecrRepository and deletes it. Returns an error if one occurs.
 func (c *FakeEcrRepositories) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ecrrepositoriesResource, name), &v1alpha1.EcrRepository{})
+		Invokes(testing.NewDeleteAction(ecrrepositoriesResource, c.ns, name), &v1alpha1.EcrRepository{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEcrRepositories) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ecrrepositoriesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ecrrepositoriesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.EcrRepositoryList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEcrRepositories) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched ecrRepository.
 func (c *FakeEcrRepositories) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EcrRepository, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ecrrepositoriesResource, name, pt, data, subresources...), &v1alpha1.EcrRepository{})
+		Invokes(testing.NewPatchSubresourceAction(ecrrepositoriesResource, c.ns, name, pt, data, subresources...), &v1alpha1.EcrRepository{})
+
 	if obj == nil {
 		return nil, err
 	}

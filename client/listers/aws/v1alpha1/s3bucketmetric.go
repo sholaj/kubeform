@@ -29,8 +29,8 @@ import (
 type S3BucketMetricLister interface {
 	// List lists all S3BucketMetrics in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.S3BucketMetric, err error)
-	// Get retrieves the S3BucketMetric from the index for a given name.
-	Get(name string) (*v1alpha1.S3BucketMetric, error)
+	// S3BucketMetrics returns an object that can list and get S3BucketMetrics.
+	S3BucketMetrics(namespace string) S3BucketMetricNamespaceLister
 	S3BucketMetricListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *s3BucketMetricLister) List(selector labels.Selector) (ret []*v1alpha1.S
 	return ret, err
 }
 
-// Get retrieves the S3BucketMetric from the index for a given name.
-func (s *s3BucketMetricLister) Get(name string) (*v1alpha1.S3BucketMetric, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// S3BucketMetrics returns an object that can list and get S3BucketMetrics.
+func (s *s3BucketMetricLister) S3BucketMetrics(namespace string) S3BucketMetricNamespaceLister {
+	return s3BucketMetricNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// S3BucketMetricNamespaceLister helps list and get S3BucketMetrics.
+type S3BucketMetricNamespaceLister interface {
+	// List lists all S3BucketMetrics in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.S3BucketMetric, err error)
+	// Get retrieves the S3BucketMetric from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.S3BucketMetric, error)
+	S3BucketMetricNamespaceListerExpansion
+}
+
+// s3BucketMetricNamespaceLister implements the S3BucketMetricNamespaceLister
+// interface.
+type s3BucketMetricNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all S3BucketMetrics in the indexer for a given namespace.
+func (s s3BucketMetricNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.S3BucketMetric, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.S3BucketMetric))
+	})
+	return ret, err
+}
+
+// Get retrieves the S3BucketMetric from the indexer for a given namespace and name.
+func (s s3BucketMetricNamespaceLister) Get(name string) (*v1alpha1.S3BucketMetric, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

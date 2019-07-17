@@ -32,7 +32,7 @@ import (
 // DbSnapshotsGetter has a method to return a DbSnapshotInterface.
 // A group's client should implement this interface.
 type DbSnapshotsGetter interface {
-	DbSnapshots() DbSnapshotInterface
+	DbSnapshots(namespace string) DbSnapshotInterface
 }
 
 // DbSnapshotInterface has methods to work with DbSnapshot resources.
@@ -52,12 +52,14 @@ type DbSnapshotInterface interface {
 // dbSnapshots implements DbSnapshotInterface
 type dbSnapshots struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDbSnapshots returns a DbSnapshots
-func newDbSnapshots(c *AwsV1alpha1Client) *dbSnapshots {
+func newDbSnapshots(c *AwsV1alpha1Client, namespace string) *dbSnapshots {
 	return &dbSnapshots{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDbSnapshots(c *AwsV1alpha1Client) *dbSnapshots {
 func (c *dbSnapshots) Get(name string, options v1.GetOptions) (result *v1alpha1.DbSnapshot, err error) {
 	result = &v1alpha1.DbSnapshot{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dbsnapshots").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dbSnapshots) List(opts v1.ListOptions) (result *v1alpha1.DbSnapshotList
 	}
 	result = &v1alpha1.DbSnapshotList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dbsnapshots").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dbSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dbsnapshots").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dbSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dbSnapshots) Create(dbSnapshot *v1alpha1.DbSnapshot) (result *v1alpha1.DbSnapshot, err error) {
 	result = &v1alpha1.DbSnapshot{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dbsnapshots").
 		Body(dbSnapshot).
 		Do().
@@ -118,6 +124,7 @@ func (c *dbSnapshots) Create(dbSnapshot *v1alpha1.DbSnapshot) (result *v1alpha1.
 func (c *dbSnapshots) Update(dbSnapshot *v1alpha1.DbSnapshot) (result *v1alpha1.DbSnapshot, err error) {
 	result = &v1alpha1.DbSnapshot{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dbsnapshots").
 		Name(dbSnapshot.Name).
 		Body(dbSnapshot).
@@ -132,6 +139,7 @@ func (c *dbSnapshots) Update(dbSnapshot *v1alpha1.DbSnapshot) (result *v1alpha1.
 func (c *dbSnapshots) UpdateStatus(dbSnapshot *v1alpha1.DbSnapshot) (result *v1alpha1.DbSnapshot, err error) {
 	result = &v1alpha1.DbSnapshot{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dbsnapshots").
 		Name(dbSnapshot.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dbSnapshots) UpdateStatus(dbSnapshot *v1alpha1.DbSnapshot) (result *v1a
 // Delete takes name of the dbSnapshot and deletes it. Returns an error if one occurs.
 func (c *dbSnapshots) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dbsnapshots").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dbSnapshots) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dbsnapshots").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dbSnapshots) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *dbSnapshots) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DbSnapshot, err error) {
 	result = &v1alpha1.DbSnapshot{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dbsnapshots").
 		SubResource(subresources...).
 		Name(name).

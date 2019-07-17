@@ -29,8 +29,8 @@ import (
 type WafregionalSizeConstraintSetLister interface {
 	// List lists all WafregionalSizeConstraintSets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.WafregionalSizeConstraintSet, err error)
-	// Get retrieves the WafregionalSizeConstraintSet from the index for a given name.
-	Get(name string) (*v1alpha1.WafregionalSizeConstraintSet, error)
+	// WafregionalSizeConstraintSets returns an object that can list and get WafregionalSizeConstraintSets.
+	WafregionalSizeConstraintSets(namespace string) WafregionalSizeConstraintSetNamespaceLister
 	WafregionalSizeConstraintSetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *wafregionalSizeConstraintSetLister) List(selector labels.Selector) (ret
 	return ret, err
 }
 
-// Get retrieves the WafregionalSizeConstraintSet from the index for a given name.
-func (s *wafregionalSizeConstraintSetLister) Get(name string) (*v1alpha1.WafregionalSizeConstraintSet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafregionalSizeConstraintSets returns an object that can list and get WafregionalSizeConstraintSets.
+func (s *wafregionalSizeConstraintSetLister) WafregionalSizeConstraintSets(namespace string) WafregionalSizeConstraintSetNamespaceLister {
+	return wafregionalSizeConstraintSetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafregionalSizeConstraintSetNamespaceLister helps list and get WafregionalSizeConstraintSets.
+type WafregionalSizeConstraintSetNamespaceLister interface {
+	// List lists all WafregionalSizeConstraintSets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafregionalSizeConstraintSet, err error)
+	// Get retrieves the WafregionalSizeConstraintSet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafregionalSizeConstraintSet, error)
+	WafregionalSizeConstraintSetNamespaceListerExpansion
+}
+
+// wafregionalSizeConstraintSetNamespaceLister implements the WafregionalSizeConstraintSetNamespaceLister
+// interface.
+type wafregionalSizeConstraintSetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafregionalSizeConstraintSets in the indexer for a given namespace.
+func (s wafregionalSizeConstraintSetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafregionalSizeConstraintSet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafregionalSizeConstraintSet))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafregionalSizeConstraintSet from the indexer for a given namespace and name.
+func (s wafregionalSizeConstraintSetNamespaceLister) Get(name string) (*v1alpha1.WafregionalSizeConstraintSet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

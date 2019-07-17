@@ -31,6 +31,7 @@ import (
 // FakeOpsworksStaticWebLayers implements OpsworksStaticWebLayerInterface
 type FakeOpsworksStaticWebLayers struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var opsworksstaticweblayersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "opsworksstaticweblayers"}
@@ -40,7 +41,8 @@ var opsworksstaticweblayersKind = schema.GroupVersionKind{Group: "aws.kubeform.c
 // Get takes name of the opsworksStaticWebLayer, and returns the corresponding opsworksStaticWebLayer object, and an error if there is any.
 func (c *FakeOpsworksStaticWebLayers) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksStaticWebLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(opsworksstaticweblayersResource, name), &v1alpha1.OpsworksStaticWebLayer{})
+		Invokes(testing.NewGetAction(opsworksstaticweblayersResource, c.ns, name), &v1alpha1.OpsworksStaticWebLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeOpsworksStaticWebLayers) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of OpsworksStaticWebLayers that match those selectors.
 func (c *FakeOpsworksStaticWebLayers) List(opts v1.ListOptions) (result *v1alpha1.OpsworksStaticWebLayerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(opsworksstaticweblayersResource, opsworksstaticweblayersKind, opts), &v1alpha1.OpsworksStaticWebLayerList{})
+		Invokes(testing.NewListAction(opsworksstaticweblayersResource, opsworksstaticweblayersKind, c.ns, opts), &v1alpha1.OpsworksStaticWebLayerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeOpsworksStaticWebLayers) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested opsworksStaticWebLayers.
 func (c *FakeOpsworksStaticWebLayers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(opsworksstaticweblayersResource, opts))
+		InvokesWatch(testing.NewWatchAction(opsworksstaticweblayersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a opsworksStaticWebLayer and creates it.  Returns the server's representation of the opsworksStaticWebLayer, and an error, if there is any.
 func (c *FakeOpsworksStaticWebLayers) Create(opsworksStaticWebLayer *v1alpha1.OpsworksStaticWebLayer) (result *v1alpha1.OpsworksStaticWebLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(opsworksstaticweblayersResource, opsworksStaticWebLayer), &v1alpha1.OpsworksStaticWebLayer{})
+		Invokes(testing.NewCreateAction(opsworksstaticweblayersResource, c.ns, opsworksStaticWebLayer), &v1alpha1.OpsworksStaticWebLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeOpsworksStaticWebLayers) Create(opsworksStaticWebLayer *v1alpha1.Op
 // Update takes the representation of a opsworksStaticWebLayer and updates it. Returns the server's representation of the opsworksStaticWebLayer, and an error, if there is any.
 func (c *FakeOpsworksStaticWebLayers) Update(opsworksStaticWebLayer *v1alpha1.OpsworksStaticWebLayer) (result *v1alpha1.OpsworksStaticWebLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(opsworksstaticweblayersResource, opsworksStaticWebLayer), &v1alpha1.OpsworksStaticWebLayer{})
+		Invokes(testing.NewUpdateAction(opsworksstaticweblayersResource, c.ns, opsworksStaticWebLayer), &v1alpha1.OpsworksStaticWebLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeOpsworksStaticWebLayers) Update(opsworksStaticWebLayer *v1alpha1.Op
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeOpsworksStaticWebLayers) UpdateStatus(opsworksStaticWebLayer *v1alpha1.OpsworksStaticWebLayer) (*v1alpha1.OpsworksStaticWebLayer, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(opsworksstaticweblayersResource, "status", opsworksStaticWebLayer), &v1alpha1.OpsworksStaticWebLayer{})
+		Invokes(testing.NewUpdateSubresourceAction(opsworksstaticweblayersResource, "status", c.ns, opsworksStaticWebLayer), &v1alpha1.OpsworksStaticWebLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeOpsworksStaticWebLayers) UpdateStatus(opsworksStaticWebLayer *v1alp
 // Delete takes name of the opsworksStaticWebLayer and deletes it. Returns an error if one occurs.
 func (c *FakeOpsworksStaticWebLayers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(opsworksstaticweblayersResource, name), &v1alpha1.OpsworksStaticWebLayer{})
+		Invokes(testing.NewDeleteAction(opsworksstaticweblayersResource, c.ns, name), &v1alpha1.OpsworksStaticWebLayer{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeOpsworksStaticWebLayers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(opsworksstaticweblayersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(opsworksstaticweblayersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.OpsworksStaticWebLayerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeOpsworksStaticWebLayers) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched opsworksStaticWebLayer.
 func (c *FakeOpsworksStaticWebLayers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksStaticWebLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(opsworksstaticweblayersResource, name, pt, data, subresources...), &v1alpha1.OpsworksStaticWebLayer{})
+		Invokes(testing.NewPatchSubresourceAction(opsworksstaticweblayersResource, c.ns, name, pt, data, subresources...), &v1alpha1.OpsworksStaticWebLayer{})
+
 	if obj == nil {
 		return nil, err
 	}

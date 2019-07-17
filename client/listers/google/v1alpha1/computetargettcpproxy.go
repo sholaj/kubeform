@@ -29,8 +29,8 @@ import (
 type ComputeTargetTcpProxyLister interface {
 	// List lists all ComputeTargetTcpProxies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeTargetTcpProxy, err error)
-	// Get retrieves the ComputeTargetTcpProxy from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeTargetTcpProxy, error)
+	// ComputeTargetTcpProxies returns an object that can list and get ComputeTargetTcpProxies.
+	ComputeTargetTcpProxies(namespace string) ComputeTargetTcpProxyNamespaceLister
 	ComputeTargetTcpProxyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeTargetTcpProxyLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the ComputeTargetTcpProxy from the index for a given name.
-func (s *computeTargetTcpProxyLister) Get(name string) (*v1alpha1.ComputeTargetTcpProxy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeTargetTcpProxies returns an object that can list and get ComputeTargetTcpProxies.
+func (s *computeTargetTcpProxyLister) ComputeTargetTcpProxies(namespace string) ComputeTargetTcpProxyNamespaceLister {
+	return computeTargetTcpProxyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeTargetTcpProxyNamespaceLister helps list and get ComputeTargetTcpProxies.
+type ComputeTargetTcpProxyNamespaceLister interface {
+	// List lists all ComputeTargetTcpProxies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeTargetTcpProxy, err error)
+	// Get retrieves the ComputeTargetTcpProxy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeTargetTcpProxy, error)
+	ComputeTargetTcpProxyNamespaceListerExpansion
+}
+
+// computeTargetTcpProxyNamespaceLister implements the ComputeTargetTcpProxyNamespaceLister
+// interface.
+type computeTargetTcpProxyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeTargetTcpProxies in the indexer for a given namespace.
+func (s computeTargetTcpProxyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeTargetTcpProxy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeTargetTcpProxy))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeTargetTcpProxy from the indexer for a given namespace and name.
+func (s computeTargetTcpProxyNamespaceLister) Get(name string) (*v1alpha1.ComputeTargetTcpProxy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

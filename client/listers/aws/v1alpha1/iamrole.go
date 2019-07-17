@@ -29,8 +29,8 @@ import (
 type IamRoleLister interface {
 	// List lists all IamRoles in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IamRole, err error)
-	// Get retrieves the IamRole from the index for a given name.
-	Get(name string) (*v1alpha1.IamRole, error)
+	// IamRoles returns an object that can list and get IamRoles.
+	IamRoles(namespace string) IamRoleNamespaceLister
 	IamRoleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iamRoleLister) List(selector labels.Selector) (ret []*v1alpha1.IamRole,
 	return ret, err
 }
 
-// Get retrieves the IamRole from the index for a given name.
-func (s *iamRoleLister) Get(name string) (*v1alpha1.IamRole, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IamRoles returns an object that can list and get IamRoles.
+func (s *iamRoleLister) IamRoles(namespace string) IamRoleNamespaceLister {
+	return iamRoleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IamRoleNamespaceLister helps list and get IamRoles.
+type IamRoleNamespaceLister interface {
+	// List lists all IamRoles in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IamRole, err error)
+	// Get retrieves the IamRole from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IamRole, error)
+	IamRoleNamespaceListerExpansion
+}
+
+// iamRoleNamespaceLister implements the IamRoleNamespaceLister
+// interface.
+type iamRoleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IamRoles in the indexer for a given namespace.
+func (s iamRoleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IamRole, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IamRole))
+	})
+	return ret, err
+}
+
+// Get retrieves the IamRole from the indexer for a given namespace and name.
+func (s iamRoleNamespaceLister) Get(name string) (*v1alpha1.IamRole, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

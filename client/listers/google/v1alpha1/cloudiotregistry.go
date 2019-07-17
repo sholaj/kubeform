@@ -29,8 +29,8 @@ import (
 type CloudiotRegistryLister interface {
 	// List lists all CloudiotRegistries in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CloudiotRegistry, err error)
-	// Get retrieves the CloudiotRegistry from the index for a given name.
-	Get(name string) (*v1alpha1.CloudiotRegistry, error)
+	// CloudiotRegistries returns an object that can list and get CloudiotRegistries.
+	CloudiotRegistries(namespace string) CloudiotRegistryNamespaceLister
 	CloudiotRegistryListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cloudiotRegistryLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the CloudiotRegistry from the index for a given name.
-func (s *cloudiotRegistryLister) Get(name string) (*v1alpha1.CloudiotRegistry, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CloudiotRegistries returns an object that can list and get CloudiotRegistries.
+func (s *cloudiotRegistryLister) CloudiotRegistries(namespace string) CloudiotRegistryNamespaceLister {
+	return cloudiotRegistryNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CloudiotRegistryNamespaceLister helps list and get CloudiotRegistries.
+type CloudiotRegistryNamespaceLister interface {
+	// List lists all CloudiotRegistries in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CloudiotRegistry, err error)
+	// Get retrieves the CloudiotRegistry from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CloudiotRegistry, error)
+	CloudiotRegistryNamespaceListerExpansion
+}
+
+// cloudiotRegistryNamespaceLister implements the CloudiotRegistryNamespaceLister
+// interface.
+type cloudiotRegistryNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CloudiotRegistries in the indexer for a given namespace.
+func (s cloudiotRegistryNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CloudiotRegistry, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CloudiotRegistry))
+	})
+	return ret, err
+}
+
+// Get retrieves the CloudiotRegistry from the indexer for a given namespace and name.
+func (s cloudiotRegistryNamespaceLister) Get(name string) (*v1alpha1.CloudiotRegistry, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

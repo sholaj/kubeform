@@ -31,6 +31,7 @@ import (
 // FakeDirectoryServiceConditionalForwarders implements DirectoryServiceConditionalForwarderInterface
 type FakeDirectoryServiceConditionalForwarders struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var directoryserviceconditionalforwardersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "directoryserviceconditionalforwarders"}
@@ -40,7 +41,8 @@ var directoryserviceconditionalforwardersKind = schema.GroupVersionKind{Group: "
 // Get takes name of the directoryServiceConditionalForwarder, and returns the corresponding directoryServiceConditionalForwarder object, and an error if there is any.
 func (c *FakeDirectoryServiceConditionalForwarders) Get(name string, options v1.GetOptions) (result *v1alpha1.DirectoryServiceConditionalForwarder, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(directoryserviceconditionalforwardersResource, name), &v1alpha1.DirectoryServiceConditionalForwarder{})
+		Invokes(testing.NewGetAction(directoryserviceconditionalforwardersResource, c.ns, name), &v1alpha1.DirectoryServiceConditionalForwarder{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDirectoryServiceConditionalForwarders) Get(name string, options v1.
 // List takes label and field selectors, and returns the list of DirectoryServiceConditionalForwarders that match those selectors.
 func (c *FakeDirectoryServiceConditionalForwarders) List(opts v1.ListOptions) (result *v1alpha1.DirectoryServiceConditionalForwarderList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(directoryserviceconditionalforwardersResource, directoryserviceconditionalforwardersKind, opts), &v1alpha1.DirectoryServiceConditionalForwarderList{})
+		Invokes(testing.NewListAction(directoryserviceconditionalforwardersResource, directoryserviceconditionalforwardersKind, c.ns, opts), &v1alpha1.DirectoryServiceConditionalForwarderList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDirectoryServiceConditionalForwarders) List(opts v1.ListOptions) (r
 // Watch returns a watch.Interface that watches the requested directoryServiceConditionalForwarders.
 func (c *FakeDirectoryServiceConditionalForwarders) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(directoryserviceconditionalforwardersResource, opts))
+		InvokesWatch(testing.NewWatchAction(directoryserviceconditionalforwardersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a directoryServiceConditionalForwarder and creates it.  Returns the server's representation of the directoryServiceConditionalForwarder, and an error, if there is any.
 func (c *FakeDirectoryServiceConditionalForwarders) Create(directoryServiceConditionalForwarder *v1alpha1.DirectoryServiceConditionalForwarder) (result *v1alpha1.DirectoryServiceConditionalForwarder, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(directoryserviceconditionalforwardersResource, directoryServiceConditionalForwarder), &v1alpha1.DirectoryServiceConditionalForwarder{})
+		Invokes(testing.NewCreateAction(directoryserviceconditionalforwardersResource, c.ns, directoryServiceConditionalForwarder), &v1alpha1.DirectoryServiceConditionalForwarder{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDirectoryServiceConditionalForwarders) Create(directoryServiceCondi
 // Update takes the representation of a directoryServiceConditionalForwarder and updates it. Returns the server's representation of the directoryServiceConditionalForwarder, and an error, if there is any.
 func (c *FakeDirectoryServiceConditionalForwarders) Update(directoryServiceConditionalForwarder *v1alpha1.DirectoryServiceConditionalForwarder) (result *v1alpha1.DirectoryServiceConditionalForwarder, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(directoryserviceconditionalforwardersResource, directoryServiceConditionalForwarder), &v1alpha1.DirectoryServiceConditionalForwarder{})
+		Invokes(testing.NewUpdateAction(directoryserviceconditionalforwardersResource, c.ns, directoryServiceConditionalForwarder), &v1alpha1.DirectoryServiceConditionalForwarder{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDirectoryServiceConditionalForwarders) Update(directoryServiceCondi
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDirectoryServiceConditionalForwarders) UpdateStatus(directoryServiceConditionalForwarder *v1alpha1.DirectoryServiceConditionalForwarder) (*v1alpha1.DirectoryServiceConditionalForwarder, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(directoryserviceconditionalforwardersResource, "status", directoryServiceConditionalForwarder), &v1alpha1.DirectoryServiceConditionalForwarder{})
+		Invokes(testing.NewUpdateSubresourceAction(directoryserviceconditionalforwardersResource, "status", c.ns, directoryServiceConditionalForwarder), &v1alpha1.DirectoryServiceConditionalForwarder{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDirectoryServiceConditionalForwarders) UpdateStatus(directoryServic
 // Delete takes name of the directoryServiceConditionalForwarder and deletes it. Returns an error if one occurs.
 func (c *FakeDirectoryServiceConditionalForwarders) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(directoryserviceconditionalforwardersResource, name), &v1alpha1.DirectoryServiceConditionalForwarder{})
+		Invokes(testing.NewDeleteAction(directoryserviceconditionalforwardersResource, c.ns, name), &v1alpha1.DirectoryServiceConditionalForwarder{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDirectoryServiceConditionalForwarders) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(directoryserviceconditionalforwardersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(directoryserviceconditionalforwardersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DirectoryServiceConditionalForwarderList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDirectoryServiceConditionalForwarders) DeleteCollection(options *v1
 // Patch applies the patch and returns the patched directoryServiceConditionalForwarder.
 func (c *FakeDirectoryServiceConditionalForwarders) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DirectoryServiceConditionalForwarder, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(directoryserviceconditionalforwardersResource, name, pt, data, subresources...), &v1alpha1.DirectoryServiceConditionalForwarder{})
+		Invokes(testing.NewPatchSubresourceAction(directoryserviceconditionalforwardersResource, c.ns, name, pt, data, subresources...), &v1alpha1.DirectoryServiceConditionalForwarder{})
+
 	if obj == nil {
 		return nil, err
 	}

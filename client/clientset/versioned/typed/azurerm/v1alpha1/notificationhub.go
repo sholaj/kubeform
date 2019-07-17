@@ -32,7 +32,7 @@ import (
 // NotificationHubsGetter has a method to return a NotificationHubInterface.
 // A group's client should implement this interface.
 type NotificationHubsGetter interface {
-	NotificationHubs() NotificationHubInterface
+	NotificationHubs(namespace string) NotificationHubInterface
 }
 
 // NotificationHubInterface has methods to work with NotificationHub resources.
@@ -52,12 +52,14 @@ type NotificationHubInterface interface {
 // notificationHubs implements NotificationHubInterface
 type notificationHubs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNotificationHubs returns a NotificationHubs
-func newNotificationHubs(c *AzurermV1alpha1Client) *notificationHubs {
+func newNotificationHubs(c *AzurermV1alpha1Client, namespace string) *notificationHubs {
 	return &notificationHubs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNotificationHubs(c *AzurermV1alpha1Client) *notificationHubs {
 func (c *notificationHubs) Get(name string, options v1.GetOptions) (result *v1alpha1.NotificationHub, err error) {
 	result = &v1alpha1.NotificationHub{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("notificationhubs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *notificationHubs) List(opts v1.ListOptions) (result *v1alpha1.Notificat
 	}
 	result = &v1alpha1.NotificationHubList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("notificationhubs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *notificationHubs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("notificationhubs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *notificationHubs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *notificationHubs) Create(notificationHub *v1alpha1.NotificationHub) (result *v1alpha1.NotificationHub, err error) {
 	result = &v1alpha1.NotificationHub{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("notificationhubs").
 		Body(notificationHub).
 		Do().
@@ -118,6 +124,7 @@ func (c *notificationHubs) Create(notificationHub *v1alpha1.NotificationHub) (re
 func (c *notificationHubs) Update(notificationHub *v1alpha1.NotificationHub) (result *v1alpha1.NotificationHub, err error) {
 	result = &v1alpha1.NotificationHub{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("notificationhubs").
 		Name(notificationHub.Name).
 		Body(notificationHub).
@@ -132,6 +139,7 @@ func (c *notificationHubs) Update(notificationHub *v1alpha1.NotificationHub) (re
 func (c *notificationHubs) UpdateStatus(notificationHub *v1alpha1.NotificationHub) (result *v1alpha1.NotificationHub, err error) {
 	result = &v1alpha1.NotificationHub{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("notificationhubs").
 		Name(notificationHub.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *notificationHubs) UpdateStatus(notificationHub *v1alpha1.NotificationHu
 // Delete takes name of the notificationHub and deletes it. Returns an error if one occurs.
 func (c *notificationHubs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("notificationhubs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *notificationHubs) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("notificationhubs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *notificationHubs) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *notificationHubs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NotificationHub, err error) {
 	result = &v1alpha1.NotificationHub{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("notificationhubs").
 		SubResource(subresources...).
 		Name(name).

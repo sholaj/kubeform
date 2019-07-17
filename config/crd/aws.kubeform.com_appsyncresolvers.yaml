@@ -397,29 +397,45 @@ spec:
           type: object
         spec:
           properties:
-            api_id:
+            apiID:
               type: string
-            data_source:
+            dataSource:
               type: string
             field:
               type: string
             kind:
               type: string
-            pipeline_config:
-              items: {}
+            pipelineConfig:
+              items:
+                properties:
+                  functions:
+                    items:
+                      type: string
+                    type: array
+                type: object
               maxItems: 1
               type: array
-            request_template:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            requestTemplate:
               type: string
-            response_template:
+            responseTemplate:
               type: string
             type:
               type: string
           required:
-          - api_id
+          - apiID
           - field
-          - request_template
-          - response_template
+          - providerRef
+          - requestTemplate
+          - responseTemplate
           - type
           type: object
         status:
@@ -431,6 +447,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

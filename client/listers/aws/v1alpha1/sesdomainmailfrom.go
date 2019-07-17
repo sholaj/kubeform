@@ -29,8 +29,8 @@ import (
 type SesDomainMailFromLister interface {
 	// List lists all SesDomainMailFroms in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SesDomainMailFrom, err error)
-	// Get retrieves the SesDomainMailFrom from the index for a given name.
-	Get(name string) (*v1alpha1.SesDomainMailFrom, error)
+	// SesDomainMailFroms returns an object that can list and get SesDomainMailFroms.
+	SesDomainMailFroms(namespace string) SesDomainMailFromNamespaceLister
 	SesDomainMailFromListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sesDomainMailFromLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the SesDomainMailFrom from the index for a given name.
-func (s *sesDomainMailFromLister) Get(name string) (*v1alpha1.SesDomainMailFrom, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SesDomainMailFroms returns an object that can list and get SesDomainMailFroms.
+func (s *sesDomainMailFromLister) SesDomainMailFroms(namespace string) SesDomainMailFromNamespaceLister {
+	return sesDomainMailFromNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SesDomainMailFromNamespaceLister helps list and get SesDomainMailFroms.
+type SesDomainMailFromNamespaceLister interface {
+	// List lists all SesDomainMailFroms in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SesDomainMailFrom, err error)
+	// Get retrieves the SesDomainMailFrom from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SesDomainMailFrom, error)
+	SesDomainMailFromNamespaceListerExpansion
+}
+
+// sesDomainMailFromNamespaceLister implements the SesDomainMailFromNamespaceLister
+// interface.
+type sesDomainMailFromNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SesDomainMailFroms in the indexer for a given namespace.
+func (s sesDomainMailFromNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SesDomainMailFrom, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SesDomainMailFrom))
+	})
+	return ret, err
+}
+
+// Get retrieves the SesDomainMailFrom from the indexer for a given namespace and name.
+func (s sesDomainMailFromNamespaceLister) Get(name string) (*v1alpha1.SesDomainMailFrom, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // SecurityhubStandardsSubscriptionsGetter has a method to return a SecurityhubStandardsSubscriptionInterface.
 // A group's client should implement this interface.
 type SecurityhubStandardsSubscriptionsGetter interface {
-	SecurityhubStandardsSubscriptions() SecurityhubStandardsSubscriptionInterface
+	SecurityhubStandardsSubscriptions(namespace string) SecurityhubStandardsSubscriptionInterface
 }
 
 // SecurityhubStandardsSubscriptionInterface has methods to work with SecurityhubStandardsSubscription resources.
@@ -52,12 +52,14 @@ type SecurityhubStandardsSubscriptionInterface interface {
 // securityhubStandardsSubscriptions implements SecurityhubStandardsSubscriptionInterface
 type securityhubStandardsSubscriptions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSecurityhubStandardsSubscriptions returns a SecurityhubStandardsSubscriptions
-func newSecurityhubStandardsSubscriptions(c *AwsV1alpha1Client) *securityhubStandardsSubscriptions {
+func newSecurityhubStandardsSubscriptions(c *AwsV1alpha1Client, namespace string) *securityhubStandardsSubscriptions {
 	return &securityhubStandardsSubscriptions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSecurityhubStandardsSubscriptions(c *AwsV1alpha1Client) *securityhubStan
 func (c *securityhubStandardsSubscriptions) Get(name string, options v1.GetOptions) (result *v1alpha1.SecurityhubStandardsSubscription, err error) {
 	result = &v1alpha1.SecurityhubStandardsSubscription{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("securityhubstandardssubscriptions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *securityhubStandardsSubscriptions) List(opts v1.ListOptions) (result *v
 	}
 	result = &v1alpha1.SecurityhubStandardsSubscriptionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("securityhubstandardssubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *securityhubStandardsSubscriptions) Watch(opts v1.ListOptions) (watch.In
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("securityhubstandardssubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *securityhubStandardsSubscriptions) Watch(opts v1.ListOptions) (watch.In
 func (c *securityhubStandardsSubscriptions) Create(securityhubStandardsSubscription *v1alpha1.SecurityhubStandardsSubscription) (result *v1alpha1.SecurityhubStandardsSubscription, err error) {
 	result = &v1alpha1.SecurityhubStandardsSubscription{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("securityhubstandardssubscriptions").
 		Body(securityhubStandardsSubscription).
 		Do().
@@ -118,6 +124,7 @@ func (c *securityhubStandardsSubscriptions) Create(securityhubStandardsSubscript
 func (c *securityhubStandardsSubscriptions) Update(securityhubStandardsSubscription *v1alpha1.SecurityhubStandardsSubscription) (result *v1alpha1.SecurityhubStandardsSubscription, err error) {
 	result = &v1alpha1.SecurityhubStandardsSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("securityhubstandardssubscriptions").
 		Name(securityhubStandardsSubscription.Name).
 		Body(securityhubStandardsSubscription).
@@ -132,6 +139,7 @@ func (c *securityhubStandardsSubscriptions) Update(securityhubStandardsSubscript
 func (c *securityhubStandardsSubscriptions) UpdateStatus(securityhubStandardsSubscription *v1alpha1.SecurityhubStandardsSubscription) (result *v1alpha1.SecurityhubStandardsSubscription, err error) {
 	result = &v1alpha1.SecurityhubStandardsSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("securityhubstandardssubscriptions").
 		Name(securityhubStandardsSubscription.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *securityhubStandardsSubscriptions) UpdateStatus(securityhubStandardsSub
 // Delete takes name of the securityhubStandardsSubscription and deletes it. Returns an error if one occurs.
 func (c *securityhubStandardsSubscriptions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("securityhubstandardssubscriptions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *securityhubStandardsSubscriptions) DeleteCollection(options *v1.DeleteO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("securityhubstandardssubscriptions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *securityhubStandardsSubscriptions) DeleteCollection(options *v1.DeleteO
 func (c *securityhubStandardsSubscriptions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SecurityhubStandardsSubscription, err error) {
 	result = &v1alpha1.SecurityhubStandardsSubscription{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("securityhubstandardssubscriptions").
 		SubResource(subresources...).
 		Name(name).

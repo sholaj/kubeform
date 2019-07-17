@@ -29,8 +29,8 @@ import (
 type BillingAccountIamBindingLister interface {
 	// List lists all BillingAccountIamBindings in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.BillingAccountIamBinding, err error)
-	// Get retrieves the BillingAccountIamBinding from the index for a given name.
-	Get(name string) (*v1alpha1.BillingAccountIamBinding, error)
+	// BillingAccountIamBindings returns an object that can list and get BillingAccountIamBindings.
+	BillingAccountIamBindings(namespace string) BillingAccountIamBindingNamespaceLister
 	BillingAccountIamBindingListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *billingAccountIamBindingLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the BillingAccountIamBinding from the index for a given name.
-func (s *billingAccountIamBindingLister) Get(name string) (*v1alpha1.BillingAccountIamBinding, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// BillingAccountIamBindings returns an object that can list and get BillingAccountIamBindings.
+func (s *billingAccountIamBindingLister) BillingAccountIamBindings(namespace string) BillingAccountIamBindingNamespaceLister {
+	return billingAccountIamBindingNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// BillingAccountIamBindingNamespaceLister helps list and get BillingAccountIamBindings.
+type BillingAccountIamBindingNamespaceLister interface {
+	// List lists all BillingAccountIamBindings in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.BillingAccountIamBinding, err error)
+	// Get retrieves the BillingAccountIamBinding from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.BillingAccountIamBinding, error)
+	BillingAccountIamBindingNamespaceListerExpansion
+}
+
+// billingAccountIamBindingNamespaceLister implements the BillingAccountIamBindingNamespaceLister
+// interface.
+type billingAccountIamBindingNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all BillingAccountIamBindings in the indexer for a given namespace.
+func (s billingAccountIamBindingNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.BillingAccountIamBinding, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.BillingAccountIamBinding))
+	})
+	return ret, err
+}
+
+// Get retrieves the BillingAccountIamBinding from the indexer for a given namespace and name.
+func (s billingAccountIamBindingNamespaceLister) Get(name string) (*v1alpha1.BillingAccountIamBinding, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

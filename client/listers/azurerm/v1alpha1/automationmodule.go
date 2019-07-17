@@ -29,8 +29,8 @@ import (
 type AutomationModuleLister interface {
 	// List lists all AutomationModules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AutomationModule, err error)
-	// Get retrieves the AutomationModule from the index for a given name.
-	Get(name string) (*v1alpha1.AutomationModule, error)
+	// AutomationModules returns an object that can list and get AutomationModules.
+	AutomationModules(namespace string) AutomationModuleNamespaceLister
 	AutomationModuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *automationModuleLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the AutomationModule from the index for a given name.
-func (s *automationModuleLister) Get(name string) (*v1alpha1.AutomationModule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AutomationModules returns an object that can list and get AutomationModules.
+func (s *automationModuleLister) AutomationModules(namespace string) AutomationModuleNamespaceLister {
+	return automationModuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AutomationModuleNamespaceLister helps list and get AutomationModules.
+type AutomationModuleNamespaceLister interface {
+	// List lists all AutomationModules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AutomationModule, err error)
+	// Get retrieves the AutomationModule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AutomationModule, error)
+	AutomationModuleNamespaceListerExpansion
+}
+
+// automationModuleNamespaceLister implements the AutomationModuleNamespaceLister
+// interface.
+type automationModuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AutomationModules in the indexer for a given namespace.
+func (s automationModuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AutomationModule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AutomationModule))
+	})
+	return ret, err
+}
+
+// Get retrieves the AutomationModule from the indexer for a given namespace and name.
+func (s automationModuleNamespaceLister) Get(name string) (*v1alpha1.AutomationModule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

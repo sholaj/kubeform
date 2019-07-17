@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// ApiManagementApiPoliciesGetter has a method to return a ApiManagementApiPolicyInterface.
+// ApiManagementAPIPoliciesGetter has a method to return a ApiManagementAPIPolicyInterface.
 // A group's client should implement this interface.
-type ApiManagementApiPoliciesGetter interface {
-	ApiManagementApiPolicies() ApiManagementApiPolicyInterface
+type ApiManagementAPIPoliciesGetter interface {
+	ApiManagementAPIPolicies(namespace string) ApiManagementAPIPolicyInterface
 }
 
-// ApiManagementApiPolicyInterface has methods to work with ApiManagementApiPolicy resources.
-type ApiManagementApiPolicyInterface interface {
-	Create(*v1alpha1.ApiManagementApiPolicy) (*v1alpha1.ApiManagementApiPolicy, error)
-	Update(*v1alpha1.ApiManagementApiPolicy) (*v1alpha1.ApiManagementApiPolicy, error)
-	UpdateStatus(*v1alpha1.ApiManagementApiPolicy) (*v1alpha1.ApiManagementApiPolicy, error)
+// ApiManagementAPIPolicyInterface has methods to work with ApiManagementAPIPolicy resources.
+type ApiManagementAPIPolicyInterface interface {
+	Create(*v1alpha1.ApiManagementAPIPolicy) (*v1alpha1.ApiManagementAPIPolicy, error)
+	Update(*v1alpha1.ApiManagementAPIPolicy) (*v1alpha1.ApiManagementAPIPolicy, error)
+	UpdateStatus(*v1alpha1.ApiManagementAPIPolicy) (*v1alpha1.ApiManagementAPIPolicy, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.ApiManagementApiPolicy, error)
-	List(opts v1.ListOptions) (*v1alpha1.ApiManagementApiPolicyList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.ApiManagementAPIPolicy, error)
+	List(opts v1.ListOptions) (*v1alpha1.ApiManagementAPIPolicyList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementApiPolicy, err error)
-	ApiManagementApiPolicyExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementAPIPolicy, err error)
+	ApiManagementAPIPolicyExpansion
 }
 
-// apiManagementApiPolicies implements ApiManagementApiPolicyInterface
-type apiManagementApiPolicies struct {
+// apiManagementAPIPolicies implements ApiManagementAPIPolicyInterface
+type apiManagementAPIPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
-// newApiManagementApiPolicies returns a ApiManagementApiPolicies
-func newApiManagementApiPolicies(c *AzurermV1alpha1Client) *apiManagementApiPolicies {
-	return &apiManagementApiPolicies{
+// newApiManagementAPIPolicies returns a ApiManagementAPIPolicies
+func newApiManagementAPIPolicies(c *AzurermV1alpha1Client, namespace string) *apiManagementAPIPolicies {
+	return &apiManagementAPIPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the apiManagementApiPolicy, and returns the corresponding apiManagementApiPolicy object, and an error if there is any.
-func (c *apiManagementApiPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementApiPolicy, err error) {
-	result = &v1alpha1.ApiManagementApiPolicy{}
+// Get takes name of the apiManagementAPIPolicy, and returns the corresponding apiManagementAPIPolicy object, and an error if there is any.
+func (c *apiManagementAPIPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementAPIPolicy, err error) {
+	result = &v1alpha1.ApiManagementAPIPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementapipolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *apiManagementApiPolicies) Get(name string, options v1.GetOptions) (resu
 	return
 }
 
-// List takes label and field selectors, and returns the list of ApiManagementApiPolicies that match those selectors.
-func (c *apiManagementApiPolicies) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementApiPolicyList, err error) {
+// List takes label and field selectors, and returns the list of ApiManagementAPIPolicies that match those selectors.
+func (c *apiManagementAPIPolicies) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementAPIPolicyList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.ApiManagementApiPolicyList{}
+	result = &v1alpha1.ApiManagementAPIPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementapipolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *apiManagementApiPolicies) List(opts v1.ListOptions) (result *v1alpha1.A
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested apiManagementApiPolicies.
-func (c *apiManagementApiPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested apiManagementAPIPolicies.
+func (c *apiManagementAPIPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementapipolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a apiManagementApiPolicy and creates it.  Returns the server's representation of the apiManagementApiPolicy, and an error, if there is any.
-func (c *apiManagementApiPolicies) Create(apiManagementApiPolicy *v1alpha1.ApiManagementApiPolicy) (result *v1alpha1.ApiManagementApiPolicy, err error) {
-	result = &v1alpha1.ApiManagementApiPolicy{}
+// Create takes the representation of a apiManagementAPIPolicy and creates it.  Returns the server's representation of the apiManagementAPIPolicy, and an error, if there is any.
+func (c *apiManagementAPIPolicies) Create(apiManagementAPIPolicy *v1alpha1.ApiManagementAPIPolicy) (result *v1alpha1.ApiManagementAPIPolicy, err error) {
+	result = &v1alpha1.ApiManagementAPIPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apimanagementapipolicies").
-		Body(apiManagementApiPolicy).
+		Body(apiManagementAPIPolicy).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a apiManagementApiPolicy and updates it. Returns the server's representation of the apiManagementApiPolicy, and an error, if there is any.
-func (c *apiManagementApiPolicies) Update(apiManagementApiPolicy *v1alpha1.ApiManagementApiPolicy) (result *v1alpha1.ApiManagementApiPolicy, err error) {
-	result = &v1alpha1.ApiManagementApiPolicy{}
+// Update takes the representation of a apiManagementAPIPolicy and updates it. Returns the server's representation of the apiManagementAPIPolicy, and an error, if there is any.
+func (c *apiManagementAPIPolicies) Update(apiManagementAPIPolicy *v1alpha1.ApiManagementAPIPolicy) (result *v1alpha1.ApiManagementAPIPolicy, err error) {
+	result = &v1alpha1.ApiManagementAPIPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementapipolicies").
-		Name(apiManagementApiPolicy.Name).
-		Body(apiManagementApiPolicy).
+		Name(apiManagementAPIPolicy.Name).
+		Body(apiManagementAPIPolicy).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *apiManagementApiPolicies) Update(apiManagementApiPolicy *v1alpha1.ApiMa
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *apiManagementApiPolicies) UpdateStatus(apiManagementApiPolicy *v1alpha1.ApiManagementApiPolicy) (result *v1alpha1.ApiManagementApiPolicy, err error) {
-	result = &v1alpha1.ApiManagementApiPolicy{}
+func (c *apiManagementAPIPolicies) UpdateStatus(apiManagementAPIPolicy *v1alpha1.ApiManagementAPIPolicy) (result *v1alpha1.ApiManagementAPIPolicy, err error) {
+	result = &v1alpha1.ApiManagementAPIPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementapipolicies").
-		Name(apiManagementApiPolicy.Name).
+		Name(apiManagementAPIPolicy.Name).
 		SubResource("status").
-		Body(apiManagementApiPolicy).
+		Body(apiManagementAPIPolicy).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the apiManagementApiPolicy and deletes it. Returns an error if one occurs.
-func (c *apiManagementApiPolicies) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the apiManagementAPIPolicy and deletes it. Returns an error if one occurs.
+func (c *apiManagementAPIPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementapipolicies").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *apiManagementApiPolicies) Delete(name string, options *v1.DeleteOptions
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *apiManagementApiPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *apiManagementAPIPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementapipolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *apiManagementApiPolicies) DeleteCollection(options *v1.DeleteOptions, l
 		Error()
 }
 
-// Patch applies the patch and returns the patched apiManagementApiPolicy.
-func (c *apiManagementApiPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementApiPolicy, err error) {
-	result = &v1alpha1.ApiManagementApiPolicy{}
+// Patch applies the patch and returns the patched apiManagementAPIPolicy.
+func (c *apiManagementAPIPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementAPIPolicy, err error) {
+	result = &v1alpha1.ApiManagementAPIPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apimanagementapipolicies").
 		SubResource(subresources...).
 		Name(name).

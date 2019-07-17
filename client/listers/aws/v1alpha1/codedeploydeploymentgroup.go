@@ -29,8 +29,8 @@ import (
 type CodedeployDeploymentGroupLister interface {
 	// List lists all CodedeployDeploymentGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CodedeployDeploymentGroup, err error)
-	// Get retrieves the CodedeployDeploymentGroup from the index for a given name.
-	Get(name string) (*v1alpha1.CodedeployDeploymentGroup, error)
+	// CodedeployDeploymentGroups returns an object that can list and get CodedeployDeploymentGroups.
+	CodedeployDeploymentGroups(namespace string) CodedeployDeploymentGroupNamespaceLister
 	CodedeployDeploymentGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *codedeployDeploymentGroupLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the CodedeployDeploymentGroup from the index for a given name.
-func (s *codedeployDeploymentGroupLister) Get(name string) (*v1alpha1.CodedeployDeploymentGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CodedeployDeploymentGroups returns an object that can list and get CodedeployDeploymentGroups.
+func (s *codedeployDeploymentGroupLister) CodedeployDeploymentGroups(namespace string) CodedeployDeploymentGroupNamespaceLister {
+	return codedeployDeploymentGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CodedeployDeploymentGroupNamespaceLister helps list and get CodedeployDeploymentGroups.
+type CodedeployDeploymentGroupNamespaceLister interface {
+	// List lists all CodedeployDeploymentGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CodedeployDeploymentGroup, err error)
+	// Get retrieves the CodedeployDeploymentGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CodedeployDeploymentGroup, error)
+	CodedeployDeploymentGroupNamespaceListerExpansion
+}
+
+// codedeployDeploymentGroupNamespaceLister implements the CodedeployDeploymentGroupNamespaceLister
+// interface.
+type codedeployDeploymentGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CodedeployDeploymentGroups in the indexer for a given namespace.
+func (s codedeployDeploymentGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CodedeployDeploymentGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CodedeployDeploymentGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the CodedeployDeploymentGroup from the indexer for a given namespace and name.
+func (s codedeployDeploymentGroupNamespaceLister) Get(name string) (*v1alpha1.CodedeployDeploymentGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

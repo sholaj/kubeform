@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,22 +20,23 @@ type DataFactoryLinkedServiceDataLakeStorageGen2 struct {
 
 type DataFactoryLinkedServiceDataLakeStorageGen2Spec struct {
 	// +optional
-	AdditionalProperties map[string]string `json:"additional_properties,omitempty"`
+	AdditionalProperties map[string]string `json:"additionalProperties,omitempty" tf:"additional_properties,omitempty"`
 	// +optional
-	Annotations     []string `json:"annotations,omitempty"`
-	DataFactoryName string   `json:"data_factory_name"`
+	Annotations     []string `json:"annotations,omitempty" tf:"annotations,omitempty"`
+	DataFactoryName string   `json:"dataFactoryName" tf:"data_factory_name"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	IntegrationRuntimeName string `json:"integration_runtime_name,omitempty"`
-	Name                   string `json:"name"`
+	IntegrationRuntimeName string `json:"integrationRuntimeName,omitempty" tf:"integration_runtime_name,omitempty"`
+	Name                   string `json:"name" tf:"name"`
 	// +optional
-	Parameters          map[string]string `json:"parameters,omitempty"`
-	ResourceGroupName   string            `json:"resource_group_name"`
-	ServicePrincipalId  string            `json:"service_principal_id"`
-	ServicePrincipalKey string            `json:"service_principal_key"`
-	Tenant              string            `json:"tenant"`
-	Url                 string            `json:"url"`
+	Parameters          map[string]string         `json:"parameters,omitempty" tf:"parameters,omitempty"`
+	ResourceGroupName   string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ServicePrincipalID  string                    `json:"servicePrincipalID" tf:"service_principal_id"`
+	ServicePrincipalKey string                    `json:"servicePrincipalKey" tf:"service_principal_key"`
+	Tenant              string                    `json:"tenant" tf:"tenant"`
+	Url                 string                    `json:"url" tf:"url"`
+	ProviderRef         core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DataFactoryLinkedServiceDataLakeStorageGen2Status struct {
@@ -43,7 +44,9 @@ type DataFactoryLinkedServiceDataLakeStorageGen2Status struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

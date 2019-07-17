@@ -29,8 +29,8 @@ import (
 type ComputeInterconnectAttachmentLister interface {
 	// List lists all ComputeInterconnectAttachments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeInterconnectAttachment, err error)
-	// Get retrieves the ComputeInterconnectAttachment from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeInterconnectAttachment, error)
+	// ComputeInterconnectAttachments returns an object that can list and get ComputeInterconnectAttachments.
+	ComputeInterconnectAttachments(namespace string) ComputeInterconnectAttachmentNamespaceLister
 	ComputeInterconnectAttachmentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeInterconnectAttachmentLister) List(selector labels.Selector) (re
 	return ret, err
 }
 
-// Get retrieves the ComputeInterconnectAttachment from the index for a given name.
-func (s *computeInterconnectAttachmentLister) Get(name string) (*v1alpha1.ComputeInterconnectAttachment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeInterconnectAttachments returns an object that can list and get ComputeInterconnectAttachments.
+func (s *computeInterconnectAttachmentLister) ComputeInterconnectAttachments(namespace string) ComputeInterconnectAttachmentNamespaceLister {
+	return computeInterconnectAttachmentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeInterconnectAttachmentNamespaceLister helps list and get ComputeInterconnectAttachments.
+type ComputeInterconnectAttachmentNamespaceLister interface {
+	// List lists all ComputeInterconnectAttachments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeInterconnectAttachment, err error)
+	// Get retrieves the ComputeInterconnectAttachment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeInterconnectAttachment, error)
+	ComputeInterconnectAttachmentNamespaceListerExpansion
+}
+
+// computeInterconnectAttachmentNamespaceLister implements the ComputeInterconnectAttachmentNamespaceLister
+// interface.
+type computeInterconnectAttachmentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeInterconnectAttachments in the indexer for a given namespace.
+func (s computeInterconnectAttachmentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeInterconnectAttachment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeInterconnectAttachment))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeInterconnectAttachment from the indexer for a given namespace and name.
+func (s computeInterconnectAttachmentNamespaceLister) Get(name string) (*v1alpha1.ComputeInterconnectAttachment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

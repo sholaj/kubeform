@@ -29,8 +29,8 @@ import (
 type OrganizationsAccountLister interface {
 	// List lists all OrganizationsAccounts in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OrganizationsAccount, err error)
-	// Get retrieves the OrganizationsAccount from the index for a given name.
-	Get(name string) (*v1alpha1.OrganizationsAccount, error)
+	// OrganizationsAccounts returns an object that can list and get OrganizationsAccounts.
+	OrganizationsAccounts(namespace string) OrganizationsAccountNamespaceLister
 	OrganizationsAccountListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *organizationsAccountLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the OrganizationsAccount from the index for a given name.
-func (s *organizationsAccountLister) Get(name string) (*v1alpha1.OrganizationsAccount, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OrganizationsAccounts returns an object that can list and get OrganizationsAccounts.
+func (s *organizationsAccountLister) OrganizationsAccounts(namespace string) OrganizationsAccountNamespaceLister {
+	return organizationsAccountNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OrganizationsAccountNamespaceLister helps list and get OrganizationsAccounts.
+type OrganizationsAccountNamespaceLister interface {
+	// List lists all OrganizationsAccounts in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OrganizationsAccount, err error)
+	// Get retrieves the OrganizationsAccount from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OrganizationsAccount, error)
+	OrganizationsAccountNamespaceListerExpansion
+}
+
+// organizationsAccountNamespaceLister implements the OrganizationsAccountNamespaceLister
+// interface.
+type organizationsAccountNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OrganizationsAccounts in the indexer for a given namespace.
+func (s organizationsAccountNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OrganizationsAccount, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OrganizationsAccount))
+	})
+	return ret, err
+}
+
+// Get retrieves the OrganizationsAccount from the indexer for a given namespace and name.
+func (s organizationsAccountNamespaceLister) Get(name string) (*v1alpha1.OrganizationsAccount, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

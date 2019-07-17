@@ -399,26 +399,43 @@ spec:
           properties:
             capacity:
               type: integer
-            enable_non_ssl_port:
+            enableNonSslPort:
               type: boolean
             family:
               type: string
             location:
               type: string
-            minimum_tls_version:
+            minimumTlsVersion:
               type: string
             name:
               type: string
-            patch_schedule:
-              items: {}
+            patchSchedule:
+              items:
+                properties:
+                  dayOfWeek:
+                    type: string
+                  startHourUtc:
+                    type: integer
+                required:
+                - dayOfWeek
+                type: object
               type: array
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
-            shard_count:
+            shardCount:
               type: integer
-            sku_name:
+            skuName:
               type: string
-            subnet_id:
+            subnetID:
               type: string
             zones:
               items:
@@ -430,8 +447,9 @@ spec:
           - family
           - location
           - name
-          - resource_group_name
-          - sku_name
+          - providerRef
+          - resourceGroupName
+          - skuName
           type: object
         status:
           properties:
@@ -442,6 +460,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

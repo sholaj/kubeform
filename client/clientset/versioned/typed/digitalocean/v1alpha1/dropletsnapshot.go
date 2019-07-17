@@ -32,7 +32,7 @@ import (
 // DropletSnapshotsGetter has a method to return a DropletSnapshotInterface.
 // A group's client should implement this interface.
 type DropletSnapshotsGetter interface {
-	DropletSnapshots() DropletSnapshotInterface
+	DropletSnapshots(namespace string) DropletSnapshotInterface
 }
 
 // DropletSnapshotInterface has methods to work with DropletSnapshot resources.
@@ -52,12 +52,14 @@ type DropletSnapshotInterface interface {
 // dropletSnapshots implements DropletSnapshotInterface
 type dropletSnapshots struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDropletSnapshots returns a DropletSnapshots
-func newDropletSnapshots(c *DigitaloceanV1alpha1Client) *dropletSnapshots {
+func newDropletSnapshots(c *DigitaloceanV1alpha1Client, namespace string) *dropletSnapshots {
 	return &dropletSnapshots{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDropletSnapshots(c *DigitaloceanV1alpha1Client) *dropletSnapshots {
 func (c *dropletSnapshots) Get(name string, options v1.GetOptions) (result *v1alpha1.DropletSnapshot, err error) {
 	result = &v1alpha1.DropletSnapshot{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dropletsnapshots").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dropletSnapshots) List(opts v1.ListOptions) (result *v1alpha1.DropletSn
 	}
 	result = &v1alpha1.DropletSnapshotList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dropletsnapshots").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dropletSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dropletsnapshots").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dropletSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dropletSnapshots) Create(dropletSnapshot *v1alpha1.DropletSnapshot) (result *v1alpha1.DropletSnapshot, err error) {
 	result = &v1alpha1.DropletSnapshot{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dropletsnapshots").
 		Body(dropletSnapshot).
 		Do().
@@ -118,6 +124,7 @@ func (c *dropletSnapshots) Create(dropletSnapshot *v1alpha1.DropletSnapshot) (re
 func (c *dropletSnapshots) Update(dropletSnapshot *v1alpha1.DropletSnapshot) (result *v1alpha1.DropletSnapshot, err error) {
 	result = &v1alpha1.DropletSnapshot{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dropletsnapshots").
 		Name(dropletSnapshot.Name).
 		Body(dropletSnapshot).
@@ -132,6 +139,7 @@ func (c *dropletSnapshots) Update(dropletSnapshot *v1alpha1.DropletSnapshot) (re
 func (c *dropletSnapshots) UpdateStatus(dropletSnapshot *v1alpha1.DropletSnapshot) (result *v1alpha1.DropletSnapshot, err error) {
 	result = &v1alpha1.DropletSnapshot{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dropletsnapshots").
 		Name(dropletSnapshot.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dropletSnapshots) UpdateStatus(dropletSnapshot *v1alpha1.DropletSnapsho
 // Delete takes name of the dropletSnapshot and deletes it. Returns an error if one occurs.
 func (c *dropletSnapshots) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dropletsnapshots").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dropletSnapshots) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dropletsnapshots").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dropletSnapshots) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *dropletSnapshots) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DropletSnapshot, err error) {
 	result = &v1alpha1.DropletSnapshot{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dropletsnapshots").
 		SubResource(subresources...).
 		Name(name).

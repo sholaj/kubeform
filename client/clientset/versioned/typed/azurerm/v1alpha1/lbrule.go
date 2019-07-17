@@ -32,7 +32,7 @@ import (
 // LbRulesGetter has a method to return a LbRuleInterface.
 // A group's client should implement this interface.
 type LbRulesGetter interface {
-	LbRules() LbRuleInterface
+	LbRules(namespace string) LbRuleInterface
 }
 
 // LbRuleInterface has methods to work with LbRule resources.
@@ -52,12 +52,14 @@ type LbRuleInterface interface {
 // lbRules implements LbRuleInterface
 type lbRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLbRules returns a LbRules
-func newLbRules(c *AzurermV1alpha1Client) *lbRules {
+func newLbRules(c *AzurermV1alpha1Client, namespace string) *lbRules {
 	return &lbRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLbRules(c *AzurermV1alpha1Client) *lbRules {
 func (c *lbRules) Get(name string, options v1.GetOptions) (result *v1alpha1.LbRule, err error) {
 	result = &v1alpha1.LbRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lbrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lbRules) List(opts v1.ListOptions) (result *v1alpha1.LbRuleList, err er
 	}
 	result = &v1alpha1.LbRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lbrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lbRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lbrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lbRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *lbRules) Create(lbRule *v1alpha1.LbRule) (result *v1alpha1.LbRule, err error) {
 	result = &v1alpha1.LbRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lbrules").
 		Body(lbRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *lbRules) Create(lbRule *v1alpha1.LbRule) (result *v1alpha1.LbRule, err 
 func (c *lbRules) Update(lbRule *v1alpha1.LbRule) (result *v1alpha1.LbRule, err error) {
 	result = &v1alpha1.LbRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lbrules").
 		Name(lbRule.Name).
 		Body(lbRule).
@@ -132,6 +139,7 @@ func (c *lbRules) Update(lbRule *v1alpha1.LbRule) (result *v1alpha1.LbRule, err 
 func (c *lbRules) UpdateStatus(lbRule *v1alpha1.LbRule) (result *v1alpha1.LbRule, err error) {
 	result = &v1alpha1.LbRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lbrules").
 		Name(lbRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lbRules) UpdateStatus(lbRule *v1alpha1.LbRule) (result *v1alpha1.LbRule
 // Delete takes name of the lbRule and deletes it. Returns an error if one occurs.
 func (c *lbRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lbrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lbRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lbrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lbRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Lis
 func (c *lbRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbRule, err error) {
 	result = &v1alpha1.LbRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lbrules").
 		SubResource(subresources...).
 		Name(name).

@@ -41,32 +41,33 @@ type SagemakerNotebookInstanceInformer interface {
 type sagemakerNotebookInstanceInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSagemakerNotebookInstanceInformer constructs a new informer for SagemakerNotebookInstance type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSagemakerNotebookInstanceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSagemakerNotebookInstanceInformer(client, resyncPeriod, indexers, nil)
+func NewSagemakerNotebookInstanceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSagemakerNotebookInstanceInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSagemakerNotebookInstanceInformer constructs a new informer for SagemakerNotebookInstance type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSagemakerNotebookInstanceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSagemakerNotebookInstanceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SagemakerNotebookInstances().List(options)
+				return client.AwsV1alpha1().SagemakerNotebookInstances(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SagemakerNotebookInstances().Watch(options)
+				return client.AwsV1alpha1().SagemakerNotebookInstances(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.SagemakerNotebookInstance{},
@@ -76,7 +77,7 @@ func NewFilteredSagemakerNotebookInstanceInformer(client versioned.Interface, re
 }
 
 func (f *sagemakerNotebookInstanceInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSagemakerNotebookInstanceInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSagemakerNotebookInstanceInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *sagemakerNotebookInstanceInformer) Informer() cache.SharedIndexInformer {

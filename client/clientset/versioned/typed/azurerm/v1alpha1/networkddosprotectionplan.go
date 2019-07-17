@@ -32,7 +32,7 @@ import (
 // NetworkDdosProtectionPlansGetter has a method to return a NetworkDdosProtectionPlanInterface.
 // A group's client should implement this interface.
 type NetworkDdosProtectionPlansGetter interface {
-	NetworkDdosProtectionPlans() NetworkDdosProtectionPlanInterface
+	NetworkDdosProtectionPlans(namespace string) NetworkDdosProtectionPlanInterface
 }
 
 // NetworkDdosProtectionPlanInterface has methods to work with NetworkDdosProtectionPlan resources.
@@ -52,12 +52,14 @@ type NetworkDdosProtectionPlanInterface interface {
 // networkDdosProtectionPlans implements NetworkDdosProtectionPlanInterface
 type networkDdosProtectionPlans struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNetworkDdosProtectionPlans returns a NetworkDdosProtectionPlans
-func newNetworkDdosProtectionPlans(c *AzurermV1alpha1Client) *networkDdosProtectionPlans {
+func newNetworkDdosProtectionPlans(c *AzurermV1alpha1Client, namespace string) *networkDdosProtectionPlans {
 	return &networkDdosProtectionPlans{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNetworkDdosProtectionPlans(c *AzurermV1alpha1Client) *networkDdosProtect
 func (c *networkDdosProtectionPlans) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkDdosProtectionPlan, err error) {
 	result = &v1alpha1.NetworkDdosProtectionPlan{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkddosprotectionplans").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *networkDdosProtectionPlans) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.NetworkDdosProtectionPlanList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkddosprotectionplans").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *networkDdosProtectionPlans) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("networkddosprotectionplans").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *networkDdosProtectionPlans) Watch(opts v1.ListOptions) (watch.Interface
 func (c *networkDdosProtectionPlans) Create(networkDdosProtectionPlan *v1alpha1.NetworkDdosProtectionPlan) (result *v1alpha1.NetworkDdosProtectionPlan, err error) {
 	result = &v1alpha1.NetworkDdosProtectionPlan{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("networkddosprotectionplans").
 		Body(networkDdosProtectionPlan).
 		Do().
@@ -118,6 +124,7 @@ func (c *networkDdosProtectionPlans) Create(networkDdosProtectionPlan *v1alpha1.
 func (c *networkDdosProtectionPlans) Update(networkDdosProtectionPlan *v1alpha1.NetworkDdosProtectionPlan) (result *v1alpha1.NetworkDdosProtectionPlan, err error) {
 	result = &v1alpha1.NetworkDdosProtectionPlan{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkddosprotectionplans").
 		Name(networkDdosProtectionPlan.Name).
 		Body(networkDdosProtectionPlan).
@@ -132,6 +139,7 @@ func (c *networkDdosProtectionPlans) Update(networkDdosProtectionPlan *v1alpha1.
 func (c *networkDdosProtectionPlans) UpdateStatus(networkDdosProtectionPlan *v1alpha1.NetworkDdosProtectionPlan) (result *v1alpha1.NetworkDdosProtectionPlan, err error) {
 	result = &v1alpha1.NetworkDdosProtectionPlan{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkddosprotectionplans").
 		Name(networkDdosProtectionPlan.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *networkDdosProtectionPlans) UpdateStatus(networkDdosProtectionPlan *v1a
 // Delete takes name of the networkDdosProtectionPlan and deletes it. Returns an error if one occurs.
 func (c *networkDdosProtectionPlans) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkddosprotectionplans").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *networkDdosProtectionPlans) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkddosprotectionplans").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *networkDdosProtectionPlans) DeleteCollection(options *v1.DeleteOptions,
 func (c *networkDdosProtectionPlans) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkDdosProtectionPlan, err error) {
 	result = &v1alpha1.NetworkDdosProtectionPlan{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("networkddosprotectionplans").
 		SubResource(subresources...).
 		Name(name).

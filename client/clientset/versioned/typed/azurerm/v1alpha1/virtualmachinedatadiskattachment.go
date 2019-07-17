@@ -32,7 +32,7 @@ import (
 // VirtualMachineDataDiskAttachmentsGetter has a method to return a VirtualMachineDataDiskAttachmentInterface.
 // A group's client should implement this interface.
 type VirtualMachineDataDiskAttachmentsGetter interface {
-	VirtualMachineDataDiskAttachments() VirtualMachineDataDiskAttachmentInterface
+	VirtualMachineDataDiskAttachments(namespace string) VirtualMachineDataDiskAttachmentInterface
 }
 
 // VirtualMachineDataDiskAttachmentInterface has methods to work with VirtualMachineDataDiskAttachment resources.
@@ -52,12 +52,14 @@ type VirtualMachineDataDiskAttachmentInterface interface {
 // virtualMachineDataDiskAttachments implements VirtualMachineDataDiskAttachmentInterface
 type virtualMachineDataDiskAttachments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVirtualMachineDataDiskAttachments returns a VirtualMachineDataDiskAttachments
-func newVirtualMachineDataDiskAttachments(c *AzurermV1alpha1Client) *virtualMachineDataDiskAttachments {
+func newVirtualMachineDataDiskAttachments(c *AzurermV1alpha1Client, namespace string) *virtualMachineDataDiskAttachments {
 	return &virtualMachineDataDiskAttachments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVirtualMachineDataDiskAttachments(c *AzurermV1alpha1Client) *virtualMach
 func (c *virtualMachineDataDiskAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.VirtualMachineDataDiskAttachment, err error) {
 	result = &v1alpha1.VirtualMachineDataDiskAttachment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("virtualmachinedatadiskattachments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *virtualMachineDataDiskAttachments) List(opts v1.ListOptions) (result *v
 	}
 	result = &v1alpha1.VirtualMachineDataDiskAttachmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("virtualmachinedatadiskattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *virtualMachineDataDiskAttachments) Watch(opts v1.ListOptions) (watch.In
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("virtualmachinedatadiskattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *virtualMachineDataDiskAttachments) Watch(opts v1.ListOptions) (watch.In
 func (c *virtualMachineDataDiskAttachments) Create(virtualMachineDataDiskAttachment *v1alpha1.VirtualMachineDataDiskAttachment) (result *v1alpha1.VirtualMachineDataDiskAttachment, err error) {
 	result = &v1alpha1.VirtualMachineDataDiskAttachment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("virtualmachinedatadiskattachments").
 		Body(virtualMachineDataDiskAttachment).
 		Do().
@@ -118,6 +124,7 @@ func (c *virtualMachineDataDiskAttachments) Create(virtualMachineDataDiskAttachm
 func (c *virtualMachineDataDiskAttachments) Update(virtualMachineDataDiskAttachment *v1alpha1.VirtualMachineDataDiskAttachment) (result *v1alpha1.VirtualMachineDataDiskAttachment, err error) {
 	result = &v1alpha1.VirtualMachineDataDiskAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("virtualmachinedatadiskattachments").
 		Name(virtualMachineDataDiskAttachment.Name).
 		Body(virtualMachineDataDiskAttachment).
@@ -132,6 +139,7 @@ func (c *virtualMachineDataDiskAttachments) Update(virtualMachineDataDiskAttachm
 func (c *virtualMachineDataDiskAttachments) UpdateStatus(virtualMachineDataDiskAttachment *v1alpha1.VirtualMachineDataDiskAttachment) (result *v1alpha1.VirtualMachineDataDiskAttachment, err error) {
 	result = &v1alpha1.VirtualMachineDataDiskAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("virtualmachinedatadiskattachments").
 		Name(virtualMachineDataDiskAttachment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *virtualMachineDataDiskAttachments) UpdateStatus(virtualMachineDataDiskA
 // Delete takes name of the virtualMachineDataDiskAttachment and deletes it. Returns an error if one occurs.
 func (c *virtualMachineDataDiskAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("virtualmachinedatadiskattachments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *virtualMachineDataDiskAttachments) DeleteCollection(options *v1.DeleteO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("virtualmachinedatadiskattachments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *virtualMachineDataDiskAttachments) DeleteCollection(options *v1.DeleteO
 func (c *virtualMachineDataDiskAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VirtualMachineDataDiskAttachment, err error) {
 	result = &v1alpha1.VirtualMachineDataDiskAttachment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("virtualmachinedatadiskattachments").
 		SubResource(subresources...).
 		Name(name).

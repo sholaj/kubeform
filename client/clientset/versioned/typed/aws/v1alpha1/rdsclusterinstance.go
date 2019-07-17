@@ -32,7 +32,7 @@ import (
 // RdsClusterInstancesGetter has a method to return a RdsClusterInstanceInterface.
 // A group's client should implement this interface.
 type RdsClusterInstancesGetter interface {
-	RdsClusterInstances() RdsClusterInstanceInterface
+	RdsClusterInstances(namespace string) RdsClusterInstanceInterface
 }
 
 // RdsClusterInstanceInterface has methods to work with RdsClusterInstance resources.
@@ -52,12 +52,14 @@ type RdsClusterInstanceInterface interface {
 // rdsClusterInstances implements RdsClusterInstanceInterface
 type rdsClusterInstances struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRdsClusterInstances returns a RdsClusterInstances
-func newRdsClusterInstances(c *AwsV1alpha1Client) *rdsClusterInstances {
+func newRdsClusterInstances(c *AwsV1alpha1Client, namespace string) *rdsClusterInstances {
 	return &rdsClusterInstances{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRdsClusterInstances(c *AwsV1alpha1Client) *rdsClusterInstances {
 func (c *rdsClusterInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.RdsClusterInstance, err error) {
 	result = &v1alpha1.RdsClusterInstance{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("rdsclusterinstances").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *rdsClusterInstances) List(opts v1.ListOptions) (result *v1alpha1.RdsClu
 	}
 	result = &v1alpha1.RdsClusterInstanceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("rdsclusterinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *rdsClusterInstances) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("rdsclusterinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *rdsClusterInstances) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *rdsClusterInstances) Create(rdsClusterInstance *v1alpha1.RdsClusterInstance) (result *v1alpha1.RdsClusterInstance, err error) {
 	result = &v1alpha1.RdsClusterInstance{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("rdsclusterinstances").
 		Body(rdsClusterInstance).
 		Do().
@@ -118,6 +124,7 @@ func (c *rdsClusterInstances) Create(rdsClusterInstance *v1alpha1.RdsClusterInst
 func (c *rdsClusterInstances) Update(rdsClusterInstance *v1alpha1.RdsClusterInstance) (result *v1alpha1.RdsClusterInstance, err error) {
 	result = &v1alpha1.RdsClusterInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("rdsclusterinstances").
 		Name(rdsClusterInstance.Name).
 		Body(rdsClusterInstance).
@@ -132,6 +139,7 @@ func (c *rdsClusterInstances) Update(rdsClusterInstance *v1alpha1.RdsClusterInst
 func (c *rdsClusterInstances) UpdateStatus(rdsClusterInstance *v1alpha1.RdsClusterInstance) (result *v1alpha1.RdsClusterInstance, err error) {
 	result = &v1alpha1.RdsClusterInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("rdsclusterinstances").
 		Name(rdsClusterInstance.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *rdsClusterInstances) UpdateStatus(rdsClusterInstance *v1alpha1.RdsClust
 // Delete takes name of the rdsClusterInstance and deletes it. Returns an error if one occurs.
 func (c *rdsClusterInstances) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("rdsclusterinstances").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *rdsClusterInstances) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("rdsclusterinstances").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *rdsClusterInstances) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *rdsClusterInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RdsClusterInstance, err error) {
 	result = &v1alpha1.RdsClusterInstance{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("rdsclusterinstances").
 		SubResource(subresources...).
 		Name(name).

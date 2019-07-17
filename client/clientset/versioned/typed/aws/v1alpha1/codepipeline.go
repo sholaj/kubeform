@@ -32,7 +32,7 @@ import (
 // CodepipelinesGetter has a method to return a CodepipelineInterface.
 // A group's client should implement this interface.
 type CodepipelinesGetter interface {
-	Codepipelines() CodepipelineInterface
+	Codepipelines(namespace string) CodepipelineInterface
 }
 
 // CodepipelineInterface has methods to work with Codepipeline resources.
@@ -52,12 +52,14 @@ type CodepipelineInterface interface {
 // codepipelines implements CodepipelineInterface
 type codepipelines struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCodepipelines returns a Codepipelines
-func newCodepipelines(c *AwsV1alpha1Client) *codepipelines {
+func newCodepipelines(c *AwsV1alpha1Client, namespace string) *codepipelines {
 	return &codepipelines{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCodepipelines(c *AwsV1alpha1Client) *codepipelines {
 func (c *codepipelines) Get(name string, options v1.GetOptions) (result *v1alpha1.Codepipeline, err error) {
 	result = &v1alpha1.Codepipeline{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("codepipelines").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *codepipelines) List(opts v1.ListOptions) (result *v1alpha1.Codepipeline
 	}
 	result = &v1alpha1.CodepipelineList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("codepipelines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *codepipelines) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("codepipelines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *codepipelines) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *codepipelines) Create(codepipeline *v1alpha1.Codepipeline) (result *v1alpha1.Codepipeline, err error) {
 	result = &v1alpha1.Codepipeline{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("codepipelines").
 		Body(codepipeline).
 		Do().
@@ -118,6 +124,7 @@ func (c *codepipelines) Create(codepipeline *v1alpha1.Codepipeline) (result *v1a
 func (c *codepipelines) Update(codepipeline *v1alpha1.Codepipeline) (result *v1alpha1.Codepipeline, err error) {
 	result = &v1alpha1.Codepipeline{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("codepipelines").
 		Name(codepipeline.Name).
 		Body(codepipeline).
@@ -132,6 +139,7 @@ func (c *codepipelines) Update(codepipeline *v1alpha1.Codepipeline) (result *v1a
 func (c *codepipelines) UpdateStatus(codepipeline *v1alpha1.Codepipeline) (result *v1alpha1.Codepipeline, err error) {
 	result = &v1alpha1.Codepipeline{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("codepipelines").
 		Name(codepipeline.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *codepipelines) UpdateStatus(codepipeline *v1alpha1.Codepipeline) (resul
 // Delete takes name of the codepipeline and deletes it. Returns an error if one occurs.
 func (c *codepipelines) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("codepipelines").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *codepipelines) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("codepipelines").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *codepipelines) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *codepipelines) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Codepipeline, err error) {
 	result = &v1alpha1.Codepipeline{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("codepipelines").
 		SubResource(subresources...).
 		Name(name).

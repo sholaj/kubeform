@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// ServiceDiscoveryPublicDnsNamespaceLister helps list ServiceDiscoveryPublicDnsNamespaces.
-type ServiceDiscoveryPublicDnsNamespaceLister interface {
-	// List lists all ServiceDiscoveryPublicDnsNamespaces in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryPublicDnsNamespace, err error)
-	// Get retrieves the ServiceDiscoveryPublicDnsNamespace from the index for a given name.
-	Get(name string) (*v1alpha1.ServiceDiscoveryPublicDnsNamespace, error)
-	ServiceDiscoveryPublicDnsNamespaceListerExpansion
+// ServiceDiscoveryPublicDNSNamespaceLister helps list ServiceDiscoveryPublicDNSNamespaces.
+type ServiceDiscoveryPublicDNSNamespaceLister interface {
+	// List lists all ServiceDiscoveryPublicDNSNamespaces in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryPublicDNSNamespace, err error)
+	// ServiceDiscoveryPublicDNSNamespaces returns an object that can list and get ServiceDiscoveryPublicDNSNamespaces.
+	ServiceDiscoveryPublicDNSNamespaces(namespace string) ServiceDiscoveryPublicDNSNamespaceNamespaceLister
+	ServiceDiscoveryPublicDNSNamespaceListerExpansion
 }
 
-// serviceDiscoveryPublicDnsNamespaceLister implements the ServiceDiscoveryPublicDnsNamespaceLister interface.
-type serviceDiscoveryPublicDnsNamespaceLister struct {
+// serviceDiscoveryPublicDNSNamespaceLister implements the ServiceDiscoveryPublicDNSNamespaceLister interface.
+type serviceDiscoveryPublicDNSNamespaceLister struct {
 	indexer cache.Indexer
 }
 
-// NewServiceDiscoveryPublicDnsNamespaceLister returns a new ServiceDiscoveryPublicDnsNamespaceLister.
-func NewServiceDiscoveryPublicDnsNamespaceLister(indexer cache.Indexer) ServiceDiscoveryPublicDnsNamespaceLister {
-	return &serviceDiscoveryPublicDnsNamespaceLister{indexer: indexer}
+// NewServiceDiscoveryPublicDNSNamespaceLister returns a new ServiceDiscoveryPublicDNSNamespaceLister.
+func NewServiceDiscoveryPublicDNSNamespaceLister(indexer cache.Indexer) ServiceDiscoveryPublicDNSNamespaceLister {
+	return &serviceDiscoveryPublicDNSNamespaceLister{indexer: indexer}
 }
 
-// List lists all ServiceDiscoveryPublicDnsNamespaces in the indexer.
-func (s *serviceDiscoveryPublicDnsNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryPublicDnsNamespace, err error) {
+// List lists all ServiceDiscoveryPublicDNSNamespaces in the indexer.
+func (s *serviceDiscoveryPublicDNSNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryPublicDNSNamespace, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ServiceDiscoveryPublicDnsNamespace))
+		ret = append(ret, m.(*v1alpha1.ServiceDiscoveryPublicDNSNamespace))
 	})
 	return ret, err
 }
 
-// Get retrieves the ServiceDiscoveryPublicDnsNamespace from the index for a given name.
-func (s *serviceDiscoveryPublicDnsNamespaceLister) Get(name string) (*v1alpha1.ServiceDiscoveryPublicDnsNamespace, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ServiceDiscoveryPublicDNSNamespaces returns an object that can list and get ServiceDiscoveryPublicDNSNamespaces.
+func (s *serviceDiscoveryPublicDNSNamespaceLister) ServiceDiscoveryPublicDNSNamespaces(namespace string) ServiceDiscoveryPublicDNSNamespaceNamespaceLister {
+	return serviceDiscoveryPublicDNSNamespaceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ServiceDiscoveryPublicDNSNamespaceNamespaceLister helps list and get ServiceDiscoveryPublicDNSNamespaces.
+type ServiceDiscoveryPublicDNSNamespaceNamespaceLister interface {
+	// List lists all ServiceDiscoveryPublicDNSNamespaces in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryPublicDNSNamespace, err error)
+	// Get retrieves the ServiceDiscoveryPublicDNSNamespace from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ServiceDiscoveryPublicDNSNamespace, error)
+	ServiceDiscoveryPublicDNSNamespaceNamespaceListerExpansion
+}
+
+// serviceDiscoveryPublicDNSNamespaceNamespaceLister implements the ServiceDiscoveryPublicDNSNamespaceNamespaceLister
+// interface.
+type serviceDiscoveryPublicDNSNamespaceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ServiceDiscoveryPublicDNSNamespaces in the indexer for a given namespace.
+func (s serviceDiscoveryPublicDNSNamespaceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryPublicDNSNamespace, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ServiceDiscoveryPublicDNSNamespace))
+	})
+	return ret, err
+}
+
+// Get retrieves the ServiceDiscoveryPublicDNSNamespace from the indexer for a given namespace and name.
+func (s serviceDiscoveryPublicDNSNamespaceNamespaceLister) Get(name string) (*v1alpha1.ServiceDiscoveryPublicDNSNamespace, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("servicediscoverypublicdnsnamespace"), name)
 	}
-	return obj.(*v1alpha1.ServiceDiscoveryPublicDnsNamespace), nil
+	return obj.(*v1alpha1.ServiceDiscoveryPublicDNSNamespace), nil
 }

@@ -32,7 +32,7 @@ import (
 // SqlDatabasesGetter has a method to return a SqlDatabaseInterface.
 // A group's client should implement this interface.
 type SqlDatabasesGetter interface {
-	SqlDatabases() SqlDatabaseInterface
+	SqlDatabases(namespace string) SqlDatabaseInterface
 }
 
 // SqlDatabaseInterface has methods to work with SqlDatabase resources.
@@ -52,12 +52,14 @@ type SqlDatabaseInterface interface {
 // sqlDatabases implements SqlDatabaseInterface
 type sqlDatabases struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSqlDatabases returns a SqlDatabases
-func newSqlDatabases(c *AzurermV1alpha1Client) *sqlDatabases {
+func newSqlDatabases(c *AzurermV1alpha1Client, namespace string) *sqlDatabases {
 	return &sqlDatabases{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSqlDatabases(c *AzurermV1alpha1Client) *sqlDatabases {
 func (c *sqlDatabases) Get(name string, options v1.GetOptions) (result *v1alpha1.SqlDatabase, err error) {
 	result = &v1alpha1.SqlDatabase{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqldatabases").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sqlDatabases) List(opts v1.ListOptions) (result *v1alpha1.SqlDatabaseLi
 	}
 	result = &v1alpha1.SqlDatabaseList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqldatabases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sqlDatabases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sqldatabases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sqlDatabases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *sqlDatabases) Create(sqlDatabase *v1alpha1.SqlDatabase) (result *v1alpha1.SqlDatabase, err error) {
 	result = &v1alpha1.SqlDatabase{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sqldatabases").
 		Body(sqlDatabase).
 		Do().
@@ -118,6 +124,7 @@ func (c *sqlDatabases) Create(sqlDatabase *v1alpha1.SqlDatabase) (result *v1alph
 func (c *sqlDatabases) Update(sqlDatabase *v1alpha1.SqlDatabase) (result *v1alpha1.SqlDatabase, err error) {
 	result = &v1alpha1.SqlDatabase{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqldatabases").
 		Name(sqlDatabase.Name).
 		Body(sqlDatabase).
@@ -132,6 +139,7 @@ func (c *sqlDatabases) Update(sqlDatabase *v1alpha1.SqlDatabase) (result *v1alph
 func (c *sqlDatabases) UpdateStatus(sqlDatabase *v1alpha1.SqlDatabase) (result *v1alpha1.SqlDatabase, err error) {
 	result = &v1alpha1.SqlDatabase{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqldatabases").
 		Name(sqlDatabase.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sqlDatabases) UpdateStatus(sqlDatabase *v1alpha1.SqlDatabase) (result *
 // Delete takes name of the sqlDatabase and deletes it. Returns an error if one occurs.
 func (c *sqlDatabases) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqldatabases").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sqlDatabases) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqldatabases").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sqlDatabases) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *sqlDatabases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SqlDatabase, err error) {
 	result = &v1alpha1.SqlDatabase{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sqldatabases").
 		SubResource(subresources...).
 		Name(name).

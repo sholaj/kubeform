@@ -397,27 +397,60 @@ spec:
           type: object
         spec:
           properties:
-            create_mode:
+            createMode:
               type: string
             import:
-              items: {}
+              items:
+                properties:
+                  administratorLogin:
+                    type: string
+                  administratorLoginPassword:
+                    type: string
+                  authenticationType:
+                    type: string
+                  operationMode:
+                    type: string
+                  storageKey:
+                    type: string
+                  storageKeyType:
+                    type: string
+                  storageURI:
+                    type: string
+                required:
+                - administratorLogin
+                - administratorLoginPassword
+                - authenticationType
+                - storageKey
+                - storageKeyType
+                - storageURI
+                type: object
               maxItems: 1
               type: array
             location:
               type: string
             name:
               type: string
-            read_scale:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            readScale:
               type: boolean
-            resource_group_name:
+            resourceGroupName:
               type: string
-            server_name:
+            serverName:
               type: string
           required:
           - location
           - name
-          - resource_group_name
-          - server_name
+          - providerRef
+          - resourceGroupName
+          - serverName
           type: object
         status:
           properties:
@@ -428,6 +461,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

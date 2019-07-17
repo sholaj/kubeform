@@ -29,8 +29,8 @@ import (
 type CognitoIdentityPoolRolesAttachmentLister interface {
 	// List lists all CognitoIdentityPoolRolesAttachments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CognitoIdentityPoolRolesAttachment, err error)
-	// Get retrieves the CognitoIdentityPoolRolesAttachment from the index for a given name.
-	Get(name string) (*v1alpha1.CognitoIdentityPoolRolesAttachment, error)
+	// CognitoIdentityPoolRolesAttachments returns an object that can list and get CognitoIdentityPoolRolesAttachments.
+	CognitoIdentityPoolRolesAttachments(namespace string) CognitoIdentityPoolRolesAttachmentNamespaceLister
 	CognitoIdentityPoolRolesAttachmentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cognitoIdentityPoolRolesAttachmentLister) List(selector labels.Selector
 	return ret, err
 }
 
-// Get retrieves the CognitoIdentityPoolRolesAttachment from the index for a given name.
-func (s *cognitoIdentityPoolRolesAttachmentLister) Get(name string) (*v1alpha1.CognitoIdentityPoolRolesAttachment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CognitoIdentityPoolRolesAttachments returns an object that can list and get CognitoIdentityPoolRolesAttachments.
+func (s *cognitoIdentityPoolRolesAttachmentLister) CognitoIdentityPoolRolesAttachments(namespace string) CognitoIdentityPoolRolesAttachmentNamespaceLister {
+	return cognitoIdentityPoolRolesAttachmentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CognitoIdentityPoolRolesAttachmentNamespaceLister helps list and get CognitoIdentityPoolRolesAttachments.
+type CognitoIdentityPoolRolesAttachmentNamespaceLister interface {
+	// List lists all CognitoIdentityPoolRolesAttachments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CognitoIdentityPoolRolesAttachment, err error)
+	// Get retrieves the CognitoIdentityPoolRolesAttachment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CognitoIdentityPoolRolesAttachment, error)
+	CognitoIdentityPoolRolesAttachmentNamespaceListerExpansion
+}
+
+// cognitoIdentityPoolRolesAttachmentNamespaceLister implements the CognitoIdentityPoolRolesAttachmentNamespaceLister
+// interface.
+type cognitoIdentityPoolRolesAttachmentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CognitoIdentityPoolRolesAttachments in the indexer for a given namespace.
+func (s cognitoIdentityPoolRolesAttachmentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CognitoIdentityPoolRolesAttachment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CognitoIdentityPoolRolesAttachment))
+	})
+	return ret, err
+}
+
+// Get retrieves the CognitoIdentityPoolRolesAttachment from the indexer for a given namespace and name.
+func (s cognitoIdentityPoolRolesAttachmentNamespaceLister) Get(name string) (*v1alpha1.CognitoIdentityPoolRolesAttachment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeIamGroupMemberships implements IamGroupMembershipInterface
 type FakeIamGroupMemberships struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var iamgroupmembershipsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "iamgroupmemberships"}
@@ -40,7 +41,8 @@ var iamgroupmembershipsKind = schema.GroupVersionKind{Group: "aws.kubeform.com",
 // Get takes name of the iamGroupMembership, and returns the corresponding iamGroupMembership object, and an error if there is any.
 func (c *FakeIamGroupMemberships) Get(name string, options v1.GetOptions) (result *v1alpha1.IamGroupMembership, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iamgroupmembershipsResource, name), &v1alpha1.IamGroupMembership{})
+		Invokes(testing.NewGetAction(iamgroupmembershipsResource, c.ns, name), &v1alpha1.IamGroupMembership{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIamGroupMemberships) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of IamGroupMemberships that match those selectors.
 func (c *FakeIamGroupMemberships) List(opts v1.ListOptions) (result *v1alpha1.IamGroupMembershipList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iamgroupmembershipsResource, iamgroupmembershipsKind, opts), &v1alpha1.IamGroupMembershipList{})
+		Invokes(testing.NewListAction(iamgroupmembershipsResource, iamgroupmembershipsKind, c.ns, opts), &v1alpha1.IamGroupMembershipList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIamGroupMemberships) List(opts v1.ListOptions) (result *v1alpha1.Ia
 // Watch returns a watch.Interface that watches the requested iamGroupMemberships.
 func (c *FakeIamGroupMemberships) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iamgroupmembershipsResource, opts))
+		InvokesWatch(testing.NewWatchAction(iamgroupmembershipsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iamGroupMembership and creates it.  Returns the server's representation of the iamGroupMembership, and an error, if there is any.
 func (c *FakeIamGroupMemberships) Create(iamGroupMembership *v1alpha1.IamGroupMembership) (result *v1alpha1.IamGroupMembership, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iamgroupmembershipsResource, iamGroupMembership), &v1alpha1.IamGroupMembership{})
+		Invokes(testing.NewCreateAction(iamgroupmembershipsResource, c.ns, iamGroupMembership), &v1alpha1.IamGroupMembership{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIamGroupMemberships) Create(iamGroupMembership *v1alpha1.IamGroupMe
 // Update takes the representation of a iamGroupMembership and updates it. Returns the server's representation of the iamGroupMembership, and an error, if there is any.
 func (c *FakeIamGroupMemberships) Update(iamGroupMembership *v1alpha1.IamGroupMembership) (result *v1alpha1.IamGroupMembership, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iamgroupmembershipsResource, iamGroupMembership), &v1alpha1.IamGroupMembership{})
+		Invokes(testing.NewUpdateAction(iamgroupmembershipsResource, c.ns, iamGroupMembership), &v1alpha1.IamGroupMembership{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIamGroupMemberships) Update(iamGroupMembership *v1alpha1.IamGroupMe
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIamGroupMemberships) UpdateStatus(iamGroupMembership *v1alpha1.IamGroupMembership) (*v1alpha1.IamGroupMembership, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iamgroupmembershipsResource, "status", iamGroupMembership), &v1alpha1.IamGroupMembership{})
+		Invokes(testing.NewUpdateSubresourceAction(iamgroupmembershipsResource, "status", c.ns, iamGroupMembership), &v1alpha1.IamGroupMembership{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIamGroupMemberships) UpdateStatus(iamGroupMembership *v1alpha1.IamG
 // Delete takes name of the iamGroupMembership and deletes it. Returns an error if one occurs.
 func (c *FakeIamGroupMemberships) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iamgroupmembershipsResource, name), &v1alpha1.IamGroupMembership{})
+		Invokes(testing.NewDeleteAction(iamgroupmembershipsResource, c.ns, name), &v1alpha1.IamGroupMembership{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIamGroupMemberships) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iamgroupmembershipsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iamgroupmembershipsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IamGroupMembershipList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIamGroupMemberships) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched iamGroupMembership.
 func (c *FakeIamGroupMemberships) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamGroupMembership, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iamgroupmembershipsResource, name, pt, data, subresources...), &v1alpha1.IamGroupMembership{})
+		Invokes(testing.NewPatchSubresourceAction(iamgroupmembershipsResource, c.ns, name, pt, data, subresources...), &v1alpha1.IamGroupMembership{})
+
 	if obj == nil {
 		return nil, err
 	}

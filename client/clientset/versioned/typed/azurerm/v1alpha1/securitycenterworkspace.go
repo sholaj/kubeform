@@ -32,7 +32,7 @@ import (
 // SecurityCenterWorkspacesGetter has a method to return a SecurityCenterWorkspaceInterface.
 // A group's client should implement this interface.
 type SecurityCenterWorkspacesGetter interface {
-	SecurityCenterWorkspaces() SecurityCenterWorkspaceInterface
+	SecurityCenterWorkspaces(namespace string) SecurityCenterWorkspaceInterface
 }
 
 // SecurityCenterWorkspaceInterface has methods to work with SecurityCenterWorkspace resources.
@@ -52,12 +52,14 @@ type SecurityCenterWorkspaceInterface interface {
 // securityCenterWorkspaces implements SecurityCenterWorkspaceInterface
 type securityCenterWorkspaces struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSecurityCenterWorkspaces returns a SecurityCenterWorkspaces
-func newSecurityCenterWorkspaces(c *AzurermV1alpha1Client) *securityCenterWorkspaces {
+func newSecurityCenterWorkspaces(c *AzurermV1alpha1Client, namespace string) *securityCenterWorkspaces {
 	return &securityCenterWorkspaces{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSecurityCenterWorkspaces(c *AzurermV1alpha1Client) *securityCenterWorksp
 func (c *securityCenterWorkspaces) Get(name string, options v1.GetOptions) (result *v1alpha1.SecurityCenterWorkspace, err error) {
 	result = &v1alpha1.SecurityCenterWorkspace{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("securitycenterworkspaces").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *securityCenterWorkspaces) List(opts v1.ListOptions) (result *v1alpha1.S
 	}
 	result = &v1alpha1.SecurityCenterWorkspaceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("securitycenterworkspaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *securityCenterWorkspaces) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("securitycenterworkspaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *securityCenterWorkspaces) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *securityCenterWorkspaces) Create(securityCenterWorkspace *v1alpha1.SecurityCenterWorkspace) (result *v1alpha1.SecurityCenterWorkspace, err error) {
 	result = &v1alpha1.SecurityCenterWorkspace{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("securitycenterworkspaces").
 		Body(securityCenterWorkspace).
 		Do().
@@ -118,6 +124,7 @@ func (c *securityCenterWorkspaces) Create(securityCenterWorkspace *v1alpha1.Secu
 func (c *securityCenterWorkspaces) Update(securityCenterWorkspace *v1alpha1.SecurityCenterWorkspace) (result *v1alpha1.SecurityCenterWorkspace, err error) {
 	result = &v1alpha1.SecurityCenterWorkspace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("securitycenterworkspaces").
 		Name(securityCenterWorkspace.Name).
 		Body(securityCenterWorkspace).
@@ -132,6 +139,7 @@ func (c *securityCenterWorkspaces) Update(securityCenterWorkspace *v1alpha1.Secu
 func (c *securityCenterWorkspaces) UpdateStatus(securityCenterWorkspace *v1alpha1.SecurityCenterWorkspace) (result *v1alpha1.SecurityCenterWorkspace, err error) {
 	result = &v1alpha1.SecurityCenterWorkspace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("securitycenterworkspaces").
 		Name(securityCenterWorkspace.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *securityCenterWorkspaces) UpdateStatus(securityCenterWorkspace *v1alpha
 // Delete takes name of the securityCenterWorkspace and deletes it. Returns an error if one occurs.
 func (c *securityCenterWorkspaces) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("securitycenterworkspaces").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *securityCenterWorkspaces) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("securitycenterworkspaces").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *securityCenterWorkspaces) DeleteCollection(options *v1.DeleteOptions, l
 func (c *securityCenterWorkspaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SecurityCenterWorkspace, err error) {
 	result = &v1alpha1.SecurityCenterWorkspace{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("securitycenterworkspaces").
 		SubResource(subresources...).
 		Name(name).

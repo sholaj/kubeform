@@ -32,7 +32,7 @@ import (
 // DmsReplicationTasksGetter has a method to return a DmsReplicationTaskInterface.
 // A group's client should implement this interface.
 type DmsReplicationTasksGetter interface {
-	DmsReplicationTasks() DmsReplicationTaskInterface
+	DmsReplicationTasks(namespace string) DmsReplicationTaskInterface
 }
 
 // DmsReplicationTaskInterface has methods to work with DmsReplicationTask resources.
@@ -52,12 +52,14 @@ type DmsReplicationTaskInterface interface {
 // dmsReplicationTasks implements DmsReplicationTaskInterface
 type dmsReplicationTasks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDmsReplicationTasks returns a DmsReplicationTasks
-func newDmsReplicationTasks(c *AwsV1alpha1Client) *dmsReplicationTasks {
+func newDmsReplicationTasks(c *AwsV1alpha1Client, namespace string) *dmsReplicationTasks {
 	return &dmsReplicationTasks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDmsReplicationTasks(c *AwsV1alpha1Client) *dmsReplicationTasks {
 func (c *dmsReplicationTasks) Get(name string, options v1.GetOptions) (result *v1alpha1.DmsReplicationTask, err error) {
 	result = &v1alpha1.DmsReplicationTask{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dmsreplicationtasks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dmsReplicationTasks) List(opts v1.ListOptions) (result *v1alpha1.DmsRep
 	}
 	result = &v1alpha1.DmsReplicationTaskList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dmsreplicationtasks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dmsReplicationTasks) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dmsreplicationtasks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dmsReplicationTasks) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *dmsReplicationTasks) Create(dmsReplicationTask *v1alpha1.DmsReplicationTask) (result *v1alpha1.DmsReplicationTask, err error) {
 	result = &v1alpha1.DmsReplicationTask{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dmsreplicationtasks").
 		Body(dmsReplicationTask).
 		Do().
@@ -118,6 +124,7 @@ func (c *dmsReplicationTasks) Create(dmsReplicationTask *v1alpha1.DmsReplication
 func (c *dmsReplicationTasks) Update(dmsReplicationTask *v1alpha1.DmsReplicationTask) (result *v1alpha1.DmsReplicationTask, err error) {
 	result = &v1alpha1.DmsReplicationTask{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dmsreplicationtasks").
 		Name(dmsReplicationTask.Name).
 		Body(dmsReplicationTask).
@@ -132,6 +139,7 @@ func (c *dmsReplicationTasks) Update(dmsReplicationTask *v1alpha1.DmsReplication
 func (c *dmsReplicationTasks) UpdateStatus(dmsReplicationTask *v1alpha1.DmsReplicationTask) (result *v1alpha1.DmsReplicationTask, err error) {
 	result = &v1alpha1.DmsReplicationTask{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dmsreplicationtasks").
 		Name(dmsReplicationTask.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dmsReplicationTasks) UpdateStatus(dmsReplicationTask *v1alpha1.DmsRepli
 // Delete takes name of the dmsReplicationTask and deletes it. Returns an error if one occurs.
 func (c *dmsReplicationTasks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dmsreplicationtasks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dmsReplicationTasks) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dmsreplicationtasks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dmsReplicationTasks) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *dmsReplicationTasks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DmsReplicationTask, err error) {
 	result = &v1alpha1.DmsReplicationTask{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dmsreplicationtasks").
 		SubResource(subresources...).
 		Name(name).

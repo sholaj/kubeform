@@ -29,8 +29,8 @@ import (
 type DnsManagedZoneLister interface {
 	// List lists all DnsManagedZones in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DnsManagedZone, err error)
-	// Get retrieves the DnsManagedZone from the index for a given name.
-	Get(name string) (*v1alpha1.DnsManagedZone, error)
+	// DnsManagedZones returns an object that can list and get DnsManagedZones.
+	DnsManagedZones(namespace string) DnsManagedZoneNamespaceLister
 	DnsManagedZoneListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dnsManagedZoneLister) List(selector labels.Selector) (ret []*v1alpha1.D
 	return ret, err
 }
 
-// Get retrieves the DnsManagedZone from the index for a given name.
-func (s *dnsManagedZoneLister) Get(name string) (*v1alpha1.DnsManagedZone, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DnsManagedZones returns an object that can list and get DnsManagedZones.
+func (s *dnsManagedZoneLister) DnsManagedZones(namespace string) DnsManagedZoneNamespaceLister {
+	return dnsManagedZoneNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DnsManagedZoneNamespaceLister helps list and get DnsManagedZones.
+type DnsManagedZoneNamespaceLister interface {
+	// List lists all DnsManagedZones in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DnsManagedZone, err error)
+	// Get retrieves the DnsManagedZone from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DnsManagedZone, error)
+	DnsManagedZoneNamespaceListerExpansion
+}
+
+// dnsManagedZoneNamespaceLister implements the DnsManagedZoneNamespaceLister
+// interface.
+type dnsManagedZoneNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DnsManagedZones in the indexer for a given namespace.
+func (s dnsManagedZoneNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DnsManagedZone, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DnsManagedZone))
+	})
+	return ret, err
+}
+
+// Get retrieves the DnsManagedZone from the indexer for a given namespace and name.
+func (s dnsManagedZoneNamespaceLister) Get(name string) (*v1alpha1.DnsManagedZone, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

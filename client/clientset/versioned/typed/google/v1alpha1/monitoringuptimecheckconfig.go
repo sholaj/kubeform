@@ -32,7 +32,7 @@ import (
 // MonitoringUptimeCheckConfigsGetter has a method to return a MonitoringUptimeCheckConfigInterface.
 // A group's client should implement this interface.
 type MonitoringUptimeCheckConfigsGetter interface {
-	MonitoringUptimeCheckConfigs() MonitoringUptimeCheckConfigInterface
+	MonitoringUptimeCheckConfigs(namespace string) MonitoringUptimeCheckConfigInterface
 }
 
 // MonitoringUptimeCheckConfigInterface has methods to work with MonitoringUptimeCheckConfig resources.
@@ -52,12 +52,14 @@ type MonitoringUptimeCheckConfigInterface interface {
 // monitoringUptimeCheckConfigs implements MonitoringUptimeCheckConfigInterface
 type monitoringUptimeCheckConfigs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMonitoringUptimeCheckConfigs returns a MonitoringUptimeCheckConfigs
-func newMonitoringUptimeCheckConfigs(c *GoogleV1alpha1Client) *monitoringUptimeCheckConfigs {
+func newMonitoringUptimeCheckConfigs(c *GoogleV1alpha1Client, namespace string) *monitoringUptimeCheckConfigs {
 	return &monitoringUptimeCheckConfigs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMonitoringUptimeCheckConfigs(c *GoogleV1alpha1Client) *monitoringUptimeC
 func (c *monitoringUptimeCheckConfigs) Get(name string, options v1.GetOptions) (result *v1alpha1.MonitoringUptimeCheckConfig, err error) {
 	result = &v1alpha1.MonitoringUptimeCheckConfig{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitoringuptimecheckconfigs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *monitoringUptimeCheckConfigs) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.MonitoringUptimeCheckConfigList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitoringuptimecheckconfigs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *monitoringUptimeCheckConfigs) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("monitoringuptimecheckconfigs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *monitoringUptimeCheckConfigs) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *monitoringUptimeCheckConfigs) Create(monitoringUptimeCheckConfig *v1alpha1.MonitoringUptimeCheckConfig) (result *v1alpha1.MonitoringUptimeCheckConfig, err error) {
 	result = &v1alpha1.MonitoringUptimeCheckConfig{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("monitoringuptimecheckconfigs").
 		Body(monitoringUptimeCheckConfig).
 		Do().
@@ -118,6 +124,7 @@ func (c *monitoringUptimeCheckConfigs) Create(monitoringUptimeCheckConfig *v1alp
 func (c *monitoringUptimeCheckConfigs) Update(monitoringUptimeCheckConfig *v1alpha1.MonitoringUptimeCheckConfig) (result *v1alpha1.MonitoringUptimeCheckConfig, err error) {
 	result = &v1alpha1.MonitoringUptimeCheckConfig{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitoringuptimecheckconfigs").
 		Name(monitoringUptimeCheckConfig.Name).
 		Body(monitoringUptimeCheckConfig).
@@ -132,6 +139,7 @@ func (c *monitoringUptimeCheckConfigs) Update(monitoringUptimeCheckConfig *v1alp
 func (c *monitoringUptimeCheckConfigs) UpdateStatus(monitoringUptimeCheckConfig *v1alpha1.MonitoringUptimeCheckConfig) (result *v1alpha1.MonitoringUptimeCheckConfig, err error) {
 	result = &v1alpha1.MonitoringUptimeCheckConfig{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitoringuptimecheckconfigs").
 		Name(monitoringUptimeCheckConfig.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *monitoringUptimeCheckConfigs) UpdateStatus(monitoringUptimeCheckConfig 
 // Delete takes name of the monitoringUptimeCheckConfig and deletes it. Returns an error if one occurs.
 func (c *monitoringUptimeCheckConfigs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitoringuptimecheckconfigs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *monitoringUptimeCheckConfigs) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitoringuptimecheckconfigs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *monitoringUptimeCheckConfigs) DeleteCollection(options *v1.DeleteOption
 func (c *monitoringUptimeCheckConfigs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MonitoringUptimeCheckConfig, err error) {
 	result = &v1alpha1.MonitoringUptimeCheckConfig{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("monitoringuptimecheckconfigs").
 		SubResource(subresources...).
 		Name(name).

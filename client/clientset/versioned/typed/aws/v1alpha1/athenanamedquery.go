@@ -32,7 +32,7 @@ import (
 // AthenaNamedQueriesGetter has a method to return a AthenaNamedQueryInterface.
 // A group's client should implement this interface.
 type AthenaNamedQueriesGetter interface {
-	AthenaNamedQueries() AthenaNamedQueryInterface
+	AthenaNamedQueries(namespace string) AthenaNamedQueryInterface
 }
 
 // AthenaNamedQueryInterface has methods to work with AthenaNamedQuery resources.
@@ -52,12 +52,14 @@ type AthenaNamedQueryInterface interface {
 // athenaNamedQueries implements AthenaNamedQueryInterface
 type athenaNamedQueries struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAthenaNamedQueries returns a AthenaNamedQueries
-func newAthenaNamedQueries(c *AwsV1alpha1Client) *athenaNamedQueries {
+func newAthenaNamedQueries(c *AwsV1alpha1Client, namespace string) *athenaNamedQueries {
 	return &athenaNamedQueries{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAthenaNamedQueries(c *AwsV1alpha1Client) *athenaNamedQueries {
 func (c *athenaNamedQueries) Get(name string, options v1.GetOptions) (result *v1alpha1.AthenaNamedQuery, err error) {
 	result = &v1alpha1.AthenaNamedQuery{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("athenanamedqueries").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *athenaNamedQueries) List(opts v1.ListOptions) (result *v1alpha1.AthenaN
 	}
 	result = &v1alpha1.AthenaNamedQueryList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("athenanamedqueries").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *athenaNamedQueries) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("athenanamedqueries").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *athenaNamedQueries) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *athenaNamedQueries) Create(athenaNamedQuery *v1alpha1.AthenaNamedQuery) (result *v1alpha1.AthenaNamedQuery, err error) {
 	result = &v1alpha1.AthenaNamedQuery{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("athenanamedqueries").
 		Body(athenaNamedQuery).
 		Do().
@@ -118,6 +124,7 @@ func (c *athenaNamedQueries) Create(athenaNamedQuery *v1alpha1.AthenaNamedQuery)
 func (c *athenaNamedQueries) Update(athenaNamedQuery *v1alpha1.AthenaNamedQuery) (result *v1alpha1.AthenaNamedQuery, err error) {
 	result = &v1alpha1.AthenaNamedQuery{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("athenanamedqueries").
 		Name(athenaNamedQuery.Name).
 		Body(athenaNamedQuery).
@@ -132,6 +139,7 @@ func (c *athenaNamedQueries) Update(athenaNamedQuery *v1alpha1.AthenaNamedQuery)
 func (c *athenaNamedQueries) UpdateStatus(athenaNamedQuery *v1alpha1.AthenaNamedQuery) (result *v1alpha1.AthenaNamedQuery, err error) {
 	result = &v1alpha1.AthenaNamedQuery{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("athenanamedqueries").
 		Name(athenaNamedQuery.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *athenaNamedQueries) UpdateStatus(athenaNamedQuery *v1alpha1.AthenaNamed
 // Delete takes name of the athenaNamedQuery and deletes it. Returns an error if one occurs.
 func (c *athenaNamedQueries) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("athenanamedqueries").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *athenaNamedQueries) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("athenanamedqueries").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *athenaNamedQueries) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *athenaNamedQueries) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AthenaNamedQuery, err error) {
 	result = &v1alpha1.AthenaNamedQuery{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("athenanamedqueries").
 		SubResource(subresources...).
 		Name(name).

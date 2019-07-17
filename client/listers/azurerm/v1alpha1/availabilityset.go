@@ -29,8 +29,8 @@ import (
 type AvailabilitySetLister interface {
 	// List lists all AvailabilitySets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AvailabilitySet, err error)
-	// Get retrieves the AvailabilitySet from the index for a given name.
-	Get(name string) (*v1alpha1.AvailabilitySet, error)
+	// AvailabilitySets returns an object that can list and get AvailabilitySets.
+	AvailabilitySets(namespace string) AvailabilitySetNamespaceLister
 	AvailabilitySetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *availabilitySetLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the AvailabilitySet from the index for a given name.
-func (s *availabilitySetLister) Get(name string) (*v1alpha1.AvailabilitySet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AvailabilitySets returns an object that can list and get AvailabilitySets.
+func (s *availabilitySetLister) AvailabilitySets(namespace string) AvailabilitySetNamespaceLister {
+	return availabilitySetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AvailabilitySetNamespaceLister helps list and get AvailabilitySets.
+type AvailabilitySetNamespaceLister interface {
+	// List lists all AvailabilitySets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AvailabilitySet, err error)
+	// Get retrieves the AvailabilitySet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AvailabilitySet, error)
+	AvailabilitySetNamespaceListerExpansion
+}
+
+// availabilitySetNamespaceLister implements the AvailabilitySetNamespaceLister
+// interface.
+type availabilitySetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AvailabilitySets in the indexer for a given namespace.
+func (s availabilitySetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AvailabilitySet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AvailabilitySet))
+	})
+	return ret, err
+}
+
+// Get retrieves the AvailabilitySet from the indexer for a given namespace and name.
+func (s availabilitySetNamespaceLister) Get(name string) (*v1alpha1.AvailabilitySet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

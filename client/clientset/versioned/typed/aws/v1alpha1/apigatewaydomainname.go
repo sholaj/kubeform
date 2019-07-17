@@ -32,7 +32,7 @@ import (
 // ApiGatewayDomainNamesGetter has a method to return a ApiGatewayDomainNameInterface.
 // A group's client should implement this interface.
 type ApiGatewayDomainNamesGetter interface {
-	ApiGatewayDomainNames() ApiGatewayDomainNameInterface
+	ApiGatewayDomainNames(namespace string) ApiGatewayDomainNameInterface
 }
 
 // ApiGatewayDomainNameInterface has methods to work with ApiGatewayDomainName resources.
@@ -52,12 +52,14 @@ type ApiGatewayDomainNameInterface interface {
 // apiGatewayDomainNames implements ApiGatewayDomainNameInterface
 type apiGatewayDomainNames struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiGatewayDomainNames returns a ApiGatewayDomainNames
-func newApiGatewayDomainNames(c *AwsV1alpha1Client) *apiGatewayDomainNames {
+func newApiGatewayDomainNames(c *AwsV1alpha1Client, namespace string) *apiGatewayDomainNames {
 	return &apiGatewayDomainNames{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiGatewayDomainNames(c *AwsV1alpha1Client) *apiGatewayDomainNames {
 func (c *apiGatewayDomainNames) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayDomainName, err error) {
 	result = &v1alpha1.ApiGatewayDomainName{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaydomainnames").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiGatewayDomainNames) List(opts v1.ListOptions) (result *v1alpha1.ApiG
 	}
 	result = &v1alpha1.ApiGatewayDomainNameList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaydomainnames").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiGatewayDomainNames) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaydomainnames").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiGatewayDomainNames) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *apiGatewayDomainNames) Create(apiGatewayDomainName *v1alpha1.ApiGatewayDomainName) (result *v1alpha1.ApiGatewayDomainName, err error) {
 	result = &v1alpha1.ApiGatewayDomainName{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apigatewaydomainnames").
 		Body(apiGatewayDomainName).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiGatewayDomainNames) Create(apiGatewayDomainName *v1alpha1.ApiGateway
 func (c *apiGatewayDomainNames) Update(apiGatewayDomainName *v1alpha1.ApiGatewayDomainName) (result *v1alpha1.ApiGatewayDomainName, err error) {
 	result = &v1alpha1.ApiGatewayDomainName{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewaydomainnames").
 		Name(apiGatewayDomainName.Name).
 		Body(apiGatewayDomainName).
@@ -132,6 +139,7 @@ func (c *apiGatewayDomainNames) Update(apiGatewayDomainName *v1alpha1.ApiGateway
 func (c *apiGatewayDomainNames) UpdateStatus(apiGatewayDomainName *v1alpha1.ApiGatewayDomainName) (result *v1alpha1.ApiGatewayDomainName, err error) {
 	result = &v1alpha1.ApiGatewayDomainName{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewaydomainnames").
 		Name(apiGatewayDomainName.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiGatewayDomainNames) UpdateStatus(apiGatewayDomainName *v1alpha1.ApiG
 // Delete takes name of the apiGatewayDomainName and deletes it. Returns an error if one occurs.
 func (c *apiGatewayDomainNames) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewaydomainnames").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiGatewayDomainNames) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewaydomainnames").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiGatewayDomainNames) DeleteCollection(options *v1.DeleteOptions, list
 func (c *apiGatewayDomainNames) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayDomainName, err error) {
 	result = &v1alpha1.ApiGatewayDomainName{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apigatewaydomainnames").
 		SubResource(subresources...).
 		Name(name).

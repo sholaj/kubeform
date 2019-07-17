@@ -32,7 +32,7 @@ import (
 // IotCertificatesGetter has a method to return a IotCertificateInterface.
 // A group's client should implement this interface.
 type IotCertificatesGetter interface {
-	IotCertificates() IotCertificateInterface
+	IotCertificates(namespace string) IotCertificateInterface
 }
 
 // IotCertificateInterface has methods to work with IotCertificate resources.
@@ -52,12 +52,14 @@ type IotCertificateInterface interface {
 // iotCertificates implements IotCertificateInterface
 type iotCertificates struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIotCertificates returns a IotCertificates
-func newIotCertificates(c *AwsV1alpha1Client) *iotCertificates {
+func newIotCertificates(c *AwsV1alpha1Client, namespace string) *iotCertificates {
 	return &iotCertificates{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIotCertificates(c *AwsV1alpha1Client) *iotCertificates {
 func (c *iotCertificates) Get(name string, options v1.GetOptions) (result *v1alpha1.IotCertificate, err error) {
 	result = &v1alpha1.IotCertificate{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iotcertificates").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iotCertificates) List(opts v1.ListOptions) (result *v1alpha1.IotCertifi
 	}
 	result = &v1alpha1.IotCertificateList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iotcertificates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iotCertificates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iotcertificates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iotCertificates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *iotCertificates) Create(iotCertificate *v1alpha1.IotCertificate) (result *v1alpha1.IotCertificate, err error) {
 	result = &v1alpha1.IotCertificate{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iotcertificates").
 		Body(iotCertificate).
 		Do().
@@ -118,6 +124,7 @@ func (c *iotCertificates) Create(iotCertificate *v1alpha1.IotCertificate) (resul
 func (c *iotCertificates) Update(iotCertificate *v1alpha1.IotCertificate) (result *v1alpha1.IotCertificate, err error) {
 	result = &v1alpha1.IotCertificate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iotcertificates").
 		Name(iotCertificate.Name).
 		Body(iotCertificate).
@@ -132,6 +139,7 @@ func (c *iotCertificates) Update(iotCertificate *v1alpha1.IotCertificate) (resul
 func (c *iotCertificates) UpdateStatus(iotCertificate *v1alpha1.IotCertificate) (result *v1alpha1.IotCertificate, err error) {
 	result = &v1alpha1.IotCertificate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iotcertificates").
 		Name(iotCertificate.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iotCertificates) UpdateStatus(iotCertificate *v1alpha1.IotCertificate) 
 // Delete takes name of the iotCertificate and deletes it. Returns an error if one occurs.
 func (c *iotCertificates) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iotcertificates").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iotCertificates) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iotcertificates").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iotCertificates) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *iotCertificates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IotCertificate, err error) {
 	result = &v1alpha1.IotCertificate{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iotcertificates").
 		SubResource(subresources...).
 		Name(name).

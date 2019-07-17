@@ -32,7 +32,7 @@ import (
 // CodebuildWebhooksGetter has a method to return a CodebuildWebhookInterface.
 // A group's client should implement this interface.
 type CodebuildWebhooksGetter interface {
-	CodebuildWebhooks() CodebuildWebhookInterface
+	CodebuildWebhooks(namespace string) CodebuildWebhookInterface
 }
 
 // CodebuildWebhookInterface has methods to work with CodebuildWebhook resources.
@@ -52,12 +52,14 @@ type CodebuildWebhookInterface interface {
 // codebuildWebhooks implements CodebuildWebhookInterface
 type codebuildWebhooks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCodebuildWebhooks returns a CodebuildWebhooks
-func newCodebuildWebhooks(c *AwsV1alpha1Client) *codebuildWebhooks {
+func newCodebuildWebhooks(c *AwsV1alpha1Client, namespace string) *codebuildWebhooks {
 	return &codebuildWebhooks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCodebuildWebhooks(c *AwsV1alpha1Client) *codebuildWebhooks {
 func (c *codebuildWebhooks) Get(name string, options v1.GetOptions) (result *v1alpha1.CodebuildWebhook, err error) {
 	result = &v1alpha1.CodebuildWebhook{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("codebuildwebhooks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *codebuildWebhooks) List(opts v1.ListOptions) (result *v1alpha1.Codebuil
 	}
 	result = &v1alpha1.CodebuildWebhookList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("codebuildwebhooks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *codebuildWebhooks) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("codebuildwebhooks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *codebuildWebhooks) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *codebuildWebhooks) Create(codebuildWebhook *v1alpha1.CodebuildWebhook) (result *v1alpha1.CodebuildWebhook, err error) {
 	result = &v1alpha1.CodebuildWebhook{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("codebuildwebhooks").
 		Body(codebuildWebhook).
 		Do().
@@ -118,6 +124,7 @@ func (c *codebuildWebhooks) Create(codebuildWebhook *v1alpha1.CodebuildWebhook) 
 func (c *codebuildWebhooks) Update(codebuildWebhook *v1alpha1.CodebuildWebhook) (result *v1alpha1.CodebuildWebhook, err error) {
 	result = &v1alpha1.CodebuildWebhook{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("codebuildwebhooks").
 		Name(codebuildWebhook.Name).
 		Body(codebuildWebhook).
@@ -132,6 +139,7 @@ func (c *codebuildWebhooks) Update(codebuildWebhook *v1alpha1.CodebuildWebhook) 
 func (c *codebuildWebhooks) UpdateStatus(codebuildWebhook *v1alpha1.CodebuildWebhook) (result *v1alpha1.CodebuildWebhook, err error) {
 	result = &v1alpha1.CodebuildWebhook{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("codebuildwebhooks").
 		Name(codebuildWebhook.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *codebuildWebhooks) UpdateStatus(codebuildWebhook *v1alpha1.CodebuildWeb
 // Delete takes name of the codebuildWebhook and deletes it. Returns an error if one occurs.
 func (c *codebuildWebhooks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("codebuildwebhooks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *codebuildWebhooks) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("codebuildwebhooks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *codebuildWebhooks) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *codebuildWebhooks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CodebuildWebhook, err error) {
 	result = &v1alpha1.CodebuildWebhook{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("codebuildwebhooks").
 		SubResource(subresources...).
 		Name(name).

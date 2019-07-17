@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/google/v1alpha1"
 )
 
-// StorageBucketAclLister helps list StorageBucketAcls.
-type StorageBucketAclLister interface {
-	// List lists all StorageBucketAcls in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.StorageBucketAcl, err error)
-	// Get retrieves the StorageBucketAcl from the index for a given name.
-	Get(name string) (*v1alpha1.StorageBucketAcl, error)
-	StorageBucketAclListerExpansion
+// StorageBucketACLLister helps list StorageBucketACLs.
+type StorageBucketACLLister interface {
+	// List lists all StorageBucketACLs in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.StorageBucketACL, err error)
+	// StorageBucketACLs returns an object that can list and get StorageBucketACLs.
+	StorageBucketACLs(namespace string) StorageBucketACLNamespaceLister
+	StorageBucketACLListerExpansion
 }
 
-// storageBucketAclLister implements the StorageBucketAclLister interface.
-type storageBucketAclLister struct {
+// storageBucketACLLister implements the StorageBucketACLLister interface.
+type storageBucketACLLister struct {
 	indexer cache.Indexer
 }
 
-// NewStorageBucketAclLister returns a new StorageBucketAclLister.
-func NewStorageBucketAclLister(indexer cache.Indexer) StorageBucketAclLister {
-	return &storageBucketAclLister{indexer: indexer}
+// NewStorageBucketACLLister returns a new StorageBucketACLLister.
+func NewStorageBucketACLLister(indexer cache.Indexer) StorageBucketACLLister {
+	return &storageBucketACLLister{indexer: indexer}
 }
 
-// List lists all StorageBucketAcls in the indexer.
-func (s *storageBucketAclLister) List(selector labels.Selector) (ret []*v1alpha1.StorageBucketAcl, err error) {
+// List lists all StorageBucketACLs in the indexer.
+func (s *storageBucketACLLister) List(selector labels.Selector) (ret []*v1alpha1.StorageBucketACL, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.StorageBucketAcl))
+		ret = append(ret, m.(*v1alpha1.StorageBucketACL))
 	})
 	return ret, err
 }
 
-// Get retrieves the StorageBucketAcl from the index for a given name.
-func (s *storageBucketAclLister) Get(name string) (*v1alpha1.StorageBucketAcl, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StorageBucketACLs returns an object that can list and get StorageBucketACLs.
+func (s *storageBucketACLLister) StorageBucketACLs(namespace string) StorageBucketACLNamespaceLister {
+	return storageBucketACLNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StorageBucketACLNamespaceLister helps list and get StorageBucketACLs.
+type StorageBucketACLNamespaceLister interface {
+	// List lists all StorageBucketACLs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StorageBucketACL, err error)
+	// Get retrieves the StorageBucketACL from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StorageBucketACL, error)
+	StorageBucketACLNamespaceListerExpansion
+}
+
+// storageBucketACLNamespaceLister implements the StorageBucketACLNamespaceLister
+// interface.
+type storageBucketACLNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StorageBucketACLs in the indexer for a given namespace.
+func (s storageBucketACLNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StorageBucketACL, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StorageBucketACL))
+	})
+	return ret, err
+}
+
+// Get retrieves the StorageBucketACL from the indexer for a given namespace and name.
+func (s storageBucketACLNamespaceLister) Get(name string) (*v1alpha1.StorageBucketACL, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("storagebucketacl"), name)
 	}
-	return obj.(*v1alpha1.StorageBucketAcl), nil
+	return obj.(*v1alpha1.StorageBucketACL), nil
 }

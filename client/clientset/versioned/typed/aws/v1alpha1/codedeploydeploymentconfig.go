@@ -32,7 +32,7 @@ import (
 // CodedeployDeploymentConfigsGetter has a method to return a CodedeployDeploymentConfigInterface.
 // A group's client should implement this interface.
 type CodedeployDeploymentConfigsGetter interface {
-	CodedeployDeploymentConfigs() CodedeployDeploymentConfigInterface
+	CodedeployDeploymentConfigs(namespace string) CodedeployDeploymentConfigInterface
 }
 
 // CodedeployDeploymentConfigInterface has methods to work with CodedeployDeploymentConfig resources.
@@ -52,12 +52,14 @@ type CodedeployDeploymentConfigInterface interface {
 // codedeployDeploymentConfigs implements CodedeployDeploymentConfigInterface
 type codedeployDeploymentConfigs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCodedeployDeploymentConfigs returns a CodedeployDeploymentConfigs
-func newCodedeployDeploymentConfigs(c *AwsV1alpha1Client) *codedeployDeploymentConfigs {
+func newCodedeployDeploymentConfigs(c *AwsV1alpha1Client, namespace string) *codedeployDeploymentConfigs {
 	return &codedeployDeploymentConfigs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCodedeployDeploymentConfigs(c *AwsV1alpha1Client) *codedeployDeploymentC
 func (c *codedeployDeploymentConfigs) Get(name string, options v1.GetOptions) (result *v1alpha1.CodedeployDeploymentConfig, err error) {
 	result = &v1alpha1.CodedeployDeploymentConfig{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("codedeploydeploymentconfigs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *codedeployDeploymentConfigs) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.CodedeployDeploymentConfigList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("codedeploydeploymentconfigs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *codedeployDeploymentConfigs) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("codedeploydeploymentconfigs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *codedeployDeploymentConfigs) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *codedeployDeploymentConfigs) Create(codedeployDeploymentConfig *v1alpha1.CodedeployDeploymentConfig) (result *v1alpha1.CodedeployDeploymentConfig, err error) {
 	result = &v1alpha1.CodedeployDeploymentConfig{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("codedeploydeploymentconfigs").
 		Body(codedeployDeploymentConfig).
 		Do().
@@ -118,6 +124,7 @@ func (c *codedeployDeploymentConfigs) Create(codedeployDeploymentConfig *v1alpha
 func (c *codedeployDeploymentConfigs) Update(codedeployDeploymentConfig *v1alpha1.CodedeployDeploymentConfig) (result *v1alpha1.CodedeployDeploymentConfig, err error) {
 	result = &v1alpha1.CodedeployDeploymentConfig{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("codedeploydeploymentconfigs").
 		Name(codedeployDeploymentConfig.Name).
 		Body(codedeployDeploymentConfig).
@@ -132,6 +139,7 @@ func (c *codedeployDeploymentConfigs) Update(codedeployDeploymentConfig *v1alpha
 func (c *codedeployDeploymentConfigs) UpdateStatus(codedeployDeploymentConfig *v1alpha1.CodedeployDeploymentConfig) (result *v1alpha1.CodedeployDeploymentConfig, err error) {
 	result = &v1alpha1.CodedeployDeploymentConfig{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("codedeploydeploymentconfigs").
 		Name(codedeployDeploymentConfig.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *codedeployDeploymentConfigs) UpdateStatus(codedeployDeploymentConfig *v
 // Delete takes name of the codedeployDeploymentConfig and deletes it. Returns an error if one occurs.
 func (c *codedeployDeploymentConfigs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("codedeploydeploymentconfigs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *codedeployDeploymentConfigs) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("codedeploydeploymentconfigs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *codedeployDeploymentConfigs) DeleteCollection(options *v1.DeleteOptions
 func (c *codedeployDeploymentConfigs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CodedeployDeploymentConfig, err error) {
 	result = &v1alpha1.CodedeployDeploymentConfig{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("codedeploydeploymentconfigs").
 		SubResource(subresources...).
 		Name(name).

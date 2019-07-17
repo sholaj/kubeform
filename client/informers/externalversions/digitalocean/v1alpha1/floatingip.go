@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/digitalocean/v1alpha1"
 )
 
-// FloatingIpInformer provides access to a shared informer and lister for
-// FloatingIps.
-type FloatingIpInformer interface {
+// FloatingIPInformer provides access to a shared informer and lister for
+// FloatingIPs.
+type FloatingIPInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.FloatingIpLister
+	Lister() v1alpha1.FloatingIPLister
 }
 
-type floatingIpInformer struct {
+type floatingIPInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewFloatingIpInformer constructs a new informer for FloatingIp type.
+// NewFloatingIPInformer constructs a new informer for FloatingIP type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFloatingIpInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredFloatingIpInformer(client, resyncPeriod, indexers, nil)
+func NewFloatingIPInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredFloatingIPInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredFloatingIpInformer constructs a new informer for FloatingIp type.
+// NewFilteredFloatingIPInformer constructs a new informer for FloatingIP type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredFloatingIpInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredFloatingIPInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.DigitaloceanV1alpha1().FloatingIps().List(options)
+				return client.DigitaloceanV1alpha1().FloatingIPs(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.DigitaloceanV1alpha1().FloatingIps().Watch(options)
+				return client.DigitaloceanV1alpha1().FloatingIPs(namespace).Watch(options)
 			},
 		},
-		&digitaloceanv1alpha1.FloatingIp{},
+		&digitaloceanv1alpha1.FloatingIP{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *floatingIpInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredFloatingIpInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *floatingIPInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredFloatingIPInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *floatingIpInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&digitaloceanv1alpha1.FloatingIp{}, f.defaultInformer)
+func (f *floatingIPInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&digitaloceanv1alpha1.FloatingIP{}, f.defaultInformer)
 }
 
-func (f *floatingIpInformer) Lister() v1alpha1.FloatingIpLister {
-	return v1alpha1.NewFloatingIpLister(f.Informer().GetIndexer())
+func (f *floatingIPInformer) Lister() v1alpha1.FloatingIPLister {
+	return v1alpha1.NewFloatingIPLister(f.Informer().GetIndexer())
 }

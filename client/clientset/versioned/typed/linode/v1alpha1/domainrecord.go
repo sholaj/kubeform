@@ -32,7 +32,7 @@ import (
 // DomainRecordsGetter has a method to return a DomainRecordInterface.
 // A group's client should implement this interface.
 type DomainRecordsGetter interface {
-	DomainRecords() DomainRecordInterface
+	DomainRecords(namespace string) DomainRecordInterface
 }
 
 // DomainRecordInterface has methods to work with DomainRecord resources.
@@ -52,12 +52,14 @@ type DomainRecordInterface interface {
 // domainRecords implements DomainRecordInterface
 type domainRecords struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDomainRecords returns a DomainRecords
-func newDomainRecords(c *LinodeV1alpha1Client) *domainRecords {
+func newDomainRecords(c *LinodeV1alpha1Client, namespace string) *domainRecords {
 	return &domainRecords{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDomainRecords(c *LinodeV1alpha1Client) *domainRecords {
 func (c *domainRecords) Get(name string, options v1.GetOptions) (result *v1alpha1.DomainRecord, err error) {
 	result = &v1alpha1.DomainRecord{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("domainrecords").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *domainRecords) List(opts v1.ListOptions) (result *v1alpha1.DomainRecord
 	}
 	result = &v1alpha1.DomainRecordList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("domainrecords").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *domainRecords) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("domainrecords").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *domainRecords) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *domainRecords) Create(domainRecord *v1alpha1.DomainRecord) (result *v1alpha1.DomainRecord, err error) {
 	result = &v1alpha1.DomainRecord{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("domainrecords").
 		Body(domainRecord).
 		Do().
@@ -118,6 +124,7 @@ func (c *domainRecords) Create(domainRecord *v1alpha1.DomainRecord) (result *v1a
 func (c *domainRecords) Update(domainRecord *v1alpha1.DomainRecord) (result *v1alpha1.DomainRecord, err error) {
 	result = &v1alpha1.DomainRecord{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("domainrecords").
 		Name(domainRecord.Name).
 		Body(domainRecord).
@@ -132,6 +139,7 @@ func (c *domainRecords) Update(domainRecord *v1alpha1.DomainRecord) (result *v1a
 func (c *domainRecords) UpdateStatus(domainRecord *v1alpha1.DomainRecord) (result *v1alpha1.DomainRecord, err error) {
 	result = &v1alpha1.DomainRecord{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("domainrecords").
 		Name(domainRecord.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *domainRecords) UpdateStatus(domainRecord *v1alpha1.DomainRecord) (resul
 // Delete takes name of the domainRecord and deletes it. Returns an error if one occurs.
 func (c *domainRecords) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("domainrecords").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *domainRecords) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("domainrecords").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *domainRecords) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *domainRecords) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DomainRecord, err error) {
 	result = &v1alpha1.DomainRecord{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("domainrecords").
 		SubResource(subresources...).
 		Name(name).

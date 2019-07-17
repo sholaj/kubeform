@@ -31,6 +31,7 @@ import (
 // FakeComputeSnapshots implements ComputeSnapshotInterface
 type FakeComputeSnapshots struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computesnapshotsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computesnapshots"}
@@ -40,7 +41,8 @@ var computesnapshotsKind = schema.GroupVersionKind{Group: "google.kubeform.com",
 // Get takes name of the computeSnapshot, and returns the corresponding computeSnapshot object, and an error if there is any.
 func (c *FakeComputeSnapshots) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computesnapshotsResource, name), &v1alpha1.ComputeSnapshot{})
+		Invokes(testing.NewGetAction(computesnapshotsResource, c.ns, name), &v1alpha1.ComputeSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeSnapshots) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of ComputeSnapshots that match those selectors.
 func (c *FakeComputeSnapshots) List(opts v1.ListOptions) (result *v1alpha1.ComputeSnapshotList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computesnapshotsResource, computesnapshotsKind, opts), &v1alpha1.ComputeSnapshotList{})
+		Invokes(testing.NewListAction(computesnapshotsResource, computesnapshotsKind, c.ns, opts), &v1alpha1.ComputeSnapshotList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeSnapshots) List(opts v1.ListOptions) (result *v1alpha1.Compu
 // Watch returns a watch.Interface that watches the requested computeSnapshots.
 func (c *FakeComputeSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computesnapshotsResource, opts))
+		InvokesWatch(testing.NewWatchAction(computesnapshotsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeSnapshot and creates it.  Returns the server's representation of the computeSnapshot, and an error, if there is any.
 func (c *FakeComputeSnapshots) Create(computeSnapshot *v1alpha1.ComputeSnapshot) (result *v1alpha1.ComputeSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computesnapshotsResource, computeSnapshot), &v1alpha1.ComputeSnapshot{})
+		Invokes(testing.NewCreateAction(computesnapshotsResource, c.ns, computeSnapshot), &v1alpha1.ComputeSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeSnapshots) Create(computeSnapshot *v1alpha1.ComputeSnapshot)
 // Update takes the representation of a computeSnapshot and updates it. Returns the server's representation of the computeSnapshot, and an error, if there is any.
 func (c *FakeComputeSnapshots) Update(computeSnapshot *v1alpha1.ComputeSnapshot) (result *v1alpha1.ComputeSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computesnapshotsResource, computeSnapshot), &v1alpha1.ComputeSnapshot{})
+		Invokes(testing.NewUpdateAction(computesnapshotsResource, c.ns, computeSnapshot), &v1alpha1.ComputeSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeSnapshots) Update(computeSnapshot *v1alpha1.ComputeSnapshot)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeSnapshots) UpdateStatus(computeSnapshot *v1alpha1.ComputeSnapshot) (*v1alpha1.ComputeSnapshot, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computesnapshotsResource, "status", computeSnapshot), &v1alpha1.ComputeSnapshot{})
+		Invokes(testing.NewUpdateSubresourceAction(computesnapshotsResource, "status", c.ns, computeSnapshot), &v1alpha1.ComputeSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeSnapshots) UpdateStatus(computeSnapshot *v1alpha1.ComputeSna
 // Delete takes name of the computeSnapshot and deletes it. Returns an error if one occurs.
 func (c *FakeComputeSnapshots) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computesnapshotsResource, name), &v1alpha1.ComputeSnapshot{})
+		Invokes(testing.NewDeleteAction(computesnapshotsResource, c.ns, name), &v1alpha1.ComputeSnapshot{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeSnapshots) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computesnapshotsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computesnapshotsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeSnapshotList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeSnapshots) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched computeSnapshot.
 func (c *FakeComputeSnapshots) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computesnapshotsResource, name, pt, data, subresources...), &v1alpha1.ComputeSnapshot{})
+		Invokes(testing.NewPatchSubresourceAction(computesnapshotsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // ServiceAccountIamMembersGetter has a method to return a ServiceAccountIamMemberInterface.
 // A group's client should implement this interface.
 type ServiceAccountIamMembersGetter interface {
-	ServiceAccountIamMembers() ServiceAccountIamMemberInterface
+	ServiceAccountIamMembers(namespace string) ServiceAccountIamMemberInterface
 }
 
 // ServiceAccountIamMemberInterface has methods to work with ServiceAccountIamMember resources.
@@ -52,12 +52,14 @@ type ServiceAccountIamMemberInterface interface {
 // serviceAccountIamMembers implements ServiceAccountIamMemberInterface
 type serviceAccountIamMembers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newServiceAccountIamMembers returns a ServiceAccountIamMembers
-func newServiceAccountIamMembers(c *GoogleV1alpha1Client) *serviceAccountIamMembers {
+func newServiceAccountIamMembers(c *GoogleV1alpha1Client, namespace string) *serviceAccountIamMembers {
 	return &serviceAccountIamMembers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newServiceAccountIamMembers(c *GoogleV1alpha1Client) *serviceAccountIamMemb
 func (c *serviceAccountIamMembers) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceAccountIamMember, err error) {
 	result = &v1alpha1.ServiceAccountIamMember{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("serviceaccountiammembers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *serviceAccountIamMembers) List(opts v1.ListOptions) (result *v1alpha1.S
 	}
 	result = &v1alpha1.ServiceAccountIamMemberList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("serviceaccountiammembers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *serviceAccountIamMembers) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("serviceaccountiammembers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *serviceAccountIamMembers) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *serviceAccountIamMembers) Create(serviceAccountIamMember *v1alpha1.ServiceAccountIamMember) (result *v1alpha1.ServiceAccountIamMember, err error) {
 	result = &v1alpha1.ServiceAccountIamMember{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("serviceaccountiammembers").
 		Body(serviceAccountIamMember).
 		Do().
@@ -118,6 +124,7 @@ func (c *serviceAccountIamMembers) Create(serviceAccountIamMember *v1alpha1.Serv
 func (c *serviceAccountIamMembers) Update(serviceAccountIamMember *v1alpha1.ServiceAccountIamMember) (result *v1alpha1.ServiceAccountIamMember, err error) {
 	result = &v1alpha1.ServiceAccountIamMember{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("serviceaccountiammembers").
 		Name(serviceAccountIamMember.Name).
 		Body(serviceAccountIamMember).
@@ -132,6 +139,7 @@ func (c *serviceAccountIamMembers) Update(serviceAccountIamMember *v1alpha1.Serv
 func (c *serviceAccountIamMembers) UpdateStatus(serviceAccountIamMember *v1alpha1.ServiceAccountIamMember) (result *v1alpha1.ServiceAccountIamMember, err error) {
 	result = &v1alpha1.ServiceAccountIamMember{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("serviceaccountiammembers").
 		Name(serviceAccountIamMember.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *serviceAccountIamMembers) UpdateStatus(serviceAccountIamMember *v1alpha
 // Delete takes name of the serviceAccountIamMember and deletes it. Returns an error if one occurs.
 func (c *serviceAccountIamMembers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("serviceaccountiammembers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *serviceAccountIamMembers) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("serviceaccountiammembers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *serviceAccountIamMembers) DeleteCollection(options *v1.DeleteOptions, l
 func (c *serviceAccountIamMembers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceAccountIamMember, err error) {
 	result = &v1alpha1.ServiceAccountIamMember{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("serviceaccountiammembers").
 		SubResource(subresources...).
 		Name(name).

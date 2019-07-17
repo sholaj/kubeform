@@ -29,8 +29,8 @@ import (
 type UserAssignedIdentityLister interface {
 	// List lists all UserAssignedIdentities in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.UserAssignedIdentity, err error)
-	// Get retrieves the UserAssignedIdentity from the index for a given name.
-	Get(name string) (*v1alpha1.UserAssignedIdentity, error)
+	// UserAssignedIdentities returns an object that can list and get UserAssignedIdentities.
+	UserAssignedIdentities(namespace string) UserAssignedIdentityNamespaceLister
 	UserAssignedIdentityListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *userAssignedIdentityLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the UserAssignedIdentity from the index for a given name.
-func (s *userAssignedIdentityLister) Get(name string) (*v1alpha1.UserAssignedIdentity, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// UserAssignedIdentities returns an object that can list and get UserAssignedIdentities.
+func (s *userAssignedIdentityLister) UserAssignedIdentities(namespace string) UserAssignedIdentityNamespaceLister {
+	return userAssignedIdentityNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// UserAssignedIdentityNamespaceLister helps list and get UserAssignedIdentities.
+type UserAssignedIdentityNamespaceLister interface {
+	// List lists all UserAssignedIdentities in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.UserAssignedIdentity, err error)
+	// Get retrieves the UserAssignedIdentity from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.UserAssignedIdentity, error)
+	UserAssignedIdentityNamespaceListerExpansion
+}
+
+// userAssignedIdentityNamespaceLister implements the UserAssignedIdentityNamespaceLister
+// interface.
+type userAssignedIdentityNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all UserAssignedIdentities in the indexer for a given namespace.
+func (s userAssignedIdentityNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.UserAssignedIdentity, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.UserAssignedIdentity))
+	})
+	return ret, err
+}
+
+// Get retrieves the UserAssignedIdentity from the indexer for a given namespace and name.
+func (s userAssignedIdentityNamespaceLister) Get(name string) (*v1alpha1.UserAssignedIdentity, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

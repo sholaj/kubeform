@@ -31,6 +31,7 @@ import (
 // FakeIotThingPrincipalAttachments implements IotThingPrincipalAttachmentInterface
 type FakeIotThingPrincipalAttachments struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var iotthingprincipalattachmentsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "iotthingprincipalattachments"}
@@ -40,7 +41,8 @@ var iotthingprincipalattachmentsKind = schema.GroupVersionKind{Group: "aws.kubef
 // Get takes name of the iotThingPrincipalAttachment, and returns the corresponding iotThingPrincipalAttachment object, and an error if there is any.
 func (c *FakeIotThingPrincipalAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.IotThingPrincipalAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iotthingprincipalattachmentsResource, name), &v1alpha1.IotThingPrincipalAttachment{})
+		Invokes(testing.NewGetAction(iotthingprincipalattachmentsResource, c.ns, name), &v1alpha1.IotThingPrincipalAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIotThingPrincipalAttachments) Get(name string, options v1.GetOption
 // List takes label and field selectors, and returns the list of IotThingPrincipalAttachments that match those selectors.
 func (c *FakeIotThingPrincipalAttachments) List(opts v1.ListOptions) (result *v1alpha1.IotThingPrincipalAttachmentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iotthingprincipalattachmentsResource, iotthingprincipalattachmentsKind, opts), &v1alpha1.IotThingPrincipalAttachmentList{})
+		Invokes(testing.NewListAction(iotthingprincipalattachmentsResource, iotthingprincipalattachmentsKind, c.ns, opts), &v1alpha1.IotThingPrincipalAttachmentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIotThingPrincipalAttachments) List(opts v1.ListOptions) (result *v1
 // Watch returns a watch.Interface that watches the requested iotThingPrincipalAttachments.
 func (c *FakeIotThingPrincipalAttachments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iotthingprincipalattachmentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(iotthingprincipalattachmentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iotThingPrincipalAttachment and creates it.  Returns the server's representation of the iotThingPrincipalAttachment, and an error, if there is any.
 func (c *FakeIotThingPrincipalAttachments) Create(iotThingPrincipalAttachment *v1alpha1.IotThingPrincipalAttachment) (result *v1alpha1.IotThingPrincipalAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iotthingprincipalattachmentsResource, iotThingPrincipalAttachment), &v1alpha1.IotThingPrincipalAttachment{})
+		Invokes(testing.NewCreateAction(iotthingprincipalattachmentsResource, c.ns, iotThingPrincipalAttachment), &v1alpha1.IotThingPrincipalAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIotThingPrincipalAttachments) Create(iotThingPrincipalAttachment *v
 // Update takes the representation of a iotThingPrincipalAttachment and updates it. Returns the server's representation of the iotThingPrincipalAttachment, and an error, if there is any.
 func (c *FakeIotThingPrincipalAttachments) Update(iotThingPrincipalAttachment *v1alpha1.IotThingPrincipalAttachment) (result *v1alpha1.IotThingPrincipalAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iotthingprincipalattachmentsResource, iotThingPrincipalAttachment), &v1alpha1.IotThingPrincipalAttachment{})
+		Invokes(testing.NewUpdateAction(iotthingprincipalattachmentsResource, c.ns, iotThingPrincipalAttachment), &v1alpha1.IotThingPrincipalAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIotThingPrincipalAttachments) Update(iotThingPrincipalAttachment *v
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIotThingPrincipalAttachments) UpdateStatus(iotThingPrincipalAttachment *v1alpha1.IotThingPrincipalAttachment) (*v1alpha1.IotThingPrincipalAttachment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iotthingprincipalattachmentsResource, "status", iotThingPrincipalAttachment), &v1alpha1.IotThingPrincipalAttachment{})
+		Invokes(testing.NewUpdateSubresourceAction(iotthingprincipalattachmentsResource, "status", c.ns, iotThingPrincipalAttachment), &v1alpha1.IotThingPrincipalAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIotThingPrincipalAttachments) UpdateStatus(iotThingPrincipalAttachm
 // Delete takes name of the iotThingPrincipalAttachment and deletes it. Returns an error if one occurs.
 func (c *FakeIotThingPrincipalAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iotthingprincipalattachmentsResource, name), &v1alpha1.IotThingPrincipalAttachment{})
+		Invokes(testing.NewDeleteAction(iotthingprincipalattachmentsResource, c.ns, name), &v1alpha1.IotThingPrincipalAttachment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIotThingPrincipalAttachments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iotthingprincipalattachmentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iotthingprincipalattachmentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IotThingPrincipalAttachmentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIotThingPrincipalAttachments) DeleteCollection(options *v1.DeleteOp
 // Patch applies the patch and returns the patched iotThingPrincipalAttachment.
 func (c *FakeIotThingPrincipalAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IotThingPrincipalAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iotthingprincipalattachmentsResource, name, pt, data, subresources...), &v1alpha1.IotThingPrincipalAttachment{})
+		Invokes(testing.NewPatchSubresourceAction(iotthingprincipalattachmentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.IotThingPrincipalAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}

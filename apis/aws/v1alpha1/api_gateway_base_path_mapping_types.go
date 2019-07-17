@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,12 +19,13 @@ type ApiGatewayBasePathMapping struct {
 }
 
 type ApiGatewayBasePathMappingSpec struct {
-	ApiId string `json:"api_id"`
+	ApiID string `json:"apiID" tf:"api_id"`
 	// +optional
-	BasePath   string `json:"base_path,omitempty"`
-	DomainName string `json:"domain_name"`
+	BasePath   string `json:"basePath,omitempty" tf:"base_path,omitempty"`
+	DomainName string `json:"domainName" tf:"domain_name"`
 	// +optional
-	StageName string `json:"stage_name,omitempty"`
+	StageName   string                    `json:"stageName,omitempty" tf:"stage_name,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ApiGatewayBasePathMappingStatus struct {
@@ -32,7 +33,9 @@ type ApiGatewayBasePathMappingStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

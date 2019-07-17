@@ -29,8 +29,8 @@ import (
 type ComputeDiskLister interface {
 	// List lists all ComputeDisks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeDisk, err error)
-	// Get retrieves the ComputeDisk from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeDisk, error)
+	// ComputeDisks returns an object that can list and get ComputeDisks.
+	ComputeDisks(namespace string) ComputeDiskNamespaceLister
 	ComputeDiskListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeDiskLister) List(selector labels.Selector) (ret []*v1alpha1.Comp
 	return ret, err
 }
 
-// Get retrieves the ComputeDisk from the index for a given name.
-func (s *computeDiskLister) Get(name string) (*v1alpha1.ComputeDisk, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeDisks returns an object that can list and get ComputeDisks.
+func (s *computeDiskLister) ComputeDisks(namespace string) ComputeDiskNamespaceLister {
+	return computeDiskNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeDiskNamespaceLister helps list and get ComputeDisks.
+type ComputeDiskNamespaceLister interface {
+	// List lists all ComputeDisks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeDisk, err error)
+	// Get retrieves the ComputeDisk from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeDisk, error)
+	ComputeDiskNamespaceListerExpansion
+}
+
+// computeDiskNamespaceLister implements the ComputeDiskNamespaceLister
+// interface.
+type computeDiskNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeDisks in the indexer for a given namespace.
+func (s computeDiskNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeDisk, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeDisk))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeDisk from the indexer for a given namespace and name.
+func (s computeDiskNamespaceLister) Get(name string) (*v1alpha1.ComputeDisk, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

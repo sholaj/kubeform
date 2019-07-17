@@ -1,67 +1,70 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type DataFactoryDatasetSqlServerTable struct {
+type DataFactoryDatasetSQLServerTable struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              DataFactoryDatasetSqlServerTableSpec   `json:"spec,omitempty"`
-	Status            DataFactoryDatasetSqlServerTableStatus `json:"status,omitempty"`
+	Spec              DataFactoryDatasetSQLServerTableSpec   `json:"spec,omitempty"`
+	Status            DataFactoryDatasetSQLServerTableStatus `json:"status,omitempty"`
 }
 
-type DataFactoryDatasetSqlServerTableSpecSchemaColumn struct {
+type DataFactoryDatasetSQLServerTableSpecSchemaColumn struct {
 	// +optional
-	Description string `json:"description,omitempty"`
-	Name        string `json:"name"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
+	Name        string `json:"name" tf:"name"`
 	// +optional
-	Type string `json:"type,omitempty"`
+	Type string `json:"type,omitempty" tf:"type,omitempty"`
 }
 
-type DataFactoryDatasetSqlServerTableSpec struct {
+type DataFactoryDatasetSQLServerTableSpec struct {
 	// +optional
-	AdditionalProperties map[string]string `json:"additional_properties,omitempty"`
+	AdditionalProperties map[string]string `json:"additionalProperties,omitempty" tf:"additional_properties,omitempty"`
 	// +optional
-	Annotations     []string `json:"annotations,omitempty"`
-	DataFactoryName string   `json:"data_factory_name"`
+	Annotations     []string `json:"annotations,omitempty" tf:"annotations,omitempty"`
+	DataFactoryName string   `json:"dataFactoryName" tf:"data_factory_name"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	Folder            string `json:"folder,omitempty"`
-	LinkedServiceName string `json:"linked_service_name"`
-	Name              string `json:"name"`
+	Folder            string `json:"folder,omitempty" tf:"folder,omitempty"`
+	LinkedServiceName string `json:"linkedServiceName" tf:"linked_service_name"`
+	Name              string `json:"name" tf:"name"`
 	// +optional
-	Parameters        map[string]string `json:"parameters,omitempty"`
-	ResourceGroupName string            `json:"resource_group_name"`
+	Parameters        map[string]string `json:"parameters,omitempty" tf:"parameters,omitempty"`
+	ResourceGroupName string            `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	SchemaColumn *[]DataFactoryDatasetSqlServerTableSpec `json:"schema_column,omitempty"`
+	SchemaColumn []DataFactoryDatasetSQLServerTableSpecSchemaColumn `json:"schemaColumn,omitempty" tf:"schema_column,omitempty"`
 	// +optional
-	TableName string `json:"table_name,omitempty"`
+	TableName   string                    `json:"tableName,omitempty" tf:"table_name,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
-type DataFactoryDatasetSqlServerTableStatus struct {
+type DataFactoryDatasetSQLServerTableStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// DataFactoryDatasetSqlServerTableList is a list of DataFactoryDatasetSqlServerTables
-type DataFactoryDatasetSqlServerTableList struct {
+// DataFactoryDatasetSQLServerTableList is a list of DataFactoryDatasetSQLServerTables
+type DataFactoryDatasetSQLServerTableList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of DataFactoryDatasetSqlServerTable CRD objects
-	Items []DataFactoryDatasetSqlServerTable `json:"items,omitempty"`
+	// Items is a list of DataFactoryDatasetSQLServerTable CRD objects
+	Items []DataFactoryDatasetSQLServerTable `json:"items,omitempty"`
 }

@@ -29,8 +29,8 @@ import (
 type StoragegatewayGatewayLister interface {
 	// List lists all StoragegatewayGateways in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StoragegatewayGateway, err error)
-	// Get retrieves the StoragegatewayGateway from the index for a given name.
-	Get(name string) (*v1alpha1.StoragegatewayGateway, error)
+	// StoragegatewayGateways returns an object that can list and get StoragegatewayGateways.
+	StoragegatewayGateways(namespace string) StoragegatewayGatewayNamespaceLister
 	StoragegatewayGatewayListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *storagegatewayGatewayLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the StoragegatewayGateway from the index for a given name.
-func (s *storagegatewayGatewayLister) Get(name string) (*v1alpha1.StoragegatewayGateway, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StoragegatewayGateways returns an object that can list and get StoragegatewayGateways.
+func (s *storagegatewayGatewayLister) StoragegatewayGateways(namespace string) StoragegatewayGatewayNamespaceLister {
+	return storagegatewayGatewayNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StoragegatewayGatewayNamespaceLister helps list and get StoragegatewayGateways.
+type StoragegatewayGatewayNamespaceLister interface {
+	// List lists all StoragegatewayGateways in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StoragegatewayGateway, err error)
+	// Get retrieves the StoragegatewayGateway from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StoragegatewayGateway, error)
+	StoragegatewayGatewayNamespaceListerExpansion
+}
+
+// storagegatewayGatewayNamespaceLister implements the StoragegatewayGatewayNamespaceLister
+// interface.
+type storagegatewayGatewayNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StoragegatewayGateways in the indexer for a given namespace.
+func (s storagegatewayGatewayNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StoragegatewayGateway, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StoragegatewayGateway))
+	})
+	return ret, err
+}
+
+// Get retrieves the StoragegatewayGateway from the indexer for a given namespace and name.
+func (s storagegatewayGatewayNamespaceLister) Get(name string) (*v1alpha1.StoragegatewayGateway, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

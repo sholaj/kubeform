@@ -29,8 +29,8 @@ import (
 type LoadBalancerBackendServerPolicyLister interface {
 	// List lists all LoadBalancerBackendServerPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LoadBalancerBackendServerPolicy, err error)
-	// Get retrieves the LoadBalancerBackendServerPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.LoadBalancerBackendServerPolicy, error)
+	// LoadBalancerBackendServerPolicies returns an object that can list and get LoadBalancerBackendServerPolicies.
+	LoadBalancerBackendServerPolicies(namespace string) LoadBalancerBackendServerPolicyNamespaceLister
 	LoadBalancerBackendServerPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *loadBalancerBackendServerPolicyLister) List(selector labels.Selector) (
 	return ret, err
 }
 
-// Get retrieves the LoadBalancerBackendServerPolicy from the index for a given name.
-func (s *loadBalancerBackendServerPolicyLister) Get(name string) (*v1alpha1.LoadBalancerBackendServerPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LoadBalancerBackendServerPolicies returns an object that can list and get LoadBalancerBackendServerPolicies.
+func (s *loadBalancerBackendServerPolicyLister) LoadBalancerBackendServerPolicies(namespace string) LoadBalancerBackendServerPolicyNamespaceLister {
+	return loadBalancerBackendServerPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LoadBalancerBackendServerPolicyNamespaceLister helps list and get LoadBalancerBackendServerPolicies.
+type LoadBalancerBackendServerPolicyNamespaceLister interface {
+	// List lists all LoadBalancerBackendServerPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LoadBalancerBackendServerPolicy, err error)
+	// Get retrieves the LoadBalancerBackendServerPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LoadBalancerBackendServerPolicy, error)
+	LoadBalancerBackendServerPolicyNamespaceListerExpansion
+}
+
+// loadBalancerBackendServerPolicyNamespaceLister implements the LoadBalancerBackendServerPolicyNamespaceLister
+// interface.
+type loadBalancerBackendServerPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LoadBalancerBackendServerPolicies in the indexer for a given namespace.
+func (s loadBalancerBackendServerPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LoadBalancerBackendServerPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LoadBalancerBackendServerPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the LoadBalancerBackendServerPolicy from the indexer for a given namespace and name.
+func (s loadBalancerBackendServerPolicyNamespaceLister) Get(name string) (*v1alpha1.LoadBalancerBackendServerPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

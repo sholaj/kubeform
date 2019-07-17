@@ -31,6 +31,7 @@ import (
 // FakeComputeBackendBuckets implements ComputeBackendBucketInterface
 type FakeComputeBackendBuckets struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computebackendbucketsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computebackendbuckets"}
@@ -40,7 +41,8 @@ var computebackendbucketsKind = schema.GroupVersionKind{Group: "google.kubeform.
 // Get takes name of the computeBackendBucket, and returns the corresponding computeBackendBucket object, and an error if there is any.
 func (c *FakeComputeBackendBuckets) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeBackendBucket, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computebackendbucketsResource, name), &v1alpha1.ComputeBackendBucket{})
+		Invokes(testing.NewGetAction(computebackendbucketsResource, c.ns, name), &v1alpha1.ComputeBackendBucket{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeBackendBuckets) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of ComputeBackendBuckets that match those selectors.
 func (c *FakeComputeBackendBuckets) List(opts v1.ListOptions) (result *v1alpha1.ComputeBackendBucketList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computebackendbucketsResource, computebackendbucketsKind, opts), &v1alpha1.ComputeBackendBucketList{})
+		Invokes(testing.NewListAction(computebackendbucketsResource, computebackendbucketsKind, c.ns, opts), &v1alpha1.ComputeBackendBucketList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeBackendBuckets) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested computeBackendBuckets.
 func (c *FakeComputeBackendBuckets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computebackendbucketsResource, opts))
+		InvokesWatch(testing.NewWatchAction(computebackendbucketsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeBackendBucket and creates it.  Returns the server's representation of the computeBackendBucket, and an error, if there is any.
 func (c *FakeComputeBackendBuckets) Create(computeBackendBucket *v1alpha1.ComputeBackendBucket) (result *v1alpha1.ComputeBackendBucket, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computebackendbucketsResource, computeBackendBucket), &v1alpha1.ComputeBackendBucket{})
+		Invokes(testing.NewCreateAction(computebackendbucketsResource, c.ns, computeBackendBucket), &v1alpha1.ComputeBackendBucket{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeBackendBuckets) Create(computeBackendBucket *v1alpha1.Comput
 // Update takes the representation of a computeBackendBucket and updates it. Returns the server's representation of the computeBackendBucket, and an error, if there is any.
 func (c *FakeComputeBackendBuckets) Update(computeBackendBucket *v1alpha1.ComputeBackendBucket) (result *v1alpha1.ComputeBackendBucket, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computebackendbucketsResource, computeBackendBucket), &v1alpha1.ComputeBackendBucket{})
+		Invokes(testing.NewUpdateAction(computebackendbucketsResource, c.ns, computeBackendBucket), &v1alpha1.ComputeBackendBucket{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeBackendBuckets) Update(computeBackendBucket *v1alpha1.Comput
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeBackendBuckets) UpdateStatus(computeBackendBucket *v1alpha1.ComputeBackendBucket) (*v1alpha1.ComputeBackendBucket, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computebackendbucketsResource, "status", computeBackendBucket), &v1alpha1.ComputeBackendBucket{})
+		Invokes(testing.NewUpdateSubresourceAction(computebackendbucketsResource, "status", c.ns, computeBackendBucket), &v1alpha1.ComputeBackendBucket{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeBackendBuckets) UpdateStatus(computeBackendBucket *v1alpha1.
 // Delete takes name of the computeBackendBucket and deletes it. Returns an error if one occurs.
 func (c *FakeComputeBackendBuckets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computebackendbucketsResource, name), &v1alpha1.ComputeBackendBucket{})
+		Invokes(testing.NewDeleteAction(computebackendbucketsResource, c.ns, name), &v1alpha1.ComputeBackendBucket{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeBackendBuckets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computebackendbucketsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computebackendbucketsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeBackendBucketList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeBackendBuckets) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched computeBackendBucket.
 func (c *FakeComputeBackendBuckets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeBackendBucket, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computebackendbucketsResource, name, pt, data, subresources...), &v1alpha1.ComputeBackendBucket{})
+		Invokes(testing.NewPatchSubresourceAction(computebackendbucketsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeBackendBucket{})
+
 	if obj == nil {
 		return nil, err
 	}

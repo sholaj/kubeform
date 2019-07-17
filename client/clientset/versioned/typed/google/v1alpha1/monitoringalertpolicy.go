@@ -32,7 +32,7 @@ import (
 // MonitoringAlertPoliciesGetter has a method to return a MonitoringAlertPolicyInterface.
 // A group's client should implement this interface.
 type MonitoringAlertPoliciesGetter interface {
-	MonitoringAlertPolicies() MonitoringAlertPolicyInterface
+	MonitoringAlertPolicies(namespace string) MonitoringAlertPolicyInterface
 }
 
 // MonitoringAlertPolicyInterface has methods to work with MonitoringAlertPolicy resources.
@@ -52,12 +52,14 @@ type MonitoringAlertPolicyInterface interface {
 // monitoringAlertPolicies implements MonitoringAlertPolicyInterface
 type monitoringAlertPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMonitoringAlertPolicies returns a MonitoringAlertPolicies
-func newMonitoringAlertPolicies(c *GoogleV1alpha1Client) *monitoringAlertPolicies {
+func newMonitoringAlertPolicies(c *GoogleV1alpha1Client, namespace string) *monitoringAlertPolicies {
 	return &monitoringAlertPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMonitoringAlertPolicies(c *GoogleV1alpha1Client) *monitoringAlertPolicie
 func (c *monitoringAlertPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.MonitoringAlertPolicy, err error) {
 	result = &v1alpha1.MonitoringAlertPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitoringalertpolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *monitoringAlertPolicies) List(opts v1.ListOptions) (result *v1alpha1.Mo
 	}
 	result = &v1alpha1.MonitoringAlertPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitoringalertpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *monitoringAlertPolicies) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("monitoringalertpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *monitoringAlertPolicies) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *monitoringAlertPolicies) Create(monitoringAlertPolicy *v1alpha1.MonitoringAlertPolicy) (result *v1alpha1.MonitoringAlertPolicy, err error) {
 	result = &v1alpha1.MonitoringAlertPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("monitoringalertpolicies").
 		Body(monitoringAlertPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *monitoringAlertPolicies) Create(monitoringAlertPolicy *v1alpha1.Monitor
 func (c *monitoringAlertPolicies) Update(monitoringAlertPolicy *v1alpha1.MonitoringAlertPolicy) (result *v1alpha1.MonitoringAlertPolicy, err error) {
 	result = &v1alpha1.MonitoringAlertPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitoringalertpolicies").
 		Name(monitoringAlertPolicy.Name).
 		Body(monitoringAlertPolicy).
@@ -132,6 +139,7 @@ func (c *monitoringAlertPolicies) Update(monitoringAlertPolicy *v1alpha1.Monitor
 func (c *monitoringAlertPolicies) UpdateStatus(monitoringAlertPolicy *v1alpha1.MonitoringAlertPolicy) (result *v1alpha1.MonitoringAlertPolicy, err error) {
 	result = &v1alpha1.MonitoringAlertPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitoringalertpolicies").
 		Name(monitoringAlertPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *monitoringAlertPolicies) UpdateStatus(monitoringAlertPolicy *v1alpha1.M
 // Delete takes name of the monitoringAlertPolicy and deletes it. Returns an error if one occurs.
 func (c *monitoringAlertPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitoringalertpolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *monitoringAlertPolicies) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitoringalertpolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *monitoringAlertPolicies) DeleteCollection(options *v1.DeleteOptions, li
 func (c *monitoringAlertPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MonitoringAlertPolicy, err error) {
 	result = &v1alpha1.MonitoringAlertPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("monitoringalertpolicies").
 		SubResource(subresources...).
 		Name(name).

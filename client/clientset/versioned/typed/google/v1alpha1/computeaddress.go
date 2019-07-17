@@ -32,7 +32,7 @@ import (
 // ComputeAddressesGetter has a method to return a ComputeAddressInterface.
 // A group's client should implement this interface.
 type ComputeAddressesGetter interface {
-	ComputeAddresses() ComputeAddressInterface
+	ComputeAddresses(namespace string) ComputeAddressInterface
 }
 
 // ComputeAddressInterface has methods to work with ComputeAddress resources.
@@ -52,12 +52,14 @@ type ComputeAddressInterface interface {
 // computeAddresses implements ComputeAddressInterface
 type computeAddresses struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeAddresses returns a ComputeAddresses
-func newComputeAddresses(c *GoogleV1alpha1Client) *computeAddresses {
+func newComputeAddresses(c *GoogleV1alpha1Client, namespace string) *computeAddresses {
 	return &computeAddresses{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeAddresses(c *GoogleV1alpha1Client) *computeAddresses {
 func (c *computeAddresses) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeAddress, err error) {
 	result = &v1alpha1.ComputeAddress{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeaddresses").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeAddresses) List(opts v1.ListOptions) (result *v1alpha1.ComputeAd
 	}
 	result = &v1alpha1.ComputeAddressList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeaddresses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeAddresses) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computeaddresses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeAddresses) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *computeAddresses) Create(computeAddress *v1alpha1.ComputeAddress) (result *v1alpha1.ComputeAddress, err error) {
 	result = &v1alpha1.ComputeAddress{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computeaddresses").
 		Body(computeAddress).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeAddresses) Create(computeAddress *v1alpha1.ComputeAddress) (resu
 func (c *computeAddresses) Update(computeAddress *v1alpha1.ComputeAddress) (result *v1alpha1.ComputeAddress, err error) {
 	result = &v1alpha1.ComputeAddress{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeaddresses").
 		Name(computeAddress.Name).
 		Body(computeAddress).
@@ -132,6 +139,7 @@ func (c *computeAddresses) Update(computeAddress *v1alpha1.ComputeAddress) (resu
 func (c *computeAddresses) UpdateStatus(computeAddress *v1alpha1.ComputeAddress) (result *v1alpha1.ComputeAddress, err error) {
 	result = &v1alpha1.ComputeAddress{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeaddresses").
 		Name(computeAddress.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeAddresses) UpdateStatus(computeAddress *v1alpha1.ComputeAddress)
 // Delete takes name of the computeAddress and deletes it. Returns an error if one occurs.
 func (c *computeAddresses) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeaddresses").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeAddresses) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeaddresses").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeAddresses) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *computeAddresses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeAddress, err error) {
 	result = &v1alpha1.ComputeAddress{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computeaddresses").
 		SubResource(subresources...).
 		Name(name).

@@ -41,32 +41,33 @@ type KmsKeyRingInformer interface {
 type kmsKeyRingInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewKmsKeyRingInformer constructs a new informer for KmsKeyRing type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewKmsKeyRingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredKmsKeyRingInformer(client, resyncPeriod, indexers, nil)
+func NewKmsKeyRingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredKmsKeyRingInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredKmsKeyRingInformer constructs a new informer for KmsKeyRing type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredKmsKeyRingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredKmsKeyRingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().KmsKeyRings().List(options)
+				return client.GoogleV1alpha1().KmsKeyRings(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().KmsKeyRings().Watch(options)
+				return client.GoogleV1alpha1().KmsKeyRings(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.KmsKeyRing{},
@@ -76,7 +77,7 @@ func NewFilteredKmsKeyRingInformer(client versioned.Interface, resyncPeriod time
 }
 
 func (f *kmsKeyRingInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredKmsKeyRingInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredKmsKeyRingInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *kmsKeyRingInformer) Informer() cache.SharedIndexInformer {

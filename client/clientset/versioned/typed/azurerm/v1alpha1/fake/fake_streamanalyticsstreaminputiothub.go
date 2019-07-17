@@ -31,6 +31,7 @@ import (
 // FakeStreamAnalyticsStreamInputIothubs implements StreamAnalyticsStreamInputIothubInterface
 type FakeStreamAnalyticsStreamInputIothubs struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var streamanalyticsstreaminputiothubsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "streamanalyticsstreaminputiothubs"}
@@ -40,7 +41,8 @@ var streamanalyticsstreaminputiothubsKind = schema.GroupVersionKind{Group: "azur
 // Get takes name of the streamAnalyticsStreamInputIothub, and returns the corresponding streamAnalyticsStreamInputIothub object, and an error if there is any.
 func (c *FakeStreamAnalyticsStreamInputIothubs) Get(name string, options v1.GetOptions) (result *v1alpha1.StreamAnalyticsStreamInputIothub, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(streamanalyticsstreaminputiothubsResource, name), &v1alpha1.StreamAnalyticsStreamInputIothub{})
+		Invokes(testing.NewGetAction(streamanalyticsstreaminputiothubsResource, c.ns, name), &v1alpha1.StreamAnalyticsStreamInputIothub{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeStreamAnalyticsStreamInputIothubs) Get(name string, options v1.GetO
 // List takes label and field selectors, and returns the list of StreamAnalyticsStreamInputIothubs that match those selectors.
 func (c *FakeStreamAnalyticsStreamInputIothubs) List(opts v1.ListOptions) (result *v1alpha1.StreamAnalyticsStreamInputIothubList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(streamanalyticsstreaminputiothubsResource, streamanalyticsstreaminputiothubsKind, opts), &v1alpha1.StreamAnalyticsStreamInputIothubList{})
+		Invokes(testing.NewListAction(streamanalyticsstreaminputiothubsResource, streamanalyticsstreaminputiothubsKind, c.ns, opts), &v1alpha1.StreamAnalyticsStreamInputIothubList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeStreamAnalyticsStreamInputIothubs) List(opts v1.ListOptions) (resul
 // Watch returns a watch.Interface that watches the requested streamAnalyticsStreamInputIothubs.
 func (c *FakeStreamAnalyticsStreamInputIothubs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(streamanalyticsstreaminputiothubsResource, opts))
+		InvokesWatch(testing.NewWatchAction(streamanalyticsstreaminputiothubsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a streamAnalyticsStreamInputIothub and creates it.  Returns the server's representation of the streamAnalyticsStreamInputIothub, and an error, if there is any.
 func (c *FakeStreamAnalyticsStreamInputIothubs) Create(streamAnalyticsStreamInputIothub *v1alpha1.StreamAnalyticsStreamInputIothub) (result *v1alpha1.StreamAnalyticsStreamInputIothub, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(streamanalyticsstreaminputiothubsResource, streamAnalyticsStreamInputIothub), &v1alpha1.StreamAnalyticsStreamInputIothub{})
+		Invokes(testing.NewCreateAction(streamanalyticsstreaminputiothubsResource, c.ns, streamAnalyticsStreamInputIothub), &v1alpha1.StreamAnalyticsStreamInputIothub{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeStreamAnalyticsStreamInputIothubs) Create(streamAnalyticsStreamInpu
 // Update takes the representation of a streamAnalyticsStreamInputIothub and updates it. Returns the server's representation of the streamAnalyticsStreamInputIothub, and an error, if there is any.
 func (c *FakeStreamAnalyticsStreamInputIothubs) Update(streamAnalyticsStreamInputIothub *v1alpha1.StreamAnalyticsStreamInputIothub) (result *v1alpha1.StreamAnalyticsStreamInputIothub, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(streamanalyticsstreaminputiothubsResource, streamAnalyticsStreamInputIothub), &v1alpha1.StreamAnalyticsStreamInputIothub{})
+		Invokes(testing.NewUpdateAction(streamanalyticsstreaminputiothubsResource, c.ns, streamAnalyticsStreamInputIothub), &v1alpha1.StreamAnalyticsStreamInputIothub{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeStreamAnalyticsStreamInputIothubs) Update(streamAnalyticsStreamInpu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeStreamAnalyticsStreamInputIothubs) UpdateStatus(streamAnalyticsStreamInputIothub *v1alpha1.StreamAnalyticsStreamInputIothub) (*v1alpha1.StreamAnalyticsStreamInputIothub, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(streamanalyticsstreaminputiothubsResource, "status", streamAnalyticsStreamInputIothub), &v1alpha1.StreamAnalyticsStreamInputIothub{})
+		Invokes(testing.NewUpdateSubresourceAction(streamanalyticsstreaminputiothubsResource, "status", c.ns, streamAnalyticsStreamInputIothub), &v1alpha1.StreamAnalyticsStreamInputIothub{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeStreamAnalyticsStreamInputIothubs) UpdateStatus(streamAnalyticsStre
 // Delete takes name of the streamAnalyticsStreamInputIothub and deletes it. Returns an error if one occurs.
 func (c *FakeStreamAnalyticsStreamInputIothubs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(streamanalyticsstreaminputiothubsResource, name), &v1alpha1.StreamAnalyticsStreamInputIothub{})
+		Invokes(testing.NewDeleteAction(streamanalyticsstreaminputiothubsResource, c.ns, name), &v1alpha1.StreamAnalyticsStreamInputIothub{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeStreamAnalyticsStreamInputIothubs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(streamanalyticsstreaminputiothubsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(streamanalyticsstreaminputiothubsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.StreamAnalyticsStreamInputIothubList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeStreamAnalyticsStreamInputIothubs) DeleteCollection(options *v1.Del
 // Patch applies the patch and returns the patched streamAnalyticsStreamInputIothub.
 func (c *FakeStreamAnalyticsStreamInputIothubs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StreamAnalyticsStreamInputIothub, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(streamanalyticsstreaminputiothubsResource, name, pt, data, subresources...), &v1alpha1.StreamAnalyticsStreamInputIothub{})
+		Invokes(testing.NewPatchSubresourceAction(streamanalyticsstreaminputiothubsResource, c.ns, name, pt, data, subresources...), &v1alpha1.StreamAnalyticsStreamInputIothub{})
+
 	if obj == nil {
 		return nil, err
 	}

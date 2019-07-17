@@ -41,32 +41,33 @@ type StorageDefaultObjectAccessControlInformer interface {
 type storageDefaultObjectAccessControlInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewStorageDefaultObjectAccessControlInformer constructs a new informer for StorageDefaultObjectAccessControl type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewStorageDefaultObjectAccessControlInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredStorageDefaultObjectAccessControlInformer(client, resyncPeriod, indexers, nil)
+func NewStorageDefaultObjectAccessControlInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredStorageDefaultObjectAccessControlInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredStorageDefaultObjectAccessControlInformer constructs a new informer for StorageDefaultObjectAccessControl type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredStorageDefaultObjectAccessControlInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredStorageDefaultObjectAccessControlInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().StorageDefaultObjectAccessControls().List(options)
+				return client.GoogleV1alpha1().StorageDefaultObjectAccessControls(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().StorageDefaultObjectAccessControls().Watch(options)
+				return client.GoogleV1alpha1().StorageDefaultObjectAccessControls(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.StorageDefaultObjectAccessControl{},
@@ -76,7 +77,7 @@ func NewFilteredStorageDefaultObjectAccessControlInformer(client versioned.Inter
 }
 
 func (f *storageDefaultObjectAccessControlInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredStorageDefaultObjectAccessControlInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredStorageDefaultObjectAccessControlInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *storageDefaultObjectAccessControlInformer) Informer() cache.SharedIndexInformer {

@@ -41,32 +41,33 @@ type AppServiceSlotInformer interface {
 type appServiceSlotInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewAppServiceSlotInformer constructs a new informer for AppServiceSlot type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAppServiceSlotInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAppServiceSlotInformer(client, resyncPeriod, indexers, nil)
+func NewAppServiceSlotInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAppServiceSlotInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredAppServiceSlotInformer constructs a new informer for AppServiceSlot type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAppServiceSlotInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAppServiceSlotInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().AppServiceSlots().List(options)
+				return client.AzurermV1alpha1().AppServiceSlots(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().AppServiceSlots().Watch(options)
+				return client.AzurermV1alpha1().AppServiceSlots(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.AppServiceSlot{},
@@ -76,7 +77,7 @@ func NewFilteredAppServiceSlotInformer(client versioned.Interface, resyncPeriod 
 }
 
 func (f *appServiceSlotInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAppServiceSlotInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredAppServiceSlotInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *appServiceSlotInformer) Informer() cache.SharedIndexInformer {

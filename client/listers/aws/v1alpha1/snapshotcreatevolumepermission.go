@@ -29,8 +29,8 @@ import (
 type SnapshotCreateVolumePermissionLister interface {
 	// List lists all SnapshotCreateVolumePermissions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SnapshotCreateVolumePermission, err error)
-	// Get retrieves the SnapshotCreateVolumePermission from the index for a given name.
-	Get(name string) (*v1alpha1.SnapshotCreateVolumePermission, error)
+	// SnapshotCreateVolumePermissions returns an object that can list and get SnapshotCreateVolumePermissions.
+	SnapshotCreateVolumePermissions(namespace string) SnapshotCreateVolumePermissionNamespaceLister
 	SnapshotCreateVolumePermissionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *snapshotCreateVolumePermissionLister) List(selector labels.Selector) (r
 	return ret, err
 }
 
-// Get retrieves the SnapshotCreateVolumePermission from the index for a given name.
-func (s *snapshotCreateVolumePermissionLister) Get(name string) (*v1alpha1.SnapshotCreateVolumePermission, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SnapshotCreateVolumePermissions returns an object that can list and get SnapshotCreateVolumePermissions.
+func (s *snapshotCreateVolumePermissionLister) SnapshotCreateVolumePermissions(namespace string) SnapshotCreateVolumePermissionNamespaceLister {
+	return snapshotCreateVolumePermissionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SnapshotCreateVolumePermissionNamespaceLister helps list and get SnapshotCreateVolumePermissions.
+type SnapshotCreateVolumePermissionNamespaceLister interface {
+	// List lists all SnapshotCreateVolumePermissions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SnapshotCreateVolumePermission, err error)
+	// Get retrieves the SnapshotCreateVolumePermission from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SnapshotCreateVolumePermission, error)
+	SnapshotCreateVolumePermissionNamespaceListerExpansion
+}
+
+// snapshotCreateVolumePermissionNamespaceLister implements the SnapshotCreateVolumePermissionNamespaceLister
+// interface.
+type snapshotCreateVolumePermissionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SnapshotCreateVolumePermissions in the indexer for a given namespace.
+func (s snapshotCreateVolumePermissionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SnapshotCreateVolumePermission, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SnapshotCreateVolumePermission))
+	})
+	return ret, err
+}
+
+// Get retrieves the SnapshotCreateVolumePermission from the indexer for a given namespace and name.
+func (s snapshotCreateVolumePermissionNamespaceLister) Get(name string) (*v1alpha1.SnapshotCreateVolumePermission, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

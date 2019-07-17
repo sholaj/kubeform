@@ -31,6 +31,7 @@ import (
 // FakeAmiFromInstances implements AmiFromInstanceInterface
 type FakeAmiFromInstances struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var amifrominstancesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "amifrominstances"}
@@ -40,7 +41,8 @@ var amifrominstancesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ve
 // Get takes name of the amiFromInstance, and returns the corresponding amiFromInstance object, and an error if there is any.
 func (c *FakeAmiFromInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.AmiFromInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(amifrominstancesResource, name), &v1alpha1.AmiFromInstance{})
+		Invokes(testing.NewGetAction(amifrominstancesResource, c.ns, name), &v1alpha1.AmiFromInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAmiFromInstances) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of AmiFromInstances that match those selectors.
 func (c *FakeAmiFromInstances) List(opts v1.ListOptions) (result *v1alpha1.AmiFromInstanceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(amifrominstancesResource, amifrominstancesKind, opts), &v1alpha1.AmiFromInstanceList{})
+		Invokes(testing.NewListAction(amifrominstancesResource, amifrominstancesKind, c.ns, opts), &v1alpha1.AmiFromInstanceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAmiFromInstances) List(opts v1.ListOptions) (result *v1alpha1.AmiFr
 // Watch returns a watch.Interface that watches the requested amiFromInstances.
 func (c *FakeAmiFromInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(amifrominstancesResource, opts))
+		InvokesWatch(testing.NewWatchAction(amifrominstancesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a amiFromInstance and creates it.  Returns the server's representation of the amiFromInstance, and an error, if there is any.
 func (c *FakeAmiFromInstances) Create(amiFromInstance *v1alpha1.AmiFromInstance) (result *v1alpha1.AmiFromInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(amifrominstancesResource, amiFromInstance), &v1alpha1.AmiFromInstance{})
+		Invokes(testing.NewCreateAction(amifrominstancesResource, c.ns, amiFromInstance), &v1alpha1.AmiFromInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAmiFromInstances) Create(amiFromInstance *v1alpha1.AmiFromInstance)
 // Update takes the representation of a amiFromInstance and updates it. Returns the server's representation of the amiFromInstance, and an error, if there is any.
 func (c *FakeAmiFromInstances) Update(amiFromInstance *v1alpha1.AmiFromInstance) (result *v1alpha1.AmiFromInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(amifrominstancesResource, amiFromInstance), &v1alpha1.AmiFromInstance{})
+		Invokes(testing.NewUpdateAction(amifrominstancesResource, c.ns, amiFromInstance), &v1alpha1.AmiFromInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAmiFromInstances) Update(amiFromInstance *v1alpha1.AmiFromInstance)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAmiFromInstances) UpdateStatus(amiFromInstance *v1alpha1.AmiFromInstance) (*v1alpha1.AmiFromInstance, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(amifrominstancesResource, "status", amiFromInstance), &v1alpha1.AmiFromInstance{})
+		Invokes(testing.NewUpdateSubresourceAction(amifrominstancesResource, "status", c.ns, amiFromInstance), &v1alpha1.AmiFromInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAmiFromInstances) UpdateStatus(amiFromInstance *v1alpha1.AmiFromIns
 // Delete takes name of the amiFromInstance and deletes it. Returns an error if one occurs.
 func (c *FakeAmiFromInstances) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(amifrominstancesResource, name), &v1alpha1.AmiFromInstance{})
+		Invokes(testing.NewDeleteAction(amifrominstancesResource, c.ns, name), &v1alpha1.AmiFromInstance{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAmiFromInstances) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(amifrominstancesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(amifrominstancesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AmiFromInstanceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAmiFromInstances) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched amiFromInstance.
 func (c *FakeAmiFromInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AmiFromInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(amifrominstancesResource, name, pt, data, subresources...), &v1alpha1.AmiFromInstance{})
+		Invokes(testing.NewPatchSubresourceAction(amifrominstancesResource, c.ns, name, pt, data, subresources...), &v1alpha1.AmiFromInstance{})
+
 	if obj == nil {
 		return nil, err
 	}

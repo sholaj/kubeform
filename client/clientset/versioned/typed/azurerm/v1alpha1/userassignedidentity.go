@@ -32,7 +32,7 @@ import (
 // UserAssignedIdentitiesGetter has a method to return a UserAssignedIdentityInterface.
 // A group's client should implement this interface.
 type UserAssignedIdentitiesGetter interface {
-	UserAssignedIdentities() UserAssignedIdentityInterface
+	UserAssignedIdentities(namespace string) UserAssignedIdentityInterface
 }
 
 // UserAssignedIdentityInterface has methods to work with UserAssignedIdentity resources.
@@ -52,12 +52,14 @@ type UserAssignedIdentityInterface interface {
 // userAssignedIdentities implements UserAssignedIdentityInterface
 type userAssignedIdentities struct {
 	client rest.Interface
+	ns     string
 }
 
 // newUserAssignedIdentities returns a UserAssignedIdentities
-func newUserAssignedIdentities(c *AzurermV1alpha1Client) *userAssignedIdentities {
+func newUserAssignedIdentities(c *AzurermV1alpha1Client, namespace string) *userAssignedIdentities {
 	return &userAssignedIdentities{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newUserAssignedIdentities(c *AzurermV1alpha1Client) *userAssignedIdentities
 func (c *userAssignedIdentities) Get(name string, options v1.GetOptions) (result *v1alpha1.UserAssignedIdentity, err error) {
 	result = &v1alpha1.UserAssignedIdentity{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("userassignedidentities").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *userAssignedIdentities) List(opts v1.ListOptions) (result *v1alpha1.Use
 	}
 	result = &v1alpha1.UserAssignedIdentityList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("userassignedidentities").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *userAssignedIdentities) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("userassignedidentities").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *userAssignedIdentities) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *userAssignedIdentities) Create(userAssignedIdentity *v1alpha1.UserAssignedIdentity) (result *v1alpha1.UserAssignedIdentity, err error) {
 	result = &v1alpha1.UserAssignedIdentity{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("userassignedidentities").
 		Body(userAssignedIdentity).
 		Do().
@@ -118,6 +124,7 @@ func (c *userAssignedIdentities) Create(userAssignedIdentity *v1alpha1.UserAssig
 func (c *userAssignedIdentities) Update(userAssignedIdentity *v1alpha1.UserAssignedIdentity) (result *v1alpha1.UserAssignedIdentity, err error) {
 	result = &v1alpha1.UserAssignedIdentity{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("userassignedidentities").
 		Name(userAssignedIdentity.Name).
 		Body(userAssignedIdentity).
@@ -132,6 +139,7 @@ func (c *userAssignedIdentities) Update(userAssignedIdentity *v1alpha1.UserAssig
 func (c *userAssignedIdentities) UpdateStatus(userAssignedIdentity *v1alpha1.UserAssignedIdentity) (result *v1alpha1.UserAssignedIdentity, err error) {
 	result = &v1alpha1.UserAssignedIdentity{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("userassignedidentities").
 		Name(userAssignedIdentity.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *userAssignedIdentities) UpdateStatus(userAssignedIdentity *v1alpha1.Use
 // Delete takes name of the userAssignedIdentity and deletes it. Returns an error if one occurs.
 func (c *userAssignedIdentities) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("userassignedidentities").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *userAssignedIdentities) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("userassignedidentities").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *userAssignedIdentities) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *userAssignedIdentities) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.UserAssignedIdentity, err error) {
 	result = &v1alpha1.UserAssignedIdentity{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("userassignedidentities").
 		SubResource(subresources...).
 		Name(name).

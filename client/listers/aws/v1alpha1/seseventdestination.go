@@ -29,8 +29,8 @@ import (
 type SesEventDestinationLister interface {
 	// List lists all SesEventDestinations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SesEventDestination, err error)
-	// Get retrieves the SesEventDestination from the index for a given name.
-	Get(name string) (*v1alpha1.SesEventDestination, error)
+	// SesEventDestinations returns an object that can list and get SesEventDestinations.
+	SesEventDestinations(namespace string) SesEventDestinationNamespaceLister
 	SesEventDestinationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sesEventDestinationLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the SesEventDestination from the index for a given name.
-func (s *sesEventDestinationLister) Get(name string) (*v1alpha1.SesEventDestination, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SesEventDestinations returns an object that can list and get SesEventDestinations.
+func (s *sesEventDestinationLister) SesEventDestinations(namespace string) SesEventDestinationNamespaceLister {
+	return sesEventDestinationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SesEventDestinationNamespaceLister helps list and get SesEventDestinations.
+type SesEventDestinationNamespaceLister interface {
+	// List lists all SesEventDestinations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SesEventDestination, err error)
+	// Get retrieves the SesEventDestination from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SesEventDestination, error)
+	SesEventDestinationNamespaceListerExpansion
+}
+
+// sesEventDestinationNamespaceLister implements the SesEventDestinationNamespaceLister
+// interface.
+type sesEventDestinationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SesEventDestinations in the indexer for a given namespace.
+func (s sesEventDestinationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SesEventDestination, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SesEventDestination))
+	})
+	return ret, err
+}
+
+// Get retrieves the SesEventDestination from the indexer for a given namespace and name.
+func (s sesEventDestinationNamespaceLister) Get(name string) (*v1alpha1.SesEventDestination, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

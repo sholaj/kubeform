@@ -32,7 +32,7 @@ import (
 // MediaStoreContainerPoliciesGetter has a method to return a MediaStoreContainerPolicyInterface.
 // A group's client should implement this interface.
 type MediaStoreContainerPoliciesGetter interface {
-	MediaStoreContainerPolicies() MediaStoreContainerPolicyInterface
+	MediaStoreContainerPolicies(namespace string) MediaStoreContainerPolicyInterface
 }
 
 // MediaStoreContainerPolicyInterface has methods to work with MediaStoreContainerPolicy resources.
@@ -52,12 +52,14 @@ type MediaStoreContainerPolicyInterface interface {
 // mediaStoreContainerPolicies implements MediaStoreContainerPolicyInterface
 type mediaStoreContainerPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMediaStoreContainerPolicies returns a MediaStoreContainerPolicies
-func newMediaStoreContainerPolicies(c *AwsV1alpha1Client) *mediaStoreContainerPolicies {
+func newMediaStoreContainerPolicies(c *AwsV1alpha1Client, namespace string) *mediaStoreContainerPolicies {
 	return &mediaStoreContainerPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMediaStoreContainerPolicies(c *AwsV1alpha1Client) *mediaStoreContainerPo
 func (c *mediaStoreContainerPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.MediaStoreContainerPolicy, err error) {
 	result = &v1alpha1.MediaStoreContainerPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mediastorecontainerpolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *mediaStoreContainerPolicies) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.MediaStoreContainerPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mediastorecontainerpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *mediaStoreContainerPolicies) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("mediastorecontainerpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *mediaStoreContainerPolicies) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *mediaStoreContainerPolicies) Create(mediaStoreContainerPolicy *v1alpha1.MediaStoreContainerPolicy) (result *v1alpha1.MediaStoreContainerPolicy, err error) {
 	result = &v1alpha1.MediaStoreContainerPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("mediastorecontainerpolicies").
 		Body(mediaStoreContainerPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *mediaStoreContainerPolicies) Create(mediaStoreContainerPolicy *v1alpha1
 func (c *mediaStoreContainerPolicies) Update(mediaStoreContainerPolicy *v1alpha1.MediaStoreContainerPolicy) (result *v1alpha1.MediaStoreContainerPolicy, err error) {
 	result = &v1alpha1.MediaStoreContainerPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mediastorecontainerpolicies").
 		Name(mediaStoreContainerPolicy.Name).
 		Body(mediaStoreContainerPolicy).
@@ -132,6 +139,7 @@ func (c *mediaStoreContainerPolicies) Update(mediaStoreContainerPolicy *v1alpha1
 func (c *mediaStoreContainerPolicies) UpdateStatus(mediaStoreContainerPolicy *v1alpha1.MediaStoreContainerPolicy) (result *v1alpha1.MediaStoreContainerPolicy, err error) {
 	result = &v1alpha1.MediaStoreContainerPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mediastorecontainerpolicies").
 		Name(mediaStoreContainerPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *mediaStoreContainerPolicies) UpdateStatus(mediaStoreContainerPolicy *v1
 // Delete takes name of the mediaStoreContainerPolicy and deletes it. Returns an error if one occurs.
 func (c *mediaStoreContainerPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mediastorecontainerpolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *mediaStoreContainerPolicies) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mediastorecontainerpolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *mediaStoreContainerPolicies) DeleteCollection(options *v1.DeleteOptions
 func (c *mediaStoreContainerPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MediaStoreContainerPolicy, err error) {
 	result = &v1alpha1.MediaStoreContainerPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("mediastorecontainerpolicies").
 		SubResource(subresources...).
 		Name(name).

@@ -41,32 +41,33 @@ type Route53ZoneAssociationInformer interface {
 type route53ZoneAssociationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewRoute53ZoneAssociationInformer constructs a new informer for Route53ZoneAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewRoute53ZoneAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredRoute53ZoneAssociationInformer(client, resyncPeriod, indexers, nil)
+func NewRoute53ZoneAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredRoute53ZoneAssociationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredRoute53ZoneAssociationInformer constructs a new informer for Route53ZoneAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredRoute53ZoneAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredRoute53ZoneAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().Route53ZoneAssociations().List(options)
+				return client.AwsV1alpha1().Route53ZoneAssociations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().Route53ZoneAssociations().Watch(options)
+				return client.AwsV1alpha1().Route53ZoneAssociations(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.Route53ZoneAssociation{},
@@ -76,7 +77,7 @@ func NewFilteredRoute53ZoneAssociationInformer(client versioned.Interface, resyn
 }
 
 func (f *route53ZoneAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredRoute53ZoneAssociationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredRoute53ZoneAssociationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *route53ZoneAssociationInformer) Informer() cache.SharedIndexInformer {

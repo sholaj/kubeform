@@ -32,7 +32,7 @@ import (
 // Route53ResolverEndpointsGetter has a method to return a Route53ResolverEndpointInterface.
 // A group's client should implement this interface.
 type Route53ResolverEndpointsGetter interface {
-	Route53ResolverEndpoints() Route53ResolverEndpointInterface
+	Route53ResolverEndpoints(namespace string) Route53ResolverEndpointInterface
 }
 
 // Route53ResolverEndpointInterface has methods to work with Route53ResolverEndpoint resources.
@@ -52,12 +52,14 @@ type Route53ResolverEndpointInterface interface {
 // route53ResolverEndpoints implements Route53ResolverEndpointInterface
 type route53ResolverEndpoints struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRoute53ResolverEndpoints returns a Route53ResolverEndpoints
-func newRoute53ResolverEndpoints(c *AwsV1alpha1Client) *route53ResolverEndpoints {
+func newRoute53ResolverEndpoints(c *AwsV1alpha1Client, namespace string) *route53ResolverEndpoints {
 	return &route53ResolverEndpoints{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRoute53ResolverEndpoints(c *AwsV1alpha1Client) *route53ResolverEndpoints
 func (c *route53ResolverEndpoints) Get(name string, options v1.GetOptions) (result *v1alpha1.Route53ResolverEndpoint, err error) {
 	result = &v1alpha1.Route53ResolverEndpoint{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("route53resolverendpoints").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *route53ResolverEndpoints) List(opts v1.ListOptions) (result *v1alpha1.R
 	}
 	result = &v1alpha1.Route53ResolverEndpointList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("route53resolverendpoints").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *route53ResolverEndpoints) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("route53resolverendpoints").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *route53ResolverEndpoints) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *route53ResolverEndpoints) Create(route53ResolverEndpoint *v1alpha1.Route53ResolverEndpoint) (result *v1alpha1.Route53ResolverEndpoint, err error) {
 	result = &v1alpha1.Route53ResolverEndpoint{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("route53resolverendpoints").
 		Body(route53ResolverEndpoint).
 		Do().
@@ -118,6 +124,7 @@ func (c *route53ResolverEndpoints) Create(route53ResolverEndpoint *v1alpha1.Rout
 func (c *route53ResolverEndpoints) Update(route53ResolverEndpoint *v1alpha1.Route53ResolverEndpoint) (result *v1alpha1.Route53ResolverEndpoint, err error) {
 	result = &v1alpha1.Route53ResolverEndpoint{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("route53resolverendpoints").
 		Name(route53ResolverEndpoint.Name).
 		Body(route53ResolverEndpoint).
@@ -132,6 +139,7 @@ func (c *route53ResolverEndpoints) Update(route53ResolverEndpoint *v1alpha1.Rout
 func (c *route53ResolverEndpoints) UpdateStatus(route53ResolverEndpoint *v1alpha1.Route53ResolverEndpoint) (result *v1alpha1.Route53ResolverEndpoint, err error) {
 	result = &v1alpha1.Route53ResolverEndpoint{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("route53resolverendpoints").
 		Name(route53ResolverEndpoint.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *route53ResolverEndpoints) UpdateStatus(route53ResolverEndpoint *v1alpha
 // Delete takes name of the route53ResolverEndpoint and deletes it. Returns an error if one occurs.
 func (c *route53ResolverEndpoints) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("route53resolverendpoints").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *route53ResolverEndpoints) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("route53resolverendpoints").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *route53ResolverEndpoints) DeleteCollection(options *v1.DeleteOptions, l
 func (c *route53ResolverEndpoints) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Route53ResolverEndpoint, err error) {
 	result = &v1alpha1.Route53ResolverEndpoint{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("route53resolverendpoints").
 		SubResource(subresources...).
 		Name(name).

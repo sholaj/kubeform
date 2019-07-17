@@ -32,7 +32,7 @@ import (
 // ComputeSubnetworksGetter has a method to return a ComputeSubnetworkInterface.
 // A group's client should implement this interface.
 type ComputeSubnetworksGetter interface {
-	ComputeSubnetworks() ComputeSubnetworkInterface
+	ComputeSubnetworks(namespace string) ComputeSubnetworkInterface
 }
 
 // ComputeSubnetworkInterface has methods to work with ComputeSubnetwork resources.
@@ -52,12 +52,14 @@ type ComputeSubnetworkInterface interface {
 // computeSubnetworks implements ComputeSubnetworkInterface
 type computeSubnetworks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeSubnetworks returns a ComputeSubnetworks
-func newComputeSubnetworks(c *GoogleV1alpha1Client) *computeSubnetworks {
+func newComputeSubnetworks(c *GoogleV1alpha1Client, namespace string) *computeSubnetworks {
 	return &computeSubnetworks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeSubnetworks(c *GoogleV1alpha1Client) *computeSubnetworks {
 func (c *computeSubnetworks) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeSubnetwork, err error) {
 	result = &v1alpha1.ComputeSubnetwork{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computesubnetworks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeSubnetworks) List(opts v1.ListOptions) (result *v1alpha1.Compute
 	}
 	result = &v1alpha1.ComputeSubnetworkList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computesubnetworks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeSubnetworks) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computesubnetworks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeSubnetworks) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *computeSubnetworks) Create(computeSubnetwork *v1alpha1.ComputeSubnetwork) (result *v1alpha1.ComputeSubnetwork, err error) {
 	result = &v1alpha1.ComputeSubnetwork{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computesubnetworks").
 		Body(computeSubnetwork).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeSubnetworks) Create(computeSubnetwork *v1alpha1.ComputeSubnetwor
 func (c *computeSubnetworks) Update(computeSubnetwork *v1alpha1.ComputeSubnetwork) (result *v1alpha1.ComputeSubnetwork, err error) {
 	result = &v1alpha1.ComputeSubnetwork{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computesubnetworks").
 		Name(computeSubnetwork.Name).
 		Body(computeSubnetwork).
@@ -132,6 +139,7 @@ func (c *computeSubnetworks) Update(computeSubnetwork *v1alpha1.ComputeSubnetwor
 func (c *computeSubnetworks) UpdateStatus(computeSubnetwork *v1alpha1.ComputeSubnetwork) (result *v1alpha1.ComputeSubnetwork, err error) {
 	result = &v1alpha1.ComputeSubnetwork{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computesubnetworks").
 		Name(computeSubnetwork.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeSubnetworks) UpdateStatus(computeSubnetwork *v1alpha1.ComputeSub
 // Delete takes name of the computeSubnetwork and deletes it. Returns an error if one occurs.
 func (c *computeSubnetworks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computesubnetworks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeSubnetworks) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computesubnetworks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeSubnetworks) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *computeSubnetworks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeSubnetwork, err error) {
 	result = &v1alpha1.ComputeSubnetwork{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computesubnetworks").
 		SubResource(subresources...).
 		Name(name).

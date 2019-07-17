@@ -29,8 +29,8 @@ import (
 type RedshiftSecurityGroupLister interface {
 	// List lists all RedshiftSecurityGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RedshiftSecurityGroup, err error)
-	// Get retrieves the RedshiftSecurityGroup from the index for a given name.
-	Get(name string) (*v1alpha1.RedshiftSecurityGroup, error)
+	// RedshiftSecurityGroups returns an object that can list and get RedshiftSecurityGroups.
+	RedshiftSecurityGroups(namespace string) RedshiftSecurityGroupNamespaceLister
 	RedshiftSecurityGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *redshiftSecurityGroupLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the RedshiftSecurityGroup from the index for a given name.
-func (s *redshiftSecurityGroupLister) Get(name string) (*v1alpha1.RedshiftSecurityGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RedshiftSecurityGroups returns an object that can list and get RedshiftSecurityGroups.
+func (s *redshiftSecurityGroupLister) RedshiftSecurityGroups(namespace string) RedshiftSecurityGroupNamespaceLister {
+	return redshiftSecurityGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RedshiftSecurityGroupNamespaceLister helps list and get RedshiftSecurityGroups.
+type RedshiftSecurityGroupNamespaceLister interface {
+	// List lists all RedshiftSecurityGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RedshiftSecurityGroup, err error)
+	// Get retrieves the RedshiftSecurityGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RedshiftSecurityGroup, error)
+	RedshiftSecurityGroupNamespaceListerExpansion
+}
+
+// redshiftSecurityGroupNamespaceLister implements the RedshiftSecurityGroupNamespaceLister
+// interface.
+type redshiftSecurityGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RedshiftSecurityGroups in the indexer for a given namespace.
+func (s redshiftSecurityGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RedshiftSecurityGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RedshiftSecurityGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the RedshiftSecurityGroup from the indexer for a given namespace and name.
+func (s redshiftSecurityGroupNamespaceLister) Get(name string) (*v1alpha1.RedshiftSecurityGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeHdinsightInteractiveQueryClusters implements HdinsightInteractiveQueryClusterInterface
 type FakeHdinsightInteractiveQueryClusters struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var hdinsightinteractivequeryclustersResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "hdinsightinteractivequeryclusters"}
@@ -40,7 +41,8 @@ var hdinsightinteractivequeryclustersKind = schema.GroupVersionKind{Group: "azur
 // Get takes name of the hdinsightInteractiveQueryCluster, and returns the corresponding hdinsightInteractiveQueryCluster object, and an error if there is any.
 func (c *FakeHdinsightInteractiveQueryClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.HdinsightInteractiveQueryCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(hdinsightinteractivequeryclustersResource, name), &v1alpha1.HdinsightInteractiveQueryCluster{})
+		Invokes(testing.NewGetAction(hdinsightinteractivequeryclustersResource, c.ns, name), &v1alpha1.HdinsightInteractiveQueryCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeHdinsightInteractiveQueryClusters) Get(name string, options v1.GetO
 // List takes label and field selectors, and returns the list of HdinsightInteractiveQueryClusters that match those selectors.
 func (c *FakeHdinsightInteractiveQueryClusters) List(opts v1.ListOptions) (result *v1alpha1.HdinsightInteractiveQueryClusterList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(hdinsightinteractivequeryclustersResource, hdinsightinteractivequeryclustersKind, opts), &v1alpha1.HdinsightInteractiveQueryClusterList{})
+		Invokes(testing.NewListAction(hdinsightinteractivequeryclustersResource, hdinsightinteractivequeryclustersKind, c.ns, opts), &v1alpha1.HdinsightInteractiveQueryClusterList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeHdinsightInteractiveQueryClusters) List(opts v1.ListOptions) (resul
 // Watch returns a watch.Interface that watches the requested hdinsightInteractiveQueryClusters.
 func (c *FakeHdinsightInteractiveQueryClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(hdinsightinteractivequeryclustersResource, opts))
+		InvokesWatch(testing.NewWatchAction(hdinsightinteractivequeryclustersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a hdinsightInteractiveQueryCluster and creates it.  Returns the server's representation of the hdinsightInteractiveQueryCluster, and an error, if there is any.
 func (c *FakeHdinsightInteractiveQueryClusters) Create(hdinsightInteractiveQueryCluster *v1alpha1.HdinsightInteractiveQueryCluster) (result *v1alpha1.HdinsightInteractiveQueryCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(hdinsightinteractivequeryclustersResource, hdinsightInteractiveQueryCluster), &v1alpha1.HdinsightInteractiveQueryCluster{})
+		Invokes(testing.NewCreateAction(hdinsightinteractivequeryclustersResource, c.ns, hdinsightInteractiveQueryCluster), &v1alpha1.HdinsightInteractiveQueryCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeHdinsightInteractiveQueryClusters) Create(hdinsightInteractiveQuery
 // Update takes the representation of a hdinsightInteractiveQueryCluster and updates it. Returns the server's representation of the hdinsightInteractiveQueryCluster, and an error, if there is any.
 func (c *FakeHdinsightInteractiveQueryClusters) Update(hdinsightInteractiveQueryCluster *v1alpha1.HdinsightInteractiveQueryCluster) (result *v1alpha1.HdinsightInteractiveQueryCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(hdinsightinteractivequeryclustersResource, hdinsightInteractiveQueryCluster), &v1alpha1.HdinsightInteractiveQueryCluster{})
+		Invokes(testing.NewUpdateAction(hdinsightinteractivequeryclustersResource, c.ns, hdinsightInteractiveQueryCluster), &v1alpha1.HdinsightInteractiveQueryCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeHdinsightInteractiveQueryClusters) Update(hdinsightInteractiveQuery
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeHdinsightInteractiveQueryClusters) UpdateStatus(hdinsightInteractiveQueryCluster *v1alpha1.HdinsightInteractiveQueryCluster) (*v1alpha1.HdinsightInteractiveQueryCluster, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(hdinsightinteractivequeryclustersResource, "status", hdinsightInteractiveQueryCluster), &v1alpha1.HdinsightInteractiveQueryCluster{})
+		Invokes(testing.NewUpdateSubresourceAction(hdinsightinteractivequeryclustersResource, "status", c.ns, hdinsightInteractiveQueryCluster), &v1alpha1.HdinsightInteractiveQueryCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeHdinsightInteractiveQueryClusters) UpdateStatus(hdinsightInteractiv
 // Delete takes name of the hdinsightInteractiveQueryCluster and deletes it. Returns an error if one occurs.
 func (c *FakeHdinsightInteractiveQueryClusters) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(hdinsightinteractivequeryclustersResource, name), &v1alpha1.HdinsightInteractiveQueryCluster{})
+		Invokes(testing.NewDeleteAction(hdinsightinteractivequeryclustersResource, c.ns, name), &v1alpha1.HdinsightInteractiveQueryCluster{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeHdinsightInteractiveQueryClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(hdinsightinteractivequeryclustersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(hdinsightinteractivequeryclustersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.HdinsightInteractiveQueryClusterList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeHdinsightInteractiveQueryClusters) DeleteCollection(options *v1.Del
 // Patch applies the patch and returns the patched hdinsightInteractiveQueryCluster.
 func (c *FakeHdinsightInteractiveQueryClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.HdinsightInteractiveQueryCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(hdinsightinteractivequeryclustersResource, name, pt, data, subresources...), &v1alpha1.HdinsightInteractiveQueryCluster{})
+		Invokes(testing.NewPatchSubresourceAction(hdinsightinteractivequeryclustersResource, c.ns, name, pt, data, subresources...), &v1alpha1.HdinsightInteractiveQueryCluster{})
+
 	if obj == nil {
 		return nil, err
 	}

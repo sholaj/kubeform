@@ -29,8 +29,8 @@ import (
 type EbsVolumeLister interface {
 	// List lists all EbsVolumes in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EbsVolume, err error)
-	// Get retrieves the EbsVolume from the index for a given name.
-	Get(name string) (*v1alpha1.EbsVolume, error)
+	// EbsVolumes returns an object that can list and get EbsVolumes.
+	EbsVolumes(namespace string) EbsVolumeNamespaceLister
 	EbsVolumeListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ebsVolumeLister) List(selector labels.Selector) (ret []*v1alpha1.EbsVol
 	return ret, err
 }
 
-// Get retrieves the EbsVolume from the index for a given name.
-func (s *ebsVolumeLister) Get(name string) (*v1alpha1.EbsVolume, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EbsVolumes returns an object that can list and get EbsVolumes.
+func (s *ebsVolumeLister) EbsVolumes(namespace string) EbsVolumeNamespaceLister {
+	return ebsVolumeNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EbsVolumeNamespaceLister helps list and get EbsVolumes.
+type EbsVolumeNamespaceLister interface {
+	// List lists all EbsVolumes in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EbsVolume, err error)
+	// Get retrieves the EbsVolume from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EbsVolume, error)
+	EbsVolumeNamespaceListerExpansion
+}
+
+// ebsVolumeNamespaceLister implements the EbsVolumeNamespaceLister
+// interface.
+type ebsVolumeNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EbsVolumes in the indexer for a given namespace.
+func (s ebsVolumeNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EbsVolume, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EbsVolume))
+	})
+	return ret, err
+}
+
+// Get retrieves the EbsVolume from the indexer for a given namespace and name.
+func (s ebsVolumeNamespaceLister) Get(name string) (*v1alpha1.EbsVolume, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

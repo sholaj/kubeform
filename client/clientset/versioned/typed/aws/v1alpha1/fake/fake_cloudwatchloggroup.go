@@ -31,6 +31,7 @@ import (
 // FakeCloudwatchLogGroups implements CloudwatchLogGroupInterface
 type FakeCloudwatchLogGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var cloudwatchloggroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "cloudwatchloggroups"}
@@ -40,7 +41,8 @@ var cloudwatchloggroupsKind = schema.GroupVersionKind{Group: "aws.kubeform.com",
 // Get takes name of the cloudwatchLogGroup, and returns the corresponding cloudwatchLogGroup object, and an error if there is any.
 func (c *FakeCloudwatchLogGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudwatchLogGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cloudwatchloggroupsResource, name), &v1alpha1.CloudwatchLogGroup{})
+		Invokes(testing.NewGetAction(cloudwatchloggroupsResource, c.ns, name), &v1alpha1.CloudwatchLogGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCloudwatchLogGroups) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of CloudwatchLogGroups that match those selectors.
 func (c *FakeCloudwatchLogGroups) List(opts v1.ListOptions) (result *v1alpha1.CloudwatchLogGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cloudwatchloggroupsResource, cloudwatchloggroupsKind, opts), &v1alpha1.CloudwatchLogGroupList{})
+		Invokes(testing.NewListAction(cloudwatchloggroupsResource, cloudwatchloggroupsKind, c.ns, opts), &v1alpha1.CloudwatchLogGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCloudwatchLogGroups) List(opts v1.ListOptions) (result *v1alpha1.Cl
 // Watch returns a watch.Interface that watches the requested cloudwatchLogGroups.
 func (c *FakeCloudwatchLogGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cloudwatchloggroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(cloudwatchloggroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cloudwatchLogGroup and creates it.  Returns the server's representation of the cloudwatchLogGroup, and an error, if there is any.
 func (c *FakeCloudwatchLogGroups) Create(cloudwatchLogGroup *v1alpha1.CloudwatchLogGroup) (result *v1alpha1.CloudwatchLogGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cloudwatchloggroupsResource, cloudwatchLogGroup), &v1alpha1.CloudwatchLogGroup{})
+		Invokes(testing.NewCreateAction(cloudwatchloggroupsResource, c.ns, cloudwatchLogGroup), &v1alpha1.CloudwatchLogGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCloudwatchLogGroups) Create(cloudwatchLogGroup *v1alpha1.Cloudwatch
 // Update takes the representation of a cloudwatchLogGroup and updates it. Returns the server's representation of the cloudwatchLogGroup, and an error, if there is any.
 func (c *FakeCloudwatchLogGroups) Update(cloudwatchLogGroup *v1alpha1.CloudwatchLogGroup) (result *v1alpha1.CloudwatchLogGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cloudwatchloggroupsResource, cloudwatchLogGroup), &v1alpha1.CloudwatchLogGroup{})
+		Invokes(testing.NewUpdateAction(cloudwatchloggroupsResource, c.ns, cloudwatchLogGroup), &v1alpha1.CloudwatchLogGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCloudwatchLogGroups) Update(cloudwatchLogGroup *v1alpha1.Cloudwatch
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCloudwatchLogGroups) UpdateStatus(cloudwatchLogGroup *v1alpha1.CloudwatchLogGroup) (*v1alpha1.CloudwatchLogGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cloudwatchloggroupsResource, "status", cloudwatchLogGroup), &v1alpha1.CloudwatchLogGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(cloudwatchloggroupsResource, "status", c.ns, cloudwatchLogGroup), &v1alpha1.CloudwatchLogGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCloudwatchLogGroups) UpdateStatus(cloudwatchLogGroup *v1alpha1.Clou
 // Delete takes name of the cloudwatchLogGroup and deletes it. Returns an error if one occurs.
 func (c *FakeCloudwatchLogGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cloudwatchloggroupsResource, name), &v1alpha1.CloudwatchLogGroup{})
+		Invokes(testing.NewDeleteAction(cloudwatchloggroupsResource, c.ns, name), &v1alpha1.CloudwatchLogGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCloudwatchLogGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cloudwatchloggroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cloudwatchloggroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CloudwatchLogGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCloudwatchLogGroups) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched cloudwatchLogGroup.
 func (c *FakeCloudwatchLogGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudwatchLogGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cloudwatchloggroupsResource, name, pt, data, subresources...), &v1alpha1.CloudwatchLogGroup{})
+		Invokes(testing.NewPatchSubresourceAction(cloudwatchloggroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.CloudwatchLogGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

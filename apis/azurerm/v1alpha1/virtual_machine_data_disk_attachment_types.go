@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,14 +19,15 @@ type VirtualMachineDataDiskAttachment struct {
 }
 
 type VirtualMachineDataDiskAttachmentSpec struct {
-	Caching string `json:"caching"`
+	Caching string `json:"caching" tf:"caching"`
 	// +optional
-	CreateOption     string `json:"create_option,omitempty"`
-	Lun              int    `json:"lun"`
-	ManagedDiskId    string `json:"managed_disk_id"`
-	VirtualMachineId string `json:"virtual_machine_id"`
+	CreateOption     string `json:"createOption,omitempty" tf:"create_option,omitempty"`
+	Lun              int    `json:"lun" tf:"lun"`
+	ManagedDiskID    string `json:"managedDiskID" tf:"managed_disk_id"`
+	VirtualMachineID string `json:"virtualMachineID" tf:"virtual_machine_id"`
 	// +optional
-	WriteAcceleratorEnabled bool `json:"write_accelerator_enabled,omitempty"`
+	WriteAcceleratorEnabled bool                      `json:"writeAcceleratorEnabled,omitempty" tf:"write_accelerator_enabled,omitempty"`
+	ProviderRef             core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type VirtualMachineDataDiskAttachmentStatus struct {
@@ -34,7 +35,9 @@ type VirtualMachineDataDiskAttachmentStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

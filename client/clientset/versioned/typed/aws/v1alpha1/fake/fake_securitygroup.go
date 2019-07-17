@@ -31,6 +31,7 @@ import (
 // FakeSecurityGroups implements SecurityGroupInterface
 type FakeSecurityGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var securitygroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "securitygroups"}
@@ -40,7 +41,8 @@ var securitygroupsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Vers
 // Get takes name of the securityGroup, and returns the corresponding securityGroup object, and an error if there is any.
 func (c *FakeSecurityGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.SecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(securitygroupsResource, name), &v1alpha1.SecurityGroup{})
+		Invokes(testing.NewGetAction(securitygroupsResource, c.ns, name), &v1alpha1.SecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSecurityGroups) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of SecurityGroups that match those selectors.
 func (c *FakeSecurityGroups) List(opts v1.ListOptions) (result *v1alpha1.SecurityGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(securitygroupsResource, securitygroupsKind, opts), &v1alpha1.SecurityGroupList{})
+		Invokes(testing.NewListAction(securitygroupsResource, securitygroupsKind, c.ns, opts), &v1alpha1.SecurityGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSecurityGroups) List(opts v1.ListOptions) (result *v1alpha1.Securit
 // Watch returns a watch.Interface that watches the requested securityGroups.
 func (c *FakeSecurityGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(securitygroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(securitygroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a securityGroup and creates it.  Returns the server's representation of the securityGroup, and an error, if there is any.
 func (c *FakeSecurityGroups) Create(securityGroup *v1alpha1.SecurityGroup) (result *v1alpha1.SecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(securitygroupsResource, securityGroup), &v1alpha1.SecurityGroup{})
+		Invokes(testing.NewCreateAction(securitygroupsResource, c.ns, securityGroup), &v1alpha1.SecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSecurityGroups) Create(securityGroup *v1alpha1.SecurityGroup) (resu
 // Update takes the representation of a securityGroup and updates it. Returns the server's representation of the securityGroup, and an error, if there is any.
 func (c *FakeSecurityGroups) Update(securityGroup *v1alpha1.SecurityGroup) (result *v1alpha1.SecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(securitygroupsResource, securityGroup), &v1alpha1.SecurityGroup{})
+		Invokes(testing.NewUpdateAction(securitygroupsResource, c.ns, securityGroup), &v1alpha1.SecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSecurityGroups) Update(securityGroup *v1alpha1.SecurityGroup) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSecurityGroups) UpdateStatus(securityGroup *v1alpha1.SecurityGroup) (*v1alpha1.SecurityGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(securitygroupsResource, "status", securityGroup), &v1alpha1.SecurityGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(securitygroupsResource, "status", c.ns, securityGroup), &v1alpha1.SecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSecurityGroups) UpdateStatus(securityGroup *v1alpha1.SecurityGroup)
 // Delete takes name of the securityGroup and deletes it. Returns an error if one occurs.
 func (c *FakeSecurityGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(securitygroupsResource, name), &v1alpha1.SecurityGroup{})
+		Invokes(testing.NewDeleteAction(securitygroupsResource, c.ns, name), &v1alpha1.SecurityGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSecurityGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(securitygroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(securitygroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SecurityGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSecurityGroups) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched securityGroup.
 func (c *FakeSecurityGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(securitygroupsResource, name, pt, data, subresources...), &v1alpha1.SecurityGroup{})
+		Invokes(testing.NewPatchSubresourceAction(securitygroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

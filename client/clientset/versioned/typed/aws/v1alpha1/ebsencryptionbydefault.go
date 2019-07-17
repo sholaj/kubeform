@@ -32,7 +32,7 @@ import (
 // EbsEncryptionByDefaultsGetter has a method to return a EbsEncryptionByDefaultInterface.
 // A group's client should implement this interface.
 type EbsEncryptionByDefaultsGetter interface {
-	EbsEncryptionByDefaults() EbsEncryptionByDefaultInterface
+	EbsEncryptionByDefaults(namespace string) EbsEncryptionByDefaultInterface
 }
 
 // EbsEncryptionByDefaultInterface has methods to work with EbsEncryptionByDefault resources.
@@ -52,12 +52,14 @@ type EbsEncryptionByDefaultInterface interface {
 // ebsEncryptionByDefaults implements EbsEncryptionByDefaultInterface
 type ebsEncryptionByDefaults struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEbsEncryptionByDefaults returns a EbsEncryptionByDefaults
-func newEbsEncryptionByDefaults(c *AwsV1alpha1Client) *ebsEncryptionByDefaults {
+func newEbsEncryptionByDefaults(c *AwsV1alpha1Client, namespace string) *ebsEncryptionByDefaults {
 	return &ebsEncryptionByDefaults{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEbsEncryptionByDefaults(c *AwsV1alpha1Client) *ebsEncryptionByDefaults {
 func (c *ebsEncryptionByDefaults) Get(name string, options v1.GetOptions) (result *v1alpha1.EbsEncryptionByDefault, err error) {
 	result = &v1alpha1.EbsEncryptionByDefault{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ebsencryptionbydefaults").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ebsEncryptionByDefaults) List(opts v1.ListOptions) (result *v1alpha1.Eb
 	}
 	result = &v1alpha1.EbsEncryptionByDefaultList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ebsencryptionbydefaults").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ebsEncryptionByDefaults) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ebsencryptionbydefaults").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ebsEncryptionByDefaults) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *ebsEncryptionByDefaults) Create(ebsEncryptionByDefault *v1alpha1.EbsEncryptionByDefault) (result *v1alpha1.EbsEncryptionByDefault, err error) {
 	result = &v1alpha1.EbsEncryptionByDefault{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ebsencryptionbydefaults").
 		Body(ebsEncryptionByDefault).
 		Do().
@@ -118,6 +124,7 @@ func (c *ebsEncryptionByDefaults) Create(ebsEncryptionByDefault *v1alpha1.EbsEnc
 func (c *ebsEncryptionByDefaults) Update(ebsEncryptionByDefault *v1alpha1.EbsEncryptionByDefault) (result *v1alpha1.EbsEncryptionByDefault, err error) {
 	result = &v1alpha1.EbsEncryptionByDefault{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ebsencryptionbydefaults").
 		Name(ebsEncryptionByDefault.Name).
 		Body(ebsEncryptionByDefault).
@@ -132,6 +139,7 @@ func (c *ebsEncryptionByDefaults) Update(ebsEncryptionByDefault *v1alpha1.EbsEnc
 func (c *ebsEncryptionByDefaults) UpdateStatus(ebsEncryptionByDefault *v1alpha1.EbsEncryptionByDefault) (result *v1alpha1.EbsEncryptionByDefault, err error) {
 	result = &v1alpha1.EbsEncryptionByDefault{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ebsencryptionbydefaults").
 		Name(ebsEncryptionByDefault.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ebsEncryptionByDefaults) UpdateStatus(ebsEncryptionByDefault *v1alpha1.
 // Delete takes name of the ebsEncryptionByDefault and deletes it. Returns an error if one occurs.
 func (c *ebsEncryptionByDefaults) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ebsencryptionbydefaults").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ebsEncryptionByDefaults) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ebsencryptionbydefaults").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ebsEncryptionByDefaults) DeleteCollection(options *v1.DeleteOptions, li
 func (c *ebsEncryptionByDefaults) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EbsEncryptionByDefault, err error) {
 	result = &v1alpha1.EbsEncryptionByDefault{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ebsencryptionbydefaults").
 		SubResource(subresources...).
 		Name(name).

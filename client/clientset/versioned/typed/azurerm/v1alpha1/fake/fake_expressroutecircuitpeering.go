@@ -31,6 +31,7 @@ import (
 // FakeExpressRouteCircuitPeerings implements ExpressRouteCircuitPeeringInterface
 type FakeExpressRouteCircuitPeerings struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var expressroutecircuitpeeringsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "expressroutecircuitpeerings"}
@@ -40,7 +41,8 @@ var expressroutecircuitpeeringsKind = schema.GroupVersionKind{Group: "azurerm.ku
 // Get takes name of the expressRouteCircuitPeering, and returns the corresponding expressRouteCircuitPeering object, and an error if there is any.
 func (c *FakeExpressRouteCircuitPeerings) Get(name string, options v1.GetOptions) (result *v1alpha1.ExpressRouteCircuitPeering, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(expressroutecircuitpeeringsResource, name), &v1alpha1.ExpressRouteCircuitPeering{})
+		Invokes(testing.NewGetAction(expressroutecircuitpeeringsResource, c.ns, name), &v1alpha1.ExpressRouteCircuitPeering{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeExpressRouteCircuitPeerings) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of ExpressRouteCircuitPeerings that match those selectors.
 func (c *FakeExpressRouteCircuitPeerings) List(opts v1.ListOptions) (result *v1alpha1.ExpressRouteCircuitPeeringList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(expressroutecircuitpeeringsResource, expressroutecircuitpeeringsKind, opts), &v1alpha1.ExpressRouteCircuitPeeringList{})
+		Invokes(testing.NewListAction(expressroutecircuitpeeringsResource, expressroutecircuitpeeringsKind, c.ns, opts), &v1alpha1.ExpressRouteCircuitPeeringList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeExpressRouteCircuitPeerings) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested expressRouteCircuitPeerings.
 func (c *FakeExpressRouteCircuitPeerings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(expressroutecircuitpeeringsResource, opts))
+		InvokesWatch(testing.NewWatchAction(expressroutecircuitpeeringsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a expressRouteCircuitPeering and creates it.  Returns the server's representation of the expressRouteCircuitPeering, and an error, if there is any.
 func (c *FakeExpressRouteCircuitPeerings) Create(expressRouteCircuitPeering *v1alpha1.ExpressRouteCircuitPeering) (result *v1alpha1.ExpressRouteCircuitPeering, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(expressroutecircuitpeeringsResource, expressRouteCircuitPeering), &v1alpha1.ExpressRouteCircuitPeering{})
+		Invokes(testing.NewCreateAction(expressroutecircuitpeeringsResource, c.ns, expressRouteCircuitPeering), &v1alpha1.ExpressRouteCircuitPeering{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeExpressRouteCircuitPeerings) Create(expressRouteCircuitPeering *v1a
 // Update takes the representation of a expressRouteCircuitPeering and updates it. Returns the server's representation of the expressRouteCircuitPeering, and an error, if there is any.
 func (c *FakeExpressRouteCircuitPeerings) Update(expressRouteCircuitPeering *v1alpha1.ExpressRouteCircuitPeering) (result *v1alpha1.ExpressRouteCircuitPeering, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(expressroutecircuitpeeringsResource, expressRouteCircuitPeering), &v1alpha1.ExpressRouteCircuitPeering{})
+		Invokes(testing.NewUpdateAction(expressroutecircuitpeeringsResource, c.ns, expressRouteCircuitPeering), &v1alpha1.ExpressRouteCircuitPeering{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeExpressRouteCircuitPeerings) Update(expressRouteCircuitPeering *v1a
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeExpressRouteCircuitPeerings) UpdateStatus(expressRouteCircuitPeering *v1alpha1.ExpressRouteCircuitPeering) (*v1alpha1.ExpressRouteCircuitPeering, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(expressroutecircuitpeeringsResource, "status", expressRouteCircuitPeering), &v1alpha1.ExpressRouteCircuitPeering{})
+		Invokes(testing.NewUpdateSubresourceAction(expressroutecircuitpeeringsResource, "status", c.ns, expressRouteCircuitPeering), &v1alpha1.ExpressRouteCircuitPeering{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeExpressRouteCircuitPeerings) UpdateStatus(expressRouteCircuitPeerin
 // Delete takes name of the expressRouteCircuitPeering and deletes it. Returns an error if one occurs.
 func (c *FakeExpressRouteCircuitPeerings) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(expressroutecircuitpeeringsResource, name), &v1alpha1.ExpressRouteCircuitPeering{})
+		Invokes(testing.NewDeleteAction(expressroutecircuitpeeringsResource, c.ns, name), &v1alpha1.ExpressRouteCircuitPeering{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeExpressRouteCircuitPeerings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(expressroutecircuitpeeringsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(expressroutecircuitpeeringsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ExpressRouteCircuitPeeringList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeExpressRouteCircuitPeerings) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched expressRouteCircuitPeering.
 func (c *FakeExpressRouteCircuitPeerings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ExpressRouteCircuitPeering, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(expressroutecircuitpeeringsResource, name, pt, data, subresources...), &v1alpha1.ExpressRouteCircuitPeering{})
+		Invokes(testing.NewPatchSubresourceAction(expressroutecircuitpeeringsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ExpressRouteCircuitPeering{})
+
 	if obj == nil {
 		return nil, err
 	}

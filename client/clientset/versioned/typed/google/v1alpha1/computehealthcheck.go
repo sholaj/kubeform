@@ -32,7 +32,7 @@ import (
 // ComputeHealthChecksGetter has a method to return a ComputeHealthCheckInterface.
 // A group's client should implement this interface.
 type ComputeHealthChecksGetter interface {
-	ComputeHealthChecks() ComputeHealthCheckInterface
+	ComputeHealthChecks(namespace string) ComputeHealthCheckInterface
 }
 
 // ComputeHealthCheckInterface has methods to work with ComputeHealthCheck resources.
@@ -52,12 +52,14 @@ type ComputeHealthCheckInterface interface {
 // computeHealthChecks implements ComputeHealthCheckInterface
 type computeHealthChecks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeHealthChecks returns a ComputeHealthChecks
-func newComputeHealthChecks(c *GoogleV1alpha1Client) *computeHealthChecks {
+func newComputeHealthChecks(c *GoogleV1alpha1Client, namespace string) *computeHealthChecks {
 	return &computeHealthChecks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeHealthChecks(c *GoogleV1alpha1Client) *computeHealthChecks {
 func (c *computeHealthChecks) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeHealthCheck, err error) {
 	result = &v1alpha1.ComputeHealthCheck{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computehealthchecks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeHealthChecks) List(opts v1.ListOptions) (result *v1alpha1.Comput
 	}
 	result = &v1alpha1.ComputeHealthCheckList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computehealthchecks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeHealthChecks) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computehealthchecks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeHealthChecks) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *computeHealthChecks) Create(computeHealthCheck *v1alpha1.ComputeHealthCheck) (result *v1alpha1.ComputeHealthCheck, err error) {
 	result = &v1alpha1.ComputeHealthCheck{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computehealthchecks").
 		Body(computeHealthCheck).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeHealthChecks) Create(computeHealthCheck *v1alpha1.ComputeHealthC
 func (c *computeHealthChecks) Update(computeHealthCheck *v1alpha1.ComputeHealthCheck) (result *v1alpha1.ComputeHealthCheck, err error) {
 	result = &v1alpha1.ComputeHealthCheck{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computehealthchecks").
 		Name(computeHealthCheck.Name).
 		Body(computeHealthCheck).
@@ -132,6 +139,7 @@ func (c *computeHealthChecks) Update(computeHealthCheck *v1alpha1.ComputeHealthC
 func (c *computeHealthChecks) UpdateStatus(computeHealthCheck *v1alpha1.ComputeHealthCheck) (result *v1alpha1.ComputeHealthCheck, err error) {
 	result = &v1alpha1.ComputeHealthCheck{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computehealthchecks").
 		Name(computeHealthCheck.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeHealthChecks) UpdateStatus(computeHealthCheck *v1alpha1.ComputeH
 // Delete takes name of the computeHealthCheck and deletes it. Returns an error if one occurs.
 func (c *computeHealthChecks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computehealthchecks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeHealthChecks) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computehealthchecks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeHealthChecks) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *computeHealthChecks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeHealthCheck, err error) {
 	result = &v1alpha1.ComputeHealthCheck{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computehealthchecks").
 		SubResource(subresources...).
 		Name(name).

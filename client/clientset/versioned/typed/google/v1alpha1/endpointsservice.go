@@ -32,7 +32,7 @@ import (
 // EndpointsServicesGetter has a method to return a EndpointsServiceInterface.
 // A group's client should implement this interface.
 type EndpointsServicesGetter interface {
-	EndpointsServices() EndpointsServiceInterface
+	EndpointsServices(namespace string) EndpointsServiceInterface
 }
 
 // EndpointsServiceInterface has methods to work with EndpointsService resources.
@@ -52,12 +52,14 @@ type EndpointsServiceInterface interface {
 // endpointsServices implements EndpointsServiceInterface
 type endpointsServices struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEndpointsServices returns a EndpointsServices
-func newEndpointsServices(c *GoogleV1alpha1Client) *endpointsServices {
+func newEndpointsServices(c *GoogleV1alpha1Client, namespace string) *endpointsServices {
 	return &endpointsServices{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEndpointsServices(c *GoogleV1alpha1Client) *endpointsServices {
 func (c *endpointsServices) Get(name string, options v1.GetOptions) (result *v1alpha1.EndpointsService, err error) {
 	result = &v1alpha1.EndpointsService{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("endpointsservices").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *endpointsServices) List(opts v1.ListOptions) (result *v1alpha1.Endpoint
 	}
 	result = &v1alpha1.EndpointsServiceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("endpointsservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *endpointsServices) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("endpointsservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *endpointsServices) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *endpointsServices) Create(endpointsService *v1alpha1.EndpointsService) (result *v1alpha1.EndpointsService, err error) {
 	result = &v1alpha1.EndpointsService{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("endpointsservices").
 		Body(endpointsService).
 		Do().
@@ -118,6 +124,7 @@ func (c *endpointsServices) Create(endpointsService *v1alpha1.EndpointsService) 
 func (c *endpointsServices) Update(endpointsService *v1alpha1.EndpointsService) (result *v1alpha1.EndpointsService, err error) {
 	result = &v1alpha1.EndpointsService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("endpointsservices").
 		Name(endpointsService.Name).
 		Body(endpointsService).
@@ -132,6 +139,7 @@ func (c *endpointsServices) Update(endpointsService *v1alpha1.EndpointsService) 
 func (c *endpointsServices) UpdateStatus(endpointsService *v1alpha1.EndpointsService) (result *v1alpha1.EndpointsService, err error) {
 	result = &v1alpha1.EndpointsService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("endpointsservices").
 		Name(endpointsService.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *endpointsServices) UpdateStatus(endpointsService *v1alpha1.EndpointsSer
 // Delete takes name of the endpointsService and deletes it. Returns an error if one occurs.
 func (c *endpointsServices) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("endpointsservices").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *endpointsServices) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("endpointsservices").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *endpointsServices) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *endpointsServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EndpointsService, err error) {
 	result = &v1alpha1.EndpointsService{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("endpointsservices").
 		SubResource(subresources...).
 		Name(name).

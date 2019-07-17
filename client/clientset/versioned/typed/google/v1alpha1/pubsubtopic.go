@@ -32,7 +32,7 @@ import (
 // PubsubTopicsGetter has a method to return a PubsubTopicInterface.
 // A group's client should implement this interface.
 type PubsubTopicsGetter interface {
-	PubsubTopics() PubsubTopicInterface
+	PubsubTopics(namespace string) PubsubTopicInterface
 }
 
 // PubsubTopicInterface has methods to work with PubsubTopic resources.
@@ -52,12 +52,14 @@ type PubsubTopicInterface interface {
 // pubsubTopics implements PubsubTopicInterface
 type pubsubTopics struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPubsubTopics returns a PubsubTopics
-func newPubsubTopics(c *GoogleV1alpha1Client) *pubsubTopics {
+func newPubsubTopics(c *GoogleV1alpha1Client, namespace string) *pubsubTopics {
 	return &pubsubTopics{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPubsubTopics(c *GoogleV1alpha1Client) *pubsubTopics {
 func (c *pubsubTopics) Get(name string, options v1.GetOptions) (result *v1alpha1.PubsubTopic, err error) {
 	result = &v1alpha1.PubsubTopic{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pubsubtopics").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *pubsubTopics) List(opts v1.ListOptions) (result *v1alpha1.PubsubTopicLi
 	}
 	result = &v1alpha1.PubsubTopicList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pubsubtopics").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *pubsubTopics) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("pubsubtopics").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *pubsubTopics) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *pubsubTopics) Create(pubsubTopic *v1alpha1.PubsubTopic) (result *v1alpha1.PubsubTopic, err error) {
 	result = &v1alpha1.PubsubTopic{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("pubsubtopics").
 		Body(pubsubTopic).
 		Do().
@@ -118,6 +124,7 @@ func (c *pubsubTopics) Create(pubsubTopic *v1alpha1.PubsubTopic) (result *v1alph
 func (c *pubsubTopics) Update(pubsubTopic *v1alpha1.PubsubTopic) (result *v1alpha1.PubsubTopic, err error) {
 	result = &v1alpha1.PubsubTopic{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pubsubtopics").
 		Name(pubsubTopic.Name).
 		Body(pubsubTopic).
@@ -132,6 +139,7 @@ func (c *pubsubTopics) Update(pubsubTopic *v1alpha1.PubsubTopic) (result *v1alph
 func (c *pubsubTopics) UpdateStatus(pubsubTopic *v1alpha1.PubsubTopic) (result *v1alpha1.PubsubTopic, err error) {
 	result = &v1alpha1.PubsubTopic{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pubsubtopics").
 		Name(pubsubTopic.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *pubsubTopics) UpdateStatus(pubsubTopic *v1alpha1.PubsubTopic) (result *
 // Delete takes name of the pubsubTopic and deletes it. Returns an error if one occurs.
 func (c *pubsubTopics) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pubsubtopics").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *pubsubTopics) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pubsubtopics").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *pubsubTopics) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *pubsubTopics) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PubsubTopic, err error) {
 	result = &v1alpha1.PubsubTopic{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("pubsubtopics").
 		SubResource(subresources...).
 		Name(name).

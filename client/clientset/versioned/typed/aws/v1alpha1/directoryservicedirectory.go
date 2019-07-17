@@ -32,7 +32,7 @@ import (
 // DirectoryServiceDirectoriesGetter has a method to return a DirectoryServiceDirectoryInterface.
 // A group's client should implement this interface.
 type DirectoryServiceDirectoriesGetter interface {
-	DirectoryServiceDirectories() DirectoryServiceDirectoryInterface
+	DirectoryServiceDirectories(namespace string) DirectoryServiceDirectoryInterface
 }
 
 // DirectoryServiceDirectoryInterface has methods to work with DirectoryServiceDirectory resources.
@@ -52,12 +52,14 @@ type DirectoryServiceDirectoryInterface interface {
 // directoryServiceDirectories implements DirectoryServiceDirectoryInterface
 type directoryServiceDirectories struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDirectoryServiceDirectories returns a DirectoryServiceDirectories
-func newDirectoryServiceDirectories(c *AwsV1alpha1Client) *directoryServiceDirectories {
+func newDirectoryServiceDirectories(c *AwsV1alpha1Client, namespace string) *directoryServiceDirectories {
 	return &directoryServiceDirectories{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDirectoryServiceDirectories(c *AwsV1alpha1Client) *directoryServiceDirec
 func (c *directoryServiceDirectories) Get(name string, options v1.GetOptions) (result *v1alpha1.DirectoryServiceDirectory, err error) {
 	result = &v1alpha1.DirectoryServiceDirectory{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("directoryservicedirectories").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *directoryServiceDirectories) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.DirectoryServiceDirectoryList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("directoryservicedirectories").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *directoryServiceDirectories) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("directoryservicedirectories").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *directoryServiceDirectories) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *directoryServiceDirectories) Create(directoryServiceDirectory *v1alpha1.DirectoryServiceDirectory) (result *v1alpha1.DirectoryServiceDirectory, err error) {
 	result = &v1alpha1.DirectoryServiceDirectory{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("directoryservicedirectories").
 		Body(directoryServiceDirectory).
 		Do().
@@ -118,6 +124,7 @@ func (c *directoryServiceDirectories) Create(directoryServiceDirectory *v1alpha1
 func (c *directoryServiceDirectories) Update(directoryServiceDirectory *v1alpha1.DirectoryServiceDirectory) (result *v1alpha1.DirectoryServiceDirectory, err error) {
 	result = &v1alpha1.DirectoryServiceDirectory{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("directoryservicedirectories").
 		Name(directoryServiceDirectory.Name).
 		Body(directoryServiceDirectory).
@@ -132,6 +139,7 @@ func (c *directoryServiceDirectories) Update(directoryServiceDirectory *v1alpha1
 func (c *directoryServiceDirectories) UpdateStatus(directoryServiceDirectory *v1alpha1.DirectoryServiceDirectory) (result *v1alpha1.DirectoryServiceDirectory, err error) {
 	result = &v1alpha1.DirectoryServiceDirectory{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("directoryservicedirectories").
 		Name(directoryServiceDirectory.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *directoryServiceDirectories) UpdateStatus(directoryServiceDirectory *v1
 // Delete takes name of the directoryServiceDirectory and deletes it. Returns an error if one occurs.
 func (c *directoryServiceDirectories) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("directoryservicedirectories").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *directoryServiceDirectories) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("directoryservicedirectories").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *directoryServiceDirectories) DeleteCollection(options *v1.DeleteOptions
 func (c *directoryServiceDirectories) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DirectoryServiceDirectory, err error) {
 	result = &v1alpha1.DirectoryServiceDirectory{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("directoryservicedirectories").
 		SubResource(subresources...).
 		Name(name).

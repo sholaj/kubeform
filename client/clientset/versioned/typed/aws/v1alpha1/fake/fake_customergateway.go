@@ -31,6 +31,7 @@ import (
 // FakeCustomerGateways implements CustomerGatewayInterface
 type FakeCustomerGateways struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var customergatewaysResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "customergateways"}
@@ -40,7 +41,8 @@ var customergatewaysKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ve
 // Get takes name of the customerGateway, and returns the corresponding customerGateway object, and an error if there is any.
 func (c *FakeCustomerGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.CustomerGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(customergatewaysResource, name), &v1alpha1.CustomerGateway{})
+		Invokes(testing.NewGetAction(customergatewaysResource, c.ns, name), &v1alpha1.CustomerGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCustomerGateways) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of CustomerGateways that match those selectors.
 func (c *FakeCustomerGateways) List(opts v1.ListOptions) (result *v1alpha1.CustomerGatewayList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(customergatewaysResource, customergatewaysKind, opts), &v1alpha1.CustomerGatewayList{})
+		Invokes(testing.NewListAction(customergatewaysResource, customergatewaysKind, c.ns, opts), &v1alpha1.CustomerGatewayList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCustomerGateways) List(opts v1.ListOptions) (result *v1alpha1.Custo
 // Watch returns a watch.Interface that watches the requested customerGateways.
 func (c *FakeCustomerGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(customergatewaysResource, opts))
+		InvokesWatch(testing.NewWatchAction(customergatewaysResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a customerGateway and creates it.  Returns the server's representation of the customerGateway, and an error, if there is any.
 func (c *FakeCustomerGateways) Create(customerGateway *v1alpha1.CustomerGateway) (result *v1alpha1.CustomerGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(customergatewaysResource, customerGateway), &v1alpha1.CustomerGateway{})
+		Invokes(testing.NewCreateAction(customergatewaysResource, c.ns, customerGateway), &v1alpha1.CustomerGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCustomerGateways) Create(customerGateway *v1alpha1.CustomerGateway)
 // Update takes the representation of a customerGateway and updates it. Returns the server's representation of the customerGateway, and an error, if there is any.
 func (c *FakeCustomerGateways) Update(customerGateway *v1alpha1.CustomerGateway) (result *v1alpha1.CustomerGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(customergatewaysResource, customerGateway), &v1alpha1.CustomerGateway{})
+		Invokes(testing.NewUpdateAction(customergatewaysResource, c.ns, customerGateway), &v1alpha1.CustomerGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCustomerGateways) Update(customerGateway *v1alpha1.CustomerGateway)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCustomerGateways) UpdateStatus(customerGateway *v1alpha1.CustomerGateway) (*v1alpha1.CustomerGateway, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(customergatewaysResource, "status", customerGateway), &v1alpha1.CustomerGateway{})
+		Invokes(testing.NewUpdateSubresourceAction(customergatewaysResource, "status", c.ns, customerGateway), &v1alpha1.CustomerGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCustomerGateways) UpdateStatus(customerGateway *v1alpha1.CustomerGa
 // Delete takes name of the customerGateway and deletes it. Returns an error if one occurs.
 func (c *FakeCustomerGateways) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(customergatewaysResource, name), &v1alpha1.CustomerGateway{})
+		Invokes(testing.NewDeleteAction(customergatewaysResource, c.ns, name), &v1alpha1.CustomerGateway{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCustomerGateways) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(customergatewaysResource, listOptions)
+	action := testing.NewDeleteCollectionAction(customergatewaysResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CustomerGatewayList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCustomerGateways) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched customerGateway.
 func (c *FakeCustomerGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CustomerGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(customergatewaysResource, name, pt, data, subresources...), &v1alpha1.CustomerGateway{})
+		Invokes(testing.NewPatchSubresourceAction(customergatewaysResource, c.ns, name, pt, data, subresources...), &v1alpha1.CustomerGateway{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,21 +19,22 @@ type SharedImageVersion struct {
 }
 
 type SharedImageVersionSpecTargetRegion struct {
-	Name                 string `json:"name"`
-	RegionalReplicaCount int    `json:"regional_replica_count"`
+	Name                 string `json:"name" tf:"name"`
+	RegionalReplicaCount int    `json:"regionalReplicaCount" tf:"regional_replica_count"`
 }
 
 type SharedImageVersionSpec struct {
 	// +optional
-	ExcludeFromLatest bool   `json:"exclude_from_latest,omitempty"`
-	GalleryName       string `json:"gallery_name"`
-	ImageName         string `json:"image_name"`
-	Location          string `json:"location"`
-	ManagedImageId    string `json:"managed_image_id"`
-	Name              string `json:"name"`
-	ResourceGroupName string `json:"resource_group_name"`
+	ExcludeFromLatest bool   `json:"excludeFromLatest,omitempty" tf:"exclude_from_latest,omitempty"`
+	GalleryName       string `json:"galleryName" tf:"gallery_name"`
+	ImageName         string `json:"imageName" tf:"image_name"`
+	Location          string `json:"location" tf:"location"`
+	ManagedImageID    string `json:"managedImageID" tf:"managed_image_id"`
+	Name              string `json:"name" tf:"name"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +kubebuilder:validation:UniqueItems=true
-	TargetRegion []SharedImageVersionSpec `json:"target_region"`
+	TargetRegion []SharedImageVersionSpecTargetRegion `json:"targetRegion" tf:"target_region"`
+	ProviderRef  core.LocalObjectReference            `json:"providerRef" tf:"-"`
 }
 
 type SharedImageVersionStatus struct {
@@ -41,7 +42,9 @@ type SharedImageVersionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

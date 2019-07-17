@@ -31,6 +31,7 @@ import (
 // FakeImages implements ImageInterface
 type FakeImages struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var imagesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "images"}
@@ -40,7 +41,8 @@ var imagesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version:
 // Get takes name of the image, and returns the corresponding image object, and an error if there is any.
 func (c *FakeImages) Get(name string, options v1.GetOptions) (result *v1alpha1.Image, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(imagesResource, name), &v1alpha1.Image{})
+		Invokes(testing.NewGetAction(imagesResource, c.ns, name), &v1alpha1.Image{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeImages) Get(name string, options v1.GetOptions) (result *v1alpha1.I
 // List takes label and field selectors, and returns the list of Images that match those selectors.
 func (c *FakeImages) List(opts v1.ListOptions) (result *v1alpha1.ImageList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(imagesResource, imagesKind, opts), &v1alpha1.ImageList{})
+		Invokes(testing.NewListAction(imagesResource, imagesKind, c.ns, opts), &v1alpha1.ImageList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeImages) List(opts v1.ListOptions) (result *v1alpha1.ImageList, err 
 // Watch returns a watch.Interface that watches the requested images.
 func (c *FakeImages) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(imagesResource, opts))
+		InvokesWatch(testing.NewWatchAction(imagesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a image and creates it.  Returns the server's representation of the image, and an error, if there is any.
 func (c *FakeImages) Create(image *v1alpha1.Image) (result *v1alpha1.Image, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(imagesResource, image), &v1alpha1.Image{})
+		Invokes(testing.NewCreateAction(imagesResource, c.ns, image), &v1alpha1.Image{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeImages) Create(image *v1alpha1.Image) (result *v1alpha1.Image, err 
 // Update takes the representation of a image and updates it. Returns the server's representation of the image, and an error, if there is any.
 func (c *FakeImages) Update(image *v1alpha1.Image) (result *v1alpha1.Image, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(imagesResource, image), &v1alpha1.Image{})
+		Invokes(testing.NewUpdateAction(imagesResource, c.ns, image), &v1alpha1.Image{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeImages) Update(image *v1alpha1.Image) (result *v1alpha1.Image, err 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeImages) UpdateStatus(image *v1alpha1.Image) (*v1alpha1.Image, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(imagesResource, "status", image), &v1alpha1.Image{})
+		Invokes(testing.NewUpdateSubresourceAction(imagesResource, "status", c.ns, image), &v1alpha1.Image{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeImages) UpdateStatus(image *v1alpha1.Image) (*v1alpha1.Image, error
 // Delete takes name of the image and deletes it. Returns an error if one occurs.
 func (c *FakeImages) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(imagesResource, name), &v1alpha1.Image{})
+		Invokes(testing.NewDeleteAction(imagesResource, c.ns, name), &v1alpha1.Image{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeImages) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(imagesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(imagesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ImageList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeImages) DeleteCollection(options *v1.DeleteOptions, listOptions v1.
 // Patch applies the patch and returns the patched image.
 func (c *FakeImages) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Image, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(imagesResource, name, pt, data, subresources...), &v1alpha1.Image{})
+		Invokes(testing.NewPatchSubresourceAction(imagesResource, c.ns, name, pt, data, subresources...), &v1alpha1.Image{})
+
 	if obj == nil {
 		return nil, err
 	}

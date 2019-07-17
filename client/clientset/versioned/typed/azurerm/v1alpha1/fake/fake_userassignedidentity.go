@@ -31,6 +31,7 @@ import (
 // FakeUserAssignedIdentities implements UserAssignedIdentityInterface
 type FakeUserAssignedIdentities struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var userassignedidentitiesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "userassignedidentities"}
@@ -40,7 +41,8 @@ var userassignedidentitiesKind = schema.GroupVersionKind{Group: "azurerm.kubefor
 // Get takes name of the userAssignedIdentity, and returns the corresponding userAssignedIdentity object, and an error if there is any.
 func (c *FakeUserAssignedIdentities) Get(name string, options v1.GetOptions) (result *v1alpha1.UserAssignedIdentity, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(userassignedidentitiesResource, name), &v1alpha1.UserAssignedIdentity{})
+		Invokes(testing.NewGetAction(userassignedidentitiesResource, c.ns, name), &v1alpha1.UserAssignedIdentity{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeUserAssignedIdentities) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of UserAssignedIdentities that match those selectors.
 func (c *FakeUserAssignedIdentities) List(opts v1.ListOptions) (result *v1alpha1.UserAssignedIdentityList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(userassignedidentitiesResource, userassignedidentitiesKind, opts), &v1alpha1.UserAssignedIdentityList{})
+		Invokes(testing.NewListAction(userassignedidentitiesResource, userassignedidentitiesKind, c.ns, opts), &v1alpha1.UserAssignedIdentityList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeUserAssignedIdentities) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested userAssignedIdentities.
 func (c *FakeUserAssignedIdentities) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(userassignedidentitiesResource, opts))
+		InvokesWatch(testing.NewWatchAction(userassignedidentitiesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a userAssignedIdentity and creates it.  Returns the server's representation of the userAssignedIdentity, and an error, if there is any.
 func (c *FakeUserAssignedIdentities) Create(userAssignedIdentity *v1alpha1.UserAssignedIdentity) (result *v1alpha1.UserAssignedIdentity, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(userassignedidentitiesResource, userAssignedIdentity), &v1alpha1.UserAssignedIdentity{})
+		Invokes(testing.NewCreateAction(userassignedidentitiesResource, c.ns, userAssignedIdentity), &v1alpha1.UserAssignedIdentity{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeUserAssignedIdentities) Create(userAssignedIdentity *v1alpha1.UserA
 // Update takes the representation of a userAssignedIdentity and updates it. Returns the server's representation of the userAssignedIdentity, and an error, if there is any.
 func (c *FakeUserAssignedIdentities) Update(userAssignedIdentity *v1alpha1.UserAssignedIdentity) (result *v1alpha1.UserAssignedIdentity, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(userassignedidentitiesResource, userAssignedIdentity), &v1alpha1.UserAssignedIdentity{})
+		Invokes(testing.NewUpdateAction(userassignedidentitiesResource, c.ns, userAssignedIdentity), &v1alpha1.UserAssignedIdentity{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeUserAssignedIdentities) Update(userAssignedIdentity *v1alpha1.UserA
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeUserAssignedIdentities) UpdateStatus(userAssignedIdentity *v1alpha1.UserAssignedIdentity) (*v1alpha1.UserAssignedIdentity, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(userassignedidentitiesResource, "status", userAssignedIdentity), &v1alpha1.UserAssignedIdentity{})
+		Invokes(testing.NewUpdateSubresourceAction(userassignedidentitiesResource, "status", c.ns, userAssignedIdentity), &v1alpha1.UserAssignedIdentity{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeUserAssignedIdentities) UpdateStatus(userAssignedIdentity *v1alpha1
 // Delete takes name of the userAssignedIdentity and deletes it. Returns an error if one occurs.
 func (c *FakeUserAssignedIdentities) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(userassignedidentitiesResource, name), &v1alpha1.UserAssignedIdentity{})
+		Invokes(testing.NewDeleteAction(userassignedidentitiesResource, c.ns, name), &v1alpha1.UserAssignedIdentity{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeUserAssignedIdentities) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(userassignedidentitiesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(userassignedidentitiesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.UserAssignedIdentityList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeUserAssignedIdentities) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched userAssignedIdentity.
 func (c *FakeUserAssignedIdentities) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.UserAssignedIdentity, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(userassignedidentitiesResource, name, pt, data, subresources...), &v1alpha1.UserAssignedIdentity{})
+		Invokes(testing.NewPatchSubresourceAction(userassignedidentitiesResource, c.ns, name, pt, data, subresources...), &v1alpha1.UserAssignedIdentity{})
+
 	if obj == nil {
 		return nil, err
 	}

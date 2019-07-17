@@ -29,8 +29,8 @@ import (
 type VolumeAttachmentLister interface {
 	// List lists all VolumeAttachments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.VolumeAttachment, err error)
-	// Get retrieves the VolumeAttachment from the index for a given name.
-	Get(name string) (*v1alpha1.VolumeAttachment, error)
+	// VolumeAttachments returns an object that can list and get VolumeAttachments.
+	VolumeAttachments(namespace string) VolumeAttachmentNamespaceLister
 	VolumeAttachmentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *volumeAttachmentLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the VolumeAttachment from the index for a given name.
-func (s *volumeAttachmentLister) Get(name string) (*v1alpha1.VolumeAttachment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VolumeAttachments returns an object that can list and get VolumeAttachments.
+func (s *volumeAttachmentLister) VolumeAttachments(namespace string) VolumeAttachmentNamespaceLister {
+	return volumeAttachmentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VolumeAttachmentNamespaceLister helps list and get VolumeAttachments.
+type VolumeAttachmentNamespaceLister interface {
+	// List lists all VolumeAttachments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VolumeAttachment, err error)
+	// Get retrieves the VolumeAttachment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VolumeAttachment, error)
+	VolumeAttachmentNamespaceListerExpansion
+}
+
+// volumeAttachmentNamespaceLister implements the VolumeAttachmentNamespaceLister
+// interface.
+type volumeAttachmentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VolumeAttachments in the indexer for a given namespace.
+func (s volumeAttachmentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VolumeAttachment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VolumeAttachment))
+	})
+	return ret, err
+}
+
+// Get retrieves the VolumeAttachment from the indexer for a given namespace and name.
+func (s volumeAttachmentNamespaceLister) Get(name string) (*v1alpha1.VolumeAttachment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

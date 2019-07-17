@@ -29,8 +29,8 @@ import (
 type SqlActiveDirectoryAdministratorLister interface {
 	// List lists all SqlActiveDirectoryAdministrators in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SqlActiveDirectoryAdministrator, err error)
-	// Get retrieves the SqlActiveDirectoryAdministrator from the index for a given name.
-	Get(name string) (*v1alpha1.SqlActiveDirectoryAdministrator, error)
+	// SqlActiveDirectoryAdministrators returns an object that can list and get SqlActiveDirectoryAdministrators.
+	SqlActiveDirectoryAdministrators(namespace string) SqlActiveDirectoryAdministratorNamespaceLister
 	SqlActiveDirectoryAdministratorListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sqlActiveDirectoryAdministratorLister) List(selector labels.Selector) (
 	return ret, err
 }
 
-// Get retrieves the SqlActiveDirectoryAdministrator from the index for a given name.
-func (s *sqlActiveDirectoryAdministratorLister) Get(name string) (*v1alpha1.SqlActiveDirectoryAdministrator, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SqlActiveDirectoryAdministrators returns an object that can list and get SqlActiveDirectoryAdministrators.
+func (s *sqlActiveDirectoryAdministratorLister) SqlActiveDirectoryAdministrators(namespace string) SqlActiveDirectoryAdministratorNamespaceLister {
+	return sqlActiveDirectoryAdministratorNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SqlActiveDirectoryAdministratorNamespaceLister helps list and get SqlActiveDirectoryAdministrators.
+type SqlActiveDirectoryAdministratorNamespaceLister interface {
+	// List lists all SqlActiveDirectoryAdministrators in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SqlActiveDirectoryAdministrator, err error)
+	// Get retrieves the SqlActiveDirectoryAdministrator from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SqlActiveDirectoryAdministrator, error)
+	SqlActiveDirectoryAdministratorNamespaceListerExpansion
+}
+
+// sqlActiveDirectoryAdministratorNamespaceLister implements the SqlActiveDirectoryAdministratorNamespaceLister
+// interface.
+type sqlActiveDirectoryAdministratorNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SqlActiveDirectoryAdministrators in the indexer for a given namespace.
+func (s sqlActiveDirectoryAdministratorNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SqlActiveDirectoryAdministrator, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SqlActiveDirectoryAdministrator))
+	})
+	return ret, err
+}
+
+// Get retrieves the SqlActiveDirectoryAdministrator from the indexer for a given namespace and name.
+func (s sqlActiveDirectoryAdministratorNamespaceLister) Get(name string) (*v1alpha1.SqlActiveDirectoryAdministrator, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // ComputeRouterPeersGetter has a method to return a ComputeRouterPeerInterface.
 // A group's client should implement this interface.
 type ComputeRouterPeersGetter interface {
-	ComputeRouterPeers() ComputeRouterPeerInterface
+	ComputeRouterPeers(namespace string) ComputeRouterPeerInterface
 }
 
 // ComputeRouterPeerInterface has methods to work with ComputeRouterPeer resources.
@@ -52,12 +52,14 @@ type ComputeRouterPeerInterface interface {
 // computeRouterPeers implements ComputeRouterPeerInterface
 type computeRouterPeers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeRouterPeers returns a ComputeRouterPeers
-func newComputeRouterPeers(c *GoogleV1alpha1Client) *computeRouterPeers {
+func newComputeRouterPeers(c *GoogleV1alpha1Client, namespace string) *computeRouterPeers {
 	return &computeRouterPeers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeRouterPeers(c *GoogleV1alpha1Client) *computeRouterPeers {
 func (c *computeRouterPeers) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeRouterPeer, err error) {
 	result = &v1alpha1.ComputeRouterPeer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computerouterpeers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeRouterPeers) List(opts v1.ListOptions) (result *v1alpha1.Compute
 	}
 	result = &v1alpha1.ComputeRouterPeerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computerouterpeers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeRouterPeers) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computerouterpeers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeRouterPeers) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *computeRouterPeers) Create(computeRouterPeer *v1alpha1.ComputeRouterPeer) (result *v1alpha1.ComputeRouterPeer, err error) {
 	result = &v1alpha1.ComputeRouterPeer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computerouterpeers").
 		Body(computeRouterPeer).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeRouterPeers) Create(computeRouterPeer *v1alpha1.ComputeRouterPee
 func (c *computeRouterPeers) Update(computeRouterPeer *v1alpha1.ComputeRouterPeer) (result *v1alpha1.ComputeRouterPeer, err error) {
 	result = &v1alpha1.ComputeRouterPeer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computerouterpeers").
 		Name(computeRouterPeer.Name).
 		Body(computeRouterPeer).
@@ -132,6 +139,7 @@ func (c *computeRouterPeers) Update(computeRouterPeer *v1alpha1.ComputeRouterPee
 func (c *computeRouterPeers) UpdateStatus(computeRouterPeer *v1alpha1.ComputeRouterPeer) (result *v1alpha1.ComputeRouterPeer, err error) {
 	result = &v1alpha1.ComputeRouterPeer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computerouterpeers").
 		Name(computeRouterPeer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeRouterPeers) UpdateStatus(computeRouterPeer *v1alpha1.ComputeRou
 // Delete takes name of the computeRouterPeer and deletes it. Returns an error if one occurs.
 func (c *computeRouterPeers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computerouterpeers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeRouterPeers) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computerouterpeers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeRouterPeers) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *computeRouterPeers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeRouterPeer, err error) {
 	result = &v1alpha1.ComputeRouterPeer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computerouterpeers").
 		SubResource(subresources...).
 		Name(name).

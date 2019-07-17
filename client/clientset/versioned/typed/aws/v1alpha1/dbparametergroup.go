@@ -32,7 +32,7 @@ import (
 // DbParameterGroupsGetter has a method to return a DbParameterGroupInterface.
 // A group's client should implement this interface.
 type DbParameterGroupsGetter interface {
-	DbParameterGroups() DbParameterGroupInterface
+	DbParameterGroups(namespace string) DbParameterGroupInterface
 }
 
 // DbParameterGroupInterface has methods to work with DbParameterGroup resources.
@@ -52,12 +52,14 @@ type DbParameterGroupInterface interface {
 // dbParameterGroups implements DbParameterGroupInterface
 type dbParameterGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDbParameterGroups returns a DbParameterGroups
-func newDbParameterGroups(c *AwsV1alpha1Client) *dbParameterGroups {
+func newDbParameterGroups(c *AwsV1alpha1Client, namespace string) *dbParameterGroups {
 	return &dbParameterGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDbParameterGroups(c *AwsV1alpha1Client) *dbParameterGroups {
 func (c *dbParameterGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.DbParameterGroup, err error) {
 	result = &v1alpha1.DbParameterGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dbparametergroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dbParameterGroups) List(opts v1.ListOptions) (result *v1alpha1.DbParame
 	}
 	result = &v1alpha1.DbParameterGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dbparametergroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dbParameterGroups) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dbparametergroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dbParameterGroups) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *dbParameterGroups) Create(dbParameterGroup *v1alpha1.DbParameterGroup) (result *v1alpha1.DbParameterGroup, err error) {
 	result = &v1alpha1.DbParameterGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dbparametergroups").
 		Body(dbParameterGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *dbParameterGroups) Create(dbParameterGroup *v1alpha1.DbParameterGroup) 
 func (c *dbParameterGroups) Update(dbParameterGroup *v1alpha1.DbParameterGroup) (result *v1alpha1.DbParameterGroup, err error) {
 	result = &v1alpha1.DbParameterGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dbparametergroups").
 		Name(dbParameterGroup.Name).
 		Body(dbParameterGroup).
@@ -132,6 +139,7 @@ func (c *dbParameterGroups) Update(dbParameterGroup *v1alpha1.DbParameterGroup) 
 func (c *dbParameterGroups) UpdateStatus(dbParameterGroup *v1alpha1.DbParameterGroup) (result *v1alpha1.DbParameterGroup, err error) {
 	result = &v1alpha1.DbParameterGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dbparametergroups").
 		Name(dbParameterGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dbParameterGroups) UpdateStatus(dbParameterGroup *v1alpha1.DbParameterG
 // Delete takes name of the dbParameterGroup and deletes it. Returns an error if one occurs.
 func (c *dbParameterGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dbparametergroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dbParameterGroups) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dbparametergroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dbParameterGroups) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *dbParameterGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DbParameterGroup, err error) {
 	result = &v1alpha1.DbParameterGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dbparametergroups").
 		SubResource(subresources...).
 		Name(name).

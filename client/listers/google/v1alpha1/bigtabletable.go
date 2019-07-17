@@ -29,8 +29,8 @@ import (
 type BigtableTableLister interface {
 	// List lists all BigtableTables in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.BigtableTable, err error)
-	// Get retrieves the BigtableTable from the index for a given name.
-	Get(name string) (*v1alpha1.BigtableTable, error)
+	// BigtableTables returns an object that can list and get BigtableTables.
+	BigtableTables(namespace string) BigtableTableNamespaceLister
 	BigtableTableListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *bigtableTableLister) List(selector labels.Selector) (ret []*v1alpha1.Bi
 	return ret, err
 }
 
-// Get retrieves the BigtableTable from the index for a given name.
-func (s *bigtableTableLister) Get(name string) (*v1alpha1.BigtableTable, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// BigtableTables returns an object that can list and get BigtableTables.
+func (s *bigtableTableLister) BigtableTables(namespace string) BigtableTableNamespaceLister {
+	return bigtableTableNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// BigtableTableNamespaceLister helps list and get BigtableTables.
+type BigtableTableNamespaceLister interface {
+	// List lists all BigtableTables in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.BigtableTable, err error)
+	// Get retrieves the BigtableTable from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.BigtableTable, error)
+	BigtableTableNamespaceListerExpansion
+}
+
+// bigtableTableNamespaceLister implements the BigtableTableNamespaceLister
+// interface.
+type bigtableTableNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all BigtableTables in the indexer for a given namespace.
+func (s bigtableTableNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.BigtableTable, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.BigtableTable))
+	})
+	return ret, err
+}
+
+// Get retrieves the BigtableTable from the indexer for a given namespace and name.
+func (s bigtableTableNamespaceLister) Get(name string) (*v1alpha1.BigtableTable, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

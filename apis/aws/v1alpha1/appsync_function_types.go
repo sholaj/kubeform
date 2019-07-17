@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,15 +19,16 @@ type AppsyncFunction struct {
 }
 
 type AppsyncFunctionSpec struct {
-	ApiId      string `json:"api_id"`
-	DataSource string `json:"data_source"`
+	ApiID      string `json:"apiID" tf:"api_id"`
+	DataSource string `json:"dataSource" tf:"data_source"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	FunctionVersion         string `json:"function_version,omitempty"`
-	Name                    string `json:"name"`
-	RequestMappingTemplate  string `json:"request_mapping_template"`
-	ResponseMappingTemplate string `json:"response_mapping_template"`
+	FunctionVersion         string                    `json:"functionVersion,omitempty" tf:"function_version,omitempty"`
+	Name                    string                    `json:"name" tf:"name"`
+	RequestMappingTemplate  string                    `json:"requestMappingTemplate" tf:"request_mapping_template"`
+	ResponseMappingTemplate string                    `json:"responseMappingTemplate" tf:"response_mapping_template"`
+	ProviderRef             core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type AppsyncFunctionStatus struct {
@@ -35,7 +36,9 @@ type AppsyncFunctionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

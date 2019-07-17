@@ -399,32 +399,273 @@ spec:
           properties:
             acl:
               type: string
-            bucket_prefix:
+            bucketPrefix:
               type: string
-            cors_rule:
-              items: {}
+            corsRule:
+              items:
+                properties:
+                  allowedHeaders:
+                    items:
+                      type: string
+                    type: array
+                  allowedMethods:
+                    items:
+                      type: string
+                    type: array
+                  allowedOrigins:
+                    items:
+                      type: string
+                    type: array
+                  exposeHeaders:
+                    items:
+                      type: string
+                    type: array
+                  maxAgeSeconds:
+                    type: integer
+                required:
+                - allowedMethods
+                - allowedOrigins
+                type: object
               type: array
-            force_destroy:
+            forceDestroy:
               type: boolean
-            lifecycle_rule:
-              items: {}
+            lifecycleRule:
+              items:
+                properties:
+                  abortIncompleteMultipartUploadDays:
+                    type: integer
+                  enabled:
+                    type: boolean
+                  expiration:
+                    items:
+                      properties:
+                        date:
+                          type: string
+                        days:
+                          type: integer
+                        expiredObjectDeleteMarker:
+                          type: boolean
+                      type: object
+                    maxItems: 1
+                    type: array
+                    uniqueItems: true
+                  noncurrentVersionExpiration:
+                    items:
+                      properties:
+                        days:
+                          type: integer
+                      type: object
+                    maxItems: 1
+                    type: array
+                    uniqueItems: true
+                  noncurrentVersionTransition:
+                    items:
+                      properties:
+                        days:
+                          type: integer
+                        storageClass:
+                          type: string
+                      required:
+                      - storageClass
+                      type: object
+                    type: array
+                    uniqueItems: true
+                  prefix:
+                    type: string
+                  tags:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  transition:
+                    items:
+                      properties:
+                        date:
+                          type: string
+                        days:
+                          type: integer
+                        storageClass:
+                          type: string
+                      required:
+                      - storageClass
+                      type: object
+                    type: array
+                    uniqueItems: true
+                required:
+                - enabled
+                type: object
               type: array
             logging:
-              items: {}
+              items:
+                properties:
+                  targetBucket:
+                    type: string
+                  targetPrefix:
+                    type: string
+                required:
+                - targetBucket
+                type: object
               type: array
               uniqueItems: true
-            object_lock_configuration:
-              items: {}
+            objectLockConfiguration:
+              items:
+                properties:
+                  objectLockEnabled:
+                    type: string
+                  rule:
+                    items:
+                      properties:
+                        defaultRetention:
+                          items:
+                            properties:
+                              days:
+                                type: integer
+                              mode:
+                                type: string
+                              years:
+                                type: integer
+                            required:
+                            - mode
+                            type: object
+                          maxItems: 1
+                          minItems: 1
+                          type: array
+                      required:
+                      - defaultRetention
+                      type: object
+                    maxItems: 1
+                    type: array
+                required:
+                - objectLockEnabled
+                type: object
               maxItems: 1
               type: array
             policy:
               type: string
-            replication_configuration:
-              items: {}
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            replicationConfiguration:
+              items:
+                properties:
+                  role:
+                    type: string
+                  rules:
+                    items:
+                      properties:
+                        ID:
+                          type: string
+                        destination:
+                          items:
+                            properties:
+                              accessControlTranslation:
+                                items:
+                                  properties:
+                                    owner:
+                                      type: string
+                                  required:
+                                  - owner
+                                  type: object
+                                maxItems: 1
+                                minItems: 1
+                                type: array
+                              accountID:
+                                type: string
+                              bucket:
+                                type: string
+                              replicaKmsKeyID:
+                                type: string
+                              storageClass:
+                                type: string
+                            required:
+                            - bucket
+                            type: object
+                          maxItems: 1
+                          minItems: 1
+                          type: array
+                          uniqueItems: true
+                        filter:
+                          items:
+                            properties:
+                              prefix:
+                                type: string
+                              tags:
+                                additionalProperties:
+                                  type: string
+                                type: object
+                            type: object
+                          maxItems: 1
+                          minItems: 1
+                          type: array
+                        prefix:
+                          type: string
+                        priority:
+                          type: integer
+                        sourceSelectionCriteria:
+                          items:
+                            properties:
+                              sseKmsEncryptedObjects:
+                                items:
+                                  properties:
+                                    enabled:
+                                      type: boolean
+                                  required:
+                                  - enabled
+                                  type: object
+                                maxItems: 1
+                                minItems: 1
+                                type: array
+                                uniqueItems: true
+                            type: object
+                          maxItems: 1
+                          minItems: 1
+                          type: array
+                          uniqueItems: true
+                        status:
+                          type: string
+                      required:
+                      - destination
+                      - status
+                      type: object
+                    type: array
+                    uniqueItems: true
+                required:
+                - role
+                - rules
+                type: object
               maxItems: 1
               type: array
-            server_side_encryption_configuration:
-              items: {}
+            serverSideEncryptionConfiguration:
+              items:
+                properties:
+                  rule:
+                    items:
+                      properties:
+                        applyServerSideEncryptionByDefault:
+                          items:
+                            properties:
+                              kmsMasterKeyID:
+                                type: string
+                              sseAlgorithm:
+                                type: string
+                            required:
+                            - sseAlgorithm
+                            type: object
+                          maxItems: 1
+                          type: array
+                      required:
+                      - applyServerSideEncryptionByDefault
+                      type: object
+                    maxItems: 1
+                    type: array
+                required:
+                - rule
+                type: object
               maxItems: 1
               type: array
             tags:
@@ -432,9 +673,21 @@ spec:
                 type: string
               type: object
             website:
-              items: {}
+              items:
+                properties:
+                  errorDocument:
+                    type: string
+                  indexDocument:
+                    type: string
+                  redirectAllRequestsTo:
+                    type: string
+                  routingRules:
+                    type: string
+                type: object
               maxItems: 1
               type: array
+          required:
+          - providerRef
           type: object
         status:
           properties:
@@ -445,6 +698,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

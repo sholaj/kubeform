@@ -29,8 +29,8 @@ import (
 type ApiManagementSubscriptionLister interface {
 	// List lists all ApiManagementSubscriptions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementSubscription, err error)
-	// Get retrieves the ApiManagementSubscription from the index for a given name.
-	Get(name string) (*v1alpha1.ApiManagementSubscription, error)
+	// ApiManagementSubscriptions returns an object that can list and get ApiManagementSubscriptions.
+	ApiManagementSubscriptions(namespace string) ApiManagementSubscriptionNamespaceLister
 	ApiManagementSubscriptionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiManagementSubscriptionLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the ApiManagementSubscription from the index for a given name.
-func (s *apiManagementSubscriptionLister) Get(name string) (*v1alpha1.ApiManagementSubscription, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiManagementSubscriptions returns an object that can list and get ApiManagementSubscriptions.
+func (s *apiManagementSubscriptionLister) ApiManagementSubscriptions(namespace string) ApiManagementSubscriptionNamespaceLister {
+	return apiManagementSubscriptionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiManagementSubscriptionNamespaceLister helps list and get ApiManagementSubscriptions.
+type ApiManagementSubscriptionNamespaceLister interface {
+	// List lists all ApiManagementSubscriptions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementSubscription, err error)
+	// Get retrieves the ApiManagementSubscription from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiManagementSubscription, error)
+	ApiManagementSubscriptionNamespaceListerExpansion
+}
+
+// apiManagementSubscriptionNamespaceLister implements the ApiManagementSubscriptionNamespaceLister
+// interface.
+type apiManagementSubscriptionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiManagementSubscriptions in the indexer for a given namespace.
+func (s apiManagementSubscriptionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementSubscription, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiManagementSubscription))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiManagementSubscription from the indexer for a given namespace and name.
+func (s apiManagementSubscriptionNamespaceLister) Get(name string) (*v1alpha1.ApiManagementSubscription, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

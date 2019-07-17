@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/azurerm/v1alpha1"
 )
 
-// PublicIpInformer provides access to a shared informer and lister for
-// PublicIps.
-type PublicIpInformer interface {
+// PublicIPInformer provides access to a shared informer and lister for
+// PublicIPs.
+type PublicIPInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.PublicIpLister
+	Lister() v1alpha1.PublicIPLister
 }
 
-type publicIpInformer struct {
+type publicIPInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewPublicIpInformer constructs a new informer for PublicIp type.
+// NewPublicIPInformer constructs a new informer for PublicIP type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewPublicIpInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredPublicIpInformer(client, resyncPeriod, indexers, nil)
+func NewPublicIPInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredPublicIPInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredPublicIpInformer constructs a new informer for PublicIp type.
+// NewFilteredPublicIPInformer constructs a new informer for PublicIP type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredPublicIpInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredPublicIPInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().PublicIps().List(options)
+				return client.AzurermV1alpha1().PublicIPs(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().PublicIps().Watch(options)
+				return client.AzurermV1alpha1().PublicIPs(namespace).Watch(options)
 			},
 		},
-		&azurermv1alpha1.PublicIp{},
+		&azurermv1alpha1.PublicIP{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *publicIpInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredPublicIpInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *publicIPInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredPublicIPInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *publicIpInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&azurermv1alpha1.PublicIp{}, f.defaultInformer)
+func (f *publicIPInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&azurermv1alpha1.PublicIP{}, f.defaultInformer)
 }
 
-func (f *publicIpInformer) Lister() v1alpha1.PublicIpLister {
-	return v1alpha1.NewPublicIpLister(f.Informer().GetIndexer())
+func (f *publicIPInformer) Lister() v1alpha1.PublicIPLister {
+	return v1alpha1.NewPublicIPLister(f.Informer().GetIndexer())
 }

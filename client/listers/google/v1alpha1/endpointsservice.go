@@ -29,8 +29,8 @@ import (
 type EndpointsServiceLister interface {
 	// List lists all EndpointsServices in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EndpointsService, err error)
-	// Get retrieves the EndpointsService from the index for a given name.
-	Get(name string) (*v1alpha1.EndpointsService, error)
+	// EndpointsServices returns an object that can list and get EndpointsServices.
+	EndpointsServices(namespace string) EndpointsServiceNamespaceLister
 	EndpointsServiceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *endpointsServiceLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the EndpointsService from the index for a given name.
-func (s *endpointsServiceLister) Get(name string) (*v1alpha1.EndpointsService, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EndpointsServices returns an object that can list and get EndpointsServices.
+func (s *endpointsServiceLister) EndpointsServices(namespace string) EndpointsServiceNamespaceLister {
+	return endpointsServiceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EndpointsServiceNamespaceLister helps list and get EndpointsServices.
+type EndpointsServiceNamespaceLister interface {
+	// List lists all EndpointsServices in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EndpointsService, err error)
+	// Get retrieves the EndpointsService from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EndpointsService, error)
+	EndpointsServiceNamespaceListerExpansion
+}
+
+// endpointsServiceNamespaceLister implements the EndpointsServiceNamespaceLister
+// interface.
+type endpointsServiceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EndpointsServices in the indexer for a given namespace.
+func (s endpointsServiceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EndpointsService, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EndpointsService))
+	})
+	return ret, err
+}
+
+// Get retrieves the EndpointsService from the indexer for a given namespace and name.
+func (s endpointsServiceNamespaceLister) Get(name string) (*v1alpha1.EndpointsService, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

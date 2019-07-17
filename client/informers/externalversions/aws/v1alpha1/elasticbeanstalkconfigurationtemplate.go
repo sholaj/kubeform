@@ -41,32 +41,33 @@ type ElasticBeanstalkConfigurationTemplateInformer interface {
 type elasticBeanstalkConfigurationTemplateInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewElasticBeanstalkConfigurationTemplateInformer constructs a new informer for ElasticBeanstalkConfigurationTemplate type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewElasticBeanstalkConfigurationTemplateInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredElasticBeanstalkConfigurationTemplateInformer(client, resyncPeriod, indexers, nil)
+func NewElasticBeanstalkConfigurationTemplateInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredElasticBeanstalkConfigurationTemplateInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredElasticBeanstalkConfigurationTemplateInformer constructs a new informer for ElasticBeanstalkConfigurationTemplate type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredElasticBeanstalkConfigurationTemplateInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredElasticBeanstalkConfigurationTemplateInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ElasticBeanstalkConfigurationTemplates().List(options)
+				return client.AwsV1alpha1().ElasticBeanstalkConfigurationTemplates(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ElasticBeanstalkConfigurationTemplates().Watch(options)
+				return client.AwsV1alpha1().ElasticBeanstalkConfigurationTemplates(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.ElasticBeanstalkConfigurationTemplate{},
@@ -76,7 +77,7 @@ func NewFilteredElasticBeanstalkConfigurationTemplateInformer(client versioned.I
 }
 
 func (f *elasticBeanstalkConfigurationTemplateInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredElasticBeanstalkConfigurationTemplateInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredElasticBeanstalkConfigurationTemplateInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *elasticBeanstalkConfigurationTemplateInformer) Informer() cache.SharedIndexInformer {

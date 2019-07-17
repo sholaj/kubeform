@@ -397,32 +397,51 @@ spec:
           type: object
         spec:
           properties:
-            exclude_from_latest:
+            excludeFromLatest:
               type: boolean
-            gallery_name:
+            galleryName:
               type: string
-            image_name:
+            imageName:
               type: string
             location:
               type: string
-            managed_image_id:
+            managedImageID:
               type: string
             name:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
-            target_region:
-              items: {}
+            targetRegion:
+              items:
+                properties:
+                  name:
+                    type: string
+                  regionalReplicaCount:
+                    type: integer
+                required:
+                - name
+                - regionalReplicaCount
+                type: object
               type: array
               uniqueItems: true
           required:
-          - gallery_name
-          - image_name
+          - galleryName
+          - imageName
           - location
-          - managed_image_id
+          - managedImageID
           - name
-          - resource_group_name
-          - target_region
+          - providerRef
+          - resourceGroupName
+          - targetRegion
           type: object
         status:
           properties:
@@ -433,6 +452,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

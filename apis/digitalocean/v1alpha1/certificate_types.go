@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,17 +20,18 @@ type Certificate struct {
 
 type CertificateSpec struct {
 	// +optional
-	CertificateChain string `json:"certificate_chain,omitempty"`
+	CertificateChain string `json:"certificateChain,omitempty" tf:"certificate_chain,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Domains []string `json:"domains,omitempty"`
+	Domains []string `json:"domains,omitempty" tf:"domains,omitempty"`
 	// +optional
-	LeafCertificate string `json:"leaf_certificate,omitempty"`
-	Name            string `json:"name"`
+	LeafCertificate string `json:"leafCertificate,omitempty" tf:"leaf_certificate,omitempty"`
+	Name            string `json:"name" tf:"name"`
 	// +optional
-	PrivateKey string `json:"private_key,omitempty"`
+	PrivateKey string `json:"privateKey,omitempty" tf:"private_key,omitempty"`
 	// +optional
-	Type string `json:"type,omitempty"`
+	Type        string                    `json:"type,omitempty" tf:"type,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type CertificateStatus struct {
@@ -38,7 +39,9 @@ type CertificateStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -32,7 +32,7 @@ import (
 // ComputeInstanceGroupsGetter has a method to return a ComputeInstanceGroupInterface.
 // A group's client should implement this interface.
 type ComputeInstanceGroupsGetter interface {
-	ComputeInstanceGroups() ComputeInstanceGroupInterface
+	ComputeInstanceGroups(namespace string) ComputeInstanceGroupInterface
 }
 
 // ComputeInstanceGroupInterface has methods to work with ComputeInstanceGroup resources.
@@ -52,12 +52,14 @@ type ComputeInstanceGroupInterface interface {
 // computeInstanceGroups implements ComputeInstanceGroupInterface
 type computeInstanceGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeInstanceGroups returns a ComputeInstanceGroups
-func newComputeInstanceGroups(c *GoogleV1alpha1Client) *computeInstanceGroups {
+func newComputeInstanceGroups(c *GoogleV1alpha1Client, namespace string) *computeInstanceGroups {
 	return &computeInstanceGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeInstanceGroups(c *GoogleV1alpha1Client) *computeInstanceGroups {
 func (c *computeInstanceGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeInstanceGroup, err error) {
 	result = &v1alpha1.ComputeInstanceGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeinstancegroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeInstanceGroups) List(opts v1.ListOptions) (result *v1alpha1.Comp
 	}
 	result = &v1alpha1.ComputeInstanceGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeinstancegroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeInstanceGroups) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computeinstancegroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeInstanceGroups) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *computeInstanceGroups) Create(computeInstanceGroup *v1alpha1.ComputeInstanceGroup) (result *v1alpha1.ComputeInstanceGroup, err error) {
 	result = &v1alpha1.ComputeInstanceGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computeinstancegroups").
 		Body(computeInstanceGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeInstanceGroups) Create(computeInstanceGroup *v1alpha1.ComputeIns
 func (c *computeInstanceGroups) Update(computeInstanceGroup *v1alpha1.ComputeInstanceGroup) (result *v1alpha1.ComputeInstanceGroup, err error) {
 	result = &v1alpha1.ComputeInstanceGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeinstancegroups").
 		Name(computeInstanceGroup.Name).
 		Body(computeInstanceGroup).
@@ -132,6 +139,7 @@ func (c *computeInstanceGroups) Update(computeInstanceGroup *v1alpha1.ComputeIns
 func (c *computeInstanceGroups) UpdateStatus(computeInstanceGroup *v1alpha1.ComputeInstanceGroup) (result *v1alpha1.ComputeInstanceGroup, err error) {
 	result = &v1alpha1.ComputeInstanceGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeinstancegroups").
 		Name(computeInstanceGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeInstanceGroups) UpdateStatus(computeInstanceGroup *v1alpha1.Comp
 // Delete takes name of the computeInstanceGroup and deletes it. Returns an error if one occurs.
 func (c *computeInstanceGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeinstancegroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeInstanceGroups) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeinstancegroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeInstanceGroups) DeleteCollection(options *v1.DeleteOptions, list
 func (c *computeInstanceGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeInstanceGroup, err error) {
 	result = &v1alpha1.ComputeInstanceGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computeinstancegroups").
 		SubResource(subresources...).
 		Name(name).

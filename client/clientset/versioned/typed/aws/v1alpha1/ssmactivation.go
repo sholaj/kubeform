@@ -32,7 +32,7 @@ import (
 // SsmActivationsGetter has a method to return a SsmActivationInterface.
 // A group's client should implement this interface.
 type SsmActivationsGetter interface {
-	SsmActivations() SsmActivationInterface
+	SsmActivations(namespace string) SsmActivationInterface
 }
 
 // SsmActivationInterface has methods to work with SsmActivation resources.
@@ -52,12 +52,14 @@ type SsmActivationInterface interface {
 // ssmActivations implements SsmActivationInterface
 type ssmActivations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSsmActivations returns a SsmActivations
-func newSsmActivations(c *AwsV1alpha1Client) *ssmActivations {
+func newSsmActivations(c *AwsV1alpha1Client, namespace string) *ssmActivations {
 	return &ssmActivations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSsmActivations(c *AwsV1alpha1Client) *ssmActivations {
 func (c *ssmActivations) Get(name string, options v1.GetOptions) (result *v1alpha1.SsmActivation, err error) {
 	result = &v1alpha1.SsmActivation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmactivations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ssmActivations) List(opts v1.ListOptions) (result *v1alpha1.SsmActivati
 	}
 	result = &v1alpha1.SsmActivationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmactivations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ssmActivations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmactivations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ssmActivations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *ssmActivations) Create(ssmActivation *v1alpha1.SsmActivation) (result *v1alpha1.SsmActivation, err error) {
 	result = &v1alpha1.SsmActivation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ssmactivations").
 		Body(ssmActivation).
 		Do().
@@ -118,6 +124,7 @@ func (c *ssmActivations) Create(ssmActivation *v1alpha1.SsmActivation) (result *
 func (c *ssmActivations) Update(ssmActivation *v1alpha1.SsmActivation) (result *v1alpha1.SsmActivation, err error) {
 	result = &v1alpha1.SsmActivation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ssmactivations").
 		Name(ssmActivation.Name).
 		Body(ssmActivation).
@@ -132,6 +139,7 @@ func (c *ssmActivations) Update(ssmActivation *v1alpha1.SsmActivation) (result *
 func (c *ssmActivations) UpdateStatus(ssmActivation *v1alpha1.SsmActivation) (result *v1alpha1.SsmActivation, err error) {
 	result = &v1alpha1.SsmActivation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ssmactivations").
 		Name(ssmActivation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ssmActivations) UpdateStatus(ssmActivation *v1alpha1.SsmActivation) (re
 // Delete takes name of the ssmActivation and deletes it. Returns an error if one occurs.
 func (c *ssmActivations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ssmactivations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ssmActivations) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ssmactivations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ssmActivations) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *ssmActivations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SsmActivation, err error) {
 	result = &v1alpha1.SsmActivation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ssmactivations").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // ImagesGetter has a method to return a ImageInterface.
 // A group's client should implement this interface.
 type ImagesGetter interface {
-	Images() ImageInterface
+	Images(namespace string) ImageInterface
 }
 
 // ImageInterface has methods to work with Image resources.
@@ -52,12 +52,14 @@ type ImageInterface interface {
 // images implements ImageInterface
 type images struct {
 	client rest.Interface
+	ns     string
 }
 
 // newImages returns a Images
-func newImages(c *AzurermV1alpha1Client) *images {
+func newImages(c *AzurermV1alpha1Client, namespace string) *images {
 	return &images{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newImages(c *AzurermV1alpha1Client) *images {
 func (c *images) Get(name string, options v1.GetOptions) (result *v1alpha1.Image, err error) {
 	result = &v1alpha1.Image{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("images").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *images) List(opts v1.ListOptions) (result *v1alpha1.ImageList, err erro
 	}
 	result = &v1alpha1.ImageList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("images").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *images) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("images").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *images) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *images) Create(image *v1alpha1.Image) (result *v1alpha1.Image, err error) {
 	result = &v1alpha1.Image{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("images").
 		Body(image).
 		Do().
@@ -118,6 +124,7 @@ func (c *images) Create(image *v1alpha1.Image) (result *v1alpha1.Image, err erro
 func (c *images) Update(image *v1alpha1.Image) (result *v1alpha1.Image, err error) {
 	result = &v1alpha1.Image{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("images").
 		Name(image.Name).
 		Body(image).
@@ -132,6 +139,7 @@ func (c *images) Update(image *v1alpha1.Image) (result *v1alpha1.Image, err erro
 func (c *images) UpdateStatus(image *v1alpha1.Image) (result *v1alpha1.Image, err error) {
 	result = &v1alpha1.Image{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("images").
 		Name(image.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *images) UpdateStatus(image *v1alpha1.Image) (result *v1alpha1.Image, er
 // Delete takes name of the image and deletes it. Returns an error if one occurs.
 func (c *images) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("images").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *images) DeleteCollection(options *v1.DeleteOptions, listOptions v1.List
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("images").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *images) DeleteCollection(options *v1.DeleteOptions, listOptions v1.List
 func (c *images) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Image, err error) {
 	result = &v1alpha1.Image{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("images").
 		SubResource(subresources...).
 		Name(name).

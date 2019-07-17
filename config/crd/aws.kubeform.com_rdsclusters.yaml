@@ -397,57 +397,95 @@ spec:
           type: object
         spec:
           properties:
-            backtrack_window:
+            backtrackWindow:
               type: integer
-            backup_retention_period:
+            backupRetentionPeriod:
               type: integer
-            copy_tags_to_snapshot:
+            copyTagsToSnapshot:
               type: boolean
-            deletion_protection:
+            deletionProtection:
               type: boolean
-            enabled_cloudwatch_logs_exports:
+            enabledCloudwatchLogsExports:
               items:
                 type: string
               type: array
             engine:
               type: string
-            engine_mode:
+            engineMode:
               type: string
-            final_snapshot_identifier:
+            finalSnapshotIdentifier:
               type: string
-            global_cluster_identifier:
+            globalClusterIdentifier:
               type: string
-            iam_database_authentication_enabled:
+            iamDatabaseAuthenticationEnabled:
               type: boolean
-            iam_roles:
+            iamRoles:
               items:
                 type: string
               type: array
               uniqueItems: true
-            master_password:
+            masterPassword:
               type: string
-            replication_source_identifier:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            replicationSourceIdentifier:
               type: string
-            s3_import:
-              items: {}
+            s3Import:
+              items:
+                properties:
+                  bucketName:
+                    type: string
+                  bucketPrefix:
+                    type: string
+                  ingestionRole:
+                    type: string
+                  sourceEngine:
+                    type: string
+                  sourceEngineVersion:
+                    type: string
+                required:
+                - bucketName
+                - ingestionRole
+                - sourceEngine
+                - sourceEngineVersion
+                type: object
               maxItems: 1
               type: array
-            scaling_configuration:
-              items: {}
+            scalingConfiguration:
+              items:
+                properties:
+                  autoPause:
+                    type: boolean
+                  maxCapacity:
+                    type: integer
+                  minCapacity:
+                    type: integer
+                  secondsUntilAutoPause:
+                    type: integer
+                type: object
               maxItems: 1
               type: array
-            skip_final_snapshot:
+            skipFinalSnapshot:
               type: boolean
-            snapshot_identifier:
+            snapshotIdentifier:
               type: string
-            source_region:
+            sourceRegion:
               type: string
-            storage_encrypted:
+            storageEncrypted:
               type: boolean
             tags:
               additionalProperties:
                 type: string
               type: object
+          required:
+          - providerRef
           type: object
         status:
           properties:
@@ -458,6 +496,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

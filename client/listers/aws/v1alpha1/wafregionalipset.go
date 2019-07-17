@@ -29,8 +29,8 @@ import (
 type WafregionalIpsetLister interface {
 	// List lists all WafregionalIpsets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.WafregionalIpset, err error)
-	// Get retrieves the WafregionalIpset from the index for a given name.
-	Get(name string) (*v1alpha1.WafregionalIpset, error)
+	// WafregionalIpsets returns an object that can list and get WafregionalIpsets.
+	WafregionalIpsets(namespace string) WafregionalIpsetNamespaceLister
 	WafregionalIpsetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *wafregionalIpsetLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the WafregionalIpset from the index for a given name.
-func (s *wafregionalIpsetLister) Get(name string) (*v1alpha1.WafregionalIpset, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafregionalIpsets returns an object that can list and get WafregionalIpsets.
+func (s *wafregionalIpsetLister) WafregionalIpsets(namespace string) WafregionalIpsetNamespaceLister {
+	return wafregionalIpsetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafregionalIpsetNamespaceLister helps list and get WafregionalIpsets.
+type WafregionalIpsetNamespaceLister interface {
+	// List lists all WafregionalIpsets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafregionalIpset, err error)
+	// Get retrieves the WafregionalIpset from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafregionalIpset, error)
+	WafregionalIpsetNamespaceListerExpansion
+}
+
+// wafregionalIpsetNamespaceLister implements the WafregionalIpsetNamespaceLister
+// interface.
+type wafregionalIpsetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafregionalIpsets in the indexer for a given namespace.
+func (s wafregionalIpsetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafregionalIpset, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafregionalIpset))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafregionalIpset from the indexer for a given namespace and name.
+func (s wafregionalIpsetNamespaceLister) Get(name string) (*v1alpha1.WafregionalIpset, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

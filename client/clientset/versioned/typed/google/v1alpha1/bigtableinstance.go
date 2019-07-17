@@ -32,7 +32,7 @@ import (
 // BigtableInstancesGetter has a method to return a BigtableInstanceInterface.
 // A group's client should implement this interface.
 type BigtableInstancesGetter interface {
-	BigtableInstances() BigtableInstanceInterface
+	BigtableInstances(namespace string) BigtableInstanceInterface
 }
 
 // BigtableInstanceInterface has methods to work with BigtableInstance resources.
@@ -52,12 +52,14 @@ type BigtableInstanceInterface interface {
 // bigtableInstances implements BigtableInstanceInterface
 type bigtableInstances struct {
 	client rest.Interface
+	ns     string
 }
 
 // newBigtableInstances returns a BigtableInstances
-func newBigtableInstances(c *GoogleV1alpha1Client) *bigtableInstances {
+func newBigtableInstances(c *GoogleV1alpha1Client, namespace string) *bigtableInstances {
 	return &bigtableInstances{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newBigtableInstances(c *GoogleV1alpha1Client) *bigtableInstances {
 func (c *bigtableInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.BigtableInstance, err error) {
 	result = &v1alpha1.BigtableInstance{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("bigtableinstances").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *bigtableInstances) List(opts v1.ListOptions) (result *v1alpha1.Bigtable
 	}
 	result = &v1alpha1.BigtableInstanceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("bigtableinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *bigtableInstances) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("bigtableinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *bigtableInstances) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *bigtableInstances) Create(bigtableInstance *v1alpha1.BigtableInstance) (result *v1alpha1.BigtableInstance, err error) {
 	result = &v1alpha1.BigtableInstance{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("bigtableinstances").
 		Body(bigtableInstance).
 		Do().
@@ -118,6 +124,7 @@ func (c *bigtableInstances) Create(bigtableInstance *v1alpha1.BigtableInstance) 
 func (c *bigtableInstances) Update(bigtableInstance *v1alpha1.BigtableInstance) (result *v1alpha1.BigtableInstance, err error) {
 	result = &v1alpha1.BigtableInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("bigtableinstances").
 		Name(bigtableInstance.Name).
 		Body(bigtableInstance).
@@ -132,6 +139,7 @@ func (c *bigtableInstances) Update(bigtableInstance *v1alpha1.BigtableInstance) 
 func (c *bigtableInstances) UpdateStatus(bigtableInstance *v1alpha1.BigtableInstance) (result *v1alpha1.BigtableInstance, err error) {
 	result = &v1alpha1.BigtableInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("bigtableinstances").
 		Name(bigtableInstance.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *bigtableInstances) UpdateStatus(bigtableInstance *v1alpha1.BigtableInst
 // Delete takes name of the bigtableInstance and deletes it. Returns an error if one occurs.
 func (c *bigtableInstances) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("bigtableinstances").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *bigtableInstances) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("bigtableinstances").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *bigtableInstances) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *bigtableInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BigtableInstance, err error) {
 	result = &v1alpha1.BigtableInstance{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("bigtableinstances").
 		SubResource(subresources...).
 		Name(name).

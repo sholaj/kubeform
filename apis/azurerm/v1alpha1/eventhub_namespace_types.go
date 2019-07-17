@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,15 +20,16 @@ type EventhubNamespace struct {
 
 type EventhubNamespaceSpec struct {
 	// +optional
-	AutoInflateEnabled bool `json:"auto_inflate_enabled,omitempty"`
+	AutoInflateEnabled bool `json:"autoInflateEnabled,omitempty" tf:"auto_inflate_enabled,omitempty"`
 	// +optional
-	Capacity int `json:"capacity,omitempty"`
+	Capacity int `json:"capacity,omitempty" tf:"capacity,omitempty"`
 	// +optional
-	KafkaEnabled      bool   `json:"kafka_enabled,omitempty"`
-	Location          string `json:"location"`
-	Name              string `json:"name"`
-	ResourceGroupName string `json:"resource_group_name"`
-	Sku               string `json:"sku"`
+	KafkaEnabled      bool                      `json:"kafkaEnabled,omitempty" tf:"kafka_enabled,omitempty"`
+	Location          string                    `json:"location" tf:"location"`
+	Name              string                    `json:"name" tf:"name"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	Sku               string                    `json:"sku" tf:"sku"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type EventhubNamespaceStatus struct {
@@ -36,7 +37,9 @@ type EventhubNamespaceStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

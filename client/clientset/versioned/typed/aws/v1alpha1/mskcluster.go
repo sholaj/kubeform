@@ -32,7 +32,7 @@ import (
 // MskClustersGetter has a method to return a MskClusterInterface.
 // A group's client should implement this interface.
 type MskClustersGetter interface {
-	MskClusters() MskClusterInterface
+	MskClusters(namespace string) MskClusterInterface
 }
 
 // MskClusterInterface has methods to work with MskCluster resources.
@@ -52,12 +52,14 @@ type MskClusterInterface interface {
 // mskClusters implements MskClusterInterface
 type mskClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMskClusters returns a MskClusters
-func newMskClusters(c *AwsV1alpha1Client) *mskClusters {
+func newMskClusters(c *AwsV1alpha1Client, namespace string) *mskClusters {
 	return &mskClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMskClusters(c *AwsV1alpha1Client) *mskClusters {
 func (c *mskClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.MskCluster, err error) {
 	result = &v1alpha1.MskCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mskclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *mskClusters) List(opts v1.ListOptions) (result *v1alpha1.MskClusterList
 	}
 	result = &v1alpha1.MskClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mskclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *mskClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("mskclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *mskClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *mskClusters) Create(mskCluster *v1alpha1.MskCluster) (result *v1alpha1.MskCluster, err error) {
 	result = &v1alpha1.MskCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("mskclusters").
 		Body(mskCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *mskClusters) Create(mskCluster *v1alpha1.MskCluster) (result *v1alpha1.
 func (c *mskClusters) Update(mskCluster *v1alpha1.MskCluster) (result *v1alpha1.MskCluster, err error) {
 	result = &v1alpha1.MskCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mskclusters").
 		Name(mskCluster.Name).
 		Body(mskCluster).
@@ -132,6 +139,7 @@ func (c *mskClusters) Update(mskCluster *v1alpha1.MskCluster) (result *v1alpha1.
 func (c *mskClusters) UpdateStatus(mskCluster *v1alpha1.MskCluster) (result *v1alpha1.MskCluster, err error) {
 	result = &v1alpha1.MskCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mskclusters").
 		Name(mskCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *mskClusters) UpdateStatus(mskCluster *v1alpha1.MskCluster) (result *v1a
 // Delete takes name of the mskCluster and deletes it. Returns an error if one occurs.
 func (c *mskClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mskclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *mskClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mskclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *mskClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *mskClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MskCluster, err error) {
 	result = &v1alpha1.MskCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("mskclusters").
 		SubResource(subresources...).
 		Name(name).

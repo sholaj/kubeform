@@ -41,32 +41,33 @@ type AppsyncDatasourceInformer interface {
 type appsyncDatasourceInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewAppsyncDatasourceInformer constructs a new informer for AppsyncDatasource type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAppsyncDatasourceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAppsyncDatasourceInformer(client, resyncPeriod, indexers, nil)
+func NewAppsyncDatasourceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAppsyncDatasourceInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredAppsyncDatasourceInformer constructs a new informer for AppsyncDatasource type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAppsyncDatasourceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAppsyncDatasourceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AppsyncDatasources().List(options)
+				return client.AwsV1alpha1().AppsyncDatasources(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AppsyncDatasources().Watch(options)
+				return client.AwsV1alpha1().AppsyncDatasources(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.AppsyncDatasource{},
@@ -76,7 +77,7 @@ func NewFilteredAppsyncDatasourceInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *appsyncDatasourceInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAppsyncDatasourceInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredAppsyncDatasourceInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *appsyncDatasourceInformer) Informer() cache.SharedIndexInformer {

@@ -29,8 +29,8 @@ import (
 type RuntimeconfigConfigLister interface {
 	// List lists all RuntimeconfigConfigs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RuntimeconfigConfig, err error)
-	// Get retrieves the RuntimeconfigConfig from the index for a given name.
-	Get(name string) (*v1alpha1.RuntimeconfigConfig, error)
+	// RuntimeconfigConfigs returns an object that can list and get RuntimeconfigConfigs.
+	RuntimeconfigConfigs(namespace string) RuntimeconfigConfigNamespaceLister
 	RuntimeconfigConfigListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *runtimeconfigConfigLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the RuntimeconfigConfig from the index for a given name.
-func (s *runtimeconfigConfigLister) Get(name string) (*v1alpha1.RuntimeconfigConfig, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RuntimeconfigConfigs returns an object that can list and get RuntimeconfigConfigs.
+func (s *runtimeconfigConfigLister) RuntimeconfigConfigs(namespace string) RuntimeconfigConfigNamespaceLister {
+	return runtimeconfigConfigNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RuntimeconfigConfigNamespaceLister helps list and get RuntimeconfigConfigs.
+type RuntimeconfigConfigNamespaceLister interface {
+	// List lists all RuntimeconfigConfigs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RuntimeconfigConfig, err error)
+	// Get retrieves the RuntimeconfigConfig from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RuntimeconfigConfig, error)
+	RuntimeconfigConfigNamespaceListerExpansion
+}
+
+// runtimeconfigConfigNamespaceLister implements the RuntimeconfigConfigNamespaceLister
+// interface.
+type runtimeconfigConfigNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RuntimeconfigConfigs in the indexer for a given namespace.
+func (s runtimeconfigConfigNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RuntimeconfigConfig, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RuntimeconfigConfig))
+	})
+	return ret, err
+}
+
+// Get retrieves the RuntimeconfigConfig from the indexer for a given namespace and name.
+func (s runtimeconfigConfigNamespaceLister) Get(name string) (*v1alpha1.RuntimeconfigConfig, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

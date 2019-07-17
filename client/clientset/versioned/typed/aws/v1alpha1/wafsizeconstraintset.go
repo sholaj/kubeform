@@ -32,7 +32,7 @@ import (
 // WafSizeConstraintSetsGetter has a method to return a WafSizeConstraintSetInterface.
 // A group's client should implement this interface.
 type WafSizeConstraintSetsGetter interface {
-	WafSizeConstraintSets() WafSizeConstraintSetInterface
+	WafSizeConstraintSets(namespace string) WafSizeConstraintSetInterface
 }
 
 // WafSizeConstraintSetInterface has methods to work with WafSizeConstraintSet resources.
@@ -52,12 +52,14 @@ type WafSizeConstraintSetInterface interface {
 // wafSizeConstraintSets implements WafSizeConstraintSetInterface
 type wafSizeConstraintSets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWafSizeConstraintSets returns a WafSizeConstraintSets
-func newWafSizeConstraintSets(c *AwsV1alpha1Client) *wafSizeConstraintSets {
+func newWafSizeConstraintSets(c *AwsV1alpha1Client, namespace string) *wafSizeConstraintSets {
 	return &wafSizeConstraintSets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWafSizeConstraintSets(c *AwsV1alpha1Client) *wafSizeConstraintSets {
 func (c *wafSizeConstraintSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafSizeConstraintSet, err error) {
 	result = &v1alpha1.WafSizeConstraintSet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafsizeconstraintsets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *wafSizeConstraintSets) List(opts v1.ListOptions) (result *v1alpha1.WafS
 	}
 	result = &v1alpha1.WafSizeConstraintSetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafsizeconstraintsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *wafSizeConstraintSets) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafsizeconstraintsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *wafSizeConstraintSets) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *wafSizeConstraintSets) Create(wafSizeConstraintSet *v1alpha1.WafSizeConstraintSet) (result *v1alpha1.WafSizeConstraintSet, err error) {
 	result = &v1alpha1.WafSizeConstraintSet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafsizeconstraintsets").
 		Body(wafSizeConstraintSet).
 		Do().
@@ -118,6 +124,7 @@ func (c *wafSizeConstraintSets) Create(wafSizeConstraintSet *v1alpha1.WafSizeCon
 func (c *wafSizeConstraintSets) Update(wafSizeConstraintSet *v1alpha1.WafSizeConstraintSet) (result *v1alpha1.WafSizeConstraintSet, err error) {
 	result = &v1alpha1.WafSizeConstraintSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafsizeconstraintsets").
 		Name(wafSizeConstraintSet.Name).
 		Body(wafSizeConstraintSet).
@@ -132,6 +139,7 @@ func (c *wafSizeConstraintSets) Update(wafSizeConstraintSet *v1alpha1.WafSizeCon
 func (c *wafSizeConstraintSets) UpdateStatus(wafSizeConstraintSet *v1alpha1.WafSizeConstraintSet) (result *v1alpha1.WafSizeConstraintSet, err error) {
 	result = &v1alpha1.WafSizeConstraintSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafsizeconstraintsets").
 		Name(wafSizeConstraintSet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *wafSizeConstraintSets) UpdateStatus(wafSizeConstraintSet *v1alpha1.WafS
 // Delete takes name of the wafSizeConstraintSet and deletes it. Returns an error if one occurs.
 func (c *wafSizeConstraintSets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafsizeconstraintsets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *wafSizeConstraintSets) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafsizeconstraintsets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *wafSizeConstraintSets) DeleteCollection(options *v1.DeleteOptions, list
 func (c *wafSizeConstraintSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafSizeConstraintSet, err error) {
 	result = &v1alpha1.WafSizeConstraintSet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafsizeconstraintsets").
 		SubResource(subresources...).
 		Name(name).

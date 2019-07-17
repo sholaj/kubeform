@@ -31,6 +31,7 @@ import (
 // FakeSqlSslCerts implements SqlSslCertInterface
 type FakeSqlSslCerts struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var sqlsslcertsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "sqlsslcerts"}
@@ -40,7 +41,8 @@ var sqlsslcertsKind = schema.GroupVersionKind{Group: "google.kubeform.com", Vers
 // Get takes name of the sqlSslCert, and returns the corresponding sqlSslCert object, and an error if there is any.
 func (c *FakeSqlSslCerts) Get(name string, options v1.GetOptions) (result *v1alpha1.SqlSslCert, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sqlsslcertsResource, name), &v1alpha1.SqlSslCert{})
+		Invokes(testing.NewGetAction(sqlsslcertsResource, c.ns, name), &v1alpha1.SqlSslCert{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSqlSslCerts) Get(name string, options v1.GetOptions) (result *v1alp
 // List takes label and field selectors, and returns the list of SqlSslCerts that match those selectors.
 func (c *FakeSqlSslCerts) List(opts v1.ListOptions) (result *v1alpha1.SqlSslCertList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sqlsslcertsResource, sqlsslcertsKind, opts), &v1alpha1.SqlSslCertList{})
+		Invokes(testing.NewListAction(sqlsslcertsResource, sqlsslcertsKind, c.ns, opts), &v1alpha1.SqlSslCertList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSqlSslCerts) List(opts v1.ListOptions) (result *v1alpha1.SqlSslCert
 // Watch returns a watch.Interface that watches the requested sqlSslCerts.
 func (c *FakeSqlSslCerts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sqlsslcertsResource, opts))
+		InvokesWatch(testing.NewWatchAction(sqlsslcertsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sqlSslCert and creates it.  Returns the server's representation of the sqlSslCert, and an error, if there is any.
 func (c *FakeSqlSslCerts) Create(sqlSslCert *v1alpha1.SqlSslCert) (result *v1alpha1.SqlSslCert, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sqlsslcertsResource, sqlSslCert), &v1alpha1.SqlSslCert{})
+		Invokes(testing.NewCreateAction(sqlsslcertsResource, c.ns, sqlSslCert), &v1alpha1.SqlSslCert{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSqlSslCerts) Create(sqlSslCert *v1alpha1.SqlSslCert) (result *v1alp
 // Update takes the representation of a sqlSslCert and updates it. Returns the server's representation of the sqlSslCert, and an error, if there is any.
 func (c *FakeSqlSslCerts) Update(sqlSslCert *v1alpha1.SqlSslCert) (result *v1alpha1.SqlSslCert, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sqlsslcertsResource, sqlSslCert), &v1alpha1.SqlSslCert{})
+		Invokes(testing.NewUpdateAction(sqlsslcertsResource, c.ns, sqlSslCert), &v1alpha1.SqlSslCert{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSqlSslCerts) Update(sqlSslCert *v1alpha1.SqlSslCert) (result *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSqlSslCerts) UpdateStatus(sqlSslCert *v1alpha1.SqlSslCert) (*v1alpha1.SqlSslCert, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sqlsslcertsResource, "status", sqlSslCert), &v1alpha1.SqlSslCert{})
+		Invokes(testing.NewUpdateSubresourceAction(sqlsslcertsResource, "status", c.ns, sqlSslCert), &v1alpha1.SqlSslCert{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSqlSslCerts) UpdateStatus(sqlSslCert *v1alpha1.SqlSslCert) (*v1alph
 // Delete takes name of the sqlSslCert and deletes it. Returns an error if one occurs.
 func (c *FakeSqlSslCerts) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sqlsslcertsResource, name), &v1alpha1.SqlSslCert{})
+		Invokes(testing.NewDeleteAction(sqlsslcertsResource, c.ns, name), &v1alpha1.SqlSslCert{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSqlSslCerts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sqlsslcertsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sqlsslcertsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SqlSslCertList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSqlSslCerts) DeleteCollection(options *v1.DeleteOptions, listOption
 // Patch applies the patch and returns the patched sqlSslCert.
 func (c *FakeSqlSslCerts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SqlSslCert, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sqlsslcertsResource, name, pt, data, subresources...), &v1alpha1.SqlSslCert{})
+		Invokes(testing.NewPatchSubresourceAction(sqlsslcertsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SqlSslCert{})
+
 	if obj == nil {
 		return nil, err
 	}

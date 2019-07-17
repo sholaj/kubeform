@@ -29,8 +29,8 @@ import (
 type MonitorActivityLogAlertLister interface {
 	// List lists all MonitorActivityLogAlerts in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MonitorActivityLogAlert, err error)
-	// Get retrieves the MonitorActivityLogAlert from the index for a given name.
-	Get(name string) (*v1alpha1.MonitorActivityLogAlert, error)
+	// MonitorActivityLogAlerts returns an object that can list and get MonitorActivityLogAlerts.
+	MonitorActivityLogAlerts(namespace string) MonitorActivityLogAlertNamespaceLister
 	MonitorActivityLogAlertListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *monitorActivityLogAlertLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the MonitorActivityLogAlert from the index for a given name.
-func (s *monitorActivityLogAlertLister) Get(name string) (*v1alpha1.MonitorActivityLogAlert, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MonitorActivityLogAlerts returns an object that can list and get MonitorActivityLogAlerts.
+func (s *monitorActivityLogAlertLister) MonitorActivityLogAlerts(namespace string) MonitorActivityLogAlertNamespaceLister {
+	return monitorActivityLogAlertNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MonitorActivityLogAlertNamespaceLister helps list and get MonitorActivityLogAlerts.
+type MonitorActivityLogAlertNamespaceLister interface {
+	// List lists all MonitorActivityLogAlerts in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MonitorActivityLogAlert, err error)
+	// Get retrieves the MonitorActivityLogAlert from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MonitorActivityLogAlert, error)
+	MonitorActivityLogAlertNamespaceListerExpansion
+}
+
+// monitorActivityLogAlertNamespaceLister implements the MonitorActivityLogAlertNamespaceLister
+// interface.
+type monitorActivityLogAlertNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MonitorActivityLogAlerts in the indexer for a given namespace.
+func (s monitorActivityLogAlertNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MonitorActivityLogAlert, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MonitorActivityLogAlert))
+	})
+	return ret, err
+}
+
+// Get retrieves the MonitorActivityLogAlert from the indexer for a given namespace and name.
+func (s monitorActivityLogAlertNamespaceLister) Get(name string) (*v1alpha1.MonitorActivityLogAlert, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

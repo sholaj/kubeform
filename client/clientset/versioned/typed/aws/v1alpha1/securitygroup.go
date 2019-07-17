@@ -32,7 +32,7 @@ import (
 // SecurityGroupsGetter has a method to return a SecurityGroupInterface.
 // A group's client should implement this interface.
 type SecurityGroupsGetter interface {
-	SecurityGroups() SecurityGroupInterface
+	SecurityGroups(namespace string) SecurityGroupInterface
 }
 
 // SecurityGroupInterface has methods to work with SecurityGroup resources.
@@ -52,12 +52,14 @@ type SecurityGroupInterface interface {
 // securityGroups implements SecurityGroupInterface
 type securityGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSecurityGroups returns a SecurityGroups
-func newSecurityGroups(c *AwsV1alpha1Client) *securityGroups {
+func newSecurityGroups(c *AwsV1alpha1Client, namespace string) *securityGroups {
 	return &securityGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSecurityGroups(c *AwsV1alpha1Client) *securityGroups {
 func (c *securityGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.SecurityGroup, err error) {
 	result = &v1alpha1.SecurityGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("securitygroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *securityGroups) List(opts v1.ListOptions) (result *v1alpha1.SecurityGro
 	}
 	result = &v1alpha1.SecurityGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("securitygroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *securityGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("securitygroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *securityGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *securityGroups) Create(securityGroup *v1alpha1.SecurityGroup) (result *v1alpha1.SecurityGroup, err error) {
 	result = &v1alpha1.SecurityGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("securitygroups").
 		Body(securityGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *securityGroups) Create(securityGroup *v1alpha1.SecurityGroup) (result *
 func (c *securityGroups) Update(securityGroup *v1alpha1.SecurityGroup) (result *v1alpha1.SecurityGroup, err error) {
 	result = &v1alpha1.SecurityGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("securitygroups").
 		Name(securityGroup.Name).
 		Body(securityGroup).
@@ -132,6 +139,7 @@ func (c *securityGroups) Update(securityGroup *v1alpha1.SecurityGroup) (result *
 func (c *securityGroups) UpdateStatus(securityGroup *v1alpha1.SecurityGroup) (result *v1alpha1.SecurityGroup, err error) {
 	result = &v1alpha1.SecurityGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("securitygroups").
 		Name(securityGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *securityGroups) UpdateStatus(securityGroup *v1alpha1.SecurityGroup) (re
 // Delete takes name of the securityGroup and deletes it. Returns an error if one occurs.
 func (c *securityGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("securitygroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *securityGroups) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("securitygroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *securityGroups) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *securityGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SecurityGroup, err error) {
 	result = &v1alpha1.SecurityGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("securitygroups").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // ComputeSecurityPoliciesGetter has a method to return a ComputeSecurityPolicyInterface.
 // A group's client should implement this interface.
 type ComputeSecurityPoliciesGetter interface {
-	ComputeSecurityPolicies() ComputeSecurityPolicyInterface
+	ComputeSecurityPolicies(namespace string) ComputeSecurityPolicyInterface
 }
 
 // ComputeSecurityPolicyInterface has methods to work with ComputeSecurityPolicy resources.
@@ -52,12 +52,14 @@ type ComputeSecurityPolicyInterface interface {
 // computeSecurityPolicies implements ComputeSecurityPolicyInterface
 type computeSecurityPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeSecurityPolicies returns a ComputeSecurityPolicies
-func newComputeSecurityPolicies(c *GoogleV1alpha1Client) *computeSecurityPolicies {
+func newComputeSecurityPolicies(c *GoogleV1alpha1Client, namespace string) *computeSecurityPolicies {
 	return &computeSecurityPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeSecurityPolicies(c *GoogleV1alpha1Client) *computeSecurityPolicie
 func (c *computeSecurityPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeSecurityPolicy, err error) {
 	result = &v1alpha1.ComputeSecurityPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computesecuritypolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeSecurityPolicies) List(opts v1.ListOptions) (result *v1alpha1.Co
 	}
 	result = &v1alpha1.ComputeSecurityPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computesecuritypolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeSecurityPolicies) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computesecuritypolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeSecurityPolicies) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *computeSecurityPolicies) Create(computeSecurityPolicy *v1alpha1.ComputeSecurityPolicy) (result *v1alpha1.ComputeSecurityPolicy, err error) {
 	result = &v1alpha1.ComputeSecurityPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computesecuritypolicies").
 		Body(computeSecurityPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeSecurityPolicies) Create(computeSecurityPolicy *v1alpha1.Compute
 func (c *computeSecurityPolicies) Update(computeSecurityPolicy *v1alpha1.ComputeSecurityPolicy) (result *v1alpha1.ComputeSecurityPolicy, err error) {
 	result = &v1alpha1.ComputeSecurityPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computesecuritypolicies").
 		Name(computeSecurityPolicy.Name).
 		Body(computeSecurityPolicy).
@@ -132,6 +139,7 @@ func (c *computeSecurityPolicies) Update(computeSecurityPolicy *v1alpha1.Compute
 func (c *computeSecurityPolicies) UpdateStatus(computeSecurityPolicy *v1alpha1.ComputeSecurityPolicy) (result *v1alpha1.ComputeSecurityPolicy, err error) {
 	result = &v1alpha1.ComputeSecurityPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computesecuritypolicies").
 		Name(computeSecurityPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeSecurityPolicies) UpdateStatus(computeSecurityPolicy *v1alpha1.C
 // Delete takes name of the computeSecurityPolicy and deletes it. Returns an error if one occurs.
 func (c *computeSecurityPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computesecuritypolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeSecurityPolicies) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computesecuritypolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeSecurityPolicies) DeleteCollection(options *v1.DeleteOptions, li
 func (c *computeSecurityPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeSecurityPolicy, err error) {
 	result = &v1alpha1.ComputeSecurityPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computesecuritypolicies").
 		SubResource(subresources...).
 		Name(name).

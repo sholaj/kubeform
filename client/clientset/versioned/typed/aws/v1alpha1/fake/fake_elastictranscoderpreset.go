@@ -31,6 +31,7 @@ import (
 // FakeElastictranscoderPresets implements ElastictranscoderPresetInterface
 type FakeElastictranscoderPresets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var elastictranscoderpresetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "elastictranscoderpresets"}
@@ -40,7 +41,8 @@ var elastictranscoderpresetsKind = schema.GroupVersionKind{Group: "aws.kubeform.
 // Get takes name of the elastictranscoderPreset, and returns the corresponding elastictranscoderPreset object, and an error if there is any.
 func (c *FakeElastictranscoderPresets) Get(name string, options v1.GetOptions) (result *v1alpha1.ElastictranscoderPreset, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(elastictranscoderpresetsResource, name), &v1alpha1.ElastictranscoderPreset{})
+		Invokes(testing.NewGetAction(elastictranscoderpresetsResource, c.ns, name), &v1alpha1.ElastictranscoderPreset{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeElastictranscoderPresets) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of ElastictranscoderPresets that match those selectors.
 func (c *FakeElastictranscoderPresets) List(opts v1.ListOptions) (result *v1alpha1.ElastictranscoderPresetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(elastictranscoderpresetsResource, elastictranscoderpresetsKind, opts), &v1alpha1.ElastictranscoderPresetList{})
+		Invokes(testing.NewListAction(elastictranscoderpresetsResource, elastictranscoderpresetsKind, c.ns, opts), &v1alpha1.ElastictranscoderPresetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeElastictranscoderPresets) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested elastictranscoderPresets.
 func (c *FakeElastictranscoderPresets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(elastictranscoderpresetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(elastictranscoderpresetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a elastictranscoderPreset and creates it.  Returns the server's representation of the elastictranscoderPreset, and an error, if there is any.
 func (c *FakeElastictranscoderPresets) Create(elastictranscoderPreset *v1alpha1.ElastictranscoderPreset) (result *v1alpha1.ElastictranscoderPreset, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(elastictranscoderpresetsResource, elastictranscoderPreset), &v1alpha1.ElastictranscoderPreset{})
+		Invokes(testing.NewCreateAction(elastictranscoderpresetsResource, c.ns, elastictranscoderPreset), &v1alpha1.ElastictranscoderPreset{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeElastictranscoderPresets) Create(elastictranscoderPreset *v1alpha1.
 // Update takes the representation of a elastictranscoderPreset and updates it. Returns the server's representation of the elastictranscoderPreset, and an error, if there is any.
 func (c *FakeElastictranscoderPresets) Update(elastictranscoderPreset *v1alpha1.ElastictranscoderPreset) (result *v1alpha1.ElastictranscoderPreset, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(elastictranscoderpresetsResource, elastictranscoderPreset), &v1alpha1.ElastictranscoderPreset{})
+		Invokes(testing.NewUpdateAction(elastictranscoderpresetsResource, c.ns, elastictranscoderPreset), &v1alpha1.ElastictranscoderPreset{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeElastictranscoderPresets) Update(elastictranscoderPreset *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeElastictranscoderPresets) UpdateStatus(elastictranscoderPreset *v1alpha1.ElastictranscoderPreset) (*v1alpha1.ElastictranscoderPreset, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(elastictranscoderpresetsResource, "status", elastictranscoderPreset), &v1alpha1.ElastictranscoderPreset{})
+		Invokes(testing.NewUpdateSubresourceAction(elastictranscoderpresetsResource, "status", c.ns, elastictranscoderPreset), &v1alpha1.ElastictranscoderPreset{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeElastictranscoderPresets) UpdateStatus(elastictranscoderPreset *v1a
 // Delete takes name of the elastictranscoderPreset and deletes it. Returns an error if one occurs.
 func (c *FakeElastictranscoderPresets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(elastictranscoderpresetsResource, name), &v1alpha1.ElastictranscoderPreset{})
+		Invokes(testing.NewDeleteAction(elastictranscoderpresetsResource, c.ns, name), &v1alpha1.ElastictranscoderPreset{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeElastictranscoderPresets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(elastictranscoderpresetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(elastictranscoderpresetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ElastictranscoderPresetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeElastictranscoderPresets) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched elastictranscoderPreset.
 func (c *FakeElastictranscoderPresets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ElastictranscoderPreset, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(elastictranscoderpresetsResource, name, pt, data, subresources...), &v1alpha1.ElastictranscoderPreset{})
+		Invokes(testing.NewPatchSubresourceAction(elastictranscoderpresetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ElastictranscoderPreset{})
+
 	if obj == nil {
 		return nil, err
 	}

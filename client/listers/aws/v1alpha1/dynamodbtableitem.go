@@ -29,8 +29,8 @@ import (
 type DynamodbTableItemLister interface {
 	// List lists all DynamodbTableItems in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DynamodbTableItem, err error)
-	// Get retrieves the DynamodbTableItem from the index for a given name.
-	Get(name string) (*v1alpha1.DynamodbTableItem, error)
+	// DynamodbTableItems returns an object that can list and get DynamodbTableItems.
+	DynamodbTableItems(namespace string) DynamodbTableItemNamespaceLister
 	DynamodbTableItemListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dynamodbTableItemLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the DynamodbTableItem from the index for a given name.
-func (s *dynamodbTableItemLister) Get(name string) (*v1alpha1.DynamodbTableItem, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DynamodbTableItems returns an object that can list and get DynamodbTableItems.
+func (s *dynamodbTableItemLister) DynamodbTableItems(namespace string) DynamodbTableItemNamespaceLister {
+	return dynamodbTableItemNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DynamodbTableItemNamespaceLister helps list and get DynamodbTableItems.
+type DynamodbTableItemNamespaceLister interface {
+	// List lists all DynamodbTableItems in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DynamodbTableItem, err error)
+	// Get retrieves the DynamodbTableItem from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DynamodbTableItem, error)
+	DynamodbTableItemNamespaceListerExpansion
+}
+
+// dynamodbTableItemNamespaceLister implements the DynamodbTableItemNamespaceLister
+// interface.
+type dynamodbTableItemNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DynamodbTableItems in the indexer for a given namespace.
+func (s dynamodbTableItemNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DynamodbTableItem, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DynamodbTableItem))
+	})
+	return ret, err
+}
+
+// Get retrieves the DynamodbTableItem from the indexer for a given namespace and name.
+func (s dynamodbTableItemNamespaceLister) Get(name string) (*v1alpha1.DynamodbTableItem, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

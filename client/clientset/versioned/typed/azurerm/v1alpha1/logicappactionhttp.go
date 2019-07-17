@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// LogicAppActionHttpsGetter has a method to return a LogicAppActionHttpInterface.
+// LogicAppActionHTTPsGetter has a method to return a LogicAppActionHTTPInterface.
 // A group's client should implement this interface.
-type LogicAppActionHttpsGetter interface {
-	LogicAppActionHttps() LogicAppActionHttpInterface
+type LogicAppActionHTTPsGetter interface {
+	LogicAppActionHTTPs(namespace string) LogicAppActionHTTPInterface
 }
 
-// LogicAppActionHttpInterface has methods to work with LogicAppActionHttp resources.
-type LogicAppActionHttpInterface interface {
-	Create(*v1alpha1.LogicAppActionHttp) (*v1alpha1.LogicAppActionHttp, error)
-	Update(*v1alpha1.LogicAppActionHttp) (*v1alpha1.LogicAppActionHttp, error)
-	UpdateStatus(*v1alpha1.LogicAppActionHttp) (*v1alpha1.LogicAppActionHttp, error)
+// LogicAppActionHTTPInterface has methods to work with LogicAppActionHTTP resources.
+type LogicAppActionHTTPInterface interface {
+	Create(*v1alpha1.LogicAppActionHTTP) (*v1alpha1.LogicAppActionHTTP, error)
+	Update(*v1alpha1.LogicAppActionHTTP) (*v1alpha1.LogicAppActionHTTP, error)
+	UpdateStatus(*v1alpha1.LogicAppActionHTTP) (*v1alpha1.LogicAppActionHTTP, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.LogicAppActionHttp, error)
-	List(opts v1.ListOptions) (*v1alpha1.LogicAppActionHttpList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.LogicAppActionHTTP, error)
+	List(opts v1.ListOptions) (*v1alpha1.LogicAppActionHTTPList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogicAppActionHttp, err error)
-	LogicAppActionHttpExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogicAppActionHTTP, err error)
+	LogicAppActionHTTPExpansion
 }
 
-// logicAppActionHttps implements LogicAppActionHttpInterface
-type logicAppActionHttps struct {
+// logicAppActionHTTPs implements LogicAppActionHTTPInterface
+type logicAppActionHTTPs struct {
 	client rest.Interface
+	ns     string
 }
 
-// newLogicAppActionHttps returns a LogicAppActionHttps
-func newLogicAppActionHttps(c *AzurermV1alpha1Client) *logicAppActionHttps {
-	return &logicAppActionHttps{
+// newLogicAppActionHTTPs returns a LogicAppActionHTTPs
+func newLogicAppActionHTTPs(c *AzurermV1alpha1Client, namespace string) *logicAppActionHTTPs {
+	return &logicAppActionHTTPs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the logicAppActionHttp, and returns the corresponding logicAppActionHttp object, and an error if there is any.
-func (c *logicAppActionHttps) Get(name string, options v1.GetOptions) (result *v1alpha1.LogicAppActionHttp, err error) {
-	result = &v1alpha1.LogicAppActionHttp{}
+// Get takes name of the logicAppActionHTTP, and returns the corresponding logicAppActionHTTP object, and an error if there is any.
+func (c *logicAppActionHTTPs) Get(name string, options v1.GetOptions) (result *v1alpha1.LogicAppActionHTTP, err error) {
+	result = &v1alpha1.LogicAppActionHTTP{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("logicappactionhttps").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *logicAppActionHttps) Get(name string, options v1.GetOptions) (result *v
 	return
 }
 
-// List takes label and field selectors, and returns the list of LogicAppActionHttps that match those selectors.
-func (c *logicAppActionHttps) List(opts v1.ListOptions) (result *v1alpha1.LogicAppActionHttpList, err error) {
+// List takes label and field selectors, and returns the list of LogicAppActionHTTPs that match those selectors.
+func (c *logicAppActionHTTPs) List(opts v1.ListOptions) (result *v1alpha1.LogicAppActionHTTPList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.LogicAppActionHttpList{}
+	result = &v1alpha1.LogicAppActionHTTPList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("logicappactionhttps").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *logicAppActionHttps) List(opts v1.ListOptions) (result *v1alpha1.LogicA
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested logicAppActionHttps.
-func (c *logicAppActionHttps) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested logicAppActionHTTPs.
+func (c *logicAppActionHTTPs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("logicappactionhttps").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a logicAppActionHttp and creates it.  Returns the server's representation of the logicAppActionHttp, and an error, if there is any.
-func (c *logicAppActionHttps) Create(logicAppActionHttp *v1alpha1.LogicAppActionHttp) (result *v1alpha1.LogicAppActionHttp, err error) {
-	result = &v1alpha1.LogicAppActionHttp{}
+// Create takes the representation of a logicAppActionHTTP and creates it.  Returns the server's representation of the logicAppActionHTTP, and an error, if there is any.
+func (c *logicAppActionHTTPs) Create(logicAppActionHTTP *v1alpha1.LogicAppActionHTTP) (result *v1alpha1.LogicAppActionHTTP, err error) {
+	result = &v1alpha1.LogicAppActionHTTP{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("logicappactionhttps").
-		Body(logicAppActionHttp).
+		Body(logicAppActionHTTP).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a logicAppActionHttp and updates it. Returns the server's representation of the logicAppActionHttp, and an error, if there is any.
-func (c *logicAppActionHttps) Update(logicAppActionHttp *v1alpha1.LogicAppActionHttp) (result *v1alpha1.LogicAppActionHttp, err error) {
-	result = &v1alpha1.LogicAppActionHttp{}
+// Update takes the representation of a logicAppActionHTTP and updates it. Returns the server's representation of the logicAppActionHTTP, and an error, if there is any.
+func (c *logicAppActionHTTPs) Update(logicAppActionHTTP *v1alpha1.LogicAppActionHTTP) (result *v1alpha1.LogicAppActionHTTP, err error) {
+	result = &v1alpha1.LogicAppActionHTTP{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("logicappactionhttps").
-		Name(logicAppActionHttp.Name).
-		Body(logicAppActionHttp).
+		Name(logicAppActionHTTP.Name).
+		Body(logicAppActionHTTP).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *logicAppActionHttps) Update(logicAppActionHttp *v1alpha1.LogicAppAction
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *logicAppActionHttps) UpdateStatus(logicAppActionHttp *v1alpha1.LogicAppActionHttp) (result *v1alpha1.LogicAppActionHttp, err error) {
-	result = &v1alpha1.LogicAppActionHttp{}
+func (c *logicAppActionHTTPs) UpdateStatus(logicAppActionHTTP *v1alpha1.LogicAppActionHTTP) (result *v1alpha1.LogicAppActionHTTP, err error) {
+	result = &v1alpha1.LogicAppActionHTTP{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("logicappactionhttps").
-		Name(logicAppActionHttp.Name).
+		Name(logicAppActionHTTP.Name).
 		SubResource("status").
-		Body(logicAppActionHttp).
+		Body(logicAppActionHTTP).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the logicAppActionHttp and deletes it. Returns an error if one occurs.
-func (c *logicAppActionHttps) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the logicAppActionHTTP and deletes it. Returns an error if one occurs.
+func (c *logicAppActionHTTPs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("logicappactionhttps").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *logicAppActionHttps) Delete(name string, options *v1.DeleteOptions) err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *logicAppActionHttps) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *logicAppActionHTTPs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("logicappactionhttps").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *logicAppActionHttps) DeleteCollection(options *v1.DeleteOptions, listOp
 		Error()
 }
 
-// Patch applies the patch and returns the patched logicAppActionHttp.
-func (c *logicAppActionHttps) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogicAppActionHttp, err error) {
-	result = &v1alpha1.LogicAppActionHttp{}
+// Patch applies the patch and returns the patched logicAppActionHTTP.
+func (c *logicAppActionHTTPs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogicAppActionHTTP, err error) {
+	result = &v1alpha1.LogicAppActionHTTP{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("logicappactionhttps").
 		SubResource(subresources...).
 		Name(name).

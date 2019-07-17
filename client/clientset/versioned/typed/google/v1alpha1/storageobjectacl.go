@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// StorageObjectAclsGetter has a method to return a StorageObjectAclInterface.
+// StorageObjectACLsGetter has a method to return a StorageObjectACLInterface.
 // A group's client should implement this interface.
-type StorageObjectAclsGetter interface {
-	StorageObjectAcls() StorageObjectAclInterface
+type StorageObjectACLsGetter interface {
+	StorageObjectACLs(namespace string) StorageObjectACLInterface
 }
 
-// StorageObjectAclInterface has methods to work with StorageObjectAcl resources.
-type StorageObjectAclInterface interface {
-	Create(*v1alpha1.StorageObjectAcl) (*v1alpha1.StorageObjectAcl, error)
-	Update(*v1alpha1.StorageObjectAcl) (*v1alpha1.StorageObjectAcl, error)
-	UpdateStatus(*v1alpha1.StorageObjectAcl) (*v1alpha1.StorageObjectAcl, error)
+// StorageObjectACLInterface has methods to work with StorageObjectACL resources.
+type StorageObjectACLInterface interface {
+	Create(*v1alpha1.StorageObjectACL) (*v1alpha1.StorageObjectACL, error)
+	Update(*v1alpha1.StorageObjectACL) (*v1alpha1.StorageObjectACL, error)
+	UpdateStatus(*v1alpha1.StorageObjectACL) (*v1alpha1.StorageObjectACL, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.StorageObjectAcl, error)
-	List(opts v1.ListOptions) (*v1alpha1.StorageObjectAclList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.StorageObjectACL, error)
+	List(opts v1.ListOptions) (*v1alpha1.StorageObjectACLList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageObjectAcl, err error)
-	StorageObjectAclExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageObjectACL, err error)
+	StorageObjectACLExpansion
 }
 
-// storageObjectAcls implements StorageObjectAclInterface
-type storageObjectAcls struct {
+// storageObjectACLs implements StorageObjectACLInterface
+type storageObjectACLs struct {
 	client rest.Interface
+	ns     string
 }
 
-// newStorageObjectAcls returns a StorageObjectAcls
-func newStorageObjectAcls(c *GoogleV1alpha1Client) *storageObjectAcls {
-	return &storageObjectAcls{
+// newStorageObjectACLs returns a StorageObjectACLs
+func newStorageObjectACLs(c *GoogleV1alpha1Client, namespace string) *storageObjectACLs {
+	return &storageObjectACLs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the storageObjectAcl, and returns the corresponding storageObjectAcl object, and an error if there is any.
-func (c *storageObjectAcls) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageObjectAcl, err error) {
-	result = &v1alpha1.StorageObjectAcl{}
+// Get takes name of the storageObjectACL, and returns the corresponding storageObjectACL object, and an error if there is any.
+func (c *storageObjectACLs) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageObjectACL, err error) {
+	result = &v1alpha1.StorageObjectACL{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storageobjectacls").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *storageObjectAcls) Get(name string, options v1.GetOptions) (result *v1a
 	return
 }
 
-// List takes label and field selectors, and returns the list of StorageObjectAcls that match those selectors.
-func (c *storageObjectAcls) List(opts v1.ListOptions) (result *v1alpha1.StorageObjectAclList, err error) {
+// List takes label and field selectors, and returns the list of StorageObjectACLs that match those selectors.
+func (c *storageObjectACLs) List(opts v1.ListOptions) (result *v1alpha1.StorageObjectACLList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.StorageObjectAclList{}
+	result = &v1alpha1.StorageObjectACLList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storageobjectacls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *storageObjectAcls) List(opts v1.ListOptions) (result *v1alpha1.StorageO
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested storageObjectAcls.
-func (c *storageObjectAcls) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested storageObjectACLs.
+func (c *storageObjectACLs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storageobjectacls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a storageObjectAcl and creates it.  Returns the server's representation of the storageObjectAcl, and an error, if there is any.
-func (c *storageObjectAcls) Create(storageObjectAcl *v1alpha1.StorageObjectAcl) (result *v1alpha1.StorageObjectAcl, err error) {
-	result = &v1alpha1.StorageObjectAcl{}
+// Create takes the representation of a storageObjectACL and creates it.  Returns the server's representation of the storageObjectACL, and an error, if there is any.
+func (c *storageObjectACLs) Create(storageObjectACL *v1alpha1.StorageObjectACL) (result *v1alpha1.StorageObjectACL, err error) {
+	result = &v1alpha1.StorageObjectACL{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storageobjectacls").
-		Body(storageObjectAcl).
+		Body(storageObjectACL).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a storageObjectAcl and updates it. Returns the server's representation of the storageObjectAcl, and an error, if there is any.
-func (c *storageObjectAcls) Update(storageObjectAcl *v1alpha1.StorageObjectAcl) (result *v1alpha1.StorageObjectAcl, err error) {
-	result = &v1alpha1.StorageObjectAcl{}
+// Update takes the representation of a storageObjectACL and updates it. Returns the server's representation of the storageObjectACL, and an error, if there is any.
+func (c *storageObjectACLs) Update(storageObjectACL *v1alpha1.StorageObjectACL) (result *v1alpha1.StorageObjectACL, err error) {
+	result = &v1alpha1.StorageObjectACL{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storageobjectacls").
-		Name(storageObjectAcl.Name).
-		Body(storageObjectAcl).
+		Name(storageObjectACL.Name).
+		Body(storageObjectACL).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *storageObjectAcls) Update(storageObjectAcl *v1alpha1.StorageObjectAcl) 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *storageObjectAcls) UpdateStatus(storageObjectAcl *v1alpha1.StorageObjectAcl) (result *v1alpha1.StorageObjectAcl, err error) {
-	result = &v1alpha1.StorageObjectAcl{}
+func (c *storageObjectACLs) UpdateStatus(storageObjectACL *v1alpha1.StorageObjectACL) (result *v1alpha1.StorageObjectACL, err error) {
+	result = &v1alpha1.StorageObjectACL{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storageobjectacls").
-		Name(storageObjectAcl.Name).
+		Name(storageObjectACL.Name).
 		SubResource("status").
-		Body(storageObjectAcl).
+		Body(storageObjectACL).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the storageObjectAcl and deletes it. Returns an error if one occurs.
-func (c *storageObjectAcls) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the storageObjectACL and deletes it. Returns an error if one occurs.
+func (c *storageObjectACLs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storageobjectacls").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *storageObjectAcls) Delete(name string, options *v1.DeleteOptions) error
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *storageObjectAcls) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *storageObjectACLs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storageobjectacls").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *storageObjectAcls) DeleteCollection(options *v1.DeleteOptions, listOpti
 		Error()
 }
 
-// Patch applies the patch and returns the patched storageObjectAcl.
-func (c *storageObjectAcls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageObjectAcl, err error) {
-	result = &v1alpha1.StorageObjectAcl{}
+// Patch applies the patch and returns the patched storageObjectACL.
+func (c *storageObjectACLs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageObjectACL, err error) {
+	result = &v1alpha1.StorageObjectACL{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storageobjectacls").
 		SubResource(subresources...).
 		Name(name).

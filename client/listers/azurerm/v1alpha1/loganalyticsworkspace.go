@@ -29,8 +29,8 @@ import (
 type LogAnalyticsWorkspaceLister interface {
 	// List lists all LogAnalyticsWorkspaces in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LogAnalyticsWorkspace, err error)
-	// Get retrieves the LogAnalyticsWorkspace from the index for a given name.
-	Get(name string) (*v1alpha1.LogAnalyticsWorkspace, error)
+	// LogAnalyticsWorkspaces returns an object that can list and get LogAnalyticsWorkspaces.
+	LogAnalyticsWorkspaces(namespace string) LogAnalyticsWorkspaceNamespaceLister
 	LogAnalyticsWorkspaceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *logAnalyticsWorkspaceLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the LogAnalyticsWorkspace from the index for a given name.
-func (s *logAnalyticsWorkspaceLister) Get(name string) (*v1alpha1.LogAnalyticsWorkspace, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LogAnalyticsWorkspaces returns an object that can list and get LogAnalyticsWorkspaces.
+func (s *logAnalyticsWorkspaceLister) LogAnalyticsWorkspaces(namespace string) LogAnalyticsWorkspaceNamespaceLister {
+	return logAnalyticsWorkspaceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LogAnalyticsWorkspaceNamespaceLister helps list and get LogAnalyticsWorkspaces.
+type LogAnalyticsWorkspaceNamespaceLister interface {
+	// List lists all LogAnalyticsWorkspaces in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LogAnalyticsWorkspace, err error)
+	// Get retrieves the LogAnalyticsWorkspace from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LogAnalyticsWorkspace, error)
+	LogAnalyticsWorkspaceNamespaceListerExpansion
+}
+
+// logAnalyticsWorkspaceNamespaceLister implements the LogAnalyticsWorkspaceNamespaceLister
+// interface.
+type logAnalyticsWorkspaceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LogAnalyticsWorkspaces in the indexer for a given namespace.
+func (s logAnalyticsWorkspaceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LogAnalyticsWorkspace, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LogAnalyticsWorkspace))
+	})
+	return ret, err
+}
+
+// Get retrieves the LogAnalyticsWorkspace from the indexer for a given namespace and name.
+func (s logAnalyticsWorkspaceNamespaceLister) Get(name string) (*v1alpha1.LogAnalyticsWorkspace, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

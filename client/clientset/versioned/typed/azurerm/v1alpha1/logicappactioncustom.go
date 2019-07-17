@@ -32,7 +32,7 @@ import (
 // LogicAppActionCustomsGetter has a method to return a LogicAppActionCustomInterface.
 // A group's client should implement this interface.
 type LogicAppActionCustomsGetter interface {
-	LogicAppActionCustoms() LogicAppActionCustomInterface
+	LogicAppActionCustoms(namespace string) LogicAppActionCustomInterface
 }
 
 // LogicAppActionCustomInterface has methods to work with LogicAppActionCustom resources.
@@ -52,12 +52,14 @@ type LogicAppActionCustomInterface interface {
 // logicAppActionCustoms implements LogicAppActionCustomInterface
 type logicAppActionCustoms struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLogicAppActionCustoms returns a LogicAppActionCustoms
-func newLogicAppActionCustoms(c *AzurermV1alpha1Client) *logicAppActionCustoms {
+func newLogicAppActionCustoms(c *AzurermV1alpha1Client, namespace string) *logicAppActionCustoms {
 	return &logicAppActionCustoms{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLogicAppActionCustoms(c *AzurermV1alpha1Client) *logicAppActionCustoms {
 func (c *logicAppActionCustoms) Get(name string, options v1.GetOptions) (result *v1alpha1.LogicAppActionCustom, err error) {
 	result = &v1alpha1.LogicAppActionCustom{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("logicappactioncustoms").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *logicAppActionCustoms) List(opts v1.ListOptions) (result *v1alpha1.Logi
 	}
 	result = &v1alpha1.LogicAppActionCustomList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("logicappactioncustoms").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *logicAppActionCustoms) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("logicappactioncustoms").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *logicAppActionCustoms) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *logicAppActionCustoms) Create(logicAppActionCustom *v1alpha1.LogicAppActionCustom) (result *v1alpha1.LogicAppActionCustom, err error) {
 	result = &v1alpha1.LogicAppActionCustom{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("logicappactioncustoms").
 		Body(logicAppActionCustom).
 		Do().
@@ -118,6 +124,7 @@ func (c *logicAppActionCustoms) Create(logicAppActionCustom *v1alpha1.LogicAppAc
 func (c *logicAppActionCustoms) Update(logicAppActionCustom *v1alpha1.LogicAppActionCustom) (result *v1alpha1.LogicAppActionCustom, err error) {
 	result = &v1alpha1.LogicAppActionCustom{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("logicappactioncustoms").
 		Name(logicAppActionCustom.Name).
 		Body(logicAppActionCustom).
@@ -132,6 +139,7 @@ func (c *logicAppActionCustoms) Update(logicAppActionCustom *v1alpha1.LogicAppAc
 func (c *logicAppActionCustoms) UpdateStatus(logicAppActionCustom *v1alpha1.LogicAppActionCustom) (result *v1alpha1.LogicAppActionCustom, err error) {
 	result = &v1alpha1.LogicAppActionCustom{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("logicappactioncustoms").
 		Name(logicAppActionCustom.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *logicAppActionCustoms) UpdateStatus(logicAppActionCustom *v1alpha1.Logi
 // Delete takes name of the logicAppActionCustom and deletes it. Returns an error if one occurs.
 func (c *logicAppActionCustoms) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("logicappactioncustoms").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *logicAppActionCustoms) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("logicappactioncustoms").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *logicAppActionCustoms) DeleteCollection(options *v1.DeleteOptions, list
 func (c *logicAppActionCustoms) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogicAppActionCustom, err error) {
 	result = &v1alpha1.LogicAppActionCustom{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("logicappactioncustoms").
 		SubResource(subresources...).
 		Name(name).

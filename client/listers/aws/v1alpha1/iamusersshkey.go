@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// IamUserSshKeyLister helps list IamUserSshKeys.
-type IamUserSshKeyLister interface {
-	// List lists all IamUserSshKeys in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.IamUserSshKey, err error)
-	// Get retrieves the IamUserSshKey from the index for a given name.
-	Get(name string) (*v1alpha1.IamUserSshKey, error)
-	IamUserSshKeyListerExpansion
+// IamUserSSHKeyLister helps list IamUserSSHKeys.
+type IamUserSSHKeyLister interface {
+	// List lists all IamUserSSHKeys in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.IamUserSSHKey, err error)
+	// IamUserSSHKeys returns an object that can list and get IamUserSSHKeys.
+	IamUserSSHKeys(namespace string) IamUserSSHKeyNamespaceLister
+	IamUserSSHKeyListerExpansion
 }
 
-// iamUserSshKeyLister implements the IamUserSshKeyLister interface.
-type iamUserSshKeyLister struct {
+// iamUserSSHKeyLister implements the IamUserSSHKeyLister interface.
+type iamUserSSHKeyLister struct {
 	indexer cache.Indexer
 }
 
-// NewIamUserSshKeyLister returns a new IamUserSshKeyLister.
-func NewIamUserSshKeyLister(indexer cache.Indexer) IamUserSshKeyLister {
-	return &iamUserSshKeyLister{indexer: indexer}
+// NewIamUserSSHKeyLister returns a new IamUserSSHKeyLister.
+func NewIamUserSSHKeyLister(indexer cache.Indexer) IamUserSSHKeyLister {
+	return &iamUserSSHKeyLister{indexer: indexer}
 }
 
-// List lists all IamUserSshKeys in the indexer.
-func (s *iamUserSshKeyLister) List(selector labels.Selector) (ret []*v1alpha1.IamUserSshKey, err error) {
+// List lists all IamUserSSHKeys in the indexer.
+func (s *iamUserSSHKeyLister) List(selector labels.Selector) (ret []*v1alpha1.IamUserSSHKey, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.IamUserSshKey))
+		ret = append(ret, m.(*v1alpha1.IamUserSSHKey))
 	})
 	return ret, err
 }
 
-// Get retrieves the IamUserSshKey from the index for a given name.
-func (s *iamUserSshKeyLister) Get(name string) (*v1alpha1.IamUserSshKey, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IamUserSSHKeys returns an object that can list and get IamUserSSHKeys.
+func (s *iamUserSSHKeyLister) IamUserSSHKeys(namespace string) IamUserSSHKeyNamespaceLister {
+	return iamUserSSHKeyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IamUserSSHKeyNamespaceLister helps list and get IamUserSSHKeys.
+type IamUserSSHKeyNamespaceLister interface {
+	// List lists all IamUserSSHKeys in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IamUserSSHKey, err error)
+	// Get retrieves the IamUserSSHKey from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IamUserSSHKey, error)
+	IamUserSSHKeyNamespaceListerExpansion
+}
+
+// iamUserSSHKeyNamespaceLister implements the IamUserSSHKeyNamespaceLister
+// interface.
+type iamUserSSHKeyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IamUserSSHKeys in the indexer for a given namespace.
+func (s iamUserSSHKeyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IamUserSSHKey, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IamUserSSHKey))
+	})
+	return ret, err
+}
+
+// Get retrieves the IamUserSSHKey from the indexer for a given namespace and name.
+func (s iamUserSSHKeyNamespaceLister) Get(name string) (*v1alpha1.IamUserSSHKey, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("iamusersshkey"), name)
 	}
-	return obj.(*v1alpha1.IamUserSshKey), nil
+	return obj.(*v1alpha1.IamUserSSHKey), nil
 }

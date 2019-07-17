@@ -32,7 +32,7 @@ import (
 // SpannerInstanceIamPoliciesGetter has a method to return a SpannerInstanceIamPolicyInterface.
 // A group's client should implement this interface.
 type SpannerInstanceIamPoliciesGetter interface {
-	SpannerInstanceIamPolicies() SpannerInstanceIamPolicyInterface
+	SpannerInstanceIamPolicies(namespace string) SpannerInstanceIamPolicyInterface
 }
 
 // SpannerInstanceIamPolicyInterface has methods to work with SpannerInstanceIamPolicy resources.
@@ -52,12 +52,14 @@ type SpannerInstanceIamPolicyInterface interface {
 // spannerInstanceIamPolicies implements SpannerInstanceIamPolicyInterface
 type spannerInstanceIamPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSpannerInstanceIamPolicies returns a SpannerInstanceIamPolicies
-func newSpannerInstanceIamPolicies(c *GoogleV1alpha1Client) *spannerInstanceIamPolicies {
+func newSpannerInstanceIamPolicies(c *GoogleV1alpha1Client, namespace string) *spannerInstanceIamPolicies {
 	return &spannerInstanceIamPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSpannerInstanceIamPolicies(c *GoogleV1alpha1Client) *spannerInstanceIamP
 func (c *spannerInstanceIamPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.SpannerInstanceIamPolicy, err error) {
 	result = &v1alpha1.SpannerInstanceIamPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("spannerinstanceiampolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *spannerInstanceIamPolicies) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.SpannerInstanceIamPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("spannerinstanceiampolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *spannerInstanceIamPolicies) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("spannerinstanceiampolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *spannerInstanceIamPolicies) Watch(opts v1.ListOptions) (watch.Interface
 func (c *spannerInstanceIamPolicies) Create(spannerInstanceIamPolicy *v1alpha1.SpannerInstanceIamPolicy) (result *v1alpha1.SpannerInstanceIamPolicy, err error) {
 	result = &v1alpha1.SpannerInstanceIamPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("spannerinstanceiampolicies").
 		Body(spannerInstanceIamPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *spannerInstanceIamPolicies) Create(spannerInstanceIamPolicy *v1alpha1.S
 func (c *spannerInstanceIamPolicies) Update(spannerInstanceIamPolicy *v1alpha1.SpannerInstanceIamPolicy) (result *v1alpha1.SpannerInstanceIamPolicy, err error) {
 	result = &v1alpha1.SpannerInstanceIamPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("spannerinstanceiampolicies").
 		Name(spannerInstanceIamPolicy.Name).
 		Body(spannerInstanceIamPolicy).
@@ -132,6 +139,7 @@ func (c *spannerInstanceIamPolicies) Update(spannerInstanceIamPolicy *v1alpha1.S
 func (c *spannerInstanceIamPolicies) UpdateStatus(spannerInstanceIamPolicy *v1alpha1.SpannerInstanceIamPolicy) (result *v1alpha1.SpannerInstanceIamPolicy, err error) {
 	result = &v1alpha1.SpannerInstanceIamPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("spannerinstanceiampolicies").
 		Name(spannerInstanceIamPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *spannerInstanceIamPolicies) UpdateStatus(spannerInstanceIamPolicy *v1al
 // Delete takes name of the spannerInstanceIamPolicy and deletes it. Returns an error if one occurs.
 func (c *spannerInstanceIamPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("spannerinstanceiampolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *spannerInstanceIamPolicies) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("spannerinstanceiampolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *spannerInstanceIamPolicies) DeleteCollection(options *v1.DeleteOptions,
 func (c *spannerInstanceIamPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SpannerInstanceIamPolicy, err error) {
 	result = &v1alpha1.SpannerInstanceIamPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("spannerinstanceiampolicies").
 		SubResource(subresources...).
 		Name(name).

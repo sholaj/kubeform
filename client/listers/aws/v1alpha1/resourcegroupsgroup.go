@@ -29,8 +29,8 @@ import (
 type ResourcegroupsGroupLister interface {
 	// List lists all ResourcegroupsGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ResourcegroupsGroup, err error)
-	// Get retrieves the ResourcegroupsGroup from the index for a given name.
-	Get(name string) (*v1alpha1.ResourcegroupsGroup, error)
+	// ResourcegroupsGroups returns an object that can list and get ResourcegroupsGroups.
+	ResourcegroupsGroups(namespace string) ResourcegroupsGroupNamespaceLister
 	ResourcegroupsGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *resourcegroupsGroupLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the ResourcegroupsGroup from the index for a given name.
-func (s *resourcegroupsGroupLister) Get(name string) (*v1alpha1.ResourcegroupsGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ResourcegroupsGroups returns an object that can list and get ResourcegroupsGroups.
+func (s *resourcegroupsGroupLister) ResourcegroupsGroups(namespace string) ResourcegroupsGroupNamespaceLister {
+	return resourcegroupsGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ResourcegroupsGroupNamespaceLister helps list and get ResourcegroupsGroups.
+type ResourcegroupsGroupNamespaceLister interface {
+	// List lists all ResourcegroupsGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ResourcegroupsGroup, err error)
+	// Get retrieves the ResourcegroupsGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ResourcegroupsGroup, error)
+	ResourcegroupsGroupNamespaceListerExpansion
+}
+
+// resourcegroupsGroupNamespaceLister implements the ResourcegroupsGroupNamespaceLister
+// interface.
+type resourcegroupsGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ResourcegroupsGroups in the indexer for a given namespace.
+func (s resourcegroupsGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ResourcegroupsGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ResourcegroupsGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the ResourcegroupsGroup from the indexer for a given namespace and name.
+func (s resourcegroupsGroupNamespaceLister) Get(name string) (*v1alpha1.ResourcegroupsGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type IothubSharedAccessPolicyLister interface {
 	// List lists all IothubSharedAccessPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IothubSharedAccessPolicy, err error)
-	// Get retrieves the IothubSharedAccessPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.IothubSharedAccessPolicy, error)
+	// IothubSharedAccessPolicies returns an object that can list and get IothubSharedAccessPolicies.
+	IothubSharedAccessPolicies(namespace string) IothubSharedAccessPolicyNamespaceLister
 	IothubSharedAccessPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iothubSharedAccessPolicyLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the IothubSharedAccessPolicy from the index for a given name.
-func (s *iothubSharedAccessPolicyLister) Get(name string) (*v1alpha1.IothubSharedAccessPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IothubSharedAccessPolicies returns an object that can list and get IothubSharedAccessPolicies.
+func (s *iothubSharedAccessPolicyLister) IothubSharedAccessPolicies(namespace string) IothubSharedAccessPolicyNamespaceLister {
+	return iothubSharedAccessPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IothubSharedAccessPolicyNamespaceLister helps list and get IothubSharedAccessPolicies.
+type IothubSharedAccessPolicyNamespaceLister interface {
+	// List lists all IothubSharedAccessPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IothubSharedAccessPolicy, err error)
+	// Get retrieves the IothubSharedAccessPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IothubSharedAccessPolicy, error)
+	IothubSharedAccessPolicyNamespaceListerExpansion
+}
+
+// iothubSharedAccessPolicyNamespaceLister implements the IothubSharedAccessPolicyNamespaceLister
+// interface.
+type iothubSharedAccessPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IothubSharedAccessPolicies in the indexer for a given namespace.
+func (s iothubSharedAccessPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IothubSharedAccessPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IothubSharedAccessPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the IothubSharedAccessPolicy from the indexer for a given namespace and name.
+func (s iothubSharedAccessPolicyNamespaceLister) Get(name string) (*v1alpha1.IothubSharedAccessPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

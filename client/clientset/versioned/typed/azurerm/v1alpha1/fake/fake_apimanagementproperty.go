@@ -31,6 +31,7 @@ import (
 // FakeApiManagementProperties implements ApiManagementPropertyInterface
 type FakeApiManagementProperties struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var apimanagementpropertiesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "apimanagementproperties"}
@@ -40,7 +41,8 @@ var apimanagementpropertiesKind = schema.GroupVersionKind{Group: "azurerm.kubefo
 // Get takes name of the apiManagementProperty, and returns the corresponding apiManagementProperty object, and an error if there is any.
 func (c *FakeApiManagementProperties) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementProperty, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apimanagementpropertiesResource, name), &v1alpha1.ApiManagementProperty{})
+		Invokes(testing.NewGetAction(apimanagementpropertiesResource, c.ns, name), &v1alpha1.ApiManagementProperty{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApiManagementProperties) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of ApiManagementProperties that match those selectors.
 func (c *FakeApiManagementProperties) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementPropertyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apimanagementpropertiesResource, apimanagementpropertiesKind, opts), &v1alpha1.ApiManagementPropertyList{})
+		Invokes(testing.NewListAction(apimanagementpropertiesResource, apimanagementpropertiesKind, c.ns, opts), &v1alpha1.ApiManagementPropertyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApiManagementProperties) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested apiManagementProperties.
 func (c *FakeApiManagementProperties) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apimanagementpropertiesResource, opts))
+		InvokesWatch(testing.NewWatchAction(apimanagementpropertiesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a apiManagementProperty and creates it.  Returns the server's representation of the apiManagementProperty, and an error, if there is any.
 func (c *FakeApiManagementProperties) Create(apiManagementProperty *v1alpha1.ApiManagementProperty) (result *v1alpha1.ApiManagementProperty, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apimanagementpropertiesResource, apiManagementProperty), &v1alpha1.ApiManagementProperty{})
+		Invokes(testing.NewCreateAction(apimanagementpropertiesResource, c.ns, apiManagementProperty), &v1alpha1.ApiManagementProperty{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApiManagementProperties) Create(apiManagementProperty *v1alpha1.Api
 // Update takes the representation of a apiManagementProperty and updates it. Returns the server's representation of the apiManagementProperty, and an error, if there is any.
 func (c *FakeApiManagementProperties) Update(apiManagementProperty *v1alpha1.ApiManagementProperty) (result *v1alpha1.ApiManagementProperty, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apimanagementpropertiesResource, apiManagementProperty), &v1alpha1.ApiManagementProperty{})
+		Invokes(testing.NewUpdateAction(apimanagementpropertiesResource, c.ns, apiManagementProperty), &v1alpha1.ApiManagementProperty{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApiManagementProperties) Update(apiManagementProperty *v1alpha1.Api
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApiManagementProperties) UpdateStatus(apiManagementProperty *v1alpha1.ApiManagementProperty) (*v1alpha1.ApiManagementProperty, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apimanagementpropertiesResource, "status", apiManagementProperty), &v1alpha1.ApiManagementProperty{})
+		Invokes(testing.NewUpdateSubresourceAction(apimanagementpropertiesResource, "status", c.ns, apiManagementProperty), &v1alpha1.ApiManagementProperty{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApiManagementProperties) UpdateStatus(apiManagementProperty *v1alph
 // Delete takes name of the apiManagementProperty and deletes it. Returns an error if one occurs.
 func (c *FakeApiManagementProperties) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apimanagementpropertiesResource, name), &v1alpha1.ApiManagementProperty{})
+		Invokes(testing.NewDeleteAction(apimanagementpropertiesResource, c.ns, name), &v1alpha1.ApiManagementProperty{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApiManagementProperties) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apimanagementpropertiesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(apimanagementpropertiesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApiManagementPropertyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApiManagementProperties) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched apiManagementProperty.
 func (c *FakeApiManagementProperties) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementProperty, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apimanagementpropertiesResource, name, pt, data, subresources...), &v1alpha1.ApiManagementProperty{})
+		Invokes(testing.NewPatchSubresourceAction(apimanagementpropertiesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiManagementProperty{})
+
 	if obj == nil {
 		return nil, err
 	}

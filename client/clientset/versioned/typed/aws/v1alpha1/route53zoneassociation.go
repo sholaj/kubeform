@@ -32,7 +32,7 @@ import (
 // Route53ZoneAssociationsGetter has a method to return a Route53ZoneAssociationInterface.
 // A group's client should implement this interface.
 type Route53ZoneAssociationsGetter interface {
-	Route53ZoneAssociations() Route53ZoneAssociationInterface
+	Route53ZoneAssociations(namespace string) Route53ZoneAssociationInterface
 }
 
 // Route53ZoneAssociationInterface has methods to work with Route53ZoneAssociation resources.
@@ -52,12 +52,14 @@ type Route53ZoneAssociationInterface interface {
 // route53ZoneAssociations implements Route53ZoneAssociationInterface
 type route53ZoneAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRoute53ZoneAssociations returns a Route53ZoneAssociations
-func newRoute53ZoneAssociations(c *AwsV1alpha1Client) *route53ZoneAssociations {
+func newRoute53ZoneAssociations(c *AwsV1alpha1Client, namespace string) *route53ZoneAssociations {
 	return &route53ZoneAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRoute53ZoneAssociations(c *AwsV1alpha1Client) *route53ZoneAssociations {
 func (c *route53ZoneAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.Route53ZoneAssociation, err error) {
 	result = &v1alpha1.Route53ZoneAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("route53zoneassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *route53ZoneAssociations) List(opts v1.ListOptions) (result *v1alpha1.Ro
 	}
 	result = &v1alpha1.Route53ZoneAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("route53zoneassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *route53ZoneAssociations) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("route53zoneassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *route53ZoneAssociations) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *route53ZoneAssociations) Create(route53ZoneAssociation *v1alpha1.Route53ZoneAssociation) (result *v1alpha1.Route53ZoneAssociation, err error) {
 	result = &v1alpha1.Route53ZoneAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("route53zoneassociations").
 		Body(route53ZoneAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *route53ZoneAssociations) Create(route53ZoneAssociation *v1alpha1.Route5
 func (c *route53ZoneAssociations) Update(route53ZoneAssociation *v1alpha1.Route53ZoneAssociation) (result *v1alpha1.Route53ZoneAssociation, err error) {
 	result = &v1alpha1.Route53ZoneAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("route53zoneassociations").
 		Name(route53ZoneAssociation.Name).
 		Body(route53ZoneAssociation).
@@ -132,6 +139,7 @@ func (c *route53ZoneAssociations) Update(route53ZoneAssociation *v1alpha1.Route5
 func (c *route53ZoneAssociations) UpdateStatus(route53ZoneAssociation *v1alpha1.Route53ZoneAssociation) (result *v1alpha1.Route53ZoneAssociation, err error) {
 	result = &v1alpha1.Route53ZoneAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("route53zoneassociations").
 		Name(route53ZoneAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *route53ZoneAssociations) UpdateStatus(route53ZoneAssociation *v1alpha1.
 // Delete takes name of the route53ZoneAssociation and deletes it. Returns an error if one occurs.
 func (c *route53ZoneAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("route53zoneassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *route53ZoneAssociations) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("route53zoneassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *route53ZoneAssociations) DeleteCollection(options *v1.DeleteOptions, li
 func (c *route53ZoneAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Route53ZoneAssociation, err error) {
 	result = &v1alpha1.Route53ZoneAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("route53zoneassociations").
 		SubResource(subresources...).
 		Name(name).

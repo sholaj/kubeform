@@ -32,7 +32,7 @@ import (
 // ApiManagementAuthorizationServersGetter has a method to return a ApiManagementAuthorizationServerInterface.
 // A group's client should implement this interface.
 type ApiManagementAuthorizationServersGetter interface {
-	ApiManagementAuthorizationServers() ApiManagementAuthorizationServerInterface
+	ApiManagementAuthorizationServers(namespace string) ApiManagementAuthorizationServerInterface
 }
 
 // ApiManagementAuthorizationServerInterface has methods to work with ApiManagementAuthorizationServer resources.
@@ -52,12 +52,14 @@ type ApiManagementAuthorizationServerInterface interface {
 // apiManagementAuthorizationServers implements ApiManagementAuthorizationServerInterface
 type apiManagementAuthorizationServers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiManagementAuthorizationServers returns a ApiManagementAuthorizationServers
-func newApiManagementAuthorizationServers(c *AzurermV1alpha1Client) *apiManagementAuthorizationServers {
+func newApiManagementAuthorizationServers(c *AzurermV1alpha1Client, namespace string) *apiManagementAuthorizationServers {
 	return &apiManagementAuthorizationServers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiManagementAuthorizationServers(c *AzurermV1alpha1Client) *apiManageme
 func (c *apiManagementAuthorizationServers) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementAuthorizationServer, err error) {
 	result = &v1alpha1.ApiManagementAuthorizationServer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementauthorizationservers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiManagementAuthorizationServers) List(opts v1.ListOptions) (result *v
 	}
 	result = &v1alpha1.ApiManagementAuthorizationServerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementauthorizationservers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiManagementAuthorizationServers) Watch(opts v1.ListOptions) (watch.In
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementauthorizationservers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiManagementAuthorizationServers) Watch(opts v1.ListOptions) (watch.In
 func (c *apiManagementAuthorizationServers) Create(apiManagementAuthorizationServer *v1alpha1.ApiManagementAuthorizationServer) (result *v1alpha1.ApiManagementAuthorizationServer, err error) {
 	result = &v1alpha1.ApiManagementAuthorizationServer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apimanagementauthorizationservers").
 		Body(apiManagementAuthorizationServer).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiManagementAuthorizationServers) Create(apiManagementAuthorizationSer
 func (c *apiManagementAuthorizationServers) Update(apiManagementAuthorizationServer *v1alpha1.ApiManagementAuthorizationServer) (result *v1alpha1.ApiManagementAuthorizationServer, err error) {
 	result = &v1alpha1.ApiManagementAuthorizationServer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementauthorizationservers").
 		Name(apiManagementAuthorizationServer.Name).
 		Body(apiManagementAuthorizationServer).
@@ -132,6 +139,7 @@ func (c *apiManagementAuthorizationServers) Update(apiManagementAuthorizationSer
 func (c *apiManagementAuthorizationServers) UpdateStatus(apiManagementAuthorizationServer *v1alpha1.ApiManagementAuthorizationServer) (result *v1alpha1.ApiManagementAuthorizationServer, err error) {
 	result = &v1alpha1.ApiManagementAuthorizationServer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementauthorizationservers").
 		Name(apiManagementAuthorizationServer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiManagementAuthorizationServers) UpdateStatus(apiManagementAuthorizat
 // Delete takes name of the apiManagementAuthorizationServer and deletes it. Returns an error if one occurs.
 func (c *apiManagementAuthorizationServers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementauthorizationservers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiManagementAuthorizationServers) DeleteCollection(options *v1.DeleteO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementauthorizationservers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiManagementAuthorizationServers) DeleteCollection(options *v1.DeleteO
 func (c *apiManagementAuthorizationServers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementAuthorizationServer, err error) {
 	result = &v1alpha1.ApiManagementAuthorizationServer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apimanagementauthorizationservers").
 		SubResource(subresources...).
 		Name(name).

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,12 +20,13 @@ type SesTemplate struct {
 
 type SesTemplateSpec struct {
 	// +optional
-	Html string `json:"html,omitempty"`
-	Name string `json:"name"`
+	Html string `json:"html,omitempty" tf:"html,omitempty"`
+	Name string `json:"name" tf:"name"`
 	// +optional
-	Subject string `json:"subject,omitempty"`
+	Subject string `json:"subject,omitempty" tf:"subject,omitempty"`
 	// +optional
-	Text string `json:"text,omitempty"`
+	Text        string                    `json:"text,omitempty" tf:"text,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SesTemplateStatus struct {
@@ -33,7 +34,9 @@ type SesTemplateStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -32,7 +32,7 @@ import (
 // SecurityCenterContactsGetter has a method to return a SecurityCenterContactInterface.
 // A group's client should implement this interface.
 type SecurityCenterContactsGetter interface {
-	SecurityCenterContacts() SecurityCenterContactInterface
+	SecurityCenterContacts(namespace string) SecurityCenterContactInterface
 }
 
 // SecurityCenterContactInterface has methods to work with SecurityCenterContact resources.
@@ -52,12 +52,14 @@ type SecurityCenterContactInterface interface {
 // securityCenterContacts implements SecurityCenterContactInterface
 type securityCenterContacts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSecurityCenterContacts returns a SecurityCenterContacts
-func newSecurityCenterContacts(c *AzurermV1alpha1Client) *securityCenterContacts {
+func newSecurityCenterContacts(c *AzurermV1alpha1Client, namespace string) *securityCenterContacts {
 	return &securityCenterContacts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSecurityCenterContacts(c *AzurermV1alpha1Client) *securityCenterContacts
 func (c *securityCenterContacts) Get(name string, options v1.GetOptions) (result *v1alpha1.SecurityCenterContact, err error) {
 	result = &v1alpha1.SecurityCenterContact{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("securitycentercontacts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *securityCenterContacts) List(opts v1.ListOptions) (result *v1alpha1.Sec
 	}
 	result = &v1alpha1.SecurityCenterContactList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("securitycentercontacts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *securityCenterContacts) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("securitycentercontacts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *securityCenterContacts) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *securityCenterContacts) Create(securityCenterContact *v1alpha1.SecurityCenterContact) (result *v1alpha1.SecurityCenterContact, err error) {
 	result = &v1alpha1.SecurityCenterContact{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("securitycentercontacts").
 		Body(securityCenterContact).
 		Do().
@@ -118,6 +124,7 @@ func (c *securityCenterContacts) Create(securityCenterContact *v1alpha1.Security
 func (c *securityCenterContacts) Update(securityCenterContact *v1alpha1.SecurityCenterContact) (result *v1alpha1.SecurityCenterContact, err error) {
 	result = &v1alpha1.SecurityCenterContact{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("securitycentercontacts").
 		Name(securityCenterContact.Name).
 		Body(securityCenterContact).
@@ -132,6 +139,7 @@ func (c *securityCenterContacts) Update(securityCenterContact *v1alpha1.Security
 func (c *securityCenterContacts) UpdateStatus(securityCenterContact *v1alpha1.SecurityCenterContact) (result *v1alpha1.SecurityCenterContact, err error) {
 	result = &v1alpha1.SecurityCenterContact{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("securitycentercontacts").
 		Name(securityCenterContact.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *securityCenterContacts) UpdateStatus(securityCenterContact *v1alpha1.Se
 // Delete takes name of the securityCenterContact and deletes it. Returns an error if one occurs.
 func (c *securityCenterContacts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("securitycentercontacts").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *securityCenterContacts) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("securitycentercontacts").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *securityCenterContacts) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *securityCenterContacts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SecurityCenterContact, err error) {
 	result = &v1alpha1.SecurityCenterContact{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("securitycentercontacts").
 		SubResource(subresources...).
 		Name(name).

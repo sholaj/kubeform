@@ -26,22 +26,20 @@ import (
 type Interface interface {
 	// ApiManagements returns a ApiManagementInformer.
 	ApiManagements() ApiManagementInformer
-	// ApiManagementApis returns a ApiManagementApiInformer.
-	ApiManagementApis() ApiManagementApiInformer
-	// ApiManagementApiOperations returns a ApiManagementApiOperationInformer.
-	ApiManagementApiOperations() ApiManagementApiOperationInformer
-	// ApiManagementApiOperationPolicies returns a ApiManagementApiOperationPolicyInformer.
-	ApiManagementApiOperationPolicies() ApiManagementApiOperationPolicyInformer
-	// ApiManagementApiPolicies returns a ApiManagementApiPolicyInformer.
-	ApiManagementApiPolicies() ApiManagementApiPolicyInformer
-	// ApiManagementApiSchemas returns a ApiManagementApiSchemaInformer.
-	ApiManagementApiSchemas() ApiManagementApiSchemaInformer
-	// ApiManagementApiVersionSets returns a ApiManagementApiVersionSetInformer.
-	ApiManagementApiVersionSets() ApiManagementApiVersionSetInformer
+	// ApiManagementAPIs returns a ApiManagementAPIInformer.
+	ApiManagementAPIs() ApiManagementAPIInformer
+	// ApiManagementAPIOperations returns a ApiManagementAPIOperationInformer.
+	ApiManagementAPIOperations() ApiManagementAPIOperationInformer
+	// ApiManagementAPIOperationPolicies returns a ApiManagementAPIOperationPolicyInformer.
+	ApiManagementAPIOperationPolicies() ApiManagementAPIOperationPolicyInformer
+	// ApiManagementAPIPolicies returns a ApiManagementAPIPolicyInformer.
+	ApiManagementAPIPolicies() ApiManagementAPIPolicyInformer
+	// ApiManagementAPISchemas returns a ApiManagementAPISchemaInformer.
+	ApiManagementAPISchemas() ApiManagementAPISchemaInformer
+	// ApiManagementAPIVersionSets returns a ApiManagementAPIVersionSetInformer.
+	ApiManagementAPIVersionSets() ApiManagementAPIVersionSetInformer
 	// ApiManagementAuthorizationServers returns a ApiManagementAuthorizationServerInformer.
 	ApiManagementAuthorizationServers() ApiManagementAuthorizationServerInformer
-	// ApiManagementBackends returns a ApiManagementBackendInformer.
-	ApiManagementBackends() ApiManagementBackendInformer
 	// ApiManagementCertificates returns a ApiManagementCertificateInformer.
 	ApiManagementCertificates() ApiManagementCertificateInformer
 	// ApiManagementGroups returns a ApiManagementGroupInformer.
@@ -54,8 +52,8 @@ type Interface interface {
 	ApiManagementOpenidConnectProviders() ApiManagementOpenidConnectProviderInformer
 	// ApiManagementProducts returns a ApiManagementProductInformer.
 	ApiManagementProducts() ApiManagementProductInformer
-	// ApiManagementProductApis returns a ApiManagementProductApiInformer.
-	ApiManagementProductApis() ApiManagementProductApiInformer
+	// ApiManagementProductAPIs returns a ApiManagementProductAPIInformer.
+	ApiManagementProductAPIs() ApiManagementProductAPIInformer
 	// ApiManagementProductGroups returns a ApiManagementProductGroupInformer.
 	ApiManagementProductGroups() ApiManagementProductGroupInformer
 	// ApiManagementProductPolicies returns a ApiManagementProductPolicyInformer.
@@ -80,8 +78,8 @@ type Interface interface {
 	ApplicationGateways() ApplicationGatewayInformer
 	// ApplicationInsightses returns a ApplicationInsightsInformer.
 	ApplicationInsightses() ApplicationInsightsInformer
-	// ApplicationInsightsApiKeys returns a ApplicationInsightsApiKeyInformer.
-	ApplicationInsightsApiKeys() ApplicationInsightsApiKeyInformer
+	// ApplicationInsightsAPIKeys returns a ApplicationInsightsAPIKeyInformer.
+	ApplicationInsightsAPIKeys() ApplicationInsightsAPIKeyInformer
 	// ApplicationInsightsWebTests returns a ApplicationInsightsWebTestInformer.
 	ApplicationInsightsWebTests() ApplicationInsightsWebTestInformer
 	// ApplicationSecurityGroups returns a ApplicationSecurityGroupInformer.
@@ -120,8 +118,6 @@ type Interface interface {
 	AzureadServicePrincipalPasswords() AzureadServicePrincipalPasswordInformer
 	// BatchAccounts returns a BatchAccountInformer.
 	BatchAccounts() BatchAccountInformer
-	// BatchApplications returns a BatchApplicationInformer.
-	BatchApplications() BatchApplicationInformer
 	// BatchCertificates returns a BatchCertificateInformer.
 	BatchCertificates() BatchCertificateInformer
 	// BatchPools returns a BatchPoolInformer.
@@ -148,8 +144,8 @@ type Interface interface {
 	CosmosdbMongoCollections() CosmosdbMongoCollectionInformer
 	// CosmosdbMongoDatabases returns a CosmosdbMongoDatabaseInformer.
 	CosmosdbMongoDatabases() CosmosdbMongoDatabaseInformer
-	// CosmosdbSqlDatabases returns a CosmosdbSqlDatabaseInformer.
-	CosmosdbSqlDatabases() CosmosdbSqlDatabaseInformer
+	// CosmosdbSQLDatabases returns a CosmosdbSQLDatabaseInformer.
+	CosmosdbSQLDatabases() CosmosdbSQLDatabaseInformer
 	// CosmosdbTables returns a CosmosdbTableInformer.
 	CosmosdbTables() CosmosdbTableInformer
 	// DataFactories returns a DataFactoryInformer.
@@ -158,16 +154,16 @@ type Interface interface {
 	DataFactoryDatasetMysqls() DataFactoryDatasetMysqlInformer
 	// DataFactoryDatasetPostgresqls returns a DataFactoryDatasetPostgresqlInformer.
 	DataFactoryDatasetPostgresqls() DataFactoryDatasetPostgresqlInformer
-	// DataFactoryDatasetSqlServerTables returns a DataFactoryDatasetSqlServerTableInformer.
-	DataFactoryDatasetSqlServerTables() DataFactoryDatasetSqlServerTableInformer
+	// DataFactoryDatasetSQLServerTables returns a DataFactoryDatasetSQLServerTableInformer.
+	DataFactoryDatasetSQLServerTables() DataFactoryDatasetSQLServerTableInformer
 	// DataFactoryLinkedServiceDataLakeStorageGen2s returns a DataFactoryLinkedServiceDataLakeStorageGen2Informer.
 	DataFactoryLinkedServiceDataLakeStorageGen2s() DataFactoryLinkedServiceDataLakeStorageGen2Informer
 	// DataFactoryLinkedServiceMysqls returns a DataFactoryLinkedServiceMysqlInformer.
 	DataFactoryLinkedServiceMysqls() DataFactoryLinkedServiceMysqlInformer
 	// DataFactoryLinkedServicePostgresqls returns a DataFactoryLinkedServicePostgresqlInformer.
 	DataFactoryLinkedServicePostgresqls() DataFactoryLinkedServicePostgresqlInformer
-	// DataFactoryLinkedServiceSqlServers returns a DataFactoryLinkedServiceSqlServerInformer.
-	DataFactoryLinkedServiceSqlServers() DataFactoryLinkedServiceSqlServerInformer
+	// DataFactoryLinkedServiceSQLServers returns a DataFactoryLinkedServiceSQLServerInformer.
+	DataFactoryLinkedServiceSQLServers() DataFactoryLinkedServiceSQLServerInformer
 	// DataFactoryPipelines returns a DataFactoryPipelineInformer.
 	DataFactoryPipelines() DataFactoryPipelineInformer
 	// DataLakeAnalyticsAccounts returns a DataLakeAnalyticsAccountInformer.
@@ -242,8 +238,8 @@ type Interface interface {
 	Firewalls() FirewallInformer
 	// FirewallApplicationRuleCollections returns a FirewallApplicationRuleCollectionInformer.
 	FirewallApplicationRuleCollections() FirewallApplicationRuleCollectionInformer
-	// FirewallNatRuleCollections returns a FirewallNatRuleCollectionInformer.
-	FirewallNatRuleCollections() FirewallNatRuleCollectionInformer
+	// FirewallNATRuleCollections returns a FirewallNATRuleCollectionInformer.
+	FirewallNATRuleCollections() FirewallNATRuleCollectionInformer
 	// FirewallNetworkRuleCollections returns a FirewallNetworkRuleCollectionInformer.
 	FirewallNetworkRuleCollections() FirewallNetworkRuleCollectionInformer
 	// FunctionApps returns a FunctionAppInformer.
@@ -292,10 +288,10 @@ type Interface interface {
 	Lbs() LbInformer
 	// LbBackendAddressPools returns a LbBackendAddressPoolInformer.
 	LbBackendAddressPools() LbBackendAddressPoolInformer
-	// LbNatPools returns a LbNatPoolInformer.
-	LbNatPools() LbNatPoolInformer
-	// LbNatRules returns a LbNatRuleInformer.
-	LbNatRules() LbNatRuleInformer
+	// LbNATPools returns a LbNATPoolInformer.
+	LbNATPools() LbNATPoolInformer
+	// LbNATRules returns a LbNATRuleInformer.
+	LbNATRules() LbNATRuleInformer
 	// LbOutboundRules returns a LbOutboundRuleInformer.
 	LbOutboundRules() LbOutboundRuleInformer
 	// LbProbes returns a LbProbeInformer.
@@ -314,12 +310,12 @@ type Interface interface {
 	LogAnalyticsWorkspaceLinkedServices() LogAnalyticsWorkspaceLinkedServiceInformer
 	// LogicAppActionCustoms returns a LogicAppActionCustomInformer.
 	LogicAppActionCustoms() LogicAppActionCustomInformer
-	// LogicAppActionHttps returns a LogicAppActionHttpInformer.
-	LogicAppActionHttps() LogicAppActionHttpInformer
+	// LogicAppActionHTTPs returns a LogicAppActionHTTPInformer.
+	LogicAppActionHTTPs() LogicAppActionHTTPInformer
 	// LogicAppTriggerCustoms returns a LogicAppTriggerCustomInformer.
 	LogicAppTriggerCustoms() LogicAppTriggerCustomInformer
-	// LogicAppTriggerHttpRequests returns a LogicAppTriggerHttpRequestInformer.
-	LogicAppTriggerHttpRequests() LogicAppTriggerHttpRequestInformer
+	// LogicAppTriggerHTTPRequests returns a LogicAppTriggerHTTPRequestInformer.
+	LogicAppTriggerHTTPRequests() LogicAppTriggerHTTPRequestInformer
 	// LogicAppTriggerRecurrences returns a LogicAppTriggerRecurrenceInformer.
 	LogicAppTriggerRecurrences() LogicAppTriggerRecurrenceInformer
 	// LogicAppWorkflows returns a LogicAppWorkflowInformer.
@@ -378,8 +374,8 @@ type Interface interface {
 	NetworkInterfaceApplicationSecurityGroupAssociations() NetworkInterfaceApplicationSecurityGroupAssociationInformer
 	// NetworkInterfaceBackendAddressPoolAssociations returns a NetworkInterfaceBackendAddressPoolAssociationInformer.
 	NetworkInterfaceBackendAddressPoolAssociations() NetworkInterfaceBackendAddressPoolAssociationInformer
-	// NetworkInterfaceNatRuleAssociations returns a NetworkInterfaceNatRuleAssociationInformer.
-	NetworkInterfaceNatRuleAssociations() NetworkInterfaceNatRuleAssociationInformer
+	// NetworkInterfaceNATRuleAssociations returns a NetworkInterfaceNATRuleAssociationInformer.
+	NetworkInterfaceNATRuleAssociations() NetworkInterfaceNATRuleAssociationInformer
 	// NetworkPacketCaptures returns a NetworkPacketCaptureInformer.
 	NetworkPacketCaptures() NetworkPacketCaptureInformer
 	// NetworkProfiles returns a NetworkProfileInformer.
@@ -414,12 +410,12 @@ type Interface interface {
 	PostgresqlServers() PostgresqlServerInformer
 	// PostgresqlVirtualNetworkRules returns a PostgresqlVirtualNetworkRuleInformer.
 	PostgresqlVirtualNetworkRules() PostgresqlVirtualNetworkRuleInformer
-	// PrivateDnsZones returns a PrivateDnsZoneInformer.
-	PrivateDnsZones() PrivateDnsZoneInformer
-	// PublicIps returns a PublicIpInformer.
-	PublicIps() PublicIpInformer
-	// PublicIpPrefixes returns a PublicIpPrefixInformer.
-	PublicIpPrefixes() PublicIpPrefixInformer
+	// PrivateDNSZones returns a PrivateDNSZoneInformer.
+	PrivateDNSZones() PrivateDNSZoneInformer
+	// PublicIPs returns a PublicIPInformer.
+	PublicIPs() PublicIPInformer
+	// PublicIPPrefixes returns a PublicIPPrefixInformer.
+	PublicIPPrefixes() PublicIPPrefixInformer
 	// RecoveryServicesProtectedVms returns a RecoveryServicesProtectedVmInformer.
 	RecoveryServicesProtectedVms() RecoveryServicesProtectedVmInformer
 	// RecoveryServicesProtectionPolicyVms returns a RecoveryServicesProtectionPolicyVmInformer.
@@ -504,12 +500,8 @@ type Interface interface {
 	StorageQueues() StorageQueueInformer
 	// StorageShares returns a StorageShareInformer.
 	StorageShares() StorageShareInformer
-	// StorageShareDirectories returns a StorageShareDirectoryInformer.
-	StorageShareDirectories() StorageShareDirectoryInformer
 	// StorageTables returns a StorageTableInformer.
 	StorageTables() StorageTableInformer
-	// StorageTableEntities returns a StorageTableEntityInformer.
-	StorageTableEntities() StorageTableEntityInformer
 	// StreamAnalyticsFunctionJavascriptUdves returns a StreamAnalyticsFunctionJavascriptUdfInformer.
 	StreamAnalyticsFunctionJavascriptUdves() StreamAnalyticsFunctionJavascriptUdfInformer
 	// StreamAnalyticsJobs returns a StreamAnalyticsJobInformer.
@@ -573,1335 +565,1315 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 
 // ApiManagements returns a ApiManagementInformer.
 func (v *version) ApiManagements() ApiManagementInformer {
-	return &apiManagementInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &apiManagementInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// ApiManagementApis returns a ApiManagementApiInformer.
-func (v *version) ApiManagementApis() ApiManagementApiInformer {
-	return &apiManagementApiInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// ApiManagementAPIs returns a ApiManagementAPIInformer.
+func (v *version) ApiManagementAPIs() ApiManagementAPIInformer {
+	return &apiManagementAPIInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// ApiManagementApiOperations returns a ApiManagementApiOperationInformer.
-func (v *version) ApiManagementApiOperations() ApiManagementApiOperationInformer {
-	return &apiManagementApiOperationInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// ApiManagementAPIOperations returns a ApiManagementAPIOperationInformer.
+func (v *version) ApiManagementAPIOperations() ApiManagementAPIOperationInformer {
+	return &apiManagementAPIOperationInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// ApiManagementApiOperationPolicies returns a ApiManagementApiOperationPolicyInformer.
-func (v *version) ApiManagementApiOperationPolicies() ApiManagementApiOperationPolicyInformer {
-	return &apiManagementApiOperationPolicyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// ApiManagementAPIOperationPolicies returns a ApiManagementAPIOperationPolicyInformer.
+func (v *version) ApiManagementAPIOperationPolicies() ApiManagementAPIOperationPolicyInformer {
+	return &apiManagementAPIOperationPolicyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// ApiManagementApiPolicies returns a ApiManagementApiPolicyInformer.
-func (v *version) ApiManagementApiPolicies() ApiManagementApiPolicyInformer {
-	return &apiManagementApiPolicyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// ApiManagementAPIPolicies returns a ApiManagementAPIPolicyInformer.
+func (v *version) ApiManagementAPIPolicies() ApiManagementAPIPolicyInformer {
+	return &apiManagementAPIPolicyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// ApiManagementApiSchemas returns a ApiManagementApiSchemaInformer.
-func (v *version) ApiManagementApiSchemas() ApiManagementApiSchemaInformer {
-	return &apiManagementApiSchemaInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// ApiManagementAPISchemas returns a ApiManagementAPISchemaInformer.
+func (v *version) ApiManagementAPISchemas() ApiManagementAPISchemaInformer {
+	return &apiManagementAPISchemaInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// ApiManagementApiVersionSets returns a ApiManagementApiVersionSetInformer.
-func (v *version) ApiManagementApiVersionSets() ApiManagementApiVersionSetInformer {
-	return &apiManagementApiVersionSetInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// ApiManagementAPIVersionSets returns a ApiManagementAPIVersionSetInformer.
+func (v *version) ApiManagementAPIVersionSets() ApiManagementAPIVersionSetInformer {
+	return &apiManagementAPIVersionSetInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ApiManagementAuthorizationServers returns a ApiManagementAuthorizationServerInformer.
 func (v *version) ApiManagementAuthorizationServers() ApiManagementAuthorizationServerInformer {
-	return &apiManagementAuthorizationServerInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
-}
-
-// ApiManagementBackends returns a ApiManagementBackendInformer.
-func (v *version) ApiManagementBackends() ApiManagementBackendInformer {
-	return &apiManagementBackendInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &apiManagementAuthorizationServerInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ApiManagementCertificates returns a ApiManagementCertificateInformer.
 func (v *version) ApiManagementCertificates() ApiManagementCertificateInformer {
-	return &apiManagementCertificateInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &apiManagementCertificateInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ApiManagementGroups returns a ApiManagementGroupInformer.
 func (v *version) ApiManagementGroups() ApiManagementGroupInformer {
-	return &apiManagementGroupInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &apiManagementGroupInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ApiManagementGroupUsers returns a ApiManagementGroupUserInformer.
 func (v *version) ApiManagementGroupUsers() ApiManagementGroupUserInformer {
-	return &apiManagementGroupUserInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &apiManagementGroupUserInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ApiManagementLoggers returns a ApiManagementLoggerInformer.
 func (v *version) ApiManagementLoggers() ApiManagementLoggerInformer {
-	return &apiManagementLoggerInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &apiManagementLoggerInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ApiManagementOpenidConnectProviders returns a ApiManagementOpenidConnectProviderInformer.
 func (v *version) ApiManagementOpenidConnectProviders() ApiManagementOpenidConnectProviderInformer {
-	return &apiManagementOpenidConnectProviderInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &apiManagementOpenidConnectProviderInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ApiManagementProducts returns a ApiManagementProductInformer.
 func (v *version) ApiManagementProducts() ApiManagementProductInformer {
-	return &apiManagementProductInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &apiManagementProductInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// ApiManagementProductApis returns a ApiManagementProductApiInformer.
-func (v *version) ApiManagementProductApis() ApiManagementProductApiInformer {
-	return &apiManagementProductApiInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// ApiManagementProductAPIs returns a ApiManagementProductAPIInformer.
+func (v *version) ApiManagementProductAPIs() ApiManagementProductAPIInformer {
+	return &apiManagementProductAPIInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ApiManagementProductGroups returns a ApiManagementProductGroupInformer.
 func (v *version) ApiManagementProductGroups() ApiManagementProductGroupInformer {
-	return &apiManagementProductGroupInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &apiManagementProductGroupInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ApiManagementProductPolicies returns a ApiManagementProductPolicyInformer.
 func (v *version) ApiManagementProductPolicies() ApiManagementProductPolicyInformer {
-	return &apiManagementProductPolicyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &apiManagementProductPolicyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ApiManagementProperties returns a ApiManagementPropertyInformer.
 func (v *version) ApiManagementProperties() ApiManagementPropertyInformer {
-	return &apiManagementPropertyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &apiManagementPropertyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ApiManagementSubscriptions returns a ApiManagementSubscriptionInformer.
 func (v *version) ApiManagementSubscriptions() ApiManagementSubscriptionInformer {
-	return &apiManagementSubscriptionInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &apiManagementSubscriptionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ApiManagementUsers returns a ApiManagementUserInformer.
 func (v *version) ApiManagementUsers() ApiManagementUserInformer {
-	return &apiManagementUserInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &apiManagementUserInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AppServices returns a AppServiceInformer.
 func (v *version) AppServices() AppServiceInformer {
-	return &appServiceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &appServiceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AppServiceActiveSlots returns a AppServiceActiveSlotInformer.
 func (v *version) AppServiceActiveSlots() AppServiceActiveSlotInformer {
-	return &appServiceActiveSlotInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &appServiceActiveSlotInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AppServiceCustomHostnameBindings returns a AppServiceCustomHostnameBindingInformer.
 func (v *version) AppServiceCustomHostnameBindings() AppServiceCustomHostnameBindingInformer {
-	return &appServiceCustomHostnameBindingInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &appServiceCustomHostnameBindingInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AppServicePlans returns a AppServicePlanInformer.
 func (v *version) AppServicePlans() AppServicePlanInformer {
-	return &appServicePlanInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &appServicePlanInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AppServiceSlots returns a AppServiceSlotInformer.
 func (v *version) AppServiceSlots() AppServiceSlotInformer {
-	return &appServiceSlotInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &appServiceSlotInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ApplicationGateways returns a ApplicationGatewayInformer.
 func (v *version) ApplicationGateways() ApplicationGatewayInformer {
-	return &applicationGatewayInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &applicationGatewayInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ApplicationInsightses returns a ApplicationInsightsInformer.
 func (v *version) ApplicationInsightses() ApplicationInsightsInformer {
-	return &applicationInsightsInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &applicationInsightsInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// ApplicationInsightsApiKeys returns a ApplicationInsightsApiKeyInformer.
-func (v *version) ApplicationInsightsApiKeys() ApplicationInsightsApiKeyInformer {
-	return &applicationInsightsApiKeyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// ApplicationInsightsAPIKeys returns a ApplicationInsightsAPIKeyInformer.
+func (v *version) ApplicationInsightsAPIKeys() ApplicationInsightsAPIKeyInformer {
+	return &applicationInsightsAPIKeyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ApplicationInsightsWebTests returns a ApplicationInsightsWebTestInformer.
 func (v *version) ApplicationInsightsWebTests() ApplicationInsightsWebTestInformer {
-	return &applicationInsightsWebTestInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &applicationInsightsWebTestInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ApplicationSecurityGroups returns a ApplicationSecurityGroupInformer.
 func (v *version) ApplicationSecurityGroups() ApplicationSecurityGroupInformer {
-	return &applicationSecurityGroupInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &applicationSecurityGroupInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AutomationAccounts returns a AutomationAccountInformer.
 func (v *version) AutomationAccounts() AutomationAccountInformer {
-	return &automationAccountInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &automationAccountInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AutomationCredentials returns a AutomationCredentialInformer.
 func (v *version) AutomationCredentials() AutomationCredentialInformer {
-	return &automationCredentialInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &automationCredentialInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AutomationDscConfigurations returns a AutomationDscConfigurationInformer.
 func (v *version) AutomationDscConfigurations() AutomationDscConfigurationInformer {
-	return &automationDscConfigurationInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &automationDscConfigurationInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AutomationDscNodeconfigurations returns a AutomationDscNodeconfigurationInformer.
 func (v *version) AutomationDscNodeconfigurations() AutomationDscNodeconfigurationInformer {
-	return &automationDscNodeconfigurationInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &automationDscNodeconfigurationInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AutomationModules returns a AutomationModuleInformer.
 func (v *version) AutomationModules() AutomationModuleInformer {
-	return &automationModuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &automationModuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AutomationRunbooks returns a AutomationRunbookInformer.
 func (v *version) AutomationRunbooks() AutomationRunbookInformer {
-	return &automationRunbookInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &automationRunbookInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AutomationSchedules returns a AutomationScheduleInformer.
 func (v *version) AutomationSchedules() AutomationScheduleInformer {
-	return &automationScheduleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &automationScheduleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AutomationVariableBools returns a AutomationVariableBoolInformer.
 func (v *version) AutomationVariableBools() AutomationVariableBoolInformer {
-	return &automationVariableBoolInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &automationVariableBoolInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AutomationVariableDatetimes returns a AutomationVariableDatetimeInformer.
 func (v *version) AutomationVariableDatetimes() AutomationVariableDatetimeInformer {
-	return &automationVariableDatetimeInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &automationVariableDatetimeInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AutomationVariableInts returns a AutomationVariableIntInformer.
 func (v *version) AutomationVariableInts() AutomationVariableIntInformer {
-	return &automationVariableIntInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &automationVariableIntInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AutomationVariableStrings returns a AutomationVariableStringInformer.
 func (v *version) AutomationVariableStrings() AutomationVariableStringInformer {
-	return &automationVariableStringInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &automationVariableStringInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AutoscaleSettings returns a AutoscaleSettingInformer.
 func (v *version) AutoscaleSettings() AutoscaleSettingInformer {
-	return &autoscaleSettingInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &autoscaleSettingInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AvailabilitySets returns a AvailabilitySetInformer.
 func (v *version) AvailabilitySets() AvailabilitySetInformer {
-	return &availabilitySetInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &availabilitySetInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AzureadApplications returns a AzureadApplicationInformer.
 func (v *version) AzureadApplications() AzureadApplicationInformer {
-	return &azureadApplicationInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &azureadApplicationInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AzureadServicePrincipals returns a AzureadServicePrincipalInformer.
 func (v *version) AzureadServicePrincipals() AzureadServicePrincipalInformer {
-	return &azureadServicePrincipalInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &azureadServicePrincipalInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AzureadServicePrincipalPasswords returns a AzureadServicePrincipalPasswordInformer.
 func (v *version) AzureadServicePrincipalPasswords() AzureadServicePrincipalPasswordInformer {
-	return &azureadServicePrincipalPasswordInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &azureadServicePrincipalPasswordInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // BatchAccounts returns a BatchAccountInformer.
 func (v *version) BatchAccounts() BatchAccountInformer {
-	return &batchAccountInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
-}
-
-// BatchApplications returns a BatchApplicationInformer.
-func (v *version) BatchApplications() BatchApplicationInformer {
-	return &batchApplicationInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &batchAccountInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // BatchCertificates returns a BatchCertificateInformer.
 func (v *version) BatchCertificates() BatchCertificateInformer {
-	return &batchCertificateInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &batchCertificateInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // BatchPools returns a BatchPoolInformer.
 func (v *version) BatchPools() BatchPoolInformer {
-	return &batchPoolInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &batchPoolInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // CdnEndpoints returns a CdnEndpointInformer.
 func (v *version) CdnEndpoints() CdnEndpointInformer {
-	return &cdnEndpointInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &cdnEndpointInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // CdnProfiles returns a CdnProfileInformer.
 func (v *version) CdnProfiles() CdnProfileInformer {
-	return &cdnProfileInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &cdnProfileInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // CognitiveAccounts returns a CognitiveAccountInformer.
 func (v *version) CognitiveAccounts() CognitiveAccountInformer {
-	return &cognitiveAccountInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &cognitiveAccountInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ConnectionMonitors returns a ConnectionMonitorInformer.
 func (v *version) ConnectionMonitors() ConnectionMonitorInformer {
-	return &connectionMonitorInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &connectionMonitorInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ContainerGroups returns a ContainerGroupInformer.
 func (v *version) ContainerGroups() ContainerGroupInformer {
-	return &containerGroupInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &containerGroupInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ContainerRegistries returns a ContainerRegistryInformer.
 func (v *version) ContainerRegistries() ContainerRegistryInformer {
-	return &containerRegistryInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &containerRegistryInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ContainerServices returns a ContainerServiceInformer.
 func (v *version) ContainerServices() ContainerServiceInformer {
-	return &containerServiceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &containerServiceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // CosmosdbAccounts returns a CosmosdbAccountInformer.
 func (v *version) CosmosdbAccounts() CosmosdbAccountInformer {
-	return &cosmosdbAccountInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &cosmosdbAccountInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // CosmosdbCassandraKeyspaces returns a CosmosdbCassandraKeyspaceInformer.
 func (v *version) CosmosdbCassandraKeyspaces() CosmosdbCassandraKeyspaceInformer {
-	return &cosmosdbCassandraKeyspaceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &cosmosdbCassandraKeyspaceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // CosmosdbMongoCollections returns a CosmosdbMongoCollectionInformer.
 func (v *version) CosmosdbMongoCollections() CosmosdbMongoCollectionInformer {
-	return &cosmosdbMongoCollectionInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &cosmosdbMongoCollectionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // CosmosdbMongoDatabases returns a CosmosdbMongoDatabaseInformer.
 func (v *version) CosmosdbMongoDatabases() CosmosdbMongoDatabaseInformer {
-	return &cosmosdbMongoDatabaseInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &cosmosdbMongoDatabaseInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// CosmosdbSqlDatabases returns a CosmosdbSqlDatabaseInformer.
-func (v *version) CosmosdbSqlDatabases() CosmosdbSqlDatabaseInformer {
-	return &cosmosdbSqlDatabaseInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// CosmosdbSQLDatabases returns a CosmosdbSQLDatabaseInformer.
+func (v *version) CosmosdbSQLDatabases() CosmosdbSQLDatabaseInformer {
+	return &cosmosdbSQLDatabaseInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // CosmosdbTables returns a CosmosdbTableInformer.
 func (v *version) CosmosdbTables() CosmosdbTableInformer {
-	return &cosmosdbTableInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &cosmosdbTableInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DataFactories returns a DataFactoryInformer.
 func (v *version) DataFactories() DataFactoryInformer {
-	return &dataFactoryInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dataFactoryInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DataFactoryDatasetMysqls returns a DataFactoryDatasetMysqlInformer.
 func (v *version) DataFactoryDatasetMysqls() DataFactoryDatasetMysqlInformer {
-	return &dataFactoryDatasetMysqlInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dataFactoryDatasetMysqlInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DataFactoryDatasetPostgresqls returns a DataFactoryDatasetPostgresqlInformer.
 func (v *version) DataFactoryDatasetPostgresqls() DataFactoryDatasetPostgresqlInformer {
-	return &dataFactoryDatasetPostgresqlInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dataFactoryDatasetPostgresqlInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// DataFactoryDatasetSqlServerTables returns a DataFactoryDatasetSqlServerTableInformer.
-func (v *version) DataFactoryDatasetSqlServerTables() DataFactoryDatasetSqlServerTableInformer {
-	return &dataFactoryDatasetSqlServerTableInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// DataFactoryDatasetSQLServerTables returns a DataFactoryDatasetSQLServerTableInformer.
+func (v *version) DataFactoryDatasetSQLServerTables() DataFactoryDatasetSQLServerTableInformer {
+	return &dataFactoryDatasetSQLServerTableInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DataFactoryLinkedServiceDataLakeStorageGen2s returns a DataFactoryLinkedServiceDataLakeStorageGen2Informer.
 func (v *version) DataFactoryLinkedServiceDataLakeStorageGen2s() DataFactoryLinkedServiceDataLakeStorageGen2Informer {
-	return &dataFactoryLinkedServiceDataLakeStorageGen2Informer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dataFactoryLinkedServiceDataLakeStorageGen2Informer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DataFactoryLinkedServiceMysqls returns a DataFactoryLinkedServiceMysqlInformer.
 func (v *version) DataFactoryLinkedServiceMysqls() DataFactoryLinkedServiceMysqlInformer {
-	return &dataFactoryLinkedServiceMysqlInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dataFactoryLinkedServiceMysqlInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DataFactoryLinkedServicePostgresqls returns a DataFactoryLinkedServicePostgresqlInformer.
 func (v *version) DataFactoryLinkedServicePostgresqls() DataFactoryLinkedServicePostgresqlInformer {
-	return &dataFactoryLinkedServicePostgresqlInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dataFactoryLinkedServicePostgresqlInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// DataFactoryLinkedServiceSqlServers returns a DataFactoryLinkedServiceSqlServerInformer.
-func (v *version) DataFactoryLinkedServiceSqlServers() DataFactoryLinkedServiceSqlServerInformer {
-	return &dataFactoryLinkedServiceSqlServerInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// DataFactoryLinkedServiceSQLServers returns a DataFactoryLinkedServiceSQLServerInformer.
+func (v *version) DataFactoryLinkedServiceSQLServers() DataFactoryLinkedServiceSQLServerInformer {
+	return &dataFactoryLinkedServiceSQLServerInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DataFactoryPipelines returns a DataFactoryPipelineInformer.
 func (v *version) DataFactoryPipelines() DataFactoryPipelineInformer {
-	return &dataFactoryPipelineInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dataFactoryPipelineInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DataLakeAnalyticsAccounts returns a DataLakeAnalyticsAccountInformer.
 func (v *version) DataLakeAnalyticsAccounts() DataLakeAnalyticsAccountInformer {
-	return &dataLakeAnalyticsAccountInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dataLakeAnalyticsAccountInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DataLakeAnalyticsFirewallRules returns a DataLakeAnalyticsFirewallRuleInformer.
 func (v *version) DataLakeAnalyticsFirewallRules() DataLakeAnalyticsFirewallRuleInformer {
-	return &dataLakeAnalyticsFirewallRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dataLakeAnalyticsFirewallRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DataLakeStores returns a DataLakeStoreInformer.
 func (v *version) DataLakeStores() DataLakeStoreInformer {
-	return &dataLakeStoreInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dataLakeStoreInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DataLakeStoreFiles returns a DataLakeStoreFileInformer.
 func (v *version) DataLakeStoreFiles() DataLakeStoreFileInformer {
-	return &dataLakeStoreFileInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dataLakeStoreFileInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DataLakeStoreFirewallRules returns a DataLakeStoreFirewallRuleInformer.
 func (v *version) DataLakeStoreFirewallRules() DataLakeStoreFirewallRuleInformer {
-	return &dataLakeStoreFirewallRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dataLakeStoreFirewallRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DatabricksWorkspaces returns a DatabricksWorkspaceInformer.
 func (v *version) DatabricksWorkspaces() DatabricksWorkspaceInformer {
-	return &databricksWorkspaceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &databricksWorkspaceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DdosProtectionPlans returns a DdosProtectionPlanInformer.
 func (v *version) DdosProtectionPlans() DdosProtectionPlanInformer {
-	return &ddosProtectionPlanInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &ddosProtectionPlanInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DevTestLabs returns a DevTestLabInformer.
 func (v *version) DevTestLabs() DevTestLabInformer {
-	return &devTestLabInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &devTestLabInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DevTestLinuxVirtualMachines returns a DevTestLinuxVirtualMachineInformer.
 func (v *version) DevTestLinuxVirtualMachines() DevTestLinuxVirtualMachineInformer {
-	return &devTestLinuxVirtualMachineInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &devTestLinuxVirtualMachineInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DevTestPolicies returns a DevTestPolicyInformer.
 func (v *version) DevTestPolicies() DevTestPolicyInformer {
-	return &devTestPolicyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &devTestPolicyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DevTestVirtualNetworks returns a DevTestVirtualNetworkInformer.
 func (v *version) DevTestVirtualNetworks() DevTestVirtualNetworkInformer {
-	return &devTestVirtualNetworkInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &devTestVirtualNetworkInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DevTestWindowsVirtualMachines returns a DevTestWindowsVirtualMachineInformer.
 func (v *version) DevTestWindowsVirtualMachines() DevTestWindowsVirtualMachineInformer {
-	return &devTestWindowsVirtualMachineInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &devTestWindowsVirtualMachineInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DevspaceControllers returns a DevspaceControllerInformer.
 func (v *version) DevspaceControllers() DevspaceControllerInformer {
-	return &devspaceControllerInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &devspaceControllerInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DnsARecords returns a DnsARecordInformer.
 func (v *version) DnsARecords() DnsARecordInformer {
-	return &dnsARecordInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dnsARecordInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DnsAaaaRecords returns a DnsAaaaRecordInformer.
 func (v *version) DnsAaaaRecords() DnsAaaaRecordInformer {
-	return &dnsAaaaRecordInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dnsAaaaRecordInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DnsCaaRecords returns a DnsCaaRecordInformer.
 func (v *version) DnsCaaRecords() DnsCaaRecordInformer {
-	return &dnsCaaRecordInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dnsCaaRecordInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DnsCnameRecords returns a DnsCnameRecordInformer.
 func (v *version) DnsCnameRecords() DnsCnameRecordInformer {
-	return &dnsCnameRecordInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dnsCnameRecordInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DnsMxRecords returns a DnsMxRecordInformer.
 func (v *version) DnsMxRecords() DnsMxRecordInformer {
-	return &dnsMxRecordInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dnsMxRecordInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DnsNsRecords returns a DnsNsRecordInformer.
 func (v *version) DnsNsRecords() DnsNsRecordInformer {
-	return &dnsNsRecordInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dnsNsRecordInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DnsPtrRecords returns a DnsPtrRecordInformer.
 func (v *version) DnsPtrRecords() DnsPtrRecordInformer {
-	return &dnsPtrRecordInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dnsPtrRecordInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DnsSrvRecords returns a DnsSrvRecordInformer.
 func (v *version) DnsSrvRecords() DnsSrvRecordInformer {
-	return &dnsSrvRecordInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dnsSrvRecordInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DnsTxtRecords returns a DnsTxtRecordInformer.
 func (v *version) DnsTxtRecords() DnsTxtRecordInformer {
-	return &dnsTxtRecordInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dnsTxtRecordInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DnsZones returns a DnsZoneInformer.
 func (v *version) DnsZones() DnsZoneInformer {
-	return &dnsZoneInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &dnsZoneInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // EventgridDomains returns a EventgridDomainInformer.
 func (v *version) EventgridDomains() EventgridDomainInformer {
-	return &eventgridDomainInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &eventgridDomainInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // EventgridEventSubscriptions returns a EventgridEventSubscriptionInformer.
 func (v *version) EventgridEventSubscriptions() EventgridEventSubscriptionInformer {
-	return &eventgridEventSubscriptionInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &eventgridEventSubscriptionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // EventgridTopics returns a EventgridTopicInformer.
 func (v *version) EventgridTopics() EventgridTopicInformer {
-	return &eventgridTopicInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &eventgridTopicInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Eventhubs returns a EventhubInformer.
 func (v *version) Eventhubs() EventhubInformer {
-	return &eventhubInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &eventhubInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // EventhubAuthorizationRules returns a EventhubAuthorizationRuleInformer.
 func (v *version) EventhubAuthorizationRules() EventhubAuthorizationRuleInformer {
-	return &eventhubAuthorizationRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &eventhubAuthorizationRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // EventhubConsumerGroups returns a EventhubConsumerGroupInformer.
 func (v *version) EventhubConsumerGroups() EventhubConsumerGroupInformer {
-	return &eventhubConsumerGroupInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &eventhubConsumerGroupInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // EventhubNamespaces returns a EventhubNamespaceInformer.
 func (v *version) EventhubNamespaces() EventhubNamespaceInformer {
-	return &eventhubNamespaceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &eventhubNamespaceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // EventhubNamespaceAuthorizationRules returns a EventhubNamespaceAuthorizationRuleInformer.
 func (v *version) EventhubNamespaceAuthorizationRules() EventhubNamespaceAuthorizationRuleInformer {
-	return &eventhubNamespaceAuthorizationRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &eventhubNamespaceAuthorizationRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ExpressRouteCircuits returns a ExpressRouteCircuitInformer.
 func (v *version) ExpressRouteCircuits() ExpressRouteCircuitInformer {
-	return &expressRouteCircuitInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &expressRouteCircuitInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ExpressRouteCircuitAuthorizations returns a ExpressRouteCircuitAuthorizationInformer.
 func (v *version) ExpressRouteCircuitAuthorizations() ExpressRouteCircuitAuthorizationInformer {
-	return &expressRouteCircuitAuthorizationInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &expressRouteCircuitAuthorizationInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ExpressRouteCircuitPeerings returns a ExpressRouteCircuitPeeringInformer.
 func (v *version) ExpressRouteCircuitPeerings() ExpressRouteCircuitPeeringInformer {
-	return &expressRouteCircuitPeeringInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &expressRouteCircuitPeeringInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Firewalls returns a FirewallInformer.
 func (v *version) Firewalls() FirewallInformer {
-	return &firewallInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &firewallInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // FirewallApplicationRuleCollections returns a FirewallApplicationRuleCollectionInformer.
 func (v *version) FirewallApplicationRuleCollections() FirewallApplicationRuleCollectionInformer {
-	return &firewallApplicationRuleCollectionInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &firewallApplicationRuleCollectionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// FirewallNatRuleCollections returns a FirewallNatRuleCollectionInformer.
-func (v *version) FirewallNatRuleCollections() FirewallNatRuleCollectionInformer {
-	return &firewallNatRuleCollectionInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// FirewallNATRuleCollections returns a FirewallNATRuleCollectionInformer.
+func (v *version) FirewallNATRuleCollections() FirewallNATRuleCollectionInformer {
+	return &firewallNATRuleCollectionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // FirewallNetworkRuleCollections returns a FirewallNetworkRuleCollectionInformer.
 func (v *version) FirewallNetworkRuleCollections() FirewallNetworkRuleCollectionInformer {
-	return &firewallNetworkRuleCollectionInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &firewallNetworkRuleCollectionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // FunctionApps returns a FunctionAppInformer.
 func (v *version) FunctionApps() FunctionAppInformer {
-	return &functionAppInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &functionAppInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // HdinsightHadoopClusters returns a HdinsightHadoopClusterInformer.
 func (v *version) HdinsightHadoopClusters() HdinsightHadoopClusterInformer {
-	return &hdinsightHadoopClusterInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &hdinsightHadoopClusterInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // HdinsightHbaseClusters returns a HdinsightHbaseClusterInformer.
 func (v *version) HdinsightHbaseClusters() HdinsightHbaseClusterInformer {
-	return &hdinsightHbaseClusterInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &hdinsightHbaseClusterInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // HdinsightInteractiveQueryClusters returns a HdinsightInteractiveQueryClusterInformer.
 func (v *version) HdinsightInteractiveQueryClusters() HdinsightInteractiveQueryClusterInformer {
-	return &hdinsightInteractiveQueryClusterInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &hdinsightInteractiveQueryClusterInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // HdinsightKafkaClusters returns a HdinsightKafkaClusterInformer.
 func (v *version) HdinsightKafkaClusters() HdinsightKafkaClusterInformer {
-	return &hdinsightKafkaClusterInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &hdinsightKafkaClusterInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // HdinsightMlServicesClusters returns a HdinsightMlServicesClusterInformer.
 func (v *version) HdinsightMlServicesClusters() HdinsightMlServicesClusterInformer {
-	return &hdinsightMlServicesClusterInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &hdinsightMlServicesClusterInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // HdinsightRserverClusters returns a HdinsightRserverClusterInformer.
 func (v *version) HdinsightRserverClusters() HdinsightRserverClusterInformer {
-	return &hdinsightRserverClusterInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &hdinsightRserverClusterInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // HdinsightSparkClusters returns a HdinsightSparkClusterInformer.
 func (v *version) HdinsightSparkClusters() HdinsightSparkClusterInformer {
-	return &hdinsightSparkClusterInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &hdinsightSparkClusterInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // HdinsightStormClusters returns a HdinsightStormClusterInformer.
 func (v *version) HdinsightStormClusters() HdinsightStormClusterInformer {
-	return &hdinsightStormClusterInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &hdinsightStormClusterInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Images returns a ImageInformer.
 func (v *version) Images() ImageInformer {
-	return &imageInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &imageInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // IotDpses returns a IotDpsInformer.
 func (v *version) IotDpses() IotDpsInformer {
-	return &iotDpsInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &iotDpsInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // IotDpsCertificates returns a IotDpsCertificateInformer.
 func (v *version) IotDpsCertificates() IotDpsCertificateInformer {
-	return &iotDpsCertificateInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &iotDpsCertificateInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Iothubs returns a IothubInformer.
 func (v *version) Iothubs() IothubInformer {
-	return &iothubInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &iothubInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // IothubConsumerGroups returns a IothubConsumerGroupInformer.
 func (v *version) IothubConsumerGroups() IothubConsumerGroupInformer {
-	return &iothubConsumerGroupInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &iothubConsumerGroupInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // IothubSharedAccessPolicies returns a IothubSharedAccessPolicyInformer.
 func (v *version) IothubSharedAccessPolicies() IothubSharedAccessPolicyInformer {
-	return &iothubSharedAccessPolicyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &iothubSharedAccessPolicyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // KeyVaults returns a KeyVaultInformer.
 func (v *version) KeyVaults() KeyVaultInformer {
-	return &keyVaultInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &keyVaultInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // KeyVaultAccessPolicies returns a KeyVaultAccessPolicyInformer.
 func (v *version) KeyVaultAccessPolicies() KeyVaultAccessPolicyInformer {
-	return &keyVaultAccessPolicyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &keyVaultAccessPolicyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // KeyVaultCertificates returns a KeyVaultCertificateInformer.
 func (v *version) KeyVaultCertificates() KeyVaultCertificateInformer {
-	return &keyVaultCertificateInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &keyVaultCertificateInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // KeyVaultKeys returns a KeyVaultKeyInformer.
 func (v *version) KeyVaultKeys() KeyVaultKeyInformer {
-	return &keyVaultKeyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &keyVaultKeyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // KeyVaultSecrets returns a KeyVaultSecretInformer.
 func (v *version) KeyVaultSecrets() KeyVaultSecretInformer {
-	return &keyVaultSecretInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &keyVaultSecretInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // KubernetesClusters returns a KubernetesClusterInformer.
 func (v *version) KubernetesClusters() KubernetesClusterInformer {
-	return &kubernetesClusterInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &kubernetesClusterInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Lbs returns a LbInformer.
 func (v *version) Lbs() LbInformer {
-	return &lbInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &lbInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // LbBackendAddressPools returns a LbBackendAddressPoolInformer.
 func (v *version) LbBackendAddressPools() LbBackendAddressPoolInformer {
-	return &lbBackendAddressPoolInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &lbBackendAddressPoolInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// LbNatPools returns a LbNatPoolInformer.
-func (v *version) LbNatPools() LbNatPoolInformer {
-	return &lbNatPoolInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// LbNATPools returns a LbNATPoolInformer.
+func (v *version) LbNATPools() LbNATPoolInformer {
+	return &lbNATPoolInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// LbNatRules returns a LbNatRuleInformer.
-func (v *version) LbNatRules() LbNatRuleInformer {
-	return &lbNatRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// LbNATRules returns a LbNATRuleInformer.
+func (v *version) LbNATRules() LbNATRuleInformer {
+	return &lbNATRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // LbOutboundRules returns a LbOutboundRuleInformer.
 func (v *version) LbOutboundRules() LbOutboundRuleInformer {
-	return &lbOutboundRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &lbOutboundRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // LbProbes returns a LbProbeInformer.
 func (v *version) LbProbes() LbProbeInformer {
-	return &lbProbeInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &lbProbeInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // LbRules returns a LbRuleInformer.
 func (v *version) LbRules() LbRuleInformer {
-	return &lbRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &lbRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // LocalNetworkGateways returns a LocalNetworkGatewayInformer.
 func (v *version) LocalNetworkGateways() LocalNetworkGatewayInformer {
-	return &localNetworkGatewayInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &localNetworkGatewayInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // LogAnalyticsLinkedServices returns a LogAnalyticsLinkedServiceInformer.
 func (v *version) LogAnalyticsLinkedServices() LogAnalyticsLinkedServiceInformer {
-	return &logAnalyticsLinkedServiceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &logAnalyticsLinkedServiceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // LogAnalyticsSolutions returns a LogAnalyticsSolutionInformer.
 func (v *version) LogAnalyticsSolutions() LogAnalyticsSolutionInformer {
-	return &logAnalyticsSolutionInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &logAnalyticsSolutionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // LogAnalyticsWorkspaces returns a LogAnalyticsWorkspaceInformer.
 func (v *version) LogAnalyticsWorkspaces() LogAnalyticsWorkspaceInformer {
-	return &logAnalyticsWorkspaceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &logAnalyticsWorkspaceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // LogAnalyticsWorkspaceLinkedServices returns a LogAnalyticsWorkspaceLinkedServiceInformer.
 func (v *version) LogAnalyticsWorkspaceLinkedServices() LogAnalyticsWorkspaceLinkedServiceInformer {
-	return &logAnalyticsWorkspaceLinkedServiceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &logAnalyticsWorkspaceLinkedServiceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // LogicAppActionCustoms returns a LogicAppActionCustomInformer.
 func (v *version) LogicAppActionCustoms() LogicAppActionCustomInformer {
-	return &logicAppActionCustomInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &logicAppActionCustomInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// LogicAppActionHttps returns a LogicAppActionHttpInformer.
-func (v *version) LogicAppActionHttps() LogicAppActionHttpInformer {
-	return &logicAppActionHttpInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// LogicAppActionHTTPs returns a LogicAppActionHTTPInformer.
+func (v *version) LogicAppActionHTTPs() LogicAppActionHTTPInformer {
+	return &logicAppActionHTTPInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // LogicAppTriggerCustoms returns a LogicAppTriggerCustomInformer.
 func (v *version) LogicAppTriggerCustoms() LogicAppTriggerCustomInformer {
-	return &logicAppTriggerCustomInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &logicAppTriggerCustomInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// LogicAppTriggerHttpRequests returns a LogicAppTriggerHttpRequestInformer.
-func (v *version) LogicAppTriggerHttpRequests() LogicAppTriggerHttpRequestInformer {
-	return &logicAppTriggerHttpRequestInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// LogicAppTriggerHTTPRequests returns a LogicAppTriggerHTTPRequestInformer.
+func (v *version) LogicAppTriggerHTTPRequests() LogicAppTriggerHTTPRequestInformer {
+	return &logicAppTriggerHTTPRequestInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // LogicAppTriggerRecurrences returns a LogicAppTriggerRecurrenceInformer.
 func (v *version) LogicAppTriggerRecurrences() LogicAppTriggerRecurrenceInformer {
-	return &logicAppTriggerRecurrenceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &logicAppTriggerRecurrenceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // LogicAppWorkflows returns a LogicAppWorkflowInformer.
 func (v *version) LogicAppWorkflows() LogicAppWorkflowInformer {
-	return &logicAppWorkflowInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &logicAppWorkflowInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ManagedDisks returns a ManagedDiskInformer.
 func (v *version) ManagedDisks() ManagedDiskInformer {
-	return &managedDiskInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &managedDiskInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ManagementGroups returns a ManagementGroupInformer.
 func (v *version) ManagementGroups() ManagementGroupInformer {
-	return &managementGroupInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &managementGroupInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ManagementLocks returns a ManagementLockInformer.
 func (v *version) ManagementLocks() ManagementLockInformer {
-	return &managementLockInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &managementLockInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MariadbDatabases returns a MariadbDatabaseInformer.
 func (v *version) MariadbDatabases() MariadbDatabaseInformer {
-	return &mariadbDatabaseInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &mariadbDatabaseInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MariadbFirewallRules returns a MariadbFirewallRuleInformer.
 func (v *version) MariadbFirewallRules() MariadbFirewallRuleInformer {
-	return &mariadbFirewallRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &mariadbFirewallRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MariadbServers returns a MariadbServerInformer.
 func (v *version) MariadbServers() MariadbServerInformer {
-	return &mariadbServerInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &mariadbServerInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MediaServicesAccounts returns a MediaServicesAccountInformer.
 func (v *version) MediaServicesAccounts() MediaServicesAccountInformer {
-	return &mediaServicesAccountInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &mediaServicesAccountInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MetricAlertrules returns a MetricAlertruleInformer.
 func (v *version) MetricAlertrules() MetricAlertruleInformer {
-	return &metricAlertruleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &metricAlertruleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MonitorActionGroups returns a MonitorActionGroupInformer.
 func (v *version) MonitorActionGroups() MonitorActionGroupInformer {
-	return &monitorActionGroupInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &monitorActionGroupInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MonitorActivityLogAlerts returns a MonitorActivityLogAlertInformer.
 func (v *version) MonitorActivityLogAlerts() MonitorActivityLogAlertInformer {
-	return &monitorActivityLogAlertInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &monitorActivityLogAlertInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MonitorAutoscaleSettings returns a MonitorAutoscaleSettingInformer.
 func (v *version) MonitorAutoscaleSettings() MonitorAutoscaleSettingInformer {
-	return &monitorAutoscaleSettingInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &monitorAutoscaleSettingInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MonitorDiagnosticSettings returns a MonitorDiagnosticSettingInformer.
 func (v *version) MonitorDiagnosticSettings() MonitorDiagnosticSettingInformer {
-	return &monitorDiagnosticSettingInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &monitorDiagnosticSettingInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MonitorLogProfiles returns a MonitorLogProfileInformer.
 func (v *version) MonitorLogProfiles() MonitorLogProfileInformer {
-	return &monitorLogProfileInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &monitorLogProfileInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MonitorMetricAlerts returns a MonitorMetricAlertInformer.
 func (v *version) MonitorMetricAlerts() MonitorMetricAlertInformer {
-	return &monitorMetricAlertInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &monitorMetricAlertInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MonitorMetricAlertrules returns a MonitorMetricAlertruleInformer.
 func (v *version) MonitorMetricAlertrules() MonitorMetricAlertruleInformer {
-	return &monitorMetricAlertruleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &monitorMetricAlertruleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MssqlElasticpools returns a MssqlElasticpoolInformer.
 func (v *version) MssqlElasticpools() MssqlElasticpoolInformer {
-	return &mssqlElasticpoolInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &mssqlElasticpoolInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MysqlConfigurations returns a MysqlConfigurationInformer.
 func (v *version) MysqlConfigurations() MysqlConfigurationInformer {
-	return &mysqlConfigurationInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &mysqlConfigurationInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MysqlDatabases returns a MysqlDatabaseInformer.
 func (v *version) MysqlDatabases() MysqlDatabaseInformer {
-	return &mysqlDatabaseInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &mysqlDatabaseInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MysqlFirewallRules returns a MysqlFirewallRuleInformer.
 func (v *version) MysqlFirewallRules() MysqlFirewallRuleInformer {
-	return &mysqlFirewallRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &mysqlFirewallRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MysqlServers returns a MysqlServerInformer.
 func (v *version) MysqlServers() MysqlServerInformer {
-	return &mysqlServerInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &mysqlServerInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MysqlVirtualNetworkRules returns a MysqlVirtualNetworkRuleInformer.
 func (v *version) MysqlVirtualNetworkRules() MysqlVirtualNetworkRuleInformer {
-	return &mysqlVirtualNetworkRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &mysqlVirtualNetworkRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // NetworkConnectionMonitors returns a NetworkConnectionMonitorInformer.
 func (v *version) NetworkConnectionMonitors() NetworkConnectionMonitorInformer {
-	return &networkConnectionMonitorInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &networkConnectionMonitorInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // NetworkDdosProtectionPlans returns a NetworkDdosProtectionPlanInformer.
 func (v *version) NetworkDdosProtectionPlans() NetworkDdosProtectionPlanInformer {
-	return &networkDdosProtectionPlanInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &networkDdosProtectionPlanInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // NetworkInterfaces returns a NetworkInterfaceInformer.
 func (v *version) NetworkInterfaces() NetworkInterfaceInformer {
-	return &networkInterfaceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &networkInterfaceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations returns a NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInformer.
 func (v *version) NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations() NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInformer {
-	return &networkInterfaceApplicationGatewayBackendAddressPoolAssociationInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &networkInterfaceApplicationGatewayBackendAddressPoolAssociationInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // NetworkInterfaceApplicationSecurityGroupAssociations returns a NetworkInterfaceApplicationSecurityGroupAssociationInformer.
 func (v *version) NetworkInterfaceApplicationSecurityGroupAssociations() NetworkInterfaceApplicationSecurityGroupAssociationInformer {
-	return &networkInterfaceApplicationSecurityGroupAssociationInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &networkInterfaceApplicationSecurityGroupAssociationInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // NetworkInterfaceBackendAddressPoolAssociations returns a NetworkInterfaceBackendAddressPoolAssociationInformer.
 func (v *version) NetworkInterfaceBackendAddressPoolAssociations() NetworkInterfaceBackendAddressPoolAssociationInformer {
-	return &networkInterfaceBackendAddressPoolAssociationInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &networkInterfaceBackendAddressPoolAssociationInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// NetworkInterfaceNatRuleAssociations returns a NetworkInterfaceNatRuleAssociationInformer.
-func (v *version) NetworkInterfaceNatRuleAssociations() NetworkInterfaceNatRuleAssociationInformer {
-	return &networkInterfaceNatRuleAssociationInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// NetworkInterfaceNATRuleAssociations returns a NetworkInterfaceNATRuleAssociationInformer.
+func (v *version) NetworkInterfaceNATRuleAssociations() NetworkInterfaceNATRuleAssociationInformer {
+	return &networkInterfaceNATRuleAssociationInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // NetworkPacketCaptures returns a NetworkPacketCaptureInformer.
 func (v *version) NetworkPacketCaptures() NetworkPacketCaptureInformer {
-	return &networkPacketCaptureInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &networkPacketCaptureInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // NetworkProfiles returns a NetworkProfileInformer.
 func (v *version) NetworkProfiles() NetworkProfileInformer {
-	return &networkProfileInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &networkProfileInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // NetworkSecurityGroups returns a NetworkSecurityGroupInformer.
 func (v *version) NetworkSecurityGroups() NetworkSecurityGroupInformer {
-	return &networkSecurityGroupInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &networkSecurityGroupInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // NetworkSecurityRules returns a NetworkSecurityRuleInformer.
 func (v *version) NetworkSecurityRules() NetworkSecurityRuleInformer {
-	return &networkSecurityRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &networkSecurityRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // NetworkWatchers returns a NetworkWatcherInformer.
 func (v *version) NetworkWatchers() NetworkWatcherInformer {
-	return &networkWatcherInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &networkWatcherInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // NotificationHubs returns a NotificationHubInformer.
 func (v *version) NotificationHubs() NotificationHubInformer {
-	return &notificationHubInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &notificationHubInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // NotificationHubAuthorizationRules returns a NotificationHubAuthorizationRuleInformer.
 func (v *version) NotificationHubAuthorizationRules() NotificationHubAuthorizationRuleInformer {
-	return &notificationHubAuthorizationRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &notificationHubAuthorizationRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // NotificationHubNamespaces returns a NotificationHubNamespaceInformer.
 func (v *version) NotificationHubNamespaces() NotificationHubNamespaceInformer {
-	return &notificationHubNamespaceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &notificationHubNamespaceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // PacketCaptures returns a PacketCaptureInformer.
 func (v *version) PacketCaptures() PacketCaptureInformer {
-	return &packetCaptureInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &packetCaptureInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // PolicyAssignments returns a PolicyAssignmentInformer.
 func (v *version) PolicyAssignments() PolicyAssignmentInformer {
-	return &policyAssignmentInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &policyAssignmentInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // PolicyDefinitions returns a PolicyDefinitionInformer.
 func (v *version) PolicyDefinitions() PolicyDefinitionInformer {
-	return &policyDefinitionInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &policyDefinitionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // PolicySetDefinitions returns a PolicySetDefinitionInformer.
 func (v *version) PolicySetDefinitions() PolicySetDefinitionInformer {
-	return &policySetDefinitionInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &policySetDefinitionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // PostgresqlConfigurations returns a PostgresqlConfigurationInformer.
 func (v *version) PostgresqlConfigurations() PostgresqlConfigurationInformer {
-	return &postgresqlConfigurationInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &postgresqlConfigurationInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // PostgresqlDatabases returns a PostgresqlDatabaseInformer.
 func (v *version) PostgresqlDatabases() PostgresqlDatabaseInformer {
-	return &postgresqlDatabaseInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &postgresqlDatabaseInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // PostgresqlFirewallRules returns a PostgresqlFirewallRuleInformer.
 func (v *version) PostgresqlFirewallRules() PostgresqlFirewallRuleInformer {
-	return &postgresqlFirewallRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &postgresqlFirewallRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // PostgresqlServers returns a PostgresqlServerInformer.
 func (v *version) PostgresqlServers() PostgresqlServerInformer {
-	return &postgresqlServerInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &postgresqlServerInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // PostgresqlVirtualNetworkRules returns a PostgresqlVirtualNetworkRuleInformer.
 func (v *version) PostgresqlVirtualNetworkRules() PostgresqlVirtualNetworkRuleInformer {
-	return &postgresqlVirtualNetworkRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &postgresqlVirtualNetworkRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// PrivateDnsZones returns a PrivateDnsZoneInformer.
-func (v *version) PrivateDnsZones() PrivateDnsZoneInformer {
-	return &privateDnsZoneInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// PrivateDNSZones returns a PrivateDNSZoneInformer.
+func (v *version) PrivateDNSZones() PrivateDNSZoneInformer {
+	return &privateDNSZoneInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// PublicIps returns a PublicIpInformer.
-func (v *version) PublicIps() PublicIpInformer {
-	return &publicIpInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// PublicIPs returns a PublicIPInformer.
+func (v *version) PublicIPs() PublicIPInformer {
+	return &publicIPInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// PublicIpPrefixes returns a PublicIpPrefixInformer.
-func (v *version) PublicIpPrefixes() PublicIpPrefixInformer {
-	return &publicIpPrefixInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// PublicIPPrefixes returns a PublicIPPrefixInformer.
+func (v *version) PublicIPPrefixes() PublicIPPrefixInformer {
+	return &publicIPPrefixInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // RecoveryServicesProtectedVms returns a RecoveryServicesProtectedVmInformer.
 func (v *version) RecoveryServicesProtectedVms() RecoveryServicesProtectedVmInformer {
-	return &recoveryServicesProtectedVmInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &recoveryServicesProtectedVmInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // RecoveryServicesProtectionPolicyVms returns a RecoveryServicesProtectionPolicyVmInformer.
 func (v *version) RecoveryServicesProtectionPolicyVms() RecoveryServicesProtectionPolicyVmInformer {
-	return &recoveryServicesProtectionPolicyVmInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &recoveryServicesProtectionPolicyVmInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // RecoveryServicesVaults returns a RecoveryServicesVaultInformer.
 func (v *version) RecoveryServicesVaults() RecoveryServicesVaultInformer {
-	return &recoveryServicesVaultInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &recoveryServicesVaultInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // RedisCaches returns a RedisCacheInformer.
 func (v *version) RedisCaches() RedisCacheInformer {
-	return &redisCacheInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &redisCacheInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // RedisFirewallRules returns a RedisFirewallRuleInformer.
 func (v *version) RedisFirewallRules() RedisFirewallRuleInformer {
-	return &redisFirewallRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &redisFirewallRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // RelayNamespaces returns a RelayNamespaceInformer.
 func (v *version) RelayNamespaces() RelayNamespaceInformer {
-	return &relayNamespaceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &relayNamespaceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ResourceGroups returns a ResourceGroupInformer.
 func (v *version) ResourceGroups() ResourceGroupInformer {
-	return &resourceGroupInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &resourceGroupInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // RoleAssignments returns a RoleAssignmentInformer.
 func (v *version) RoleAssignments() RoleAssignmentInformer {
-	return &roleAssignmentInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &roleAssignmentInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // RoleDefinitions returns a RoleDefinitionInformer.
 func (v *version) RoleDefinitions() RoleDefinitionInformer {
-	return &roleDefinitionInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &roleDefinitionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Routes returns a RouteInformer.
 func (v *version) Routes() RouteInformer {
-	return &routeInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &routeInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // RouteTables returns a RouteTableInformer.
 func (v *version) RouteTables() RouteTableInformer {
-	return &routeTableInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &routeTableInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SchedulerJobs returns a SchedulerJobInformer.
 func (v *version) SchedulerJobs() SchedulerJobInformer {
-	return &schedulerJobInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &schedulerJobInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SchedulerJobCollections returns a SchedulerJobCollectionInformer.
 func (v *version) SchedulerJobCollections() SchedulerJobCollectionInformer {
-	return &schedulerJobCollectionInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &schedulerJobCollectionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SearchServices returns a SearchServiceInformer.
 func (v *version) SearchServices() SearchServiceInformer {
-	return &searchServiceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &searchServiceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SecurityCenterContacts returns a SecurityCenterContactInformer.
 func (v *version) SecurityCenterContacts() SecurityCenterContactInformer {
-	return &securityCenterContactInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &securityCenterContactInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SecurityCenterSubscriptionPricings returns a SecurityCenterSubscriptionPricingInformer.
 func (v *version) SecurityCenterSubscriptionPricings() SecurityCenterSubscriptionPricingInformer {
-	return &securityCenterSubscriptionPricingInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &securityCenterSubscriptionPricingInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SecurityCenterWorkspaces returns a SecurityCenterWorkspaceInformer.
 func (v *version) SecurityCenterWorkspaces() SecurityCenterWorkspaceInformer {
-	return &securityCenterWorkspaceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &securityCenterWorkspaceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ServiceFabricClusters returns a ServiceFabricClusterInformer.
 func (v *version) ServiceFabricClusters() ServiceFabricClusterInformer {
-	return &serviceFabricClusterInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &serviceFabricClusterInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ServicebusNamespaces returns a ServicebusNamespaceInformer.
 func (v *version) ServicebusNamespaces() ServicebusNamespaceInformer {
-	return &servicebusNamespaceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &servicebusNamespaceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ServicebusNamespaceAuthorizationRules returns a ServicebusNamespaceAuthorizationRuleInformer.
 func (v *version) ServicebusNamespaceAuthorizationRules() ServicebusNamespaceAuthorizationRuleInformer {
-	return &servicebusNamespaceAuthorizationRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &servicebusNamespaceAuthorizationRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ServicebusQueues returns a ServicebusQueueInformer.
 func (v *version) ServicebusQueues() ServicebusQueueInformer {
-	return &servicebusQueueInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &servicebusQueueInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ServicebusQueueAuthorizationRules returns a ServicebusQueueAuthorizationRuleInformer.
 func (v *version) ServicebusQueueAuthorizationRules() ServicebusQueueAuthorizationRuleInformer {
-	return &servicebusQueueAuthorizationRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &servicebusQueueAuthorizationRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ServicebusSubscriptions returns a ServicebusSubscriptionInformer.
 func (v *version) ServicebusSubscriptions() ServicebusSubscriptionInformer {
-	return &servicebusSubscriptionInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &servicebusSubscriptionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ServicebusSubscriptionRules returns a ServicebusSubscriptionRuleInformer.
 func (v *version) ServicebusSubscriptionRules() ServicebusSubscriptionRuleInformer {
-	return &servicebusSubscriptionRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &servicebusSubscriptionRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ServicebusTopics returns a ServicebusTopicInformer.
 func (v *version) ServicebusTopics() ServicebusTopicInformer {
-	return &servicebusTopicInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &servicebusTopicInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ServicebusTopicAuthorizationRules returns a ServicebusTopicAuthorizationRuleInformer.
 func (v *version) ServicebusTopicAuthorizationRules() ServicebusTopicAuthorizationRuleInformer {
-	return &servicebusTopicAuthorizationRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &servicebusTopicAuthorizationRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SharedImages returns a SharedImageInformer.
 func (v *version) SharedImages() SharedImageInformer {
-	return &sharedImageInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &sharedImageInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SharedImageGalleries returns a SharedImageGalleryInformer.
 func (v *version) SharedImageGalleries() SharedImageGalleryInformer {
-	return &sharedImageGalleryInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &sharedImageGalleryInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SharedImageVersions returns a SharedImageVersionInformer.
 func (v *version) SharedImageVersions() SharedImageVersionInformer {
-	return &sharedImageVersionInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &sharedImageVersionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SignalrServices returns a SignalrServiceInformer.
 func (v *version) SignalrServices() SignalrServiceInformer {
-	return &signalrServiceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &signalrServiceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Snapshots returns a SnapshotInformer.
 func (v *version) Snapshots() SnapshotInformer {
-	return &snapshotInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &snapshotInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SqlActiveDirectoryAdministrators returns a SqlActiveDirectoryAdministratorInformer.
 func (v *version) SqlActiveDirectoryAdministrators() SqlActiveDirectoryAdministratorInformer {
-	return &sqlActiveDirectoryAdministratorInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &sqlActiveDirectoryAdministratorInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SqlDatabases returns a SqlDatabaseInformer.
 func (v *version) SqlDatabases() SqlDatabaseInformer {
-	return &sqlDatabaseInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &sqlDatabaseInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SqlElasticpools returns a SqlElasticpoolInformer.
 func (v *version) SqlElasticpools() SqlElasticpoolInformer {
-	return &sqlElasticpoolInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &sqlElasticpoolInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SqlFirewallRules returns a SqlFirewallRuleInformer.
 func (v *version) SqlFirewallRules() SqlFirewallRuleInformer {
-	return &sqlFirewallRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &sqlFirewallRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SqlServers returns a SqlServerInformer.
 func (v *version) SqlServers() SqlServerInformer {
-	return &sqlServerInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &sqlServerInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SqlVirtualNetworkRules returns a SqlVirtualNetworkRuleInformer.
 func (v *version) SqlVirtualNetworkRules() SqlVirtualNetworkRuleInformer {
-	return &sqlVirtualNetworkRuleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &sqlVirtualNetworkRuleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // StorageAccounts returns a StorageAccountInformer.
 func (v *version) StorageAccounts() StorageAccountInformer {
-	return &storageAccountInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &storageAccountInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // StorageBlobs returns a StorageBlobInformer.
 func (v *version) StorageBlobs() StorageBlobInformer {
-	return &storageBlobInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &storageBlobInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // StorageContainers returns a StorageContainerInformer.
 func (v *version) StorageContainers() StorageContainerInformer {
-	return &storageContainerInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &storageContainerInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // StorageQueues returns a StorageQueueInformer.
 func (v *version) StorageQueues() StorageQueueInformer {
-	return &storageQueueInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &storageQueueInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // StorageShares returns a StorageShareInformer.
 func (v *version) StorageShares() StorageShareInformer {
-	return &storageShareInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
-}
-
-// StorageShareDirectories returns a StorageShareDirectoryInformer.
-func (v *version) StorageShareDirectories() StorageShareDirectoryInformer {
-	return &storageShareDirectoryInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &storageShareInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // StorageTables returns a StorageTableInformer.
 func (v *version) StorageTables() StorageTableInformer {
-	return &storageTableInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
-}
-
-// StorageTableEntities returns a StorageTableEntityInformer.
-func (v *version) StorageTableEntities() StorageTableEntityInformer {
-	return &storageTableEntityInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &storageTableInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // StreamAnalyticsFunctionJavascriptUdves returns a StreamAnalyticsFunctionJavascriptUdfInformer.
 func (v *version) StreamAnalyticsFunctionJavascriptUdves() StreamAnalyticsFunctionJavascriptUdfInformer {
-	return &streamAnalyticsFunctionJavascriptUdfInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &streamAnalyticsFunctionJavascriptUdfInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // StreamAnalyticsJobs returns a StreamAnalyticsJobInformer.
 func (v *version) StreamAnalyticsJobs() StreamAnalyticsJobInformer {
-	return &streamAnalyticsJobInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &streamAnalyticsJobInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // StreamAnalyticsOutputBlobs returns a StreamAnalyticsOutputBlobInformer.
 func (v *version) StreamAnalyticsOutputBlobs() StreamAnalyticsOutputBlobInformer {
-	return &streamAnalyticsOutputBlobInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &streamAnalyticsOutputBlobInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // StreamAnalyticsOutputEventhubs returns a StreamAnalyticsOutputEventhubInformer.
 func (v *version) StreamAnalyticsOutputEventhubs() StreamAnalyticsOutputEventhubInformer {
-	return &streamAnalyticsOutputEventhubInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &streamAnalyticsOutputEventhubInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // StreamAnalyticsOutputMssqls returns a StreamAnalyticsOutputMssqlInformer.
 func (v *version) StreamAnalyticsOutputMssqls() StreamAnalyticsOutputMssqlInformer {
-	return &streamAnalyticsOutputMssqlInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &streamAnalyticsOutputMssqlInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // StreamAnalyticsOutputServicebusQueues returns a StreamAnalyticsOutputServicebusQueueInformer.
 func (v *version) StreamAnalyticsOutputServicebusQueues() StreamAnalyticsOutputServicebusQueueInformer {
-	return &streamAnalyticsOutputServicebusQueueInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &streamAnalyticsOutputServicebusQueueInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // StreamAnalyticsStreamInputBlobs returns a StreamAnalyticsStreamInputBlobInformer.
 func (v *version) StreamAnalyticsStreamInputBlobs() StreamAnalyticsStreamInputBlobInformer {
-	return &streamAnalyticsStreamInputBlobInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &streamAnalyticsStreamInputBlobInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // StreamAnalyticsStreamInputEventhubs returns a StreamAnalyticsStreamInputEventhubInformer.
 func (v *version) StreamAnalyticsStreamInputEventhubs() StreamAnalyticsStreamInputEventhubInformer {
-	return &streamAnalyticsStreamInputEventhubInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &streamAnalyticsStreamInputEventhubInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // StreamAnalyticsStreamInputIothubs returns a StreamAnalyticsStreamInputIothubInformer.
 func (v *version) StreamAnalyticsStreamInputIothubs() StreamAnalyticsStreamInputIothubInformer {
-	return &streamAnalyticsStreamInputIothubInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &streamAnalyticsStreamInputIothubInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Subnets returns a SubnetInformer.
 func (v *version) Subnets() SubnetInformer {
-	return &subnetInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &subnetInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SubnetNetworkSecurityGroupAssociations returns a SubnetNetworkSecurityGroupAssociationInformer.
 func (v *version) SubnetNetworkSecurityGroupAssociations() SubnetNetworkSecurityGroupAssociationInformer {
-	return &subnetNetworkSecurityGroupAssociationInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &subnetNetworkSecurityGroupAssociationInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SubnetRouteTableAssociations returns a SubnetRouteTableAssociationInformer.
 func (v *version) SubnetRouteTableAssociations() SubnetRouteTableAssociationInformer {
-	return &subnetRouteTableAssociationInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &subnetRouteTableAssociationInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // TemplateDeployments returns a TemplateDeploymentInformer.
 func (v *version) TemplateDeployments() TemplateDeploymentInformer {
-	return &templateDeploymentInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &templateDeploymentInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // TrafficManagerEndpoints returns a TrafficManagerEndpointInformer.
 func (v *version) TrafficManagerEndpoints() TrafficManagerEndpointInformer {
-	return &trafficManagerEndpointInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &trafficManagerEndpointInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // TrafficManagerProfiles returns a TrafficManagerProfileInformer.
 func (v *version) TrafficManagerProfiles() TrafficManagerProfileInformer {
-	return &trafficManagerProfileInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &trafficManagerProfileInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // UserAssignedIdentities returns a UserAssignedIdentityInformer.
 func (v *version) UserAssignedIdentities() UserAssignedIdentityInformer {
-	return &userAssignedIdentityInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &userAssignedIdentityInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // VirtualMachines returns a VirtualMachineInformer.
 func (v *version) VirtualMachines() VirtualMachineInformer {
-	return &virtualMachineInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &virtualMachineInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // VirtualMachineDataDiskAttachments returns a VirtualMachineDataDiskAttachmentInformer.
 func (v *version) VirtualMachineDataDiskAttachments() VirtualMachineDataDiskAttachmentInformer {
-	return &virtualMachineDataDiskAttachmentInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &virtualMachineDataDiskAttachmentInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // VirtualMachineExtensions returns a VirtualMachineExtensionInformer.
 func (v *version) VirtualMachineExtensions() VirtualMachineExtensionInformer {
-	return &virtualMachineExtensionInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &virtualMachineExtensionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // VirtualMachineScaleSets returns a VirtualMachineScaleSetInformer.
 func (v *version) VirtualMachineScaleSets() VirtualMachineScaleSetInformer {
-	return &virtualMachineScaleSetInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &virtualMachineScaleSetInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // VirtualNetworks returns a VirtualNetworkInformer.
 func (v *version) VirtualNetworks() VirtualNetworkInformer {
-	return &virtualNetworkInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &virtualNetworkInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // VirtualNetworkGateways returns a VirtualNetworkGatewayInformer.
 func (v *version) VirtualNetworkGateways() VirtualNetworkGatewayInformer {
-	return &virtualNetworkGatewayInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &virtualNetworkGatewayInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // VirtualNetworkGatewayConnections returns a VirtualNetworkGatewayConnectionInformer.
 func (v *version) VirtualNetworkGatewayConnections() VirtualNetworkGatewayConnectionInformer {
-	return &virtualNetworkGatewayConnectionInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &virtualNetworkGatewayConnectionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // VirtualNetworkPeerings returns a VirtualNetworkPeeringInformer.
 func (v *version) VirtualNetworkPeerings() VirtualNetworkPeeringInformer {
-	return &virtualNetworkPeeringInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &virtualNetworkPeeringInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }

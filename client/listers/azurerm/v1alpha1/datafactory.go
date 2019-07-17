@@ -29,8 +29,8 @@ import (
 type DataFactoryLister interface {
 	// List lists all DataFactories in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DataFactory, err error)
-	// Get retrieves the DataFactory from the index for a given name.
-	Get(name string) (*v1alpha1.DataFactory, error)
+	// DataFactories returns an object that can list and get DataFactories.
+	DataFactories(namespace string) DataFactoryNamespaceLister
 	DataFactoryListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dataFactoryLister) List(selector labels.Selector) (ret []*v1alpha1.Data
 	return ret, err
 }
 
-// Get retrieves the DataFactory from the index for a given name.
-func (s *dataFactoryLister) Get(name string) (*v1alpha1.DataFactory, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DataFactories returns an object that can list and get DataFactories.
+func (s *dataFactoryLister) DataFactories(namespace string) DataFactoryNamespaceLister {
+	return dataFactoryNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DataFactoryNamespaceLister helps list and get DataFactories.
+type DataFactoryNamespaceLister interface {
+	// List lists all DataFactories in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DataFactory, err error)
+	// Get retrieves the DataFactory from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DataFactory, error)
+	DataFactoryNamespaceListerExpansion
+}
+
+// dataFactoryNamespaceLister implements the DataFactoryNamespaceLister
+// interface.
+type dataFactoryNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DataFactories in the indexer for a given namespace.
+func (s dataFactoryNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DataFactory, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DataFactory))
+	})
+	return ret, err
+}
+
+// Get retrieves the DataFactory from the indexer for a given namespace and name.
+func (s dataFactoryNamespaceLister) Get(name string) (*v1alpha1.DataFactory, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

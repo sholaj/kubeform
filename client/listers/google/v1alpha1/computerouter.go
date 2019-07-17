@@ -29,8 +29,8 @@ import (
 type ComputeRouterLister interface {
 	// List lists all ComputeRouters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeRouter, err error)
-	// Get retrieves the ComputeRouter from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeRouter, error)
+	// ComputeRouters returns an object that can list and get ComputeRouters.
+	ComputeRouters(namespace string) ComputeRouterNamespaceLister
 	ComputeRouterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeRouterLister) List(selector labels.Selector) (ret []*v1alpha1.Co
 	return ret, err
 }
 
-// Get retrieves the ComputeRouter from the index for a given name.
-func (s *computeRouterLister) Get(name string) (*v1alpha1.ComputeRouter, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeRouters returns an object that can list and get ComputeRouters.
+func (s *computeRouterLister) ComputeRouters(namespace string) ComputeRouterNamespaceLister {
+	return computeRouterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeRouterNamespaceLister helps list and get ComputeRouters.
+type ComputeRouterNamespaceLister interface {
+	// List lists all ComputeRouters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeRouter, err error)
+	// Get retrieves the ComputeRouter from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeRouter, error)
+	ComputeRouterNamespaceListerExpansion
+}
+
+// computeRouterNamespaceLister implements the ComputeRouterNamespaceLister
+// interface.
+type computeRouterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeRouters in the indexer for a given namespace.
+func (s computeRouterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeRouter, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeRouter))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeRouter from the indexer for a given namespace and name.
+func (s computeRouterNamespaceLister) Get(name string) (*v1alpha1.ComputeRouter, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type StorageContainerLister interface {
 	// List lists all StorageContainers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StorageContainer, err error)
-	// Get retrieves the StorageContainer from the index for a given name.
-	Get(name string) (*v1alpha1.StorageContainer, error)
+	// StorageContainers returns an object that can list and get StorageContainers.
+	StorageContainers(namespace string) StorageContainerNamespaceLister
 	StorageContainerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *storageContainerLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the StorageContainer from the index for a given name.
-func (s *storageContainerLister) Get(name string) (*v1alpha1.StorageContainer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StorageContainers returns an object that can list and get StorageContainers.
+func (s *storageContainerLister) StorageContainers(namespace string) StorageContainerNamespaceLister {
+	return storageContainerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StorageContainerNamespaceLister helps list and get StorageContainers.
+type StorageContainerNamespaceLister interface {
+	// List lists all StorageContainers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StorageContainer, err error)
+	// Get retrieves the StorageContainer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StorageContainer, error)
+	StorageContainerNamespaceListerExpansion
+}
+
+// storageContainerNamespaceLister implements the StorageContainerNamespaceLister
+// interface.
+type storageContainerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StorageContainers in the indexer for a given namespace.
+func (s storageContainerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StorageContainer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StorageContainer))
+	})
+	return ret, err
+}
+
+// Get retrieves the StorageContainer from the indexer for a given namespace and name.
+func (s storageContainerNamespaceLister) Get(name string) (*v1alpha1.StorageContainer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

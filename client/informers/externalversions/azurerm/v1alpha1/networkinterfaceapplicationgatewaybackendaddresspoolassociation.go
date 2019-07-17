@@ -41,32 +41,33 @@ type NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInformer int
 type networkInterfaceApplicationGatewayBackendAddressPoolAssociationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewNetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInformer constructs a new informer for NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewNetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredNetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInformer(client, resyncPeriod, indexers, nil)
+func NewNetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredNetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredNetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInformer constructs a new informer for NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredNetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredNetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations().List(options)
+				return client.AzurermV1alpha1().NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations().Watch(options)
+				return client.AzurermV1alpha1().NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation{},
@@ -76,7 +77,7 @@ func NewFilteredNetworkInterfaceApplicationGatewayBackendAddressPoolAssociationI
 }
 
 func (f *networkInterfaceApplicationGatewayBackendAddressPoolAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredNetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredNetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *networkInterfaceApplicationGatewayBackendAddressPoolAssociationInformer) Informer() cache.SharedIndexInformer {

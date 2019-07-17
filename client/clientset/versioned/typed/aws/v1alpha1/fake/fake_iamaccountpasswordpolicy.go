@@ -31,6 +31,7 @@ import (
 // FakeIamAccountPasswordPolicies implements IamAccountPasswordPolicyInterface
 type FakeIamAccountPasswordPolicies struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var iamaccountpasswordpoliciesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "iamaccountpasswordpolicies"}
@@ -40,7 +41,8 @@ var iamaccountpasswordpoliciesKind = schema.GroupVersionKind{Group: "aws.kubefor
 // Get takes name of the iamAccountPasswordPolicy, and returns the corresponding iamAccountPasswordPolicy object, and an error if there is any.
 func (c *FakeIamAccountPasswordPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.IamAccountPasswordPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iamaccountpasswordpoliciesResource, name), &v1alpha1.IamAccountPasswordPolicy{})
+		Invokes(testing.NewGetAction(iamaccountpasswordpoliciesResource, c.ns, name), &v1alpha1.IamAccountPasswordPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIamAccountPasswordPolicies) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of IamAccountPasswordPolicies that match those selectors.
 func (c *FakeIamAccountPasswordPolicies) List(opts v1.ListOptions) (result *v1alpha1.IamAccountPasswordPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iamaccountpasswordpoliciesResource, iamaccountpasswordpoliciesKind, opts), &v1alpha1.IamAccountPasswordPolicyList{})
+		Invokes(testing.NewListAction(iamaccountpasswordpoliciesResource, iamaccountpasswordpoliciesKind, c.ns, opts), &v1alpha1.IamAccountPasswordPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIamAccountPasswordPolicies) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested iamAccountPasswordPolicies.
 func (c *FakeIamAccountPasswordPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iamaccountpasswordpoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(iamaccountpasswordpoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iamAccountPasswordPolicy and creates it.  Returns the server's representation of the iamAccountPasswordPolicy, and an error, if there is any.
 func (c *FakeIamAccountPasswordPolicies) Create(iamAccountPasswordPolicy *v1alpha1.IamAccountPasswordPolicy) (result *v1alpha1.IamAccountPasswordPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iamaccountpasswordpoliciesResource, iamAccountPasswordPolicy), &v1alpha1.IamAccountPasswordPolicy{})
+		Invokes(testing.NewCreateAction(iamaccountpasswordpoliciesResource, c.ns, iamAccountPasswordPolicy), &v1alpha1.IamAccountPasswordPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIamAccountPasswordPolicies) Create(iamAccountPasswordPolicy *v1alph
 // Update takes the representation of a iamAccountPasswordPolicy and updates it. Returns the server's representation of the iamAccountPasswordPolicy, and an error, if there is any.
 func (c *FakeIamAccountPasswordPolicies) Update(iamAccountPasswordPolicy *v1alpha1.IamAccountPasswordPolicy) (result *v1alpha1.IamAccountPasswordPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iamaccountpasswordpoliciesResource, iamAccountPasswordPolicy), &v1alpha1.IamAccountPasswordPolicy{})
+		Invokes(testing.NewUpdateAction(iamaccountpasswordpoliciesResource, c.ns, iamAccountPasswordPolicy), &v1alpha1.IamAccountPasswordPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIamAccountPasswordPolicies) Update(iamAccountPasswordPolicy *v1alph
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIamAccountPasswordPolicies) UpdateStatus(iamAccountPasswordPolicy *v1alpha1.IamAccountPasswordPolicy) (*v1alpha1.IamAccountPasswordPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iamaccountpasswordpoliciesResource, "status", iamAccountPasswordPolicy), &v1alpha1.IamAccountPasswordPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(iamaccountpasswordpoliciesResource, "status", c.ns, iamAccountPasswordPolicy), &v1alpha1.IamAccountPasswordPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIamAccountPasswordPolicies) UpdateStatus(iamAccountPasswordPolicy *
 // Delete takes name of the iamAccountPasswordPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeIamAccountPasswordPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iamaccountpasswordpoliciesResource, name), &v1alpha1.IamAccountPasswordPolicy{})
+		Invokes(testing.NewDeleteAction(iamaccountpasswordpoliciesResource, c.ns, name), &v1alpha1.IamAccountPasswordPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIamAccountPasswordPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iamaccountpasswordpoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iamaccountpasswordpoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IamAccountPasswordPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIamAccountPasswordPolicies) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched iamAccountPasswordPolicy.
 func (c *FakeIamAccountPasswordPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamAccountPasswordPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iamaccountpasswordpoliciesResource, name, pt, data, subresources...), &v1alpha1.IamAccountPasswordPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(iamaccountpasswordpoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.IamAccountPasswordPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

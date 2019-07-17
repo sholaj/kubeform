@@ -41,32 +41,33 @@ type AthenaWorkgroupInformer interface {
 type athenaWorkgroupInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewAthenaWorkgroupInformer constructs a new informer for AthenaWorkgroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAthenaWorkgroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAthenaWorkgroupInformer(client, resyncPeriod, indexers, nil)
+func NewAthenaWorkgroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAthenaWorkgroupInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredAthenaWorkgroupInformer constructs a new informer for AthenaWorkgroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAthenaWorkgroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAthenaWorkgroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AthenaWorkgroups().List(options)
+				return client.AwsV1alpha1().AthenaWorkgroups(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AthenaWorkgroups().Watch(options)
+				return client.AwsV1alpha1().AthenaWorkgroups(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.AthenaWorkgroup{},
@@ -76,7 +77,7 @@ func NewFilteredAthenaWorkgroupInformer(client versioned.Interface, resyncPeriod
 }
 
 func (f *athenaWorkgroupInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAthenaWorkgroupInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredAthenaWorkgroupInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *athenaWorkgroupInformer) Informer() cache.SharedIndexInformer {

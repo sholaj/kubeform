@@ -41,32 +41,33 @@ type IamGroupPolicyAttachmentInformer interface {
 type iamGroupPolicyAttachmentInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewIamGroupPolicyAttachmentInformer constructs a new informer for IamGroupPolicyAttachment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewIamGroupPolicyAttachmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredIamGroupPolicyAttachmentInformer(client, resyncPeriod, indexers, nil)
+func NewIamGroupPolicyAttachmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredIamGroupPolicyAttachmentInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredIamGroupPolicyAttachmentInformer constructs a new informer for IamGroupPolicyAttachment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredIamGroupPolicyAttachmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredIamGroupPolicyAttachmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().IamGroupPolicyAttachments().List(options)
+				return client.AwsV1alpha1().IamGroupPolicyAttachments(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().IamGroupPolicyAttachments().Watch(options)
+				return client.AwsV1alpha1().IamGroupPolicyAttachments(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.IamGroupPolicyAttachment{},
@@ -76,7 +77,7 @@ func NewFilteredIamGroupPolicyAttachmentInformer(client versioned.Interface, res
 }
 
 func (f *iamGroupPolicyAttachmentInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredIamGroupPolicyAttachmentInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredIamGroupPolicyAttachmentInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *iamGroupPolicyAttachmentInformer) Informer() cache.SharedIndexInformer {

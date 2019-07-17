@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,21 +19,22 @@ type BackupSelection struct {
 }
 
 type BackupSelectionSpecSelectionTag struct {
-	Key   string `json:"key"`
-	Type  string `json:"type"`
-	Value string `json:"value"`
+	Key   string `json:"key" tf:"key"`
+	Type  string `json:"type" tf:"type"`
+	Value string `json:"value" tf:"value"`
 }
 
 type BackupSelectionSpec struct {
-	IamRoleArn string `json:"iam_role_arn"`
-	Name       string `json:"name"`
-	PlanId     string `json:"plan_id"`
+	IamRoleArn string `json:"iamRoleArn" tf:"iam_role_arn"`
+	Name       string `json:"name" tf:"name"`
+	PlanID     string `json:"planID" tf:"plan_id"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Resources []string `json:"resources,omitempty"`
+	Resources []string `json:"resources,omitempty" tf:"resources,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SelectionTag *[]BackupSelectionSpec `json:"selection_tag,omitempty"`
+	SelectionTag []BackupSelectionSpecSelectionTag `json:"selectionTag,omitempty" tf:"selection_tag,omitempty"`
+	ProviderRef  core.LocalObjectReference         `json:"providerRef" tf:"-"`
 }
 
 type BackupSelectionStatus struct {
@@ -41,7 +42,9 @@ type BackupSelectionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

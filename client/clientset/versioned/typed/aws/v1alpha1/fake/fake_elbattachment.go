@@ -31,6 +31,7 @@ import (
 // FakeElbAttachments implements ElbAttachmentInterface
 type FakeElbAttachments struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var elbattachmentsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "elbattachments"}
@@ -40,7 +41,8 @@ var elbattachmentsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Vers
 // Get takes name of the elbAttachment, and returns the corresponding elbAttachment object, and an error if there is any.
 func (c *FakeElbAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.ElbAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(elbattachmentsResource, name), &v1alpha1.ElbAttachment{})
+		Invokes(testing.NewGetAction(elbattachmentsResource, c.ns, name), &v1alpha1.ElbAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeElbAttachments) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of ElbAttachments that match those selectors.
 func (c *FakeElbAttachments) List(opts v1.ListOptions) (result *v1alpha1.ElbAttachmentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(elbattachmentsResource, elbattachmentsKind, opts), &v1alpha1.ElbAttachmentList{})
+		Invokes(testing.NewListAction(elbattachmentsResource, elbattachmentsKind, c.ns, opts), &v1alpha1.ElbAttachmentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeElbAttachments) List(opts v1.ListOptions) (result *v1alpha1.ElbAtta
 // Watch returns a watch.Interface that watches the requested elbAttachments.
 func (c *FakeElbAttachments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(elbattachmentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(elbattachmentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a elbAttachment and creates it.  Returns the server's representation of the elbAttachment, and an error, if there is any.
 func (c *FakeElbAttachments) Create(elbAttachment *v1alpha1.ElbAttachment) (result *v1alpha1.ElbAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(elbattachmentsResource, elbAttachment), &v1alpha1.ElbAttachment{})
+		Invokes(testing.NewCreateAction(elbattachmentsResource, c.ns, elbAttachment), &v1alpha1.ElbAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeElbAttachments) Create(elbAttachment *v1alpha1.ElbAttachment) (resu
 // Update takes the representation of a elbAttachment and updates it. Returns the server's representation of the elbAttachment, and an error, if there is any.
 func (c *FakeElbAttachments) Update(elbAttachment *v1alpha1.ElbAttachment) (result *v1alpha1.ElbAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(elbattachmentsResource, elbAttachment), &v1alpha1.ElbAttachment{})
+		Invokes(testing.NewUpdateAction(elbattachmentsResource, c.ns, elbAttachment), &v1alpha1.ElbAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeElbAttachments) Update(elbAttachment *v1alpha1.ElbAttachment) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeElbAttachments) UpdateStatus(elbAttachment *v1alpha1.ElbAttachment) (*v1alpha1.ElbAttachment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(elbattachmentsResource, "status", elbAttachment), &v1alpha1.ElbAttachment{})
+		Invokes(testing.NewUpdateSubresourceAction(elbattachmentsResource, "status", c.ns, elbAttachment), &v1alpha1.ElbAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeElbAttachments) UpdateStatus(elbAttachment *v1alpha1.ElbAttachment)
 // Delete takes name of the elbAttachment and deletes it. Returns an error if one occurs.
 func (c *FakeElbAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(elbattachmentsResource, name), &v1alpha1.ElbAttachment{})
+		Invokes(testing.NewDeleteAction(elbattachmentsResource, c.ns, name), &v1alpha1.ElbAttachment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeElbAttachments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(elbattachmentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(elbattachmentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ElbAttachmentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeElbAttachments) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched elbAttachment.
 func (c *FakeElbAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ElbAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(elbattachmentsResource, name, pt, data, subresources...), &v1alpha1.ElbAttachment{})
+		Invokes(testing.NewPatchSubresourceAction(elbattachmentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ElbAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}

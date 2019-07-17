@@ -399,23 +399,52 @@ spec:
           properties:
             algorithm:
               type: string
-            droplet_tag:
+            dropletTag:
               type: string
-            enable_proxy_protocol:
+            enableProxyProtocol:
               type: boolean
-            forwarding_rule:
-              items: {}
+            forwardingRule:
+              items:
+                properties:
+                  certificateID:
+                    type: string
+                  entryPort:
+                    type: integer
+                  entryProtocol:
+                    type: string
+                  targetPort:
+                    type: integer
+                  targetProtocol:
+                    type: string
+                  tlsPassthrough:
+                    type: boolean
+                required:
+                - entryPort
+                - entryProtocol
+                - targetPort
+                - targetProtocol
+                type: object
               minItems: 1
               type: array
             name:
               type: string
-            redirect_http_to_https:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            redirectHTTPToHTTPS:
               type: boolean
             region:
               type: string
           required:
-          - forwarding_rule
+          - forwardingRule
           - name
+          - providerRef
           - region
           type: object
         status:
@@ -427,6 +456,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

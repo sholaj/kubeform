@@ -29,8 +29,8 @@ import (
 type AzureadApplicationLister interface {
 	// List lists all AzureadApplications in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AzureadApplication, err error)
-	// Get retrieves the AzureadApplication from the index for a given name.
-	Get(name string) (*v1alpha1.AzureadApplication, error)
+	// AzureadApplications returns an object that can list and get AzureadApplications.
+	AzureadApplications(namespace string) AzureadApplicationNamespaceLister
 	AzureadApplicationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *azureadApplicationLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the AzureadApplication from the index for a given name.
-func (s *azureadApplicationLister) Get(name string) (*v1alpha1.AzureadApplication, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AzureadApplications returns an object that can list and get AzureadApplications.
+func (s *azureadApplicationLister) AzureadApplications(namespace string) AzureadApplicationNamespaceLister {
+	return azureadApplicationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AzureadApplicationNamespaceLister helps list and get AzureadApplications.
+type AzureadApplicationNamespaceLister interface {
+	// List lists all AzureadApplications in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AzureadApplication, err error)
+	// Get retrieves the AzureadApplication from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AzureadApplication, error)
+	AzureadApplicationNamespaceListerExpansion
+}
+
+// azureadApplicationNamespaceLister implements the AzureadApplicationNamespaceLister
+// interface.
+type azureadApplicationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AzureadApplications in the indexer for a given namespace.
+func (s azureadApplicationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AzureadApplication, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AzureadApplication))
+	})
+	return ret, err
+}
+
+// Get retrieves the AzureadApplication from the indexer for a given namespace and name.
+func (s azureadApplicationNamespaceLister) Get(name string) (*v1alpha1.AzureadApplication, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

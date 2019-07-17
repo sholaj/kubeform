@@ -31,6 +31,7 @@ import (
 // FakeEc2TransitGateways implements Ec2TransitGatewayInterface
 type FakeEc2TransitGateways struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ec2transitgatewaysResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ec2transitgateways"}
@@ -40,7 +41,8 @@ var ec2transitgatewaysKind = schema.GroupVersionKind{Group: "aws.kubeform.com", 
 // Get takes name of the ec2TransitGateway, and returns the corresponding ec2TransitGateway object, and an error if there is any.
 func (c *FakeEc2TransitGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.Ec2TransitGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ec2transitgatewaysResource, name), &v1alpha1.Ec2TransitGateway{})
+		Invokes(testing.NewGetAction(ec2transitgatewaysResource, c.ns, name), &v1alpha1.Ec2TransitGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEc2TransitGateways) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of Ec2TransitGateways that match those selectors.
 func (c *FakeEc2TransitGateways) List(opts v1.ListOptions) (result *v1alpha1.Ec2TransitGatewayList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ec2transitgatewaysResource, ec2transitgatewaysKind, opts), &v1alpha1.Ec2TransitGatewayList{})
+		Invokes(testing.NewListAction(ec2transitgatewaysResource, ec2transitgatewaysKind, c.ns, opts), &v1alpha1.Ec2TransitGatewayList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEc2TransitGateways) List(opts v1.ListOptions) (result *v1alpha1.Ec2
 // Watch returns a watch.Interface that watches the requested ec2TransitGateways.
 func (c *FakeEc2TransitGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ec2transitgatewaysResource, opts))
+		InvokesWatch(testing.NewWatchAction(ec2transitgatewaysResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ec2TransitGateway and creates it.  Returns the server's representation of the ec2TransitGateway, and an error, if there is any.
 func (c *FakeEc2TransitGateways) Create(ec2TransitGateway *v1alpha1.Ec2TransitGateway) (result *v1alpha1.Ec2TransitGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ec2transitgatewaysResource, ec2TransitGateway), &v1alpha1.Ec2TransitGateway{})
+		Invokes(testing.NewCreateAction(ec2transitgatewaysResource, c.ns, ec2TransitGateway), &v1alpha1.Ec2TransitGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEc2TransitGateways) Create(ec2TransitGateway *v1alpha1.Ec2TransitGa
 // Update takes the representation of a ec2TransitGateway and updates it. Returns the server's representation of the ec2TransitGateway, and an error, if there is any.
 func (c *FakeEc2TransitGateways) Update(ec2TransitGateway *v1alpha1.Ec2TransitGateway) (result *v1alpha1.Ec2TransitGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ec2transitgatewaysResource, ec2TransitGateway), &v1alpha1.Ec2TransitGateway{})
+		Invokes(testing.NewUpdateAction(ec2transitgatewaysResource, c.ns, ec2TransitGateway), &v1alpha1.Ec2TransitGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEc2TransitGateways) Update(ec2TransitGateway *v1alpha1.Ec2TransitGa
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEc2TransitGateways) UpdateStatus(ec2TransitGateway *v1alpha1.Ec2TransitGateway) (*v1alpha1.Ec2TransitGateway, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ec2transitgatewaysResource, "status", ec2TransitGateway), &v1alpha1.Ec2TransitGateway{})
+		Invokes(testing.NewUpdateSubresourceAction(ec2transitgatewaysResource, "status", c.ns, ec2TransitGateway), &v1alpha1.Ec2TransitGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEc2TransitGateways) UpdateStatus(ec2TransitGateway *v1alpha1.Ec2Tra
 // Delete takes name of the ec2TransitGateway and deletes it. Returns an error if one occurs.
 func (c *FakeEc2TransitGateways) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ec2transitgatewaysResource, name), &v1alpha1.Ec2TransitGateway{})
+		Invokes(testing.NewDeleteAction(ec2transitgatewaysResource, c.ns, name), &v1alpha1.Ec2TransitGateway{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEc2TransitGateways) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ec2transitgatewaysResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ec2transitgatewaysResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.Ec2TransitGatewayList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEc2TransitGateways) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched ec2TransitGateway.
 func (c *FakeEc2TransitGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Ec2TransitGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ec2transitgatewaysResource, name, pt, data, subresources...), &v1alpha1.Ec2TransitGateway{})
+		Invokes(testing.NewPatchSubresourceAction(ec2transitgatewaysResource, c.ns, name, pt, data, subresources...), &v1alpha1.Ec2TransitGateway{})
+
 	if obj == nil {
 		return nil, err
 	}

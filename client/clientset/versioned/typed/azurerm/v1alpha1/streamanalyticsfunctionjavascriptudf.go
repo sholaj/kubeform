@@ -32,7 +32,7 @@ import (
 // StreamAnalyticsFunctionJavascriptUdvesGetter has a method to return a StreamAnalyticsFunctionJavascriptUdfInterface.
 // A group's client should implement this interface.
 type StreamAnalyticsFunctionJavascriptUdvesGetter interface {
-	StreamAnalyticsFunctionJavascriptUdves() StreamAnalyticsFunctionJavascriptUdfInterface
+	StreamAnalyticsFunctionJavascriptUdves(namespace string) StreamAnalyticsFunctionJavascriptUdfInterface
 }
 
 // StreamAnalyticsFunctionJavascriptUdfInterface has methods to work with StreamAnalyticsFunctionJavascriptUdf resources.
@@ -52,12 +52,14 @@ type StreamAnalyticsFunctionJavascriptUdfInterface interface {
 // streamAnalyticsFunctionJavascriptUdves implements StreamAnalyticsFunctionJavascriptUdfInterface
 type streamAnalyticsFunctionJavascriptUdves struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStreamAnalyticsFunctionJavascriptUdves returns a StreamAnalyticsFunctionJavascriptUdves
-func newStreamAnalyticsFunctionJavascriptUdves(c *AzurermV1alpha1Client) *streamAnalyticsFunctionJavascriptUdves {
+func newStreamAnalyticsFunctionJavascriptUdves(c *AzurermV1alpha1Client, namespace string) *streamAnalyticsFunctionJavascriptUdves {
 	return &streamAnalyticsFunctionJavascriptUdves{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStreamAnalyticsFunctionJavascriptUdves(c *AzurermV1alpha1Client) *stream
 func (c *streamAnalyticsFunctionJavascriptUdves) Get(name string, options v1.GetOptions) (result *v1alpha1.StreamAnalyticsFunctionJavascriptUdf, err error) {
 	result = &v1alpha1.StreamAnalyticsFunctionJavascriptUdf{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("streamanalyticsfunctionjavascriptudves").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *streamAnalyticsFunctionJavascriptUdves) List(opts v1.ListOptions) (resu
 	}
 	result = &v1alpha1.StreamAnalyticsFunctionJavascriptUdfList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("streamanalyticsfunctionjavascriptudves").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *streamAnalyticsFunctionJavascriptUdves) Watch(opts v1.ListOptions) (wat
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("streamanalyticsfunctionjavascriptudves").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *streamAnalyticsFunctionJavascriptUdves) Watch(opts v1.ListOptions) (wat
 func (c *streamAnalyticsFunctionJavascriptUdves) Create(streamAnalyticsFunctionJavascriptUdf *v1alpha1.StreamAnalyticsFunctionJavascriptUdf) (result *v1alpha1.StreamAnalyticsFunctionJavascriptUdf, err error) {
 	result = &v1alpha1.StreamAnalyticsFunctionJavascriptUdf{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("streamanalyticsfunctionjavascriptudves").
 		Body(streamAnalyticsFunctionJavascriptUdf).
 		Do().
@@ -118,6 +124,7 @@ func (c *streamAnalyticsFunctionJavascriptUdves) Create(streamAnalyticsFunctionJ
 func (c *streamAnalyticsFunctionJavascriptUdves) Update(streamAnalyticsFunctionJavascriptUdf *v1alpha1.StreamAnalyticsFunctionJavascriptUdf) (result *v1alpha1.StreamAnalyticsFunctionJavascriptUdf, err error) {
 	result = &v1alpha1.StreamAnalyticsFunctionJavascriptUdf{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("streamanalyticsfunctionjavascriptudves").
 		Name(streamAnalyticsFunctionJavascriptUdf.Name).
 		Body(streamAnalyticsFunctionJavascriptUdf).
@@ -132,6 +139,7 @@ func (c *streamAnalyticsFunctionJavascriptUdves) Update(streamAnalyticsFunctionJ
 func (c *streamAnalyticsFunctionJavascriptUdves) UpdateStatus(streamAnalyticsFunctionJavascriptUdf *v1alpha1.StreamAnalyticsFunctionJavascriptUdf) (result *v1alpha1.StreamAnalyticsFunctionJavascriptUdf, err error) {
 	result = &v1alpha1.StreamAnalyticsFunctionJavascriptUdf{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("streamanalyticsfunctionjavascriptudves").
 		Name(streamAnalyticsFunctionJavascriptUdf.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *streamAnalyticsFunctionJavascriptUdves) UpdateStatus(streamAnalyticsFun
 // Delete takes name of the streamAnalyticsFunctionJavascriptUdf and deletes it. Returns an error if one occurs.
 func (c *streamAnalyticsFunctionJavascriptUdves) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("streamanalyticsfunctionjavascriptudves").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *streamAnalyticsFunctionJavascriptUdves) DeleteCollection(options *v1.De
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("streamanalyticsfunctionjavascriptudves").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *streamAnalyticsFunctionJavascriptUdves) DeleteCollection(options *v1.De
 func (c *streamAnalyticsFunctionJavascriptUdves) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StreamAnalyticsFunctionJavascriptUdf, err error) {
 	result = &v1alpha1.StreamAnalyticsFunctionJavascriptUdf{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("streamanalyticsfunctionjavascriptudves").
 		SubResource(subresources...).
 		Name(name).

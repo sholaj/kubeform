@@ -41,32 +41,33 @@ type DirectoryServiceLogSubscriptionInformer interface {
 type directoryServiceLogSubscriptionInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDirectoryServiceLogSubscriptionInformer constructs a new informer for DirectoryServiceLogSubscription type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDirectoryServiceLogSubscriptionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDirectoryServiceLogSubscriptionInformer(client, resyncPeriod, indexers, nil)
+func NewDirectoryServiceLogSubscriptionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDirectoryServiceLogSubscriptionInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDirectoryServiceLogSubscriptionInformer constructs a new informer for DirectoryServiceLogSubscription type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDirectoryServiceLogSubscriptionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDirectoryServiceLogSubscriptionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DirectoryServiceLogSubscriptions().List(options)
+				return client.AwsV1alpha1().DirectoryServiceLogSubscriptions(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DirectoryServiceLogSubscriptions().Watch(options)
+				return client.AwsV1alpha1().DirectoryServiceLogSubscriptions(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.DirectoryServiceLogSubscription{},
@@ -76,7 +77,7 @@ func NewFilteredDirectoryServiceLogSubscriptionInformer(client versioned.Interfa
 }
 
 func (f *directoryServiceLogSubscriptionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDirectoryServiceLogSubscriptionInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDirectoryServiceLogSubscriptionInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *directoryServiceLogSubscriptionInformer) Informer() cache.SharedIndexInformer {

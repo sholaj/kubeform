@@ -32,7 +32,7 @@ import (
 // ComputeAutoscalersGetter has a method to return a ComputeAutoscalerInterface.
 // A group's client should implement this interface.
 type ComputeAutoscalersGetter interface {
-	ComputeAutoscalers() ComputeAutoscalerInterface
+	ComputeAutoscalers(namespace string) ComputeAutoscalerInterface
 }
 
 // ComputeAutoscalerInterface has methods to work with ComputeAutoscaler resources.
@@ -52,12 +52,14 @@ type ComputeAutoscalerInterface interface {
 // computeAutoscalers implements ComputeAutoscalerInterface
 type computeAutoscalers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeAutoscalers returns a ComputeAutoscalers
-func newComputeAutoscalers(c *GoogleV1alpha1Client) *computeAutoscalers {
+func newComputeAutoscalers(c *GoogleV1alpha1Client, namespace string) *computeAutoscalers {
 	return &computeAutoscalers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeAutoscalers(c *GoogleV1alpha1Client) *computeAutoscalers {
 func (c *computeAutoscalers) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeAutoscaler, err error) {
 	result = &v1alpha1.ComputeAutoscaler{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeautoscalers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeAutoscalers) List(opts v1.ListOptions) (result *v1alpha1.Compute
 	}
 	result = &v1alpha1.ComputeAutoscalerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeautoscalers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeAutoscalers) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computeautoscalers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeAutoscalers) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *computeAutoscalers) Create(computeAutoscaler *v1alpha1.ComputeAutoscaler) (result *v1alpha1.ComputeAutoscaler, err error) {
 	result = &v1alpha1.ComputeAutoscaler{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computeautoscalers").
 		Body(computeAutoscaler).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeAutoscalers) Create(computeAutoscaler *v1alpha1.ComputeAutoscale
 func (c *computeAutoscalers) Update(computeAutoscaler *v1alpha1.ComputeAutoscaler) (result *v1alpha1.ComputeAutoscaler, err error) {
 	result = &v1alpha1.ComputeAutoscaler{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeautoscalers").
 		Name(computeAutoscaler.Name).
 		Body(computeAutoscaler).
@@ -132,6 +139,7 @@ func (c *computeAutoscalers) Update(computeAutoscaler *v1alpha1.ComputeAutoscale
 func (c *computeAutoscalers) UpdateStatus(computeAutoscaler *v1alpha1.ComputeAutoscaler) (result *v1alpha1.ComputeAutoscaler, err error) {
 	result = &v1alpha1.ComputeAutoscaler{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeautoscalers").
 		Name(computeAutoscaler.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeAutoscalers) UpdateStatus(computeAutoscaler *v1alpha1.ComputeAut
 // Delete takes name of the computeAutoscaler and deletes it. Returns an error if one occurs.
 func (c *computeAutoscalers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeautoscalers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeAutoscalers) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeautoscalers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeAutoscalers) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *computeAutoscalers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeAutoscaler, err error) {
 	result = &v1alpha1.ComputeAutoscaler{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computeautoscalers").
 		SubResource(subresources...).
 		Name(name).

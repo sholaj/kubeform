@@ -32,7 +32,7 @@ import (
 // InternetGatewaysGetter has a method to return a InternetGatewayInterface.
 // A group's client should implement this interface.
 type InternetGatewaysGetter interface {
-	InternetGateways() InternetGatewayInterface
+	InternetGateways(namespace string) InternetGatewayInterface
 }
 
 // InternetGatewayInterface has methods to work with InternetGateway resources.
@@ -52,12 +52,14 @@ type InternetGatewayInterface interface {
 // internetGateways implements InternetGatewayInterface
 type internetGateways struct {
 	client rest.Interface
+	ns     string
 }
 
 // newInternetGateways returns a InternetGateways
-func newInternetGateways(c *AwsV1alpha1Client) *internetGateways {
+func newInternetGateways(c *AwsV1alpha1Client, namespace string) *internetGateways {
 	return &internetGateways{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newInternetGateways(c *AwsV1alpha1Client) *internetGateways {
 func (c *internetGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.InternetGateway, err error) {
 	result = &v1alpha1.InternetGateway{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("internetgateways").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *internetGateways) List(opts v1.ListOptions) (result *v1alpha1.InternetG
 	}
 	result = &v1alpha1.InternetGatewayList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("internetgateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *internetGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("internetgateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *internetGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *internetGateways) Create(internetGateway *v1alpha1.InternetGateway) (result *v1alpha1.InternetGateway, err error) {
 	result = &v1alpha1.InternetGateway{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("internetgateways").
 		Body(internetGateway).
 		Do().
@@ -118,6 +124,7 @@ func (c *internetGateways) Create(internetGateway *v1alpha1.InternetGateway) (re
 func (c *internetGateways) Update(internetGateway *v1alpha1.InternetGateway) (result *v1alpha1.InternetGateway, err error) {
 	result = &v1alpha1.InternetGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("internetgateways").
 		Name(internetGateway.Name).
 		Body(internetGateway).
@@ -132,6 +139,7 @@ func (c *internetGateways) Update(internetGateway *v1alpha1.InternetGateway) (re
 func (c *internetGateways) UpdateStatus(internetGateway *v1alpha1.InternetGateway) (result *v1alpha1.InternetGateway, err error) {
 	result = &v1alpha1.InternetGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("internetgateways").
 		Name(internetGateway.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *internetGateways) UpdateStatus(internetGateway *v1alpha1.InternetGatewa
 // Delete takes name of the internetGateway and deletes it. Returns an error if one occurs.
 func (c *internetGateways) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("internetgateways").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *internetGateways) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("internetgateways").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *internetGateways) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *internetGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.InternetGateway, err error) {
 	result = &v1alpha1.InternetGateway{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("internetgateways").
 		SubResource(subresources...).
 		Name(name).

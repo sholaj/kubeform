@@ -31,6 +31,7 @@ import (
 // FakeStorageBucketIamBindings implements StorageBucketIamBindingInterface
 type FakeStorageBucketIamBindings struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var storagebucketiambindingsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "storagebucketiambindings"}
@@ -40,7 +41,8 @@ var storagebucketiambindingsKind = schema.GroupVersionKind{Group: "google.kubefo
 // Get takes name of the storageBucketIamBinding, and returns the corresponding storageBucketIamBinding object, and an error if there is any.
 func (c *FakeStorageBucketIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageBucketIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(storagebucketiambindingsResource, name), &v1alpha1.StorageBucketIamBinding{})
+		Invokes(testing.NewGetAction(storagebucketiambindingsResource, c.ns, name), &v1alpha1.StorageBucketIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeStorageBucketIamBindings) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of StorageBucketIamBindings that match those selectors.
 func (c *FakeStorageBucketIamBindings) List(opts v1.ListOptions) (result *v1alpha1.StorageBucketIamBindingList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(storagebucketiambindingsResource, storagebucketiambindingsKind, opts), &v1alpha1.StorageBucketIamBindingList{})
+		Invokes(testing.NewListAction(storagebucketiambindingsResource, storagebucketiambindingsKind, c.ns, opts), &v1alpha1.StorageBucketIamBindingList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeStorageBucketIamBindings) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested storageBucketIamBindings.
 func (c *FakeStorageBucketIamBindings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(storagebucketiambindingsResource, opts))
+		InvokesWatch(testing.NewWatchAction(storagebucketiambindingsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a storageBucketIamBinding and creates it.  Returns the server's representation of the storageBucketIamBinding, and an error, if there is any.
 func (c *FakeStorageBucketIamBindings) Create(storageBucketIamBinding *v1alpha1.StorageBucketIamBinding) (result *v1alpha1.StorageBucketIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(storagebucketiambindingsResource, storageBucketIamBinding), &v1alpha1.StorageBucketIamBinding{})
+		Invokes(testing.NewCreateAction(storagebucketiambindingsResource, c.ns, storageBucketIamBinding), &v1alpha1.StorageBucketIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeStorageBucketIamBindings) Create(storageBucketIamBinding *v1alpha1.
 // Update takes the representation of a storageBucketIamBinding and updates it. Returns the server's representation of the storageBucketIamBinding, and an error, if there is any.
 func (c *FakeStorageBucketIamBindings) Update(storageBucketIamBinding *v1alpha1.StorageBucketIamBinding) (result *v1alpha1.StorageBucketIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(storagebucketiambindingsResource, storageBucketIamBinding), &v1alpha1.StorageBucketIamBinding{})
+		Invokes(testing.NewUpdateAction(storagebucketiambindingsResource, c.ns, storageBucketIamBinding), &v1alpha1.StorageBucketIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeStorageBucketIamBindings) Update(storageBucketIamBinding *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeStorageBucketIamBindings) UpdateStatus(storageBucketIamBinding *v1alpha1.StorageBucketIamBinding) (*v1alpha1.StorageBucketIamBinding, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(storagebucketiambindingsResource, "status", storageBucketIamBinding), &v1alpha1.StorageBucketIamBinding{})
+		Invokes(testing.NewUpdateSubresourceAction(storagebucketiambindingsResource, "status", c.ns, storageBucketIamBinding), &v1alpha1.StorageBucketIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeStorageBucketIamBindings) UpdateStatus(storageBucketIamBinding *v1a
 // Delete takes name of the storageBucketIamBinding and deletes it. Returns an error if one occurs.
 func (c *FakeStorageBucketIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(storagebucketiambindingsResource, name), &v1alpha1.StorageBucketIamBinding{})
+		Invokes(testing.NewDeleteAction(storagebucketiambindingsResource, c.ns, name), &v1alpha1.StorageBucketIamBinding{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeStorageBucketIamBindings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(storagebucketiambindingsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(storagebucketiambindingsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.StorageBucketIamBindingList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeStorageBucketIamBindings) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched storageBucketIamBinding.
 func (c *FakeStorageBucketIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageBucketIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(storagebucketiambindingsResource, name, pt, data, subresources...), &v1alpha1.StorageBucketIamBinding{})
+		Invokes(testing.NewPatchSubresourceAction(storagebucketiambindingsResource, c.ns, name, pt, data, subresources...), &v1alpha1.StorageBucketIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}

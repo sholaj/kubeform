@@ -31,6 +31,7 @@ import (
 // FakeSesTemplates implements SesTemplateInterface
 type FakeSesTemplates struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var sestemplatesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "sestemplates"}
@@ -40,7 +41,8 @@ var sestemplatesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Versio
 // Get takes name of the sesTemplate, and returns the corresponding sesTemplate object, and an error if there is any.
 func (c *FakeSesTemplates) Get(name string, options v1.GetOptions) (result *v1alpha1.SesTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sestemplatesResource, name), &v1alpha1.SesTemplate{})
+		Invokes(testing.NewGetAction(sestemplatesResource, c.ns, name), &v1alpha1.SesTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSesTemplates) Get(name string, options v1.GetOptions) (result *v1al
 // List takes label and field selectors, and returns the list of SesTemplates that match those selectors.
 func (c *FakeSesTemplates) List(opts v1.ListOptions) (result *v1alpha1.SesTemplateList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sestemplatesResource, sestemplatesKind, opts), &v1alpha1.SesTemplateList{})
+		Invokes(testing.NewListAction(sestemplatesResource, sestemplatesKind, c.ns, opts), &v1alpha1.SesTemplateList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSesTemplates) List(opts v1.ListOptions) (result *v1alpha1.SesTempla
 // Watch returns a watch.Interface that watches the requested sesTemplates.
 func (c *FakeSesTemplates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sestemplatesResource, opts))
+		InvokesWatch(testing.NewWatchAction(sestemplatesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sesTemplate and creates it.  Returns the server's representation of the sesTemplate, and an error, if there is any.
 func (c *FakeSesTemplates) Create(sesTemplate *v1alpha1.SesTemplate) (result *v1alpha1.SesTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sestemplatesResource, sesTemplate), &v1alpha1.SesTemplate{})
+		Invokes(testing.NewCreateAction(sestemplatesResource, c.ns, sesTemplate), &v1alpha1.SesTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSesTemplates) Create(sesTemplate *v1alpha1.SesTemplate) (result *v1
 // Update takes the representation of a sesTemplate and updates it. Returns the server's representation of the sesTemplate, and an error, if there is any.
 func (c *FakeSesTemplates) Update(sesTemplate *v1alpha1.SesTemplate) (result *v1alpha1.SesTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sestemplatesResource, sesTemplate), &v1alpha1.SesTemplate{})
+		Invokes(testing.NewUpdateAction(sestemplatesResource, c.ns, sesTemplate), &v1alpha1.SesTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSesTemplates) Update(sesTemplate *v1alpha1.SesTemplate) (result *v1
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSesTemplates) UpdateStatus(sesTemplate *v1alpha1.SesTemplate) (*v1alpha1.SesTemplate, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sestemplatesResource, "status", sesTemplate), &v1alpha1.SesTemplate{})
+		Invokes(testing.NewUpdateSubresourceAction(sestemplatesResource, "status", c.ns, sesTemplate), &v1alpha1.SesTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSesTemplates) UpdateStatus(sesTemplate *v1alpha1.SesTemplate) (*v1a
 // Delete takes name of the sesTemplate and deletes it. Returns an error if one occurs.
 func (c *FakeSesTemplates) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sestemplatesResource, name), &v1alpha1.SesTemplate{})
+		Invokes(testing.NewDeleteAction(sestemplatesResource, c.ns, name), &v1alpha1.SesTemplate{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSesTemplates) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sestemplatesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sestemplatesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SesTemplateList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSesTemplates) DeleteCollection(options *v1.DeleteOptions, listOptio
 // Patch applies the patch and returns the patched sesTemplate.
 func (c *FakeSesTemplates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sestemplatesResource, name, pt, data, subresources...), &v1alpha1.SesTemplate{})
+		Invokes(testing.NewPatchSubresourceAction(sestemplatesResource, c.ns, name, pt, data, subresources...), &v1alpha1.SesTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}

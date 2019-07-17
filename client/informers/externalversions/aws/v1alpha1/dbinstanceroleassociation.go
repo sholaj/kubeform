@@ -41,32 +41,33 @@ type DbInstanceRoleAssociationInformer interface {
 type dbInstanceRoleAssociationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDbInstanceRoleAssociationInformer constructs a new informer for DbInstanceRoleAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDbInstanceRoleAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDbInstanceRoleAssociationInformer(client, resyncPeriod, indexers, nil)
+func NewDbInstanceRoleAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDbInstanceRoleAssociationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDbInstanceRoleAssociationInformer constructs a new informer for DbInstanceRoleAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDbInstanceRoleAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDbInstanceRoleAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DbInstanceRoleAssociations().List(options)
+				return client.AwsV1alpha1().DbInstanceRoleAssociations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DbInstanceRoleAssociations().Watch(options)
+				return client.AwsV1alpha1().DbInstanceRoleAssociations(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.DbInstanceRoleAssociation{},
@@ -76,7 +77,7 @@ func NewFilteredDbInstanceRoleAssociationInformer(client versioned.Interface, re
 }
 
 func (f *dbInstanceRoleAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDbInstanceRoleAssociationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDbInstanceRoleAssociationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *dbInstanceRoleAssociationInformer) Informer() cache.SharedIndexInformer {

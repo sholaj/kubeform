@@ -31,6 +31,7 @@ import (
 // FakeCognitoUserGroups implements CognitoUserGroupInterface
 type FakeCognitoUserGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var cognitousergroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "cognitousergroups"}
@@ -40,7 +41,8 @@ var cognitousergroupsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", V
 // Get takes name of the cognitoUserGroup, and returns the corresponding cognitoUserGroup object, and an error if there is any.
 func (c *FakeCognitoUserGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.CognitoUserGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cognitousergroupsResource, name), &v1alpha1.CognitoUserGroup{})
+		Invokes(testing.NewGetAction(cognitousergroupsResource, c.ns, name), &v1alpha1.CognitoUserGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCognitoUserGroups) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of CognitoUserGroups that match those selectors.
 func (c *FakeCognitoUserGroups) List(opts v1.ListOptions) (result *v1alpha1.CognitoUserGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cognitousergroupsResource, cognitousergroupsKind, opts), &v1alpha1.CognitoUserGroupList{})
+		Invokes(testing.NewListAction(cognitousergroupsResource, cognitousergroupsKind, c.ns, opts), &v1alpha1.CognitoUserGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCognitoUserGroups) List(opts v1.ListOptions) (result *v1alpha1.Cogn
 // Watch returns a watch.Interface that watches the requested cognitoUserGroups.
 func (c *FakeCognitoUserGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cognitousergroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(cognitousergroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cognitoUserGroup and creates it.  Returns the server's representation of the cognitoUserGroup, and an error, if there is any.
 func (c *FakeCognitoUserGroups) Create(cognitoUserGroup *v1alpha1.CognitoUserGroup) (result *v1alpha1.CognitoUserGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cognitousergroupsResource, cognitoUserGroup), &v1alpha1.CognitoUserGroup{})
+		Invokes(testing.NewCreateAction(cognitousergroupsResource, c.ns, cognitoUserGroup), &v1alpha1.CognitoUserGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCognitoUserGroups) Create(cognitoUserGroup *v1alpha1.CognitoUserGro
 // Update takes the representation of a cognitoUserGroup and updates it. Returns the server's representation of the cognitoUserGroup, and an error, if there is any.
 func (c *FakeCognitoUserGroups) Update(cognitoUserGroup *v1alpha1.CognitoUserGroup) (result *v1alpha1.CognitoUserGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cognitousergroupsResource, cognitoUserGroup), &v1alpha1.CognitoUserGroup{})
+		Invokes(testing.NewUpdateAction(cognitousergroupsResource, c.ns, cognitoUserGroup), &v1alpha1.CognitoUserGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCognitoUserGroups) Update(cognitoUserGroup *v1alpha1.CognitoUserGro
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCognitoUserGroups) UpdateStatus(cognitoUserGroup *v1alpha1.CognitoUserGroup) (*v1alpha1.CognitoUserGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cognitousergroupsResource, "status", cognitoUserGroup), &v1alpha1.CognitoUserGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(cognitousergroupsResource, "status", c.ns, cognitoUserGroup), &v1alpha1.CognitoUserGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCognitoUserGroups) UpdateStatus(cognitoUserGroup *v1alpha1.CognitoU
 // Delete takes name of the cognitoUserGroup and deletes it. Returns an error if one occurs.
 func (c *FakeCognitoUserGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cognitousergroupsResource, name), &v1alpha1.CognitoUserGroup{})
+		Invokes(testing.NewDeleteAction(cognitousergroupsResource, c.ns, name), &v1alpha1.CognitoUserGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCognitoUserGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cognitousergroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cognitousergroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CognitoUserGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCognitoUserGroups) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched cognitoUserGroup.
 func (c *FakeCognitoUserGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CognitoUserGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cognitousergroupsResource, name, pt, data, subresources...), &v1alpha1.CognitoUserGroup{})
+		Invokes(testing.NewPatchSubresourceAction(cognitousergroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.CognitoUserGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

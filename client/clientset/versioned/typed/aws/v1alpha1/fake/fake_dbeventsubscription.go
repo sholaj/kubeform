@@ -31,6 +31,7 @@ import (
 // FakeDbEventSubscriptions implements DbEventSubscriptionInterface
 type FakeDbEventSubscriptions struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var dbeventsubscriptionsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "dbeventsubscriptions"}
@@ -40,7 +41,8 @@ var dbeventsubscriptionsKind = schema.GroupVersionKind{Group: "aws.kubeform.com"
 // Get takes name of the dbEventSubscription, and returns the corresponding dbEventSubscription object, and an error if there is any.
 func (c *FakeDbEventSubscriptions) Get(name string, options v1.GetOptions) (result *v1alpha1.DbEventSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(dbeventsubscriptionsResource, name), &v1alpha1.DbEventSubscription{})
+		Invokes(testing.NewGetAction(dbeventsubscriptionsResource, c.ns, name), &v1alpha1.DbEventSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDbEventSubscriptions) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of DbEventSubscriptions that match those selectors.
 func (c *FakeDbEventSubscriptions) List(opts v1.ListOptions) (result *v1alpha1.DbEventSubscriptionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(dbeventsubscriptionsResource, dbeventsubscriptionsKind, opts), &v1alpha1.DbEventSubscriptionList{})
+		Invokes(testing.NewListAction(dbeventsubscriptionsResource, dbeventsubscriptionsKind, c.ns, opts), &v1alpha1.DbEventSubscriptionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDbEventSubscriptions) List(opts v1.ListOptions) (result *v1alpha1.D
 // Watch returns a watch.Interface that watches the requested dbEventSubscriptions.
 func (c *FakeDbEventSubscriptions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(dbeventsubscriptionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(dbeventsubscriptionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dbEventSubscription and creates it.  Returns the server's representation of the dbEventSubscription, and an error, if there is any.
 func (c *FakeDbEventSubscriptions) Create(dbEventSubscription *v1alpha1.DbEventSubscription) (result *v1alpha1.DbEventSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(dbeventsubscriptionsResource, dbEventSubscription), &v1alpha1.DbEventSubscription{})
+		Invokes(testing.NewCreateAction(dbeventsubscriptionsResource, c.ns, dbEventSubscription), &v1alpha1.DbEventSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDbEventSubscriptions) Create(dbEventSubscription *v1alpha1.DbEventS
 // Update takes the representation of a dbEventSubscription and updates it. Returns the server's representation of the dbEventSubscription, and an error, if there is any.
 func (c *FakeDbEventSubscriptions) Update(dbEventSubscription *v1alpha1.DbEventSubscription) (result *v1alpha1.DbEventSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(dbeventsubscriptionsResource, dbEventSubscription), &v1alpha1.DbEventSubscription{})
+		Invokes(testing.NewUpdateAction(dbeventsubscriptionsResource, c.ns, dbEventSubscription), &v1alpha1.DbEventSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDbEventSubscriptions) Update(dbEventSubscription *v1alpha1.DbEventS
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDbEventSubscriptions) UpdateStatus(dbEventSubscription *v1alpha1.DbEventSubscription) (*v1alpha1.DbEventSubscription, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(dbeventsubscriptionsResource, "status", dbEventSubscription), &v1alpha1.DbEventSubscription{})
+		Invokes(testing.NewUpdateSubresourceAction(dbeventsubscriptionsResource, "status", c.ns, dbEventSubscription), &v1alpha1.DbEventSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDbEventSubscriptions) UpdateStatus(dbEventSubscription *v1alpha1.Db
 // Delete takes name of the dbEventSubscription and deletes it. Returns an error if one occurs.
 func (c *FakeDbEventSubscriptions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(dbeventsubscriptionsResource, name), &v1alpha1.DbEventSubscription{})
+		Invokes(testing.NewDeleteAction(dbeventsubscriptionsResource, c.ns, name), &v1alpha1.DbEventSubscription{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDbEventSubscriptions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(dbeventsubscriptionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(dbeventsubscriptionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DbEventSubscriptionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDbEventSubscriptions) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched dbEventSubscription.
 func (c *FakeDbEventSubscriptions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DbEventSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(dbeventsubscriptionsResource, name, pt, data, subresources...), &v1alpha1.DbEventSubscription{})
+		Invokes(testing.NewPatchSubresourceAction(dbeventsubscriptionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DbEventSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}

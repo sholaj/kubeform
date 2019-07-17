@@ -29,8 +29,8 @@ import (
 type DirectoryServiceConditionalForwarderLister interface {
 	// List lists all DirectoryServiceConditionalForwarders in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DirectoryServiceConditionalForwarder, err error)
-	// Get retrieves the DirectoryServiceConditionalForwarder from the index for a given name.
-	Get(name string) (*v1alpha1.DirectoryServiceConditionalForwarder, error)
+	// DirectoryServiceConditionalForwarders returns an object that can list and get DirectoryServiceConditionalForwarders.
+	DirectoryServiceConditionalForwarders(namespace string) DirectoryServiceConditionalForwarderNamespaceLister
 	DirectoryServiceConditionalForwarderListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *directoryServiceConditionalForwarderLister) List(selector labels.Select
 	return ret, err
 }
 
-// Get retrieves the DirectoryServiceConditionalForwarder from the index for a given name.
-func (s *directoryServiceConditionalForwarderLister) Get(name string) (*v1alpha1.DirectoryServiceConditionalForwarder, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DirectoryServiceConditionalForwarders returns an object that can list and get DirectoryServiceConditionalForwarders.
+func (s *directoryServiceConditionalForwarderLister) DirectoryServiceConditionalForwarders(namespace string) DirectoryServiceConditionalForwarderNamespaceLister {
+	return directoryServiceConditionalForwarderNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DirectoryServiceConditionalForwarderNamespaceLister helps list and get DirectoryServiceConditionalForwarders.
+type DirectoryServiceConditionalForwarderNamespaceLister interface {
+	// List lists all DirectoryServiceConditionalForwarders in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DirectoryServiceConditionalForwarder, err error)
+	// Get retrieves the DirectoryServiceConditionalForwarder from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DirectoryServiceConditionalForwarder, error)
+	DirectoryServiceConditionalForwarderNamespaceListerExpansion
+}
+
+// directoryServiceConditionalForwarderNamespaceLister implements the DirectoryServiceConditionalForwarderNamespaceLister
+// interface.
+type directoryServiceConditionalForwarderNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DirectoryServiceConditionalForwarders in the indexer for a given namespace.
+func (s directoryServiceConditionalForwarderNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DirectoryServiceConditionalForwarder, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DirectoryServiceConditionalForwarder))
+	})
+	return ret, err
+}
+
+// Get retrieves the DirectoryServiceConditionalForwarder from the indexer for a given namespace and name.
+func (s directoryServiceConditionalForwarderNamespaceLister) Get(name string) (*v1alpha1.DirectoryServiceConditionalForwarder, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

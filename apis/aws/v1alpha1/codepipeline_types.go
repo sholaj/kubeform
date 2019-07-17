@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,48 +19,49 @@ type Codepipeline struct {
 }
 
 type CodepipelineSpecArtifactStoreEncryptionKey struct {
-	Id   string `json:"id"`
-	Type string `json:"type"`
+	ID   string `json:"ID" tf:"id"`
+	Type string `json:"type" tf:"type"`
 }
 
 type CodepipelineSpecArtifactStore struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	EncryptionKey *[]CodepipelineSpecArtifactStore `json:"encryption_key,omitempty"`
-	Location      string                           `json:"location"`
-	Type          string                           `json:"type"`
+	EncryptionKey []CodepipelineSpecArtifactStoreEncryptionKey `json:"encryptionKey,omitempty" tf:"encryption_key,omitempty"`
+	Location      string                                       `json:"location" tf:"location"`
+	Type          string                                       `json:"type" tf:"type"`
 }
 
 type CodepipelineSpecStageAction struct {
-	Category string `json:"category"`
+	Category string `json:"category" tf:"category"`
 	// +optional
-	Configuration map[string]string `json:"configuration,omitempty"`
+	Configuration map[string]string `json:"configuration,omitempty" tf:"configuration,omitempty"`
 	// +optional
-	InputArtifacts []string `json:"input_artifacts,omitempty"`
-	Name           string   `json:"name"`
+	InputArtifacts []string `json:"inputArtifacts,omitempty" tf:"input_artifacts,omitempty"`
+	Name           string   `json:"name" tf:"name"`
 	// +optional
-	OutputArtifacts []string `json:"output_artifacts,omitempty"`
-	Owner           string   `json:"owner"`
-	Provider        string   `json:"provider"`
+	OutputArtifacts []string `json:"outputArtifacts,omitempty" tf:"output_artifacts,omitempty"`
+	Owner           string   `json:"owner" tf:"owner"`
+	Provider        string   `json:"provider" tf:"provider"`
 	// +optional
-	RoleArn string `json:"role_arn,omitempty"`
-	Version string `json:"version"`
+	RoleArn string `json:"roleArn,omitempty" tf:"role_arn,omitempty"`
+	Version string `json:"version" tf:"version"`
 }
 
 type CodepipelineSpecStage struct {
-	Action []CodepipelineSpecStage `json:"action"`
-	Name   string                  `json:"name"`
+	Action []CodepipelineSpecStageAction `json:"action" tf:"action"`
+	Name   string                        `json:"name" tf:"name"`
 }
 
 type CodepipelineSpec struct {
 	// +kubebuilder:validation:MaxItems=1
-	ArtifactStore []CodepipelineSpec `json:"artifact_store"`
-	Name          string             `json:"name"`
-	RoleArn       string             `json:"role_arn"`
+	ArtifactStore []CodepipelineSpecArtifactStore `json:"artifactStore" tf:"artifact_store"`
+	Name          string                          `json:"name" tf:"name"`
+	RoleArn       string                          `json:"roleArn" tf:"role_arn"`
 	// +kubebuilder:validation:MinItems=2
-	Stage []CodepipelineSpec `json:"stage"`
+	Stage []CodepipelineSpecStage `json:"stage" tf:"stage"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type CodepipelineStatus struct {
@@ -68,7 +69,9 @@ type CodepipelineStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -32,7 +32,7 @@ import (
 // PubsubSubscriptionsGetter has a method to return a PubsubSubscriptionInterface.
 // A group's client should implement this interface.
 type PubsubSubscriptionsGetter interface {
-	PubsubSubscriptions() PubsubSubscriptionInterface
+	PubsubSubscriptions(namespace string) PubsubSubscriptionInterface
 }
 
 // PubsubSubscriptionInterface has methods to work with PubsubSubscription resources.
@@ -52,12 +52,14 @@ type PubsubSubscriptionInterface interface {
 // pubsubSubscriptions implements PubsubSubscriptionInterface
 type pubsubSubscriptions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPubsubSubscriptions returns a PubsubSubscriptions
-func newPubsubSubscriptions(c *GoogleV1alpha1Client) *pubsubSubscriptions {
+func newPubsubSubscriptions(c *GoogleV1alpha1Client, namespace string) *pubsubSubscriptions {
 	return &pubsubSubscriptions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPubsubSubscriptions(c *GoogleV1alpha1Client) *pubsubSubscriptions {
 func (c *pubsubSubscriptions) Get(name string, options v1.GetOptions) (result *v1alpha1.PubsubSubscription, err error) {
 	result = &v1alpha1.PubsubSubscription{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *pubsubSubscriptions) List(opts v1.ListOptions) (result *v1alpha1.Pubsub
 	}
 	result = &v1alpha1.PubsubSubscriptionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *pubsubSubscriptions) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *pubsubSubscriptions) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *pubsubSubscriptions) Create(pubsubSubscription *v1alpha1.PubsubSubscription) (result *v1alpha1.PubsubSubscription, err error) {
 	result = &v1alpha1.PubsubSubscription{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptions").
 		Body(pubsubSubscription).
 		Do().
@@ -118,6 +124,7 @@ func (c *pubsubSubscriptions) Create(pubsubSubscription *v1alpha1.PubsubSubscrip
 func (c *pubsubSubscriptions) Update(pubsubSubscription *v1alpha1.PubsubSubscription) (result *v1alpha1.PubsubSubscription, err error) {
 	result = &v1alpha1.PubsubSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptions").
 		Name(pubsubSubscription.Name).
 		Body(pubsubSubscription).
@@ -132,6 +139,7 @@ func (c *pubsubSubscriptions) Update(pubsubSubscription *v1alpha1.PubsubSubscrip
 func (c *pubsubSubscriptions) UpdateStatus(pubsubSubscription *v1alpha1.PubsubSubscription) (result *v1alpha1.PubsubSubscription, err error) {
 	result = &v1alpha1.PubsubSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptions").
 		Name(pubsubSubscription.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *pubsubSubscriptions) UpdateStatus(pubsubSubscription *v1alpha1.PubsubSu
 // Delete takes name of the pubsubSubscription and deletes it. Returns an error if one occurs.
 func (c *pubsubSubscriptions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *pubsubSubscriptions) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *pubsubSubscriptions) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *pubsubSubscriptions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PubsubSubscription, err error) {
 	result = &v1alpha1.PubsubSubscription{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("pubsubsubscriptions").
 		SubResource(subresources...).
 		Name(name).

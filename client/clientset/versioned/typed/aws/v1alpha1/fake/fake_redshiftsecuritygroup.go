@@ -31,6 +31,7 @@ import (
 // FakeRedshiftSecurityGroups implements RedshiftSecurityGroupInterface
 type FakeRedshiftSecurityGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var redshiftsecuritygroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "redshiftsecuritygroups"}
@@ -40,7 +41,8 @@ var redshiftsecuritygroupsKind = schema.GroupVersionKind{Group: "aws.kubeform.co
 // Get takes name of the redshiftSecurityGroup, and returns the corresponding redshiftSecurityGroup object, and an error if there is any.
 func (c *FakeRedshiftSecurityGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.RedshiftSecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(redshiftsecuritygroupsResource, name), &v1alpha1.RedshiftSecurityGroup{})
+		Invokes(testing.NewGetAction(redshiftsecuritygroupsResource, c.ns, name), &v1alpha1.RedshiftSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRedshiftSecurityGroups) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of RedshiftSecurityGroups that match those selectors.
 func (c *FakeRedshiftSecurityGroups) List(opts v1.ListOptions) (result *v1alpha1.RedshiftSecurityGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(redshiftsecuritygroupsResource, redshiftsecuritygroupsKind, opts), &v1alpha1.RedshiftSecurityGroupList{})
+		Invokes(testing.NewListAction(redshiftsecuritygroupsResource, redshiftsecuritygroupsKind, c.ns, opts), &v1alpha1.RedshiftSecurityGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRedshiftSecurityGroups) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested redshiftSecurityGroups.
 func (c *FakeRedshiftSecurityGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(redshiftsecuritygroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(redshiftsecuritygroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a redshiftSecurityGroup and creates it.  Returns the server's representation of the redshiftSecurityGroup, and an error, if there is any.
 func (c *FakeRedshiftSecurityGroups) Create(redshiftSecurityGroup *v1alpha1.RedshiftSecurityGroup) (result *v1alpha1.RedshiftSecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(redshiftsecuritygroupsResource, redshiftSecurityGroup), &v1alpha1.RedshiftSecurityGroup{})
+		Invokes(testing.NewCreateAction(redshiftsecuritygroupsResource, c.ns, redshiftSecurityGroup), &v1alpha1.RedshiftSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRedshiftSecurityGroups) Create(redshiftSecurityGroup *v1alpha1.Reds
 // Update takes the representation of a redshiftSecurityGroup and updates it. Returns the server's representation of the redshiftSecurityGroup, and an error, if there is any.
 func (c *FakeRedshiftSecurityGroups) Update(redshiftSecurityGroup *v1alpha1.RedshiftSecurityGroup) (result *v1alpha1.RedshiftSecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(redshiftsecuritygroupsResource, redshiftSecurityGroup), &v1alpha1.RedshiftSecurityGroup{})
+		Invokes(testing.NewUpdateAction(redshiftsecuritygroupsResource, c.ns, redshiftSecurityGroup), &v1alpha1.RedshiftSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRedshiftSecurityGroups) Update(redshiftSecurityGroup *v1alpha1.Reds
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRedshiftSecurityGroups) UpdateStatus(redshiftSecurityGroup *v1alpha1.RedshiftSecurityGroup) (*v1alpha1.RedshiftSecurityGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(redshiftsecuritygroupsResource, "status", redshiftSecurityGroup), &v1alpha1.RedshiftSecurityGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(redshiftsecuritygroupsResource, "status", c.ns, redshiftSecurityGroup), &v1alpha1.RedshiftSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRedshiftSecurityGroups) UpdateStatus(redshiftSecurityGroup *v1alpha
 // Delete takes name of the redshiftSecurityGroup and deletes it. Returns an error if one occurs.
 func (c *FakeRedshiftSecurityGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(redshiftsecuritygroupsResource, name), &v1alpha1.RedshiftSecurityGroup{})
+		Invokes(testing.NewDeleteAction(redshiftsecuritygroupsResource, c.ns, name), &v1alpha1.RedshiftSecurityGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRedshiftSecurityGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(redshiftsecuritygroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(redshiftsecuritygroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.RedshiftSecurityGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRedshiftSecurityGroups) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched redshiftSecurityGroup.
 func (c *FakeRedshiftSecurityGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RedshiftSecurityGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(redshiftsecuritygroupsResource, name, pt, data, subresources...), &v1alpha1.RedshiftSecurityGroup{})
+		Invokes(testing.NewPatchSubresourceAction(redshiftsecuritygroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.RedshiftSecurityGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

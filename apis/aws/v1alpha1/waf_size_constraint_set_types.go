@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,24 +20,25 @@ type WafSizeConstraintSet struct {
 
 type WafSizeConstraintSetSpecSizeConstraintsFieldToMatch struct {
 	// +optional
-	Data string `json:"data,omitempty"`
-	Type string `json:"type"`
+	Data string `json:"data,omitempty" tf:"data,omitempty"`
+	Type string `json:"type" tf:"type"`
 }
 
 type WafSizeConstraintSetSpecSizeConstraints struct {
-	ComparisonOperator string `json:"comparison_operator"`
+	ComparisonOperator string `json:"comparisonOperator" tf:"comparison_operator"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	FieldToMatch       []WafSizeConstraintSetSpecSizeConstraints `json:"field_to_match"`
-	Size               int                                       `json:"size"`
-	TextTransformation string                                    `json:"text_transformation"`
+	FieldToMatch       []WafSizeConstraintSetSpecSizeConstraintsFieldToMatch `json:"fieldToMatch" tf:"field_to_match"`
+	Size               int                                                   `json:"size" tf:"size"`
+	TextTransformation string                                                `json:"textTransformation" tf:"text_transformation"`
 }
 
 type WafSizeConstraintSetSpec struct {
-	Name string `json:"name"`
+	Name string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SizeConstraints *[]WafSizeConstraintSetSpec `json:"size_constraints,omitempty"`
+	SizeConstraints []WafSizeConstraintSetSpecSizeConstraints `json:"sizeConstraints,omitempty" tf:"size_constraints,omitempty"`
+	ProviderRef     core.LocalObjectReference                 `json:"providerRef" tf:"-"`
 }
 
 type WafSizeConstraintSetStatus struct {
@@ -45,7 +46,9 @@ type WafSizeConstraintSetStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

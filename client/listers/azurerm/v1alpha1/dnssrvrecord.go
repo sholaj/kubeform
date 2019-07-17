@@ -29,8 +29,8 @@ import (
 type DnsSrvRecordLister interface {
 	// List lists all DnsSrvRecords in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DnsSrvRecord, err error)
-	// Get retrieves the DnsSrvRecord from the index for a given name.
-	Get(name string) (*v1alpha1.DnsSrvRecord, error)
+	// DnsSrvRecords returns an object that can list and get DnsSrvRecords.
+	DnsSrvRecords(namespace string) DnsSrvRecordNamespaceLister
 	DnsSrvRecordListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dnsSrvRecordLister) List(selector labels.Selector) (ret []*v1alpha1.Dns
 	return ret, err
 }
 
-// Get retrieves the DnsSrvRecord from the index for a given name.
-func (s *dnsSrvRecordLister) Get(name string) (*v1alpha1.DnsSrvRecord, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DnsSrvRecords returns an object that can list and get DnsSrvRecords.
+func (s *dnsSrvRecordLister) DnsSrvRecords(namespace string) DnsSrvRecordNamespaceLister {
+	return dnsSrvRecordNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DnsSrvRecordNamespaceLister helps list and get DnsSrvRecords.
+type DnsSrvRecordNamespaceLister interface {
+	// List lists all DnsSrvRecords in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DnsSrvRecord, err error)
+	// Get retrieves the DnsSrvRecord from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DnsSrvRecord, error)
+	DnsSrvRecordNamespaceListerExpansion
+}
+
+// dnsSrvRecordNamespaceLister implements the DnsSrvRecordNamespaceLister
+// interface.
+type dnsSrvRecordNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DnsSrvRecords in the indexer for a given namespace.
+func (s dnsSrvRecordNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DnsSrvRecord, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DnsSrvRecord))
+	})
+	return ret, err
+}
+
+// Get retrieves the DnsSrvRecord from the indexer for a given namespace and name.
+func (s dnsSrvRecordNamespaceLister) Get(name string) (*v1alpha1.DnsSrvRecord, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

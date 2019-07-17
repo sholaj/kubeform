@@ -397,37 +397,99 @@ spec:
           type: object
         spec:
           properties:
-            can_ip_forward:
+            canIPForward:
               type: boolean
             description:
               type: string
             disk:
-              items: {}
+              items:
+                properties:
+                  autoDelete:
+                    type: boolean
+                  diskEncryptionKey:
+                    items:
+                      properties:
+                        kmsKeySelfLink:
+                          type: string
+                      type: object
+                    maxItems: 1
+                    type: array
+                  diskName:
+                    type: string
+                  diskSizeGb:
+                    type: integer
+                  source:
+                    type: string
+                type: object
               type: array
-            guest_accelerator:
-              items: {}
+            guestAccelerator:
+              items:
+                properties:
+                  count:
+                    type: integer
+                  type:
+                    type: string
+                required:
+                - count
+                - type
+                type: object
               type: array
-            instance_description:
+            instanceDescription:
               type: string
             labels:
               additionalProperties:
                 type: string
               type: object
-            machine_type:
+            machineType:
               type: string
             metadata:
               additionalProperties:
                 type: string
               type: object
-            metadata_startup_script:
+            metadataStartupScript:
               type: string
-            min_cpu_platform:
+            minCPUPlatform:
               type: string
-            network_interface:
-              items: {}
+            networkInterface:
+              items:
+                properties:
+                  accessConfig:
+                    items:
+                      type: object
+                    type: array
+                  aliasIPRange:
+                    items:
+                      properties:
+                        ipCIDRRange:
+                          type: string
+                        subnetworkRangeName:
+                          type: string
+                      required:
+                      - ipCIDRRange
+                      type: object
+                    type: array
+                type: object
               type: array
-            service_account:
-              items: {}
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            serviceAccount:
+              items:
+                properties:
+                  scopes:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                required:
+                - scopes
+                type: object
               maxItems: 1
               type: array
             tags:
@@ -437,7 +499,8 @@ spec:
               uniqueItems: true
           required:
           - disk
-          - machine_type
+          - machineType
+          - providerRef
           type: object
         status:
           properties:
@@ -448,6 +511,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

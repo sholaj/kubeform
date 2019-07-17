@@ -41,32 +41,33 @@ type StreamAnalyticsOutputMssqlInformer interface {
 type streamAnalyticsOutputMssqlInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewStreamAnalyticsOutputMssqlInformer constructs a new informer for StreamAnalyticsOutputMssql type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewStreamAnalyticsOutputMssqlInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredStreamAnalyticsOutputMssqlInformer(client, resyncPeriod, indexers, nil)
+func NewStreamAnalyticsOutputMssqlInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredStreamAnalyticsOutputMssqlInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredStreamAnalyticsOutputMssqlInformer constructs a new informer for StreamAnalyticsOutputMssql type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredStreamAnalyticsOutputMssqlInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredStreamAnalyticsOutputMssqlInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().StreamAnalyticsOutputMssqls().List(options)
+				return client.AzurermV1alpha1().StreamAnalyticsOutputMssqls(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().StreamAnalyticsOutputMssqls().Watch(options)
+				return client.AzurermV1alpha1().StreamAnalyticsOutputMssqls(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.StreamAnalyticsOutputMssql{},
@@ -76,7 +77,7 @@ func NewFilteredStreamAnalyticsOutputMssqlInformer(client versioned.Interface, r
 }
 
 func (f *streamAnalyticsOutputMssqlInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredStreamAnalyticsOutputMssqlInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredStreamAnalyticsOutputMssqlInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *streamAnalyticsOutputMssqlInformer) Informer() cache.SharedIndexInformer {

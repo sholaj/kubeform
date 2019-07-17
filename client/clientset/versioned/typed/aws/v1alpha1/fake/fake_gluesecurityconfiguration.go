@@ -31,6 +31,7 @@ import (
 // FakeGlueSecurityConfigurations implements GlueSecurityConfigurationInterface
 type FakeGlueSecurityConfigurations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var gluesecurityconfigurationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "gluesecurityconfigurations"}
@@ -40,7 +41,8 @@ var gluesecurityconfigurationsKind = schema.GroupVersionKind{Group: "aws.kubefor
 // Get takes name of the glueSecurityConfiguration, and returns the corresponding glueSecurityConfiguration object, and an error if there is any.
 func (c *FakeGlueSecurityConfigurations) Get(name string, options v1.GetOptions) (result *v1alpha1.GlueSecurityConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(gluesecurityconfigurationsResource, name), &v1alpha1.GlueSecurityConfiguration{})
+		Invokes(testing.NewGetAction(gluesecurityconfigurationsResource, c.ns, name), &v1alpha1.GlueSecurityConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeGlueSecurityConfigurations) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of GlueSecurityConfigurations that match those selectors.
 func (c *FakeGlueSecurityConfigurations) List(opts v1.ListOptions) (result *v1alpha1.GlueSecurityConfigurationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(gluesecurityconfigurationsResource, gluesecurityconfigurationsKind, opts), &v1alpha1.GlueSecurityConfigurationList{})
+		Invokes(testing.NewListAction(gluesecurityconfigurationsResource, gluesecurityconfigurationsKind, c.ns, opts), &v1alpha1.GlueSecurityConfigurationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeGlueSecurityConfigurations) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested glueSecurityConfigurations.
 func (c *FakeGlueSecurityConfigurations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(gluesecurityconfigurationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(gluesecurityconfigurationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a glueSecurityConfiguration and creates it.  Returns the server's representation of the glueSecurityConfiguration, and an error, if there is any.
 func (c *FakeGlueSecurityConfigurations) Create(glueSecurityConfiguration *v1alpha1.GlueSecurityConfiguration) (result *v1alpha1.GlueSecurityConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(gluesecurityconfigurationsResource, glueSecurityConfiguration), &v1alpha1.GlueSecurityConfiguration{})
+		Invokes(testing.NewCreateAction(gluesecurityconfigurationsResource, c.ns, glueSecurityConfiguration), &v1alpha1.GlueSecurityConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeGlueSecurityConfigurations) Create(glueSecurityConfiguration *v1alp
 // Update takes the representation of a glueSecurityConfiguration and updates it. Returns the server's representation of the glueSecurityConfiguration, and an error, if there is any.
 func (c *FakeGlueSecurityConfigurations) Update(glueSecurityConfiguration *v1alpha1.GlueSecurityConfiguration) (result *v1alpha1.GlueSecurityConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(gluesecurityconfigurationsResource, glueSecurityConfiguration), &v1alpha1.GlueSecurityConfiguration{})
+		Invokes(testing.NewUpdateAction(gluesecurityconfigurationsResource, c.ns, glueSecurityConfiguration), &v1alpha1.GlueSecurityConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeGlueSecurityConfigurations) Update(glueSecurityConfiguration *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeGlueSecurityConfigurations) UpdateStatus(glueSecurityConfiguration *v1alpha1.GlueSecurityConfiguration) (*v1alpha1.GlueSecurityConfiguration, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(gluesecurityconfigurationsResource, "status", glueSecurityConfiguration), &v1alpha1.GlueSecurityConfiguration{})
+		Invokes(testing.NewUpdateSubresourceAction(gluesecurityconfigurationsResource, "status", c.ns, glueSecurityConfiguration), &v1alpha1.GlueSecurityConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeGlueSecurityConfigurations) UpdateStatus(glueSecurityConfiguration 
 // Delete takes name of the glueSecurityConfiguration and deletes it. Returns an error if one occurs.
 func (c *FakeGlueSecurityConfigurations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(gluesecurityconfigurationsResource, name), &v1alpha1.GlueSecurityConfiguration{})
+		Invokes(testing.NewDeleteAction(gluesecurityconfigurationsResource, c.ns, name), &v1alpha1.GlueSecurityConfiguration{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeGlueSecurityConfigurations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(gluesecurityconfigurationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(gluesecurityconfigurationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.GlueSecurityConfigurationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeGlueSecurityConfigurations) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched glueSecurityConfiguration.
 func (c *FakeGlueSecurityConfigurations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GlueSecurityConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(gluesecurityconfigurationsResource, name, pt, data, subresources...), &v1alpha1.GlueSecurityConfiguration{})
+		Invokes(testing.NewPatchSubresourceAction(gluesecurityconfigurationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.GlueSecurityConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeLaunchConfigurations implements LaunchConfigurationInterface
 type FakeLaunchConfigurations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var launchconfigurationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "launchconfigurations"}
@@ -40,7 +41,8 @@ var launchconfigurationsKind = schema.GroupVersionKind{Group: "aws.kubeform.com"
 // Get takes name of the launchConfiguration, and returns the corresponding launchConfiguration object, and an error if there is any.
 func (c *FakeLaunchConfigurations) Get(name string, options v1.GetOptions) (result *v1alpha1.LaunchConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(launchconfigurationsResource, name), &v1alpha1.LaunchConfiguration{})
+		Invokes(testing.NewGetAction(launchconfigurationsResource, c.ns, name), &v1alpha1.LaunchConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLaunchConfigurations) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of LaunchConfigurations that match those selectors.
 func (c *FakeLaunchConfigurations) List(opts v1.ListOptions) (result *v1alpha1.LaunchConfigurationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(launchconfigurationsResource, launchconfigurationsKind, opts), &v1alpha1.LaunchConfigurationList{})
+		Invokes(testing.NewListAction(launchconfigurationsResource, launchconfigurationsKind, c.ns, opts), &v1alpha1.LaunchConfigurationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLaunchConfigurations) List(opts v1.ListOptions) (result *v1alpha1.L
 // Watch returns a watch.Interface that watches the requested launchConfigurations.
 func (c *FakeLaunchConfigurations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(launchconfigurationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(launchconfigurationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a launchConfiguration and creates it.  Returns the server's representation of the launchConfiguration, and an error, if there is any.
 func (c *FakeLaunchConfigurations) Create(launchConfiguration *v1alpha1.LaunchConfiguration) (result *v1alpha1.LaunchConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(launchconfigurationsResource, launchConfiguration), &v1alpha1.LaunchConfiguration{})
+		Invokes(testing.NewCreateAction(launchconfigurationsResource, c.ns, launchConfiguration), &v1alpha1.LaunchConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLaunchConfigurations) Create(launchConfiguration *v1alpha1.LaunchCo
 // Update takes the representation of a launchConfiguration and updates it. Returns the server's representation of the launchConfiguration, and an error, if there is any.
 func (c *FakeLaunchConfigurations) Update(launchConfiguration *v1alpha1.LaunchConfiguration) (result *v1alpha1.LaunchConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(launchconfigurationsResource, launchConfiguration), &v1alpha1.LaunchConfiguration{})
+		Invokes(testing.NewUpdateAction(launchconfigurationsResource, c.ns, launchConfiguration), &v1alpha1.LaunchConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLaunchConfigurations) Update(launchConfiguration *v1alpha1.LaunchCo
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLaunchConfigurations) UpdateStatus(launchConfiguration *v1alpha1.LaunchConfiguration) (*v1alpha1.LaunchConfiguration, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(launchconfigurationsResource, "status", launchConfiguration), &v1alpha1.LaunchConfiguration{})
+		Invokes(testing.NewUpdateSubresourceAction(launchconfigurationsResource, "status", c.ns, launchConfiguration), &v1alpha1.LaunchConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLaunchConfigurations) UpdateStatus(launchConfiguration *v1alpha1.La
 // Delete takes name of the launchConfiguration and deletes it. Returns an error if one occurs.
 func (c *FakeLaunchConfigurations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(launchconfigurationsResource, name), &v1alpha1.LaunchConfiguration{})
+		Invokes(testing.NewDeleteAction(launchconfigurationsResource, c.ns, name), &v1alpha1.LaunchConfiguration{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLaunchConfigurations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(launchconfigurationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(launchconfigurationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LaunchConfigurationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLaunchConfigurations) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched launchConfiguration.
 func (c *FakeLaunchConfigurations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LaunchConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(launchconfigurationsResource, name, pt, data, subresources...), &v1alpha1.LaunchConfiguration{})
+		Invokes(testing.NewPatchSubresourceAction(launchconfigurationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.LaunchConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}

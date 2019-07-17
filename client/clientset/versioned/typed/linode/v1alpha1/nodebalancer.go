@@ -32,7 +32,7 @@ import (
 // NodebalancersGetter has a method to return a NodebalancerInterface.
 // A group's client should implement this interface.
 type NodebalancersGetter interface {
-	Nodebalancers() NodebalancerInterface
+	Nodebalancers(namespace string) NodebalancerInterface
 }
 
 // NodebalancerInterface has methods to work with Nodebalancer resources.
@@ -52,12 +52,14 @@ type NodebalancerInterface interface {
 // nodebalancers implements NodebalancerInterface
 type nodebalancers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNodebalancers returns a Nodebalancers
-func newNodebalancers(c *LinodeV1alpha1Client) *nodebalancers {
+func newNodebalancers(c *LinodeV1alpha1Client, namespace string) *nodebalancers {
 	return &nodebalancers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNodebalancers(c *LinodeV1alpha1Client) *nodebalancers {
 func (c *nodebalancers) Get(name string, options v1.GetOptions) (result *v1alpha1.Nodebalancer, err error) {
 	result = &v1alpha1.Nodebalancer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("nodebalancers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *nodebalancers) List(opts v1.ListOptions) (result *v1alpha1.Nodebalancer
 	}
 	result = &v1alpha1.NodebalancerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("nodebalancers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *nodebalancers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("nodebalancers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *nodebalancers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *nodebalancers) Create(nodebalancer *v1alpha1.Nodebalancer) (result *v1alpha1.Nodebalancer, err error) {
 	result = &v1alpha1.Nodebalancer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("nodebalancers").
 		Body(nodebalancer).
 		Do().
@@ -118,6 +124,7 @@ func (c *nodebalancers) Create(nodebalancer *v1alpha1.Nodebalancer) (result *v1a
 func (c *nodebalancers) Update(nodebalancer *v1alpha1.Nodebalancer) (result *v1alpha1.Nodebalancer, err error) {
 	result = &v1alpha1.Nodebalancer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("nodebalancers").
 		Name(nodebalancer.Name).
 		Body(nodebalancer).
@@ -132,6 +139,7 @@ func (c *nodebalancers) Update(nodebalancer *v1alpha1.Nodebalancer) (result *v1a
 func (c *nodebalancers) UpdateStatus(nodebalancer *v1alpha1.Nodebalancer) (result *v1alpha1.Nodebalancer, err error) {
 	result = &v1alpha1.Nodebalancer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("nodebalancers").
 		Name(nodebalancer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *nodebalancers) UpdateStatus(nodebalancer *v1alpha1.Nodebalancer) (resul
 // Delete takes name of the nodebalancer and deletes it. Returns an error if one occurs.
 func (c *nodebalancers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("nodebalancers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *nodebalancers) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("nodebalancers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *nodebalancers) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *nodebalancers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Nodebalancer, err error) {
 	result = &v1alpha1.Nodebalancer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("nodebalancers").
 		SubResource(subresources...).
 		Name(name).

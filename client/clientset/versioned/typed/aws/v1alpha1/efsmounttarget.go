@@ -32,7 +32,7 @@ import (
 // EfsMountTargetsGetter has a method to return a EfsMountTargetInterface.
 // A group's client should implement this interface.
 type EfsMountTargetsGetter interface {
-	EfsMountTargets() EfsMountTargetInterface
+	EfsMountTargets(namespace string) EfsMountTargetInterface
 }
 
 // EfsMountTargetInterface has methods to work with EfsMountTarget resources.
@@ -52,12 +52,14 @@ type EfsMountTargetInterface interface {
 // efsMountTargets implements EfsMountTargetInterface
 type efsMountTargets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEfsMountTargets returns a EfsMountTargets
-func newEfsMountTargets(c *AwsV1alpha1Client) *efsMountTargets {
+func newEfsMountTargets(c *AwsV1alpha1Client, namespace string) *efsMountTargets {
 	return &efsMountTargets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEfsMountTargets(c *AwsV1alpha1Client) *efsMountTargets {
 func (c *efsMountTargets) Get(name string, options v1.GetOptions) (result *v1alpha1.EfsMountTarget, err error) {
 	result = &v1alpha1.EfsMountTarget{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("efsmounttargets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *efsMountTargets) List(opts v1.ListOptions) (result *v1alpha1.EfsMountTa
 	}
 	result = &v1alpha1.EfsMountTargetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("efsmounttargets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *efsMountTargets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("efsmounttargets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *efsMountTargets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *efsMountTargets) Create(efsMountTarget *v1alpha1.EfsMountTarget) (result *v1alpha1.EfsMountTarget, err error) {
 	result = &v1alpha1.EfsMountTarget{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("efsmounttargets").
 		Body(efsMountTarget).
 		Do().
@@ -118,6 +124,7 @@ func (c *efsMountTargets) Create(efsMountTarget *v1alpha1.EfsMountTarget) (resul
 func (c *efsMountTargets) Update(efsMountTarget *v1alpha1.EfsMountTarget) (result *v1alpha1.EfsMountTarget, err error) {
 	result = &v1alpha1.EfsMountTarget{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("efsmounttargets").
 		Name(efsMountTarget.Name).
 		Body(efsMountTarget).
@@ -132,6 +139,7 @@ func (c *efsMountTargets) Update(efsMountTarget *v1alpha1.EfsMountTarget) (resul
 func (c *efsMountTargets) UpdateStatus(efsMountTarget *v1alpha1.EfsMountTarget) (result *v1alpha1.EfsMountTarget, err error) {
 	result = &v1alpha1.EfsMountTarget{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("efsmounttargets").
 		Name(efsMountTarget.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *efsMountTargets) UpdateStatus(efsMountTarget *v1alpha1.EfsMountTarget) 
 // Delete takes name of the efsMountTarget and deletes it. Returns an error if one occurs.
 func (c *efsMountTargets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("efsmounttargets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *efsMountTargets) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("efsmounttargets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *efsMountTargets) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *efsMountTargets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EfsMountTarget, err error) {
 	result = &v1alpha1.EfsMountTarget{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("efsmounttargets").
 		SubResource(subresources...).
 		Name(name).

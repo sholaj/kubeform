@@ -32,7 +32,7 @@ import (
 // LightsailDomainsGetter has a method to return a LightsailDomainInterface.
 // A group's client should implement this interface.
 type LightsailDomainsGetter interface {
-	LightsailDomains() LightsailDomainInterface
+	LightsailDomains(namespace string) LightsailDomainInterface
 }
 
 // LightsailDomainInterface has methods to work with LightsailDomain resources.
@@ -52,12 +52,14 @@ type LightsailDomainInterface interface {
 // lightsailDomains implements LightsailDomainInterface
 type lightsailDomains struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLightsailDomains returns a LightsailDomains
-func newLightsailDomains(c *AwsV1alpha1Client) *lightsailDomains {
+func newLightsailDomains(c *AwsV1alpha1Client, namespace string) *lightsailDomains {
 	return &lightsailDomains{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLightsailDomains(c *AwsV1alpha1Client) *lightsailDomains {
 func (c *lightsailDomains) Get(name string, options v1.GetOptions) (result *v1alpha1.LightsailDomain, err error) {
 	result = &v1alpha1.LightsailDomain{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lightsaildomains").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lightsailDomains) List(opts v1.ListOptions) (result *v1alpha1.Lightsail
 	}
 	result = &v1alpha1.LightsailDomainList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lightsaildomains").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lightsailDomains) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lightsaildomains").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lightsailDomains) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *lightsailDomains) Create(lightsailDomain *v1alpha1.LightsailDomain) (result *v1alpha1.LightsailDomain, err error) {
 	result = &v1alpha1.LightsailDomain{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lightsaildomains").
 		Body(lightsailDomain).
 		Do().
@@ -118,6 +124,7 @@ func (c *lightsailDomains) Create(lightsailDomain *v1alpha1.LightsailDomain) (re
 func (c *lightsailDomains) Update(lightsailDomain *v1alpha1.LightsailDomain) (result *v1alpha1.LightsailDomain, err error) {
 	result = &v1alpha1.LightsailDomain{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lightsaildomains").
 		Name(lightsailDomain.Name).
 		Body(lightsailDomain).
@@ -132,6 +139,7 @@ func (c *lightsailDomains) Update(lightsailDomain *v1alpha1.LightsailDomain) (re
 func (c *lightsailDomains) UpdateStatus(lightsailDomain *v1alpha1.LightsailDomain) (result *v1alpha1.LightsailDomain, err error) {
 	result = &v1alpha1.LightsailDomain{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lightsaildomains").
 		Name(lightsailDomain.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lightsailDomains) UpdateStatus(lightsailDomain *v1alpha1.LightsailDomai
 // Delete takes name of the lightsailDomain and deletes it. Returns an error if one occurs.
 func (c *lightsailDomains) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lightsaildomains").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lightsailDomains) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lightsaildomains").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lightsailDomains) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *lightsailDomains) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LightsailDomain, err error) {
 	result = &v1alpha1.LightsailDomain{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lightsaildomains").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // KmsCryptoKeysGetter has a method to return a KmsCryptoKeyInterface.
 // A group's client should implement this interface.
 type KmsCryptoKeysGetter interface {
-	KmsCryptoKeys() KmsCryptoKeyInterface
+	KmsCryptoKeys(namespace string) KmsCryptoKeyInterface
 }
 
 // KmsCryptoKeyInterface has methods to work with KmsCryptoKey resources.
@@ -52,12 +52,14 @@ type KmsCryptoKeyInterface interface {
 // kmsCryptoKeys implements KmsCryptoKeyInterface
 type kmsCryptoKeys struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKmsCryptoKeys returns a KmsCryptoKeys
-func newKmsCryptoKeys(c *GoogleV1alpha1Client) *kmsCryptoKeys {
+func newKmsCryptoKeys(c *GoogleV1alpha1Client, namespace string) *kmsCryptoKeys {
 	return &kmsCryptoKeys{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKmsCryptoKeys(c *GoogleV1alpha1Client) *kmsCryptoKeys {
 func (c *kmsCryptoKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.KmsCryptoKey, err error) {
 	result = &v1alpha1.KmsCryptoKey{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmscryptokeys").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *kmsCryptoKeys) List(opts v1.ListOptions) (result *v1alpha1.KmsCryptoKey
 	}
 	result = &v1alpha1.KmsCryptoKeyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmscryptokeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *kmsCryptoKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("kmscryptokeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *kmsCryptoKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *kmsCryptoKeys) Create(kmsCryptoKey *v1alpha1.KmsCryptoKey) (result *v1alpha1.KmsCryptoKey, err error) {
 	result = &v1alpha1.KmsCryptoKey{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("kmscryptokeys").
 		Body(kmsCryptoKey).
 		Do().
@@ -118,6 +124,7 @@ func (c *kmsCryptoKeys) Create(kmsCryptoKey *v1alpha1.KmsCryptoKey) (result *v1a
 func (c *kmsCryptoKeys) Update(kmsCryptoKey *v1alpha1.KmsCryptoKey) (result *v1alpha1.KmsCryptoKey, err error) {
 	result = &v1alpha1.KmsCryptoKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmscryptokeys").
 		Name(kmsCryptoKey.Name).
 		Body(kmsCryptoKey).
@@ -132,6 +139,7 @@ func (c *kmsCryptoKeys) Update(kmsCryptoKey *v1alpha1.KmsCryptoKey) (result *v1a
 func (c *kmsCryptoKeys) UpdateStatus(kmsCryptoKey *v1alpha1.KmsCryptoKey) (result *v1alpha1.KmsCryptoKey, err error) {
 	result = &v1alpha1.KmsCryptoKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmscryptokeys").
 		Name(kmsCryptoKey.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *kmsCryptoKeys) UpdateStatus(kmsCryptoKey *v1alpha1.KmsCryptoKey) (resul
 // Delete takes name of the kmsCryptoKey and deletes it. Returns an error if one occurs.
 func (c *kmsCryptoKeys) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmscryptokeys").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *kmsCryptoKeys) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmscryptokeys").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *kmsCryptoKeys) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *kmsCryptoKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KmsCryptoKey, err error) {
 	result = &v1alpha1.KmsCryptoKey{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("kmscryptokeys").
 		SubResource(subresources...).
 		Name(name).

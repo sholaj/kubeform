@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,42 +19,43 @@ type DevTestLinuxVirtualMachine struct {
 }
 
 type DevTestLinuxVirtualMachineSpecGalleryImageReference struct {
-	Offer     string `json:"offer"`
-	Publisher string `json:"publisher"`
-	Sku       string `json:"sku"`
-	Version   string `json:"version"`
+	Offer     string `json:"offer" tf:"offer"`
+	Publisher string `json:"publisher" tf:"publisher"`
+	Sku       string `json:"sku" tf:"sku"`
+	Version   string `json:"version" tf:"version"`
 }
 
-type DevTestLinuxVirtualMachineSpecInboundNatRule struct {
-	BackendPort int    `json:"backend_port"`
-	Protocol    string `json:"protocol"`
+type DevTestLinuxVirtualMachineSpecInboundNATRule struct {
+	BackendPort int    `json:"backendPort" tf:"backend_port"`
+	Protocol    string `json:"protocol" tf:"protocol"`
 }
 
 type DevTestLinuxVirtualMachineSpec struct {
 	// +optional
-	AllowClaim bool `json:"allow_claim,omitempty"`
+	AllowClaim bool `json:"allowClaim,omitempty" tf:"allow_claim,omitempty"`
 	// +optional
-	DisallowPublicIpAddress bool `json:"disallow_public_ip_address,omitempty"`
+	DisallowPublicIPAddress bool `json:"disallowPublicIPAddress,omitempty" tf:"disallow_public_ip_address,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
-	GalleryImageReference []DevTestLinuxVirtualMachineSpec `json:"gallery_image_reference"`
+	GalleryImageReference []DevTestLinuxVirtualMachineSpecGalleryImageReference `json:"galleryImageReference" tf:"gallery_image_reference"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	InboundNatRule      *[]DevTestLinuxVirtualMachineSpec `json:"inbound_nat_rule,omitempty"`
-	LabName             string                            `json:"lab_name"`
-	LabSubnetName       string                            `json:"lab_subnet_name"`
-	LabVirtualNetworkId string                            `json:"lab_virtual_network_id"`
-	Location            string                            `json:"location"`
-	Name                string                            `json:"name"`
+	InboundNATRule      []DevTestLinuxVirtualMachineSpecInboundNATRule `json:"inboundNATRule,omitempty" tf:"inbound_nat_rule,omitempty"`
+	LabName             string                                         `json:"labName" tf:"lab_name"`
+	LabSubnetName       string                                         `json:"labSubnetName" tf:"lab_subnet_name"`
+	LabVirtualNetworkID string                                         `json:"labVirtualNetworkID" tf:"lab_virtual_network_id"`
+	Location            string                                         `json:"location" tf:"location"`
+	Name                string                                         `json:"name" tf:"name"`
 	// +optional
-	Notes string `json:"notes,omitempty"`
+	Notes string `json:"notes,omitempty" tf:"notes,omitempty"`
 	// +optional
-	Password          string `json:"password,omitempty"`
-	ResourceGroupName string `json:"resource_group_name"`
-	Size              string `json:"size"`
+	Password          string `json:"password,omitempty" tf:"password,omitempty"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
+	Size              string `json:"size" tf:"size"`
 	// +optional
-	SshKey      string `json:"ssh_key,omitempty"`
-	StorageType string `json:"storage_type"`
-	Username    string `json:"username"`
+	SshKey      string                    `json:"sshKey,omitempty" tf:"ssh_key,omitempty"`
+	StorageType string                    `json:"storageType" tf:"storage_type"`
+	Username    string                    `json:"username" tf:"username"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DevTestLinuxVirtualMachineStatus struct {
@@ -62,7 +63,9 @@ type DevTestLinuxVirtualMachineStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -32,7 +32,7 @@ import (
 // CdnProfilesGetter has a method to return a CdnProfileInterface.
 // A group's client should implement this interface.
 type CdnProfilesGetter interface {
-	CdnProfiles() CdnProfileInterface
+	CdnProfiles(namespace string) CdnProfileInterface
 }
 
 // CdnProfileInterface has methods to work with CdnProfile resources.
@@ -52,12 +52,14 @@ type CdnProfileInterface interface {
 // cdnProfiles implements CdnProfileInterface
 type cdnProfiles struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCdnProfiles returns a CdnProfiles
-func newCdnProfiles(c *AzurermV1alpha1Client) *cdnProfiles {
+func newCdnProfiles(c *AzurermV1alpha1Client, namespace string) *cdnProfiles {
 	return &cdnProfiles{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCdnProfiles(c *AzurermV1alpha1Client) *cdnProfiles {
 func (c *cdnProfiles) Get(name string, options v1.GetOptions) (result *v1alpha1.CdnProfile, err error) {
 	result = &v1alpha1.CdnProfile{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cdnprofiles").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cdnProfiles) List(opts v1.ListOptions) (result *v1alpha1.CdnProfileList
 	}
 	result = &v1alpha1.CdnProfileList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cdnprofiles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cdnProfiles) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cdnprofiles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cdnProfiles) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *cdnProfiles) Create(cdnProfile *v1alpha1.CdnProfile) (result *v1alpha1.CdnProfile, err error) {
 	result = &v1alpha1.CdnProfile{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cdnprofiles").
 		Body(cdnProfile).
 		Do().
@@ -118,6 +124,7 @@ func (c *cdnProfiles) Create(cdnProfile *v1alpha1.CdnProfile) (result *v1alpha1.
 func (c *cdnProfiles) Update(cdnProfile *v1alpha1.CdnProfile) (result *v1alpha1.CdnProfile, err error) {
 	result = &v1alpha1.CdnProfile{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cdnprofiles").
 		Name(cdnProfile.Name).
 		Body(cdnProfile).
@@ -132,6 +139,7 @@ func (c *cdnProfiles) Update(cdnProfile *v1alpha1.CdnProfile) (result *v1alpha1.
 func (c *cdnProfiles) UpdateStatus(cdnProfile *v1alpha1.CdnProfile) (result *v1alpha1.CdnProfile, err error) {
 	result = &v1alpha1.CdnProfile{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cdnprofiles").
 		Name(cdnProfile.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cdnProfiles) UpdateStatus(cdnProfile *v1alpha1.CdnProfile) (result *v1a
 // Delete takes name of the cdnProfile and deletes it. Returns an error if one occurs.
 func (c *cdnProfiles) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cdnprofiles").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cdnProfiles) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cdnprofiles").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cdnProfiles) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *cdnProfiles) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CdnProfile, err error) {
 	result = &v1alpha1.CdnProfile{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cdnprofiles").
 		SubResource(subresources...).
 		Name(name).

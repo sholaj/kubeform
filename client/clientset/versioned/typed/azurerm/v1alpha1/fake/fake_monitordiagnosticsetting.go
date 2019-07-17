@@ -31,6 +31,7 @@ import (
 // FakeMonitorDiagnosticSettings implements MonitorDiagnosticSettingInterface
 type FakeMonitorDiagnosticSettings struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var monitordiagnosticsettingsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "monitordiagnosticsettings"}
@@ -40,7 +41,8 @@ var monitordiagnosticsettingsKind = schema.GroupVersionKind{Group: "azurerm.kube
 // Get takes name of the monitorDiagnosticSetting, and returns the corresponding monitorDiagnosticSetting object, and an error if there is any.
 func (c *FakeMonitorDiagnosticSettings) Get(name string, options v1.GetOptions) (result *v1alpha1.MonitorDiagnosticSetting, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(monitordiagnosticsettingsResource, name), &v1alpha1.MonitorDiagnosticSetting{})
+		Invokes(testing.NewGetAction(monitordiagnosticsettingsResource, c.ns, name), &v1alpha1.MonitorDiagnosticSetting{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMonitorDiagnosticSettings) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of MonitorDiagnosticSettings that match those selectors.
 func (c *FakeMonitorDiagnosticSettings) List(opts v1.ListOptions) (result *v1alpha1.MonitorDiagnosticSettingList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(monitordiagnosticsettingsResource, monitordiagnosticsettingsKind, opts), &v1alpha1.MonitorDiagnosticSettingList{})
+		Invokes(testing.NewListAction(monitordiagnosticsettingsResource, monitordiagnosticsettingsKind, c.ns, opts), &v1alpha1.MonitorDiagnosticSettingList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMonitorDiagnosticSettings) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested monitorDiagnosticSettings.
 func (c *FakeMonitorDiagnosticSettings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(monitordiagnosticsettingsResource, opts))
+		InvokesWatch(testing.NewWatchAction(monitordiagnosticsettingsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a monitorDiagnosticSetting and creates it.  Returns the server's representation of the monitorDiagnosticSetting, and an error, if there is any.
 func (c *FakeMonitorDiagnosticSettings) Create(monitorDiagnosticSetting *v1alpha1.MonitorDiagnosticSetting) (result *v1alpha1.MonitorDiagnosticSetting, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(monitordiagnosticsettingsResource, monitorDiagnosticSetting), &v1alpha1.MonitorDiagnosticSetting{})
+		Invokes(testing.NewCreateAction(monitordiagnosticsettingsResource, c.ns, monitorDiagnosticSetting), &v1alpha1.MonitorDiagnosticSetting{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMonitorDiagnosticSettings) Create(monitorDiagnosticSetting *v1alpha
 // Update takes the representation of a monitorDiagnosticSetting and updates it. Returns the server's representation of the monitorDiagnosticSetting, and an error, if there is any.
 func (c *FakeMonitorDiagnosticSettings) Update(monitorDiagnosticSetting *v1alpha1.MonitorDiagnosticSetting) (result *v1alpha1.MonitorDiagnosticSetting, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(monitordiagnosticsettingsResource, monitorDiagnosticSetting), &v1alpha1.MonitorDiagnosticSetting{})
+		Invokes(testing.NewUpdateAction(monitordiagnosticsettingsResource, c.ns, monitorDiagnosticSetting), &v1alpha1.MonitorDiagnosticSetting{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMonitorDiagnosticSettings) Update(monitorDiagnosticSetting *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMonitorDiagnosticSettings) UpdateStatus(monitorDiagnosticSetting *v1alpha1.MonitorDiagnosticSetting) (*v1alpha1.MonitorDiagnosticSetting, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(monitordiagnosticsettingsResource, "status", monitorDiagnosticSetting), &v1alpha1.MonitorDiagnosticSetting{})
+		Invokes(testing.NewUpdateSubresourceAction(monitordiagnosticsettingsResource, "status", c.ns, monitorDiagnosticSetting), &v1alpha1.MonitorDiagnosticSetting{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMonitorDiagnosticSettings) UpdateStatus(monitorDiagnosticSetting *v
 // Delete takes name of the monitorDiagnosticSetting and deletes it. Returns an error if one occurs.
 func (c *FakeMonitorDiagnosticSettings) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(monitordiagnosticsettingsResource, name), &v1alpha1.MonitorDiagnosticSetting{})
+		Invokes(testing.NewDeleteAction(monitordiagnosticsettingsResource, c.ns, name), &v1alpha1.MonitorDiagnosticSetting{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMonitorDiagnosticSettings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(monitordiagnosticsettingsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(monitordiagnosticsettingsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MonitorDiagnosticSettingList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMonitorDiagnosticSettings) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched monitorDiagnosticSetting.
 func (c *FakeMonitorDiagnosticSettings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MonitorDiagnosticSetting, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(monitordiagnosticsettingsResource, name, pt, data, subresources...), &v1alpha1.MonitorDiagnosticSetting{})
+		Invokes(testing.NewPatchSubresourceAction(monitordiagnosticsettingsResource, c.ns, name, pt, data, subresources...), &v1alpha1.MonitorDiagnosticSetting{})
+
 	if obj == nil {
 		return nil, err
 	}

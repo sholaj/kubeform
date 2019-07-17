@@ -32,7 +32,7 @@ import (
 // AppmeshVirtualRoutersGetter has a method to return a AppmeshVirtualRouterInterface.
 // A group's client should implement this interface.
 type AppmeshVirtualRoutersGetter interface {
-	AppmeshVirtualRouters() AppmeshVirtualRouterInterface
+	AppmeshVirtualRouters(namespace string) AppmeshVirtualRouterInterface
 }
 
 // AppmeshVirtualRouterInterface has methods to work with AppmeshVirtualRouter resources.
@@ -52,12 +52,14 @@ type AppmeshVirtualRouterInterface interface {
 // appmeshVirtualRouters implements AppmeshVirtualRouterInterface
 type appmeshVirtualRouters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAppmeshVirtualRouters returns a AppmeshVirtualRouters
-func newAppmeshVirtualRouters(c *AwsV1alpha1Client) *appmeshVirtualRouters {
+func newAppmeshVirtualRouters(c *AwsV1alpha1Client, namespace string) *appmeshVirtualRouters {
 	return &appmeshVirtualRouters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAppmeshVirtualRouters(c *AwsV1alpha1Client) *appmeshVirtualRouters {
 func (c *appmeshVirtualRouters) Get(name string, options v1.GetOptions) (result *v1alpha1.AppmeshVirtualRouter, err error) {
 	result = &v1alpha1.AppmeshVirtualRouter{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appmeshvirtualrouters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *appmeshVirtualRouters) List(opts v1.ListOptions) (result *v1alpha1.Appm
 	}
 	result = &v1alpha1.AppmeshVirtualRouterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appmeshvirtualrouters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *appmeshVirtualRouters) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("appmeshvirtualrouters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *appmeshVirtualRouters) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *appmeshVirtualRouters) Create(appmeshVirtualRouter *v1alpha1.AppmeshVirtualRouter) (result *v1alpha1.AppmeshVirtualRouter, err error) {
 	result = &v1alpha1.AppmeshVirtualRouter{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("appmeshvirtualrouters").
 		Body(appmeshVirtualRouter).
 		Do().
@@ -118,6 +124,7 @@ func (c *appmeshVirtualRouters) Create(appmeshVirtualRouter *v1alpha1.AppmeshVir
 func (c *appmeshVirtualRouters) Update(appmeshVirtualRouter *v1alpha1.AppmeshVirtualRouter) (result *v1alpha1.AppmeshVirtualRouter, err error) {
 	result = &v1alpha1.AppmeshVirtualRouter{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appmeshvirtualrouters").
 		Name(appmeshVirtualRouter.Name).
 		Body(appmeshVirtualRouter).
@@ -132,6 +139,7 @@ func (c *appmeshVirtualRouters) Update(appmeshVirtualRouter *v1alpha1.AppmeshVir
 func (c *appmeshVirtualRouters) UpdateStatus(appmeshVirtualRouter *v1alpha1.AppmeshVirtualRouter) (result *v1alpha1.AppmeshVirtualRouter, err error) {
 	result = &v1alpha1.AppmeshVirtualRouter{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appmeshvirtualrouters").
 		Name(appmeshVirtualRouter.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *appmeshVirtualRouters) UpdateStatus(appmeshVirtualRouter *v1alpha1.Appm
 // Delete takes name of the appmeshVirtualRouter and deletes it. Returns an error if one occurs.
 func (c *appmeshVirtualRouters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appmeshvirtualrouters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *appmeshVirtualRouters) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appmeshvirtualrouters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *appmeshVirtualRouters) DeleteCollection(options *v1.DeleteOptions, list
 func (c *appmeshVirtualRouters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppmeshVirtualRouter, err error) {
 	result = &v1alpha1.AppmeshVirtualRouter{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("appmeshvirtualrouters").
 		SubResource(subresources...).
 		Name(name).

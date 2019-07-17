@@ -29,8 +29,8 @@ import (
 type BackupSelectionLister interface {
 	// List lists all BackupSelections in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.BackupSelection, err error)
-	// Get retrieves the BackupSelection from the index for a given name.
-	Get(name string) (*v1alpha1.BackupSelection, error)
+	// BackupSelections returns an object that can list and get BackupSelections.
+	BackupSelections(namespace string) BackupSelectionNamespaceLister
 	BackupSelectionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *backupSelectionLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the BackupSelection from the index for a given name.
-func (s *backupSelectionLister) Get(name string) (*v1alpha1.BackupSelection, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// BackupSelections returns an object that can list and get BackupSelections.
+func (s *backupSelectionLister) BackupSelections(namespace string) BackupSelectionNamespaceLister {
+	return backupSelectionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// BackupSelectionNamespaceLister helps list and get BackupSelections.
+type BackupSelectionNamespaceLister interface {
+	// List lists all BackupSelections in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.BackupSelection, err error)
+	// Get retrieves the BackupSelection from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.BackupSelection, error)
+	BackupSelectionNamespaceListerExpansion
+}
+
+// backupSelectionNamespaceLister implements the BackupSelectionNamespaceLister
+// interface.
+type backupSelectionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all BackupSelections in the indexer for a given namespace.
+func (s backupSelectionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.BackupSelection, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.BackupSelection))
+	})
+	return ret, err
+}
+
+// Get retrieves the BackupSelection from the indexer for a given namespace and name.
+func (s backupSelectionNamespaceLister) Get(name string) (*v1alpha1.BackupSelection, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

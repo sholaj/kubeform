@@ -29,8 +29,8 @@ import (
 type SharedImageGalleryLister interface {
 	// List lists all SharedImageGalleries in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SharedImageGallery, err error)
-	// Get retrieves the SharedImageGallery from the index for a given name.
-	Get(name string) (*v1alpha1.SharedImageGallery, error)
+	// SharedImageGalleries returns an object that can list and get SharedImageGalleries.
+	SharedImageGalleries(namespace string) SharedImageGalleryNamespaceLister
 	SharedImageGalleryListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sharedImageGalleryLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the SharedImageGallery from the index for a given name.
-func (s *sharedImageGalleryLister) Get(name string) (*v1alpha1.SharedImageGallery, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SharedImageGalleries returns an object that can list and get SharedImageGalleries.
+func (s *sharedImageGalleryLister) SharedImageGalleries(namespace string) SharedImageGalleryNamespaceLister {
+	return sharedImageGalleryNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SharedImageGalleryNamespaceLister helps list and get SharedImageGalleries.
+type SharedImageGalleryNamespaceLister interface {
+	// List lists all SharedImageGalleries in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SharedImageGallery, err error)
+	// Get retrieves the SharedImageGallery from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SharedImageGallery, error)
+	SharedImageGalleryNamespaceListerExpansion
+}
+
+// sharedImageGalleryNamespaceLister implements the SharedImageGalleryNamespaceLister
+// interface.
+type sharedImageGalleryNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SharedImageGalleries in the indexer for a given namespace.
+func (s sharedImageGalleryNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SharedImageGallery, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SharedImageGallery))
+	})
+	return ret, err
+}
+
+// Get retrieves the SharedImageGallery from the indexer for a given namespace and name.
+func (s sharedImageGalleryNamespaceLister) Get(name string) (*v1alpha1.SharedImageGallery, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

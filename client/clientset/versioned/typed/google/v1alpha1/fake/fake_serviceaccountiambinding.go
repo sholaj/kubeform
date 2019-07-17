@@ -31,6 +31,7 @@ import (
 // FakeServiceAccountIamBindings implements ServiceAccountIamBindingInterface
 type FakeServiceAccountIamBindings struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var serviceaccountiambindingsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "serviceaccountiambindings"}
@@ -40,7 +41,8 @@ var serviceaccountiambindingsKind = schema.GroupVersionKind{Group: "google.kubef
 // Get takes name of the serviceAccountIamBinding, and returns the corresponding serviceAccountIamBinding object, and an error if there is any.
 func (c *FakeServiceAccountIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceAccountIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(serviceaccountiambindingsResource, name), &v1alpha1.ServiceAccountIamBinding{})
+		Invokes(testing.NewGetAction(serviceaccountiambindingsResource, c.ns, name), &v1alpha1.ServiceAccountIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeServiceAccountIamBindings) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of ServiceAccountIamBindings that match those selectors.
 func (c *FakeServiceAccountIamBindings) List(opts v1.ListOptions) (result *v1alpha1.ServiceAccountIamBindingList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(serviceaccountiambindingsResource, serviceaccountiambindingsKind, opts), &v1alpha1.ServiceAccountIamBindingList{})
+		Invokes(testing.NewListAction(serviceaccountiambindingsResource, serviceaccountiambindingsKind, c.ns, opts), &v1alpha1.ServiceAccountIamBindingList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeServiceAccountIamBindings) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested serviceAccountIamBindings.
 func (c *FakeServiceAccountIamBindings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(serviceaccountiambindingsResource, opts))
+		InvokesWatch(testing.NewWatchAction(serviceaccountiambindingsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a serviceAccountIamBinding and creates it.  Returns the server's representation of the serviceAccountIamBinding, and an error, if there is any.
 func (c *FakeServiceAccountIamBindings) Create(serviceAccountIamBinding *v1alpha1.ServiceAccountIamBinding) (result *v1alpha1.ServiceAccountIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(serviceaccountiambindingsResource, serviceAccountIamBinding), &v1alpha1.ServiceAccountIamBinding{})
+		Invokes(testing.NewCreateAction(serviceaccountiambindingsResource, c.ns, serviceAccountIamBinding), &v1alpha1.ServiceAccountIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeServiceAccountIamBindings) Create(serviceAccountIamBinding *v1alpha
 // Update takes the representation of a serviceAccountIamBinding and updates it. Returns the server's representation of the serviceAccountIamBinding, and an error, if there is any.
 func (c *FakeServiceAccountIamBindings) Update(serviceAccountIamBinding *v1alpha1.ServiceAccountIamBinding) (result *v1alpha1.ServiceAccountIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(serviceaccountiambindingsResource, serviceAccountIamBinding), &v1alpha1.ServiceAccountIamBinding{})
+		Invokes(testing.NewUpdateAction(serviceaccountiambindingsResource, c.ns, serviceAccountIamBinding), &v1alpha1.ServiceAccountIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeServiceAccountIamBindings) Update(serviceAccountIamBinding *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeServiceAccountIamBindings) UpdateStatus(serviceAccountIamBinding *v1alpha1.ServiceAccountIamBinding) (*v1alpha1.ServiceAccountIamBinding, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(serviceaccountiambindingsResource, "status", serviceAccountIamBinding), &v1alpha1.ServiceAccountIamBinding{})
+		Invokes(testing.NewUpdateSubresourceAction(serviceaccountiambindingsResource, "status", c.ns, serviceAccountIamBinding), &v1alpha1.ServiceAccountIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeServiceAccountIamBindings) UpdateStatus(serviceAccountIamBinding *v
 // Delete takes name of the serviceAccountIamBinding and deletes it. Returns an error if one occurs.
 func (c *FakeServiceAccountIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(serviceaccountiambindingsResource, name), &v1alpha1.ServiceAccountIamBinding{})
+		Invokes(testing.NewDeleteAction(serviceaccountiambindingsResource, c.ns, name), &v1alpha1.ServiceAccountIamBinding{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeServiceAccountIamBindings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(serviceaccountiambindingsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(serviceaccountiambindingsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ServiceAccountIamBindingList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeServiceAccountIamBindings) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched serviceAccountIamBinding.
 func (c *FakeServiceAccountIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceAccountIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(serviceaccountiambindingsResource, name, pt, data, subresources...), &v1alpha1.ServiceAccountIamBinding{})
+		Invokes(testing.NewPatchSubresourceAction(serviceaccountiambindingsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ServiceAccountIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}

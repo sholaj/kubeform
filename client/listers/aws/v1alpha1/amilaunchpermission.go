@@ -29,8 +29,8 @@ import (
 type AmiLaunchPermissionLister interface {
 	// List lists all AmiLaunchPermissions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AmiLaunchPermission, err error)
-	// Get retrieves the AmiLaunchPermission from the index for a given name.
-	Get(name string) (*v1alpha1.AmiLaunchPermission, error)
+	// AmiLaunchPermissions returns an object that can list and get AmiLaunchPermissions.
+	AmiLaunchPermissions(namespace string) AmiLaunchPermissionNamespaceLister
 	AmiLaunchPermissionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *amiLaunchPermissionLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the AmiLaunchPermission from the index for a given name.
-func (s *amiLaunchPermissionLister) Get(name string) (*v1alpha1.AmiLaunchPermission, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AmiLaunchPermissions returns an object that can list and get AmiLaunchPermissions.
+func (s *amiLaunchPermissionLister) AmiLaunchPermissions(namespace string) AmiLaunchPermissionNamespaceLister {
+	return amiLaunchPermissionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AmiLaunchPermissionNamespaceLister helps list and get AmiLaunchPermissions.
+type AmiLaunchPermissionNamespaceLister interface {
+	// List lists all AmiLaunchPermissions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AmiLaunchPermission, err error)
+	// Get retrieves the AmiLaunchPermission from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AmiLaunchPermission, error)
+	AmiLaunchPermissionNamespaceListerExpansion
+}
+
+// amiLaunchPermissionNamespaceLister implements the AmiLaunchPermissionNamespaceLister
+// interface.
+type amiLaunchPermissionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AmiLaunchPermissions in the indexer for a given namespace.
+func (s amiLaunchPermissionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AmiLaunchPermission, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AmiLaunchPermission))
+	})
+	return ret, err
+}
+
+// Get retrieves the AmiLaunchPermission from the indexer for a given namespace and name.
+func (s amiLaunchPermissionNamespaceLister) Get(name string) (*v1alpha1.AmiLaunchPermission, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

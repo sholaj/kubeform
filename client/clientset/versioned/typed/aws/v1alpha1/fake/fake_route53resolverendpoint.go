@@ -31,6 +31,7 @@ import (
 // FakeRoute53ResolverEndpoints implements Route53ResolverEndpointInterface
 type FakeRoute53ResolverEndpoints struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var route53resolverendpointsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "route53resolverendpoints"}
@@ -40,7 +41,8 @@ var route53resolverendpointsKind = schema.GroupVersionKind{Group: "aws.kubeform.
 // Get takes name of the route53ResolverEndpoint, and returns the corresponding route53ResolverEndpoint object, and an error if there is any.
 func (c *FakeRoute53ResolverEndpoints) Get(name string, options v1.GetOptions) (result *v1alpha1.Route53ResolverEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(route53resolverendpointsResource, name), &v1alpha1.Route53ResolverEndpoint{})
+		Invokes(testing.NewGetAction(route53resolverendpointsResource, c.ns, name), &v1alpha1.Route53ResolverEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRoute53ResolverEndpoints) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of Route53ResolverEndpoints that match those selectors.
 func (c *FakeRoute53ResolverEndpoints) List(opts v1.ListOptions) (result *v1alpha1.Route53ResolverEndpointList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(route53resolverendpointsResource, route53resolverendpointsKind, opts), &v1alpha1.Route53ResolverEndpointList{})
+		Invokes(testing.NewListAction(route53resolverendpointsResource, route53resolverendpointsKind, c.ns, opts), &v1alpha1.Route53ResolverEndpointList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRoute53ResolverEndpoints) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested route53ResolverEndpoints.
 func (c *FakeRoute53ResolverEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(route53resolverendpointsResource, opts))
+		InvokesWatch(testing.NewWatchAction(route53resolverendpointsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a route53ResolverEndpoint and creates it.  Returns the server's representation of the route53ResolverEndpoint, and an error, if there is any.
 func (c *FakeRoute53ResolverEndpoints) Create(route53ResolverEndpoint *v1alpha1.Route53ResolverEndpoint) (result *v1alpha1.Route53ResolverEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(route53resolverendpointsResource, route53ResolverEndpoint), &v1alpha1.Route53ResolverEndpoint{})
+		Invokes(testing.NewCreateAction(route53resolverendpointsResource, c.ns, route53ResolverEndpoint), &v1alpha1.Route53ResolverEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRoute53ResolverEndpoints) Create(route53ResolverEndpoint *v1alpha1.
 // Update takes the representation of a route53ResolverEndpoint and updates it. Returns the server's representation of the route53ResolverEndpoint, and an error, if there is any.
 func (c *FakeRoute53ResolverEndpoints) Update(route53ResolverEndpoint *v1alpha1.Route53ResolverEndpoint) (result *v1alpha1.Route53ResolverEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(route53resolverendpointsResource, route53ResolverEndpoint), &v1alpha1.Route53ResolverEndpoint{})
+		Invokes(testing.NewUpdateAction(route53resolverendpointsResource, c.ns, route53ResolverEndpoint), &v1alpha1.Route53ResolverEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRoute53ResolverEndpoints) Update(route53ResolverEndpoint *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRoute53ResolverEndpoints) UpdateStatus(route53ResolverEndpoint *v1alpha1.Route53ResolverEndpoint) (*v1alpha1.Route53ResolverEndpoint, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(route53resolverendpointsResource, "status", route53ResolverEndpoint), &v1alpha1.Route53ResolverEndpoint{})
+		Invokes(testing.NewUpdateSubresourceAction(route53resolverendpointsResource, "status", c.ns, route53ResolverEndpoint), &v1alpha1.Route53ResolverEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRoute53ResolverEndpoints) UpdateStatus(route53ResolverEndpoint *v1a
 // Delete takes name of the route53ResolverEndpoint and deletes it. Returns an error if one occurs.
 func (c *FakeRoute53ResolverEndpoints) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(route53resolverendpointsResource, name), &v1alpha1.Route53ResolverEndpoint{})
+		Invokes(testing.NewDeleteAction(route53resolverendpointsResource, c.ns, name), &v1alpha1.Route53ResolverEndpoint{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRoute53ResolverEndpoints) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(route53resolverendpointsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(route53resolverendpointsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.Route53ResolverEndpointList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRoute53ResolverEndpoints) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched route53ResolverEndpoint.
 func (c *FakeRoute53ResolverEndpoints) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Route53ResolverEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(route53resolverendpointsResource, name, pt, data, subresources...), &v1alpha1.Route53ResolverEndpoint{})
+		Invokes(testing.NewPatchSubresourceAction(route53resolverendpointsResource, c.ns, name, pt, data, subresources...), &v1alpha1.Route53ResolverEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}

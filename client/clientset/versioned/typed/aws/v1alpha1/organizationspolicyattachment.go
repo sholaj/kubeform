@@ -32,7 +32,7 @@ import (
 // OrganizationsPolicyAttachmentsGetter has a method to return a OrganizationsPolicyAttachmentInterface.
 // A group's client should implement this interface.
 type OrganizationsPolicyAttachmentsGetter interface {
-	OrganizationsPolicyAttachments() OrganizationsPolicyAttachmentInterface
+	OrganizationsPolicyAttachments(namespace string) OrganizationsPolicyAttachmentInterface
 }
 
 // OrganizationsPolicyAttachmentInterface has methods to work with OrganizationsPolicyAttachment resources.
@@ -52,12 +52,14 @@ type OrganizationsPolicyAttachmentInterface interface {
 // organizationsPolicyAttachments implements OrganizationsPolicyAttachmentInterface
 type organizationsPolicyAttachments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOrganizationsPolicyAttachments returns a OrganizationsPolicyAttachments
-func newOrganizationsPolicyAttachments(c *AwsV1alpha1Client) *organizationsPolicyAttachments {
+func newOrganizationsPolicyAttachments(c *AwsV1alpha1Client, namespace string) *organizationsPolicyAttachments {
 	return &organizationsPolicyAttachments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOrganizationsPolicyAttachments(c *AwsV1alpha1Client) *organizationsPolic
 func (c *organizationsPolicyAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.OrganizationsPolicyAttachment, err error) {
 	result = &v1alpha1.OrganizationsPolicyAttachment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationspolicyattachments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *organizationsPolicyAttachments) List(opts v1.ListOptions) (result *v1al
 	}
 	result = &v1alpha1.OrganizationsPolicyAttachmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationspolicyattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *organizationsPolicyAttachments) Watch(opts v1.ListOptions) (watch.Inter
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationspolicyattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *organizationsPolicyAttachments) Watch(opts v1.ListOptions) (watch.Inter
 func (c *organizationsPolicyAttachments) Create(organizationsPolicyAttachment *v1alpha1.OrganizationsPolicyAttachment) (result *v1alpha1.OrganizationsPolicyAttachment, err error) {
 	result = &v1alpha1.OrganizationsPolicyAttachment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("organizationspolicyattachments").
 		Body(organizationsPolicyAttachment).
 		Do().
@@ -118,6 +124,7 @@ func (c *organizationsPolicyAttachments) Create(organizationsPolicyAttachment *v
 func (c *organizationsPolicyAttachments) Update(organizationsPolicyAttachment *v1alpha1.OrganizationsPolicyAttachment) (result *v1alpha1.OrganizationsPolicyAttachment, err error) {
 	result = &v1alpha1.OrganizationsPolicyAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("organizationspolicyattachments").
 		Name(organizationsPolicyAttachment.Name).
 		Body(organizationsPolicyAttachment).
@@ -132,6 +139,7 @@ func (c *organizationsPolicyAttachments) Update(organizationsPolicyAttachment *v
 func (c *organizationsPolicyAttachments) UpdateStatus(organizationsPolicyAttachment *v1alpha1.OrganizationsPolicyAttachment) (result *v1alpha1.OrganizationsPolicyAttachment, err error) {
 	result = &v1alpha1.OrganizationsPolicyAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("organizationspolicyattachments").
 		Name(organizationsPolicyAttachment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *organizationsPolicyAttachments) UpdateStatus(organizationsPolicyAttachm
 // Delete takes name of the organizationsPolicyAttachment and deletes it. Returns an error if one occurs.
 func (c *organizationsPolicyAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("organizationspolicyattachments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *organizationsPolicyAttachments) DeleteCollection(options *v1.DeleteOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("organizationspolicyattachments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *organizationsPolicyAttachments) DeleteCollection(options *v1.DeleteOpti
 func (c *organizationsPolicyAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OrganizationsPolicyAttachment, err error) {
 	result = &v1alpha1.OrganizationsPolicyAttachment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("organizationspolicyattachments").
 		SubResource(subresources...).
 		Name(name).

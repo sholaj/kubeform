@@ -29,8 +29,8 @@ import (
 type IotPolicyAttachmentLister interface {
 	// List lists all IotPolicyAttachments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IotPolicyAttachment, err error)
-	// Get retrieves the IotPolicyAttachment from the index for a given name.
-	Get(name string) (*v1alpha1.IotPolicyAttachment, error)
+	// IotPolicyAttachments returns an object that can list and get IotPolicyAttachments.
+	IotPolicyAttachments(namespace string) IotPolicyAttachmentNamespaceLister
 	IotPolicyAttachmentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iotPolicyAttachmentLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the IotPolicyAttachment from the index for a given name.
-func (s *iotPolicyAttachmentLister) Get(name string) (*v1alpha1.IotPolicyAttachment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IotPolicyAttachments returns an object that can list and get IotPolicyAttachments.
+func (s *iotPolicyAttachmentLister) IotPolicyAttachments(namespace string) IotPolicyAttachmentNamespaceLister {
+	return iotPolicyAttachmentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IotPolicyAttachmentNamespaceLister helps list and get IotPolicyAttachments.
+type IotPolicyAttachmentNamespaceLister interface {
+	// List lists all IotPolicyAttachments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IotPolicyAttachment, err error)
+	// Get retrieves the IotPolicyAttachment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IotPolicyAttachment, error)
+	IotPolicyAttachmentNamespaceListerExpansion
+}
+
+// iotPolicyAttachmentNamespaceLister implements the IotPolicyAttachmentNamespaceLister
+// interface.
+type iotPolicyAttachmentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IotPolicyAttachments in the indexer for a given namespace.
+func (s iotPolicyAttachmentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IotPolicyAttachment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IotPolicyAttachment))
+	})
+	return ret, err
+}
+
+// Get retrieves the IotPolicyAttachment from the indexer for a given namespace and name.
+func (s iotPolicyAttachmentNamespaceLister) Get(name string) (*v1alpha1.IotPolicyAttachment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

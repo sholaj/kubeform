@@ -32,7 +32,7 @@ import (
 // Cloud9EnvironmentEc2sGetter has a method to return a Cloud9EnvironmentEc2Interface.
 // A group's client should implement this interface.
 type Cloud9EnvironmentEc2sGetter interface {
-	Cloud9EnvironmentEc2s() Cloud9EnvironmentEc2Interface
+	Cloud9EnvironmentEc2s(namespace string) Cloud9EnvironmentEc2Interface
 }
 
 // Cloud9EnvironmentEc2Interface has methods to work with Cloud9EnvironmentEc2 resources.
@@ -52,12 +52,14 @@ type Cloud9EnvironmentEc2Interface interface {
 // cloud9EnvironmentEc2s implements Cloud9EnvironmentEc2Interface
 type cloud9EnvironmentEc2s struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCloud9EnvironmentEc2s returns a Cloud9EnvironmentEc2s
-func newCloud9EnvironmentEc2s(c *AwsV1alpha1Client) *cloud9EnvironmentEc2s {
+func newCloud9EnvironmentEc2s(c *AwsV1alpha1Client, namespace string) *cloud9EnvironmentEc2s {
 	return &cloud9EnvironmentEc2s{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCloud9EnvironmentEc2s(c *AwsV1alpha1Client) *cloud9EnvironmentEc2s {
 func (c *cloud9EnvironmentEc2s) Get(name string, options v1.GetOptions) (result *v1alpha1.Cloud9EnvironmentEc2, err error) {
 	result = &v1alpha1.Cloud9EnvironmentEc2{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloud9environmentec2s").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cloud9EnvironmentEc2s) List(opts v1.ListOptions) (result *v1alpha1.Clou
 	}
 	result = &v1alpha1.Cloud9EnvironmentEc2List{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloud9environmentec2s").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cloud9EnvironmentEc2s) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cloud9environmentec2s").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cloud9EnvironmentEc2s) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *cloud9EnvironmentEc2s) Create(cloud9EnvironmentEc2 *v1alpha1.Cloud9EnvironmentEc2) (result *v1alpha1.Cloud9EnvironmentEc2, err error) {
 	result = &v1alpha1.Cloud9EnvironmentEc2{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cloud9environmentec2s").
 		Body(cloud9EnvironmentEc2).
 		Do().
@@ -118,6 +124,7 @@ func (c *cloud9EnvironmentEc2s) Create(cloud9EnvironmentEc2 *v1alpha1.Cloud9Envi
 func (c *cloud9EnvironmentEc2s) Update(cloud9EnvironmentEc2 *v1alpha1.Cloud9EnvironmentEc2) (result *v1alpha1.Cloud9EnvironmentEc2, err error) {
 	result = &v1alpha1.Cloud9EnvironmentEc2{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloud9environmentec2s").
 		Name(cloud9EnvironmentEc2.Name).
 		Body(cloud9EnvironmentEc2).
@@ -132,6 +139,7 @@ func (c *cloud9EnvironmentEc2s) Update(cloud9EnvironmentEc2 *v1alpha1.Cloud9Envi
 func (c *cloud9EnvironmentEc2s) UpdateStatus(cloud9EnvironmentEc2 *v1alpha1.Cloud9EnvironmentEc2) (result *v1alpha1.Cloud9EnvironmentEc2, err error) {
 	result = &v1alpha1.Cloud9EnvironmentEc2{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloud9environmentec2s").
 		Name(cloud9EnvironmentEc2.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cloud9EnvironmentEc2s) UpdateStatus(cloud9EnvironmentEc2 *v1alpha1.Clou
 // Delete takes name of the cloud9EnvironmentEc2 and deletes it. Returns an error if one occurs.
 func (c *cloud9EnvironmentEc2s) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloud9environmentec2s").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cloud9EnvironmentEc2s) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloud9environmentec2s").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cloud9EnvironmentEc2s) DeleteCollection(options *v1.DeleteOptions, list
 func (c *cloud9EnvironmentEc2s) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Cloud9EnvironmentEc2, err error) {
 	result = &v1alpha1.Cloud9EnvironmentEc2{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cloud9environmentec2s").
 		SubResource(subresources...).
 		Name(name).

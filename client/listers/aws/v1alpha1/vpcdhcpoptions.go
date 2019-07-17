@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// VpcDhcpOptionsLister helps list VpcDhcpOptionses.
-type VpcDhcpOptionsLister interface {
-	// List lists all VpcDhcpOptionses in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.VpcDhcpOptions, err error)
-	// Get retrieves the VpcDhcpOptions from the index for a given name.
-	Get(name string) (*v1alpha1.VpcDhcpOptions, error)
-	VpcDhcpOptionsListerExpansion
+// VpcDHCPOptionsLister helps list VpcDHCPOptionses.
+type VpcDHCPOptionsLister interface {
+	// List lists all VpcDHCPOptionses in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.VpcDHCPOptions, err error)
+	// VpcDHCPOptionses returns an object that can list and get VpcDHCPOptionses.
+	VpcDHCPOptionses(namespace string) VpcDHCPOptionsNamespaceLister
+	VpcDHCPOptionsListerExpansion
 }
 
-// vpcDhcpOptionsLister implements the VpcDhcpOptionsLister interface.
-type vpcDhcpOptionsLister struct {
+// vpcDHCPOptionsLister implements the VpcDHCPOptionsLister interface.
+type vpcDHCPOptionsLister struct {
 	indexer cache.Indexer
 }
 
-// NewVpcDhcpOptionsLister returns a new VpcDhcpOptionsLister.
-func NewVpcDhcpOptionsLister(indexer cache.Indexer) VpcDhcpOptionsLister {
-	return &vpcDhcpOptionsLister{indexer: indexer}
+// NewVpcDHCPOptionsLister returns a new VpcDHCPOptionsLister.
+func NewVpcDHCPOptionsLister(indexer cache.Indexer) VpcDHCPOptionsLister {
+	return &vpcDHCPOptionsLister{indexer: indexer}
 }
 
-// List lists all VpcDhcpOptionses in the indexer.
-func (s *vpcDhcpOptionsLister) List(selector labels.Selector) (ret []*v1alpha1.VpcDhcpOptions, err error) {
+// List lists all VpcDHCPOptionses in the indexer.
+func (s *vpcDHCPOptionsLister) List(selector labels.Selector) (ret []*v1alpha1.VpcDHCPOptions, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.VpcDhcpOptions))
+		ret = append(ret, m.(*v1alpha1.VpcDHCPOptions))
 	})
 	return ret, err
 }
 
-// Get retrieves the VpcDhcpOptions from the index for a given name.
-func (s *vpcDhcpOptionsLister) Get(name string) (*v1alpha1.VpcDhcpOptions, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VpcDHCPOptionses returns an object that can list and get VpcDHCPOptionses.
+func (s *vpcDHCPOptionsLister) VpcDHCPOptionses(namespace string) VpcDHCPOptionsNamespaceLister {
+	return vpcDHCPOptionsNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VpcDHCPOptionsNamespaceLister helps list and get VpcDHCPOptionses.
+type VpcDHCPOptionsNamespaceLister interface {
+	// List lists all VpcDHCPOptionses in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VpcDHCPOptions, err error)
+	// Get retrieves the VpcDHCPOptions from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VpcDHCPOptions, error)
+	VpcDHCPOptionsNamespaceListerExpansion
+}
+
+// vpcDHCPOptionsNamespaceLister implements the VpcDHCPOptionsNamespaceLister
+// interface.
+type vpcDHCPOptionsNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VpcDHCPOptionses in the indexer for a given namespace.
+func (s vpcDHCPOptionsNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VpcDHCPOptions, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VpcDHCPOptions))
+	})
+	return ret, err
+}
+
+// Get retrieves the VpcDHCPOptions from the indexer for a given namespace and name.
+func (s vpcDHCPOptionsNamespaceLister) Get(name string) (*v1alpha1.VpcDHCPOptions, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("vpcdhcpoptions"), name)
 	}
-	return obj.(*v1alpha1.VpcDhcpOptions), nil
+	return obj.(*v1alpha1.VpcDHCPOptions), nil
 }

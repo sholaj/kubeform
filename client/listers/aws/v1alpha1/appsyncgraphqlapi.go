@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// AppsyncGraphqlApiLister helps list AppsyncGraphqlApis.
-type AppsyncGraphqlApiLister interface {
-	// List lists all AppsyncGraphqlApis in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.AppsyncGraphqlApi, err error)
-	// Get retrieves the AppsyncGraphqlApi from the index for a given name.
-	Get(name string) (*v1alpha1.AppsyncGraphqlApi, error)
-	AppsyncGraphqlApiListerExpansion
+// AppsyncGraphqlAPILister helps list AppsyncGraphqlAPIs.
+type AppsyncGraphqlAPILister interface {
+	// List lists all AppsyncGraphqlAPIs in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.AppsyncGraphqlAPI, err error)
+	// AppsyncGraphqlAPIs returns an object that can list and get AppsyncGraphqlAPIs.
+	AppsyncGraphqlAPIs(namespace string) AppsyncGraphqlAPINamespaceLister
+	AppsyncGraphqlAPIListerExpansion
 }
 
-// appsyncGraphqlApiLister implements the AppsyncGraphqlApiLister interface.
-type appsyncGraphqlApiLister struct {
+// appsyncGraphqlAPILister implements the AppsyncGraphqlAPILister interface.
+type appsyncGraphqlAPILister struct {
 	indexer cache.Indexer
 }
 
-// NewAppsyncGraphqlApiLister returns a new AppsyncGraphqlApiLister.
-func NewAppsyncGraphqlApiLister(indexer cache.Indexer) AppsyncGraphqlApiLister {
-	return &appsyncGraphqlApiLister{indexer: indexer}
+// NewAppsyncGraphqlAPILister returns a new AppsyncGraphqlAPILister.
+func NewAppsyncGraphqlAPILister(indexer cache.Indexer) AppsyncGraphqlAPILister {
+	return &appsyncGraphqlAPILister{indexer: indexer}
 }
 
-// List lists all AppsyncGraphqlApis in the indexer.
-func (s *appsyncGraphqlApiLister) List(selector labels.Selector) (ret []*v1alpha1.AppsyncGraphqlApi, err error) {
+// List lists all AppsyncGraphqlAPIs in the indexer.
+func (s *appsyncGraphqlAPILister) List(selector labels.Selector) (ret []*v1alpha1.AppsyncGraphqlAPI, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.AppsyncGraphqlApi))
+		ret = append(ret, m.(*v1alpha1.AppsyncGraphqlAPI))
 	})
 	return ret, err
 }
 
-// Get retrieves the AppsyncGraphqlApi from the index for a given name.
-func (s *appsyncGraphqlApiLister) Get(name string) (*v1alpha1.AppsyncGraphqlApi, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AppsyncGraphqlAPIs returns an object that can list and get AppsyncGraphqlAPIs.
+func (s *appsyncGraphqlAPILister) AppsyncGraphqlAPIs(namespace string) AppsyncGraphqlAPINamespaceLister {
+	return appsyncGraphqlAPINamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AppsyncGraphqlAPINamespaceLister helps list and get AppsyncGraphqlAPIs.
+type AppsyncGraphqlAPINamespaceLister interface {
+	// List lists all AppsyncGraphqlAPIs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AppsyncGraphqlAPI, err error)
+	// Get retrieves the AppsyncGraphqlAPI from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AppsyncGraphqlAPI, error)
+	AppsyncGraphqlAPINamespaceListerExpansion
+}
+
+// appsyncGraphqlAPINamespaceLister implements the AppsyncGraphqlAPINamespaceLister
+// interface.
+type appsyncGraphqlAPINamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AppsyncGraphqlAPIs in the indexer for a given namespace.
+func (s appsyncGraphqlAPINamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AppsyncGraphqlAPI, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AppsyncGraphqlAPI))
+	})
+	return ret, err
+}
+
+// Get retrieves the AppsyncGraphqlAPI from the indexer for a given namespace and name.
+func (s appsyncGraphqlAPINamespaceLister) Get(name string) (*v1alpha1.AppsyncGraphqlAPI, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("appsyncgraphqlapi"), name)
 	}
-	return obj.(*v1alpha1.AppsyncGraphqlApi), nil
+	return obj.(*v1alpha1.AppsyncGraphqlAPI), nil
 }

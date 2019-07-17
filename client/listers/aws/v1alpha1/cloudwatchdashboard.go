@@ -29,8 +29,8 @@ import (
 type CloudwatchDashboardLister interface {
 	// List lists all CloudwatchDashboards in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CloudwatchDashboard, err error)
-	// Get retrieves the CloudwatchDashboard from the index for a given name.
-	Get(name string) (*v1alpha1.CloudwatchDashboard, error)
+	// CloudwatchDashboards returns an object that can list and get CloudwatchDashboards.
+	CloudwatchDashboards(namespace string) CloudwatchDashboardNamespaceLister
 	CloudwatchDashboardListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cloudwatchDashboardLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the CloudwatchDashboard from the index for a given name.
-func (s *cloudwatchDashboardLister) Get(name string) (*v1alpha1.CloudwatchDashboard, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CloudwatchDashboards returns an object that can list and get CloudwatchDashboards.
+func (s *cloudwatchDashboardLister) CloudwatchDashboards(namespace string) CloudwatchDashboardNamespaceLister {
+	return cloudwatchDashboardNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CloudwatchDashboardNamespaceLister helps list and get CloudwatchDashboards.
+type CloudwatchDashboardNamespaceLister interface {
+	// List lists all CloudwatchDashboards in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CloudwatchDashboard, err error)
+	// Get retrieves the CloudwatchDashboard from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CloudwatchDashboard, error)
+	CloudwatchDashboardNamespaceListerExpansion
+}
+
+// cloudwatchDashboardNamespaceLister implements the CloudwatchDashboardNamespaceLister
+// interface.
+type cloudwatchDashboardNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CloudwatchDashboards in the indexer for a given namespace.
+func (s cloudwatchDashboardNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CloudwatchDashboard, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CloudwatchDashboard))
+	})
+	return ret, err
+}
+
+// Get retrieves the CloudwatchDashboard from the indexer for a given namespace and name.
+func (s cloudwatchDashboardNamespaceLister) Get(name string) (*v1alpha1.CloudwatchDashboard, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

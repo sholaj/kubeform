@@ -31,6 +31,7 @@ import (
 // FakeStoragegatewayNfsFileShares implements StoragegatewayNfsFileShareInterface
 type FakeStoragegatewayNfsFileShares struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var storagegatewaynfsfilesharesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "storagegatewaynfsfileshares"}
@@ -40,7 +41,8 @@ var storagegatewaynfsfilesharesKind = schema.GroupVersionKind{Group: "aws.kubefo
 // Get takes name of the storagegatewayNfsFileShare, and returns the corresponding storagegatewayNfsFileShare object, and an error if there is any.
 func (c *FakeStoragegatewayNfsFileShares) Get(name string, options v1.GetOptions) (result *v1alpha1.StoragegatewayNfsFileShare, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(storagegatewaynfsfilesharesResource, name), &v1alpha1.StoragegatewayNfsFileShare{})
+		Invokes(testing.NewGetAction(storagegatewaynfsfilesharesResource, c.ns, name), &v1alpha1.StoragegatewayNfsFileShare{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeStoragegatewayNfsFileShares) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of StoragegatewayNfsFileShares that match those selectors.
 func (c *FakeStoragegatewayNfsFileShares) List(opts v1.ListOptions) (result *v1alpha1.StoragegatewayNfsFileShareList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(storagegatewaynfsfilesharesResource, storagegatewaynfsfilesharesKind, opts), &v1alpha1.StoragegatewayNfsFileShareList{})
+		Invokes(testing.NewListAction(storagegatewaynfsfilesharesResource, storagegatewaynfsfilesharesKind, c.ns, opts), &v1alpha1.StoragegatewayNfsFileShareList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeStoragegatewayNfsFileShares) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested storagegatewayNfsFileShares.
 func (c *FakeStoragegatewayNfsFileShares) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(storagegatewaynfsfilesharesResource, opts))
+		InvokesWatch(testing.NewWatchAction(storagegatewaynfsfilesharesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a storagegatewayNfsFileShare and creates it.  Returns the server's representation of the storagegatewayNfsFileShare, and an error, if there is any.
 func (c *FakeStoragegatewayNfsFileShares) Create(storagegatewayNfsFileShare *v1alpha1.StoragegatewayNfsFileShare) (result *v1alpha1.StoragegatewayNfsFileShare, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(storagegatewaynfsfilesharesResource, storagegatewayNfsFileShare), &v1alpha1.StoragegatewayNfsFileShare{})
+		Invokes(testing.NewCreateAction(storagegatewaynfsfilesharesResource, c.ns, storagegatewayNfsFileShare), &v1alpha1.StoragegatewayNfsFileShare{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeStoragegatewayNfsFileShares) Create(storagegatewayNfsFileShare *v1a
 // Update takes the representation of a storagegatewayNfsFileShare and updates it. Returns the server's representation of the storagegatewayNfsFileShare, and an error, if there is any.
 func (c *FakeStoragegatewayNfsFileShares) Update(storagegatewayNfsFileShare *v1alpha1.StoragegatewayNfsFileShare) (result *v1alpha1.StoragegatewayNfsFileShare, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(storagegatewaynfsfilesharesResource, storagegatewayNfsFileShare), &v1alpha1.StoragegatewayNfsFileShare{})
+		Invokes(testing.NewUpdateAction(storagegatewaynfsfilesharesResource, c.ns, storagegatewayNfsFileShare), &v1alpha1.StoragegatewayNfsFileShare{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeStoragegatewayNfsFileShares) Update(storagegatewayNfsFileShare *v1a
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeStoragegatewayNfsFileShares) UpdateStatus(storagegatewayNfsFileShare *v1alpha1.StoragegatewayNfsFileShare) (*v1alpha1.StoragegatewayNfsFileShare, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(storagegatewaynfsfilesharesResource, "status", storagegatewayNfsFileShare), &v1alpha1.StoragegatewayNfsFileShare{})
+		Invokes(testing.NewUpdateSubresourceAction(storagegatewaynfsfilesharesResource, "status", c.ns, storagegatewayNfsFileShare), &v1alpha1.StoragegatewayNfsFileShare{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeStoragegatewayNfsFileShares) UpdateStatus(storagegatewayNfsFileShar
 // Delete takes name of the storagegatewayNfsFileShare and deletes it. Returns an error if one occurs.
 func (c *FakeStoragegatewayNfsFileShares) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(storagegatewaynfsfilesharesResource, name), &v1alpha1.StoragegatewayNfsFileShare{})
+		Invokes(testing.NewDeleteAction(storagegatewaynfsfilesharesResource, c.ns, name), &v1alpha1.StoragegatewayNfsFileShare{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeStoragegatewayNfsFileShares) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(storagegatewaynfsfilesharesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(storagegatewaynfsfilesharesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.StoragegatewayNfsFileShareList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeStoragegatewayNfsFileShares) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched storagegatewayNfsFileShare.
 func (c *FakeStoragegatewayNfsFileShares) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StoragegatewayNfsFileShare, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(storagegatewaynfsfilesharesResource, name, pt, data, subresources...), &v1alpha1.StoragegatewayNfsFileShare{})
+		Invokes(testing.NewPatchSubresourceAction(storagegatewaynfsfilesharesResource, c.ns, name, pt, data, subresources...), &v1alpha1.StoragegatewayNfsFileShare{})
+
 	if obj == nil {
 		return nil, err
 	}

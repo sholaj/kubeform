@@ -41,32 +41,33 @@ type OrganizationIamBindingInformer interface {
 type organizationIamBindingInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewOrganizationIamBindingInformer constructs a new informer for OrganizationIamBinding type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewOrganizationIamBindingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredOrganizationIamBindingInformer(client, resyncPeriod, indexers, nil)
+func NewOrganizationIamBindingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredOrganizationIamBindingInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredOrganizationIamBindingInformer constructs a new informer for OrganizationIamBinding type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredOrganizationIamBindingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredOrganizationIamBindingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().OrganizationIamBindings().List(options)
+				return client.GoogleV1alpha1().OrganizationIamBindings(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().OrganizationIamBindings().Watch(options)
+				return client.GoogleV1alpha1().OrganizationIamBindings(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.OrganizationIamBinding{},
@@ -76,7 +77,7 @@ func NewFilteredOrganizationIamBindingInformer(client versioned.Interface, resyn
 }
 
 func (f *organizationIamBindingInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredOrganizationIamBindingInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredOrganizationIamBindingInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *organizationIamBindingInformer) Informer() cache.SharedIndexInformer {

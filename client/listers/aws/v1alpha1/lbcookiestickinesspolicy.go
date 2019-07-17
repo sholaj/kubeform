@@ -29,8 +29,8 @@ import (
 type LbCookieStickinessPolicyLister interface {
 	// List lists all LbCookieStickinessPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LbCookieStickinessPolicy, err error)
-	// Get retrieves the LbCookieStickinessPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.LbCookieStickinessPolicy, error)
+	// LbCookieStickinessPolicies returns an object that can list and get LbCookieStickinessPolicies.
+	LbCookieStickinessPolicies(namespace string) LbCookieStickinessPolicyNamespaceLister
 	LbCookieStickinessPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *lbCookieStickinessPolicyLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the LbCookieStickinessPolicy from the index for a given name.
-func (s *lbCookieStickinessPolicyLister) Get(name string) (*v1alpha1.LbCookieStickinessPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LbCookieStickinessPolicies returns an object that can list and get LbCookieStickinessPolicies.
+func (s *lbCookieStickinessPolicyLister) LbCookieStickinessPolicies(namespace string) LbCookieStickinessPolicyNamespaceLister {
+	return lbCookieStickinessPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LbCookieStickinessPolicyNamespaceLister helps list and get LbCookieStickinessPolicies.
+type LbCookieStickinessPolicyNamespaceLister interface {
+	// List lists all LbCookieStickinessPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LbCookieStickinessPolicy, err error)
+	// Get retrieves the LbCookieStickinessPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LbCookieStickinessPolicy, error)
+	LbCookieStickinessPolicyNamespaceListerExpansion
+}
+
+// lbCookieStickinessPolicyNamespaceLister implements the LbCookieStickinessPolicyNamespaceLister
+// interface.
+type lbCookieStickinessPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LbCookieStickinessPolicies in the indexer for a given namespace.
+func (s lbCookieStickinessPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LbCookieStickinessPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LbCookieStickinessPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the LbCookieStickinessPolicy from the indexer for a given namespace and name.
+func (s lbCookieStickinessPolicyNamespaceLister) Get(name string) (*v1alpha1.LbCookieStickinessPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

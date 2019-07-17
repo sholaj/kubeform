@@ -31,6 +31,7 @@ import (
 // FakeApiManagementGroupUsers implements ApiManagementGroupUserInterface
 type FakeApiManagementGroupUsers struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var apimanagementgroupusersResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "apimanagementgroupusers"}
@@ -40,7 +41,8 @@ var apimanagementgroupusersKind = schema.GroupVersionKind{Group: "azurerm.kubefo
 // Get takes name of the apiManagementGroupUser, and returns the corresponding apiManagementGroupUser object, and an error if there is any.
 func (c *FakeApiManagementGroupUsers) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementGroupUser, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apimanagementgroupusersResource, name), &v1alpha1.ApiManagementGroupUser{})
+		Invokes(testing.NewGetAction(apimanagementgroupusersResource, c.ns, name), &v1alpha1.ApiManagementGroupUser{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApiManagementGroupUsers) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of ApiManagementGroupUsers that match those selectors.
 func (c *FakeApiManagementGroupUsers) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementGroupUserList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apimanagementgroupusersResource, apimanagementgroupusersKind, opts), &v1alpha1.ApiManagementGroupUserList{})
+		Invokes(testing.NewListAction(apimanagementgroupusersResource, apimanagementgroupusersKind, c.ns, opts), &v1alpha1.ApiManagementGroupUserList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApiManagementGroupUsers) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested apiManagementGroupUsers.
 func (c *FakeApiManagementGroupUsers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apimanagementgroupusersResource, opts))
+		InvokesWatch(testing.NewWatchAction(apimanagementgroupusersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a apiManagementGroupUser and creates it.  Returns the server's representation of the apiManagementGroupUser, and an error, if there is any.
 func (c *FakeApiManagementGroupUsers) Create(apiManagementGroupUser *v1alpha1.ApiManagementGroupUser) (result *v1alpha1.ApiManagementGroupUser, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apimanagementgroupusersResource, apiManagementGroupUser), &v1alpha1.ApiManagementGroupUser{})
+		Invokes(testing.NewCreateAction(apimanagementgroupusersResource, c.ns, apiManagementGroupUser), &v1alpha1.ApiManagementGroupUser{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApiManagementGroupUsers) Create(apiManagementGroupUser *v1alpha1.Ap
 // Update takes the representation of a apiManagementGroupUser and updates it. Returns the server's representation of the apiManagementGroupUser, and an error, if there is any.
 func (c *FakeApiManagementGroupUsers) Update(apiManagementGroupUser *v1alpha1.ApiManagementGroupUser) (result *v1alpha1.ApiManagementGroupUser, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apimanagementgroupusersResource, apiManagementGroupUser), &v1alpha1.ApiManagementGroupUser{})
+		Invokes(testing.NewUpdateAction(apimanagementgroupusersResource, c.ns, apiManagementGroupUser), &v1alpha1.ApiManagementGroupUser{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApiManagementGroupUsers) Update(apiManagementGroupUser *v1alpha1.Ap
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApiManagementGroupUsers) UpdateStatus(apiManagementGroupUser *v1alpha1.ApiManagementGroupUser) (*v1alpha1.ApiManagementGroupUser, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apimanagementgroupusersResource, "status", apiManagementGroupUser), &v1alpha1.ApiManagementGroupUser{})
+		Invokes(testing.NewUpdateSubresourceAction(apimanagementgroupusersResource, "status", c.ns, apiManagementGroupUser), &v1alpha1.ApiManagementGroupUser{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApiManagementGroupUsers) UpdateStatus(apiManagementGroupUser *v1alp
 // Delete takes name of the apiManagementGroupUser and deletes it. Returns an error if one occurs.
 func (c *FakeApiManagementGroupUsers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apimanagementgroupusersResource, name), &v1alpha1.ApiManagementGroupUser{})
+		Invokes(testing.NewDeleteAction(apimanagementgroupusersResource, c.ns, name), &v1alpha1.ApiManagementGroupUser{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApiManagementGroupUsers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apimanagementgroupusersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(apimanagementgroupusersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApiManagementGroupUserList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApiManagementGroupUsers) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched apiManagementGroupUser.
 func (c *FakeApiManagementGroupUsers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementGroupUser, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apimanagementgroupusersResource, name, pt, data, subresources...), &v1alpha1.ApiManagementGroupUser{})
+		Invokes(testing.NewPatchSubresourceAction(apimanagementgroupusersResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiManagementGroupUser{})
+
 	if obj == nil {
 		return nil, err
 	}

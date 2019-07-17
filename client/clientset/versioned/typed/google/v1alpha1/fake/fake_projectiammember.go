@@ -31,6 +31,7 @@ import (
 // FakeProjectIamMembers implements ProjectIamMemberInterface
 type FakeProjectIamMembers struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var projectiammembersResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "projectiammembers"}
@@ -40,7 +41,8 @@ var projectiammembersKind = schema.GroupVersionKind{Group: "google.kubeform.com"
 // Get takes name of the projectIamMember, and returns the corresponding projectIamMember object, and an error if there is any.
 func (c *FakeProjectIamMembers) Get(name string, options v1.GetOptions) (result *v1alpha1.ProjectIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(projectiammembersResource, name), &v1alpha1.ProjectIamMember{})
+		Invokes(testing.NewGetAction(projectiammembersResource, c.ns, name), &v1alpha1.ProjectIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeProjectIamMembers) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of ProjectIamMembers that match those selectors.
 func (c *FakeProjectIamMembers) List(opts v1.ListOptions) (result *v1alpha1.ProjectIamMemberList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(projectiammembersResource, projectiammembersKind, opts), &v1alpha1.ProjectIamMemberList{})
+		Invokes(testing.NewListAction(projectiammembersResource, projectiammembersKind, c.ns, opts), &v1alpha1.ProjectIamMemberList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeProjectIamMembers) List(opts v1.ListOptions) (result *v1alpha1.Proj
 // Watch returns a watch.Interface that watches the requested projectIamMembers.
 func (c *FakeProjectIamMembers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(projectiammembersResource, opts))
+		InvokesWatch(testing.NewWatchAction(projectiammembersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a projectIamMember and creates it.  Returns the server's representation of the projectIamMember, and an error, if there is any.
 func (c *FakeProjectIamMembers) Create(projectIamMember *v1alpha1.ProjectIamMember) (result *v1alpha1.ProjectIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(projectiammembersResource, projectIamMember), &v1alpha1.ProjectIamMember{})
+		Invokes(testing.NewCreateAction(projectiammembersResource, c.ns, projectIamMember), &v1alpha1.ProjectIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeProjectIamMembers) Create(projectIamMember *v1alpha1.ProjectIamMemb
 // Update takes the representation of a projectIamMember and updates it. Returns the server's representation of the projectIamMember, and an error, if there is any.
 func (c *FakeProjectIamMembers) Update(projectIamMember *v1alpha1.ProjectIamMember) (result *v1alpha1.ProjectIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(projectiammembersResource, projectIamMember), &v1alpha1.ProjectIamMember{})
+		Invokes(testing.NewUpdateAction(projectiammembersResource, c.ns, projectIamMember), &v1alpha1.ProjectIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeProjectIamMembers) Update(projectIamMember *v1alpha1.ProjectIamMemb
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeProjectIamMembers) UpdateStatus(projectIamMember *v1alpha1.ProjectIamMember) (*v1alpha1.ProjectIamMember, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(projectiammembersResource, "status", projectIamMember), &v1alpha1.ProjectIamMember{})
+		Invokes(testing.NewUpdateSubresourceAction(projectiammembersResource, "status", c.ns, projectIamMember), &v1alpha1.ProjectIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeProjectIamMembers) UpdateStatus(projectIamMember *v1alpha1.ProjectI
 // Delete takes name of the projectIamMember and deletes it. Returns an error if one occurs.
 func (c *FakeProjectIamMembers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(projectiammembersResource, name), &v1alpha1.ProjectIamMember{})
+		Invokes(testing.NewDeleteAction(projectiammembersResource, c.ns, name), &v1alpha1.ProjectIamMember{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeProjectIamMembers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(projectiammembersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(projectiammembersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ProjectIamMemberList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeProjectIamMembers) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched projectIamMember.
 func (c *FakeProjectIamMembers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ProjectIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(projectiammembersResource, name, pt, data, subresources...), &v1alpha1.ProjectIamMember{})
+		Invokes(testing.NewPatchSubresourceAction(projectiammembersResource, c.ns, name, pt, data, subresources...), &v1alpha1.ProjectIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}

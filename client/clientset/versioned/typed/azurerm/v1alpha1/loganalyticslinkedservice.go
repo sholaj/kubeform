@@ -32,7 +32,7 @@ import (
 // LogAnalyticsLinkedServicesGetter has a method to return a LogAnalyticsLinkedServiceInterface.
 // A group's client should implement this interface.
 type LogAnalyticsLinkedServicesGetter interface {
-	LogAnalyticsLinkedServices() LogAnalyticsLinkedServiceInterface
+	LogAnalyticsLinkedServices(namespace string) LogAnalyticsLinkedServiceInterface
 }
 
 // LogAnalyticsLinkedServiceInterface has methods to work with LogAnalyticsLinkedService resources.
@@ -52,12 +52,14 @@ type LogAnalyticsLinkedServiceInterface interface {
 // logAnalyticsLinkedServices implements LogAnalyticsLinkedServiceInterface
 type logAnalyticsLinkedServices struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLogAnalyticsLinkedServices returns a LogAnalyticsLinkedServices
-func newLogAnalyticsLinkedServices(c *AzurermV1alpha1Client) *logAnalyticsLinkedServices {
+func newLogAnalyticsLinkedServices(c *AzurermV1alpha1Client, namespace string) *logAnalyticsLinkedServices {
 	return &logAnalyticsLinkedServices{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLogAnalyticsLinkedServices(c *AzurermV1alpha1Client) *logAnalyticsLinked
 func (c *logAnalyticsLinkedServices) Get(name string, options v1.GetOptions) (result *v1alpha1.LogAnalyticsLinkedService, err error) {
 	result = &v1alpha1.LogAnalyticsLinkedService{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loganalyticslinkedservices").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *logAnalyticsLinkedServices) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.LogAnalyticsLinkedServiceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loganalyticslinkedservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *logAnalyticsLinkedServices) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("loganalyticslinkedservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *logAnalyticsLinkedServices) Watch(opts v1.ListOptions) (watch.Interface
 func (c *logAnalyticsLinkedServices) Create(logAnalyticsLinkedService *v1alpha1.LogAnalyticsLinkedService) (result *v1alpha1.LogAnalyticsLinkedService, err error) {
 	result = &v1alpha1.LogAnalyticsLinkedService{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("loganalyticslinkedservices").
 		Body(logAnalyticsLinkedService).
 		Do().
@@ -118,6 +124,7 @@ func (c *logAnalyticsLinkedServices) Create(logAnalyticsLinkedService *v1alpha1.
 func (c *logAnalyticsLinkedServices) Update(logAnalyticsLinkedService *v1alpha1.LogAnalyticsLinkedService) (result *v1alpha1.LogAnalyticsLinkedService, err error) {
 	result = &v1alpha1.LogAnalyticsLinkedService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loganalyticslinkedservices").
 		Name(logAnalyticsLinkedService.Name).
 		Body(logAnalyticsLinkedService).
@@ -132,6 +139,7 @@ func (c *logAnalyticsLinkedServices) Update(logAnalyticsLinkedService *v1alpha1.
 func (c *logAnalyticsLinkedServices) UpdateStatus(logAnalyticsLinkedService *v1alpha1.LogAnalyticsLinkedService) (result *v1alpha1.LogAnalyticsLinkedService, err error) {
 	result = &v1alpha1.LogAnalyticsLinkedService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loganalyticslinkedservices").
 		Name(logAnalyticsLinkedService.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *logAnalyticsLinkedServices) UpdateStatus(logAnalyticsLinkedService *v1a
 // Delete takes name of the logAnalyticsLinkedService and deletes it. Returns an error if one occurs.
 func (c *logAnalyticsLinkedServices) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loganalyticslinkedservices").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *logAnalyticsLinkedServices) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loganalyticslinkedservices").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *logAnalyticsLinkedServices) DeleteCollection(options *v1.DeleteOptions,
 func (c *logAnalyticsLinkedServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogAnalyticsLinkedService, err error) {
 	result = &v1alpha1.LogAnalyticsLinkedService{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("loganalyticslinkedservices").
 		SubResource(subresources...).
 		Name(name).

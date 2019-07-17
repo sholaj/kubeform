@@ -29,8 +29,8 @@ import (
 type CloudwatchEventTargetLister interface {
 	// List lists all CloudwatchEventTargets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CloudwatchEventTarget, err error)
-	// Get retrieves the CloudwatchEventTarget from the index for a given name.
-	Get(name string) (*v1alpha1.CloudwatchEventTarget, error)
+	// CloudwatchEventTargets returns an object that can list and get CloudwatchEventTargets.
+	CloudwatchEventTargets(namespace string) CloudwatchEventTargetNamespaceLister
 	CloudwatchEventTargetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cloudwatchEventTargetLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the CloudwatchEventTarget from the index for a given name.
-func (s *cloudwatchEventTargetLister) Get(name string) (*v1alpha1.CloudwatchEventTarget, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CloudwatchEventTargets returns an object that can list and get CloudwatchEventTargets.
+func (s *cloudwatchEventTargetLister) CloudwatchEventTargets(namespace string) CloudwatchEventTargetNamespaceLister {
+	return cloudwatchEventTargetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CloudwatchEventTargetNamespaceLister helps list and get CloudwatchEventTargets.
+type CloudwatchEventTargetNamespaceLister interface {
+	// List lists all CloudwatchEventTargets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CloudwatchEventTarget, err error)
+	// Get retrieves the CloudwatchEventTarget from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CloudwatchEventTarget, error)
+	CloudwatchEventTargetNamespaceListerExpansion
+}
+
+// cloudwatchEventTargetNamespaceLister implements the CloudwatchEventTargetNamespaceLister
+// interface.
+type cloudwatchEventTargetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CloudwatchEventTargets in the indexer for a given namespace.
+func (s cloudwatchEventTargetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CloudwatchEventTarget, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CloudwatchEventTarget))
+	})
+	return ret, err
+}
+
+// Get retrieves the CloudwatchEventTarget from the indexer for a given namespace and name.
+func (s cloudwatchEventTargetNamespaceLister) Get(name string) (*v1alpha1.CloudwatchEventTarget, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

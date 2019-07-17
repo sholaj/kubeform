@@ -29,8 +29,8 @@ import (
 type NetworkSecurityGroupLister interface {
 	// List lists all NetworkSecurityGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NetworkSecurityGroup, err error)
-	// Get retrieves the NetworkSecurityGroup from the index for a given name.
-	Get(name string) (*v1alpha1.NetworkSecurityGroup, error)
+	// NetworkSecurityGroups returns an object that can list and get NetworkSecurityGroups.
+	NetworkSecurityGroups(namespace string) NetworkSecurityGroupNamespaceLister
 	NetworkSecurityGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *networkSecurityGroupLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the NetworkSecurityGroup from the index for a given name.
-func (s *networkSecurityGroupLister) Get(name string) (*v1alpha1.NetworkSecurityGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NetworkSecurityGroups returns an object that can list and get NetworkSecurityGroups.
+func (s *networkSecurityGroupLister) NetworkSecurityGroups(namespace string) NetworkSecurityGroupNamespaceLister {
+	return networkSecurityGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NetworkSecurityGroupNamespaceLister helps list and get NetworkSecurityGroups.
+type NetworkSecurityGroupNamespaceLister interface {
+	// List lists all NetworkSecurityGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NetworkSecurityGroup, err error)
+	// Get retrieves the NetworkSecurityGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NetworkSecurityGroup, error)
+	NetworkSecurityGroupNamespaceListerExpansion
+}
+
+// networkSecurityGroupNamespaceLister implements the NetworkSecurityGroupNamespaceLister
+// interface.
+type networkSecurityGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NetworkSecurityGroups in the indexer for a given namespace.
+func (s networkSecurityGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NetworkSecurityGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NetworkSecurityGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the NetworkSecurityGroup from the indexer for a given namespace and name.
+func (s networkSecurityGroupNamespaceLister) Get(name string) (*v1alpha1.NetworkSecurityGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

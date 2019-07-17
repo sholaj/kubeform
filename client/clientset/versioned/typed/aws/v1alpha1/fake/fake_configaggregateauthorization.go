@@ -31,6 +31,7 @@ import (
 // FakeConfigAggregateAuthorizations implements ConfigAggregateAuthorizationInterface
 type FakeConfigAggregateAuthorizations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var configaggregateauthorizationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "configaggregateauthorizations"}
@@ -40,7 +41,8 @@ var configaggregateauthorizationsKind = schema.GroupVersionKind{Group: "aws.kube
 // Get takes name of the configAggregateAuthorization, and returns the corresponding configAggregateAuthorization object, and an error if there is any.
 func (c *FakeConfigAggregateAuthorizations) Get(name string, options v1.GetOptions) (result *v1alpha1.ConfigAggregateAuthorization, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(configaggregateauthorizationsResource, name), &v1alpha1.ConfigAggregateAuthorization{})
+		Invokes(testing.NewGetAction(configaggregateauthorizationsResource, c.ns, name), &v1alpha1.ConfigAggregateAuthorization{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeConfigAggregateAuthorizations) Get(name string, options v1.GetOptio
 // List takes label and field selectors, and returns the list of ConfigAggregateAuthorizations that match those selectors.
 func (c *FakeConfigAggregateAuthorizations) List(opts v1.ListOptions) (result *v1alpha1.ConfigAggregateAuthorizationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(configaggregateauthorizationsResource, configaggregateauthorizationsKind, opts), &v1alpha1.ConfigAggregateAuthorizationList{})
+		Invokes(testing.NewListAction(configaggregateauthorizationsResource, configaggregateauthorizationsKind, c.ns, opts), &v1alpha1.ConfigAggregateAuthorizationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeConfigAggregateAuthorizations) List(opts v1.ListOptions) (result *v
 // Watch returns a watch.Interface that watches the requested configAggregateAuthorizations.
 func (c *FakeConfigAggregateAuthorizations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(configaggregateauthorizationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(configaggregateauthorizationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a configAggregateAuthorization and creates it.  Returns the server's representation of the configAggregateAuthorization, and an error, if there is any.
 func (c *FakeConfigAggregateAuthorizations) Create(configAggregateAuthorization *v1alpha1.ConfigAggregateAuthorization) (result *v1alpha1.ConfigAggregateAuthorization, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(configaggregateauthorizationsResource, configAggregateAuthorization), &v1alpha1.ConfigAggregateAuthorization{})
+		Invokes(testing.NewCreateAction(configaggregateauthorizationsResource, c.ns, configAggregateAuthorization), &v1alpha1.ConfigAggregateAuthorization{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeConfigAggregateAuthorizations) Create(configAggregateAuthorization 
 // Update takes the representation of a configAggregateAuthorization and updates it. Returns the server's representation of the configAggregateAuthorization, and an error, if there is any.
 func (c *FakeConfigAggregateAuthorizations) Update(configAggregateAuthorization *v1alpha1.ConfigAggregateAuthorization) (result *v1alpha1.ConfigAggregateAuthorization, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(configaggregateauthorizationsResource, configAggregateAuthorization), &v1alpha1.ConfigAggregateAuthorization{})
+		Invokes(testing.NewUpdateAction(configaggregateauthorizationsResource, c.ns, configAggregateAuthorization), &v1alpha1.ConfigAggregateAuthorization{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeConfigAggregateAuthorizations) Update(configAggregateAuthorization 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeConfigAggregateAuthorizations) UpdateStatus(configAggregateAuthorization *v1alpha1.ConfigAggregateAuthorization) (*v1alpha1.ConfigAggregateAuthorization, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(configaggregateauthorizationsResource, "status", configAggregateAuthorization), &v1alpha1.ConfigAggregateAuthorization{})
+		Invokes(testing.NewUpdateSubresourceAction(configaggregateauthorizationsResource, "status", c.ns, configAggregateAuthorization), &v1alpha1.ConfigAggregateAuthorization{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeConfigAggregateAuthorizations) UpdateStatus(configAggregateAuthoriz
 // Delete takes name of the configAggregateAuthorization and deletes it. Returns an error if one occurs.
 func (c *FakeConfigAggregateAuthorizations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(configaggregateauthorizationsResource, name), &v1alpha1.ConfigAggregateAuthorization{})
+		Invokes(testing.NewDeleteAction(configaggregateauthorizationsResource, c.ns, name), &v1alpha1.ConfigAggregateAuthorization{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeConfigAggregateAuthorizations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(configaggregateauthorizationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(configaggregateauthorizationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ConfigAggregateAuthorizationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeConfigAggregateAuthorizations) DeleteCollection(options *v1.DeleteO
 // Patch applies the patch and returns the patched configAggregateAuthorization.
 func (c *FakeConfigAggregateAuthorizations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ConfigAggregateAuthorization, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(configaggregateauthorizationsResource, name, pt, data, subresources...), &v1alpha1.ConfigAggregateAuthorization{})
+		Invokes(testing.NewPatchSubresourceAction(configaggregateauthorizationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ConfigAggregateAuthorization{})
+
 	if obj == nil {
 		return nil, err
 	}

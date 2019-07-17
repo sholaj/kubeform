@@ -32,7 +32,7 @@ import (
 // DataLakeAnalyticsAccountsGetter has a method to return a DataLakeAnalyticsAccountInterface.
 // A group's client should implement this interface.
 type DataLakeAnalyticsAccountsGetter interface {
-	DataLakeAnalyticsAccounts() DataLakeAnalyticsAccountInterface
+	DataLakeAnalyticsAccounts(namespace string) DataLakeAnalyticsAccountInterface
 }
 
 // DataLakeAnalyticsAccountInterface has methods to work with DataLakeAnalyticsAccount resources.
@@ -52,12 +52,14 @@ type DataLakeAnalyticsAccountInterface interface {
 // dataLakeAnalyticsAccounts implements DataLakeAnalyticsAccountInterface
 type dataLakeAnalyticsAccounts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDataLakeAnalyticsAccounts returns a DataLakeAnalyticsAccounts
-func newDataLakeAnalyticsAccounts(c *AzurermV1alpha1Client) *dataLakeAnalyticsAccounts {
+func newDataLakeAnalyticsAccounts(c *AzurermV1alpha1Client, namespace string) *dataLakeAnalyticsAccounts {
 	return &dataLakeAnalyticsAccounts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDataLakeAnalyticsAccounts(c *AzurermV1alpha1Client) *dataLakeAnalyticsAc
 func (c *dataLakeAnalyticsAccounts) Get(name string, options v1.GetOptions) (result *v1alpha1.DataLakeAnalyticsAccount, err error) {
 	result = &v1alpha1.DataLakeAnalyticsAccount{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datalakeanalyticsaccounts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dataLakeAnalyticsAccounts) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.DataLakeAnalyticsAccountList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datalakeanalyticsaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dataLakeAnalyticsAccounts) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("datalakeanalyticsaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dataLakeAnalyticsAccounts) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *dataLakeAnalyticsAccounts) Create(dataLakeAnalyticsAccount *v1alpha1.DataLakeAnalyticsAccount) (result *v1alpha1.DataLakeAnalyticsAccount, err error) {
 	result = &v1alpha1.DataLakeAnalyticsAccount{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("datalakeanalyticsaccounts").
 		Body(dataLakeAnalyticsAccount).
 		Do().
@@ -118,6 +124,7 @@ func (c *dataLakeAnalyticsAccounts) Create(dataLakeAnalyticsAccount *v1alpha1.Da
 func (c *dataLakeAnalyticsAccounts) Update(dataLakeAnalyticsAccount *v1alpha1.DataLakeAnalyticsAccount) (result *v1alpha1.DataLakeAnalyticsAccount, err error) {
 	result = &v1alpha1.DataLakeAnalyticsAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datalakeanalyticsaccounts").
 		Name(dataLakeAnalyticsAccount.Name).
 		Body(dataLakeAnalyticsAccount).
@@ -132,6 +139,7 @@ func (c *dataLakeAnalyticsAccounts) Update(dataLakeAnalyticsAccount *v1alpha1.Da
 func (c *dataLakeAnalyticsAccounts) UpdateStatus(dataLakeAnalyticsAccount *v1alpha1.DataLakeAnalyticsAccount) (result *v1alpha1.DataLakeAnalyticsAccount, err error) {
 	result = &v1alpha1.DataLakeAnalyticsAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datalakeanalyticsaccounts").
 		Name(dataLakeAnalyticsAccount.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dataLakeAnalyticsAccounts) UpdateStatus(dataLakeAnalyticsAccount *v1alp
 // Delete takes name of the dataLakeAnalyticsAccount and deletes it. Returns an error if one occurs.
 func (c *dataLakeAnalyticsAccounts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datalakeanalyticsaccounts").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dataLakeAnalyticsAccounts) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datalakeanalyticsaccounts").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dataLakeAnalyticsAccounts) DeleteCollection(options *v1.DeleteOptions, 
 func (c *dataLakeAnalyticsAccounts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataLakeAnalyticsAccount, err error) {
 	result = &v1alpha1.DataLakeAnalyticsAccount{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("datalakeanalyticsaccounts").
 		SubResource(subresources...).
 		Name(name).

@@ -31,6 +31,7 @@ import (
 // FakeEventgridEventSubscriptions implements EventgridEventSubscriptionInterface
 type FakeEventgridEventSubscriptions struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var eventgrideventsubscriptionsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "eventgrideventsubscriptions"}
@@ -40,7 +41,8 @@ var eventgrideventsubscriptionsKind = schema.GroupVersionKind{Group: "azurerm.ku
 // Get takes name of the eventgridEventSubscription, and returns the corresponding eventgridEventSubscription object, and an error if there is any.
 func (c *FakeEventgridEventSubscriptions) Get(name string, options v1.GetOptions) (result *v1alpha1.EventgridEventSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(eventgrideventsubscriptionsResource, name), &v1alpha1.EventgridEventSubscription{})
+		Invokes(testing.NewGetAction(eventgrideventsubscriptionsResource, c.ns, name), &v1alpha1.EventgridEventSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEventgridEventSubscriptions) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of EventgridEventSubscriptions that match those selectors.
 func (c *FakeEventgridEventSubscriptions) List(opts v1.ListOptions) (result *v1alpha1.EventgridEventSubscriptionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(eventgrideventsubscriptionsResource, eventgrideventsubscriptionsKind, opts), &v1alpha1.EventgridEventSubscriptionList{})
+		Invokes(testing.NewListAction(eventgrideventsubscriptionsResource, eventgrideventsubscriptionsKind, c.ns, opts), &v1alpha1.EventgridEventSubscriptionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEventgridEventSubscriptions) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested eventgridEventSubscriptions.
 func (c *FakeEventgridEventSubscriptions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(eventgrideventsubscriptionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(eventgrideventsubscriptionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a eventgridEventSubscription and creates it.  Returns the server's representation of the eventgridEventSubscription, and an error, if there is any.
 func (c *FakeEventgridEventSubscriptions) Create(eventgridEventSubscription *v1alpha1.EventgridEventSubscription) (result *v1alpha1.EventgridEventSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(eventgrideventsubscriptionsResource, eventgridEventSubscription), &v1alpha1.EventgridEventSubscription{})
+		Invokes(testing.NewCreateAction(eventgrideventsubscriptionsResource, c.ns, eventgridEventSubscription), &v1alpha1.EventgridEventSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEventgridEventSubscriptions) Create(eventgridEventSubscription *v1a
 // Update takes the representation of a eventgridEventSubscription and updates it. Returns the server's representation of the eventgridEventSubscription, and an error, if there is any.
 func (c *FakeEventgridEventSubscriptions) Update(eventgridEventSubscription *v1alpha1.EventgridEventSubscription) (result *v1alpha1.EventgridEventSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(eventgrideventsubscriptionsResource, eventgridEventSubscription), &v1alpha1.EventgridEventSubscription{})
+		Invokes(testing.NewUpdateAction(eventgrideventsubscriptionsResource, c.ns, eventgridEventSubscription), &v1alpha1.EventgridEventSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEventgridEventSubscriptions) Update(eventgridEventSubscription *v1a
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEventgridEventSubscriptions) UpdateStatus(eventgridEventSubscription *v1alpha1.EventgridEventSubscription) (*v1alpha1.EventgridEventSubscription, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(eventgrideventsubscriptionsResource, "status", eventgridEventSubscription), &v1alpha1.EventgridEventSubscription{})
+		Invokes(testing.NewUpdateSubresourceAction(eventgrideventsubscriptionsResource, "status", c.ns, eventgridEventSubscription), &v1alpha1.EventgridEventSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEventgridEventSubscriptions) UpdateStatus(eventgridEventSubscriptio
 // Delete takes name of the eventgridEventSubscription and deletes it. Returns an error if one occurs.
 func (c *FakeEventgridEventSubscriptions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(eventgrideventsubscriptionsResource, name), &v1alpha1.EventgridEventSubscription{})
+		Invokes(testing.NewDeleteAction(eventgrideventsubscriptionsResource, c.ns, name), &v1alpha1.EventgridEventSubscription{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEventgridEventSubscriptions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(eventgrideventsubscriptionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(eventgrideventsubscriptionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.EventgridEventSubscriptionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEventgridEventSubscriptions) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched eventgridEventSubscription.
 func (c *FakeEventgridEventSubscriptions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EventgridEventSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(eventgrideventsubscriptionsResource, name, pt, data, subresources...), &v1alpha1.EventgridEventSubscription{})
+		Invokes(testing.NewPatchSubresourceAction(eventgrideventsubscriptionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.EventgridEventSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}

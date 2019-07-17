@@ -29,8 +29,8 @@ import (
 type AppServiceActiveSlotLister interface {
 	// List lists all AppServiceActiveSlots in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AppServiceActiveSlot, err error)
-	// Get retrieves the AppServiceActiveSlot from the index for a given name.
-	Get(name string) (*v1alpha1.AppServiceActiveSlot, error)
+	// AppServiceActiveSlots returns an object that can list and get AppServiceActiveSlots.
+	AppServiceActiveSlots(namespace string) AppServiceActiveSlotNamespaceLister
 	AppServiceActiveSlotListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *appServiceActiveSlotLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the AppServiceActiveSlot from the index for a given name.
-func (s *appServiceActiveSlotLister) Get(name string) (*v1alpha1.AppServiceActiveSlot, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AppServiceActiveSlots returns an object that can list and get AppServiceActiveSlots.
+func (s *appServiceActiveSlotLister) AppServiceActiveSlots(namespace string) AppServiceActiveSlotNamespaceLister {
+	return appServiceActiveSlotNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AppServiceActiveSlotNamespaceLister helps list and get AppServiceActiveSlots.
+type AppServiceActiveSlotNamespaceLister interface {
+	// List lists all AppServiceActiveSlots in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AppServiceActiveSlot, err error)
+	// Get retrieves the AppServiceActiveSlot from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AppServiceActiveSlot, error)
+	AppServiceActiveSlotNamespaceListerExpansion
+}
+
+// appServiceActiveSlotNamespaceLister implements the AppServiceActiveSlotNamespaceLister
+// interface.
+type appServiceActiveSlotNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AppServiceActiveSlots in the indexer for a given namespace.
+func (s appServiceActiveSlotNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AppServiceActiveSlot, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AppServiceActiveSlot))
+	})
+	return ret, err
+}
+
+// Get retrieves the AppServiceActiveSlot from the indexer for a given namespace and name.
+func (s appServiceActiveSlotNamespaceLister) Get(name string) (*v1alpha1.AppServiceActiveSlot, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

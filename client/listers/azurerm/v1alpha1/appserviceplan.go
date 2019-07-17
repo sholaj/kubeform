@@ -29,8 +29,8 @@ import (
 type AppServicePlanLister interface {
 	// List lists all AppServicePlans in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AppServicePlan, err error)
-	// Get retrieves the AppServicePlan from the index for a given name.
-	Get(name string) (*v1alpha1.AppServicePlan, error)
+	// AppServicePlans returns an object that can list and get AppServicePlans.
+	AppServicePlans(namespace string) AppServicePlanNamespaceLister
 	AppServicePlanListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *appServicePlanLister) List(selector labels.Selector) (ret []*v1alpha1.A
 	return ret, err
 }
 
-// Get retrieves the AppServicePlan from the index for a given name.
-func (s *appServicePlanLister) Get(name string) (*v1alpha1.AppServicePlan, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AppServicePlans returns an object that can list and get AppServicePlans.
+func (s *appServicePlanLister) AppServicePlans(namespace string) AppServicePlanNamespaceLister {
+	return appServicePlanNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AppServicePlanNamespaceLister helps list and get AppServicePlans.
+type AppServicePlanNamespaceLister interface {
+	// List lists all AppServicePlans in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AppServicePlan, err error)
+	// Get retrieves the AppServicePlan from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AppServicePlan, error)
+	AppServicePlanNamespaceListerExpansion
+}
+
+// appServicePlanNamespaceLister implements the AppServicePlanNamespaceLister
+// interface.
+type appServicePlanNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AppServicePlans in the indexer for a given namespace.
+func (s appServicePlanNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AppServicePlan, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AppServicePlan))
+	})
+	return ret, err
+}
+
+// Get retrieves the AppServicePlan from the indexer for a given namespace and name.
+func (s appServicePlanNamespaceLister) Get(name string) (*v1alpha1.AppServicePlan, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

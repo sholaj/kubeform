@@ -29,8 +29,8 @@ import (
 type KmsCryptoKeyLister interface {
 	// List lists all KmsCryptoKeys in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KmsCryptoKey, err error)
-	// Get retrieves the KmsCryptoKey from the index for a given name.
-	Get(name string) (*v1alpha1.KmsCryptoKey, error)
+	// KmsCryptoKeys returns an object that can list and get KmsCryptoKeys.
+	KmsCryptoKeys(namespace string) KmsCryptoKeyNamespaceLister
 	KmsCryptoKeyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *kmsCryptoKeyLister) List(selector labels.Selector) (ret []*v1alpha1.Kms
 	return ret, err
 }
 
-// Get retrieves the KmsCryptoKey from the index for a given name.
-func (s *kmsCryptoKeyLister) Get(name string) (*v1alpha1.KmsCryptoKey, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KmsCryptoKeys returns an object that can list and get KmsCryptoKeys.
+func (s *kmsCryptoKeyLister) KmsCryptoKeys(namespace string) KmsCryptoKeyNamespaceLister {
+	return kmsCryptoKeyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KmsCryptoKeyNamespaceLister helps list and get KmsCryptoKeys.
+type KmsCryptoKeyNamespaceLister interface {
+	// List lists all KmsCryptoKeys in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KmsCryptoKey, err error)
+	// Get retrieves the KmsCryptoKey from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KmsCryptoKey, error)
+	KmsCryptoKeyNamespaceListerExpansion
+}
+
+// kmsCryptoKeyNamespaceLister implements the KmsCryptoKeyNamespaceLister
+// interface.
+type kmsCryptoKeyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KmsCryptoKeys in the indexer for a given namespace.
+func (s kmsCryptoKeyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KmsCryptoKey, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KmsCryptoKey))
+	})
+	return ret, err
+}
+
+// Get retrieves the KmsCryptoKey from the indexer for a given namespace and name.
+func (s kmsCryptoKeyNamespaceLister) Get(name string) (*v1alpha1.KmsCryptoKey, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

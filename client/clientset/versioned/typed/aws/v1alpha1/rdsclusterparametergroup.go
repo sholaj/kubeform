@@ -32,7 +32,7 @@ import (
 // RdsClusterParameterGroupsGetter has a method to return a RdsClusterParameterGroupInterface.
 // A group's client should implement this interface.
 type RdsClusterParameterGroupsGetter interface {
-	RdsClusterParameterGroups() RdsClusterParameterGroupInterface
+	RdsClusterParameterGroups(namespace string) RdsClusterParameterGroupInterface
 }
 
 // RdsClusterParameterGroupInterface has methods to work with RdsClusterParameterGroup resources.
@@ -52,12 +52,14 @@ type RdsClusterParameterGroupInterface interface {
 // rdsClusterParameterGroups implements RdsClusterParameterGroupInterface
 type rdsClusterParameterGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRdsClusterParameterGroups returns a RdsClusterParameterGroups
-func newRdsClusterParameterGroups(c *AwsV1alpha1Client) *rdsClusterParameterGroups {
+func newRdsClusterParameterGroups(c *AwsV1alpha1Client, namespace string) *rdsClusterParameterGroups {
 	return &rdsClusterParameterGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRdsClusterParameterGroups(c *AwsV1alpha1Client) *rdsClusterParameterGrou
 func (c *rdsClusterParameterGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.RdsClusterParameterGroup, err error) {
 	result = &v1alpha1.RdsClusterParameterGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("rdsclusterparametergroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *rdsClusterParameterGroups) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.RdsClusterParameterGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("rdsclusterparametergroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *rdsClusterParameterGroups) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("rdsclusterparametergroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *rdsClusterParameterGroups) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *rdsClusterParameterGroups) Create(rdsClusterParameterGroup *v1alpha1.RdsClusterParameterGroup) (result *v1alpha1.RdsClusterParameterGroup, err error) {
 	result = &v1alpha1.RdsClusterParameterGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("rdsclusterparametergroups").
 		Body(rdsClusterParameterGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *rdsClusterParameterGroups) Create(rdsClusterParameterGroup *v1alpha1.Rd
 func (c *rdsClusterParameterGroups) Update(rdsClusterParameterGroup *v1alpha1.RdsClusterParameterGroup) (result *v1alpha1.RdsClusterParameterGroup, err error) {
 	result = &v1alpha1.RdsClusterParameterGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("rdsclusterparametergroups").
 		Name(rdsClusterParameterGroup.Name).
 		Body(rdsClusterParameterGroup).
@@ -132,6 +139,7 @@ func (c *rdsClusterParameterGroups) Update(rdsClusterParameterGroup *v1alpha1.Rd
 func (c *rdsClusterParameterGroups) UpdateStatus(rdsClusterParameterGroup *v1alpha1.RdsClusterParameterGroup) (result *v1alpha1.RdsClusterParameterGroup, err error) {
 	result = &v1alpha1.RdsClusterParameterGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("rdsclusterparametergroups").
 		Name(rdsClusterParameterGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *rdsClusterParameterGroups) UpdateStatus(rdsClusterParameterGroup *v1alp
 // Delete takes name of the rdsClusterParameterGroup and deletes it. Returns an error if one occurs.
 func (c *rdsClusterParameterGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("rdsclusterparametergroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *rdsClusterParameterGroups) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("rdsclusterparametergroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *rdsClusterParameterGroups) DeleteCollection(options *v1.DeleteOptions, 
 func (c *rdsClusterParameterGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RdsClusterParameterGroup, err error) {
 	result = &v1alpha1.RdsClusterParameterGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("rdsclusterparametergroups").
 		SubResource(subresources...).
 		Name(name).

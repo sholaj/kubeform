@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,20 +19,21 @@ type Record struct {
 }
 
 type RecordSpec struct {
-	Domain string `json:"domain"`
+	Domain string `json:"domain" tf:"domain"`
 	// +optional
-	Flags int    `json:"flags,omitempty"`
-	Name  string `json:"name"`
+	Flags int    `json:"flags,omitempty" tf:"flags,omitempty"`
+	Name  string `json:"name" tf:"name"`
 	// +optional
-	Port int `json:"port,omitempty"`
+	Port int `json:"port,omitempty" tf:"port,omitempty"`
 	// +optional
-	Priority int `json:"priority,omitempty"`
+	Priority int `json:"priority,omitempty" tf:"priority,omitempty"`
 	// +optional
-	Tag   string `json:"tag,omitempty"`
-	Type  string `json:"type"`
-	Value string `json:"value"`
+	Tag   string `json:"tag,omitempty" tf:"tag,omitempty"`
+	Type  string `json:"type" tf:"type"`
+	Value string `json:"value" tf:"value"`
 	// +optional
-	Weight int `json:"weight,omitempty"`
+	Weight      int                       `json:"weight,omitempty" tf:"weight,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type RecordStatus struct {
@@ -40,7 +41,9 @@ type RecordStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

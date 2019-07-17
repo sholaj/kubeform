@@ -32,7 +32,7 @@ import (
 // AutomationSchedulesGetter has a method to return a AutomationScheduleInterface.
 // A group's client should implement this interface.
 type AutomationSchedulesGetter interface {
-	AutomationSchedules() AutomationScheduleInterface
+	AutomationSchedules(namespace string) AutomationScheduleInterface
 }
 
 // AutomationScheduleInterface has methods to work with AutomationSchedule resources.
@@ -52,12 +52,14 @@ type AutomationScheduleInterface interface {
 // automationSchedules implements AutomationScheduleInterface
 type automationSchedules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAutomationSchedules returns a AutomationSchedules
-func newAutomationSchedules(c *AzurermV1alpha1Client) *automationSchedules {
+func newAutomationSchedules(c *AzurermV1alpha1Client, namespace string) *automationSchedules {
 	return &automationSchedules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAutomationSchedules(c *AzurermV1alpha1Client) *automationSchedules {
 func (c *automationSchedules) Get(name string, options v1.GetOptions) (result *v1alpha1.AutomationSchedule, err error) {
 	result = &v1alpha1.AutomationSchedule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("automationschedules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *automationSchedules) List(opts v1.ListOptions) (result *v1alpha1.Automa
 	}
 	result = &v1alpha1.AutomationScheduleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("automationschedules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *automationSchedules) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("automationschedules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *automationSchedules) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *automationSchedules) Create(automationSchedule *v1alpha1.AutomationSchedule) (result *v1alpha1.AutomationSchedule, err error) {
 	result = &v1alpha1.AutomationSchedule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("automationschedules").
 		Body(automationSchedule).
 		Do().
@@ -118,6 +124,7 @@ func (c *automationSchedules) Create(automationSchedule *v1alpha1.AutomationSche
 func (c *automationSchedules) Update(automationSchedule *v1alpha1.AutomationSchedule) (result *v1alpha1.AutomationSchedule, err error) {
 	result = &v1alpha1.AutomationSchedule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("automationschedules").
 		Name(automationSchedule.Name).
 		Body(automationSchedule).
@@ -132,6 +139,7 @@ func (c *automationSchedules) Update(automationSchedule *v1alpha1.AutomationSche
 func (c *automationSchedules) UpdateStatus(automationSchedule *v1alpha1.AutomationSchedule) (result *v1alpha1.AutomationSchedule, err error) {
 	result = &v1alpha1.AutomationSchedule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("automationschedules").
 		Name(automationSchedule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *automationSchedules) UpdateStatus(automationSchedule *v1alpha1.Automati
 // Delete takes name of the automationSchedule and deletes it. Returns an error if one occurs.
 func (c *automationSchedules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("automationschedules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *automationSchedules) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("automationschedules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *automationSchedules) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *automationSchedules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AutomationSchedule, err error) {
 	result = &v1alpha1.AutomationSchedule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("automationschedules").
 		SubResource(subresources...).
 		Name(name).

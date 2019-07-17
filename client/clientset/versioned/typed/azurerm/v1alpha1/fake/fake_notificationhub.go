@@ -31,6 +31,7 @@ import (
 // FakeNotificationHubs implements NotificationHubInterface
 type FakeNotificationHubs struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var notificationhubsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "notificationhubs"}
@@ -40,7 +41,8 @@ var notificationhubsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com"
 // Get takes name of the notificationHub, and returns the corresponding notificationHub object, and an error if there is any.
 func (c *FakeNotificationHubs) Get(name string, options v1.GetOptions) (result *v1alpha1.NotificationHub, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(notificationhubsResource, name), &v1alpha1.NotificationHub{})
+		Invokes(testing.NewGetAction(notificationhubsResource, c.ns, name), &v1alpha1.NotificationHub{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeNotificationHubs) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of NotificationHubs that match those selectors.
 func (c *FakeNotificationHubs) List(opts v1.ListOptions) (result *v1alpha1.NotificationHubList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(notificationhubsResource, notificationhubsKind, opts), &v1alpha1.NotificationHubList{})
+		Invokes(testing.NewListAction(notificationhubsResource, notificationhubsKind, c.ns, opts), &v1alpha1.NotificationHubList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeNotificationHubs) List(opts v1.ListOptions) (result *v1alpha1.Notif
 // Watch returns a watch.Interface that watches the requested notificationHubs.
 func (c *FakeNotificationHubs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(notificationhubsResource, opts))
+		InvokesWatch(testing.NewWatchAction(notificationhubsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a notificationHub and creates it.  Returns the server's representation of the notificationHub, and an error, if there is any.
 func (c *FakeNotificationHubs) Create(notificationHub *v1alpha1.NotificationHub) (result *v1alpha1.NotificationHub, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(notificationhubsResource, notificationHub), &v1alpha1.NotificationHub{})
+		Invokes(testing.NewCreateAction(notificationhubsResource, c.ns, notificationHub), &v1alpha1.NotificationHub{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeNotificationHubs) Create(notificationHub *v1alpha1.NotificationHub)
 // Update takes the representation of a notificationHub and updates it. Returns the server's representation of the notificationHub, and an error, if there is any.
 func (c *FakeNotificationHubs) Update(notificationHub *v1alpha1.NotificationHub) (result *v1alpha1.NotificationHub, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(notificationhubsResource, notificationHub), &v1alpha1.NotificationHub{})
+		Invokes(testing.NewUpdateAction(notificationhubsResource, c.ns, notificationHub), &v1alpha1.NotificationHub{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeNotificationHubs) Update(notificationHub *v1alpha1.NotificationHub)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNotificationHubs) UpdateStatus(notificationHub *v1alpha1.NotificationHub) (*v1alpha1.NotificationHub, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(notificationhubsResource, "status", notificationHub), &v1alpha1.NotificationHub{})
+		Invokes(testing.NewUpdateSubresourceAction(notificationhubsResource, "status", c.ns, notificationHub), &v1alpha1.NotificationHub{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeNotificationHubs) UpdateStatus(notificationHub *v1alpha1.Notificati
 // Delete takes name of the notificationHub and deletes it. Returns an error if one occurs.
 func (c *FakeNotificationHubs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(notificationhubsResource, name), &v1alpha1.NotificationHub{})
+		Invokes(testing.NewDeleteAction(notificationhubsResource, c.ns, name), &v1alpha1.NotificationHub{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNotificationHubs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(notificationhubsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(notificationhubsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NotificationHubList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeNotificationHubs) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched notificationHub.
 func (c *FakeNotificationHubs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NotificationHub, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(notificationhubsResource, name, pt, data, subresources...), &v1alpha1.NotificationHub{})
+		Invokes(testing.NewPatchSubresourceAction(notificationhubsResource, c.ns, name, pt, data, subresources...), &v1alpha1.NotificationHub{})
+
 	if obj == nil {
 		return nil, err
 	}

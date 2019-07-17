@@ -29,8 +29,8 @@ import (
 type SnsTopicPolicyLister interface {
 	// List lists all SnsTopicPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SnsTopicPolicy, err error)
-	// Get retrieves the SnsTopicPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.SnsTopicPolicy, error)
+	// SnsTopicPolicies returns an object that can list and get SnsTopicPolicies.
+	SnsTopicPolicies(namespace string) SnsTopicPolicyNamespaceLister
 	SnsTopicPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *snsTopicPolicyLister) List(selector labels.Selector) (ret []*v1alpha1.S
 	return ret, err
 }
 
-// Get retrieves the SnsTopicPolicy from the index for a given name.
-func (s *snsTopicPolicyLister) Get(name string) (*v1alpha1.SnsTopicPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SnsTopicPolicies returns an object that can list and get SnsTopicPolicies.
+func (s *snsTopicPolicyLister) SnsTopicPolicies(namespace string) SnsTopicPolicyNamespaceLister {
+	return snsTopicPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SnsTopicPolicyNamespaceLister helps list and get SnsTopicPolicies.
+type SnsTopicPolicyNamespaceLister interface {
+	// List lists all SnsTopicPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SnsTopicPolicy, err error)
+	// Get retrieves the SnsTopicPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SnsTopicPolicy, error)
+	SnsTopicPolicyNamespaceListerExpansion
+}
+
+// snsTopicPolicyNamespaceLister implements the SnsTopicPolicyNamespaceLister
+// interface.
+type snsTopicPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SnsTopicPolicies in the indexer for a given namespace.
+func (s snsTopicPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SnsTopicPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SnsTopicPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the SnsTopicPolicy from the indexer for a given namespace and name.
+func (s snsTopicPolicyNamespaceLister) Get(name string) (*v1alpha1.SnsTopicPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

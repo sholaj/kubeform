@@ -32,7 +32,7 @@ import (
 // SesDomainDkimsGetter has a method to return a SesDomainDkimInterface.
 // A group's client should implement this interface.
 type SesDomainDkimsGetter interface {
-	SesDomainDkims() SesDomainDkimInterface
+	SesDomainDkims(namespace string) SesDomainDkimInterface
 }
 
 // SesDomainDkimInterface has methods to work with SesDomainDkim resources.
@@ -52,12 +52,14 @@ type SesDomainDkimInterface interface {
 // sesDomainDkims implements SesDomainDkimInterface
 type sesDomainDkims struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSesDomainDkims returns a SesDomainDkims
-func newSesDomainDkims(c *AwsV1alpha1Client) *sesDomainDkims {
+func newSesDomainDkims(c *AwsV1alpha1Client, namespace string) *sesDomainDkims {
 	return &sesDomainDkims{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSesDomainDkims(c *AwsV1alpha1Client) *sesDomainDkims {
 func (c *sesDomainDkims) Get(name string, options v1.GetOptions) (result *v1alpha1.SesDomainDkim, err error) {
 	result = &v1alpha1.SesDomainDkim{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sesdomaindkims").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sesDomainDkims) List(opts v1.ListOptions) (result *v1alpha1.SesDomainDk
 	}
 	result = &v1alpha1.SesDomainDkimList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sesdomaindkims").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sesDomainDkims) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sesdomaindkims").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sesDomainDkims) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *sesDomainDkims) Create(sesDomainDkim *v1alpha1.SesDomainDkim) (result *v1alpha1.SesDomainDkim, err error) {
 	result = &v1alpha1.SesDomainDkim{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sesdomaindkims").
 		Body(sesDomainDkim).
 		Do().
@@ -118,6 +124,7 @@ func (c *sesDomainDkims) Create(sesDomainDkim *v1alpha1.SesDomainDkim) (result *
 func (c *sesDomainDkims) Update(sesDomainDkim *v1alpha1.SesDomainDkim) (result *v1alpha1.SesDomainDkim, err error) {
 	result = &v1alpha1.SesDomainDkim{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sesdomaindkims").
 		Name(sesDomainDkim.Name).
 		Body(sesDomainDkim).
@@ -132,6 +139,7 @@ func (c *sesDomainDkims) Update(sesDomainDkim *v1alpha1.SesDomainDkim) (result *
 func (c *sesDomainDkims) UpdateStatus(sesDomainDkim *v1alpha1.SesDomainDkim) (result *v1alpha1.SesDomainDkim, err error) {
 	result = &v1alpha1.SesDomainDkim{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sesdomaindkims").
 		Name(sesDomainDkim.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sesDomainDkims) UpdateStatus(sesDomainDkim *v1alpha1.SesDomainDkim) (re
 // Delete takes name of the sesDomainDkim and deletes it. Returns an error if one occurs.
 func (c *sesDomainDkims) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sesdomaindkims").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sesDomainDkims) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sesdomaindkims").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sesDomainDkims) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *sesDomainDkims) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesDomainDkim, err error) {
 	result = &v1alpha1.SesDomainDkim{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sesdomaindkims").
 		SubResource(subresources...).
 		Name(name).

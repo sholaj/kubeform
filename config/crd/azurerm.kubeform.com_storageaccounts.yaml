@@ -397,44 +397,64 @@ spec:
           type: object
         spec:
           properties:
-            account_encryption_source:
+            accountEncryptionSource:
               type: string
-            account_kind:
+            accountKind:
               type: string
-            account_replication_type:
+            accountReplicationType:
               type: string
-            account_tier:
+            accountTier:
               type: string
-            custom_domain:
-              items: {}
+            customDomain:
+              items:
+                properties:
+                  name:
+                    type: string
+                  useSubdomain:
+                    type: boolean
+                required:
+                - name
+                type: object
               maxItems: 1
               type: array
-            enable_advanced_threat_protection:
+            enableBlobEncryption:
               type: boolean
-            enable_blob_encryption:
+            enableFileEncryption:
               type: boolean
-            enable_file_encryption:
+            enableHTTPSTrafficOnly:
               type: boolean
-            enable_https_traffic_only:
-              type: boolean
-            is_hns_enabled:
+            isHnsEnabled:
               type: boolean
             location:
               type: string
             name:
               type: string
-            network_rules:
-              items: {}
+            networkRules:
+              items:
+                properties:
+                  defaultAction:
+                    type: string
+                type: object
               maxItems: 1
               type: array
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
           required:
-          - account_replication_type
-          - account_tier
+          - accountReplicationType
+          - accountTier
           - location
           - name
-          - resource_group_name
+          - providerRef
+          - resourceGroupName
           type: object
         status:
           properties:
@@ -445,6 +465,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

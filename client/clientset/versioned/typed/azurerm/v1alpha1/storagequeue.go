@@ -32,7 +32,7 @@ import (
 // StorageQueuesGetter has a method to return a StorageQueueInterface.
 // A group's client should implement this interface.
 type StorageQueuesGetter interface {
-	StorageQueues() StorageQueueInterface
+	StorageQueues(namespace string) StorageQueueInterface
 }
 
 // StorageQueueInterface has methods to work with StorageQueue resources.
@@ -52,12 +52,14 @@ type StorageQueueInterface interface {
 // storageQueues implements StorageQueueInterface
 type storageQueues struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStorageQueues returns a StorageQueues
-func newStorageQueues(c *AzurermV1alpha1Client) *storageQueues {
+func newStorageQueues(c *AzurermV1alpha1Client, namespace string) *storageQueues {
 	return &storageQueues{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStorageQueues(c *AzurermV1alpha1Client) *storageQueues {
 func (c *storageQueues) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageQueue, err error) {
 	result = &v1alpha1.StorageQueue{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagequeues").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *storageQueues) List(opts v1.ListOptions) (result *v1alpha1.StorageQueue
 	}
 	result = &v1alpha1.StorageQueueList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagequeues").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *storageQueues) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storagequeues").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *storageQueues) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *storageQueues) Create(storageQueue *v1alpha1.StorageQueue) (result *v1alpha1.StorageQueue, err error) {
 	result = &v1alpha1.StorageQueue{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storagequeues").
 		Body(storageQueue).
 		Do().
@@ -118,6 +124,7 @@ func (c *storageQueues) Create(storageQueue *v1alpha1.StorageQueue) (result *v1a
 func (c *storageQueues) Update(storageQueue *v1alpha1.StorageQueue) (result *v1alpha1.StorageQueue, err error) {
 	result = &v1alpha1.StorageQueue{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagequeues").
 		Name(storageQueue.Name).
 		Body(storageQueue).
@@ -132,6 +139,7 @@ func (c *storageQueues) Update(storageQueue *v1alpha1.StorageQueue) (result *v1a
 func (c *storageQueues) UpdateStatus(storageQueue *v1alpha1.StorageQueue) (result *v1alpha1.StorageQueue, err error) {
 	result = &v1alpha1.StorageQueue{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagequeues").
 		Name(storageQueue.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *storageQueues) UpdateStatus(storageQueue *v1alpha1.StorageQueue) (resul
 // Delete takes name of the storageQueue and deletes it. Returns an error if one occurs.
 func (c *storageQueues) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagequeues").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *storageQueues) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagequeues").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *storageQueues) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *storageQueues) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageQueue, err error) {
 	result = &v1alpha1.StorageQueue{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storagequeues").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // WafRuleGroupsGetter has a method to return a WafRuleGroupInterface.
 // A group's client should implement this interface.
 type WafRuleGroupsGetter interface {
-	WafRuleGroups() WafRuleGroupInterface
+	WafRuleGroups(namespace string) WafRuleGroupInterface
 }
 
 // WafRuleGroupInterface has methods to work with WafRuleGroup resources.
@@ -52,12 +52,14 @@ type WafRuleGroupInterface interface {
 // wafRuleGroups implements WafRuleGroupInterface
 type wafRuleGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWafRuleGroups returns a WafRuleGroups
-func newWafRuleGroups(c *AwsV1alpha1Client) *wafRuleGroups {
+func newWafRuleGroups(c *AwsV1alpha1Client, namespace string) *wafRuleGroups {
 	return &wafRuleGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWafRuleGroups(c *AwsV1alpha1Client) *wafRuleGroups {
 func (c *wafRuleGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.WafRuleGroup, err error) {
 	result = &v1alpha1.WafRuleGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafrulegroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *wafRuleGroups) List(opts v1.ListOptions) (result *v1alpha1.WafRuleGroup
 	}
 	result = &v1alpha1.WafRuleGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafrulegroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *wafRuleGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafrulegroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *wafRuleGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *wafRuleGroups) Create(wafRuleGroup *v1alpha1.WafRuleGroup) (result *v1alpha1.WafRuleGroup, err error) {
 	result = &v1alpha1.WafRuleGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafrulegroups").
 		Body(wafRuleGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *wafRuleGroups) Create(wafRuleGroup *v1alpha1.WafRuleGroup) (result *v1a
 func (c *wafRuleGroups) Update(wafRuleGroup *v1alpha1.WafRuleGroup) (result *v1alpha1.WafRuleGroup, err error) {
 	result = &v1alpha1.WafRuleGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafrulegroups").
 		Name(wafRuleGroup.Name).
 		Body(wafRuleGroup).
@@ -132,6 +139,7 @@ func (c *wafRuleGroups) Update(wafRuleGroup *v1alpha1.WafRuleGroup) (result *v1a
 func (c *wafRuleGroups) UpdateStatus(wafRuleGroup *v1alpha1.WafRuleGroup) (result *v1alpha1.WafRuleGroup, err error) {
 	result = &v1alpha1.WafRuleGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafrulegroups").
 		Name(wafRuleGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *wafRuleGroups) UpdateStatus(wafRuleGroup *v1alpha1.WafRuleGroup) (resul
 // Delete takes name of the wafRuleGroup and deletes it. Returns an error if one occurs.
 func (c *wafRuleGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafrulegroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *wafRuleGroups) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafrulegroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *wafRuleGroups) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *wafRuleGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafRuleGroup, err error) {
 	result = &v1alpha1.WafRuleGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafrulegroups").
 		SubResource(subresources...).
 		Name(name).

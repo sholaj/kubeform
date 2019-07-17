@@ -29,8 +29,8 @@ import (
 type GameliftBuildLister interface {
 	// List lists all GameliftBuilds in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GameliftBuild, err error)
-	// Get retrieves the GameliftBuild from the index for a given name.
-	Get(name string) (*v1alpha1.GameliftBuild, error)
+	// GameliftBuilds returns an object that can list and get GameliftBuilds.
+	GameliftBuilds(namespace string) GameliftBuildNamespaceLister
 	GameliftBuildListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *gameliftBuildLister) List(selector labels.Selector) (ret []*v1alpha1.Ga
 	return ret, err
 }
 
-// Get retrieves the GameliftBuild from the index for a given name.
-func (s *gameliftBuildLister) Get(name string) (*v1alpha1.GameliftBuild, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GameliftBuilds returns an object that can list and get GameliftBuilds.
+func (s *gameliftBuildLister) GameliftBuilds(namespace string) GameliftBuildNamespaceLister {
+	return gameliftBuildNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GameliftBuildNamespaceLister helps list and get GameliftBuilds.
+type GameliftBuildNamespaceLister interface {
+	// List lists all GameliftBuilds in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GameliftBuild, err error)
+	// Get retrieves the GameliftBuild from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GameliftBuild, error)
+	GameliftBuildNamespaceListerExpansion
+}
+
+// gameliftBuildNamespaceLister implements the GameliftBuildNamespaceLister
+// interface.
+type gameliftBuildNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GameliftBuilds in the indexer for a given namespace.
+func (s gameliftBuildNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GameliftBuild, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GameliftBuild))
+	})
+	return ret, err
+}
+
+// Get retrieves the GameliftBuild from the indexer for a given namespace and name.
+func (s gameliftBuildNamespaceLister) Get(name string) (*v1alpha1.GameliftBuild, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

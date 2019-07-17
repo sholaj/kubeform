@@ -32,7 +32,7 @@ import (
 // MskConfigurationsGetter has a method to return a MskConfigurationInterface.
 // A group's client should implement this interface.
 type MskConfigurationsGetter interface {
-	MskConfigurations() MskConfigurationInterface
+	MskConfigurations(namespace string) MskConfigurationInterface
 }
 
 // MskConfigurationInterface has methods to work with MskConfiguration resources.
@@ -52,12 +52,14 @@ type MskConfigurationInterface interface {
 // mskConfigurations implements MskConfigurationInterface
 type mskConfigurations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMskConfigurations returns a MskConfigurations
-func newMskConfigurations(c *AwsV1alpha1Client) *mskConfigurations {
+func newMskConfigurations(c *AwsV1alpha1Client, namespace string) *mskConfigurations {
 	return &mskConfigurations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMskConfigurations(c *AwsV1alpha1Client) *mskConfigurations {
 func (c *mskConfigurations) Get(name string, options v1.GetOptions) (result *v1alpha1.MskConfiguration, err error) {
 	result = &v1alpha1.MskConfiguration{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mskconfigurations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *mskConfigurations) List(opts v1.ListOptions) (result *v1alpha1.MskConfi
 	}
 	result = &v1alpha1.MskConfigurationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mskconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *mskConfigurations) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("mskconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *mskConfigurations) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *mskConfigurations) Create(mskConfiguration *v1alpha1.MskConfiguration) (result *v1alpha1.MskConfiguration, err error) {
 	result = &v1alpha1.MskConfiguration{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("mskconfigurations").
 		Body(mskConfiguration).
 		Do().
@@ -118,6 +124,7 @@ func (c *mskConfigurations) Create(mskConfiguration *v1alpha1.MskConfiguration) 
 func (c *mskConfigurations) Update(mskConfiguration *v1alpha1.MskConfiguration) (result *v1alpha1.MskConfiguration, err error) {
 	result = &v1alpha1.MskConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mskconfigurations").
 		Name(mskConfiguration.Name).
 		Body(mskConfiguration).
@@ -132,6 +139,7 @@ func (c *mskConfigurations) Update(mskConfiguration *v1alpha1.MskConfiguration) 
 func (c *mskConfigurations) UpdateStatus(mskConfiguration *v1alpha1.MskConfiguration) (result *v1alpha1.MskConfiguration, err error) {
 	result = &v1alpha1.MskConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mskconfigurations").
 		Name(mskConfiguration.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *mskConfigurations) UpdateStatus(mskConfiguration *v1alpha1.MskConfigura
 // Delete takes name of the mskConfiguration and deletes it. Returns an error if one occurs.
 func (c *mskConfigurations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mskconfigurations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *mskConfigurations) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mskconfigurations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *mskConfigurations) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *mskConfigurations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MskConfiguration, err error) {
 	result = &v1alpha1.MskConfiguration{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("mskconfigurations").
 		SubResource(subresources...).
 		Name(name).

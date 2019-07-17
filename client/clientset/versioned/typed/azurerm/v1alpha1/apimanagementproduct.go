@@ -32,7 +32,7 @@ import (
 // ApiManagementProductsGetter has a method to return a ApiManagementProductInterface.
 // A group's client should implement this interface.
 type ApiManagementProductsGetter interface {
-	ApiManagementProducts() ApiManagementProductInterface
+	ApiManagementProducts(namespace string) ApiManagementProductInterface
 }
 
 // ApiManagementProductInterface has methods to work with ApiManagementProduct resources.
@@ -52,12 +52,14 @@ type ApiManagementProductInterface interface {
 // apiManagementProducts implements ApiManagementProductInterface
 type apiManagementProducts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiManagementProducts returns a ApiManagementProducts
-func newApiManagementProducts(c *AzurermV1alpha1Client) *apiManagementProducts {
+func newApiManagementProducts(c *AzurermV1alpha1Client, namespace string) *apiManagementProducts {
 	return &apiManagementProducts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiManagementProducts(c *AzurermV1alpha1Client) *apiManagementProducts {
 func (c *apiManagementProducts) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementProduct, err error) {
 	result = &v1alpha1.ApiManagementProduct{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementproducts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiManagementProducts) List(opts v1.ListOptions) (result *v1alpha1.ApiM
 	}
 	result = &v1alpha1.ApiManagementProductList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementproducts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiManagementProducts) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementproducts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiManagementProducts) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *apiManagementProducts) Create(apiManagementProduct *v1alpha1.ApiManagementProduct) (result *v1alpha1.ApiManagementProduct, err error) {
 	result = &v1alpha1.ApiManagementProduct{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apimanagementproducts").
 		Body(apiManagementProduct).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiManagementProducts) Create(apiManagementProduct *v1alpha1.ApiManagem
 func (c *apiManagementProducts) Update(apiManagementProduct *v1alpha1.ApiManagementProduct) (result *v1alpha1.ApiManagementProduct, err error) {
 	result = &v1alpha1.ApiManagementProduct{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementproducts").
 		Name(apiManagementProduct.Name).
 		Body(apiManagementProduct).
@@ -132,6 +139,7 @@ func (c *apiManagementProducts) Update(apiManagementProduct *v1alpha1.ApiManagem
 func (c *apiManagementProducts) UpdateStatus(apiManagementProduct *v1alpha1.ApiManagementProduct) (result *v1alpha1.ApiManagementProduct, err error) {
 	result = &v1alpha1.ApiManagementProduct{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementproducts").
 		Name(apiManagementProduct.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiManagementProducts) UpdateStatus(apiManagementProduct *v1alpha1.ApiM
 // Delete takes name of the apiManagementProduct and deletes it. Returns an error if one occurs.
 func (c *apiManagementProducts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementproducts").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiManagementProducts) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementproducts").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiManagementProducts) DeleteCollection(options *v1.DeleteOptions, list
 func (c *apiManagementProducts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementProduct, err error) {
 	result = &v1alpha1.ApiManagementProduct{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apimanagementproducts").
 		SubResource(subresources...).
 		Name(name).

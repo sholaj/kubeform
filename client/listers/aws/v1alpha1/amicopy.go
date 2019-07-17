@@ -29,8 +29,8 @@ import (
 type AmiCopyLister interface {
 	// List lists all AmiCopies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AmiCopy, err error)
-	// Get retrieves the AmiCopy from the index for a given name.
-	Get(name string) (*v1alpha1.AmiCopy, error)
+	// AmiCopies returns an object that can list and get AmiCopies.
+	AmiCopies(namespace string) AmiCopyNamespaceLister
 	AmiCopyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *amiCopyLister) List(selector labels.Selector) (ret []*v1alpha1.AmiCopy,
 	return ret, err
 }
 
-// Get retrieves the AmiCopy from the index for a given name.
-func (s *amiCopyLister) Get(name string) (*v1alpha1.AmiCopy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AmiCopies returns an object that can list and get AmiCopies.
+func (s *amiCopyLister) AmiCopies(namespace string) AmiCopyNamespaceLister {
+	return amiCopyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AmiCopyNamespaceLister helps list and get AmiCopies.
+type AmiCopyNamespaceLister interface {
+	// List lists all AmiCopies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AmiCopy, err error)
+	// Get retrieves the AmiCopy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AmiCopy, error)
+	AmiCopyNamespaceListerExpansion
+}
+
+// amiCopyNamespaceLister implements the AmiCopyNamespaceLister
+// interface.
+type amiCopyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AmiCopies in the indexer for a given namespace.
+func (s amiCopyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AmiCopy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AmiCopy))
+	})
+	return ret, err
+}
+
+// Get retrieves the AmiCopy from the indexer for a given namespace and name.
+func (s amiCopyNamespaceLister) Get(name string) (*v1alpha1.AmiCopy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

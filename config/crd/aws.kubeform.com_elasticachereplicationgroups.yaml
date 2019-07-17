@@ -397,47 +397,57 @@ spec:
           type: object
         spec:
           properties:
-            at_rest_encryption_enabled:
+            atRestEncryptionEnabled:
               type: boolean
-            auth_token:
+            authToken:
               type: string
-            auto_minor_version_upgrade:
+            autoMinorVersionUpgrade:
               type: boolean
-            automatic_failover_enabled:
+            automaticFailoverEnabled:
               type: boolean
-            availability_zones:
+            availabilityZones:
               items:
                 type: string
               type: array
               uniqueItems: true
             engine:
               type: string
-            notification_topic_arn:
+            notificationTopicArn:
               type: string
             port:
               type: integer
-            replication_group_description:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            replicationGroupDescription:
               type: string
-            replication_group_id:
+            replicationGroupID:
               type: string
-            snapshot_arns:
+            snapshotArns:
               items:
                 type: string
               type: array
               uniqueItems: true
-            snapshot_name:
+            snapshotName:
               type: string
-            snapshot_retention_limit:
+            snapshotRetentionLimit:
               type: integer
             tags:
               additionalProperties:
                 type: string
               type: object
-            transit_encryption_enabled:
+            transitEncryptionEnabled:
               type: boolean
           required:
-          - replication_group_description
-          - replication_group_id
+          - providerRef
+          - replicationGroupDescription
+          - replicationGroupID
           type: object
         status:
           properties:
@@ -448,6 +458,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

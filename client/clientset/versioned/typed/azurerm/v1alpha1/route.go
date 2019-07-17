@@ -32,7 +32,7 @@ import (
 // RoutesGetter has a method to return a RouteInterface.
 // A group's client should implement this interface.
 type RoutesGetter interface {
-	Routes() RouteInterface
+	Routes(namespace string) RouteInterface
 }
 
 // RouteInterface has methods to work with Route resources.
@@ -52,12 +52,14 @@ type RouteInterface interface {
 // routes implements RouteInterface
 type routes struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRoutes returns a Routes
-func newRoutes(c *AzurermV1alpha1Client) *routes {
+func newRoutes(c *AzurermV1alpha1Client, namespace string) *routes {
 	return &routes{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRoutes(c *AzurermV1alpha1Client) *routes {
 func (c *routes) Get(name string, options v1.GetOptions) (result *v1alpha1.Route, err error) {
 	result = &v1alpha1.Route{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("routes").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *routes) List(opts v1.ListOptions) (result *v1alpha1.RouteList, err erro
 	}
 	result = &v1alpha1.RouteList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("routes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *routes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("routes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *routes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *routes) Create(route *v1alpha1.Route) (result *v1alpha1.Route, err error) {
 	result = &v1alpha1.Route{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("routes").
 		Body(route).
 		Do().
@@ -118,6 +124,7 @@ func (c *routes) Create(route *v1alpha1.Route) (result *v1alpha1.Route, err erro
 func (c *routes) Update(route *v1alpha1.Route) (result *v1alpha1.Route, err error) {
 	result = &v1alpha1.Route{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("routes").
 		Name(route.Name).
 		Body(route).
@@ -132,6 +139,7 @@ func (c *routes) Update(route *v1alpha1.Route) (result *v1alpha1.Route, err erro
 func (c *routes) UpdateStatus(route *v1alpha1.Route) (result *v1alpha1.Route, err error) {
 	result = &v1alpha1.Route{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("routes").
 		Name(route.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *routes) UpdateStatus(route *v1alpha1.Route) (result *v1alpha1.Route, er
 // Delete takes name of the route and deletes it. Returns an error if one occurs.
 func (c *routes) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("routes").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *routes) DeleteCollection(options *v1.DeleteOptions, listOptions v1.List
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("routes").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *routes) DeleteCollection(options *v1.DeleteOptions, listOptions v1.List
 func (c *routes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Route, err error) {
 	result = &v1alpha1.Route{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("routes").
 		SubResource(subresources...).
 		Name(name).

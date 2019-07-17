@@ -29,8 +29,8 @@ import (
 type Ec2CapacityReservationLister interface {
 	// List lists all Ec2CapacityReservations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Ec2CapacityReservation, err error)
-	// Get retrieves the Ec2CapacityReservation from the index for a given name.
-	Get(name string) (*v1alpha1.Ec2CapacityReservation, error)
+	// Ec2CapacityReservations returns an object that can list and get Ec2CapacityReservations.
+	Ec2CapacityReservations(namespace string) Ec2CapacityReservationNamespaceLister
 	Ec2CapacityReservationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ec2CapacityReservationLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the Ec2CapacityReservation from the index for a given name.
-func (s *ec2CapacityReservationLister) Get(name string) (*v1alpha1.Ec2CapacityReservation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Ec2CapacityReservations returns an object that can list and get Ec2CapacityReservations.
+func (s *ec2CapacityReservationLister) Ec2CapacityReservations(namespace string) Ec2CapacityReservationNamespaceLister {
+	return ec2CapacityReservationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// Ec2CapacityReservationNamespaceLister helps list and get Ec2CapacityReservations.
+type Ec2CapacityReservationNamespaceLister interface {
+	// List lists all Ec2CapacityReservations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Ec2CapacityReservation, err error)
+	// Get retrieves the Ec2CapacityReservation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Ec2CapacityReservation, error)
+	Ec2CapacityReservationNamespaceListerExpansion
+}
+
+// ec2CapacityReservationNamespaceLister implements the Ec2CapacityReservationNamespaceLister
+// interface.
+type ec2CapacityReservationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Ec2CapacityReservations in the indexer for a given namespace.
+func (s ec2CapacityReservationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Ec2CapacityReservation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Ec2CapacityReservation))
+	})
+	return ret, err
+}
+
+// Get retrieves the Ec2CapacityReservation from the indexer for a given namespace and name.
+func (s ec2CapacityReservationNamespaceLister) Get(name string) (*v1alpha1.Ec2CapacityReservation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

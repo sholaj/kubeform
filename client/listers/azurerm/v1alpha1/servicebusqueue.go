@@ -29,8 +29,8 @@ import (
 type ServicebusQueueLister interface {
 	// List lists all ServicebusQueues in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ServicebusQueue, err error)
-	// Get retrieves the ServicebusQueue from the index for a given name.
-	Get(name string) (*v1alpha1.ServicebusQueue, error)
+	// ServicebusQueues returns an object that can list and get ServicebusQueues.
+	ServicebusQueues(namespace string) ServicebusQueueNamespaceLister
 	ServicebusQueueListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *servicebusQueueLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the ServicebusQueue from the index for a given name.
-func (s *servicebusQueueLister) Get(name string) (*v1alpha1.ServicebusQueue, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ServicebusQueues returns an object that can list and get ServicebusQueues.
+func (s *servicebusQueueLister) ServicebusQueues(namespace string) ServicebusQueueNamespaceLister {
+	return servicebusQueueNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ServicebusQueueNamespaceLister helps list and get ServicebusQueues.
+type ServicebusQueueNamespaceLister interface {
+	// List lists all ServicebusQueues in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ServicebusQueue, err error)
+	// Get retrieves the ServicebusQueue from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ServicebusQueue, error)
+	ServicebusQueueNamespaceListerExpansion
+}
+
+// servicebusQueueNamespaceLister implements the ServicebusQueueNamespaceLister
+// interface.
+type servicebusQueueNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ServicebusQueues in the indexer for a given namespace.
+func (s servicebusQueueNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServicebusQueue, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ServicebusQueue))
+	})
+	return ret, err
+}
+
+// Get retrieves the ServicebusQueue from the indexer for a given namespace and name.
+func (s servicebusQueueNamespaceLister) Get(name string) (*v1alpha1.ServicebusQueue, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

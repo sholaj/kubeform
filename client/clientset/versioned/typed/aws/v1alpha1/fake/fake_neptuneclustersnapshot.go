@@ -31,6 +31,7 @@ import (
 // FakeNeptuneClusterSnapshots implements NeptuneClusterSnapshotInterface
 type FakeNeptuneClusterSnapshots struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var neptuneclustersnapshotsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "neptuneclustersnapshots"}
@@ -40,7 +41,8 @@ var neptuneclustersnapshotsKind = schema.GroupVersionKind{Group: "aws.kubeform.c
 // Get takes name of the neptuneClusterSnapshot, and returns the corresponding neptuneClusterSnapshot object, and an error if there is any.
 func (c *FakeNeptuneClusterSnapshots) Get(name string, options v1.GetOptions) (result *v1alpha1.NeptuneClusterSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(neptuneclustersnapshotsResource, name), &v1alpha1.NeptuneClusterSnapshot{})
+		Invokes(testing.NewGetAction(neptuneclustersnapshotsResource, c.ns, name), &v1alpha1.NeptuneClusterSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeNeptuneClusterSnapshots) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of NeptuneClusterSnapshots that match those selectors.
 func (c *FakeNeptuneClusterSnapshots) List(opts v1.ListOptions) (result *v1alpha1.NeptuneClusterSnapshotList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(neptuneclustersnapshotsResource, neptuneclustersnapshotsKind, opts), &v1alpha1.NeptuneClusterSnapshotList{})
+		Invokes(testing.NewListAction(neptuneclustersnapshotsResource, neptuneclustersnapshotsKind, c.ns, opts), &v1alpha1.NeptuneClusterSnapshotList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeNeptuneClusterSnapshots) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested neptuneClusterSnapshots.
 func (c *FakeNeptuneClusterSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(neptuneclustersnapshotsResource, opts))
+		InvokesWatch(testing.NewWatchAction(neptuneclustersnapshotsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a neptuneClusterSnapshot and creates it.  Returns the server's representation of the neptuneClusterSnapshot, and an error, if there is any.
 func (c *FakeNeptuneClusterSnapshots) Create(neptuneClusterSnapshot *v1alpha1.NeptuneClusterSnapshot) (result *v1alpha1.NeptuneClusterSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(neptuneclustersnapshotsResource, neptuneClusterSnapshot), &v1alpha1.NeptuneClusterSnapshot{})
+		Invokes(testing.NewCreateAction(neptuneclustersnapshotsResource, c.ns, neptuneClusterSnapshot), &v1alpha1.NeptuneClusterSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeNeptuneClusterSnapshots) Create(neptuneClusterSnapshot *v1alpha1.Ne
 // Update takes the representation of a neptuneClusterSnapshot and updates it. Returns the server's representation of the neptuneClusterSnapshot, and an error, if there is any.
 func (c *FakeNeptuneClusterSnapshots) Update(neptuneClusterSnapshot *v1alpha1.NeptuneClusterSnapshot) (result *v1alpha1.NeptuneClusterSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(neptuneclustersnapshotsResource, neptuneClusterSnapshot), &v1alpha1.NeptuneClusterSnapshot{})
+		Invokes(testing.NewUpdateAction(neptuneclustersnapshotsResource, c.ns, neptuneClusterSnapshot), &v1alpha1.NeptuneClusterSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeNeptuneClusterSnapshots) Update(neptuneClusterSnapshot *v1alpha1.Ne
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNeptuneClusterSnapshots) UpdateStatus(neptuneClusterSnapshot *v1alpha1.NeptuneClusterSnapshot) (*v1alpha1.NeptuneClusterSnapshot, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(neptuneclustersnapshotsResource, "status", neptuneClusterSnapshot), &v1alpha1.NeptuneClusterSnapshot{})
+		Invokes(testing.NewUpdateSubresourceAction(neptuneclustersnapshotsResource, "status", c.ns, neptuneClusterSnapshot), &v1alpha1.NeptuneClusterSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeNeptuneClusterSnapshots) UpdateStatus(neptuneClusterSnapshot *v1alp
 // Delete takes name of the neptuneClusterSnapshot and deletes it. Returns an error if one occurs.
 func (c *FakeNeptuneClusterSnapshots) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(neptuneclustersnapshotsResource, name), &v1alpha1.NeptuneClusterSnapshot{})
+		Invokes(testing.NewDeleteAction(neptuneclustersnapshotsResource, c.ns, name), &v1alpha1.NeptuneClusterSnapshot{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNeptuneClusterSnapshots) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(neptuneclustersnapshotsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(neptuneclustersnapshotsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NeptuneClusterSnapshotList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeNeptuneClusterSnapshots) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched neptuneClusterSnapshot.
 func (c *FakeNeptuneClusterSnapshots) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NeptuneClusterSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(neptuneclustersnapshotsResource, name, pt, data, subresources...), &v1alpha1.NeptuneClusterSnapshot{})
+		Invokes(testing.NewPatchSubresourceAction(neptuneclustersnapshotsResource, c.ns, name, pt, data, subresources...), &v1alpha1.NeptuneClusterSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}

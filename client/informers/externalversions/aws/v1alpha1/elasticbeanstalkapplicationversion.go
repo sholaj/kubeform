@@ -41,32 +41,33 @@ type ElasticBeanstalkApplicationVersionInformer interface {
 type elasticBeanstalkApplicationVersionInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewElasticBeanstalkApplicationVersionInformer constructs a new informer for ElasticBeanstalkApplicationVersion type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewElasticBeanstalkApplicationVersionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredElasticBeanstalkApplicationVersionInformer(client, resyncPeriod, indexers, nil)
+func NewElasticBeanstalkApplicationVersionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredElasticBeanstalkApplicationVersionInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredElasticBeanstalkApplicationVersionInformer constructs a new informer for ElasticBeanstalkApplicationVersion type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredElasticBeanstalkApplicationVersionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredElasticBeanstalkApplicationVersionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ElasticBeanstalkApplicationVersions().List(options)
+				return client.AwsV1alpha1().ElasticBeanstalkApplicationVersions(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ElasticBeanstalkApplicationVersions().Watch(options)
+				return client.AwsV1alpha1().ElasticBeanstalkApplicationVersions(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.ElasticBeanstalkApplicationVersion{},
@@ -76,7 +77,7 @@ func NewFilteredElasticBeanstalkApplicationVersionInformer(client versioned.Inte
 }
 
 func (f *elasticBeanstalkApplicationVersionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredElasticBeanstalkApplicationVersionInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredElasticBeanstalkApplicationVersionInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *elasticBeanstalkApplicationVersionInformer) Informer() cache.SharedIndexInformer {

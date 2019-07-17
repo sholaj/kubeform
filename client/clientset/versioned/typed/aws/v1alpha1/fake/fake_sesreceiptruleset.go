@@ -31,6 +31,7 @@ import (
 // FakeSesReceiptRuleSets implements SesReceiptRuleSetInterface
 type FakeSesReceiptRuleSets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var sesreceiptrulesetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "sesreceiptrulesets"}
@@ -40,7 +41,8 @@ var sesreceiptrulesetsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", 
 // Get takes name of the sesReceiptRuleSet, and returns the corresponding sesReceiptRuleSet object, and an error if there is any.
 func (c *FakeSesReceiptRuleSets) Get(name string, options v1.GetOptions) (result *v1alpha1.SesReceiptRuleSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sesreceiptrulesetsResource, name), &v1alpha1.SesReceiptRuleSet{})
+		Invokes(testing.NewGetAction(sesreceiptrulesetsResource, c.ns, name), &v1alpha1.SesReceiptRuleSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSesReceiptRuleSets) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of SesReceiptRuleSets that match those selectors.
 func (c *FakeSesReceiptRuleSets) List(opts v1.ListOptions) (result *v1alpha1.SesReceiptRuleSetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sesreceiptrulesetsResource, sesreceiptrulesetsKind, opts), &v1alpha1.SesReceiptRuleSetList{})
+		Invokes(testing.NewListAction(sesreceiptrulesetsResource, sesreceiptrulesetsKind, c.ns, opts), &v1alpha1.SesReceiptRuleSetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSesReceiptRuleSets) List(opts v1.ListOptions) (result *v1alpha1.Ses
 // Watch returns a watch.Interface that watches the requested sesReceiptRuleSets.
 func (c *FakeSesReceiptRuleSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sesreceiptrulesetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(sesreceiptrulesetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sesReceiptRuleSet and creates it.  Returns the server's representation of the sesReceiptRuleSet, and an error, if there is any.
 func (c *FakeSesReceiptRuleSets) Create(sesReceiptRuleSet *v1alpha1.SesReceiptRuleSet) (result *v1alpha1.SesReceiptRuleSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sesreceiptrulesetsResource, sesReceiptRuleSet), &v1alpha1.SesReceiptRuleSet{})
+		Invokes(testing.NewCreateAction(sesreceiptrulesetsResource, c.ns, sesReceiptRuleSet), &v1alpha1.SesReceiptRuleSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSesReceiptRuleSets) Create(sesReceiptRuleSet *v1alpha1.SesReceiptRu
 // Update takes the representation of a sesReceiptRuleSet and updates it. Returns the server's representation of the sesReceiptRuleSet, and an error, if there is any.
 func (c *FakeSesReceiptRuleSets) Update(sesReceiptRuleSet *v1alpha1.SesReceiptRuleSet) (result *v1alpha1.SesReceiptRuleSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sesreceiptrulesetsResource, sesReceiptRuleSet), &v1alpha1.SesReceiptRuleSet{})
+		Invokes(testing.NewUpdateAction(sesreceiptrulesetsResource, c.ns, sesReceiptRuleSet), &v1alpha1.SesReceiptRuleSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSesReceiptRuleSets) Update(sesReceiptRuleSet *v1alpha1.SesReceiptRu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSesReceiptRuleSets) UpdateStatus(sesReceiptRuleSet *v1alpha1.SesReceiptRuleSet) (*v1alpha1.SesReceiptRuleSet, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sesreceiptrulesetsResource, "status", sesReceiptRuleSet), &v1alpha1.SesReceiptRuleSet{})
+		Invokes(testing.NewUpdateSubresourceAction(sesreceiptrulesetsResource, "status", c.ns, sesReceiptRuleSet), &v1alpha1.SesReceiptRuleSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSesReceiptRuleSets) UpdateStatus(sesReceiptRuleSet *v1alpha1.SesRec
 // Delete takes name of the sesReceiptRuleSet and deletes it. Returns an error if one occurs.
 func (c *FakeSesReceiptRuleSets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sesreceiptrulesetsResource, name), &v1alpha1.SesReceiptRuleSet{})
+		Invokes(testing.NewDeleteAction(sesreceiptrulesetsResource, c.ns, name), &v1alpha1.SesReceiptRuleSet{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSesReceiptRuleSets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sesreceiptrulesetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sesreceiptrulesetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SesReceiptRuleSetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSesReceiptRuleSets) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched sesReceiptRuleSet.
 func (c *FakeSesReceiptRuleSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesReceiptRuleSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sesreceiptrulesetsResource, name, pt, data, subresources...), &v1alpha1.SesReceiptRuleSet{})
+		Invokes(testing.NewPatchSubresourceAction(sesreceiptrulesetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SesReceiptRuleSet{})
+
 	if obj == nil {
 		return nil, err
 	}

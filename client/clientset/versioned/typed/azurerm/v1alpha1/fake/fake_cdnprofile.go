@@ -31,6 +31,7 @@ import (
 // FakeCdnProfiles implements CdnProfileInterface
 type FakeCdnProfiles struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var cdnprofilesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "cdnprofiles"}
@@ -40,7 +41,8 @@ var cdnprofilesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Ver
 // Get takes name of the cdnProfile, and returns the corresponding cdnProfile object, and an error if there is any.
 func (c *FakeCdnProfiles) Get(name string, options v1.GetOptions) (result *v1alpha1.CdnProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cdnprofilesResource, name), &v1alpha1.CdnProfile{})
+		Invokes(testing.NewGetAction(cdnprofilesResource, c.ns, name), &v1alpha1.CdnProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCdnProfiles) Get(name string, options v1.GetOptions) (result *v1alp
 // List takes label and field selectors, and returns the list of CdnProfiles that match those selectors.
 func (c *FakeCdnProfiles) List(opts v1.ListOptions) (result *v1alpha1.CdnProfileList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cdnprofilesResource, cdnprofilesKind, opts), &v1alpha1.CdnProfileList{})
+		Invokes(testing.NewListAction(cdnprofilesResource, cdnprofilesKind, c.ns, opts), &v1alpha1.CdnProfileList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCdnProfiles) List(opts v1.ListOptions) (result *v1alpha1.CdnProfile
 // Watch returns a watch.Interface that watches the requested cdnProfiles.
 func (c *FakeCdnProfiles) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cdnprofilesResource, opts))
+		InvokesWatch(testing.NewWatchAction(cdnprofilesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cdnProfile and creates it.  Returns the server's representation of the cdnProfile, and an error, if there is any.
 func (c *FakeCdnProfiles) Create(cdnProfile *v1alpha1.CdnProfile) (result *v1alpha1.CdnProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cdnprofilesResource, cdnProfile), &v1alpha1.CdnProfile{})
+		Invokes(testing.NewCreateAction(cdnprofilesResource, c.ns, cdnProfile), &v1alpha1.CdnProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCdnProfiles) Create(cdnProfile *v1alpha1.CdnProfile) (result *v1alp
 // Update takes the representation of a cdnProfile and updates it. Returns the server's representation of the cdnProfile, and an error, if there is any.
 func (c *FakeCdnProfiles) Update(cdnProfile *v1alpha1.CdnProfile) (result *v1alpha1.CdnProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cdnprofilesResource, cdnProfile), &v1alpha1.CdnProfile{})
+		Invokes(testing.NewUpdateAction(cdnprofilesResource, c.ns, cdnProfile), &v1alpha1.CdnProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCdnProfiles) Update(cdnProfile *v1alpha1.CdnProfile) (result *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCdnProfiles) UpdateStatus(cdnProfile *v1alpha1.CdnProfile) (*v1alpha1.CdnProfile, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cdnprofilesResource, "status", cdnProfile), &v1alpha1.CdnProfile{})
+		Invokes(testing.NewUpdateSubresourceAction(cdnprofilesResource, "status", c.ns, cdnProfile), &v1alpha1.CdnProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCdnProfiles) UpdateStatus(cdnProfile *v1alpha1.CdnProfile) (*v1alph
 // Delete takes name of the cdnProfile and deletes it. Returns an error if one occurs.
 func (c *FakeCdnProfiles) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cdnprofilesResource, name), &v1alpha1.CdnProfile{})
+		Invokes(testing.NewDeleteAction(cdnprofilesResource, c.ns, name), &v1alpha1.CdnProfile{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCdnProfiles) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cdnprofilesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cdnprofilesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CdnProfileList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCdnProfiles) DeleteCollection(options *v1.DeleteOptions, listOption
 // Patch applies the patch and returns the patched cdnProfile.
 func (c *FakeCdnProfiles) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CdnProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cdnprofilesResource, name, pt, data, subresources...), &v1alpha1.CdnProfile{})
+		Invokes(testing.NewPatchSubresourceAction(cdnprofilesResource, c.ns, name, pt, data, subresources...), &v1alpha1.CdnProfile{})
+
 	if obj == nil {
 		return nil, err
 	}

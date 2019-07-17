@@ -41,32 +41,33 @@ type MediaServicesAccountInformer interface {
 type mediaServicesAccountInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewMediaServicesAccountInformer constructs a new informer for MediaServicesAccount type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewMediaServicesAccountInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredMediaServicesAccountInformer(client, resyncPeriod, indexers, nil)
+func NewMediaServicesAccountInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredMediaServicesAccountInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredMediaServicesAccountInformer constructs a new informer for MediaServicesAccount type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredMediaServicesAccountInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredMediaServicesAccountInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().MediaServicesAccounts().List(options)
+				return client.AzurermV1alpha1().MediaServicesAccounts(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().MediaServicesAccounts().Watch(options)
+				return client.AzurermV1alpha1().MediaServicesAccounts(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.MediaServicesAccount{},
@@ -76,7 +77,7 @@ func NewFilteredMediaServicesAccountInformer(client versioned.Interface, resyncP
 }
 
 func (f *mediaServicesAccountInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredMediaServicesAccountInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredMediaServicesAccountInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *mediaServicesAccountInformer) Informer() cache.SharedIndexInformer {

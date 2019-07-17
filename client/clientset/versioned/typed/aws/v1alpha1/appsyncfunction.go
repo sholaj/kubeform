@@ -32,7 +32,7 @@ import (
 // AppsyncFunctionsGetter has a method to return a AppsyncFunctionInterface.
 // A group's client should implement this interface.
 type AppsyncFunctionsGetter interface {
-	AppsyncFunctions() AppsyncFunctionInterface
+	AppsyncFunctions(namespace string) AppsyncFunctionInterface
 }
 
 // AppsyncFunctionInterface has methods to work with AppsyncFunction resources.
@@ -52,12 +52,14 @@ type AppsyncFunctionInterface interface {
 // appsyncFunctions implements AppsyncFunctionInterface
 type appsyncFunctions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAppsyncFunctions returns a AppsyncFunctions
-func newAppsyncFunctions(c *AwsV1alpha1Client) *appsyncFunctions {
+func newAppsyncFunctions(c *AwsV1alpha1Client, namespace string) *appsyncFunctions {
 	return &appsyncFunctions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAppsyncFunctions(c *AwsV1alpha1Client) *appsyncFunctions {
 func (c *appsyncFunctions) Get(name string, options v1.GetOptions) (result *v1alpha1.AppsyncFunction, err error) {
 	result = &v1alpha1.AppsyncFunction{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appsyncfunctions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *appsyncFunctions) List(opts v1.ListOptions) (result *v1alpha1.AppsyncFu
 	}
 	result = &v1alpha1.AppsyncFunctionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appsyncfunctions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *appsyncFunctions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("appsyncfunctions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *appsyncFunctions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *appsyncFunctions) Create(appsyncFunction *v1alpha1.AppsyncFunction) (result *v1alpha1.AppsyncFunction, err error) {
 	result = &v1alpha1.AppsyncFunction{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("appsyncfunctions").
 		Body(appsyncFunction).
 		Do().
@@ -118,6 +124,7 @@ func (c *appsyncFunctions) Create(appsyncFunction *v1alpha1.AppsyncFunction) (re
 func (c *appsyncFunctions) Update(appsyncFunction *v1alpha1.AppsyncFunction) (result *v1alpha1.AppsyncFunction, err error) {
 	result = &v1alpha1.AppsyncFunction{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appsyncfunctions").
 		Name(appsyncFunction.Name).
 		Body(appsyncFunction).
@@ -132,6 +139,7 @@ func (c *appsyncFunctions) Update(appsyncFunction *v1alpha1.AppsyncFunction) (re
 func (c *appsyncFunctions) UpdateStatus(appsyncFunction *v1alpha1.AppsyncFunction) (result *v1alpha1.AppsyncFunction, err error) {
 	result = &v1alpha1.AppsyncFunction{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appsyncfunctions").
 		Name(appsyncFunction.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *appsyncFunctions) UpdateStatus(appsyncFunction *v1alpha1.AppsyncFunctio
 // Delete takes name of the appsyncFunction and deletes it. Returns an error if one occurs.
 func (c *appsyncFunctions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appsyncfunctions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *appsyncFunctions) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appsyncfunctions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *appsyncFunctions) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *appsyncFunctions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppsyncFunction, err error) {
 	result = &v1alpha1.AppsyncFunction{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("appsyncfunctions").
 		SubResource(subresources...).
 		Name(name).

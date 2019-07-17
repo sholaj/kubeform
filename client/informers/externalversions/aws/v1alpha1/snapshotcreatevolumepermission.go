@@ -41,32 +41,33 @@ type SnapshotCreateVolumePermissionInformer interface {
 type snapshotCreateVolumePermissionInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSnapshotCreateVolumePermissionInformer constructs a new informer for SnapshotCreateVolumePermission type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSnapshotCreateVolumePermissionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSnapshotCreateVolumePermissionInformer(client, resyncPeriod, indexers, nil)
+func NewSnapshotCreateVolumePermissionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSnapshotCreateVolumePermissionInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSnapshotCreateVolumePermissionInformer constructs a new informer for SnapshotCreateVolumePermission type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSnapshotCreateVolumePermissionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSnapshotCreateVolumePermissionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SnapshotCreateVolumePermissions().List(options)
+				return client.AwsV1alpha1().SnapshotCreateVolumePermissions(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SnapshotCreateVolumePermissions().Watch(options)
+				return client.AwsV1alpha1().SnapshotCreateVolumePermissions(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.SnapshotCreateVolumePermission{},
@@ -76,7 +77,7 @@ func NewFilteredSnapshotCreateVolumePermissionInformer(client versioned.Interfac
 }
 
 func (f *snapshotCreateVolumePermissionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSnapshotCreateVolumePermissionInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSnapshotCreateVolumePermissionInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *snapshotCreateVolumePermissionInformer) Informer() cache.SharedIndexInformer {

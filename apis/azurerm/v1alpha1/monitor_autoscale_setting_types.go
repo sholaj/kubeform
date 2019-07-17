@@ -3,12 +3,12 @@ package v1alpha1
 import (
 	"encoding/json"
 
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -22,102 +22,103 @@ type MonitorAutoscaleSetting struct {
 
 type MonitorAutoscaleSettingSpecNotificationEmail struct {
 	// +optional
-	CustomEmails []string `json:"custom_emails,omitempty"`
+	CustomEmails []string `json:"customEmails,omitempty" tf:"custom_emails,omitempty"`
 	// +optional
-	SendToSubscriptionAdministrator bool `json:"send_to_subscription_administrator,omitempty"`
+	SendToSubscriptionAdministrator bool `json:"sendToSubscriptionAdministrator,omitempty" tf:"send_to_subscription_administrator,omitempty"`
 	// +optional
-	SendToSubscriptionCoAdministrator bool `json:"send_to_subscription_co_administrator,omitempty"`
+	SendToSubscriptionCoAdministrator bool `json:"sendToSubscriptionCoAdministrator,omitempty" tf:"send_to_subscription_co_administrator,omitempty"`
 }
 
 type MonitorAutoscaleSettingSpecNotificationWebhook struct {
 	// +optional
-	Properties map[string]string `json:"properties,omitempty"`
-	ServiceUri string            `json:"service_uri"`
+	Properties map[string]string `json:"properties,omitempty" tf:"properties,omitempty"`
+	ServiceURI string            `json:"serviceURI" tf:"service_uri"`
 }
 
 type MonitorAutoscaleSettingSpecNotification struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Email *[]MonitorAutoscaleSettingSpecNotification `json:"email,omitempty"`
+	Email []MonitorAutoscaleSettingSpecNotificationEmail `json:"email,omitempty" tf:"email,omitempty"`
 	// +optional
-	Webhook *[]MonitorAutoscaleSettingSpecNotification `json:"webhook,omitempty"`
+	Webhook []MonitorAutoscaleSettingSpecNotificationWebhook `json:"webhook,omitempty" tf:"webhook,omitempty"`
 }
 
 type MonitorAutoscaleSettingSpecProfileCapacity struct {
-	Default int `json:"default"`
-	Maximum int `json:"maximum"`
-	Minimum int `json:"minimum"`
+	Default int `json:"default" tf:"default"`
+	Maximum int `json:"maximum" tf:"maximum"`
+	Minimum int `json:"minimum" tf:"minimum"`
 }
 
 type MonitorAutoscaleSettingSpecProfileFixedDate struct {
-	End   string `json:"end"`
-	Start string `json:"start"`
+	End   string `json:"end" tf:"end"`
+	Start string `json:"start" tf:"start"`
 	// +optional
-	Timezone string `json:"timezone,omitempty"`
+	Timezone string `json:"timezone,omitempty" tf:"timezone,omitempty"`
 }
 
 type MonitorAutoscaleSettingSpecProfileRecurrence struct {
-	Days []string `json:"days"`
+	Days []string `json:"days" tf:"days"`
 	// +kubebuilder:validation:MaxItems=1
-	Hours []int64 `json:"hours"`
+	Hours []int64 `json:"hours" tf:"hours"`
 	// +kubebuilder:validation:MaxItems=1
-	Minutes []int64 `json:"minutes"`
+	Minutes []int64 `json:"minutes" tf:"minutes"`
 	// +optional
-	Timezone string `json:"timezone,omitempty"`
+	Timezone string `json:"timezone,omitempty" tf:"timezone,omitempty"`
 }
 
 type MonitorAutoscaleSettingSpecProfileRuleMetricTrigger struct {
-	MetricName       string      `json:"metric_name"`
-	MetricResourceId string      `json:"metric_resource_id"`
-	Operator         string      `json:"operator"`
-	Statistic        string      `json:"statistic"`
-	Threshold        json.Number `json:"threshold"`
-	TimeAggregation  string      `json:"time_aggregation"`
-	TimeGrain        string      `json:"time_grain"`
-	TimeWindow       string      `json:"time_window"`
+	MetricName       string      `json:"metricName" tf:"metric_name"`
+	MetricResourceID string      `json:"metricResourceID" tf:"metric_resource_id"`
+	Operator         string      `json:"operator" tf:"operator"`
+	Statistic        string      `json:"statistic" tf:"statistic"`
+	Threshold        json.Number `json:"threshold" tf:"threshold"`
+	TimeAggregation  string      `json:"timeAggregation" tf:"time_aggregation"`
+	TimeGrain        string      `json:"timeGrain" tf:"time_grain"`
+	TimeWindow       string      `json:"timeWindow" tf:"time_window"`
 }
 
 type MonitorAutoscaleSettingSpecProfileRuleScaleAction struct {
-	Cooldown  string `json:"cooldown"`
-	Direction string `json:"direction"`
-	Type      string `json:"type"`
-	Value     int    `json:"value"`
+	Cooldown  string `json:"cooldown" tf:"cooldown"`
+	Direction string `json:"direction" tf:"direction"`
+	Type      string `json:"type" tf:"type"`
+	Value     int    `json:"value" tf:"value"`
 }
 
 type MonitorAutoscaleSettingSpecProfileRule struct {
 	// +kubebuilder:validation:MaxItems=1
-	MetricTrigger []MonitorAutoscaleSettingSpecProfileRule `json:"metric_trigger"`
+	MetricTrigger []MonitorAutoscaleSettingSpecProfileRuleMetricTrigger `json:"metricTrigger" tf:"metric_trigger"`
 	// +kubebuilder:validation:MaxItems=1
-	ScaleAction []MonitorAutoscaleSettingSpecProfileRule `json:"scale_action"`
+	ScaleAction []MonitorAutoscaleSettingSpecProfileRuleScaleAction `json:"scaleAction" tf:"scale_action"`
 }
 
 type MonitorAutoscaleSettingSpecProfile struct {
 	// +kubebuilder:validation:MaxItems=1
-	Capacity []MonitorAutoscaleSettingSpecProfile `json:"capacity"`
+	Capacity []MonitorAutoscaleSettingSpecProfileCapacity `json:"capacity" tf:"capacity"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	FixedDate *[]MonitorAutoscaleSettingSpecProfile `json:"fixed_date,omitempty"`
-	Name      string                                `json:"name"`
+	FixedDate []MonitorAutoscaleSettingSpecProfileFixedDate `json:"fixedDate,omitempty" tf:"fixed_date,omitempty"`
+	Name      string                                        `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Recurrence *[]MonitorAutoscaleSettingSpecProfile `json:"recurrence,omitempty"`
+	Recurrence []MonitorAutoscaleSettingSpecProfileRecurrence `json:"recurrence,omitempty" tf:"recurrence,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=10
-	Rule *[]MonitorAutoscaleSettingSpecProfile `json:"rule,omitempty"`
+	Rule []MonitorAutoscaleSettingSpecProfileRule `json:"rule,omitempty" tf:"rule,omitempty"`
 }
 
 type MonitorAutoscaleSettingSpec struct {
 	// +optional
-	Enabled  bool   `json:"enabled,omitempty"`
-	Location string `json:"location"`
-	Name     string `json:"name"`
+	Enabled  bool   `json:"enabled,omitempty" tf:"enabled,omitempty"`
+	Location string `json:"location" tf:"location"`
+	Name     string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Notification *[]MonitorAutoscaleSettingSpec `json:"notification,omitempty"`
+	Notification []MonitorAutoscaleSettingSpecNotification `json:"notification,omitempty" tf:"notification,omitempty"`
 	// +kubebuilder:validation:MaxItems=20
-	Profile           []MonitorAutoscaleSettingSpec `json:"profile"`
-	ResourceGroupName string                        `json:"resource_group_name"`
-	TargetResourceId  string                        `json:"target_resource_id"`
+	Profile           []MonitorAutoscaleSettingSpecProfile `json:"profile" tf:"profile"`
+	ResourceGroupName string                               `json:"resourceGroupName" tf:"resource_group_name"`
+	TargetResourceID  string                               `json:"targetResourceID" tf:"target_resource_id"`
+	ProviderRef       core.LocalObjectReference            `json:"providerRef" tf:"-"`
 }
 
 type MonitorAutoscaleSettingStatus struct {
@@ -125,7 +126,9 @@ type MonitorAutoscaleSettingStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

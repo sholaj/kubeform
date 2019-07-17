@@ -32,7 +32,7 @@ import (
 // ApiGatewayRequestValidatorsGetter has a method to return a ApiGatewayRequestValidatorInterface.
 // A group's client should implement this interface.
 type ApiGatewayRequestValidatorsGetter interface {
-	ApiGatewayRequestValidators() ApiGatewayRequestValidatorInterface
+	ApiGatewayRequestValidators(namespace string) ApiGatewayRequestValidatorInterface
 }
 
 // ApiGatewayRequestValidatorInterface has methods to work with ApiGatewayRequestValidator resources.
@@ -52,12 +52,14 @@ type ApiGatewayRequestValidatorInterface interface {
 // apiGatewayRequestValidators implements ApiGatewayRequestValidatorInterface
 type apiGatewayRequestValidators struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiGatewayRequestValidators returns a ApiGatewayRequestValidators
-func newApiGatewayRequestValidators(c *AwsV1alpha1Client) *apiGatewayRequestValidators {
+func newApiGatewayRequestValidators(c *AwsV1alpha1Client, namespace string) *apiGatewayRequestValidators {
 	return &apiGatewayRequestValidators{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiGatewayRequestValidators(c *AwsV1alpha1Client) *apiGatewayRequestVali
 func (c *apiGatewayRequestValidators) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayRequestValidator, err error) {
 	result = &v1alpha1.ApiGatewayRequestValidator{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayrequestvalidators").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiGatewayRequestValidators) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.ApiGatewayRequestValidatorList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayrequestvalidators").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiGatewayRequestValidators) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayrequestvalidators").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiGatewayRequestValidators) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *apiGatewayRequestValidators) Create(apiGatewayRequestValidator *v1alpha1.ApiGatewayRequestValidator) (result *v1alpha1.ApiGatewayRequestValidator, err error) {
 	result = &v1alpha1.ApiGatewayRequestValidator{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apigatewayrequestvalidators").
 		Body(apiGatewayRequestValidator).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiGatewayRequestValidators) Create(apiGatewayRequestValidator *v1alpha
 func (c *apiGatewayRequestValidators) Update(apiGatewayRequestValidator *v1alpha1.ApiGatewayRequestValidator) (result *v1alpha1.ApiGatewayRequestValidator, err error) {
 	result = &v1alpha1.ApiGatewayRequestValidator{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewayrequestvalidators").
 		Name(apiGatewayRequestValidator.Name).
 		Body(apiGatewayRequestValidator).
@@ -132,6 +139,7 @@ func (c *apiGatewayRequestValidators) Update(apiGatewayRequestValidator *v1alpha
 func (c *apiGatewayRequestValidators) UpdateStatus(apiGatewayRequestValidator *v1alpha1.ApiGatewayRequestValidator) (result *v1alpha1.ApiGatewayRequestValidator, err error) {
 	result = &v1alpha1.ApiGatewayRequestValidator{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewayrequestvalidators").
 		Name(apiGatewayRequestValidator.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiGatewayRequestValidators) UpdateStatus(apiGatewayRequestValidator *v
 // Delete takes name of the apiGatewayRequestValidator and deletes it. Returns an error if one occurs.
 func (c *apiGatewayRequestValidators) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewayrequestvalidators").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiGatewayRequestValidators) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewayrequestvalidators").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiGatewayRequestValidators) DeleteCollection(options *v1.DeleteOptions
 func (c *apiGatewayRequestValidators) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayRequestValidator, err error) {
 	result = &v1alpha1.ApiGatewayRequestValidator{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apigatewayrequestvalidators").
 		SubResource(subresources...).
 		Name(name).

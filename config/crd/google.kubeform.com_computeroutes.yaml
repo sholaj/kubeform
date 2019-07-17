@@ -399,33 +399,43 @@ spec:
           properties:
             description:
               type: string
-            dest_range:
+            destRange:
               type: string
             name:
               type: string
             network:
               type: string
-            next_hop_gateway:
+            nextHopGateway:
               type: string
-            next_hop_instance:
+            nextHopIP:
               type: string
-            next_hop_instance_zone:
+            nextHopInstance:
               type: string
-            next_hop_ip:
+            nextHopInstanceZone:
               type: string
-            next_hop_vpn_tunnel:
+            nextHopVPNTunnel:
               type: string
             priority:
               type: integer
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             tags:
               items:
                 type: string
               type: array
               uniqueItems: true
           required:
-          - dest_range
+          - destRange
           - name
           - network
+          - providerRef
           type: object
         status:
           properties:
@@ -436,6 +446,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

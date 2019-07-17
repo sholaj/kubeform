@@ -32,7 +32,7 @@ import (
 // SqlServersGetter has a method to return a SqlServerInterface.
 // A group's client should implement this interface.
 type SqlServersGetter interface {
-	SqlServers() SqlServerInterface
+	SqlServers(namespace string) SqlServerInterface
 }
 
 // SqlServerInterface has methods to work with SqlServer resources.
@@ -52,12 +52,14 @@ type SqlServerInterface interface {
 // sqlServers implements SqlServerInterface
 type sqlServers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSqlServers returns a SqlServers
-func newSqlServers(c *AzurermV1alpha1Client) *sqlServers {
+func newSqlServers(c *AzurermV1alpha1Client, namespace string) *sqlServers {
 	return &sqlServers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSqlServers(c *AzurermV1alpha1Client) *sqlServers {
 func (c *sqlServers) Get(name string, options v1.GetOptions) (result *v1alpha1.SqlServer, err error) {
 	result = &v1alpha1.SqlServer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlservers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sqlServers) List(opts v1.ListOptions) (result *v1alpha1.SqlServerList, 
 	}
 	result = &v1alpha1.SqlServerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlservers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sqlServers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlservers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sqlServers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *sqlServers) Create(sqlServer *v1alpha1.SqlServer) (result *v1alpha1.SqlServer, err error) {
 	result = &v1alpha1.SqlServer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sqlservers").
 		Body(sqlServer).
 		Do().
@@ -118,6 +124,7 @@ func (c *sqlServers) Create(sqlServer *v1alpha1.SqlServer) (result *v1alpha1.Sql
 func (c *sqlServers) Update(sqlServer *v1alpha1.SqlServer) (result *v1alpha1.SqlServer, err error) {
 	result = &v1alpha1.SqlServer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqlservers").
 		Name(sqlServer.Name).
 		Body(sqlServer).
@@ -132,6 +139,7 @@ func (c *sqlServers) Update(sqlServer *v1alpha1.SqlServer) (result *v1alpha1.Sql
 func (c *sqlServers) UpdateStatus(sqlServer *v1alpha1.SqlServer) (result *v1alpha1.SqlServer, err error) {
 	result = &v1alpha1.SqlServer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqlservers").
 		Name(sqlServer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sqlServers) UpdateStatus(sqlServer *v1alpha1.SqlServer) (result *v1alph
 // Delete takes name of the sqlServer and deletes it. Returns an error if one occurs.
 func (c *sqlServers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqlservers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sqlServers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqlservers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sqlServers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.
 func (c *sqlServers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SqlServer, err error) {
 	result = &v1alpha1.SqlServer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sqlservers").
 		SubResource(subresources...).
 		Name(name).

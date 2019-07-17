@@ -29,8 +29,8 @@ import (
 type AutoscaleSettingLister interface {
 	// List lists all AutoscaleSettings in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AutoscaleSetting, err error)
-	// Get retrieves the AutoscaleSetting from the index for a given name.
-	Get(name string) (*v1alpha1.AutoscaleSetting, error)
+	// AutoscaleSettings returns an object that can list and get AutoscaleSettings.
+	AutoscaleSettings(namespace string) AutoscaleSettingNamespaceLister
 	AutoscaleSettingListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *autoscaleSettingLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the AutoscaleSetting from the index for a given name.
-func (s *autoscaleSettingLister) Get(name string) (*v1alpha1.AutoscaleSetting, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AutoscaleSettings returns an object that can list and get AutoscaleSettings.
+func (s *autoscaleSettingLister) AutoscaleSettings(namespace string) AutoscaleSettingNamespaceLister {
+	return autoscaleSettingNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AutoscaleSettingNamespaceLister helps list and get AutoscaleSettings.
+type AutoscaleSettingNamespaceLister interface {
+	// List lists all AutoscaleSettings in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AutoscaleSetting, err error)
+	// Get retrieves the AutoscaleSetting from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AutoscaleSetting, error)
+	AutoscaleSettingNamespaceListerExpansion
+}
+
+// autoscaleSettingNamespaceLister implements the AutoscaleSettingNamespaceLister
+// interface.
+type autoscaleSettingNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AutoscaleSettings in the indexer for a given namespace.
+func (s autoscaleSettingNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AutoscaleSetting, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AutoscaleSetting))
+	})
+	return ret, err
+}
+
+// Get retrieves the AutoscaleSetting from the indexer for a given namespace and name.
+func (s autoscaleSettingNamespaceLister) Get(name string) (*v1alpha1.AutoscaleSetting, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

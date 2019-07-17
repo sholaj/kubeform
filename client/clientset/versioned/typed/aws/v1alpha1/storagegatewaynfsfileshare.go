@@ -32,7 +32,7 @@ import (
 // StoragegatewayNfsFileSharesGetter has a method to return a StoragegatewayNfsFileShareInterface.
 // A group's client should implement this interface.
 type StoragegatewayNfsFileSharesGetter interface {
-	StoragegatewayNfsFileShares() StoragegatewayNfsFileShareInterface
+	StoragegatewayNfsFileShares(namespace string) StoragegatewayNfsFileShareInterface
 }
 
 // StoragegatewayNfsFileShareInterface has methods to work with StoragegatewayNfsFileShare resources.
@@ -52,12 +52,14 @@ type StoragegatewayNfsFileShareInterface interface {
 // storagegatewayNfsFileShares implements StoragegatewayNfsFileShareInterface
 type storagegatewayNfsFileShares struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStoragegatewayNfsFileShares returns a StoragegatewayNfsFileShares
-func newStoragegatewayNfsFileShares(c *AwsV1alpha1Client) *storagegatewayNfsFileShares {
+func newStoragegatewayNfsFileShares(c *AwsV1alpha1Client, namespace string) *storagegatewayNfsFileShares {
 	return &storagegatewayNfsFileShares{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStoragegatewayNfsFileShares(c *AwsV1alpha1Client) *storagegatewayNfsFile
 func (c *storagegatewayNfsFileShares) Get(name string, options v1.GetOptions) (result *v1alpha1.StoragegatewayNfsFileShare, err error) {
 	result = &v1alpha1.StoragegatewayNfsFileShare{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagegatewaynfsfileshares").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *storagegatewayNfsFileShares) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.StoragegatewayNfsFileShareList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagegatewaynfsfileshares").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *storagegatewayNfsFileShares) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storagegatewaynfsfileshares").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *storagegatewayNfsFileShares) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *storagegatewayNfsFileShares) Create(storagegatewayNfsFileShare *v1alpha1.StoragegatewayNfsFileShare) (result *v1alpha1.StoragegatewayNfsFileShare, err error) {
 	result = &v1alpha1.StoragegatewayNfsFileShare{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storagegatewaynfsfileshares").
 		Body(storagegatewayNfsFileShare).
 		Do().
@@ -118,6 +124,7 @@ func (c *storagegatewayNfsFileShares) Create(storagegatewayNfsFileShare *v1alpha
 func (c *storagegatewayNfsFileShares) Update(storagegatewayNfsFileShare *v1alpha1.StoragegatewayNfsFileShare) (result *v1alpha1.StoragegatewayNfsFileShare, err error) {
 	result = &v1alpha1.StoragegatewayNfsFileShare{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagegatewaynfsfileshares").
 		Name(storagegatewayNfsFileShare.Name).
 		Body(storagegatewayNfsFileShare).
@@ -132,6 +139,7 @@ func (c *storagegatewayNfsFileShares) Update(storagegatewayNfsFileShare *v1alpha
 func (c *storagegatewayNfsFileShares) UpdateStatus(storagegatewayNfsFileShare *v1alpha1.StoragegatewayNfsFileShare) (result *v1alpha1.StoragegatewayNfsFileShare, err error) {
 	result = &v1alpha1.StoragegatewayNfsFileShare{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagegatewaynfsfileshares").
 		Name(storagegatewayNfsFileShare.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *storagegatewayNfsFileShares) UpdateStatus(storagegatewayNfsFileShare *v
 // Delete takes name of the storagegatewayNfsFileShare and deletes it. Returns an error if one occurs.
 func (c *storagegatewayNfsFileShares) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagegatewaynfsfileshares").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *storagegatewayNfsFileShares) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagegatewaynfsfileshares").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *storagegatewayNfsFileShares) DeleteCollection(options *v1.DeleteOptions
 func (c *storagegatewayNfsFileShares) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StoragegatewayNfsFileShare, err error) {
 	result = &v1alpha1.StoragegatewayNfsFileShare{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storagegatewaynfsfileshares").
 		SubResource(subresources...).
 		Name(name).

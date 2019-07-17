@@ -31,6 +31,7 @@ import (
 // FakeMysqlServers implements MysqlServerInterface
 type FakeMysqlServers struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var mysqlserversResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "mysqlservers"}
@@ -40,7 +41,8 @@ var mysqlserversKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Ve
 // Get takes name of the mysqlServer, and returns the corresponding mysqlServer object, and an error if there is any.
 func (c *FakeMysqlServers) Get(name string, options v1.GetOptions) (result *v1alpha1.MysqlServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(mysqlserversResource, name), &v1alpha1.MysqlServer{})
+		Invokes(testing.NewGetAction(mysqlserversResource, c.ns, name), &v1alpha1.MysqlServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMysqlServers) Get(name string, options v1.GetOptions) (result *v1al
 // List takes label and field selectors, and returns the list of MysqlServers that match those selectors.
 func (c *FakeMysqlServers) List(opts v1.ListOptions) (result *v1alpha1.MysqlServerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(mysqlserversResource, mysqlserversKind, opts), &v1alpha1.MysqlServerList{})
+		Invokes(testing.NewListAction(mysqlserversResource, mysqlserversKind, c.ns, opts), &v1alpha1.MysqlServerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMysqlServers) List(opts v1.ListOptions) (result *v1alpha1.MysqlServ
 // Watch returns a watch.Interface that watches the requested mysqlServers.
 func (c *FakeMysqlServers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(mysqlserversResource, opts))
+		InvokesWatch(testing.NewWatchAction(mysqlserversResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a mysqlServer and creates it.  Returns the server's representation of the mysqlServer, and an error, if there is any.
 func (c *FakeMysqlServers) Create(mysqlServer *v1alpha1.MysqlServer) (result *v1alpha1.MysqlServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(mysqlserversResource, mysqlServer), &v1alpha1.MysqlServer{})
+		Invokes(testing.NewCreateAction(mysqlserversResource, c.ns, mysqlServer), &v1alpha1.MysqlServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMysqlServers) Create(mysqlServer *v1alpha1.MysqlServer) (result *v1
 // Update takes the representation of a mysqlServer and updates it. Returns the server's representation of the mysqlServer, and an error, if there is any.
 func (c *FakeMysqlServers) Update(mysqlServer *v1alpha1.MysqlServer) (result *v1alpha1.MysqlServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(mysqlserversResource, mysqlServer), &v1alpha1.MysqlServer{})
+		Invokes(testing.NewUpdateAction(mysqlserversResource, c.ns, mysqlServer), &v1alpha1.MysqlServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMysqlServers) Update(mysqlServer *v1alpha1.MysqlServer) (result *v1
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMysqlServers) UpdateStatus(mysqlServer *v1alpha1.MysqlServer) (*v1alpha1.MysqlServer, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(mysqlserversResource, "status", mysqlServer), &v1alpha1.MysqlServer{})
+		Invokes(testing.NewUpdateSubresourceAction(mysqlserversResource, "status", c.ns, mysqlServer), &v1alpha1.MysqlServer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMysqlServers) UpdateStatus(mysqlServer *v1alpha1.MysqlServer) (*v1a
 // Delete takes name of the mysqlServer and deletes it. Returns an error if one occurs.
 func (c *FakeMysqlServers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(mysqlserversResource, name), &v1alpha1.MysqlServer{})
+		Invokes(testing.NewDeleteAction(mysqlserversResource, c.ns, name), &v1alpha1.MysqlServer{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMysqlServers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(mysqlserversResource, listOptions)
+	action := testing.NewDeleteCollectionAction(mysqlserversResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MysqlServerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMysqlServers) DeleteCollection(options *v1.DeleteOptions, listOptio
 // Patch applies the patch and returns the patched mysqlServer.
 func (c *FakeMysqlServers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MysqlServer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(mysqlserversResource, name, pt, data, subresources...), &v1alpha1.MysqlServer{})
+		Invokes(testing.NewPatchSubresourceAction(mysqlserversResource, c.ns, name, pt, data, subresources...), &v1alpha1.MysqlServer{})
+
 	if obj == nil {
 		return nil, err
 	}

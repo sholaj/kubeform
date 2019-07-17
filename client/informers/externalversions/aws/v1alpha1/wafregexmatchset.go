@@ -41,32 +41,33 @@ type WafRegexMatchSetInformer interface {
 type wafRegexMatchSetInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewWafRegexMatchSetInformer constructs a new informer for WafRegexMatchSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewWafRegexMatchSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredWafRegexMatchSetInformer(client, resyncPeriod, indexers, nil)
+func NewWafRegexMatchSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredWafRegexMatchSetInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredWafRegexMatchSetInformer constructs a new informer for WafRegexMatchSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredWafRegexMatchSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredWafRegexMatchSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafRegexMatchSets().List(options)
+				return client.AwsV1alpha1().WafRegexMatchSets(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafRegexMatchSets().Watch(options)
+				return client.AwsV1alpha1().WafRegexMatchSets(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.WafRegexMatchSet{},
@@ -76,7 +77,7 @@ func NewFilteredWafRegexMatchSetInformer(client versioned.Interface, resyncPerio
 }
 
 func (f *wafRegexMatchSetInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredWafRegexMatchSetInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredWafRegexMatchSetInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *wafRegexMatchSetInformer) Informer() cache.SharedIndexInformer {

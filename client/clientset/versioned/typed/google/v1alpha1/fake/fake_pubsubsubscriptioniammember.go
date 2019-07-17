@@ -31,6 +31,7 @@ import (
 // FakePubsubSubscriptionIamMembers implements PubsubSubscriptionIamMemberInterface
 type FakePubsubSubscriptionIamMembers struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var pubsubsubscriptioniammembersResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "pubsubsubscriptioniammembers"}
@@ -40,7 +41,8 @@ var pubsubsubscriptioniammembersKind = schema.GroupVersionKind{Group: "google.ku
 // Get takes name of the pubsubSubscriptionIamMember, and returns the corresponding pubsubSubscriptionIamMember object, and an error if there is any.
 func (c *FakePubsubSubscriptionIamMembers) Get(name string, options v1.GetOptions) (result *v1alpha1.PubsubSubscriptionIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(pubsubsubscriptioniammembersResource, name), &v1alpha1.PubsubSubscriptionIamMember{})
+		Invokes(testing.NewGetAction(pubsubsubscriptioniammembersResource, c.ns, name), &v1alpha1.PubsubSubscriptionIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakePubsubSubscriptionIamMembers) Get(name string, options v1.GetOption
 // List takes label and field selectors, and returns the list of PubsubSubscriptionIamMembers that match those selectors.
 func (c *FakePubsubSubscriptionIamMembers) List(opts v1.ListOptions) (result *v1alpha1.PubsubSubscriptionIamMemberList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(pubsubsubscriptioniammembersResource, pubsubsubscriptioniammembersKind, opts), &v1alpha1.PubsubSubscriptionIamMemberList{})
+		Invokes(testing.NewListAction(pubsubsubscriptioniammembersResource, pubsubsubscriptioniammembersKind, c.ns, opts), &v1alpha1.PubsubSubscriptionIamMemberList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakePubsubSubscriptionIamMembers) List(opts v1.ListOptions) (result *v1
 // Watch returns a watch.Interface that watches the requested pubsubSubscriptionIamMembers.
 func (c *FakePubsubSubscriptionIamMembers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(pubsubsubscriptioniammembersResource, opts))
+		InvokesWatch(testing.NewWatchAction(pubsubsubscriptioniammembersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a pubsubSubscriptionIamMember and creates it.  Returns the server's representation of the pubsubSubscriptionIamMember, and an error, if there is any.
 func (c *FakePubsubSubscriptionIamMembers) Create(pubsubSubscriptionIamMember *v1alpha1.PubsubSubscriptionIamMember) (result *v1alpha1.PubsubSubscriptionIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(pubsubsubscriptioniammembersResource, pubsubSubscriptionIamMember), &v1alpha1.PubsubSubscriptionIamMember{})
+		Invokes(testing.NewCreateAction(pubsubsubscriptioniammembersResource, c.ns, pubsubSubscriptionIamMember), &v1alpha1.PubsubSubscriptionIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakePubsubSubscriptionIamMembers) Create(pubsubSubscriptionIamMember *v
 // Update takes the representation of a pubsubSubscriptionIamMember and updates it. Returns the server's representation of the pubsubSubscriptionIamMember, and an error, if there is any.
 func (c *FakePubsubSubscriptionIamMembers) Update(pubsubSubscriptionIamMember *v1alpha1.PubsubSubscriptionIamMember) (result *v1alpha1.PubsubSubscriptionIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(pubsubsubscriptioniammembersResource, pubsubSubscriptionIamMember), &v1alpha1.PubsubSubscriptionIamMember{})
+		Invokes(testing.NewUpdateAction(pubsubsubscriptioniammembersResource, c.ns, pubsubSubscriptionIamMember), &v1alpha1.PubsubSubscriptionIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakePubsubSubscriptionIamMembers) Update(pubsubSubscriptionIamMember *v
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakePubsubSubscriptionIamMembers) UpdateStatus(pubsubSubscriptionIamMember *v1alpha1.PubsubSubscriptionIamMember) (*v1alpha1.PubsubSubscriptionIamMember, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(pubsubsubscriptioniammembersResource, "status", pubsubSubscriptionIamMember), &v1alpha1.PubsubSubscriptionIamMember{})
+		Invokes(testing.NewUpdateSubresourceAction(pubsubsubscriptioniammembersResource, "status", c.ns, pubsubSubscriptionIamMember), &v1alpha1.PubsubSubscriptionIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakePubsubSubscriptionIamMembers) UpdateStatus(pubsubSubscriptionIamMem
 // Delete takes name of the pubsubSubscriptionIamMember and deletes it. Returns an error if one occurs.
 func (c *FakePubsubSubscriptionIamMembers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(pubsubsubscriptioniammembersResource, name), &v1alpha1.PubsubSubscriptionIamMember{})
+		Invokes(testing.NewDeleteAction(pubsubsubscriptioniammembersResource, c.ns, name), &v1alpha1.PubsubSubscriptionIamMember{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakePubsubSubscriptionIamMembers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(pubsubsubscriptioniammembersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(pubsubsubscriptioniammembersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PubsubSubscriptionIamMemberList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakePubsubSubscriptionIamMembers) DeleteCollection(options *v1.DeleteOp
 // Patch applies the patch and returns the patched pubsubSubscriptionIamMember.
 func (c *FakePubsubSubscriptionIamMembers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PubsubSubscriptionIamMember, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(pubsubsubscriptioniammembersResource, name, pt, data, subresources...), &v1alpha1.PubsubSubscriptionIamMember{})
+		Invokes(testing.NewPatchSubresourceAction(pubsubsubscriptioniammembersResource, c.ns, name, pt, data, subresources...), &v1alpha1.PubsubSubscriptionIamMember{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -41,32 +41,33 @@ type Ec2TransitGatewayVpcAttachmentAccepterInformer interface {
 type ec2TransitGatewayVpcAttachmentAccepterInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewEc2TransitGatewayVpcAttachmentAccepterInformer constructs a new informer for Ec2TransitGatewayVpcAttachmentAccepter type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewEc2TransitGatewayVpcAttachmentAccepterInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredEc2TransitGatewayVpcAttachmentAccepterInformer(client, resyncPeriod, indexers, nil)
+func NewEc2TransitGatewayVpcAttachmentAccepterInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredEc2TransitGatewayVpcAttachmentAccepterInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredEc2TransitGatewayVpcAttachmentAccepterInformer constructs a new informer for Ec2TransitGatewayVpcAttachmentAccepter type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredEc2TransitGatewayVpcAttachmentAccepterInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredEc2TransitGatewayVpcAttachmentAccepterInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().Ec2TransitGatewayVpcAttachmentAccepters().List(options)
+				return client.AwsV1alpha1().Ec2TransitGatewayVpcAttachmentAccepters(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().Ec2TransitGatewayVpcAttachmentAccepters().Watch(options)
+				return client.AwsV1alpha1().Ec2TransitGatewayVpcAttachmentAccepters(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.Ec2TransitGatewayVpcAttachmentAccepter{},
@@ -76,7 +77,7 @@ func NewFilteredEc2TransitGatewayVpcAttachmentAccepterInformer(client versioned.
 }
 
 func (f *ec2TransitGatewayVpcAttachmentAccepterInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredEc2TransitGatewayVpcAttachmentAccepterInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredEc2TransitGatewayVpcAttachmentAccepterInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *ec2TransitGatewayVpcAttachmentAccepterInformer) Informer() cache.SharedIndexInformer {

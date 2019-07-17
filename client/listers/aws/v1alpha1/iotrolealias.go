@@ -29,8 +29,8 @@ import (
 type IotRoleAliasLister interface {
 	// List lists all IotRoleAliases in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IotRoleAlias, err error)
-	// Get retrieves the IotRoleAlias from the index for a given name.
-	Get(name string) (*v1alpha1.IotRoleAlias, error)
+	// IotRoleAliases returns an object that can list and get IotRoleAliases.
+	IotRoleAliases(namespace string) IotRoleAliasNamespaceLister
 	IotRoleAliasListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iotRoleAliasLister) List(selector labels.Selector) (ret []*v1alpha1.Iot
 	return ret, err
 }
 
-// Get retrieves the IotRoleAlias from the index for a given name.
-func (s *iotRoleAliasLister) Get(name string) (*v1alpha1.IotRoleAlias, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IotRoleAliases returns an object that can list and get IotRoleAliases.
+func (s *iotRoleAliasLister) IotRoleAliases(namespace string) IotRoleAliasNamespaceLister {
+	return iotRoleAliasNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IotRoleAliasNamespaceLister helps list and get IotRoleAliases.
+type IotRoleAliasNamespaceLister interface {
+	// List lists all IotRoleAliases in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IotRoleAlias, err error)
+	// Get retrieves the IotRoleAlias from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IotRoleAlias, error)
+	IotRoleAliasNamespaceListerExpansion
+}
+
+// iotRoleAliasNamespaceLister implements the IotRoleAliasNamespaceLister
+// interface.
+type iotRoleAliasNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IotRoleAliases in the indexer for a given namespace.
+func (s iotRoleAliasNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IotRoleAlias, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IotRoleAlias))
+	})
+	return ret, err
+}
+
+// Get retrieves the IotRoleAlias from the indexer for a given namespace and name.
+func (s iotRoleAliasNamespaceLister) Get(name string) (*v1alpha1.IotRoleAlias, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

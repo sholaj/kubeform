@@ -29,8 +29,8 @@ import (
 type HdinsightKafkaClusterLister interface {
 	// List lists all HdinsightKafkaClusters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.HdinsightKafkaCluster, err error)
-	// Get retrieves the HdinsightKafkaCluster from the index for a given name.
-	Get(name string) (*v1alpha1.HdinsightKafkaCluster, error)
+	// HdinsightKafkaClusters returns an object that can list and get HdinsightKafkaClusters.
+	HdinsightKafkaClusters(namespace string) HdinsightKafkaClusterNamespaceLister
 	HdinsightKafkaClusterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *hdinsightKafkaClusterLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the HdinsightKafkaCluster from the index for a given name.
-func (s *hdinsightKafkaClusterLister) Get(name string) (*v1alpha1.HdinsightKafkaCluster, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// HdinsightKafkaClusters returns an object that can list and get HdinsightKafkaClusters.
+func (s *hdinsightKafkaClusterLister) HdinsightKafkaClusters(namespace string) HdinsightKafkaClusterNamespaceLister {
+	return hdinsightKafkaClusterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// HdinsightKafkaClusterNamespaceLister helps list and get HdinsightKafkaClusters.
+type HdinsightKafkaClusterNamespaceLister interface {
+	// List lists all HdinsightKafkaClusters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.HdinsightKafkaCluster, err error)
+	// Get retrieves the HdinsightKafkaCluster from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.HdinsightKafkaCluster, error)
+	HdinsightKafkaClusterNamespaceListerExpansion
+}
+
+// hdinsightKafkaClusterNamespaceLister implements the HdinsightKafkaClusterNamespaceLister
+// interface.
+type hdinsightKafkaClusterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all HdinsightKafkaClusters in the indexer for a given namespace.
+func (s hdinsightKafkaClusterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.HdinsightKafkaCluster, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.HdinsightKafkaCluster))
+	})
+	return ret, err
+}
+
+// Get retrieves the HdinsightKafkaCluster from the indexer for a given namespace and name.
+func (s hdinsightKafkaClusterNamespaceLister) Get(name string) (*v1alpha1.HdinsightKafkaCluster, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

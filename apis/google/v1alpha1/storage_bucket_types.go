@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,92 +20,93 @@ type StorageBucket struct {
 
 type StorageBucketSpecCors struct {
 	// +optional
-	MaxAgeSeconds int `json:"max_age_seconds,omitempty"`
+	MaxAgeSeconds int `json:"maxAgeSeconds,omitempty" tf:"max_age_seconds,omitempty"`
 	// +optional
-	Method []string `json:"method,omitempty"`
+	Method []string `json:"method,omitempty" tf:"method,omitempty"`
 	// +optional
-	Origin []string `json:"origin,omitempty"`
+	Origin []string `json:"origin,omitempty" tf:"origin,omitempty"`
 	// +optional
-	ResponseHeader []string `json:"response_header,omitempty"`
+	ResponseHeader []string `json:"responseHeader,omitempty" tf:"response_header,omitempty"`
 }
 
 type StorageBucketSpecEncryption struct {
-	DefaultKmsKeyName string `json:"default_kms_key_name"`
+	DefaultKmsKeyName string `json:"defaultKmsKeyName" tf:"default_kms_key_name"`
 }
 
 type StorageBucketSpecLifecycleRuleAction struct {
 	// +optional
-	StorageClass string `json:"storage_class,omitempty"`
-	Type         string `json:"type"`
+	StorageClass string `json:"storageClass,omitempty" tf:"storage_class,omitempty"`
+	Type         string `json:"type" tf:"type"`
 }
 
 type StorageBucketSpecLifecycleRuleCondition struct {
 	// +optional
-	Age int `json:"age,omitempty"`
+	Age int `json:"age,omitempty" tf:"age,omitempty"`
 	// +optional
-	CreatedBefore string `json:"created_before,omitempty"`
+	CreatedBefore string `json:"createdBefore,omitempty" tf:"created_before,omitempty"`
 	// +optional
-	IsLive bool `json:"is_live,omitempty"`
+	IsLive bool `json:"isLive,omitempty" tf:"is_live,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MinItems=1
-	MatchesStorageClass []string `json:"matches_storage_class,omitempty"`
+	MatchesStorageClass []string `json:"matchesStorageClass,omitempty" tf:"matches_storage_class,omitempty"`
 	// +optional
-	NumNewerVersions int `json:"num_newer_versions,omitempty"`
+	NumNewerVersions int `json:"numNewerVersions,omitempty" tf:"num_newer_versions,omitempty"`
 }
 
 type StorageBucketSpecLifecycleRule struct {
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	Action []StorageBucketSpecLifecycleRule `json:"action"`
+	Action []StorageBucketSpecLifecycleRuleAction `json:"action" tf:"action"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	Condition []StorageBucketSpecLifecycleRule `json:"condition"`
+	Condition []StorageBucketSpecLifecycleRuleCondition `json:"condition" tf:"condition"`
 }
 
 type StorageBucketSpecLogging struct {
-	LogBucket string `json:"log_bucket"`
+	LogBucket string `json:"logBucket" tf:"log_bucket"`
 }
 
 type StorageBucketSpecVersioning struct {
 	// +optional
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
 }
 
 type StorageBucketSpecWebsite struct {
 	// +optional
-	MainPageSuffix string `json:"main_page_suffix,omitempty"`
+	MainPageSuffix string `json:"mainPageSuffix,omitempty" tf:"main_page_suffix,omitempty"`
 	// +optional
-	NotFoundPage string `json:"not_found_page,omitempty"`
+	NotFoundPage string `json:"notFoundPage,omitempty" tf:"not_found_page,omitempty"`
 }
 
 type StorageBucketSpec struct {
 	// +optional
-	Cors *[]StorageBucketSpec `json:"cors,omitempty"`
+	Cors []StorageBucketSpecCors `json:"cors,omitempty" tf:"cors,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Encryption *[]StorageBucketSpec `json:"encryption,omitempty"`
+	Encryption []StorageBucketSpecEncryption `json:"encryption,omitempty" tf:"encryption,omitempty"`
 	// +optional
-	ForceDestroy bool `json:"force_destroy,omitempty"`
+	ForceDestroy bool `json:"forceDestroy,omitempty" tf:"force_destroy,omitempty"`
 	// +optional
-	Labels map[string]string `json:"labels,omitempty"`
+	Labels map[string]string `json:"labels,omitempty" tf:"labels,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=100
-	LifecycleRule *[]StorageBucketSpec `json:"lifecycle_rule,omitempty"`
+	LifecycleRule []StorageBucketSpecLifecycleRule `json:"lifecycleRule,omitempty" tf:"lifecycle_rule,omitempty"`
 	// +optional
-	Location string `json:"location,omitempty"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	Logging *[]StorageBucketSpec `json:"logging,omitempty"`
-	Name    string               `json:"name"`
-	// +optional
-	StorageClass string `json:"storage_class,omitempty"`
+	Location string `json:"location,omitempty" tf:"location,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Versioning *[]StorageBucketSpec `json:"versioning,omitempty"`
+	Logging []StorageBucketSpecLogging `json:"logging,omitempty" tf:"logging,omitempty"`
+	Name    string                     `json:"name" tf:"name"`
 	// +optional
-	Website *[]StorageBucketSpec `json:"website,omitempty"`
+	StorageClass string `json:"storageClass,omitempty" tf:"storage_class,omitempty"`
+	// +optional
+	// +kubebuilder:validation:MaxItems=1
+	Versioning []StorageBucketSpecVersioning `json:"versioning,omitempty" tf:"versioning,omitempty"`
+	// +optional
+	Website     []StorageBucketSpecWebsite `json:"website,omitempty" tf:"website,omitempty"`
+	ProviderRef core.LocalObjectReference  `json:"providerRef" tf:"-"`
 }
 
 type StorageBucketStatus struct {
@@ -113,7 +114,9 @@ type StorageBucketStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

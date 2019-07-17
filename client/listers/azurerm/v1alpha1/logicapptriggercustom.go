@@ -29,8 +29,8 @@ import (
 type LogicAppTriggerCustomLister interface {
 	// List lists all LogicAppTriggerCustoms in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LogicAppTriggerCustom, err error)
-	// Get retrieves the LogicAppTriggerCustom from the index for a given name.
-	Get(name string) (*v1alpha1.LogicAppTriggerCustom, error)
+	// LogicAppTriggerCustoms returns an object that can list and get LogicAppTriggerCustoms.
+	LogicAppTriggerCustoms(namespace string) LogicAppTriggerCustomNamespaceLister
 	LogicAppTriggerCustomListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *logicAppTriggerCustomLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the LogicAppTriggerCustom from the index for a given name.
-func (s *logicAppTriggerCustomLister) Get(name string) (*v1alpha1.LogicAppTriggerCustom, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LogicAppTriggerCustoms returns an object that can list and get LogicAppTriggerCustoms.
+func (s *logicAppTriggerCustomLister) LogicAppTriggerCustoms(namespace string) LogicAppTriggerCustomNamespaceLister {
+	return logicAppTriggerCustomNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LogicAppTriggerCustomNamespaceLister helps list and get LogicAppTriggerCustoms.
+type LogicAppTriggerCustomNamespaceLister interface {
+	// List lists all LogicAppTriggerCustoms in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LogicAppTriggerCustom, err error)
+	// Get retrieves the LogicAppTriggerCustom from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LogicAppTriggerCustom, error)
+	LogicAppTriggerCustomNamespaceListerExpansion
+}
+
+// logicAppTriggerCustomNamespaceLister implements the LogicAppTriggerCustomNamespaceLister
+// interface.
+type logicAppTriggerCustomNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LogicAppTriggerCustoms in the indexer for a given namespace.
+func (s logicAppTriggerCustomNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LogicAppTriggerCustom, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LogicAppTriggerCustom))
+	})
+	return ret, err
+}
+
+// Get retrieves the LogicAppTriggerCustom from the indexer for a given namespace and name.
+func (s logicAppTriggerCustomNamespaceLister) Get(name string) (*v1alpha1.LogicAppTriggerCustom, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // PlacementGroupsGetter has a method to return a PlacementGroupInterface.
 // A group's client should implement this interface.
 type PlacementGroupsGetter interface {
-	PlacementGroups() PlacementGroupInterface
+	PlacementGroups(namespace string) PlacementGroupInterface
 }
 
 // PlacementGroupInterface has methods to work with PlacementGroup resources.
@@ -52,12 +52,14 @@ type PlacementGroupInterface interface {
 // placementGroups implements PlacementGroupInterface
 type placementGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPlacementGroups returns a PlacementGroups
-func newPlacementGroups(c *AwsV1alpha1Client) *placementGroups {
+func newPlacementGroups(c *AwsV1alpha1Client, namespace string) *placementGroups {
 	return &placementGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPlacementGroups(c *AwsV1alpha1Client) *placementGroups {
 func (c *placementGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.PlacementGroup, err error) {
 	result = &v1alpha1.PlacementGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("placementgroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *placementGroups) List(opts v1.ListOptions) (result *v1alpha1.PlacementG
 	}
 	result = &v1alpha1.PlacementGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("placementgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *placementGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("placementgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *placementGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *placementGroups) Create(placementGroup *v1alpha1.PlacementGroup) (result *v1alpha1.PlacementGroup, err error) {
 	result = &v1alpha1.PlacementGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("placementgroups").
 		Body(placementGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *placementGroups) Create(placementGroup *v1alpha1.PlacementGroup) (resul
 func (c *placementGroups) Update(placementGroup *v1alpha1.PlacementGroup) (result *v1alpha1.PlacementGroup, err error) {
 	result = &v1alpha1.PlacementGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("placementgroups").
 		Name(placementGroup.Name).
 		Body(placementGroup).
@@ -132,6 +139,7 @@ func (c *placementGroups) Update(placementGroup *v1alpha1.PlacementGroup) (resul
 func (c *placementGroups) UpdateStatus(placementGroup *v1alpha1.PlacementGroup) (result *v1alpha1.PlacementGroup, err error) {
 	result = &v1alpha1.PlacementGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("placementgroups").
 		Name(placementGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *placementGroups) UpdateStatus(placementGroup *v1alpha1.PlacementGroup) 
 // Delete takes name of the placementGroup and deletes it. Returns an error if one occurs.
 func (c *placementGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("placementgroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *placementGroups) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("placementgroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *placementGroups) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *placementGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PlacementGroup, err error) {
 	result = &v1alpha1.PlacementGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("placementgroups").
 		SubResource(subresources...).
 		Name(name).

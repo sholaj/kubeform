@@ -32,7 +32,7 @@ import (
 // LoadbalancersGetter has a method to return a LoadbalancerInterface.
 // A group's client should implement this interface.
 type LoadbalancersGetter interface {
-	Loadbalancers() LoadbalancerInterface
+	Loadbalancers(namespace string) LoadbalancerInterface
 }
 
 // LoadbalancerInterface has methods to work with Loadbalancer resources.
@@ -52,12 +52,14 @@ type LoadbalancerInterface interface {
 // loadbalancers implements LoadbalancerInterface
 type loadbalancers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLoadbalancers returns a Loadbalancers
-func newLoadbalancers(c *DigitaloceanV1alpha1Client) *loadbalancers {
+func newLoadbalancers(c *DigitaloceanV1alpha1Client, namespace string) *loadbalancers {
 	return &loadbalancers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLoadbalancers(c *DigitaloceanV1alpha1Client) *loadbalancers {
 func (c *loadbalancers) Get(name string, options v1.GetOptions) (result *v1alpha1.Loadbalancer, err error) {
 	result = &v1alpha1.Loadbalancer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loadbalancers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *loadbalancers) List(opts v1.ListOptions) (result *v1alpha1.Loadbalancer
 	}
 	result = &v1alpha1.LoadbalancerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loadbalancers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *loadbalancers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("loadbalancers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *loadbalancers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *loadbalancers) Create(loadbalancer *v1alpha1.Loadbalancer) (result *v1alpha1.Loadbalancer, err error) {
 	result = &v1alpha1.Loadbalancer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("loadbalancers").
 		Body(loadbalancer).
 		Do().
@@ -118,6 +124,7 @@ func (c *loadbalancers) Create(loadbalancer *v1alpha1.Loadbalancer) (result *v1a
 func (c *loadbalancers) Update(loadbalancer *v1alpha1.Loadbalancer) (result *v1alpha1.Loadbalancer, err error) {
 	result = &v1alpha1.Loadbalancer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loadbalancers").
 		Name(loadbalancer.Name).
 		Body(loadbalancer).
@@ -132,6 +139,7 @@ func (c *loadbalancers) Update(loadbalancer *v1alpha1.Loadbalancer) (result *v1a
 func (c *loadbalancers) UpdateStatus(loadbalancer *v1alpha1.Loadbalancer) (result *v1alpha1.Loadbalancer, err error) {
 	result = &v1alpha1.Loadbalancer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loadbalancers").
 		Name(loadbalancer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *loadbalancers) UpdateStatus(loadbalancer *v1alpha1.Loadbalancer) (resul
 // Delete takes name of the loadbalancer and deletes it. Returns an error if one occurs.
 func (c *loadbalancers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loadbalancers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *loadbalancers) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loadbalancers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *loadbalancers) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *loadbalancers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Loadbalancer, err error) {
 	result = &v1alpha1.Loadbalancer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("loadbalancers").
 		SubResource(subresources...).
 		Name(name).

@@ -31,6 +31,7 @@ import (
 // FakeKmsKeyRingIamPolicies implements KmsKeyRingIamPolicyInterface
 type FakeKmsKeyRingIamPolicies struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var kmskeyringiampoliciesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "kmskeyringiampolicies"}
@@ -40,7 +41,8 @@ var kmskeyringiampoliciesKind = schema.GroupVersionKind{Group: "google.kubeform.
 // Get takes name of the kmsKeyRingIamPolicy, and returns the corresponding kmsKeyRingIamPolicy object, and an error if there is any.
 func (c *FakeKmsKeyRingIamPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.KmsKeyRingIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(kmskeyringiampoliciesResource, name), &v1alpha1.KmsKeyRingIamPolicy{})
+		Invokes(testing.NewGetAction(kmskeyringiampoliciesResource, c.ns, name), &v1alpha1.KmsKeyRingIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeKmsKeyRingIamPolicies) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of KmsKeyRingIamPolicies that match those selectors.
 func (c *FakeKmsKeyRingIamPolicies) List(opts v1.ListOptions) (result *v1alpha1.KmsKeyRingIamPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(kmskeyringiampoliciesResource, kmskeyringiampoliciesKind, opts), &v1alpha1.KmsKeyRingIamPolicyList{})
+		Invokes(testing.NewListAction(kmskeyringiampoliciesResource, kmskeyringiampoliciesKind, c.ns, opts), &v1alpha1.KmsKeyRingIamPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeKmsKeyRingIamPolicies) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested kmsKeyRingIamPolicies.
 func (c *FakeKmsKeyRingIamPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(kmskeyringiampoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(kmskeyringiampoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a kmsKeyRingIamPolicy and creates it.  Returns the server's representation of the kmsKeyRingIamPolicy, and an error, if there is any.
 func (c *FakeKmsKeyRingIamPolicies) Create(kmsKeyRingIamPolicy *v1alpha1.KmsKeyRingIamPolicy) (result *v1alpha1.KmsKeyRingIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(kmskeyringiampoliciesResource, kmsKeyRingIamPolicy), &v1alpha1.KmsKeyRingIamPolicy{})
+		Invokes(testing.NewCreateAction(kmskeyringiampoliciesResource, c.ns, kmsKeyRingIamPolicy), &v1alpha1.KmsKeyRingIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeKmsKeyRingIamPolicies) Create(kmsKeyRingIamPolicy *v1alpha1.KmsKeyR
 // Update takes the representation of a kmsKeyRingIamPolicy and updates it. Returns the server's representation of the kmsKeyRingIamPolicy, and an error, if there is any.
 func (c *FakeKmsKeyRingIamPolicies) Update(kmsKeyRingIamPolicy *v1alpha1.KmsKeyRingIamPolicy) (result *v1alpha1.KmsKeyRingIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(kmskeyringiampoliciesResource, kmsKeyRingIamPolicy), &v1alpha1.KmsKeyRingIamPolicy{})
+		Invokes(testing.NewUpdateAction(kmskeyringiampoliciesResource, c.ns, kmsKeyRingIamPolicy), &v1alpha1.KmsKeyRingIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeKmsKeyRingIamPolicies) Update(kmsKeyRingIamPolicy *v1alpha1.KmsKeyR
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeKmsKeyRingIamPolicies) UpdateStatus(kmsKeyRingIamPolicy *v1alpha1.KmsKeyRingIamPolicy) (*v1alpha1.KmsKeyRingIamPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(kmskeyringiampoliciesResource, "status", kmsKeyRingIamPolicy), &v1alpha1.KmsKeyRingIamPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(kmskeyringiampoliciesResource, "status", c.ns, kmsKeyRingIamPolicy), &v1alpha1.KmsKeyRingIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeKmsKeyRingIamPolicies) UpdateStatus(kmsKeyRingIamPolicy *v1alpha1.K
 // Delete takes name of the kmsKeyRingIamPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeKmsKeyRingIamPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(kmskeyringiampoliciesResource, name), &v1alpha1.KmsKeyRingIamPolicy{})
+		Invokes(testing.NewDeleteAction(kmskeyringiampoliciesResource, c.ns, name), &v1alpha1.KmsKeyRingIamPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeKmsKeyRingIamPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(kmskeyringiampoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(kmskeyringiampoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.KmsKeyRingIamPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeKmsKeyRingIamPolicies) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched kmsKeyRingIamPolicy.
 func (c *FakeKmsKeyRingIamPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KmsKeyRingIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(kmskeyringiampoliciesResource, name, pt, data, subresources...), &v1alpha1.KmsKeyRingIamPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(kmskeyringiampoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.KmsKeyRingIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

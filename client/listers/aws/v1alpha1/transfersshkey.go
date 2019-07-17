@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// TransferSshKeyLister helps list TransferSshKeys.
-type TransferSshKeyLister interface {
-	// List lists all TransferSshKeys in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.TransferSshKey, err error)
-	// Get retrieves the TransferSshKey from the index for a given name.
-	Get(name string) (*v1alpha1.TransferSshKey, error)
-	TransferSshKeyListerExpansion
+// TransferSSHKeyLister helps list TransferSSHKeys.
+type TransferSSHKeyLister interface {
+	// List lists all TransferSSHKeys in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.TransferSSHKey, err error)
+	// TransferSSHKeys returns an object that can list and get TransferSSHKeys.
+	TransferSSHKeys(namespace string) TransferSSHKeyNamespaceLister
+	TransferSSHKeyListerExpansion
 }
 
-// transferSshKeyLister implements the TransferSshKeyLister interface.
-type transferSshKeyLister struct {
+// transferSSHKeyLister implements the TransferSSHKeyLister interface.
+type transferSSHKeyLister struct {
 	indexer cache.Indexer
 }
 
-// NewTransferSshKeyLister returns a new TransferSshKeyLister.
-func NewTransferSshKeyLister(indexer cache.Indexer) TransferSshKeyLister {
-	return &transferSshKeyLister{indexer: indexer}
+// NewTransferSSHKeyLister returns a new TransferSSHKeyLister.
+func NewTransferSSHKeyLister(indexer cache.Indexer) TransferSSHKeyLister {
+	return &transferSSHKeyLister{indexer: indexer}
 }
 
-// List lists all TransferSshKeys in the indexer.
-func (s *transferSshKeyLister) List(selector labels.Selector) (ret []*v1alpha1.TransferSshKey, err error) {
+// List lists all TransferSSHKeys in the indexer.
+func (s *transferSSHKeyLister) List(selector labels.Selector) (ret []*v1alpha1.TransferSSHKey, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.TransferSshKey))
+		ret = append(ret, m.(*v1alpha1.TransferSSHKey))
 	})
 	return ret, err
 }
 
-// Get retrieves the TransferSshKey from the index for a given name.
-func (s *transferSshKeyLister) Get(name string) (*v1alpha1.TransferSshKey, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// TransferSSHKeys returns an object that can list and get TransferSSHKeys.
+func (s *transferSSHKeyLister) TransferSSHKeys(namespace string) TransferSSHKeyNamespaceLister {
+	return transferSSHKeyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// TransferSSHKeyNamespaceLister helps list and get TransferSSHKeys.
+type TransferSSHKeyNamespaceLister interface {
+	// List lists all TransferSSHKeys in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.TransferSSHKey, err error)
+	// Get retrieves the TransferSSHKey from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.TransferSSHKey, error)
+	TransferSSHKeyNamespaceListerExpansion
+}
+
+// transferSSHKeyNamespaceLister implements the TransferSSHKeyNamespaceLister
+// interface.
+type transferSSHKeyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all TransferSSHKeys in the indexer for a given namespace.
+func (s transferSSHKeyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.TransferSSHKey, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.TransferSSHKey))
+	})
+	return ret, err
+}
+
+// Get retrieves the TransferSSHKey from the indexer for a given namespace and name.
+func (s transferSSHKeyNamespaceLister) Get(name string) (*v1alpha1.TransferSSHKey, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("transfersshkey"), name)
 	}
-	return obj.(*v1alpha1.TransferSshKey), nil
+	return obj.(*v1alpha1.TransferSSHKey), nil
 }

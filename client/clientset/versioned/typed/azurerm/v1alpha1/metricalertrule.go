@@ -32,7 +32,7 @@ import (
 // MetricAlertrulesGetter has a method to return a MetricAlertruleInterface.
 // A group's client should implement this interface.
 type MetricAlertrulesGetter interface {
-	MetricAlertrules() MetricAlertruleInterface
+	MetricAlertrules(namespace string) MetricAlertruleInterface
 }
 
 // MetricAlertruleInterface has methods to work with MetricAlertrule resources.
@@ -52,12 +52,14 @@ type MetricAlertruleInterface interface {
 // metricAlertrules implements MetricAlertruleInterface
 type metricAlertrules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMetricAlertrules returns a MetricAlertrules
-func newMetricAlertrules(c *AzurermV1alpha1Client) *metricAlertrules {
+func newMetricAlertrules(c *AzurermV1alpha1Client, namespace string) *metricAlertrules {
 	return &metricAlertrules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMetricAlertrules(c *AzurermV1alpha1Client) *metricAlertrules {
 func (c *metricAlertrules) Get(name string, options v1.GetOptions) (result *v1alpha1.MetricAlertrule, err error) {
 	result = &v1alpha1.MetricAlertrule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("metricalertrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *metricAlertrules) List(opts v1.ListOptions) (result *v1alpha1.MetricAle
 	}
 	result = &v1alpha1.MetricAlertruleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("metricalertrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *metricAlertrules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("metricalertrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *metricAlertrules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *metricAlertrules) Create(metricAlertrule *v1alpha1.MetricAlertrule) (result *v1alpha1.MetricAlertrule, err error) {
 	result = &v1alpha1.MetricAlertrule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("metricalertrules").
 		Body(metricAlertrule).
 		Do().
@@ -118,6 +124,7 @@ func (c *metricAlertrules) Create(metricAlertrule *v1alpha1.MetricAlertrule) (re
 func (c *metricAlertrules) Update(metricAlertrule *v1alpha1.MetricAlertrule) (result *v1alpha1.MetricAlertrule, err error) {
 	result = &v1alpha1.MetricAlertrule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("metricalertrules").
 		Name(metricAlertrule.Name).
 		Body(metricAlertrule).
@@ -132,6 +139,7 @@ func (c *metricAlertrules) Update(metricAlertrule *v1alpha1.MetricAlertrule) (re
 func (c *metricAlertrules) UpdateStatus(metricAlertrule *v1alpha1.MetricAlertrule) (result *v1alpha1.MetricAlertrule, err error) {
 	result = &v1alpha1.MetricAlertrule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("metricalertrules").
 		Name(metricAlertrule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *metricAlertrules) UpdateStatus(metricAlertrule *v1alpha1.MetricAlertrul
 // Delete takes name of the metricAlertrule and deletes it. Returns an error if one occurs.
 func (c *metricAlertrules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("metricalertrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *metricAlertrules) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("metricalertrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *metricAlertrules) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *metricAlertrules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MetricAlertrule, err error) {
 	result = &v1alpha1.MetricAlertrule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("metricalertrules").
 		SubResource(subresources...).
 		Name(name).

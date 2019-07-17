@@ -32,7 +32,7 @@ import (
 // WafregionalRegexMatchSetsGetter has a method to return a WafregionalRegexMatchSetInterface.
 // A group's client should implement this interface.
 type WafregionalRegexMatchSetsGetter interface {
-	WafregionalRegexMatchSets() WafregionalRegexMatchSetInterface
+	WafregionalRegexMatchSets(namespace string) WafregionalRegexMatchSetInterface
 }
 
 // WafregionalRegexMatchSetInterface has methods to work with WafregionalRegexMatchSet resources.
@@ -52,12 +52,14 @@ type WafregionalRegexMatchSetInterface interface {
 // wafregionalRegexMatchSets implements WafregionalRegexMatchSetInterface
 type wafregionalRegexMatchSets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWafregionalRegexMatchSets returns a WafregionalRegexMatchSets
-func newWafregionalRegexMatchSets(c *AwsV1alpha1Client) *wafregionalRegexMatchSets {
+func newWafregionalRegexMatchSets(c *AwsV1alpha1Client, namespace string) *wafregionalRegexMatchSets {
 	return &wafregionalRegexMatchSets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWafregionalRegexMatchSets(c *AwsV1alpha1Client) *wafregionalRegexMatchSe
 func (c *wafregionalRegexMatchSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalRegexMatchSet, err error) {
 	result = &v1alpha1.WafregionalRegexMatchSet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalregexmatchsets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *wafregionalRegexMatchSets) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.WafregionalRegexMatchSetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalregexmatchsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *wafregionalRegexMatchSets) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregionalregexmatchsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *wafregionalRegexMatchSets) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *wafregionalRegexMatchSets) Create(wafregionalRegexMatchSet *v1alpha1.WafregionalRegexMatchSet) (result *v1alpha1.WafregionalRegexMatchSet, err error) {
 	result = &v1alpha1.WafregionalRegexMatchSet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafregionalregexmatchsets").
 		Body(wafregionalRegexMatchSet).
 		Do().
@@ -118,6 +124,7 @@ func (c *wafregionalRegexMatchSets) Create(wafregionalRegexMatchSet *v1alpha1.Wa
 func (c *wafregionalRegexMatchSets) Update(wafregionalRegexMatchSet *v1alpha1.WafregionalRegexMatchSet) (result *v1alpha1.WafregionalRegexMatchSet, err error) {
 	result = &v1alpha1.WafregionalRegexMatchSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregionalregexmatchsets").
 		Name(wafregionalRegexMatchSet.Name).
 		Body(wafregionalRegexMatchSet).
@@ -132,6 +139,7 @@ func (c *wafregionalRegexMatchSets) Update(wafregionalRegexMatchSet *v1alpha1.Wa
 func (c *wafregionalRegexMatchSets) UpdateStatus(wafregionalRegexMatchSet *v1alpha1.WafregionalRegexMatchSet) (result *v1alpha1.WafregionalRegexMatchSet, err error) {
 	result = &v1alpha1.WafregionalRegexMatchSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregionalregexmatchsets").
 		Name(wafregionalRegexMatchSet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *wafregionalRegexMatchSets) UpdateStatus(wafregionalRegexMatchSet *v1alp
 // Delete takes name of the wafregionalRegexMatchSet and deletes it. Returns an error if one occurs.
 func (c *wafregionalRegexMatchSets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregionalregexmatchsets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *wafregionalRegexMatchSets) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregionalregexmatchsets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *wafregionalRegexMatchSets) DeleteCollection(options *v1.DeleteOptions, 
 func (c *wafregionalRegexMatchSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalRegexMatchSet, err error) {
 	result = &v1alpha1.WafregionalRegexMatchSet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafregionalregexmatchsets").
 		SubResource(subresources...).
 		Name(name).

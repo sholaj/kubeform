@@ -397,41 +397,249 @@ spec:
           type: object
         spec:
           properties:
-            action_storage_queue:
-              items: {}
+            actionStorageQueue:
+              items:
+                properties:
+                  message:
+                    type: string
+                  sasToken:
+                    type: string
+                  storageAccountName:
+                    type: string
+                  storageQueueName:
+                    type: string
+                required:
+                - message
+                - sasToken
+                - storageAccountName
+                - storageQueueName
+                type: object
               maxItems: 1
               type: array
-            action_web:
-              items: {}
+            actionWeb:
+              items:
+                properties:
+                  authenticationActiveDirectory:
+                    items:
+                      properties:
+                        clientID:
+                          type: string
+                        secret:
+                          type: string
+                        tenantID:
+                          type: string
+                      required:
+                      - clientID
+                      - secret
+                      - tenantID
+                      type: object
+                    maxItems: 1
+                    type: array
+                  authenticationBasic:
+                    items:
+                      properties:
+                        password:
+                          type: string
+                        username:
+                          type: string
+                      required:
+                      - password
+                      - username
+                      type: object
+                    maxItems: 1
+                    type: array
+                  authenticationCertificate:
+                    items:
+                      properties:
+                        password:
+                          type: string
+                        pfx:
+                          type: string
+                      required:
+                      - password
+                      - pfx
+                      type: object
+                    maxItems: 1
+                    type: array
+                  body:
+                    type: string
+                  headers:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  method:
+                    type: string
+                  url:
+                    type: string
+                required:
+                - method
+                - url
+                type: object
               maxItems: 1
               type: array
-            error_action_storage_queue:
-              items: {}
+            errorActionStorageQueue:
+              items:
+                properties:
+                  message:
+                    type: string
+                  sasToken:
+                    type: string
+                  storageAccountName:
+                    type: string
+                  storageQueueName:
+                    type: string
+                required:
+                - message
+                - sasToken
+                - storageAccountName
+                - storageQueueName
+                type: object
               maxItems: 1
               type: array
-            error_action_web:
-              items: {}
+            errorActionWeb:
+              items:
+                properties:
+                  authenticationActiveDirectory:
+                    items:
+                      properties:
+                        clientID:
+                          type: string
+                        secret:
+                          type: string
+                        tenantID:
+                          type: string
+                      required:
+                      - clientID
+                      - secret
+                      - tenantID
+                      type: object
+                    maxItems: 1
+                    type: array
+                  authenticationBasic:
+                    items:
+                      properties:
+                        password:
+                          type: string
+                        username:
+                          type: string
+                      required:
+                      - password
+                      - username
+                      type: object
+                    maxItems: 1
+                    type: array
+                  authenticationCertificate:
+                    items:
+                      properties:
+                        password:
+                          type: string
+                        pfx:
+                          type: string
+                      required:
+                      - password
+                      - pfx
+                      type: object
+                    maxItems: 1
+                    type: array
+                  body:
+                    type: string
+                  headers:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  method:
+                    type: string
+                  url:
+                    type: string
+                required:
+                - method
+                - url
+                type: object
               maxItems: 1
               type: array
-            job_collection_name:
+            jobCollectionName:
               type: string
             name:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             recurrence:
-              items: {}
+              items:
+                properties:
+                  count:
+                    type: integer
+                  frequency:
+                    type: string
+                  hours:
+                    items:
+                      format: int64
+                      type: integer
+                    type: array
+                    uniqueItems: true
+                  interval:
+                    type: integer
+                  minutes:
+                    items:
+                      format: int64
+                      type: integer
+                    type: array
+                    uniqueItems: true
+                  monthDays:
+                    items:
+                      format: int64
+                      type: integer
+                    minItems: 1
+                    type: array
+                    uniqueItems: true
+                  monthlyOccurrences:
+                    items:
+                      properties:
+                        day:
+                          type: string
+                        occurrence:
+                          type: integer
+                      required:
+                      - day
+                      - occurrence
+                      type: object
+                    minItems: 1
+                    type: array
+                    uniqueItems: true
+                  weekDays:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                required:
+                - frequency
+                type: object
               maxItems: 1
               minItems: 1
               type: array
-            resource_group_name:
+            resourceGroupName:
               type: string
             retry:
-              items: {}
+              items:
+                properties:
+                  count:
+                    type: integer
+                  interval:
+                    type: string
+                type: object
               maxItems: 1
               type: array
           required:
-          - job_collection_name
+          - jobCollectionName
           - name
-          - resource_group_name
+          - providerRef
+          - resourceGroupName
           type: object
         status:
           properties:
@@ -442,6 +650,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

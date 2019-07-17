@@ -397,18 +397,29 @@ spec:
           type: object
         spec:
           properties:
-            default_sender_id:
+            defaultSenderID:
               type: string
-            default_sms_type:
+            defaultSmsType:
               type: string
-            delivery_status_iam_role_arn:
+            deliveryStatusIamRoleArn:
               type: string
-            delivery_status_success_sampling_rate:
+            deliveryStatusSuccessSamplingRate:
               type: string
-            monthly_spend_limit:
+            monthlySpendLimit:
               type: string
-            usage_report_s3_bucket:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            usageReportS3Bucket:
               type: string
+          required:
+          - providerRef
           type: object
         status:
           properties:
@@ -419,6 +430,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

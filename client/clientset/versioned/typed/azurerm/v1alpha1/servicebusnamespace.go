@@ -32,7 +32,7 @@ import (
 // ServicebusNamespacesGetter has a method to return a ServicebusNamespaceInterface.
 // A group's client should implement this interface.
 type ServicebusNamespacesGetter interface {
-	ServicebusNamespaces() ServicebusNamespaceInterface
+	ServicebusNamespaces(namespace string) ServicebusNamespaceInterface
 }
 
 // ServicebusNamespaceInterface has methods to work with ServicebusNamespace resources.
@@ -52,12 +52,14 @@ type ServicebusNamespaceInterface interface {
 // servicebusNamespaces implements ServicebusNamespaceInterface
 type servicebusNamespaces struct {
 	client rest.Interface
+	ns     string
 }
 
 // newServicebusNamespaces returns a ServicebusNamespaces
-func newServicebusNamespaces(c *AzurermV1alpha1Client) *servicebusNamespaces {
+func newServicebusNamespaces(c *AzurermV1alpha1Client, namespace string) *servicebusNamespaces {
 	return &servicebusNamespaces{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newServicebusNamespaces(c *AzurermV1alpha1Client) *servicebusNamespaces {
 func (c *servicebusNamespaces) Get(name string, options v1.GetOptions) (result *v1alpha1.ServicebusNamespace, err error) {
 	result = &v1alpha1.ServicebusNamespace{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicebusnamespaces").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *servicebusNamespaces) List(opts v1.ListOptions) (result *v1alpha1.Servi
 	}
 	result = &v1alpha1.ServicebusNamespaceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicebusnamespaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *servicebusNamespaces) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("servicebusnamespaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *servicebusNamespaces) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *servicebusNamespaces) Create(servicebusNamespace *v1alpha1.ServicebusNamespace) (result *v1alpha1.ServicebusNamespace, err error) {
 	result = &v1alpha1.ServicebusNamespace{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("servicebusnamespaces").
 		Body(servicebusNamespace).
 		Do().
@@ -118,6 +124,7 @@ func (c *servicebusNamespaces) Create(servicebusNamespace *v1alpha1.ServicebusNa
 func (c *servicebusNamespaces) Update(servicebusNamespace *v1alpha1.ServicebusNamespace) (result *v1alpha1.ServicebusNamespace, err error) {
 	result = &v1alpha1.ServicebusNamespace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicebusnamespaces").
 		Name(servicebusNamespace.Name).
 		Body(servicebusNamespace).
@@ -132,6 +139,7 @@ func (c *servicebusNamespaces) Update(servicebusNamespace *v1alpha1.ServicebusNa
 func (c *servicebusNamespaces) UpdateStatus(servicebusNamespace *v1alpha1.ServicebusNamespace) (result *v1alpha1.ServicebusNamespace, err error) {
 	result = &v1alpha1.ServicebusNamespace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicebusnamespaces").
 		Name(servicebusNamespace.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *servicebusNamespaces) UpdateStatus(servicebusNamespace *v1alpha1.Servic
 // Delete takes name of the servicebusNamespace and deletes it. Returns an error if one occurs.
 func (c *servicebusNamespaces) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicebusnamespaces").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *servicebusNamespaces) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicebusnamespaces").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *servicebusNamespaces) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *servicebusNamespaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServicebusNamespace, err error) {
 	result = &v1alpha1.ServicebusNamespace{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("servicebusnamespaces").
 		SubResource(subresources...).
 		Name(name).

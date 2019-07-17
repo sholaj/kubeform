@@ -41,32 +41,33 @@ type CodepipelineWebhookInformer interface {
 type codepipelineWebhookInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewCodepipelineWebhookInformer constructs a new informer for CodepipelineWebhook type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCodepipelineWebhookInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCodepipelineWebhookInformer(client, resyncPeriod, indexers, nil)
+func NewCodepipelineWebhookInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCodepipelineWebhookInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredCodepipelineWebhookInformer constructs a new informer for CodepipelineWebhook type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCodepipelineWebhookInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCodepipelineWebhookInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CodepipelineWebhooks().List(options)
+				return client.AwsV1alpha1().CodepipelineWebhooks(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CodepipelineWebhooks().Watch(options)
+				return client.AwsV1alpha1().CodepipelineWebhooks(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.CodepipelineWebhook{},
@@ -76,7 +77,7 @@ func NewFilteredCodepipelineWebhookInformer(client versioned.Interface, resyncPe
 }
 
 func (f *codepipelineWebhookInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCodepipelineWebhookInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredCodepipelineWebhookInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *codepipelineWebhookInformer) Informer() cache.SharedIndexInformer {

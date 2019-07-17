@@ -3,12 +3,12 @@ package v1alpha1
 import (
 	"encoding/json"
 
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -22,11 +22,12 @@ type EfsFileSystem struct {
 
 type EfsFileSystemSpec struct {
 	// +optional
-	ProvisionedThroughputInMibps json.Number `json:"provisioned_throughput_in_mibps,omitempty"`
+	ProvisionedThroughputInMibps json.Number `json:"provisionedThroughputInMibps,omitempty" tf:"provisioned_throughput_in_mibps,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	ThroughputMode string `json:"throughput_mode,omitempty"`
+	ThroughputMode string                    `json:"throughputMode,omitempty" tf:"throughput_mode,omitempty"`
+	ProviderRef    core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type EfsFileSystemStatus struct {
@@ -34,7 +35,9 @@ type EfsFileSystemStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

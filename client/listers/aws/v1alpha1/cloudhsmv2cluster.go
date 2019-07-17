@@ -29,8 +29,8 @@ import (
 type CloudhsmV2ClusterLister interface {
 	// List lists all CloudhsmV2Clusters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CloudhsmV2Cluster, err error)
-	// Get retrieves the CloudhsmV2Cluster from the index for a given name.
-	Get(name string) (*v1alpha1.CloudhsmV2Cluster, error)
+	// CloudhsmV2Clusters returns an object that can list and get CloudhsmV2Clusters.
+	CloudhsmV2Clusters(namespace string) CloudhsmV2ClusterNamespaceLister
 	CloudhsmV2ClusterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cloudhsmV2ClusterLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the CloudhsmV2Cluster from the index for a given name.
-func (s *cloudhsmV2ClusterLister) Get(name string) (*v1alpha1.CloudhsmV2Cluster, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CloudhsmV2Clusters returns an object that can list and get CloudhsmV2Clusters.
+func (s *cloudhsmV2ClusterLister) CloudhsmV2Clusters(namespace string) CloudhsmV2ClusterNamespaceLister {
+	return cloudhsmV2ClusterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CloudhsmV2ClusterNamespaceLister helps list and get CloudhsmV2Clusters.
+type CloudhsmV2ClusterNamespaceLister interface {
+	// List lists all CloudhsmV2Clusters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CloudhsmV2Cluster, err error)
+	// Get retrieves the CloudhsmV2Cluster from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CloudhsmV2Cluster, error)
+	CloudhsmV2ClusterNamespaceListerExpansion
+}
+
+// cloudhsmV2ClusterNamespaceLister implements the CloudhsmV2ClusterNamespaceLister
+// interface.
+type cloudhsmV2ClusterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CloudhsmV2Clusters in the indexer for a given namespace.
+func (s cloudhsmV2ClusterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CloudhsmV2Cluster, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CloudhsmV2Cluster))
+	})
+	return ret, err
+}
+
+// Get retrieves the CloudhsmV2Cluster from the indexer for a given namespace and name.
+func (s cloudhsmV2ClusterNamespaceLister) Get(name string) (*v1alpha1.CloudhsmV2Cluster, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

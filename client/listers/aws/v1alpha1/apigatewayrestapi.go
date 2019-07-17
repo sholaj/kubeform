@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// ApiGatewayRestApiLister helps list ApiGatewayRestApis.
-type ApiGatewayRestApiLister interface {
-	// List lists all ApiGatewayRestApis in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayRestApi, err error)
-	// Get retrieves the ApiGatewayRestApi from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayRestApi, error)
-	ApiGatewayRestApiListerExpansion
+// ApiGatewayRestAPILister helps list ApiGatewayRestAPIs.
+type ApiGatewayRestAPILister interface {
+	// List lists all ApiGatewayRestAPIs in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayRestAPI, err error)
+	// ApiGatewayRestAPIs returns an object that can list and get ApiGatewayRestAPIs.
+	ApiGatewayRestAPIs(namespace string) ApiGatewayRestAPINamespaceLister
+	ApiGatewayRestAPIListerExpansion
 }
 
-// apiGatewayRestApiLister implements the ApiGatewayRestApiLister interface.
-type apiGatewayRestApiLister struct {
+// apiGatewayRestAPILister implements the ApiGatewayRestAPILister interface.
+type apiGatewayRestAPILister struct {
 	indexer cache.Indexer
 }
 
-// NewApiGatewayRestApiLister returns a new ApiGatewayRestApiLister.
-func NewApiGatewayRestApiLister(indexer cache.Indexer) ApiGatewayRestApiLister {
-	return &apiGatewayRestApiLister{indexer: indexer}
+// NewApiGatewayRestAPILister returns a new ApiGatewayRestAPILister.
+func NewApiGatewayRestAPILister(indexer cache.Indexer) ApiGatewayRestAPILister {
+	return &apiGatewayRestAPILister{indexer: indexer}
 }
 
-// List lists all ApiGatewayRestApis in the indexer.
-func (s *apiGatewayRestApiLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayRestApi, err error) {
+// List lists all ApiGatewayRestAPIs in the indexer.
+func (s *apiGatewayRestAPILister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayRestAPI, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ApiGatewayRestApi))
+		ret = append(ret, m.(*v1alpha1.ApiGatewayRestAPI))
 	})
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayRestApi from the index for a given name.
-func (s *apiGatewayRestApiLister) Get(name string) (*v1alpha1.ApiGatewayRestApi, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayRestAPIs returns an object that can list and get ApiGatewayRestAPIs.
+func (s *apiGatewayRestAPILister) ApiGatewayRestAPIs(namespace string) ApiGatewayRestAPINamespaceLister {
+	return apiGatewayRestAPINamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayRestAPINamespaceLister helps list and get ApiGatewayRestAPIs.
+type ApiGatewayRestAPINamespaceLister interface {
+	// List lists all ApiGatewayRestAPIs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayRestAPI, err error)
+	// Get retrieves the ApiGatewayRestAPI from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayRestAPI, error)
+	ApiGatewayRestAPINamespaceListerExpansion
+}
+
+// apiGatewayRestAPINamespaceLister implements the ApiGatewayRestAPINamespaceLister
+// interface.
+type apiGatewayRestAPINamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayRestAPIs in the indexer for a given namespace.
+func (s apiGatewayRestAPINamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayRestAPI, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayRestAPI))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayRestAPI from the indexer for a given namespace and name.
+func (s apiGatewayRestAPINamespaceLister) Get(name string) (*v1alpha1.ApiGatewayRestAPI, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("apigatewayrestapi"), name)
 	}
-	return obj.(*v1alpha1.ApiGatewayRestApi), nil
+	return obj.(*v1alpha1.ApiGatewayRestAPI), nil
 }

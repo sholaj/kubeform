@@ -41,32 +41,33 @@ type LbCookieStickinessPolicyInformer interface {
 type lbCookieStickinessPolicyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewLbCookieStickinessPolicyInformer constructs a new informer for LbCookieStickinessPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLbCookieStickinessPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLbCookieStickinessPolicyInformer(client, resyncPeriod, indexers, nil)
+func NewLbCookieStickinessPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLbCookieStickinessPolicyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredLbCookieStickinessPolicyInformer constructs a new informer for LbCookieStickinessPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLbCookieStickinessPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLbCookieStickinessPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().LbCookieStickinessPolicies().List(options)
+				return client.AwsV1alpha1().LbCookieStickinessPolicies(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().LbCookieStickinessPolicies().Watch(options)
+				return client.AwsV1alpha1().LbCookieStickinessPolicies(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.LbCookieStickinessPolicy{},
@@ -76,7 +77,7 @@ func NewFilteredLbCookieStickinessPolicyInformer(client versioned.Interface, res
 }
 
 func (f *lbCookieStickinessPolicyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLbCookieStickinessPolicyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredLbCookieStickinessPolicyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *lbCookieStickinessPolicyInformer) Informer() cache.SharedIndexInformer {

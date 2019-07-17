@@ -32,7 +32,7 @@ import (
 // VpcEndpointServiceAllowedPrincipalsGetter has a method to return a VpcEndpointServiceAllowedPrincipalInterface.
 // A group's client should implement this interface.
 type VpcEndpointServiceAllowedPrincipalsGetter interface {
-	VpcEndpointServiceAllowedPrincipals() VpcEndpointServiceAllowedPrincipalInterface
+	VpcEndpointServiceAllowedPrincipals(namespace string) VpcEndpointServiceAllowedPrincipalInterface
 }
 
 // VpcEndpointServiceAllowedPrincipalInterface has methods to work with VpcEndpointServiceAllowedPrincipal resources.
@@ -52,12 +52,14 @@ type VpcEndpointServiceAllowedPrincipalInterface interface {
 // vpcEndpointServiceAllowedPrincipals implements VpcEndpointServiceAllowedPrincipalInterface
 type vpcEndpointServiceAllowedPrincipals struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVpcEndpointServiceAllowedPrincipals returns a VpcEndpointServiceAllowedPrincipals
-func newVpcEndpointServiceAllowedPrincipals(c *AwsV1alpha1Client) *vpcEndpointServiceAllowedPrincipals {
+func newVpcEndpointServiceAllowedPrincipals(c *AwsV1alpha1Client, namespace string) *vpcEndpointServiceAllowedPrincipals {
 	return &vpcEndpointServiceAllowedPrincipals{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVpcEndpointServiceAllowedPrincipals(c *AwsV1alpha1Client) *vpcEndpointSe
 func (c *vpcEndpointServiceAllowedPrincipals) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcEndpointServiceAllowedPrincipal, err error) {
 	result = &v1alpha1.VpcEndpointServiceAllowedPrincipal{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcendpointserviceallowedprincipals").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *vpcEndpointServiceAllowedPrincipals) List(opts v1.ListOptions) (result 
 	}
 	result = &v1alpha1.VpcEndpointServiceAllowedPrincipalList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcendpointserviceallowedprincipals").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *vpcEndpointServiceAllowedPrincipals) Watch(opts v1.ListOptions) (watch.
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcendpointserviceallowedprincipals").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *vpcEndpointServiceAllowedPrincipals) Watch(opts v1.ListOptions) (watch.
 func (c *vpcEndpointServiceAllowedPrincipals) Create(vpcEndpointServiceAllowedPrincipal *v1alpha1.VpcEndpointServiceAllowedPrincipal) (result *v1alpha1.VpcEndpointServiceAllowedPrincipal, err error) {
 	result = &v1alpha1.VpcEndpointServiceAllowedPrincipal{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("vpcendpointserviceallowedprincipals").
 		Body(vpcEndpointServiceAllowedPrincipal).
 		Do().
@@ -118,6 +124,7 @@ func (c *vpcEndpointServiceAllowedPrincipals) Create(vpcEndpointServiceAllowedPr
 func (c *vpcEndpointServiceAllowedPrincipals) Update(vpcEndpointServiceAllowedPrincipal *v1alpha1.VpcEndpointServiceAllowedPrincipal) (result *v1alpha1.VpcEndpointServiceAllowedPrincipal, err error) {
 	result = &v1alpha1.VpcEndpointServiceAllowedPrincipal{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcendpointserviceallowedprincipals").
 		Name(vpcEndpointServiceAllowedPrincipal.Name).
 		Body(vpcEndpointServiceAllowedPrincipal).
@@ -132,6 +139,7 @@ func (c *vpcEndpointServiceAllowedPrincipals) Update(vpcEndpointServiceAllowedPr
 func (c *vpcEndpointServiceAllowedPrincipals) UpdateStatus(vpcEndpointServiceAllowedPrincipal *v1alpha1.VpcEndpointServiceAllowedPrincipal) (result *v1alpha1.VpcEndpointServiceAllowedPrincipal, err error) {
 	result = &v1alpha1.VpcEndpointServiceAllowedPrincipal{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcendpointserviceallowedprincipals").
 		Name(vpcEndpointServiceAllowedPrincipal.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *vpcEndpointServiceAllowedPrincipals) UpdateStatus(vpcEndpointServiceAll
 // Delete takes name of the vpcEndpointServiceAllowedPrincipal and deletes it. Returns an error if one occurs.
 func (c *vpcEndpointServiceAllowedPrincipals) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcendpointserviceallowedprincipals").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *vpcEndpointServiceAllowedPrincipals) DeleteCollection(options *v1.Delet
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcendpointserviceallowedprincipals").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *vpcEndpointServiceAllowedPrincipals) DeleteCollection(options *v1.Delet
 func (c *vpcEndpointServiceAllowedPrincipals) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcEndpointServiceAllowedPrincipal, err error) {
 	result = &v1alpha1.VpcEndpointServiceAllowedPrincipal{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("vpcendpointserviceallowedprincipals").
 		SubResource(subresources...).
 		Name(name).

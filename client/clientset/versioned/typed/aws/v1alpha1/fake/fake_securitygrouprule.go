@@ -31,6 +31,7 @@ import (
 // FakeSecurityGroupRules implements SecurityGroupRuleInterface
 type FakeSecurityGroupRules struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var securitygrouprulesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "securitygrouprules"}
@@ -40,7 +41,8 @@ var securitygrouprulesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", 
 // Get takes name of the securityGroupRule, and returns the corresponding securityGroupRule object, and an error if there is any.
 func (c *FakeSecurityGroupRules) Get(name string, options v1.GetOptions) (result *v1alpha1.SecurityGroupRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(securitygrouprulesResource, name), &v1alpha1.SecurityGroupRule{})
+		Invokes(testing.NewGetAction(securitygrouprulesResource, c.ns, name), &v1alpha1.SecurityGroupRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSecurityGroupRules) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of SecurityGroupRules that match those selectors.
 func (c *FakeSecurityGroupRules) List(opts v1.ListOptions) (result *v1alpha1.SecurityGroupRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(securitygrouprulesResource, securitygrouprulesKind, opts), &v1alpha1.SecurityGroupRuleList{})
+		Invokes(testing.NewListAction(securitygrouprulesResource, securitygrouprulesKind, c.ns, opts), &v1alpha1.SecurityGroupRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSecurityGroupRules) List(opts v1.ListOptions) (result *v1alpha1.Sec
 // Watch returns a watch.Interface that watches the requested securityGroupRules.
 func (c *FakeSecurityGroupRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(securitygrouprulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(securitygrouprulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a securityGroupRule and creates it.  Returns the server's representation of the securityGroupRule, and an error, if there is any.
 func (c *FakeSecurityGroupRules) Create(securityGroupRule *v1alpha1.SecurityGroupRule) (result *v1alpha1.SecurityGroupRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(securitygrouprulesResource, securityGroupRule), &v1alpha1.SecurityGroupRule{})
+		Invokes(testing.NewCreateAction(securitygrouprulesResource, c.ns, securityGroupRule), &v1alpha1.SecurityGroupRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSecurityGroupRules) Create(securityGroupRule *v1alpha1.SecurityGrou
 // Update takes the representation of a securityGroupRule and updates it. Returns the server's representation of the securityGroupRule, and an error, if there is any.
 func (c *FakeSecurityGroupRules) Update(securityGroupRule *v1alpha1.SecurityGroupRule) (result *v1alpha1.SecurityGroupRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(securitygrouprulesResource, securityGroupRule), &v1alpha1.SecurityGroupRule{})
+		Invokes(testing.NewUpdateAction(securitygrouprulesResource, c.ns, securityGroupRule), &v1alpha1.SecurityGroupRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSecurityGroupRules) Update(securityGroupRule *v1alpha1.SecurityGrou
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSecurityGroupRules) UpdateStatus(securityGroupRule *v1alpha1.SecurityGroupRule) (*v1alpha1.SecurityGroupRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(securitygrouprulesResource, "status", securityGroupRule), &v1alpha1.SecurityGroupRule{})
+		Invokes(testing.NewUpdateSubresourceAction(securitygrouprulesResource, "status", c.ns, securityGroupRule), &v1alpha1.SecurityGroupRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSecurityGroupRules) UpdateStatus(securityGroupRule *v1alpha1.Securi
 // Delete takes name of the securityGroupRule and deletes it. Returns an error if one occurs.
 func (c *FakeSecurityGroupRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(securitygrouprulesResource, name), &v1alpha1.SecurityGroupRule{})
+		Invokes(testing.NewDeleteAction(securitygrouprulesResource, c.ns, name), &v1alpha1.SecurityGroupRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSecurityGroupRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(securitygrouprulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(securitygrouprulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SecurityGroupRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSecurityGroupRules) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched securityGroupRule.
 func (c *FakeSecurityGroupRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SecurityGroupRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(securitygrouprulesResource, name, pt, data, subresources...), &v1alpha1.SecurityGroupRule{})
+		Invokes(testing.NewPatchSubresourceAction(securitygrouprulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.SecurityGroupRule{})
+
 	if obj == nil {
 		return nil, err
 	}

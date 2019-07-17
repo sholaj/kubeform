@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,16 +20,17 @@ type IothubSharedAccessPolicy struct {
 
 type IothubSharedAccessPolicySpec struct {
 	// +optional
-	DeviceConnect bool   `json:"device_connect,omitempty"`
-	IothubName    string `json:"iothub_name"`
-	Name          string `json:"name"`
+	DeviceConnect bool   `json:"deviceConnect,omitempty" tf:"device_connect,omitempty"`
+	IothubName    string `json:"iothubName" tf:"iothub_name"`
+	Name          string `json:"name" tf:"name"`
 	// +optional
-	RegistryRead bool `json:"registry_read,omitempty"`
+	RegistryRead bool `json:"registryRead,omitempty" tf:"registry_read,omitempty"`
 	// +optional
-	RegistryWrite     bool   `json:"registry_write,omitempty"`
-	ResourceGroupName string `json:"resource_group_name"`
+	RegistryWrite     bool   `json:"registryWrite,omitempty" tf:"registry_write,omitempty"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	ServiceConnect bool `json:"service_connect,omitempty"`
+	ServiceConnect bool                      `json:"serviceConnect,omitempty" tf:"service_connect,omitempty"`
+	ProviderRef    core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type IothubSharedAccessPolicyStatus struct {
@@ -37,7 +38,9 @@ type IothubSharedAccessPolicyStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

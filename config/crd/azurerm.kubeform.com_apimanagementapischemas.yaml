@@ -8,7 +8,7 @@ metadata:
 spec:
   group: azurerm.kubeform.com
   names:
-    kind: ApiManagementApiSchema
+    kind: ApiManagementAPISchema
     plural: apimanagementapischemas
   scope: ""
   validation:
@@ -397,24 +397,34 @@ spec:
           type: object
         spec:
           properties:
-            api_management_name:
+            apiManagementName:
               type: string
-            api_name:
+            apiName:
               type: string
-            content_type:
+            contentType:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
-            schema_id:
+            schemaID:
               type: string
             value:
               type: string
           required:
-          - api_management_name
-          - api_name
-          - content_type
-          - resource_group_name
-          - schema_id
+          - apiManagementName
+          - apiName
+          - contentType
+          - providerRef
+          - resourceGroupName
+          - schemaID
           - value
           type: object
         status:
@@ -426,6 +436,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

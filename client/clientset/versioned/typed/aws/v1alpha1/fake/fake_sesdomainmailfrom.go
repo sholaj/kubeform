@@ -31,6 +31,7 @@ import (
 // FakeSesDomainMailFroms implements SesDomainMailFromInterface
 type FakeSesDomainMailFroms struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var sesdomainmailfromsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "sesdomainmailfroms"}
@@ -40,7 +41,8 @@ var sesdomainmailfromsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", 
 // Get takes name of the sesDomainMailFrom, and returns the corresponding sesDomainMailFrom object, and an error if there is any.
 func (c *FakeSesDomainMailFroms) Get(name string, options v1.GetOptions) (result *v1alpha1.SesDomainMailFrom, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sesdomainmailfromsResource, name), &v1alpha1.SesDomainMailFrom{})
+		Invokes(testing.NewGetAction(sesdomainmailfromsResource, c.ns, name), &v1alpha1.SesDomainMailFrom{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSesDomainMailFroms) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of SesDomainMailFroms that match those selectors.
 func (c *FakeSesDomainMailFroms) List(opts v1.ListOptions) (result *v1alpha1.SesDomainMailFromList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sesdomainmailfromsResource, sesdomainmailfromsKind, opts), &v1alpha1.SesDomainMailFromList{})
+		Invokes(testing.NewListAction(sesdomainmailfromsResource, sesdomainmailfromsKind, c.ns, opts), &v1alpha1.SesDomainMailFromList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSesDomainMailFroms) List(opts v1.ListOptions) (result *v1alpha1.Ses
 // Watch returns a watch.Interface that watches the requested sesDomainMailFroms.
 func (c *FakeSesDomainMailFroms) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sesdomainmailfromsResource, opts))
+		InvokesWatch(testing.NewWatchAction(sesdomainmailfromsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sesDomainMailFrom and creates it.  Returns the server's representation of the sesDomainMailFrom, and an error, if there is any.
 func (c *FakeSesDomainMailFroms) Create(sesDomainMailFrom *v1alpha1.SesDomainMailFrom) (result *v1alpha1.SesDomainMailFrom, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sesdomainmailfromsResource, sesDomainMailFrom), &v1alpha1.SesDomainMailFrom{})
+		Invokes(testing.NewCreateAction(sesdomainmailfromsResource, c.ns, sesDomainMailFrom), &v1alpha1.SesDomainMailFrom{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSesDomainMailFroms) Create(sesDomainMailFrom *v1alpha1.SesDomainMai
 // Update takes the representation of a sesDomainMailFrom and updates it. Returns the server's representation of the sesDomainMailFrom, and an error, if there is any.
 func (c *FakeSesDomainMailFroms) Update(sesDomainMailFrom *v1alpha1.SesDomainMailFrom) (result *v1alpha1.SesDomainMailFrom, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sesdomainmailfromsResource, sesDomainMailFrom), &v1alpha1.SesDomainMailFrom{})
+		Invokes(testing.NewUpdateAction(sesdomainmailfromsResource, c.ns, sesDomainMailFrom), &v1alpha1.SesDomainMailFrom{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSesDomainMailFroms) Update(sesDomainMailFrom *v1alpha1.SesDomainMai
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSesDomainMailFroms) UpdateStatus(sesDomainMailFrom *v1alpha1.SesDomainMailFrom) (*v1alpha1.SesDomainMailFrom, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sesdomainmailfromsResource, "status", sesDomainMailFrom), &v1alpha1.SesDomainMailFrom{})
+		Invokes(testing.NewUpdateSubresourceAction(sesdomainmailfromsResource, "status", c.ns, sesDomainMailFrom), &v1alpha1.SesDomainMailFrom{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSesDomainMailFroms) UpdateStatus(sesDomainMailFrom *v1alpha1.SesDom
 // Delete takes name of the sesDomainMailFrom and deletes it. Returns an error if one occurs.
 func (c *FakeSesDomainMailFroms) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sesdomainmailfromsResource, name), &v1alpha1.SesDomainMailFrom{})
+		Invokes(testing.NewDeleteAction(sesdomainmailfromsResource, c.ns, name), &v1alpha1.SesDomainMailFrom{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSesDomainMailFroms) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sesdomainmailfromsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sesdomainmailfromsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SesDomainMailFromList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSesDomainMailFroms) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched sesDomainMailFrom.
 func (c *FakeSesDomainMailFroms) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesDomainMailFrom, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sesdomainmailfromsResource, name, pt, data, subresources...), &v1alpha1.SesDomainMailFrom{})
+		Invokes(testing.NewPatchSubresourceAction(sesdomainmailfromsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SesDomainMailFrom{})
+
 	if obj == nil {
 		return nil, err
 	}

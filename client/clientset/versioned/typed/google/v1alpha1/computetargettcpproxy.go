@@ -32,7 +32,7 @@ import (
 // ComputeTargetTcpProxiesGetter has a method to return a ComputeTargetTcpProxyInterface.
 // A group's client should implement this interface.
 type ComputeTargetTcpProxiesGetter interface {
-	ComputeTargetTcpProxies() ComputeTargetTcpProxyInterface
+	ComputeTargetTcpProxies(namespace string) ComputeTargetTcpProxyInterface
 }
 
 // ComputeTargetTcpProxyInterface has methods to work with ComputeTargetTcpProxy resources.
@@ -52,12 +52,14 @@ type ComputeTargetTcpProxyInterface interface {
 // computeTargetTcpProxies implements ComputeTargetTcpProxyInterface
 type computeTargetTcpProxies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeTargetTcpProxies returns a ComputeTargetTcpProxies
-func newComputeTargetTcpProxies(c *GoogleV1alpha1Client) *computeTargetTcpProxies {
+func newComputeTargetTcpProxies(c *GoogleV1alpha1Client, namespace string) *computeTargetTcpProxies {
 	return &computeTargetTcpProxies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeTargetTcpProxies(c *GoogleV1alpha1Client) *computeTargetTcpProxie
 func (c *computeTargetTcpProxies) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeTargetTcpProxy, err error) {
 	result = &v1alpha1.ComputeTargetTcpProxy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computetargettcpproxies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeTargetTcpProxies) List(opts v1.ListOptions) (result *v1alpha1.Co
 	}
 	result = &v1alpha1.ComputeTargetTcpProxyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computetargettcpproxies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeTargetTcpProxies) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computetargettcpproxies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeTargetTcpProxies) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *computeTargetTcpProxies) Create(computeTargetTcpProxy *v1alpha1.ComputeTargetTcpProxy) (result *v1alpha1.ComputeTargetTcpProxy, err error) {
 	result = &v1alpha1.ComputeTargetTcpProxy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computetargettcpproxies").
 		Body(computeTargetTcpProxy).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeTargetTcpProxies) Create(computeTargetTcpProxy *v1alpha1.Compute
 func (c *computeTargetTcpProxies) Update(computeTargetTcpProxy *v1alpha1.ComputeTargetTcpProxy) (result *v1alpha1.ComputeTargetTcpProxy, err error) {
 	result = &v1alpha1.ComputeTargetTcpProxy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computetargettcpproxies").
 		Name(computeTargetTcpProxy.Name).
 		Body(computeTargetTcpProxy).
@@ -132,6 +139,7 @@ func (c *computeTargetTcpProxies) Update(computeTargetTcpProxy *v1alpha1.Compute
 func (c *computeTargetTcpProxies) UpdateStatus(computeTargetTcpProxy *v1alpha1.ComputeTargetTcpProxy) (result *v1alpha1.ComputeTargetTcpProxy, err error) {
 	result = &v1alpha1.ComputeTargetTcpProxy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computetargettcpproxies").
 		Name(computeTargetTcpProxy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeTargetTcpProxies) UpdateStatus(computeTargetTcpProxy *v1alpha1.C
 // Delete takes name of the computeTargetTcpProxy and deletes it. Returns an error if one occurs.
 func (c *computeTargetTcpProxies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computetargettcpproxies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeTargetTcpProxies) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computetargettcpproxies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeTargetTcpProxies) DeleteCollection(options *v1.DeleteOptions, li
 func (c *computeTargetTcpProxies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeTargetTcpProxy, err error) {
 	result = &v1alpha1.ComputeTargetTcpProxy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computetargettcpproxies").
 		SubResource(subresources...).
 		Name(name).

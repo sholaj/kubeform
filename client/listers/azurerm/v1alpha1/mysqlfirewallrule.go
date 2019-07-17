@@ -29,8 +29,8 @@ import (
 type MysqlFirewallRuleLister interface {
 	// List lists all MysqlFirewallRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MysqlFirewallRule, err error)
-	// Get retrieves the MysqlFirewallRule from the index for a given name.
-	Get(name string) (*v1alpha1.MysqlFirewallRule, error)
+	// MysqlFirewallRules returns an object that can list and get MysqlFirewallRules.
+	MysqlFirewallRules(namespace string) MysqlFirewallRuleNamespaceLister
 	MysqlFirewallRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *mysqlFirewallRuleLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the MysqlFirewallRule from the index for a given name.
-func (s *mysqlFirewallRuleLister) Get(name string) (*v1alpha1.MysqlFirewallRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MysqlFirewallRules returns an object that can list and get MysqlFirewallRules.
+func (s *mysqlFirewallRuleLister) MysqlFirewallRules(namespace string) MysqlFirewallRuleNamespaceLister {
+	return mysqlFirewallRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MysqlFirewallRuleNamespaceLister helps list and get MysqlFirewallRules.
+type MysqlFirewallRuleNamespaceLister interface {
+	// List lists all MysqlFirewallRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MysqlFirewallRule, err error)
+	// Get retrieves the MysqlFirewallRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MysqlFirewallRule, error)
+	MysqlFirewallRuleNamespaceListerExpansion
+}
+
+// mysqlFirewallRuleNamespaceLister implements the MysqlFirewallRuleNamespaceLister
+// interface.
+type mysqlFirewallRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MysqlFirewallRules in the indexer for a given namespace.
+func (s mysqlFirewallRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MysqlFirewallRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MysqlFirewallRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the MysqlFirewallRule from the indexer for a given namespace and name.
+func (s mysqlFirewallRuleNamespaceLister) Get(name string) (*v1alpha1.MysqlFirewallRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

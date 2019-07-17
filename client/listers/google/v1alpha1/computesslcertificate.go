@@ -29,8 +29,8 @@ import (
 type ComputeSslCertificateLister interface {
 	// List lists all ComputeSslCertificates in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeSslCertificate, err error)
-	// Get retrieves the ComputeSslCertificate from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeSslCertificate, error)
+	// ComputeSslCertificates returns an object that can list and get ComputeSslCertificates.
+	ComputeSslCertificates(namespace string) ComputeSslCertificateNamespaceLister
 	ComputeSslCertificateListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeSslCertificateLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the ComputeSslCertificate from the index for a given name.
-func (s *computeSslCertificateLister) Get(name string) (*v1alpha1.ComputeSslCertificate, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeSslCertificates returns an object that can list and get ComputeSslCertificates.
+func (s *computeSslCertificateLister) ComputeSslCertificates(namespace string) ComputeSslCertificateNamespaceLister {
+	return computeSslCertificateNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeSslCertificateNamespaceLister helps list and get ComputeSslCertificates.
+type ComputeSslCertificateNamespaceLister interface {
+	// List lists all ComputeSslCertificates in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeSslCertificate, err error)
+	// Get retrieves the ComputeSslCertificate from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeSslCertificate, error)
+	ComputeSslCertificateNamespaceListerExpansion
+}
+
+// computeSslCertificateNamespaceLister implements the ComputeSslCertificateNamespaceLister
+// interface.
+type computeSslCertificateNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeSslCertificates in the indexer for a given namespace.
+func (s computeSslCertificateNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeSslCertificate, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeSslCertificate))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeSslCertificate from the indexer for a given namespace and name.
+func (s computeSslCertificateNamespaceLister) Get(name string) (*v1alpha1.ComputeSslCertificate, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

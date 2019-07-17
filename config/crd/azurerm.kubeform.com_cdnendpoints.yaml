@@ -397,37 +397,74 @@ spec:
           type: object
         spec:
           properties:
-            geo_filter:
-              items: {}
+            geoFilter:
+              items:
+                properties:
+                  action:
+                    type: string
+                  countryCodes:
+                    items:
+                      type: string
+                    type: array
+                  relativePath:
+                    type: string
+                required:
+                - action
+                - countryCodes
+                - relativePath
+                type: object
               type: array
-            is_compression_enabled:
+            isCompressionEnabled:
               type: boolean
-            is_http_allowed:
+            isHTTPAllowed:
               type: boolean
-            is_https_allowed:
+            isHTTPSAllowed:
               type: boolean
             location:
               type: string
             name:
               type: string
-            optimization_type:
+            optimizationType:
               type: string
             origin:
-              items: {}
+              items:
+                properties:
+                  hostName:
+                    type: string
+                  httpPort:
+                    type: integer
+                  httpsPort:
+                    type: integer
+                  name:
+                    type: string
+                required:
+                - hostName
+                - name
+                type: object
               type: array
               uniqueItems: true
-            profile_name:
+            profileName:
               type: string
-            querystring_caching_behaviour:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            querystringCachingBehaviour:
               type: string
-            resource_group_name:
+            resourceGroupName:
               type: string
           required:
           - location
           - name
           - origin
-          - profile_name
-          - resource_group_name
+          - profileName
+          - providerRef
+          - resourceGroupName
           type: object
         status:
           properties:
@@ -438,6 +475,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

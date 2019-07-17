@@ -31,6 +31,7 @@ import (
 // FakeShieldProtections implements ShieldProtectionInterface
 type FakeShieldProtections struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var shieldprotectionsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "shieldprotections"}
@@ -40,7 +41,8 @@ var shieldprotectionsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", V
 // Get takes name of the shieldProtection, and returns the corresponding shieldProtection object, and an error if there is any.
 func (c *FakeShieldProtections) Get(name string, options v1.GetOptions) (result *v1alpha1.ShieldProtection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(shieldprotectionsResource, name), &v1alpha1.ShieldProtection{})
+		Invokes(testing.NewGetAction(shieldprotectionsResource, c.ns, name), &v1alpha1.ShieldProtection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeShieldProtections) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of ShieldProtections that match those selectors.
 func (c *FakeShieldProtections) List(opts v1.ListOptions) (result *v1alpha1.ShieldProtectionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(shieldprotectionsResource, shieldprotectionsKind, opts), &v1alpha1.ShieldProtectionList{})
+		Invokes(testing.NewListAction(shieldprotectionsResource, shieldprotectionsKind, c.ns, opts), &v1alpha1.ShieldProtectionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeShieldProtections) List(opts v1.ListOptions) (result *v1alpha1.Shie
 // Watch returns a watch.Interface that watches the requested shieldProtections.
 func (c *FakeShieldProtections) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(shieldprotectionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(shieldprotectionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a shieldProtection and creates it.  Returns the server's representation of the shieldProtection, and an error, if there is any.
 func (c *FakeShieldProtections) Create(shieldProtection *v1alpha1.ShieldProtection) (result *v1alpha1.ShieldProtection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(shieldprotectionsResource, shieldProtection), &v1alpha1.ShieldProtection{})
+		Invokes(testing.NewCreateAction(shieldprotectionsResource, c.ns, shieldProtection), &v1alpha1.ShieldProtection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeShieldProtections) Create(shieldProtection *v1alpha1.ShieldProtecti
 // Update takes the representation of a shieldProtection and updates it. Returns the server's representation of the shieldProtection, and an error, if there is any.
 func (c *FakeShieldProtections) Update(shieldProtection *v1alpha1.ShieldProtection) (result *v1alpha1.ShieldProtection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(shieldprotectionsResource, shieldProtection), &v1alpha1.ShieldProtection{})
+		Invokes(testing.NewUpdateAction(shieldprotectionsResource, c.ns, shieldProtection), &v1alpha1.ShieldProtection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeShieldProtections) Update(shieldProtection *v1alpha1.ShieldProtecti
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeShieldProtections) UpdateStatus(shieldProtection *v1alpha1.ShieldProtection) (*v1alpha1.ShieldProtection, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(shieldprotectionsResource, "status", shieldProtection), &v1alpha1.ShieldProtection{})
+		Invokes(testing.NewUpdateSubresourceAction(shieldprotectionsResource, "status", c.ns, shieldProtection), &v1alpha1.ShieldProtection{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeShieldProtections) UpdateStatus(shieldProtection *v1alpha1.ShieldPr
 // Delete takes name of the shieldProtection and deletes it. Returns an error if one occurs.
 func (c *FakeShieldProtections) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(shieldprotectionsResource, name), &v1alpha1.ShieldProtection{})
+		Invokes(testing.NewDeleteAction(shieldprotectionsResource, c.ns, name), &v1alpha1.ShieldProtection{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeShieldProtections) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(shieldprotectionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(shieldprotectionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ShieldProtectionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeShieldProtections) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched shieldProtection.
 func (c *FakeShieldProtections) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ShieldProtection, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(shieldprotectionsResource, name, pt, data, subresources...), &v1alpha1.ShieldProtection{})
+		Invokes(testing.NewPatchSubresourceAction(shieldprotectionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ShieldProtection{})
+
 	if obj == nil {
 		return nil, err
 	}

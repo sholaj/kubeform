@@ -29,8 +29,8 @@ import (
 type DatasyncLocationNfsLister interface {
 	// List lists all DatasyncLocationNfses in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DatasyncLocationNfs, err error)
-	// Get retrieves the DatasyncLocationNfs from the index for a given name.
-	Get(name string) (*v1alpha1.DatasyncLocationNfs, error)
+	// DatasyncLocationNfses returns an object that can list and get DatasyncLocationNfses.
+	DatasyncLocationNfses(namespace string) DatasyncLocationNfsNamespaceLister
 	DatasyncLocationNfsListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *datasyncLocationNfsLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the DatasyncLocationNfs from the index for a given name.
-func (s *datasyncLocationNfsLister) Get(name string) (*v1alpha1.DatasyncLocationNfs, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DatasyncLocationNfses returns an object that can list and get DatasyncLocationNfses.
+func (s *datasyncLocationNfsLister) DatasyncLocationNfses(namespace string) DatasyncLocationNfsNamespaceLister {
+	return datasyncLocationNfsNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DatasyncLocationNfsNamespaceLister helps list and get DatasyncLocationNfses.
+type DatasyncLocationNfsNamespaceLister interface {
+	// List lists all DatasyncLocationNfses in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DatasyncLocationNfs, err error)
+	// Get retrieves the DatasyncLocationNfs from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DatasyncLocationNfs, error)
+	DatasyncLocationNfsNamespaceListerExpansion
+}
+
+// datasyncLocationNfsNamespaceLister implements the DatasyncLocationNfsNamespaceLister
+// interface.
+type datasyncLocationNfsNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DatasyncLocationNfses in the indexer for a given namespace.
+func (s datasyncLocationNfsNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DatasyncLocationNfs, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DatasyncLocationNfs))
+	})
+	return ret, err
+}
+
+// Get retrieves the DatasyncLocationNfs from the indexer for a given namespace and name.
+func (s datasyncLocationNfsNamespaceLister) Get(name string) (*v1alpha1.DatasyncLocationNfs, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // KmsKeyRingsGetter has a method to return a KmsKeyRingInterface.
 // A group's client should implement this interface.
 type KmsKeyRingsGetter interface {
-	KmsKeyRings() KmsKeyRingInterface
+	KmsKeyRings(namespace string) KmsKeyRingInterface
 }
 
 // KmsKeyRingInterface has methods to work with KmsKeyRing resources.
@@ -52,12 +52,14 @@ type KmsKeyRingInterface interface {
 // kmsKeyRings implements KmsKeyRingInterface
 type kmsKeyRings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKmsKeyRings returns a KmsKeyRings
-func newKmsKeyRings(c *GoogleV1alpha1Client) *kmsKeyRings {
+func newKmsKeyRings(c *GoogleV1alpha1Client, namespace string) *kmsKeyRings {
 	return &kmsKeyRings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKmsKeyRings(c *GoogleV1alpha1Client) *kmsKeyRings {
 func (c *kmsKeyRings) Get(name string, options v1.GetOptions) (result *v1alpha1.KmsKeyRing, err error) {
 	result = &v1alpha1.KmsKeyRing{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmskeyrings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *kmsKeyRings) List(opts v1.ListOptions) (result *v1alpha1.KmsKeyRingList
 	}
 	result = &v1alpha1.KmsKeyRingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmskeyrings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *kmsKeyRings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("kmskeyrings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *kmsKeyRings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *kmsKeyRings) Create(kmsKeyRing *v1alpha1.KmsKeyRing) (result *v1alpha1.KmsKeyRing, err error) {
 	result = &v1alpha1.KmsKeyRing{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("kmskeyrings").
 		Body(kmsKeyRing).
 		Do().
@@ -118,6 +124,7 @@ func (c *kmsKeyRings) Create(kmsKeyRing *v1alpha1.KmsKeyRing) (result *v1alpha1.
 func (c *kmsKeyRings) Update(kmsKeyRing *v1alpha1.KmsKeyRing) (result *v1alpha1.KmsKeyRing, err error) {
 	result = &v1alpha1.KmsKeyRing{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmskeyrings").
 		Name(kmsKeyRing.Name).
 		Body(kmsKeyRing).
@@ -132,6 +139,7 @@ func (c *kmsKeyRings) Update(kmsKeyRing *v1alpha1.KmsKeyRing) (result *v1alpha1.
 func (c *kmsKeyRings) UpdateStatus(kmsKeyRing *v1alpha1.KmsKeyRing) (result *v1alpha1.KmsKeyRing, err error) {
 	result = &v1alpha1.KmsKeyRing{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmskeyrings").
 		Name(kmsKeyRing.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *kmsKeyRings) UpdateStatus(kmsKeyRing *v1alpha1.KmsKeyRing) (result *v1a
 // Delete takes name of the kmsKeyRing and deletes it. Returns an error if one occurs.
 func (c *kmsKeyRings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmskeyrings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *kmsKeyRings) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmskeyrings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *kmsKeyRings) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *kmsKeyRings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KmsKeyRing, err error) {
 	result = &v1alpha1.KmsKeyRing{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("kmskeyrings").
 		SubResource(subresources...).
 		Name(name).

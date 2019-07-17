@@ -29,8 +29,8 @@ import (
 type MonitorActionGroupLister interface {
 	// List lists all MonitorActionGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MonitorActionGroup, err error)
-	// Get retrieves the MonitorActionGroup from the index for a given name.
-	Get(name string) (*v1alpha1.MonitorActionGroup, error)
+	// MonitorActionGroups returns an object that can list and get MonitorActionGroups.
+	MonitorActionGroups(namespace string) MonitorActionGroupNamespaceLister
 	MonitorActionGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *monitorActionGroupLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the MonitorActionGroup from the index for a given name.
-func (s *monitorActionGroupLister) Get(name string) (*v1alpha1.MonitorActionGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MonitorActionGroups returns an object that can list and get MonitorActionGroups.
+func (s *monitorActionGroupLister) MonitorActionGroups(namespace string) MonitorActionGroupNamespaceLister {
+	return monitorActionGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MonitorActionGroupNamespaceLister helps list and get MonitorActionGroups.
+type MonitorActionGroupNamespaceLister interface {
+	// List lists all MonitorActionGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MonitorActionGroup, err error)
+	// Get retrieves the MonitorActionGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MonitorActionGroup, error)
+	MonitorActionGroupNamespaceListerExpansion
+}
+
+// monitorActionGroupNamespaceLister implements the MonitorActionGroupNamespaceLister
+// interface.
+type monitorActionGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MonitorActionGroups in the indexer for a given namespace.
+func (s monitorActionGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MonitorActionGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MonitorActionGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the MonitorActionGroup from the indexer for a given namespace and name.
+func (s monitorActionGroupNamespaceLister) Get(name string) (*v1alpha1.MonitorActionGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

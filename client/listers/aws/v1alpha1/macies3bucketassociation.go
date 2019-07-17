@@ -29,8 +29,8 @@ import (
 type MacieS3BucketAssociationLister interface {
 	// List lists all MacieS3BucketAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MacieS3BucketAssociation, err error)
-	// Get retrieves the MacieS3BucketAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.MacieS3BucketAssociation, error)
+	// MacieS3BucketAssociations returns an object that can list and get MacieS3BucketAssociations.
+	MacieS3BucketAssociations(namespace string) MacieS3BucketAssociationNamespaceLister
 	MacieS3BucketAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *macieS3BucketAssociationLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the MacieS3BucketAssociation from the index for a given name.
-func (s *macieS3BucketAssociationLister) Get(name string) (*v1alpha1.MacieS3BucketAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MacieS3BucketAssociations returns an object that can list and get MacieS3BucketAssociations.
+func (s *macieS3BucketAssociationLister) MacieS3BucketAssociations(namespace string) MacieS3BucketAssociationNamespaceLister {
+	return macieS3BucketAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MacieS3BucketAssociationNamespaceLister helps list and get MacieS3BucketAssociations.
+type MacieS3BucketAssociationNamespaceLister interface {
+	// List lists all MacieS3BucketAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MacieS3BucketAssociation, err error)
+	// Get retrieves the MacieS3BucketAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MacieS3BucketAssociation, error)
+	MacieS3BucketAssociationNamespaceListerExpansion
+}
+
+// macieS3BucketAssociationNamespaceLister implements the MacieS3BucketAssociationNamespaceLister
+// interface.
+type macieS3BucketAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MacieS3BucketAssociations in the indexer for a given namespace.
+func (s macieS3BucketAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MacieS3BucketAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MacieS3BucketAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the MacieS3BucketAssociation from the indexer for a given namespace and name.
+func (s macieS3BucketAssociationNamespaceLister) Get(name string) (*v1alpha1.MacieS3BucketAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

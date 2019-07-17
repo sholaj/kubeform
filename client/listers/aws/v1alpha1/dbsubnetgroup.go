@@ -29,8 +29,8 @@ import (
 type DbSubnetGroupLister interface {
 	// List lists all DbSubnetGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DbSubnetGroup, err error)
-	// Get retrieves the DbSubnetGroup from the index for a given name.
-	Get(name string) (*v1alpha1.DbSubnetGroup, error)
+	// DbSubnetGroups returns an object that can list and get DbSubnetGroups.
+	DbSubnetGroups(namespace string) DbSubnetGroupNamespaceLister
 	DbSubnetGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dbSubnetGroupLister) List(selector labels.Selector) (ret []*v1alpha1.Db
 	return ret, err
 }
 
-// Get retrieves the DbSubnetGroup from the index for a given name.
-func (s *dbSubnetGroupLister) Get(name string) (*v1alpha1.DbSubnetGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DbSubnetGroups returns an object that can list and get DbSubnetGroups.
+func (s *dbSubnetGroupLister) DbSubnetGroups(namespace string) DbSubnetGroupNamespaceLister {
+	return dbSubnetGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DbSubnetGroupNamespaceLister helps list and get DbSubnetGroups.
+type DbSubnetGroupNamespaceLister interface {
+	// List lists all DbSubnetGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DbSubnetGroup, err error)
+	// Get retrieves the DbSubnetGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DbSubnetGroup, error)
+	DbSubnetGroupNamespaceListerExpansion
+}
+
+// dbSubnetGroupNamespaceLister implements the DbSubnetGroupNamespaceLister
+// interface.
+type dbSubnetGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DbSubnetGroups in the indexer for a given namespace.
+func (s dbSubnetGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DbSubnetGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DbSubnetGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the DbSubnetGroup from the indexer for a given namespace and name.
+func (s dbSubnetGroupNamespaceLister) Get(name string) (*v1alpha1.DbSubnetGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

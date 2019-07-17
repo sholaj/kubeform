@@ -29,8 +29,8 @@ import (
 type GuarddutyThreatintelsetLister interface {
 	// List lists all GuarddutyThreatintelsets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GuarddutyThreatintelset, err error)
-	// Get retrieves the GuarddutyThreatintelset from the index for a given name.
-	Get(name string) (*v1alpha1.GuarddutyThreatintelset, error)
+	// GuarddutyThreatintelsets returns an object that can list and get GuarddutyThreatintelsets.
+	GuarddutyThreatintelsets(namespace string) GuarddutyThreatintelsetNamespaceLister
 	GuarddutyThreatintelsetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *guarddutyThreatintelsetLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the GuarddutyThreatintelset from the index for a given name.
-func (s *guarddutyThreatintelsetLister) Get(name string) (*v1alpha1.GuarddutyThreatintelset, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GuarddutyThreatintelsets returns an object that can list and get GuarddutyThreatintelsets.
+func (s *guarddutyThreatintelsetLister) GuarddutyThreatintelsets(namespace string) GuarddutyThreatintelsetNamespaceLister {
+	return guarddutyThreatintelsetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GuarddutyThreatintelsetNamespaceLister helps list and get GuarddutyThreatintelsets.
+type GuarddutyThreatintelsetNamespaceLister interface {
+	// List lists all GuarddutyThreatintelsets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GuarddutyThreatintelset, err error)
+	// Get retrieves the GuarddutyThreatintelset from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GuarddutyThreatintelset, error)
+	GuarddutyThreatintelsetNamespaceListerExpansion
+}
+
+// guarddutyThreatintelsetNamespaceLister implements the GuarddutyThreatintelsetNamespaceLister
+// interface.
+type guarddutyThreatintelsetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GuarddutyThreatintelsets in the indexer for a given namespace.
+func (s guarddutyThreatintelsetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GuarddutyThreatintelset, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GuarddutyThreatintelset))
+	})
+	return ret, err
+}
+
+// Get retrieves the GuarddutyThreatintelset from the indexer for a given namespace and name.
+func (s guarddutyThreatintelsetNamespaceLister) Get(name string) (*v1alpha1.GuarddutyThreatintelset, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

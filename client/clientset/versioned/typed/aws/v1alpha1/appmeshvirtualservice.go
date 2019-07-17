@@ -32,7 +32,7 @@ import (
 // AppmeshVirtualServicesGetter has a method to return a AppmeshVirtualServiceInterface.
 // A group's client should implement this interface.
 type AppmeshVirtualServicesGetter interface {
-	AppmeshVirtualServices() AppmeshVirtualServiceInterface
+	AppmeshVirtualServices(namespace string) AppmeshVirtualServiceInterface
 }
 
 // AppmeshVirtualServiceInterface has methods to work with AppmeshVirtualService resources.
@@ -52,12 +52,14 @@ type AppmeshVirtualServiceInterface interface {
 // appmeshVirtualServices implements AppmeshVirtualServiceInterface
 type appmeshVirtualServices struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAppmeshVirtualServices returns a AppmeshVirtualServices
-func newAppmeshVirtualServices(c *AwsV1alpha1Client) *appmeshVirtualServices {
+func newAppmeshVirtualServices(c *AwsV1alpha1Client, namespace string) *appmeshVirtualServices {
 	return &appmeshVirtualServices{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAppmeshVirtualServices(c *AwsV1alpha1Client) *appmeshVirtualServices {
 func (c *appmeshVirtualServices) Get(name string, options v1.GetOptions) (result *v1alpha1.AppmeshVirtualService, err error) {
 	result = &v1alpha1.AppmeshVirtualService{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appmeshvirtualservices").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *appmeshVirtualServices) List(opts v1.ListOptions) (result *v1alpha1.App
 	}
 	result = &v1alpha1.AppmeshVirtualServiceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appmeshvirtualservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *appmeshVirtualServices) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("appmeshvirtualservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *appmeshVirtualServices) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *appmeshVirtualServices) Create(appmeshVirtualService *v1alpha1.AppmeshVirtualService) (result *v1alpha1.AppmeshVirtualService, err error) {
 	result = &v1alpha1.AppmeshVirtualService{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("appmeshvirtualservices").
 		Body(appmeshVirtualService).
 		Do().
@@ -118,6 +124,7 @@ func (c *appmeshVirtualServices) Create(appmeshVirtualService *v1alpha1.AppmeshV
 func (c *appmeshVirtualServices) Update(appmeshVirtualService *v1alpha1.AppmeshVirtualService) (result *v1alpha1.AppmeshVirtualService, err error) {
 	result = &v1alpha1.AppmeshVirtualService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appmeshvirtualservices").
 		Name(appmeshVirtualService.Name).
 		Body(appmeshVirtualService).
@@ -132,6 +139,7 @@ func (c *appmeshVirtualServices) Update(appmeshVirtualService *v1alpha1.AppmeshV
 func (c *appmeshVirtualServices) UpdateStatus(appmeshVirtualService *v1alpha1.AppmeshVirtualService) (result *v1alpha1.AppmeshVirtualService, err error) {
 	result = &v1alpha1.AppmeshVirtualService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appmeshvirtualservices").
 		Name(appmeshVirtualService.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *appmeshVirtualServices) UpdateStatus(appmeshVirtualService *v1alpha1.Ap
 // Delete takes name of the appmeshVirtualService and deletes it. Returns an error if one occurs.
 func (c *appmeshVirtualServices) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appmeshvirtualservices").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *appmeshVirtualServices) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appmeshvirtualservices").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *appmeshVirtualServices) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *appmeshVirtualServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppmeshVirtualService, err error) {
 	result = &v1alpha1.AppmeshVirtualService{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("appmeshvirtualservices").
 		SubResource(subresources...).
 		Name(name).

@@ -41,32 +41,33 @@ type RamPrincipalAssociationInformer interface {
 type ramPrincipalAssociationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewRamPrincipalAssociationInformer constructs a new informer for RamPrincipalAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewRamPrincipalAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredRamPrincipalAssociationInformer(client, resyncPeriod, indexers, nil)
+func NewRamPrincipalAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredRamPrincipalAssociationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredRamPrincipalAssociationInformer constructs a new informer for RamPrincipalAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredRamPrincipalAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredRamPrincipalAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().RamPrincipalAssociations().List(options)
+				return client.AwsV1alpha1().RamPrincipalAssociations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().RamPrincipalAssociations().Watch(options)
+				return client.AwsV1alpha1().RamPrincipalAssociations(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.RamPrincipalAssociation{},
@@ -76,7 +77,7 @@ func NewFilteredRamPrincipalAssociationInformer(client versioned.Interface, resy
 }
 
 func (f *ramPrincipalAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredRamPrincipalAssociationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredRamPrincipalAssociationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *ramPrincipalAssociationInformer) Informer() cache.SharedIndexInformer {

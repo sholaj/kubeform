@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,11 +20,12 @@ type Ec2TransitGatewayRoute struct {
 
 type Ec2TransitGatewayRouteSpec struct {
 	// +optional
-	Blackhole            bool   `json:"blackhole,omitempty"`
-	DestinationCidrBlock string `json:"destination_cidr_block"`
+	Blackhole            bool   `json:"blackhole,omitempty" tf:"blackhole,omitempty"`
+	DestinationCIDRBlock string `json:"destinationCIDRBlock" tf:"destination_cidr_block"`
 	// +optional
-	TransitGatewayAttachmentId string `json:"transit_gateway_attachment_id,omitempty"`
-	TransitGatewayRouteTableId string `json:"transit_gateway_route_table_id"`
+	TransitGatewayAttachmentID string                    `json:"transitGatewayAttachmentID,omitempty" tf:"transit_gateway_attachment_id,omitempty"`
+	TransitGatewayRouteTableID string                    `json:"transitGatewayRouteTableID" tf:"transit_gateway_route_table_id"`
+	ProviderRef                core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type Ec2TransitGatewayRouteStatus struct {
@@ -32,7 +33,9 @@ type Ec2TransitGatewayRouteStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

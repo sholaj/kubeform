@@ -31,6 +31,7 @@ import (
 // FakeComputeNetworkPeerings implements ComputeNetworkPeeringInterface
 type FakeComputeNetworkPeerings struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computenetworkpeeringsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computenetworkpeerings"}
@@ -40,7 +41,8 @@ var computenetworkpeeringsKind = schema.GroupVersionKind{Group: "google.kubeform
 // Get takes name of the computeNetworkPeering, and returns the corresponding computeNetworkPeering object, and an error if there is any.
 func (c *FakeComputeNetworkPeerings) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeNetworkPeering, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computenetworkpeeringsResource, name), &v1alpha1.ComputeNetworkPeering{})
+		Invokes(testing.NewGetAction(computenetworkpeeringsResource, c.ns, name), &v1alpha1.ComputeNetworkPeering{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeNetworkPeerings) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of ComputeNetworkPeerings that match those selectors.
 func (c *FakeComputeNetworkPeerings) List(opts v1.ListOptions) (result *v1alpha1.ComputeNetworkPeeringList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computenetworkpeeringsResource, computenetworkpeeringsKind, opts), &v1alpha1.ComputeNetworkPeeringList{})
+		Invokes(testing.NewListAction(computenetworkpeeringsResource, computenetworkpeeringsKind, c.ns, opts), &v1alpha1.ComputeNetworkPeeringList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeNetworkPeerings) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested computeNetworkPeerings.
 func (c *FakeComputeNetworkPeerings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computenetworkpeeringsResource, opts))
+		InvokesWatch(testing.NewWatchAction(computenetworkpeeringsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeNetworkPeering and creates it.  Returns the server's representation of the computeNetworkPeering, and an error, if there is any.
 func (c *FakeComputeNetworkPeerings) Create(computeNetworkPeering *v1alpha1.ComputeNetworkPeering) (result *v1alpha1.ComputeNetworkPeering, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computenetworkpeeringsResource, computeNetworkPeering), &v1alpha1.ComputeNetworkPeering{})
+		Invokes(testing.NewCreateAction(computenetworkpeeringsResource, c.ns, computeNetworkPeering), &v1alpha1.ComputeNetworkPeering{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeNetworkPeerings) Create(computeNetworkPeering *v1alpha1.Comp
 // Update takes the representation of a computeNetworkPeering and updates it. Returns the server's representation of the computeNetworkPeering, and an error, if there is any.
 func (c *FakeComputeNetworkPeerings) Update(computeNetworkPeering *v1alpha1.ComputeNetworkPeering) (result *v1alpha1.ComputeNetworkPeering, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computenetworkpeeringsResource, computeNetworkPeering), &v1alpha1.ComputeNetworkPeering{})
+		Invokes(testing.NewUpdateAction(computenetworkpeeringsResource, c.ns, computeNetworkPeering), &v1alpha1.ComputeNetworkPeering{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeNetworkPeerings) Update(computeNetworkPeering *v1alpha1.Comp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeNetworkPeerings) UpdateStatus(computeNetworkPeering *v1alpha1.ComputeNetworkPeering) (*v1alpha1.ComputeNetworkPeering, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computenetworkpeeringsResource, "status", computeNetworkPeering), &v1alpha1.ComputeNetworkPeering{})
+		Invokes(testing.NewUpdateSubresourceAction(computenetworkpeeringsResource, "status", c.ns, computeNetworkPeering), &v1alpha1.ComputeNetworkPeering{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeNetworkPeerings) UpdateStatus(computeNetworkPeering *v1alpha
 // Delete takes name of the computeNetworkPeering and deletes it. Returns an error if one occurs.
 func (c *FakeComputeNetworkPeerings) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computenetworkpeeringsResource, name), &v1alpha1.ComputeNetworkPeering{})
+		Invokes(testing.NewDeleteAction(computenetworkpeeringsResource, c.ns, name), &v1alpha1.ComputeNetworkPeering{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeNetworkPeerings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computenetworkpeeringsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computenetworkpeeringsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeNetworkPeeringList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeNetworkPeerings) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched computeNetworkPeering.
 func (c *FakeComputeNetworkPeerings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeNetworkPeering, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computenetworkpeeringsResource, name, pt, data, subresources...), &v1alpha1.ComputeNetworkPeering{})
+		Invokes(testing.NewPatchSubresourceAction(computenetworkpeeringsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeNetworkPeering{})
+
 	if obj == nil {
 		return nil, err
 	}

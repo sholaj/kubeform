@@ -32,7 +32,7 @@ import (
 // ApiGatewayAccountsGetter has a method to return a ApiGatewayAccountInterface.
 // A group's client should implement this interface.
 type ApiGatewayAccountsGetter interface {
-	ApiGatewayAccounts() ApiGatewayAccountInterface
+	ApiGatewayAccounts(namespace string) ApiGatewayAccountInterface
 }
 
 // ApiGatewayAccountInterface has methods to work with ApiGatewayAccount resources.
@@ -52,12 +52,14 @@ type ApiGatewayAccountInterface interface {
 // apiGatewayAccounts implements ApiGatewayAccountInterface
 type apiGatewayAccounts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiGatewayAccounts returns a ApiGatewayAccounts
-func newApiGatewayAccounts(c *AwsV1alpha1Client) *apiGatewayAccounts {
+func newApiGatewayAccounts(c *AwsV1alpha1Client, namespace string) *apiGatewayAccounts {
 	return &apiGatewayAccounts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiGatewayAccounts(c *AwsV1alpha1Client) *apiGatewayAccounts {
 func (c *apiGatewayAccounts) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayAccount, err error) {
 	result = &v1alpha1.ApiGatewayAccount{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayaccounts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiGatewayAccounts) List(opts v1.ListOptions) (result *v1alpha1.ApiGate
 	}
 	result = &v1alpha1.ApiGatewayAccountList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiGatewayAccounts) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiGatewayAccounts) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *apiGatewayAccounts) Create(apiGatewayAccount *v1alpha1.ApiGatewayAccount) (result *v1alpha1.ApiGatewayAccount, err error) {
 	result = &v1alpha1.ApiGatewayAccount{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apigatewayaccounts").
 		Body(apiGatewayAccount).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiGatewayAccounts) Create(apiGatewayAccount *v1alpha1.ApiGatewayAccoun
 func (c *apiGatewayAccounts) Update(apiGatewayAccount *v1alpha1.ApiGatewayAccount) (result *v1alpha1.ApiGatewayAccount, err error) {
 	result = &v1alpha1.ApiGatewayAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewayaccounts").
 		Name(apiGatewayAccount.Name).
 		Body(apiGatewayAccount).
@@ -132,6 +139,7 @@ func (c *apiGatewayAccounts) Update(apiGatewayAccount *v1alpha1.ApiGatewayAccoun
 func (c *apiGatewayAccounts) UpdateStatus(apiGatewayAccount *v1alpha1.ApiGatewayAccount) (result *v1alpha1.ApiGatewayAccount, err error) {
 	result = &v1alpha1.ApiGatewayAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewayaccounts").
 		Name(apiGatewayAccount.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiGatewayAccounts) UpdateStatus(apiGatewayAccount *v1alpha1.ApiGateway
 // Delete takes name of the apiGatewayAccount and deletes it. Returns an error if one occurs.
 func (c *apiGatewayAccounts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewayaccounts").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiGatewayAccounts) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewayaccounts").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiGatewayAccounts) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *apiGatewayAccounts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayAccount, err error) {
 	result = &v1alpha1.ApiGatewayAccount{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apigatewayaccounts").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // NeptuneClusterParameterGroupsGetter has a method to return a NeptuneClusterParameterGroupInterface.
 // A group's client should implement this interface.
 type NeptuneClusterParameterGroupsGetter interface {
-	NeptuneClusterParameterGroups() NeptuneClusterParameterGroupInterface
+	NeptuneClusterParameterGroups(namespace string) NeptuneClusterParameterGroupInterface
 }
 
 // NeptuneClusterParameterGroupInterface has methods to work with NeptuneClusterParameterGroup resources.
@@ -52,12 +52,14 @@ type NeptuneClusterParameterGroupInterface interface {
 // neptuneClusterParameterGroups implements NeptuneClusterParameterGroupInterface
 type neptuneClusterParameterGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNeptuneClusterParameterGroups returns a NeptuneClusterParameterGroups
-func newNeptuneClusterParameterGroups(c *AwsV1alpha1Client) *neptuneClusterParameterGroups {
+func newNeptuneClusterParameterGroups(c *AwsV1alpha1Client, namespace string) *neptuneClusterParameterGroups {
 	return &neptuneClusterParameterGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNeptuneClusterParameterGroups(c *AwsV1alpha1Client) *neptuneClusterParam
 func (c *neptuneClusterParameterGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.NeptuneClusterParameterGroup, err error) {
 	result = &v1alpha1.NeptuneClusterParameterGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("neptuneclusterparametergroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *neptuneClusterParameterGroups) List(opts v1.ListOptions) (result *v1alp
 	}
 	result = &v1alpha1.NeptuneClusterParameterGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("neptuneclusterparametergroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *neptuneClusterParameterGroups) Watch(opts v1.ListOptions) (watch.Interf
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("neptuneclusterparametergroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *neptuneClusterParameterGroups) Watch(opts v1.ListOptions) (watch.Interf
 func (c *neptuneClusterParameterGroups) Create(neptuneClusterParameterGroup *v1alpha1.NeptuneClusterParameterGroup) (result *v1alpha1.NeptuneClusterParameterGroup, err error) {
 	result = &v1alpha1.NeptuneClusterParameterGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("neptuneclusterparametergroups").
 		Body(neptuneClusterParameterGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *neptuneClusterParameterGroups) Create(neptuneClusterParameterGroup *v1a
 func (c *neptuneClusterParameterGroups) Update(neptuneClusterParameterGroup *v1alpha1.NeptuneClusterParameterGroup) (result *v1alpha1.NeptuneClusterParameterGroup, err error) {
 	result = &v1alpha1.NeptuneClusterParameterGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("neptuneclusterparametergroups").
 		Name(neptuneClusterParameterGroup.Name).
 		Body(neptuneClusterParameterGroup).
@@ -132,6 +139,7 @@ func (c *neptuneClusterParameterGroups) Update(neptuneClusterParameterGroup *v1a
 func (c *neptuneClusterParameterGroups) UpdateStatus(neptuneClusterParameterGroup *v1alpha1.NeptuneClusterParameterGroup) (result *v1alpha1.NeptuneClusterParameterGroup, err error) {
 	result = &v1alpha1.NeptuneClusterParameterGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("neptuneclusterparametergroups").
 		Name(neptuneClusterParameterGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *neptuneClusterParameterGroups) UpdateStatus(neptuneClusterParameterGrou
 // Delete takes name of the neptuneClusterParameterGroup and deletes it. Returns an error if one occurs.
 func (c *neptuneClusterParameterGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("neptuneclusterparametergroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *neptuneClusterParameterGroups) DeleteCollection(options *v1.DeleteOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("neptuneclusterparametergroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *neptuneClusterParameterGroups) DeleteCollection(options *v1.DeleteOptio
 func (c *neptuneClusterParameterGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NeptuneClusterParameterGroup, err error) {
 	result = &v1alpha1.NeptuneClusterParameterGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("neptuneclusterparametergroups").
 		SubResource(subresources...).
 		Name(name).

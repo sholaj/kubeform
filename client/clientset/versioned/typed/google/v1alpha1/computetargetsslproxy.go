@@ -32,7 +32,7 @@ import (
 // ComputeTargetSslProxiesGetter has a method to return a ComputeTargetSslProxyInterface.
 // A group's client should implement this interface.
 type ComputeTargetSslProxiesGetter interface {
-	ComputeTargetSslProxies() ComputeTargetSslProxyInterface
+	ComputeTargetSslProxies(namespace string) ComputeTargetSslProxyInterface
 }
 
 // ComputeTargetSslProxyInterface has methods to work with ComputeTargetSslProxy resources.
@@ -52,12 +52,14 @@ type ComputeTargetSslProxyInterface interface {
 // computeTargetSslProxies implements ComputeTargetSslProxyInterface
 type computeTargetSslProxies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeTargetSslProxies returns a ComputeTargetSslProxies
-func newComputeTargetSslProxies(c *GoogleV1alpha1Client) *computeTargetSslProxies {
+func newComputeTargetSslProxies(c *GoogleV1alpha1Client, namespace string) *computeTargetSslProxies {
 	return &computeTargetSslProxies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeTargetSslProxies(c *GoogleV1alpha1Client) *computeTargetSslProxie
 func (c *computeTargetSslProxies) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeTargetSslProxy, err error) {
 	result = &v1alpha1.ComputeTargetSslProxy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computetargetsslproxies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeTargetSslProxies) List(opts v1.ListOptions) (result *v1alpha1.Co
 	}
 	result = &v1alpha1.ComputeTargetSslProxyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computetargetsslproxies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeTargetSslProxies) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computetargetsslproxies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeTargetSslProxies) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *computeTargetSslProxies) Create(computeTargetSslProxy *v1alpha1.ComputeTargetSslProxy) (result *v1alpha1.ComputeTargetSslProxy, err error) {
 	result = &v1alpha1.ComputeTargetSslProxy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computetargetsslproxies").
 		Body(computeTargetSslProxy).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeTargetSslProxies) Create(computeTargetSslProxy *v1alpha1.Compute
 func (c *computeTargetSslProxies) Update(computeTargetSslProxy *v1alpha1.ComputeTargetSslProxy) (result *v1alpha1.ComputeTargetSslProxy, err error) {
 	result = &v1alpha1.ComputeTargetSslProxy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computetargetsslproxies").
 		Name(computeTargetSslProxy.Name).
 		Body(computeTargetSslProxy).
@@ -132,6 +139,7 @@ func (c *computeTargetSslProxies) Update(computeTargetSslProxy *v1alpha1.Compute
 func (c *computeTargetSslProxies) UpdateStatus(computeTargetSslProxy *v1alpha1.ComputeTargetSslProxy) (result *v1alpha1.ComputeTargetSslProxy, err error) {
 	result = &v1alpha1.ComputeTargetSslProxy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computetargetsslproxies").
 		Name(computeTargetSslProxy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeTargetSslProxies) UpdateStatus(computeTargetSslProxy *v1alpha1.C
 // Delete takes name of the computeTargetSslProxy and deletes it. Returns an error if one occurs.
 func (c *computeTargetSslProxies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computetargetsslproxies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeTargetSslProxies) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computetargetsslproxies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeTargetSslProxies) DeleteCollection(options *v1.DeleteOptions, li
 func (c *computeTargetSslProxies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeTargetSslProxy, err error) {
 	result = &v1alpha1.ComputeTargetSslProxy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computetargetsslproxies").
 		SubResource(subresources...).
 		Name(name).

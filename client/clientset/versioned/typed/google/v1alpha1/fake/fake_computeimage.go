@@ -31,6 +31,7 @@ import (
 // FakeComputeImages implements ComputeImageInterface
 type FakeComputeImages struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computeimagesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computeimages"}
@@ -40,7 +41,8 @@ var computeimagesKind = schema.GroupVersionKind{Group: "google.kubeform.com", Ve
 // Get takes name of the computeImage, and returns the corresponding computeImage object, and an error if there is any.
 func (c *FakeComputeImages) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeImage, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computeimagesResource, name), &v1alpha1.ComputeImage{})
+		Invokes(testing.NewGetAction(computeimagesResource, c.ns, name), &v1alpha1.ComputeImage{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeImages) Get(name string, options v1.GetOptions) (result *v1a
 // List takes label and field selectors, and returns the list of ComputeImages that match those selectors.
 func (c *FakeComputeImages) List(opts v1.ListOptions) (result *v1alpha1.ComputeImageList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computeimagesResource, computeimagesKind, opts), &v1alpha1.ComputeImageList{})
+		Invokes(testing.NewListAction(computeimagesResource, computeimagesKind, c.ns, opts), &v1alpha1.ComputeImageList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeImages) List(opts v1.ListOptions) (result *v1alpha1.ComputeI
 // Watch returns a watch.Interface that watches the requested computeImages.
 func (c *FakeComputeImages) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computeimagesResource, opts))
+		InvokesWatch(testing.NewWatchAction(computeimagesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeImage and creates it.  Returns the server's representation of the computeImage, and an error, if there is any.
 func (c *FakeComputeImages) Create(computeImage *v1alpha1.ComputeImage) (result *v1alpha1.ComputeImage, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computeimagesResource, computeImage), &v1alpha1.ComputeImage{})
+		Invokes(testing.NewCreateAction(computeimagesResource, c.ns, computeImage), &v1alpha1.ComputeImage{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeImages) Create(computeImage *v1alpha1.ComputeImage) (result 
 // Update takes the representation of a computeImage and updates it. Returns the server's representation of the computeImage, and an error, if there is any.
 func (c *FakeComputeImages) Update(computeImage *v1alpha1.ComputeImage) (result *v1alpha1.ComputeImage, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computeimagesResource, computeImage), &v1alpha1.ComputeImage{})
+		Invokes(testing.NewUpdateAction(computeimagesResource, c.ns, computeImage), &v1alpha1.ComputeImage{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeImages) Update(computeImage *v1alpha1.ComputeImage) (result 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeImages) UpdateStatus(computeImage *v1alpha1.ComputeImage) (*v1alpha1.ComputeImage, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computeimagesResource, "status", computeImage), &v1alpha1.ComputeImage{})
+		Invokes(testing.NewUpdateSubresourceAction(computeimagesResource, "status", c.ns, computeImage), &v1alpha1.ComputeImage{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeImages) UpdateStatus(computeImage *v1alpha1.ComputeImage) (*
 // Delete takes name of the computeImage and deletes it. Returns an error if one occurs.
 func (c *FakeComputeImages) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computeimagesResource, name), &v1alpha1.ComputeImage{})
+		Invokes(testing.NewDeleteAction(computeimagesResource, c.ns, name), &v1alpha1.ComputeImage{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeImages) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computeimagesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computeimagesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeImageList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeImages) DeleteCollection(options *v1.DeleteOptions, listOpti
 // Patch applies the patch and returns the patched computeImage.
 func (c *FakeComputeImages) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeImage, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computeimagesResource, name, pt, data, subresources...), &v1alpha1.ComputeImage{})
+		Invokes(testing.NewPatchSubresourceAction(computeimagesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeImage{})
+
 	if obj == nil {
 		return nil, err
 	}

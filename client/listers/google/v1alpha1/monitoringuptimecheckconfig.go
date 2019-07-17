@@ -29,8 +29,8 @@ import (
 type MonitoringUptimeCheckConfigLister interface {
 	// List lists all MonitoringUptimeCheckConfigs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MonitoringUptimeCheckConfig, err error)
-	// Get retrieves the MonitoringUptimeCheckConfig from the index for a given name.
-	Get(name string) (*v1alpha1.MonitoringUptimeCheckConfig, error)
+	// MonitoringUptimeCheckConfigs returns an object that can list and get MonitoringUptimeCheckConfigs.
+	MonitoringUptimeCheckConfigs(namespace string) MonitoringUptimeCheckConfigNamespaceLister
 	MonitoringUptimeCheckConfigListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *monitoringUptimeCheckConfigLister) List(selector labels.Selector) (ret 
 	return ret, err
 }
 
-// Get retrieves the MonitoringUptimeCheckConfig from the index for a given name.
-func (s *monitoringUptimeCheckConfigLister) Get(name string) (*v1alpha1.MonitoringUptimeCheckConfig, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MonitoringUptimeCheckConfigs returns an object that can list and get MonitoringUptimeCheckConfigs.
+func (s *monitoringUptimeCheckConfigLister) MonitoringUptimeCheckConfigs(namespace string) MonitoringUptimeCheckConfigNamespaceLister {
+	return monitoringUptimeCheckConfigNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MonitoringUptimeCheckConfigNamespaceLister helps list and get MonitoringUptimeCheckConfigs.
+type MonitoringUptimeCheckConfigNamespaceLister interface {
+	// List lists all MonitoringUptimeCheckConfigs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MonitoringUptimeCheckConfig, err error)
+	// Get retrieves the MonitoringUptimeCheckConfig from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MonitoringUptimeCheckConfig, error)
+	MonitoringUptimeCheckConfigNamespaceListerExpansion
+}
+
+// monitoringUptimeCheckConfigNamespaceLister implements the MonitoringUptimeCheckConfigNamespaceLister
+// interface.
+type monitoringUptimeCheckConfigNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MonitoringUptimeCheckConfigs in the indexer for a given namespace.
+func (s monitoringUptimeCheckConfigNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MonitoringUptimeCheckConfig, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MonitoringUptimeCheckConfig))
+	})
+	return ret, err
+}
+
+// Get retrieves the MonitoringUptimeCheckConfig from the indexer for a given namespace and name.
+func (s monitoringUptimeCheckConfigNamespaceLister) Get(name string) (*v1alpha1.MonitoringUptimeCheckConfig, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

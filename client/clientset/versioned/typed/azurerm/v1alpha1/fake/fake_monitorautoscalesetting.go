@@ -31,6 +31,7 @@ import (
 // FakeMonitorAutoscaleSettings implements MonitorAutoscaleSettingInterface
 type FakeMonitorAutoscaleSettings struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var monitorautoscalesettingsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "monitorautoscalesettings"}
@@ -40,7 +41,8 @@ var monitorautoscalesettingsKind = schema.GroupVersionKind{Group: "azurerm.kubef
 // Get takes name of the monitorAutoscaleSetting, and returns the corresponding monitorAutoscaleSetting object, and an error if there is any.
 func (c *FakeMonitorAutoscaleSettings) Get(name string, options v1.GetOptions) (result *v1alpha1.MonitorAutoscaleSetting, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(monitorautoscalesettingsResource, name), &v1alpha1.MonitorAutoscaleSetting{})
+		Invokes(testing.NewGetAction(monitorautoscalesettingsResource, c.ns, name), &v1alpha1.MonitorAutoscaleSetting{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMonitorAutoscaleSettings) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of MonitorAutoscaleSettings that match those selectors.
 func (c *FakeMonitorAutoscaleSettings) List(opts v1.ListOptions) (result *v1alpha1.MonitorAutoscaleSettingList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(monitorautoscalesettingsResource, monitorautoscalesettingsKind, opts), &v1alpha1.MonitorAutoscaleSettingList{})
+		Invokes(testing.NewListAction(monitorautoscalesettingsResource, monitorautoscalesettingsKind, c.ns, opts), &v1alpha1.MonitorAutoscaleSettingList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMonitorAutoscaleSettings) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested monitorAutoscaleSettings.
 func (c *FakeMonitorAutoscaleSettings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(monitorautoscalesettingsResource, opts))
+		InvokesWatch(testing.NewWatchAction(monitorautoscalesettingsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a monitorAutoscaleSetting and creates it.  Returns the server's representation of the monitorAutoscaleSetting, and an error, if there is any.
 func (c *FakeMonitorAutoscaleSettings) Create(monitorAutoscaleSetting *v1alpha1.MonitorAutoscaleSetting) (result *v1alpha1.MonitorAutoscaleSetting, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(monitorautoscalesettingsResource, monitorAutoscaleSetting), &v1alpha1.MonitorAutoscaleSetting{})
+		Invokes(testing.NewCreateAction(monitorautoscalesettingsResource, c.ns, monitorAutoscaleSetting), &v1alpha1.MonitorAutoscaleSetting{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMonitorAutoscaleSettings) Create(monitorAutoscaleSetting *v1alpha1.
 // Update takes the representation of a monitorAutoscaleSetting and updates it. Returns the server's representation of the monitorAutoscaleSetting, and an error, if there is any.
 func (c *FakeMonitorAutoscaleSettings) Update(monitorAutoscaleSetting *v1alpha1.MonitorAutoscaleSetting) (result *v1alpha1.MonitorAutoscaleSetting, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(monitorautoscalesettingsResource, monitorAutoscaleSetting), &v1alpha1.MonitorAutoscaleSetting{})
+		Invokes(testing.NewUpdateAction(monitorautoscalesettingsResource, c.ns, monitorAutoscaleSetting), &v1alpha1.MonitorAutoscaleSetting{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMonitorAutoscaleSettings) Update(monitorAutoscaleSetting *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMonitorAutoscaleSettings) UpdateStatus(monitorAutoscaleSetting *v1alpha1.MonitorAutoscaleSetting) (*v1alpha1.MonitorAutoscaleSetting, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(monitorautoscalesettingsResource, "status", monitorAutoscaleSetting), &v1alpha1.MonitorAutoscaleSetting{})
+		Invokes(testing.NewUpdateSubresourceAction(monitorautoscalesettingsResource, "status", c.ns, monitorAutoscaleSetting), &v1alpha1.MonitorAutoscaleSetting{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMonitorAutoscaleSettings) UpdateStatus(monitorAutoscaleSetting *v1a
 // Delete takes name of the monitorAutoscaleSetting and deletes it. Returns an error if one occurs.
 func (c *FakeMonitorAutoscaleSettings) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(monitorautoscalesettingsResource, name), &v1alpha1.MonitorAutoscaleSetting{})
+		Invokes(testing.NewDeleteAction(monitorautoscalesettingsResource, c.ns, name), &v1alpha1.MonitorAutoscaleSetting{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMonitorAutoscaleSettings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(monitorautoscalesettingsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(monitorautoscalesettingsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MonitorAutoscaleSettingList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMonitorAutoscaleSettings) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched monitorAutoscaleSetting.
 func (c *FakeMonitorAutoscaleSettings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MonitorAutoscaleSetting, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(monitorautoscalesettingsResource, name, pt, data, subresources...), &v1alpha1.MonitorAutoscaleSetting{})
+		Invokes(testing.NewPatchSubresourceAction(monitorautoscalesettingsResource, c.ns, name, pt, data, subresources...), &v1alpha1.MonitorAutoscaleSetting{})
+
 	if obj == nil {
 		return nil, err
 	}

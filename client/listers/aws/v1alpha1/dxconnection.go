@@ -29,8 +29,8 @@ import (
 type DxConnectionLister interface {
 	// List lists all DxConnections in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DxConnection, err error)
-	// Get retrieves the DxConnection from the index for a given name.
-	Get(name string) (*v1alpha1.DxConnection, error)
+	// DxConnections returns an object that can list and get DxConnections.
+	DxConnections(namespace string) DxConnectionNamespaceLister
 	DxConnectionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dxConnectionLister) List(selector labels.Selector) (ret []*v1alpha1.DxC
 	return ret, err
 }
 
-// Get retrieves the DxConnection from the index for a given name.
-func (s *dxConnectionLister) Get(name string) (*v1alpha1.DxConnection, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DxConnections returns an object that can list and get DxConnections.
+func (s *dxConnectionLister) DxConnections(namespace string) DxConnectionNamespaceLister {
+	return dxConnectionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DxConnectionNamespaceLister helps list and get DxConnections.
+type DxConnectionNamespaceLister interface {
+	// List lists all DxConnections in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DxConnection, err error)
+	// Get retrieves the DxConnection from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DxConnection, error)
+	DxConnectionNamespaceListerExpansion
+}
+
+// dxConnectionNamespaceLister implements the DxConnectionNamespaceLister
+// interface.
+type dxConnectionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DxConnections in the indexer for a given namespace.
+func (s dxConnectionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DxConnection, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DxConnection))
+	})
+	return ret, err
+}
+
+// Get retrieves the DxConnection from the indexer for a given namespace and name.
+func (s dxConnectionNamespaceLister) Get(name string) (*v1alpha1.DxConnection, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

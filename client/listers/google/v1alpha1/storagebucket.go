@@ -29,8 +29,8 @@ import (
 type StorageBucketLister interface {
 	// List lists all StorageBuckets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StorageBucket, err error)
-	// Get retrieves the StorageBucket from the index for a given name.
-	Get(name string) (*v1alpha1.StorageBucket, error)
+	// StorageBuckets returns an object that can list and get StorageBuckets.
+	StorageBuckets(namespace string) StorageBucketNamespaceLister
 	StorageBucketListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *storageBucketLister) List(selector labels.Selector) (ret []*v1alpha1.St
 	return ret, err
 }
 
-// Get retrieves the StorageBucket from the index for a given name.
-func (s *storageBucketLister) Get(name string) (*v1alpha1.StorageBucket, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StorageBuckets returns an object that can list and get StorageBuckets.
+func (s *storageBucketLister) StorageBuckets(namespace string) StorageBucketNamespaceLister {
+	return storageBucketNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StorageBucketNamespaceLister helps list and get StorageBuckets.
+type StorageBucketNamespaceLister interface {
+	// List lists all StorageBuckets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StorageBucket, err error)
+	// Get retrieves the StorageBucket from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StorageBucket, error)
+	StorageBucketNamespaceListerExpansion
+}
+
+// storageBucketNamespaceLister implements the StorageBucketNamespaceLister
+// interface.
+type storageBucketNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StorageBuckets in the indexer for a given namespace.
+func (s storageBucketNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StorageBucket, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StorageBucket))
+	})
+	return ret, err
+}
+
+// Get retrieves the StorageBucket from the indexer for a given namespace and name.
+func (s storageBucketNamespaceLister) Get(name string) (*v1alpha1.StorageBucket, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

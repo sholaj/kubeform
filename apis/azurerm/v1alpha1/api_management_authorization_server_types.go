@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,44 +19,45 @@ type ApiManagementAuthorizationServer struct {
 }
 
 type ApiManagementAuthorizationServerSpecTokenBodyParameter struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
+	Name  string `json:"name" tf:"name"`
+	Value string `json:"value" tf:"value"`
 }
 
 type ApiManagementAuthorizationServerSpec struct {
-	ApiManagementName     string `json:"api_management_name"`
-	AuthorizationEndpoint string `json:"authorization_endpoint"`
+	ApiManagementName     string `json:"apiManagementName" tf:"api_management_name"`
+	AuthorizationEndpoint string `json:"authorizationEndpoint" tf:"authorization_endpoint"`
 	// +kubebuilder:validation:UniqueItems=true
-	AuthorizationMethods []string `json:"authorization_methods"`
-	// +optional
-	// +kubebuilder:validation:UniqueItems=true
-	BearerTokenSendingMethods []string `json:"bearer_token_sending_methods,omitempty"`
+	AuthorizationMethods []string `json:"authorizationMethods" tf:"authorization_methods"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	ClientAuthenticationMethod []string `json:"client_authentication_method,omitempty"`
-	ClientId                   string   `json:"client_id"`
-	ClientRegistrationEndpoint string   `json:"client_registration_endpoint"`
+	BearerTokenSendingMethods []string `json:"bearerTokenSendingMethods,omitempty" tf:"bearer_token_sending_methods,omitempty"`
 	// +optional
-	ClientSecret string `json:"client_secret,omitempty"`
-	// +optional
-	DefaultScope string `json:"default_scope,omitempty"`
-	// +optional
-	Description string `json:"description,omitempty"`
-	DisplayName string `json:"display_name"`
 	// +kubebuilder:validation:UniqueItems=true
-	GrantTypes        []string `json:"grant_types"`
-	Name              string   `json:"name"`
-	ResourceGroupName string   `json:"resource_group_name"`
+	ClientAuthenticationMethod []string `json:"clientAuthenticationMethod,omitempty" tf:"client_authentication_method,omitempty"`
+	ClientID                   string   `json:"clientID" tf:"client_id"`
+	ClientRegistrationEndpoint string   `json:"clientRegistrationEndpoint" tf:"client_registration_endpoint"`
 	// +optional
-	ResourceOwnerPassword string `json:"resource_owner_password,omitempty"`
+	ClientSecret string `json:"clientSecret,omitempty" tf:"client_secret,omitempty"`
 	// +optional
-	ResourceOwnerUsername string `json:"resource_owner_username,omitempty"`
+	DefaultScope string `json:"defaultScope,omitempty" tf:"default_scope,omitempty"`
 	// +optional
-	SupportState bool `json:"support_state,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
+	DisplayName string `json:"displayName" tf:"display_name"`
+	// +kubebuilder:validation:UniqueItems=true
+	GrantTypes        []string `json:"grantTypes" tf:"grant_types"`
+	Name              string   `json:"name" tf:"name"`
+	ResourceGroupName string   `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	TokenBodyParameter *[]ApiManagementAuthorizationServerSpec `json:"token_body_parameter,omitempty"`
+	ResourceOwnerPassword string `json:"resourceOwnerPassword,omitempty" tf:"resource_owner_password,omitempty"`
 	// +optional
-	TokenEndpoint string `json:"token_endpoint,omitempty"`
+	ResourceOwnerUsername string `json:"resourceOwnerUsername,omitempty" tf:"resource_owner_username,omitempty"`
+	// +optional
+	SupportState bool `json:"supportState,omitempty" tf:"support_state,omitempty"`
+	// +optional
+	TokenBodyParameter []ApiManagementAuthorizationServerSpecTokenBodyParameter `json:"tokenBodyParameter,omitempty" tf:"token_body_parameter,omitempty"`
+	// +optional
+	TokenEndpoint string                    `json:"tokenEndpoint,omitempty" tf:"token_endpoint,omitempty"`
+	ProviderRef   core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ApiManagementAuthorizationServerStatus struct {
@@ -64,7 +65,9 @@ type ApiManagementAuthorizationServerStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

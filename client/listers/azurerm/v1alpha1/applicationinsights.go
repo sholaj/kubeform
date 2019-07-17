@@ -29,8 +29,8 @@ import (
 type ApplicationInsightsLister interface {
 	// List lists all ApplicationInsightses in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApplicationInsights, err error)
-	// Get retrieves the ApplicationInsights from the index for a given name.
-	Get(name string) (*v1alpha1.ApplicationInsights, error)
+	// ApplicationInsightses returns an object that can list and get ApplicationInsightses.
+	ApplicationInsightses(namespace string) ApplicationInsightsNamespaceLister
 	ApplicationInsightsListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *applicationInsightsLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the ApplicationInsights from the index for a given name.
-func (s *applicationInsightsLister) Get(name string) (*v1alpha1.ApplicationInsights, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApplicationInsightses returns an object that can list and get ApplicationInsightses.
+func (s *applicationInsightsLister) ApplicationInsightses(namespace string) ApplicationInsightsNamespaceLister {
+	return applicationInsightsNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApplicationInsightsNamespaceLister helps list and get ApplicationInsightses.
+type ApplicationInsightsNamespaceLister interface {
+	// List lists all ApplicationInsightses in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApplicationInsights, err error)
+	// Get retrieves the ApplicationInsights from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApplicationInsights, error)
+	ApplicationInsightsNamespaceListerExpansion
+}
+
+// applicationInsightsNamespaceLister implements the ApplicationInsightsNamespaceLister
+// interface.
+type applicationInsightsNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApplicationInsightses in the indexer for a given namespace.
+func (s applicationInsightsNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApplicationInsights, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApplicationInsights))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApplicationInsights from the indexer for a given namespace and name.
+func (s applicationInsightsNamespaceLister) Get(name string) (*v1alpha1.ApplicationInsights, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

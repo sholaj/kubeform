@@ -32,7 +32,7 @@ import (
 // LoggingOrganizationSinksGetter has a method to return a LoggingOrganizationSinkInterface.
 // A group's client should implement this interface.
 type LoggingOrganizationSinksGetter interface {
-	LoggingOrganizationSinks() LoggingOrganizationSinkInterface
+	LoggingOrganizationSinks(namespace string) LoggingOrganizationSinkInterface
 }
 
 // LoggingOrganizationSinkInterface has methods to work with LoggingOrganizationSink resources.
@@ -52,12 +52,14 @@ type LoggingOrganizationSinkInterface interface {
 // loggingOrganizationSinks implements LoggingOrganizationSinkInterface
 type loggingOrganizationSinks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLoggingOrganizationSinks returns a LoggingOrganizationSinks
-func newLoggingOrganizationSinks(c *GoogleV1alpha1Client) *loggingOrganizationSinks {
+func newLoggingOrganizationSinks(c *GoogleV1alpha1Client, namespace string) *loggingOrganizationSinks {
 	return &loggingOrganizationSinks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLoggingOrganizationSinks(c *GoogleV1alpha1Client) *loggingOrganizationSi
 func (c *loggingOrganizationSinks) Get(name string, options v1.GetOptions) (result *v1alpha1.LoggingOrganizationSink, err error) {
 	result = &v1alpha1.LoggingOrganizationSink{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingorganizationsinks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *loggingOrganizationSinks) List(opts v1.ListOptions) (result *v1alpha1.L
 	}
 	result = &v1alpha1.LoggingOrganizationSinkList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingorganizationsinks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *loggingOrganizationSinks) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("loggingorganizationsinks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *loggingOrganizationSinks) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *loggingOrganizationSinks) Create(loggingOrganizationSink *v1alpha1.LoggingOrganizationSink) (result *v1alpha1.LoggingOrganizationSink, err error) {
 	result = &v1alpha1.LoggingOrganizationSink{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("loggingorganizationsinks").
 		Body(loggingOrganizationSink).
 		Do().
@@ -118,6 +124,7 @@ func (c *loggingOrganizationSinks) Create(loggingOrganizationSink *v1alpha1.Logg
 func (c *loggingOrganizationSinks) Update(loggingOrganizationSink *v1alpha1.LoggingOrganizationSink) (result *v1alpha1.LoggingOrganizationSink, err error) {
 	result = &v1alpha1.LoggingOrganizationSink{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loggingorganizationsinks").
 		Name(loggingOrganizationSink.Name).
 		Body(loggingOrganizationSink).
@@ -132,6 +139,7 @@ func (c *loggingOrganizationSinks) Update(loggingOrganizationSink *v1alpha1.Logg
 func (c *loggingOrganizationSinks) UpdateStatus(loggingOrganizationSink *v1alpha1.LoggingOrganizationSink) (result *v1alpha1.LoggingOrganizationSink, err error) {
 	result = &v1alpha1.LoggingOrganizationSink{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loggingorganizationsinks").
 		Name(loggingOrganizationSink.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *loggingOrganizationSinks) UpdateStatus(loggingOrganizationSink *v1alpha
 // Delete takes name of the loggingOrganizationSink and deletes it. Returns an error if one occurs.
 func (c *loggingOrganizationSinks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loggingorganizationsinks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *loggingOrganizationSinks) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loggingorganizationsinks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *loggingOrganizationSinks) DeleteCollection(options *v1.DeleteOptions, l
 func (c *loggingOrganizationSinks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LoggingOrganizationSink, err error) {
 	result = &v1alpha1.LoggingOrganizationSink{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("loggingorganizationsinks").
 		SubResource(subresources...).
 		Name(name).

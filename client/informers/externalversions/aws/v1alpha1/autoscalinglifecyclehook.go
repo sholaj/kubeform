@@ -41,32 +41,33 @@ type AutoscalingLifecycleHookInformer interface {
 type autoscalingLifecycleHookInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewAutoscalingLifecycleHookInformer constructs a new informer for AutoscalingLifecycleHook type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAutoscalingLifecycleHookInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAutoscalingLifecycleHookInformer(client, resyncPeriod, indexers, nil)
+func NewAutoscalingLifecycleHookInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAutoscalingLifecycleHookInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredAutoscalingLifecycleHookInformer constructs a new informer for AutoscalingLifecycleHook type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAutoscalingLifecycleHookInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAutoscalingLifecycleHookInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AutoscalingLifecycleHooks().List(options)
+				return client.AwsV1alpha1().AutoscalingLifecycleHooks(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AutoscalingLifecycleHooks().Watch(options)
+				return client.AwsV1alpha1().AutoscalingLifecycleHooks(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.AutoscalingLifecycleHook{},
@@ -76,7 +77,7 @@ func NewFilteredAutoscalingLifecycleHookInformer(client versioned.Interface, res
 }
 
 func (f *autoscalingLifecycleHookInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAutoscalingLifecycleHookInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredAutoscalingLifecycleHookInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *autoscalingLifecycleHookInformer) Informer() cache.SharedIndexInformer {

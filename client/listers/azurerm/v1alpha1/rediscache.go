@@ -29,8 +29,8 @@ import (
 type RedisCacheLister interface {
 	// List lists all RedisCaches in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RedisCache, err error)
-	// Get retrieves the RedisCache from the index for a given name.
-	Get(name string) (*v1alpha1.RedisCache, error)
+	// RedisCaches returns an object that can list and get RedisCaches.
+	RedisCaches(namespace string) RedisCacheNamespaceLister
 	RedisCacheListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *redisCacheLister) List(selector labels.Selector) (ret []*v1alpha1.Redis
 	return ret, err
 }
 
-// Get retrieves the RedisCache from the index for a given name.
-func (s *redisCacheLister) Get(name string) (*v1alpha1.RedisCache, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RedisCaches returns an object that can list and get RedisCaches.
+func (s *redisCacheLister) RedisCaches(namespace string) RedisCacheNamespaceLister {
+	return redisCacheNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RedisCacheNamespaceLister helps list and get RedisCaches.
+type RedisCacheNamespaceLister interface {
+	// List lists all RedisCaches in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RedisCache, err error)
+	// Get retrieves the RedisCache from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RedisCache, error)
+	RedisCacheNamespaceListerExpansion
+}
+
+// redisCacheNamespaceLister implements the RedisCacheNamespaceLister
+// interface.
+type redisCacheNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RedisCaches in the indexer for a given namespace.
+func (s redisCacheNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RedisCache, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RedisCache))
+	})
+	return ret, err
+}
+
+// Get retrieves the RedisCache from the indexer for a given namespace and name.
+func (s redisCacheNamespaceLister) Get(name string) (*v1alpha1.RedisCache, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

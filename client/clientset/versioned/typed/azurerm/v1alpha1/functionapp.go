@@ -32,7 +32,7 @@ import (
 // FunctionAppsGetter has a method to return a FunctionAppInterface.
 // A group's client should implement this interface.
 type FunctionAppsGetter interface {
-	FunctionApps() FunctionAppInterface
+	FunctionApps(namespace string) FunctionAppInterface
 }
 
 // FunctionAppInterface has methods to work with FunctionApp resources.
@@ -52,12 +52,14 @@ type FunctionAppInterface interface {
 // functionApps implements FunctionAppInterface
 type functionApps struct {
 	client rest.Interface
+	ns     string
 }
 
 // newFunctionApps returns a FunctionApps
-func newFunctionApps(c *AzurermV1alpha1Client) *functionApps {
+func newFunctionApps(c *AzurermV1alpha1Client, namespace string) *functionApps {
 	return &functionApps{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newFunctionApps(c *AzurermV1alpha1Client) *functionApps {
 func (c *functionApps) Get(name string, options v1.GetOptions) (result *v1alpha1.FunctionApp, err error) {
 	result = &v1alpha1.FunctionApp{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("functionapps").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *functionApps) List(opts v1.ListOptions) (result *v1alpha1.FunctionAppLi
 	}
 	result = &v1alpha1.FunctionAppList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("functionapps").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *functionApps) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("functionapps").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *functionApps) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *functionApps) Create(functionApp *v1alpha1.FunctionApp) (result *v1alpha1.FunctionApp, err error) {
 	result = &v1alpha1.FunctionApp{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("functionapps").
 		Body(functionApp).
 		Do().
@@ -118,6 +124,7 @@ func (c *functionApps) Create(functionApp *v1alpha1.FunctionApp) (result *v1alph
 func (c *functionApps) Update(functionApp *v1alpha1.FunctionApp) (result *v1alpha1.FunctionApp, err error) {
 	result = &v1alpha1.FunctionApp{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("functionapps").
 		Name(functionApp.Name).
 		Body(functionApp).
@@ -132,6 +139,7 @@ func (c *functionApps) Update(functionApp *v1alpha1.FunctionApp) (result *v1alph
 func (c *functionApps) UpdateStatus(functionApp *v1alpha1.FunctionApp) (result *v1alpha1.FunctionApp, err error) {
 	result = &v1alpha1.FunctionApp{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("functionapps").
 		Name(functionApp.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *functionApps) UpdateStatus(functionApp *v1alpha1.FunctionApp) (result *
 // Delete takes name of the functionApp and deletes it. Returns an error if one occurs.
 func (c *functionApps) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("functionapps").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *functionApps) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("functionapps").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *functionApps) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *functionApps) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FunctionApp, err error) {
 	result = &v1alpha1.FunctionApp{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("functionapps").
 		SubResource(subresources...).
 		Name(name).

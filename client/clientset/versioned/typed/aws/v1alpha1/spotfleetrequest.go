@@ -32,7 +32,7 @@ import (
 // SpotFleetRequestsGetter has a method to return a SpotFleetRequestInterface.
 // A group's client should implement this interface.
 type SpotFleetRequestsGetter interface {
-	SpotFleetRequests() SpotFleetRequestInterface
+	SpotFleetRequests(namespace string) SpotFleetRequestInterface
 }
 
 // SpotFleetRequestInterface has methods to work with SpotFleetRequest resources.
@@ -52,12 +52,14 @@ type SpotFleetRequestInterface interface {
 // spotFleetRequests implements SpotFleetRequestInterface
 type spotFleetRequests struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSpotFleetRequests returns a SpotFleetRequests
-func newSpotFleetRequests(c *AwsV1alpha1Client) *spotFleetRequests {
+func newSpotFleetRequests(c *AwsV1alpha1Client, namespace string) *spotFleetRequests {
 	return &spotFleetRequests{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSpotFleetRequests(c *AwsV1alpha1Client) *spotFleetRequests {
 func (c *spotFleetRequests) Get(name string, options v1.GetOptions) (result *v1alpha1.SpotFleetRequest, err error) {
 	result = &v1alpha1.SpotFleetRequest{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("spotfleetrequests").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *spotFleetRequests) List(opts v1.ListOptions) (result *v1alpha1.SpotFlee
 	}
 	result = &v1alpha1.SpotFleetRequestList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("spotfleetrequests").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *spotFleetRequests) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("spotfleetrequests").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *spotFleetRequests) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *spotFleetRequests) Create(spotFleetRequest *v1alpha1.SpotFleetRequest) (result *v1alpha1.SpotFleetRequest, err error) {
 	result = &v1alpha1.SpotFleetRequest{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("spotfleetrequests").
 		Body(spotFleetRequest).
 		Do().
@@ -118,6 +124,7 @@ func (c *spotFleetRequests) Create(spotFleetRequest *v1alpha1.SpotFleetRequest) 
 func (c *spotFleetRequests) Update(spotFleetRequest *v1alpha1.SpotFleetRequest) (result *v1alpha1.SpotFleetRequest, err error) {
 	result = &v1alpha1.SpotFleetRequest{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("spotfleetrequests").
 		Name(spotFleetRequest.Name).
 		Body(spotFleetRequest).
@@ -132,6 +139,7 @@ func (c *spotFleetRequests) Update(spotFleetRequest *v1alpha1.SpotFleetRequest) 
 func (c *spotFleetRequests) UpdateStatus(spotFleetRequest *v1alpha1.SpotFleetRequest) (result *v1alpha1.SpotFleetRequest, err error) {
 	result = &v1alpha1.SpotFleetRequest{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("spotfleetrequests").
 		Name(spotFleetRequest.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *spotFleetRequests) UpdateStatus(spotFleetRequest *v1alpha1.SpotFleetReq
 // Delete takes name of the spotFleetRequest and deletes it. Returns an error if one occurs.
 func (c *spotFleetRequests) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("spotfleetrequests").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *spotFleetRequests) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("spotfleetrequests").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *spotFleetRequests) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *spotFleetRequests) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SpotFleetRequest, err error) {
 	result = &v1alpha1.SpotFleetRequest{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("spotfleetrequests").
 		SubResource(subresources...).
 		Name(name).

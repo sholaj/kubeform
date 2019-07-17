@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,16 +20,17 @@ type Volume struct {
 
 type VolumeSpec struct {
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	InitialFilesystemLabel string `json:"initial_filesystem_label,omitempty"`
+	InitialFilesystemLabel string `json:"initialFilesystemLabel,omitempty" tf:"initial_filesystem_label,omitempty"`
 	// +optional
-	InitialFilesystemType string `json:"initial_filesystem_type,omitempty"`
-	Name                  string `json:"name"`
-	Region                string `json:"region"`
-	Size                  int    `json:"size"`
+	InitialFilesystemType string `json:"initialFilesystemType,omitempty" tf:"initial_filesystem_type,omitempty"`
+	Name                  string `json:"name" tf:"name"`
+	Region                string `json:"region" tf:"region"`
+	Size                  int    `json:"size" tf:"size"`
 	// +optional
-	SnapshotId string `json:"snapshot_id,omitempty"`
+	SnapshotID  string                    `json:"snapshotID,omitempty" tf:"snapshot_id,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type VolumeStatus struct {
@@ -37,7 +38,9 @@ type VolumeStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

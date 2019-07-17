@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,13 +19,14 @@ type DynamodbGlobalTable struct {
 }
 
 type DynamodbGlobalTableSpecReplica struct {
-	RegionName string `json:"region_name"`
+	RegionName string `json:"regionName" tf:"region_name"`
 }
 
 type DynamodbGlobalTableSpec struct {
-	Name string `json:"name"`
+	Name string `json:"name" tf:"name"`
 	// +kubebuilder:validation:UniqueItems=true
-	Replica []DynamodbGlobalTableSpec `json:"replica"`
+	Replica     []DynamodbGlobalTableSpecReplica `json:"replica" tf:"replica"`
+	ProviderRef core.LocalObjectReference        `json:"providerRef" tf:"-"`
 }
 
 type DynamodbGlobalTableStatus struct {
@@ -33,7 +34,9 @@ type DynamodbGlobalTableStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

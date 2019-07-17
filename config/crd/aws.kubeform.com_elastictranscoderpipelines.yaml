@@ -397,27 +397,67 @@ spec:
           type: object
         spec:
           properties:
-            aws_kms_key_arn:
+            awsKmsKeyArn:
               type: string
-            content_config_permissions:
-              items: {}
+            contentConfigPermissions:
+              items:
+                properties:
+                  access:
+                    items:
+                      type: string
+                    type: array
+                  grantee:
+                    type: string
+                  granteeType:
+                    type: string
+                type: object
               type: array
               uniqueItems: true
-            input_bucket:
+            inputBucket:
               type: string
             notifications:
-              items: {}
+              items:
+                properties:
+                  completed:
+                    type: string
+                  error:
+                    type: string
+                  progressing:
+                    type: string
+                  warning:
+                    type: string
+                type: object
               maxItems: 1
               type: array
               uniqueItems: true
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             role:
               type: string
-            thumbnail_config_permissions:
-              items: {}
+            thumbnailConfigPermissions:
+              items:
+                properties:
+                  access:
+                    items:
+                      type: string
+                    type: array
+                  grantee:
+                    type: string
+                  granteeType:
+                    type: string
+                type: object
               type: array
               uniqueItems: true
           required:
-          - input_bucket
+          - inputBucket
+          - providerRef
           - role
           type: object
         status:
@@ -429,6 +469,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

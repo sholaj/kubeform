@@ -31,6 +31,7 @@ import (
 // FakeAutomationModules implements AutomationModuleInterface
 type FakeAutomationModules struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var automationmodulesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "automationmodules"}
@@ -40,7 +41,8 @@ var automationmodulesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com
 // Get takes name of the automationModule, and returns the corresponding automationModule object, and an error if there is any.
 func (c *FakeAutomationModules) Get(name string, options v1.GetOptions) (result *v1alpha1.AutomationModule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(automationmodulesResource, name), &v1alpha1.AutomationModule{})
+		Invokes(testing.NewGetAction(automationmodulesResource, c.ns, name), &v1alpha1.AutomationModule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAutomationModules) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of AutomationModules that match those selectors.
 func (c *FakeAutomationModules) List(opts v1.ListOptions) (result *v1alpha1.AutomationModuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(automationmodulesResource, automationmodulesKind, opts), &v1alpha1.AutomationModuleList{})
+		Invokes(testing.NewListAction(automationmodulesResource, automationmodulesKind, c.ns, opts), &v1alpha1.AutomationModuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAutomationModules) List(opts v1.ListOptions) (result *v1alpha1.Auto
 // Watch returns a watch.Interface that watches the requested automationModules.
 func (c *FakeAutomationModules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(automationmodulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(automationmodulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a automationModule and creates it.  Returns the server's representation of the automationModule, and an error, if there is any.
 func (c *FakeAutomationModules) Create(automationModule *v1alpha1.AutomationModule) (result *v1alpha1.AutomationModule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(automationmodulesResource, automationModule), &v1alpha1.AutomationModule{})
+		Invokes(testing.NewCreateAction(automationmodulesResource, c.ns, automationModule), &v1alpha1.AutomationModule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAutomationModules) Create(automationModule *v1alpha1.AutomationModu
 // Update takes the representation of a automationModule and updates it. Returns the server's representation of the automationModule, and an error, if there is any.
 func (c *FakeAutomationModules) Update(automationModule *v1alpha1.AutomationModule) (result *v1alpha1.AutomationModule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(automationmodulesResource, automationModule), &v1alpha1.AutomationModule{})
+		Invokes(testing.NewUpdateAction(automationmodulesResource, c.ns, automationModule), &v1alpha1.AutomationModule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAutomationModules) Update(automationModule *v1alpha1.AutomationModu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAutomationModules) UpdateStatus(automationModule *v1alpha1.AutomationModule) (*v1alpha1.AutomationModule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(automationmodulesResource, "status", automationModule), &v1alpha1.AutomationModule{})
+		Invokes(testing.NewUpdateSubresourceAction(automationmodulesResource, "status", c.ns, automationModule), &v1alpha1.AutomationModule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAutomationModules) UpdateStatus(automationModule *v1alpha1.Automati
 // Delete takes name of the automationModule and deletes it. Returns an error if one occurs.
 func (c *FakeAutomationModules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(automationmodulesResource, name), &v1alpha1.AutomationModule{})
+		Invokes(testing.NewDeleteAction(automationmodulesResource, c.ns, name), &v1alpha1.AutomationModule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAutomationModules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(automationmodulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(automationmodulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AutomationModuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAutomationModules) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched automationModule.
 func (c *FakeAutomationModules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AutomationModule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(automationmodulesResource, name, pt, data, subresources...), &v1alpha1.AutomationModule{})
+		Invokes(testing.NewPatchSubresourceAction(automationmodulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.AutomationModule{})
+
 	if obj == nil {
 		return nil, err
 	}

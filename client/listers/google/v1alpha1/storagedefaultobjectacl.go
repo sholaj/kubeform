@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/google/v1alpha1"
 )
 
-// StorageDefaultObjectAclLister helps list StorageDefaultObjectAcls.
-type StorageDefaultObjectAclLister interface {
-	// List lists all StorageDefaultObjectAcls in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.StorageDefaultObjectAcl, err error)
-	// Get retrieves the StorageDefaultObjectAcl from the index for a given name.
-	Get(name string) (*v1alpha1.StorageDefaultObjectAcl, error)
-	StorageDefaultObjectAclListerExpansion
+// StorageDefaultObjectACLLister helps list StorageDefaultObjectACLs.
+type StorageDefaultObjectACLLister interface {
+	// List lists all StorageDefaultObjectACLs in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.StorageDefaultObjectACL, err error)
+	// StorageDefaultObjectACLs returns an object that can list and get StorageDefaultObjectACLs.
+	StorageDefaultObjectACLs(namespace string) StorageDefaultObjectACLNamespaceLister
+	StorageDefaultObjectACLListerExpansion
 }
 
-// storageDefaultObjectAclLister implements the StorageDefaultObjectAclLister interface.
-type storageDefaultObjectAclLister struct {
+// storageDefaultObjectACLLister implements the StorageDefaultObjectACLLister interface.
+type storageDefaultObjectACLLister struct {
 	indexer cache.Indexer
 }
 
-// NewStorageDefaultObjectAclLister returns a new StorageDefaultObjectAclLister.
-func NewStorageDefaultObjectAclLister(indexer cache.Indexer) StorageDefaultObjectAclLister {
-	return &storageDefaultObjectAclLister{indexer: indexer}
+// NewStorageDefaultObjectACLLister returns a new StorageDefaultObjectACLLister.
+func NewStorageDefaultObjectACLLister(indexer cache.Indexer) StorageDefaultObjectACLLister {
+	return &storageDefaultObjectACLLister{indexer: indexer}
 }
 
-// List lists all StorageDefaultObjectAcls in the indexer.
-func (s *storageDefaultObjectAclLister) List(selector labels.Selector) (ret []*v1alpha1.StorageDefaultObjectAcl, err error) {
+// List lists all StorageDefaultObjectACLs in the indexer.
+func (s *storageDefaultObjectACLLister) List(selector labels.Selector) (ret []*v1alpha1.StorageDefaultObjectACL, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.StorageDefaultObjectAcl))
+		ret = append(ret, m.(*v1alpha1.StorageDefaultObjectACL))
 	})
 	return ret, err
 }
 
-// Get retrieves the StorageDefaultObjectAcl from the index for a given name.
-func (s *storageDefaultObjectAclLister) Get(name string) (*v1alpha1.StorageDefaultObjectAcl, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StorageDefaultObjectACLs returns an object that can list and get StorageDefaultObjectACLs.
+func (s *storageDefaultObjectACLLister) StorageDefaultObjectACLs(namespace string) StorageDefaultObjectACLNamespaceLister {
+	return storageDefaultObjectACLNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StorageDefaultObjectACLNamespaceLister helps list and get StorageDefaultObjectACLs.
+type StorageDefaultObjectACLNamespaceLister interface {
+	// List lists all StorageDefaultObjectACLs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StorageDefaultObjectACL, err error)
+	// Get retrieves the StorageDefaultObjectACL from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StorageDefaultObjectACL, error)
+	StorageDefaultObjectACLNamespaceListerExpansion
+}
+
+// storageDefaultObjectACLNamespaceLister implements the StorageDefaultObjectACLNamespaceLister
+// interface.
+type storageDefaultObjectACLNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StorageDefaultObjectACLs in the indexer for a given namespace.
+func (s storageDefaultObjectACLNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StorageDefaultObjectACL, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StorageDefaultObjectACL))
+	})
+	return ret, err
+}
+
+// Get retrieves the StorageDefaultObjectACL from the indexer for a given namespace and name.
+func (s storageDefaultObjectACLNamespaceLister) Get(name string) (*v1alpha1.StorageDefaultObjectACL, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("storagedefaultobjectacl"), name)
 	}
-	return obj.(*v1alpha1.StorageDefaultObjectAcl), nil
+	return obj.(*v1alpha1.StorageDefaultObjectACL), nil
 }

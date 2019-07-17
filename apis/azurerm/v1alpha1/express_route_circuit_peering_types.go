@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,21 +19,22 @@ type ExpressRouteCircuitPeering struct {
 }
 
 type ExpressRouteCircuitPeeringSpecMicrosoftPeeringConfig struct {
-	AdvertisedPublicPrefixes []string `json:"advertised_public_prefixes"`
+	AdvertisedPublicPrefixes []string `json:"advertisedPublicPrefixes" tf:"advertised_public_prefixes"`
 }
 
 type ExpressRouteCircuitPeeringSpec struct {
-	ExpressRouteCircuitName string `json:"express_route_circuit_name"`
+	ExpressRouteCircuitName string `json:"expressRouteCircuitName" tf:"express_route_circuit_name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	MicrosoftPeeringConfig     *[]ExpressRouteCircuitPeeringSpec `json:"microsoft_peering_config,omitempty"`
-	PeeringType                string                            `json:"peering_type"`
-	PrimaryPeerAddressPrefix   string                            `json:"primary_peer_address_prefix"`
-	ResourceGroupName          string                            `json:"resource_group_name"`
-	SecondaryPeerAddressPrefix string                            `json:"secondary_peer_address_prefix"`
+	MicrosoftPeeringConfig     []ExpressRouteCircuitPeeringSpecMicrosoftPeeringConfig `json:"microsoftPeeringConfig,omitempty" tf:"microsoft_peering_config,omitempty"`
+	PeeringType                string                                                 `json:"peeringType" tf:"peering_type"`
+	PrimaryPeerAddressPrefix   string                                                 `json:"primaryPeerAddressPrefix" tf:"primary_peer_address_prefix"`
+	ResourceGroupName          string                                                 `json:"resourceGroupName" tf:"resource_group_name"`
+	SecondaryPeerAddressPrefix string                                                 `json:"secondaryPeerAddressPrefix" tf:"secondary_peer_address_prefix"`
 	// +optional
-	SharedKey string `json:"shared_key,omitempty"`
-	VlanId    int    `json:"vlan_id"`
+	SharedKey   string                    `json:"sharedKey,omitempty" tf:"shared_key,omitempty"`
+	VlanID      int                       `json:"vlanID" tf:"vlan_id"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ExpressRouteCircuitPeeringStatus struct {
@@ -41,7 +42,9 @@ type ExpressRouteCircuitPeeringStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

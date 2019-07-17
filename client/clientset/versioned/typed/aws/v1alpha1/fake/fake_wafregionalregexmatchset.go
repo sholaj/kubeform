@@ -31,6 +31,7 @@ import (
 // FakeWafregionalRegexMatchSets implements WafregionalRegexMatchSetInterface
 type FakeWafregionalRegexMatchSets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var wafregionalregexmatchsetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "wafregionalregexmatchsets"}
@@ -40,7 +41,8 @@ var wafregionalregexmatchsetsKind = schema.GroupVersionKind{Group: "aws.kubeform
 // Get takes name of the wafregionalRegexMatchSet, and returns the corresponding wafregionalRegexMatchSet object, and an error if there is any.
 func (c *FakeWafregionalRegexMatchSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalRegexMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(wafregionalregexmatchsetsResource, name), &v1alpha1.WafregionalRegexMatchSet{})
+		Invokes(testing.NewGetAction(wafregionalregexmatchsetsResource, c.ns, name), &v1alpha1.WafregionalRegexMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeWafregionalRegexMatchSets) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of WafregionalRegexMatchSets that match those selectors.
 func (c *FakeWafregionalRegexMatchSets) List(opts v1.ListOptions) (result *v1alpha1.WafregionalRegexMatchSetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(wafregionalregexmatchsetsResource, wafregionalregexmatchsetsKind, opts), &v1alpha1.WafregionalRegexMatchSetList{})
+		Invokes(testing.NewListAction(wafregionalregexmatchsetsResource, wafregionalregexmatchsetsKind, c.ns, opts), &v1alpha1.WafregionalRegexMatchSetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeWafregionalRegexMatchSets) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested wafregionalRegexMatchSets.
 func (c *FakeWafregionalRegexMatchSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(wafregionalregexmatchsetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(wafregionalregexmatchsetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a wafregionalRegexMatchSet and creates it.  Returns the server's representation of the wafregionalRegexMatchSet, and an error, if there is any.
 func (c *FakeWafregionalRegexMatchSets) Create(wafregionalRegexMatchSet *v1alpha1.WafregionalRegexMatchSet) (result *v1alpha1.WafregionalRegexMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(wafregionalregexmatchsetsResource, wafregionalRegexMatchSet), &v1alpha1.WafregionalRegexMatchSet{})
+		Invokes(testing.NewCreateAction(wafregionalregexmatchsetsResource, c.ns, wafregionalRegexMatchSet), &v1alpha1.WafregionalRegexMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeWafregionalRegexMatchSets) Create(wafregionalRegexMatchSet *v1alpha
 // Update takes the representation of a wafregionalRegexMatchSet and updates it. Returns the server's representation of the wafregionalRegexMatchSet, and an error, if there is any.
 func (c *FakeWafregionalRegexMatchSets) Update(wafregionalRegexMatchSet *v1alpha1.WafregionalRegexMatchSet) (result *v1alpha1.WafregionalRegexMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(wafregionalregexmatchsetsResource, wafregionalRegexMatchSet), &v1alpha1.WafregionalRegexMatchSet{})
+		Invokes(testing.NewUpdateAction(wafregionalregexmatchsetsResource, c.ns, wafregionalRegexMatchSet), &v1alpha1.WafregionalRegexMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeWafregionalRegexMatchSets) Update(wafregionalRegexMatchSet *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeWafregionalRegexMatchSets) UpdateStatus(wafregionalRegexMatchSet *v1alpha1.WafregionalRegexMatchSet) (*v1alpha1.WafregionalRegexMatchSet, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(wafregionalregexmatchsetsResource, "status", wafregionalRegexMatchSet), &v1alpha1.WafregionalRegexMatchSet{})
+		Invokes(testing.NewUpdateSubresourceAction(wafregionalregexmatchsetsResource, "status", c.ns, wafregionalRegexMatchSet), &v1alpha1.WafregionalRegexMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeWafregionalRegexMatchSets) UpdateStatus(wafregionalRegexMatchSet *v
 // Delete takes name of the wafregionalRegexMatchSet and deletes it. Returns an error if one occurs.
 func (c *FakeWafregionalRegexMatchSets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(wafregionalregexmatchsetsResource, name), &v1alpha1.WafregionalRegexMatchSet{})
+		Invokes(testing.NewDeleteAction(wafregionalregexmatchsetsResource, c.ns, name), &v1alpha1.WafregionalRegexMatchSet{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeWafregionalRegexMatchSets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(wafregionalregexmatchsetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(wafregionalregexmatchsetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.WafregionalRegexMatchSetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeWafregionalRegexMatchSets) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched wafregionalRegexMatchSet.
 func (c *FakeWafregionalRegexMatchSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalRegexMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(wafregionalregexmatchsetsResource, name, pt, data, subresources...), &v1alpha1.WafregionalRegexMatchSet{})
+		Invokes(testing.NewPatchSubresourceAction(wafregionalregexmatchsetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.WafregionalRegexMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeDdosProtectionPlans implements DdosProtectionPlanInterface
 type FakeDdosProtectionPlans struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var ddosprotectionplansResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "ddosprotectionplans"}
@@ -40,7 +41,8 @@ var ddosprotectionplansKind = schema.GroupVersionKind{Group: "azurerm.kubeform.c
 // Get takes name of the ddosProtectionPlan, and returns the corresponding ddosProtectionPlan object, and an error if there is any.
 func (c *FakeDdosProtectionPlans) Get(name string, options v1.GetOptions) (result *v1alpha1.DdosProtectionPlan, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ddosprotectionplansResource, name), &v1alpha1.DdosProtectionPlan{})
+		Invokes(testing.NewGetAction(ddosprotectionplansResource, c.ns, name), &v1alpha1.DdosProtectionPlan{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDdosProtectionPlans) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of DdosProtectionPlans that match those selectors.
 func (c *FakeDdosProtectionPlans) List(opts v1.ListOptions) (result *v1alpha1.DdosProtectionPlanList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ddosprotectionplansResource, ddosprotectionplansKind, opts), &v1alpha1.DdosProtectionPlanList{})
+		Invokes(testing.NewListAction(ddosprotectionplansResource, ddosprotectionplansKind, c.ns, opts), &v1alpha1.DdosProtectionPlanList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDdosProtectionPlans) List(opts v1.ListOptions) (result *v1alpha1.Dd
 // Watch returns a watch.Interface that watches the requested ddosProtectionPlans.
 func (c *FakeDdosProtectionPlans) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ddosprotectionplansResource, opts))
+		InvokesWatch(testing.NewWatchAction(ddosprotectionplansResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ddosProtectionPlan and creates it.  Returns the server's representation of the ddosProtectionPlan, and an error, if there is any.
 func (c *FakeDdosProtectionPlans) Create(ddosProtectionPlan *v1alpha1.DdosProtectionPlan) (result *v1alpha1.DdosProtectionPlan, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ddosprotectionplansResource, ddosProtectionPlan), &v1alpha1.DdosProtectionPlan{})
+		Invokes(testing.NewCreateAction(ddosprotectionplansResource, c.ns, ddosProtectionPlan), &v1alpha1.DdosProtectionPlan{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDdosProtectionPlans) Create(ddosProtectionPlan *v1alpha1.DdosProtec
 // Update takes the representation of a ddosProtectionPlan and updates it. Returns the server's representation of the ddosProtectionPlan, and an error, if there is any.
 func (c *FakeDdosProtectionPlans) Update(ddosProtectionPlan *v1alpha1.DdosProtectionPlan) (result *v1alpha1.DdosProtectionPlan, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ddosprotectionplansResource, ddosProtectionPlan), &v1alpha1.DdosProtectionPlan{})
+		Invokes(testing.NewUpdateAction(ddosprotectionplansResource, c.ns, ddosProtectionPlan), &v1alpha1.DdosProtectionPlan{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDdosProtectionPlans) Update(ddosProtectionPlan *v1alpha1.DdosProtec
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDdosProtectionPlans) UpdateStatus(ddosProtectionPlan *v1alpha1.DdosProtectionPlan) (*v1alpha1.DdosProtectionPlan, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ddosprotectionplansResource, "status", ddosProtectionPlan), &v1alpha1.DdosProtectionPlan{})
+		Invokes(testing.NewUpdateSubresourceAction(ddosprotectionplansResource, "status", c.ns, ddosProtectionPlan), &v1alpha1.DdosProtectionPlan{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDdosProtectionPlans) UpdateStatus(ddosProtectionPlan *v1alpha1.Ddos
 // Delete takes name of the ddosProtectionPlan and deletes it. Returns an error if one occurs.
 func (c *FakeDdosProtectionPlans) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ddosprotectionplansResource, name), &v1alpha1.DdosProtectionPlan{})
+		Invokes(testing.NewDeleteAction(ddosprotectionplansResource, c.ns, name), &v1alpha1.DdosProtectionPlan{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDdosProtectionPlans) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ddosprotectionplansResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ddosprotectionplansResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DdosProtectionPlanList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDdosProtectionPlans) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched ddosProtectionPlan.
 func (c *FakeDdosProtectionPlans) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DdosProtectionPlan, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ddosprotectionplansResource, name, pt, data, subresources...), &v1alpha1.DdosProtectionPlan{})
+		Invokes(testing.NewPatchSubresourceAction(ddosprotectionplansResource, c.ns, name, pt, data, subresources...), &v1alpha1.DdosProtectionPlan{})
+
 	if obj == nil {
 		return nil, err
 	}

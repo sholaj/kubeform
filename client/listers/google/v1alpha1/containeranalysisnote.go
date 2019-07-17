@@ -29,8 +29,8 @@ import (
 type ContainerAnalysisNoteLister interface {
 	// List lists all ContainerAnalysisNotes in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ContainerAnalysisNote, err error)
-	// Get retrieves the ContainerAnalysisNote from the index for a given name.
-	Get(name string) (*v1alpha1.ContainerAnalysisNote, error)
+	// ContainerAnalysisNotes returns an object that can list and get ContainerAnalysisNotes.
+	ContainerAnalysisNotes(namespace string) ContainerAnalysisNoteNamespaceLister
 	ContainerAnalysisNoteListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *containerAnalysisNoteLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the ContainerAnalysisNote from the index for a given name.
-func (s *containerAnalysisNoteLister) Get(name string) (*v1alpha1.ContainerAnalysisNote, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ContainerAnalysisNotes returns an object that can list and get ContainerAnalysisNotes.
+func (s *containerAnalysisNoteLister) ContainerAnalysisNotes(namespace string) ContainerAnalysisNoteNamespaceLister {
+	return containerAnalysisNoteNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ContainerAnalysisNoteNamespaceLister helps list and get ContainerAnalysisNotes.
+type ContainerAnalysisNoteNamespaceLister interface {
+	// List lists all ContainerAnalysisNotes in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ContainerAnalysisNote, err error)
+	// Get retrieves the ContainerAnalysisNote from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ContainerAnalysisNote, error)
+	ContainerAnalysisNoteNamespaceListerExpansion
+}
+
+// containerAnalysisNoteNamespaceLister implements the ContainerAnalysisNoteNamespaceLister
+// interface.
+type containerAnalysisNoteNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ContainerAnalysisNotes in the indexer for a given namespace.
+func (s containerAnalysisNoteNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ContainerAnalysisNote, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ContainerAnalysisNote))
+	})
+	return ret, err
+}
+
+// Get retrieves the ContainerAnalysisNote from the indexer for a given namespace and name.
+func (s containerAnalysisNoteNamespaceLister) Get(name string) (*v1alpha1.ContainerAnalysisNote, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

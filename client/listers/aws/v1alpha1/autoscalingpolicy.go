@@ -29,8 +29,8 @@ import (
 type AutoscalingPolicyLister interface {
 	// List lists all AutoscalingPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AutoscalingPolicy, err error)
-	// Get retrieves the AutoscalingPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.AutoscalingPolicy, error)
+	// AutoscalingPolicies returns an object that can list and get AutoscalingPolicies.
+	AutoscalingPolicies(namespace string) AutoscalingPolicyNamespaceLister
 	AutoscalingPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *autoscalingPolicyLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the AutoscalingPolicy from the index for a given name.
-func (s *autoscalingPolicyLister) Get(name string) (*v1alpha1.AutoscalingPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AutoscalingPolicies returns an object that can list and get AutoscalingPolicies.
+func (s *autoscalingPolicyLister) AutoscalingPolicies(namespace string) AutoscalingPolicyNamespaceLister {
+	return autoscalingPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AutoscalingPolicyNamespaceLister helps list and get AutoscalingPolicies.
+type AutoscalingPolicyNamespaceLister interface {
+	// List lists all AutoscalingPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AutoscalingPolicy, err error)
+	// Get retrieves the AutoscalingPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AutoscalingPolicy, error)
+	AutoscalingPolicyNamespaceListerExpansion
+}
+
+// autoscalingPolicyNamespaceLister implements the AutoscalingPolicyNamespaceLister
+// interface.
+type autoscalingPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AutoscalingPolicies in the indexer for a given namespace.
+func (s autoscalingPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AutoscalingPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AutoscalingPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the AutoscalingPolicy from the indexer for a given namespace and name.
+func (s autoscalingPolicyNamespaceLister) Get(name string) (*v1alpha1.AutoscalingPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

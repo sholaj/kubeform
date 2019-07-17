@@ -29,8 +29,8 @@ import (
 type RouteLister interface {
 	// List lists all Routes in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Route, err error)
-	// Get retrieves the Route from the index for a given name.
-	Get(name string) (*v1alpha1.Route, error)
+	// Routes returns an object that can list and get Routes.
+	Routes(namespace string) RouteNamespaceLister
 	RouteListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *routeLister) List(selector labels.Selector) (ret []*v1alpha1.Route, err
 	return ret, err
 }
 
-// Get retrieves the Route from the index for a given name.
-func (s *routeLister) Get(name string) (*v1alpha1.Route, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Routes returns an object that can list and get Routes.
+func (s *routeLister) Routes(namespace string) RouteNamespaceLister {
+	return routeNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RouteNamespaceLister helps list and get Routes.
+type RouteNamespaceLister interface {
+	// List lists all Routes in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Route, err error)
+	// Get retrieves the Route from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Route, error)
+	RouteNamespaceListerExpansion
+}
+
+// routeNamespaceLister implements the RouteNamespaceLister
+// interface.
+type routeNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Routes in the indexer for a given namespace.
+func (s routeNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Route, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Route))
+	})
+	return ret, err
+}
+
+// Get retrieves the Route from the indexer for a given namespace and name.
+func (s routeNamespaceLister) Get(name string) (*v1alpha1.Route, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

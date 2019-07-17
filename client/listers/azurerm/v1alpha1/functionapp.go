@@ -29,8 +29,8 @@ import (
 type FunctionAppLister interface {
 	// List lists all FunctionApps in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.FunctionApp, err error)
-	// Get retrieves the FunctionApp from the index for a given name.
-	Get(name string) (*v1alpha1.FunctionApp, error)
+	// FunctionApps returns an object that can list and get FunctionApps.
+	FunctionApps(namespace string) FunctionAppNamespaceLister
 	FunctionAppListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *functionAppLister) List(selector labels.Selector) (ret []*v1alpha1.Func
 	return ret, err
 }
 
-// Get retrieves the FunctionApp from the index for a given name.
-func (s *functionAppLister) Get(name string) (*v1alpha1.FunctionApp, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// FunctionApps returns an object that can list and get FunctionApps.
+func (s *functionAppLister) FunctionApps(namespace string) FunctionAppNamespaceLister {
+	return functionAppNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// FunctionAppNamespaceLister helps list and get FunctionApps.
+type FunctionAppNamespaceLister interface {
+	// List lists all FunctionApps in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.FunctionApp, err error)
+	// Get retrieves the FunctionApp from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.FunctionApp, error)
+	FunctionAppNamespaceListerExpansion
+}
+
+// functionAppNamespaceLister implements the FunctionAppNamespaceLister
+// interface.
+type functionAppNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all FunctionApps in the indexer for a given namespace.
+func (s functionAppNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.FunctionApp, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.FunctionApp))
+	})
+	return ret, err
+}
+
+// Get retrieves the FunctionApp from the indexer for a given namespace and name.
+func (s functionAppNamespaceLister) Get(name string) (*v1alpha1.FunctionApp, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

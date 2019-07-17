@@ -31,6 +31,7 @@ import (
 // FakeServicebusSubscriptionRules implements ServicebusSubscriptionRuleInterface
 type FakeServicebusSubscriptionRules struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var servicebussubscriptionrulesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "servicebussubscriptionrules"}
@@ -40,7 +41,8 @@ var servicebussubscriptionrulesKind = schema.GroupVersionKind{Group: "azurerm.ku
 // Get takes name of the servicebusSubscriptionRule, and returns the corresponding servicebusSubscriptionRule object, and an error if there is any.
 func (c *FakeServicebusSubscriptionRules) Get(name string, options v1.GetOptions) (result *v1alpha1.ServicebusSubscriptionRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(servicebussubscriptionrulesResource, name), &v1alpha1.ServicebusSubscriptionRule{})
+		Invokes(testing.NewGetAction(servicebussubscriptionrulesResource, c.ns, name), &v1alpha1.ServicebusSubscriptionRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeServicebusSubscriptionRules) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of ServicebusSubscriptionRules that match those selectors.
 func (c *FakeServicebusSubscriptionRules) List(opts v1.ListOptions) (result *v1alpha1.ServicebusSubscriptionRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(servicebussubscriptionrulesResource, servicebussubscriptionrulesKind, opts), &v1alpha1.ServicebusSubscriptionRuleList{})
+		Invokes(testing.NewListAction(servicebussubscriptionrulesResource, servicebussubscriptionrulesKind, c.ns, opts), &v1alpha1.ServicebusSubscriptionRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeServicebusSubscriptionRules) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested servicebusSubscriptionRules.
 func (c *FakeServicebusSubscriptionRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(servicebussubscriptionrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(servicebussubscriptionrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a servicebusSubscriptionRule and creates it.  Returns the server's representation of the servicebusSubscriptionRule, and an error, if there is any.
 func (c *FakeServicebusSubscriptionRules) Create(servicebusSubscriptionRule *v1alpha1.ServicebusSubscriptionRule) (result *v1alpha1.ServicebusSubscriptionRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(servicebussubscriptionrulesResource, servicebusSubscriptionRule), &v1alpha1.ServicebusSubscriptionRule{})
+		Invokes(testing.NewCreateAction(servicebussubscriptionrulesResource, c.ns, servicebusSubscriptionRule), &v1alpha1.ServicebusSubscriptionRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeServicebusSubscriptionRules) Create(servicebusSubscriptionRule *v1a
 // Update takes the representation of a servicebusSubscriptionRule and updates it. Returns the server's representation of the servicebusSubscriptionRule, and an error, if there is any.
 func (c *FakeServicebusSubscriptionRules) Update(servicebusSubscriptionRule *v1alpha1.ServicebusSubscriptionRule) (result *v1alpha1.ServicebusSubscriptionRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(servicebussubscriptionrulesResource, servicebusSubscriptionRule), &v1alpha1.ServicebusSubscriptionRule{})
+		Invokes(testing.NewUpdateAction(servicebussubscriptionrulesResource, c.ns, servicebusSubscriptionRule), &v1alpha1.ServicebusSubscriptionRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeServicebusSubscriptionRules) Update(servicebusSubscriptionRule *v1a
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeServicebusSubscriptionRules) UpdateStatus(servicebusSubscriptionRule *v1alpha1.ServicebusSubscriptionRule) (*v1alpha1.ServicebusSubscriptionRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(servicebussubscriptionrulesResource, "status", servicebusSubscriptionRule), &v1alpha1.ServicebusSubscriptionRule{})
+		Invokes(testing.NewUpdateSubresourceAction(servicebussubscriptionrulesResource, "status", c.ns, servicebusSubscriptionRule), &v1alpha1.ServicebusSubscriptionRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeServicebusSubscriptionRules) UpdateStatus(servicebusSubscriptionRul
 // Delete takes name of the servicebusSubscriptionRule and deletes it. Returns an error if one occurs.
 func (c *FakeServicebusSubscriptionRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(servicebussubscriptionrulesResource, name), &v1alpha1.ServicebusSubscriptionRule{})
+		Invokes(testing.NewDeleteAction(servicebussubscriptionrulesResource, c.ns, name), &v1alpha1.ServicebusSubscriptionRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeServicebusSubscriptionRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(servicebussubscriptionrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(servicebussubscriptionrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ServicebusSubscriptionRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeServicebusSubscriptionRules) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched servicebusSubscriptionRule.
 func (c *FakeServicebusSubscriptionRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServicebusSubscriptionRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(servicebussubscriptionrulesResource, name, pt, data, subresources...), &v1alpha1.ServicebusSubscriptionRule{})
+		Invokes(testing.NewPatchSubresourceAction(servicebussubscriptionrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ServicebusSubscriptionRule{})
+
 	if obj == nil {
 		return nil, err
 	}

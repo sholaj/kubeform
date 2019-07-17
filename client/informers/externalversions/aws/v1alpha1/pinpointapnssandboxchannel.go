@@ -41,32 +41,33 @@ type PinpointApnsSandboxChannelInformer interface {
 type pinpointApnsSandboxChannelInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewPinpointApnsSandboxChannelInformer constructs a new informer for PinpointApnsSandboxChannel type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewPinpointApnsSandboxChannelInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredPinpointApnsSandboxChannelInformer(client, resyncPeriod, indexers, nil)
+func NewPinpointApnsSandboxChannelInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredPinpointApnsSandboxChannelInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredPinpointApnsSandboxChannelInformer constructs a new informer for PinpointApnsSandboxChannel type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredPinpointApnsSandboxChannelInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredPinpointApnsSandboxChannelInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().PinpointApnsSandboxChannels().List(options)
+				return client.AwsV1alpha1().PinpointApnsSandboxChannels(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().PinpointApnsSandboxChannels().Watch(options)
+				return client.AwsV1alpha1().PinpointApnsSandboxChannels(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.PinpointApnsSandboxChannel{},
@@ -76,7 +77,7 @@ func NewFilteredPinpointApnsSandboxChannelInformer(client versioned.Interface, r
 }
 
 func (f *pinpointApnsSandboxChannelInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredPinpointApnsSandboxChannelInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredPinpointApnsSandboxChannelInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *pinpointApnsSandboxChannelInformer) Informer() cache.SharedIndexInformer {

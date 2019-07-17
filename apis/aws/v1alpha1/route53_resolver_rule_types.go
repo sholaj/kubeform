@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -18,24 +18,25 @@ type Route53ResolverRule struct {
 	Status            Route53ResolverRuleStatus `json:"status,omitempty"`
 }
 
-type Route53ResolverRuleSpecTargetIp struct {
-	Ip string `json:"ip"`
+type Route53ResolverRuleSpecTargetIP struct {
+	Ip string `json:"ip" tf:"ip"`
 	// +optional
-	Port int `json:"port,omitempty"`
+	Port int `json:"port,omitempty" tf:"port,omitempty"`
 }
 
 type Route53ResolverRuleSpec struct {
-	DomainName string `json:"domain_name"`
+	DomainName string `json:"domainName" tf:"domain_name"`
 	// +optional
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" tf:"name,omitempty"`
 	// +optional
-	ResolverEndpointId string `json:"resolver_endpoint_id,omitempty"`
-	RuleType           string `json:"rule_type"`
+	ResolverEndpointID string `json:"resolverEndpointID,omitempty" tf:"resolver_endpoint_id,omitempty"`
+	RuleType           string `json:"ruleType" tf:"rule_type"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	TargetIp *[]Route53ResolverRuleSpec `json:"target_ip,omitempty"`
+	TargetIP    []Route53ResolverRuleSpecTargetIP `json:"targetIP,omitempty" tf:"target_ip,omitempty"`
+	ProviderRef core.LocalObjectReference         `json:"providerRef" tf:"-"`
 }
 
 type Route53ResolverRuleStatus struct {
@@ -43,7 +44,9 @@ type Route53ResolverRuleStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

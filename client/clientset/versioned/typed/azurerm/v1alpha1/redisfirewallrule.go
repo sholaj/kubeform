@@ -32,7 +32,7 @@ import (
 // RedisFirewallRulesGetter has a method to return a RedisFirewallRuleInterface.
 // A group's client should implement this interface.
 type RedisFirewallRulesGetter interface {
-	RedisFirewallRules() RedisFirewallRuleInterface
+	RedisFirewallRules(namespace string) RedisFirewallRuleInterface
 }
 
 // RedisFirewallRuleInterface has methods to work with RedisFirewallRule resources.
@@ -52,12 +52,14 @@ type RedisFirewallRuleInterface interface {
 // redisFirewallRules implements RedisFirewallRuleInterface
 type redisFirewallRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRedisFirewallRules returns a RedisFirewallRules
-func newRedisFirewallRules(c *AzurermV1alpha1Client) *redisFirewallRules {
+func newRedisFirewallRules(c *AzurermV1alpha1Client, namespace string) *redisFirewallRules {
 	return &redisFirewallRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRedisFirewallRules(c *AzurermV1alpha1Client) *redisFirewallRules {
 func (c *redisFirewallRules) Get(name string, options v1.GetOptions) (result *v1alpha1.RedisFirewallRule, err error) {
 	result = &v1alpha1.RedisFirewallRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("redisfirewallrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *redisFirewallRules) List(opts v1.ListOptions) (result *v1alpha1.RedisFi
 	}
 	result = &v1alpha1.RedisFirewallRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("redisfirewallrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *redisFirewallRules) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("redisfirewallrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *redisFirewallRules) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *redisFirewallRules) Create(redisFirewallRule *v1alpha1.RedisFirewallRule) (result *v1alpha1.RedisFirewallRule, err error) {
 	result = &v1alpha1.RedisFirewallRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("redisfirewallrules").
 		Body(redisFirewallRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *redisFirewallRules) Create(redisFirewallRule *v1alpha1.RedisFirewallRul
 func (c *redisFirewallRules) Update(redisFirewallRule *v1alpha1.RedisFirewallRule) (result *v1alpha1.RedisFirewallRule, err error) {
 	result = &v1alpha1.RedisFirewallRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("redisfirewallrules").
 		Name(redisFirewallRule.Name).
 		Body(redisFirewallRule).
@@ -132,6 +139,7 @@ func (c *redisFirewallRules) Update(redisFirewallRule *v1alpha1.RedisFirewallRul
 func (c *redisFirewallRules) UpdateStatus(redisFirewallRule *v1alpha1.RedisFirewallRule) (result *v1alpha1.RedisFirewallRule, err error) {
 	result = &v1alpha1.RedisFirewallRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("redisfirewallrules").
 		Name(redisFirewallRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *redisFirewallRules) UpdateStatus(redisFirewallRule *v1alpha1.RedisFirew
 // Delete takes name of the redisFirewallRule and deletes it. Returns an error if one occurs.
 func (c *redisFirewallRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("redisfirewallrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *redisFirewallRules) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("redisfirewallrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *redisFirewallRules) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *redisFirewallRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RedisFirewallRule, err error) {
 	result = &v1alpha1.RedisFirewallRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("redisfirewallrules").
 		SubResource(subresources...).
 		Name(name).

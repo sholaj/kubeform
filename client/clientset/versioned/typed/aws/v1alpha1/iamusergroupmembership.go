@@ -32,7 +32,7 @@ import (
 // IamUserGroupMembershipsGetter has a method to return a IamUserGroupMembershipInterface.
 // A group's client should implement this interface.
 type IamUserGroupMembershipsGetter interface {
-	IamUserGroupMemberships() IamUserGroupMembershipInterface
+	IamUserGroupMemberships(namespace string) IamUserGroupMembershipInterface
 }
 
 // IamUserGroupMembershipInterface has methods to work with IamUserGroupMembership resources.
@@ -52,12 +52,14 @@ type IamUserGroupMembershipInterface interface {
 // iamUserGroupMemberships implements IamUserGroupMembershipInterface
 type iamUserGroupMemberships struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIamUserGroupMemberships returns a IamUserGroupMemberships
-func newIamUserGroupMemberships(c *AwsV1alpha1Client) *iamUserGroupMemberships {
+func newIamUserGroupMemberships(c *AwsV1alpha1Client, namespace string) *iamUserGroupMemberships {
 	return &iamUserGroupMemberships{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIamUserGroupMemberships(c *AwsV1alpha1Client) *iamUserGroupMemberships {
 func (c *iamUserGroupMemberships) Get(name string, options v1.GetOptions) (result *v1alpha1.IamUserGroupMembership, err error) {
 	result = &v1alpha1.IamUserGroupMembership{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamusergroupmemberships").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iamUserGroupMemberships) List(opts v1.ListOptions) (result *v1alpha1.Ia
 	}
 	result = &v1alpha1.IamUserGroupMembershipList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamusergroupmemberships").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iamUserGroupMemberships) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iamusergroupmemberships").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iamUserGroupMemberships) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *iamUserGroupMemberships) Create(iamUserGroupMembership *v1alpha1.IamUserGroupMembership) (result *v1alpha1.IamUserGroupMembership, err error) {
 	result = &v1alpha1.IamUserGroupMembership{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iamusergroupmemberships").
 		Body(iamUserGroupMembership).
 		Do().
@@ -118,6 +124,7 @@ func (c *iamUserGroupMemberships) Create(iamUserGroupMembership *v1alpha1.IamUse
 func (c *iamUserGroupMemberships) Update(iamUserGroupMembership *v1alpha1.IamUserGroupMembership) (result *v1alpha1.IamUserGroupMembership, err error) {
 	result = &v1alpha1.IamUserGroupMembership{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamusergroupmemberships").
 		Name(iamUserGroupMembership.Name).
 		Body(iamUserGroupMembership).
@@ -132,6 +139,7 @@ func (c *iamUserGroupMemberships) Update(iamUserGroupMembership *v1alpha1.IamUse
 func (c *iamUserGroupMemberships) UpdateStatus(iamUserGroupMembership *v1alpha1.IamUserGroupMembership) (result *v1alpha1.IamUserGroupMembership, err error) {
 	result = &v1alpha1.IamUserGroupMembership{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamusergroupmemberships").
 		Name(iamUserGroupMembership.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iamUserGroupMemberships) UpdateStatus(iamUserGroupMembership *v1alpha1.
 // Delete takes name of the iamUserGroupMembership and deletes it. Returns an error if one occurs.
 func (c *iamUserGroupMemberships) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamusergroupmemberships").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iamUserGroupMemberships) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamusergroupmemberships").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iamUserGroupMemberships) DeleteCollection(options *v1.DeleteOptions, li
 func (c *iamUserGroupMemberships) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamUserGroupMembership, err error) {
 	result = &v1alpha1.IamUserGroupMembership{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iamusergroupmemberships").
 		SubResource(subresources...).
 		Name(name).

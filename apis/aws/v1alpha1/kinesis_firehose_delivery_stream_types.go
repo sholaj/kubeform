@@ -3,12 +3,12 @@ package v1alpha1
 import (
 	"encoding/json"
 
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -21,336 +21,337 @@ type KinesisFirehoseDeliveryStream struct {
 }
 
 type KinesisFirehoseDeliveryStreamSpecElasticsearchConfigurationProcessingConfigurationProcessorsParameters struct {
-	ParameterName  string `json:"parameter_name"`
-	ParameterValue string `json:"parameter_value"`
+	ParameterName  string `json:"parameterName" tf:"parameter_name"`
+	ParameterValue string `json:"parameterValue" tf:"parameter_value"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecElasticsearchConfigurationProcessingConfigurationProcessors struct {
 	// +optional
-	Parameters *[]KinesisFirehoseDeliveryStreamSpecElasticsearchConfigurationProcessingConfigurationProcessors `json:"parameters,omitempty"`
-	Type       string                                                                                          `json:"type"`
+	Parameters []KinesisFirehoseDeliveryStreamSpecElasticsearchConfigurationProcessingConfigurationProcessorsParameters `json:"parameters,omitempty" tf:"parameters,omitempty"`
+	Type       string                                                                                                   `json:"type" tf:"type"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecElasticsearchConfigurationProcessingConfiguration struct {
 	// +optional
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
 	// +optional
-	Processors *[]KinesisFirehoseDeliveryStreamSpecElasticsearchConfigurationProcessingConfiguration `json:"processors,omitempty"`
+	Processors []KinesisFirehoseDeliveryStreamSpecElasticsearchConfigurationProcessingConfigurationProcessors `json:"processors,omitempty" tf:"processors,omitempty"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecElasticsearchConfiguration struct {
 	// +optional
-	BufferingInterval int `json:"buffering_interval,omitempty"`
+	BufferingInterval int `json:"bufferingInterval,omitempty" tf:"buffering_interval,omitempty"`
 	// +optional
-	BufferingSize int    `json:"buffering_size,omitempty"`
-	DomainArn     string `json:"domain_arn"`
-	IndexName     string `json:"index_name"`
+	BufferingSize int    `json:"bufferingSize,omitempty" tf:"buffering_size,omitempty"`
+	DomainArn     string `json:"domainArn" tf:"domain_arn"`
+	IndexName     string `json:"indexName" tf:"index_name"`
 	// +optional
-	IndexRotationPeriod string `json:"index_rotation_period,omitempty"`
+	IndexRotationPeriod string `json:"indexRotationPeriod,omitempty" tf:"index_rotation_period,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ProcessingConfiguration *[]KinesisFirehoseDeliveryStreamSpecElasticsearchConfiguration `json:"processing_configuration,omitempty"`
+	ProcessingConfiguration []KinesisFirehoseDeliveryStreamSpecElasticsearchConfigurationProcessingConfiguration `json:"processingConfiguration,omitempty" tf:"processing_configuration,omitempty"`
 	// +optional
-	RetryDuration int    `json:"retry_duration,omitempty"`
-	RoleArn       string `json:"role_arn"`
+	RetryDuration int    `json:"retryDuration,omitempty" tf:"retry_duration,omitempty"`
+	RoleArn       string `json:"roleArn" tf:"role_arn"`
 	// +optional
-	S3BackupMode string `json:"s3_backup_mode,omitempty"`
+	S3BackupMode string `json:"s3BackupMode,omitempty" tf:"s3_backup_mode,omitempty"`
 	// +optional
-	TypeName string `json:"type_name,omitempty"`
+	TypeName string `json:"typeName,omitempty" tf:"type_name,omitempty"`
 }
 
-type KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationInputFormatConfigurationDeserializerHiveJsonSerDe struct {
+type KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationInputFormatConfigurationDeserializerHiveJSONSerDe struct {
 	// +optional
-	TimestampFormats []string `json:"timestamp_formats,omitempty"`
+	TimestampFormats []string `json:"timestampFormats,omitempty" tf:"timestamp_formats,omitempty"`
 }
 
-type KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationInputFormatConfigurationDeserializerOpenXJsonSerDe struct {
+type KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationInputFormatConfigurationDeserializerOpenXJSONSerDe struct {
 	// +optional
-	CaseInsensitive bool `json:"case_insensitive,omitempty"`
+	CaseInsensitive bool `json:"caseInsensitive,omitempty" tf:"case_insensitive,omitempty"`
 	// +optional
-	ColumnToJsonKeyMappings map[string]string `json:"column_to_json_key_mappings,omitempty"`
+	ColumnToJSONKeyMappings map[string]string `json:"columnToJSONKeyMappings,omitempty" tf:"column_to_json_key_mappings,omitempty"`
 	// +optional
-	ConvertDotsInJsonKeysToUnderscores bool `json:"convert_dots_in_json_keys_to_underscores,omitempty"`
+	ConvertDotsInJSONKeysToUnderscores bool `json:"convertDotsInJSONKeysToUnderscores,omitempty" tf:"convert_dots_in_json_keys_to_underscores,omitempty"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationInputFormatConfigurationDeserializer struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	HiveJsonSerDe *[]KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationInputFormatConfigurationDeserializer `json:"hive_json_ser_de,omitempty"`
+	HiveJSONSerDe []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationInputFormatConfigurationDeserializerHiveJSONSerDe `json:"hiveJSONSerDe,omitempty" tf:"hive_json_ser_de,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	OpenXJsonSerDe *[]KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationInputFormatConfigurationDeserializer `json:"open_x_json_ser_de,omitempty"`
+	OpenXJSONSerDe []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationInputFormatConfigurationDeserializerOpenXJSONSerDe `json:"openXJSONSerDe,omitempty" tf:"open_x_json_ser_de,omitempty"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationInputFormatConfiguration struct {
 	// +kubebuilder:validation:MaxItems=1
-	Deserializer []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationInputFormatConfiguration `json:"deserializer"`
+	Deserializer []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationInputFormatConfigurationDeserializer `json:"deserializer" tf:"deserializer"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationOutputFormatConfigurationSerializerOrcSerDe struct {
 	// +optional
-	BlockSizeBytes int `json:"block_size_bytes,omitempty"`
+	BlockSizeBytes int `json:"blockSizeBytes,omitempty" tf:"block_size_bytes,omitempty"`
 	// +optional
-	BloomFilterColumns []string `json:"bloom_filter_columns,omitempty"`
+	BloomFilterColumns []string `json:"bloomFilterColumns,omitempty" tf:"bloom_filter_columns,omitempty"`
 	// +optional
-	BloomFilterFalsePositiveProbability json.Number `json:"bloom_filter_false_positive_probability,omitempty"`
+	BloomFilterFalsePositiveProbability json.Number `json:"bloomFilterFalsePositiveProbability,omitempty" tf:"bloom_filter_false_positive_probability,omitempty"`
 	// +optional
-	Compression string `json:"compression,omitempty"`
+	Compression string `json:"compression,omitempty" tf:"compression,omitempty"`
 	// +optional
-	DictionaryKeyThreshold json.Number `json:"dictionary_key_threshold,omitempty"`
+	DictionaryKeyThreshold json.Number `json:"dictionaryKeyThreshold,omitempty" tf:"dictionary_key_threshold,omitempty"`
 	// +optional
-	EnablePadding bool `json:"enable_padding,omitempty"`
+	EnablePadding bool `json:"enablePadding,omitempty" tf:"enable_padding,omitempty"`
 	// +optional
-	FormatVersion string `json:"format_version,omitempty"`
+	FormatVersion string `json:"formatVersion,omitempty" tf:"format_version,omitempty"`
 	// +optional
-	PaddingTolerance json.Number `json:"padding_tolerance,omitempty"`
+	PaddingTolerance json.Number `json:"paddingTolerance,omitempty" tf:"padding_tolerance,omitempty"`
 	// +optional
-	RowIndexStride int `json:"row_index_stride,omitempty"`
+	RowIndexStride int `json:"rowIndexStride,omitempty" tf:"row_index_stride,omitempty"`
 	// +optional
-	StripeSizeBytes int `json:"stripe_size_bytes,omitempty"`
+	StripeSizeBytes int `json:"stripeSizeBytes,omitempty" tf:"stripe_size_bytes,omitempty"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationOutputFormatConfigurationSerializerParquetSerDe struct {
 	// +optional
-	BlockSizeBytes int `json:"block_size_bytes,omitempty"`
+	BlockSizeBytes int `json:"blockSizeBytes,omitempty" tf:"block_size_bytes,omitempty"`
 	// +optional
-	Compression string `json:"compression,omitempty"`
+	Compression string `json:"compression,omitempty" tf:"compression,omitempty"`
 	// +optional
-	EnableDictionaryCompression bool `json:"enable_dictionary_compression,omitempty"`
+	EnableDictionaryCompression bool `json:"enableDictionaryCompression,omitempty" tf:"enable_dictionary_compression,omitempty"`
 	// +optional
-	MaxPaddingBytes int `json:"max_padding_bytes,omitempty"`
+	MaxPaddingBytes int `json:"maxPaddingBytes,omitempty" tf:"max_padding_bytes,omitempty"`
 	// +optional
-	PageSizeBytes int `json:"page_size_bytes,omitempty"`
+	PageSizeBytes int `json:"pageSizeBytes,omitempty" tf:"page_size_bytes,omitempty"`
 	// +optional
-	WriterVersion string `json:"writer_version,omitempty"`
+	WriterVersion string `json:"writerVersion,omitempty" tf:"writer_version,omitempty"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationOutputFormatConfigurationSerializer struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	OrcSerDe *[]KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationOutputFormatConfigurationSerializer `json:"orc_ser_de,omitempty"`
+	OrcSerDe []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationOutputFormatConfigurationSerializerOrcSerDe `json:"orcSerDe,omitempty" tf:"orc_ser_de,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ParquetSerDe *[]KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationOutputFormatConfigurationSerializer `json:"parquet_ser_de,omitempty"`
+	ParquetSerDe []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationOutputFormatConfigurationSerializerParquetSerDe `json:"parquetSerDe,omitempty" tf:"parquet_ser_de,omitempty"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationOutputFormatConfiguration struct {
 	// +kubebuilder:validation:MaxItems=1
-	Serializer []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationOutputFormatConfiguration `json:"serializer"`
+	Serializer []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationOutputFormatConfigurationSerializer `json:"serializer" tf:"serializer"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationSchemaConfiguration struct {
-	DatabaseName string `json:"database_name"`
-	RoleArn      string `json:"role_arn"`
-	TableName    string `json:"table_name"`
+	DatabaseName string `json:"databaseName" tf:"database_name"`
+	RoleArn      string `json:"roleArn" tf:"role_arn"`
+	TableName    string `json:"tableName" tf:"table_name"`
 	// +optional
-	VersionId string `json:"version_id,omitempty"`
+	VersionID string `json:"versionID,omitempty" tf:"version_id,omitempty"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfiguration struct {
 	// +optional
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
-	InputFormatConfiguration []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfiguration `json:"input_format_configuration"`
+	InputFormatConfiguration []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationInputFormatConfiguration `json:"inputFormatConfiguration" tf:"input_format_configuration"`
 	// +kubebuilder:validation:MaxItems=1
-	OutputFormatConfiguration []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfiguration `json:"output_format_configuration"`
+	OutputFormatConfiguration []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationOutputFormatConfiguration `json:"outputFormatConfiguration" tf:"output_format_configuration"`
 	// +kubebuilder:validation:MaxItems=1
-	SchemaConfiguration []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfiguration `json:"schema_configuration"`
+	SchemaConfiguration []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfigurationSchemaConfiguration `json:"schemaConfiguration" tf:"schema_configuration"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationProcessingConfigurationProcessorsParameters struct {
-	ParameterName  string `json:"parameter_name"`
-	ParameterValue string `json:"parameter_value"`
+	ParameterName  string `json:"parameterName" tf:"parameter_name"`
+	ParameterValue string `json:"parameterValue" tf:"parameter_value"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationProcessingConfigurationProcessors struct {
 	// +optional
-	Parameters *[]KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationProcessingConfigurationProcessors `json:"parameters,omitempty"`
-	Type       string                                                                                       `json:"type"`
+	Parameters []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationProcessingConfigurationProcessorsParameters `json:"parameters,omitempty" tf:"parameters,omitempty"`
+	Type       string                                                                                                `json:"type" tf:"type"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationProcessingConfiguration struct {
 	// +optional
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
 	// +optional
-	Processors *[]KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationProcessingConfiguration `json:"processors,omitempty"`
+	Processors []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationProcessingConfigurationProcessors `json:"processors,omitempty" tf:"processors,omitempty"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationS3BackupConfiguration struct {
-	BucketArn string `json:"bucket_arn"`
+	BucketArn string `json:"bucketArn" tf:"bucket_arn"`
 	// +optional
-	BufferInterval int `json:"buffer_interval,omitempty"`
+	BufferInterval int `json:"bufferInterval,omitempty" tf:"buffer_interval,omitempty"`
 	// +optional
-	BufferSize int `json:"buffer_size,omitempty"`
+	BufferSize int `json:"bufferSize,omitempty" tf:"buffer_size,omitempty"`
 	// +optional
-	CompressionFormat string `json:"compression_format,omitempty"`
+	CompressionFormat string `json:"compressionFormat,omitempty" tf:"compression_format,omitempty"`
 	// +optional
-	KmsKeyArn string `json:"kms_key_arn,omitempty"`
+	KmsKeyArn string `json:"kmsKeyArn,omitempty" tf:"kms_key_arn,omitempty"`
 	// +optional
-	Prefix  string `json:"prefix,omitempty"`
-	RoleArn string `json:"role_arn"`
+	Prefix  string `json:"prefix,omitempty" tf:"prefix,omitempty"`
+	RoleArn string `json:"roleArn" tf:"role_arn"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecExtendedS3Configuration struct {
-	BucketArn string `json:"bucket_arn"`
+	BucketArn string `json:"bucketArn" tf:"bucket_arn"`
 	// +optional
-	BufferInterval int `json:"buffer_interval,omitempty"`
+	BufferInterval int `json:"bufferInterval,omitempty" tf:"buffer_interval,omitempty"`
 	// +optional
-	BufferSize int `json:"buffer_size,omitempty"`
+	BufferSize int `json:"bufferSize,omitempty" tf:"buffer_size,omitempty"`
 	// +optional
-	CompressionFormat string `json:"compression_format,omitempty"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	DataFormatConversionConfiguration *[]KinesisFirehoseDeliveryStreamSpecExtendedS3Configuration `json:"data_format_conversion_configuration,omitempty"`
-	// +optional
-	ErrorOutputPrefix string `json:"error_output_prefix,omitempty"`
-	// +optional
-	KmsKeyArn string `json:"kms_key_arn,omitempty"`
-	// +optional
-	Prefix string `json:"prefix,omitempty"`
+	CompressionFormat string `json:"compressionFormat,omitempty" tf:"compression_format,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ProcessingConfiguration *[]KinesisFirehoseDeliveryStreamSpecExtendedS3Configuration `json:"processing_configuration,omitempty"`
-	RoleArn                 string                                                      `json:"role_arn"`
+	DataFormatConversionConfiguration []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationDataFormatConversionConfiguration `json:"dataFormatConversionConfiguration,omitempty" tf:"data_format_conversion_configuration,omitempty"`
+	// +optional
+	ErrorOutputPrefix string `json:"errorOutputPrefix,omitempty" tf:"error_output_prefix,omitempty"`
+	// +optional
+	KmsKeyArn string `json:"kmsKeyArn,omitempty" tf:"kms_key_arn,omitempty"`
+	// +optional
+	Prefix string `json:"prefix,omitempty" tf:"prefix,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	S3BackupConfiguration *[]KinesisFirehoseDeliveryStreamSpecExtendedS3Configuration `json:"s3_backup_configuration,omitempty"`
+	ProcessingConfiguration []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationProcessingConfiguration `json:"processingConfiguration,omitempty" tf:"processing_configuration,omitempty"`
+	RoleArn                 string                                                                            `json:"roleArn" tf:"role_arn"`
 	// +optional
-	S3BackupMode string `json:"s3_backup_mode,omitempty"`
+	// +kubebuilder:validation:MaxItems=1
+	S3BackupConfiguration []KinesisFirehoseDeliveryStreamSpecExtendedS3ConfigurationS3BackupConfiguration `json:"s3BackupConfiguration,omitempty" tf:"s3_backup_configuration,omitempty"`
+	// +optional
+	S3BackupMode string `json:"s3BackupMode,omitempty" tf:"s3_backup_mode,omitempty"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecKinesisSourceConfiguration struct {
-	KinesisStreamArn string `json:"kinesis_stream_arn"`
-	RoleArn          string `json:"role_arn"`
+	KinesisStreamArn string `json:"kinesisStreamArn" tf:"kinesis_stream_arn"`
+	RoleArn          string `json:"roleArn" tf:"role_arn"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecRedshiftConfigurationProcessingConfigurationProcessorsParameters struct {
-	ParameterName  string `json:"parameter_name"`
-	ParameterValue string `json:"parameter_value"`
+	ParameterName  string `json:"parameterName" tf:"parameter_name"`
+	ParameterValue string `json:"parameterValue" tf:"parameter_value"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecRedshiftConfigurationProcessingConfigurationProcessors struct {
 	// +optional
-	Parameters *[]KinesisFirehoseDeliveryStreamSpecRedshiftConfigurationProcessingConfigurationProcessors `json:"parameters,omitempty"`
-	Type       string                                                                                     `json:"type"`
+	Parameters []KinesisFirehoseDeliveryStreamSpecRedshiftConfigurationProcessingConfigurationProcessorsParameters `json:"parameters,omitempty" tf:"parameters,omitempty"`
+	Type       string                                                                                              `json:"type" tf:"type"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecRedshiftConfigurationProcessingConfiguration struct {
 	// +optional
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
 	// +optional
-	Processors *[]KinesisFirehoseDeliveryStreamSpecRedshiftConfigurationProcessingConfiguration `json:"processors,omitempty"`
+	Processors []KinesisFirehoseDeliveryStreamSpecRedshiftConfigurationProcessingConfigurationProcessors `json:"processors,omitempty" tf:"processors,omitempty"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecRedshiftConfigurationS3BackupConfiguration struct {
-	BucketArn string `json:"bucket_arn"`
+	BucketArn string `json:"bucketArn" tf:"bucket_arn"`
 	// +optional
-	BufferInterval int `json:"buffer_interval,omitempty"`
+	BufferInterval int `json:"bufferInterval,omitempty" tf:"buffer_interval,omitempty"`
 	// +optional
-	BufferSize int `json:"buffer_size,omitempty"`
+	BufferSize int `json:"bufferSize,omitempty" tf:"buffer_size,omitempty"`
 	// +optional
-	CompressionFormat string `json:"compression_format,omitempty"`
+	CompressionFormat string `json:"compressionFormat,omitempty" tf:"compression_format,omitempty"`
 	// +optional
-	KmsKeyArn string `json:"kms_key_arn,omitempty"`
+	KmsKeyArn string `json:"kmsKeyArn,omitempty" tf:"kms_key_arn,omitempty"`
 	// +optional
-	Prefix  string `json:"prefix,omitempty"`
-	RoleArn string `json:"role_arn"`
+	Prefix  string `json:"prefix,omitempty" tf:"prefix,omitempty"`
+	RoleArn string `json:"roleArn" tf:"role_arn"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecRedshiftConfiguration struct {
-	ClusterJdbcurl string `json:"cluster_jdbcurl"`
+	ClusterJdbcurl string `json:"clusterJdbcurl" tf:"cluster_jdbcurl"`
 	// +optional
-	CopyOptions string `json:"copy_options,omitempty"`
+	CopyOptions string `json:"copyOptions,omitempty" tf:"copy_options,omitempty"`
 	// +optional
-	DataTableColumns string `json:"data_table_columns,omitempty"`
-	DataTableName    string `json:"data_table_name"`
-	Password         string `json:"password"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	ProcessingConfiguration *[]KinesisFirehoseDeliveryStreamSpecRedshiftConfiguration `json:"processing_configuration,omitempty"`
-	// +optional
-	RetryDuration int    `json:"retry_duration,omitempty"`
-	RoleArn       string `json:"role_arn"`
+	DataTableColumns string `json:"dataTableColumns,omitempty" tf:"data_table_columns,omitempty"`
+	DataTableName    string `json:"dataTableName" tf:"data_table_name"`
+	Password         string `json:"password" tf:"password"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	S3BackupConfiguration *[]KinesisFirehoseDeliveryStreamSpecRedshiftConfiguration `json:"s3_backup_configuration,omitempty"`
+	ProcessingConfiguration []KinesisFirehoseDeliveryStreamSpecRedshiftConfigurationProcessingConfiguration `json:"processingConfiguration,omitempty" tf:"processing_configuration,omitempty"`
 	// +optional
-	S3BackupMode string `json:"s3_backup_mode,omitempty"`
-	Username     string `json:"username"`
+	RetryDuration int    `json:"retryDuration,omitempty" tf:"retry_duration,omitempty"`
+	RoleArn       string `json:"roleArn" tf:"role_arn"`
+	// +optional
+	// +kubebuilder:validation:MaxItems=1
+	S3BackupConfiguration []KinesisFirehoseDeliveryStreamSpecRedshiftConfigurationS3BackupConfiguration `json:"s3BackupConfiguration,omitempty" tf:"s3_backup_configuration,omitempty"`
+	// +optional
+	S3BackupMode string `json:"s3BackupMode,omitempty" tf:"s3_backup_mode,omitempty"`
+	Username     string `json:"username" tf:"username"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecS3Configuration struct {
-	BucketArn string `json:"bucket_arn"`
+	BucketArn string `json:"bucketArn" tf:"bucket_arn"`
 	// +optional
-	BufferInterval int `json:"buffer_interval,omitempty"`
+	BufferInterval int `json:"bufferInterval,omitempty" tf:"buffer_interval,omitempty"`
 	// +optional
-	BufferSize int `json:"buffer_size,omitempty"`
+	BufferSize int `json:"bufferSize,omitempty" tf:"buffer_size,omitempty"`
 	// +optional
-	CompressionFormat string `json:"compression_format,omitempty"`
+	CompressionFormat string `json:"compressionFormat,omitempty" tf:"compression_format,omitempty"`
 	// +optional
-	KmsKeyArn string `json:"kms_key_arn,omitempty"`
+	KmsKeyArn string `json:"kmsKeyArn,omitempty" tf:"kms_key_arn,omitempty"`
 	// +optional
-	Prefix  string `json:"prefix,omitempty"`
-	RoleArn string `json:"role_arn"`
+	Prefix  string `json:"prefix,omitempty" tf:"prefix,omitempty"`
+	RoleArn string `json:"roleArn" tf:"role_arn"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecSplunkConfigurationProcessingConfigurationProcessorsParameters struct {
-	ParameterName  string `json:"parameter_name"`
-	ParameterValue string `json:"parameter_value"`
+	ParameterName  string `json:"parameterName" tf:"parameter_name"`
+	ParameterValue string `json:"parameterValue" tf:"parameter_value"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecSplunkConfigurationProcessingConfigurationProcessors struct {
 	// +optional
-	Parameters *[]KinesisFirehoseDeliveryStreamSpecSplunkConfigurationProcessingConfigurationProcessors `json:"parameters,omitempty"`
-	Type       string                                                                                   `json:"type"`
+	Parameters []KinesisFirehoseDeliveryStreamSpecSplunkConfigurationProcessingConfigurationProcessorsParameters `json:"parameters,omitempty" tf:"parameters,omitempty"`
+	Type       string                                                                                            `json:"type" tf:"type"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecSplunkConfigurationProcessingConfiguration struct {
 	// +optional
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
 	// +optional
-	Processors *[]KinesisFirehoseDeliveryStreamSpecSplunkConfigurationProcessingConfiguration `json:"processors,omitempty"`
+	Processors []KinesisFirehoseDeliveryStreamSpecSplunkConfigurationProcessingConfigurationProcessors `json:"processors,omitempty" tf:"processors,omitempty"`
 }
 
 type KinesisFirehoseDeliveryStreamSpecSplunkConfiguration struct {
 	// +optional
-	HecAcknowledgmentTimeout int    `json:"hec_acknowledgment_timeout,omitempty"`
-	HecEndpoint              string `json:"hec_endpoint"`
+	HecAcknowledgmentTimeout int    `json:"hecAcknowledgmentTimeout,omitempty" tf:"hec_acknowledgment_timeout,omitempty"`
+	HecEndpoint              string `json:"hecEndpoint" tf:"hec_endpoint"`
 	// +optional
-	HecEndpointType string `json:"hec_endpoint_type,omitempty"`
-	HecToken        string `json:"hec_token"`
+	HecEndpointType string `json:"hecEndpointType,omitempty" tf:"hec_endpoint_type,omitempty"`
+	HecToken        string `json:"hecToken" tf:"hec_token"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ProcessingConfiguration *[]KinesisFirehoseDeliveryStreamSpecSplunkConfiguration `json:"processing_configuration,omitempty"`
+	ProcessingConfiguration []KinesisFirehoseDeliveryStreamSpecSplunkConfigurationProcessingConfiguration `json:"processingConfiguration,omitempty" tf:"processing_configuration,omitempty"`
 	// +optional
-	RetryDuration int `json:"retry_duration,omitempty"`
+	RetryDuration int `json:"retryDuration,omitempty" tf:"retry_duration,omitempty"`
 	// +optional
-	S3BackupMode string `json:"s3_backup_mode,omitempty"`
+	S3BackupMode string `json:"s3BackupMode,omitempty" tf:"s3_backup_mode,omitempty"`
 }
 
 type KinesisFirehoseDeliveryStreamSpec struct {
-	Destination string `json:"destination"`
+	Destination string `json:"destination" tf:"destination"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ElasticsearchConfiguration *[]KinesisFirehoseDeliveryStreamSpec `json:"elasticsearch_configuration,omitempty"`
+	ElasticsearchConfiguration []KinesisFirehoseDeliveryStreamSpecElasticsearchConfiguration `json:"elasticsearchConfiguration,omitempty" tf:"elasticsearch_configuration,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ExtendedS3Configuration *[]KinesisFirehoseDeliveryStreamSpec `json:"extended_s3_configuration,omitempty"`
+	ExtendedS3Configuration []KinesisFirehoseDeliveryStreamSpecExtendedS3Configuration `json:"extendedS3Configuration,omitempty" tf:"extended_s3_configuration,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	KinesisSourceConfiguration *[]KinesisFirehoseDeliveryStreamSpec `json:"kinesis_source_configuration,omitempty"`
-	Name                       string                               `json:"name"`
+	KinesisSourceConfiguration []KinesisFirehoseDeliveryStreamSpecKinesisSourceConfiguration `json:"kinesisSourceConfiguration,omitempty" tf:"kinesis_source_configuration,omitempty"`
+	Name                       string                                                        `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	RedshiftConfiguration *[]KinesisFirehoseDeliveryStreamSpec `json:"redshift_configuration,omitempty"`
+	RedshiftConfiguration []KinesisFirehoseDeliveryStreamSpecRedshiftConfiguration `json:"redshiftConfiguration,omitempty" tf:"redshift_configuration,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	S3Configuration *[]KinesisFirehoseDeliveryStreamSpec `json:"s3_configuration,omitempty"`
+	S3Configuration []KinesisFirehoseDeliveryStreamSpecS3Configuration `json:"s3Configuration,omitempty" tf:"s3_configuration,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	SplunkConfiguration *[]KinesisFirehoseDeliveryStreamSpec `json:"splunk_configuration,omitempty"`
+	SplunkConfiguration []KinesisFirehoseDeliveryStreamSpecSplunkConfiguration `json:"splunkConfiguration,omitempty" tf:"splunk_configuration,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type KinesisFirehoseDeliveryStreamStatus struct {
@@ -358,7 +359,9 @@ type KinesisFirehoseDeliveryStreamStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

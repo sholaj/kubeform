@@ -31,6 +31,7 @@ import (
 // FakeServicecatalogPortfolios implements ServicecatalogPortfolioInterface
 type FakeServicecatalogPortfolios struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var servicecatalogportfoliosResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "servicecatalogportfolios"}
@@ -40,7 +41,8 @@ var servicecatalogportfoliosKind = schema.GroupVersionKind{Group: "aws.kubeform.
 // Get takes name of the servicecatalogPortfolio, and returns the corresponding servicecatalogPortfolio object, and an error if there is any.
 func (c *FakeServicecatalogPortfolios) Get(name string, options v1.GetOptions) (result *v1alpha1.ServicecatalogPortfolio, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(servicecatalogportfoliosResource, name), &v1alpha1.ServicecatalogPortfolio{})
+		Invokes(testing.NewGetAction(servicecatalogportfoliosResource, c.ns, name), &v1alpha1.ServicecatalogPortfolio{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeServicecatalogPortfolios) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of ServicecatalogPortfolios that match those selectors.
 func (c *FakeServicecatalogPortfolios) List(opts v1.ListOptions) (result *v1alpha1.ServicecatalogPortfolioList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(servicecatalogportfoliosResource, servicecatalogportfoliosKind, opts), &v1alpha1.ServicecatalogPortfolioList{})
+		Invokes(testing.NewListAction(servicecatalogportfoliosResource, servicecatalogportfoliosKind, c.ns, opts), &v1alpha1.ServicecatalogPortfolioList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeServicecatalogPortfolios) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested servicecatalogPortfolios.
 func (c *FakeServicecatalogPortfolios) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(servicecatalogportfoliosResource, opts))
+		InvokesWatch(testing.NewWatchAction(servicecatalogportfoliosResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a servicecatalogPortfolio and creates it.  Returns the server's representation of the servicecatalogPortfolio, and an error, if there is any.
 func (c *FakeServicecatalogPortfolios) Create(servicecatalogPortfolio *v1alpha1.ServicecatalogPortfolio) (result *v1alpha1.ServicecatalogPortfolio, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(servicecatalogportfoliosResource, servicecatalogPortfolio), &v1alpha1.ServicecatalogPortfolio{})
+		Invokes(testing.NewCreateAction(servicecatalogportfoliosResource, c.ns, servicecatalogPortfolio), &v1alpha1.ServicecatalogPortfolio{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeServicecatalogPortfolios) Create(servicecatalogPortfolio *v1alpha1.
 // Update takes the representation of a servicecatalogPortfolio and updates it. Returns the server's representation of the servicecatalogPortfolio, and an error, if there is any.
 func (c *FakeServicecatalogPortfolios) Update(servicecatalogPortfolio *v1alpha1.ServicecatalogPortfolio) (result *v1alpha1.ServicecatalogPortfolio, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(servicecatalogportfoliosResource, servicecatalogPortfolio), &v1alpha1.ServicecatalogPortfolio{})
+		Invokes(testing.NewUpdateAction(servicecatalogportfoliosResource, c.ns, servicecatalogPortfolio), &v1alpha1.ServicecatalogPortfolio{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeServicecatalogPortfolios) Update(servicecatalogPortfolio *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeServicecatalogPortfolios) UpdateStatus(servicecatalogPortfolio *v1alpha1.ServicecatalogPortfolio) (*v1alpha1.ServicecatalogPortfolio, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(servicecatalogportfoliosResource, "status", servicecatalogPortfolio), &v1alpha1.ServicecatalogPortfolio{})
+		Invokes(testing.NewUpdateSubresourceAction(servicecatalogportfoliosResource, "status", c.ns, servicecatalogPortfolio), &v1alpha1.ServicecatalogPortfolio{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeServicecatalogPortfolios) UpdateStatus(servicecatalogPortfolio *v1a
 // Delete takes name of the servicecatalogPortfolio and deletes it. Returns an error if one occurs.
 func (c *FakeServicecatalogPortfolios) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(servicecatalogportfoliosResource, name), &v1alpha1.ServicecatalogPortfolio{})
+		Invokes(testing.NewDeleteAction(servicecatalogportfoliosResource, c.ns, name), &v1alpha1.ServicecatalogPortfolio{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeServicecatalogPortfolios) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(servicecatalogportfoliosResource, listOptions)
+	action := testing.NewDeleteCollectionAction(servicecatalogportfoliosResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ServicecatalogPortfolioList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeServicecatalogPortfolios) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched servicecatalogPortfolio.
 func (c *FakeServicecatalogPortfolios) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServicecatalogPortfolio, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(servicecatalogportfoliosResource, name, pt, data, subresources...), &v1alpha1.ServicecatalogPortfolio{})
+		Invokes(testing.NewPatchSubresourceAction(servicecatalogportfoliosResource, c.ns, name, pt, data, subresources...), &v1alpha1.ServicecatalogPortfolio{})
+
 	if obj == nil {
 		return nil, err
 	}

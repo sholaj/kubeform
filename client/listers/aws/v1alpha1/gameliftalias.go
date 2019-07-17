@@ -29,8 +29,8 @@ import (
 type GameliftAliasLister interface {
 	// List lists all GameliftAliases in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GameliftAlias, err error)
-	// Get retrieves the GameliftAlias from the index for a given name.
-	Get(name string) (*v1alpha1.GameliftAlias, error)
+	// GameliftAliases returns an object that can list and get GameliftAliases.
+	GameliftAliases(namespace string) GameliftAliasNamespaceLister
 	GameliftAliasListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *gameliftAliasLister) List(selector labels.Selector) (ret []*v1alpha1.Ga
 	return ret, err
 }
 
-// Get retrieves the GameliftAlias from the index for a given name.
-func (s *gameliftAliasLister) Get(name string) (*v1alpha1.GameliftAlias, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GameliftAliases returns an object that can list and get GameliftAliases.
+func (s *gameliftAliasLister) GameliftAliases(namespace string) GameliftAliasNamespaceLister {
+	return gameliftAliasNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GameliftAliasNamespaceLister helps list and get GameliftAliases.
+type GameliftAliasNamespaceLister interface {
+	// List lists all GameliftAliases in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GameliftAlias, err error)
+	// Get retrieves the GameliftAlias from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GameliftAlias, error)
+	GameliftAliasNamespaceListerExpansion
+}
+
+// gameliftAliasNamespaceLister implements the GameliftAliasNamespaceLister
+// interface.
+type gameliftAliasNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GameliftAliases in the indexer for a given namespace.
+func (s gameliftAliasNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GameliftAlias, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GameliftAlias))
+	})
+	return ret, err
+}
+
+// Get retrieves the GameliftAlias from the indexer for a given namespace and name.
+func (s gameliftAliasNamespaceLister) Get(name string) (*v1alpha1.GameliftAlias, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

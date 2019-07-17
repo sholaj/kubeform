@@ -29,8 +29,8 @@ import (
 type ManagementLockLister interface {
 	// List lists all ManagementLocks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ManagementLock, err error)
-	// Get retrieves the ManagementLock from the index for a given name.
-	Get(name string) (*v1alpha1.ManagementLock, error)
+	// ManagementLocks returns an object that can list and get ManagementLocks.
+	ManagementLocks(namespace string) ManagementLockNamespaceLister
 	ManagementLockListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *managementLockLister) List(selector labels.Selector) (ret []*v1alpha1.M
 	return ret, err
 }
 
-// Get retrieves the ManagementLock from the index for a given name.
-func (s *managementLockLister) Get(name string) (*v1alpha1.ManagementLock, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ManagementLocks returns an object that can list and get ManagementLocks.
+func (s *managementLockLister) ManagementLocks(namespace string) ManagementLockNamespaceLister {
+	return managementLockNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ManagementLockNamespaceLister helps list and get ManagementLocks.
+type ManagementLockNamespaceLister interface {
+	// List lists all ManagementLocks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ManagementLock, err error)
+	// Get retrieves the ManagementLock from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ManagementLock, error)
+	ManagementLockNamespaceListerExpansion
+}
+
+// managementLockNamespaceLister implements the ManagementLockNamespaceLister
+// interface.
+type managementLockNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ManagementLocks in the indexer for a given namespace.
+func (s managementLockNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ManagementLock, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ManagementLock))
+	})
+	return ret, err
+}
+
+// Get retrieves the ManagementLock from the indexer for a given namespace and name.
+func (s managementLockNamespaceLister) Get(name string) (*v1alpha1.ManagementLock, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

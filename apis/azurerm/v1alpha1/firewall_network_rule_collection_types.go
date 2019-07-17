@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,27 +20,28 @@ type FirewallNetworkRuleCollection struct {
 
 type FirewallNetworkRuleCollectionSpecRule struct {
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +kubebuilder:validation:UniqueItems=true
-	DestinationAddresses []string `json:"destination_addresses"`
+	DestinationAddresses []string `json:"destinationAddresses" tf:"destination_addresses"`
 	// +kubebuilder:validation:UniqueItems=true
-	DestinationPorts []string `json:"destination_ports"`
-	Name             string   `json:"name"`
+	DestinationPorts []string `json:"destinationPorts" tf:"destination_ports"`
+	Name             string   `json:"name" tf:"name"`
 	// +kubebuilder:validation:UniqueItems=true
-	Protocols []string `json:"protocols"`
+	Protocols []string `json:"protocols" tf:"protocols"`
 	// +kubebuilder:validation:UniqueItems=true
-	SourceAddresses []string `json:"source_addresses"`
+	SourceAddresses []string `json:"sourceAddresses" tf:"source_addresses"`
 }
 
 type FirewallNetworkRuleCollectionSpec struct {
-	Action            string `json:"action"`
-	AzureFirewallName string `json:"azure_firewall_name"`
-	Name              string `json:"name"`
-	Priority          int    `json:"priority"`
-	ResourceGroupName string `json:"resource_group_name"`
+	Action            string `json:"action" tf:"action"`
+	AzureFirewallName string `json:"azureFirewallName" tf:"azure_firewall_name"`
+	Name              string `json:"name" tf:"name"`
+	Priority          int    `json:"priority" tf:"priority"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	Rule []FirewallNetworkRuleCollectionSpec `json:"rule"`
+	Rule        []FirewallNetworkRuleCollectionSpecRule `json:"rule" tf:"rule"`
+	ProviderRef core.LocalObjectReference               `json:"providerRef" tf:"-"`
 }
 
 type FirewallNetworkRuleCollectionStatus struct {
@@ -48,7 +49,9 @@ type FirewallNetworkRuleCollectionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

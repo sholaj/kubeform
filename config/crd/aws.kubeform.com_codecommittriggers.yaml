@@ -397,15 +397,45 @@ spec:
           type: object
         spec:
           properties:
-            repository_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            repositoryName:
               type: string
             trigger:
-              items: {}
+              items:
+                properties:
+                  branches:
+                    items:
+                      type: string
+                    type: array
+                  customData:
+                    type: string
+                  destinationArn:
+                    type: string
+                  events:
+                    items:
+                      type: string
+                    type: array
+                  name:
+                    type: string
+                required:
+                - destinationArn
+                - events
+                - name
+                type: object
               maxItems: 10
               type: array
               uniqueItems: true
           required:
-          - repository_name
+          - providerRef
+          - repositoryName
           - trigger
           type: object
         status:
@@ -417,6 +447,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -29,8 +29,8 @@ import (
 type SqlDatabaseLister interface {
 	// List lists all SqlDatabases in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SqlDatabase, err error)
-	// Get retrieves the SqlDatabase from the index for a given name.
-	Get(name string) (*v1alpha1.SqlDatabase, error)
+	// SqlDatabases returns an object that can list and get SqlDatabases.
+	SqlDatabases(namespace string) SqlDatabaseNamespaceLister
 	SqlDatabaseListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sqlDatabaseLister) List(selector labels.Selector) (ret []*v1alpha1.SqlD
 	return ret, err
 }
 
-// Get retrieves the SqlDatabase from the index for a given name.
-func (s *sqlDatabaseLister) Get(name string) (*v1alpha1.SqlDatabase, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SqlDatabases returns an object that can list and get SqlDatabases.
+func (s *sqlDatabaseLister) SqlDatabases(namespace string) SqlDatabaseNamespaceLister {
+	return sqlDatabaseNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SqlDatabaseNamespaceLister helps list and get SqlDatabases.
+type SqlDatabaseNamespaceLister interface {
+	// List lists all SqlDatabases in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SqlDatabase, err error)
+	// Get retrieves the SqlDatabase from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SqlDatabase, error)
+	SqlDatabaseNamespaceListerExpansion
+}
+
+// sqlDatabaseNamespaceLister implements the SqlDatabaseNamespaceLister
+// interface.
+type sqlDatabaseNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SqlDatabases in the indexer for a given namespace.
+func (s sqlDatabaseNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SqlDatabase, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SqlDatabase))
+	})
+	return ret, err
+}
+
+// Get retrieves the SqlDatabase from the indexer for a given namespace and name.
+func (s sqlDatabaseNamespaceLister) Get(name string) (*v1alpha1.SqlDatabase, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type CodedeployDeploymentConfigLister interface {
 	// List lists all CodedeployDeploymentConfigs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CodedeployDeploymentConfig, err error)
-	// Get retrieves the CodedeployDeploymentConfig from the index for a given name.
-	Get(name string) (*v1alpha1.CodedeployDeploymentConfig, error)
+	// CodedeployDeploymentConfigs returns an object that can list and get CodedeployDeploymentConfigs.
+	CodedeployDeploymentConfigs(namespace string) CodedeployDeploymentConfigNamespaceLister
 	CodedeployDeploymentConfigListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *codedeployDeploymentConfigLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the CodedeployDeploymentConfig from the index for a given name.
-func (s *codedeployDeploymentConfigLister) Get(name string) (*v1alpha1.CodedeployDeploymentConfig, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CodedeployDeploymentConfigs returns an object that can list and get CodedeployDeploymentConfigs.
+func (s *codedeployDeploymentConfigLister) CodedeployDeploymentConfigs(namespace string) CodedeployDeploymentConfigNamespaceLister {
+	return codedeployDeploymentConfigNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CodedeployDeploymentConfigNamespaceLister helps list and get CodedeployDeploymentConfigs.
+type CodedeployDeploymentConfigNamespaceLister interface {
+	// List lists all CodedeployDeploymentConfigs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CodedeployDeploymentConfig, err error)
+	// Get retrieves the CodedeployDeploymentConfig from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CodedeployDeploymentConfig, error)
+	CodedeployDeploymentConfigNamespaceListerExpansion
+}
+
+// codedeployDeploymentConfigNamespaceLister implements the CodedeployDeploymentConfigNamespaceLister
+// interface.
+type codedeployDeploymentConfigNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CodedeployDeploymentConfigs in the indexer for a given namespace.
+func (s codedeployDeploymentConfigNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CodedeployDeploymentConfig, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CodedeployDeploymentConfig))
+	})
+	return ret, err
+}
+
+// Get retrieves the CodedeployDeploymentConfig from the indexer for a given namespace and name.
+func (s codedeployDeploymentConfigNamespaceLister) Get(name string) (*v1alpha1.CodedeployDeploymentConfig, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

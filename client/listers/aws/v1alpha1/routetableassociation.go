@@ -29,8 +29,8 @@ import (
 type RouteTableAssociationLister interface {
 	// List lists all RouteTableAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RouteTableAssociation, err error)
-	// Get retrieves the RouteTableAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.RouteTableAssociation, error)
+	// RouteTableAssociations returns an object that can list and get RouteTableAssociations.
+	RouteTableAssociations(namespace string) RouteTableAssociationNamespaceLister
 	RouteTableAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *routeTableAssociationLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the RouteTableAssociation from the index for a given name.
-func (s *routeTableAssociationLister) Get(name string) (*v1alpha1.RouteTableAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RouteTableAssociations returns an object that can list and get RouteTableAssociations.
+func (s *routeTableAssociationLister) RouteTableAssociations(namespace string) RouteTableAssociationNamespaceLister {
+	return routeTableAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RouteTableAssociationNamespaceLister helps list and get RouteTableAssociations.
+type RouteTableAssociationNamespaceLister interface {
+	// List lists all RouteTableAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RouteTableAssociation, err error)
+	// Get retrieves the RouteTableAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RouteTableAssociation, error)
+	RouteTableAssociationNamespaceListerExpansion
+}
+
+// routeTableAssociationNamespaceLister implements the RouteTableAssociationNamespaceLister
+// interface.
+type routeTableAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RouteTableAssociations in the indexer for a given namespace.
+func (s routeTableAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RouteTableAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RouteTableAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the RouteTableAssociation from the indexer for a given namespace and name.
+func (s routeTableAssociationNamespaceLister) Get(name string) (*v1alpha1.RouteTableAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

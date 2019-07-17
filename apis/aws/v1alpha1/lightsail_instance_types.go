@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,16 +19,17 @@ type LightsailInstance struct {
 }
 
 type LightsailInstanceSpec struct {
-	AvailabilityZone string `json:"availability_zone"`
-	BlueprintId      string `json:"blueprint_id"`
-	BundleId         string `json:"bundle_id"`
+	AvailabilityZone string `json:"availabilityZone" tf:"availability_zone"`
+	BlueprintID      string `json:"blueprintID" tf:"blueprint_id"`
+	BundleID         string `json:"bundleID" tf:"bundle_id"`
 	// +optional
-	KeyPairName string `json:"key_pair_name,omitempty"`
-	Name        string `json:"name"`
+	KeyPairName string `json:"keyPairName,omitempty" tf:"key_pair_name,omitempty"`
+	Name        string `json:"name" tf:"name"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	UserData string `json:"user_data,omitempty"`
+	UserData    string                    `json:"userData,omitempty" tf:"user_data,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type LightsailInstanceStatus struct {
@@ -36,7 +37,9 @@ type LightsailInstanceStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,22 +20,23 @@ type WafXssMatchSet struct {
 
 type WafXssMatchSetSpecXssMatchTuplesFieldToMatch struct {
 	// +optional
-	Data string `json:"data,omitempty"`
-	Type string `json:"type"`
+	Data string `json:"data,omitempty" tf:"data,omitempty"`
+	Type string `json:"type" tf:"type"`
 }
 
 type WafXssMatchSetSpecXssMatchTuples struct {
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	FieldToMatch       []WafXssMatchSetSpecXssMatchTuples `json:"field_to_match"`
-	TextTransformation string                             `json:"text_transformation"`
+	FieldToMatch       []WafXssMatchSetSpecXssMatchTuplesFieldToMatch `json:"fieldToMatch" tf:"field_to_match"`
+	TextTransformation string                                         `json:"textTransformation" tf:"text_transformation"`
 }
 
 type WafXssMatchSetSpec struct {
-	Name string `json:"name"`
+	Name string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	XssMatchTuples *[]WafXssMatchSetSpec `json:"xss_match_tuples,omitempty"`
+	XssMatchTuples []WafXssMatchSetSpecXssMatchTuples `json:"xssMatchTuples,omitempty" tf:"xss_match_tuples,omitempty"`
+	ProviderRef    core.LocalObjectReference          `json:"providerRef" tf:"-"`
 }
 
 type WafXssMatchSetStatus struct {
@@ -43,7 +44,9 @@ type WafXssMatchSetStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

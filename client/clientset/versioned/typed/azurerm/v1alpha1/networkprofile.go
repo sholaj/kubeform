@@ -32,7 +32,7 @@ import (
 // NetworkProfilesGetter has a method to return a NetworkProfileInterface.
 // A group's client should implement this interface.
 type NetworkProfilesGetter interface {
-	NetworkProfiles() NetworkProfileInterface
+	NetworkProfiles(namespace string) NetworkProfileInterface
 }
 
 // NetworkProfileInterface has methods to work with NetworkProfile resources.
@@ -52,12 +52,14 @@ type NetworkProfileInterface interface {
 // networkProfiles implements NetworkProfileInterface
 type networkProfiles struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNetworkProfiles returns a NetworkProfiles
-func newNetworkProfiles(c *AzurermV1alpha1Client) *networkProfiles {
+func newNetworkProfiles(c *AzurermV1alpha1Client, namespace string) *networkProfiles {
 	return &networkProfiles{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNetworkProfiles(c *AzurermV1alpha1Client) *networkProfiles {
 func (c *networkProfiles) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkProfile, err error) {
 	result = &v1alpha1.NetworkProfile{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkprofiles").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *networkProfiles) List(opts v1.ListOptions) (result *v1alpha1.NetworkPro
 	}
 	result = &v1alpha1.NetworkProfileList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkprofiles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *networkProfiles) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("networkprofiles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *networkProfiles) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *networkProfiles) Create(networkProfile *v1alpha1.NetworkProfile) (result *v1alpha1.NetworkProfile, err error) {
 	result = &v1alpha1.NetworkProfile{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("networkprofiles").
 		Body(networkProfile).
 		Do().
@@ -118,6 +124,7 @@ func (c *networkProfiles) Create(networkProfile *v1alpha1.NetworkProfile) (resul
 func (c *networkProfiles) Update(networkProfile *v1alpha1.NetworkProfile) (result *v1alpha1.NetworkProfile, err error) {
 	result = &v1alpha1.NetworkProfile{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkprofiles").
 		Name(networkProfile.Name).
 		Body(networkProfile).
@@ -132,6 +139,7 @@ func (c *networkProfiles) Update(networkProfile *v1alpha1.NetworkProfile) (resul
 func (c *networkProfiles) UpdateStatus(networkProfile *v1alpha1.NetworkProfile) (result *v1alpha1.NetworkProfile, err error) {
 	result = &v1alpha1.NetworkProfile{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkprofiles").
 		Name(networkProfile.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *networkProfiles) UpdateStatus(networkProfile *v1alpha1.NetworkProfile) 
 // Delete takes name of the networkProfile and deletes it. Returns an error if one occurs.
 func (c *networkProfiles) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkprofiles").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *networkProfiles) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkprofiles").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *networkProfiles) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *networkProfiles) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkProfile, err error) {
 	result = &v1alpha1.NetworkProfile{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("networkprofiles").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // TagsGetter has a method to return a TagInterface.
 // A group's client should implement this interface.
 type TagsGetter interface {
-	Tags() TagInterface
+	Tags(namespace string) TagInterface
 }
 
 // TagInterface has methods to work with Tag resources.
@@ -52,12 +52,14 @@ type TagInterface interface {
 // tags implements TagInterface
 type tags struct {
 	client rest.Interface
+	ns     string
 }
 
 // newTags returns a Tags
-func newTags(c *DigitaloceanV1alpha1Client) *tags {
+func newTags(c *DigitaloceanV1alpha1Client, namespace string) *tags {
 	return &tags{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newTags(c *DigitaloceanV1alpha1Client) *tags {
 func (c *tags) Get(name string, options v1.GetOptions) (result *v1alpha1.Tag, err error) {
 	result = &v1alpha1.Tag{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("tags").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *tags) List(opts v1.ListOptions) (result *v1alpha1.TagList, err error) {
 	}
 	result = &v1alpha1.TagList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("tags").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *tags) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("tags").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *tags) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *tags) Create(tag *v1alpha1.Tag) (result *v1alpha1.Tag, err error) {
 	result = &v1alpha1.Tag{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("tags").
 		Body(tag).
 		Do().
@@ -118,6 +124,7 @@ func (c *tags) Create(tag *v1alpha1.Tag) (result *v1alpha1.Tag, err error) {
 func (c *tags) Update(tag *v1alpha1.Tag) (result *v1alpha1.Tag, err error) {
 	result = &v1alpha1.Tag{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("tags").
 		Name(tag.Name).
 		Body(tag).
@@ -132,6 +139,7 @@ func (c *tags) Update(tag *v1alpha1.Tag) (result *v1alpha1.Tag, err error) {
 func (c *tags) UpdateStatus(tag *v1alpha1.Tag) (result *v1alpha1.Tag, err error) {
 	result = &v1alpha1.Tag{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("tags").
 		Name(tag.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *tags) UpdateStatus(tag *v1alpha1.Tag) (result *v1alpha1.Tag, err error)
 // Delete takes name of the tag and deletes it. Returns an error if one occurs.
 func (c *tags) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("tags").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *tags) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("tags").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *tags) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOp
 func (c *tags) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Tag, err error) {
 	result = &v1alpha1.Tag{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("tags").
 		SubResource(subresources...).
 		Name(name).

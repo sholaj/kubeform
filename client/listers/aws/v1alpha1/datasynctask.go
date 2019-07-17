@@ -29,8 +29,8 @@ import (
 type DatasyncTaskLister interface {
 	// List lists all DatasyncTasks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DatasyncTask, err error)
-	// Get retrieves the DatasyncTask from the index for a given name.
-	Get(name string) (*v1alpha1.DatasyncTask, error)
+	// DatasyncTasks returns an object that can list and get DatasyncTasks.
+	DatasyncTasks(namespace string) DatasyncTaskNamespaceLister
 	DatasyncTaskListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *datasyncTaskLister) List(selector labels.Selector) (ret []*v1alpha1.Dat
 	return ret, err
 }
 
-// Get retrieves the DatasyncTask from the index for a given name.
-func (s *datasyncTaskLister) Get(name string) (*v1alpha1.DatasyncTask, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DatasyncTasks returns an object that can list and get DatasyncTasks.
+func (s *datasyncTaskLister) DatasyncTasks(namespace string) DatasyncTaskNamespaceLister {
+	return datasyncTaskNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DatasyncTaskNamespaceLister helps list and get DatasyncTasks.
+type DatasyncTaskNamespaceLister interface {
+	// List lists all DatasyncTasks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DatasyncTask, err error)
+	// Get retrieves the DatasyncTask from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DatasyncTask, error)
+	DatasyncTaskNamespaceListerExpansion
+}
+
+// datasyncTaskNamespaceLister implements the DatasyncTaskNamespaceLister
+// interface.
+type datasyncTaskNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DatasyncTasks in the indexer for a given namespace.
+func (s datasyncTaskNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DatasyncTask, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DatasyncTask))
+	})
+	return ret, err
+}
+
+// Get retrieves the DatasyncTask from the indexer for a given namespace and name.
+func (s datasyncTaskNamespaceLister) Get(name string) (*v1alpha1.DatasyncTask, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeLogicAppTriggerRecurrences implements LogicAppTriggerRecurrenceInterface
 type FakeLogicAppTriggerRecurrences struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var logicapptriggerrecurrencesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "logicapptriggerrecurrences"}
@@ -40,7 +41,8 @@ var logicapptriggerrecurrencesKind = schema.GroupVersionKind{Group: "azurerm.kub
 // Get takes name of the logicAppTriggerRecurrence, and returns the corresponding logicAppTriggerRecurrence object, and an error if there is any.
 func (c *FakeLogicAppTriggerRecurrences) Get(name string, options v1.GetOptions) (result *v1alpha1.LogicAppTriggerRecurrence, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(logicapptriggerrecurrencesResource, name), &v1alpha1.LogicAppTriggerRecurrence{})
+		Invokes(testing.NewGetAction(logicapptriggerrecurrencesResource, c.ns, name), &v1alpha1.LogicAppTriggerRecurrence{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLogicAppTriggerRecurrences) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of LogicAppTriggerRecurrences that match those selectors.
 func (c *FakeLogicAppTriggerRecurrences) List(opts v1.ListOptions) (result *v1alpha1.LogicAppTriggerRecurrenceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(logicapptriggerrecurrencesResource, logicapptriggerrecurrencesKind, opts), &v1alpha1.LogicAppTriggerRecurrenceList{})
+		Invokes(testing.NewListAction(logicapptriggerrecurrencesResource, logicapptriggerrecurrencesKind, c.ns, opts), &v1alpha1.LogicAppTriggerRecurrenceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLogicAppTriggerRecurrences) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested logicAppTriggerRecurrences.
 func (c *FakeLogicAppTriggerRecurrences) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(logicapptriggerrecurrencesResource, opts))
+		InvokesWatch(testing.NewWatchAction(logicapptriggerrecurrencesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a logicAppTriggerRecurrence and creates it.  Returns the server's representation of the logicAppTriggerRecurrence, and an error, if there is any.
 func (c *FakeLogicAppTriggerRecurrences) Create(logicAppTriggerRecurrence *v1alpha1.LogicAppTriggerRecurrence) (result *v1alpha1.LogicAppTriggerRecurrence, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(logicapptriggerrecurrencesResource, logicAppTriggerRecurrence), &v1alpha1.LogicAppTriggerRecurrence{})
+		Invokes(testing.NewCreateAction(logicapptriggerrecurrencesResource, c.ns, logicAppTriggerRecurrence), &v1alpha1.LogicAppTriggerRecurrence{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLogicAppTriggerRecurrences) Create(logicAppTriggerRecurrence *v1alp
 // Update takes the representation of a logicAppTriggerRecurrence and updates it. Returns the server's representation of the logicAppTriggerRecurrence, and an error, if there is any.
 func (c *FakeLogicAppTriggerRecurrences) Update(logicAppTriggerRecurrence *v1alpha1.LogicAppTriggerRecurrence) (result *v1alpha1.LogicAppTriggerRecurrence, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(logicapptriggerrecurrencesResource, logicAppTriggerRecurrence), &v1alpha1.LogicAppTriggerRecurrence{})
+		Invokes(testing.NewUpdateAction(logicapptriggerrecurrencesResource, c.ns, logicAppTriggerRecurrence), &v1alpha1.LogicAppTriggerRecurrence{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLogicAppTriggerRecurrences) Update(logicAppTriggerRecurrence *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLogicAppTriggerRecurrences) UpdateStatus(logicAppTriggerRecurrence *v1alpha1.LogicAppTriggerRecurrence) (*v1alpha1.LogicAppTriggerRecurrence, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(logicapptriggerrecurrencesResource, "status", logicAppTriggerRecurrence), &v1alpha1.LogicAppTriggerRecurrence{})
+		Invokes(testing.NewUpdateSubresourceAction(logicapptriggerrecurrencesResource, "status", c.ns, logicAppTriggerRecurrence), &v1alpha1.LogicAppTriggerRecurrence{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLogicAppTriggerRecurrences) UpdateStatus(logicAppTriggerRecurrence 
 // Delete takes name of the logicAppTriggerRecurrence and deletes it. Returns an error if one occurs.
 func (c *FakeLogicAppTriggerRecurrences) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(logicapptriggerrecurrencesResource, name), &v1alpha1.LogicAppTriggerRecurrence{})
+		Invokes(testing.NewDeleteAction(logicapptriggerrecurrencesResource, c.ns, name), &v1alpha1.LogicAppTriggerRecurrence{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLogicAppTriggerRecurrences) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(logicapptriggerrecurrencesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(logicapptriggerrecurrencesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LogicAppTriggerRecurrenceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLogicAppTriggerRecurrences) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched logicAppTriggerRecurrence.
 func (c *FakeLogicAppTriggerRecurrences) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogicAppTriggerRecurrence, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(logicapptriggerrecurrencesResource, name, pt, data, subresources...), &v1alpha1.LogicAppTriggerRecurrence{})
+		Invokes(testing.NewPatchSubresourceAction(logicapptriggerrecurrencesResource, c.ns, name, pt, data, subresources...), &v1alpha1.LogicAppTriggerRecurrence{})
+
 	if obj == nil {
 		return nil, err
 	}

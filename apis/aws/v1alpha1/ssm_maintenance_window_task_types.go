@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,41 +19,42 @@ type SsmMaintenanceWindowTask struct {
 }
 
 type SsmMaintenanceWindowTaskSpecLoggingInfo struct {
-	S3BucketName string `json:"s3_bucket_name"`
+	S3BucketName string `json:"s3BucketName" tf:"s3_bucket_name"`
 	// +optional
-	S3BucketPrefix string `json:"s3_bucket_prefix,omitempty"`
-	S3Region       string `json:"s3_region"`
+	S3BucketPrefix string `json:"s3BucketPrefix,omitempty" tf:"s3_bucket_prefix,omitempty"`
+	S3Region       string `json:"s3Region" tf:"s3_region"`
 }
 
 type SsmMaintenanceWindowTaskSpecTargets struct {
-	Key    string   `json:"key"`
-	Values []string `json:"values"`
+	Key    string   `json:"key" tf:"key"`
+	Values []string `json:"values" tf:"values"`
 }
 
 type SsmMaintenanceWindowTaskSpecTaskParameters struct {
-	Name   string   `json:"name"`
-	Values []string `json:"values"`
+	Name   string   `json:"name" tf:"name"`
+	Values []string `json:"values" tf:"values"`
 }
 
 type SsmMaintenanceWindowTaskSpec struct {
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	LoggingInfo    *[]SsmMaintenanceWindowTaskSpec `json:"logging_info,omitempty"`
-	MaxConcurrency string                          `json:"max_concurrency"`
-	MaxErrors      string                          `json:"max_errors"`
+	LoggingInfo    []SsmMaintenanceWindowTaskSpecLoggingInfo `json:"loggingInfo,omitempty" tf:"logging_info,omitempty"`
+	MaxConcurrency string                                    `json:"maxConcurrency" tf:"max_concurrency"`
+	MaxErrors      string                                    `json:"maxErrors" tf:"max_errors"`
 	// +optional
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" tf:"name,omitempty"`
 	// +optional
-	Priority       int                            `json:"priority,omitempty"`
-	ServiceRoleArn string                         `json:"service_role_arn"`
-	Targets        []SsmMaintenanceWindowTaskSpec `json:"targets"`
-	TaskArn        string                         `json:"task_arn"`
+	Priority       int                                   `json:"priority,omitempty" tf:"priority,omitempty"`
+	ServiceRoleArn string                                `json:"serviceRoleArn" tf:"service_role_arn"`
+	Targets        []SsmMaintenanceWindowTaskSpecTargets `json:"targets" tf:"targets"`
+	TaskArn        string                                `json:"taskArn" tf:"task_arn"`
 	// +optional
-	TaskParameters *[]SsmMaintenanceWindowTaskSpec `json:"task_parameters,omitempty"`
-	TaskType       string                          `json:"task_type"`
-	WindowId       string                          `json:"window_id"`
+	TaskParameters []SsmMaintenanceWindowTaskSpecTaskParameters `json:"taskParameters,omitempty" tf:"task_parameters,omitempty"`
+	TaskType       string                                       `json:"taskType" tf:"task_type"`
+	WindowID       string                                       `json:"windowID" tf:"window_id"`
+	ProviderRef    core.LocalObjectReference                    `json:"providerRef" tf:"-"`
 }
 
 type SsmMaintenanceWindowTaskStatus struct {
@@ -61,7 +62,9 @@ type SsmMaintenanceWindowTaskStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

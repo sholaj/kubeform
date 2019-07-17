@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/google/v1alpha1"
 )
 
-// StorageDefaultObjectAclInformer provides access to a shared informer and lister for
-// StorageDefaultObjectAcls.
-type StorageDefaultObjectAclInformer interface {
+// StorageDefaultObjectACLInformer provides access to a shared informer and lister for
+// StorageDefaultObjectACLs.
+type StorageDefaultObjectACLInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.StorageDefaultObjectAclLister
+	Lister() v1alpha1.StorageDefaultObjectACLLister
 }
 
-type storageDefaultObjectAclInformer struct {
+type storageDefaultObjectACLInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewStorageDefaultObjectAclInformer constructs a new informer for StorageDefaultObjectAcl type.
+// NewStorageDefaultObjectACLInformer constructs a new informer for StorageDefaultObjectACL type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewStorageDefaultObjectAclInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredStorageDefaultObjectAclInformer(client, resyncPeriod, indexers, nil)
+func NewStorageDefaultObjectACLInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredStorageDefaultObjectACLInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredStorageDefaultObjectAclInformer constructs a new informer for StorageDefaultObjectAcl type.
+// NewFilteredStorageDefaultObjectACLInformer constructs a new informer for StorageDefaultObjectACL type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredStorageDefaultObjectAclInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredStorageDefaultObjectACLInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().StorageDefaultObjectAcls().List(options)
+				return client.GoogleV1alpha1().StorageDefaultObjectACLs(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().StorageDefaultObjectAcls().Watch(options)
+				return client.GoogleV1alpha1().StorageDefaultObjectACLs(namespace).Watch(options)
 			},
 		},
-		&googlev1alpha1.StorageDefaultObjectAcl{},
+		&googlev1alpha1.StorageDefaultObjectACL{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *storageDefaultObjectAclInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredStorageDefaultObjectAclInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *storageDefaultObjectACLInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredStorageDefaultObjectACLInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *storageDefaultObjectAclInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&googlev1alpha1.StorageDefaultObjectAcl{}, f.defaultInformer)
+func (f *storageDefaultObjectACLInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&googlev1alpha1.StorageDefaultObjectACL{}, f.defaultInformer)
 }
 
-func (f *storageDefaultObjectAclInformer) Lister() v1alpha1.StorageDefaultObjectAclLister {
-	return v1alpha1.NewStorageDefaultObjectAclLister(f.Informer().GetIndexer())
+func (f *storageDefaultObjectACLInformer) Lister() v1alpha1.StorageDefaultObjectACLLister {
+	return v1alpha1.NewStorageDefaultObjectACLLister(f.Informer().GetIndexer())
 }

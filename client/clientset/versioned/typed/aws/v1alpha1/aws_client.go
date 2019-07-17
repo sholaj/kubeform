@@ -40,8 +40,8 @@ type AwsV1alpha1Interface interface {
 	AmiCopiesGetter
 	AmiFromInstancesGetter
 	AmiLaunchPermissionsGetter
+	ApiGatewayAPIKeysGetter
 	ApiGatewayAccountsGetter
-	ApiGatewayApiKeysGetter
 	ApiGatewayAuthorizersGetter
 	ApiGatewayBasePathMappingsGetter
 	ApiGatewayClientCertificatesGetter
@@ -58,7 +58,7 @@ type AwsV1alpha1Interface interface {
 	ApiGatewayModelsGetter
 	ApiGatewayRequestValidatorsGetter
 	ApiGatewayResourcesGetter
-	ApiGatewayRestApisGetter
+	ApiGatewayRestAPIsGetter
 	ApiGatewayStagesGetter
 	ApiGatewayUsagePlansGetter
 	ApiGatewayUsagePlanKeysGetter
@@ -72,10 +72,10 @@ type AwsV1alpha1Interface interface {
 	AppmeshVirtualNodesGetter
 	AppmeshVirtualRoutersGetter
 	AppmeshVirtualServicesGetter
-	AppsyncApiKeysGetter
+	AppsyncAPIKeysGetter
 	AppsyncDatasourcesGetter
 	AppsyncFunctionsGetter
-	AppsyncGraphqlApisGetter
+	AppsyncGraphqlAPIsGetter
 	AppsyncResolversGetter
 	AthenaDatabasesGetter
 	AthenaNamedQueriesGetter
@@ -158,12 +158,12 @@ type AwsV1alpha1Interface interface {
 	DbSecurityGroupsGetter
 	DbSnapshotsGetter
 	DbSubnetGroupsGetter
-	DefaultNetworkAclsGetter
+	DefaultNetworkACLsGetter
 	DefaultRouteTablesGetter
 	DefaultSecurityGroupsGetter
 	DefaultSubnetsGetter
 	DefaultVpcsGetter
-	DefaultVpcDhcpOptionsesGetter
+	DefaultVpcDHCPOptionsesGetter
 	DevicefarmProjectsGetter
 	DirectoryServiceConditionalForwardersGetter
 	DirectoryServiceDirectoriesGetter
@@ -179,7 +179,7 @@ type AwsV1alpha1Interface interface {
 	DocdbClusterParameterGroupsGetter
 	DocdbClusterSnapshotsGetter
 	DocdbSubnetGroupsGetter
-	DxBgpPeersGetter
+	DxBGPPeersGetter
 	DxConnectionsGetter
 	DxConnectionAssociationsGetter
 	DxGatewaysGetter
@@ -201,8 +201,8 @@ type AwsV1alpha1Interface interface {
 	EbsSnapshotCopiesGetter
 	EbsVolumesGetter
 	Ec2CapacityReservationsGetter
-	Ec2ClientVpnEndpointsGetter
-	Ec2ClientVpnNetworkAssociationsGetter
+	Ec2ClientVPNEndpointsGetter
+	Ec2ClientVPNNetworkAssociationsGetter
 	Ec2FleetsGetter
 	Ec2TransitGatewaysGetter
 	Ec2TransitGatewayRoutesGetter
@@ -286,7 +286,7 @@ type AwsV1alpha1Interface interface {
 	IamUserLoginProfilesGetter
 	IamUserPoliciesGetter
 	IamUserPolicyAttachmentsGetter
-	IamUserSshKeysGetter
+	IamUserSSHKeysGetter
 	InspectorAssessmentTargetsGetter
 	InspectorAssessmentTemplatesGetter
 	InspectorResourceGroupsGetter
@@ -329,8 +329,8 @@ type AwsV1alpha1Interface interface {
 	LightsailDomainsGetter
 	LightsailInstancesGetter
 	LightsailKeyPairsGetter
-	LightsailStaticIpsGetter
-	LightsailStaticIpAttachmentsGetter
+	LightsailStaticIPsGetter
+	LightsailStaticIPAttachmentsGetter
 	LoadBalancerBackendServerPoliciesGetter
 	LoadBalancerListenerPoliciesGetter
 	LoadBalancerPoliciesGetter
@@ -352,8 +352,8 @@ type AwsV1alpha1Interface interface {
 	NeptuneEventSubscriptionsGetter
 	NeptuneParameterGroupsGetter
 	NeptuneSubnetGroupsGetter
-	NetworkAclsGetter
-	NetworkAclRulesGetter
+	NetworkACLsGetter
+	NetworkACLRulesGetter
 	NetworkInterfacesGetter
 	NetworkInterfaceAttachmentsGetter
 	NetworkInterfaceSgAttachmentsGetter
@@ -438,9 +438,9 @@ type AwsV1alpha1Interface interface {
 	SecurityhubAccountsGetter
 	SecurityhubProductSubscriptionsGetter
 	SecurityhubStandardsSubscriptionsGetter
-	ServiceDiscoveryHttpNamespacesGetter
-	ServiceDiscoveryPrivateDnsNamespacesGetter
-	ServiceDiscoveryPublicDnsNamespacesGetter
+	ServiceDiscoveryHTTPNamespacesGetter
+	ServiceDiscoveryPrivateDNSNamespacesGetter
+	ServiceDiscoveryPublicDNSNamespacesGetter
 	ServiceDiscoveryServicesGetter
 	ServicecatalogPortfoliosGetter
 	SesActiveReceiptRuleSetsGetter
@@ -491,20 +491,20 @@ type AwsV1alpha1Interface interface {
 	StoragegatewayWorkingStoragesGetter
 	SubnetsGetter
 	SwfDomainsGetter
+	TransferSSHKeysGetter
 	TransferServersGetter
-	TransferSshKeysGetter
 	TransferUsersGetter
 	VolumeAttachmentsGetter
 	VpcsGetter
-	VpcDhcpOptionsesGetter
-	VpcDhcpOptionsAssociationsGetter
+	VpcDHCPOptionsesGetter
+	VpcDHCPOptionsAssociationsGetter
 	VpcEndpointsGetter
 	VpcEndpointConnectionNotificationsGetter
 	VpcEndpointRouteTableAssociationsGetter
 	VpcEndpointServicesGetter
 	VpcEndpointServiceAllowedPrincipalsGetter
 	VpcEndpointSubnetAssociationsGetter
-	VpcIpv4CidrBlockAssociationsGetter
+	VpcIpv4CIDRBlockAssociationsGetter
 	VpcPeeringConnectionsGetter
 	VpcPeeringConnectionAcceptersGetter
 	VpcPeeringConnectionOptionsesGetter
@@ -521,9 +521,9 @@ type AwsV1alpha1Interface interface {
 	WafRegexPatternSetsGetter
 	WafRulesGetter
 	WafRuleGroupsGetter
+	WafSQLInjectionMatchSetsGetter
 	WafSizeConstraintSetsGetter
-	WafSqlInjectionMatchSetsGetter
-	WafWebAclsGetter
+	WafWebACLsGetter
 	WafXssMatchSetsGetter
 	WafregionalByteMatchSetsGetter
 	WafregionalGeoMatchSetsGetter
@@ -533,10 +533,10 @@ type AwsV1alpha1Interface interface {
 	WafregionalRegexPatternSetsGetter
 	WafregionalRulesGetter
 	WafregionalRuleGroupsGetter
+	WafregionalSQLInjectionMatchSetsGetter
 	WafregionalSizeConstraintSetsGetter
-	WafregionalSqlInjectionMatchSetsGetter
-	WafregionalWebAclsGetter
-	WafregionalWebAclAssociationsGetter
+	WafregionalWebACLsGetter
+	WafregionalWebACLAssociationsGetter
 	WafregionalXssMatchSetsGetter
 	WorklinkFleetsGetter
 	WorklinkWebsiteCertificateAuthorityAssociationsGetter
@@ -548,2060 +548,2060 @@ type AwsV1alpha1Client struct {
 	restClient rest.Interface
 }
 
-func (c *AwsV1alpha1Client) AcmCertificates() AcmCertificateInterface {
-	return newAcmCertificates(c)
+func (c *AwsV1alpha1Client) AcmCertificates(namespace string) AcmCertificateInterface {
+	return newAcmCertificates(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AcmCertificateValidations() AcmCertificateValidationInterface {
-	return newAcmCertificateValidations(c)
+func (c *AwsV1alpha1Client) AcmCertificateValidations(namespace string) AcmCertificateValidationInterface {
+	return newAcmCertificateValidations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AcmpcaCertificateAuthorities() AcmpcaCertificateAuthorityInterface {
-	return newAcmpcaCertificateAuthorities(c)
+func (c *AwsV1alpha1Client) AcmpcaCertificateAuthorities(namespace string) AcmpcaCertificateAuthorityInterface {
+	return newAcmpcaCertificateAuthorities(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Albs() AlbInterface {
-	return newAlbs(c)
+func (c *AwsV1alpha1Client) Albs(namespace string) AlbInterface {
+	return newAlbs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AlbListeners() AlbListenerInterface {
-	return newAlbListeners(c)
+func (c *AwsV1alpha1Client) AlbListeners(namespace string) AlbListenerInterface {
+	return newAlbListeners(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AlbListenerCertificates() AlbListenerCertificateInterface {
-	return newAlbListenerCertificates(c)
+func (c *AwsV1alpha1Client) AlbListenerCertificates(namespace string) AlbListenerCertificateInterface {
+	return newAlbListenerCertificates(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AlbListenerRules() AlbListenerRuleInterface {
-	return newAlbListenerRules(c)
+func (c *AwsV1alpha1Client) AlbListenerRules(namespace string) AlbListenerRuleInterface {
+	return newAlbListenerRules(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AlbTargetGroups() AlbTargetGroupInterface {
-	return newAlbTargetGroups(c)
+func (c *AwsV1alpha1Client) AlbTargetGroups(namespace string) AlbTargetGroupInterface {
+	return newAlbTargetGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AlbTargetGroupAttachments() AlbTargetGroupAttachmentInterface {
-	return newAlbTargetGroupAttachments(c)
+func (c *AwsV1alpha1Client) AlbTargetGroupAttachments(namespace string) AlbTargetGroupAttachmentInterface {
+	return newAlbTargetGroupAttachments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Amis() AmiInterface {
-	return newAmis(c)
+func (c *AwsV1alpha1Client) Amis(namespace string) AmiInterface {
+	return newAmis(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AmiCopies() AmiCopyInterface {
-	return newAmiCopies(c)
+func (c *AwsV1alpha1Client) AmiCopies(namespace string) AmiCopyInterface {
+	return newAmiCopies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AmiFromInstances() AmiFromInstanceInterface {
-	return newAmiFromInstances(c)
+func (c *AwsV1alpha1Client) AmiFromInstances(namespace string) AmiFromInstanceInterface {
+	return newAmiFromInstances(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AmiLaunchPermissions() AmiLaunchPermissionInterface {
-	return newAmiLaunchPermissions(c)
+func (c *AwsV1alpha1Client) AmiLaunchPermissions(namespace string) AmiLaunchPermissionInterface {
+	return newAmiLaunchPermissions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayAccounts() ApiGatewayAccountInterface {
-	return newApiGatewayAccounts(c)
+func (c *AwsV1alpha1Client) ApiGatewayAPIKeys(namespace string) ApiGatewayAPIKeyInterface {
+	return newApiGatewayAPIKeys(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayApiKeys() ApiGatewayApiKeyInterface {
-	return newApiGatewayApiKeys(c)
+func (c *AwsV1alpha1Client) ApiGatewayAccounts(namespace string) ApiGatewayAccountInterface {
+	return newApiGatewayAccounts(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayAuthorizers() ApiGatewayAuthorizerInterface {
-	return newApiGatewayAuthorizers(c)
+func (c *AwsV1alpha1Client) ApiGatewayAuthorizers(namespace string) ApiGatewayAuthorizerInterface {
+	return newApiGatewayAuthorizers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayBasePathMappings() ApiGatewayBasePathMappingInterface {
-	return newApiGatewayBasePathMappings(c)
+func (c *AwsV1alpha1Client) ApiGatewayBasePathMappings(namespace string) ApiGatewayBasePathMappingInterface {
+	return newApiGatewayBasePathMappings(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayClientCertificates() ApiGatewayClientCertificateInterface {
-	return newApiGatewayClientCertificates(c)
+func (c *AwsV1alpha1Client) ApiGatewayClientCertificates(namespace string) ApiGatewayClientCertificateInterface {
+	return newApiGatewayClientCertificates(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayDeployments() ApiGatewayDeploymentInterface {
-	return newApiGatewayDeployments(c)
+func (c *AwsV1alpha1Client) ApiGatewayDeployments(namespace string) ApiGatewayDeploymentInterface {
+	return newApiGatewayDeployments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayDocumentationParts() ApiGatewayDocumentationPartInterface {
-	return newApiGatewayDocumentationParts(c)
+func (c *AwsV1alpha1Client) ApiGatewayDocumentationParts(namespace string) ApiGatewayDocumentationPartInterface {
+	return newApiGatewayDocumentationParts(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayDocumentationVersions() ApiGatewayDocumentationVersionInterface {
-	return newApiGatewayDocumentationVersions(c)
+func (c *AwsV1alpha1Client) ApiGatewayDocumentationVersions(namespace string) ApiGatewayDocumentationVersionInterface {
+	return newApiGatewayDocumentationVersions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayDomainNames() ApiGatewayDomainNameInterface {
-	return newApiGatewayDomainNames(c)
+func (c *AwsV1alpha1Client) ApiGatewayDomainNames(namespace string) ApiGatewayDomainNameInterface {
+	return newApiGatewayDomainNames(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayGatewayResponses() ApiGatewayGatewayResponseInterface {
-	return newApiGatewayGatewayResponses(c)
+func (c *AwsV1alpha1Client) ApiGatewayGatewayResponses(namespace string) ApiGatewayGatewayResponseInterface {
+	return newApiGatewayGatewayResponses(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayIntegrations() ApiGatewayIntegrationInterface {
-	return newApiGatewayIntegrations(c)
+func (c *AwsV1alpha1Client) ApiGatewayIntegrations(namespace string) ApiGatewayIntegrationInterface {
+	return newApiGatewayIntegrations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayIntegrationResponses() ApiGatewayIntegrationResponseInterface {
-	return newApiGatewayIntegrationResponses(c)
+func (c *AwsV1alpha1Client) ApiGatewayIntegrationResponses(namespace string) ApiGatewayIntegrationResponseInterface {
+	return newApiGatewayIntegrationResponses(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayMethods() ApiGatewayMethodInterface {
-	return newApiGatewayMethods(c)
+func (c *AwsV1alpha1Client) ApiGatewayMethods(namespace string) ApiGatewayMethodInterface {
+	return newApiGatewayMethods(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayMethodResponses() ApiGatewayMethodResponseInterface {
-	return newApiGatewayMethodResponses(c)
+func (c *AwsV1alpha1Client) ApiGatewayMethodResponses(namespace string) ApiGatewayMethodResponseInterface {
+	return newApiGatewayMethodResponses(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayMethodSettingses() ApiGatewayMethodSettingsInterface {
-	return newApiGatewayMethodSettingses(c)
+func (c *AwsV1alpha1Client) ApiGatewayMethodSettingses(namespace string) ApiGatewayMethodSettingsInterface {
+	return newApiGatewayMethodSettingses(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayModels() ApiGatewayModelInterface {
-	return newApiGatewayModels(c)
+func (c *AwsV1alpha1Client) ApiGatewayModels(namespace string) ApiGatewayModelInterface {
+	return newApiGatewayModels(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayRequestValidators() ApiGatewayRequestValidatorInterface {
-	return newApiGatewayRequestValidators(c)
+func (c *AwsV1alpha1Client) ApiGatewayRequestValidators(namespace string) ApiGatewayRequestValidatorInterface {
+	return newApiGatewayRequestValidators(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayResources() ApiGatewayResourceInterface {
-	return newApiGatewayResources(c)
+func (c *AwsV1alpha1Client) ApiGatewayResources(namespace string) ApiGatewayResourceInterface {
+	return newApiGatewayResources(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayRestApis() ApiGatewayRestApiInterface {
-	return newApiGatewayRestApis(c)
+func (c *AwsV1alpha1Client) ApiGatewayRestAPIs(namespace string) ApiGatewayRestAPIInterface {
+	return newApiGatewayRestAPIs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayStages() ApiGatewayStageInterface {
-	return newApiGatewayStages(c)
+func (c *AwsV1alpha1Client) ApiGatewayStages(namespace string) ApiGatewayStageInterface {
+	return newApiGatewayStages(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayUsagePlans() ApiGatewayUsagePlanInterface {
-	return newApiGatewayUsagePlans(c)
+func (c *AwsV1alpha1Client) ApiGatewayUsagePlans(namespace string) ApiGatewayUsagePlanInterface {
+	return newApiGatewayUsagePlans(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayUsagePlanKeys() ApiGatewayUsagePlanKeyInterface {
-	return newApiGatewayUsagePlanKeys(c)
+func (c *AwsV1alpha1Client) ApiGatewayUsagePlanKeys(namespace string) ApiGatewayUsagePlanKeyInterface {
+	return newApiGatewayUsagePlanKeys(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ApiGatewayVpcLinks() ApiGatewayVpcLinkInterface {
-	return newApiGatewayVpcLinks(c)
+func (c *AwsV1alpha1Client) ApiGatewayVpcLinks(namespace string) ApiGatewayVpcLinkInterface {
+	return newApiGatewayVpcLinks(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AppCookieStickinessPolicies() AppCookieStickinessPolicyInterface {
-	return newAppCookieStickinessPolicies(c)
+func (c *AwsV1alpha1Client) AppCookieStickinessPolicies(namespace string) AppCookieStickinessPolicyInterface {
+	return newAppCookieStickinessPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AppautoscalingPolicies() AppautoscalingPolicyInterface {
-	return newAppautoscalingPolicies(c)
+func (c *AwsV1alpha1Client) AppautoscalingPolicies(namespace string) AppautoscalingPolicyInterface {
+	return newAppautoscalingPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AppautoscalingScheduledActions() AppautoscalingScheduledActionInterface {
-	return newAppautoscalingScheduledActions(c)
+func (c *AwsV1alpha1Client) AppautoscalingScheduledActions(namespace string) AppautoscalingScheduledActionInterface {
+	return newAppautoscalingScheduledActions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AppautoscalingTargets() AppautoscalingTargetInterface {
-	return newAppautoscalingTargets(c)
+func (c *AwsV1alpha1Client) AppautoscalingTargets(namespace string) AppautoscalingTargetInterface {
+	return newAppautoscalingTargets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AppmeshMeshes() AppmeshMeshInterface {
-	return newAppmeshMeshes(c)
+func (c *AwsV1alpha1Client) AppmeshMeshes(namespace string) AppmeshMeshInterface {
+	return newAppmeshMeshes(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AppmeshRoutes() AppmeshRouteInterface {
-	return newAppmeshRoutes(c)
+func (c *AwsV1alpha1Client) AppmeshRoutes(namespace string) AppmeshRouteInterface {
+	return newAppmeshRoutes(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AppmeshVirtualNodes() AppmeshVirtualNodeInterface {
-	return newAppmeshVirtualNodes(c)
+func (c *AwsV1alpha1Client) AppmeshVirtualNodes(namespace string) AppmeshVirtualNodeInterface {
+	return newAppmeshVirtualNodes(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AppmeshVirtualRouters() AppmeshVirtualRouterInterface {
-	return newAppmeshVirtualRouters(c)
+func (c *AwsV1alpha1Client) AppmeshVirtualRouters(namespace string) AppmeshVirtualRouterInterface {
+	return newAppmeshVirtualRouters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AppmeshVirtualServices() AppmeshVirtualServiceInterface {
-	return newAppmeshVirtualServices(c)
+func (c *AwsV1alpha1Client) AppmeshVirtualServices(namespace string) AppmeshVirtualServiceInterface {
+	return newAppmeshVirtualServices(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AppsyncApiKeys() AppsyncApiKeyInterface {
-	return newAppsyncApiKeys(c)
+func (c *AwsV1alpha1Client) AppsyncAPIKeys(namespace string) AppsyncAPIKeyInterface {
+	return newAppsyncAPIKeys(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AppsyncDatasources() AppsyncDatasourceInterface {
-	return newAppsyncDatasources(c)
+func (c *AwsV1alpha1Client) AppsyncDatasources(namespace string) AppsyncDatasourceInterface {
+	return newAppsyncDatasources(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AppsyncFunctions() AppsyncFunctionInterface {
-	return newAppsyncFunctions(c)
+func (c *AwsV1alpha1Client) AppsyncFunctions(namespace string) AppsyncFunctionInterface {
+	return newAppsyncFunctions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AppsyncGraphqlApis() AppsyncGraphqlApiInterface {
-	return newAppsyncGraphqlApis(c)
+func (c *AwsV1alpha1Client) AppsyncGraphqlAPIs(namespace string) AppsyncGraphqlAPIInterface {
+	return newAppsyncGraphqlAPIs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AppsyncResolvers() AppsyncResolverInterface {
-	return newAppsyncResolvers(c)
+func (c *AwsV1alpha1Client) AppsyncResolvers(namespace string) AppsyncResolverInterface {
+	return newAppsyncResolvers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AthenaDatabases() AthenaDatabaseInterface {
-	return newAthenaDatabases(c)
+func (c *AwsV1alpha1Client) AthenaDatabases(namespace string) AthenaDatabaseInterface {
+	return newAthenaDatabases(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AthenaNamedQueries() AthenaNamedQueryInterface {
-	return newAthenaNamedQueries(c)
+func (c *AwsV1alpha1Client) AthenaNamedQueries(namespace string) AthenaNamedQueryInterface {
+	return newAthenaNamedQueries(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AthenaWorkgroups() AthenaWorkgroupInterface {
-	return newAthenaWorkgroups(c)
+func (c *AwsV1alpha1Client) AthenaWorkgroups(namespace string) AthenaWorkgroupInterface {
+	return newAthenaWorkgroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AutoscalingAttachments() AutoscalingAttachmentInterface {
-	return newAutoscalingAttachments(c)
+func (c *AwsV1alpha1Client) AutoscalingAttachments(namespace string) AutoscalingAttachmentInterface {
+	return newAutoscalingAttachments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AutoscalingGroups() AutoscalingGroupInterface {
-	return newAutoscalingGroups(c)
+func (c *AwsV1alpha1Client) AutoscalingGroups(namespace string) AutoscalingGroupInterface {
+	return newAutoscalingGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AutoscalingLifecycleHooks() AutoscalingLifecycleHookInterface {
-	return newAutoscalingLifecycleHooks(c)
+func (c *AwsV1alpha1Client) AutoscalingLifecycleHooks(namespace string) AutoscalingLifecycleHookInterface {
+	return newAutoscalingLifecycleHooks(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AutoscalingNotifications() AutoscalingNotificationInterface {
-	return newAutoscalingNotifications(c)
+func (c *AwsV1alpha1Client) AutoscalingNotifications(namespace string) AutoscalingNotificationInterface {
+	return newAutoscalingNotifications(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AutoscalingPolicies() AutoscalingPolicyInterface {
-	return newAutoscalingPolicies(c)
+func (c *AwsV1alpha1Client) AutoscalingPolicies(namespace string) AutoscalingPolicyInterface {
+	return newAutoscalingPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AutoscalingSchedules() AutoscalingScheduleInterface {
-	return newAutoscalingSchedules(c)
+func (c *AwsV1alpha1Client) AutoscalingSchedules(namespace string) AutoscalingScheduleInterface {
+	return newAutoscalingSchedules(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) BackupPlans() BackupPlanInterface {
-	return newBackupPlans(c)
+func (c *AwsV1alpha1Client) BackupPlans(namespace string) BackupPlanInterface {
+	return newBackupPlans(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) BackupSelections() BackupSelectionInterface {
-	return newBackupSelections(c)
+func (c *AwsV1alpha1Client) BackupSelections(namespace string) BackupSelectionInterface {
+	return newBackupSelections(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) BackupVaults() BackupVaultInterface {
-	return newBackupVaults(c)
+func (c *AwsV1alpha1Client) BackupVaults(namespace string) BackupVaultInterface {
+	return newBackupVaults(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) BatchComputeEnvironments() BatchComputeEnvironmentInterface {
-	return newBatchComputeEnvironments(c)
+func (c *AwsV1alpha1Client) BatchComputeEnvironments(namespace string) BatchComputeEnvironmentInterface {
+	return newBatchComputeEnvironments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) BatchJobDefinitions() BatchJobDefinitionInterface {
-	return newBatchJobDefinitions(c)
+func (c *AwsV1alpha1Client) BatchJobDefinitions(namespace string) BatchJobDefinitionInterface {
+	return newBatchJobDefinitions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) BatchJobQueues() BatchJobQueueInterface {
-	return newBatchJobQueues(c)
+func (c *AwsV1alpha1Client) BatchJobQueues(namespace string) BatchJobQueueInterface {
+	return newBatchJobQueues(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) BudgetsBudgets() BudgetsBudgetInterface {
-	return newBudgetsBudgets(c)
+func (c *AwsV1alpha1Client) BudgetsBudgets(namespace string) BudgetsBudgetInterface {
+	return newBudgetsBudgets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Cloud9EnvironmentEc2s() Cloud9EnvironmentEc2Interface {
-	return newCloud9EnvironmentEc2s(c)
+func (c *AwsV1alpha1Client) Cloud9EnvironmentEc2s(namespace string) Cloud9EnvironmentEc2Interface {
+	return newCloud9EnvironmentEc2s(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudformationStacks() CloudformationStackInterface {
-	return newCloudformationStacks(c)
+func (c *AwsV1alpha1Client) CloudformationStacks(namespace string) CloudformationStackInterface {
+	return newCloudformationStacks(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudformationStackSets() CloudformationStackSetInterface {
-	return newCloudformationStackSets(c)
+func (c *AwsV1alpha1Client) CloudformationStackSets(namespace string) CloudformationStackSetInterface {
+	return newCloudformationStackSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudformationStackSetInstances() CloudformationStackSetInstanceInterface {
-	return newCloudformationStackSetInstances(c)
+func (c *AwsV1alpha1Client) CloudformationStackSetInstances(namespace string) CloudformationStackSetInstanceInterface {
+	return newCloudformationStackSetInstances(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudfrontDistributions() CloudfrontDistributionInterface {
-	return newCloudfrontDistributions(c)
+func (c *AwsV1alpha1Client) CloudfrontDistributions(namespace string) CloudfrontDistributionInterface {
+	return newCloudfrontDistributions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudfrontOriginAccessIdentities() CloudfrontOriginAccessIdentityInterface {
-	return newCloudfrontOriginAccessIdentities(c)
+func (c *AwsV1alpha1Client) CloudfrontOriginAccessIdentities(namespace string) CloudfrontOriginAccessIdentityInterface {
+	return newCloudfrontOriginAccessIdentities(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudfrontPublicKeys() CloudfrontPublicKeyInterface {
-	return newCloudfrontPublicKeys(c)
+func (c *AwsV1alpha1Client) CloudfrontPublicKeys(namespace string) CloudfrontPublicKeyInterface {
+	return newCloudfrontPublicKeys(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudhsmV2Clusters() CloudhsmV2ClusterInterface {
-	return newCloudhsmV2Clusters(c)
+func (c *AwsV1alpha1Client) CloudhsmV2Clusters(namespace string) CloudhsmV2ClusterInterface {
+	return newCloudhsmV2Clusters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudhsmV2Hsms() CloudhsmV2HsmInterface {
-	return newCloudhsmV2Hsms(c)
+func (c *AwsV1alpha1Client) CloudhsmV2Hsms(namespace string) CloudhsmV2HsmInterface {
+	return newCloudhsmV2Hsms(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Cloudtrails() CloudtrailInterface {
-	return newCloudtrails(c)
+func (c *AwsV1alpha1Client) Cloudtrails(namespace string) CloudtrailInterface {
+	return newCloudtrails(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudwatchDashboards() CloudwatchDashboardInterface {
-	return newCloudwatchDashboards(c)
+func (c *AwsV1alpha1Client) CloudwatchDashboards(namespace string) CloudwatchDashboardInterface {
+	return newCloudwatchDashboards(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudwatchEventPermissions() CloudwatchEventPermissionInterface {
-	return newCloudwatchEventPermissions(c)
+func (c *AwsV1alpha1Client) CloudwatchEventPermissions(namespace string) CloudwatchEventPermissionInterface {
+	return newCloudwatchEventPermissions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudwatchEventRules() CloudwatchEventRuleInterface {
-	return newCloudwatchEventRules(c)
+func (c *AwsV1alpha1Client) CloudwatchEventRules(namespace string) CloudwatchEventRuleInterface {
+	return newCloudwatchEventRules(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudwatchEventTargets() CloudwatchEventTargetInterface {
-	return newCloudwatchEventTargets(c)
+func (c *AwsV1alpha1Client) CloudwatchEventTargets(namespace string) CloudwatchEventTargetInterface {
+	return newCloudwatchEventTargets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudwatchLogDestinations() CloudwatchLogDestinationInterface {
-	return newCloudwatchLogDestinations(c)
+func (c *AwsV1alpha1Client) CloudwatchLogDestinations(namespace string) CloudwatchLogDestinationInterface {
+	return newCloudwatchLogDestinations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudwatchLogDestinationPolicies() CloudwatchLogDestinationPolicyInterface {
-	return newCloudwatchLogDestinationPolicies(c)
+func (c *AwsV1alpha1Client) CloudwatchLogDestinationPolicies(namespace string) CloudwatchLogDestinationPolicyInterface {
+	return newCloudwatchLogDestinationPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudwatchLogGroups() CloudwatchLogGroupInterface {
-	return newCloudwatchLogGroups(c)
+func (c *AwsV1alpha1Client) CloudwatchLogGroups(namespace string) CloudwatchLogGroupInterface {
+	return newCloudwatchLogGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudwatchLogMetricFilters() CloudwatchLogMetricFilterInterface {
-	return newCloudwatchLogMetricFilters(c)
+func (c *AwsV1alpha1Client) CloudwatchLogMetricFilters(namespace string) CloudwatchLogMetricFilterInterface {
+	return newCloudwatchLogMetricFilters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudwatchLogResourcePolicies() CloudwatchLogResourcePolicyInterface {
-	return newCloudwatchLogResourcePolicies(c)
+func (c *AwsV1alpha1Client) CloudwatchLogResourcePolicies(namespace string) CloudwatchLogResourcePolicyInterface {
+	return newCloudwatchLogResourcePolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudwatchLogStreams() CloudwatchLogStreamInterface {
-	return newCloudwatchLogStreams(c)
+func (c *AwsV1alpha1Client) CloudwatchLogStreams(namespace string) CloudwatchLogStreamInterface {
+	return newCloudwatchLogStreams(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudwatchLogSubscriptionFilters() CloudwatchLogSubscriptionFilterInterface {
-	return newCloudwatchLogSubscriptionFilters(c)
+func (c *AwsV1alpha1Client) CloudwatchLogSubscriptionFilters(namespace string) CloudwatchLogSubscriptionFilterInterface {
+	return newCloudwatchLogSubscriptionFilters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CloudwatchMetricAlarms() CloudwatchMetricAlarmInterface {
-	return newCloudwatchMetricAlarms(c)
+func (c *AwsV1alpha1Client) CloudwatchMetricAlarms(namespace string) CloudwatchMetricAlarmInterface {
+	return newCloudwatchMetricAlarms(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CodebuildProjects() CodebuildProjectInterface {
-	return newCodebuildProjects(c)
+func (c *AwsV1alpha1Client) CodebuildProjects(namespace string) CodebuildProjectInterface {
+	return newCodebuildProjects(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CodebuildWebhooks() CodebuildWebhookInterface {
-	return newCodebuildWebhooks(c)
+func (c *AwsV1alpha1Client) CodebuildWebhooks(namespace string) CodebuildWebhookInterface {
+	return newCodebuildWebhooks(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CodecommitRepositories() CodecommitRepositoryInterface {
-	return newCodecommitRepositories(c)
+func (c *AwsV1alpha1Client) CodecommitRepositories(namespace string) CodecommitRepositoryInterface {
+	return newCodecommitRepositories(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CodecommitTriggers() CodecommitTriggerInterface {
-	return newCodecommitTriggers(c)
+func (c *AwsV1alpha1Client) CodecommitTriggers(namespace string) CodecommitTriggerInterface {
+	return newCodecommitTriggers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CodedeployApps() CodedeployAppInterface {
-	return newCodedeployApps(c)
+func (c *AwsV1alpha1Client) CodedeployApps(namespace string) CodedeployAppInterface {
+	return newCodedeployApps(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CodedeployDeploymentConfigs() CodedeployDeploymentConfigInterface {
-	return newCodedeployDeploymentConfigs(c)
+func (c *AwsV1alpha1Client) CodedeployDeploymentConfigs(namespace string) CodedeployDeploymentConfigInterface {
+	return newCodedeployDeploymentConfigs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CodedeployDeploymentGroups() CodedeployDeploymentGroupInterface {
-	return newCodedeployDeploymentGroups(c)
+func (c *AwsV1alpha1Client) CodedeployDeploymentGroups(namespace string) CodedeployDeploymentGroupInterface {
+	return newCodedeployDeploymentGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Codepipelines() CodepipelineInterface {
-	return newCodepipelines(c)
+func (c *AwsV1alpha1Client) Codepipelines(namespace string) CodepipelineInterface {
+	return newCodepipelines(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CodepipelineWebhooks() CodepipelineWebhookInterface {
-	return newCodepipelineWebhooks(c)
+func (c *AwsV1alpha1Client) CodepipelineWebhooks(namespace string) CodepipelineWebhookInterface {
+	return newCodepipelineWebhooks(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CognitoIdentityPools() CognitoIdentityPoolInterface {
-	return newCognitoIdentityPools(c)
+func (c *AwsV1alpha1Client) CognitoIdentityPools(namespace string) CognitoIdentityPoolInterface {
+	return newCognitoIdentityPools(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CognitoIdentityPoolRolesAttachments() CognitoIdentityPoolRolesAttachmentInterface {
-	return newCognitoIdentityPoolRolesAttachments(c)
+func (c *AwsV1alpha1Client) CognitoIdentityPoolRolesAttachments(namespace string) CognitoIdentityPoolRolesAttachmentInterface {
+	return newCognitoIdentityPoolRolesAttachments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CognitoIdentityProviders() CognitoIdentityProviderInterface {
-	return newCognitoIdentityProviders(c)
+func (c *AwsV1alpha1Client) CognitoIdentityProviders(namespace string) CognitoIdentityProviderInterface {
+	return newCognitoIdentityProviders(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CognitoResourceServers() CognitoResourceServerInterface {
-	return newCognitoResourceServers(c)
+func (c *AwsV1alpha1Client) CognitoResourceServers(namespace string) CognitoResourceServerInterface {
+	return newCognitoResourceServers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CognitoUserGroups() CognitoUserGroupInterface {
-	return newCognitoUserGroups(c)
+func (c *AwsV1alpha1Client) CognitoUserGroups(namespace string) CognitoUserGroupInterface {
+	return newCognitoUserGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CognitoUserPools() CognitoUserPoolInterface {
-	return newCognitoUserPools(c)
+func (c *AwsV1alpha1Client) CognitoUserPools(namespace string) CognitoUserPoolInterface {
+	return newCognitoUserPools(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CognitoUserPoolClients() CognitoUserPoolClientInterface {
-	return newCognitoUserPoolClients(c)
+func (c *AwsV1alpha1Client) CognitoUserPoolClients(namespace string) CognitoUserPoolClientInterface {
+	return newCognitoUserPoolClients(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CognitoUserPoolDomains() CognitoUserPoolDomainInterface {
-	return newCognitoUserPoolDomains(c)
+func (c *AwsV1alpha1Client) CognitoUserPoolDomains(namespace string) CognitoUserPoolDomainInterface {
+	return newCognitoUserPoolDomains(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ConfigAggregateAuthorizations() ConfigAggregateAuthorizationInterface {
-	return newConfigAggregateAuthorizations(c)
+func (c *AwsV1alpha1Client) ConfigAggregateAuthorizations(namespace string) ConfigAggregateAuthorizationInterface {
+	return newConfigAggregateAuthorizations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ConfigConfigRules() ConfigConfigRuleInterface {
-	return newConfigConfigRules(c)
+func (c *AwsV1alpha1Client) ConfigConfigRules(namespace string) ConfigConfigRuleInterface {
+	return newConfigConfigRules(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ConfigConfigurationAggregators() ConfigConfigurationAggregatorInterface {
-	return newConfigConfigurationAggregators(c)
+func (c *AwsV1alpha1Client) ConfigConfigurationAggregators(namespace string) ConfigConfigurationAggregatorInterface {
+	return newConfigConfigurationAggregators(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ConfigConfigurationRecorders() ConfigConfigurationRecorderInterface {
-	return newConfigConfigurationRecorders(c)
+func (c *AwsV1alpha1Client) ConfigConfigurationRecorders(namespace string) ConfigConfigurationRecorderInterface {
+	return newConfigConfigurationRecorders(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ConfigConfigurationRecorderStatus_s() ConfigConfigurationRecorderStatus_Interface {
-	return newConfigConfigurationRecorderStatus_s(c)
+func (c *AwsV1alpha1Client) ConfigConfigurationRecorderStatus_s(namespace string) ConfigConfigurationRecorderStatus_Interface {
+	return newConfigConfigurationRecorderStatus_s(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ConfigDeliveryChannels() ConfigDeliveryChannelInterface {
-	return newConfigDeliveryChannels(c)
+func (c *AwsV1alpha1Client) ConfigDeliveryChannels(namespace string) ConfigDeliveryChannelInterface {
+	return newConfigDeliveryChannels(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CurReportDefinitions() CurReportDefinitionInterface {
-	return newCurReportDefinitions(c)
+func (c *AwsV1alpha1Client) CurReportDefinitions(namespace string) CurReportDefinitionInterface {
+	return newCurReportDefinitions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) CustomerGateways() CustomerGatewayInterface {
-	return newCustomerGateways(c)
+func (c *AwsV1alpha1Client) CustomerGateways(namespace string) CustomerGatewayInterface {
+	return newCustomerGateways(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DatapipelinePipelines() DatapipelinePipelineInterface {
-	return newDatapipelinePipelines(c)
+func (c *AwsV1alpha1Client) DatapipelinePipelines(namespace string) DatapipelinePipelineInterface {
+	return newDatapipelinePipelines(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DatasyncAgents() DatasyncAgentInterface {
-	return newDatasyncAgents(c)
+func (c *AwsV1alpha1Client) DatasyncAgents(namespace string) DatasyncAgentInterface {
+	return newDatasyncAgents(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DatasyncLocationEfses() DatasyncLocationEfsInterface {
-	return newDatasyncLocationEfses(c)
+func (c *AwsV1alpha1Client) DatasyncLocationEfses(namespace string) DatasyncLocationEfsInterface {
+	return newDatasyncLocationEfses(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DatasyncLocationNfses() DatasyncLocationNfsInterface {
-	return newDatasyncLocationNfses(c)
+func (c *AwsV1alpha1Client) DatasyncLocationNfses(namespace string) DatasyncLocationNfsInterface {
+	return newDatasyncLocationNfses(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DatasyncLocationS3s() DatasyncLocationS3Interface {
-	return newDatasyncLocationS3s(c)
+func (c *AwsV1alpha1Client) DatasyncLocationS3s(namespace string) DatasyncLocationS3Interface {
+	return newDatasyncLocationS3s(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DatasyncTasks() DatasyncTaskInterface {
-	return newDatasyncTasks(c)
+func (c *AwsV1alpha1Client) DatasyncTasks(namespace string) DatasyncTaskInterface {
+	return newDatasyncTasks(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DaxClusters() DaxClusterInterface {
-	return newDaxClusters(c)
+func (c *AwsV1alpha1Client) DaxClusters(namespace string) DaxClusterInterface {
+	return newDaxClusters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DaxParameterGroups() DaxParameterGroupInterface {
-	return newDaxParameterGroups(c)
+func (c *AwsV1alpha1Client) DaxParameterGroups(namespace string) DaxParameterGroupInterface {
+	return newDaxParameterGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DaxSubnetGroups() DaxSubnetGroupInterface {
-	return newDaxSubnetGroups(c)
+func (c *AwsV1alpha1Client) DaxSubnetGroups(namespace string) DaxSubnetGroupInterface {
+	return newDaxSubnetGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DbClusterSnapshots() DbClusterSnapshotInterface {
-	return newDbClusterSnapshots(c)
+func (c *AwsV1alpha1Client) DbClusterSnapshots(namespace string) DbClusterSnapshotInterface {
+	return newDbClusterSnapshots(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DbEventSubscriptions() DbEventSubscriptionInterface {
-	return newDbEventSubscriptions(c)
+func (c *AwsV1alpha1Client) DbEventSubscriptions(namespace string) DbEventSubscriptionInterface {
+	return newDbEventSubscriptions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DbInstances() DbInstanceInterface {
-	return newDbInstances(c)
+func (c *AwsV1alpha1Client) DbInstances(namespace string) DbInstanceInterface {
+	return newDbInstances(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DbInstanceRoleAssociations() DbInstanceRoleAssociationInterface {
-	return newDbInstanceRoleAssociations(c)
+func (c *AwsV1alpha1Client) DbInstanceRoleAssociations(namespace string) DbInstanceRoleAssociationInterface {
+	return newDbInstanceRoleAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DbOptionGroups() DbOptionGroupInterface {
-	return newDbOptionGroups(c)
+func (c *AwsV1alpha1Client) DbOptionGroups(namespace string) DbOptionGroupInterface {
+	return newDbOptionGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DbParameterGroups() DbParameterGroupInterface {
-	return newDbParameterGroups(c)
+func (c *AwsV1alpha1Client) DbParameterGroups(namespace string) DbParameterGroupInterface {
+	return newDbParameterGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DbSecurityGroups() DbSecurityGroupInterface {
-	return newDbSecurityGroups(c)
+func (c *AwsV1alpha1Client) DbSecurityGroups(namespace string) DbSecurityGroupInterface {
+	return newDbSecurityGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DbSnapshots() DbSnapshotInterface {
-	return newDbSnapshots(c)
+func (c *AwsV1alpha1Client) DbSnapshots(namespace string) DbSnapshotInterface {
+	return newDbSnapshots(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DbSubnetGroups() DbSubnetGroupInterface {
-	return newDbSubnetGroups(c)
+func (c *AwsV1alpha1Client) DbSubnetGroups(namespace string) DbSubnetGroupInterface {
+	return newDbSubnetGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DefaultNetworkAcls() DefaultNetworkAclInterface {
-	return newDefaultNetworkAcls(c)
+func (c *AwsV1alpha1Client) DefaultNetworkACLs(namespace string) DefaultNetworkACLInterface {
+	return newDefaultNetworkACLs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DefaultRouteTables() DefaultRouteTableInterface {
-	return newDefaultRouteTables(c)
+func (c *AwsV1alpha1Client) DefaultRouteTables(namespace string) DefaultRouteTableInterface {
+	return newDefaultRouteTables(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DefaultSecurityGroups() DefaultSecurityGroupInterface {
-	return newDefaultSecurityGroups(c)
+func (c *AwsV1alpha1Client) DefaultSecurityGroups(namespace string) DefaultSecurityGroupInterface {
+	return newDefaultSecurityGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DefaultSubnets() DefaultSubnetInterface {
-	return newDefaultSubnets(c)
+func (c *AwsV1alpha1Client) DefaultSubnets(namespace string) DefaultSubnetInterface {
+	return newDefaultSubnets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DefaultVpcs() DefaultVpcInterface {
-	return newDefaultVpcs(c)
+func (c *AwsV1alpha1Client) DefaultVpcs(namespace string) DefaultVpcInterface {
+	return newDefaultVpcs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DefaultVpcDhcpOptionses() DefaultVpcDhcpOptionsInterface {
-	return newDefaultVpcDhcpOptionses(c)
+func (c *AwsV1alpha1Client) DefaultVpcDHCPOptionses(namespace string) DefaultVpcDHCPOptionsInterface {
+	return newDefaultVpcDHCPOptionses(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DevicefarmProjects() DevicefarmProjectInterface {
-	return newDevicefarmProjects(c)
+func (c *AwsV1alpha1Client) DevicefarmProjects(namespace string) DevicefarmProjectInterface {
+	return newDevicefarmProjects(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DirectoryServiceConditionalForwarders() DirectoryServiceConditionalForwarderInterface {
-	return newDirectoryServiceConditionalForwarders(c)
+func (c *AwsV1alpha1Client) DirectoryServiceConditionalForwarders(namespace string) DirectoryServiceConditionalForwarderInterface {
+	return newDirectoryServiceConditionalForwarders(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DirectoryServiceDirectories() DirectoryServiceDirectoryInterface {
-	return newDirectoryServiceDirectories(c)
+func (c *AwsV1alpha1Client) DirectoryServiceDirectories(namespace string) DirectoryServiceDirectoryInterface {
+	return newDirectoryServiceDirectories(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DirectoryServiceLogSubscriptions() DirectoryServiceLogSubscriptionInterface {
-	return newDirectoryServiceLogSubscriptions(c)
+func (c *AwsV1alpha1Client) DirectoryServiceLogSubscriptions(namespace string) DirectoryServiceLogSubscriptionInterface {
+	return newDirectoryServiceLogSubscriptions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DlmLifecyclePolicies() DlmLifecyclePolicyInterface {
-	return newDlmLifecyclePolicies(c)
+func (c *AwsV1alpha1Client) DlmLifecyclePolicies(namespace string) DlmLifecyclePolicyInterface {
+	return newDlmLifecyclePolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DmsCertificates() DmsCertificateInterface {
-	return newDmsCertificates(c)
+func (c *AwsV1alpha1Client) DmsCertificates(namespace string) DmsCertificateInterface {
+	return newDmsCertificates(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DmsEndpoints() DmsEndpointInterface {
-	return newDmsEndpoints(c)
+func (c *AwsV1alpha1Client) DmsEndpoints(namespace string) DmsEndpointInterface {
+	return newDmsEndpoints(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DmsReplicationInstances() DmsReplicationInstanceInterface {
-	return newDmsReplicationInstances(c)
+func (c *AwsV1alpha1Client) DmsReplicationInstances(namespace string) DmsReplicationInstanceInterface {
+	return newDmsReplicationInstances(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DmsReplicationSubnetGroups() DmsReplicationSubnetGroupInterface {
-	return newDmsReplicationSubnetGroups(c)
+func (c *AwsV1alpha1Client) DmsReplicationSubnetGroups(namespace string) DmsReplicationSubnetGroupInterface {
+	return newDmsReplicationSubnetGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DmsReplicationTasks() DmsReplicationTaskInterface {
-	return newDmsReplicationTasks(c)
+func (c *AwsV1alpha1Client) DmsReplicationTasks(namespace string) DmsReplicationTaskInterface {
+	return newDmsReplicationTasks(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DocdbClusters() DocdbClusterInterface {
-	return newDocdbClusters(c)
+func (c *AwsV1alpha1Client) DocdbClusters(namespace string) DocdbClusterInterface {
+	return newDocdbClusters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DocdbClusterInstances() DocdbClusterInstanceInterface {
-	return newDocdbClusterInstances(c)
+func (c *AwsV1alpha1Client) DocdbClusterInstances(namespace string) DocdbClusterInstanceInterface {
+	return newDocdbClusterInstances(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DocdbClusterParameterGroups() DocdbClusterParameterGroupInterface {
-	return newDocdbClusterParameterGroups(c)
+func (c *AwsV1alpha1Client) DocdbClusterParameterGroups(namespace string) DocdbClusterParameterGroupInterface {
+	return newDocdbClusterParameterGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DocdbClusterSnapshots() DocdbClusterSnapshotInterface {
-	return newDocdbClusterSnapshots(c)
+func (c *AwsV1alpha1Client) DocdbClusterSnapshots(namespace string) DocdbClusterSnapshotInterface {
+	return newDocdbClusterSnapshots(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DocdbSubnetGroups() DocdbSubnetGroupInterface {
-	return newDocdbSubnetGroups(c)
+func (c *AwsV1alpha1Client) DocdbSubnetGroups(namespace string) DocdbSubnetGroupInterface {
+	return newDocdbSubnetGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DxBgpPeers() DxBgpPeerInterface {
-	return newDxBgpPeers(c)
+func (c *AwsV1alpha1Client) DxBGPPeers(namespace string) DxBGPPeerInterface {
+	return newDxBGPPeers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DxConnections() DxConnectionInterface {
-	return newDxConnections(c)
+func (c *AwsV1alpha1Client) DxConnections(namespace string) DxConnectionInterface {
+	return newDxConnections(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DxConnectionAssociations() DxConnectionAssociationInterface {
-	return newDxConnectionAssociations(c)
+func (c *AwsV1alpha1Client) DxConnectionAssociations(namespace string) DxConnectionAssociationInterface {
+	return newDxConnectionAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DxGateways() DxGatewayInterface {
-	return newDxGateways(c)
+func (c *AwsV1alpha1Client) DxGateways(namespace string) DxGatewayInterface {
+	return newDxGateways(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DxGatewayAssociations() DxGatewayAssociationInterface {
-	return newDxGatewayAssociations(c)
+func (c *AwsV1alpha1Client) DxGatewayAssociations(namespace string) DxGatewayAssociationInterface {
+	return newDxGatewayAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DxGatewayAssociationProposals() DxGatewayAssociationProposalInterface {
-	return newDxGatewayAssociationProposals(c)
+func (c *AwsV1alpha1Client) DxGatewayAssociationProposals(namespace string) DxGatewayAssociationProposalInterface {
+	return newDxGatewayAssociationProposals(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DxHostedPrivateVirtualInterfaces() DxHostedPrivateVirtualInterfaceInterface {
-	return newDxHostedPrivateVirtualInterfaces(c)
+func (c *AwsV1alpha1Client) DxHostedPrivateVirtualInterfaces(namespace string) DxHostedPrivateVirtualInterfaceInterface {
+	return newDxHostedPrivateVirtualInterfaces(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DxHostedPrivateVirtualInterfaceAccepters() DxHostedPrivateVirtualInterfaceAccepterInterface {
-	return newDxHostedPrivateVirtualInterfaceAccepters(c)
+func (c *AwsV1alpha1Client) DxHostedPrivateVirtualInterfaceAccepters(namespace string) DxHostedPrivateVirtualInterfaceAccepterInterface {
+	return newDxHostedPrivateVirtualInterfaceAccepters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DxHostedPublicVirtualInterfaces() DxHostedPublicVirtualInterfaceInterface {
-	return newDxHostedPublicVirtualInterfaces(c)
+func (c *AwsV1alpha1Client) DxHostedPublicVirtualInterfaces(namespace string) DxHostedPublicVirtualInterfaceInterface {
+	return newDxHostedPublicVirtualInterfaces(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DxHostedPublicVirtualInterfaceAccepters() DxHostedPublicVirtualInterfaceAccepterInterface {
-	return newDxHostedPublicVirtualInterfaceAccepters(c)
+func (c *AwsV1alpha1Client) DxHostedPublicVirtualInterfaceAccepters(namespace string) DxHostedPublicVirtualInterfaceAccepterInterface {
+	return newDxHostedPublicVirtualInterfaceAccepters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DxLags() DxLagInterface {
-	return newDxLags(c)
+func (c *AwsV1alpha1Client) DxLags(namespace string) DxLagInterface {
+	return newDxLags(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DxPrivateVirtualInterfaces() DxPrivateVirtualInterfaceInterface {
-	return newDxPrivateVirtualInterfaces(c)
+func (c *AwsV1alpha1Client) DxPrivateVirtualInterfaces(namespace string) DxPrivateVirtualInterfaceInterface {
+	return newDxPrivateVirtualInterfaces(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DxPublicVirtualInterfaces() DxPublicVirtualInterfaceInterface {
-	return newDxPublicVirtualInterfaces(c)
+func (c *AwsV1alpha1Client) DxPublicVirtualInterfaces(namespace string) DxPublicVirtualInterfaceInterface {
+	return newDxPublicVirtualInterfaces(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DynamodbGlobalTables() DynamodbGlobalTableInterface {
-	return newDynamodbGlobalTables(c)
+func (c *AwsV1alpha1Client) DynamodbGlobalTables(namespace string) DynamodbGlobalTableInterface {
+	return newDynamodbGlobalTables(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DynamodbTables() DynamodbTableInterface {
-	return newDynamodbTables(c)
+func (c *AwsV1alpha1Client) DynamodbTables(namespace string) DynamodbTableInterface {
+	return newDynamodbTables(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DynamodbTableItems() DynamodbTableItemInterface {
-	return newDynamodbTableItems(c)
+func (c *AwsV1alpha1Client) DynamodbTableItems(namespace string) DynamodbTableItemInterface {
+	return newDynamodbTableItems(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EbsDefaultKmsKeys() EbsDefaultKmsKeyInterface {
-	return newEbsDefaultKmsKeys(c)
+func (c *AwsV1alpha1Client) EbsDefaultKmsKeys(namespace string) EbsDefaultKmsKeyInterface {
+	return newEbsDefaultKmsKeys(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EbsEncryptionByDefaults() EbsEncryptionByDefaultInterface {
-	return newEbsEncryptionByDefaults(c)
+func (c *AwsV1alpha1Client) EbsEncryptionByDefaults(namespace string) EbsEncryptionByDefaultInterface {
+	return newEbsEncryptionByDefaults(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EbsSnapshots() EbsSnapshotInterface {
-	return newEbsSnapshots(c)
+func (c *AwsV1alpha1Client) EbsSnapshots(namespace string) EbsSnapshotInterface {
+	return newEbsSnapshots(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EbsSnapshotCopies() EbsSnapshotCopyInterface {
-	return newEbsSnapshotCopies(c)
+func (c *AwsV1alpha1Client) EbsSnapshotCopies(namespace string) EbsSnapshotCopyInterface {
+	return newEbsSnapshotCopies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EbsVolumes() EbsVolumeInterface {
-	return newEbsVolumes(c)
+func (c *AwsV1alpha1Client) EbsVolumes(namespace string) EbsVolumeInterface {
+	return newEbsVolumes(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Ec2CapacityReservations() Ec2CapacityReservationInterface {
-	return newEc2CapacityReservations(c)
+func (c *AwsV1alpha1Client) Ec2CapacityReservations(namespace string) Ec2CapacityReservationInterface {
+	return newEc2CapacityReservations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Ec2ClientVpnEndpoints() Ec2ClientVpnEndpointInterface {
-	return newEc2ClientVpnEndpoints(c)
+func (c *AwsV1alpha1Client) Ec2ClientVPNEndpoints(namespace string) Ec2ClientVPNEndpointInterface {
+	return newEc2ClientVPNEndpoints(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Ec2ClientVpnNetworkAssociations() Ec2ClientVpnNetworkAssociationInterface {
-	return newEc2ClientVpnNetworkAssociations(c)
+func (c *AwsV1alpha1Client) Ec2ClientVPNNetworkAssociations(namespace string) Ec2ClientVPNNetworkAssociationInterface {
+	return newEc2ClientVPNNetworkAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Ec2Fleets() Ec2FleetInterface {
-	return newEc2Fleets(c)
+func (c *AwsV1alpha1Client) Ec2Fleets(namespace string) Ec2FleetInterface {
+	return newEc2Fleets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Ec2TransitGateways() Ec2TransitGatewayInterface {
-	return newEc2TransitGateways(c)
+func (c *AwsV1alpha1Client) Ec2TransitGateways(namespace string) Ec2TransitGatewayInterface {
+	return newEc2TransitGateways(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Ec2TransitGatewayRoutes() Ec2TransitGatewayRouteInterface {
-	return newEc2TransitGatewayRoutes(c)
+func (c *AwsV1alpha1Client) Ec2TransitGatewayRoutes(namespace string) Ec2TransitGatewayRouteInterface {
+	return newEc2TransitGatewayRoutes(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Ec2TransitGatewayRouteTables() Ec2TransitGatewayRouteTableInterface {
-	return newEc2TransitGatewayRouteTables(c)
+func (c *AwsV1alpha1Client) Ec2TransitGatewayRouteTables(namespace string) Ec2TransitGatewayRouteTableInterface {
+	return newEc2TransitGatewayRouteTables(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Ec2TransitGatewayRouteTableAssociations() Ec2TransitGatewayRouteTableAssociationInterface {
-	return newEc2TransitGatewayRouteTableAssociations(c)
+func (c *AwsV1alpha1Client) Ec2TransitGatewayRouteTableAssociations(namespace string) Ec2TransitGatewayRouteTableAssociationInterface {
+	return newEc2TransitGatewayRouteTableAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Ec2TransitGatewayRouteTablePropagations() Ec2TransitGatewayRouteTablePropagationInterface {
-	return newEc2TransitGatewayRouteTablePropagations(c)
+func (c *AwsV1alpha1Client) Ec2TransitGatewayRouteTablePropagations(namespace string) Ec2TransitGatewayRouteTablePropagationInterface {
+	return newEc2TransitGatewayRouteTablePropagations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Ec2TransitGatewayVpcAttachments() Ec2TransitGatewayVpcAttachmentInterface {
-	return newEc2TransitGatewayVpcAttachments(c)
+func (c *AwsV1alpha1Client) Ec2TransitGatewayVpcAttachments(namespace string) Ec2TransitGatewayVpcAttachmentInterface {
+	return newEc2TransitGatewayVpcAttachments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Ec2TransitGatewayVpcAttachmentAccepters() Ec2TransitGatewayVpcAttachmentAccepterInterface {
-	return newEc2TransitGatewayVpcAttachmentAccepters(c)
+func (c *AwsV1alpha1Client) Ec2TransitGatewayVpcAttachmentAccepters(namespace string) Ec2TransitGatewayVpcAttachmentAccepterInterface {
+	return newEc2TransitGatewayVpcAttachmentAccepters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EcrLifecyclePolicies() EcrLifecyclePolicyInterface {
-	return newEcrLifecyclePolicies(c)
+func (c *AwsV1alpha1Client) EcrLifecyclePolicies(namespace string) EcrLifecyclePolicyInterface {
+	return newEcrLifecyclePolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EcrRepositories() EcrRepositoryInterface {
-	return newEcrRepositories(c)
+func (c *AwsV1alpha1Client) EcrRepositories(namespace string) EcrRepositoryInterface {
+	return newEcrRepositories(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EcrRepositoryPolicies() EcrRepositoryPolicyInterface {
-	return newEcrRepositoryPolicies(c)
+func (c *AwsV1alpha1Client) EcrRepositoryPolicies(namespace string) EcrRepositoryPolicyInterface {
+	return newEcrRepositoryPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EcsClusters() EcsClusterInterface {
-	return newEcsClusters(c)
+func (c *AwsV1alpha1Client) EcsClusters(namespace string) EcsClusterInterface {
+	return newEcsClusters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EcsServices() EcsServiceInterface {
-	return newEcsServices(c)
+func (c *AwsV1alpha1Client) EcsServices(namespace string) EcsServiceInterface {
+	return newEcsServices(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EcsTaskDefinitions() EcsTaskDefinitionInterface {
-	return newEcsTaskDefinitions(c)
+func (c *AwsV1alpha1Client) EcsTaskDefinitions(namespace string) EcsTaskDefinitionInterface {
+	return newEcsTaskDefinitions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EfsFileSystems() EfsFileSystemInterface {
-	return newEfsFileSystems(c)
+func (c *AwsV1alpha1Client) EfsFileSystems(namespace string) EfsFileSystemInterface {
+	return newEfsFileSystems(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EfsMountTargets() EfsMountTargetInterface {
-	return newEfsMountTargets(c)
+func (c *AwsV1alpha1Client) EfsMountTargets(namespace string) EfsMountTargetInterface {
+	return newEfsMountTargets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EgressOnlyInternetGateways() EgressOnlyInternetGatewayInterface {
-	return newEgressOnlyInternetGateways(c)
+func (c *AwsV1alpha1Client) EgressOnlyInternetGateways(namespace string) EgressOnlyInternetGatewayInterface {
+	return newEgressOnlyInternetGateways(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Eips() EipInterface {
-	return newEips(c)
+func (c *AwsV1alpha1Client) Eips(namespace string) EipInterface {
+	return newEips(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EipAssociations() EipAssociationInterface {
-	return newEipAssociations(c)
+func (c *AwsV1alpha1Client) EipAssociations(namespace string) EipAssociationInterface {
+	return newEipAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EksClusters() EksClusterInterface {
-	return newEksClusters(c)
+func (c *AwsV1alpha1Client) EksClusters(namespace string) EksClusterInterface {
+	return newEksClusters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ElasticBeanstalkApplications() ElasticBeanstalkApplicationInterface {
-	return newElasticBeanstalkApplications(c)
+func (c *AwsV1alpha1Client) ElasticBeanstalkApplications(namespace string) ElasticBeanstalkApplicationInterface {
+	return newElasticBeanstalkApplications(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ElasticBeanstalkApplicationVersions() ElasticBeanstalkApplicationVersionInterface {
-	return newElasticBeanstalkApplicationVersions(c)
+func (c *AwsV1alpha1Client) ElasticBeanstalkApplicationVersions(namespace string) ElasticBeanstalkApplicationVersionInterface {
+	return newElasticBeanstalkApplicationVersions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ElasticBeanstalkConfigurationTemplates() ElasticBeanstalkConfigurationTemplateInterface {
-	return newElasticBeanstalkConfigurationTemplates(c)
+func (c *AwsV1alpha1Client) ElasticBeanstalkConfigurationTemplates(namespace string) ElasticBeanstalkConfigurationTemplateInterface {
+	return newElasticBeanstalkConfigurationTemplates(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ElasticBeanstalkEnvironments() ElasticBeanstalkEnvironmentInterface {
-	return newElasticBeanstalkEnvironments(c)
+func (c *AwsV1alpha1Client) ElasticBeanstalkEnvironments(namespace string) ElasticBeanstalkEnvironmentInterface {
+	return newElasticBeanstalkEnvironments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ElasticacheClusters() ElasticacheClusterInterface {
-	return newElasticacheClusters(c)
+func (c *AwsV1alpha1Client) ElasticacheClusters(namespace string) ElasticacheClusterInterface {
+	return newElasticacheClusters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ElasticacheParameterGroups() ElasticacheParameterGroupInterface {
-	return newElasticacheParameterGroups(c)
+func (c *AwsV1alpha1Client) ElasticacheParameterGroups(namespace string) ElasticacheParameterGroupInterface {
+	return newElasticacheParameterGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ElasticacheReplicationGroups() ElasticacheReplicationGroupInterface {
-	return newElasticacheReplicationGroups(c)
+func (c *AwsV1alpha1Client) ElasticacheReplicationGroups(namespace string) ElasticacheReplicationGroupInterface {
+	return newElasticacheReplicationGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ElasticacheSecurityGroups() ElasticacheSecurityGroupInterface {
-	return newElasticacheSecurityGroups(c)
+func (c *AwsV1alpha1Client) ElasticacheSecurityGroups(namespace string) ElasticacheSecurityGroupInterface {
+	return newElasticacheSecurityGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ElasticacheSubnetGroups() ElasticacheSubnetGroupInterface {
-	return newElasticacheSubnetGroups(c)
+func (c *AwsV1alpha1Client) ElasticacheSubnetGroups(namespace string) ElasticacheSubnetGroupInterface {
+	return newElasticacheSubnetGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ElasticsearchDomains() ElasticsearchDomainInterface {
-	return newElasticsearchDomains(c)
+func (c *AwsV1alpha1Client) ElasticsearchDomains(namespace string) ElasticsearchDomainInterface {
+	return newElasticsearchDomains(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ElasticsearchDomainPolicies() ElasticsearchDomainPolicyInterface {
-	return newElasticsearchDomainPolicies(c)
+func (c *AwsV1alpha1Client) ElasticsearchDomainPolicies(namespace string) ElasticsearchDomainPolicyInterface {
+	return newElasticsearchDomainPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ElastictranscoderPipelines() ElastictranscoderPipelineInterface {
-	return newElastictranscoderPipelines(c)
+func (c *AwsV1alpha1Client) ElastictranscoderPipelines(namespace string) ElastictranscoderPipelineInterface {
+	return newElastictranscoderPipelines(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ElastictranscoderPresets() ElastictranscoderPresetInterface {
-	return newElastictranscoderPresets(c)
+func (c *AwsV1alpha1Client) ElastictranscoderPresets(namespace string) ElastictranscoderPresetInterface {
+	return newElastictranscoderPresets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Elbs() ElbInterface {
-	return newElbs(c)
+func (c *AwsV1alpha1Client) Elbs(namespace string) ElbInterface {
+	return newElbs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ElbAttachments() ElbAttachmentInterface {
-	return newElbAttachments(c)
+func (c *AwsV1alpha1Client) ElbAttachments(namespace string) ElbAttachmentInterface {
+	return newElbAttachments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EmrClusters() EmrClusterInterface {
-	return newEmrClusters(c)
+func (c *AwsV1alpha1Client) EmrClusters(namespace string) EmrClusterInterface {
+	return newEmrClusters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EmrInstanceGroups() EmrInstanceGroupInterface {
-	return newEmrInstanceGroups(c)
+func (c *AwsV1alpha1Client) EmrInstanceGroups(namespace string) EmrInstanceGroupInterface {
+	return newEmrInstanceGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EmrSecurityConfigurations() EmrSecurityConfigurationInterface {
-	return newEmrSecurityConfigurations(c)
+func (c *AwsV1alpha1Client) EmrSecurityConfigurations(namespace string) EmrSecurityConfigurationInterface {
+	return newEmrSecurityConfigurations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) FlowLogs() FlowLogInterface {
-	return newFlowLogs(c)
+func (c *AwsV1alpha1Client) FlowLogs(namespace string) FlowLogInterface {
+	return newFlowLogs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GameliftAliases() GameliftAliasInterface {
-	return newGameliftAliases(c)
+func (c *AwsV1alpha1Client) GameliftAliases(namespace string) GameliftAliasInterface {
+	return newGameliftAliases(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GameliftBuilds() GameliftBuildInterface {
-	return newGameliftBuilds(c)
+func (c *AwsV1alpha1Client) GameliftBuilds(namespace string) GameliftBuildInterface {
+	return newGameliftBuilds(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GameliftFleets() GameliftFleetInterface {
-	return newGameliftFleets(c)
+func (c *AwsV1alpha1Client) GameliftFleets(namespace string) GameliftFleetInterface {
+	return newGameliftFleets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GameliftGameSessionQueues() GameliftGameSessionQueueInterface {
-	return newGameliftGameSessionQueues(c)
+func (c *AwsV1alpha1Client) GameliftGameSessionQueues(namespace string) GameliftGameSessionQueueInterface {
+	return newGameliftGameSessionQueues(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GlacierVaults() GlacierVaultInterface {
-	return newGlacierVaults(c)
+func (c *AwsV1alpha1Client) GlacierVaults(namespace string) GlacierVaultInterface {
+	return newGlacierVaults(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GlacierVaultLocks() GlacierVaultLockInterface {
-	return newGlacierVaultLocks(c)
+func (c *AwsV1alpha1Client) GlacierVaultLocks(namespace string) GlacierVaultLockInterface {
+	return newGlacierVaultLocks(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GlobalacceleratorAccelerators() GlobalacceleratorAcceleratorInterface {
-	return newGlobalacceleratorAccelerators(c)
+func (c *AwsV1alpha1Client) GlobalacceleratorAccelerators(namespace string) GlobalacceleratorAcceleratorInterface {
+	return newGlobalacceleratorAccelerators(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GlobalacceleratorEndpointGroups() GlobalacceleratorEndpointGroupInterface {
-	return newGlobalacceleratorEndpointGroups(c)
+func (c *AwsV1alpha1Client) GlobalacceleratorEndpointGroups(namespace string) GlobalacceleratorEndpointGroupInterface {
+	return newGlobalacceleratorEndpointGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GlobalacceleratorListeners() GlobalacceleratorListenerInterface {
-	return newGlobalacceleratorListeners(c)
+func (c *AwsV1alpha1Client) GlobalacceleratorListeners(namespace string) GlobalacceleratorListenerInterface {
+	return newGlobalacceleratorListeners(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GlueCatalogDatabases() GlueCatalogDatabaseInterface {
-	return newGlueCatalogDatabases(c)
+func (c *AwsV1alpha1Client) GlueCatalogDatabases(namespace string) GlueCatalogDatabaseInterface {
+	return newGlueCatalogDatabases(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GlueCatalogTables() GlueCatalogTableInterface {
-	return newGlueCatalogTables(c)
+func (c *AwsV1alpha1Client) GlueCatalogTables(namespace string) GlueCatalogTableInterface {
+	return newGlueCatalogTables(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GlueClassifiers() GlueClassifierInterface {
-	return newGlueClassifiers(c)
+func (c *AwsV1alpha1Client) GlueClassifiers(namespace string) GlueClassifierInterface {
+	return newGlueClassifiers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GlueConnections() GlueConnectionInterface {
-	return newGlueConnections(c)
+func (c *AwsV1alpha1Client) GlueConnections(namespace string) GlueConnectionInterface {
+	return newGlueConnections(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GlueCrawlers() GlueCrawlerInterface {
-	return newGlueCrawlers(c)
+func (c *AwsV1alpha1Client) GlueCrawlers(namespace string) GlueCrawlerInterface {
+	return newGlueCrawlers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GlueJobs() GlueJobInterface {
-	return newGlueJobs(c)
+func (c *AwsV1alpha1Client) GlueJobs(namespace string) GlueJobInterface {
+	return newGlueJobs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GlueSecurityConfigurations() GlueSecurityConfigurationInterface {
-	return newGlueSecurityConfigurations(c)
+func (c *AwsV1alpha1Client) GlueSecurityConfigurations(namespace string) GlueSecurityConfigurationInterface {
+	return newGlueSecurityConfigurations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GlueTriggers() GlueTriggerInterface {
-	return newGlueTriggers(c)
+func (c *AwsV1alpha1Client) GlueTriggers(namespace string) GlueTriggerInterface {
+	return newGlueTriggers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GuarddutyDetectors() GuarddutyDetectorInterface {
-	return newGuarddutyDetectors(c)
+func (c *AwsV1alpha1Client) GuarddutyDetectors(namespace string) GuarddutyDetectorInterface {
+	return newGuarddutyDetectors(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GuarddutyInviteAccepters() GuarddutyInviteAccepterInterface {
-	return newGuarddutyInviteAccepters(c)
+func (c *AwsV1alpha1Client) GuarddutyInviteAccepters(namespace string) GuarddutyInviteAccepterInterface {
+	return newGuarddutyInviteAccepters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GuarddutyIpsets() GuarddutyIpsetInterface {
-	return newGuarddutyIpsets(c)
+func (c *AwsV1alpha1Client) GuarddutyIpsets(namespace string) GuarddutyIpsetInterface {
+	return newGuarddutyIpsets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GuarddutyMembers() GuarddutyMemberInterface {
-	return newGuarddutyMembers(c)
+func (c *AwsV1alpha1Client) GuarddutyMembers(namespace string) GuarddutyMemberInterface {
+	return newGuarddutyMembers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) GuarddutyThreatintelsets() GuarddutyThreatintelsetInterface {
-	return newGuarddutyThreatintelsets(c)
+func (c *AwsV1alpha1Client) GuarddutyThreatintelsets(namespace string) GuarddutyThreatintelsetInterface {
+	return newGuarddutyThreatintelsets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamAccessKeys() IamAccessKeyInterface {
-	return newIamAccessKeys(c)
+func (c *AwsV1alpha1Client) IamAccessKeys(namespace string) IamAccessKeyInterface {
+	return newIamAccessKeys(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamAccountAliases() IamAccountAliasInterface {
-	return newIamAccountAliases(c)
+func (c *AwsV1alpha1Client) IamAccountAliases(namespace string) IamAccountAliasInterface {
+	return newIamAccountAliases(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamAccountPasswordPolicies() IamAccountPasswordPolicyInterface {
-	return newIamAccountPasswordPolicies(c)
+func (c *AwsV1alpha1Client) IamAccountPasswordPolicies(namespace string) IamAccountPasswordPolicyInterface {
+	return newIamAccountPasswordPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamGroups() IamGroupInterface {
-	return newIamGroups(c)
+func (c *AwsV1alpha1Client) IamGroups(namespace string) IamGroupInterface {
+	return newIamGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamGroupMemberships() IamGroupMembershipInterface {
-	return newIamGroupMemberships(c)
+func (c *AwsV1alpha1Client) IamGroupMemberships(namespace string) IamGroupMembershipInterface {
+	return newIamGroupMemberships(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamGroupPolicies() IamGroupPolicyInterface {
-	return newIamGroupPolicies(c)
+func (c *AwsV1alpha1Client) IamGroupPolicies(namespace string) IamGroupPolicyInterface {
+	return newIamGroupPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamGroupPolicyAttachments() IamGroupPolicyAttachmentInterface {
-	return newIamGroupPolicyAttachments(c)
+func (c *AwsV1alpha1Client) IamGroupPolicyAttachments(namespace string) IamGroupPolicyAttachmentInterface {
+	return newIamGroupPolicyAttachments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamInstanceProfiles() IamInstanceProfileInterface {
-	return newIamInstanceProfiles(c)
+func (c *AwsV1alpha1Client) IamInstanceProfiles(namespace string) IamInstanceProfileInterface {
+	return newIamInstanceProfiles(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamOpenidConnectProviders() IamOpenidConnectProviderInterface {
-	return newIamOpenidConnectProviders(c)
+func (c *AwsV1alpha1Client) IamOpenidConnectProviders(namespace string) IamOpenidConnectProviderInterface {
+	return newIamOpenidConnectProviders(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamPolicies() IamPolicyInterface {
-	return newIamPolicies(c)
+func (c *AwsV1alpha1Client) IamPolicies(namespace string) IamPolicyInterface {
+	return newIamPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamPolicyAttachments() IamPolicyAttachmentInterface {
-	return newIamPolicyAttachments(c)
+func (c *AwsV1alpha1Client) IamPolicyAttachments(namespace string) IamPolicyAttachmentInterface {
+	return newIamPolicyAttachments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamRoles() IamRoleInterface {
-	return newIamRoles(c)
+func (c *AwsV1alpha1Client) IamRoles(namespace string) IamRoleInterface {
+	return newIamRoles(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamRolePolicies() IamRolePolicyInterface {
-	return newIamRolePolicies(c)
+func (c *AwsV1alpha1Client) IamRolePolicies(namespace string) IamRolePolicyInterface {
+	return newIamRolePolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamRolePolicyAttachments() IamRolePolicyAttachmentInterface {
-	return newIamRolePolicyAttachments(c)
+func (c *AwsV1alpha1Client) IamRolePolicyAttachments(namespace string) IamRolePolicyAttachmentInterface {
+	return newIamRolePolicyAttachments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamSamlProviders() IamSamlProviderInterface {
-	return newIamSamlProviders(c)
+func (c *AwsV1alpha1Client) IamSamlProviders(namespace string) IamSamlProviderInterface {
+	return newIamSamlProviders(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamServerCertificates() IamServerCertificateInterface {
-	return newIamServerCertificates(c)
+func (c *AwsV1alpha1Client) IamServerCertificates(namespace string) IamServerCertificateInterface {
+	return newIamServerCertificates(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamServiceLinkedRoles() IamServiceLinkedRoleInterface {
-	return newIamServiceLinkedRoles(c)
+func (c *AwsV1alpha1Client) IamServiceLinkedRoles(namespace string) IamServiceLinkedRoleInterface {
+	return newIamServiceLinkedRoles(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamUsers() IamUserInterface {
-	return newIamUsers(c)
+func (c *AwsV1alpha1Client) IamUsers(namespace string) IamUserInterface {
+	return newIamUsers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamUserGroupMemberships() IamUserGroupMembershipInterface {
-	return newIamUserGroupMemberships(c)
+func (c *AwsV1alpha1Client) IamUserGroupMemberships(namespace string) IamUserGroupMembershipInterface {
+	return newIamUserGroupMemberships(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamUserLoginProfiles() IamUserLoginProfileInterface {
-	return newIamUserLoginProfiles(c)
+func (c *AwsV1alpha1Client) IamUserLoginProfiles(namespace string) IamUserLoginProfileInterface {
+	return newIamUserLoginProfiles(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamUserPolicies() IamUserPolicyInterface {
-	return newIamUserPolicies(c)
+func (c *AwsV1alpha1Client) IamUserPolicies(namespace string) IamUserPolicyInterface {
+	return newIamUserPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamUserPolicyAttachments() IamUserPolicyAttachmentInterface {
-	return newIamUserPolicyAttachments(c)
+func (c *AwsV1alpha1Client) IamUserPolicyAttachments(namespace string) IamUserPolicyAttachmentInterface {
+	return newIamUserPolicyAttachments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IamUserSshKeys() IamUserSshKeyInterface {
-	return newIamUserSshKeys(c)
+func (c *AwsV1alpha1Client) IamUserSSHKeys(namespace string) IamUserSSHKeyInterface {
+	return newIamUserSSHKeys(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) InspectorAssessmentTargets() InspectorAssessmentTargetInterface {
-	return newInspectorAssessmentTargets(c)
+func (c *AwsV1alpha1Client) InspectorAssessmentTargets(namespace string) InspectorAssessmentTargetInterface {
+	return newInspectorAssessmentTargets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) InspectorAssessmentTemplates() InspectorAssessmentTemplateInterface {
-	return newInspectorAssessmentTemplates(c)
+func (c *AwsV1alpha1Client) InspectorAssessmentTemplates(namespace string) InspectorAssessmentTemplateInterface {
+	return newInspectorAssessmentTemplates(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) InspectorResourceGroups() InspectorResourceGroupInterface {
-	return newInspectorResourceGroups(c)
+func (c *AwsV1alpha1Client) InspectorResourceGroups(namespace string) InspectorResourceGroupInterface {
+	return newInspectorResourceGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Instances() InstanceInterface {
-	return newInstances(c)
+func (c *AwsV1alpha1Client) Instances(namespace string) InstanceInterface {
+	return newInstances(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) InternetGateways() InternetGatewayInterface {
-	return newInternetGateways(c)
+func (c *AwsV1alpha1Client) InternetGateways(namespace string) InternetGatewayInterface {
+	return newInternetGateways(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IotCertificates() IotCertificateInterface {
-	return newIotCertificates(c)
+func (c *AwsV1alpha1Client) IotCertificates(namespace string) IotCertificateInterface {
+	return newIotCertificates(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IotPolicies() IotPolicyInterface {
-	return newIotPolicies(c)
+func (c *AwsV1alpha1Client) IotPolicies(namespace string) IotPolicyInterface {
+	return newIotPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IotPolicyAttachments() IotPolicyAttachmentInterface {
-	return newIotPolicyAttachments(c)
+func (c *AwsV1alpha1Client) IotPolicyAttachments(namespace string) IotPolicyAttachmentInterface {
+	return newIotPolicyAttachments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IotRoleAliases() IotRoleAliasInterface {
-	return newIotRoleAliases(c)
+func (c *AwsV1alpha1Client) IotRoleAliases(namespace string) IotRoleAliasInterface {
+	return newIotRoleAliases(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IotThings() IotThingInterface {
-	return newIotThings(c)
+func (c *AwsV1alpha1Client) IotThings(namespace string) IotThingInterface {
+	return newIotThings(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IotThingPrincipalAttachments() IotThingPrincipalAttachmentInterface {
-	return newIotThingPrincipalAttachments(c)
+func (c *AwsV1alpha1Client) IotThingPrincipalAttachments(namespace string) IotThingPrincipalAttachmentInterface {
+	return newIotThingPrincipalAttachments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IotThingTypes() IotThingTypeInterface {
-	return newIotThingTypes(c)
+func (c *AwsV1alpha1Client) IotThingTypes(namespace string) IotThingTypeInterface {
+	return newIotThingTypes(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) IotTopicRules() IotTopicRuleInterface {
-	return newIotTopicRules(c)
+func (c *AwsV1alpha1Client) IotTopicRules(namespace string) IotTopicRuleInterface {
+	return newIotTopicRules(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) KeyPairs() KeyPairInterface {
-	return newKeyPairs(c)
+func (c *AwsV1alpha1Client) KeyPairs(namespace string) KeyPairInterface {
+	return newKeyPairs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) KinesisAnalyticsApplications() KinesisAnalyticsApplicationInterface {
-	return newKinesisAnalyticsApplications(c)
+func (c *AwsV1alpha1Client) KinesisAnalyticsApplications(namespace string) KinesisAnalyticsApplicationInterface {
+	return newKinesisAnalyticsApplications(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) KinesisFirehoseDeliveryStreams() KinesisFirehoseDeliveryStreamInterface {
-	return newKinesisFirehoseDeliveryStreams(c)
+func (c *AwsV1alpha1Client) KinesisFirehoseDeliveryStreams(namespace string) KinesisFirehoseDeliveryStreamInterface {
+	return newKinesisFirehoseDeliveryStreams(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) KinesisStreams() KinesisStreamInterface {
-	return newKinesisStreams(c)
+func (c *AwsV1alpha1Client) KinesisStreams(namespace string) KinesisStreamInterface {
+	return newKinesisStreams(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) KmsAliases() KmsAliasInterface {
-	return newKmsAliases(c)
+func (c *AwsV1alpha1Client) KmsAliases(namespace string) KmsAliasInterface {
+	return newKmsAliases(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) KmsCiphertexts() KmsCiphertextInterface {
-	return newKmsCiphertexts(c)
+func (c *AwsV1alpha1Client) KmsCiphertexts(namespace string) KmsCiphertextInterface {
+	return newKmsCiphertexts(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) KmsExternalKeys() KmsExternalKeyInterface {
-	return newKmsExternalKeys(c)
+func (c *AwsV1alpha1Client) KmsExternalKeys(namespace string) KmsExternalKeyInterface {
+	return newKmsExternalKeys(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) KmsGrants() KmsGrantInterface {
-	return newKmsGrants(c)
+func (c *AwsV1alpha1Client) KmsGrants(namespace string) KmsGrantInterface {
+	return newKmsGrants(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) KmsKeys() KmsKeyInterface {
-	return newKmsKeys(c)
+func (c *AwsV1alpha1Client) KmsKeys(namespace string) KmsKeyInterface {
+	return newKmsKeys(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LambdaAliases() LambdaAliasInterface {
-	return newLambdaAliases(c)
+func (c *AwsV1alpha1Client) LambdaAliases(namespace string) LambdaAliasInterface {
+	return newLambdaAliases(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LambdaEventSourceMappings() LambdaEventSourceMappingInterface {
-	return newLambdaEventSourceMappings(c)
+func (c *AwsV1alpha1Client) LambdaEventSourceMappings(namespace string) LambdaEventSourceMappingInterface {
+	return newLambdaEventSourceMappings(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LambdaFunctions() LambdaFunctionInterface {
-	return newLambdaFunctions(c)
+func (c *AwsV1alpha1Client) LambdaFunctions(namespace string) LambdaFunctionInterface {
+	return newLambdaFunctions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LambdaLayerVersions() LambdaLayerVersionInterface {
-	return newLambdaLayerVersions(c)
+func (c *AwsV1alpha1Client) LambdaLayerVersions(namespace string) LambdaLayerVersionInterface {
+	return newLambdaLayerVersions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LambdaPermissions() LambdaPermissionInterface {
-	return newLambdaPermissions(c)
+func (c *AwsV1alpha1Client) LambdaPermissions(namespace string) LambdaPermissionInterface {
+	return newLambdaPermissions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LaunchConfigurations() LaunchConfigurationInterface {
-	return newLaunchConfigurations(c)
+func (c *AwsV1alpha1Client) LaunchConfigurations(namespace string) LaunchConfigurationInterface {
+	return newLaunchConfigurations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LaunchTemplates() LaunchTemplateInterface {
-	return newLaunchTemplates(c)
+func (c *AwsV1alpha1Client) LaunchTemplates(namespace string) LaunchTemplateInterface {
+	return newLaunchTemplates(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Lbs() LbInterface {
-	return newLbs(c)
+func (c *AwsV1alpha1Client) Lbs(namespace string) LbInterface {
+	return newLbs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LbCookieStickinessPolicies() LbCookieStickinessPolicyInterface {
-	return newLbCookieStickinessPolicies(c)
+func (c *AwsV1alpha1Client) LbCookieStickinessPolicies(namespace string) LbCookieStickinessPolicyInterface {
+	return newLbCookieStickinessPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LbListeners() LbListenerInterface {
-	return newLbListeners(c)
+func (c *AwsV1alpha1Client) LbListeners(namespace string) LbListenerInterface {
+	return newLbListeners(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LbListenerCertificates() LbListenerCertificateInterface {
-	return newLbListenerCertificates(c)
+func (c *AwsV1alpha1Client) LbListenerCertificates(namespace string) LbListenerCertificateInterface {
+	return newLbListenerCertificates(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LbListenerRules() LbListenerRuleInterface {
-	return newLbListenerRules(c)
+func (c *AwsV1alpha1Client) LbListenerRules(namespace string) LbListenerRuleInterface {
+	return newLbListenerRules(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LbSslNegotiationPolicies() LbSslNegotiationPolicyInterface {
-	return newLbSslNegotiationPolicies(c)
+func (c *AwsV1alpha1Client) LbSslNegotiationPolicies(namespace string) LbSslNegotiationPolicyInterface {
+	return newLbSslNegotiationPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LbTargetGroups() LbTargetGroupInterface {
-	return newLbTargetGroups(c)
+func (c *AwsV1alpha1Client) LbTargetGroups(namespace string) LbTargetGroupInterface {
+	return newLbTargetGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LbTargetGroupAttachments() LbTargetGroupAttachmentInterface {
-	return newLbTargetGroupAttachments(c)
+func (c *AwsV1alpha1Client) LbTargetGroupAttachments(namespace string) LbTargetGroupAttachmentInterface {
+	return newLbTargetGroupAttachments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LicensemanagerAssociations() LicensemanagerAssociationInterface {
-	return newLicensemanagerAssociations(c)
+func (c *AwsV1alpha1Client) LicensemanagerAssociations(namespace string) LicensemanagerAssociationInterface {
+	return newLicensemanagerAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LicensemanagerLicenseConfigurations() LicensemanagerLicenseConfigurationInterface {
-	return newLicensemanagerLicenseConfigurations(c)
+func (c *AwsV1alpha1Client) LicensemanagerLicenseConfigurations(namespace string) LicensemanagerLicenseConfigurationInterface {
+	return newLicensemanagerLicenseConfigurations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LightsailDomains() LightsailDomainInterface {
-	return newLightsailDomains(c)
+func (c *AwsV1alpha1Client) LightsailDomains(namespace string) LightsailDomainInterface {
+	return newLightsailDomains(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LightsailInstances() LightsailInstanceInterface {
-	return newLightsailInstances(c)
+func (c *AwsV1alpha1Client) LightsailInstances(namespace string) LightsailInstanceInterface {
+	return newLightsailInstances(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LightsailKeyPairs() LightsailKeyPairInterface {
-	return newLightsailKeyPairs(c)
+func (c *AwsV1alpha1Client) LightsailKeyPairs(namespace string) LightsailKeyPairInterface {
+	return newLightsailKeyPairs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LightsailStaticIps() LightsailStaticIpInterface {
-	return newLightsailStaticIps(c)
+func (c *AwsV1alpha1Client) LightsailStaticIPs(namespace string) LightsailStaticIPInterface {
+	return newLightsailStaticIPs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LightsailStaticIpAttachments() LightsailStaticIpAttachmentInterface {
-	return newLightsailStaticIpAttachments(c)
+func (c *AwsV1alpha1Client) LightsailStaticIPAttachments(namespace string) LightsailStaticIPAttachmentInterface {
+	return newLightsailStaticIPAttachments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LoadBalancerBackendServerPolicies() LoadBalancerBackendServerPolicyInterface {
-	return newLoadBalancerBackendServerPolicies(c)
+func (c *AwsV1alpha1Client) LoadBalancerBackendServerPolicies(namespace string) LoadBalancerBackendServerPolicyInterface {
+	return newLoadBalancerBackendServerPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LoadBalancerListenerPolicies() LoadBalancerListenerPolicyInterface {
-	return newLoadBalancerListenerPolicies(c)
+func (c *AwsV1alpha1Client) LoadBalancerListenerPolicies(namespace string) LoadBalancerListenerPolicyInterface {
+	return newLoadBalancerListenerPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) LoadBalancerPolicies() LoadBalancerPolicyInterface {
-	return newLoadBalancerPolicies(c)
+func (c *AwsV1alpha1Client) LoadBalancerPolicies(namespace string) LoadBalancerPolicyInterface {
+	return newLoadBalancerPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) MacieMemberAccountAssociations() MacieMemberAccountAssociationInterface {
-	return newMacieMemberAccountAssociations(c)
+func (c *AwsV1alpha1Client) MacieMemberAccountAssociations(namespace string) MacieMemberAccountAssociationInterface {
+	return newMacieMemberAccountAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) MacieS3BucketAssociations() MacieS3BucketAssociationInterface {
-	return newMacieS3BucketAssociations(c)
+func (c *AwsV1alpha1Client) MacieS3BucketAssociations(namespace string) MacieS3BucketAssociationInterface {
+	return newMacieS3BucketAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) MainRouteTableAssociations() MainRouteTableAssociationInterface {
-	return newMainRouteTableAssociations(c)
+func (c *AwsV1alpha1Client) MainRouteTableAssociations(namespace string) MainRouteTableAssociationInterface {
+	return newMainRouteTableAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) MediaPackageChannels() MediaPackageChannelInterface {
-	return newMediaPackageChannels(c)
+func (c *AwsV1alpha1Client) MediaPackageChannels(namespace string) MediaPackageChannelInterface {
+	return newMediaPackageChannels(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) MediaStoreContainers() MediaStoreContainerInterface {
-	return newMediaStoreContainers(c)
+func (c *AwsV1alpha1Client) MediaStoreContainers(namespace string) MediaStoreContainerInterface {
+	return newMediaStoreContainers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) MediaStoreContainerPolicies() MediaStoreContainerPolicyInterface {
-	return newMediaStoreContainerPolicies(c)
+func (c *AwsV1alpha1Client) MediaStoreContainerPolicies(namespace string) MediaStoreContainerPolicyInterface {
+	return newMediaStoreContainerPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) MqBrokers() MqBrokerInterface {
-	return newMqBrokers(c)
+func (c *AwsV1alpha1Client) MqBrokers(namespace string) MqBrokerInterface {
+	return newMqBrokers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) MqConfigurations() MqConfigurationInterface {
-	return newMqConfigurations(c)
+func (c *AwsV1alpha1Client) MqConfigurations(namespace string) MqConfigurationInterface {
+	return newMqConfigurations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) MskClusters() MskClusterInterface {
-	return newMskClusters(c)
+func (c *AwsV1alpha1Client) MskClusters(namespace string) MskClusterInterface {
+	return newMskClusters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) MskConfigurations() MskConfigurationInterface {
-	return newMskConfigurations(c)
+func (c *AwsV1alpha1Client) MskConfigurations(namespace string) MskConfigurationInterface {
+	return newMskConfigurations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) NatGateways() NatGatewayInterface {
-	return newNatGateways(c)
+func (c *AwsV1alpha1Client) NatGateways(namespace string) NatGatewayInterface {
+	return newNatGateways(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) NeptuneClusters() NeptuneClusterInterface {
-	return newNeptuneClusters(c)
+func (c *AwsV1alpha1Client) NeptuneClusters(namespace string) NeptuneClusterInterface {
+	return newNeptuneClusters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) NeptuneClusterInstances() NeptuneClusterInstanceInterface {
-	return newNeptuneClusterInstances(c)
+func (c *AwsV1alpha1Client) NeptuneClusterInstances(namespace string) NeptuneClusterInstanceInterface {
+	return newNeptuneClusterInstances(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) NeptuneClusterParameterGroups() NeptuneClusterParameterGroupInterface {
-	return newNeptuneClusterParameterGroups(c)
+func (c *AwsV1alpha1Client) NeptuneClusterParameterGroups(namespace string) NeptuneClusterParameterGroupInterface {
+	return newNeptuneClusterParameterGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) NeptuneClusterSnapshots() NeptuneClusterSnapshotInterface {
-	return newNeptuneClusterSnapshots(c)
+func (c *AwsV1alpha1Client) NeptuneClusterSnapshots(namespace string) NeptuneClusterSnapshotInterface {
+	return newNeptuneClusterSnapshots(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) NeptuneEventSubscriptions() NeptuneEventSubscriptionInterface {
-	return newNeptuneEventSubscriptions(c)
+func (c *AwsV1alpha1Client) NeptuneEventSubscriptions(namespace string) NeptuneEventSubscriptionInterface {
+	return newNeptuneEventSubscriptions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) NeptuneParameterGroups() NeptuneParameterGroupInterface {
-	return newNeptuneParameterGroups(c)
+func (c *AwsV1alpha1Client) NeptuneParameterGroups(namespace string) NeptuneParameterGroupInterface {
+	return newNeptuneParameterGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) NeptuneSubnetGroups() NeptuneSubnetGroupInterface {
-	return newNeptuneSubnetGroups(c)
+func (c *AwsV1alpha1Client) NeptuneSubnetGroups(namespace string) NeptuneSubnetGroupInterface {
+	return newNeptuneSubnetGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) NetworkAcls() NetworkAclInterface {
-	return newNetworkAcls(c)
+func (c *AwsV1alpha1Client) NetworkACLs(namespace string) NetworkACLInterface {
+	return newNetworkACLs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) NetworkAclRules() NetworkAclRuleInterface {
-	return newNetworkAclRules(c)
+func (c *AwsV1alpha1Client) NetworkACLRules(namespace string) NetworkACLRuleInterface {
+	return newNetworkACLRules(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) NetworkInterfaces() NetworkInterfaceInterface {
-	return newNetworkInterfaces(c)
+func (c *AwsV1alpha1Client) NetworkInterfaces(namespace string) NetworkInterfaceInterface {
+	return newNetworkInterfaces(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) NetworkInterfaceAttachments() NetworkInterfaceAttachmentInterface {
-	return newNetworkInterfaceAttachments(c)
+func (c *AwsV1alpha1Client) NetworkInterfaceAttachments(namespace string) NetworkInterfaceAttachmentInterface {
+	return newNetworkInterfaceAttachments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) NetworkInterfaceSgAttachments() NetworkInterfaceSgAttachmentInterface {
-	return newNetworkInterfaceSgAttachments(c)
+func (c *AwsV1alpha1Client) NetworkInterfaceSgAttachments(namespace string) NetworkInterfaceSgAttachmentInterface {
+	return newNetworkInterfaceSgAttachments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OpsworksApplications() OpsworksApplicationInterface {
-	return newOpsworksApplications(c)
+func (c *AwsV1alpha1Client) OpsworksApplications(namespace string) OpsworksApplicationInterface {
+	return newOpsworksApplications(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OpsworksCustomLayers() OpsworksCustomLayerInterface {
-	return newOpsworksCustomLayers(c)
+func (c *AwsV1alpha1Client) OpsworksCustomLayers(namespace string) OpsworksCustomLayerInterface {
+	return newOpsworksCustomLayers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OpsworksGangliaLayers() OpsworksGangliaLayerInterface {
-	return newOpsworksGangliaLayers(c)
+func (c *AwsV1alpha1Client) OpsworksGangliaLayers(namespace string) OpsworksGangliaLayerInterface {
+	return newOpsworksGangliaLayers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OpsworksHaproxyLayers() OpsworksHaproxyLayerInterface {
-	return newOpsworksHaproxyLayers(c)
+func (c *AwsV1alpha1Client) OpsworksHaproxyLayers(namespace string) OpsworksHaproxyLayerInterface {
+	return newOpsworksHaproxyLayers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OpsworksInstances() OpsworksInstanceInterface {
-	return newOpsworksInstances(c)
+func (c *AwsV1alpha1Client) OpsworksInstances(namespace string) OpsworksInstanceInterface {
+	return newOpsworksInstances(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OpsworksJavaAppLayers() OpsworksJavaAppLayerInterface {
-	return newOpsworksJavaAppLayers(c)
+func (c *AwsV1alpha1Client) OpsworksJavaAppLayers(namespace string) OpsworksJavaAppLayerInterface {
+	return newOpsworksJavaAppLayers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OpsworksMemcachedLayers() OpsworksMemcachedLayerInterface {
-	return newOpsworksMemcachedLayers(c)
+func (c *AwsV1alpha1Client) OpsworksMemcachedLayers(namespace string) OpsworksMemcachedLayerInterface {
+	return newOpsworksMemcachedLayers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OpsworksMysqlLayers() OpsworksMysqlLayerInterface {
-	return newOpsworksMysqlLayers(c)
+func (c *AwsV1alpha1Client) OpsworksMysqlLayers(namespace string) OpsworksMysqlLayerInterface {
+	return newOpsworksMysqlLayers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OpsworksNodejsAppLayers() OpsworksNodejsAppLayerInterface {
-	return newOpsworksNodejsAppLayers(c)
+func (c *AwsV1alpha1Client) OpsworksNodejsAppLayers(namespace string) OpsworksNodejsAppLayerInterface {
+	return newOpsworksNodejsAppLayers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OpsworksPermissions() OpsworksPermissionInterface {
-	return newOpsworksPermissions(c)
+func (c *AwsV1alpha1Client) OpsworksPermissions(namespace string) OpsworksPermissionInterface {
+	return newOpsworksPermissions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OpsworksPhpAppLayers() OpsworksPhpAppLayerInterface {
-	return newOpsworksPhpAppLayers(c)
+func (c *AwsV1alpha1Client) OpsworksPhpAppLayers(namespace string) OpsworksPhpAppLayerInterface {
+	return newOpsworksPhpAppLayers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OpsworksRailsAppLayers() OpsworksRailsAppLayerInterface {
-	return newOpsworksRailsAppLayers(c)
+func (c *AwsV1alpha1Client) OpsworksRailsAppLayers(namespace string) OpsworksRailsAppLayerInterface {
+	return newOpsworksRailsAppLayers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OpsworksRdsDbInstances() OpsworksRdsDbInstanceInterface {
-	return newOpsworksRdsDbInstances(c)
+func (c *AwsV1alpha1Client) OpsworksRdsDbInstances(namespace string) OpsworksRdsDbInstanceInterface {
+	return newOpsworksRdsDbInstances(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OpsworksStacks() OpsworksStackInterface {
-	return newOpsworksStacks(c)
+func (c *AwsV1alpha1Client) OpsworksStacks(namespace string) OpsworksStackInterface {
+	return newOpsworksStacks(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OpsworksStaticWebLayers() OpsworksStaticWebLayerInterface {
-	return newOpsworksStaticWebLayers(c)
+func (c *AwsV1alpha1Client) OpsworksStaticWebLayers(namespace string) OpsworksStaticWebLayerInterface {
+	return newOpsworksStaticWebLayers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OpsworksUserProfiles() OpsworksUserProfileInterface {
-	return newOpsworksUserProfiles(c)
+func (c *AwsV1alpha1Client) OpsworksUserProfiles(namespace string) OpsworksUserProfileInterface {
+	return newOpsworksUserProfiles(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OrganizationsAccounts() OrganizationsAccountInterface {
-	return newOrganizationsAccounts(c)
+func (c *AwsV1alpha1Client) OrganizationsAccounts(namespace string) OrganizationsAccountInterface {
+	return newOrganizationsAccounts(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OrganizationsOrganizations() OrganizationsOrganizationInterface {
-	return newOrganizationsOrganizations(c)
+func (c *AwsV1alpha1Client) OrganizationsOrganizations(namespace string) OrganizationsOrganizationInterface {
+	return newOrganizationsOrganizations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OrganizationsOrganizationalUnits() OrganizationsOrganizationalUnitInterface {
-	return newOrganizationsOrganizationalUnits(c)
+func (c *AwsV1alpha1Client) OrganizationsOrganizationalUnits(namespace string) OrganizationsOrganizationalUnitInterface {
+	return newOrganizationsOrganizationalUnits(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OrganizationsPolicies() OrganizationsPolicyInterface {
-	return newOrganizationsPolicies(c)
+func (c *AwsV1alpha1Client) OrganizationsPolicies(namespace string) OrganizationsPolicyInterface {
+	return newOrganizationsPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) OrganizationsPolicyAttachments() OrganizationsPolicyAttachmentInterface {
-	return newOrganizationsPolicyAttachments(c)
+func (c *AwsV1alpha1Client) OrganizationsPolicyAttachments(namespace string) OrganizationsPolicyAttachmentInterface {
+	return newOrganizationsPolicyAttachments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) PinpointAdmChannels() PinpointAdmChannelInterface {
-	return newPinpointAdmChannels(c)
+func (c *AwsV1alpha1Client) PinpointAdmChannels(namespace string) PinpointAdmChannelInterface {
+	return newPinpointAdmChannels(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) PinpointApnsChannels() PinpointApnsChannelInterface {
-	return newPinpointApnsChannels(c)
+func (c *AwsV1alpha1Client) PinpointApnsChannels(namespace string) PinpointApnsChannelInterface {
+	return newPinpointApnsChannels(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) PinpointApnsSandboxChannels() PinpointApnsSandboxChannelInterface {
-	return newPinpointApnsSandboxChannels(c)
+func (c *AwsV1alpha1Client) PinpointApnsSandboxChannels(namespace string) PinpointApnsSandboxChannelInterface {
+	return newPinpointApnsSandboxChannels(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) PinpointApnsVoipChannels() PinpointApnsVoipChannelInterface {
-	return newPinpointApnsVoipChannels(c)
+func (c *AwsV1alpha1Client) PinpointApnsVoipChannels(namespace string) PinpointApnsVoipChannelInterface {
+	return newPinpointApnsVoipChannels(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) PinpointApnsVoipSandboxChannels() PinpointApnsVoipSandboxChannelInterface {
-	return newPinpointApnsVoipSandboxChannels(c)
+func (c *AwsV1alpha1Client) PinpointApnsVoipSandboxChannels(namespace string) PinpointApnsVoipSandboxChannelInterface {
+	return newPinpointApnsVoipSandboxChannels(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) PinpointApps() PinpointAppInterface {
-	return newPinpointApps(c)
+func (c *AwsV1alpha1Client) PinpointApps(namespace string) PinpointAppInterface {
+	return newPinpointApps(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) PinpointBaiduChannels() PinpointBaiduChannelInterface {
-	return newPinpointBaiduChannels(c)
+func (c *AwsV1alpha1Client) PinpointBaiduChannels(namespace string) PinpointBaiduChannelInterface {
+	return newPinpointBaiduChannels(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) PinpointEmailChannels() PinpointEmailChannelInterface {
-	return newPinpointEmailChannels(c)
+func (c *AwsV1alpha1Client) PinpointEmailChannels(namespace string) PinpointEmailChannelInterface {
+	return newPinpointEmailChannels(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) PinpointEventStreams() PinpointEventStreamInterface {
-	return newPinpointEventStreams(c)
+func (c *AwsV1alpha1Client) PinpointEventStreams(namespace string) PinpointEventStreamInterface {
+	return newPinpointEventStreams(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) PinpointGcmChannels() PinpointGcmChannelInterface {
-	return newPinpointGcmChannels(c)
+func (c *AwsV1alpha1Client) PinpointGcmChannels(namespace string) PinpointGcmChannelInterface {
+	return newPinpointGcmChannels(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) PinpointSmsChannels() PinpointSmsChannelInterface {
-	return newPinpointSmsChannels(c)
+func (c *AwsV1alpha1Client) PinpointSmsChannels(namespace string) PinpointSmsChannelInterface {
+	return newPinpointSmsChannels(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) PlacementGroups() PlacementGroupInterface {
-	return newPlacementGroups(c)
+func (c *AwsV1alpha1Client) PlacementGroups(namespace string) PlacementGroupInterface {
+	return newPlacementGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ProxyProtocolPolicies() ProxyProtocolPolicyInterface {
-	return newProxyProtocolPolicies(c)
+func (c *AwsV1alpha1Client) ProxyProtocolPolicies(namespace string) ProxyProtocolPolicyInterface {
+	return newProxyProtocolPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) RamPrincipalAssociations() RamPrincipalAssociationInterface {
-	return newRamPrincipalAssociations(c)
+func (c *AwsV1alpha1Client) RamPrincipalAssociations(namespace string) RamPrincipalAssociationInterface {
+	return newRamPrincipalAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) RamResourceAssociations() RamResourceAssociationInterface {
-	return newRamResourceAssociations(c)
+func (c *AwsV1alpha1Client) RamResourceAssociations(namespace string) RamResourceAssociationInterface {
+	return newRamResourceAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) RamResourceShares() RamResourceShareInterface {
-	return newRamResourceShares(c)
+func (c *AwsV1alpha1Client) RamResourceShares(namespace string) RamResourceShareInterface {
+	return newRamResourceShares(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) RdsClusters() RdsClusterInterface {
-	return newRdsClusters(c)
+func (c *AwsV1alpha1Client) RdsClusters(namespace string) RdsClusterInterface {
+	return newRdsClusters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) RdsClusterEndpoints() RdsClusterEndpointInterface {
-	return newRdsClusterEndpoints(c)
+func (c *AwsV1alpha1Client) RdsClusterEndpoints(namespace string) RdsClusterEndpointInterface {
+	return newRdsClusterEndpoints(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) RdsClusterInstances() RdsClusterInstanceInterface {
-	return newRdsClusterInstances(c)
+func (c *AwsV1alpha1Client) RdsClusterInstances(namespace string) RdsClusterInstanceInterface {
+	return newRdsClusterInstances(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) RdsClusterParameterGroups() RdsClusterParameterGroupInterface {
-	return newRdsClusterParameterGroups(c)
+func (c *AwsV1alpha1Client) RdsClusterParameterGroups(namespace string) RdsClusterParameterGroupInterface {
+	return newRdsClusterParameterGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) RdsGlobalClusters() RdsGlobalClusterInterface {
-	return newRdsGlobalClusters(c)
+func (c *AwsV1alpha1Client) RdsGlobalClusters(namespace string) RdsGlobalClusterInterface {
+	return newRdsGlobalClusters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) RedshiftClusters() RedshiftClusterInterface {
-	return newRedshiftClusters(c)
+func (c *AwsV1alpha1Client) RedshiftClusters(namespace string) RedshiftClusterInterface {
+	return newRedshiftClusters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) RedshiftEventSubscriptions() RedshiftEventSubscriptionInterface {
-	return newRedshiftEventSubscriptions(c)
+func (c *AwsV1alpha1Client) RedshiftEventSubscriptions(namespace string) RedshiftEventSubscriptionInterface {
+	return newRedshiftEventSubscriptions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) RedshiftParameterGroups() RedshiftParameterGroupInterface {
-	return newRedshiftParameterGroups(c)
+func (c *AwsV1alpha1Client) RedshiftParameterGroups(namespace string) RedshiftParameterGroupInterface {
+	return newRedshiftParameterGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) RedshiftSecurityGroups() RedshiftSecurityGroupInterface {
-	return newRedshiftSecurityGroups(c)
+func (c *AwsV1alpha1Client) RedshiftSecurityGroups(namespace string) RedshiftSecurityGroupInterface {
+	return newRedshiftSecurityGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) RedshiftSnapshotCopyGrants() RedshiftSnapshotCopyGrantInterface {
-	return newRedshiftSnapshotCopyGrants(c)
+func (c *AwsV1alpha1Client) RedshiftSnapshotCopyGrants(namespace string) RedshiftSnapshotCopyGrantInterface {
+	return newRedshiftSnapshotCopyGrants(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) RedshiftSubnetGroups() RedshiftSubnetGroupInterface {
-	return newRedshiftSubnetGroups(c)
+func (c *AwsV1alpha1Client) RedshiftSubnetGroups(namespace string) RedshiftSubnetGroupInterface {
+	return newRedshiftSubnetGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ResourcegroupsGroups() ResourcegroupsGroupInterface {
-	return newResourcegroupsGroups(c)
+func (c *AwsV1alpha1Client) ResourcegroupsGroups(namespace string) ResourcegroupsGroupInterface {
+	return newResourcegroupsGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Routes() RouteInterface {
-	return newRoutes(c)
+func (c *AwsV1alpha1Client) Routes(namespace string) RouteInterface {
+	return newRoutes(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Route53DelegationSets() Route53DelegationSetInterface {
-	return newRoute53DelegationSets(c)
+func (c *AwsV1alpha1Client) Route53DelegationSets(namespace string) Route53DelegationSetInterface {
+	return newRoute53DelegationSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Route53HealthChecks() Route53HealthCheckInterface {
-	return newRoute53HealthChecks(c)
+func (c *AwsV1alpha1Client) Route53HealthChecks(namespace string) Route53HealthCheckInterface {
+	return newRoute53HealthChecks(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Route53QueryLogs() Route53QueryLogInterface {
-	return newRoute53QueryLogs(c)
+func (c *AwsV1alpha1Client) Route53QueryLogs(namespace string) Route53QueryLogInterface {
+	return newRoute53QueryLogs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Route53Records() Route53RecordInterface {
-	return newRoute53Records(c)
+func (c *AwsV1alpha1Client) Route53Records(namespace string) Route53RecordInterface {
+	return newRoute53Records(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Route53ResolverEndpoints() Route53ResolverEndpointInterface {
-	return newRoute53ResolverEndpoints(c)
+func (c *AwsV1alpha1Client) Route53ResolverEndpoints(namespace string) Route53ResolverEndpointInterface {
+	return newRoute53ResolverEndpoints(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Route53ResolverRules() Route53ResolverRuleInterface {
-	return newRoute53ResolverRules(c)
+func (c *AwsV1alpha1Client) Route53ResolverRules(namespace string) Route53ResolverRuleInterface {
+	return newRoute53ResolverRules(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Route53ResolverRuleAssociations() Route53ResolverRuleAssociationInterface {
-	return newRoute53ResolverRuleAssociations(c)
+func (c *AwsV1alpha1Client) Route53ResolverRuleAssociations(namespace string) Route53ResolverRuleAssociationInterface {
+	return newRoute53ResolverRuleAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Route53Zones() Route53ZoneInterface {
-	return newRoute53Zones(c)
+func (c *AwsV1alpha1Client) Route53Zones(namespace string) Route53ZoneInterface {
+	return newRoute53Zones(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Route53ZoneAssociations() Route53ZoneAssociationInterface {
-	return newRoute53ZoneAssociations(c)
+func (c *AwsV1alpha1Client) Route53ZoneAssociations(namespace string) Route53ZoneAssociationInterface {
+	return newRoute53ZoneAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) RouteTables() RouteTableInterface {
-	return newRouteTables(c)
+func (c *AwsV1alpha1Client) RouteTables(namespace string) RouteTableInterface {
+	return newRouteTables(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) RouteTableAssociations() RouteTableAssociationInterface {
-	return newRouteTableAssociations(c)
+func (c *AwsV1alpha1Client) RouteTableAssociations(namespace string) RouteTableAssociationInterface {
+	return newRouteTableAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) S3AccountPublicAccessBlocks() S3AccountPublicAccessBlockInterface {
-	return newS3AccountPublicAccessBlocks(c)
+func (c *AwsV1alpha1Client) S3AccountPublicAccessBlocks(namespace string) S3AccountPublicAccessBlockInterface {
+	return newS3AccountPublicAccessBlocks(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) S3Buckets() S3BucketInterface {
-	return newS3Buckets(c)
+func (c *AwsV1alpha1Client) S3Buckets(namespace string) S3BucketInterface {
+	return newS3Buckets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) S3BucketInventories() S3BucketInventoryInterface {
-	return newS3BucketInventories(c)
+func (c *AwsV1alpha1Client) S3BucketInventories(namespace string) S3BucketInventoryInterface {
+	return newS3BucketInventories(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) S3BucketMetrics() S3BucketMetricInterface {
-	return newS3BucketMetrics(c)
+func (c *AwsV1alpha1Client) S3BucketMetrics(namespace string) S3BucketMetricInterface {
+	return newS3BucketMetrics(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) S3BucketNotifications() S3BucketNotificationInterface {
-	return newS3BucketNotifications(c)
+func (c *AwsV1alpha1Client) S3BucketNotifications(namespace string) S3BucketNotificationInterface {
+	return newS3BucketNotifications(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) S3BucketObjects() S3BucketObjectInterface {
-	return newS3BucketObjects(c)
+func (c *AwsV1alpha1Client) S3BucketObjects(namespace string) S3BucketObjectInterface {
+	return newS3BucketObjects(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) S3BucketPolicies() S3BucketPolicyInterface {
-	return newS3BucketPolicies(c)
+func (c *AwsV1alpha1Client) S3BucketPolicies(namespace string) S3BucketPolicyInterface {
+	return newS3BucketPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) S3BucketPublicAccessBlocks() S3BucketPublicAccessBlockInterface {
-	return newS3BucketPublicAccessBlocks(c)
+func (c *AwsV1alpha1Client) S3BucketPublicAccessBlocks(namespace string) S3BucketPublicAccessBlockInterface {
+	return newS3BucketPublicAccessBlocks(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SagemakerEndpoints() SagemakerEndpointInterface {
-	return newSagemakerEndpoints(c)
+func (c *AwsV1alpha1Client) SagemakerEndpoints(namespace string) SagemakerEndpointInterface {
+	return newSagemakerEndpoints(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SagemakerEndpointConfigurations() SagemakerEndpointConfigurationInterface {
-	return newSagemakerEndpointConfigurations(c)
+func (c *AwsV1alpha1Client) SagemakerEndpointConfigurations(namespace string) SagemakerEndpointConfigurationInterface {
+	return newSagemakerEndpointConfigurations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SagemakerModels() SagemakerModelInterface {
-	return newSagemakerModels(c)
+func (c *AwsV1alpha1Client) SagemakerModels(namespace string) SagemakerModelInterface {
+	return newSagemakerModels(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SagemakerNotebookInstances() SagemakerNotebookInstanceInterface {
-	return newSagemakerNotebookInstances(c)
+func (c *AwsV1alpha1Client) SagemakerNotebookInstances(namespace string) SagemakerNotebookInstanceInterface {
+	return newSagemakerNotebookInstances(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SagemakerNotebookInstanceLifecycleConfigurations() SagemakerNotebookInstanceLifecycleConfigurationInterface {
-	return newSagemakerNotebookInstanceLifecycleConfigurations(c)
+func (c *AwsV1alpha1Client) SagemakerNotebookInstanceLifecycleConfigurations(namespace string) SagemakerNotebookInstanceLifecycleConfigurationInterface {
+	return newSagemakerNotebookInstanceLifecycleConfigurations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SecretsmanagerSecrets() SecretsmanagerSecretInterface {
-	return newSecretsmanagerSecrets(c)
+func (c *AwsV1alpha1Client) SecretsmanagerSecrets(namespace string) SecretsmanagerSecretInterface {
+	return newSecretsmanagerSecrets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SecretsmanagerSecretVersions() SecretsmanagerSecretVersionInterface {
-	return newSecretsmanagerSecretVersions(c)
+func (c *AwsV1alpha1Client) SecretsmanagerSecretVersions(namespace string) SecretsmanagerSecretVersionInterface {
+	return newSecretsmanagerSecretVersions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SecurityGroups() SecurityGroupInterface {
-	return newSecurityGroups(c)
+func (c *AwsV1alpha1Client) SecurityGroups(namespace string) SecurityGroupInterface {
+	return newSecurityGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SecurityGroupRules() SecurityGroupRuleInterface {
-	return newSecurityGroupRules(c)
+func (c *AwsV1alpha1Client) SecurityGroupRules(namespace string) SecurityGroupRuleInterface {
+	return newSecurityGroupRules(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SecurityhubAccounts() SecurityhubAccountInterface {
-	return newSecurityhubAccounts(c)
+func (c *AwsV1alpha1Client) SecurityhubAccounts(namespace string) SecurityhubAccountInterface {
+	return newSecurityhubAccounts(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SecurityhubProductSubscriptions() SecurityhubProductSubscriptionInterface {
-	return newSecurityhubProductSubscriptions(c)
+func (c *AwsV1alpha1Client) SecurityhubProductSubscriptions(namespace string) SecurityhubProductSubscriptionInterface {
+	return newSecurityhubProductSubscriptions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SecurityhubStandardsSubscriptions() SecurityhubStandardsSubscriptionInterface {
-	return newSecurityhubStandardsSubscriptions(c)
+func (c *AwsV1alpha1Client) SecurityhubStandardsSubscriptions(namespace string) SecurityhubStandardsSubscriptionInterface {
+	return newSecurityhubStandardsSubscriptions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ServiceDiscoveryHttpNamespaces() ServiceDiscoveryHttpNamespaceInterface {
-	return newServiceDiscoveryHttpNamespaces(c)
+func (c *AwsV1alpha1Client) ServiceDiscoveryHTTPNamespaces(namespace string) ServiceDiscoveryHTTPNamespaceInterface {
+	return newServiceDiscoveryHTTPNamespaces(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ServiceDiscoveryPrivateDnsNamespaces() ServiceDiscoveryPrivateDnsNamespaceInterface {
-	return newServiceDiscoveryPrivateDnsNamespaces(c)
+func (c *AwsV1alpha1Client) ServiceDiscoveryPrivateDNSNamespaces(namespace string) ServiceDiscoveryPrivateDNSNamespaceInterface {
+	return newServiceDiscoveryPrivateDNSNamespaces(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ServiceDiscoveryPublicDnsNamespaces() ServiceDiscoveryPublicDnsNamespaceInterface {
-	return newServiceDiscoveryPublicDnsNamespaces(c)
+func (c *AwsV1alpha1Client) ServiceDiscoveryPublicDNSNamespaces(namespace string) ServiceDiscoveryPublicDNSNamespaceInterface {
+	return newServiceDiscoveryPublicDNSNamespaces(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ServiceDiscoveryServices() ServiceDiscoveryServiceInterface {
-	return newServiceDiscoveryServices(c)
+func (c *AwsV1alpha1Client) ServiceDiscoveryServices(namespace string) ServiceDiscoveryServiceInterface {
+	return newServiceDiscoveryServices(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ServicecatalogPortfolios() ServicecatalogPortfolioInterface {
-	return newServicecatalogPortfolios(c)
+func (c *AwsV1alpha1Client) ServicecatalogPortfolios(namespace string) ServicecatalogPortfolioInterface {
+	return newServicecatalogPortfolios(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SesActiveReceiptRuleSets() SesActiveReceiptRuleSetInterface {
-	return newSesActiveReceiptRuleSets(c)
+func (c *AwsV1alpha1Client) SesActiveReceiptRuleSets(namespace string) SesActiveReceiptRuleSetInterface {
+	return newSesActiveReceiptRuleSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SesConfigurationSets() SesConfigurationSetInterface {
-	return newSesConfigurationSets(c)
+func (c *AwsV1alpha1Client) SesConfigurationSets(namespace string) SesConfigurationSetInterface {
+	return newSesConfigurationSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SesDomainDkims() SesDomainDkimInterface {
-	return newSesDomainDkims(c)
+func (c *AwsV1alpha1Client) SesDomainDkims(namespace string) SesDomainDkimInterface {
+	return newSesDomainDkims(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SesDomainIdentities() SesDomainIdentityInterface {
-	return newSesDomainIdentities(c)
+func (c *AwsV1alpha1Client) SesDomainIdentities(namespace string) SesDomainIdentityInterface {
+	return newSesDomainIdentities(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SesDomainIdentityVerifications() SesDomainIdentityVerificationInterface {
-	return newSesDomainIdentityVerifications(c)
+func (c *AwsV1alpha1Client) SesDomainIdentityVerifications(namespace string) SesDomainIdentityVerificationInterface {
+	return newSesDomainIdentityVerifications(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SesDomainMailFroms() SesDomainMailFromInterface {
-	return newSesDomainMailFroms(c)
+func (c *AwsV1alpha1Client) SesDomainMailFroms(namespace string) SesDomainMailFromInterface {
+	return newSesDomainMailFroms(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SesEmailIdentities() SesEmailIdentityInterface {
-	return newSesEmailIdentities(c)
+func (c *AwsV1alpha1Client) SesEmailIdentities(namespace string) SesEmailIdentityInterface {
+	return newSesEmailIdentities(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SesEventDestinations() SesEventDestinationInterface {
-	return newSesEventDestinations(c)
+func (c *AwsV1alpha1Client) SesEventDestinations(namespace string) SesEventDestinationInterface {
+	return newSesEventDestinations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SesIdentityNotificationTopics() SesIdentityNotificationTopicInterface {
-	return newSesIdentityNotificationTopics(c)
+func (c *AwsV1alpha1Client) SesIdentityNotificationTopics(namespace string) SesIdentityNotificationTopicInterface {
+	return newSesIdentityNotificationTopics(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SesIdentityPolicies() SesIdentityPolicyInterface {
-	return newSesIdentityPolicies(c)
+func (c *AwsV1alpha1Client) SesIdentityPolicies(namespace string) SesIdentityPolicyInterface {
+	return newSesIdentityPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SesReceiptFilters() SesReceiptFilterInterface {
-	return newSesReceiptFilters(c)
+func (c *AwsV1alpha1Client) SesReceiptFilters(namespace string) SesReceiptFilterInterface {
+	return newSesReceiptFilters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SesReceiptRules() SesReceiptRuleInterface {
-	return newSesReceiptRules(c)
+func (c *AwsV1alpha1Client) SesReceiptRules(namespace string) SesReceiptRuleInterface {
+	return newSesReceiptRules(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SesReceiptRuleSets() SesReceiptRuleSetInterface {
-	return newSesReceiptRuleSets(c)
+func (c *AwsV1alpha1Client) SesReceiptRuleSets(namespace string) SesReceiptRuleSetInterface {
+	return newSesReceiptRuleSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SesTemplates() SesTemplateInterface {
-	return newSesTemplates(c)
+func (c *AwsV1alpha1Client) SesTemplates(namespace string) SesTemplateInterface {
+	return newSesTemplates(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SfnActivities() SfnActivityInterface {
-	return newSfnActivities(c)
+func (c *AwsV1alpha1Client) SfnActivities(namespace string) SfnActivityInterface {
+	return newSfnActivities(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SfnStateMachines() SfnStateMachineInterface {
-	return newSfnStateMachines(c)
+func (c *AwsV1alpha1Client) SfnStateMachines(namespace string) SfnStateMachineInterface {
+	return newSfnStateMachines(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) ShieldProtections() ShieldProtectionInterface {
-	return newShieldProtections(c)
+func (c *AwsV1alpha1Client) ShieldProtections(namespace string) ShieldProtectionInterface {
+	return newShieldProtections(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SimpledbDomains() SimpledbDomainInterface {
-	return newSimpledbDomains(c)
+func (c *AwsV1alpha1Client) SimpledbDomains(namespace string) SimpledbDomainInterface {
+	return newSimpledbDomains(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SnapshotCreateVolumePermissions() SnapshotCreateVolumePermissionInterface {
-	return newSnapshotCreateVolumePermissions(c)
+func (c *AwsV1alpha1Client) SnapshotCreateVolumePermissions(namespace string) SnapshotCreateVolumePermissionInterface {
+	return newSnapshotCreateVolumePermissions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SnsPlatformApplications() SnsPlatformApplicationInterface {
-	return newSnsPlatformApplications(c)
+func (c *AwsV1alpha1Client) SnsPlatformApplications(namespace string) SnsPlatformApplicationInterface {
+	return newSnsPlatformApplications(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SnsSmsPreferenceses() SnsSmsPreferencesInterface {
-	return newSnsSmsPreferenceses(c)
+func (c *AwsV1alpha1Client) SnsSmsPreferenceses(namespace string) SnsSmsPreferencesInterface {
+	return newSnsSmsPreferenceses(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SnsTopics() SnsTopicInterface {
-	return newSnsTopics(c)
+func (c *AwsV1alpha1Client) SnsTopics(namespace string) SnsTopicInterface {
+	return newSnsTopics(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SnsTopicPolicies() SnsTopicPolicyInterface {
-	return newSnsTopicPolicies(c)
+func (c *AwsV1alpha1Client) SnsTopicPolicies(namespace string) SnsTopicPolicyInterface {
+	return newSnsTopicPolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SnsTopicSubscriptions() SnsTopicSubscriptionInterface {
-	return newSnsTopicSubscriptions(c)
+func (c *AwsV1alpha1Client) SnsTopicSubscriptions(namespace string) SnsTopicSubscriptionInterface {
+	return newSnsTopicSubscriptions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SpotDatafeedSubscriptions() SpotDatafeedSubscriptionInterface {
-	return newSpotDatafeedSubscriptions(c)
+func (c *AwsV1alpha1Client) SpotDatafeedSubscriptions(namespace string) SpotDatafeedSubscriptionInterface {
+	return newSpotDatafeedSubscriptions(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SpotFleetRequests() SpotFleetRequestInterface {
-	return newSpotFleetRequests(c)
+func (c *AwsV1alpha1Client) SpotFleetRequests(namespace string) SpotFleetRequestInterface {
+	return newSpotFleetRequests(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SpotInstanceRequests() SpotInstanceRequestInterface {
-	return newSpotInstanceRequests(c)
+func (c *AwsV1alpha1Client) SpotInstanceRequests(namespace string) SpotInstanceRequestInterface {
+	return newSpotInstanceRequests(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SqsQueues() SqsQueueInterface {
-	return newSqsQueues(c)
+func (c *AwsV1alpha1Client) SqsQueues(namespace string) SqsQueueInterface {
+	return newSqsQueues(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SqsQueuePolicies() SqsQueuePolicyInterface {
-	return newSqsQueuePolicies(c)
+func (c *AwsV1alpha1Client) SqsQueuePolicies(namespace string) SqsQueuePolicyInterface {
+	return newSqsQueuePolicies(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SsmActivations() SsmActivationInterface {
-	return newSsmActivations(c)
+func (c *AwsV1alpha1Client) SsmActivations(namespace string) SsmActivationInterface {
+	return newSsmActivations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SsmAssociations() SsmAssociationInterface {
-	return newSsmAssociations(c)
+func (c *AwsV1alpha1Client) SsmAssociations(namespace string) SsmAssociationInterface {
+	return newSsmAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SsmDocuments() SsmDocumentInterface {
-	return newSsmDocuments(c)
+func (c *AwsV1alpha1Client) SsmDocuments(namespace string) SsmDocumentInterface {
+	return newSsmDocuments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SsmMaintenanceWindows() SsmMaintenanceWindowInterface {
-	return newSsmMaintenanceWindows(c)
+func (c *AwsV1alpha1Client) SsmMaintenanceWindows(namespace string) SsmMaintenanceWindowInterface {
+	return newSsmMaintenanceWindows(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SsmMaintenanceWindowTargets() SsmMaintenanceWindowTargetInterface {
-	return newSsmMaintenanceWindowTargets(c)
+func (c *AwsV1alpha1Client) SsmMaintenanceWindowTargets(namespace string) SsmMaintenanceWindowTargetInterface {
+	return newSsmMaintenanceWindowTargets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SsmMaintenanceWindowTasks() SsmMaintenanceWindowTaskInterface {
-	return newSsmMaintenanceWindowTasks(c)
+func (c *AwsV1alpha1Client) SsmMaintenanceWindowTasks(namespace string) SsmMaintenanceWindowTaskInterface {
+	return newSsmMaintenanceWindowTasks(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SsmParameters() SsmParameterInterface {
-	return newSsmParameters(c)
+func (c *AwsV1alpha1Client) SsmParameters(namespace string) SsmParameterInterface {
+	return newSsmParameters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SsmPatchBaselines() SsmPatchBaselineInterface {
-	return newSsmPatchBaselines(c)
+func (c *AwsV1alpha1Client) SsmPatchBaselines(namespace string) SsmPatchBaselineInterface {
+	return newSsmPatchBaselines(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SsmPatchGroups() SsmPatchGroupInterface {
-	return newSsmPatchGroups(c)
+func (c *AwsV1alpha1Client) SsmPatchGroups(namespace string) SsmPatchGroupInterface {
+	return newSsmPatchGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SsmResourceDataSyncs() SsmResourceDataSyncInterface {
-	return newSsmResourceDataSyncs(c)
+func (c *AwsV1alpha1Client) SsmResourceDataSyncs(namespace string) SsmResourceDataSyncInterface {
+	return newSsmResourceDataSyncs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) StoragegatewayCaches() StoragegatewayCacheInterface {
-	return newStoragegatewayCaches(c)
+func (c *AwsV1alpha1Client) StoragegatewayCaches(namespace string) StoragegatewayCacheInterface {
+	return newStoragegatewayCaches(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) StoragegatewayCachedIscsiVolumes() StoragegatewayCachedIscsiVolumeInterface {
-	return newStoragegatewayCachedIscsiVolumes(c)
+func (c *AwsV1alpha1Client) StoragegatewayCachedIscsiVolumes(namespace string) StoragegatewayCachedIscsiVolumeInterface {
+	return newStoragegatewayCachedIscsiVolumes(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) StoragegatewayGateways() StoragegatewayGatewayInterface {
-	return newStoragegatewayGateways(c)
+func (c *AwsV1alpha1Client) StoragegatewayGateways(namespace string) StoragegatewayGatewayInterface {
+	return newStoragegatewayGateways(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) StoragegatewayNfsFileShares() StoragegatewayNfsFileShareInterface {
-	return newStoragegatewayNfsFileShares(c)
+func (c *AwsV1alpha1Client) StoragegatewayNfsFileShares(namespace string) StoragegatewayNfsFileShareInterface {
+	return newStoragegatewayNfsFileShares(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) StoragegatewaySmbFileShares() StoragegatewaySmbFileShareInterface {
-	return newStoragegatewaySmbFileShares(c)
+func (c *AwsV1alpha1Client) StoragegatewaySmbFileShares(namespace string) StoragegatewaySmbFileShareInterface {
+	return newStoragegatewaySmbFileShares(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) StoragegatewayUploadBuffers() StoragegatewayUploadBufferInterface {
-	return newStoragegatewayUploadBuffers(c)
+func (c *AwsV1alpha1Client) StoragegatewayUploadBuffers(namespace string) StoragegatewayUploadBufferInterface {
+	return newStoragegatewayUploadBuffers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) StoragegatewayWorkingStorages() StoragegatewayWorkingStorageInterface {
-	return newStoragegatewayWorkingStorages(c)
+func (c *AwsV1alpha1Client) StoragegatewayWorkingStorages(namespace string) StoragegatewayWorkingStorageInterface {
+	return newStoragegatewayWorkingStorages(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Subnets() SubnetInterface {
-	return newSubnets(c)
+func (c *AwsV1alpha1Client) Subnets(namespace string) SubnetInterface {
+	return newSubnets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SwfDomains() SwfDomainInterface {
-	return newSwfDomains(c)
+func (c *AwsV1alpha1Client) SwfDomains(namespace string) SwfDomainInterface {
+	return newSwfDomains(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) TransferServers() TransferServerInterface {
-	return newTransferServers(c)
+func (c *AwsV1alpha1Client) TransferSSHKeys(namespace string) TransferSSHKeyInterface {
+	return newTransferSSHKeys(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) TransferSshKeys() TransferSshKeyInterface {
-	return newTransferSshKeys(c)
+func (c *AwsV1alpha1Client) TransferServers(namespace string) TransferServerInterface {
+	return newTransferServers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) TransferUsers() TransferUserInterface {
-	return newTransferUsers(c)
+func (c *AwsV1alpha1Client) TransferUsers(namespace string) TransferUserInterface {
+	return newTransferUsers(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) VolumeAttachments() VolumeAttachmentInterface {
-	return newVolumeAttachments(c)
+func (c *AwsV1alpha1Client) VolumeAttachments(namespace string) VolumeAttachmentInterface {
+	return newVolumeAttachments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) Vpcs() VpcInterface {
-	return newVpcs(c)
+func (c *AwsV1alpha1Client) Vpcs(namespace string) VpcInterface {
+	return newVpcs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) VpcDhcpOptionses() VpcDhcpOptionsInterface {
-	return newVpcDhcpOptionses(c)
+func (c *AwsV1alpha1Client) VpcDHCPOptionses(namespace string) VpcDHCPOptionsInterface {
+	return newVpcDHCPOptionses(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) VpcDhcpOptionsAssociations() VpcDhcpOptionsAssociationInterface {
-	return newVpcDhcpOptionsAssociations(c)
+func (c *AwsV1alpha1Client) VpcDHCPOptionsAssociations(namespace string) VpcDHCPOptionsAssociationInterface {
+	return newVpcDHCPOptionsAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) VpcEndpoints() VpcEndpointInterface {
-	return newVpcEndpoints(c)
+func (c *AwsV1alpha1Client) VpcEndpoints(namespace string) VpcEndpointInterface {
+	return newVpcEndpoints(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) VpcEndpointConnectionNotifications() VpcEndpointConnectionNotificationInterface {
-	return newVpcEndpointConnectionNotifications(c)
+func (c *AwsV1alpha1Client) VpcEndpointConnectionNotifications(namespace string) VpcEndpointConnectionNotificationInterface {
+	return newVpcEndpointConnectionNotifications(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) VpcEndpointRouteTableAssociations() VpcEndpointRouteTableAssociationInterface {
-	return newVpcEndpointRouteTableAssociations(c)
+func (c *AwsV1alpha1Client) VpcEndpointRouteTableAssociations(namespace string) VpcEndpointRouteTableAssociationInterface {
+	return newVpcEndpointRouteTableAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) VpcEndpointServices() VpcEndpointServiceInterface {
-	return newVpcEndpointServices(c)
+func (c *AwsV1alpha1Client) VpcEndpointServices(namespace string) VpcEndpointServiceInterface {
+	return newVpcEndpointServices(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) VpcEndpointServiceAllowedPrincipals() VpcEndpointServiceAllowedPrincipalInterface {
-	return newVpcEndpointServiceAllowedPrincipals(c)
+func (c *AwsV1alpha1Client) VpcEndpointServiceAllowedPrincipals(namespace string) VpcEndpointServiceAllowedPrincipalInterface {
+	return newVpcEndpointServiceAllowedPrincipals(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) VpcEndpointSubnetAssociations() VpcEndpointSubnetAssociationInterface {
-	return newVpcEndpointSubnetAssociations(c)
+func (c *AwsV1alpha1Client) VpcEndpointSubnetAssociations(namespace string) VpcEndpointSubnetAssociationInterface {
+	return newVpcEndpointSubnetAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) VpcIpv4CidrBlockAssociations() VpcIpv4CidrBlockAssociationInterface {
-	return newVpcIpv4CidrBlockAssociations(c)
+func (c *AwsV1alpha1Client) VpcIpv4CIDRBlockAssociations(namespace string) VpcIpv4CIDRBlockAssociationInterface {
+	return newVpcIpv4CIDRBlockAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) VpcPeeringConnections() VpcPeeringConnectionInterface {
-	return newVpcPeeringConnections(c)
+func (c *AwsV1alpha1Client) VpcPeeringConnections(namespace string) VpcPeeringConnectionInterface {
+	return newVpcPeeringConnections(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) VpcPeeringConnectionAccepters() VpcPeeringConnectionAccepterInterface {
-	return newVpcPeeringConnectionAccepters(c)
+func (c *AwsV1alpha1Client) VpcPeeringConnectionAccepters(namespace string) VpcPeeringConnectionAccepterInterface {
+	return newVpcPeeringConnectionAccepters(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) VpcPeeringConnectionOptionses() VpcPeeringConnectionOptionsInterface {
-	return newVpcPeeringConnectionOptionses(c)
+func (c *AwsV1alpha1Client) VpcPeeringConnectionOptionses(namespace string) VpcPeeringConnectionOptionsInterface {
+	return newVpcPeeringConnectionOptionses(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) VpnConnections() VpnConnectionInterface {
-	return newVpnConnections(c)
+func (c *AwsV1alpha1Client) VpnConnections(namespace string) VpnConnectionInterface {
+	return newVpnConnections(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) VpnConnectionRoutes() VpnConnectionRouteInterface {
-	return newVpnConnectionRoutes(c)
+func (c *AwsV1alpha1Client) VpnConnectionRoutes(namespace string) VpnConnectionRouteInterface {
+	return newVpnConnectionRoutes(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) VpnGateways() VpnGatewayInterface {
-	return newVpnGateways(c)
+func (c *AwsV1alpha1Client) VpnGateways(namespace string) VpnGatewayInterface {
+	return newVpnGateways(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) VpnGatewayAttachments() VpnGatewayAttachmentInterface {
-	return newVpnGatewayAttachments(c)
+func (c *AwsV1alpha1Client) VpnGatewayAttachments(namespace string) VpnGatewayAttachmentInterface {
+	return newVpnGatewayAttachments(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) VpnGatewayRoutePropagations() VpnGatewayRoutePropagationInterface {
-	return newVpnGatewayRoutePropagations(c)
+func (c *AwsV1alpha1Client) VpnGatewayRoutePropagations(namespace string) VpnGatewayRoutePropagationInterface {
+	return newVpnGatewayRoutePropagations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafByteMatchSets() WafByteMatchSetInterface {
-	return newWafByteMatchSets(c)
+func (c *AwsV1alpha1Client) WafByteMatchSets(namespace string) WafByteMatchSetInterface {
+	return newWafByteMatchSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafGeoMatchSets() WafGeoMatchSetInterface {
-	return newWafGeoMatchSets(c)
+func (c *AwsV1alpha1Client) WafGeoMatchSets(namespace string) WafGeoMatchSetInterface {
+	return newWafGeoMatchSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafIpsets() WafIpsetInterface {
-	return newWafIpsets(c)
+func (c *AwsV1alpha1Client) WafIpsets(namespace string) WafIpsetInterface {
+	return newWafIpsets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafRateBasedRules() WafRateBasedRuleInterface {
-	return newWafRateBasedRules(c)
+func (c *AwsV1alpha1Client) WafRateBasedRules(namespace string) WafRateBasedRuleInterface {
+	return newWafRateBasedRules(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafRegexMatchSets() WafRegexMatchSetInterface {
-	return newWafRegexMatchSets(c)
+func (c *AwsV1alpha1Client) WafRegexMatchSets(namespace string) WafRegexMatchSetInterface {
+	return newWafRegexMatchSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafRegexPatternSets() WafRegexPatternSetInterface {
-	return newWafRegexPatternSets(c)
+func (c *AwsV1alpha1Client) WafRegexPatternSets(namespace string) WafRegexPatternSetInterface {
+	return newWafRegexPatternSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafRules() WafRuleInterface {
-	return newWafRules(c)
+func (c *AwsV1alpha1Client) WafRules(namespace string) WafRuleInterface {
+	return newWafRules(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafRuleGroups() WafRuleGroupInterface {
-	return newWafRuleGroups(c)
+func (c *AwsV1alpha1Client) WafRuleGroups(namespace string) WafRuleGroupInterface {
+	return newWafRuleGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafSizeConstraintSets() WafSizeConstraintSetInterface {
-	return newWafSizeConstraintSets(c)
+func (c *AwsV1alpha1Client) WafSQLInjectionMatchSets(namespace string) WafSQLInjectionMatchSetInterface {
+	return newWafSQLInjectionMatchSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafSqlInjectionMatchSets() WafSqlInjectionMatchSetInterface {
-	return newWafSqlInjectionMatchSets(c)
+func (c *AwsV1alpha1Client) WafSizeConstraintSets(namespace string) WafSizeConstraintSetInterface {
+	return newWafSizeConstraintSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafWebAcls() WafWebAclInterface {
-	return newWafWebAcls(c)
+func (c *AwsV1alpha1Client) WafWebACLs(namespace string) WafWebACLInterface {
+	return newWafWebACLs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafXssMatchSets() WafXssMatchSetInterface {
-	return newWafXssMatchSets(c)
+func (c *AwsV1alpha1Client) WafXssMatchSets(namespace string) WafXssMatchSetInterface {
+	return newWafXssMatchSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafregionalByteMatchSets() WafregionalByteMatchSetInterface {
-	return newWafregionalByteMatchSets(c)
+func (c *AwsV1alpha1Client) WafregionalByteMatchSets(namespace string) WafregionalByteMatchSetInterface {
+	return newWafregionalByteMatchSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafregionalGeoMatchSets() WafregionalGeoMatchSetInterface {
-	return newWafregionalGeoMatchSets(c)
+func (c *AwsV1alpha1Client) WafregionalGeoMatchSets(namespace string) WafregionalGeoMatchSetInterface {
+	return newWafregionalGeoMatchSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafregionalIpsets() WafregionalIpsetInterface {
-	return newWafregionalIpsets(c)
+func (c *AwsV1alpha1Client) WafregionalIpsets(namespace string) WafregionalIpsetInterface {
+	return newWafregionalIpsets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafregionalRateBasedRules() WafregionalRateBasedRuleInterface {
-	return newWafregionalRateBasedRules(c)
+func (c *AwsV1alpha1Client) WafregionalRateBasedRules(namespace string) WafregionalRateBasedRuleInterface {
+	return newWafregionalRateBasedRules(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafregionalRegexMatchSets() WafregionalRegexMatchSetInterface {
-	return newWafregionalRegexMatchSets(c)
+func (c *AwsV1alpha1Client) WafregionalRegexMatchSets(namespace string) WafregionalRegexMatchSetInterface {
+	return newWafregionalRegexMatchSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafregionalRegexPatternSets() WafregionalRegexPatternSetInterface {
-	return newWafregionalRegexPatternSets(c)
+func (c *AwsV1alpha1Client) WafregionalRegexPatternSets(namespace string) WafregionalRegexPatternSetInterface {
+	return newWafregionalRegexPatternSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafregionalRules() WafregionalRuleInterface {
-	return newWafregionalRules(c)
+func (c *AwsV1alpha1Client) WafregionalRules(namespace string) WafregionalRuleInterface {
+	return newWafregionalRules(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafregionalRuleGroups() WafregionalRuleGroupInterface {
-	return newWafregionalRuleGroups(c)
+func (c *AwsV1alpha1Client) WafregionalRuleGroups(namespace string) WafregionalRuleGroupInterface {
+	return newWafregionalRuleGroups(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafregionalSizeConstraintSets() WafregionalSizeConstraintSetInterface {
-	return newWafregionalSizeConstraintSets(c)
+func (c *AwsV1alpha1Client) WafregionalSQLInjectionMatchSets(namespace string) WafregionalSQLInjectionMatchSetInterface {
+	return newWafregionalSQLInjectionMatchSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafregionalSqlInjectionMatchSets() WafregionalSqlInjectionMatchSetInterface {
-	return newWafregionalSqlInjectionMatchSets(c)
+func (c *AwsV1alpha1Client) WafregionalSizeConstraintSets(namespace string) WafregionalSizeConstraintSetInterface {
+	return newWafregionalSizeConstraintSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafregionalWebAcls() WafregionalWebAclInterface {
-	return newWafregionalWebAcls(c)
+func (c *AwsV1alpha1Client) WafregionalWebACLs(namespace string) WafregionalWebACLInterface {
+	return newWafregionalWebACLs(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafregionalWebAclAssociations() WafregionalWebAclAssociationInterface {
-	return newWafregionalWebAclAssociations(c)
+func (c *AwsV1alpha1Client) WafregionalWebACLAssociations(namespace string) WafregionalWebACLAssociationInterface {
+	return newWafregionalWebACLAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WafregionalXssMatchSets() WafregionalXssMatchSetInterface {
-	return newWafregionalXssMatchSets(c)
+func (c *AwsV1alpha1Client) WafregionalXssMatchSets(namespace string) WafregionalXssMatchSetInterface {
+	return newWafregionalXssMatchSets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WorklinkFleets() WorklinkFleetInterface {
-	return newWorklinkFleets(c)
+func (c *AwsV1alpha1Client) WorklinkFleets(namespace string) WorklinkFleetInterface {
+	return newWorklinkFleets(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) WorklinkWebsiteCertificateAuthorityAssociations() WorklinkWebsiteCertificateAuthorityAssociationInterface {
-	return newWorklinkWebsiteCertificateAuthorityAssociations(c)
+func (c *AwsV1alpha1Client) WorklinkWebsiteCertificateAuthorityAssociations(namespace string) WorklinkWebsiteCertificateAuthorityAssociationInterface {
+	return newWorklinkWebsiteCertificateAuthorityAssociations(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) XraySamplingRules() XraySamplingRuleInterface {
-	return newXraySamplingRules(c)
+func (c *AwsV1alpha1Client) XraySamplingRules(namespace string) XraySamplingRuleInterface {
+	return newXraySamplingRules(c, namespace)
 }
 
 // NewForConfig creates a new AwsV1alpha1Client for the given config.

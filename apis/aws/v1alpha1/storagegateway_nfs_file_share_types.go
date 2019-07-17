@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,42 +20,43 @@ type StoragegatewayNfsFileShare struct {
 
 type StoragegatewayNfsFileShareSpecNfsFileShareDefaults struct {
 	// +optional
-	DirectoryMode string `json:"directory_mode,omitempty"`
+	DirectoryMode string `json:"directoryMode,omitempty" tf:"directory_mode,omitempty"`
 	// +optional
-	FileMode string `json:"file_mode,omitempty"`
+	FileMode string `json:"fileMode,omitempty" tf:"file_mode,omitempty"`
 	// +optional
-	GroupId int `json:"group_id,omitempty"`
+	GroupID int `json:"groupID,omitempty" tf:"group_id,omitempty"`
 	// +optional
-	OwnerId int `json:"owner_id,omitempty"`
+	OwnerID int `json:"ownerID,omitempty" tf:"owner_id,omitempty"`
 }
 
 type StoragegatewayNfsFileShareSpec struct {
 	// +kubebuilder:validation:MaxItems=100
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	ClientList []string `json:"client_list"`
+	ClientList []string `json:"clientList" tf:"client_list"`
 	// +optional
-	DefaultStorageClass string `json:"default_storage_class,omitempty"`
-	GatewayArn          string `json:"gateway_arn"`
+	DefaultStorageClass string `json:"defaultStorageClass,omitempty" tf:"default_storage_class,omitempty"`
+	GatewayArn          string `json:"gatewayArn" tf:"gateway_arn"`
 	// +optional
-	GuessMimeTypeEnabled bool `json:"guess_mime_type_enabled,omitempty"`
+	GuessMimeTypeEnabled bool `json:"guessMimeTypeEnabled,omitempty" tf:"guess_mime_type_enabled,omitempty"`
 	// +optional
-	KmsEncrypted bool `json:"kms_encrypted,omitempty"`
+	KmsEncrypted bool `json:"kmsEncrypted,omitempty" tf:"kms_encrypted,omitempty"`
 	// +optional
-	KmsKeyArn   string `json:"kms_key_arn,omitempty"`
-	LocationArn string `json:"location_arn"`
+	KmsKeyArn   string `json:"kmsKeyArn,omitempty" tf:"kms_key_arn,omitempty"`
+	LocationArn string `json:"locationArn" tf:"location_arn"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	NfsFileShareDefaults *[]StoragegatewayNfsFileShareSpec `json:"nfs_file_share_defaults,omitempty"`
+	NfsFileShareDefaults []StoragegatewayNfsFileShareSpecNfsFileShareDefaults `json:"nfsFileShareDefaults,omitempty" tf:"nfs_file_share_defaults,omitempty"`
 	// +optional
-	ObjectAcl string `json:"object_acl,omitempty"`
+	ObjectACL string `json:"objectACL,omitempty" tf:"object_acl,omitempty"`
 	// +optional
-	ReadOnly bool `json:"read_only,omitempty"`
+	ReadOnly bool `json:"readOnly,omitempty" tf:"read_only,omitempty"`
 	// +optional
-	RequesterPays bool   `json:"requester_pays,omitempty"`
-	RoleArn       string `json:"role_arn"`
+	RequesterPays bool   `json:"requesterPays,omitempty" tf:"requester_pays,omitempty"`
+	RoleArn       string `json:"roleArn" tf:"role_arn"`
 	// +optional
-	Squash string `json:"squash,omitempty"`
+	Squash      string                    `json:"squash,omitempty" tf:"squash,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type StoragegatewayNfsFileShareStatus struct {
@@ -63,7 +64,9 @@ type StoragegatewayNfsFileShareStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

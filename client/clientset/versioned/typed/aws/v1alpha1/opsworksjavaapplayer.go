@@ -32,7 +32,7 @@ import (
 // OpsworksJavaAppLayersGetter has a method to return a OpsworksJavaAppLayerInterface.
 // A group's client should implement this interface.
 type OpsworksJavaAppLayersGetter interface {
-	OpsworksJavaAppLayers() OpsworksJavaAppLayerInterface
+	OpsworksJavaAppLayers(namespace string) OpsworksJavaAppLayerInterface
 }
 
 // OpsworksJavaAppLayerInterface has methods to work with OpsworksJavaAppLayer resources.
@@ -52,12 +52,14 @@ type OpsworksJavaAppLayerInterface interface {
 // opsworksJavaAppLayers implements OpsworksJavaAppLayerInterface
 type opsworksJavaAppLayers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOpsworksJavaAppLayers returns a OpsworksJavaAppLayers
-func newOpsworksJavaAppLayers(c *AwsV1alpha1Client) *opsworksJavaAppLayers {
+func newOpsworksJavaAppLayers(c *AwsV1alpha1Client, namespace string) *opsworksJavaAppLayers {
 	return &opsworksJavaAppLayers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOpsworksJavaAppLayers(c *AwsV1alpha1Client) *opsworksJavaAppLayers {
 func (c *opsworksJavaAppLayers) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksJavaAppLayer, err error) {
 	result = &v1alpha1.OpsworksJavaAppLayer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksjavaapplayers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *opsworksJavaAppLayers) List(opts v1.ListOptions) (result *v1alpha1.Opsw
 	}
 	result = &v1alpha1.OpsworksJavaAppLayerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksjavaapplayers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *opsworksJavaAppLayers) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksjavaapplayers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *opsworksJavaAppLayers) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *opsworksJavaAppLayers) Create(opsworksJavaAppLayer *v1alpha1.OpsworksJavaAppLayer) (result *v1alpha1.OpsworksJavaAppLayer, err error) {
 	result = &v1alpha1.OpsworksJavaAppLayer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("opsworksjavaapplayers").
 		Body(opsworksJavaAppLayer).
 		Do().
@@ -118,6 +124,7 @@ func (c *opsworksJavaAppLayers) Create(opsworksJavaAppLayer *v1alpha1.OpsworksJa
 func (c *opsworksJavaAppLayers) Update(opsworksJavaAppLayer *v1alpha1.OpsworksJavaAppLayer) (result *v1alpha1.OpsworksJavaAppLayer, err error) {
 	result = &v1alpha1.OpsworksJavaAppLayer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksjavaapplayers").
 		Name(opsworksJavaAppLayer.Name).
 		Body(opsworksJavaAppLayer).
@@ -132,6 +139,7 @@ func (c *opsworksJavaAppLayers) Update(opsworksJavaAppLayer *v1alpha1.OpsworksJa
 func (c *opsworksJavaAppLayers) UpdateStatus(opsworksJavaAppLayer *v1alpha1.OpsworksJavaAppLayer) (result *v1alpha1.OpsworksJavaAppLayer, err error) {
 	result = &v1alpha1.OpsworksJavaAppLayer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksjavaapplayers").
 		Name(opsworksJavaAppLayer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *opsworksJavaAppLayers) UpdateStatus(opsworksJavaAppLayer *v1alpha1.Opsw
 // Delete takes name of the opsworksJavaAppLayer and deletes it. Returns an error if one occurs.
 func (c *opsworksJavaAppLayers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksjavaapplayers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *opsworksJavaAppLayers) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksjavaapplayers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *opsworksJavaAppLayers) DeleteCollection(options *v1.DeleteOptions, list
 func (c *opsworksJavaAppLayers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksJavaAppLayer, err error) {
 	result = &v1alpha1.OpsworksJavaAppLayer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("opsworksjavaapplayers").
 		SubResource(subresources...).
 		Name(name).

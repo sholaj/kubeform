@@ -32,7 +32,7 @@ import (
 // OpsworksUserProfilesGetter has a method to return a OpsworksUserProfileInterface.
 // A group's client should implement this interface.
 type OpsworksUserProfilesGetter interface {
-	OpsworksUserProfiles() OpsworksUserProfileInterface
+	OpsworksUserProfiles(namespace string) OpsworksUserProfileInterface
 }
 
 // OpsworksUserProfileInterface has methods to work with OpsworksUserProfile resources.
@@ -52,12 +52,14 @@ type OpsworksUserProfileInterface interface {
 // opsworksUserProfiles implements OpsworksUserProfileInterface
 type opsworksUserProfiles struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOpsworksUserProfiles returns a OpsworksUserProfiles
-func newOpsworksUserProfiles(c *AwsV1alpha1Client) *opsworksUserProfiles {
+func newOpsworksUserProfiles(c *AwsV1alpha1Client, namespace string) *opsworksUserProfiles {
 	return &opsworksUserProfiles{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOpsworksUserProfiles(c *AwsV1alpha1Client) *opsworksUserProfiles {
 func (c *opsworksUserProfiles) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksUserProfile, err error) {
 	result = &v1alpha1.OpsworksUserProfile{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksuserprofiles").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *opsworksUserProfiles) List(opts v1.ListOptions) (result *v1alpha1.Opswo
 	}
 	result = &v1alpha1.OpsworksUserProfileList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksuserprofiles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *opsworksUserProfiles) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksuserprofiles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *opsworksUserProfiles) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *opsworksUserProfiles) Create(opsworksUserProfile *v1alpha1.OpsworksUserProfile) (result *v1alpha1.OpsworksUserProfile, err error) {
 	result = &v1alpha1.OpsworksUserProfile{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("opsworksuserprofiles").
 		Body(opsworksUserProfile).
 		Do().
@@ -118,6 +124,7 @@ func (c *opsworksUserProfiles) Create(opsworksUserProfile *v1alpha1.OpsworksUser
 func (c *opsworksUserProfiles) Update(opsworksUserProfile *v1alpha1.OpsworksUserProfile) (result *v1alpha1.OpsworksUserProfile, err error) {
 	result = &v1alpha1.OpsworksUserProfile{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksuserprofiles").
 		Name(opsworksUserProfile.Name).
 		Body(opsworksUserProfile).
@@ -132,6 +139,7 @@ func (c *opsworksUserProfiles) Update(opsworksUserProfile *v1alpha1.OpsworksUser
 func (c *opsworksUserProfiles) UpdateStatus(opsworksUserProfile *v1alpha1.OpsworksUserProfile) (result *v1alpha1.OpsworksUserProfile, err error) {
 	result = &v1alpha1.OpsworksUserProfile{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksuserprofiles").
 		Name(opsworksUserProfile.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *opsworksUserProfiles) UpdateStatus(opsworksUserProfile *v1alpha1.Opswor
 // Delete takes name of the opsworksUserProfile and deletes it. Returns an error if one occurs.
 func (c *opsworksUserProfiles) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksuserprofiles").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *opsworksUserProfiles) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksuserprofiles").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *opsworksUserProfiles) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *opsworksUserProfiles) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksUserProfile, err error) {
 	result = &v1alpha1.OpsworksUserProfile{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("opsworksuserprofiles").
 		SubResource(subresources...).
 		Name(name).

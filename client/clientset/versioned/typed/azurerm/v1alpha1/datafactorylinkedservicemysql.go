@@ -32,7 +32,7 @@ import (
 // DataFactoryLinkedServiceMysqlsGetter has a method to return a DataFactoryLinkedServiceMysqlInterface.
 // A group's client should implement this interface.
 type DataFactoryLinkedServiceMysqlsGetter interface {
-	DataFactoryLinkedServiceMysqls() DataFactoryLinkedServiceMysqlInterface
+	DataFactoryLinkedServiceMysqls(namespace string) DataFactoryLinkedServiceMysqlInterface
 }
 
 // DataFactoryLinkedServiceMysqlInterface has methods to work with DataFactoryLinkedServiceMysql resources.
@@ -52,12 +52,14 @@ type DataFactoryLinkedServiceMysqlInterface interface {
 // dataFactoryLinkedServiceMysqls implements DataFactoryLinkedServiceMysqlInterface
 type dataFactoryLinkedServiceMysqls struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDataFactoryLinkedServiceMysqls returns a DataFactoryLinkedServiceMysqls
-func newDataFactoryLinkedServiceMysqls(c *AzurermV1alpha1Client) *dataFactoryLinkedServiceMysqls {
+func newDataFactoryLinkedServiceMysqls(c *AzurermV1alpha1Client, namespace string) *dataFactoryLinkedServiceMysqls {
 	return &dataFactoryLinkedServiceMysqls{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDataFactoryLinkedServiceMysqls(c *AzurermV1alpha1Client) *dataFactoryLin
 func (c *dataFactoryLinkedServiceMysqls) Get(name string, options v1.GetOptions) (result *v1alpha1.DataFactoryLinkedServiceMysql, err error) {
 	result = &v1alpha1.DataFactoryLinkedServiceMysql{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicemysqls").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dataFactoryLinkedServiceMysqls) List(opts v1.ListOptions) (result *v1al
 	}
 	result = &v1alpha1.DataFactoryLinkedServiceMysqlList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicemysqls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dataFactoryLinkedServiceMysqls) Watch(opts v1.ListOptions) (watch.Inter
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicemysqls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dataFactoryLinkedServiceMysqls) Watch(opts v1.ListOptions) (watch.Inter
 func (c *dataFactoryLinkedServiceMysqls) Create(dataFactoryLinkedServiceMysql *v1alpha1.DataFactoryLinkedServiceMysql) (result *v1alpha1.DataFactoryLinkedServiceMysql, err error) {
 	result = &v1alpha1.DataFactoryLinkedServiceMysql{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicemysqls").
 		Body(dataFactoryLinkedServiceMysql).
 		Do().
@@ -118,6 +124,7 @@ func (c *dataFactoryLinkedServiceMysqls) Create(dataFactoryLinkedServiceMysql *v
 func (c *dataFactoryLinkedServiceMysqls) Update(dataFactoryLinkedServiceMysql *v1alpha1.DataFactoryLinkedServiceMysql) (result *v1alpha1.DataFactoryLinkedServiceMysql, err error) {
 	result = &v1alpha1.DataFactoryLinkedServiceMysql{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicemysqls").
 		Name(dataFactoryLinkedServiceMysql.Name).
 		Body(dataFactoryLinkedServiceMysql).
@@ -132,6 +139,7 @@ func (c *dataFactoryLinkedServiceMysqls) Update(dataFactoryLinkedServiceMysql *v
 func (c *dataFactoryLinkedServiceMysqls) UpdateStatus(dataFactoryLinkedServiceMysql *v1alpha1.DataFactoryLinkedServiceMysql) (result *v1alpha1.DataFactoryLinkedServiceMysql, err error) {
 	result = &v1alpha1.DataFactoryLinkedServiceMysql{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicemysqls").
 		Name(dataFactoryLinkedServiceMysql.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dataFactoryLinkedServiceMysqls) UpdateStatus(dataFactoryLinkedServiceMy
 // Delete takes name of the dataFactoryLinkedServiceMysql and deletes it. Returns an error if one occurs.
 func (c *dataFactoryLinkedServiceMysqls) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicemysqls").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dataFactoryLinkedServiceMysqls) DeleteCollection(options *v1.DeleteOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicemysqls").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dataFactoryLinkedServiceMysqls) DeleteCollection(options *v1.DeleteOpti
 func (c *dataFactoryLinkedServiceMysqls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataFactoryLinkedServiceMysql, err error) {
 	result = &v1alpha1.DataFactoryLinkedServiceMysql{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicemysqls").
 		SubResource(subresources...).
 		Name(name).

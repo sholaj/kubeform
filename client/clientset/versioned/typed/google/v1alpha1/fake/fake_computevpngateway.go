@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/google/v1alpha1"
 )
 
-// FakeComputeVpnGateways implements ComputeVpnGatewayInterface
-type FakeComputeVpnGateways struct {
+// FakeComputeVPNGateways implements ComputeVPNGatewayInterface
+type FakeComputeVPNGateways struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computevpngatewaysResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computevpngateways"}
 
-var computevpngatewaysKind = schema.GroupVersionKind{Group: "google.kubeform.com", Version: "v1alpha1", Kind: "ComputeVpnGateway"}
+var computevpngatewaysKind = schema.GroupVersionKind{Group: "google.kubeform.com", Version: "v1alpha1", Kind: "ComputeVPNGateway"}
 
-// Get takes name of the computeVpnGateway, and returns the corresponding computeVpnGateway object, and an error if there is any.
-func (c *FakeComputeVpnGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeVpnGateway, err error) {
+// Get takes name of the computeVPNGateway, and returns the corresponding computeVPNGateway object, and an error if there is any.
+func (c *FakeComputeVPNGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeVPNGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computevpngatewaysResource, name), &v1alpha1.ComputeVpnGateway{})
+		Invokes(testing.NewGetAction(computevpngatewaysResource, c.ns, name), &v1alpha1.ComputeVPNGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeVpnGateway), err
+	return obj.(*v1alpha1.ComputeVPNGateway), err
 }
 
-// List takes label and field selectors, and returns the list of ComputeVpnGateways that match those selectors.
-func (c *FakeComputeVpnGateways) List(opts v1.ListOptions) (result *v1alpha1.ComputeVpnGatewayList, err error) {
+// List takes label and field selectors, and returns the list of ComputeVPNGateways that match those selectors.
+func (c *FakeComputeVPNGateways) List(opts v1.ListOptions) (result *v1alpha1.ComputeVPNGatewayList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computevpngatewaysResource, computevpngatewaysKind, opts), &v1alpha1.ComputeVpnGatewayList{})
+		Invokes(testing.NewListAction(computevpngatewaysResource, computevpngatewaysKind, c.ns, opts), &v1alpha1.ComputeVPNGatewayList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeComputeVpnGateways) List(opts v1.ListOptions) (result *v1alpha1.Com
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.ComputeVpnGatewayList{ListMeta: obj.(*v1alpha1.ComputeVpnGatewayList).ListMeta}
-	for _, item := range obj.(*v1alpha1.ComputeVpnGatewayList).Items {
+	list := &v1alpha1.ComputeVPNGatewayList{ListMeta: obj.(*v1alpha1.ComputeVPNGatewayList).ListMeta}
+	for _, item := range obj.(*v1alpha1.ComputeVPNGatewayList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeComputeVpnGateways) List(opts v1.ListOptions) (result *v1alpha1.Com
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested computeVpnGateways.
-func (c *FakeComputeVpnGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested computeVPNGateways.
+func (c *FakeComputeVPNGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computevpngatewaysResource, opts))
+		InvokesWatch(testing.NewWatchAction(computevpngatewaysResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a computeVpnGateway and creates it.  Returns the server's representation of the computeVpnGateway, and an error, if there is any.
-func (c *FakeComputeVpnGateways) Create(computeVpnGateway *v1alpha1.ComputeVpnGateway) (result *v1alpha1.ComputeVpnGateway, err error) {
+// Create takes the representation of a computeVPNGateway and creates it.  Returns the server's representation of the computeVPNGateway, and an error, if there is any.
+func (c *FakeComputeVPNGateways) Create(computeVPNGateway *v1alpha1.ComputeVPNGateway) (result *v1alpha1.ComputeVPNGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computevpngatewaysResource, computeVpnGateway), &v1alpha1.ComputeVpnGateway{})
+		Invokes(testing.NewCreateAction(computevpngatewaysResource, c.ns, computeVPNGateway), &v1alpha1.ComputeVPNGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeVpnGateway), err
+	return obj.(*v1alpha1.ComputeVPNGateway), err
 }
 
-// Update takes the representation of a computeVpnGateway and updates it. Returns the server's representation of the computeVpnGateway, and an error, if there is any.
-func (c *FakeComputeVpnGateways) Update(computeVpnGateway *v1alpha1.ComputeVpnGateway) (result *v1alpha1.ComputeVpnGateway, err error) {
+// Update takes the representation of a computeVPNGateway and updates it. Returns the server's representation of the computeVPNGateway, and an error, if there is any.
+func (c *FakeComputeVPNGateways) Update(computeVPNGateway *v1alpha1.ComputeVPNGateway) (result *v1alpha1.ComputeVPNGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computevpngatewaysResource, computeVpnGateway), &v1alpha1.ComputeVpnGateway{})
+		Invokes(testing.NewUpdateAction(computevpngatewaysResource, c.ns, computeVPNGateway), &v1alpha1.ComputeVPNGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeVpnGateway), err
+	return obj.(*v1alpha1.ComputeVPNGateway), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeComputeVpnGateways) UpdateStatus(computeVpnGateway *v1alpha1.ComputeVpnGateway) (*v1alpha1.ComputeVpnGateway, error) {
+func (c *FakeComputeVPNGateways) UpdateStatus(computeVPNGateway *v1alpha1.ComputeVPNGateway) (*v1alpha1.ComputeVPNGateway, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computevpngatewaysResource, "status", computeVpnGateway), &v1alpha1.ComputeVpnGateway{})
+		Invokes(testing.NewUpdateSubresourceAction(computevpngatewaysResource, "status", c.ns, computeVPNGateway), &v1alpha1.ComputeVPNGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeVpnGateway), err
+	return obj.(*v1alpha1.ComputeVPNGateway), err
 }
 
-// Delete takes name of the computeVpnGateway and deletes it. Returns an error if one occurs.
-func (c *FakeComputeVpnGateways) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the computeVPNGateway and deletes it. Returns an error if one occurs.
+func (c *FakeComputeVPNGateways) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computevpngatewaysResource, name), &v1alpha1.ComputeVpnGateway{})
+		Invokes(testing.NewDeleteAction(computevpngatewaysResource, c.ns, name), &v1alpha1.ComputeVPNGateway{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeComputeVpnGateways) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computevpngatewaysResource, listOptions)
+func (c *FakeComputeVPNGateways) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(computevpngatewaysResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeVpnGatewayList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeVPNGatewayList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched computeVpnGateway.
-func (c *FakeComputeVpnGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeVpnGateway, err error) {
+// Patch applies the patch and returns the patched computeVPNGateway.
+func (c *FakeComputeVPNGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeVPNGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computevpngatewaysResource, name, pt, data, subresources...), &v1alpha1.ComputeVpnGateway{})
+		Invokes(testing.NewPatchSubresourceAction(computevpngatewaysResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeVPNGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeVpnGateway), err
+	return obj.(*v1alpha1.ComputeVPNGateway), err
 }

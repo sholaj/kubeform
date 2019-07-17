@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,15 +19,16 @@ type LogicAppWorkflow struct {
 }
 
 type LogicAppWorkflowSpec struct {
-	Location string `json:"location"`
-	Name     string `json:"name"`
+	Location string `json:"location" tf:"location"`
+	Name     string `json:"name" tf:"name"`
 	// +optional
-	Parameters        map[string]string `json:"parameters,omitempty"`
-	ResourceGroupName string            `json:"resource_group_name"`
+	Parameters        map[string]string `json:"parameters,omitempty" tf:"parameters,omitempty"`
+	ResourceGroupName string            `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	WorkflowSchema string `json:"workflow_schema,omitempty"`
+	WorkflowSchema string `json:"workflowSchema,omitempty" tf:"workflow_schema,omitempty"`
 	// +optional
-	WorkflowVersion string `json:"workflow_version,omitempty"`
+	WorkflowVersion string                    `json:"workflowVersion,omitempty" tf:"workflow_version,omitempty"`
+	ProviderRef     core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type LogicAppWorkflowStatus struct {
@@ -35,7 +36,9 @@ type LogicAppWorkflowStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

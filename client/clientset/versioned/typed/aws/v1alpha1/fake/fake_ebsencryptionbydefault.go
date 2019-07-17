@@ -31,6 +31,7 @@ import (
 // FakeEbsEncryptionByDefaults implements EbsEncryptionByDefaultInterface
 type FakeEbsEncryptionByDefaults struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ebsencryptionbydefaultsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ebsencryptionbydefaults"}
@@ -40,7 +41,8 @@ var ebsencryptionbydefaultsKind = schema.GroupVersionKind{Group: "aws.kubeform.c
 // Get takes name of the ebsEncryptionByDefault, and returns the corresponding ebsEncryptionByDefault object, and an error if there is any.
 func (c *FakeEbsEncryptionByDefaults) Get(name string, options v1.GetOptions) (result *v1alpha1.EbsEncryptionByDefault, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ebsencryptionbydefaultsResource, name), &v1alpha1.EbsEncryptionByDefault{})
+		Invokes(testing.NewGetAction(ebsencryptionbydefaultsResource, c.ns, name), &v1alpha1.EbsEncryptionByDefault{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEbsEncryptionByDefaults) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of EbsEncryptionByDefaults that match those selectors.
 func (c *FakeEbsEncryptionByDefaults) List(opts v1.ListOptions) (result *v1alpha1.EbsEncryptionByDefaultList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ebsencryptionbydefaultsResource, ebsencryptionbydefaultsKind, opts), &v1alpha1.EbsEncryptionByDefaultList{})
+		Invokes(testing.NewListAction(ebsencryptionbydefaultsResource, ebsencryptionbydefaultsKind, c.ns, opts), &v1alpha1.EbsEncryptionByDefaultList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEbsEncryptionByDefaults) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested ebsEncryptionByDefaults.
 func (c *FakeEbsEncryptionByDefaults) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ebsencryptionbydefaultsResource, opts))
+		InvokesWatch(testing.NewWatchAction(ebsencryptionbydefaultsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ebsEncryptionByDefault and creates it.  Returns the server's representation of the ebsEncryptionByDefault, and an error, if there is any.
 func (c *FakeEbsEncryptionByDefaults) Create(ebsEncryptionByDefault *v1alpha1.EbsEncryptionByDefault) (result *v1alpha1.EbsEncryptionByDefault, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ebsencryptionbydefaultsResource, ebsEncryptionByDefault), &v1alpha1.EbsEncryptionByDefault{})
+		Invokes(testing.NewCreateAction(ebsencryptionbydefaultsResource, c.ns, ebsEncryptionByDefault), &v1alpha1.EbsEncryptionByDefault{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEbsEncryptionByDefaults) Create(ebsEncryptionByDefault *v1alpha1.Eb
 // Update takes the representation of a ebsEncryptionByDefault and updates it. Returns the server's representation of the ebsEncryptionByDefault, and an error, if there is any.
 func (c *FakeEbsEncryptionByDefaults) Update(ebsEncryptionByDefault *v1alpha1.EbsEncryptionByDefault) (result *v1alpha1.EbsEncryptionByDefault, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ebsencryptionbydefaultsResource, ebsEncryptionByDefault), &v1alpha1.EbsEncryptionByDefault{})
+		Invokes(testing.NewUpdateAction(ebsencryptionbydefaultsResource, c.ns, ebsEncryptionByDefault), &v1alpha1.EbsEncryptionByDefault{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEbsEncryptionByDefaults) Update(ebsEncryptionByDefault *v1alpha1.Eb
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEbsEncryptionByDefaults) UpdateStatus(ebsEncryptionByDefault *v1alpha1.EbsEncryptionByDefault) (*v1alpha1.EbsEncryptionByDefault, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ebsencryptionbydefaultsResource, "status", ebsEncryptionByDefault), &v1alpha1.EbsEncryptionByDefault{})
+		Invokes(testing.NewUpdateSubresourceAction(ebsencryptionbydefaultsResource, "status", c.ns, ebsEncryptionByDefault), &v1alpha1.EbsEncryptionByDefault{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEbsEncryptionByDefaults) UpdateStatus(ebsEncryptionByDefault *v1alp
 // Delete takes name of the ebsEncryptionByDefault and deletes it. Returns an error if one occurs.
 func (c *FakeEbsEncryptionByDefaults) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ebsencryptionbydefaultsResource, name), &v1alpha1.EbsEncryptionByDefault{})
+		Invokes(testing.NewDeleteAction(ebsencryptionbydefaultsResource, c.ns, name), &v1alpha1.EbsEncryptionByDefault{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEbsEncryptionByDefaults) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ebsencryptionbydefaultsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ebsencryptionbydefaultsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.EbsEncryptionByDefaultList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEbsEncryptionByDefaults) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched ebsEncryptionByDefault.
 func (c *FakeEbsEncryptionByDefaults) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EbsEncryptionByDefault, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ebsencryptionbydefaultsResource, name, pt, data, subresources...), &v1alpha1.EbsEncryptionByDefault{})
+		Invokes(testing.NewPatchSubresourceAction(ebsencryptionbydefaultsResource, c.ns, name, pt, data, subresources...), &v1alpha1.EbsEncryptionByDefault{})
+
 	if obj == nil {
 		return nil, err
 	}

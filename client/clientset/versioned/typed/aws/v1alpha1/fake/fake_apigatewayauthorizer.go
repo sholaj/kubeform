@@ -31,6 +31,7 @@ import (
 // FakeApiGatewayAuthorizers implements ApiGatewayAuthorizerInterface
 type FakeApiGatewayAuthorizers struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var apigatewayauthorizersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "apigatewayauthorizers"}
@@ -40,7 +41,8 @@ var apigatewayauthorizersKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the apiGatewayAuthorizer, and returns the corresponding apiGatewayAuthorizer object, and an error if there is any.
 func (c *FakeApiGatewayAuthorizers) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayAuthorizer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apigatewayauthorizersResource, name), &v1alpha1.ApiGatewayAuthorizer{})
+		Invokes(testing.NewGetAction(apigatewayauthorizersResource, c.ns, name), &v1alpha1.ApiGatewayAuthorizer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApiGatewayAuthorizers) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of ApiGatewayAuthorizers that match those selectors.
 func (c *FakeApiGatewayAuthorizers) List(opts v1.ListOptions) (result *v1alpha1.ApiGatewayAuthorizerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apigatewayauthorizersResource, apigatewayauthorizersKind, opts), &v1alpha1.ApiGatewayAuthorizerList{})
+		Invokes(testing.NewListAction(apigatewayauthorizersResource, apigatewayauthorizersKind, c.ns, opts), &v1alpha1.ApiGatewayAuthorizerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApiGatewayAuthorizers) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested apiGatewayAuthorizers.
 func (c *FakeApiGatewayAuthorizers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apigatewayauthorizersResource, opts))
+		InvokesWatch(testing.NewWatchAction(apigatewayauthorizersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a apiGatewayAuthorizer and creates it.  Returns the server's representation of the apiGatewayAuthorizer, and an error, if there is any.
 func (c *FakeApiGatewayAuthorizers) Create(apiGatewayAuthorizer *v1alpha1.ApiGatewayAuthorizer) (result *v1alpha1.ApiGatewayAuthorizer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apigatewayauthorizersResource, apiGatewayAuthorizer), &v1alpha1.ApiGatewayAuthorizer{})
+		Invokes(testing.NewCreateAction(apigatewayauthorizersResource, c.ns, apiGatewayAuthorizer), &v1alpha1.ApiGatewayAuthorizer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApiGatewayAuthorizers) Create(apiGatewayAuthorizer *v1alpha1.ApiGat
 // Update takes the representation of a apiGatewayAuthorizer and updates it. Returns the server's representation of the apiGatewayAuthorizer, and an error, if there is any.
 func (c *FakeApiGatewayAuthorizers) Update(apiGatewayAuthorizer *v1alpha1.ApiGatewayAuthorizer) (result *v1alpha1.ApiGatewayAuthorizer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apigatewayauthorizersResource, apiGatewayAuthorizer), &v1alpha1.ApiGatewayAuthorizer{})
+		Invokes(testing.NewUpdateAction(apigatewayauthorizersResource, c.ns, apiGatewayAuthorizer), &v1alpha1.ApiGatewayAuthorizer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApiGatewayAuthorizers) Update(apiGatewayAuthorizer *v1alpha1.ApiGat
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApiGatewayAuthorizers) UpdateStatus(apiGatewayAuthorizer *v1alpha1.ApiGatewayAuthorizer) (*v1alpha1.ApiGatewayAuthorizer, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apigatewayauthorizersResource, "status", apiGatewayAuthorizer), &v1alpha1.ApiGatewayAuthorizer{})
+		Invokes(testing.NewUpdateSubresourceAction(apigatewayauthorizersResource, "status", c.ns, apiGatewayAuthorizer), &v1alpha1.ApiGatewayAuthorizer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApiGatewayAuthorizers) UpdateStatus(apiGatewayAuthorizer *v1alpha1.
 // Delete takes name of the apiGatewayAuthorizer and deletes it. Returns an error if one occurs.
 func (c *FakeApiGatewayAuthorizers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apigatewayauthorizersResource, name), &v1alpha1.ApiGatewayAuthorizer{})
+		Invokes(testing.NewDeleteAction(apigatewayauthorizersResource, c.ns, name), &v1alpha1.ApiGatewayAuthorizer{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApiGatewayAuthorizers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apigatewayauthorizersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(apigatewayauthorizersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApiGatewayAuthorizerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApiGatewayAuthorizers) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched apiGatewayAuthorizer.
 func (c *FakeApiGatewayAuthorizers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayAuthorizer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apigatewayauthorizersResource, name, pt, data, subresources...), &v1alpha1.ApiGatewayAuthorizer{})
+		Invokes(testing.NewPatchSubresourceAction(apigatewayauthorizersResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiGatewayAuthorizer{})
+
 	if obj == nil {
 		return nil, err
 	}

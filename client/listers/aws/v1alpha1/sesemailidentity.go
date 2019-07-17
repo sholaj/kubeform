@@ -29,8 +29,8 @@ import (
 type SesEmailIdentityLister interface {
 	// List lists all SesEmailIdentities in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SesEmailIdentity, err error)
-	// Get retrieves the SesEmailIdentity from the index for a given name.
-	Get(name string) (*v1alpha1.SesEmailIdentity, error)
+	// SesEmailIdentities returns an object that can list and get SesEmailIdentities.
+	SesEmailIdentities(namespace string) SesEmailIdentityNamespaceLister
 	SesEmailIdentityListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sesEmailIdentityLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the SesEmailIdentity from the index for a given name.
-func (s *sesEmailIdentityLister) Get(name string) (*v1alpha1.SesEmailIdentity, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SesEmailIdentities returns an object that can list and get SesEmailIdentities.
+func (s *sesEmailIdentityLister) SesEmailIdentities(namespace string) SesEmailIdentityNamespaceLister {
+	return sesEmailIdentityNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SesEmailIdentityNamespaceLister helps list and get SesEmailIdentities.
+type SesEmailIdentityNamespaceLister interface {
+	// List lists all SesEmailIdentities in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SesEmailIdentity, err error)
+	// Get retrieves the SesEmailIdentity from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SesEmailIdentity, error)
+	SesEmailIdentityNamespaceListerExpansion
+}
+
+// sesEmailIdentityNamespaceLister implements the SesEmailIdentityNamespaceLister
+// interface.
+type sesEmailIdentityNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SesEmailIdentities in the indexer for a given namespace.
+func (s sesEmailIdentityNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SesEmailIdentity, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SesEmailIdentity))
+	})
+	return ret, err
+}
+
+// Get retrieves the SesEmailIdentity from the indexer for a given namespace and name.
+func (s sesEmailIdentityNamespaceLister) Get(name string) (*v1alpha1.SesEmailIdentity, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type ApiManagementAuthorizationServerLister interface {
 	// List lists all ApiManagementAuthorizationServers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAuthorizationServer, err error)
-	// Get retrieves the ApiManagementAuthorizationServer from the index for a given name.
-	Get(name string) (*v1alpha1.ApiManagementAuthorizationServer, error)
+	// ApiManagementAuthorizationServers returns an object that can list and get ApiManagementAuthorizationServers.
+	ApiManagementAuthorizationServers(namespace string) ApiManagementAuthorizationServerNamespaceLister
 	ApiManagementAuthorizationServerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiManagementAuthorizationServerLister) List(selector labels.Selector) 
 	return ret, err
 }
 
-// Get retrieves the ApiManagementAuthorizationServer from the index for a given name.
-func (s *apiManagementAuthorizationServerLister) Get(name string) (*v1alpha1.ApiManagementAuthorizationServer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiManagementAuthorizationServers returns an object that can list and get ApiManagementAuthorizationServers.
+func (s *apiManagementAuthorizationServerLister) ApiManagementAuthorizationServers(namespace string) ApiManagementAuthorizationServerNamespaceLister {
+	return apiManagementAuthorizationServerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiManagementAuthorizationServerNamespaceLister helps list and get ApiManagementAuthorizationServers.
+type ApiManagementAuthorizationServerNamespaceLister interface {
+	// List lists all ApiManagementAuthorizationServers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAuthorizationServer, err error)
+	// Get retrieves the ApiManagementAuthorizationServer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiManagementAuthorizationServer, error)
+	ApiManagementAuthorizationServerNamespaceListerExpansion
+}
+
+// apiManagementAuthorizationServerNamespaceLister implements the ApiManagementAuthorizationServerNamespaceLister
+// interface.
+type apiManagementAuthorizationServerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiManagementAuthorizationServers in the indexer for a given namespace.
+func (s apiManagementAuthorizationServerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAuthorizationServer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiManagementAuthorizationServer))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiManagementAuthorizationServer from the indexer for a given namespace and name.
+func (s apiManagementAuthorizationServerNamespaceLister) Get(name string) (*v1alpha1.ApiManagementAuthorizationServer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

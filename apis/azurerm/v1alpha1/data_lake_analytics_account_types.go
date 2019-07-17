@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,12 +19,13 @@ type DataLakeAnalyticsAccount struct {
 }
 
 type DataLakeAnalyticsAccountSpec struct {
-	DefaultStoreAccountName string `json:"default_store_account_name"`
-	Location                string `json:"location"`
-	Name                    string `json:"name"`
-	ResourceGroupName       string `json:"resource_group_name"`
+	DefaultStoreAccountName string `json:"defaultStoreAccountName" tf:"default_store_account_name"`
+	Location                string `json:"location" tf:"location"`
+	Name                    string `json:"name" tf:"name"`
+	ResourceGroupName       string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	Tier string `json:"tier,omitempty"`
+	Tier        string                    `json:"tier,omitempty" tf:"tier,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DataLakeAnalyticsAccountStatus struct {
@@ -32,7 +33,9 @@ type DataLakeAnalyticsAccountStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

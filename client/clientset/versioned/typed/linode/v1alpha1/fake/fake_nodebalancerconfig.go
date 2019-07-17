@@ -31,6 +31,7 @@ import (
 // FakeNodebalancerConfigs implements NodebalancerConfigInterface
 type FakeNodebalancerConfigs struct {
 	Fake *FakeLinodeV1alpha1
+	ns   string
 }
 
 var nodebalancerconfigsResource = schema.GroupVersionResource{Group: "linode.kubeform.com", Version: "v1alpha1", Resource: "nodebalancerconfigs"}
@@ -40,7 +41,8 @@ var nodebalancerconfigsKind = schema.GroupVersionKind{Group: "linode.kubeform.co
 // Get takes name of the nodebalancerConfig, and returns the corresponding nodebalancerConfig object, and an error if there is any.
 func (c *FakeNodebalancerConfigs) Get(name string, options v1.GetOptions) (result *v1alpha1.NodebalancerConfig, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(nodebalancerconfigsResource, name), &v1alpha1.NodebalancerConfig{})
+		Invokes(testing.NewGetAction(nodebalancerconfigsResource, c.ns, name), &v1alpha1.NodebalancerConfig{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeNodebalancerConfigs) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of NodebalancerConfigs that match those selectors.
 func (c *FakeNodebalancerConfigs) List(opts v1.ListOptions) (result *v1alpha1.NodebalancerConfigList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(nodebalancerconfigsResource, nodebalancerconfigsKind, opts), &v1alpha1.NodebalancerConfigList{})
+		Invokes(testing.NewListAction(nodebalancerconfigsResource, nodebalancerconfigsKind, c.ns, opts), &v1alpha1.NodebalancerConfigList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeNodebalancerConfigs) List(opts v1.ListOptions) (result *v1alpha1.No
 // Watch returns a watch.Interface that watches the requested nodebalancerConfigs.
 func (c *FakeNodebalancerConfigs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(nodebalancerconfigsResource, opts))
+		InvokesWatch(testing.NewWatchAction(nodebalancerconfigsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a nodebalancerConfig and creates it.  Returns the server's representation of the nodebalancerConfig, and an error, if there is any.
 func (c *FakeNodebalancerConfigs) Create(nodebalancerConfig *v1alpha1.NodebalancerConfig) (result *v1alpha1.NodebalancerConfig, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(nodebalancerconfigsResource, nodebalancerConfig), &v1alpha1.NodebalancerConfig{})
+		Invokes(testing.NewCreateAction(nodebalancerconfigsResource, c.ns, nodebalancerConfig), &v1alpha1.NodebalancerConfig{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeNodebalancerConfigs) Create(nodebalancerConfig *v1alpha1.Nodebalanc
 // Update takes the representation of a nodebalancerConfig and updates it. Returns the server's representation of the nodebalancerConfig, and an error, if there is any.
 func (c *FakeNodebalancerConfigs) Update(nodebalancerConfig *v1alpha1.NodebalancerConfig) (result *v1alpha1.NodebalancerConfig, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(nodebalancerconfigsResource, nodebalancerConfig), &v1alpha1.NodebalancerConfig{})
+		Invokes(testing.NewUpdateAction(nodebalancerconfigsResource, c.ns, nodebalancerConfig), &v1alpha1.NodebalancerConfig{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeNodebalancerConfigs) Update(nodebalancerConfig *v1alpha1.Nodebalanc
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNodebalancerConfigs) UpdateStatus(nodebalancerConfig *v1alpha1.NodebalancerConfig) (*v1alpha1.NodebalancerConfig, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(nodebalancerconfigsResource, "status", nodebalancerConfig), &v1alpha1.NodebalancerConfig{})
+		Invokes(testing.NewUpdateSubresourceAction(nodebalancerconfigsResource, "status", c.ns, nodebalancerConfig), &v1alpha1.NodebalancerConfig{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeNodebalancerConfigs) UpdateStatus(nodebalancerConfig *v1alpha1.Node
 // Delete takes name of the nodebalancerConfig and deletes it. Returns an error if one occurs.
 func (c *FakeNodebalancerConfigs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(nodebalancerconfigsResource, name), &v1alpha1.NodebalancerConfig{})
+		Invokes(testing.NewDeleteAction(nodebalancerconfigsResource, c.ns, name), &v1alpha1.NodebalancerConfig{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNodebalancerConfigs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(nodebalancerconfigsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(nodebalancerconfigsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NodebalancerConfigList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeNodebalancerConfigs) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched nodebalancerConfig.
 func (c *FakeNodebalancerConfigs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NodebalancerConfig, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(nodebalancerconfigsResource, name, pt, data, subresources...), &v1alpha1.NodebalancerConfig{})
+		Invokes(testing.NewPatchSubresourceAction(nodebalancerconfigsResource, c.ns, name, pt, data, subresources...), &v1alpha1.NodebalancerConfig{})
+
 	if obj == nil {
 		return nil, err
 	}

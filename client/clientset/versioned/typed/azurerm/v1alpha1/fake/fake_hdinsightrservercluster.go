@@ -31,6 +31,7 @@ import (
 // FakeHdinsightRserverClusters implements HdinsightRserverClusterInterface
 type FakeHdinsightRserverClusters struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var hdinsightrserverclustersResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "hdinsightrserverclusters"}
@@ -40,7 +41,8 @@ var hdinsightrserverclustersKind = schema.GroupVersionKind{Group: "azurerm.kubef
 // Get takes name of the hdinsightRserverCluster, and returns the corresponding hdinsightRserverCluster object, and an error if there is any.
 func (c *FakeHdinsightRserverClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.HdinsightRserverCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(hdinsightrserverclustersResource, name), &v1alpha1.HdinsightRserverCluster{})
+		Invokes(testing.NewGetAction(hdinsightrserverclustersResource, c.ns, name), &v1alpha1.HdinsightRserverCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeHdinsightRserverClusters) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of HdinsightRserverClusters that match those selectors.
 func (c *FakeHdinsightRserverClusters) List(opts v1.ListOptions) (result *v1alpha1.HdinsightRserverClusterList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(hdinsightrserverclustersResource, hdinsightrserverclustersKind, opts), &v1alpha1.HdinsightRserverClusterList{})
+		Invokes(testing.NewListAction(hdinsightrserverclustersResource, hdinsightrserverclustersKind, c.ns, opts), &v1alpha1.HdinsightRserverClusterList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeHdinsightRserverClusters) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested hdinsightRserverClusters.
 func (c *FakeHdinsightRserverClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(hdinsightrserverclustersResource, opts))
+		InvokesWatch(testing.NewWatchAction(hdinsightrserverclustersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a hdinsightRserverCluster and creates it.  Returns the server's representation of the hdinsightRserverCluster, and an error, if there is any.
 func (c *FakeHdinsightRserverClusters) Create(hdinsightRserverCluster *v1alpha1.HdinsightRserverCluster) (result *v1alpha1.HdinsightRserverCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(hdinsightrserverclustersResource, hdinsightRserverCluster), &v1alpha1.HdinsightRserverCluster{})
+		Invokes(testing.NewCreateAction(hdinsightrserverclustersResource, c.ns, hdinsightRserverCluster), &v1alpha1.HdinsightRserverCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeHdinsightRserverClusters) Create(hdinsightRserverCluster *v1alpha1.
 // Update takes the representation of a hdinsightRserverCluster and updates it. Returns the server's representation of the hdinsightRserverCluster, and an error, if there is any.
 func (c *FakeHdinsightRserverClusters) Update(hdinsightRserverCluster *v1alpha1.HdinsightRserverCluster) (result *v1alpha1.HdinsightRserverCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(hdinsightrserverclustersResource, hdinsightRserverCluster), &v1alpha1.HdinsightRserverCluster{})
+		Invokes(testing.NewUpdateAction(hdinsightrserverclustersResource, c.ns, hdinsightRserverCluster), &v1alpha1.HdinsightRserverCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeHdinsightRserverClusters) Update(hdinsightRserverCluster *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeHdinsightRserverClusters) UpdateStatus(hdinsightRserverCluster *v1alpha1.HdinsightRserverCluster) (*v1alpha1.HdinsightRserverCluster, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(hdinsightrserverclustersResource, "status", hdinsightRserverCluster), &v1alpha1.HdinsightRserverCluster{})
+		Invokes(testing.NewUpdateSubresourceAction(hdinsightrserverclustersResource, "status", c.ns, hdinsightRserverCluster), &v1alpha1.HdinsightRserverCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeHdinsightRserverClusters) UpdateStatus(hdinsightRserverCluster *v1a
 // Delete takes name of the hdinsightRserverCluster and deletes it. Returns an error if one occurs.
 func (c *FakeHdinsightRserverClusters) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(hdinsightrserverclustersResource, name), &v1alpha1.HdinsightRserverCluster{})
+		Invokes(testing.NewDeleteAction(hdinsightrserverclustersResource, c.ns, name), &v1alpha1.HdinsightRserverCluster{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeHdinsightRserverClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(hdinsightrserverclustersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(hdinsightrserverclustersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.HdinsightRserverClusterList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeHdinsightRserverClusters) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched hdinsightRserverCluster.
 func (c *FakeHdinsightRserverClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.HdinsightRserverCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(hdinsightrserverclustersResource, name, pt, data, subresources...), &v1alpha1.HdinsightRserverCluster{})
+		Invokes(testing.NewPatchSubresourceAction(hdinsightrserverclustersResource, c.ns, name, pt, data, subresources...), &v1alpha1.HdinsightRserverCluster{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// ApiManagementApiPolicyLister helps list ApiManagementApiPolicies.
-type ApiManagementApiPolicyLister interface {
-	// List lists all ApiManagementApiPolicies in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementApiPolicy, err error)
-	// Get retrieves the ApiManagementApiPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.ApiManagementApiPolicy, error)
-	ApiManagementApiPolicyListerExpansion
+// ApiManagementAPIPolicyLister helps list ApiManagementAPIPolicies.
+type ApiManagementAPIPolicyLister interface {
+	// List lists all ApiManagementAPIPolicies in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPIPolicy, err error)
+	// ApiManagementAPIPolicies returns an object that can list and get ApiManagementAPIPolicies.
+	ApiManagementAPIPolicies(namespace string) ApiManagementAPIPolicyNamespaceLister
+	ApiManagementAPIPolicyListerExpansion
 }
 
-// apiManagementApiPolicyLister implements the ApiManagementApiPolicyLister interface.
-type apiManagementApiPolicyLister struct {
+// apiManagementAPIPolicyLister implements the ApiManagementAPIPolicyLister interface.
+type apiManagementAPIPolicyLister struct {
 	indexer cache.Indexer
 }
 
-// NewApiManagementApiPolicyLister returns a new ApiManagementApiPolicyLister.
-func NewApiManagementApiPolicyLister(indexer cache.Indexer) ApiManagementApiPolicyLister {
-	return &apiManagementApiPolicyLister{indexer: indexer}
+// NewApiManagementAPIPolicyLister returns a new ApiManagementAPIPolicyLister.
+func NewApiManagementAPIPolicyLister(indexer cache.Indexer) ApiManagementAPIPolicyLister {
+	return &apiManagementAPIPolicyLister{indexer: indexer}
 }
 
-// List lists all ApiManagementApiPolicies in the indexer.
-func (s *apiManagementApiPolicyLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementApiPolicy, err error) {
+// List lists all ApiManagementAPIPolicies in the indexer.
+func (s *apiManagementAPIPolicyLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPIPolicy, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ApiManagementApiPolicy))
+		ret = append(ret, m.(*v1alpha1.ApiManagementAPIPolicy))
 	})
 	return ret, err
 }
 
-// Get retrieves the ApiManagementApiPolicy from the index for a given name.
-func (s *apiManagementApiPolicyLister) Get(name string) (*v1alpha1.ApiManagementApiPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiManagementAPIPolicies returns an object that can list and get ApiManagementAPIPolicies.
+func (s *apiManagementAPIPolicyLister) ApiManagementAPIPolicies(namespace string) ApiManagementAPIPolicyNamespaceLister {
+	return apiManagementAPIPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiManagementAPIPolicyNamespaceLister helps list and get ApiManagementAPIPolicies.
+type ApiManagementAPIPolicyNamespaceLister interface {
+	// List lists all ApiManagementAPIPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPIPolicy, err error)
+	// Get retrieves the ApiManagementAPIPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiManagementAPIPolicy, error)
+	ApiManagementAPIPolicyNamespaceListerExpansion
+}
+
+// apiManagementAPIPolicyNamespaceLister implements the ApiManagementAPIPolicyNamespaceLister
+// interface.
+type apiManagementAPIPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiManagementAPIPolicies in the indexer for a given namespace.
+func (s apiManagementAPIPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPIPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiManagementAPIPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiManagementAPIPolicy from the indexer for a given namespace and name.
+func (s apiManagementAPIPolicyNamespaceLister) Get(name string) (*v1alpha1.ApiManagementAPIPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("apimanagementapipolicy"), name)
 	}
-	return obj.(*v1alpha1.ApiManagementApiPolicy), nil
+	return obj.(*v1alpha1.ApiManagementAPIPolicy), nil
 }

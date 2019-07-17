@@ -32,7 +32,7 @@ import (
 // WafRegexMatchSetsGetter has a method to return a WafRegexMatchSetInterface.
 // A group's client should implement this interface.
 type WafRegexMatchSetsGetter interface {
-	WafRegexMatchSets() WafRegexMatchSetInterface
+	WafRegexMatchSets(namespace string) WafRegexMatchSetInterface
 }
 
 // WafRegexMatchSetInterface has methods to work with WafRegexMatchSet resources.
@@ -52,12 +52,14 @@ type WafRegexMatchSetInterface interface {
 // wafRegexMatchSets implements WafRegexMatchSetInterface
 type wafRegexMatchSets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWafRegexMatchSets returns a WafRegexMatchSets
-func newWafRegexMatchSets(c *AwsV1alpha1Client) *wafRegexMatchSets {
+func newWafRegexMatchSets(c *AwsV1alpha1Client, namespace string) *wafRegexMatchSets {
 	return &wafRegexMatchSets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWafRegexMatchSets(c *AwsV1alpha1Client) *wafRegexMatchSets {
 func (c *wafRegexMatchSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafRegexMatchSet, err error) {
 	result = &v1alpha1.WafRegexMatchSet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregexmatchsets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *wafRegexMatchSets) List(opts v1.ListOptions) (result *v1alpha1.WafRegex
 	}
 	result = &v1alpha1.WafRegexMatchSetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregexmatchsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *wafRegexMatchSets) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregexmatchsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *wafRegexMatchSets) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *wafRegexMatchSets) Create(wafRegexMatchSet *v1alpha1.WafRegexMatchSet) (result *v1alpha1.WafRegexMatchSet, err error) {
 	result = &v1alpha1.WafRegexMatchSet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafregexmatchsets").
 		Body(wafRegexMatchSet).
 		Do().
@@ -118,6 +124,7 @@ func (c *wafRegexMatchSets) Create(wafRegexMatchSet *v1alpha1.WafRegexMatchSet) 
 func (c *wafRegexMatchSets) Update(wafRegexMatchSet *v1alpha1.WafRegexMatchSet) (result *v1alpha1.WafRegexMatchSet, err error) {
 	result = &v1alpha1.WafRegexMatchSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregexmatchsets").
 		Name(wafRegexMatchSet.Name).
 		Body(wafRegexMatchSet).
@@ -132,6 +139,7 @@ func (c *wafRegexMatchSets) Update(wafRegexMatchSet *v1alpha1.WafRegexMatchSet) 
 func (c *wafRegexMatchSets) UpdateStatus(wafRegexMatchSet *v1alpha1.WafRegexMatchSet) (result *v1alpha1.WafRegexMatchSet, err error) {
 	result = &v1alpha1.WafRegexMatchSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregexmatchsets").
 		Name(wafRegexMatchSet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *wafRegexMatchSets) UpdateStatus(wafRegexMatchSet *v1alpha1.WafRegexMatc
 // Delete takes name of the wafRegexMatchSet and deletes it. Returns an error if one occurs.
 func (c *wafRegexMatchSets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregexmatchsets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *wafRegexMatchSets) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregexmatchsets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *wafRegexMatchSets) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *wafRegexMatchSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafRegexMatchSet, err error) {
 	result = &v1alpha1.WafRegexMatchSet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafregexmatchsets").
 		SubResource(subresources...).
 		Name(name).

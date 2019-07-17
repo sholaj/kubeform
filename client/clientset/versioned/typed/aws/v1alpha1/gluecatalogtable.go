@@ -32,7 +32,7 @@ import (
 // GlueCatalogTablesGetter has a method to return a GlueCatalogTableInterface.
 // A group's client should implement this interface.
 type GlueCatalogTablesGetter interface {
-	GlueCatalogTables() GlueCatalogTableInterface
+	GlueCatalogTables(namespace string) GlueCatalogTableInterface
 }
 
 // GlueCatalogTableInterface has methods to work with GlueCatalogTable resources.
@@ -52,12 +52,14 @@ type GlueCatalogTableInterface interface {
 // glueCatalogTables implements GlueCatalogTableInterface
 type glueCatalogTables struct {
 	client rest.Interface
+	ns     string
 }
 
 // newGlueCatalogTables returns a GlueCatalogTables
-func newGlueCatalogTables(c *AwsV1alpha1Client) *glueCatalogTables {
+func newGlueCatalogTables(c *AwsV1alpha1Client, namespace string) *glueCatalogTables {
 	return &glueCatalogTables{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newGlueCatalogTables(c *AwsV1alpha1Client) *glueCatalogTables {
 func (c *glueCatalogTables) Get(name string, options v1.GetOptions) (result *v1alpha1.GlueCatalogTable, err error) {
 	result = &v1alpha1.GlueCatalogTable{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("gluecatalogtables").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *glueCatalogTables) List(opts v1.ListOptions) (result *v1alpha1.GlueCata
 	}
 	result = &v1alpha1.GlueCatalogTableList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("gluecatalogtables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *glueCatalogTables) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("gluecatalogtables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *glueCatalogTables) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *glueCatalogTables) Create(glueCatalogTable *v1alpha1.GlueCatalogTable) (result *v1alpha1.GlueCatalogTable, err error) {
 	result = &v1alpha1.GlueCatalogTable{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("gluecatalogtables").
 		Body(glueCatalogTable).
 		Do().
@@ -118,6 +124,7 @@ func (c *glueCatalogTables) Create(glueCatalogTable *v1alpha1.GlueCatalogTable) 
 func (c *glueCatalogTables) Update(glueCatalogTable *v1alpha1.GlueCatalogTable) (result *v1alpha1.GlueCatalogTable, err error) {
 	result = &v1alpha1.GlueCatalogTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("gluecatalogtables").
 		Name(glueCatalogTable.Name).
 		Body(glueCatalogTable).
@@ -132,6 +139,7 @@ func (c *glueCatalogTables) Update(glueCatalogTable *v1alpha1.GlueCatalogTable) 
 func (c *glueCatalogTables) UpdateStatus(glueCatalogTable *v1alpha1.GlueCatalogTable) (result *v1alpha1.GlueCatalogTable, err error) {
 	result = &v1alpha1.GlueCatalogTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("gluecatalogtables").
 		Name(glueCatalogTable.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *glueCatalogTables) UpdateStatus(glueCatalogTable *v1alpha1.GlueCatalogT
 // Delete takes name of the glueCatalogTable and deletes it. Returns an error if one occurs.
 func (c *glueCatalogTables) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("gluecatalogtables").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *glueCatalogTables) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("gluecatalogtables").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *glueCatalogTables) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *glueCatalogTables) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GlueCatalogTable, err error) {
 	result = &v1alpha1.GlueCatalogTable{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("gluecatalogtables").
 		SubResource(subresources...).
 		Name(name).

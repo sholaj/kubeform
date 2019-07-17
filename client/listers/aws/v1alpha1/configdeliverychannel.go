@@ -29,8 +29,8 @@ import (
 type ConfigDeliveryChannelLister interface {
 	// List lists all ConfigDeliveryChannels in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ConfigDeliveryChannel, err error)
-	// Get retrieves the ConfigDeliveryChannel from the index for a given name.
-	Get(name string) (*v1alpha1.ConfigDeliveryChannel, error)
+	// ConfigDeliveryChannels returns an object that can list and get ConfigDeliveryChannels.
+	ConfigDeliveryChannels(namespace string) ConfigDeliveryChannelNamespaceLister
 	ConfigDeliveryChannelListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *configDeliveryChannelLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the ConfigDeliveryChannel from the index for a given name.
-func (s *configDeliveryChannelLister) Get(name string) (*v1alpha1.ConfigDeliveryChannel, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ConfigDeliveryChannels returns an object that can list and get ConfigDeliveryChannels.
+func (s *configDeliveryChannelLister) ConfigDeliveryChannels(namespace string) ConfigDeliveryChannelNamespaceLister {
+	return configDeliveryChannelNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ConfigDeliveryChannelNamespaceLister helps list and get ConfigDeliveryChannels.
+type ConfigDeliveryChannelNamespaceLister interface {
+	// List lists all ConfigDeliveryChannels in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ConfigDeliveryChannel, err error)
+	// Get retrieves the ConfigDeliveryChannel from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ConfigDeliveryChannel, error)
+	ConfigDeliveryChannelNamespaceListerExpansion
+}
+
+// configDeliveryChannelNamespaceLister implements the ConfigDeliveryChannelNamespaceLister
+// interface.
+type configDeliveryChannelNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ConfigDeliveryChannels in the indexer for a given namespace.
+func (s configDeliveryChannelNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ConfigDeliveryChannel, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ConfigDeliveryChannel))
+	})
+	return ret, err
+}
+
+// Get retrieves the ConfigDeliveryChannel from the indexer for a given namespace and name.
+func (s configDeliveryChannelNamespaceLister) Get(name string) (*v1alpha1.ConfigDeliveryChannel, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

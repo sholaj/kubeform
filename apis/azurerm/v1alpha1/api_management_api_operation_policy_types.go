@@ -1,47 +1,50 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type ApiManagementApiOperationPolicy struct {
+type ApiManagementAPIOperationPolicy struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              ApiManagementApiOperationPolicySpec   `json:"spec,omitempty"`
-	Status            ApiManagementApiOperationPolicyStatus `json:"status,omitempty"`
+	Spec              ApiManagementAPIOperationPolicySpec   `json:"spec,omitempty"`
+	Status            ApiManagementAPIOperationPolicyStatus `json:"status,omitempty"`
 }
 
-type ApiManagementApiOperationPolicySpec struct {
-	ApiManagementName string `json:"api_management_name"`
-	ApiName           string `json:"api_name"`
-	OperationId       string `json:"operation_id"`
-	ResourceGroupName string `json:"resource_group_name"`
+type ApiManagementAPIOperationPolicySpec struct {
+	ApiManagementName string `json:"apiManagementName" tf:"api_management_name"`
+	ApiName           string `json:"apiName" tf:"api_name"`
+	OperationID       string `json:"operationID" tf:"operation_id"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	XmlLink string `json:"xml_link,omitempty"`
+	XmlLink     string                    `json:"xmlLink,omitempty" tf:"xml_link,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
-type ApiManagementApiOperationPolicyStatus struct {
+type ApiManagementAPIOperationPolicyStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// ApiManagementApiOperationPolicyList is a list of ApiManagementApiOperationPolicys
-type ApiManagementApiOperationPolicyList struct {
+// ApiManagementAPIOperationPolicyList is a list of ApiManagementAPIOperationPolicys
+type ApiManagementAPIOperationPolicyList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of ApiManagementApiOperationPolicy CRD objects
-	Items []ApiManagementApiOperationPolicy `json:"items,omitempty"`
+	// Items is a list of ApiManagementAPIOperationPolicy CRD objects
+	Items []ApiManagementAPIOperationPolicy `json:"items,omitempty"`
 }

@@ -8,7 +8,7 @@ metadata:
 spec:
   group: azurerm.kubeform.com
   names:
-    kind: ApiManagementApiOperation
+    kind: ApiManagementAPIOperation
     plural: apimanagementapioperations
   scope: ""
   validation:
@@ -397,36 +397,138 @@ spec:
           type: object
         spec:
           properties:
-            api_management_name:
+            apiManagementName:
               type: string
-            api_name:
+            apiName:
               type: string
             description:
               type: string
-            display_name:
+            displayName:
               type: string
             method:
               type: string
-            operation_id:
+            operationID:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
             response:
-              items: {}
+              items:
+                properties:
+                  description:
+                    type: string
+                  header:
+                    items:
+                      properties:
+                        defaultValue:
+                          type: string
+                        description:
+                          type: string
+                        name:
+                          type: string
+                        required:
+                          type: boolean
+                        type:
+                          type: string
+                        values:
+                          items:
+                            type: string
+                          type: array
+                          uniqueItems: true
+                      required:
+                      - name
+                      - required
+                      - type
+                      type: object
+                    type: array
+                  representation:
+                    items:
+                      properties:
+                        contentType:
+                          type: string
+                        formParameter:
+                          items:
+                            properties:
+                              defaultValue:
+                                type: string
+                              description:
+                                type: string
+                              name:
+                                type: string
+                              required:
+                                type: boolean
+                              type:
+                                type: string
+                              values:
+                                items:
+                                  type: string
+                                type: array
+                                uniqueItems: true
+                            required:
+                            - name
+                            - required
+                            - type
+                            type: object
+                          type: array
+                        sample:
+                          type: string
+                        schemaID:
+                          type: string
+                        typeName:
+                          type: string
+                      required:
+                      - contentType
+                      type: object
+                    type: array
+                  statusCode:
+                    type: integer
+                required:
+                - statusCode
+                type: object
               type: array
-            template_parameter:
-              items: {}
+            templateParameter:
+              items:
+                properties:
+                  defaultValue:
+                    type: string
+                  description:
+                    type: string
+                  name:
+                    type: string
+                  required:
+                    type: boolean
+                  type:
+                    type: string
+                  values:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                required:
+                - name
+                - required
+                - type
+                type: object
               type: array
-            url_template:
+            urlTemplate:
               type: string
           required:
-          - api_management_name
-          - api_name
-          - display_name
+          - apiManagementName
+          - apiName
+          - displayName
           - method
-          - operation_id
-          - resource_group_name
-          - url_template
+          - operationID
+          - providerRef
+          - resourceGroupName
+          - urlTemplate
           type: object
         status:
           properties:
@@ -437,6 +539,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

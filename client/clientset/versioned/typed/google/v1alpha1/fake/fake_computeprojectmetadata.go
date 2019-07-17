@@ -31,6 +31,7 @@ import (
 // FakeComputeProjectMetadatas implements ComputeProjectMetadataInterface
 type FakeComputeProjectMetadatas struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computeprojectmetadatasResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computeprojectmetadatas"}
@@ -40,7 +41,8 @@ var computeprojectmetadatasKind = schema.GroupVersionKind{Group: "google.kubefor
 // Get takes name of the computeProjectMetadata, and returns the corresponding computeProjectMetadata object, and an error if there is any.
 func (c *FakeComputeProjectMetadatas) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeProjectMetadata, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computeprojectmetadatasResource, name), &v1alpha1.ComputeProjectMetadata{})
+		Invokes(testing.NewGetAction(computeprojectmetadatasResource, c.ns, name), &v1alpha1.ComputeProjectMetadata{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeProjectMetadatas) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of ComputeProjectMetadatas that match those selectors.
 func (c *FakeComputeProjectMetadatas) List(opts v1.ListOptions) (result *v1alpha1.ComputeProjectMetadataList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computeprojectmetadatasResource, computeprojectmetadatasKind, opts), &v1alpha1.ComputeProjectMetadataList{})
+		Invokes(testing.NewListAction(computeprojectmetadatasResource, computeprojectmetadatasKind, c.ns, opts), &v1alpha1.ComputeProjectMetadataList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeProjectMetadatas) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested computeProjectMetadatas.
 func (c *FakeComputeProjectMetadatas) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computeprojectmetadatasResource, opts))
+		InvokesWatch(testing.NewWatchAction(computeprojectmetadatasResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeProjectMetadata and creates it.  Returns the server's representation of the computeProjectMetadata, and an error, if there is any.
 func (c *FakeComputeProjectMetadatas) Create(computeProjectMetadata *v1alpha1.ComputeProjectMetadata) (result *v1alpha1.ComputeProjectMetadata, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computeprojectmetadatasResource, computeProjectMetadata), &v1alpha1.ComputeProjectMetadata{})
+		Invokes(testing.NewCreateAction(computeprojectmetadatasResource, c.ns, computeProjectMetadata), &v1alpha1.ComputeProjectMetadata{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeProjectMetadatas) Create(computeProjectMetadata *v1alpha1.Co
 // Update takes the representation of a computeProjectMetadata and updates it. Returns the server's representation of the computeProjectMetadata, and an error, if there is any.
 func (c *FakeComputeProjectMetadatas) Update(computeProjectMetadata *v1alpha1.ComputeProjectMetadata) (result *v1alpha1.ComputeProjectMetadata, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computeprojectmetadatasResource, computeProjectMetadata), &v1alpha1.ComputeProjectMetadata{})
+		Invokes(testing.NewUpdateAction(computeprojectmetadatasResource, c.ns, computeProjectMetadata), &v1alpha1.ComputeProjectMetadata{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeProjectMetadatas) Update(computeProjectMetadata *v1alpha1.Co
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeProjectMetadatas) UpdateStatus(computeProjectMetadata *v1alpha1.ComputeProjectMetadata) (*v1alpha1.ComputeProjectMetadata, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computeprojectmetadatasResource, "status", computeProjectMetadata), &v1alpha1.ComputeProjectMetadata{})
+		Invokes(testing.NewUpdateSubresourceAction(computeprojectmetadatasResource, "status", c.ns, computeProjectMetadata), &v1alpha1.ComputeProjectMetadata{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeProjectMetadatas) UpdateStatus(computeProjectMetadata *v1alp
 // Delete takes name of the computeProjectMetadata and deletes it. Returns an error if one occurs.
 func (c *FakeComputeProjectMetadatas) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computeprojectmetadatasResource, name), &v1alpha1.ComputeProjectMetadata{})
+		Invokes(testing.NewDeleteAction(computeprojectmetadatasResource, c.ns, name), &v1alpha1.ComputeProjectMetadata{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeProjectMetadatas) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computeprojectmetadatasResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computeprojectmetadatasResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeProjectMetadataList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeProjectMetadatas) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched computeProjectMetadata.
 func (c *FakeComputeProjectMetadatas) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeProjectMetadata, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computeprojectmetadatasResource, name, pt, data, subresources...), &v1alpha1.ComputeProjectMetadata{})
+		Invokes(testing.NewPatchSubresourceAction(computeprojectmetadatasResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeProjectMetadata{})
+
 	if obj == nil {
 		return nil, err
 	}

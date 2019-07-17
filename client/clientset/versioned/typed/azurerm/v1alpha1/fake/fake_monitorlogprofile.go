@@ -31,6 +31,7 @@ import (
 // FakeMonitorLogProfiles implements MonitorLogProfileInterface
 type FakeMonitorLogProfiles struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var monitorlogprofilesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "monitorlogprofiles"}
@@ -40,7 +41,8 @@ var monitorlogprofilesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.co
 // Get takes name of the monitorLogProfile, and returns the corresponding monitorLogProfile object, and an error if there is any.
 func (c *FakeMonitorLogProfiles) Get(name string, options v1.GetOptions) (result *v1alpha1.MonitorLogProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(monitorlogprofilesResource, name), &v1alpha1.MonitorLogProfile{})
+		Invokes(testing.NewGetAction(monitorlogprofilesResource, c.ns, name), &v1alpha1.MonitorLogProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMonitorLogProfiles) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of MonitorLogProfiles that match those selectors.
 func (c *FakeMonitorLogProfiles) List(opts v1.ListOptions) (result *v1alpha1.MonitorLogProfileList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(monitorlogprofilesResource, monitorlogprofilesKind, opts), &v1alpha1.MonitorLogProfileList{})
+		Invokes(testing.NewListAction(monitorlogprofilesResource, monitorlogprofilesKind, c.ns, opts), &v1alpha1.MonitorLogProfileList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMonitorLogProfiles) List(opts v1.ListOptions) (result *v1alpha1.Mon
 // Watch returns a watch.Interface that watches the requested monitorLogProfiles.
 func (c *FakeMonitorLogProfiles) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(monitorlogprofilesResource, opts))
+		InvokesWatch(testing.NewWatchAction(monitorlogprofilesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a monitorLogProfile and creates it.  Returns the server's representation of the monitorLogProfile, and an error, if there is any.
 func (c *FakeMonitorLogProfiles) Create(monitorLogProfile *v1alpha1.MonitorLogProfile) (result *v1alpha1.MonitorLogProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(monitorlogprofilesResource, monitorLogProfile), &v1alpha1.MonitorLogProfile{})
+		Invokes(testing.NewCreateAction(monitorlogprofilesResource, c.ns, monitorLogProfile), &v1alpha1.MonitorLogProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMonitorLogProfiles) Create(monitorLogProfile *v1alpha1.MonitorLogPr
 // Update takes the representation of a monitorLogProfile and updates it. Returns the server's representation of the monitorLogProfile, and an error, if there is any.
 func (c *FakeMonitorLogProfiles) Update(monitorLogProfile *v1alpha1.MonitorLogProfile) (result *v1alpha1.MonitorLogProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(monitorlogprofilesResource, monitorLogProfile), &v1alpha1.MonitorLogProfile{})
+		Invokes(testing.NewUpdateAction(monitorlogprofilesResource, c.ns, monitorLogProfile), &v1alpha1.MonitorLogProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMonitorLogProfiles) Update(monitorLogProfile *v1alpha1.MonitorLogPr
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMonitorLogProfiles) UpdateStatus(monitorLogProfile *v1alpha1.MonitorLogProfile) (*v1alpha1.MonitorLogProfile, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(monitorlogprofilesResource, "status", monitorLogProfile), &v1alpha1.MonitorLogProfile{})
+		Invokes(testing.NewUpdateSubresourceAction(monitorlogprofilesResource, "status", c.ns, monitorLogProfile), &v1alpha1.MonitorLogProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMonitorLogProfiles) UpdateStatus(monitorLogProfile *v1alpha1.Monito
 // Delete takes name of the monitorLogProfile and deletes it. Returns an error if one occurs.
 func (c *FakeMonitorLogProfiles) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(monitorlogprofilesResource, name), &v1alpha1.MonitorLogProfile{})
+		Invokes(testing.NewDeleteAction(monitorlogprofilesResource, c.ns, name), &v1alpha1.MonitorLogProfile{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMonitorLogProfiles) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(monitorlogprofilesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(monitorlogprofilesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MonitorLogProfileList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMonitorLogProfiles) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched monitorLogProfile.
 func (c *FakeMonitorLogProfiles) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MonitorLogProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(monitorlogprofilesResource, name, pt, data, subresources...), &v1alpha1.MonitorLogProfile{})
+		Invokes(testing.NewPatchSubresourceAction(monitorlogprofilesResource, c.ns, name, pt, data, subresources...), &v1alpha1.MonitorLogProfile{})
+
 	if obj == nil {
 		return nil, err
 	}

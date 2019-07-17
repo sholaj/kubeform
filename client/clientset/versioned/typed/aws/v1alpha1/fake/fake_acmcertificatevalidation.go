@@ -31,6 +31,7 @@ import (
 // FakeAcmCertificateValidations implements AcmCertificateValidationInterface
 type FakeAcmCertificateValidations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var acmcertificatevalidationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "acmcertificatevalidations"}
@@ -40,7 +41,8 @@ var acmcertificatevalidationsKind = schema.GroupVersionKind{Group: "aws.kubeform
 // Get takes name of the acmCertificateValidation, and returns the corresponding acmCertificateValidation object, and an error if there is any.
 func (c *FakeAcmCertificateValidations) Get(name string, options v1.GetOptions) (result *v1alpha1.AcmCertificateValidation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(acmcertificatevalidationsResource, name), &v1alpha1.AcmCertificateValidation{})
+		Invokes(testing.NewGetAction(acmcertificatevalidationsResource, c.ns, name), &v1alpha1.AcmCertificateValidation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAcmCertificateValidations) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of AcmCertificateValidations that match those selectors.
 func (c *FakeAcmCertificateValidations) List(opts v1.ListOptions) (result *v1alpha1.AcmCertificateValidationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(acmcertificatevalidationsResource, acmcertificatevalidationsKind, opts), &v1alpha1.AcmCertificateValidationList{})
+		Invokes(testing.NewListAction(acmcertificatevalidationsResource, acmcertificatevalidationsKind, c.ns, opts), &v1alpha1.AcmCertificateValidationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAcmCertificateValidations) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested acmCertificateValidations.
 func (c *FakeAcmCertificateValidations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(acmcertificatevalidationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(acmcertificatevalidationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a acmCertificateValidation and creates it.  Returns the server's representation of the acmCertificateValidation, and an error, if there is any.
 func (c *FakeAcmCertificateValidations) Create(acmCertificateValidation *v1alpha1.AcmCertificateValidation) (result *v1alpha1.AcmCertificateValidation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(acmcertificatevalidationsResource, acmCertificateValidation), &v1alpha1.AcmCertificateValidation{})
+		Invokes(testing.NewCreateAction(acmcertificatevalidationsResource, c.ns, acmCertificateValidation), &v1alpha1.AcmCertificateValidation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAcmCertificateValidations) Create(acmCertificateValidation *v1alpha
 // Update takes the representation of a acmCertificateValidation and updates it. Returns the server's representation of the acmCertificateValidation, and an error, if there is any.
 func (c *FakeAcmCertificateValidations) Update(acmCertificateValidation *v1alpha1.AcmCertificateValidation) (result *v1alpha1.AcmCertificateValidation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(acmcertificatevalidationsResource, acmCertificateValidation), &v1alpha1.AcmCertificateValidation{})
+		Invokes(testing.NewUpdateAction(acmcertificatevalidationsResource, c.ns, acmCertificateValidation), &v1alpha1.AcmCertificateValidation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAcmCertificateValidations) Update(acmCertificateValidation *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAcmCertificateValidations) UpdateStatus(acmCertificateValidation *v1alpha1.AcmCertificateValidation) (*v1alpha1.AcmCertificateValidation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(acmcertificatevalidationsResource, "status", acmCertificateValidation), &v1alpha1.AcmCertificateValidation{})
+		Invokes(testing.NewUpdateSubresourceAction(acmcertificatevalidationsResource, "status", c.ns, acmCertificateValidation), &v1alpha1.AcmCertificateValidation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAcmCertificateValidations) UpdateStatus(acmCertificateValidation *v
 // Delete takes name of the acmCertificateValidation and deletes it. Returns an error if one occurs.
 func (c *FakeAcmCertificateValidations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(acmcertificatevalidationsResource, name), &v1alpha1.AcmCertificateValidation{})
+		Invokes(testing.NewDeleteAction(acmcertificatevalidationsResource, c.ns, name), &v1alpha1.AcmCertificateValidation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAcmCertificateValidations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(acmcertificatevalidationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(acmcertificatevalidationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AcmCertificateValidationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAcmCertificateValidations) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched acmCertificateValidation.
 func (c *FakeAcmCertificateValidations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AcmCertificateValidation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(acmcertificatevalidationsResource, name, pt, data, subresources...), &v1alpha1.AcmCertificateValidation{})
+		Invokes(testing.NewPatchSubresourceAction(acmcertificatevalidationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.AcmCertificateValidation{})
+
 	if obj == nil {
 		return nil, err
 	}

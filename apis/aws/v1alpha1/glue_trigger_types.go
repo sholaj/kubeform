@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,40 +20,41 @@ type GlueTrigger struct {
 
 type GlueTriggerSpecActions struct {
 	// +optional
-	Arguments map[string]string `json:"arguments,omitempty"`
-	JobName   string            `json:"job_name"`
+	Arguments map[string]string `json:"arguments,omitempty" tf:"arguments,omitempty"`
+	JobName   string            `json:"jobName" tf:"job_name"`
 	// +optional
-	Timeout int `json:"timeout,omitempty"`
+	Timeout int `json:"timeout,omitempty" tf:"timeout,omitempty"`
 }
 
 type GlueTriggerSpecPredicateConditions struct {
-	JobName string `json:"job_name"`
+	JobName string `json:"jobName" tf:"job_name"`
 	// +optional
-	LogicalOperator string `json:"logical_operator,omitempty"`
-	State           string `json:"state"`
+	LogicalOperator string `json:"logicalOperator,omitempty" tf:"logical_operator,omitempty"`
+	State           string `json:"state" tf:"state"`
 }
 
 type GlueTriggerSpecPredicate struct {
 	// +kubebuilder:validation:MinItems=1
-	Conditions []GlueTriggerSpecPredicate `json:"conditions"`
+	Conditions []GlueTriggerSpecPredicateConditions `json:"conditions" tf:"conditions"`
 	// +optional
-	Logical string `json:"logical,omitempty"`
+	Logical string `json:"logical,omitempty" tf:"logical,omitempty"`
 }
 
 type GlueTriggerSpec struct {
 	// +kubebuilder:validation:MinItems=1
-	Actions []GlueTriggerSpec `json:"actions"`
+	Actions []GlueTriggerSpecActions `json:"actions" tf:"actions"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	Enabled bool   `json:"enabled,omitempty"`
-	Name    string `json:"name"`
+	Enabled bool   `json:"enabled,omitempty" tf:"enabled,omitempty"`
+	Name    string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Predicate *[]GlueTriggerSpec `json:"predicate,omitempty"`
+	Predicate []GlueTriggerSpecPredicate `json:"predicate,omitempty" tf:"predicate,omitempty"`
 	// +optional
-	Schedule string `json:"schedule,omitempty"`
-	Type     string `json:"type"`
+	Schedule    string                    `json:"schedule,omitempty" tf:"schedule,omitempty"`
+	Type        string                    `json:"type" tf:"type"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type GlueTriggerStatus struct {
@@ -61,7 +62,9 @@ type GlueTriggerStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

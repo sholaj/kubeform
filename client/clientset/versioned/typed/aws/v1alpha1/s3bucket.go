@@ -32,7 +32,7 @@ import (
 // S3BucketsGetter has a method to return a S3BucketInterface.
 // A group's client should implement this interface.
 type S3BucketsGetter interface {
-	S3Buckets() S3BucketInterface
+	S3Buckets(namespace string) S3BucketInterface
 }
 
 // S3BucketInterface has methods to work with S3Bucket resources.
@@ -52,12 +52,14 @@ type S3BucketInterface interface {
 // s3Buckets implements S3BucketInterface
 type s3Buckets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newS3Buckets returns a S3Buckets
-func newS3Buckets(c *AwsV1alpha1Client) *s3Buckets {
+func newS3Buckets(c *AwsV1alpha1Client, namespace string) *s3Buckets {
 	return &s3Buckets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newS3Buckets(c *AwsV1alpha1Client) *s3Buckets {
 func (c *s3Buckets) Get(name string, options v1.GetOptions) (result *v1alpha1.S3Bucket, err error) {
 	result = &v1alpha1.S3Bucket{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("s3buckets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *s3Buckets) List(opts v1.ListOptions) (result *v1alpha1.S3BucketList, er
 	}
 	result = &v1alpha1.S3BucketList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("s3buckets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *s3Buckets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("s3buckets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *s3Buckets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *s3Buckets) Create(s3Bucket *v1alpha1.S3Bucket) (result *v1alpha1.S3Bucket, err error) {
 	result = &v1alpha1.S3Bucket{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("s3buckets").
 		Body(s3Bucket).
 		Do().
@@ -118,6 +124,7 @@ func (c *s3Buckets) Create(s3Bucket *v1alpha1.S3Bucket) (result *v1alpha1.S3Buck
 func (c *s3Buckets) Update(s3Bucket *v1alpha1.S3Bucket) (result *v1alpha1.S3Bucket, err error) {
 	result = &v1alpha1.S3Bucket{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("s3buckets").
 		Name(s3Bucket.Name).
 		Body(s3Bucket).
@@ -132,6 +139,7 @@ func (c *s3Buckets) Update(s3Bucket *v1alpha1.S3Bucket) (result *v1alpha1.S3Buck
 func (c *s3Buckets) UpdateStatus(s3Bucket *v1alpha1.S3Bucket) (result *v1alpha1.S3Bucket, err error) {
 	result = &v1alpha1.S3Bucket{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("s3buckets").
 		Name(s3Bucket.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *s3Buckets) UpdateStatus(s3Bucket *v1alpha1.S3Bucket) (result *v1alpha1.
 // Delete takes name of the s3Bucket and deletes it. Returns an error if one occurs.
 func (c *s3Buckets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("s3buckets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *s3Buckets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("s3buckets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *s3Buckets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 func (c *s3Buckets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.S3Bucket, err error) {
 	result = &v1alpha1.S3Bucket{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("s3buckets").
 		SubResource(subresources...).
 		Name(name).

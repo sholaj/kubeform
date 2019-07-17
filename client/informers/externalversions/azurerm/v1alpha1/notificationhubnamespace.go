@@ -41,32 +41,33 @@ type NotificationHubNamespaceInformer interface {
 type notificationHubNamespaceInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewNotificationHubNamespaceInformer constructs a new informer for NotificationHubNamespace type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewNotificationHubNamespaceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredNotificationHubNamespaceInformer(client, resyncPeriod, indexers, nil)
+func NewNotificationHubNamespaceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredNotificationHubNamespaceInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredNotificationHubNamespaceInformer constructs a new informer for NotificationHubNamespace type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredNotificationHubNamespaceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredNotificationHubNamespaceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().NotificationHubNamespaces().List(options)
+				return client.AzurermV1alpha1().NotificationHubNamespaces(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().NotificationHubNamespaces().Watch(options)
+				return client.AzurermV1alpha1().NotificationHubNamespaces(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.NotificationHubNamespace{},
@@ -76,7 +77,7 @@ func NewFilteredNotificationHubNamespaceInformer(client versioned.Interface, res
 }
 
 func (f *notificationHubNamespaceInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredNotificationHubNamespaceInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredNotificationHubNamespaceInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *notificationHubNamespaceInformer) Informer() cache.SharedIndexInformer {

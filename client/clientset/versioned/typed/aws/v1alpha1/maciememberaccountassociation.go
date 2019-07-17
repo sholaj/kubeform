@@ -32,7 +32,7 @@ import (
 // MacieMemberAccountAssociationsGetter has a method to return a MacieMemberAccountAssociationInterface.
 // A group's client should implement this interface.
 type MacieMemberAccountAssociationsGetter interface {
-	MacieMemberAccountAssociations() MacieMemberAccountAssociationInterface
+	MacieMemberAccountAssociations(namespace string) MacieMemberAccountAssociationInterface
 }
 
 // MacieMemberAccountAssociationInterface has methods to work with MacieMemberAccountAssociation resources.
@@ -52,12 +52,14 @@ type MacieMemberAccountAssociationInterface interface {
 // macieMemberAccountAssociations implements MacieMemberAccountAssociationInterface
 type macieMemberAccountAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMacieMemberAccountAssociations returns a MacieMemberAccountAssociations
-func newMacieMemberAccountAssociations(c *AwsV1alpha1Client) *macieMemberAccountAssociations {
+func newMacieMemberAccountAssociations(c *AwsV1alpha1Client, namespace string) *macieMemberAccountAssociations {
 	return &macieMemberAccountAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMacieMemberAccountAssociations(c *AwsV1alpha1Client) *macieMemberAccount
 func (c *macieMemberAccountAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.MacieMemberAccountAssociation, err error) {
 	result = &v1alpha1.MacieMemberAccountAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("maciememberaccountassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *macieMemberAccountAssociations) List(opts v1.ListOptions) (result *v1al
 	}
 	result = &v1alpha1.MacieMemberAccountAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("maciememberaccountassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *macieMemberAccountAssociations) Watch(opts v1.ListOptions) (watch.Inter
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("maciememberaccountassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *macieMemberAccountAssociations) Watch(opts v1.ListOptions) (watch.Inter
 func (c *macieMemberAccountAssociations) Create(macieMemberAccountAssociation *v1alpha1.MacieMemberAccountAssociation) (result *v1alpha1.MacieMemberAccountAssociation, err error) {
 	result = &v1alpha1.MacieMemberAccountAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("maciememberaccountassociations").
 		Body(macieMemberAccountAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *macieMemberAccountAssociations) Create(macieMemberAccountAssociation *v
 func (c *macieMemberAccountAssociations) Update(macieMemberAccountAssociation *v1alpha1.MacieMemberAccountAssociation) (result *v1alpha1.MacieMemberAccountAssociation, err error) {
 	result = &v1alpha1.MacieMemberAccountAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("maciememberaccountassociations").
 		Name(macieMemberAccountAssociation.Name).
 		Body(macieMemberAccountAssociation).
@@ -132,6 +139,7 @@ func (c *macieMemberAccountAssociations) Update(macieMemberAccountAssociation *v
 func (c *macieMemberAccountAssociations) UpdateStatus(macieMemberAccountAssociation *v1alpha1.MacieMemberAccountAssociation) (result *v1alpha1.MacieMemberAccountAssociation, err error) {
 	result = &v1alpha1.MacieMemberAccountAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("maciememberaccountassociations").
 		Name(macieMemberAccountAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *macieMemberAccountAssociations) UpdateStatus(macieMemberAccountAssociat
 // Delete takes name of the macieMemberAccountAssociation and deletes it. Returns an error if one occurs.
 func (c *macieMemberAccountAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("maciememberaccountassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *macieMemberAccountAssociations) DeleteCollection(options *v1.DeleteOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("maciememberaccountassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *macieMemberAccountAssociations) DeleteCollection(options *v1.DeleteOpti
 func (c *macieMemberAccountAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MacieMemberAccountAssociation, err error) {
 	result = &v1alpha1.MacieMemberAccountAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("maciememberaccountassociations").
 		SubResource(subresources...).
 		Name(name).

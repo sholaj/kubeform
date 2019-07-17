@@ -31,6 +31,7 @@ import (
 // FakeEc2Fleets implements Ec2FleetInterface
 type FakeEc2Fleets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ec2fleetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ec2fleets"}
@@ -40,7 +41,8 @@ var ec2fleetsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: 
 // Get takes name of the ec2Fleet, and returns the corresponding ec2Fleet object, and an error if there is any.
 func (c *FakeEc2Fleets) Get(name string, options v1.GetOptions) (result *v1alpha1.Ec2Fleet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ec2fleetsResource, name), &v1alpha1.Ec2Fleet{})
+		Invokes(testing.NewGetAction(ec2fleetsResource, c.ns, name), &v1alpha1.Ec2Fleet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEc2Fleets) Get(name string, options v1.GetOptions) (result *v1alpha
 // List takes label and field selectors, and returns the list of Ec2Fleets that match those selectors.
 func (c *FakeEc2Fleets) List(opts v1.ListOptions) (result *v1alpha1.Ec2FleetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ec2fleetsResource, ec2fleetsKind, opts), &v1alpha1.Ec2FleetList{})
+		Invokes(testing.NewListAction(ec2fleetsResource, ec2fleetsKind, c.ns, opts), &v1alpha1.Ec2FleetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEc2Fleets) List(opts v1.ListOptions) (result *v1alpha1.Ec2FleetList
 // Watch returns a watch.Interface that watches the requested ec2Fleets.
 func (c *FakeEc2Fleets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ec2fleetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(ec2fleetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ec2Fleet and creates it.  Returns the server's representation of the ec2Fleet, and an error, if there is any.
 func (c *FakeEc2Fleets) Create(ec2Fleet *v1alpha1.Ec2Fleet) (result *v1alpha1.Ec2Fleet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ec2fleetsResource, ec2Fleet), &v1alpha1.Ec2Fleet{})
+		Invokes(testing.NewCreateAction(ec2fleetsResource, c.ns, ec2Fleet), &v1alpha1.Ec2Fleet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEc2Fleets) Create(ec2Fleet *v1alpha1.Ec2Fleet) (result *v1alpha1.Ec
 // Update takes the representation of a ec2Fleet and updates it. Returns the server's representation of the ec2Fleet, and an error, if there is any.
 func (c *FakeEc2Fleets) Update(ec2Fleet *v1alpha1.Ec2Fleet) (result *v1alpha1.Ec2Fleet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ec2fleetsResource, ec2Fleet), &v1alpha1.Ec2Fleet{})
+		Invokes(testing.NewUpdateAction(ec2fleetsResource, c.ns, ec2Fleet), &v1alpha1.Ec2Fleet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEc2Fleets) Update(ec2Fleet *v1alpha1.Ec2Fleet) (result *v1alpha1.Ec
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEc2Fleets) UpdateStatus(ec2Fleet *v1alpha1.Ec2Fleet) (*v1alpha1.Ec2Fleet, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ec2fleetsResource, "status", ec2Fleet), &v1alpha1.Ec2Fleet{})
+		Invokes(testing.NewUpdateSubresourceAction(ec2fleetsResource, "status", c.ns, ec2Fleet), &v1alpha1.Ec2Fleet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEc2Fleets) UpdateStatus(ec2Fleet *v1alpha1.Ec2Fleet) (*v1alpha1.Ec2
 // Delete takes name of the ec2Fleet and deletes it. Returns an error if one occurs.
 func (c *FakeEc2Fleets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ec2fleetsResource, name), &v1alpha1.Ec2Fleet{})
+		Invokes(testing.NewDeleteAction(ec2fleetsResource, c.ns, name), &v1alpha1.Ec2Fleet{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEc2Fleets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ec2fleetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ec2fleetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.Ec2FleetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEc2Fleets) DeleteCollection(options *v1.DeleteOptions, listOptions 
 // Patch applies the patch and returns the patched ec2Fleet.
 func (c *FakeEc2Fleets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Ec2Fleet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ec2fleetsResource, name, pt, data, subresources...), &v1alpha1.Ec2Fleet{})
+		Invokes(testing.NewPatchSubresourceAction(ec2fleetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.Ec2Fleet{})
+
 	if obj == nil {
 		return nil, err
 	}

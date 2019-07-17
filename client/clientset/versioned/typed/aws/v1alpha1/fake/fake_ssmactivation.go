@@ -31,6 +31,7 @@ import (
 // FakeSsmActivations implements SsmActivationInterface
 type FakeSsmActivations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ssmactivationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ssmactivations"}
@@ -40,7 +41,8 @@ var ssmactivationsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Vers
 // Get takes name of the ssmActivation, and returns the corresponding ssmActivation object, and an error if there is any.
 func (c *FakeSsmActivations) Get(name string, options v1.GetOptions) (result *v1alpha1.SsmActivation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ssmactivationsResource, name), &v1alpha1.SsmActivation{})
+		Invokes(testing.NewGetAction(ssmactivationsResource, c.ns, name), &v1alpha1.SsmActivation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSsmActivations) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of SsmActivations that match those selectors.
 func (c *FakeSsmActivations) List(opts v1.ListOptions) (result *v1alpha1.SsmActivationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ssmactivationsResource, ssmactivationsKind, opts), &v1alpha1.SsmActivationList{})
+		Invokes(testing.NewListAction(ssmactivationsResource, ssmactivationsKind, c.ns, opts), &v1alpha1.SsmActivationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSsmActivations) List(opts v1.ListOptions) (result *v1alpha1.SsmActi
 // Watch returns a watch.Interface that watches the requested ssmActivations.
 func (c *FakeSsmActivations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ssmactivationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(ssmactivationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ssmActivation and creates it.  Returns the server's representation of the ssmActivation, and an error, if there is any.
 func (c *FakeSsmActivations) Create(ssmActivation *v1alpha1.SsmActivation) (result *v1alpha1.SsmActivation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ssmactivationsResource, ssmActivation), &v1alpha1.SsmActivation{})
+		Invokes(testing.NewCreateAction(ssmactivationsResource, c.ns, ssmActivation), &v1alpha1.SsmActivation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSsmActivations) Create(ssmActivation *v1alpha1.SsmActivation) (resu
 // Update takes the representation of a ssmActivation and updates it. Returns the server's representation of the ssmActivation, and an error, if there is any.
 func (c *FakeSsmActivations) Update(ssmActivation *v1alpha1.SsmActivation) (result *v1alpha1.SsmActivation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ssmactivationsResource, ssmActivation), &v1alpha1.SsmActivation{})
+		Invokes(testing.NewUpdateAction(ssmactivationsResource, c.ns, ssmActivation), &v1alpha1.SsmActivation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSsmActivations) Update(ssmActivation *v1alpha1.SsmActivation) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSsmActivations) UpdateStatus(ssmActivation *v1alpha1.SsmActivation) (*v1alpha1.SsmActivation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ssmactivationsResource, "status", ssmActivation), &v1alpha1.SsmActivation{})
+		Invokes(testing.NewUpdateSubresourceAction(ssmactivationsResource, "status", c.ns, ssmActivation), &v1alpha1.SsmActivation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSsmActivations) UpdateStatus(ssmActivation *v1alpha1.SsmActivation)
 // Delete takes name of the ssmActivation and deletes it. Returns an error if one occurs.
 func (c *FakeSsmActivations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ssmactivationsResource, name), &v1alpha1.SsmActivation{})
+		Invokes(testing.NewDeleteAction(ssmactivationsResource, c.ns, name), &v1alpha1.SsmActivation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSsmActivations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ssmactivationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ssmactivationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SsmActivationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSsmActivations) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched ssmActivation.
 func (c *FakeSsmActivations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SsmActivation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ssmactivationsResource, name, pt, data, subresources...), &v1alpha1.SsmActivation{})
+		Invokes(testing.NewPatchSubresourceAction(ssmactivationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SsmActivation{})
+
 	if obj == nil {
 		return nil, err
 	}

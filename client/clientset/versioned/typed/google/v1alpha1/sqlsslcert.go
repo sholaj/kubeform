@@ -32,7 +32,7 @@ import (
 // SqlSslCertsGetter has a method to return a SqlSslCertInterface.
 // A group's client should implement this interface.
 type SqlSslCertsGetter interface {
-	SqlSslCerts() SqlSslCertInterface
+	SqlSslCerts(namespace string) SqlSslCertInterface
 }
 
 // SqlSslCertInterface has methods to work with SqlSslCert resources.
@@ -52,12 +52,14 @@ type SqlSslCertInterface interface {
 // sqlSslCerts implements SqlSslCertInterface
 type sqlSslCerts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSqlSslCerts returns a SqlSslCerts
-func newSqlSslCerts(c *GoogleV1alpha1Client) *sqlSslCerts {
+func newSqlSslCerts(c *GoogleV1alpha1Client, namespace string) *sqlSslCerts {
 	return &sqlSslCerts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSqlSslCerts(c *GoogleV1alpha1Client) *sqlSslCerts {
 func (c *sqlSslCerts) Get(name string, options v1.GetOptions) (result *v1alpha1.SqlSslCert, err error) {
 	result = &v1alpha1.SqlSslCert{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlsslcerts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sqlSslCerts) List(opts v1.ListOptions) (result *v1alpha1.SqlSslCertList
 	}
 	result = &v1alpha1.SqlSslCertList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlsslcerts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sqlSslCerts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlsslcerts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sqlSslCerts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *sqlSslCerts) Create(sqlSslCert *v1alpha1.SqlSslCert) (result *v1alpha1.SqlSslCert, err error) {
 	result = &v1alpha1.SqlSslCert{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sqlsslcerts").
 		Body(sqlSslCert).
 		Do().
@@ -118,6 +124,7 @@ func (c *sqlSslCerts) Create(sqlSslCert *v1alpha1.SqlSslCert) (result *v1alpha1.
 func (c *sqlSslCerts) Update(sqlSslCert *v1alpha1.SqlSslCert) (result *v1alpha1.SqlSslCert, err error) {
 	result = &v1alpha1.SqlSslCert{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqlsslcerts").
 		Name(sqlSslCert.Name).
 		Body(sqlSslCert).
@@ -132,6 +139,7 @@ func (c *sqlSslCerts) Update(sqlSslCert *v1alpha1.SqlSslCert) (result *v1alpha1.
 func (c *sqlSslCerts) UpdateStatus(sqlSslCert *v1alpha1.SqlSslCert) (result *v1alpha1.SqlSslCert, err error) {
 	result = &v1alpha1.SqlSslCert{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqlsslcerts").
 		Name(sqlSslCert.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sqlSslCerts) UpdateStatus(sqlSslCert *v1alpha1.SqlSslCert) (result *v1a
 // Delete takes name of the sqlSslCert and deletes it. Returns an error if one occurs.
 func (c *sqlSslCerts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqlsslcerts").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sqlSslCerts) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqlsslcerts").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sqlSslCerts) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *sqlSslCerts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SqlSslCert, err error) {
 	result = &v1alpha1.SqlSslCert{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sqlsslcerts").
 		SubResource(subresources...).
 		Name(name).

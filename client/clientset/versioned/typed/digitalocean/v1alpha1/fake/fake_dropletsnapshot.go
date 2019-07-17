@@ -31,6 +31,7 @@ import (
 // FakeDropletSnapshots implements DropletSnapshotInterface
 type FakeDropletSnapshots struct {
 	Fake *FakeDigitaloceanV1alpha1
+	ns   string
 }
 
 var dropletsnapshotsResource = schema.GroupVersionResource{Group: "digitalocean.kubeform.com", Version: "v1alpha1", Resource: "dropletsnapshots"}
@@ -40,7 +41,8 @@ var dropletsnapshotsKind = schema.GroupVersionKind{Group: "digitalocean.kubeform
 // Get takes name of the dropletSnapshot, and returns the corresponding dropletSnapshot object, and an error if there is any.
 func (c *FakeDropletSnapshots) Get(name string, options v1.GetOptions) (result *v1alpha1.DropletSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(dropletsnapshotsResource, name), &v1alpha1.DropletSnapshot{})
+		Invokes(testing.NewGetAction(dropletsnapshotsResource, c.ns, name), &v1alpha1.DropletSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDropletSnapshots) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of DropletSnapshots that match those selectors.
 func (c *FakeDropletSnapshots) List(opts v1.ListOptions) (result *v1alpha1.DropletSnapshotList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(dropletsnapshotsResource, dropletsnapshotsKind, opts), &v1alpha1.DropletSnapshotList{})
+		Invokes(testing.NewListAction(dropletsnapshotsResource, dropletsnapshotsKind, c.ns, opts), &v1alpha1.DropletSnapshotList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDropletSnapshots) List(opts v1.ListOptions) (result *v1alpha1.Dropl
 // Watch returns a watch.Interface that watches the requested dropletSnapshots.
 func (c *FakeDropletSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(dropletsnapshotsResource, opts))
+		InvokesWatch(testing.NewWatchAction(dropletsnapshotsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dropletSnapshot and creates it.  Returns the server's representation of the dropletSnapshot, and an error, if there is any.
 func (c *FakeDropletSnapshots) Create(dropletSnapshot *v1alpha1.DropletSnapshot) (result *v1alpha1.DropletSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(dropletsnapshotsResource, dropletSnapshot), &v1alpha1.DropletSnapshot{})
+		Invokes(testing.NewCreateAction(dropletsnapshotsResource, c.ns, dropletSnapshot), &v1alpha1.DropletSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDropletSnapshots) Create(dropletSnapshot *v1alpha1.DropletSnapshot)
 // Update takes the representation of a dropletSnapshot and updates it. Returns the server's representation of the dropletSnapshot, and an error, if there is any.
 func (c *FakeDropletSnapshots) Update(dropletSnapshot *v1alpha1.DropletSnapshot) (result *v1alpha1.DropletSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(dropletsnapshotsResource, dropletSnapshot), &v1alpha1.DropletSnapshot{})
+		Invokes(testing.NewUpdateAction(dropletsnapshotsResource, c.ns, dropletSnapshot), &v1alpha1.DropletSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDropletSnapshots) Update(dropletSnapshot *v1alpha1.DropletSnapshot)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDropletSnapshots) UpdateStatus(dropletSnapshot *v1alpha1.DropletSnapshot) (*v1alpha1.DropletSnapshot, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(dropletsnapshotsResource, "status", dropletSnapshot), &v1alpha1.DropletSnapshot{})
+		Invokes(testing.NewUpdateSubresourceAction(dropletsnapshotsResource, "status", c.ns, dropletSnapshot), &v1alpha1.DropletSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDropletSnapshots) UpdateStatus(dropletSnapshot *v1alpha1.DropletSna
 // Delete takes name of the dropletSnapshot and deletes it. Returns an error if one occurs.
 func (c *FakeDropletSnapshots) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(dropletsnapshotsResource, name), &v1alpha1.DropletSnapshot{})
+		Invokes(testing.NewDeleteAction(dropletsnapshotsResource, c.ns, name), &v1alpha1.DropletSnapshot{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDropletSnapshots) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(dropletsnapshotsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(dropletsnapshotsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DropletSnapshotList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDropletSnapshots) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched dropletSnapshot.
 func (c *FakeDropletSnapshots) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DropletSnapshot, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(dropletsnapshotsResource, name, pt, data, subresources...), &v1alpha1.DropletSnapshot{})
+		Invokes(testing.NewPatchSubresourceAction(dropletsnapshotsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DropletSnapshot{})
+
 	if obj == nil {
 		return nil, err
 	}

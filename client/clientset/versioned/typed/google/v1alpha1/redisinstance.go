@@ -32,7 +32,7 @@ import (
 // RedisInstancesGetter has a method to return a RedisInstanceInterface.
 // A group's client should implement this interface.
 type RedisInstancesGetter interface {
-	RedisInstances() RedisInstanceInterface
+	RedisInstances(namespace string) RedisInstanceInterface
 }
 
 // RedisInstanceInterface has methods to work with RedisInstance resources.
@@ -52,12 +52,14 @@ type RedisInstanceInterface interface {
 // redisInstances implements RedisInstanceInterface
 type redisInstances struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRedisInstances returns a RedisInstances
-func newRedisInstances(c *GoogleV1alpha1Client) *redisInstances {
+func newRedisInstances(c *GoogleV1alpha1Client, namespace string) *redisInstances {
 	return &redisInstances{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRedisInstances(c *GoogleV1alpha1Client) *redisInstances {
 func (c *redisInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.RedisInstance, err error) {
 	result = &v1alpha1.RedisInstance{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("redisinstances").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *redisInstances) List(opts v1.ListOptions) (result *v1alpha1.RedisInstan
 	}
 	result = &v1alpha1.RedisInstanceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("redisinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *redisInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("redisinstances").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *redisInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *redisInstances) Create(redisInstance *v1alpha1.RedisInstance) (result *v1alpha1.RedisInstance, err error) {
 	result = &v1alpha1.RedisInstance{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("redisinstances").
 		Body(redisInstance).
 		Do().
@@ -118,6 +124,7 @@ func (c *redisInstances) Create(redisInstance *v1alpha1.RedisInstance) (result *
 func (c *redisInstances) Update(redisInstance *v1alpha1.RedisInstance) (result *v1alpha1.RedisInstance, err error) {
 	result = &v1alpha1.RedisInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("redisinstances").
 		Name(redisInstance.Name).
 		Body(redisInstance).
@@ -132,6 +139,7 @@ func (c *redisInstances) Update(redisInstance *v1alpha1.RedisInstance) (result *
 func (c *redisInstances) UpdateStatus(redisInstance *v1alpha1.RedisInstance) (result *v1alpha1.RedisInstance, err error) {
 	result = &v1alpha1.RedisInstance{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("redisinstances").
 		Name(redisInstance.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *redisInstances) UpdateStatus(redisInstance *v1alpha1.RedisInstance) (re
 // Delete takes name of the redisInstance and deletes it. Returns an error if one occurs.
 func (c *redisInstances) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("redisinstances").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *redisInstances) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("redisinstances").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *redisInstances) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *redisInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RedisInstance, err error) {
 	result = &v1alpha1.RedisInstance{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("redisinstances").
 		SubResource(subresources...).
 		Name(name).

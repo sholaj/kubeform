@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// Ec2ClientVpnEndpointInformer provides access to a shared informer and lister for
-// Ec2ClientVpnEndpoints.
-type Ec2ClientVpnEndpointInformer interface {
+// Ec2ClientVPNEndpointInformer provides access to a shared informer and lister for
+// Ec2ClientVPNEndpoints.
+type Ec2ClientVPNEndpointInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.Ec2ClientVpnEndpointLister
+	Lister() v1alpha1.Ec2ClientVPNEndpointLister
 }
 
-type ec2ClientVpnEndpointInformer struct {
+type ec2ClientVPNEndpointInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewEc2ClientVpnEndpointInformer constructs a new informer for Ec2ClientVpnEndpoint type.
+// NewEc2ClientVPNEndpointInformer constructs a new informer for Ec2ClientVPNEndpoint type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewEc2ClientVpnEndpointInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredEc2ClientVpnEndpointInformer(client, resyncPeriod, indexers, nil)
+func NewEc2ClientVPNEndpointInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredEc2ClientVPNEndpointInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredEc2ClientVpnEndpointInformer constructs a new informer for Ec2ClientVpnEndpoint type.
+// NewFilteredEc2ClientVPNEndpointInformer constructs a new informer for Ec2ClientVPNEndpoint type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredEc2ClientVpnEndpointInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredEc2ClientVPNEndpointInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().Ec2ClientVpnEndpoints().List(options)
+				return client.AwsV1alpha1().Ec2ClientVPNEndpoints(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().Ec2ClientVpnEndpoints().Watch(options)
+				return client.AwsV1alpha1().Ec2ClientVPNEndpoints(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.Ec2ClientVpnEndpoint{},
+		&awsv1alpha1.Ec2ClientVPNEndpoint{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *ec2ClientVpnEndpointInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredEc2ClientVpnEndpointInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *ec2ClientVPNEndpointInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredEc2ClientVPNEndpointInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *ec2ClientVpnEndpointInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.Ec2ClientVpnEndpoint{}, f.defaultInformer)
+func (f *ec2ClientVPNEndpointInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.Ec2ClientVPNEndpoint{}, f.defaultInformer)
 }
 
-func (f *ec2ClientVpnEndpointInformer) Lister() v1alpha1.Ec2ClientVpnEndpointLister {
-	return v1alpha1.NewEc2ClientVpnEndpointLister(f.Informer().GetIndexer())
+func (f *ec2ClientVPNEndpointInformer) Lister() v1alpha1.Ec2ClientVPNEndpointLister {
+	return v1alpha1.NewEc2ClientVPNEndpointLister(f.Informer().GetIndexer())
 }

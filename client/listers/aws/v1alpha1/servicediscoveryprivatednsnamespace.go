@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// ServiceDiscoveryPrivateDnsNamespaceLister helps list ServiceDiscoveryPrivateDnsNamespaces.
-type ServiceDiscoveryPrivateDnsNamespaceLister interface {
-	// List lists all ServiceDiscoveryPrivateDnsNamespaces in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryPrivateDnsNamespace, err error)
-	// Get retrieves the ServiceDiscoveryPrivateDnsNamespace from the index for a given name.
-	Get(name string) (*v1alpha1.ServiceDiscoveryPrivateDnsNamespace, error)
-	ServiceDiscoveryPrivateDnsNamespaceListerExpansion
+// ServiceDiscoveryPrivateDNSNamespaceLister helps list ServiceDiscoveryPrivateDNSNamespaces.
+type ServiceDiscoveryPrivateDNSNamespaceLister interface {
+	// List lists all ServiceDiscoveryPrivateDNSNamespaces in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryPrivateDNSNamespace, err error)
+	// ServiceDiscoveryPrivateDNSNamespaces returns an object that can list and get ServiceDiscoveryPrivateDNSNamespaces.
+	ServiceDiscoveryPrivateDNSNamespaces(namespace string) ServiceDiscoveryPrivateDNSNamespaceNamespaceLister
+	ServiceDiscoveryPrivateDNSNamespaceListerExpansion
 }
 
-// serviceDiscoveryPrivateDnsNamespaceLister implements the ServiceDiscoveryPrivateDnsNamespaceLister interface.
-type serviceDiscoveryPrivateDnsNamespaceLister struct {
+// serviceDiscoveryPrivateDNSNamespaceLister implements the ServiceDiscoveryPrivateDNSNamespaceLister interface.
+type serviceDiscoveryPrivateDNSNamespaceLister struct {
 	indexer cache.Indexer
 }
 
-// NewServiceDiscoveryPrivateDnsNamespaceLister returns a new ServiceDiscoveryPrivateDnsNamespaceLister.
-func NewServiceDiscoveryPrivateDnsNamespaceLister(indexer cache.Indexer) ServiceDiscoveryPrivateDnsNamespaceLister {
-	return &serviceDiscoveryPrivateDnsNamespaceLister{indexer: indexer}
+// NewServiceDiscoveryPrivateDNSNamespaceLister returns a new ServiceDiscoveryPrivateDNSNamespaceLister.
+func NewServiceDiscoveryPrivateDNSNamespaceLister(indexer cache.Indexer) ServiceDiscoveryPrivateDNSNamespaceLister {
+	return &serviceDiscoveryPrivateDNSNamespaceLister{indexer: indexer}
 }
 
-// List lists all ServiceDiscoveryPrivateDnsNamespaces in the indexer.
-func (s *serviceDiscoveryPrivateDnsNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryPrivateDnsNamespace, err error) {
+// List lists all ServiceDiscoveryPrivateDNSNamespaces in the indexer.
+func (s *serviceDiscoveryPrivateDNSNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryPrivateDNSNamespace, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ServiceDiscoveryPrivateDnsNamespace))
+		ret = append(ret, m.(*v1alpha1.ServiceDiscoveryPrivateDNSNamespace))
 	})
 	return ret, err
 }
 
-// Get retrieves the ServiceDiscoveryPrivateDnsNamespace from the index for a given name.
-func (s *serviceDiscoveryPrivateDnsNamespaceLister) Get(name string) (*v1alpha1.ServiceDiscoveryPrivateDnsNamespace, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ServiceDiscoveryPrivateDNSNamespaces returns an object that can list and get ServiceDiscoveryPrivateDNSNamespaces.
+func (s *serviceDiscoveryPrivateDNSNamespaceLister) ServiceDiscoveryPrivateDNSNamespaces(namespace string) ServiceDiscoveryPrivateDNSNamespaceNamespaceLister {
+	return serviceDiscoveryPrivateDNSNamespaceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ServiceDiscoveryPrivateDNSNamespaceNamespaceLister helps list and get ServiceDiscoveryPrivateDNSNamespaces.
+type ServiceDiscoveryPrivateDNSNamespaceNamespaceLister interface {
+	// List lists all ServiceDiscoveryPrivateDNSNamespaces in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryPrivateDNSNamespace, err error)
+	// Get retrieves the ServiceDiscoveryPrivateDNSNamespace from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ServiceDiscoveryPrivateDNSNamespace, error)
+	ServiceDiscoveryPrivateDNSNamespaceNamespaceListerExpansion
+}
+
+// serviceDiscoveryPrivateDNSNamespaceNamespaceLister implements the ServiceDiscoveryPrivateDNSNamespaceNamespaceLister
+// interface.
+type serviceDiscoveryPrivateDNSNamespaceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ServiceDiscoveryPrivateDNSNamespaces in the indexer for a given namespace.
+func (s serviceDiscoveryPrivateDNSNamespaceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServiceDiscoveryPrivateDNSNamespace, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ServiceDiscoveryPrivateDNSNamespace))
+	})
+	return ret, err
+}
+
+// Get retrieves the ServiceDiscoveryPrivateDNSNamespace from the indexer for a given namespace and name.
+func (s serviceDiscoveryPrivateDNSNamespaceNamespaceLister) Get(name string) (*v1alpha1.ServiceDiscoveryPrivateDNSNamespace, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("servicediscoveryprivatednsnamespace"), name)
 	}
-	return obj.(*v1alpha1.ServiceDiscoveryPrivateDnsNamespace), nil
+	return obj.(*v1alpha1.ServiceDiscoveryPrivateDNSNamespace), nil
 }

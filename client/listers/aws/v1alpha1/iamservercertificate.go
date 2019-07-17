@@ -29,8 +29,8 @@ import (
 type IamServerCertificateLister interface {
 	// List lists all IamServerCertificates in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IamServerCertificate, err error)
-	// Get retrieves the IamServerCertificate from the index for a given name.
-	Get(name string) (*v1alpha1.IamServerCertificate, error)
+	// IamServerCertificates returns an object that can list and get IamServerCertificates.
+	IamServerCertificates(namespace string) IamServerCertificateNamespaceLister
 	IamServerCertificateListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iamServerCertificateLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the IamServerCertificate from the index for a given name.
-func (s *iamServerCertificateLister) Get(name string) (*v1alpha1.IamServerCertificate, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IamServerCertificates returns an object that can list and get IamServerCertificates.
+func (s *iamServerCertificateLister) IamServerCertificates(namespace string) IamServerCertificateNamespaceLister {
+	return iamServerCertificateNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IamServerCertificateNamespaceLister helps list and get IamServerCertificates.
+type IamServerCertificateNamespaceLister interface {
+	// List lists all IamServerCertificates in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IamServerCertificate, err error)
+	// Get retrieves the IamServerCertificate from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IamServerCertificate, error)
+	IamServerCertificateNamespaceListerExpansion
+}
+
+// iamServerCertificateNamespaceLister implements the IamServerCertificateNamespaceLister
+// interface.
+type iamServerCertificateNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IamServerCertificates in the indexer for a given namespace.
+func (s iamServerCertificateNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IamServerCertificate, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IamServerCertificate))
+	})
+	return ret, err
+}
+
+// Get retrieves the IamServerCertificate from the indexer for a given namespace and name.
+func (s iamServerCertificateNamespaceLister) Get(name string) (*v1alpha1.IamServerCertificate, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

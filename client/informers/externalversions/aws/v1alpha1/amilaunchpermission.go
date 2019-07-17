@@ -41,32 +41,33 @@ type AmiLaunchPermissionInformer interface {
 type amiLaunchPermissionInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewAmiLaunchPermissionInformer constructs a new informer for AmiLaunchPermission type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAmiLaunchPermissionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAmiLaunchPermissionInformer(client, resyncPeriod, indexers, nil)
+func NewAmiLaunchPermissionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAmiLaunchPermissionInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredAmiLaunchPermissionInformer constructs a new informer for AmiLaunchPermission type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAmiLaunchPermissionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAmiLaunchPermissionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AmiLaunchPermissions().List(options)
+				return client.AwsV1alpha1().AmiLaunchPermissions(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AmiLaunchPermissions().Watch(options)
+				return client.AwsV1alpha1().AmiLaunchPermissions(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.AmiLaunchPermission{},
@@ -76,7 +77,7 @@ func NewFilteredAmiLaunchPermissionInformer(client versioned.Interface, resyncPe
 }
 
 func (f *amiLaunchPermissionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAmiLaunchPermissionInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredAmiLaunchPermissionInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *amiLaunchPermissionInformer) Informer() cache.SharedIndexInformer {

@@ -32,7 +32,7 @@ import (
 // PinpointApnsSandboxChannelsGetter has a method to return a PinpointApnsSandboxChannelInterface.
 // A group's client should implement this interface.
 type PinpointApnsSandboxChannelsGetter interface {
-	PinpointApnsSandboxChannels() PinpointApnsSandboxChannelInterface
+	PinpointApnsSandboxChannels(namespace string) PinpointApnsSandboxChannelInterface
 }
 
 // PinpointApnsSandboxChannelInterface has methods to work with PinpointApnsSandboxChannel resources.
@@ -52,12 +52,14 @@ type PinpointApnsSandboxChannelInterface interface {
 // pinpointApnsSandboxChannels implements PinpointApnsSandboxChannelInterface
 type pinpointApnsSandboxChannels struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPinpointApnsSandboxChannels returns a PinpointApnsSandboxChannels
-func newPinpointApnsSandboxChannels(c *AwsV1alpha1Client) *pinpointApnsSandboxChannels {
+func newPinpointApnsSandboxChannels(c *AwsV1alpha1Client, namespace string) *pinpointApnsSandboxChannels {
 	return &pinpointApnsSandboxChannels{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPinpointApnsSandboxChannels(c *AwsV1alpha1Client) *pinpointApnsSandboxCh
 func (c *pinpointApnsSandboxChannels) Get(name string, options v1.GetOptions) (result *v1alpha1.PinpointApnsSandboxChannel, err error) {
 	result = &v1alpha1.PinpointApnsSandboxChannel{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointapnssandboxchannels").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *pinpointApnsSandboxChannels) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.PinpointApnsSandboxChannelList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointapnssandboxchannels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *pinpointApnsSandboxChannels) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("pinpointapnssandboxchannels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *pinpointApnsSandboxChannels) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *pinpointApnsSandboxChannels) Create(pinpointApnsSandboxChannel *v1alpha1.PinpointApnsSandboxChannel) (result *v1alpha1.PinpointApnsSandboxChannel, err error) {
 	result = &v1alpha1.PinpointApnsSandboxChannel{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("pinpointapnssandboxchannels").
 		Body(pinpointApnsSandboxChannel).
 		Do().
@@ -118,6 +124,7 @@ func (c *pinpointApnsSandboxChannels) Create(pinpointApnsSandboxChannel *v1alpha
 func (c *pinpointApnsSandboxChannels) Update(pinpointApnsSandboxChannel *v1alpha1.PinpointApnsSandboxChannel) (result *v1alpha1.PinpointApnsSandboxChannel, err error) {
 	result = &v1alpha1.PinpointApnsSandboxChannel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pinpointapnssandboxchannels").
 		Name(pinpointApnsSandboxChannel.Name).
 		Body(pinpointApnsSandboxChannel).
@@ -132,6 +139,7 @@ func (c *pinpointApnsSandboxChannels) Update(pinpointApnsSandboxChannel *v1alpha
 func (c *pinpointApnsSandboxChannels) UpdateStatus(pinpointApnsSandboxChannel *v1alpha1.PinpointApnsSandboxChannel) (result *v1alpha1.PinpointApnsSandboxChannel, err error) {
 	result = &v1alpha1.PinpointApnsSandboxChannel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pinpointapnssandboxchannels").
 		Name(pinpointApnsSandboxChannel.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *pinpointApnsSandboxChannels) UpdateStatus(pinpointApnsSandboxChannel *v
 // Delete takes name of the pinpointApnsSandboxChannel and deletes it. Returns an error if one occurs.
 func (c *pinpointApnsSandboxChannels) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pinpointapnssandboxchannels").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *pinpointApnsSandboxChannels) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pinpointapnssandboxchannels").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *pinpointApnsSandboxChannels) DeleteCollection(options *v1.DeleteOptions
 func (c *pinpointApnsSandboxChannels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PinpointApnsSandboxChannel, err error) {
 	result = &v1alpha1.PinpointApnsSandboxChannel{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("pinpointapnssandboxchannels").
 		SubResource(subresources...).
 		Name(name).

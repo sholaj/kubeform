@@ -31,6 +31,7 @@ import (
 // FakeDatasyncAgents implements DatasyncAgentInterface
 type FakeDatasyncAgents struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var datasyncagentsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "datasyncagents"}
@@ -40,7 +41,8 @@ var datasyncagentsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Vers
 // Get takes name of the datasyncAgent, and returns the corresponding datasyncAgent object, and an error if there is any.
 func (c *FakeDatasyncAgents) Get(name string, options v1.GetOptions) (result *v1alpha1.DatasyncAgent, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(datasyncagentsResource, name), &v1alpha1.DatasyncAgent{})
+		Invokes(testing.NewGetAction(datasyncagentsResource, c.ns, name), &v1alpha1.DatasyncAgent{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDatasyncAgents) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of DatasyncAgents that match those selectors.
 func (c *FakeDatasyncAgents) List(opts v1.ListOptions) (result *v1alpha1.DatasyncAgentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(datasyncagentsResource, datasyncagentsKind, opts), &v1alpha1.DatasyncAgentList{})
+		Invokes(testing.NewListAction(datasyncagentsResource, datasyncagentsKind, c.ns, opts), &v1alpha1.DatasyncAgentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDatasyncAgents) List(opts v1.ListOptions) (result *v1alpha1.Datasyn
 // Watch returns a watch.Interface that watches the requested datasyncAgents.
 func (c *FakeDatasyncAgents) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(datasyncagentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(datasyncagentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a datasyncAgent and creates it.  Returns the server's representation of the datasyncAgent, and an error, if there is any.
 func (c *FakeDatasyncAgents) Create(datasyncAgent *v1alpha1.DatasyncAgent) (result *v1alpha1.DatasyncAgent, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(datasyncagentsResource, datasyncAgent), &v1alpha1.DatasyncAgent{})
+		Invokes(testing.NewCreateAction(datasyncagentsResource, c.ns, datasyncAgent), &v1alpha1.DatasyncAgent{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDatasyncAgents) Create(datasyncAgent *v1alpha1.DatasyncAgent) (resu
 // Update takes the representation of a datasyncAgent and updates it. Returns the server's representation of the datasyncAgent, and an error, if there is any.
 func (c *FakeDatasyncAgents) Update(datasyncAgent *v1alpha1.DatasyncAgent) (result *v1alpha1.DatasyncAgent, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(datasyncagentsResource, datasyncAgent), &v1alpha1.DatasyncAgent{})
+		Invokes(testing.NewUpdateAction(datasyncagentsResource, c.ns, datasyncAgent), &v1alpha1.DatasyncAgent{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDatasyncAgents) Update(datasyncAgent *v1alpha1.DatasyncAgent) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDatasyncAgents) UpdateStatus(datasyncAgent *v1alpha1.DatasyncAgent) (*v1alpha1.DatasyncAgent, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(datasyncagentsResource, "status", datasyncAgent), &v1alpha1.DatasyncAgent{})
+		Invokes(testing.NewUpdateSubresourceAction(datasyncagentsResource, "status", c.ns, datasyncAgent), &v1alpha1.DatasyncAgent{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDatasyncAgents) UpdateStatus(datasyncAgent *v1alpha1.DatasyncAgent)
 // Delete takes name of the datasyncAgent and deletes it. Returns an error if one occurs.
 func (c *FakeDatasyncAgents) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(datasyncagentsResource, name), &v1alpha1.DatasyncAgent{})
+		Invokes(testing.NewDeleteAction(datasyncagentsResource, c.ns, name), &v1alpha1.DatasyncAgent{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDatasyncAgents) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(datasyncagentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(datasyncagentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DatasyncAgentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDatasyncAgents) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched datasyncAgent.
 func (c *FakeDatasyncAgents) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DatasyncAgent, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(datasyncagentsResource, name, pt, data, subresources...), &v1alpha1.DatasyncAgent{})
+		Invokes(testing.NewPatchSubresourceAction(datasyncagentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DatasyncAgent{})
+
 	if obj == nil {
 		return nil, err
 	}

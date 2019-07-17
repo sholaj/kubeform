@@ -29,8 +29,8 @@ import (
 type IamUserLoginProfileLister interface {
 	// List lists all IamUserLoginProfiles in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IamUserLoginProfile, err error)
-	// Get retrieves the IamUserLoginProfile from the index for a given name.
-	Get(name string) (*v1alpha1.IamUserLoginProfile, error)
+	// IamUserLoginProfiles returns an object that can list and get IamUserLoginProfiles.
+	IamUserLoginProfiles(namespace string) IamUserLoginProfileNamespaceLister
 	IamUserLoginProfileListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iamUserLoginProfileLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the IamUserLoginProfile from the index for a given name.
-func (s *iamUserLoginProfileLister) Get(name string) (*v1alpha1.IamUserLoginProfile, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IamUserLoginProfiles returns an object that can list and get IamUserLoginProfiles.
+func (s *iamUserLoginProfileLister) IamUserLoginProfiles(namespace string) IamUserLoginProfileNamespaceLister {
+	return iamUserLoginProfileNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IamUserLoginProfileNamespaceLister helps list and get IamUserLoginProfiles.
+type IamUserLoginProfileNamespaceLister interface {
+	// List lists all IamUserLoginProfiles in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IamUserLoginProfile, err error)
+	// Get retrieves the IamUserLoginProfile from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IamUserLoginProfile, error)
+	IamUserLoginProfileNamespaceListerExpansion
+}
+
+// iamUserLoginProfileNamespaceLister implements the IamUserLoginProfileNamespaceLister
+// interface.
+type iamUserLoginProfileNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IamUserLoginProfiles in the indexer for a given namespace.
+func (s iamUserLoginProfileNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IamUserLoginProfile, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IamUserLoginProfile))
+	})
+	return ret, err
+}
+
+// Get retrieves the IamUserLoginProfile from the indexer for a given namespace and name.
+func (s iamUserLoginProfileNamespaceLister) Get(name string) (*v1alpha1.IamUserLoginProfile, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

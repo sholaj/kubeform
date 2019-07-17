@@ -32,7 +32,7 @@ import (
 // HdinsightHadoopClustersGetter has a method to return a HdinsightHadoopClusterInterface.
 // A group's client should implement this interface.
 type HdinsightHadoopClustersGetter interface {
-	HdinsightHadoopClusters() HdinsightHadoopClusterInterface
+	HdinsightHadoopClusters(namespace string) HdinsightHadoopClusterInterface
 }
 
 // HdinsightHadoopClusterInterface has methods to work with HdinsightHadoopCluster resources.
@@ -52,12 +52,14 @@ type HdinsightHadoopClusterInterface interface {
 // hdinsightHadoopClusters implements HdinsightHadoopClusterInterface
 type hdinsightHadoopClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newHdinsightHadoopClusters returns a HdinsightHadoopClusters
-func newHdinsightHadoopClusters(c *AzurermV1alpha1Client) *hdinsightHadoopClusters {
+func newHdinsightHadoopClusters(c *AzurermV1alpha1Client, namespace string) *hdinsightHadoopClusters {
 	return &hdinsightHadoopClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newHdinsightHadoopClusters(c *AzurermV1alpha1Client) *hdinsightHadoopCluste
 func (c *hdinsightHadoopClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.HdinsightHadoopCluster, err error) {
 	result = &v1alpha1.HdinsightHadoopCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("hdinsighthadoopclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *hdinsightHadoopClusters) List(opts v1.ListOptions) (result *v1alpha1.Hd
 	}
 	result = &v1alpha1.HdinsightHadoopClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("hdinsighthadoopclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *hdinsightHadoopClusters) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("hdinsighthadoopclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *hdinsightHadoopClusters) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *hdinsightHadoopClusters) Create(hdinsightHadoopCluster *v1alpha1.HdinsightHadoopCluster) (result *v1alpha1.HdinsightHadoopCluster, err error) {
 	result = &v1alpha1.HdinsightHadoopCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("hdinsighthadoopclusters").
 		Body(hdinsightHadoopCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *hdinsightHadoopClusters) Create(hdinsightHadoopCluster *v1alpha1.Hdinsi
 func (c *hdinsightHadoopClusters) Update(hdinsightHadoopCluster *v1alpha1.HdinsightHadoopCluster) (result *v1alpha1.HdinsightHadoopCluster, err error) {
 	result = &v1alpha1.HdinsightHadoopCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("hdinsighthadoopclusters").
 		Name(hdinsightHadoopCluster.Name).
 		Body(hdinsightHadoopCluster).
@@ -132,6 +139,7 @@ func (c *hdinsightHadoopClusters) Update(hdinsightHadoopCluster *v1alpha1.Hdinsi
 func (c *hdinsightHadoopClusters) UpdateStatus(hdinsightHadoopCluster *v1alpha1.HdinsightHadoopCluster) (result *v1alpha1.HdinsightHadoopCluster, err error) {
 	result = &v1alpha1.HdinsightHadoopCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("hdinsighthadoopclusters").
 		Name(hdinsightHadoopCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *hdinsightHadoopClusters) UpdateStatus(hdinsightHadoopCluster *v1alpha1.
 // Delete takes name of the hdinsightHadoopCluster and deletes it. Returns an error if one occurs.
 func (c *hdinsightHadoopClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("hdinsighthadoopclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *hdinsightHadoopClusters) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("hdinsighthadoopclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *hdinsightHadoopClusters) DeleteCollection(options *v1.DeleteOptions, li
 func (c *hdinsightHadoopClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.HdinsightHadoopCluster, err error) {
 	result = &v1alpha1.HdinsightHadoopCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("hdinsighthadoopclusters").
 		SubResource(subresources...).
 		Name(name).

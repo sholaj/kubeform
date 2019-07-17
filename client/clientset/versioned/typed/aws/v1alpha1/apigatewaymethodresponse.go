@@ -32,7 +32,7 @@ import (
 // ApiGatewayMethodResponsesGetter has a method to return a ApiGatewayMethodResponseInterface.
 // A group's client should implement this interface.
 type ApiGatewayMethodResponsesGetter interface {
-	ApiGatewayMethodResponses() ApiGatewayMethodResponseInterface
+	ApiGatewayMethodResponses(namespace string) ApiGatewayMethodResponseInterface
 }
 
 // ApiGatewayMethodResponseInterface has methods to work with ApiGatewayMethodResponse resources.
@@ -52,12 +52,14 @@ type ApiGatewayMethodResponseInterface interface {
 // apiGatewayMethodResponses implements ApiGatewayMethodResponseInterface
 type apiGatewayMethodResponses struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiGatewayMethodResponses returns a ApiGatewayMethodResponses
-func newApiGatewayMethodResponses(c *AwsV1alpha1Client) *apiGatewayMethodResponses {
+func newApiGatewayMethodResponses(c *AwsV1alpha1Client, namespace string) *apiGatewayMethodResponses {
 	return &apiGatewayMethodResponses{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiGatewayMethodResponses(c *AwsV1alpha1Client) *apiGatewayMethodRespons
 func (c *apiGatewayMethodResponses) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayMethodResponse, err error) {
 	result = &v1alpha1.ApiGatewayMethodResponse{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaymethodresponses").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiGatewayMethodResponses) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.ApiGatewayMethodResponseList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaymethodresponses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiGatewayMethodResponses) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaymethodresponses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiGatewayMethodResponses) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *apiGatewayMethodResponses) Create(apiGatewayMethodResponse *v1alpha1.ApiGatewayMethodResponse) (result *v1alpha1.ApiGatewayMethodResponse, err error) {
 	result = &v1alpha1.ApiGatewayMethodResponse{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apigatewaymethodresponses").
 		Body(apiGatewayMethodResponse).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiGatewayMethodResponses) Create(apiGatewayMethodResponse *v1alpha1.Ap
 func (c *apiGatewayMethodResponses) Update(apiGatewayMethodResponse *v1alpha1.ApiGatewayMethodResponse) (result *v1alpha1.ApiGatewayMethodResponse, err error) {
 	result = &v1alpha1.ApiGatewayMethodResponse{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewaymethodresponses").
 		Name(apiGatewayMethodResponse.Name).
 		Body(apiGatewayMethodResponse).
@@ -132,6 +139,7 @@ func (c *apiGatewayMethodResponses) Update(apiGatewayMethodResponse *v1alpha1.Ap
 func (c *apiGatewayMethodResponses) UpdateStatus(apiGatewayMethodResponse *v1alpha1.ApiGatewayMethodResponse) (result *v1alpha1.ApiGatewayMethodResponse, err error) {
 	result = &v1alpha1.ApiGatewayMethodResponse{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewaymethodresponses").
 		Name(apiGatewayMethodResponse.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiGatewayMethodResponses) UpdateStatus(apiGatewayMethodResponse *v1alp
 // Delete takes name of the apiGatewayMethodResponse and deletes it. Returns an error if one occurs.
 func (c *apiGatewayMethodResponses) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewaymethodresponses").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiGatewayMethodResponses) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewaymethodresponses").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiGatewayMethodResponses) DeleteCollection(options *v1.DeleteOptions, 
 func (c *apiGatewayMethodResponses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayMethodResponse, err error) {
 	result = &v1alpha1.ApiGatewayMethodResponse{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apigatewaymethodresponses").
 		SubResource(subresources...).
 		Name(name).

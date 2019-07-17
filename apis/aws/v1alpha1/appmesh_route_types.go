@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,66 +19,67 @@ type AppmeshRoute struct {
 }
 
 type AppmeshRouteSpecSpecHttpRouteActionWeightedTarget struct {
-	VirtualNode string `json:"virtual_node"`
-	Weight      int    `json:"weight"`
+	VirtualNode string `json:"virtualNode" tf:"virtual_node"`
+	Weight      int    `json:"weight" tf:"weight"`
 }
 
 type AppmeshRouteSpecSpecHttpRouteAction struct {
 	// +kubebuilder:validation:MaxItems=10
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	WeightedTarget []AppmeshRouteSpecSpecHttpRouteAction `json:"weighted_target"`
+	WeightedTarget []AppmeshRouteSpecSpecHttpRouteActionWeightedTarget `json:"weightedTarget" tf:"weighted_target"`
 }
 
 type AppmeshRouteSpecSpecHttpRouteMatch struct {
-	Prefix string `json:"prefix"`
+	Prefix string `json:"prefix" tf:"prefix"`
 }
 
 type AppmeshRouteSpecSpecHttpRoute struct {
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	Action []AppmeshRouteSpecSpecHttpRoute `json:"action"`
+	Action []AppmeshRouteSpecSpecHttpRouteAction `json:"action" tf:"action"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	Match []AppmeshRouteSpecSpecHttpRoute `json:"match"`
+	Match []AppmeshRouteSpecSpecHttpRouteMatch `json:"match" tf:"match"`
 }
 
 type AppmeshRouteSpecSpecTcpRouteActionWeightedTarget struct {
-	VirtualNode string `json:"virtual_node"`
-	Weight      int    `json:"weight"`
+	VirtualNode string `json:"virtualNode" tf:"virtual_node"`
+	Weight      int    `json:"weight" tf:"weight"`
 }
 
 type AppmeshRouteSpecSpecTcpRouteAction struct {
 	// +kubebuilder:validation:MaxItems=10
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	WeightedTarget []AppmeshRouteSpecSpecTcpRouteAction `json:"weighted_target"`
+	WeightedTarget []AppmeshRouteSpecSpecTcpRouteActionWeightedTarget `json:"weightedTarget" tf:"weighted_target"`
 }
 
 type AppmeshRouteSpecSpecTcpRoute struct {
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	Action []AppmeshRouteSpecSpecTcpRoute `json:"action"`
+	Action []AppmeshRouteSpecSpecTcpRouteAction `json:"action" tf:"action"`
 }
 
 type AppmeshRouteSpecSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	HttpRoute *[]AppmeshRouteSpecSpec `json:"http_route,omitempty"`
+	HttpRoute []AppmeshRouteSpecSpecHttpRoute `json:"httpRoute,omitempty" tf:"http_route,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	TcpRoute *[]AppmeshRouteSpecSpec `json:"tcp_route,omitempty"`
+	TcpRoute []AppmeshRouteSpecSpecTcpRoute `json:"tcpRoute,omitempty" tf:"tcp_route,omitempty"`
 }
 
 type AppmeshRouteSpec struct {
-	MeshName string `json:"mesh_name"`
-	Name     string `json:"name"`
+	MeshName string `json:"meshName" tf:"mesh_name"`
+	Name     string `json:"name" tf:"name"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	Spec []AppmeshRouteSpec `json:"spec"`
+	Spec []AppmeshRouteSpecSpec `json:"spec" tf:"spec"`
 	// +optional
-	Tags              map[string]string `json:"tags,omitempty"`
-	VirtualRouterName string            `json:"virtual_router_name"`
+	Tags              map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	VirtualRouterName string                    `json:"virtualRouterName" tf:"virtual_router_name"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type AppmeshRouteStatus struct {
@@ -86,7 +87,9 @@ type AppmeshRouteStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

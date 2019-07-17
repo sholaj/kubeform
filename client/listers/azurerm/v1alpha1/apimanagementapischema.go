@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// ApiManagementApiSchemaLister helps list ApiManagementApiSchemas.
-type ApiManagementApiSchemaLister interface {
-	// List lists all ApiManagementApiSchemas in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementApiSchema, err error)
-	// Get retrieves the ApiManagementApiSchema from the index for a given name.
-	Get(name string) (*v1alpha1.ApiManagementApiSchema, error)
-	ApiManagementApiSchemaListerExpansion
+// ApiManagementAPISchemaLister helps list ApiManagementAPISchemas.
+type ApiManagementAPISchemaLister interface {
+	// List lists all ApiManagementAPISchemas in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPISchema, err error)
+	// ApiManagementAPISchemas returns an object that can list and get ApiManagementAPISchemas.
+	ApiManagementAPISchemas(namespace string) ApiManagementAPISchemaNamespaceLister
+	ApiManagementAPISchemaListerExpansion
 }
 
-// apiManagementApiSchemaLister implements the ApiManagementApiSchemaLister interface.
-type apiManagementApiSchemaLister struct {
+// apiManagementAPISchemaLister implements the ApiManagementAPISchemaLister interface.
+type apiManagementAPISchemaLister struct {
 	indexer cache.Indexer
 }
 
-// NewApiManagementApiSchemaLister returns a new ApiManagementApiSchemaLister.
-func NewApiManagementApiSchemaLister(indexer cache.Indexer) ApiManagementApiSchemaLister {
-	return &apiManagementApiSchemaLister{indexer: indexer}
+// NewApiManagementAPISchemaLister returns a new ApiManagementAPISchemaLister.
+func NewApiManagementAPISchemaLister(indexer cache.Indexer) ApiManagementAPISchemaLister {
+	return &apiManagementAPISchemaLister{indexer: indexer}
 }
 
-// List lists all ApiManagementApiSchemas in the indexer.
-func (s *apiManagementApiSchemaLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementApiSchema, err error) {
+// List lists all ApiManagementAPISchemas in the indexer.
+func (s *apiManagementAPISchemaLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPISchema, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ApiManagementApiSchema))
+		ret = append(ret, m.(*v1alpha1.ApiManagementAPISchema))
 	})
 	return ret, err
 }
 
-// Get retrieves the ApiManagementApiSchema from the index for a given name.
-func (s *apiManagementApiSchemaLister) Get(name string) (*v1alpha1.ApiManagementApiSchema, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiManagementAPISchemas returns an object that can list and get ApiManagementAPISchemas.
+func (s *apiManagementAPISchemaLister) ApiManagementAPISchemas(namespace string) ApiManagementAPISchemaNamespaceLister {
+	return apiManagementAPISchemaNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiManagementAPISchemaNamespaceLister helps list and get ApiManagementAPISchemas.
+type ApiManagementAPISchemaNamespaceLister interface {
+	// List lists all ApiManagementAPISchemas in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPISchema, err error)
+	// Get retrieves the ApiManagementAPISchema from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiManagementAPISchema, error)
+	ApiManagementAPISchemaNamespaceListerExpansion
+}
+
+// apiManagementAPISchemaNamespaceLister implements the ApiManagementAPISchemaNamespaceLister
+// interface.
+type apiManagementAPISchemaNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiManagementAPISchemas in the indexer for a given namespace.
+func (s apiManagementAPISchemaNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPISchema, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiManagementAPISchema))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiManagementAPISchema from the indexer for a given namespace and name.
+func (s apiManagementAPISchemaNamespaceLister) Get(name string) (*v1alpha1.ApiManagementAPISchema, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("apimanagementapischema"), name)
 	}
-	return obj.(*v1alpha1.ApiManagementApiSchema), nil
+	return obj.(*v1alpha1.ApiManagementAPISchema), nil
 }

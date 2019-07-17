@@ -29,8 +29,8 @@ import (
 type GuarddutyMemberLister interface {
 	// List lists all GuarddutyMembers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GuarddutyMember, err error)
-	// Get retrieves the GuarddutyMember from the index for a given name.
-	Get(name string) (*v1alpha1.GuarddutyMember, error)
+	// GuarddutyMembers returns an object that can list and get GuarddutyMembers.
+	GuarddutyMembers(namespace string) GuarddutyMemberNamespaceLister
 	GuarddutyMemberListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *guarddutyMemberLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the GuarddutyMember from the index for a given name.
-func (s *guarddutyMemberLister) Get(name string) (*v1alpha1.GuarddutyMember, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GuarddutyMembers returns an object that can list and get GuarddutyMembers.
+func (s *guarddutyMemberLister) GuarddutyMembers(namespace string) GuarddutyMemberNamespaceLister {
+	return guarddutyMemberNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GuarddutyMemberNamespaceLister helps list and get GuarddutyMembers.
+type GuarddutyMemberNamespaceLister interface {
+	// List lists all GuarddutyMembers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GuarddutyMember, err error)
+	// Get retrieves the GuarddutyMember from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GuarddutyMember, error)
+	GuarddutyMemberNamespaceListerExpansion
+}
+
+// guarddutyMemberNamespaceLister implements the GuarddutyMemberNamespaceLister
+// interface.
+type guarddutyMemberNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GuarddutyMembers in the indexer for a given namespace.
+func (s guarddutyMemberNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GuarddutyMember, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GuarddutyMember))
+	})
+	return ret, err
+}
+
+// Get retrieves the GuarddutyMember from the indexer for a given namespace and name.
+func (s guarddutyMemberNamespaceLister) Get(name string) (*v1alpha1.GuarddutyMember, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

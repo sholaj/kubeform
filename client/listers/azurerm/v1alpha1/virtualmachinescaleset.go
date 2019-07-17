@@ -29,8 +29,8 @@ import (
 type VirtualMachineScaleSetLister interface {
 	// List lists all VirtualMachineScaleSets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.VirtualMachineScaleSet, err error)
-	// Get retrieves the VirtualMachineScaleSet from the index for a given name.
-	Get(name string) (*v1alpha1.VirtualMachineScaleSet, error)
+	// VirtualMachineScaleSets returns an object that can list and get VirtualMachineScaleSets.
+	VirtualMachineScaleSets(namespace string) VirtualMachineScaleSetNamespaceLister
 	VirtualMachineScaleSetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *virtualMachineScaleSetLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the VirtualMachineScaleSet from the index for a given name.
-func (s *virtualMachineScaleSetLister) Get(name string) (*v1alpha1.VirtualMachineScaleSet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VirtualMachineScaleSets returns an object that can list and get VirtualMachineScaleSets.
+func (s *virtualMachineScaleSetLister) VirtualMachineScaleSets(namespace string) VirtualMachineScaleSetNamespaceLister {
+	return virtualMachineScaleSetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VirtualMachineScaleSetNamespaceLister helps list and get VirtualMachineScaleSets.
+type VirtualMachineScaleSetNamespaceLister interface {
+	// List lists all VirtualMachineScaleSets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VirtualMachineScaleSet, err error)
+	// Get retrieves the VirtualMachineScaleSet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VirtualMachineScaleSet, error)
+	VirtualMachineScaleSetNamespaceListerExpansion
+}
+
+// virtualMachineScaleSetNamespaceLister implements the VirtualMachineScaleSetNamespaceLister
+// interface.
+type virtualMachineScaleSetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VirtualMachineScaleSets in the indexer for a given namespace.
+func (s virtualMachineScaleSetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VirtualMachineScaleSet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VirtualMachineScaleSet))
+	})
+	return ret, err
+}
+
+// Get retrieves the VirtualMachineScaleSet from the indexer for a given namespace and name.
+func (s virtualMachineScaleSetNamespaceLister) Get(name string) (*v1alpha1.VirtualMachineScaleSet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

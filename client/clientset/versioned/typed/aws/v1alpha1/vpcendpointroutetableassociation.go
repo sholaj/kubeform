@@ -32,7 +32,7 @@ import (
 // VpcEndpointRouteTableAssociationsGetter has a method to return a VpcEndpointRouteTableAssociationInterface.
 // A group's client should implement this interface.
 type VpcEndpointRouteTableAssociationsGetter interface {
-	VpcEndpointRouteTableAssociations() VpcEndpointRouteTableAssociationInterface
+	VpcEndpointRouteTableAssociations(namespace string) VpcEndpointRouteTableAssociationInterface
 }
 
 // VpcEndpointRouteTableAssociationInterface has methods to work with VpcEndpointRouteTableAssociation resources.
@@ -52,12 +52,14 @@ type VpcEndpointRouteTableAssociationInterface interface {
 // vpcEndpointRouteTableAssociations implements VpcEndpointRouteTableAssociationInterface
 type vpcEndpointRouteTableAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVpcEndpointRouteTableAssociations returns a VpcEndpointRouteTableAssociations
-func newVpcEndpointRouteTableAssociations(c *AwsV1alpha1Client) *vpcEndpointRouteTableAssociations {
+func newVpcEndpointRouteTableAssociations(c *AwsV1alpha1Client, namespace string) *vpcEndpointRouteTableAssociations {
 	return &vpcEndpointRouteTableAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVpcEndpointRouteTableAssociations(c *AwsV1alpha1Client) *vpcEndpointRout
 func (c *vpcEndpointRouteTableAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcEndpointRouteTableAssociation, err error) {
 	result = &v1alpha1.VpcEndpointRouteTableAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcendpointroutetableassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *vpcEndpointRouteTableAssociations) List(opts v1.ListOptions) (result *v
 	}
 	result = &v1alpha1.VpcEndpointRouteTableAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcendpointroutetableassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *vpcEndpointRouteTableAssociations) Watch(opts v1.ListOptions) (watch.In
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcendpointroutetableassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *vpcEndpointRouteTableAssociations) Watch(opts v1.ListOptions) (watch.In
 func (c *vpcEndpointRouteTableAssociations) Create(vpcEndpointRouteTableAssociation *v1alpha1.VpcEndpointRouteTableAssociation) (result *v1alpha1.VpcEndpointRouteTableAssociation, err error) {
 	result = &v1alpha1.VpcEndpointRouteTableAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("vpcendpointroutetableassociations").
 		Body(vpcEndpointRouteTableAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *vpcEndpointRouteTableAssociations) Create(vpcEndpointRouteTableAssociat
 func (c *vpcEndpointRouteTableAssociations) Update(vpcEndpointRouteTableAssociation *v1alpha1.VpcEndpointRouteTableAssociation) (result *v1alpha1.VpcEndpointRouteTableAssociation, err error) {
 	result = &v1alpha1.VpcEndpointRouteTableAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcendpointroutetableassociations").
 		Name(vpcEndpointRouteTableAssociation.Name).
 		Body(vpcEndpointRouteTableAssociation).
@@ -132,6 +139,7 @@ func (c *vpcEndpointRouteTableAssociations) Update(vpcEndpointRouteTableAssociat
 func (c *vpcEndpointRouteTableAssociations) UpdateStatus(vpcEndpointRouteTableAssociation *v1alpha1.VpcEndpointRouteTableAssociation) (result *v1alpha1.VpcEndpointRouteTableAssociation, err error) {
 	result = &v1alpha1.VpcEndpointRouteTableAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcendpointroutetableassociations").
 		Name(vpcEndpointRouteTableAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *vpcEndpointRouteTableAssociations) UpdateStatus(vpcEndpointRouteTableAs
 // Delete takes name of the vpcEndpointRouteTableAssociation and deletes it. Returns an error if one occurs.
 func (c *vpcEndpointRouteTableAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcendpointroutetableassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *vpcEndpointRouteTableAssociations) DeleteCollection(options *v1.DeleteO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcendpointroutetableassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *vpcEndpointRouteTableAssociations) DeleteCollection(options *v1.DeleteO
 func (c *vpcEndpointRouteTableAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcEndpointRouteTableAssociation, err error) {
 	result = &v1alpha1.VpcEndpointRouteTableAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("vpcendpointroutetableassociations").
 		SubResource(subresources...).
 		Name(name).

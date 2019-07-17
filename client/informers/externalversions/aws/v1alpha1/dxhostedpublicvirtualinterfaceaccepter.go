@@ -41,32 +41,33 @@ type DxHostedPublicVirtualInterfaceAccepterInformer interface {
 type dxHostedPublicVirtualInterfaceAccepterInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDxHostedPublicVirtualInterfaceAccepterInformer constructs a new informer for DxHostedPublicVirtualInterfaceAccepter type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDxHostedPublicVirtualInterfaceAccepterInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDxHostedPublicVirtualInterfaceAccepterInformer(client, resyncPeriod, indexers, nil)
+func NewDxHostedPublicVirtualInterfaceAccepterInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDxHostedPublicVirtualInterfaceAccepterInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDxHostedPublicVirtualInterfaceAccepterInformer constructs a new informer for DxHostedPublicVirtualInterfaceAccepter type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDxHostedPublicVirtualInterfaceAccepterInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDxHostedPublicVirtualInterfaceAccepterInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DxHostedPublicVirtualInterfaceAccepters().List(options)
+				return client.AwsV1alpha1().DxHostedPublicVirtualInterfaceAccepters(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DxHostedPublicVirtualInterfaceAccepters().Watch(options)
+				return client.AwsV1alpha1().DxHostedPublicVirtualInterfaceAccepters(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.DxHostedPublicVirtualInterfaceAccepter{},
@@ -76,7 +77,7 @@ func NewFilteredDxHostedPublicVirtualInterfaceAccepterInformer(client versioned.
 }
 
 func (f *dxHostedPublicVirtualInterfaceAccepterInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDxHostedPublicVirtualInterfaceAccepterInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDxHostedPublicVirtualInterfaceAccepterInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *dxHostedPublicVirtualInterfaceAccepterInformer) Informer() cache.SharedIndexInformer {

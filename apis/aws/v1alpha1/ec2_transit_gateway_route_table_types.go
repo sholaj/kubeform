@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,8 +20,9 @@ type Ec2TransitGatewayRouteTable struct {
 
 type Ec2TransitGatewayRouteTableSpec struct {
 	// +optional
-	Tags             map[string]string `json:"tags,omitempty"`
-	TransitGatewayId string            `json:"transit_gateway_id"`
+	Tags             map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	TransitGatewayID string                    `json:"transitGatewayID" tf:"transit_gateway_id"`
+	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type Ec2TransitGatewayRouteTableStatus struct {
@@ -29,7 +30,9 @@ type Ec2TransitGatewayRouteTableStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

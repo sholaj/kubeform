@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// ComputeRouterNatsGetter has a method to return a ComputeRouterNatInterface.
+// ComputeRouterNATsGetter has a method to return a ComputeRouterNATInterface.
 // A group's client should implement this interface.
-type ComputeRouterNatsGetter interface {
-	ComputeRouterNats() ComputeRouterNatInterface
+type ComputeRouterNATsGetter interface {
+	ComputeRouterNATs(namespace string) ComputeRouterNATInterface
 }
 
-// ComputeRouterNatInterface has methods to work with ComputeRouterNat resources.
-type ComputeRouterNatInterface interface {
-	Create(*v1alpha1.ComputeRouterNat) (*v1alpha1.ComputeRouterNat, error)
-	Update(*v1alpha1.ComputeRouterNat) (*v1alpha1.ComputeRouterNat, error)
-	UpdateStatus(*v1alpha1.ComputeRouterNat) (*v1alpha1.ComputeRouterNat, error)
+// ComputeRouterNATInterface has methods to work with ComputeRouterNAT resources.
+type ComputeRouterNATInterface interface {
+	Create(*v1alpha1.ComputeRouterNAT) (*v1alpha1.ComputeRouterNAT, error)
+	Update(*v1alpha1.ComputeRouterNAT) (*v1alpha1.ComputeRouterNAT, error)
+	UpdateStatus(*v1alpha1.ComputeRouterNAT) (*v1alpha1.ComputeRouterNAT, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.ComputeRouterNat, error)
-	List(opts v1.ListOptions) (*v1alpha1.ComputeRouterNatList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.ComputeRouterNAT, error)
+	List(opts v1.ListOptions) (*v1alpha1.ComputeRouterNATList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeRouterNat, err error)
-	ComputeRouterNatExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeRouterNAT, err error)
+	ComputeRouterNATExpansion
 }
 
-// computeRouterNats implements ComputeRouterNatInterface
-type computeRouterNats struct {
+// computeRouterNATs implements ComputeRouterNATInterface
+type computeRouterNATs struct {
 	client rest.Interface
+	ns     string
 }
 
-// newComputeRouterNats returns a ComputeRouterNats
-func newComputeRouterNats(c *GoogleV1alpha1Client) *computeRouterNats {
-	return &computeRouterNats{
+// newComputeRouterNATs returns a ComputeRouterNATs
+func newComputeRouterNATs(c *GoogleV1alpha1Client, namespace string) *computeRouterNATs {
+	return &computeRouterNATs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the computeRouterNat, and returns the corresponding computeRouterNat object, and an error if there is any.
-func (c *computeRouterNats) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeRouterNat, err error) {
-	result = &v1alpha1.ComputeRouterNat{}
+// Get takes name of the computeRouterNAT, and returns the corresponding computeRouterNAT object, and an error if there is any.
+func (c *computeRouterNATs) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeRouterNAT, err error) {
+	result = &v1alpha1.ComputeRouterNAT{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computerouternats").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *computeRouterNats) Get(name string, options v1.GetOptions) (result *v1a
 	return
 }
 
-// List takes label and field selectors, and returns the list of ComputeRouterNats that match those selectors.
-func (c *computeRouterNats) List(opts v1.ListOptions) (result *v1alpha1.ComputeRouterNatList, err error) {
+// List takes label and field selectors, and returns the list of ComputeRouterNATs that match those selectors.
+func (c *computeRouterNATs) List(opts v1.ListOptions) (result *v1alpha1.ComputeRouterNATList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.ComputeRouterNatList{}
+	result = &v1alpha1.ComputeRouterNATList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computerouternats").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *computeRouterNats) List(opts v1.ListOptions) (result *v1alpha1.ComputeR
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested computeRouterNats.
-func (c *computeRouterNats) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested computeRouterNATs.
+func (c *computeRouterNATs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computerouternats").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a computeRouterNat and creates it.  Returns the server's representation of the computeRouterNat, and an error, if there is any.
-func (c *computeRouterNats) Create(computeRouterNat *v1alpha1.ComputeRouterNat) (result *v1alpha1.ComputeRouterNat, err error) {
-	result = &v1alpha1.ComputeRouterNat{}
+// Create takes the representation of a computeRouterNAT and creates it.  Returns the server's representation of the computeRouterNAT, and an error, if there is any.
+func (c *computeRouterNATs) Create(computeRouterNAT *v1alpha1.ComputeRouterNAT) (result *v1alpha1.ComputeRouterNAT, err error) {
+	result = &v1alpha1.ComputeRouterNAT{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computerouternats").
-		Body(computeRouterNat).
+		Body(computeRouterNAT).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a computeRouterNat and updates it. Returns the server's representation of the computeRouterNat, and an error, if there is any.
-func (c *computeRouterNats) Update(computeRouterNat *v1alpha1.ComputeRouterNat) (result *v1alpha1.ComputeRouterNat, err error) {
-	result = &v1alpha1.ComputeRouterNat{}
+// Update takes the representation of a computeRouterNAT and updates it. Returns the server's representation of the computeRouterNAT, and an error, if there is any.
+func (c *computeRouterNATs) Update(computeRouterNAT *v1alpha1.ComputeRouterNAT) (result *v1alpha1.ComputeRouterNAT, err error) {
+	result = &v1alpha1.ComputeRouterNAT{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computerouternats").
-		Name(computeRouterNat.Name).
-		Body(computeRouterNat).
+		Name(computeRouterNAT.Name).
+		Body(computeRouterNAT).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *computeRouterNats) Update(computeRouterNat *v1alpha1.ComputeRouterNat) 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *computeRouterNats) UpdateStatus(computeRouterNat *v1alpha1.ComputeRouterNat) (result *v1alpha1.ComputeRouterNat, err error) {
-	result = &v1alpha1.ComputeRouterNat{}
+func (c *computeRouterNATs) UpdateStatus(computeRouterNAT *v1alpha1.ComputeRouterNAT) (result *v1alpha1.ComputeRouterNAT, err error) {
+	result = &v1alpha1.ComputeRouterNAT{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computerouternats").
-		Name(computeRouterNat.Name).
+		Name(computeRouterNAT.Name).
 		SubResource("status").
-		Body(computeRouterNat).
+		Body(computeRouterNAT).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the computeRouterNat and deletes it. Returns an error if one occurs.
-func (c *computeRouterNats) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the computeRouterNAT and deletes it. Returns an error if one occurs.
+func (c *computeRouterNATs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computerouternats").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *computeRouterNats) Delete(name string, options *v1.DeleteOptions) error
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *computeRouterNats) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *computeRouterNATs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computerouternats").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *computeRouterNats) DeleteCollection(options *v1.DeleteOptions, listOpti
 		Error()
 }
 
-// Patch applies the patch and returns the patched computeRouterNat.
-func (c *computeRouterNats) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeRouterNat, err error) {
-	result = &v1alpha1.ComputeRouterNat{}
+// Patch applies the patch and returns the patched computeRouterNAT.
+func (c *computeRouterNATs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeRouterNAT, err error) {
+	result = &v1alpha1.ComputeRouterNAT{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computerouternats").
 		SubResource(subresources...).
 		Name(name).

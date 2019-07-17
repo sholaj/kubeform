@@ -31,6 +31,7 @@ import (
 // FakeAppServiceCustomHostnameBindings implements AppServiceCustomHostnameBindingInterface
 type FakeAppServiceCustomHostnameBindings struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var appservicecustomhostnamebindingsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "appservicecustomhostnamebindings"}
@@ -40,7 +41,8 @@ var appservicecustomhostnamebindingsKind = schema.GroupVersionKind{Group: "azure
 // Get takes name of the appServiceCustomHostnameBinding, and returns the corresponding appServiceCustomHostnameBinding object, and an error if there is any.
 func (c *FakeAppServiceCustomHostnameBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.AppServiceCustomHostnameBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(appservicecustomhostnamebindingsResource, name), &v1alpha1.AppServiceCustomHostnameBinding{})
+		Invokes(testing.NewGetAction(appservicecustomhostnamebindingsResource, c.ns, name), &v1alpha1.AppServiceCustomHostnameBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAppServiceCustomHostnameBindings) Get(name string, options v1.GetOp
 // List takes label and field selectors, and returns the list of AppServiceCustomHostnameBindings that match those selectors.
 func (c *FakeAppServiceCustomHostnameBindings) List(opts v1.ListOptions) (result *v1alpha1.AppServiceCustomHostnameBindingList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(appservicecustomhostnamebindingsResource, appservicecustomhostnamebindingsKind, opts), &v1alpha1.AppServiceCustomHostnameBindingList{})
+		Invokes(testing.NewListAction(appservicecustomhostnamebindingsResource, appservicecustomhostnamebindingsKind, c.ns, opts), &v1alpha1.AppServiceCustomHostnameBindingList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAppServiceCustomHostnameBindings) List(opts v1.ListOptions) (result
 // Watch returns a watch.Interface that watches the requested appServiceCustomHostnameBindings.
 func (c *FakeAppServiceCustomHostnameBindings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(appservicecustomhostnamebindingsResource, opts))
+		InvokesWatch(testing.NewWatchAction(appservicecustomhostnamebindingsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a appServiceCustomHostnameBinding and creates it.  Returns the server's representation of the appServiceCustomHostnameBinding, and an error, if there is any.
 func (c *FakeAppServiceCustomHostnameBindings) Create(appServiceCustomHostnameBinding *v1alpha1.AppServiceCustomHostnameBinding) (result *v1alpha1.AppServiceCustomHostnameBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(appservicecustomhostnamebindingsResource, appServiceCustomHostnameBinding), &v1alpha1.AppServiceCustomHostnameBinding{})
+		Invokes(testing.NewCreateAction(appservicecustomhostnamebindingsResource, c.ns, appServiceCustomHostnameBinding), &v1alpha1.AppServiceCustomHostnameBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAppServiceCustomHostnameBindings) Create(appServiceCustomHostnameBi
 // Update takes the representation of a appServiceCustomHostnameBinding and updates it. Returns the server's representation of the appServiceCustomHostnameBinding, and an error, if there is any.
 func (c *FakeAppServiceCustomHostnameBindings) Update(appServiceCustomHostnameBinding *v1alpha1.AppServiceCustomHostnameBinding) (result *v1alpha1.AppServiceCustomHostnameBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(appservicecustomhostnamebindingsResource, appServiceCustomHostnameBinding), &v1alpha1.AppServiceCustomHostnameBinding{})
+		Invokes(testing.NewUpdateAction(appservicecustomhostnamebindingsResource, c.ns, appServiceCustomHostnameBinding), &v1alpha1.AppServiceCustomHostnameBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAppServiceCustomHostnameBindings) Update(appServiceCustomHostnameBi
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAppServiceCustomHostnameBindings) UpdateStatus(appServiceCustomHostnameBinding *v1alpha1.AppServiceCustomHostnameBinding) (*v1alpha1.AppServiceCustomHostnameBinding, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(appservicecustomhostnamebindingsResource, "status", appServiceCustomHostnameBinding), &v1alpha1.AppServiceCustomHostnameBinding{})
+		Invokes(testing.NewUpdateSubresourceAction(appservicecustomhostnamebindingsResource, "status", c.ns, appServiceCustomHostnameBinding), &v1alpha1.AppServiceCustomHostnameBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAppServiceCustomHostnameBindings) UpdateStatus(appServiceCustomHost
 // Delete takes name of the appServiceCustomHostnameBinding and deletes it. Returns an error if one occurs.
 func (c *FakeAppServiceCustomHostnameBindings) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(appservicecustomhostnamebindingsResource, name), &v1alpha1.AppServiceCustomHostnameBinding{})
+		Invokes(testing.NewDeleteAction(appservicecustomhostnamebindingsResource, c.ns, name), &v1alpha1.AppServiceCustomHostnameBinding{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAppServiceCustomHostnameBindings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(appservicecustomhostnamebindingsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(appservicecustomhostnamebindingsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AppServiceCustomHostnameBindingList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAppServiceCustomHostnameBindings) DeleteCollection(options *v1.Dele
 // Patch applies the patch and returns the patched appServiceCustomHostnameBinding.
 func (c *FakeAppServiceCustomHostnameBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppServiceCustomHostnameBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(appservicecustomhostnamebindingsResource, name, pt, data, subresources...), &v1alpha1.AppServiceCustomHostnameBinding{})
+		Invokes(testing.NewPatchSubresourceAction(appservicecustomhostnamebindingsResource, c.ns, name, pt, data, subresources...), &v1alpha1.AppServiceCustomHostnameBinding{})
+
 	if obj == nil {
 		return nil, err
 	}

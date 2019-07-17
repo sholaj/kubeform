@@ -29,8 +29,8 @@ import (
 type PinpointApnsVoipChannelLister interface {
 	// List lists all PinpointApnsVoipChannels in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.PinpointApnsVoipChannel, err error)
-	// Get retrieves the PinpointApnsVoipChannel from the index for a given name.
-	Get(name string) (*v1alpha1.PinpointApnsVoipChannel, error)
+	// PinpointApnsVoipChannels returns an object that can list and get PinpointApnsVoipChannels.
+	PinpointApnsVoipChannels(namespace string) PinpointApnsVoipChannelNamespaceLister
 	PinpointApnsVoipChannelListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *pinpointApnsVoipChannelLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the PinpointApnsVoipChannel from the index for a given name.
-func (s *pinpointApnsVoipChannelLister) Get(name string) (*v1alpha1.PinpointApnsVoipChannel, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// PinpointApnsVoipChannels returns an object that can list and get PinpointApnsVoipChannels.
+func (s *pinpointApnsVoipChannelLister) PinpointApnsVoipChannels(namespace string) PinpointApnsVoipChannelNamespaceLister {
+	return pinpointApnsVoipChannelNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// PinpointApnsVoipChannelNamespaceLister helps list and get PinpointApnsVoipChannels.
+type PinpointApnsVoipChannelNamespaceLister interface {
+	// List lists all PinpointApnsVoipChannels in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.PinpointApnsVoipChannel, err error)
+	// Get retrieves the PinpointApnsVoipChannel from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.PinpointApnsVoipChannel, error)
+	PinpointApnsVoipChannelNamespaceListerExpansion
+}
+
+// pinpointApnsVoipChannelNamespaceLister implements the PinpointApnsVoipChannelNamespaceLister
+// interface.
+type pinpointApnsVoipChannelNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all PinpointApnsVoipChannels in the indexer for a given namespace.
+func (s pinpointApnsVoipChannelNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.PinpointApnsVoipChannel, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.PinpointApnsVoipChannel))
+	})
+	return ret, err
+}
+
+// Get retrieves the PinpointApnsVoipChannel from the indexer for a given namespace and name.
+func (s pinpointApnsVoipChannelNamespaceLister) Get(name string) (*v1alpha1.PinpointApnsVoipChannel, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

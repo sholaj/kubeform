@@ -29,8 +29,8 @@ import (
 type WafregionalRegexPatternSetLister interface {
 	// List lists all WafregionalRegexPatternSets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.WafregionalRegexPatternSet, err error)
-	// Get retrieves the WafregionalRegexPatternSet from the index for a given name.
-	Get(name string) (*v1alpha1.WafregionalRegexPatternSet, error)
+	// WafregionalRegexPatternSets returns an object that can list and get WafregionalRegexPatternSets.
+	WafregionalRegexPatternSets(namespace string) WafregionalRegexPatternSetNamespaceLister
 	WafregionalRegexPatternSetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *wafregionalRegexPatternSetLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the WafregionalRegexPatternSet from the index for a given name.
-func (s *wafregionalRegexPatternSetLister) Get(name string) (*v1alpha1.WafregionalRegexPatternSet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafregionalRegexPatternSets returns an object that can list and get WafregionalRegexPatternSets.
+func (s *wafregionalRegexPatternSetLister) WafregionalRegexPatternSets(namespace string) WafregionalRegexPatternSetNamespaceLister {
+	return wafregionalRegexPatternSetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafregionalRegexPatternSetNamespaceLister helps list and get WafregionalRegexPatternSets.
+type WafregionalRegexPatternSetNamespaceLister interface {
+	// List lists all WafregionalRegexPatternSets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafregionalRegexPatternSet, err error)
+	// Get retrieves the WafregionalRegexPatternSet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafregionalRegexPatternSet, error)
+	WafregionalRegexPatternSetNamespaceListerExpansion
+}
+
+// wafregionalRegexPatternSetNamespaceLister implements the WafregionalRegexPatternSetNamespaceLister
+// interface.
+type wafregionalRegexPatternSetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafregionalRegexPatternSets in the indexer for a given namespace.
+func (s wafregionalRegexPatternSetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafregionalRegexPatternSet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafregionalRegexPatternSet))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafregionalRegexPatternSet from the indexer for a given namespace and name.
+func (s wafregionalRegexPatternSetNamespaceLister) Get(name string) (*v1alpha1.WafregionalRegexPatternSet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

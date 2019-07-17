@@ -399,21 +399,31 @@ spec:
           properties:
             caching:
               type: string
-            create_option:
+            createOption:
               type: string
             lun:
               type: integer
-            managed_disk_id:
+            managedDiskID:
               type: string
-            virtual_machine_id:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            virtualMachineID:
               type: string
-            write_accelerator_enabled:
+            writeAcceleratorEnabled:
               type: boolean
           required:
           - caching
           - lun
-          - managed_disk_id
-          - virtual_machine_id
+          - managedDiskID
+          - providerRef
+          - virtualMachineID
           type: object
         status:
           properties:
@@ -424,6 +434,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

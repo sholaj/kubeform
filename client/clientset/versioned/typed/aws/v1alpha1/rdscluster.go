@@ -32,7 +32,7 @@ import (
 // RdsClustersGetter has a method to return a RdsClusterInterface.
 // A group's client should implement this interface.
 type RdsClustersGetter interface {
-	RdsClusters() RdsClusterInterface
+	RdsClusters(namespace string) RdsClusterInterface
 }
 
 // RdsClusterInterface has methods to work with RdsCluster resources.
@@ -52,12 +52,14 @@ type RdsClusterInterface interface {
 // rdsClusters implements RdsClusterInterface
 type rdsClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRdsClusters returns a RdsClusters
-func newRdsClusters(c *AwsV1alpha1Client) *rdsClusters {
+func newRdsClusters(c *AwsV1alpha1Client, namespace string) *rdsClusters {
 	return &rdsClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRdsClusters(c *AwsV1alpha1Client) *rdsClusters {
 func (c *rdsClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.RdsCluster, err error) {
 	result = &v1alpha1.RdsCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("rdsclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *rdsClusters) List(opts v1.ListOptions) (result *v1alpha1.RdsClusterList
 	}
 	result = &v1alpha1.RdsClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("rdsclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *rdsClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("rdsclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *rdsClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *rdsClusters) Create(rdsCluster *v1alpha1.RdsCluster) (result *v1alpha1.RdsCluster, err error) {
 	result = &v1alpha1.RdsCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("rdsclusters").
 		Body(rdsCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *rdsClusters) Create(rdsCluster *v1alpha1.RdsCluster) (result *v1alpha1.
 func (c *rdsClusters) Update(rdsCluster *v1alpha1.RdsCluster) (result *v1alpha1.RdsCluster, err error) {
 	result = &v1alpha1.RdsCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("rdsclusters").
 		Name(rdsCluster.Name).
 		Body(rdsCluster).
@@ -132,6 +139,7 @@ func (c *rdsClusters) Update(rdsCluster *v1alpha1.RdsCluster) (result *v1alpha1.
 func (c *rdsClusters) UpdateStatus(rdsCluster *v1alpha1.RdsCluster) (result *v1alpha1.RdsCluster, err error) {
 	result = &v1alpha1.RdsCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("rdsclusters").
 		Name(rdsCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *rdsClusters) UpdateStatus(rdsCluster *v1alpha1.RdsCluster) (result *v1a
 // Delete takes name of the rdsCluster and deletes it. Returns an error if one occurs.
 func (c *rdsClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("rdsclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *rdsClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("rdsclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *rdsClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *rdsClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RdsCluster, err error) {
 	result = &v1alpha1.RdsCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("rdsclusters").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type GlueClassifierLister interface {
 	// List lists all GlueClassifiers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GlueClassifier, err error)
-	// Get retrieves the GlueClassifier from the index for a given name.
-	Get(name string) (*v1alpha1.GlueClassifier, error)
+	// GlueClassifiers returns an object that can list and get GlueClassifiers.
+	GlueClassifiers(namespace string) GlueClassifierNamespaceLister
 	GlueClassifierListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *glueClassifierLister) List(selector labels.Selector) (ret []*v1alpha1.G
 	return ret, err
 }
 
-// Get retrieves the GlueClassifier from the index for a given name.
-func (s *glueClassifierLister) Get(name string) (*v1alpha1.GlueClassifier, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GlueClassifiers returns an object that can list and get GlueClassifiers.
+func (s *glueClassifierLister) GlueClassifiers(namespace string) GlueClassifierNamespaceLister {
+	return glueClassifierNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GlueClassifierNamespaceLister helps list and get GlueClassifiers.
+type GlueClassifierNamespaceLister interface {
+	// List lists all GlueClassifiers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GlueClassifier, err error)
+	// Get retrieves the GlueClassifier from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GlueClassifier, error)
+	GlueClassifierNamespaceListerExpansion
+}
+
+// glueClassifierNamespaceLister implements the GlueClassifierNamespaceLister
+// interface.
+type glueClassifierNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GlueClassifiers in the indexer for a given namespace.
+func (s glueClassifierNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GlueClassifier, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GlueClassifier))
+	})
+	return ret, err
+}
+
+// Get retrieves the GlueClassifier from the indexer for a given namespace and name.
+func (s glueClassifierNamespaceLister) Get(name string) (*v1alpha1.GlueClassifier, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

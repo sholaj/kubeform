@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// NetworkAclRuleLister helps list NetworkAclRules.
-type NetworkAclRuleLister interface {
-	// List lists all NetworkAclRules in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.NetworkAclRule, err error)
-	// Get retrieves the NetworkAclRule from the index for a given name.
-	Get(name string) (*v1alpha1.NetworkAclRule, error)
-	NetworkAclRuleListerExpansion
+// NetworkACLRuleLister helps list NetworkACLRules.
+type NetworkACLRuleLister interface {
+	// List lists all NetworkACLRules in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.NetworkACLRule, err error)
+	// NetworkACLRules returns an object that can list and get NetworkACLRules.
+	NetworkACLRules(namespace string) NetworkACLRuleNamespaceLister
+	NetworkACLRuleListerExpansion
 }
 
-// networkAclRuleLister implements the NetworkAclRuleLister interface.
-type networkAclRuleLister struct {
+// networkACLRuleLister implements the NetworkACLRuleLister interface.
+type networkACLRuleLister struct {
 	indexer cache.Indexer
 }
 
-// NewNetworkAclRuleLister returns a new NetworkAclRuleLister.
-func NewNetworkAclRuleLister(indexer cache.Indexer) NetworkAclRuleLister {
-	return &networkAclRuleLister{indexer: indexer}
+// NewNetworkACLRuleLister returns a new NetworkACLRuleLister.
+func NewNetworkACLRuleLister(indexer cache.Indexer) NetworkACLRuleLister {
+	return &networkACLRuleLister{indexer: indexer}
 }
 
-// List lists all NetworkAclRules in the indexer.
-func (s *networkAclRuleLister) List(selector labels.Selector) (ret []*v1alpha1.NetworkAclRule, err error) {
+// List lists all NetworkACLRules in the indexer.
+func (s *networkACLRuleLister) List(selector labels.Selector) (ret []*v1alpha1.NetworkACLRule, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.NetworkAclRule))
+		ret = append(ret, m.(*v1alpha1.NetworkACLRule))
 	})
 	return ret, err
 }
 
-// Get retrieves the NetworkAclRule from the index for a given name.
-func (s *networkAclRuleLister) Get(name string) (*v1alpha1.NetworkAclRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NetworkACLRules returns an object that can list and get NetworkACLRules.
+func (s *networkACLRuleLister) NetworkACLRules(namespace string) NetworkACLRuleNamespaceLister {
+	return networkACLRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NetworkACLRuleNamespaceLister helps list and get NetworkACLRules.
+type NetworkACLRuleNamespaceLister interface {
+	// List lists all NetworkACLRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NetworkACLRule, err error)
+	// Get retrieves the NetworkACLRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NetworkACLRule, error)
+	NetworkACLRuleNamespaceListerExpansion
+}
+
+// networkACLRuleNamespaceLister implements the NetworkACLRuleNamespaceLister
+// interface.
+type networkACLRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NetworkACLRules in the indexer for a given namespace.
+func (s networkACLRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NetworkACLRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NetworkACLRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the NetworkACLRule from the indexer for a given namespace and name.
+func (s networkACLRuleNamespaceLister) Get(name string) (*v1alpha1.NetworkACLRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("networkaclrule"), name)
 	}
-	return obj.(*v1alpha1.NetworkAclRule), nil
+	return obj.(*v1alpha1.NetworkACLRule), nil
 }

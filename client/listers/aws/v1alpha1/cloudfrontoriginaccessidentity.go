@@ -29,8 +29,8 @@ import (
 type CloudfrontOriginAccessIdentityLister interface {
 	// List lists all CloudfrontOriginAccessIdentities in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CloudfrontOriginAccessIdentity, err error)
-	// Get retrieves the CloudfrontOriginAccessIdentity from the index for a given name.
-	Get(name string) (*v1alpha1.CloudfrontOriginAccessIdentity, error)
+	// CloudfrontOriginAccessIdentities returns an object that can list and get CloudfrontOriginAccessIdentities.
+	CloudfrontOriginAccessIdentities(namespace string) CloudfrontOriginAccessIdentityNamespaceLister
 	CloudfrontOriginAccessIdentityListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cloudfrontOriginAccessIdentityLister) List(selector labels.Selector) (r
 	return ret, err
 }
 
-// Get retrieves the CloudfrontOriginAccessIdentity from the index for a given name.
-func (s *cloudfrontOriginAccessIdentityLister) Get(name string) (*v1alpha1.CloudfrontOriginAccessIdentity, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CloudfrontOriginAccessIdentities returns an object that can list and get CloudfrontOriginAccessIdentities.
+func (s *cloudfrontOriginAccessIdentityLister) CloudfrontOriginAccessIdentities(namespace string) CloudfrontOriginAccessIdentityNamespaceLister {
+	return cloudfrontOriginAccessIdentityNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CloudfrontOriginAccessIdentityNamespaceLister helps list and get CloudfrontOriginAccessIdentities.
+type CloudfrontOriginAccessIdentityNamespaceLister interface {
+	// List lists all CloudfrontOriginAccessIdentities in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CloudfrontOriginAccessIdentity, err error)
+	// Get retrieves the CloudfrontOriginAccessIdentity from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CloudfrontOriginAccessIdentity, error)
+	CloudfrontOriginAccessIdentityNamespaceListerExpansion
+}
+
+// cloudfrontOriginAccessIdentityNamespaceLister implements the CloudfrontOriginAccessIdentityNamespaceLister
+// interface.
+type cloudfrontOriginAccessIdentityNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CloudfrontOriginAccessIdentities in the indexer for a given namespace.
+func (s cloudfrontOriginAccessIdentityNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CloudfrontOriginAccessIdentity, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CloudfrontOriginAccessIdentity))
+	})
+	return ret, err
+}
+
+// Get retrieves the CloudfrontOriginAccessIdentity from the indexer for a given namespace and name.
+func (s cloudfrontOriginAccessIdentityNamespaceLister) Get(name string) (*v1alpha1.CloudfrontOriginAccessIdentity, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// WafregionalSqlInjectionMatchSetInformer provides access to a shared informer and lister for
-// WafregionalSqlInjectionMatchSets.
-type WafregionalSqlInjectionMatchSetInformer interface {
+// WafregionalSQLInjectionMatchSetInformer provides access to a shared informer and lister for
+// WafregionalSQLInjectionMatchSets.
+type WafregionalSQLInjectionMatchSetInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.WafregionalSqlInjectionMatchSetLister
+	Lister() v1alpha1.WafregionalSQLInjectionMatchSetLister
 }
 
-type wafregionalSqlInjectionMatchSetInformer struct {
+type wafregionalSQLInjectionMatchSetInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewWafregionalSqlInjectionMatchSetInformer constructs a new informer for WafregionalSqlInjectionMatchSet type.
+// NewWafregionalSQLInjectionMatchSetInformer constructs a new informer for WafregionalSQLInjectionMatchSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewWafregionalSqlInjectionMatchSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredWafregionalSqlInjectionMatchSetInformer(client, resyncPeriod, indexers, nil)
+func NewWafregionalSQLInjectionMatchSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredWafregionalSQLInjectionMatchSetInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredWafregionalSqlInjectionMatchSetInformer constructs a new informer for WafregionalSqlInjectionMatchSet type.
+// NewFilteredWafregionalSQLInjectionMatchSetInformer constructs a new informer for WafregionalSQLInjectionMatchSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredWafregionalSqlInjectionMatchSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredWafregionalSQLInjectionMatchSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafregionalSqlInjectionMatchSets().List(options)
+				return client.AwsV1alpha1().WafregionalSQLInjectionMatchSets(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().WafregionalSqlInjectionMatchSets().Watch(options)
+				return client.AwsV1alpha1().WafregionalSQLInjectionMatchSets(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.WafregionalSqlInjectionMatchSet{},
+		&awsv1alpha1.WafregionalSQLInjectionMatchSet{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *wafregionalSqlInjectionMatchSetInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredWafregionalSqlInjectionMatchSetInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *wafregionalSQLInjectionMatchSetInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredWafregionalSQLInjectionMatchSetInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *wafregionalSqlInjectionMatchSetInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.WafregionalSqlInjectionMatchSet{}, f.defaultInformer)
+func (f *wafregionalSQLInjectionMatchSetInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.WafregionalSQLInjectionMatchSet{}, f.defaultInformer)
 }
 
-func (f *wafregionalSqlInjectionMatchSetInformer) Lister() v1alpha1.WafregionalSqlInjectionMatchSetLister {
-	return v1alpha1.NewWafregionalSqlInjectionMatchSetLister(f.Informer().GetIndexer())
+func (f *wafregionalSQLInjectionMatchSetInformer) Lister() v1alpha1.WafregionalSQLInjectionMatchSetLister {
+	return v1alpha1.NewWafregionalSQLInjectionMatchSetLister(f.Informer().GetIndexer())
 }

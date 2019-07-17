@@ -31,6 +31,7 @@ import (
 // FakeBudgetsBudgets implements BudgetsBudgetInterface
 type FakeBudgetsBudgets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var budgetsbudgetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "budgetsbudgets"}
@@ -40,7 +41,8 @@ var budgetsbudgetsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Vers
 // Get takes name of the budgetsBudget, and returns the corresponding budgetsBudget object, and an error if there is any.
 func (c *FakeBudgetsBudgets) Get(name string, options v1.GetOptions) (result *v1alpha1.BudgetsBudget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(budgetsbudgetsResource, name), &v1alpha1.BudgetsBudget{})
+		Invokes(testing.NewGetAction(budgetsbudgetsResource, c.ns, name), &v1alpha1.BudgetsBudget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeBudgetsBudgets) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of BudgetsBudgets that match those selectors.
 func (c *FakeBudgetsBudgets) List(opts v1.ListOptions) (result *v1alpha1.BudgetsBudgetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(budgetsbudgetsResource, budgetsbudgetsKind, opts), &v1alpha1.BudgetsBudgetList{})
+		Invokes(testing.NewListAction(budgetsbudgetsResource, budgetsbudgetsKind, c.ns, opts), &v1alpha1.BudgetsBudgetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeBudgetsBudgets) List(opts v1.ListOptions) (result *v1alpha1.Budgets
 // Watch returns a watch.Interface that watches the requested budgetsBudgets.
 func (c *FakeBudgetsBudgets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(budgetsbudgetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(budgetsbudgetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a budgetsBudget and creates it.  Returns the server's representation of the budgetsBudget, and an error, if there is any.
 func (c *FakeBudgetsBudgets) Create(budgetsBudget *v1alpha1.BudgetsBudget) (result *v1alpha1.BudgetsBudget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(budgetsbudgetsResource, budgetsBudget), &v1alpha1.BudgetsBudget{})
+		Invokes(testing.NewCreateAction(budgetsbudgetsResource, c.ns, budgetsBudget), &v1alpha1.BudgetsBudget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeBudgetsBudgets) Create(budgetsBudget *v1alpha1.BudgetsBudget) (resu
 // Update takes the representation of a budgetsBudget and updates it. Returns the server's representation of the budgetsBudget, and an error, if there is any.
 func (c *FakeBudgetsBudgets) Update(budgetsBudget *v1alpha1.BudgetsBudget) (result *v1alpha1.BudgetsBudget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(budgetsbudgetsResource, budgetsBudget), &v1alpha1.BudgetsBudget{})
+		Invokes(testing.NewUpdateAction(budgetsbudgetsResource, c.ns, budgetsBudget), &v1alpha1.BudgetsBudget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeBudgetsBudgets) Update(budgetsBudget *v1alpha1.BudgetsBudget) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeBudgetsBudgets) UpdateStatus(budgetsBudget *v1alpha1.BudgetsBudget) (*v1alpha1.BudgetsBudget, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(budgetsbudgetsResource, "status", budgetsBudget), &v1alpha1.BudgetsBudget{})
+		Invokes(testing.NewUpdateSubresourceAction(budgetsbudgetsResource, "status", c.ns, budgetsBudget), &v1alpha1.BudgetsBudget{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeBudgetsBudgets) UpdateStatus(budgetsBudget *v1alpha1.BudgetsBudget)
 // Delete takes name of the budgetsBudget and deletes it. Returns an error if one occurs.
 func (c *FakeBudgetsBudgets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(budgetsbudgetsResource, name), &v1alpha1.BudgetsBudget{})
+		Invokes(testing.NewDeleteAction(budgetsbudgetsResource, c.ns, name), &v1alpha1.BudgetsBudget{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeBudgetsBudgets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(budgetsbudgetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(budgetsbudgetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.BudgetsBudgetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeBudgetsBudgets) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched budgetsBudget.
 func (c *FakeBudgetsBudgets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BudgetsBudget, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(budgetsbudgetsResource, name, pt, data, subresources...), &v1alpha1.BudgetsBudget{})
+		Invokes(testing.NewPatchSubresourceAction(budgetsbudgetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.BudgetsBudget{})
+
 	if obj == nil {
 		return nil, err
 	}

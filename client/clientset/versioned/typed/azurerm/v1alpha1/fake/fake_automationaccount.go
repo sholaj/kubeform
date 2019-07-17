@@ -31,6 +31,7 @@ import (
 // FakeAutomationAccounts implements AutomationAccountInterface
 type FakeAutomationAccounts struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var automationaccountsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "automationaccounts"}
@@ -40,7 +41,8 @@ var automationaccountsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.co
 // Get takes name of the automationAccount, and returns the corresponding automationAccount object, and an error if there is any.
 func (c *FakeAutomationAccounts) Get(name string, options v1.GetOptions) (result *v1alpha1.AutomationAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(automationaccountsResource, name), &v1alpha1.AutomationAccount{})
+		Invokes(testing.NewGetAction(automationaccountsResource, c.ns, name), &v1alpha1.AutomationAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAutomationAccounts) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of AutomationAccounts that match those selectors.
 func (c *FakeAutomationAccounts) List(opts v1.ListOptions) (result *v1alpha1.AutomationAccountList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(automationaccountsResource, automationaccountsKind, opts), &v1alpha1.AutomationAccountList{})
+		Invokes(testing.NewListAction(automationaccountsResource, automationaccountsKind, c.ns, opts), &v1alpha1.AutomationAccountList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAutomationAccounts) List(opts v1.ListOptions) (result *v1alpha1.Aut
 // Watch returns a watch.Interface that watches the requested automationAccounts.
 func (c *FakeAutomationAccounts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(automationaccountsResource, opts))
+		InvokesWatch(testing.NewWatchAction(automationaccountsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a automationAccount and creates it.  Returns the server's representation of the automationAccount, and an error, if there is any.
 func (c *FakeAutomationAccounts) Create(automationAccount *v1alpha1.AutomationAccount) (result *v1alpha1.AutomationAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(automationaccountsResource, automationAccount), &v1alpha1.AutomationAccount{})
+		Invokes(testing.NewCreateAction(automationaccountsResource, c.ns, automationAccount), &v1alpha1.AutomationAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAutomationAccounts) Create(automationAccount *v1alpha1.AutomationAc
 // Update takes the representation of a automationAccount and updates it. Returns the server's representation of the automationAccount, and an error, if there is any.
 func (c *FakeAutomationAccounts) Update(automationAccount *v1alpha1.AutomationAccount) (result *v1alpha1.AutomationAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(automationaccountsResource, automationAccount), &v1alpha1.AutomationAccount{})
+		Invokes(testing.NewUpdateAction(automationaccountsResource, c.ns, automationAccount), &v1alpha1.AutomationAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAutomationAccounts) Update(automationAccount *v1alpha1.AutomationAc
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAutomationAccounts) UpdateStatus(automationAccount *v1alpha1.AutomationAccount) (*v1alpha1.AutomationAccount, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(automationaccountsResource, "status", automationAccount), &v1alpha1.AutomationAccount{})
+		Invokes(testing.NewUpdateSubresourceAction(automationaccountsResource, "status", c.ns, automationAccount), &v1alpha1.AutomationAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAutomationAccounts) UpdateStatus(automationAccount *v1alpha1.Automa
 // Delete takes name of the automationAccount and deletes it. Returns an error if one occurs.
 func (c *FakeAutomationAccounts) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(automationaccountsResource, name), &v1alpha1.AutomationAccount{})
+		Invokes(testing.NewDeleteAction(automationaccountsResource, c.ns, name), &v1alpha1.AutomationAccount{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAutomationAccounts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(automationaccountsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(automationaccountsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AutomationAccountList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAutomationAccounts) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched automationAccount.
 func (c *FakeAutomationAccounts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AutomationAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(automationaccountsResource, name, pt, data, subresources...), &v1alpha1.AutomationAccount{})
+		Invokes(testing.NewPatchSubresourceAction(automationaccountsResource, c.ns, name, pt, data, subresources...), &v1alpha1.AutomationAccount{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type LicensemanagerAssociationLister interface {
 	// List lists all LicensemanagerAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LicensemanagerAssociation, err error)
-	// Get retrieves the LicensemanagerAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.LicensemanagerAssociation, error)
+	// LicensemanagerAssociations returns an object that can list and get LicensemanagerAssociations.
+	LicensemanagerAssociations(namespace string) LicensemanagerAssociationNamespaceLister
 	LicensemanagerAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *licensemanagerAssociationLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the LicensemanagerAssociation from the index for a given name.
-func (s *licensemanagerAssociationLister) Get(name string) (*v1alpha1.LicensemanagerAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LicensemanagerAssociations returns an object that can list and get LicensemanagerAssociations.
+func (s *licensemanagerAssociationLister) LicensemanagerAssociations(namespace string) LicensemanagerAssociationNamespaceLister {
+	return licensemanagerAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LicensemanagerAssociationNamespaceLister helps list and get LicensemanagerAssociations.
+type LicensemanagerAssociationNamespaceLister interface {
+	// List lists all LicensemanagerAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LicensemanagerAssociation, err error)
+	// Get retrieves the LicensemanagerAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LicensemanagerAssociation, error)
+	LicensemanagerAssociationNamespaceListerExpansion
+}
+
+// licensemanagerAssociationNamespaceLister implements the LicensemanagerAssociationNamespaceLister
+// interface.
+type licensemanagerAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LicensemanagerAssociations in the indexer for a given namespace.
+func (s licensemanagerAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LicensemanagerAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LicensemanagerAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the LicensemanagerAssociation from the indexer for a given namespace and name.
+func (s licensemanagerAssociationNamespaceLister) Get(name string) (*v1alpha1.LicensemanagerAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type AzureadServicePrincipalLister interface {
 	// List lists all AzureadServicePrincipals in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AzureadServicePrincipal, err error)
-	// Get retrieves the AzureadServicePrincipal from the index for a given name.
-	Get(name string) (*v1alpha1.AzureadServicePrincipal, error)
+	// AzureadServicePrincipals returns an object that can list and get AzureadServicePrincipals.
+	AzureadServicePrincipals(namespace string) AzureadServicePrincipalNamespaceLister
 	AzureadServicePrincipalListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *azureadServicePrincipalLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the AzureadServicePrincipal from the index for a given name.
-func (s *azureadServicePrincipalLister) Get(name string) (*v1alpha1.AzureadServicePrincipal, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AzureadServicePrincipals returns an object that can list and get AzureadServicePrincipals.
+func (s *azureadServicePrincipalLister) AzureadServicePrincipals(namespace string) AzureadServicePrincipalNamespaceLister {
+	return azureadServicePrincipalNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AzureadServicePrincipalNamespaceLister helps list and get AzureadServicePrincipals.
+type AzureadServicePrincipalNamespaceLister interface {
+	// List lists all AzureadServicePrincipals in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AzureadServicePrincipal, err error)
+	// Get retrieves the AzureadServicePrincipal from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AzureadServicePrincipal, error)
+	AzureadServicePrincipalNamespaceListerExpansion
+}
+
+// azureadServicePrincipalNamespaceLister implements the AzureadServicePrincipalNamespaceLister
+// interface.
+type azureadServicePrincipalNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AzureadServicePrincipals in the indexer for a given namespace.
+func (s azureadServicePrincipalNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AzureadServicePrincipal, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AzureadServicePrincipal))
+	})
+	return ret, err
+}
+
+// Get retrieves the AzureadServicePrincipal from the indexer for a given namespace and name.
+func (s azureadServicePrincipalNamespaceLister) Get(name string) (*v1alpha1.AzureadServicePrincipal, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

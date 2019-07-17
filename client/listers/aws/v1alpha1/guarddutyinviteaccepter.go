@@ -29,8 +29,8 @@ import (
 type GuarddutyInviteAccepterLister interface {
 	// List lists all GuarddutyInviteAccepters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GuarddutyInviteAccepter, err error)
-	// Get retrieves the GuarddutyInviteAccepter from the index for a given name.
-	Get(name string) (*v1alpha1.GuarddutyInviteAccepter, error)
+	// GuarddutyInviteAccepters returns an object that can list and get GuarddutyInviteAccepters.
+	GuarddutyInviteAccepters(namespace string) GuarddutyInviteAccepterNamespaceLister
 	GuarddutyInviteAccepterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *guarddutyInviteAccepterLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the GuarddutyInviteAccepter from the index for a given name.
-func (s *guarddutyInviteAccepterLister) Get(name string) (*v1alpha1.GuarddutyInviteAccepter, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GuarddutyInviteAccepters returns an object that can list and get GuarddutyInviteAccepters.
+func (s *guarddutyInviteAccepterLister) GuarddutyInviteAccepters(namespace string) GuarddutyInviteAccepterNamespaceLister {
+	return guarddutyInviteAccepterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GuarddutyInviteAccepterNamespaceLister helps list and get GuarddutyInviteAccepters.
+type GuarddutyInviteAccepterNamespaceLister interface {
+	// List lists all GuarddutyInviteAccepters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GuarddutyInviteAccepter, err error)
+	// Get retrieves the GuarddutyInviteAccepter from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GuarddutyInviteAccepter, error)
+	GuarddutyInviteAccepterNamespaceListerExpansion
+}
+
+// guarddutyInviteAccepterNamespaceLister implements the GuarddutyInviteAccepterNamespaceLister
+// interface.
+type guarddutyInviteAccepterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GuarddutyInviteAccepters in the indexer for a given namespace.
+func (s guarddutyInviteAccepterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GuarddutyInviteAccepter, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GuarddutyInviteAccepter))
+	})
+	return ret, err
+}
+
+// Get retrieves the GuarddutyInviteAccepter from the indexer for a given namespace and name.
+func (s guarddutyInviteAccepterNamespaceLister) Get(name string) (*v1alpha1.GuarddutyInviteAccepter, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

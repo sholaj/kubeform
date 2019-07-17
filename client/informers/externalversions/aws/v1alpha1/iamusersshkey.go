@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// IamUserSshKeyInformer provides access to a shared informer and lister for
-// IamUserSshKeys.
-type IamUserSshKeyInformer interface {
+// IamUserSSHKeyInformer provides access to a shared informer and lister for
+// IamUserSSHKeys.
+type IamUserSSHKeyInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.IamUserSshKeyLister
+	Lister() v1alpha1.IamUserSSHKeyLister
 }
 
-type iamUserSshKeyInformer struct {
+type iamUserSSHKeyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewIamUserSshKeyInformer constructs a new informer for IamUserSshKey type.
+// NewIamUserSSHKeyInformer constructs a new informer for IamUserSSHKey type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewIamUserSshKeyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredIamUserSshKeyInformer(client, resyncPeriod, indexers, nil)
+func NewIamUserSSHKeyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredIamUserSSHKeyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredIamUserSshKeyInformer constructs a new informer for IamUserSshKey type.
+// NewFilteredIamUserSSHKeyInformer constructs a new informer for IamUserSSHKey type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredIamUserSshKeyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredIamUserSSHKeyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().IamUserSshKeys().List(options)
+				return client.AwsV1alpha1().IamUserSSHKeys(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().IamUserSshKeys().Watch(options)
+				return client.AwsV1alpha1().IamUserSSHKeys(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.IamUserSshKey{},
+		&awsv1alpha1.IamUserSSHKey{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *iamUserSshKeyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredIamUserSshKeyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *iamUserSSHKeyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredIamUserSSHKeyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *iamUserSshKeyInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.IamUserSshKey{}, f.defaultInformer)
+func (f *iamUserSSHKeyInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.IamUserSSHKey{}, f.defaultInformer)
 }
 
-func (f *iamUserSshKeyInformer) Lister() v1alpha1.IamUserSshKeyLister {
-	return v1alpha1.NewIamUserSshKeyLister(f.Informer().GetIndexer())
+func (f *iamUserSSHKeyInformer) Lister() v1alpha1.IamUserSSHKeyLister {
+	return v1alpha1.NewIamUserSSHKeyLister(f.Informer().GetIndexer())
 }

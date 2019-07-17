@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,20 +19,21 @@ type SsmDocument struct {
 }
 
 type SsmDocumentSpecPermissions struct {
-	AccountIds string `json:"account_ids"`
-	Type       string `json:"type"`
+	AccountIDS string `json:"accountIDS" tf:"account_ids"`
+	Type       string `json:"type" tf:"type"`
 }
 
 type SsmDocumentSpec struct {
-	Content string `json:"content"`
+	Content string `json:"content" tf:"content"`
 	// +optional
-	DocumentFormat string `json:"document_format,omitempty"`
-	DocumentType   string `json:"document_type"`
-	Name           string `json:"name"`
+	DocumentFormat string `json:"documentFormat,omitempty" tf:"document_format,omitempty"`
+	DocumentType   string `json:"documentType" tf:"document_type"`
+	Name           string `json:"name" tf:"name"`
 	// +optional
-	Permissions map[string]SsmDocumentSpecPermissions `json:"permissions,omitempty"`
+	Permissions map[string]SsmDocumentSpecPermissions `json:"permissions,omitempty" tf:"permissions,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SsmDocumentStatus struct {
@@ -40,7 +41,9 @@ type SsmDocumentStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

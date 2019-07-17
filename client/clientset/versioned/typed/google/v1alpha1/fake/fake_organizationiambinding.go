@@ -31,6 +31,7 @@ import (
 // FakeOrganizationIamBindings implements OrganizationIamBindingInterface
 type FakeOrganizationIamBindings struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var organizationiambindingsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "organizationiambindings"}
@@ -40,7 +41,8 @@ var organizationiambindingsKind = schema.GroupVersionKind{Group: "google.kubefor
 // Get takes name of the organizationIamBinding, and returns the corresponding organizationIamBinding object, and an error if there is any.
 func (c *FakeOrganizationIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.OrganizationIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(organizationiambindingsResource, name), &v1alpha1.OrganizationIamBinding{})
+		Invokes(testing.NewGetAction(organizationiambindingsResource, c.ns, name), &v1alpha1.OrganizationIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeOrganizationIamBindings) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of OrganizationIamBindings that match those selectors.
 func (c *FakeOrganizationIamBindings) List(opts v1.ListOptions) (result *v1alpha1.OrganizationIamBindingList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(organizationiambindingsResource, organizationiambindingsKind, opts), &v1alpha1.OrganizationIamBindingList{})
+		Invokes(testing.NewListAction(organizationiambindingsResource, organizationiambindingsKind, c.ns, opts), &v1alpha1.OrganizationIamBindingList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeOrganizationIamBindings) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested organizationIamBindings.
 func (c *FakeOrganizationIamBindings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(organizationiambindingsResource, opts))
+		InvokesWatch(testing.NewWatchAction(organizationiambindingsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a organizationIamBinding and creates it.  Returns the server's representation of the organizationIamBinding, and an error, if there is any.
 func (c *FakeOrganizationIamBindings) Create(organizationIamBinding *v1alpha1.OrganizationIamBinding) (result *v1alpha1.OrganizationIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(organizationiambindingsResource, organizationIamBinding), &v1alpha1.OrganizationIamBinding{})
+		Invokes(testing.NewCreateAction(organizationiambindingsResource, c.ns, organizationIamBinding), &v1alpha1.OrganizationIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeOrganizationIamBindings) Create(organizationIamBinding *v1alpha1.Or
 // Update takes the representation of a organizationIamBinding and updates it. Returns the server's representation of the organizationIamBinding, and an error, if there is any.
 func (c *FakeOrganizationIamBindings) Update(organizationIamBinding *v1alpha1.OrganizationIamBinding) (result *v1alpha1.OrganizationIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(organizationiambindingsResource, organizationIamBinding), &v1alpha1.OrganizationIamBinding{})
+		Invokes(testing.NewUpdateAction(organizationiambindingsResource, c.ns, organizationIamBinding), &v1alpha1.OrganizationIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeOrganizationIamBindings) Update(organizationIamBinding *v1alpha1.Or
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeOrganizationIamBindings) UpdateStatus(organizationIamBinding *v1alpha1.OrganizationIamBinding) (*v1alpha1.OrganizationIamBinding, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(organizationiambindingsResource, "status", organizationIamBinding), &v1alpha1.OrganizationIamBinding{})
+		Invokes(testing.NewUpdateSubresourceAction(organizationiambindingsResource, "status", c.ns, organizationIamBinding), &v1alpha1.OrganizationIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeOrganizationIamBindings) UpdateStatus(organizationIamBinding *v1alp
 // Delete takes name of the organizationIamBinding and deletes it. Returns an error if one occurs.
 func (c *FakeOrganizationIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(organizationiambindingsResource, name), &v1alpha1.OrganizationIamBinding{})
+		Invokes(testing.NewDeleteAction(organizationiambindingsResource, c.ns, name), &v1alpha1.OrganizationIamBinding{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeOrganizationIamBindings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(organizationiambindingsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(organizationiambindingsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.OrganizationIamBindingList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeOrganizationIamBindings) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched organizationIamBinding.
 func (c *FakeOrganizationIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OrganizationIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(organizationiambindingsResource, name, pt, data, subresources...), &v1alpha1.OrganizationIamBinding{})
+		Invokes(testing.NewPatchSubresourceAction(organizationiambindingsResource, c.ns, name, pt, data, subresources...), &v1alpha1.OrganizationIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}

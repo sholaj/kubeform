@@ -29,8 +29,8 @@ import (
 type IamGroupLister interface {
 	// List lists all IamGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IamGroup, err error)
-	// Get retrieves the IamGroup from the index for a given name.
-	Get(name string) (*v1alpha1.IamGroup, error)
+	// IamGroups returns an object that can list and get IamGroups.
+	IamGroups(namespace string) IamGroupNamespaceLister
 	IamGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iamGroupLister) List(selector labels.Selector) (ret []*v1alpha1.IamGrou
 	return ret, err
 }
 
-// Get retrieves the IamGroup from the index for a given name.
-func (s *iamGroupLister) Get(name string) (*v1alpha1.IamGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IamGroups returns an object that can list and get IamGroups.
+func (s *iamGroupLister) IamGroups(namespace string) IamGroupNamespaceLister {
+	return iamGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IamGroupNamespaceLister helps list and get IamGroups.
+type IamGroupNamespaceLister interface {
+	// List lists all IamGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IamGroup, err error)
+	// Get retrieves the IamGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IamGroup, error)
+	IamGroupNamespaceListerExpansion
+}
+
+// iamGroupNamespaceLister implements the IamGroupNamespaceLister
+// interface.
+type iamGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IamGroups in the indexer for a given namespace.
+func (s iamGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IamGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IamGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the IamGroup from the indexer for a given namespace and name.
+func (s iamGroupNamespaceLister) Get(name string) (*v1alpha1.IamGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

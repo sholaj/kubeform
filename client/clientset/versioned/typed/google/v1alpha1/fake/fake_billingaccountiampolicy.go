@@ -31,6 +31,7 @@ import (
 // FakeBillingAccountIamPolicies implements BillingAccountIamPolicyInterface
 type FakeBillingAccountIamPolicies struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var billingaccountiampoliciesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "billingaccountiampolicies"}
@@ -40,7 +41,8 @@ var billingaccountiampoliciesKind = schema.GroupVersionKind{Group: "google.kubef
 // Get takes name of the billingAccountIamPolicy, and returns the corresponding billingAccountIamPolicy object, and an error if there is any.
 func (c *FakeBillingAccountIamPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.BillingAccountIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(billingaccountiampoliciesResource, name), &v1alpha1.BillingAccountIamPolicy{})
+		Invokes(testing.NewGetAction(billingaccountiampoliciesResource, c.ns, name), &v1alpha1.BillingAccountIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeBillingAccountIamPolicies) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of BillingAccountIamPolicies that match those selectors.
 func (c *FakeBillingAccountIamPolicies) List(opts v1.ListOptions) (result *v1alpha1.BillingAccountIamPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(billingaccountiampoliciesResource, billingaccountiampoliciesKind, opts), &v1alpha1.BillingAccountIamPolicyList{})
+		Invokes(testing.NewListAction(billingaccountiampoliciesResource, billingaccountiampoliciesKind, c.ns, opts), &v1alpha1.BillingAccountIamPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeBillingAccountIamPolicies) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested billingAccountIamPolicies.
 func (c *FakeBillingAccountIamPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(billingaccountiampoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(billingaccountiampoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a billingAccountIamPolicy and creates it.  Returns the server's representation of the billingAccountIamPolicy, and an error, if there is any.
 func (c *FakeBillingAccountIamPolicies) Create(billingAccountIamPolicy *v1alpha1.BillingAccountIamPolicy) (result *v1alpha1.BillingAccountIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(billingaccountiampoliciesResource, billingAccountIamPolicy), &v1alpha1.BillingAccountIamPolicy{})
+		Invokes(testing.NewCreateAction(billingaccountiampoliciesResource, c.ns, billingAccountIamPolicy), &v1alpha1.BillingAccountIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeBillingAccountIamPolicies) Create(billingAccountIamPolicy *v1alpha1
 // Update takes the representation of a billingAccountIamPolicy and updates it. Returns the server's representation of the billingAccountIamPolicy, and an error, if there is any.
 func (c *FakeBillingAccountIamPolicies) Update(billingAccountIamPolicy *v1alpha1.BillingAccountIamPolicy) (result *v1alpha1.BillingAccountIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(billingaccountiampoliciesResource, billingAccountIamPolicy), &v1alpha1.BillingAccountIamPolicy{})
+		Invokes(testing.NewUpdateAction(billingaccountiampoliciesResource, c.ns, billingAccountIamPolicy), &v1alpha1.BillingAccountIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeBillingAccountIamPolicies) Update(billingAccountIamPolicy *v1alpha1
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeBillingAccountIamPolicies) UpdateStatus(billingAccountIamPolicy *v1alpha1.BillingAccountIamPolicy) (*v1alpha1.BillingAccountIamPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(billingaccountiampoliciesResource, "status", billingAccountIamPolicy), &v1alpha1.BillingAccountIamPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(billingaccountiampoliciesResource, "status", c.ns, billingAccountIamPolicy), &v1alpha1.BillingAccountIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeBillingAccountIamPolicies) UpdateStatus(billingAccountIamPolicy *v1
 // Delete takes name of the billingAccountIamPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeBillingAccountIamPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(billingaccountiampoliciesResource, name), &v1alpha1.BillingAccountIamPolicy{})
+		Invokes(testing.NewDeleteAction(billingaccountiampoliciesResource, c.ns, name), &v1alpha1.BillingAccountIamPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeBillingAccountIamPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(billingaccountiampoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(billingaccountiampoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.BillingAccountIamPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeBillingAccountIamPolicies) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched billingAccountIamPolicy.
 func (c *FakeBillingAccountIamPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BillingAccountIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(billingaccountiampoliciesResource, name, pt, data, subresources...), &v1alpha1.BillingAccountIamPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(billingaccountiampoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.BillingAccountIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type RecoveryServicesProtectedVmLister interface {
 	// List lists all RecoveryServicesProtectedVms in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RecoveryServicesProtectedVm, err error)
-	// Get retrieves the RecoveryServicesProtectedVm from the index for a given name.
-	Get(name string) (*v1alpha1.RecoveryServicesProtectedVm, error)
+	// RecoveryServicesProtectedVms returns an object that can list and get RecoveryServicesProtectedVms.
+	RecoveryServicesProtectedVms(namespace string) RecoveryServicesProtectedVmNamespaceLister
 	RecoveryServicesProtectedVmListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *recoveryServicesProtectedVmLister) List(selector labels.Selector) (ret 
 	return ret, err
 }
 
-// Get retrieves the RecoveryServicesProtectedVm from the index for a given name.
-func (s *recoveryServicesProtectedVmLister) Get(name string) (*v1alpha1.RecoveryServicesProtectedVm, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RecoveryServicesProtectedVms returns an object that can list and get RecoveryServicesProtectedVms.
+func (s *recoveryServicesProtectedVmLister) RecoveryServicesProtectedVms(namespace string) RecoveryServicesProtectedVmNamespaceLister {
+	return recoveryServicesProtectedVmNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RecoveryServicesProtectedVmNamespaceLister helps list and get RecoveryServicesProtectedVms.
+type RecoveryServicesProtectedVmNamespaceLister interface {
+	// List lists all RecoveryServicesProtectedVms in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RecoveryServicesProtectedVm, err error)
+	// Get retrieves the RecoveryServicesProtectedVm from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RecoveryServicesProtectedVm, error)
+	RecoveryServicesProtectedVmNamespaceListerExpansion
+}
+
+// recoveryServicesProtectedVmNamespaceLister implements the RecoveryServicesProtectedVmNamespaceLister
+// interface.
+type recoveryServicesProtectedVmNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RecoveryServicesProtectedVms in the indexer for a given namespace.
+func (s recoveryServicesProtectedVmNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RecoveryServicesProtectedVm, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RecoveryServicesProtectedVm))
+	})
+	return ret, err
+}
+
+// Get retrieves the RecoveryServicesProtectedVm from the indexer for a given namespace and name.
+func (s recoveryServicesProtectedVmNamespaceLister) Get(name string) (*v1alpha1.RecoveryServicesProtectedVm, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -1,45 +1,48 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type ComputeTargetHttpProxy struct {
+type ComputeTargetHTTPProxy struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              ComputeTargetHttpProxySpec   `json:"spec,omitempty"`
-	Status            ComputeTargetHttpProxyStatus `json:"status,omitempty"`
+	Spec              ComputeTargetHTTPProxySpec   `json:"spec,omitempty"`
+	Status            ComputeTargetHTTPProxyStatus `json:"status,omitempty"`
 }
 
-type ComputeTargetHttpProxySpec struct {
+type ComputeTargetHTTPProxySpec struct {
 	// +optional
-	Description string `json:"description,omitempty"`
-	Name        string `json:"name"`
-	UrlMap      string `json:"url_map"`
+	Description string                    `json:"description,omitempty" tf:"description,omitempty"`
+	Name        string                    `json:"name" tf:"name"`
+	UrlMap      string                    `json:"urlMap" tf:"url_map"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
-type ComputeTargetHttpProxyStatus struct {
+type ComputeTargetHTTPProxyStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// ComputeTargetHttpProxyList is a list of ComputeTargetHttpProxys
-type ComputeTargetHttpProxyList struct {
+// ComputeTargetHTTPProxyList is a list of ComputeTargetHTTPProxys
+type ComputeTargetHTTPProxyList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of ComputeTargetHttpProxy CRD objects
-	Items []ComputeTargetHttpProxy `json:"items,omitempty"`
+	// Items is a list of ComputeTargetHTTPProxy CRD objects
+	Items []ComputeTargetHTTPProxy `json:"items,omitempty"`
 }

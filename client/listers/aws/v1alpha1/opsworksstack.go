@@ -29,8 +29,8 @@ import (
 type OpsworksStackLister interface {
 	// List lists all OpsworksStacks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OpsworksStack, err error)
-	// Get retrieves the OpsworksStack from the index for a given name.
-	Get(name string) (*v1alpha1.OpsworksStack, error)
+	// OpsworksStacks returns an object that can list and get OpsworksStacks.
+	OpsworksStacks(namespace string) OpsworksStackNamespaceLister
 	OpsworksStackListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *opsworksStackLister) List(selector labels.Selector) (ret []*v1alpha1.Op
 	return ret, err
 }
 
-// Get retrieves the OpsworksStack from the index for a given name.
-func (s *opsworksStackLister) Get(name string) (*v1alpha1.OpsworksStack, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OpsworksStacks returns an object that can list and get OpsworksStacks.
+func (s *opsworksStackLister) OpsworksStacks(namespace string) OpsworksStackNamespaceLister {
+	return opsworksStackNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OpsworksStackNamespaceLister helps list and get OpsworksStacks.
+type OpsworksStackNamespaceLister interface {
+	// List lists all OpsworksStacks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OpsworksStack, err error)
+	// Get retrieves the OpsworksStack from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OpsworksStack, error)
+	OpsworksStackNamespaceListerExpansion
+}
+
+// opsworksStackNamespaceLister implements the OpsworksStackNamespaceLister
+// interface.
+type opsworksStackNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OpsworksStacks in the indexer for a given namespace.
+func (s opsworksStackNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OpsworksStack, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OpsworksStack))
+	})
+	return ret, err
+}
+
+// Get retrieves the OpsworksStack from the indexer for a given namespace and name.
+func (s opsworksStackNamespaceLister) Get(name string) (*v1alpha1.OpsworksStack, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

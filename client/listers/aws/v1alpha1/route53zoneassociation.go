@@ -29,8 +29,8 @@ import (
 type Route53ZoneAssociationLister interface {
 	// List lists all Route53ZoneAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Route53ZoneAssociation, err error)
-	// Get retrieves the Route53ZoneAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.Route53ZoneAssociation, error)
+	// Route53ZoneAssociations returns an object that can list and get Route53ZoneAssociations.
+	Route53ZoneAssociations(namespace string) Route53ZoneAssociationNamespaceLister
 	Route53ZoneAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *route53ZoneAssociationLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the Route53ZoneAssociation from the index for a given name.
-func (s *route53ZoneAssociationLister) Get(name string) (*v1alpha1.Route53ZoneAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Route53ZoneAssociations returns an object that can list and get Route53ZoneAssociations.
+func (s *route53ZoneAssociationLister) Route53ZoneAssociations(namespace string) Route53ZoneAssociationNamespaceLister {
+	return route53ZoneAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// Route53ZoneAssociationNamespaceLister helps list and get Route53ZoneAssociations.
+type Route53ZoneAssociationNamespaceLister interface {
+	// List lists all Route53ZoneAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Route53ZoneAssociation, err error)
+	// Get retrieves the Route53ZoneAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Route53ZoneAssociation, error)
+	Route53ZoneAssociationNamespaceListerExpansion
+}
+
+// route53ZoneAssociationNamespaceLister implements the Route53ZoneAssociationNamespaceLister
+// interface.
+type route53ZoneAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Route53ZoneAssociations in the indexer for a given namespace.
+func (s route53ZoneAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Route53ZoneAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Route53ZoneAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the Route53ZoneAssociation from the indexer for a given namespace and name.
+func (s route53ZoneAssociationNamespaceLister) Get(name string) (*v1alpha1.Route53ZoneAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

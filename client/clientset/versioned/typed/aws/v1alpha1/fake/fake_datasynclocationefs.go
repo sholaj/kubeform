@@ -31,6 +31,7 @@ import (
 // FakeDatasyncLocationEfses implements DatasyncLocationEfsInterface
 type FakeDatasyncLocationEfses struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var datasynclocationefsesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "datasynclocationefses"}
@@ -40,7 +41,8 @@ var datasynclocationefsesKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the datasyncLocationEfs, and returns the corresponding datasyncLocationEfs object, and an error if there is any.
 func (c *FakeDatasyncLocationEfses) Get(name string, options v1.GetOptions) (result *v1alpha1.DatasyncLocationEfs, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(datasynclocationefsesResource, name), &v1alpha1.DatasyncLocationEfs{})
+		Invokes(testing.NewGetAction(datasynclocationefsesResource, c.ns, name), &v1alpha1.DatasyncLocationEfs{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDatasyncLocationEfses) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of DatasyncLocationEfses that match those selectors.
 func (c *FakeDatasyncLocationEfses) List(opts v1.ListOptions) (result *v1alpha1.DatasyncLocationEfsList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(datasynclocationefsesResource, datasynclocationefsesKind, opts), &v1alpha1.DatasyncLocationEfsList{})
+		Invokes(testing.NewListAction(datasynclocationefsesResource, datasynclocationefsesKind, c.ns, opts), &v1alpha1.DatasyncLocationEfsList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDatasyncLocationEfses) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested datasyncLocationEfses.
 func (c *FakeDatasyncLocationEfses) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(datasynclocationefsesResource, opts))
+		InvokesWatch(testing.NewWatchAction(datasynclocationefsesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a datasyncLocationEfs and creates it.  Returns the server's representation of the datasyncLocationEfs, and an error, if there is any.
 func (c *FakeDatasyncLocationEfses) Create(datasyncLocationEfs *v1alpha1.DatasyncLocationEfs) (result *v1alpha1.DatasyncLocationEfs, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(datasynclocationefsesResource, datasyncLocationEfs), &v1alpha1.DatasyncLocationEfs{})
+		Invokes(testing.NewCreateAction(datasynclocationefsesResource, c.ns, datasyncLocationEfs), &v1alpha1.DatasyncLocationEfs{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDatasyncLocationEfses) Create(datasyncLocationEfs *v1alpha1.Datasyn
 // Update takes the representation of a datasyncLocationEfs and updates it. Returns the server's representation of the datasyncLocationEfs, and an error, if there is any.
 func (c *FakeDatasyncLocationEfses) Update(datasyncLocationEfs *v1alpha1.DatasyncLocationEfs) (result *v1alpha1.DatasyncLocationEfs, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(datasynclocationefsesResource, datasyncLocationEfs), &v1alpha1.DatasyncLocationEfs{})
+		Invokes(testing.NewUpdateAction(datasynclocationefsesResource, c.ns, datasyncLocationEfs), &v1alpha1.DatasyncLocationEfs{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDatasyncLocationEfses) Update(datasyncLocationEfs *v1alpha1.Datasyn
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDatasyncLocationEfses) UpdateStatus(datasyncLocationEfs *v1alpha1.DatasyncLocationEfs) (*v1alpha1.DatasyncLocationEfs, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(datasynclocationefsesResource, "status", datasyncLocationEfs), &v1alpha1.DatasyncLocationEfs{})
+		Invokes(testing.NewUpdateSubresourceAction(datasynclocationefsesResource, "status", c.ns, datasyncLocationEfs), &v1alpha1.DatasyncLocationEfs{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDatasyncLocationEfses) UpdateStatus(datasyncLocationEfs *v1alpha1.D
 // Delete takes name of the datasyncLocationEfs and deletes it. Returns an error if one occurs.
 func (c *FakeDatasyncLocationEfses) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(datasynclocationefsesResource, name), &v1alpha1.DatasyncLocationEfs{})
+		Invokes(testing.NewDeleteAction(datasynclocationefsesResource, c.ns, name), &v1alpha1.DatasyncLocationEfs{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDatasyncLocationEfses) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(datasynclocationefsesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(datasynclocationefsesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DatasyncLocationEfsList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDatasyncLocationEfses) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched datasyncLocationEfs.
 func (c *FakeDatasyncLocationEfses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DatasyncLocationEfs, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(datasynclocationefsesResource, name, pt, data, subresources...), &v1alpha1.DatasyncLocationEfs{})
+		Invokes(testing.NewPatchSubresourceAction(datasynclocationefsesResource, c.ns, name, pt, data, subresources...), &v1alpha1.DatasyncLocationEfs{})
+
 	if obj == nil {
 		return nil, err
 	}

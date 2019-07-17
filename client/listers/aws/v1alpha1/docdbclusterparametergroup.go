@@ -29,8 +29,8 @@ import (
 type DocdbClusterParameterGroupLister interface {
 	// List lists all DocdbClusterParameterGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DocdbClusterParameterGroup, err error)
-	// Get retrieves the DocdbClusterParameterGroup from the index for a given name.
-	Get(name string) (*v1alpha1.DocdbClusterParameterGroup, error)
+	// DocdbClusterParameterGroups returns an object that can list and get DocdbClusterParameterGroups.
+	DocdbClusterParameterGroups(namespace string) DocdbClusterParameterGroupNamespaceLister
 	DocdbClusterParameterGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *docdbClusterParameterGroupLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the DocdbClusterParameterGroup from the index for a given name.
-func (s *docdbClusterParameterGroupLister) Get(name string) (*v1alpha1.DocdbClusterParameterGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DocdbClusterParameterGroups returns an object that can list and get DocdbClusterParameterGroups.
+func (s *docdbClusterParameterGroupLister) DocdbClusterParameterGroups(namespace string) DocdbClusterParameterGroupNamespaceLister {
+	return docdbClusterParameterGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DocdbClusterParameterGroupNamespaceLister helps list and get DocdbClusterParameterGroups.
+type DocdbClusterParameterGroupNamespaceLister interface {
+	// List lists all DocdbClusterParameterGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DocdbClusterParameterGroup, err error)
+	// Get retrieves the DocdbClusterParameterGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DocdbClusterParameterGroup, error)
+	DocdbClusterParameterGroupNamespaceListerExpansion
+}
+
+// docdbClusterParameterGroupNamespaceLister implements the DocdbClusterParameterGroupNamespaceLister
+// interface.
+type docdbClusterParameterGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DocdbClusterParameterGroups in the indexer for a given namespace.
+func (s docdbClusterParameterGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DocdbClusterParameterGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DocdbClusterParameterGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the DocdbClusterParameterGroup from the indexer for a given namespace and name.
+func (s docdbClusterParameterGroupNamespaceLister) Get(name string) (*v1alpha1.DocdbClusterParameterGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

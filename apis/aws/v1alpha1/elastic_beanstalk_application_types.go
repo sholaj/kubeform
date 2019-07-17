@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,23 +20,24 @@ type ElasticBeanstalkApplication struct {
 
 type ElasticBeanstalkApplicationSpecAppversionLifecycle struct {
 	// +optional
-	DeleteSourceFromS3 bool `json:"delete_source_from_s3,omitempty"`
+	DeleteSourceFromS3 bool `json:"deleteSourceFromS3,omitempty" tf:"delete_source_from_s3,omitempty"`
 	// +optional
-	MaxAgeInDays int `json:"max_age_in_days,omitempty"`
+	MaxAgeInDays int `json:"maxAgeInDays,omitempty" tf:"max_age_in_days,omitempty"`
 	// +optional
-	MaxCount    int    `json:"max_count,omitempty"`
-	ServiceRole string `json:"service_role"`
+	MaxCount    int    `json:"maxCount,omitempty" tf:"max_count,omitempty"`
+	ServiceRole string `json:"serviceRole" tf:"service_role"`
 }
 
 type ElasticBeanstalkApplicationSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	AppversionLifecycle *[]ElasticBeanstalkApplicationSpec `json:"appversion_lifecycle,omitempty"`
+	AppversionLifecycle []ElasticBeanstalkApplicationSpecAppversionLifecycle `json:"appversionLifecycle,omitempty" tf:"appversion_lifecycle,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
-	Name        string `json:"name"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
+	Name        string `json:"name" tf:"name"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ElasticBeanstalkApplicationStatus struct {
@@ -44,7 +45,9 @@ type ElasticBeanstalkApplicationStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

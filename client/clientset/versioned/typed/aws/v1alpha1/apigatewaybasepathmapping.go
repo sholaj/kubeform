@@ -32,7 +32,7 @@ import (
 // ApiGatewayBasePathMappingsGetter has a method to return a ApiGatewayBasePathMappingInterface.
 // A group's client should implement this interface.
 type ApiGatewayBasePathMappingsGetter interface {
-	ApiGatewayBasePathMappings() ApiGatewayBasePathMappingInterface
+	ApiGatewayBasePathMappings(namespace string) ApiGatewayBasePathMappingInterface
 }
 
 // ApiGatewayBasePathMappingInterface has methods to work with ApiGatewayBasePathMapping resources.
@@ -52,12 +52,14 @@ type ApiGatewayBasePathMappingInterface interface {
 // apiGatewayBasePathMappings implements ApiGatewayBasePathMappingInterface
 type apiGatewayBasePathMappings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiGatewayBasePathMappings returns a ApiGatewayBasePathMappings
-func newApiGatewayBasePathMappings(c *AwsV1alpha1Client) *apiGatewayBasePathMappings {
+func newApiGatewayBasePathMappings(c *AwsV1alpha1Client, namespace string) *apiGatewayBasePathMappings {
 	return &apiGatewayBasePathMappings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiGatewayBasePathMappings(c *AwsV1alpha1Client) *apiGatewayBasePathMapp
 func (c *apiGatewayBasePathMappings) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayBasePathMapping, err error) {
 	result = &v1alpha1.ApiGatewayBasePathMapping{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaybasepathmappings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiGatewayBasePathMappings) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.ApiGatewayBasePathMappingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaybasepathmappings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiGatewayBasePathMappings) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaybasepathmappings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiGatewayBasePathMappings) Watch(opts v1.ListOptions) (watch.Interface
 func (c *apiGatewayBasePathMappings) Create(apiGatewayBasePathMapping *v1alpha1.ApiGatewayBasePathMapping) (result *v1alpha1.ApiGatewayBasePathMapping, err error) {
 	result = &v1alpha1.ApiGatewayBasePathMapping{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apigatewaybasepathmappings").
 		Body(apiGatewayBasePathMapping).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiGatewayBasePathMappings) Create(apiGatewayBasePathMapping *v1alpha1.
 func (c *apiGatewayBasePathMappings) Update(apiGatewayBasePathMapping *v1alpha1.ApiGatewayBasePathMapping) (result *v1alpha1.ApiGatewayBasePathMapping, err error) {
 	result = &v1alpha1.ApiGatewayBasePathMapping{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewaybasepathmappings").
 		Name(apiGatewayBasePathMapping.Name).
 		Body(apiGatewayBasePathMapping).
@@ -132,6 +139,7 @@ func (c *apiGatewayBasePathMappings) Update(apiGatewayBasePathMapping *v1alpha1.
 func (c *apiGatewayBasePathMappings) UpdateStatus(apiGatewayBasePathMapping *v1alpha1.ApiGatewayBasePathMapping) (result *v1alpha1.ApiGatewayBasePathMapping, err error) {
 	result = &v1alpha1.ApiGatewayBasePathMapping{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewaybasepathmappings").
 		Name(apiGatewayBasePathMapping.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiGatewayBasePathMappings) UpdateStatus(apiGatewayBasePathMapping *v1a
 // Delete takes name of the apiGatewayBasePathMapping and deletes it. Returns an error if one occurs.
 func (c *apiGatewayBasePathMappings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewaybasepathmappings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiGatewayBasePathMappings) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewaybasepathmappings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiGatewayBasePathMappings) DeleteCollection(options *v1.DeleteOptions,
 func (c *apiGatewayBasePathMappings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayBasePathMapping, err error) {
 	result = &v1alpha1.ApiGatewayBasePathMapping{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apigatewaybasepathmappings").
 		SubResource(subresources...).
 		Name(name).

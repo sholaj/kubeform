@@ -32,7 +32,7 @@ import (
 // ComputeSslCertificatesGetter has a method to return a ComputeSslCertificateInterface.
 // A group's client should implement this interface.
 type ComputeSslCertificatesGetter interface {
-	ComputeSslCertificates() ComputeSslCertificateInterface
+	ComputeSslCertificates(namespace string) ComputeSslCertificateInterface
 }
 
 // ComputeSslCertificateInterface has methods to work with ComputeSslCertificate resources.
@@ -52,12 +52,14 @@ type ComputeSslCertificateInterface interface {
 // computeSslCertificates implements ComputeSslCertificateInterface
 type computeSslCertificates struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeSslCertificates returns a ComputeSslCertificates
-func newComputeSslCertificates(c *GoogleV1alpha1Client) *computeSslCertificates {
+func newComputeSslCertificates(c *GoogleV1alpha1Client, namespace string) *computeSslCertificates {
 	return &computeSslCertificates{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeSslCertificates(c *GoogleV1alpha1Client) *computeSslCertificates 
 func (c *computeSslCertificates) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeSslCertificate, err error) {
 	result = &v1alpha1.ComputeSslCertificate{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computesslcertificates").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeSslCertificates) List(opts v1.ListOptions) (result *v1alpha1.Com
 	}
 	result = &v1alpha1.ComputeSslCertificateList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computesslcertificates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeSslCertificates) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computesslcertificates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeSslCertificates) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *computeSslCertificates) Create(computeSslCertificate *v1alpha1.ComputeSslCertificate) (result *v1alpha1.ComputeSslCertificate, err error) {
 	result = &v1alpha1.ComputeSslCertificate{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computesslcertificates").
 		Body(computeSslCertificate).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeSslCertificates) Create(computeSslCertificate *v1alpha1.ComputeS
 func (c *computeSslCertificates) Update(computeSslCertificate *v1alpha1.ComputeSslCertificate) (result *v1alpha1.ComputeSslCertificate, err error) {
 	result = &v1alpha1.ComputeSslCertificate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computesslcertificates").
 		Name(computeSslCertificate.Name).
 		Body(computeSslCertificate).
@@ -132,6 +139,7 @@ func (c *computeSslCertificates) Update(computeSslCertificate *v1alpha1.ComputeS
 func (c *computeSslCertificates) UpdateStatus(computeSslCertificate *v1alpha1.ComputeSslCertificate) (result *v1alpha1.ComputeSslCertificate, err error) {
 	result = &v1alpha1.ComputeSslCertificate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computesslcertificates").
 		Name(computeSslCertificate.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeSslCertificates) UpdateStatus(computeSslCertificate *v1alpha1.Co
 // Delete takes name of the computeSslCertificate and deletes it. Returns an error if one occurs.
 func (c *computeSslCertificates) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computesslcertificates").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeSslCertificates) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computesslcertificates").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeSslCertificates) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *computeSslCertificates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeSslCertificate, err error) {
 	result = &v1alpha1.ComputeSslCertificate{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computesslcertificates").
 		SubResource(subresources...).
 		Name(name).

@@ -31,6 +31,7 @@ import (
 // FakeS3BucketPolicies implements S3BucketPolicyInterface
 type FakeS3BucketPolicies struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var s3bucketpoliciesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "s3bucketpolicies"}
@@ -40,7 +41,8 @@ var s3bucketpoliciesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ve
 // Get takes name of the s3BucketPolicy, and returns the corresponding s3BucketPolicy object, and an error if there is any.
 func (c *FakeS3BucketPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.S3BucketPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(s3bucketpoliciesResource, name), &v1alpha1.S3BucketPolicy{})
+		Invokes(testing.NewGetAction(s3bucketpoliciesResource, c.ns, name), &v1alpha1.S3BucketPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeS3BucketPolicies) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of S3BucketPolicies that match those selectors.
 func (c *FakeS3BucketPolicies) List(opts v1.ListOptions) (result *v1alpha1.S3BucketPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(s3bucketpoliciesResource, s3bucketpoliciesKind, opts), &v1alpha1.S3BucketPolicyList{})
+		Invokes(testing.NewListAction(s3bucketpoliciesResource, s3bucketpoliciesKind, c.ns, opts), &v1alpha1.S3BucketPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeS3BucketPolicies) List(opts v1.ListOptions) (result *v1alpha1.S3Buc
 // Watch returns a watch.Interface that watches the requested s3BucketPolicies.
 func (c *FakeS3BucketPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(s3bucketpoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(s3bucketpoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a s3BucketPolicy and creates it.  Returns the server's representation of the s3BucketPolicy, and an error, if there is any.
 func (c *FakeS3BucketPolicies) Create(s3BucketPolicy *v1alpha1.S3BucketPolicy) (result *v1alpha1.S3BucketPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(s3bucketpoliciesResource, s3BucketPolicy), &v1alpha1.S3BucketPolicy{})
+		Invokes(testing.NewCreateAction(s3bucketpoliciesResource, c.ns, s3BucketPolicy), &v1alpha1.S3BucketPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeS3BucketPolicies) Create(s3BucketPolicy *v1alpha1.S3BucketPolicy) (
 // Update takes the representation of a s3BucketPolicy and updates it. Returns the server's representation of the s3BucketPolicy, and an error, if there is any.
 func (c *FakeS3BucketPolicies) Update(s3BucketPolicy *v1alpha1.S3BucketPolicy) (result *v1alpha1.S3BucketPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(s3bucketpoliciesResource, s3BucketPolicy), &v1alpha1.S3BucketPolicy{})
+		Invokes(testing.NewUpdateAction(s3bucketpoliciesResource, c.ns, s3BucketPolicy), &v1alpha1.S3BucketPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeS3BucketPolicies) Update(s3BucketPolicy *v1alpha1.S3BucketPolicy) (
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeS3BucketPolicies) UpdateStatus(s3BucketPolicy *v1alpha1.S3BucketPolicy) (*v1alpha1.S3BucketPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(s3bucketpoliciesResource, "status", s3BucketPolicy), &v1alpha1.S3BucketPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(s3bucketpoliciesResource, "status", c.ns, s3BucketPolicy), &v1alpha1.S3BucketPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeS3BucketPolicies) UpdateStatus(s3BucketPolicy *v1alpha1.S3BucketPol
 // Delete takes name of the s3BucketPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeS3BucketPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(s3bucketpoliciesResource, name), &v1alpha1.S3BucketPolicy{})
+		Invokes(testing.NewDeleteAction(s3bucketpoliciesResource, c.ns, name), &v1alpha1.S3BucketPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeS3BucketPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(s3bucketpoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(s3bucketpoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.S3BucketPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeS3BucketPolicies) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched s3BucketPolicy.
 func (c *FakeS3BucketPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.S3BucketPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(s3bucketpoliciesResource, name, pt, data, subresources...), &v1alpha1.S3BucketPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(s3bucketpoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.S3BucketPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

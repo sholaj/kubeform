@@ -32,7 +32,7 @@ import (
 // EcrRepositoriesGetter has a method to return a EcrRepositoryInterface.
 // A group's client should implement this interface.
 type EcrRepositoriesGetter interface {
-	EcrRepositories() EcrRepositoryInterface
+	EcrRepositories(namespace string) EcrRepositoryInterface
 }
 
 // EcrRepositoryInterface has methods to work with EcrRepository resources.
@@ -52,12 +52,14 @@ type EcrRepositoryInterface interface {
 // ecrRepositories implements EcrRepositoryInterface
 type ecrRepositories struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEcrRepositories returns a EcrRepositories
-func newEcrRepositories(c *AwsV1alpha1Client) *ecrRepositories {
+func newEcrRepositories(c *AwsV1alpha1Client, namespace string) *ecrRepositories {
 	return &ecrRepositories{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEcrRepositories(c *AwsV1alpha1Client) *ecrRepositories {
 func (c *ecrRepositories) Get(name string, options v1.GetOptions) (result *v1alpha1.EcrRepository, err error) {
 	result = &v1alpha1.EcrRepository{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ecrrepositories").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ecrRepositories) List(opts v1.ListOptions) (result *v1alpha1.EcrReposit
 	}
 	result = &v1alpha1.EcrRepositoryList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ecrrepositories").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ecrRepositories) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ecrrepositories").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ecrRepositories) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *ecrRepositories) Create(ecrRepository *v1alpha1.EcrRepository) (result *v1alpha1.EcrRepository, err error) {
 	result = &v1alpha1.EcrRepository{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ecrrepositories").
 		Body(ecrRepository).
 		Do().
@@ -118,6 +124,7 @@ func (c *ecrRepositories) Create(ecrRepository *v1alpha1.EcrRepository) (result 
 func (c *ecrRepositories) Update(ecrRepository *v1alpha1.EcrRepository) (result *v1alpha1.EcrRepository, err error) {
 	result = &v1alpha1.EcrRepository{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ecrrepositories").
 		Name(ecrRepository.Name).
 		Body(ecrRepository).
@@ -132,6 +139,7 @@ func (c *ecrRepositories) Update(ecrRepository *v1alpha1.EcrRepository) (result 
 func (c *ecrRepositories) UpdateStatus(ecrRepository *v1alpha1.EcrRepository) (result *v1alpha1.EcrRepository, err error) {
 	result = &v1alpha1.EcrRepository{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ecrrepositories").
 		Name(ecrRepository.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ecrRepositories) UpdateStatus(ecrRepository *v1alpha1.EcrRepository) (r
 // Delete takes name of the ecrRepository and deletes it. Returns an error if one occurs.
 func (c *ecrRepositories) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ecrrepositories").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ecrRepositories) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ecrrepositories").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ecrRepositories) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *ecrRepositories) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EcrRepository, err error) {
 	result = &v1alpha1.EcrRepository{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ecrrepositories").
 		SubResource(subresources...).
 		Name(name).

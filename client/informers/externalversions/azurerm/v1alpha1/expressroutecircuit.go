@@ -41,32 +41,33 @@ type ExpressRouteCircuitInformer interface {
 type expressRouteCircuitInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewExpressRouteCircuitInformer constructs a new informer for ExpressRouteCircuit type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewExpressRouteCircuitInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredExpressRouteCircuitInformer(client, resyncPeriod, indexers, nil)
+func NewExpressRouteCircuitInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredExpressRouteCircuitInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredExpressRouteCircuitInformer constructs a new informer for ExpressRouteCircuit type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredExpressRouteCircuitInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredExpressRouteCircuitInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ExpressRouteCircuits().List(options)
+				return client.AzurermV1alpha1().ExpressRouteCircuits(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ExpressRouteCircuits().Watch(options)
+				return client.AzurermV1alpha1().ExpressRouteCircuits(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.ExpressRouteCircuit{},
@@ -76,7 +77,7 @@ func NewFilteredExpressRouteCircuitInformer(client versioned.Interface, resyncPe
 }
 
 func (f *expressRouteCircuitInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredExpressRouteCircuitInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredExpressRouteCircuitInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *expressRouteCircuitInformer) Informer() cache.SharedIndexInformer {

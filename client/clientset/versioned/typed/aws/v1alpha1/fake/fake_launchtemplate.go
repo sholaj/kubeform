@@ -31,6 +31,7 @@ import (
 // FakeLaunchTemplates implements LaunchTemplateInterface
 type FakeLaunchTemplates struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var launchtemplatesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "launchtemplates"}
@@ -40,7 +41,8 @@ var launchtemplatesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ver
 // Get takes name of the launchTemplate, and returns the corresponding launchTemplate object, and an error if there is any.
 func (c *FakeLaunchTemplates) Get(name string, options v1.GetOptions) (result *v1alpha1.LaunchTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(launchtemplatesResource, name), &v1alpha1.LaunchTemplate{})
+		Invokes(testing.NewGetAction(launchtemplatesResource, c.ns, name), &v1alpha1.LaunchTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLaunchTemplates) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of LaunchTemplates that match those selectors.
 func (c *FakeLaunchTemplates) List(opts v1.ListOptions) (result *v1alpha1.LaunchTemplateList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(launchtemplatesResource, launchtemplatesKind, opts), &v1alpha1.LaunchTemplateList{})
+		Invokes(testing.NewListAction(launchtemplatesResource, launchtemplatesKind, c.ns, opts), &v1alpha1.LaunchTemplateList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLaunchTemplates) List(opts v1.ListOptions) (result *v1alpha1.Launch
 // Watch returns a watch.Interface that watches the requested launchTemplates.
 func (c *FakeLaunchTemplates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(launchtemplatesResource, opts))
+		InvokesWatch(testing.NewWatchAction(launchtemplatesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a launchTemplate and creates it.  Returns the server's representation of the launchTemplate, and an error, if there is any.
 func (c *FakeLaunchTemplates) Create(launchTemplate *v1alpha1.LaunchTemplate) (result *v1alpha1.LaunchTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(launchtemplatesResource, launchTemplate), &v1alpha1.LaunchTemplate{})
+		Invokes(testing.NewCreateAction(launchtemplatesResource, c.ns, launchTemplate), &v1alpha1.LaunchTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLaunchTemplates) Create(launchTemplate *v1alpha1.LaunchTemplate) (r
 // Update takes the representation of a launchTemplate and updates it. Returns the server's representation of the launchTemplate, and an error, if there is any.
 func (c *FakeLaunchTemplates) Update(launchTemplate *v1alpha1.LaunchTemplate) (result *v1alpha1.LaunchTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(launchtemplatesResource, launchTemplate), &v1alpha1.LaunchTemplate{})
+		Invokes(testing.NewUpdateAction(launchtemplatesResource, c.ns, launchTemplate), &v1alpha1.LaunchTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLaunchTemplates) Update(launchTemplate *v1alpha1.LaunchTemplate) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLaunchTemplates) UpdateStatus(launchTemplate *v1alpha1.LaunchTemplate) (*v1alpha1.LaunchTemplate, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(launchtemplatesResource, "status", launchTemplate), &v1alpha1.LaunchTemplate{})
+		Invokes(testing.NewUpdateSubresourceAction(launchtemplatesResource, "status", c.ns, launchTemplate), &v1alpha1.LaunchTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLaunchTemplates) UpdateStatus(launchTemplate *v1alpha1.LaunchTempla
 // Delete takes name of the launchTemplate and deletes it. Returns an error if one occurs.
 func (c *FakeLaunchTemplates) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(launchtemplatesResource, name), &v1alpha1.LaunchTemplate{})
+		Invokes(testing.NewDeleteAction(launchtemplatesResource, c.ns, name), &v1alpha1.LaunchTemplate{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLaunchTemplates) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(launchtemplatesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(launchtemplatesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LaunchTemplateList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLaunchTemplates) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched launchTemplate.
 func (c *FakeLaunchTemplates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LaunchTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(launchtemplatesResource, name, pt, data, subresources...), &v1alpha1.LaunchTemplate{})
+		Invokes(testing.NewPatchSubresourceAction(launchtemplatesResource, c.ns, name, pt, data, subresources...), &v1alpha1.LaunchTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}

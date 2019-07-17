@@ -32,7 +32,7 @@ import (
 // DataprocJobsGetter has a method to return a DataprocJobInterface.
 // A group's client should implement this interface.
 type DataprocJobsGetter interface {
-	DataprocJobs() DataprocJobInterface
+	DataprocJobs(namespace string) DataprocJobInterface
 }
 
 // DataprocJobInterface has methods to work with DataprocJob resources.
@@ -52,12 +52,14 @@ type DataprocJobInterface interface {
 // dataprocJobs implements DataprocJobInterface
 type dataprocJobs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDataprocJobs returns a DataprocJobs
-func newDataprocJobs(c *GoogleV1alpha1Client) *dataprocJobs {
+func newDataprocJobs(c *GoogleV1alpha1Client, namespace string) *dataprocJobs {
 	return &dataprocJobs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDataprocJobs(c *GoogleV1alpha1Client) *dataprocJobs {
 func (c *dataprocJobs) Get(name string, options v1.GetOptions) (result *v1alpha1.DataprocJob, err error) {
 	result = &v1alpha1.DataprocJob{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dataprocjobs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dataprocJobs) List(opts v1.ListOptions) (result *v1alpha1.DataprocJobLi
 	}
 	result = &v1alpha1.DataprocJobList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dataprocjobs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dataprocJobs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dataprocjobs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dataprocJobs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dataprocJobs) Create(dataprocJob *v1alpha1.DataprocJob) (result *v1alpha1.DataprocJob, err error) {
 	result = &v1alpha1.DataprocJob{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dataprocjobs").
 		Body(dataprocJob).
 		Do().
@@ -118,6 +124,7 @@ func (c *dataprocJobs) Create(dataprocJob *v1alpha1.DataprocJob) (result *v1alph
 func (c *dataprocJobs) Update(dataprocJob *v1alpha1.DataprocJob) (result *v1alpha1.DataprocJob, err error) {
 	result = &v1alpha1.DataprocJob{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dataprocjobs").
 		Name(dataprocJob.Name).
 		Body(dataprocJob).
@@ -132,6 +139,7 @@ func (c *dataprocJobs) Update(dataprocJob *v1alpha1.DataprocJob) (result *v1alph
 func (c *dataprocJobs) UpdateStatus(dataprocJob *v1alpha1.DataprocJob) (result *v1alpha1.DataprocJob, err error) {
 	result = &v1alpha1.DataprocJob{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dataprocjobs").
 		Name(dataprocJob.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dataprocJobs) UpdateStatus(dataprocJob *v1alpha1.DataprocJob) (result *
 // Delete takes name of the dataprocJob and deletes it. Returns an error if one occurs.
 func (c *dataprocJobs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dataprocjobs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dataprocJobs) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dataprocjobs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dataprocJobs) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *dataprocJobs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataprocJob, err error) {
 	result = &v1alpha1.DataprocJob{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dataprocjobs").
 		SubResource(subresources...).
 		Name(name).

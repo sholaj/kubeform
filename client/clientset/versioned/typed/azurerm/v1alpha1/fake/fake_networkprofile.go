@@ -31,6 +31,7 @@ import (
 // FakeNetworkProfiles implements NetworkProfileInterface
 type FakeNetworkProfiles struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var networkprofilesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "networkprofiles"}
@@ -40,7 +41,8 @@ var networkprofilesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com",
 // Get takes name of the networkProfile, and returns the corresponding networkProfile object, and an error if there is any.
 func (c *FakeNetworkProfiles) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(networkprofilesResource, name), &v1alpha1.NetworkProfile{})
+		Invokes(testing.NewGetAction(networkprofilesResource, c.ns, name), &v1alpha1.NetworkProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeNetworkProfiles) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of NetworkProfiles that match those selectors.
 func (c *FakeNetworkProfiles) List(opts v1.ListOptions) (result *v1alpha1.NetworkProfileList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(networkprofilesResource, networkprofilesKind, opts), &v1alpha1.NetworkProfileList{})
+		Invokes(testing.NewListAction(networkprofilesResource, networkprofilesKind, c.ns, opts), &v1alpha1.NetworkProfileList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeNetworkProfiles) List(opts v1.ListOptions) (result *v1alpha1.Networ
 // Watch returns a watch.Interface that watches the requested networkProfiles.
 func (c *FakeNetworkProfiles) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(networkprofilesResource, opts))
+		InvokesWatch(testing.NewWatchAction(networkprofilesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a networkProfile and creates it.  Returns the server's representation of the networkProfile, and an error, if there is any.
 func (c *FakeNetworkProfiles) Create(networkProfile *v1alpha1.NetworkProfile) (result *v1alpha1.NetworkProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(networkprofilesResource, networkProfile), &v1alpha1.NetworkProfile{})
+		Invokes(testing.NewCreateAction(networkprofilesResource, c.ns, networkProfile), &v1alpha1.NetworkProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeNetworkProfiles) Create(networkProfile *v1alpha1.NetworkProfile) (r
 // Update takes the representation of a networkProfile and updates it. Returns the server's representation of the networkProfile, and an error, if there is any.
 func (c *FakeNetworkProfiles) Update(networkProfile *v1alpha1.NetworkProfile) (result *v1alpha1.NetworkProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(networkprofilesResource, networkProfile), &v1alpha1.NetworkProfile{})
+		Invokes(testing.NewUpdateAction(networkprofilesResource, c.ns, networkProfile), &v1alpha1.NetworkProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeNetworkProfiles) Update(networkProfile *v1alpha1.NetworkProfile) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNetworkProfiles) UpdateStatus(networkProfile *v1alpha1.NetworkProfile) (*v1alpha1.NetworkProfile, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(networkprofilesResource, "status", networkProfile), &v1alpha1.NetworkProfile{})
+		Invokes(testing.NewUpdateSubresourceAction(networkprofilesResource, "status", c.ns, networkProfile), &v1alpha1.NetworkProfile{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeNetworkProfiles) UpdateStatus(networkProfile *v1alpha1.NetworkProfi
 // Delete takes name of the networkProfile and deletes it. Returns an error if one occurs.
 func (c *FakeNetworkProfiles) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(networkprofilesResource, name), &v1alpha1.NetworkProfile{})
+		Invokes(testing.NewDeleteAction(networkprofilesResource, c.ns, name), &v1alpha1.NetworkProfile{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNetworkProfiles) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(networkprofilesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(networkprofilesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NetworkProfileList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeNetworkProfiles) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched networkProfile.
 func (c *FakeNetworkProfiles) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkProfile, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(networkprofilesResource, name, pt, data, subresources...), &v1alpha1.NetworkProfile{})
+		Invokes(testing.NewPatchSubresourceAction(networkprofilesResource, c.ns, name, pt, data, subresources...), &v1alpha1.NetworkProfile{})
+
 	if obj == nil {
 		return nil, err
 	}

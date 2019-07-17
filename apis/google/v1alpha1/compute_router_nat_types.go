@@ -1,72 +1,75 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type ComputeRouterNat struct {
+type ComputeRouterNAT struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              ComputeRouterNatSpec   `json:"spec,omitempty"`
-	Status            ComputeRouterNatStatus `json:"status,omitempty"`
+	Spec              ComputeRouterNATSpec   `json:"spec,omitempty"`
+	Status            ComputeRouterNATStatus `json:"status,omitempty"`
 }
 
-type ComputeRouterNatSpecSubnetwork struct {
-	Name string `json:"name"`
+type ComputeRouterNATSpecSubnetwork struct {
+	Name string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SecondaryIpRangeNames []string `json:"secondary_ip_range_names,omitempty"`
+	SecondaryIPRangeNames []string `json:"secondaryIPRangeNames,omitempty" tf:"secondary_ip_range_names,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SourceIpRangesToNat []string `json:"source_ip_ranges_to_nat,omitempty"`
+	SourceIPRangesToNAT []string `json:"sourceIPRangesToNAT,omitempty" tf:"source_ip_ranges_to_nat,omitempty"`
 }
 
-type ComputeRouterNatSpec struct {
+type ComputeRouterNATSpec struct {
 	// +optional
-	IcmpIdleTimeoutSec int `json:"icmp_idle_timeout_sec,omitempty"`
+	IcmpIdleTimeoutSec int `json:"icmpIdleTimeoutSec,omitempty" tf:"icmp_idle_timeout_sec,omitempty"`
 	// +optional
-	MinPortsPerVm       int    `json:"min_ports_per_vm,omitempty"`
-	Name                string `json:"name"`
-	NatIpAllocateOption string `json:"nat_ip_allocate_option"`
-	// +optional
-	// +kubebuilder:validation:UniqueItems=true
-	NatIps []string `json:"nat_ips,omitempty"`
-	Router string   `json:"router"`
-	// +optional
-	SourceSubnetworkIpRangesToNat string `json:"source_subnetwork_ip_ranges_to_nat,omitempty"`
+	MinPortsPerVm       int    `json:"minPortsPerVm,omitempty" tf:"min_ports_per_vm,omitempty"`
+	Name                string `json:"name" tf:"name"`
+	NatIPAllocateOption string `json:"natIPAllocateOption" tf:"nat_ip_allocate_option"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Subnetwork *[]ComputeRouterNatSpec `json:"subnetwork,omitempty"`
+	NatIPS []string `json:"natIPS,omitempty" tf:"nat_ips,omitempty"`
+	Router string   `json:"router" tf:"router"`
 	// +optional
-	TcpEstablishedIdleTimeoutSec int `json:"tcp_established_idle_timeout_sec,omitempty"`
+	SourceSubnetworkIPRangesToNAT string `json:"sourceSubnetworkIPRangesToNAT,omitempty" tf:"source_subnetwork_ip_ranges_to_nat,omitempty"`
 	// +optional
-	TcpTransitoryIdleTimeoutSec int `json:"tcp_transitory_idle_timeout_sec,omitempty"`
+	// +kubebuilder:validation:UniqueItems=true
+	Subnetwork []ComputeRouterNATSpecSubnetwork `json:"subnetwork,omitempty" tf:"subnetwork,omitempty"`
 	// +optional
-	UdpIdleTimeoutSec int `json:"udp_idle_timeout_sec,omitempty"`
+	TcpEstablishedIdleTimeoutSec int `json:"tcpEstablishedIdleTimeoutSec,omitempty" tf:"tcp_established_idle_timeout_sec,omitempty"`
+	// +optional
+	TcpTransitoryIdleTimeoutSec int `json:"tcpTransitoryIdleTimeoutSec,omitempty" tf:"tcp_transitory_idle_timeout_sec,omitempty"`
+	// +optional
+	UdpIdleTimeoutSec int                       `json:"udpIdleTimeoutSec,omitempty" tf:"udp_idle_timeout_sec,omitempty"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
-type ComputeRouterNatStatus struct {
+type ComputeRouterNATStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// ComputeRouterNatList is a list of ComputeRouterNats
-type ComputeRouterNatList struct {
+// ComputeRouterNATList is a list of ComputeRouterNATs
+type ComputeRouterNATList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of ComputeRouterNat CRD objects
-	Items []ComputeRouterNat `json:"items,omitempty"`
+	// Items is a list of ComputeRouterNAT CRD objects
+	Items []ComputeRouterNAT `json:"items,omitempty"`
 }

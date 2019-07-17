@@ -31,6 +31,7 @@ import (
 // FakeDocdbClusterInstances implements DocdbClusterInstanceInterface
 type FakeDocdbClusterInstances struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var docdbclusterinstancesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "docdbclusterinstances"}
@@ -40,7 +41,8 @@ var docdbclusterinstancesKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the docdbClusterInstance, and returns the corresponding docdbClusterInstance object, and an error if there is any.
 func (c *FakeDocdbClusterInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.DocdbClusterInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(docdbclusterinstancesResource, name), &v1alpha1.DocdbClusterInstance{})
+		Invokes(testing.NewGetAction(docdbclusterinstancesResource, c.ns, name), &v1alpha1.DocdbClusterInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDocdbClusterInstances) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of DocdbClusterInstances that match those selectors.
 func (c *FakeDocdbClusterInstances) List(opts v1.ListOptions) (result *v1alpha1.DocdbClusterInstanceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(docdbclusterinstancesResource, docdbclusterinstancesKind, opts), &v1alpha1.DocdbClusterInstanceList{})
+		Invokes(testing.NewListAction(docdbclusterinstancesResource, docdbclusterinstancesKind, c.ns, opts), &v1alpha1.DocdbClusterInstanceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDocdbClusterInstances) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested docdbClusterInstances.
 func (c *FakeDocdbClusterInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(docdbclusterinstancesResource, opts))
+		InvokesWatch(testing.NewWatchAction(docdbclusterinstancesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a docdbClusterInstance and creates it.  Returns the server's representation of the docdbClusterInstance, and an error, if there is any.
 func (c *FakeDocdbClusterInstances) Create(docdbClusterInstance *v1alpha1.DocdbClusterInstance) (result *v1alpha1.DocdbClusterInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(docdbclusterinstancesResource, docdbClusterInstance), &v1alpha1.DocdbClusterInstance{})
+		Invokes(testing.NewCreateAction(docdbclusterinstancesResource, c.ns, docdbClusterInstance), &v1alpha1.DocdbClusterInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDocdbClusterInstances) Create(docdbClusterInstance *v1alpha1.DocdbC
 // Update takes the representation of a docdbClusterInstance and updates it. Returns the server's representation of the docdbClusterInstance, and an error, if there is any.
 func (c *FakeDocdbClusterInstances) Update(docdbClusterInstance *v1alpha1.DocdbClusterInstance) (result *v1alpha1.DocdbClusterInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(docdbclusterinstancesResource, docdbClusterInstance), &v1alpha1.DocdbClusterInstance{})
+		Invokes(testing.NewUpdateAction(docdbclusterinstancesResource, c.ns, docdbClusterInstance), &v1alpha1.DocdbClusterInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDocdbClusterInstances) Update(docdbClusterInstance *v1alpha1.DocdbC
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDocdbClusterInstances) UpdateStatus(docdbClusterInstance *v1alpha1.DocdbClusterInstance) (*v1alpha1.DocdbClusterInstance, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(docdbclusterinstancesResource, "status", docdbClusterInstance), &v1alpha1.DocdbClusterInstance{})
+		Invokes(testing.NewUpdateSubresourceAction(docdbclusterinstancesResource, "status", c.ns, docdbClusterInstance), &v1alpha1.DocdbClusterInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDocdbClusterInstances) UpdateStatus(docdbClusterInstance *v1alpha1.
 // Delete takes name of the docdbClusterInstance and deletes it. Returns an error if one occurs.
 func (c *FakeDocdbClusterInstances) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(docdbclusterinstancesResource, name), &v1alpha1.DocdbClusterInstance{})
+		Invokes(testing.NewDeleteAction(docdbclusterinstancesResource, c.ns, name), &v1alpha1.DocdbClusterInstance{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDocdbClusterInstances) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(docdbclusterinstancesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(docdbclusterinstancesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DocdbClusterInstanceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDocdbClusterInstances) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched docdbClusterInstance.
 func (c *FakeDocdbClusterInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DocdbClusterInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(docdbclusterinstancesResource, name, pt, data, subresources...), &v1alpha1.DocdbClusterInstance{})
+		Invokes(testing.NewPatchSubresourceAction(docdbclusterinstancesResource, c.ns, name, pt, data, subresources...), &v1alpha1.DocdbClusterInstance{})
+
 	if obj == nil {
 		return nil, err
 	}

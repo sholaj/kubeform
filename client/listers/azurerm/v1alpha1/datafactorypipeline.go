@@ -29,8 +29,8 @@ import (
 type DataFactoryPipelineLister interface {
 	// List lists all DataFactoryPipelines in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DataFactoryPipeline, err error)
-	// Get retrieves the DataFactoryPipeline from the index for a given name.
-	Get(name string) (*v1alpha1.DataFactoryPipeline, error)
+	// DataFactoryPipelines returns an object that can list and get DataFactoryPipelines.
+	DataFactoryPipelines(namespace string) DataFactoryPipelineNamespaceLister
 	DataFactoryPipelineListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dataFactoryPipelineLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the DataFactoryPipeline from the index for a given name.
-func (s *dataFactoryPipelineLister) Get(name string) (*v1alpha1.DataFactoryPipeline, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DataFactoryPipelines returns an object that can list and get DataFactoryPipelines.
+func (s *dataFactoryPipelineLister) DataFactoryPipelines(namespace string) DataFactoryPipelineNamespaceLister {
+	return dataFactoryPipelineNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DataFactoryPipelineNamespaceLister helps list and get DataFactoryPipelines.
+type DataFactoryPipelineNamespaceLister interface {
+	// List lists all DataFactoryPipelines in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DataFactoryPipeline, err error)
+	// Get retrieves the DataFactoryPipeline from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DataFactoryPipeline, error)
+	DataFactoryPipelineNamespaceListerExpansion
+}
+
+// dataFactoryPipelineNamespaceLister implements the DataFactoryPipelineNamespaceLister
+// interface.
+type dataFactoryPipelineNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DataFactoryPipelines in the indexer for a given namespace.
+func (s dataFactoryPipelineNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DataFactoryPipeline, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DataFactoryPipeline))
+	})
+	return ret, err
+}
+
+// Get retrieves the DataFactoryPipeline from the indexer for a given namespace and name.
+func (s dataFactoryPipelineNamespaceLister) Get(name string) (*v1alpha1.DataFactoryPipeline, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

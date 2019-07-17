@@ -29,8 +29,8 @@ import (
 type TokenLister interface {
 	// List lists all Tokens in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Token, err error)
-	// Get retrieves the Token from the index for a given name.
-	Get(name string) (*v1alpha1.Token, error)
+	// Tokens returns an object that can list and get Tokens.
+	Tokens(namespace string) TokenNamespaceLister
 	TokenListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *tokenLister) List(selector labels.Selector) (ret []*v1alpha1.Token, err
 	return ret, err
 }
 
-// Get retrieves the Token from the index for a given name.
-func (s *tokenLister) Get(name string) (*v1alpha1.Token, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Tokens returns an object that can list and get Tokens.
+func (s *tokenLister) Tokens(namespace string) TokenNamespaceLister {
+	return tokenNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// TokenNamespaceLister helps list and get Tokens.
+type TokenNamespaceLister interface {
+	// List lists all Tokens in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Token, err error)
+	// Get retrieves the Token from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Token, error)
+	TokenNamespaceListerExpansion
+}
+
+// tokenNamespaceLister implements the TokenNamespaceLister
+// interface.
+type tokenNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Tokens in the indexer for a given namespace.
+func (s tokenNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Token, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Token))
+	})
+	return ret, err
+}
+
+// Get retrieves the Token from the indexer for a given namespace and name.
+func (s tokenNamespaceLister) Get(name string) (*v1alpha1.Token, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // SnsPlatformApplicationsGetter has a method to return a SnsPlatformApplicationInterface.
 // A group's client should implement this interface.
 type SnsPlatformApplicationsGetter interface {
-	SnsPlatformApplications() SnsPlatformApplicationInterface
+	SnsPlatformApplications(namespace string) SnsPlatformApplicationInterface
 }
 
 // SnsPlatformApplicationInterface has methods to work with SnsPlatformApplication resources.
@@ -52,12 +52,14 @@ type SnsPlatformApplicationInterface interface {
 // snsPlatformApplications implements SnsPlatformApplicationInterface
 type snsPlatformApplications struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSnsPlatformApplications returns a SnsPlatformApplications
-func newSnsPlatformApplications(c *AwsV1alpha1Client) *snsPlatformApplications {
+func newSnsPlatformApplications(c *AwsV1alpha1Client, namespace string) *snsPlatformApplications {
 	return &snsPlatformApplications{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSnsPlatformApplications(c *AwsV1alpha1Client) *snsPlatformApplications {
 func (c *snsPlatformApplications) Get(name string, options v1.GetOptions) (result *v1alpha1.SnsPlatformApplication, err error) {
 	result = &v1alpha1.SnsPlatformApplication{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("snsplatformapplications").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *snsPlatformApplications) List(opts v1.ListOptions) (result *v1alpha1.Sn
 	}
 	result = &v1alpha1.SnsPlatformApplicationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("snsplatformapplications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *snsPlatformApplications) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("snsplatformapplications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *snsPlatformApplications) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *snsPlatformApplications) Create(snsPlatformApplication *v1alpha1.SnsPlatformApplication) (result *v1alpha1.SnsPlatformApplication, err error) {
 	result = &v1alpha1.SnsPlatformApplication{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("snsplatformapplications").
 		Body(snsPlatformApplication).
 		Do().
@@ -118,6 +124,7 @@ func (c *snsPlatformApplications) Create(snsPlatformApplication *v1alpha1.SnsPla
 func (c *snsPlatformApplications) Update(snsPlatformApplication *v1alpha1.SnsPlatformApplication) (result *v1alpha1.SnsPlatformApplication, err error) {
 	result = &v1alpha1.SnsPlatformApplication{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("snsplatformapplications").
 		Name(snsPlatformApplication.Name).
 		Body(snsPlatformApplication).
@@ -132,6 +139,7 @@ func (c *snsPlatformApplications) Update(snsPlatformApplication *v1alpha1.SnsPla
 func (c *snsPlatformApplications) UpdateStatus(snsPlatformApplication *v1alpha1.SnsPlatformApplication) (result *v1alpha1.SnsPlatformApplication, err error) {
 	result = &v1alpha1.SnsPlatformApplication{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("snsplatformapplications").
 		Name(snsPlatformApplication.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *snsPlatformApplications) UpdateStatus(snsPlatformApplication *v1alpha1.
 // Delete takes name of the snsPlatformApplication and deletes it. Returns an error if one occurs.
 func (c *snsPlatformApplications) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("snsplatformapplications").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *snsPlatformApplications) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("snsplatformapplications").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *snsPlatformApplications) DeleteCollection(options *v1.DeleteOptions, li
 func (c *snsPlatformApplications) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SnsPlatformApplication, err error) {
 	result = &v1alpha1.SnsPlatformApplication{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("snsplatformapplications").
 		SubResource(subresources...).
 		Name(name).

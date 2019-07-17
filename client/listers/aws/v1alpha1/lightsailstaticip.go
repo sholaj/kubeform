@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// LightsailStaticIpLister helps list LightsailStaticIps.
-type LightsailStaticIpLister interface {
-	// List lists all LightsailStaticIps in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.LightsailStaticIp, err error)
-	// Get retrieves the LightsailStaticIp from the index for a given name.
-	Get(name string) (*v1alpha1.LightsailStaticIp, error)
-	LightsailStaticIpListerExpansion
+// LightsailStaticIPLister helps list LightsailStaticIPs.
+type LightsailStaticIPLister interface {
+	// List lists all LightsailStaticIPs in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.LightsailStaticIP, err error)
+	// LightsailStaticIPs returns an object that can list and get LightsailStaticIPs.
+	LightsailStaticIPs(namespace string) LightsailStaticIPNamespaceLister
+	LightsailStaticIPListerExpansion
 }
 
-// lightsailStaticIpLister implements the LightsailStaticIpLister interface.
-type lightsailStaticIpLister struct {
+// lightsailStaticIPLister implements the LightsailStaticIPLister interface.
+type lightsailStaticIPLister struct {
 	indexer cache.Indexer
 }
 
-// NewLightsailStaticIpLister returns a new LightsailStaticIpLister.
-func NewLightsailStaticIpLister(indexer cache.Indexer) LightsailStaticIpLister {
-	return &lightsailStaticIpLister{indexer: indexer}
+// NewLightsailStaticIPLister returns a new LightsailStaticIPLister.
+func NewLightsailStaticIPLister(indexer cache.Indexer) LightsailStaticIPLister {
+	return &lightsailStaticIPLister{indexer: indexer}
 }
 
-// List lists all LightsailStaticIps in the indexer.
-func (s *lightsailStaticIpLister) List(selector labels.Selector) (ret []*v1alpha1.LightsailStaticIp, err error) {
+// List lists all LightsailStaticIPs in the indexer.
+func (s *lightsailStaticIPLister) List(selector labels.Selector) (ret []*v1alpha1.LightsailStaticIP, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.LightsailStaticIp))
+		ret = append(ret, m.(*v1alpha1.LightsailStaticIP))
 	})
 	return ret, err
 }
 
-// Get retrieves the LightsailStaticIp from the index for a given name.
-func (s *lightsailStaticIpLister) Get(name string) (*v1alpha1.LightsailStaticIp, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LightsailStaticIPs returns an object that can list and get LightsailStaticIPs.
+func (s *lightsailStaticIPLister) LightsailStaticIPs(namespace string) LightsailStaticIPNamespaceLister {
+	return lightsailStaticIPNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LightsailStaticIPNamespaceLister helps list and get LightsailStaticIPs.
+type LightsailStaticIPNamespaceLister interface {
+	// List lists all LightsailStaticIPs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LightsailStaticIP, err error)
+	// Get retrieves the LightsailStaticIP from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LightsailStaticIP, error)
+	LightsailStaticIPNamespaceListerExpansion
+}
+
+// lightsailStaticIPNamespaceLister implements the LightsailStaticIPNamespaceLister
+// interface.
+type lightsailStaticIPNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LightsailStaticIPs in the indexer for a given namespace.
+func (s lightsailStaticIPNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LightsailStaticIP, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LightsailStaticIP))
+	})
+	return ret, err
+}
+
+// Get retrieves the LightsailStaticIP from the indexer for a given namespace and name.
+func (s lightsailStaticIPNamespaceLister) Get(name string) (*v1alpha1.LightsailStaticIP, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("lightsailstaticip"), name)
 	}
-	return obj.(*v1alpha1.LightsailStaticIp), nil
+	return obj.(*v1alpha1.LightsailStaticIP), nil
 }

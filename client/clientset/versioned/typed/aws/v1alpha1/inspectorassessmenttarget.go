@@ -32,7 +32,7 @@ import (
 // InspectorAssessmentTargetsGetter has a method to return a InspectorAssessmentTargetInterface.
 // A group's client should implement this interface.
 type InspectorAssessmentTargetsGetter interface {
-	InspectorAssessmentTargets() InspectorAssessmentTargetInterface
+	InspectorAssessmentTargets(namespace string) InspectorAssessmentTargetInterface
 }
 
 // InspectorAssessmentTargetInterface has methods to work with InspectorAssessmentTarget resources.
@@ -52,12 +52,14 @@ type InspectorAssessmentTargetInterface interface {
 // inspectorAssessmentTargets implements InspectorAssessmentTargetInterface
 type inspectorAssessmentTargets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newInspectorAssessmentTargets returns a InspectorAssessmentTargets
-func newInspectorAssessmentTargets(c *AwsV1alpha1Client) *inspectorAssessmentTargets {
+func newInspectorAssessmentTargets(c *AwsV1alpha1Client, namespace string) *inspectorAssessmentTargets {
 	return &inspectorAssessmentTargets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newInspectorAssessmentTargets(c *AwsV1alpha1Client) *inspectorAssessmentTar
 func (c *inspectorAssessmentTargets) Get(name string, options v1.GetOptions) (result *v1alpha1.InspectorAssessmentTarget, err error) {
 	result = &v1alpha1.InspectorAssessmentTarget{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("inspectorassessmenttargets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *inspectorAssessmentTargets) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.InspectorAssessmentTargetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("inspectorassessmenttargets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *inspectorAssessmentTargets) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("inspectorassessmenttargets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *inspectorAssessmentTargets) Watch(opts v1.ListOptions) (watch.Interface
 func (c *inspectorAssessmentTargets) Create(inspectorAssessmentTarget *v1alpha1.InspectorAssessmentTarget) (result *v1alpha1.InspectorAssessmentTarget, err error) {
 	result = &v1alpha1.InspectorAssessmentTarget{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("inspectorassessmenttargets").
 		Body(inspectorAssessmentTarget).
 		Do().
@@ -118,6 +124,7 @@ func (c *inspectorAssessmentTargets) Create(inspectorAssessmentTarget *v1alpha1.
 func (c *inspectorAssessmentTargets) Update(inspectorAssessmentTarget *v1alpha1.InspectorAssessmentTarget) (result *v1alpha1.InspectorAssessmentTarget, err error) {
 	result = &v1alpha1.InspectorAssessmentTarget{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("inspectorassessmenttargets").
 		Name(inspectorAssessmentTarget.Name).
 		Body(inspectorAssessmentTarget).
@@ -132,6 +139,7 @@ func (c *inspectorAssessmentTargets) Update(inspectorAssessmentTarget *v1alpha1.
 func (c *inspectorAssessmentTargets) UpdateStatus(inspectorAssessmentTarget *v1alpha1.InspectorAssessmentTarget) (result *v1alpha1.InspectorAssessmentTarget, err error) {
 	result = &v1alpha1.InspectorAssessmentTarget{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("inspectorassessmenttargets").
 		Name(inspectorAssessmentTarget.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *inspectorAssessmentTargets) UpdateStatus(inspectorAssessmentTarget *v1a
 // Delete takes name of the inspectorAssessmentTarget and deletes it. Returns an error if one occurs.
 func (c *inspectorAssessmentTargets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("inspectorassessmenttargets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *inspectorAssessmentTargets) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("inspectorassessmenttargets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *inspectorAssessmentTargets) DeleteCollection(options *v1.DeleteOptions,
 func (c *inspectorAssessmentTargets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.InspectorAssessmentTarget, err error) {
 	result = &v1alpha1.InspectorAssessmentTarget{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("inspectorassessmenttargets").
 		SubResource(subresources...).
 		Name(name).

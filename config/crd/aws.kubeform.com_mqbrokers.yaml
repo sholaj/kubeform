@@ -397,27 +397,42 @@ spec:
           type: object
         spec:
           properties:
-            apply_immediately:
+            applyImmediately:
               type: boolean
-            auto_minor_version_upgrade:
+            autoMinorVersionUpgrade:
               type: boolean
-            broker_name:
+            brokerName:
               type: string
-            deployment_mode:
+            deploymentMode:
               type: string
-            engine_type:
+            engineType:
               type: string
-            engine_version:
+            engineVersion:
               type: string
-            host_instance_type:
+            hostInstanceType:
               type: string
             logs:
-              items: {}
+              items:
+                properties:
+                  audit:
+                    type: boolean
+                  general:
+                    type: boolean
+                type: object
               maxItems: 1
               type: array
-            publicly_accessible:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            publiclyAccessible:
               type: boolean
-            security_groups:
+            securityGroups:
               items:
                 type: string
               type: array
@@ -427,15 +442,32 @@ spec:
                 type: string
               type: object
             user:
-              items: {}
+              items:
+                properties:
+                  consoleAccess:
+                    type: boolean
+                  groups:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                  password:
+                    type: string
+                  username:
+                    type: string
+                required:
+                - password
+                - username
+                type: object
               type: array
               uniqueItems: true
           required:
-          - broker_name
-          - engine_type
-          - engine_version
-          - host_instance_type
-          - security_groups
+          - brokerName
+          - engineType
+          - engineVersion
+          - hostInstanceType
+          - providerRef
+          - securityGroups
           - user
           type: object
         status:
@@ -447,6 +479,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

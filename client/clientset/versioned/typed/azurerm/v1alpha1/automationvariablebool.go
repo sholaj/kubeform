@@ -32,7 +32,7 @@ import (
 // AutomationVariableBoolsGetter has a method to return a AutomationVariableBoolInterface.
 // A group's client should implement this interface.
 type AutomationVariableBoolsGetter interface {
-	AutomationVariableBools() AutomationVariableBoolInterface
+	AutomationVariableBools(namespace string) AutomationVariableBoolInterface
 }
 
 // AutomationVariableBoolInterface has methods to work with AutomationVariableBool resources.
@@ -52,12 +52,14 @@ type AutomationVariableBoolInterface interface {
 // automationVariableBools implements AutomationVariableBoolInterface
 type automationVariableBools struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAutomationVariableBools returns a AutomationVariableBools
-func newAutomationVariableBools(c *AzurermV1alpha1Client) *automationVariableBools {
+func newAutomationVariableBools(c *AzurermV1alpha1Client, namespace string) *automationVariableBools {
 	return &automationVariableBools{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAutomationVariableBools(c *AzurermV1alpha1Client) *automationVariableBoo
 func (c *automationVariableBools) Get(name string, options v1.GetOptions) (result *v1alpha1.AutomationVariableBool, err error) {
 	result = &v1alpha1.AutomationVariableBool{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("automationvariablebools").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *automationVariableBools) List(opts v1.ListOptions) (result *v1alpha1.Au
 	}
 	result = &v1alpha1.AutomationVariableBoolList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("automationvariablebools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *automationVariableBools) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("automationvariablebools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *automationVariableBools) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *automationVariableBools) Create(automationVariableBool *v1alpha1.AutomationVariableBool) (result *v1alpha1.AutomationVariableBool, err error) {
 	result = &v1alpha1.AutomationVariableBool{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("automationvariablebools").
 		Body(automationVariableBool).
 		Do().
@@ -118,6 +124,7 @@ func (c *automationVariableBools) Create(automationVariableBool *v1alpha1.Automa
 func (c *automationVariableBools) Update(automationVariableBool *v1alpha1.AutomationVariableBool) (result *v1alpha1.AutomationVariableBool, err error) {
 	result = &v1alpha1.AutomationVariableBool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("automationvariablebools").
 		Name(automationVariableBool.Name).
 		Body(automationVariableBool).
@@ -132,6 +139,7 @@ func (c *automationVariableBools) Update(automationVariableBool *v1alpha1.Automa
 func (c *automationVariableBools) UpdateStatus(automationVariableBool *v1alpha1.AutomationVariableBool) (result *v1alpha1.AutomationVariableBool, err error) {
 	result = &v1alpha1.AutomationVariableBool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("automationvariablebools").
 		Name(automationVariableBool.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *automationVariableBools) UpdateStatus(automationVariableBool *v1alpha1.
 // Delete takes name of the automationVariableBool and deletes it. Returns an error if one occurs.
 func (c *automationVariableBools) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("automationvariablebools").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *automationVariableBools) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("automationvariablebools").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *automationVariableBools) DeleteCollection(options *v1.DeleteOptions, li
 func (c *automationVariableBools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AutomationVariableBool, err error) {
 	result = &v1alpha1.AutomationVariableBool{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("automationvariablebools").
 		SubResource(subresources...).
 		Name(name).

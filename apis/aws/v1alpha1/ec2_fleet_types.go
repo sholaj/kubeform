@@ -3,12 +3,12 @@ package v1alpha1
 import (
 	"encoding/json"
 
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -22,84 +22,85 @@ type Ec2Fleet struct {
 
 type Ec2FleetSpecLaunchTemplateConfigLaunchTemplateSpecification struct {
 	// +optional
-	LaunchTemplateId string `json:"launch_template_id,omitempty"`
+	LaunchTemplateID string `json:"launchTemplateID,omitempty" tf:"launch_template_id,omitempty"`
 	// +optional
-	LaunchTemplateName string `json:"launch_template_name,omitempty"`
-	Version            string `json:"version"`
+	LaunchTemplateName string `json:"launchTemplateName,omitempty" tf:"launch_template_name,omitempty"`
+	Version            string `json:"version" tf:"version"`
 }
 
 type Ec2FleetSpecLaunchTemplateConfigOverride struct {
 	// +optional
-	AvailabilityZone string `json:"availability_zone,omitempty"`
+	AvailabilityZone string `json:"availabilityZone,omitempty" tf:"availability_zone,omitempty"`
 	// +optional
-	InstanceType string `json:"instance_type,omitempty"`
+	InstanceType string `json:"instanceType,omitempty" tf:"instance_type,omitempty"`
 	// +optional
-	MaxPrice string `json:"max_price,omitempty"`
+	MaxPrice string `json:"maxPrice,omitempty" tf:"max_price,omitempty"`
 	// +optional
-	Priority json.Number `json:"priority,omitempty"`
+	Priority json.Number `json:"priority,omitempty" tf:"priority,omitempty"`
 	// +optional
-	SubnetId string `json:"subnet_id,omitempty"`
+	SubnetID string `json:"subnetID,omitempty" tf:"subnet_id,omitempty"`
 	// +optional
-	WeightedCapacity json.Number `json:"weighted_capacity,omitempty"`
+	WeightedCapacity json.Number `json:"weightedCapacity,omitempty" tf:"weighted_capacity,omitempty"`
 }
 
 type Ec2FleetSpecLaunchTemplateConfig struct {
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	LaunchTemplateSpecification []Ec2FleetSpecLaunchTemplateConfig `json:"launch_template_specification"`
+	LaunchTemplateSpecification []Ec2FleetSpecLaunchTemplateConfigLaunchTemplateSpecification `json:"launchTemplateSpecification" tf:"launch_template_specification"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=50
-	Override *[]Ec2FleetSpecLaunchTemplateConfig `json:"override,omitempty"`
+	Override []Ec2FleetSpecLaunchTemplateConfigOverride `json:"override,omitempty" tf:"override,omitempty"`
 }
 
 type Ec2FleetSpecOnDemandOptions struct {
 	// +optional
-	AllocationStrategy string `json:"allocation_strategy,omitempty"`
+	AllocationStrategy string `json:"allocationStrategy,omitempty" tf:"allocation_strategy,omitempty"`
 }
 
 type Ec2FleetSpecSpotOptions struct {
 	// +optional
-	AllocationStrategy string `json:"allocation_strategy,omitempty"`
+	AllocationStrategy string `json:"allocationStrategy,omitempty" tf:"allocation_strategy,omitempty"`
 	// +optional
-	InstanceInterruptionBehavior string `json:"instance_interruption_behavior,omitempty"`
+	InstanceInterruptionBehavior string `json:"instanceInterruptionBehavior,omitempty" tf:"instance_interruption_behavior,omitempty"`
 	// +optional
-	InstancePoolsToUseCount int `json:"instance_pools_to_use_count,omitempty"`
+	InstancePoolsToUseCount int `json:"instancePoolsToUseCount,omitempty" tf:"instance_pools_to_use_count,omitempty"`
 }
 
 type Ec2FleetSpecTargetCapacitySpecification struct {
-	DefaultTargetCapacityType string `json:"default_target_capacity_type"`
+	DefaultTargetCapacityType string `json:"defaultTargetCapacityType" tf:"default_target_capacity_type"`
 	// +optional
-	OnDemandTargetCapacity int `json:"on_demand_target_capacity,omitempty"`
+	OnDemandTargetCapacity int `json:"onDemandTargetCapacity,omitempty" tf:"on_demand_target_capacity,omitempty"`
 	// +optional
-	SpotTargetCapacity  int `json:"spot_target_capacity,omitempty"`
-	TotalTargetCapacity int `json:"total_target_capacity"`
+	SpotTargetCapacity  int `json:"spotTargetCapacity,omitempty" tf:"spot_target_capacity,omitempty"`
+	TotalTargetCapacity int `json:"totalTargetCapacity" tf:"total_target_capacity"`
 }
 
 type Ec2FleetSpec struct {
 	// +optional
-	ExcessCapacityTerminationPolicy string `json:"excess_capacity_termination_policy,omitempty"`
+	ExcessCapacityTerminationPolicy string `json:"excessCapacityTerminationPolicy,omitempty" tf:"excess_capacity_termination_policy,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	LaunchTemplateConfig []Ec2FleetSpec `json:"launch_template_config"`
+	LaunchTemplateConfig []Ec2FleetSpecLaunchTemplateConfig `json:"launchTemplateConfig" tf:"launch_template_config"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	OnDemandOptions *[]Ec2FleetSpec `json:"on_demand_options,omitempty"`
+	OnDemandOptions []Ec2FleetSpecOnDemandOptions `json:"onDemandOptions,omitempty" tf:"on_demand_options,omitempty"`
 	// +optional
-	ReplaceUnhealthyInstances bool `json:"replace_unhealthy_instances,omitempty"`
+	ReplaceUnhealthyInstances bool `json:"replaceUnhealthyInstances,omitempty" tf:"replace_unhealthy_instances,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	SpotOptions *[]Ec2FleetSpec `json:"spot_options,omitempty"`
+	SpotOptions []Ec2FleetSpecSpotOptions `json:"spotOptions,omitempty" tf:"spot_options,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	TargetCapacitySpecification []Ec2FleetSpec `json:"target_capacity_specification"`
+	TargetCapacitySpecification []Ec2FleetSpecTargetCapacitySpecification `json:"targetCapacitySpecification" tf:"target_capacity_specification"`
 	// +optional
-	TerminateInstances bool `json:"terminate_instances,omitempty"`
+	TerminateInstances bool `json:"terminateInstances,omitempty" tf:"terminate_instances,omitempty"`
 	// +optional
-	TerminateInstancesWithExpiration bool `json:"terminate_instances_with_expiration,omitempty"`
+	TerminateInstancesWithExpiration bool `json:"terminateInstancesWithExpiration,omitempty" tf:"terminate_instances_with_expiration,omitempty"`
 	// +optional
-	Type string `json:"type,omitempty"`
+	Type        string                    `json:"type,omitempty" tf:"type,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type Ec2FleetStatus struct {
@@ -107,7 +108,9 @@ type Ec2FleetStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

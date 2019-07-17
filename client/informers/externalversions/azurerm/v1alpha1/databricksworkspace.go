@@ -41,32 +41,33 @@ type DatabricksWorkspaceInformer interface {
 type databricksWorkspaceInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDatabricksWorkspaceInformer constructs a new informer for DatabricksWorkspace type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDatabricksWorkspaceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDatabricksWorkspaceInformer(client, resyncPeriod, indexers, nil)
+func NewDatabricksWorkspaceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDatabricksWorkspaceInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDatabricksWorkspaceInformer constructs a new informer for DatabricksWorkspace type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDatabricksWorkspaceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDatabricksWorkspaceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DatabricksWorkspaces().List(options)
+				return client.AzurermV1alpha1().DatabricksWorkspaces(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DatabricksWorkspaces().Watch(options)
+				return client.AzurermV1alpha1().DatabricksWorkspaces(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.DatabricksWorkspace{},
@@ -76,7 +77,7 @@ func NewFilteredDatabricksWorkspaceInformer(client versioned.Interface, resyncPe
 }
 
 func (f *databricksWorkspaceInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDatabricksWorkspaceInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDatabricksWorkspaceInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *databricksWorkspaceInformer) Informer() cache.SharedIndexInformer {

@@ -32,7 +32,7 @@ import (
 // StoragegatewayCachedIscsiVolumesGetter has a method to return a StoragegatewayCachedIscsiVolumeInterface.
 // A group's client should implement this interface.
 type StoragegatewayCachedIscsiVolumesGetter interface {
-	StoragegatewayCachedIscsiVolumes() StoragegatewayCachedIscsiVolumeInterface
+	StoragegatewayCachedIscsiVolumes(namespace string) StoragegatewayCachedIscsiVolumeInterface
 }
 
 // StoragegatewayCachedIscsiVolumeInterface has methods to work with StoragegatewayCachedIscsiVolume resources.
@@ -52,12 +52,14 @@ type StoragegatewayCachedIscsiVolumeInterface interface {
 // storagegatewayCachedIscsiVolumes implements StoragegatewayCachedIscsiVolumeInterface
 type storagegatewayCachedIscsiVolumes struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStoragegatewayCachedIscsiVolumes returns a StoragegatewayCachedIscsiVolumes
-func newStoragegatewayCachedIscsiVolumes(c *AwsV1alpha1Client) *storagegatewayCachedIscsiVolumes {
+func newStoragegatewayCachedIscsiVolumes(c *AwsV1alpha1Client, namespace string) *storagegatewayCachedIscsiVolumes {
 	return &storagegatewayCachedIscsiVolumes{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStoragegatewayCachedIscsiVolumes(c *AwsV1alpha1Client) *storagegatewayCa
 func (c *storagegatewayCachedIscsiVolumes) Get(name string, options v1.GetOptions) (result *v1alpha1.StoragegatewayCachedIscsiVolume, err error) {
 	result = &v1alpha1.StoragegatewayCachedIscsiVolume{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagegatewaycachediscsivolumes").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *storagegatewayCachedIscsiVolumes) List(opts v1.ListOptions) (result *v1
 	}
 	result = &v1alpha1.StoragegatewayCachedIscsiVolumeList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagegatewaycachediscsivolumes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *storagegatewayCachedIscsiVolumes) Watch(opts v1.ListOptions) (watch.Int
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storagegatewaycachediscsivolumes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *storagegatewayCachedIscsiVolumes) Watch(opts v1.ListOptions) (watch.Int
 func (c *storagegatewayCachedIscsiVolumes) Create(storagegatewayCachedIscsiVolume *v1alpha1.StoragegatewayCachedIscsiVolume) (result *v1alpha1.StoragegatewayCachedIscsiVolume, err error) {
 	result = &v1alpha1.StoragegatewayCachedIscsiVolume{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storagegatewaycachediscsivolumes").
 		Body(storagegatewayCachedIscsiVolume).
 		Do().
@@ -118,6 +124,7 @@ func (c *storagegatewayCachedIscsiVolumes) Create(storagegatewayCachedIscsiVolum
 func (c *storagegatewayCachedIscsiVolumes) Update(storagegatewayCachedIscsiVolume *v1alpha1.StoragegatewayCachedIscsiVolume) (result *v1alpha1.StoragegatewayCachedIscsiVolume, err error) {
 	result = &v1alpha1.StoragegatewayCachedIscsiVolume{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagegatewaycachediscsivolumes").
 		Name(storagegatewayCachedIscsiVolume.Name).
 		Body(storagegatewayCachedIscsiVolume).
@@ -132,6 +139,7 @@ func (c *storagegatewayCachedIscsiVolumes) Update(storagegatewayCachedIscsiVolum
 func (c *storagegatewayCachedIscsiVolumes) UpdateStatus(storagegatewayCachedIscsiVolume *v1alpha1.StoragegatewayCachedIscsiVolume) (result *v1alpha1.StoragegatewayCachedIscsiVolume, err error) {
 	result = &v1alpha1.StoragegatewayCachedIscsiVolume{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagegatewaycachediscsivolumes").
 		Name(storagegatewayCachedIscsiVolume.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *storagegatewayCachedIscsiVolumes) UpdateStatus(storagegatewayCachedIscs
 // Delete takes name of the storagegatewayCachedIscsiVolume and deletes it. Returns an error if one occurs.
 func (c *storagegatewayCachedIscsiVolumes) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagegatewaycachediscsivolumes").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *storagegatewayCachedIscsiVolumes) DeleteCollection(options *v1.DeleteOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagegatewaycachediscsivolumes").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *storagegatewayCachedIscsiVolumes) DeleteCollection(options *v1.DeleteOp
 func (c *storagegatewayCachedIscsiVolumes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StoragegatewayCachedIscsiVolume, err error) {
 	result = &v1alpha1.StoragegatewayCachedIscsiVolume{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storagegatewaycachediscsivolumes").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type OpsworksHaproxyLayerLister interface {
 	// List lists all OpsworksHaproxyLayers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OpsworksHaproxyLayer, err error)
-	// Get retrieves the OpsworksHaproxyLayer from the index for a given name.
-	Get(name string) (*v1alpha1.OpsworksHaproxyLayer, error)
+	// OpsworksHaproxyLayers returns an object that can list and get OpsworksHaproxyLayers.
+	OpsworksHaproxyLayers(namespace string) OpsworksHaproxyLayerNamespaceLister
 	OpsworksHaproxyLayerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *opsworksHaproxyLayerLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the OpsworksHaproxyLayer from the index for a given name.
-func (s *opsworksHaproxyLayerLister) Get(name string) (*v1alpha1.OpsworksHaproxyLayer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OpsworksHaproxyLayers returns an object that can list and get OpsworksHaproxyLayers.
+func (s *opsworksHaproxyLayerLister) OpsworksHaproxyLayers(namespace string) OpsworksHaproxyLayerNamespaceLister {
+	return opsworksHaproxyLayerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OpsworksHaproxyLayerNamespaceLister helps list and get OpsworksHaproxyLayers.
+type OpsworksHaproxyLayerNamespaceLister interface {
+	// List lists all OpsworksHaproxyLayers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OpsworksHaproxyLayer, err error)
+	// Get retrieves the OpsworksHaproxyLayer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OpsworksHaproxyLayer, error)
+	OpsworksHaproxyLayerNamespaceListerExpansion
+}
+
+// opsworksHaproxyLayerNamespaceLister implements the OpsworksHaproxyLayerNamespaceLister
+// interface.
+type opsworksHaproxyLayerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OpsworksHaproxyLayers in the indexer for a given namespace.
+func (s opsworksHaproxyLayerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OpsworksHaproxyLayer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OpsworksHaproxyLayer))
+	})
+	return ret, err
+}
+
+// Get retrieves the OpsworksHaproxyLayer from the indexer for a given namespace and name.
+func (s opsworksHaproxyLayerNamespaceLister) Get(name string) (*v1alpha1.OpsworksHaproxyLayer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

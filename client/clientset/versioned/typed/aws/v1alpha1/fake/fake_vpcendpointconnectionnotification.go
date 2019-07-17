@@ -31,6 +31,7 @@ import (
 // FakeVpcEndpointConnectionNotifications implements VpcEndpointConnectionNotificationInterface
 type FakeVpcEndpointConnectionNotifications struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var vpcendpointconnectionnotificationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "vpcendpointconnectionnotifications"}
@@ -40,7 +41,8 @@ var vpcendpointconnectionnotificationsKind = schema.GroupVersionKind{Group: "aws
 // Get takes name of the vpcEndpointConnectionNotification, and returns the corresponding vpcEndpointConnectionNotification object, and an error if there is any.
 func (c *FakeVpcEndpointConnectionNotifications) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcEndpointConnectionNotification, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(vpcendpointconnectionnotificationsResource, name), &v1alpha1.VpcEndpointConnectionNotification{})
+		Invokes(testing.NewGetAction(vpcendpointconnectionnotificationsResource, c.ns, name), &v1alpha1.VpcEndpointConnectionNotification{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeVpcEndpointConnectionNotifications) Get(name string, options v1.Get
 // List takes label and field selectors, and returns the list of VpcEndpointConnectionNotifications that match those selectors.
 func (c *FakeVpcEndpointConnectionNotifications) List(opts v1.ListOptions) (result *v1alpha1.VpcEndpointConnectionNotificationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(vpcendpointconnectionnotificationsResource, vpcendpointconnectionnotificationsKind, opts), &v1alpha1.VpcEndpointConnectionNotificationList{})
+		Invokes(testing.NewListAction(vpcendpointconnectionnotificationsResource, vpcendpointconnectionnotificationsKind, c.ns, opts), &v1alpha1.VpcEndpointConnectionNotificationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeVpcEndpointConnectionNotifications) List(opts v1.ListOptions) (resu
 // Watch returns a watch.Interface that watches the requested vpcEndpointConnectionNotifications.
 func (c *FakeVpcEndpointConnectionNotifications) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(vpcendpointconnectionnotificationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(vpcendpointconnectionnotificationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a vpcEndpointConnectionNotification and creates it.  Returns the server's representation of the vpcEndpointConnectionNotification, and an error, if there is any.
 func (c *FakeVpcEndpointConnectionNotifications) Create(vpcEndpointConnectionNotification *v1alpha1.VpcEndpointConnectionNotification) (result *v1alpha1.VpcEndpointConnectionNotification, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(vpcendpointconnectionnotificationsResource, vpcEndpointConnectionNotification), &v1alpha1.VpcEndpointConnectionNotification{})
+		Invokes(testing.NewCreateAction(vpcendpointconnectionnotificationsResource, c.ns, vpcEndpointConnectionNotification), &v1alpha1.VpcEndpointConnectionNotification{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeVpcEndpointConnectionNotifications) Create(vpcEndpointConnectionNot
 // Update takes the representation of a vpcEndpointConnectionNotification and updates it. Returns the server's representation of the vpcEndpointConnectionNotification, and an error, if there is any.
 func (c *FakeVpcEndpointConnectionNotifications) Update(vpcEndpointConnectionNotification *v1alpha1.VpcEndpointConnectionNotification) (result *v1alpha1.VpcEndpointConnectionNotification, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(vpcendpointconnectionnotificationsResource, vpcEndpointConnectionNotification), &v1alpha1.VpcEndpointConnectionNotification{})
+		Invokes(testing.NewUpdateAction(vpcendpointconnectionnotificationsResource, c.ns, vpcEndpointConnectionNotification), &v1alpha1.VpcEndpointConnectionNotification{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeVpcEndpointConnectionNotifications) Update(vpcEndpointConnectionNot
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeVpcEndpointConnectionNotifications) UpdateStatus(vpcEndpointConnectionNotification *v1alpha1.VpcEndpointConnectionNotification) (*v1alpha1.VpcEndpointConnectionNotification, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(vpcendpointconnectionnotificationsResource, "status", vpcEndpointConnectionNotification), &v1alpha1.VpcEndpointConnectionNotification{})
+		Invokes(testing.NewUpdateSubresourceAction(vpcendpointconnectionnotificationsResource, "status", c.ns, vpcEndpointConnectionNotification), &v1alpha1.VpcEndpointConnectionNotification{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeVpcEndpointConnectionNotifications) UpdateStatus(vpcEndpointConnect
 // Delete takes name of the vpcEndpointConnectionNotification and deletes it. Returns an error if one occurs.
 func (c *FakeVpcEndpointConnectionNotifications) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(vpcendpointconnectionnotificationsResource, name), &v1alpha1.VpcEndpointConnectionNotification{})
+		Invokes(testing.NewDeleteAction(vpcendpointconnectionnotificationsResource, c.ns, name), &v1alpha1.VpcEndpointConnectionNotification{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeVpcEndpointConnectionNotifications) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(vpcendpointconnectionnotificationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(vpcendpointconnectionnotificationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.VpcEndpointConnectionNotificationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeVpcEndpointConnectionNotifications) DeleteCollection(options *v1.De
 // Patch applies the patch and returns the patched vpcEndpointConnectionNotification.
 func (c *FakeVpcEndpointConnectionNotifications) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcEndpointConnectionNotification, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(vpcendpointconnectionnotificationsResource, name, pt, data, subresources...), &v1alpha1.VpcEndpointConnectionNotification{})
+		Invokes(testing.NewPatchSubresourceAction(vpcendpointconnectionnotificationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.VpcEndpointConnectionNotification{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -41,32 +41,33 @@ type DataFactoryDatasetMysqlInformer interface {
 type dataFactoryDatasetMysqlInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDataFactoryDatasetMysqlInformer constructs a new informer for DataFactoryDatasetMysql type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDataFactoryDatasetMysqlInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDataFactoryDatasetMysqlInformer(client, resyncPeriod, indexers, nil)
+func NewDataFactoryDatasetMysqlInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDataFactoryDatasetMysqlInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDataFactoryDatasetMysqlInformer constructs a new informer for DataFactoryDatasetMysql type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDataFactoryDatasetMysqlInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDataFactoryDatasetMysqlInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DataFactoryDatasetMysqls().List(options)
+				return client.AzurermV1alpha1().DataFactoryDatasetMysqls(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DataFactoryDatasetMysqls().Watch(options)
+				return client.AzurermV1alpha1().DataFactoryDatasetMysqls(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.DataFactoryDatasetMysql{},
@@ -76,7 +77,7 @@ func NewFilteredDataFactoryDatasetMysqlInformer(client versioned.Interface, resy
 }
 
 func (f *dataFactoryDatasetMysqlInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDataFactoryDatasetMysqlInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDataFactoryDatasetMysqlInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *dataFactoryDatasetMysqlInformer) Informer() cache.SharedIndexInformer {

@@ -29,8 +29,8 @@ import (
 type LoggingFolderSinkLister interface {
 	// List lists all LoggingFolderSinks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LoggingFolderSink, err error)
-	// Get retrieves the LoggingFolderSink from the index for a given name.
-	Get(name string) (*v1alpha1.LoggingFolderSink, error)
+	// LoggingFolderSinks returns an object that can list and get LoggingFolderSinks.
+	LoggingFolderSinks(namespace string) LoggingFolderSinkNamespaceLister
 	LoggingFolderSinkListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *loggingFolderSinkLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the LoggingFolderSink from the index for a given name.
-func (s *loggingFolderSinkLister) Get(name string) (*v1alpha1.LoggingFolderSink, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LoggingFolderSinks returns an object that can list and get LoggingFolderSinks.
+func (s *loggingFolderSinkLister) LoggingFolderSinks(namespace string) LoggingFolderSinkNamespaceLister {
+	return loggingFolderSinkNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LoggingFolderSinkNamespaceLister helps list and get LoggingFolderSinks.
+type LoggingFolderSinkNamespaceLister interface {
+	// List lists all LoggingFolderSinks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LoggingFolderSink, err error)
+	// Get retrieves the LoggingFolderSink from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LoggingFolderSink, error)
+	LoggingFolderSinkNamespaceListerExpansion
+}
+
+// loggingFolderSinkNamespaceLister implements the LoggingFolderSinkNamespaceLister
+// interface.
+type loggingFolderSinkNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LoggingFolderSinks in the indexer for a given namespace.
+func (s loggingFolderSinkNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LoggingFolderSink, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LoggingFolderSink))
+	})
+	return ret, err
+}
+
+// Get retrieves the LoggingFolderSink from the indexer for a given namespace and name.
+func (s loggingFolderSinkNamespaceLister) Get(name string) (*v1alpha1.LoggingFolderSink, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // DbOptionGroupsGetter has a method to return a DbOptionGroupInterface.
 // A group's client should implement this interface.
 type DbOptionGroupsGetter interface {
-	DbOptionGroups() DbOptionGroupInterface
+	DbOptionGroups(namespace string) DbOptionGroupInterface
 }
 
 // DbOptionGroupInterface has methods to work with DbOptionGroup resources.
@@ -52,12 +52,14 @@ type DbOptionGroupInterface interface {
 // dbOptionGroups implements DbOptionGroupInterface
 type dbOptionGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDbOptionGroups returns a DbOptionGroups
-func newDbOptionGroups(c *AwsV1alpha1Client) *dbOptionGroups {
+func newDbOptionGroups(c *AwsV1alpha1Client, namespace string) *dbOptionGroups {
 	return &dbOptionGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDbOptionGroups(c *AwsV1alpha1Client) *dbOptionGroups {
 func (c *dbOptionGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.DbOptionGroup, err error) {
 	result = &v1alpha1.DbOptionGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dboptiongroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dbOptionGroups) List(opts v1.ListOptions) (result *v1alpha1.DbOptionGro
 	}
 	result = &v1alpha1.DbOptionGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dboptiongroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dbOptionGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dboptiongroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dbOptionGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dbOptionGroups) Create(dbOptionGroup *v1alpha1.DbOptionGroup) (result *v1alpha1.DbOptionGroup, err error) {
 	result = &v1alpha1.DbOptionGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dboptiongroups").
 		Body(dbOptionGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *dbOptionGroups) Create(dbOptionGroup *v1alpha1.DbOptionGroup) (result *
 func (c *dbOptionGroups) Update(dbOptionGroup *v1alpha1.DbOptionGroup) (result *v1alpha1.DbOptionGroup, err error) {
 	result = &v1alpha1.DbOptionGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dboptiongroups").
 		Name(dbOptionGroup.Name).
 		Body(dbOptionGroup).
@@ -132,6 +139,7 @@ func (c *dbOptionGroups) Update(dbOptionGroup *v1alpha1.DbOptionGroup) (result *
 func (c *dbOptionGroups) UpdateStatus(dbOptionGroup *v1alpha1.DbOptionGroup) (result *v1alpha1.DbOptionGroup, err error) {
 	result = &v1alpha1.DbOptionGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dboptiongroups").
 		Name(dbOptionGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dbOptionGroups) UpdateStatus(dbOptionGroup *v1alpha1.DbOptionGroup) (re
 // Delete takes name of the dbOptionGroup and deletes it. Returns an error if one occurs.
 func (c *dbOptionGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dboptiongroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dbOptionGroups) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dboptiongroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dbOptionGroups) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *dbOptionGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DbOptionGroup, err error) {
 	result = &v1alpha1.DbOptionGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dboptiongroups").
 		SubResource(subresources...).
 		Name(name).

@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// FakeEc2ClientVpnEndpoints implements Ec2ClientVpnEndpointInterface
-type FakeEc2ClientVpnEndpoints struct {
+// FakeEc2ClientVPNEndpoints implements Ec2ClientVPNEndpointInterface
+type FakeEc2ClientVPNEndpoints struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ec2clientvpnendpointsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ec2clientvpnendpoints"}
 
-var ec2clientvpnendpointsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "Ec2ClientVpnEndpoint"}
+var ec2clientvpnendpointsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "Ec2ClientVPNEndpoint"}
 
-// Get takes name of the ec2ClientVpnEndpoint, and returns the corresponding ec2ClientVpnEndpoint object, and an error if there is any.
-func (c *FakeEc2ClientVpnEndpoints) Get(name string, options v1.GetOptions) (result *v1alpha1.Ec2ClientVpnEndpoint, err error) {
+// Get takes name of the ec2ClientVPNEndpoint, and returns the corresponding ec2ClientVPNEndpoint object, and an error if there is any.
+func (c *FakeEc2ClientVPNEndpoints) Get(name string, options v1.GetOptions) (result *v1alpha1.Ec2ClientVPNEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ec2clientvpnendpointsResource, name), &v1alpha1.Ec2ClientVpnEndpoint{})
+		Invokes(testing.NewGetAction(ec2clientvpnendpointsResource, c.ns, name), &v1alpha1.Ec2ClientVPNEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.Ec2ClientVpnEndpoint), err
+	return obj.(*v1alpha1.Ec2ClientVPNEndpoint), err
 }
 
-// List takes label and field selectors, and returns the list of Ec2ClientVpnEndpoints that match those selectors.
-func (c *FakeEc2ClientVpnEndpoints) List(opts v1.ListOptions) (result *v1alpha1.Ec2ClientVpnEndpointList, err error) {
+// List takes label and field selectors, and returns the list of Ec2ClientVPNEndpoints that match those selectors.
+func (c *FakeEc2ClientVPNEndpoints) List(opts v1.ListOptions) (result *v1alpha1.Ec2ClientVPNEndpointList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ec2clientvpnendpointsResource, ec2clientvpnendpointsKind, opts), &v1alpha1.Ec2ClientVpnEndpointList{})
+		Invokes(testing.NewListAction(ec2clientvpnendpointsResource, ec2clientvpnendpointsKind, c.ns, opts), &v1alpha1.Ec2ClientVPNEndpointList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeEc2ClientVpnEndpoints) List(opts v1.ListOptions) (result *v1alpha1.
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.Ec2ClientVpnEndpointList{ListMeta: obj.(*v1alpha1.Ec2ClientVpnEndpointList).ListMeta}
-	for _, item := range obj.(*v1alpha1.Ec2ClientVpnEndpointList).Items {
+	list := &v1alpha1.Ec2ClientVPNEndpointList{ListMeta: obj.(*v1alpha1.Ec2ClientVPNEndpointList).ListMeta}
+	for _, item := range obj.(*v1alpha1.Ec2ClientVPNEndpointList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeEc2ClientVpnEndpoints) List(opts v1.ListOptions) (result *v1alpha1.
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested ec2ClientVpnEndpoints.
-func (c *FakeEc2ClientVpnEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested ec2ClientVPNEndpoints.
+func (c *FakeEc2ClientVPNEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ec2clientvpnendpointsResource, opts))
+		InvokesWatch(testing.NewWatchAction(ec2clientvpnendpointsResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a ec2ClientVpnEndpoint and creates it.  Returns the server's representation of the ec2ClientVpnEndpoint, and an error, if there is any.
-func (c *FakeEc2ClientVpnEndpoints) Create(ec2ClientVpnEndpoint *v1alpha1.Ec2ClientVpnEndpoint) (result *v1alpha1.Ec2ClientVpnEndpoint, err error) {
+// Create takes the representation of a ec2ClientVPNEndpoint and creates it.  Returns the server's representation of the ec2ClientVPNEndpoint, and an error, if there is any.
+func (c *FakeEc2ClientVPNEndpoints) Create(ec2ClientVPNEndpoint *v1alpha1.Ec2ClientVPNEndpoint) (result *v1alpha1.Ec2ClientVPNEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ec2clientvpnendpointsResource, ec2ClientVpnEndpoint), &v1alpha1.Ec2ClientVpnEndpoint{})
+		Invokes(testing.NewCreateAction(ec2clientvpnendpointsResource, c.ns, ec2ClientVPNEndpoint), &v1alpha1.Ec2ClientVPNEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.Ec2ClientVpnEndpoint), err
+	return obj.(*v1alpha1.Ec2ClientVPNEndpoint), err
 }
 
-// Update takes the representation of a ec2ClientVpnEndpoint and updates it. Returns the server's representation of the ec2ClientVpnEndpoint, and an error, if there is any.
-func (c *FakeEc2ClientVpnEndpoints) Update(ec2ClientVpnEndpoint *v1alpha1.Ec2ClientVpnEndpoint) (result *v1alpha1.Ec2ClientVpnEndpoint, err error) {
+// Update takes the representation of a ec2ClientVPNEndpoint and updates it. Returns the server's representation of the ec2ClientVPNEndpoint, and an error, if there is any.
+func (c *FakeEc2ClientVPNEndpoints) Update(ec2ClientVPNEndpoint *v1alpha1.Ec2ClientVPNEndpoint) (result *v1alpha1.Ec2ClientVPNEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ec2clientvpnendpointsResource, ec2ClientVpnEndpoint), &v1alpha1.Ec2ClientVpnEndpoint{})
+		Invokes(testing.NewUpdateAction(ec2clientvpnendpointsResource, c.ns, ec2ClientVPNEndpoint), &v1alpha1.Ec2ClientVPNEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.Ec2ClientVpnEndpoint), err
+	return obj.(*v1alpha1.Ec2ClientVPNEndpoint), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeEc2ClientVpnEndpoints) UpdateStatus(ec2ClientVpnEndpoint *v1alpha1.Ec2ClientVpnEndpoint) (*v1alpha1.Ec2ClientVpnEndpoint, error) {
+func (c *FakeEc2ClientVPNEndpoints) UpdateStatus(ec2ClientVPNEndpoint *v1alpha1.Ec2ClientVPNEndpoint) (*v1alpha1.Ec2ClientVPNEndpoint, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ec2clientvpnendpointsResource, "status", ec2ClientVpnEndpoint), &v1alpha1.Ec2ClientVpnEndpoint{})
+		Invokes(testing.NewUpdateSubresourceAction(ec2clientvpnendpointsResource, "status", c.ns, ec2ClientVPNEndpoint), &v1alpha1.Ec2ClientVPNEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.Ec2ClientVpnEndpoint), err
+	return obj.(*v1alpha1.Ec2ClientVPNEndpoint), err
 }
 
-// Delete takes name of the ec2ClientVpnEndpoint and deletes it. Returns an error if one occurs.
-func (c *FakeEc2ClientVpnEndpoints) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the ec2ClientVPNEndpoint and deletes it. Returns an error if one occurs.
+func (c *FakeEc2ClientVPNEndpoints) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ec2clientvpnendpointsResource, name), &v1alpha1.Ec2ClientVpnEndpoint{})
+		Invokes(testing.NewDeleteAction(ec2clientvpnendpointsResource, c.ns, name), &v1alpha1.Ec2ClientVPNEndpoint{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeEc2ClientVpnEndpoints) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ec2clientvpnendpointsResource, listOptions)
+func (c *FakeEc2ClientVPNEndpoints) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(ec2clientvpnendpointsResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.Ec2ClientVpnEndpointList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.Ec2ClientVPNEndpointList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched ec2ClientVpnEndpoint.
-func (c *FakeEc2ClientVpnEndpoints) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Ec2ClientVpnEndpoint, err error) {
+// Patch applies the patch and returns the patched ec2ClientVPNEndpoint.
+func (c *FakeEc2ClientVPNEndpoints) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Ec2ClientVPNEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ec2clientvpnendpointsResource, name, pt, data, subresources...), &v1alpha1.Ec2ClientVpnEndpoint{})
+		Invokes(testing.NewPatchSubresourceAction(ec2clientvpnendpointsResource, c.ns, name, pt, data, subresources...), &v1alpha1.Ec2ClientVPNEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.Ec2ClientVpnEndpoint), err
+	return obj.(*v1alpha1.Ec2ClientVPNEndpoint), err
 }

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,42 +20,43 @@ type Route53HealthCheck struct {
 
 type Route53HealthCheckSpec struct {
 	// +optional
-	ChildHealthThreshold int `json:"child_health_threshold,omitempty"`
+	ChildHealthThreshold int `json:"childHealthThreshold,omitempty" tf:"child_health_threshold,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	ChildHealthchecks []string `json:"child_healthchecks,omitempty"`
+	ChildHealthchecks []string `json:"childHealthchecks,omitempty" tf:"child_healthchecks,omitempty"`
 	// +optional
-	CloudwatchAlarmName string `json:"cloudwatch_alarm_name,omitempty"`
+	CloudwatchAlarmName string `json:"cloudwatchAlarmName,omitempty" tf:"cloudwatch_alarm_name,omitempty"`
 	// +optional
-	CloudwatchAlarmRegion string `json:"cloudwatch_alarm_region,omitempty"`
+	CloudwatchAlarmRegion string `json:"cloudwatchAlarmRegion,omitempty" tf:"cloudwatch_alarm_region,omitempty"`
 	// +optional
-	FailureThreshold int `json:"failure_threshold,omitempty"`
+	FailureThreshold int `json:"failureThreshold,omitempty" tf:"failure_threshold,omitempty"`
 	// +optional
-	Fqdn string `json:"fqdn,omitempty"`
+	Fqdn string `json:"fqdn,omitempty" tf:"fqdn,omitempty"`
 	// +optional
-	InsufficientDataHealthStatus string `json:"insufficient_data_health_status,omitempty"`
+	InsufficientDataHealthStatus string `json:"insufficientDataHealthStatus,omitempty" tf:"insufficient_data_health_status,omitempty"`
 	// +optional
-	InvertHealthcheck bool `json:"invert_healthcheck,omitempty"`
+	InvertHealthcheck bool `json:"invertHealthcheck,omitempty" tf:"invert_healthcheck,omitempty"`
 	// +optional
-	IpAddress string `json:"ip_address,omitempty"`
+	IpAddress string `json:"ipAddress,omitempty" tf:"ip_address,omitempty"`
 	// +optional
-	MeasureLatency bool `json:"measure_latency,omitempty"`
+	MeasureLatency bool `json:"measureLatency,omitempty" tf:"measure_latency,omitempty"`
 	// +optional
-	Port int `json:"port,omitempty"`
+	Port int `json:"port,omitempty" tf:"port,omitempty"`
 	// +optional
-	ReferenceName string `json:"reference_name,omitempty"`
+	ReferenceName string `json:"referenceName,omitempty" tf:"reference_name,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Regions []string `json:"regions,omitempty"`
+	Regions []string `json:"regions,omitempty" tf:"regions,omitempty"`
 	// +optional
-	RequestInterval int `json:"request_interval,omitempty"`
+	RequestInterval int `json:"requestInterval,omitempty" tf:"request_interval,omitempty"`
 	// +optional
-	ResourcePath string `json:"resource_path,omitempty"`
+	ResourcePath string `json:"resourcePath,omitempty" tf:"resource_path,omitempty"`
 	// +optional
-	SearchString string `json:"search_string,omitempty"`
+	SearchString string `json:"searchString,omitempty" tf:"search_string,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
-	Type string            `json:"type"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	Type        string                    `json:"type" tf:"type"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type Route53HealthCheckStatus struct {
@@ -63,7 +64,9 @@ type Route53HealthCheckStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

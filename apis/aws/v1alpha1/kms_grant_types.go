@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,28 +20,29 @@ type KmsGrant struct {
 
 type KmsGrantSpecConstraints struct {
 	// +optional
-	EncryptionContextEquals map[string]string `json:"encryption_context_equals,omitempty"`
+	EncryptionContextEquals map[string]string `json:"encryptionContextEquals,omitempty" tf:"encryption_context_equals,omitempty"`
 	// +optional
-	EncryptionContextSubset map[string]string `json:"encryption_context_subset,omitempty"`
+	EncryptionContextSubset map[string]string `json:"encryptionContextSubset,omitempty" tf:"encryption_context_subset,omitempty"`
 }
 
 type KmsGrantSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Constraints *[]KmsGrantSpec `json:"constraints,omitempty"`
+	Constraints []KmsGrantSpecConstraints `json:"constraints,omitempty" tf:"constraints,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	GrantCreationTokens []string `json:"grant_creation_tokens,omitempty"`
-	GranteePrincipal    string   `json:"grantee_principal"`
-	KeyId               string   `json:"key_id"`
+	GrantCreationTokens []string `json:"grantCreationTokens,omitempty" tf:"grant_creation_tokens,omitempty"`
+	GranteePrincipal    string   `json:"granteePrincipal" tf:"grantee_principal"`
+	KeyID               string   `json:"keyID" tf:"key_id"`
 	// +optional
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" tf:"name,omitempty"`
 	// +kubebuilder:validation:UniqueItems=true
-	Operations []string `json:"operations"`
+	Operations []string `json:"operations" tf:"operations"`
 	// +optional
-	RetireOnDelete bool `json:"retire_on_delete,omitempty"`
+	RetireOnDelete bool `json:"retireOnDelete,omitempty" tf:"retire_on_delete,omitempty"`
 	// +optional
-	RetiringPrincipal string `json:"retiring_principal,omitempty"`
+	RetiringPrincipal string                    `json:"retiringPrincipal,omitempty" tf:"retiring_principal,omitempty"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type KmsGrantStatus struct {
@@ -49,7 +50,9 @@ type KmsGrantStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

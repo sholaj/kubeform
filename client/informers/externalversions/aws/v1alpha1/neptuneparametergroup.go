@@ -41,32 +41,33 @@ type NeptuneParameterGroupInformer interface {
 type neptuneParameterGroupInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewNeptuneParameterGroupInformer constructs a new informer for NeptuneParameterGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewNeptuneParameterGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredNeptuneParameterGroupInformer(client, resyncPeriod, indexers, nil)
+func NewNeptuneParameterGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredNeptuneParameterGroupInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredNeptuneParameterGroupInformer constructs a new informer for NeptuneParameterGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredNeptuneParameterGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredNeptuneParameterGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().NeptuneParameterGroups().List(options)
+				return client.AwsV1alpha1().NeptuneParameterGroups(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().NeptuneParameterGroups().Watch(options)
+				return client.AwsV1alpha1().NeptuneParameterGroups(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.NeptuneParameterGroup{},
@@ -76,7 +77,7 @@ func NewFilteredNeptuneParameterGroupInformer(client versioned.Interface, resync
 }
 
 func (f *neptuneParameterGroupInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredNeptuneParameterGroupInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredNeptuneParameterGroupInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *neptuneParameterGroupInformer) Informer() cache.SharedIndexInformer {

@@ -32,7 +32,7 @@ import (
 // ManagementLocksGetter has a method to return a ManagementLockInterface.
 // A group's client should implement this interface.
 type ManagementLocksGetter interface {
-	ManagementLocks() ManagementLockInterface
+	ManagementLocks(namespace string) ManagementLockInterface
 }
 
 // ManagementLockInterface has methods to work with ManagementLock resources.
@@ -52,12 +52,14 @@ type ManagementLockInterface interface {
 // managementLocks implements ManagementLockInterface
 type managementLocks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newManagementLocks returns a ManagementLocks
-func newManagementLocks(c *AzurermV1alpha1Client) *managementLocks {
+func newManagementLocks(c *AzurermV1alpha1Client, namespace string) *managementLocks {
 	return &managementLocks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newManagementLocks(c *AzurermV1alpha1Client) *managementLocks {
 func (c *managementLocks) Get(name string, options v1.GetOptions) (result *v1alpha1.ManagementLock, err error) {
 	result = &v1alpha1.ManagementLock{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("managementlocks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *managementLocks) List(opts v1.ListOptions) (result *v1alpha1.Management
 	}
 	result = &v1alpha1.ManagementLockList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("managementlocks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *managementLocks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("managementlocks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *managementLocks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *managementLocks) Create(managementLock *v1alpha1.ManagementLock) (result *v1alpha1.ManagementLock, err error) {
 	result = &v1alpha1.ManagementLock{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("managementlocks").
 		Body(managementLock).
 		Do().
@@ -118,6 +124,7 @@ func (c *managementLocks) Create(managementLock *v1alpha1.ManagementLock) (resul
 func (c *managementLocks) Update(managementLock *v1alpha1.ManagementLock) (result *v1alpha1.ManagementLock, err error) {
 	result = &v1alpha1.ManagementLock{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("managementlocks").
 		Name(managementLock.Name).
 		Body(managementLock).
@@ -132,6 +139,7 @@ func (c *managementLocks) Update(managementLock *v1alpha1.ManagementLock) (resul
 func (c *managementLocks) UpdateStatus(managementLock *v1alpha1.ManagementLock) (result *v1alpha1.ManagementLock, err error) {
 	result = &v1alpha1.ManagementLock{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("managementlocks").
 		Name(managementLock.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *managementLocks) UpdateStatus(managementLock *v1alpha1.ManagementLock) 
 // Delete takes name of the managementLock and deletes it. Returns an error if one occurs.
 func (c *managementLocks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("managementlocks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *managementLocks) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("managementlocks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *managementLocks) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *managementLocks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ManagementLock, err error) {
 	result = &v1alpha1.ManagementLock{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("managementlocks").
 		SubResource(subresources...).
 		Name(name).

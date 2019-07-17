@@ -32,7 +32,7 @@ import (
 // SesDomainIdentitiesGetter has a method to return a SesDomainIdentityInterface.
 // A group's client should implement this interface.
 type SesDomainIdentitiesGetter interface {
-	SesDomainIdentities() SesDomainIdentityInterface
+	SesDomainIdentities(namespace string) SesDomainIdentityInterface
 }
 
 // SesDomainIdentityInterface has methods to work with SesDomainIdentity resources.
@@ -52,12 +52,14 @@ type SesDomainIdentityInterface interface {
 // sesDomainIdentities implements SesDomainIdentityInterface
 type sesDomainIdentities struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSesDomainIdentities returns a SesDomainIdentities
-func newSesDomainIdentities(c *AwsV1alpha1Client) *sesDomainIdentities {
+func newSesDomainIdentities(c *AwsV1alpha1Client, namespace string) *sesDomainIdentities {
 	return &sesDomainIdentities{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSesDomainIdentities(c *AwsV1alpha1Client) *sesDomainIdentities {
 func (c *sesDomainIdentities) Get(name string, options v1.GetOptions) (result *v1alpha1.SesDomainIdentity, err error) {
 	result = &v1alpha1.SesDomainIdentity{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sesdomainidentities").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sesDomainIdentities) List(opts v1.ListOptions) (result *v1alpha1.SesDom
 	}
 	result = &v1alpha1.SesDomainIdentityList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sesdomainidentities").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sesDomainIdentities) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sesdomainidentities").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sesDomainIdentities) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *sesDomainIdentities) Create(sesDomainIdentity *v1alpha1.SesDomainIdentity) (result *v1alpha1.SesDomainIdentity, err error) {
 	result = &v1alpha1.SesDomainIdentity{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sesdomainidentities").
 		Body(sesDomainIdentity).
 		Do().
@@ -118,6 +124,7 @@ func (c *sesDomainIdentities) Create(sesDomainIdentity *v1alpha1.SesDomainIdenti
 func (c *sesDomainIdentities) Update(sesDomainIdentity *v1alpha1.SesDomainIdentity) (result *v1alpha1.SesDomainIdentity, err error) {
 	result = &v1alpha1.SesDomainIdentity{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sesdomainidentities").
 		Name(sesDomainIdentity.Name).
 		Body(sesDomainIdentity).
@@ -132,6 +139,7 @@ func (c *sesDomainIdentities) Update(sesDomainIdentity *v1alpha1.SesDomainIdenti
 func (c *sesDomainIdentities) UpdateStatus(sesDomainIdentity *v1alpha1.SesDomainIdentity) (result *v1alpha1.SesDomainIdentity, err error) {
 	result = &v1alpha1.SesDomainIdentity{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sesdomainidentities").
 		Name(sesDomainIdentity.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sesDomainIdentities) UpdateStatus(sesDomainIdentity *v1alpha1.SesDomain
 // Delete takes name of the sesDomainIdentity and deletes it. Returns an error if one occurs.
 func (c *sesDomainIdentities) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sesdomainidentities").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sesDomainIdentities) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sesdomainidentities").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sesDomainIdentities) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *sesDomainIdentities) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesDomainIdentity, err error) {
 	result = &v1alpha1.SesDomainIdentity{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sesdomainidentities").
 		SubResource(subresources...).
 		Name(name).

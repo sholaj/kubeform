@@ -32,7 +32,7 @@ import (
 // DynamodbTablesGetter has a method to return a DynamodbTableInterface.
 // A group's client should implement this interface.
 type DynamodbTablesGetter interface {
-	DynamodbTables() DynamodbTableInterface
+	DynamodbTables(namespace string) DynamodbTableInterface
 }
 
 // DynamodbTableInterface has methods to work with DynamodbTable resources.
@@ -52,12 +52,14 @@ type DynamodbTableInterface interface {
 // dynamodbTables implements DynamodbTableInterface
 type dynamodbTables struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDynamodbTables returns a DynamodbTables
-func newDynamodbTables(c *AwsV1alpha1Client) *dynamodbTables {
+func newDynamodbTables(c *AwsV1alpha1Client, namespace string) *dynamodbTables {
 	return &dynamodbTables{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDynamodbTables(c *AwsV1alpha1Client) *dynamodbTables {
 func (c *dynamodbTables) Get(name string, options v1.GetOptions) (result *v1alpha1.DynamodbTable, err error) {
 	result = &v1alpha1.DynamodbTable{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dynamodbtables").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dynamodbTables) List(opts v1.ListOptions) (result *v1alpha1.DynamodbTab
 	}
 	result = &v1alpha1.DynamodbTableList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dynamodbtables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dynamodbTables) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dynamodbtables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dynamodbTables) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dynamodbTables) Create(dynamodbTable *v1alpha1.DynamodbTable) (result *v1alpha1.DynamodbTable, err error) {
 	result = &v1alpha1.DynamodbTable{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dynamodbtables").
 		Body(dynamodbTable).
 		Do().
@@ -118,6 +124,7 @@ func (c *dynamodbTables) Create(dynamodbTable *v1alpha1.DynamodbTable) (result *
 func (c *dynamodbTables) Update(dynamodbTable *v1alpha1.DynamodbTable) (result *v1alpha1.DynamodbTable, err error) {
 	result = &v1alpha1.DynamodbTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dynamodbtables").
 		Name(dynamodbTable.Name).
 		Body(dynamodbTable).
@@ -132,6 +139,7 @@ func (c *dynamodbTables) Update(dynamodbTable *v1alpha1.DynamodbTable) (result *
 func (c *dynamodbTables) UpdateStatus(dynamodbTable *v1alpha1.DynamodbTable) (result *v1alpha1.DynamodbTable, err error) {
 	result = &v1alpha1.DynamodbTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dynamodbtables").
 		Name(dynamodbTable.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dynamodbTables) UpdateStatus(dynamodbTable *v1alpha1.DynamodbTable) (re
 // Delete takes name of the dynamodbTable and deletes it. Returns an error if one occurs.
 func (c *dynamodbTables) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dynamodbtables").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dynamodbTables) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dynamodbtables").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dynamodbTables) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *dynamodbTables) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DynamodbTable, err error) {
 	result = &v1alpha1.DynamodbTable{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dynamodbtables").
 		SubResource(subresources...).
 		Name(name).

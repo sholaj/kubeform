@@ -29,8 +29,8 @@ import (
 type Ec2TransitGatewayVpcAttachmentAccepterLister interface {
 	// List lists all Ec2TransitGatewayVpcAttachmentAccepters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Ec2TransitGatewayVpcAttachmentAccepter, err error)
-	// Get retrieves the Ec2TransitGatewayVpcAttachmentAccepter from the index for a given name.
-	Get(name string) (*v1alpha1.Ec2TransitGatewayVpcAttachmentAccepter, error)
+	// Ec2TransitGatewayVpcAttachmentAccepters returns an object that can list and get Ec2TransitGatewayVpcAttachmentAccepters.
+	Ec2TransitGatewayVpcAttachmentAccepters(namespace string) Ec2TransitGatewayVpcAttachmentAccepterNamespaceLister
 	Ec2TransitGatewayVpcAttachmentAccepterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ec2TransitGatewayVpcAttachmentAccepterLister) List(selector labels.Sele
 	return ret, err
 }
 
-// Get retrieves the Ec2TransitGatewayVpcAttachmentAccepter from the index for a given name.
-func (s *ec2TransitGatewayVpcAttachmentAccepterLister) Get(name string) (*v1alpha1.Ec2TransitGatewayVpcAttachmentAccepter, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Ec2TransitGatewayVpcAttachmentAccepters returns an object that can list and get Ec2TransitGatewayVpcAttachmentAccepters.
+func (s *ec2TransitGatewayVpcAttachmentAccepterLister) Ec2TransitGatewayVpcAttachmentAccepters(namespace string) Ec2TransitGatewayVpcAttachmentAccepterNamespaceLister {
+	return ec2TransitGatewayVpcAttachmentAccepterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// Ec2TransitGatewayVpcAttachmentAccepterNamespaceLister helps list and get Ec2TransitGatewayVpcAttachmentAccepters.
+type Ec2TransitGatewayVpcAttachmentAccepterNamespaceLister interface {
+	// List lists all Ec2TransitGatewayVpcAttachmentAccepters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Ec2TransitGatewayVpcAttachmentAccepter, err error)
+	// Get retrieves the Ec2TransitGatewayVpcAttachmentAccepter from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Ec2TransitGatewayVpcAttachmentAccepter, error)
+	Ec2TransitGatewayVpcAttachmentAccepterNamespaceListerExpansion
+}
+
+// ec2TransitGatewayVpcAttachmentAccepterNamespaceLister implements the Ec2TransitGatewayVpcAttachmentAccepterNamespaceLister
+// interface.
+type ec2TransitGatewayVpcAttachmentAccepterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Ec2TransitGatewayVpcAttachmentAccepters in the indexer for a given namespace.
+func (s ec2TransitGatewayVpcAttachmentAccepterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Ec2TransitGatewayVpcAttachmentAccepter, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Ec2TransitGatewayVpcAttachmentAccepter))
+	})
+	return ret, err
+}
+
+// Get retrieves the Ec2TransitGatewayVpcAttachmentAccepter from the indexer for a given namespace and name.
+func (s ec2TransitGatewayVpcAttachmentAccepterNamespaceLister) Get(name string) (*v1alpha1.Ec2TransitGatewayVpcAttachmentAccepter, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

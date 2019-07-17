@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// NetworkAclRulesGetter has a method to return a NetworkAclRuleInterface.
+// NetworkACLRulesGetter has a method to return a NetworkACLRuleInterface.
 // A group's client should implement this interface.
-type NetworkAclRulesGetter interface {
-	NetworkAclRules() NetworkAclRuleInterface
+type NetworkACLRulesGetter interface {
+	NetworkACLRules(namespace string) NetworkACLRuleInterface
 }
 
-// NetworkAclRuleInterface has methods to work with NetworkAclRule resources.
-type NetworkAclRuleInterface interface {
-	Create(*v1alpha1.NetworkAclRule) (*v1alpha1.NetworkAclRule, error)
-	Update(*v1alpha1.NetworkAclRule) (*v1alpha1.NetworkAclRule, error)
-	UpdateStatus(*v1alpha1.NetworkAclRule) (*v1alpha1.NetworkAclRule, error)
+// NetworkACLRuleInterface has methods to work with NetworkACLRule resources.
+type NetworkACLRuleInterface interface {
+	Create(*v1alpha1.NetworkACLRule) (*v1alpha1.NetworkACLRule, error)
+	Update(*v1alpha1.NetworkACLRule) (*v1alpha1.NetworkACLRule, error)
+	UpdateStatus(*v1alpha1.NetworkACLRule) (*v1alpha1.NetworkACLRule, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.NetworkAclRule, error)
-	List(opts v1.ListOptions) (*v1alpha1.NetworkAclRuleList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.NetworkACLRule, error)
+	List(opts v1.ListOptions) (*v1alpha1.NetworkACLRuleList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkAclRule, err error)
-	NetworkAclRuleExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkACLRule, err error)
+	NetworkACLRuleExpansion
 }
 
-// networkAclRules implements NetworkAclRuleInterface
-type networkAclRules struct {
+// networkACLRules implements NetworkACLRuleInterface
+type networkACLRules struct {
 	client rest.Interface
+	ns     string
 }
 
-// newNetworkAclRules returns a NetworkAclRules
-func newNetworkAclRules(c *AwsV1alpha1Client) *networkAclRules {
-	return &networkAclRules{
+// newNetworkACLRules returns a NetworkACLRules
+func newNetworkACLRules(c *AwsV1alpha1Client, namespace string) *networkACLRules {
+	return &networkACLRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the networkAclRule, and returns the corresponding networkAclRule object, and an error if there is any.
-func (c *networkAclRules) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkAclRule, err error) {
-	result = &v1alpha1.NetworkAclRule{}
+// Get takes name of the networkACLRule, and returns the corresponding networkACLRule object, and an error if there is any.
+func (c *networkACLRules) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkACLRule, err error) {
+	result = &v1alpha1.NetworkACLRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkaclrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *networkAclRules) Get(name string, options v1.GetOptions) (result *v1alp
 	return
 }
 
-// List takes label and field selectors, and returns the list of NetworkAclRules that match those selectors.
-func (c *networkAclRules) List(opts v1.ListOptions) (result *v1alpha1.NetworkAclRuleList, err error) {
+// List takes label and field selectors, and returns the list of NetworkACLRules that match those selectors.
+func (c *networkACLRules) List(opts v1.ListOptions) (result *v1alpha1.NetworkACLRuleList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.NetworkAclRuleList{}
+	result = &v1alpha1.NetworkACLRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkaclrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *networkAclRules) List(opts v1.ListOptions) (result *v1alpha1.NetworkAcl
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested networkAclRules.
-func (c *networkAclRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested networkACLRules.
+func (c *networkACLRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("networkaclrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a networkAclRule and creates it.  Returns the server's representation of the networkAclRule, and an error, if there is any.
-func (c *networkAclRules) Create(networkAclRule *v1alpha1.NetworkAclRule) (result *v1alpha1.NetworkAclRule, err error) {
-	result = &v1alpha1.NetworkAclRule{}
+// Create takes the representation of a networkACLRule and creates it.  Returns the server's representation of the networkACLRule, and an error, if there is any.
+func (c *networkACLRules) Create(networkACLRule *v1alpha1.NetworkACLRule) (result *v1alpha1.NetworkACLRule, err error) {
+	result = &v1alpha1.NetworkACLRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("networkaclrules").
-		Body(networkAclRule).
+		Body(networkACLRule).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a networkAclRule and updates it. Returns the server's representation of the networkAclRule, and an error, if there is any.
-func (c *networkAclRules) Update(networkAclRule *v1alpha1.NetworkAclRule) (result *v1alpha1.NetworkAclRule, err error) {
-	result = &v1alpha1.NetworkAclRule{}
+// Update takes the representation of a networkACLRule and updates it. Returns the server's representation of the networkACLRule, and an error, if there is any.
+func (c *networkACLRules) Update(networkACLRule *v1alpha1.NetworkACLRule) (result *v1alpha1.NetworkACLRule, err error) {
+	result = &v1alpha1.NetworkACLRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkaclrules").
-		Name(networkAclRule.Name).
-		Body(networkAclRule).
+		Name(networkACLRule.Name).
+		Body(networkACLRule).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *networkAclRules) Update(networkAclRule *v1alpha1.NetworkAclRule) (resul
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *networkAclRules) UpdateStatus(networkAclRule *v1alpha1.NetworkAclRule) (result *v1alpha1.NetworkAclRule, err error) {
-	result = &v1alpha1.NetworkAclRule{}
+func (c *networkACLRules) UpdateStatus(networkACLRule *v1alpha1.NetworkACLRule) (result *v1alpha1.NetworkACLRule, err error) {
+	result = &v1alpha1.NetworkACLRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkaclrules").
-		Name(networkAclRule.Name).
+		Name(networkACLRule.Name).
 		SubResource("status").
-		Body(networkAclRule).
+		Body(networkACLRule).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the networkAclRule and deletes it. Returns an error if one occurs.
-func (c *networkAclRules) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the networkACLRule and deletes it. Returns an error if one occurs.
+func (c *networkACLRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkaclrules").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *networkAclRules) Delete(name string, options *v1.DeleteOptions) error {
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *networkAclRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *networkACLRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkaclrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *networkAclRules) DeleteCollection(options *v1.DeleteOptions, listOption
 		Error()
 }
 
-// Patch applies the patch and returns the patched networkAclRule.
-func (c *networkAclRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkAclRule, err error) {
-	result = &v1alpha1.NetworkAclRule{}
+// Patch applies the patch and returns the patched networkACLRule.
+func (c *networkACLRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkACLRule, err error) {
+	result = &v1alpha1.NetworkACLRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("networkaclrules").
 		SubResource(subresources...).
 		Name(name).

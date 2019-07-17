@@ -32,7 +32,7 @@ import (
 // Ec2CapacityReservationsGetter has a method to return a Ec2CapacityReservationInterface.
 // A group's client should implement this interface.
 type Ec2CapacityReservationsGetter interface {
-	Ec2CapacityReservations() Ec2CapacityReservationInterface
+	Ec2CapacityReservations(namespace string) Ec2CapacityReservationInterface
 }
 
 // Ec2CapacityReservationInterface has methods to work with Ec2CapacityReservation resources.
@@ -52,12 +52,14 @@ type Ec2CapacityReservationInterface interface {
 // ec2CapacityReservations implements Ec2CapacityReservationInterface
 type ec2CapacityReservations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEc2CapacityReservations returns a Ec2CapacityReservations
-func newEc2CapacityReservations(c *AwsV1alpha1Client) *ec2CapacityReservations {
+func newEc2CapacityReservations(c *AwsV1alpha1Client, namespace string) *ec2CapacityReservations {
 	return &ec2CapacityReservations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEc2CapacityReservations(c *AwsV1alpha1Client) *ec2CapacityReservations {
 func (c *ec2CapacityReservations) Get(name string, options v1.GetOptions) (result *v1alpha1.Ec2CapacityReservation, err error) {
 	result = &v1alpha1.Ec2CapacityReservation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ec2capacityreservations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ec2CapacityReservations) List(opts v1.ListOptions) (result *v1alpha1.Ec
 	}
 	result = &v1alpha1.Ec2CapacityReservationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ec2capacityreservations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ec2CapacityReservations) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ec2capacityreservations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ec2CapacityReservations) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *ec2CapacityReservations) Create(ec2CapacityReservation *v1alpha1.Ec2CapacityReservation) (result *v1alpha1.Ec2CapacityReservation, err error) {
 	result = &v1alpha1.Ec2CapacityReservation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ec2capacityreservations").
 		Body(ec2CapacityReservation).
 		Do().
@@ -118,6 +124,7 @@ func (c *ec2CapacityReservations) Create(ec2CapacityReservation *v1alpha1.Ec2Cap
 func (c *ec2CapacityReservations) Update(ec2CapacityReservation *v1alpha1.Ec2CapacityReservation) (result *v1alpha1.Ec2CapacityReservation, err error) {
 	result = &v1alpha1.Ec2CapacityReservation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ec2capacityreservations").
 		Name(ec2CapacityReservation.Name).
 		Body(ec2CapacityReservation).
@@ -132,6 +139,7 @@ func (c *ec2CapacityReservations) Update(ec2CapacityReservation *v1alpha1.Ec2Cap
 func (c *ec2CapacityReservations) UpdateStatus(ec2CapacityReservation *v1alpha1.Ec2CapacityReservation) (result *v1alpha1.Ec2CapacityReservation, err error) {
 	result = &v1alpha1.Ec2CapacityReservation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ec2capacityreservations").
 		Name(ec2CapacityReservation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ec2CapacityReservations) UpdateStatus(ec2CapacityReservation *v1alpha1.
 // Delete takes name of the ec2CapacityReservation and deletes it. Returns an error if one occurs.
 func (c *ec2CapacityReservations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ec2capacityreservations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ec2CapacityReservations) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ec2capacityreservations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ec2CapacityReservations) DeleteCollection(options *v1.DeleteOptions, li
 func (c *ec2CapacityReservations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Ec2CapacityReservation, err error) {
 	result = &v1alpha1.Ec2CapacityReservation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ec2capacityreservations").
 		SubResource(subresources...).
 		Name(name).

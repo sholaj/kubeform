@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,32 +19,33 @@ type CloudiotRegistry struct {
 }
 
 type CloudiotRegistrySpecCredentialsPublicKeyCertificate struct {
-	Certificate string `json:"certificate"`
-	Format      string `json:"format"`
+	Certificate string `json:"certificate" tf:"certificate"`
+	Format      string `json:"format" tf:"format"`
 }
 
 type CloudiotRegistrySpecCredentials struct {
 	// +optional
-	PublicKeyCertificate map[string]CloudiotRegistrySpecCredentialsPublicKeyCertificate `json:"public_key_certificate,omitempty"`
+	PublicKeyCertificate map[string]CloudiotRegistrySpecCredentialsPublicKeyCertificate `json:"publicKeyCertificate,omitempty" tf:"public_key_certificate,omitempty"`
 }
 
 type CloudiotRegistrySpecEventNotificationConfig struct {
-	PubsubTopicName string `json:"pubsub_topic_name"`
+	PubsubTopicName string `json:"pubsubTopicName" tf:"pubsub_topic_name"`
 }
 
 type CloudiotRegistrySpecStateNotificationConfig struct {
-	PubsubTopicName string `json:"pubsub_topic_name"`
+	PubsubTopicName string `json:"pubsubTopicName" tf:"pubsub_topic_name"`
 }
 
 type CloudiotRegistrySpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=10
-	Credentials *[]CloudiotRegistrySpec `json:"credentials,omitempty"`
+	Credentials []CloudiotRegistrySpecCredentials `json:"credentials,omitempty" tf:"credentials,omitempty"`
 	// +optional
-	EventNotificationConfig map[string]CloudiotRegistrySpecEventNotificationConfig `json:"event_notification_config,omitempty"`
-	Name                    string                                                 `json:"name"`
+	EventNotificationConfig map[string]CloudiotRegistrySpecEventNotificationConfig `json:"eventNotificationConfig,omitempty" tf:"event_notification_config,omitempty"`
+	Name                    string                                                 `json:"name" tf:"name"`
 	// +optional
-	StateNotificationConfig map[string]CloudiotRegistrySpecStateNotificationConfig `json:"state_notification_config,omitempty"`
+	StateNotificationConfig map[string]CloudiotRegistrySpecStateNotificationConfig `json:"stateNotificationConfig,omitempty" tf:"state_notification_config,omitempty"`
+	ProviderRef             core.LocalObjectReference                              `json:"providerRef" tf:"-"`
 }
 
 type CloudiotRegistryStatus struct {
@@ -52,7 +53,9 @@ type CloudiotRegistryStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

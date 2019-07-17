@@ -1,69 +1,72 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type ApiManagementApi struct {
+type ApiManagementAPI struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              ApiManagementApiSpec   `json:"spec,omitempty"`
-	Status            ApiManagementApiStatus `json:"status,omitempty"`
+	Spec              ApiManagementAPISpec   `json:"spec,omitempty"`
+	Status            ApiManagementAPIStatus `json:"status,omitempty"`
 }
 
-type ApiManagementApiSpecImportWsdlSelector struct {
-	EndpointName string `json:"endpoint_name"`
-	ServiceName  string `json:"service_name"`
+type ApiManagementAPISpecImportWsdlSelector struct {
+	EndpointName string `json:"endpointName" tf:"endpoint_name"`
+	ServiceName  string `json:"serviceName" tf:"service_name"`
 }
 
-type ApiManagementApiSpecImport struct {
-	ContentFormat string `json:"content_format"`
-	ContentValue  string `json:"content_value"`
+type ApiManagementAPISpecImport struct {
+	ContentFormat string `json:"contentFormat" tf:"content_format"`
+	ContentValue  string `json:"contentValue" tf:"content_value"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	WsdlSelector *[]ApiManagementApiSpecImport `json:"wsdl_selector,omitempty"`
+	WsdlSelector []ApiManagementAPISpecImportWsdlSelector `json:"wsdlSelector,omitempty" tf:"wsdl_selector,omitempty"`
 }
 
-type ApiManagementApiSpec struct {
-	ApiManagementName string `json:"api_management_name"`
+type ApiManagementAPISpec struct {
+	ApiManagementName string `json:"apiManagementName" tf:"api_management_name"`
 	// +optional
-	Description string `json:"description,omitempty"`
-	DisplayName string `json:"display_name"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
+	DisplayName string `json:"displayName" tf:"display_name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Import *[]ApiManagementApiSpec `json:"import,omitempty"`
-	Name   string                  `json:"name"`
-	Path   string                  `json:"path"`
+	Import []ApiManagementAPISpecImport `json:"import,omitempty" tf:"import,omitempty"`
+	Name   string                       `json:"name" tf:"name"`
+	Path   string                       `json:"path" tf:"path"`
 	// +kubebuilder:validation:UniqueItems=true
-	Protocols         []string `json:"protocols"`
-	ResourceGroupName string   `json:"resource_group_name"`
-	Revision          string   `json:"revision"`
+	Protocols         []string `json:"protocols" tf:"protocols"`
+	ResourceGroupName string   `json:"resourceGroupName" tf:"resource_group_name"`
+	Revision          string   `json:"revision" tf:"revision"`
 	// +optional
-	SoapPassThrough bool `json:"soap_pass_through,omitempty"`
+	SoapPassThrough bool                      `json:"soapPassThrough,omitempty" tf:"soap_pass_through,omitempty"`
+	ProviderRef     core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
-type ApiManagementApiStatus struct {
+type ApiManagementAPIStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// ApiManagementApiList is a list of ApiManagementApis
-type ApiManagementApiList struct {
+// ApiManagementAPIList is a list of ApiManagementAPIs
+type ApiManagementAPIList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of ApiManagementApi CRD objects
-	Items []ApiManagementApi `json:"items,omitempty"`
+	// Items is a list of ApiManagementAPI CRD objects
+	Items []ApiManagementAPI `json:"items,omitempty"`
 }

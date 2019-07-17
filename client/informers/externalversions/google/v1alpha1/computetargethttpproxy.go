@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/google/v1alpha1"
 )
 
-// ComputeTargetHttpProxyInformer provides access to a shared informer and lister for
-// ComputeTargetHttpProxies.
-type ComputeTargetHttpProxyInformer interface {
+// ComputeTargetHTTPProxyInformer provides access to a shared informer and lister for
+// ComputeTargetHTTPProxies.
+type ComputeTargetHTTPProxyInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.ComputeTargetHttpProxyLister
+	Lister() v1alpha1.ComputeTargetHTTPProxyLister
 }
 
-type computeTargetHttpProxyInformer struct {
+type computeTargetHTTPProxyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewComputeTargetHttpProxyInformer constructs a new informer for ComputeTargetHttpProxy type.
+// NewComputeTargetHTTPProxyInformer constructs a new informer for ComputeTargetHTTPProxy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewComputeTargetHttpProxyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredComputeTargetHttpProxyInformer(client, resyncPeriod, indexers, nil)
+func NewComputeTargetHTTPProxyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredComputeTargetHTTPProxyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredComputeTargetHttpProxyInformer constructs a new informer for ComputeTargetHttpProxy type.
+// NewFilteredComputeTargetHTTPProxyInformer constructs a new informer for ComputeTargetHTTPProxy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredComputeTargetHttpProxyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredComputeTargetHTTPProxyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeTargetHttpProxies().List(options)
+				return client.GoogleV1alpha1().ComputeTargetHTTPProxies(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeTargetHttpProxies().Watch(options)
+				return client.GoogleV1alpha1().ComputeTargetHTTPProxies(namespace).Watch(options)
 			},
 		},
-		&googlev1alpha1.ComputeTargetHttpProxy{},
+		&googlev1alpha1.ComputeTargetHTTPProxy{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *computeTargetHttpProxyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredComputeTargetHttpProxyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *computeTargetHTTPProxyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredComputeTargetHTTPProxyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *computeTargetHttpProxyInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&googlev1alpha1.ComputeTargetHttpProxy{}, f.defaultInformer)
+func (f *computeTargetHTTPProxyInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&googlev1alpha1.ComputeTargetHTTPProxy{}, f.defaultInformer)
 }
 
-func (f *computeTargetHttpProxyInformer) Lister() v1alpha1.ComputeTargetHttpProxyLister {
-	return v1alpha1.NewComputeTargetHttpProxyLister(f.Informer().GetIndexer())
+func (f *computeTargetHTTPProxyInformer) Lister() v1alpha1.ComputeTargetHTTPProxyLister {
+	return v1alpha1.NewComputeTargetHTTPProxyLister(f.Informer().GetIndexer())
 }

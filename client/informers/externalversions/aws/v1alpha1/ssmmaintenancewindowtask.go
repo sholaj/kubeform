@@ -41,32 +41,33 @@ type SsmMaintenanceWindowTaskInformer interface {
 type ssmMaintenanceWindowTaskInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSsmMaintenanceWindowTaskInformer constructs a new informer for SsmMaintenanceWindowTask type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSsmMaintenanceWindowTaskInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSsmMaintenanceWindowTaskInformer(client, resyncPeriod, indexers, nil)
+func NewSsmMaintenanceWindowTaskInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSsmMaintenanceWindowTaskInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSsmMaintenanceWindowTaskInformer constructs a new informer for SsmMaintenanceWindowTask type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSsmMaintenanceWindowTaskInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSsmMaintenanceWindowTaskInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SsmMaintenanceWindowTasks().List(options)
+				return client.AwsV1alpha1().SsmMaintenanceWindowTasks(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SsmMaintenanceWindowTasks().Watch(options)
+				return client.AwsV1alpha1().SsmMaintenanceWindowTasks(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.SsmMaintenanceWindowTask{},
@@ -76,7 +77,7 @@ func NewFilteredSsmMaintenanceWindowTaskInformer(client versioned.Interface, res
 }
 
 func (f *ssmMaintenanceWindowTaskInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSsmMaintenanceWindowTaskInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSsmMaintenanceWindowTaskInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *ssmMaintenanceWindowTaskInformer) Informer() cache.SharedIndexInformer {

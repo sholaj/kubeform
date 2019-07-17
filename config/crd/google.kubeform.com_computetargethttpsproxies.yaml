@@ -8,7 +8,7 @@ metadata:
 spec:
   group: google.kubeform.com
   names:
-    kind: ComputeTargetHttpsProxy
+    kind: ComputeTargetHTTPSProxy
     plural: computetargethttpsproxies
   scope: ""
   validation:
@@ -401,20 +401,30 @@ spec:
               type: string
             name:
               type: string
-            quic_override:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            quicOverride:
               type: string
-            ssl_certificates:
+            sslCertificates:
               items:
                 type: string
               type: array
-            ssl_policy:
+            sslPolicy:
               type: string
-            url_map:
+            urlMap:
               type: string
           required:
           - name
-          - ssl_certificates
-          - url_map
+          - providerRef
+          - sslCertificates
+          - urlMap
           type: object
         status:
           properties:
@@ -425,6 +435,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -31,6 +31,7 @@ import (
 // FakeNetworkDdosProtectionPlans implements NetworkDdosProtectionPlanInterface
 type FakeNetworkDdosProtectionPlans struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var networkddosprotectionplansResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "networkddosprotectionplans"}
@@ -40,7 +41,8 @@ var networkddosprotectionplansKind = schema.GroupVersionKind{Group: "azurerm.kub
 // Get takes name of the networkDdosProtectionPlan, and returns the corresponding networkDdosProtectionPlan object, and an error if there is any.
 func (c *FakeNetworkDdosProtectionPlans) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkDdosProtectionPlan, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(networkddosprotectionplansResource, name), &v1alpha1.NetworkDdosProtectionPlan{})
+		Invokes(testing.NewGetAction(networkddosprotectionplansResource, c.ns, name), &v1alpha1.NetworkDdosProtectionPlan{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeNetworkDdosProtectionPlans) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of NetworkDdosProtectionPlans that match those selectors.
 func (c *FakeNetworkDdosProtectionPlans) List(opts v1.ListOptions) (result *v1alpha1.NetworkDdosProtectionPlanList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(networkddosprotectionplansResource, networkddosprotectionplansKind, opts), &v1alpha1.NetworkDdosProtectionPlanList{})
+		Invokes(testing.NewListAction(networkddosprotectionplansResource, networkddosprotectionplansKind, c.ns, opts), &v1alpha1.NetworkDdosProtectionPlanList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeNetworkDdosProtectionPlans) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested networkDdosProtectionPlans.
 func (c *FakeNetworkDdosProtectionPlans) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(networkddosprotectionplansResource, opts))
+		InvokesWatch(testing.NewWatchAction(networkddosprotectionplansResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a networkDdosProtectionPlan and creates it.  Returns the server's representation of the networkDdosProtectionPlan, and an error, if there is any.
 func (c *FakeNetworkDdosProtectionPlans) Create(networkDdosProtectionPlan *v1alpha1.NetworkDdosProtectionPlan) (result *v1alpha1.NetworkDdosProtectionPlan, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(networkddosprotectionplansResource, networkDdosProtectionPlan), &v1alpha1.NetworkDdosProtectionPlan{})
+		Invokes(testing.NewCreateAction(networkddosprotectionplansResource, c.ns, networkDdosProtectionPlan), &v1alpha1.NetworkDdosProtectionPlan{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeNetworkDdosProtectionPlans) Create(networkDdosProtectionPlan *v1alp
 // Update takes the representation of a networkDdosProtectionPlan and updates it. Returns the server's representation of the networkDdosProtectionPlan, and an error, if there is any.
 func (c *FakeNetworkDdosProtectionPlans) Update(networkDdosProtectionPlan *v1alpha1.NetworkDdosProtectionPlan) (result *v1alpha1.NetworkDdosProtectionPlan, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(networkddosprotectionplansResource, networkDdosProtectionPlan), &v1alpha1.NetworkDdosProtectionPlan{})
+		Invokes(testing.NewUpdateAction(networkddosprotectionplansResource, c.ns, networkDdosProtectionPlan), &v1alpha1.NetworkDdosProtectionPlan{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeNetworkDdosProtectionPlans) Update(networkDdosProtectionPlan *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNetworkDdosProtectionPlans) UpdateStatus(networkDdosProtectionPlan *v1alpha1.NetworkDdosProtectionPlan) (*v1alpha1.NetworkDdosProtectionPlan, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(networkddosprotectionplansResource, "status", networkDdosProtectionPlan), &v1alpha1.NetworkDdosProtectionPlan{})
+		Invokes(testing.NewUpdateSubresourceAction(networkddosprotectionplansResource, "status", c.ns, networkDdosProtectionPlan), &v1alpha1.NetworkDdosProtectionPlan{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeNetworkDdosProtectionPlans) UpdateStatus(networkDdosProtectionPlan 
 // Delete takes name of the networkDdosProtectionPlan and deletes it. Returns an error if one occurs.
 func (c *FakeNetworkDdosProtectionPlans) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(networkddosprotectionplansResource, name), &v1alpha1.NetworkDdosProtectionPlan{})
+		Invokes(testing.NewDeleteAction(networkddosprotectionplansResource, c.ns, name), &v1alpha1.NetworkDdosProtectionPlan{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNetworkDdosProtectionPlans) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(networkddosprotectionplansResource, listOptions)
+	action := testing.NewDeleteCollectionAction(networkddosprotectionplansResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NetworkDdosProtectionPlanList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeNetworkDdosProtectionPlans) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched networkDdosProtectionPlan.
 func (c *FakeNetworkDdosProtectionPlans) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkDdosProtectionPlan, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(networkddosprotectionplansResource, name, pt, data, subresources...), &v1alpha1.NetworkDdosProtectionPlan{})
+		Invokes(testing.NewPatchSubresourceAction(networkddosprotectionplansResource, c.ns, name, pt, data, subresources...), &v1alpha1.NetworkDdosProtectionPlan{})
+
 	if obj == nil {
 		return nil, err
 	}

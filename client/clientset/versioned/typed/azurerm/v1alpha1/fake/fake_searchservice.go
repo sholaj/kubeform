@@ -31,6 +31,7 @@ import (
 // FakeSearchServices implements SearchServiceInterface
 type FakeSearchServices struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var searchservicesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "searchservices"}
@@ -40,7 +41,8 @@ var searchservicesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", 
 // Get takes name of the searchService, and returns the corresponding searchService object, and an error if there is any.
 func (c *FakeSearchServices) Get(name string, options v1.GetOptions) (result *v1alpha1.SearchService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(searchservicesResource, name), &v1alpha1.SearchService{})
+		Invokes(testing.NewGetAction(searchservicesResource, c.ns, name), &v1alpha1.SearchService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSearchServices) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of SearchServices that match those selectors.
 func (c *FakeSearchServices) List(opts v1.ListOptions) (result *v1alpha1.SearchServiceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(searchservicesResource, searchservicesKind, opts), &v1alpha1.SearchServiceList{})
+		Invokes(testing.NewListAction(searchservicesResource, searchservicesKind, c.ns, opts), &v1alpha1.SearchServiceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSearchServices) List(opts v1.ListOptions) (result *v1alpha1.SearchS
 // Watch returns a watch.Interface that watches the requested searchServices.
 func (c *FakeSearchServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(searchservicesResource, opts))
+		InvokesWatch(testing.NewWatchAction(searchservicesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a searchService and creates it.  Returns the server's representation of the searchService, and an error, if there is any.
 func (c *FakeSearchServices) Create(searchService *v1alpha1.SearchService) (result *v1alpha1.SearchService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(searchservicesResource, searchService), &v1alpha1.SearchService{})
+		Invokes(testing.NewCreateAction(searchservicesResource, c.ns, searchService), &v1alpha1.SearchService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSearchServices) Create(searchService *v1alpha1.SearchService) (resu
 // Update takes the representation of a searchService and updates it. Returns the server's representation of the searchService, and an error, if there is any.
 func (c *FakeSearchServices) Update(searchService *v1alpha1.SearchService) (result *v1alpha1.SearchService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(searchservicesResource, searchService), &v1alpha1.SearchService{})
+		Invokes(testing.NewUpdateAction(searchservicesResource, c.ns, searchService), &v1alpha1.SearchService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSearchServices) Update(searchService *v1alpha1.SearchService) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSearchServices) UpdateStatus(searchService *v1alpha1.SearchService) (*v1alpha1.SearchService, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(searchservicesResource, "status", searchService), &v1alpha1.SearchService{})
+		Invokes(testing.NewUpdateSubresourceAction(searchservicesResource, "status", c.ns, searchService), &v1alpha1.SearchService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSearchServices) UpdateStatus(searchService *v1alpha1.SearchService)
 // Delete takes name of the searchService and deletes it. Returns an error if one occurs.
 func (c *FakeSearchServices) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(searchservicesResource, name), &v1alpha1.SearchService{})
+		Invokes(testing.NewDeleteAction(searchservicesResource, c.ns, name), &v1alpha1.SearchService{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSearchServices) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(searchservicesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(searchservicesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SearchServiceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSearchServices) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched searchService.
 func (c *FakeSearchServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SearchService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(searchservicesResource, name, pt, data, subresources...), &v1alpha1.SearchService{})
+		Invokes(testing.NewPatchSubresourceAction(searchservicesResource, c.ns, name, pt, data, subresources...), &v1alpha1.SearchService{})
+
 	if obj == nil {
 		return nil, err
 	}

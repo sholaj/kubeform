@@ -32,7 +32,7 @@ import (
 // DatabaseClustersGetter has a method to return a DatabaseClusterInterface.
 // A group's client should implement this interface.
 type DatabaseClustersGetter interface {
-	DatabaseClusters() DatabaseClusterInterface
+	DatabaseClusters(namespace string) DatabaseClusterInterface
 }
 
 // DatabaseClusterInterface has methods to work with DatabaseCluster resources.
@@ -52,12 +52,14 @@ type DatabaseClusterInterface interface {
 // databaseClusters implements DatabaseClusterInterface
 type databaseClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDatabaseClusters returns a DatabaseClusters
-func newDatabaseClusters(c *DigitaloceanV1alpha1Client) *databaseClusters {
+func newDatabaseClusters(c *DigitaloceanV1alpha1Client, namespace string) *databaseClusters {
 	return &databaseClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDatabaseClusters(c *DigitaloceanV1alpha1Client) *databaseClusters {
 func (c *databaseClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.DatabaseCluster, err error) {
 	result = &v1alpha1.DatabaseCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("databaseclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *databaseClusters) List(opts v1.ListOptions) (result *v1alpha1.DatabaseC
 	}
 	result = &v1alpha1.DatabaseClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("databaseclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *databaseClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("databaseclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *databaseClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *databaseClusters) Create(databaseCluster *v1alpha1.DatabaseCluster) (result *v1alpha1.DatabaseCluster, err error) {
 	result = &v1alpha1.DatabaseCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("databaseclusters").
 		Body(databaseCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *databaseClusters) Create(databaseCluster *v1alpha1.DatabaseCluster) (re
 func (c *databaseClusters) Update(databaseCluster *v1alpha1.DatabaseCluster) (result *v1alpha1.DatabaseCluster, err error) {
 	result = &v1alpha1.DatabaseCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("databaseclusters").
 		Name(databaseCluster.Name).
 		Body(databaseCluster).
@@ -132,6 +139,7 @@ func (c *databaseClusters) Update(databaseCluster *v1alpha1.DatabaseCluster) (re
 func (c *databaseClusters) UpdateStatus(databaseCluster *v1alpha1.DatabaseCluster) (result *v1alpha1.DatabaseCluster, err error) {
 	result = &v1alpha1.DatabaseCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("databaseclusters").
 		Name(databaseCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *databaseClusters) UpdateStatus(databaseCluster *v1alpha1.DatabaseCluste
 // Delete takes name of the databaseCluster and deletes it. Returns an error if one occurs.
 func (c *databaseClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("databaseclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *databaseClusters) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("databaseclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *databaseClusters) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *databaseClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DatabaseCluster, err error) {
 	result = &v1alpha1.DatabaseCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("databaseclusters").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type SchedulerJobLister interface {
 	// List lists all SchedulerJobs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SchedulerJob, err error)
-	// Get retrieves the SchedulerJob from the index for a given name.
-	Get(name string) (*v1alpha1.SchedulerJob, error)
+	// SchedulerJobs returns an object that can list and get SchedulerJobs.
+	SchedulerJobs(namespace string) SchedulerJobNamespaceLister
 	SchedulerJobListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *schedulerJobLister) List(selector labels.Selector) (ret []*v1alpha1.Sch
 	return ret, err
 }
 
-// Get retrieves the SchedulerJob from the index for a given name.
-func (s *schedulerJobLister) Get(name string) (*v1alpha1.SchedulerJob, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SchedulerJobs returns an object that can list and get SchedulerJobs.
+func (s *schedulerJobLister) SchedulerJobs(namespace string) SchedulerJobNamespaceLister {
+	return schedulerJobNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SchedulerJobNamespaceLister helps list and get SchedulerJobs.
+type SchedulerJobNamespaceLister interface {
+	// List lists all SchedulerJobs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SchedulerJob, err error)
+	// Get retrieves the SchedulerJob from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SchedulerJob, error)
+	SchedulerJobNamespaceListerExpansion
+}
+
+// schedulerJobNamespaceLister implements the SchedulerJobNamespaceLister
+// interface.
+type schedulerJobNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SchedulerJobs in the indexer for a given namespace.
+func (s schedulerJobNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SchedulerJob, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SchedulerJob))
+	})
+	return ret, err
+}
+
+// Get retrieves the SchedulerJob from the indexer for a given namespace and name.
+func (s schedulerJobNamespaceLister) Get(name string) (*v1alpha1.SchedulerJob, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

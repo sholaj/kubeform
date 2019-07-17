@@ -41,32 +41,33 @@ type ComputeTargetSslProxyInformer interface {
 type computeTargetSslProxyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewComputeTargetSslProxyInformer constructs a new informer for ComputeTargetSslProxy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewComputeTargetSslProxyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredComputeTargetSslProxyInformer(client, resyncPeriod, indexers, nil)
+func NewComputeTargetSslProxyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredComputeTargetSslProxyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredComputeTargetSslProxyInformer constructs a new informer for ComputeTargetSslProxy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredComputeTargetSslProxyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredComputeTargetSslProxyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeTargetSslProxies().List(options)
+				return client.GoogleV1alpha1().ComputeTargetSslProxies(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeTargetSslProxies().Watch(options)
+				return client.GoogleV1alpha1().ComputeTargetSslProxies(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.ComputeTargetSslProxy{},
@@ -76,7 +77,7 @@ func NewFilteredComputeTargetSslProxyInformer(client versioned.Interface, resync
 }
 
 func (f *computeTargetSslProxyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredComputeTargetSslProxyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredComputeTargetSslProxyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *computeTargetSslProxyInformer) Informer() cache.SharedIndexInformer {

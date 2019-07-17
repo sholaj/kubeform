@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,14 +19,15 @@ type BatchCertificate struct {
 }
 
 type BatchCertificateSpec struct {
-	AccountName string `json:"account_name"`
-	Certificate string `json:"certificate"`
-	Format      string `json:"format"`
+	AccountName string `json:"accountName" tf:"account_name"`
+	Certificate string `json:"certificate" tf:"certificate"`
+	Format      string `json:"format" tf:"format"`
 	// +optional
-	Password            string `json:"password,omitempty"`
-	ResourceGroupName   string `json:"resource_group_name"`
-	Thumbprint          string `json:"thumbprint"`
-	ThumbprintAlgorithm string `json:"thumbprint_algorithm"`
+	Password            string                    `json:"password,omitempty" tf:"password,omitempty"`
+	ResourceGroupName   string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	Thumbprint          string                    `json:"thumbprint" tf:"thumbprint"`
+	ThumbprintAlgorithm string                    `json:"thumbprintAlgorithm" tf:"thumbprint_algorithm"`
+	ProviderRef         core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type BatchCertificateStatus struct {
@@ -34,7 +35,9 @@ type BatchCertificateStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

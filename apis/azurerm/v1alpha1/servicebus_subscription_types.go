@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -21,23 +21,24 @@ type ServicebusSubscription struct {
 type ServicebusSubscriptionSpec struct {
 	// +optional
 	// Deprecated
-	DeadLetteringOnFilterEvaluationExceptions bool `json:"dead_lettering_on_filter_evaluation_exceptions,omitempty"`
+	DeadLetteringOnFilterEvaluationExceptions bool `json:"deadLetteringOnFilterEvaluationExceptions,omitempty" tf:"dead_lettering_on_filter_evaluation_exceptions,omitempty"`
 	// +optional
-	DeadLetteringOnMessageExpiration bool `json:"dead_lettering_on_message_expiration,omitempty"`
+	DeadLetteringOnMessageExpiration bool `json:"deadLetteringOnMessageExpiration,omitempty" tf:"dead_lettering_on_message_expiration,omitempty"`
 	// +optional
-	EnableBatchedOperations bool `json:"enable_batched_operations,omitempty"`
+	EnableBatchedOperations bool `json:"enableBatchedOperations,omitempty" tf:"enable_batched_operations,omitempty"`
 	// +optional
-	ForwardTo string `json:"forward_to,omitempty"`
+	ForwardTo string `json:"forwardTo,omitempty" tf:"forward_to,omitempty"`
 	// +optional
 	// Deprecated
-	Location         string `json:"location,omitempty"`
-	MaxDeliveryCount int    `json:"max_delivery_count"`
-	Name             string `json:"name"`
-	NamespaceName    string `json:"namespace_name"`
+	Location         string `json:"location,omitempty" tf:"location,omitempty"`
+	MaxDeliveryCount int    `json:"maxDeliveryCount" tf:"max_delivery_count"`
+	Name             string `json:"name" tf:"name"`
+	NamespaceName    string `json:"namespaceName" tf:"namespace_name"`
 	// +optional
-	RequiresSession   bool   `json:"requires_session,omitempty"`
-	ResourceGroupName string `json:"resource_group_name"`
-	TopicName         string `json:"topic_name"`
+	RequiresSession   bool                      `json:"requiresSession,omitempty" tf:"requires_session,omitempty"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	TopicName         string                    `json:"topicName" tf:"topic_name"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ServicebusSubscriptionStatus struct {
@@ -45,7 +46,9 @@ type ServicebusSubscriptionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

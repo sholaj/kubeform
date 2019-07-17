@@ -29,8 +29,8 @@ import (
 type StorageBucketIamMemberLister interface {
 	// List lists all StorageBucketIamMembers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StorageBucketIamMember, err error)
-	// Get retrieves the StorageBucketIamMember from the index for a given name.
-	Get(name string) (*v1alpha1.StorageBucketIamMember, error)
+	// StorageBucketIamMembers returns an object that can list and get StorageBucketIamMembers.
+	StorageBucketIamMembers(namespace string) StorageBucketIamMemberNamespaceLister
 	StorageBucketIamMemberListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *storageBucketIamMemberLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the StorageBucketIamMember from the index for a given name.
-func (s *storageBucketIamMemberLister) Get(name string) (*v1alpha1.StorageBucketIamMember, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StorageBucketIamMembers returns an object that can list and get StorageBucketIamMembers.
+func (s *storageBucketIamMemberLister) StorageBucketIamMembers(namespace string) StorageBucketIamMemberNamespaceLister {
+	return storageBucketIamMemberNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StorageBucketIamMemberNamespaceLister helps list and get StorageBucketIamMembers.
+type StorageBucketIamMemberNamespaceLister interface {
+	// List lists all StorageBucketIamMembers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StorageBucketIamMember, err error)
+	// Get retrieves the StorageBucketIamMember from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StorageBucketIamMember, error)
+	StorageBucketIamMemberNamespaceListerExpansion
+}
+
+// storageBucketIamMemberNamespaceLister implements the StorageBucketIamMemberNamespaceLister
+// interface.
+type storageBucketIamMemberNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StorageBucketIamMembers in the indexer for a given namespace.
+func (s storageBucketIamMemberNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StorageBucketIamMember, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StorageBucketIamMember))
+	})
+	return ret, err
+}
+
+// Get retrieves the StorageBucketIamMember from the indexer for a given namespace and name.
+func (s storageBucketIamMemberNamespaceLister) Get(name string) (*v1alpha1.StorageBucketIamMember, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

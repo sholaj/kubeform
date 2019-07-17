@@ -29,8 +29,8 @@ import (
 type RamPrincipalAssociationLister interface {
 	// List lists all RamPrincipalAssociations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RamPrincipalAssociation, err error)
-	// Get retrieves the RamPrincipalAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.RamPrincipalAssociation, error)
+	// RamPrincipalAssociations returns an object that can list and get RamPrincipalAssociations.
+	RamPrincipalAssociations(namespace string) RamPrincipalAssociationNamespaceLister
 	RamPrincipalAssociationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ramPrincipalAssociationLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the RamPrincipalAssociation from the index for a given name.
-func (s *ramPrincipalAssociationLister) Get(name string) (*v1alpha1.RamPrincipalAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RamPrincipalAssociations returns an object that can list and get RamPrincipalAssociations.
+func (s *ramPrincipalAssociationLister) RamPrincipalAssociations(namespace string) RamPrincipalAssociationNamespaceLister {
+	return ramPrincipalAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RamPrincipalAssociationNamespaceLister helps list and get RamPrincipalAssociations.
+type RamPrincipalAssociationNamespaceLister interface {
+	// List lists all RamPrincipalAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RamPrincipalAssociation, err error)
+	// Get retrieves the RamPrincipalAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RamPrincipalAssociation, error)
+	RamPrincipalAssociationNamespaceListerExpansion
+}
+
+// ramPrincipalAssociationNamespaceLister implements the RamPrincipalAssociationNamespaceLister
+// interface.
+type ramPrincipalAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RamPrincipalAssociations in the indexer for a given namespace.
+func (s ramPrincipalAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RamPrincipalAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RamPrincipalAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the RamPrincipalAssociation from the indexer for a given namespace and name.
+func (s ramPrincipalAssociationNamespaceLister) Get(name string) (*v1alpha1.RamPrincipalAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

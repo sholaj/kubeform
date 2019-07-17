@@ -31,6 +31,7 @@ import (
 // FakeCloudfunctionsFunctions implements CloudfunctionsFunctionInterface
 type FakeCloudfunctionsFunctions struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var cloudfunctionsfunctionsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "cloudfunctionsfunctions"}
@@ -40,7 +41,8 @@ var cloudfunctionsfunctionsKind = schema.GroupVersionKind{Group: "google.kubefor
 // Get takes name of the cloudfunctionsFunction, and returns the corresponding cloudfunctionsFunction object, and an error if there is any.
 func (c *FakeCloudfunctionsFunctions) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudfunctionsFunction, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cloudfunctionsfunctionsResource, name), &v1alpha1.CloudfunctionsFunction{})
+		Invokes(testing.NewGetAction(cloudfunctionsfunctionsResource, c.ns, name), &v1alpha1.CloudfunctionsFunction{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCloudfunctionsFunctions) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of CloudfunctionsFunctions that match those selectors.
 func (c *FakeCloudfunctionsFunctions) List(opts v1.ListOptions) (result *v1alpha1.CloudfunctionsFunctionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cloudfunctionsfunctionsResource, cloudfunctionsfunctionsKind, opts), &v1alpha1.CloudfunctionsFunctionList{})
+		Invokes(testing.NewListAction(cloudfunctionsfunctionsResource, cloudfunctionsfunctionsKind, c.ns, opts), &v1alpha1.CloudfunctionsFunctionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCloudfunctionsFunctions) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested cloudfunctionsFunctions.
 func (c *FakeCloudfunctionsFunctions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cloudfunctionsfunctionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(cloudfunctionsfunctionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cloudfunctionsFunction and creates it.  Returns the server's representation of the cloudfunctionsFunction, and an error, if there is any.
 func (c *FakeCloudfunctionsFunctions) Create(cloudfunctionsFunction *v1alpha1.CloudfunctionsFunction) (result *v1alpha1.CloudfunctionsFunction, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cloudfunctionsfunctionsResource, cloudfunctionsFunction), &v1alpha1.CloudfunctionsFunction{})
+		Invokes(testing.NewCreateAction(cloudfunctionsfunctionsResource, c.ns, cloudfunctionsFunction), &v1alpha1.CloudfunctionsFunction{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCloudfunctionsFunctions) Create(cloudfunctionsFunction *v1alpha1.Cl
 // Update takes the representation of a cloudfunctionsFunction and updates it. Returns the server's representation of the cloudfunctionsFunction, and an error, if there is any.
 func (c *FakeCloudfunctionsFunctions) Update(cloudfunctionsFunction *v1alpha1.CloudfunctionsFunction) (result *v1alpha1.CloudfunctionsFunction, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cloudfunctionsfunctionsResource, cloudfunctionsFunction), &v1alpha1.CloudfunctionsFunction{})
+		Invokes(testing.NewUpdateAction(cloudfunctionsfunctionsResource, c.ns, cloudfunctionsFunction), &v1alpha1.CloudfunctionsFunction{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCloudfunctionsFunctions) Update(cloudfunctionsFunction *v1alpha1.Cl
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCloudfunctionsFunctions) UpdateStatus(cloudfunctionsFunction *v1alpha1.CloudfunctionsFunction) (*v1alpha1.CloudfunctionsFunction, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cloudfunctionsfunctionsResource, "status", cloudfunctionsFunction), &v1alpha1.CloudfunctionsFunction{})
+		Invokes(testing.NewUpdateSubresourceAction(cloudfunctionsfunctionsResource, "status", c.ns, cloudfunctionsFunction), &v1alpha1.CloudfunctionsFunction{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCloudfunctionsFunctions) UpdateStatus(cloudfunctionsFunction *v1alp
 // Delete takes name of the cloudfunctionsFunction and deletes it. Returns an error if one occurs.
 func (c *FakeCloudfunctionsFunctions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cloudfunctionsfunctionsResource, name), &v1alpha1.CloudfunctionsFunction{})
+		Invokes(testing.NewDeleteAction(cloudfunctionsfunctionsResource, c.ns, name), &v1alpha1.CloudfunctionsFunction{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCloudfunctionsFunctions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cloudfunctionsfunctionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cloudfunctionsfunctionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CloudfunctionsFunctionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCloudfunctionsFunctions) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched cloudfunctionsFunction.
 func (c *FakeCloudfunctionsFunctions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudfunctionsFunction, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cloudfunctionsfunctionsResource, name, pt, data, subresources...), &v1alpha1.CloudfunctionsFunction{})
+		Invokes(testing.NewPatchSubresourceAction(cloudfunctionsfunctionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.CloudfunctionsFunction{})
+
 	if obj == nil {
 		return nil, err
 	}

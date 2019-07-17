@@ -31,6 +31,7 @@ import (
 // FakeNetworkInterfaceAttachments implements NetworkInterfaceAttachmentInterface
 type FakeNetworkInterfaceAttachments struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var networkinterfaceattachmentsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "networkinterfaceattachments"}
@@ -40,7 +41,8 @@ var networkinterfaceattachmentsKind = schema.GroupVersionKind{Group: "aws.kubefo
 // Get takes name of the networkInterfaceAttachment, and returns the corresponding networkInterfaceAttachment object, and an error if there is any.
 func (c *FakeNetworkInterfaceAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkInterfaceAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(networkinterfaceattachmentsResource, name), &v1alpha1.NetworkInterfaceAttachment{})
+		Invokes(testing.NewGetAction(networkinterfaceattachmentsResource, c.ns, name), &v1alpha1.NetworkInterfaceAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeNetworkInterfaceAttachments) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of NetworkInterfaceAttachments that match those selectors.
 func (c *FakeNetworkInterfaceAttachments) List(opts v1.ListOptions) (result *v1alpha1.NetworkInterfaceAttachmentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(networkinterfaceattachmentsResource, networkinterfaceattachmentsKind, opts), &v1alpha1.NetworkInterfaceAttachmentList{})
+		Invokes(testing.NewListAction(networkinterfaceattachmentsResource, networkinterfaceattachmentsKind, c.ns, opts), &v1alpha1.NetworkInterfaceAttachmentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeNetworkInterfaceAttachments) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested networkInterfaceAttachments.
 func (c *FakeNetworkInterfaceAttachments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(networkinterfaceattachmentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(networkinterfaceattachmentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a networkInterfaceAttachment and creates it.  Returns the server's representation of the networkInterfaceAttachment, and an error, if there is any.
 func (c *FakeNetworkInterfaceAttachments) Create(networkInterfaceAttachment *v1alpha1.NetworkInterfaceAttachment) (result *v1alpha1.NetworkInterfaceAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(networkinterfaceattachmentsResource, networkInterfaceAttachment), &v1alpha1.NetworkInterfaceAttachment{})
+		Invokes(testing.NewCreateAction(networkinterfaceattachmentsResource, c.ns, networkInterfaceAttachment), &v1alpha1.NetworkInterfaceAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeNetworkInterfaceAttachments) Create(networkInterfaceAttachment *v1a
 // Update takes the representation of a networkInterfaceAttachment and updates it. Returns the server's representation of the networkInterfaceAttachment, and an error, if there is any.
 func (c *FakeNetworkInterfaceAttachments) Update(networkInterfaceAttachment *v1alpha1.NetworkInterfaceAttachment) (result *v1alpha1.NetworkInterfaceAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(networkinterfaceattachmentsResource, networkInterfaceAttachment), &v1alpha1.NetworkInterfaceAttachment{})
+		Invokes(testing.NewUpdateAction(networkinterfaceattachmentsResource, c.ns, networkInterfaceAttachment), &v1alpha1.NetworkInterfaceAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeNetworkInterfaceAttachments) Update(networkInterfaceAttachment *v1a
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNetworkInterfaceAttachments) UpdateStatus(networkInterfaceAttachment *v1alpha1.NetworkInterfaceAttachment) (*v1alpha1.NetworkInterfaceAttachment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(networkinterfaceattachmentsResource, "status", networkInterfaceAttachment), &v1alpha1.NetworkInterfaceAttachment{})
+		Invokes(testing.NewUpdateSubresourceAction(networkinterfaceattachmentsResource, "status", c.ns, networkInterfaceAttachment), &v1alpha1.NetworkInterfaceAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeNetworkInterfaceAttachments) UpdateStatus(networkInterfaceAttachmen
 // Delete takes name of the networkInterfaceAttachment and deletes it. Returns an error if one occurs.
 func (c *FakeNetworkInterfaceAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(networkinterfaceattachmentsResource, name), &v1alpha1.NetworkInterfaceAttachment{})
+		Invokes(testing.NewDeleteAction(networkinterfaceattachmentsResource, c.ns, name), &v1alpha1.NetworkInterfaceAttachment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNetworkInterfaceAttachments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(networkinterfaceattachmentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(networkinterfaceattachmentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NetworkInterfaceAttachmentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeNetworkInterfaceAttachments) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched networkInterfaceAttachment.
 func (c *FakeNetworkInterfaceAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkInterfaceAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(networkinterfaceattachmentsResource, name, pt, data, subresources...), &v1alpha1.NetworkInterfaceAttachment{})
+		Invokes(testing.NewPatchSubresourceAction(networkinterfaceattachmentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.NetworkInterfaceAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}

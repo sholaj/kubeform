@@ -29,8 +29,8 @@ import (
 type ComputeNetworkLister interface {
 	// List lists all ComputeNetworks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeNetwork, err error)
-	// Get retrieves the ComputeNetwork from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeNetwork, error)
+	// ComputeNetworks returns an object that can list and get ComputeNetworks.
+	ComputeNetworks(namespace string) ComputeNetworkNamespaceLister
 	ComputeNetworkListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeNetworkLister) List(selector labels.Selector) (ret []*v1alpha1.C
 	return ret, err
 }
 
-// Get retrieves the ComputeNetwork from the index for a given name.
-func (s *computeNetworkLister) Get(name string) (*v1alpha1.ComputeNetwork, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeNetworks returns an object that can list and get ComputeNetworks.
+func (s *computeNetworkLister) ComputeNetworks(namespace string) ComputeNetworkNamespaceLister {
+	return computeNetworkNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeNetworkNamespaceLister helps list and get ComputeNetworks.
+type ComputeNetworkNamespaceLister interface {
+	// List lists all ComputeNetworks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeNetwork, err error)
+	// Get retrieves the ComputeNetwork from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeNetwork, error)
+	ComputeNetworkNamespaceListerExpansion
+}
+
+// computeNetworkNamespaceLister implements the ComputeNetworkNamespaceLister
+// interface.
+type computeNetworkNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeNetworks in the indexer for a given namespace.
+func (s computeNetworkNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeNetwork, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeNetwork))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeNetwork from the indexer for a given namespace and name.
+func (s computeNetworkNamespaceLister) Get(name string) (*v1alpha1.ComputeNetwork, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -397,17 +397,26 @@ spec:
           type: object
         spec:
           properties:
-            address_family:
+            addressFamily:
               type: string
-            bgp_asn:
+            bgpAsn:
               type: integer
-            connection_id:
+            connectionID:
               type: string
             name:
               type: string
-            owner_account_id:
+            ownerAccountID:
               type: string
-            route_filter_prefixes:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            routeFilterPrefixes:
               items:
                 type: string
               minItems: 1
@@ -416,12 +425,13 @@ spec:
             vlan:
               type: integer
           required:
-          - address_family
-          - bgp_asn
-          - connection_id
+          - addressFamily
+          - bgpAsn
+          - connectionID
           - name
-          - owner_account_id
-          - route_filter_prefixes
+          - ownerAccountID
+          - providerRef
+          - routeFilterPrefixes
           - vlan
           type: object
         status:
@@ -433,6 +443,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

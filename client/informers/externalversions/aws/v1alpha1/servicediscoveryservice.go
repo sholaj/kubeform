@@ -41,32 +41,33 @@ type ServiceDiscoveryServiceInformer interface {
 type serviceDiscoveryServiceInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewServiceDiscoveryServiceInformer constructs a new informer for ServiceDiscoveryService type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewServiceDiscoveryServiceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredServiceDiscoveryServiceInformer(client, resyncPeriod, indexers, nil)
+func NewServiceDiscoveryServiceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredServiceDiscoveryServiceInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredServiceDiscoveryServiceInformer constructs a new informer for ServiceDiscoveryService type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredServiceDiscoveryServiceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredServiceDiscoveryServiceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ServiceDiscoveryServices().List(options)
+				return client.AwsV1alpha1().ServiceDiscoveryServices(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ServiceDiscoveryServices().Watch(options)
+				return client.AwsV1alpha1().ServiceDiscoveryServices(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.ServiceDiscoveryService{},
@@ -76,7 +77,7 @@ func NewFilteredServiceDiscoveryServiceInformer(client versioned.Interface, resy
 }
 
 func (f *serviceDiscoveryServiceInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredServiceDiscoveryServiceInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredServiceDiscoveryServiceInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *serviceDiscoveryServiceInformer) Informer() cache.SharedIndexInformer {

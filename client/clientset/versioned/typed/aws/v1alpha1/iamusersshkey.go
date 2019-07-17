@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// IamUserSshKeysGetter has a method to return a IamUserSshKeyInterface.
+// IamUserSSHKeysGetter has a method to return a IamUserSSHKeyInterface.
 // A group's client should implement this interface.
-type IamUserSshKeysGetter interface {
-	IamUserSshKeys() IamUserSshKeyInterface
+type IamUserSSHKeysGetter interface {
+	IamUserSSHKeys(namespace string) IamUserSSHKeyInterface
 }
 
-// IamUserSshKeyInterface has methods to work with IamUserSshKey resources.
-type IamUserSshKeyInterface interface {
-	Create(*v1alpha1.IamUserSshKey) (*v1alpha1.IamUserSshKey, error)
-	Update(*v1alpha1.IamUserSshKey) (*v1alpha1.IamUserSshKey, error)
-	UpdateStatus(*v1alpha1.IamUserSshKey) (*v1alpha1.IamUserSshKey, error)
+// IamUserSSHKeyInterface has methods to work with IamUserSSHKey resources.
+type IamUserSSHKeyInterface interface {
+	Create(*v1alpha1.IamUserSSHKey) (*v1alpha1.IamUserSSHKey, error)
+	Update(*v1alpha1.IamUserSSHKey) (*v1alpha1.IamUserSSHKey, error)
+	UpdateStatus(*v1alpha1.IamUserSSHKey) (*v1alpha1.IamUserSSHKey, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.IamUserSshKey, error)
-	List(opts v1.ListOptions) (*v1alpha1.IamUserSshKeyList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.IamUserSSHKey, error)
+	List(opts v1.ListOptions) (*v1alpha1.IamUserSSHKeyList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamUserSshKey, err error)
-	IamUserSshKeyExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamUserSSHKey, err error)
+	IamUserSSHKeyExpansion
 }
 
-// iamUserSshKeys implements IamUserSshKeyInterface
-type iamUserSshKeys struct {
+// iamUserSSHKeys implements IamUserSSHKeyInterface
+type iamUserSSHKeys struct {
 	client rest.Interface
+	ns     string
 }
 
-// newIamUserSshKeys returns a IamUserSshKeys
-func newIamUserSshKeys(c *AwsV1alpha1Client) *iamUserSshKeys {
-	return &iamUserSshKeys{
+// newIamUserSSHKeys returns a IamUserSSHKeys
+func newIamUserSSHKeys(c *AwsV1alpha1Client, namespace string) *iamUserSSHKeys {
+	return &iamUserSSHKeys{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the iamUserSshKey, and returns the corresponding iamUserSshKey object, and an error if there is any.
-func (c *iamUserSshKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.IamUserSshKey, err error) {
-	result = &v1alpha1.IamUserSshKey{}
+// Get takes name of the iamUserSSHKey, and returns the corresponding iamUserSSHKey object, and an error if there is any.
+func (c *iamUserSSHKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.IamUserSSHKey, err error) {
+	result = &v1alpha1.IamUserSSHKey{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamusersshkeys").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *iamUserSshKeys) Get(name string, options v1.GetOptions) (result *v1alph
 	return
 }
 
-// List takes label and field selectors, and returns the list of IamUserSshKeys that match those selectors.
-func (c *iamUserSshKeys) List(opts v1.ListOptions) (result *v1alpha1.IamUserSshKeyList, err error) {
+// List takes label and field selectors, and returns the list of IamUserSSHKeys that match those selectors.
+func (c *iamUserSSHKeys) List(opts v1.ListOptions) (result *v1alpha1.IamUserSSHKeyList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.IamUserSshKeyList{}
+	result = &v1alpha1.IamUserSSHKeyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamusersshkeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *iamUserSshKeys) List(opts v1.ListOptions) (result *v1alpha1.IamUserSshK
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested iamUserSshKeys.
-func (c *iamUserSshKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested iamUserSSHKeys.
+func (c *iamUserSSHKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iamusersshkeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a iamUserSshKey and creates it.  Returns the server's representation of the iamUserSshKey, and an error, if there is any.
-func (c *iamUserSshKeys) Create(iamUserSshKey *v1alpha1.IamUserSshKey) (result *v1alpha1.IamUserSshKey, err error) {
-	result = &v1alpha1.IamUserSshKey{}
+// Create takes the representation of a iamUserSSHKey and creates it.  Returns the server's representation of the iamUserSSHKey, and an error, if there is any.
+func (c *iamUserSSHKeys) Create(iamUserSSHKey *v1alpha1.IamUserSSHKey) (result *v1alpha1.IamUserSSHKey, err error) {
+	result = &v1alpha1.IamUserSSHKey{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iamusersshkeys").
-		Body(iamUserSshKey).
+		Body(iamUserSSHKey).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a iamUserSshKey and updates it. Returns the server's representation of the iamUserSshKey, and an error, if there is any.
-func (c *iamUserSshKeys) Update(iamUserSshKey *v1alpha1.IamUserSshKey) (result *v1alpha1.IamUserSshKey, err error) {
-	result = &v1alpha1.IamUserSshKey{}
+// Update takes the representation of a iamUserSSHKey and updates it. Returns the server's representation of the iamUserSSHKey, and an error, if there is any.
+func (c *iamUserSSHKeys) Update(iamUserSSHKey *v1alpha1.IamUserSSHKey) (result *v1alpha1.IamUserSSHKey, err error) {
+	result = &v1alpha1.IamUserSSHKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamusersshkeys").
-		Name(iamUserSshKey.Name).
-		Body(iamUserSshKey).
+		Name(iamUserSSHKey.Name).
+		Body(iamUserSSHKey).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *iamUserSshKeys) Update(iamUserSshKey *v1alpha1.IamUserSshKey) (result *
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *iamUserSshKeys) UpdateStatus(iamUserSshKey *v1alpha1.IamUserSshKey) (result *v1alpha1.IamUserSshKey, err error) {
-	result = &v1alpha1.IamUserSshKey{}
+func (c *iamUserSSHKeys) UpdateStatus(iamUserSSHKey *v1alpha1.IamUserSSHKey) (result *v1alpha1.IamUserSSHKey, err error) {
+	result = &v1alpha1.IamUserSSHKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamusersshkeys").
-		Name(iamUserSshKey.Name).
+		Name(iamUserSSHKey.Name).
 		SubResource("status").
-		Body(iamUserSshKey).
+		Body(iamUserSSHKey).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the iamUserSshKey and deletes it. Returns an error if one occurs.
-func (c *iamUserSshKeys) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the iamUserSSHKey and deletes it. Returns an error if one occurs.
+func (c *iamUserSSHKeys) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamusersshkeys").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *iamUserSshKeys) Delete(name string, options *v1.DeleteOptions) error {
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *iamUserSshKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *iamUserSSHKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamusersshkeys").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *iamUserSshKeys) DeleteCollection(options *v1.DeleteOptions, listOptions
 		Error()
 }
 
-// Patch applies the patch and returns the patched iamUserSshKey.
-func (c *iamUserSshKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamUserSshKey, err error) {
-	result = &v1alpha1.IamUserSshKey{}
+// Patch applies the patch and returns the patched iamUserSSHKey.
+func (c *iamUserSSHKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamUserSSHKey, err error) {
+	result = &v1alpha1.IamUserSSHKey{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iamusersshkeys").
 		SubResource(subresources...).
 		Name(name).

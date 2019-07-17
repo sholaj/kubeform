@@ -399,17 +399,27 @@ spec:
           properties:
             name:
               type: string
-            remote_virtual_network_id:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            remoteVirtualNetworkID:
               type: string
-            resource_group_name:
+            resourceGroupName:
               type: string
-            virtual_network_name:
+            virtualNetworkName:
               type: string
           required:
           - name
-          - remote_virtual_network_id
-          - resource_group_name
-          - virtual_network_name
+          - providerRef
+          - remoteVirtualNetworkID
+          - resourceGroupName
+          - virtualNetworkName
           type: object
         status:
           properties:
@@ -420,6 +430,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -29,8 +29,8 @@ import (
 type ApplicationSecurityGroupLister interface {
 	// List lists all ApplicationSecurityGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApplicationSecurityGroup, err error)
-	// Get retrieves the ApplicationSecurityGroup from the index for a given name.
-	Get(name string) (*v1alpha1.ApplicationSecurityGroup, error)
+	// ApplicationSecurityGroups returns an object that can list and get ApplicationSecurityGroups.
+	ApplicationSecurityGroups(namespace string) ApplicationSecurityGroupNamespaceLister
 	ApplicationSecurityGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *applicationSecurityGroupLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the ApplicationSecurityGroup from the index for a given name.
-func (s *applicationSecurityGroupLister) Get(name string) (*v1alpha1.ApplicationSecurityGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApplicationSecurityGroups returns an object that can list and get ApplicationSecurityGroups.
+func (s *applicationSecurityGroupLister) ApplicationSecurityGroups(namespace string) ApplicationSecurityGroupNamespaceLister {
+	return applicationSecurityGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApplicationSecurityGroupNamespaceLister helps list and get ApplicationSecurityGroups.
+type ApplicationSecurityGroupNamespaceLister interface {
+	// List lists all ApplicationSecurityGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApplicationSecurityGroup, err error)
+	// Get retrieves the ApplicationSecurityGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApplicationSecurityGroup, error)
+	ApplicationSecurityGroupNamespaceListerExpansion
+}
+
+// applicationSecurityGroupNamespaceLister implements the ApplicationSecurityGroupNamespaceLister
+// interface.
+type applicationSecurityGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApplicationSecurityGroups in the indexer for a given namespace.
+func (s applicationSecurityGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApplicationSecurityGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApplicationSecurityGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApplicationSecurityGroup from the indexer for a given namespace and name.
+func (s applicationSecurityGroupNamespaceLister) Get(name string) (*v1alpha1.ApplicationSecurityGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

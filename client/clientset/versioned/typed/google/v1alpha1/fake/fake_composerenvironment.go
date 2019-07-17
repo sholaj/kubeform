@@ -31,6 +31,7 @@ import (
 // FakeComposerEnvironments implements ComposerEnvironmentInterface
 type FakeComposerEnvironments struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var composerenvironmentsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "composerenvironments"}
@@ -40,7 +41,8 @@ var composerenvironmentsKind = schema.GroupVersionKind{Group: "google.kubeform.c
 // Get takes name of the composerEnvironment, and returns the corresponding composerEnvironment object, and an error if there is any.
 func (c *FakeComposerEnvironments) Get(name string, options v1.GetOptions) (result *v1alpha1.ComposerEnvironment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(composerenvironmentsResource, name), &v1alpha1.ComposerEnvironment{})
+		Invokes(testing.NewGetAction(composerenvironmentsResource, c.ns, name), &v1alpha1.ComposerEnvironment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComposerEnvironments) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of ComposerEnvironments that match those selectors.
 func (c *FakeComposerEnvironments) List(opts v1.ListOptions) (result *v1alpha1.ComposerEnvironmentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(composerenvironmentsResource, composerenvironmentsKind, opts), &v1alpha1.ComposerEnvironmentList{})
+		Invokes(testing.NewListAction(composerenvironmentsResource, composerenvironmentsKind, c.ns, opts), &v1alpha1.ComposerEnvironmentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComposerEnvironments) List(opts v1.ListOptions) (result *v1alpha1.C
 // Watch returns a watch.Interface that watches the requested composerEnvironments.
 func (c *FakeComposerEnvironments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(composerenvironmentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(composerenvironmentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a composerEnvironment and creates it.  Returns the server's representation of the composerEnvironment, and an error, if there is any.
 func (c *FakeComposerEnvironments) Create(composerEnvironment *v1alpha1.ComposerEnvironment) (result *v1alpha1.ComposerEnvironment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(composerenvironmentsResource, composerEnvironment), &v1alpha1.ComposerEnvironment{})
+		Invokes(testing.NewCreateAction(composerenvironmentsResource, c.ns, composerEnvironment), &v1alpha1.ComposerEnvironment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComposerEnvironments) Create(composerEnvironment *v1alpha1.Composer
 // Update takes the representation of a composerEnvironment and updates it. Returns the server's representation of the composerEnvironment, and an error, if there is any.
 func (c *FakeComposerEnvironments) Update(composerEnvironment *v1alpha1.ComposerEnvironment) (result *v1alpha1.ComposerEnvironment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(composerenvironmentsResource, composerEnvironment), &v1alpha1.ComposerEnvironment{})
+		Invokes(testing.NewUpdateAction(composerenvironmentsResource, c.ns, composerEnvironment), &v1alpha1.ComposerEnvironment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComposerEnvironments) Update(composerEnvironment *v1alpha1.Composer
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComposerEnvironments) UpdateStatus(composerEnvironment *v1alpha1.ComposerEnvironment) (*v1alpha1.ComposerEnvironment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(composerenvironmentsResource, "status", composerEnvironment), &v1alpha1.ComposerEnvironment{})
+		Invokes(testing.NewUpdateSubresourceAction(composerenvironmentsResource, "status", c.ns, composerEnvironment), &v1alpha1.ComposerEnvironment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComposerEnvironments) UpdateStatus(composerEnvironment *v1alpha1.Co
 // Delete takes name of the composerEnvironment and deletes it. Returns an error if one occurs.
 func (c *FakeComposerEnvironments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(composerenvironmentsResource, name), &v1alpha1.ComposerEnvironment{})
+		Invokes(testing.NewDeleteAction(composerenvironmentsResource, c.ns, name), &v1alpha1.ComposerEnvironment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComposerEnvironments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(composerenvironmentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(composerenvironmentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComposerEnvironmentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComposerEnvironments) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched composerEnvironment.
 func (c *FakeComposerEnvironments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComposerEnvironment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(composerenvironmentsResource, name, pt, data, subresources...), &v1alpha1.ComposerEnvironment{})
+		Invokes(testing.NewPatchSubresourceAction(composerenvironmentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComposerEnvironment{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeDataLakeStoreFirewallRules implements DataLakeStoreFirewallRuleInterface
 type FakeDataLakeStoreFirewallRules struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var datalakestorefirewallrulesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "datalakestorefirewallrules"}
@@ -40,7 +41,8 @@ var datalakestorefirewallrulesKind = schema.GroupVersionKind{Group: "azurerm.kub
 // Get takes name of the dataLakeStoreFirewallRule, and returns the corresponding dataLakeStoreFirewallRule object, and an error if there is any.
 func (c *FakeDataLakeStoreFirewallRules) Get(name string, options v1.GetOptions) (result *v1alpha1.DataLakeStoreFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(datalakestorefirewallrulesResource, name), &v1alpha1.DataLakeStoreFirewallRule{})
+		Invokes(testing.NewGetAction(datalakestorefirewallrulesResource, c.ns, name), &v1alpha1.DataLakeStoreFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDataLakeStoreFirewallRules) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of DataLakeStoreFirewallRules that match those selectors.
 func (c *FakeDataLakeStoreFirewallRules) List(opts v1.ListOptions) (result *v1alpha1.DataLakeStoreFirewallRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(datalakestorefirewallrulesResource, datalakestorefirewallrulesKind, opts), &v1alpha1.DataLakeStoreFirewallRuleList{})
+		Invokes(testing.NewListAction(datalakestorefirewallrulesResource, datalakestorefirewallrulesKind, c.ns, opts), &v1alpha1.DataLakeStoreFirewallRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDataLakeStoreFirewallRules) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested dataLakeStoreFirewallRules.
 func (c *FakeDataLakeStoreFirewallRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(datalakestorefirewallrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(datalakestorefirewallrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dataLakeStoreFirewallRule and creates it.  Returns the server's representation of the dataLakeStoreFirewallRule, and an error, if there is any.
 func (c *FakeDataLakeStoreFirewallRules) Create(dataLakeStoreFirewallRule *v1alpha1.DataLakeStoreFirewallRule) (result *v1alpha1.DataLakeStoreFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(datalakestorefirewallrulesResource, dataLakeStoreFirewallRule), &v1alpha1.DataLakeStoreFirewallRule{})
+		Invokes(testing.NewCreateAction(datalakestorefirewallrulesResource, c.ns, dataLakeStoreFirewallRule), &v1alpha1.DataLakeStoreFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDataLakeStoreFirewallRules) Create(dataLakeStoreFirewallRule *v1alp
 // Update takes the representation of a dataLakeStoreFirewallRule and updates it. Returns the server's representation of the dataLakeStoreFirewallRule, and an error, if there is any.
 func (c *FakeDataLakeStoreFirewallRules) Update(dataLakeStoreFirewallRule *v1alpha1.DataLakeStoreFirewallRule) (result *v1alpha1.DataLakeStoreFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(datalakestorefirewallrulesResource, dataLakeStoreFirewallRule), &v1alpha1.DataLakeStoreFirewallRule{})
+		Invokes(testing.NewUpdateAction(datalakestorefirewallrulesResource, c.ns, dataLakeStoreFirewallRule), &v1alpha1.DataLakeStoreFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDataLakeStoreFirewallRules) Update(dataLakeStoreFirewallRule *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDataLakeStoreFirewallRules) UpdateStatus(dataLakeStoreFirewallRule *v1alpha1.DataLakeStoreFirewallRule) (*v1alpha1.DataLakeStoreFirewallRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(datalakestorefirewallrulesResource, "status", dataLakeStoreFirewallRule), &v1alpha1.DataLakeStoreFirewallRule{})
+		Invokes(testing.NewUpdateSubresourceAction(datalakestorefirewallrulesResource, "status", c.ns, dataLakeStoreFirewallRule), &v1alpha1.DataLakeStoreFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDataLakeStoreFirewallRules) UpdateStatus(dataLakeStoreFirewallRule 
 // Delete takes name of the dataLakeStoreFirewallRule and deletes it. Returns an error if one occurs.
 func (c *FakeDataLakeStoreFirewallRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(datalakestorefirewallrulesResource, name), &v1alpha1.DataLakeStoreFirewallRule{})
+		Invokes(testing.NewDeleteAction(datalakestorefirewallrulesResource, c.ns, name), &v1alpha1.DataLakeStoreFirewallRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDataLakeStoreFirewallRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(datalakestorefirewallrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(datalakestorefirewallrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DataLakeStoreFirewallRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDataLakeStoreFirewallRules) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched dataLakeStoreFirewallRule.
 func (c *FakeDataLakeStoreFirewallRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataLakeStoreFirewallRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(datalakestorefirewallrulesResource, name, pt, data, subresources...), &v1alpha1.DataLakeStoreFirewallRule{})
+		Invokes(testing.NewPatchSubresourceAction(datalakestorefirewallrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.DataLakeStoreFirewallRule{})
+
 	if obj == nil {
 		return nil, err
 	}

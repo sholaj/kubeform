@@ -32,7 +32,7 @@ import (
 // ServicebusTopicAuthorizationRulesGetter has a method to return a ServicebusTopicAuthorizationRuleInterface.
 // A group's client should implement this interface.
 type ServicebusTopicAuthorizationRulesGetter interface {
-	ServicebusTopicAuthorizationRules() ServicebusTopicAuthorizationRuleInterface
+	ServicebusTopicAuthorizationRules(namespace string) ServicebusTopicAuthorizationRuleInterface
 }
 
 // ServicebusTopicAuthorizationRuleInterface has methods to work with ServicebusTopicAuthorizationRule resources.
@@ -52,12 +52,14 @@ type ServicebusTopicAuthorizationRuleInterface interface {
 // servicebusTopicAuthorizationRules implements ServicebusTopicAuthorizationRuleInterface
 type servicebusTopicAuthorizationRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newServicebusTopicAuthorizationRules returns a ServicebusTopicAuthorizationRules
-func newServicebusTopicAuthorizationRules(c *AzurermV1alpha1Client) *servicebusTopicAuthorizationRules {
+func newServicebusTopicAuthorizationRules(c *AzurermV1alpha1Client, namespace string) *servicebusTopicAuthorizationRules {
 	return &servicebusTopicAuthorizationRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newServicebusTopicAuthorizationRules(c *AzurermV1alpha1Client) *servicebusT
 func (c *servicebusTopicAuthorizationRules) Get(name string, options v1.GetOptions) (result *v1alpha1.ServicebusTopicAuthorizationRule, err error) {
 	result = &v1alpha1.ServicebusTopicAuthorizationRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicebustopicauthorizationrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *servicebusTopicAuthorizationRules) List(opts v1.ListOptions) (result *v
 	}
 	result = &v1alpha1.ServicebusTopicAuthorizationRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicebustopicauthorizationrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *servicebusTopicAuthorizationRules) Watch(opts v1.ListOptions) (watch.In
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("servicebustopicauthorizationrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *servicebusTopicAuthorizationRules) Watch(opts v1.ListOptions) (watch.In
 func (c *servicebusTopicAuthorizationRules) Create(servicebusTopicAuthorizationRule *v1alpha1.ServicebusTopicAuthorizationRule) (result *v1alpha1.ServicebusTopicAuthorizationRule, err error) {
 	result = &v1alpha1.ServicebusTopicAuthorizationRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("servicebustopicauthorizationrules").
 		Body(servicebusTopicAuthorizationRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *servicebusTopicAuthorizationRules) Create(servicebusTopicAuthorizationR
 func (c *servicebusTopicAuthorizationRules) Update(servicebusTopicAuthorizationRule *v1alpha1.ServicebusTopicAuthorizationRule) (result *v1alpha1.ServicebusTopicAuthorizationRule, err error) {
 	result = &v1alpha1.ServicebusTopicAuthorizationRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicebustopicauthorizationrules").
 		Name(servicebusTopicAuthorizationRule.Name).
 		Body(servicebusTopicAuthorizationRule).
@@ -132,6 +139,7 @@ func (c *servicebusTopicAuthorizationRules) Update(servicebusTopicAuthorizationR
 func (c *servicebusTopicAuthorizationRules) UpdateStatus(servicebusTopicAuthorizationRule *v1alpha1.ServicebusTopicAuthorizationRule) (result *v1alpha1.ServicebusTopicAuthorizationRule, err error) {
 	result = &v1alpha1.ServicebusTopicAuthorizationRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicebustopicauthorizationrules").
 		Name(servicebusTopicAuthorizationRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *servicebusTopicAuthorizationRules) UpdateStatus(servicebusTopicAuthoriz
 // Delete takes name of the servicebusTopicAuthorizationRule and deletes it. Returns an error if one occurs.
 func (c *servicebusTopicAuthorizationRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicebustopicauthorizationrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *servicebusTopicAuthorizationRules) DeleteCollection(options *v1.DeleteO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicebustopicauthorizationrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *servicebusTopicAuthorizationRules) DeleteCollection(options *v1.DeleteO
 func (c *servicebusTopicAuthorizationRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServicebusTopicAuthorizationRule, err error) {
 	result = &v1alpha1.ServicebusTopicAuthorizationRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("servicebustopicauthorizationrules").
 		SubResource(subresources...).
 		Name(name).

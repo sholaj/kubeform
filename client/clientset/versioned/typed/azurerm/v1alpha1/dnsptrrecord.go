@@ -32,7 +32,7 @@ import (
 // DnsPtrRecordsGetter has a method to return a DnsPtrRecordInterface.
 // A group's client should implement this interface.
 type DnsPtrRecordsGetter interface {
-	DnsPtrRecords() DnsPtrRecordInterface
+	DnsPtrRecords(namespace string) DnsPtrRecordInterface
 }
 
 // DnsPtrRecordInterface has methods to work with DnsPtrRecord resources.
@@ -52,12 +52,14 @@ type DnsPtrRecordInterface interface {
 // dnsPtrRecords implements DnsPtrRecordInterface
 type dnsPtrRecords struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDnsPtrRecords returns a DnsPtrRecords
-func newDnsPtrRecords(c *AzurermV1alpha1Client) *dnsPtrRecords {
+func newDnsPtrRecords(c *AzurermV1alpha1Client, namespace string) *dnsPtrRecords {
 	return &dnsPtrRecords{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDnsPtrRecords(c *AzurermV1alpha1Client) *dnsPtrRecords {
 func (c *dnsPtrRecords) Get(name string, options v1.GetOptions) (result *v1alpha1.DnsPtrRecord, err error) {
 	result = &v1alpha1.DnsPtrRecord{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dnsptrrecords").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dnsPtrRecords) List(opts v1.ListOptions) (result *v1alpha1.DnsPtrRecord
 	}
 	result = &v1alpha1.DnsPtrRecordList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dnsptrrecords").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dnsPtrRecords) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dnsptrrecords").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dnsPtrRecords) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dnsPtrRecords) Create(dnsPtrRecord *v1alpha1.DnsPtrRecord) (result *v1alpha1.DnsPtrRecord, err error) {
 	result = &v1alpha1.DnsPtrRecord{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dnsptrrecords").
 		Body(dnsPtrRecord).
 		Do().
@@ -118,6 +124,7 @@ func (c *dnsPtrRecords) Create(dnsPtrRecord *v1alpha1.DnsPtrRecord) (result *v1a
 func (c *dnsPtrRecords) Update(dnsPtrRecord *v1alpha1.DnsPtrRecord) (result *v1alpha1.DnsPtrRecord, err error) {
 	result = &v1alpha1.DnsPtrRecord{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dnsptrrecords").
 		Name(dnsPtrRecord.Name).
 		Body(dnsPtrRecord).
@@ -132,6 +139,7 @@ func (c *dnsPtrRecords) Update(dnsPtrRecord *v1alpha1.DnsPtrRecord) (result *v1a
 func (c *dnsPtrRecords) UpdateStatus(dnsPtrRecord *v1alpha1.DnsPtrRecord) (result *v1alpha1.DnsPtrRecord, err error) {
 	result = &v1alpha1.DnsPtrRecord{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dnsptrrecords").
 		Name(dnsPtrRecord.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dnsPtrRecords) UpdateStatus(dnsPtrRecord *v1alpha1.DnsPtrRecord) (resul
 // Delete takes name of the dnsPtrRecord and deletes it. Returns an error if one occurs.
 func (c *dnsPtrRecords) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dnsptrrecords").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dnsPtrRecords) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dnsptrrecords").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dnsPtrRecords) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *dnsPtrRecords) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DnsPtrRecord, err error) {
 	result = &v1alpha1.DnsPtrRecord{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dnsptrrecords").
 		SubResource(subresources...).
 		Name(name).

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,53 +20,54 @@ type DefaultSecurityGroup struct {
 
 type DefaultSecurityGroupSpecEgress struct {
 	// +optional
-	CidrBlocks []string `json:"cidr_blocks,omitempty"`
+	CidrBlocks []string `json:"cidrBlocks,omitempty" tf:"cidr_blocks,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
-	FromPort    int    `json:"from_port"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
+	FromPort    int    `json:"fromPort" tf:"from_port"`
 	// +optional
-	Ipv6CidrBlocks []string `json:"ipv6_cidr_blocks,omitempty"`
+	Ipv6CIDRBlocks []string `json:"ipv6CIDRBlocks,omitempty" tf:"ipv6_cidr_blocks,omitempty"`
 	// +optional
-	PrefixListIds []string `json:"prefix_list_ids,omitempty"`
-	Protocol      string   `json:"protocol"`
+	PrefixListIDS []string `json:"prefixListIDS,omitempty" tf:"prefix_list_ids,omitempty"`
+	Protocol      string   `json:"protocol" tf:"protocol"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SecurityGroups []string `json:"security_groups,omitempty"`
+	SecurityGroups []string `json:"securityGroups,omitempty" tf:"security_groups,omitempty"`
 	// +optional
-	Self   bool `json:"self,omitempty"`
-	ToPort int  `json:"to_port"`
+	Self   bool `json:"self,omitempty" tf:"self,omitempty"`
+	ToPort int  `json:"toPort" tf:"to_port"`
 }
 
 type DefaultSecurityGroupSpecIngress struct {
 	// +optional
-	CidrBlocks []string `json:"cidr_blocks,omitempty"`
+	CidrBlocks []string `json:"cidrBlocks,omitempty" tf:"cidr_blocks,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
-	FromPort    int    `json:"from_port"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
+	FromPort    int    `json:"fromPort" tf:"from_port"`
 	// +optional
-	Ipv6CidrBlocks []string `json:"ipv6_cidr_blocks,omitempty"`
+	Ipv6CIDRBlocks []string `json:"ipv6CIDRBlocks,omitempty" tf:"ipv6_cidr_blocks,omitempty"`
 	// +optional
-	PrefixListIds []string `json:"prefix_list_ids,omitempty"`
-	Protocol      string   `json:"protocol"`
+	PrefixListIDS []string `json:"prefixListIDS,omitempty" tf:"prefix_list_ids,omitempty"`
+	Protocol      string   `json:"protocol" tf:"protocol"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	SecurityGroups []string `json:"security_groups,omitempty"`
+	SecurityGroups []string `json:"securityGroups,omitempty" tf:"security_groups,omitempty"`
 	// +optional
-	Self   bool `json:"self,omitempty"`
-	ToPort int  `json:"to_port"`
+	Self   bool `json:"self,omitempty" tf:"self,omitempty"`
+	ToPort int  `json:"toPort" tf:"to_port"`
 }
 
 type DefaultSecurityGroupSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Egress *[]DefaultSecurityGroupSpec `json:"egress,omitempty"`
+	Egress []DefaultSecurityGroupSpecEgress `json:"egress,omitempty" tf:"egress,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Ingress *[]DefaultSecurityGroupSpec `json:"ingress,omitempty"`
+	Ingress []DefaultSecurityGroupSpecIngress `json:"ingress,omitempty" tf:"ingress,omitempty"`
 	// +optional
-	RevokeRulesOnDelete bool `json:"revoke_rules_on_delete,omitempty"`
+	RevokeRulesOnDelete bool `json:"revokeRulesOnDelete,omitempty" tf:"revoke_rules_on_delete,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DefaultSecurityGroupStatus struct {
@@ -74,7 +75,9 @@ type DefaultSecurityGroupStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

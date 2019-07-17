@@ -32,7 +32,7 @@ import (
 // ElastictranscoderPipelinesGetter has a method to return a ElastictranscoderPipelineInterface.
 // A group's client should implement this interface.
 type ElastictranscoderPipelinesGetter interface {
-	ElastictranscoderPipelines() ElastictranscoderPipelineInterface
+	ElastictranscoderPipelines(namespace string) ElastictranscoderPipelineInterface
 }
 
 // ElastictranscoderPipelineInterface has methods to work with ElastictranscoderPipeline resources.
@@ -52,12 +52,14 @@ type ElastictranscoderPipelineInterface interface {
 // elastictranscoderPipelines implements ElastictranscoderPipelineInterface
 type elastictranscoderPipelines struct {
 	client rest.Interface
+	ns     string
 }
 
 // newElastictranscoderPipelines returns a ElastictranscoderPipelines
-func newElastictranscoderPipelines(c *AwsV1alpha1Client) *elastictranscoderPipelines {
+func newElastictranscoderPipelines(c *AwsV1alpha1Client, namespace string) *elastictranscoderPipelines {
 	return &elastictranscoderPipelines{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newElastictranscoderPipelines(c *AwsV1alpha1Client) *elastictranscoderPipel
 func (c *elastictranscoderPipelines) Get(name string, options v1.GetOptions) (result *v1alpha1.ElastictranscoderPipeline, err error) {
 	result = &v1alpha1.ElastictranscoderPipeline{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elastictranscoderpipelines").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *elastictranscoderPipelines) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.ElastictranscoderPipelineList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elastictranscoderpipelines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *elastictranscoderPipelines) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("elastictranscoderpipelines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *elastictranscoderPipelines) Watch(opts v1.ListOptions) (watch.Interface
 func (c *elastictranscoderPipelines) Create(elastictranscoderPipeline *v1alpha1.ElastictranscoderPipeline) (result *v1alpha1.ElastictranscoderPipeline, err error) {
 	result = &v1alpha1.ElastictranscoderPipeline{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("elastictranscoderpipelines").
 		Body(elastictranscoderPipeline).
 		Do().
@@ -118,6 +124,7 @@ func (c *elastictranscoderPipelines) Create(elastictranscoderPipeline *v1alpha1.
 func (c *elastictranscoderPipelines) Update(elastictranscoderPipeline *v1alpha1.ElastictranscoderPipeline) (result *v1alpha1.ElastictranscoderPipeline, err error) {
 	result = &v1alpha1.ElastictranscoderPipeline{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elastictranscoderpipelines").
 		Name(elastictranscoderPipeline.Name).
 		Body(elastictranscoderPipeline).
@@ -132,6 +139,7 @@ func (c *elastictranscoderPipelines) Update(elastictranscoderPipeline *v1alpha1.
 func (c *elastictranscoderPipelines) UpdateStatus(elastictranscoderPipeline *v1alpha1.ElastictranscoderPipeline) (result *v1alpha1.ElastictranscoderPipeline, err error) {
 	result = &v1alpha1.ElastictranscoderPipeline{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elastictranscoderpipelines").
 		Name(elastictranscoderPipeline.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *elastictranscoderPipelines) UpdateStatus(elastictranscoderPipeline *v1a
 // Delete takes name of the elastictranscoderPipeline and deletes it. Returns an error if one occurs.
 func (c *elastictranscoderPipelines) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elastictranscoderpipelines").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *elastictranscoderPipelines) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elastictranscoderpipelines").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *elastictranscoderPipelines) DeleteCollection(options *v1.DeleteOptions,
 func (c *elastictranscoderPipelines) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ElastictranscoderPipeline, err error) {
 	result = &v1alpha1.ElastictranscoderPipeline{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("elastictranscoderpipelines").
 		SubResource(subresources...).
 		Name(name).

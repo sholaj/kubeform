@@ -31,6 +31,7 @@ import (
 // FakeSfnActivities implements SfnActivityInterface
 type FakeSfnActivities struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var sfnactivitiesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "sfnactivities"}
@@ -40,7 +41,8 @@ var sfnactivitiesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Versi
 // Get takes name of the sfnActivity, and returns the corresponding sfnActivity object, and an error if there is any.
 func (c *FakeSfnActivities) Get(name string, options v1.GetOptions) (result *v1alpha1.SfnActivity, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sfnactivitiesResource, name), &v1alpha1.SfnActivity{})
+		Invokes(testing.NewGetAction(sfnactivitiesResource, c.ns, name), &v1alpha1.SfnActivity{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSfnActivities) Get(name string, options v1.GetOptions) (result *v1a
 // List takes label and field selectors, and returns the list of SfnActivities that match those selectors.
 func (c *FakeSfnActivities) List(opts v1.ListOptions) (result *v1alpha1.SfnActivityList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sfnactivitiesResource, sfnactivitiesKind, opts), &v1alpha1.SfnActivityList{})
+		Invokes(testing.NewListAction(sfnactivitiesResource, sfnactivitiesKind, c.ns, opts), &v1alpha1.SfnActivityList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSfnActivities) List(opts v1.ListOptions) (result *v1alpha1.SfnActiv
 // Watch returns a watch.Interface that watches the requested sfnActivities.
 func (c *FakeSfnActivities) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sfnactivitiesResource, opts))
+		InvokesWatch(testing.NewWatchAction(sfnactivitiesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sfnActivity and creates it.  Returns the server's representation of the sfnActivity, and an error, if there is any.
 func (c *FakeSfnActivities) Create(sfnActivity *v1alpha1.SfnActivity) (result *v1alpha1.SfnActivity, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sfnactivitiesResource, sfnActivity), &v1alpha1.SfnActivity{})
+		Invokes(testing.NewCreateAction(sfnactivitiesResource, c.ns, sfnActivity), &v1alpha1.SfnActivity{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSfnActivities) Create(sfnActivity *v1alpha1.SfnActivity) (result *v
 // Update takes the representation of a sfnActivity and updates it. Returns the server's representation of the sfnActivity, and an error, if there is any.
 func (c *FakeSfnActivities) Update(sfnActivity *v1alpha1.SfnActivity) (result *v1alpha1.SfnActivity, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sfnactivitiesResource, sfnActivity), &v1alpha1.SfnActivity{})
+		Invokes(testing.NewUpdateAction(sfnactivitiesResource, c.ns, sfnActivity), &v1alpha1.SfnActivity{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSfnActivities) Update(sfnActivity *v1alpha1.SfnActivity) (result *v
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSfnActivities) UpdateStatus(sfnActivity *v1alpha1.SfnActivity) (*v1alpha1.SfnActivity, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sfnactivitiesResource, "status", sfnActivity), &v1alpha1.SfnActivity{})
+		Invokes(testing.NewUpdateSubresourceAction(sfnactivitiesResource, "status", c.ns, sfnActivity), &v1alpha1.SfnActivity{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSfnActivities) UpdateStatus(sfnActivity *v1alpha1.SfnActivity) (*v1
 // Delete takes name of the sfnActivity and deletes it. Returns an error if one occurs.
 func (c *FakeSfnActivities) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sfnactivitiesResource, name), &v1alpha1.SfnActivity{})
+		Invokes(testing.NewDeleteAction(sfnactivitiesResource, c.ns, name), &v1alpha1.SfnActivity{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSfnActivities) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sfnactivitiesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sfnactivitiesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SfnActivityList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSfnActivities) DeleteCollection(options *v1.DeleteOptions, listOpti
 // Patch applies the patch and returns the patched sfnActivity.
 func (c *FakeSfnActivities) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SfnActivity, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sfnactivitiesResource, name, pt, data, subresources...), &v1alpha1.SfnActivity{})
+		Invokes(testing.NewPatchSubresourceAction(sfnactivitiesResource, c.ns, name, pt, data, subresources...), &v1alpha1.SfnActivity{})
+
 	if obj == nil {
 		return nil, err
 	}

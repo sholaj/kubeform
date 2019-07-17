@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/google/v1alpha1"
 )
 
-// ComputeHttpsHealthCheckInformer provides access to a shared informer and lister for
-// ComputeHttpsHealthChecks.
-type ComputeHttpsHealthCheckInformer interface {
+// ComputeHTTPSHealthCheckInformer provides access to a shared informer and lister for
+// ComputeHTTPSHealthChecks.
+type ComputeHTTPSHealthCheckInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.ComputeHttpsHealthCheckLister
+	Lister() v1alpha1.ComputeHTTPSHealthCheckLister
 }
 
-type computeHttpsHealthCheckInformer struct {
+type computeHTTPSHealthCheckInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewComputeHttpsHealthCheckInformer constructs a new informer for ComputeHttpsHealthCheck type.
+// NewComputeHTTPSHealthCheckInformer constructs a new informer for ComputeHTTPSHealthCheck type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewComputeHttpsHealthCheckInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredComputeHttpsHealthCheckInformer(client, resyncPeriod, indexers, nil)
+func NewComputeHTTPSHealthCheckInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredComputeHTTPSHealthCheckInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredComputeHttpsHealthCheckInformer constructs a new informer for ComputeHttpsHealthCheck type.
+// NewFilteredComputeHTTPSHealthCheckInformer constructs a new informer for ComputeHTTPSHealthCheck type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredComputeHttpsHealthCheckInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredComputeHTTPSHealthCheckInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeHttpsHealthChecks().List(options)
+				return client.GoogleV1alpha1().ComputeHTTPSHealthChecks(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeHttpsHealthChecks().Watch(options)
+				return client.GoogleV1alpha1().ComputeHTTPSHealthChecks(namespace).Watch(options)
 			},
 		},
-		&googlev1alpha1.ComputeHttpsHealthCheck{},
+		&googlev1alpha1.ComputeHTTPSHealthCheck{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *computeHttpsHealthCheckInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredComputeHttpsHealthCheckInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *computeHTTPSHealthCheckInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredComputeHTTPSHealthCheckInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *computeHttpsHealthCheckInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&googlev1alpha1.ComputeHttpsHealthCheck{}, f.defaultInformer)
+func (f *computeHTTPSHealthCheckInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&googlev1alpha1.ComputeHTTPSHealthCheck{}, f.defaultInformer)
 }
 
-func (f *computeHttpsHealthCheckInformer) Lister() v1alpha1.ComputeHttpsHealthCheckLister {
-	return v1alpha1.NewComputeHttpsHealthCheckLister(f.Informer().GetIndexer())
+func (f *computeHTTPSHealthCheckInformer) Lister() v1alpha1.ComputeHTTPSHealthCheckLister {
+	return v1alpha1.NewComputeHTTPSHealthCheckLister(f.Informer().GetIndexer())
 }

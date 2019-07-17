@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// ApiManagementApiOperationLister helps list ApiManagementApiOperations.
-type ApiManagementApiOperationLister interface {
-	// List lists all ApiManagementApiOperations in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementApiOperation, err error)
-	// Get retrieves the ApiManagementApiOperation from the index for a given name.
-	Get(name string) (*v1alpha1.ApiManagementApiOperation, error)
-	ApiManagementApiOperationListerExpansion
+// ApiManagementAPIOperationLister helps list ApiManagementAPIOperations.
+type ApiManagementAPIOperationLister interface {
+	// List lists all ApiManagementAPIOperations in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPIOperation, err error)
+	// ApiManagementAPIOperations returns an object that can list and get ApiManagementAPIOperations.
+	ApiManagementAPIOperations(namespace string) ApiManagementAPIOperationNamespaceLister
+	ApiManagementAPIOperationListerExpansion
 }
 
-// apiManagementApiOperationLister implements the ApiManagementApiOperationLister interface.
-type apiManagementApiOperationLister struct {
+// apiManagementAPIOperationLister implements the ApiManagementAPIOperationLister interface.
+type apiManagementAPIOperationLister struct {
 	indexer cache.Indexer
 }
 
-// NewApiManagementApiOperationLister returns a new ApiManagementApiOperationLister.
-func NewApiManagementApiOperationLister(indexer cache.Indexer) ApiManagementApiOperationLister {
-	return &apiManagementApiOperationLister{indexer: indexer}
+// NewApiManagementAPIOperationLister returns a new ApiManagementAPIOperationLister.
+func NewApiManagementAPIOperationLister(indexer cache.Indexer) ApiManagementAPIOperationLister {
+	return &apiManagementAPIOperationLister{indexer: indexer}
 }
 
-// List lists all ApiManagementApiOperations in the indexer.
-func (s *apiManagementApiOperationLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementApiOperation, err error) {
+// List lists all ApiManagementAPIOperations in the indexer.
+func (s *apiManagementAPIOperationLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPIOperation, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ApiManagementApiOperation))
+		ret = append(ret, m.(*v1alpha1.ApiManagementAPIOperation))
 	})
 	return ret, err
 }
 
-// Get retrieves the ApiManagementApiOperation from the index for a given name.
-func (s *apiManagementApiOperationLister) Get(name string) (*v1alpha1.ApiManagementApiOperation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiManagementAPIOperations returns an object that can list and get ApiManagementAPIOperations.
+func (s *apiManagementAPIOperationLister) ApiManagementAPIOperations(namespace string) ApiManagementAPIOperationNamespaceLister {
+	return apiManagementAPIOperationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiManagementAPIOperationNamespaceLister helps list and get ApiManagementAPIOperations.
+type ApiManagementAPIOperationNamespaceLister interface {
+	// List lists all ApiManagementAPIOperations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPIOperation, err error)
+	// Get retrieves the ApiManagementAPIOperation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiManagementAPIOperation, error)
+	ApiManagementAPIOperationNamespaceListerExpansion
+}
+
+// apiManagementAPIOperationNamespaceLister implements the ApiManagementAPIOperationNamespaceLister
+// interface.
+type apiManagementAPIOperationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiManagementAPIOperations in the indexer for a given namespace.
+func (s apiManagementAPIOperationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPIOperation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiManagementAPIOperation))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiManagementAPIOperation from the indexer for a given namespace and name.
+func (s apiManagementAPIOperationNamespaceLister) Get(name string) (*v1alpha1.ApiManagementAPIOperation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("apimanagementapioperation"), name)
 	}
-	return obj.(*v1alpha1.ApiManagementApiOperation), nil
+	return obj.(*v1alpha1.ApiManagementAPIOperation), nil
 }

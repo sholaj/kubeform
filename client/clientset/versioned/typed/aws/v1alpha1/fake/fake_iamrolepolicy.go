@@ -31,6 +31,7 @@ import (
 // FakeIamRolePolicies implements IamRolePolicyInterface
 type FakeIamRolePolicies struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var iamrolepoliciesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "iamrolepolicies"}
@@ -40,7 +41,8 @@ var iamrolepoliciesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ver
 // Get takes name of the iamRolePolicy, and returns the corresponding iamRolePolicy object, and an error if there is any.
 func (c *FakeIamRolePolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.IamRolePolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iamrolepoliciesResource, name), &v1alpha1.IamRolePolicy{})
+		Invokes(testing.NewGetAction(iamrolepoliciesResource, c.ns, name), &v1alpha1.IamRolePolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIamRolePolicies) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of IamRolePolicies that match those selectors.
 func (c *FakeIamRolePolicies) List(opts v1.ListOptions) (result *v1alpha1.IamRolePolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iamrolepoliciesResource, iamrolepoliciesKind, opts), &v1alpha1.IamRolePolicyList{})
+		Invokes(testing.NewListAction(iamrolepoliciesResource, iamrolepoliciesKind, c.ns, opts), &v1alpha1.IamRolePolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIamRolePolicies) List(opts v1.ListOptions) (result *v1alpha1.IamRol
 // Watch returns a watch.Interface that watches the requested iamRolePolicies.
 func (c *FakeIamRolePolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iamrolepoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(iamrolepoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iamRolePolicy and creates it.  Returns the server's representation of the iamRolePolicy, and an error, if there is any.
 func (c *FakeIamRolePolicies) Create(iamRolePolicy *v1alpha1.IamRolePolicy) (result *v1alpha1.IamRolePolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iamrolepoliciesResource, iamRolePolicy), &v1alpha1.IamRolePolicy{})
+		Invokes(testing.NewCreateAction(iamrolepoliciesResource, c.ns, iamRolePolicy), &v1alpha1.IamRolePolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIamRolePolicies) Create(iamRolePolicy *v1alpha1.IamRolePolicy) (res
 // Update takes the representation of a iamRolePolicy and updates it. Returns the server's representation of the iamRolePolicy, and an error, if there is any.
 func (c *FakeIamRolePolicies) Update(iamRolePolicy *v1alpha1.IamRolePolicy) (result *v1alpha1.IamRolePolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iamrolepoliciesResource, iamRolePolicy), &v1alpha1.IamRolePolicy{})
+		Invokes(testing.NewUpdateAction(iamrolepoliciesResource, c.ns, iamRolePolicy), &v1alpha1.IamRolePolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIamRolePolicies) Update(iamRolePolicy *v1alpha1.IamRolePolicy) (res
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIamRolePolicies) UpdateStatus(iamRolePolicy *v1alpha1.IamRolePolicy) (*v1alpha1.IamRolePolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iamrolepoliciesResource, "status", iamRolePolicy), &v1alpha1.IamRolePolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(iamrolepoliciesResource, "status", c.ns, iamRolePolicy), &v1alpha1.IamRolePolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIamRolePolicies) UpdateStatus(iamRolePolicy *v1alpha1.IamRolePolicy
 // Delete takes name of the iamRolePolicy and deletes it. Returns an error if one occurs.
 func (c *FakeIamRolePolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iamrolepoliciesResource, name), &v1alpha1.IamRolePolicy{})
+		Invokes(testing.NewDeleteAction(iamrolepoliciesResource, c.ns, name), &v1alpha1.IamRolePolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIamRolePolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iamrolepoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iamrolepoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IamRolePolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIamRolePolicies) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched iamRolePolicy.
 func (c *FakeIamRolePolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamRolePolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iamrolepoliciesResource, name, pt, data, subresources...), &v1alpha1.IamRolePolicy{})
+		Invokes(testing.NewPatchSubresourceAction(iamrolepoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.IamRolePolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

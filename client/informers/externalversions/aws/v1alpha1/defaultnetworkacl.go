@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// DefaultNetworkAclInformer provides access to a shared informer and lister for
-// DefaultNetworkAcls.
-type DefaultNetworkAclInformer interface {
+// DefaultNetworkACLInformer provides access to a shared informer and lister for
+// DefaultNetworkACLs.
+type DefaultNetworkACLInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.DefaultNetworkAclLister
+	Lister() v1alpha1.DefaultNetworkACLLister
 }
 
-type defaultNetworkAclInformer struct {
+type defaultNetworkACLInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewDefaultNetworkAclInformer constructs a new informer for DefaultNetworkAcl type.
+// NewDefaultNetworkACLInformer constructs a new informer for DefaultNetworkACL type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDefaultNetworkAclInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDefaultNetworkAclInformer(client, resyncPeriod, indexers, nil)
+func NewDefaultNetworkACLInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDefaultNetworkACLInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredDefaultNetworkAclInformer constructs a new informer for DefaultNetworkAcl type.
+// NewFilteredDefaultNetworkACLInformer constructs a new informer for DefaultNetworkACL type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDefaultNetworkAclInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDefaultNetworkACLInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DefaultNetworkAcls().List(options)
+				return client.AwsV1alpha1().DefaultNetworkACLs(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DefaultNetworkAcls().Watch(options)
+				return client.AwsV1alpha1().DefaultNetworkACLs(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.DefaultNetworkAcl{},
+		&awsv1alpha1.DefaultNetworkACL{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *defaultNetworkAclInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDefaultNetworkAclInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *defaultNetworkACLInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredDefaultNetworkACLInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *defaultNetworkAclInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.DefaultNetworkAcl{}, f.defaultInformer)
+func (f *defaultNetworkACLInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.DefaultNetworkACL{}, f.defaultInformer)
 }
 
-func (f *defaultNetworkAclInformer) Lister() v1alpha1.DefaultNetworkAclLister {
-	return v1alpha1.NewDefaultNetworkAclLister(f.Informer().GetIndexer())
+func (f *defaultNetworkACLInformer) Lister() v1alpha1.DefaultNetworkACLLister {
+	return v1alpha1.NewDefaultNetworkACLLister(f.Informer().GetIndexer())
 }

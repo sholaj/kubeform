@@ -31,6 +31,7 @@ import (
 // FakeStorageAccounts implements StorageAccountInterface
 type FakeStorageAccounts struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var storageaccountsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "storageaccounts"}
@@ -40,7 +41,8 @@ var storageaccountsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com",
 // Get takes name of the storageAccount, and returns the corresponding storageAccount object, and an error if there is any.
 func (c *FakeStorageAccounts) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(storageaccountsResource, name), &v1alpha1.StorageAccount{})
+		Invokes(testing.NewGetAction(storageaccountsResource, c.ns, name), &v1alpha1.StorageAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeStorageAccounts) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of StorageAccounts that match those selectors.
 func (c *FakeStorageAccounts) List(opts v1.ListOptions) (result *v1alpha1.StorageAccountList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(storageaccountsResource, storageaccountsKind, opts), &v1alpha1.StorageAccountList{})
+		Invokes(testing.NewListAction(storageaccountsResource, storageaccountsKind, c.ns, opts), &v1alpha1.StorageAccountList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeStorageAccounts) List(opts v1.ListOptions) (result *v1alpha1.Storag
 // Watch returns a watch.Interface that watches the requested storageAccounts.
 func (c *FakeStorageAccounts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(storageaccountsResource, opts))
+		InvokesWatch(testing.NewWatchAction(storageaccountsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a storageAccount and creates it.  Returns the server's representation of the storageAccount, and an error, if there is any.
 func (c *FakeStorageAccounts) Create(storageAccount *v1alpha1.StorageAccount) (result *v1alpha1.StorageAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(storageaccountsResource, storageAccount), &v1alpha1.StorageAccount{})
+		Invokes(testing.NewCreateAction(storageaccountsResource, c.ns, storageAccount), &v1alpha1.StorageAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeStorageAccounts) Create(storageAccount *v1alpha1.StorageAccount) (r
 // Update takes the representation of a storageAccount and updates it. Returns the server's representation of the storageAccount, and an error, if there is any.
 func (c *FakeStorageAccounts) Update(storageAccount *v1alpha1.StorageAccount) (result *v1alpha1.StorageAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(storageaccountsResource, storageAccount), &v1alpha1.StorageAccount{})
+		Invokes(testing.NewUpdateAction(storageaccountsResource, c.ns, storageAccount), &v1alpha1.StorageAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeStorageAccounts) Update(storageAccount *v1alpha1.StorageAccount) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeStorageAccounts) UpdateStatus(storageAccount *v1alpha1.StorageAccount) (*v1alpha1.StorageAccount, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(storageaccountsResource, "status", storageAccount), &v1alpha1.StorageAccount{})
+		Invokes(testing.NewUpdateSubresourceAction(storageaccountsResource, "status", c.ns, storageAccount), &v1alpha1.StorageAccount{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeStorageAccounts) UpdateStatus(storageAccount *v1alpha1.StorageAccou
 // Delete takes name of the storageAccount and deletes it. Returns an error if one occurs.
 func (c *FakeStorageAccounts) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(storageaccountsResource, name), &v1alpha1.StorageAccount{})
+		Invokes(testing.NewDeleteAction(storageaccountsResource, c.ns, name), &v1alpha1.StorageAccount{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeStorageAccounts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(storageaccountsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(storageaccountsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.StorageAccountList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeStorageAccounts) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched storageAccount.
 func (c *FakeStorageAccounts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageAccount, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(storageaccountsResource, name, pt, data, subresources...), &v1alpha1.StorageAccount{})
+		Invokes(testing.NewPatchSubresourceAction(storageaccountsResource, c.ns, name, pt, data, subresources...), &v1alpha1.StorageAccount{})
+
 	if obj == nil {
 		return nil, err
 	}

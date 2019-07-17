@@ -31,6 +31,7 @@ import (
 // FakeKmsExternalKeys implements KmsExternalKeyInterface
 type FakeKmsExternalKeys struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var kmsexternalkeysResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "kmsexternalkeys"}
@@ -40,7 +41,8 @@ var kmsexternalkeysKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ver
 // Get takes name of the kmsExternalKey, and returns the corresponding kmsExternalKey object, and an error if there is any.
 func (c *FakeKmsExternalKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.KmsExternalKey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(kmsexternalkeysResource, name), &v1alpha1.KmsExternalKey{})
+		Invokes(testing.NewGetAction(kmsexternalkeysResource, c.ns, name), &v1alpha1.KmsExternalKey{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeKmsExternalKeys) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of KmsExternalKeys that match those selectors.
 func (c *FakeKmsExternalKeys) List(opts v1.ListOptions) (result *v1alpha1.KmsExternalKeyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(kmsexternalkeysResource, kmsexternalkeysKind, opts), &v1alpha1.KmsExternalKeyList{})
+		Invokes(testing.NewListAction(kmsexternalkeysResource, kmsexternalkeysKind, c.ns, opts), &v1alpha1.KmsExternalKeyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeKmsExternalKeys) List(opts v1.ListOptions) (result *v1alpha1.KmsExt
 // Watch returns a watch.Interface that watches the requested kmsExternalKeys.
 func (c *FakeKmsExternalKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(kmsexternalkeysResource, opts))
+		InvokesWatch(testing.NewWatchAction(kmsexternalkeysResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a kmsExternalKey and creates it.  Returns the server's representation of the kmsExternalKey, and an error, if there is any.
 func (c *FakeKmsExternalKeys) Create(kmsExternalKey *v1alpha1.KmsExternalKey) (result *v1alpha1.KmsExternalKey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(kmsexternalkeysResource, kmsExternalKey), &v1alpha1.KmsExternalKey{})
+		Invokes(testing.NewCreateAction(kmsexternalkeysResource, c.ns, kmsExternalKey), &v1alpha1.KmsExternalKey{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeKmsExternalKeys) Create(kmsExternalKey *v1alpha1.KmsExternalKey) (r
 // Update takes the representation of a kmsExternalKey and updates it. Returns the server's representation of the kmsExternalKey, and an error, if there is any.
 func (c *FakeKmsExternalKeys) Update(kmsExternalKey *v1alpha1.KmsExternalKey) (result *v1alpha1.KmsExternalKey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(kmsexternalkeysResource, kmsExternalKey), &v1alpha1.KmsExternalKey{})
+		Invokes(testing.NewUpdateAction(kmsexternalkeysResource, c.ns, kmsExternalKey), &v1alpha1.KmsExternalKey{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeKmsExternalKeys) Update(kmsExternalKey *v1alpha1.KmsExternalKey) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeKmsExternalKeys) UpdateStatus(kmsExternalKey *v1alpha1.KmsExternalKey) (*v1alpha1.KmsExternalKey, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(kmsexternalkeysResource, "status", kmsExternalKey), &v1alpha1.KmsExternalKey{})
+		Invokes(testing.NewUpdateSubresourceAction(kmsexternalkeysResource, "status", c.ns, kmsExternalKey), &v1alpha1.KmsExternalKey{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeKmsExternalKeys) UpdateStatus(kmsExternalKey *v1alpha1.KmsExternalK
 // Delete takes name of the kmsExternalKey and deletes it. Returns an error if one occurs.
 func (c *FakeKmsExternalKeys) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(kmsexternalkeysResource, name), &v1alpha1.KmsExternalKey{})
+		Invokes(testing.NewDeleteAction(kmsexternalkeysResource, c.ns, name), &v1alpha1.KmsExternalKey{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeKmsExternalKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(kmsexternalkeysResource, listOptions)
+	action := testing.NewDeleteCollectionAction(kmsexternalkeysResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.KmsExternalKeyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeKmsExternalKeys) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched kmsExternalKey.
 func (c *FakeKmsExternalKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KmsExternalKey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(kmsexternalkeysResource, name, pt, data, subresources...), &v1alpha1.KmsExternalKey{})
+		Invokes(testing.NewPatchSubresourceAction(kmsexternalkeysResource, c.ns, name, pt, data, subresources...), &v1alpha1.KmsExternalKey{})
+
 	if obj == nil {
 		return nil, err
 	}

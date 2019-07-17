@@ -397,21 +397,120 @@ spec:
           type: object
         spec:
           properties:
-            certificate_arn:
+            certificateArn:
               type: string
-            default_action:
-              items: {}
+            defaultAction:
+              items:
+                properties:
+                  authenticateCognito:
+                    items:
+                      properties:
+                        authenticationRequestExtraParams:
+                          additionalProperties:
+                            type: string
+                          type: object
+                        userPoolArn:
+                          type: string
+                        userPoolClientID:
+                          type: string
+                        userPoolDomain:
+                          type: string
+                      required:
+                      - userPoolArn
+                      - userPoolClientID
+                      - userPoolDomain
+                      type: object
+                    maxItems: 1
+                    type: array
+                  authenticateOidc:
+                    items:
+                      properties:
+                        authenticationRequestExtraParams:
+                          additionalProperties:
+                            type: string
+                          type: object
+                        authorizationEndpoint:
+                          type: string
+                        clientID:
+                          type: string
+                        clientSecret:
+                          type: string
+                        issuer:
+                          type: string
+                        tokenEndpoint:
+                          type: string
+                        userInfoEndpoint:
+                          type: string
+                      required:
+                      - authorizationEndpoint
+                      - clientID
+                      - clientSecret
+                      - issuer
+                      - tokenEndpoint
+                      - userInfoEndpoint
+                      type: object
+                    maxItems: 1
+                    type: array
+                  fixedResponse:
+                    items:
+                      properties:
+                        contentType:
+                          type: string
+                        messageBody:
+                          type: string
+                      required:
+                      - contentType
+                      type: object
+                    maxItems: 1
+                    type: array
+                  redirect:
+                    items:
+                      properties:
+                        host:
+                          type: string
+                        path:
+                          type: string
+                        port:
+                          type: string
+                        protocol:
+                          type: string
+                        query:
+                          type: string
+                        statusCode:
+                          type: string
+                      required:
+                      - statusCode
+                      type: object
+                    maxItems: 1
+                    type: array
+                  targetGroupArn:
+                    type: string
+                  type:
+                    type: string
+                required:
+                - type
+                type: object
               type: array
-            load_balancer_arn:
+            loadBalancerArn:
               type: string
             port:
               type: integer
             protocol:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
           required:
-          - default_action
-          - load_balancer_arn
+          - defaultAction
+          - loadBalancerArn
           - port
+          - providerRef
           type: object
         status:
           properties:
@@ -422,6 +521,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

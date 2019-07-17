@@ -41,32 +41,33 @@ type EcrLifecyclePolicyInformer interface {
 type ecrLifecyclePolicyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewEcrLifecyclePolicyInformer constructs a new informer for EcrLifecyclePolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewEcrLifecyclePolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredEcrLifecyclePolicyInformer(client, resyncPeriod, indexers, nil)
+func NewEcrLifecyclePolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredEcrLifecyclePolicyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredEcrLifecyclePolicyInformer constructs a new informer for EcrLifecyclePolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredEcrLifecyclePolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredEcrLifecyclePolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().EcrLifecyclePolicies().List(options)
+				return client.AwsV1alpha1().EcrLifecyclePolicies(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().EcrLifecyclePolicies().Watch(options)
+				return client.AwsV1alpha1().EcrLifecyclePolicies(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.EcrLifecyclePolicy{},
@@ -76,7 +77,7 @@ func NewFilteredEcrLifecyclePolicyInformer(client versioned.Interface, resyncPer
 }
 
 func (f *ecrLifecyclePolicyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredEcrLifecyclePolicyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredEcrLifecyclePolicyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *ecrLifecyclePolicyInformer) Informer() cache.SharedIndexInformer {

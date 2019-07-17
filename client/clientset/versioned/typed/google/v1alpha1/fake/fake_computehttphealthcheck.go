@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/google/v1alpha1"
 )
 
-// FakeComputeHttpHealthChecks implements ComputeHttpHealthCheckInterface
-type FakeComputeHttpHealthChecks struct {
+// FakeComputeHTTPHealthChecks implements ComputeHTTPHealthCheckInterface
+type FakeComputeHTTPHealthChecks struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computehttphealthchecksResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computehttphealthchecks"}
 
-var computehttphealthchecksKind = schema.GroupVersionKind{Group: "google.kubeform.com", Version: "v1alpha1", Kind: "ComputeHttpHealthCheck"}
+var computehttphealthchecksKind = schema.GroupVersionKind{Group: "google.kubeform.com", Version: "v1alpha1", Kind: "ComputeHTTPHealthCheck"}
 
-// Get takes name of the computeHttpHealthCheck, and returns the corresponding computeHttpHealthCheck object, and an error if there is any.
-func (c *FakeComputeHttpHealthChecks) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeHttpHealthCheck, err error) {
+// Get takes name of the computeHTTPHealthCheck, and returns the corresponding computeHTTPHealthCheck object, and an error if there is any.
+func (c *FakeComputeHTTPHealthChecks) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeHTTPHealthCheck, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computehttphealthchecksResource, name), &v1alpha1.ComputeHttpHealthCheck{})
+		Invokes(testing.NewGetAction(computehttphealthchecksResource, c.ns, name), &v1alpha1.ComputeHTTPHealthCheck{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeHttpHealthCheck), err
+	return obj.(*v1alpha1.ComputeHTTPHealthCheck), err
 }
 
-// List takes label and field selectors, and returns the list of ComputeHttpHealthChecks that match those selectors.
-func (c *FakeComputeHttpHealthChecks) List(opts v1.ListOptions) (result *v1alpha1.ComputeHttpHealthCheckList, err error) {
+// List takes label and field selectors, and returns the list of ComputeHTTPHealthChecks that match those selectors.
+func (c *FakeComputeHTTPHealthChecks) List(opts v1.ListOptions) (result *v1alpha1.ComputeHTTPHealthCheckList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computehttphealthchecksResource, computehttphealthchecksKind, opts), &v1alpha1.ComputeHttpHealthCheckList{})
+		Invokes(testing.NewListAction(computehttphealthchecksResource, computehttphealthchecksKind, c.ns, opts), &v1alpha1.ComputeHTTPHealthCheckList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeComputeHttpHealthChecks) List(opts v1.ListOptions) (result *v1alpha
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.ComputeHttpHealthCheckList{ListMeta: obj.(*v1alpha1.ComputeHttpHealthCheckList).ListMeta}
-	for _, item := range obj.(*v1alpha1.ComputeHttpHealthCheckList).Items {
+	list := &v1alpha1.ComputeHTTPHealthCheckList{ListMeta: obj.(*v1alpha1.ComputeHTTPHealthCheckList).ListMeta}
+	for _, item := range obj.(*v1alpha1.ComputeHTTPHealthCheckList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeComputeHttpHealthChecks) List(opts v1.ListOptions) (result *v1alpha
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested computeHttpHealthChecks.
-func (c *FakeComputeHttpHealthChecks) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested computeHTTPHealthChecks.
+func (c *FakeComputeHTTPHealthChecks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computehttphealthchecksResource, opts))
+		InvokesWatch(testing.NewWatchAction(computehttphealthchecksResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a computeHttpHealthCheck and creates it.  Returns the server's representation of the computeHttpHealthCheck, and an error, if there is any.
-func (c *FakeComputeHttpHealthChecks) Create(computeHttpHealthCheck *v1alpha1.ComputeHttpHealthCheck) (result *v1alpha1.ComputeHttpHealthCheck, err error) {
+// Create takes the representation of a computeHTTPHealthCheck and creates it.  Returns the server's representation of the computeHTTPHealthCheck, and an error, if there is any.
+func (c *FakeComputeHTTPHealthChecks) Create(computeHTTPHealthCheck *v1alpha1.ComputeHTTPHealthCheck) (result *v1alpha1.ComputeHTTPHealthCheck, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computehttphealthchecksResource, computeHttpHealthCheck), &v1alpha1.ComputeHttpHealthCheck{})
+		Invokes(testing.NewCreateAction(computehttphealthchecksResource, c.ns, computeHTTPHealthCheck), &v1alpha1.ComputeHTTPHealthCheck{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeHttpHealthCheck), err
+	return obj.(*v1alpha1.ComputeHTTPHealthCheck), err
 }
 
-// Update takes the representation of a computeHttpHealthCheck and updates it. Returns the server's representation of the computeHttpHealthCheck, and an error, if there is any.
-func (c *FakeComputeHttpHealthChecks) Update(computeHttpHealthCheck *v1alpha1.ComputeHttpHealthCheck) (result *v1alpha1.ComputeHttpHealthCheck, err error) {
+// Update takes the representation of a computeHTTPHealthCheck and updates it. Returns the server's representation of the computeHTTPHealthCheck, and an error, if there is any.
+func (c *FakeComputeHTTPHealthChecks) Update(computeHTTPHealthCheck *v1alpha1.ComputeHTTPHealthCheck) (result *v1alpha1.ComputeHTTPHealthCheck, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computehttphealthchecksResource, computeHttpHealthCheck), &v1alpha1.ComputeHttpHealthCheck{})
+		Invokes(testing.NewUpdateAction(computehttphealthchecksResource, c.ns, computeHTTPHealthCheck), &v1alpha1.ComputeHTTPHealthCheck{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeHttpHealthCheck), err
+	return obj.(*v1alpha1.ComputeHTTPHealthCheck), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeComputeHttpHealthChecks) UpdateStatus(computeHttpHealthCheck *v1alpha1.ComputeHttpHealthCheck) (*v1alpha1.ComputeHttpHealthCheck, error) {
+func (c *FakeComputeHTTPHealthChecks) UpdateStatus(computeHTTPHealthCheck *v1alpha1.ComputeHTTPHealthCheck) (*v1alpha1.ComputeHTTPHealthCheck, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computehttphealthchecksResource, "status", computeHttpHealthCheck), &v1alpha1.ComputeHttpHealthCheck{})
+		Invokes(testing.NewUpdateSubresourceAction(computehttphealthchecksResource, "status", c.ns, computeHTTPHealthCheck), &v1alpha1.ComputeHTTPHealthCheck{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeHttpHealthCheck), err
+	return obj.(*v1alpha1.ComputeHTTPHealthCheck), err
 }
 
-// Delete takes name of the computeHttpHealthCheck and deletes it. Returns an error if one occurs.
-func (c *FakeComputeHttpHealthChecks) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the computeHTTPHealthCheck and deletes it. Returns an error if one occurs.
+func (c *FakeComputeHTTPHealthChecks) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computehttphealthchecksResource, name), &v1alpha1.ComputeHttpHealthCheck{})
+		Invokes(testing.NewDeleteAction(computehttphealthchecksResource, c.ns, name), &v1alpha1.ComputeHTTPHealthCheck{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeComputeHttpHealthChecks) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computehttphealthchecksResource, listOptions)
+func (c *FakeComputeHTTPHealthChecks) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(computehttphealthchecksResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeHttpHealthCheckList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeHTTPHealthCheckList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched computeHttpHealthCheck.
-func (c *FakeComputeHttpHealthChecks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeHttpHealthCheck, err error) {
+// Patch applies the patch and returns the patched computeHTTPHealthCheck.
+func (c *FakeComputeHTTPHealthChecks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeHTTPHealthCheck, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computehttphealthchecksResource, name, pt, data, subresources...), &v1alpha1.ComputeHttpHealthCheck{})
+		Invokes(testing.NewPatchSubresourceAction(computehttphealthchecksResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeHTTPHealthCheck{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeHttpHealthCheck), err
+	return obj.(*v1alpha1.ComputeHTTPHealthCheck), err
 }

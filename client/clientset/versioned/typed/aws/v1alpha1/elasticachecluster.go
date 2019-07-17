@@ -32,7 +32,7 @@ import (
 // ElasticacheClustersGetter has a method to return a ElasticacheClusterInterface.
 // A group's client should implement this interface.
 type ElasticacheClustersGetter interface {
-	ElasticacheClusters() ElasticacheClusterInterface
+	ElasticacheClusters(namespace string) ElasticacheClusterInterface
 }
 
 // ElasticacheClusterInterface has methods to work with ElasticacheCluster resources.
@@ -52,12 +52,14 @@ type ElasticacheClusterInterface interface {
 // elasticacheClusters implements ElasticacheClusterInterface
 type elasticacheClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newElasticacheClusters returns a ElasticacheClusters
-func newElasticacheClusters(c *AwsV1alpha1Client) *elasticacheClusters {
+func newElasticacheClusters(c *AwsV1alpha1Client, namespace string) *elasticacheClusters {
 	return &elasticacheClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newElasticacheClusters(c *AwsV1alpha1Client) *elasticacheClusters {
 func (c *elasticacheClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.ElasticacheCluster, err error) {
 	result = &v1alpha1.ElasticacheCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticacheclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *elasticacheClusters) List(opts v1.ListOptions) (result *v1alpha1.Elasti
 	}
 	result = &v1alpha1.ElasticacheClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticacheclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *elasticacheClusters) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticacheclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *elasticacheClusters) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *elasticacheClusters) Create(elasticacheCluster *v1alpha1.ElasticacheCluster) (result *v1alpha1.ElasticacheCluster, err error) {
 	result = &v1alpha1.ElasticacheCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("elasticacheclusters").
 		Body(elasticacheCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *elasticacheClusters) Create(elasticacheCluster *v1alpha1.ElasticacheClu
 func (c *elasticacheClusters) Update(elasticacheCluster *v1alpha1.ElasticacheCluster) (result *v1alpha1.ElasticacheCluster, err error) {
 	result = &v1alpha1.ElasticacheCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elasticacheclusters").
 		Name(elasticacheCluster.Name).
 		Body(elasticacheCluster).
@@ -132,6 +139,7 @@ func (c *elasticacheClusters) Update(elasticacheCluster *v1alpha1.ElasticacheClu
 func (c *elasticacheClusters) UpdateStatus(elasticacheCluster *v1alpha1.ElasticacheCluster) (result *v1alpha1.ElasticacheCluster, err error) {
 	result = &v1alpha1.ElasticacheCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elasticacheclusters").
 		Name(elasticacheCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *elasticacheClusters) UpdateStatus(elasticacheCluster *v1alpha1.Elastica
 // Delete takes name of the elasticacheCluster and deletes it. Returns an error if one occurs.
 func (c *elasticacheClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elasticacheclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *elasticacheClusters) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elasticacheclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *elasticacheClusters) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *elasticacheClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ElasticacheCluster, err error) {
 	result = &v1alpha1.ElasticacheCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("elasticacheclusters").
 		SubResource(subresources...).
 		Name(name).

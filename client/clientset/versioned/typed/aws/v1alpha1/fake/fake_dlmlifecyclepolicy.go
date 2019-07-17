@@ -31,6 +31,7 @@ import (
 // FakeDlmLifecyclePolicies implements DlmLifecyclePolicyInterface
 type FakeDlmLifecyclePolicies struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var dlmlifecyclepoliciesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "dlmlifecyclepolicies"}
@@ -40,7 +41,8 @@ var dlmlifecyclepoliciesKind = schema.GroupVersionKind{Group: "aws.kubeform.com"
 // Get takes name of the dlmLifecyclePolicy, and returns the corresponding dlmLifecyclePolicy object, and an error if there is any.
 func (c *FakeDlmLifecyclePolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.DlmLifecyclePolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(dlmlifecyclepoliciesResource, name), &v1alpha1.DlmLifecyclePolicy{})
+		Invokes(testing.NewGetAction(dlmlifecyclepoliciesResource, c.ns, name), &v1alpha1.DlmLifecyclePolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDlmLifecyclePolicies) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of DlmLifecyclePolicies that match those selectors.
 func (c *FakeDlmLifecyclePolicies) List(opts v1.ListOptions) (result *v1alpha1.DlmLifecyclePolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(dlmlifecyclepoliciesResource, dlmlifecyclepoliciesKind, opts), &v1alpha1.DlmLifecyclePolicyList{})
+		Invokes(testing.NewListAction(dlmlifecyclepoliciesResource, dlmlifecyclepoliciesKind, c.ns, opts), &v1alpha1.DlmLifecyclePolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDlmLifecyclePolicies) List(opts v1.ListOptions) (result *v1alpha1.D
 // Watch returns a watch.Interface that watches the requested dlmLifecyclePolicies.
 func (c *FakeDlmLifecyclePolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(dlmlifecyclepoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(dlmlifecyclepoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dlmLifecyclePolicy and creates it.  Returns the server's representation of the dlmLifecyclePolicy, and an error, if there is any.
 func (c *FakeDlmLifecyclePolicies) Create(dlmLifecyclePolicy *v1alpha1.DlmLifecyclePolicy) (result *v1alpha1.DlmLifecyclePolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(dlmlifecyclepoliciesResource, dlmLifecyclePolicy), &v1alpha1.DlmLifecyclePolicy{})
+		Invokes(testing.NewCreateAction(dlmlifecyclepoliciesResource, c.ns, dlmLifecyclePolicy), &v1alpha1.DlmLifecyclePolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDlmLifecyclePolicies) Create(dlmLifecyclePolicy *v1alpha1.DlmLifecy
 // Update takes the representation of a dlmLifecyclePolicy and updates it. Returns the server's representation of the dlmLifecyclePolicy, and an error, if there is any.
 func (c *FakeDlmLifecyclePolicies) Update(dlmLifecyclePolicy *v1alpha1.DlmLifecyclePolicy) (result *v1alpha1.DlmLifecyclePolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(dlmlifecyclepoliciesResource, dlmLifecyclePolicy), &v1alpha1.DlmLifecyclePolicy{})
+		Invokes(testing.NewUpdateAction(dlmlifecyclepoliciesResource, c.ns, dlmLifecyclePolicy), &v1alpha1.DlmLifecyclePolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDlmLifecyclePolicies) Update(dlmLifecyclePolicy *v1alpha1.DlmLifecy
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDlmLifecyclePolicies) UpdateStatus(dlmLifecyclePolicy *v1alpha1.DlmLifecyclePolicy) (*v1alpha1.DlmLifecyclePolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(dlmlifecyclepoliciesResource, "status", dlmLifecyclePolicy), &v1alpha1.DlmLifecyclePolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(dlmlifecyclepoliciesResource, "status", c.ns, dlmLifecyclePolicy), &v1alpha1.DlmLifecyclePolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDlmLifecyclePolicies) UpdateStatus(dlmLifecyclePolicy *v1alpha1.Dlm
 // Delete takes name of the dlmLifecyclePolicy and deletes it. Returns an error if one occurs.
 func (c *FakeDlmLifecyclePolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(dlmlifecyclepoliciesResource, name), &v1alpha1.DlmLifecyclePolicy{})
+		Invokes(testing.NewDeleteAction(dlmlifecyclepoliciesResource, c.ns, name), &v1alpha1.DlmLifecyclePolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDlmLifecyclePolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(dlmlifecyclepoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(dlmlifecyclepoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DlmLifecyclePolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDlmLifecyclePolicies) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched dlmLifecyclePolicy.
 func (c *FakeDlmLifecyclePolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DlmLifecyclePolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(dlmlifecyclepoliciesResource, name, pt, data, subresources...), &v1alpha1.DlmLifecyclePolicy{})
+		Invokes(testing.NewPatchSubresourceAction(dlmlifecyclepoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.DlmLifecyclePolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeCloudhsmV2Clusters implements CloudhsmV2ClusterInterface
 type FakeCloudhsmV2Clusters struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var cloudhsmv2clustersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "cloudhsmv2clusters"}
@@ -40,7 +41,8 @@ var cloudhsmv2clustersKind = schema.GroupVersionKind{Group: "aws.kubeform.com", 
 // Get takes name of the cloudhsmV2Cluster, and returns the corresponding cloudhsmV2Cluster object, and an error if there is any.
 func (c *FakeCloudhsmV2Clusters) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudhsmV2Cluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cloudhsmv2clustersResource, name), &v1alpha1.CloudhsmV2Cluster{})
+		Invokes(testing.NewGetAction(cloudhsmv2clustersResource, c.ns, name), &v1alpha1.CloudhsmV2Cluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCloudhsmV2Clusters) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of CloudhsmV2Clusters that match those selectors.
 func (c *FakeCloudhsmV2Clusters) List(opts v1.ListOptions) (result *v1alpha1.CloudhsmV2ClusterList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cloudhsmv2clustersResource, cloudhsmv2clustersKind, opts), &v1alpha1.CloudhsmV2ClusterList{})
+		Invokes(testing.NewListAction(cloudhsmv2clustersResource, cloudhsmv2clustersKind, c.ns, opts), &v1alpha1.CloudhsmV2ClusterList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCloudhsmV2Clusters) List(opts v1.ListOptions) (result *v1alpha1.Clo
 // Watch returns a watch.Interface that watches the requested cloudhsmV2Clusters.
 func (c *FakeCloudhsmV2Clusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cloudhsmv2clustersResource, opts))
+		InvokesWatch(testing.NewWatchAction(cloudhsmv2clustersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cloudhsmV2Cluster and creates it.  Returns the server's representation of the cloudhsmV2Cluster, and an error, if there is any.
 func (c *FakeCloudhsmV2Clusters) Create(cloudhsmV2Cluster *v1alpha1.CloudhsmV2Cluster) (result *v1alpha1.CloudhsmV2Cluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cloudhsmv2clustersResource, cloudhsmV2Cluster), &v1alpha1.CloudhsmV2Cluster{})
+		Invokes(testing.NewCreateAction(cloudhsmv2clustersResource, c.ns, cloudhsmV2Cluster), &v1alpha1.CloudhsmV2Cluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCloudhsmV2Clusters) Create(cloudhsmV2Cluster *v1alpha1.CloudhsmV2Cl
 // Update takes the representation of a cloudhsmV2Cluster and updates it. Returns the server's representation of the cloudhsmV2Cluster, and an error, if there is any.
 func (c *FakeCloudhsmV2Clusters) Update(cloudhsmV2Cluster *v1alpha1.CloudhsmV2Cluster) (result *v1alpha1.CloudhsmV2Cluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cloudhsmv2clustersResource, cloudhsmV2Cluster), &v1alpha1.CloudhsmV2Cluster{})
+		Invokes(testing.NewUpdateAction(cloudhsmv2clustersResource, c.ns, cloudhsmV2Cluster), &v1alpha1.CloudhsmV2Cluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCloudhsmV2Clusters) Update(cloudhsmV2Cluster *v1alpha1.CloudhsmV2Cl
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCloudhsmV2Clusters) UpdateStatus(cloudhsmV2Cluster *v1alpha1.CloudhsmV2Cluster) (*v1alpha1.CloudhsmV2Cluster, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cloudhsmv2clustersResource, "status", cloudhsmV2Cluster), &v1alpha1.CloudhsmV2Cluster{})
+		Invokes(testing.NewUpdateSubresourceAction(cloudhsmv2clustersResource, "status", c.ns, cloudhsmV2Cluster), &v1alpha1.CloudhsmV2Cluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCloudhsmV2Clusters) UpdateStatus(cloudhsmV2Cluster *v1alpha1.Cloudh
 // Delete takes name of the cloudhsmV2Cluster and deletes it. Returns an error if one occurs.
 func (c *FakeCloudhsmV2Clusters) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cloudhsmv2clustersResource, name), &v1alpha1.CloudhsmV2Cluster{})
+		Invokes(testing.NewDeleteAction(cloudhsmv2clustersResource, c.ns, name), &v1alpha1.CloudhsmV2Cluster{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCloudhsmV2Clusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cloudhsmv2clustersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cloudhsmv2clustersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CloudhsmV2ClusterList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCloudhsmV2Clusters) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched cloudhsmV2Cluster.
 func (c *FakeCloudhsmV2Clusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudhsmV2Cluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cloudhsmv2clustersResource, name, pt, data, subresources...), &v1alpha1.CloudhsmV2Cluster{})
+		Invokes(testing.NewPatchSubresourceAction(cloudhsmv2clustersResource, c.ns, name, pt, data, subresources...), &v1alpha1.CloudhsmV2Cluster{})
+
 	if obj == nil {
 		return nil, err
 	}

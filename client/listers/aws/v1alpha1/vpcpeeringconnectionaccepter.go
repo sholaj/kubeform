@@ -29,8 +29,8 @@ import (
 type VpcPeeringConnectionAccepterLister interface {
 	// List lists all VpcPeeringConnectionAccepters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.VpcPeeringConnectionAccepter, err error)
-	// Get retrieves the VpcPeeringConnectionAccepter from the index for a given name.
-	Get(name string) (*v1alpha1.VpcPeeringConnectionAccepter, error)
+	// VpcPeeringConnectionAccepters returns an object that can list and get VpcPeeringConnectionAccepters.
+	VpcPeeringConnectionAccepters(namespace string) VpcPeeringConnectionAccepterNamespaceLister
 	VpcPeeringConnectionAccepterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *vpcPeeringConnectionAccepterLister) List(selector labels.Selector) (ret
 	return ret, err
 }
 
-// Get retrieves the VpcPeeringConnectionAccepter from the index for a given name.
-func (s *vpcPeeringConnectionAccepterLister) Get(name string) (*v1alpha1.VpcPeeringConnectionAccepter, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VpcPeeringConnectionAccepters returns an object that can list and get VpcPeeringConnectionAccepters.
+func (s *vpcPeeringConnectionAccepterLister) VpcPeeringConnectionAccepters(namespace string) VpcPeeringConnectionAccepterNamespaceLister {
+	return vpcPeeringConnectionAccepterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VpcPeeringConnectionAccepterNamespaceLister helps list and get VpcPeeringConnectionAccepters.
+type VpcPeeringConnectionAccepterNamespaceLister interface {
+	// List lists all VpcPeeringConnectionAccepters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VpcPeeringConnectionAccepter, err error)
+	// Get retrieves the VpcPeeringConnectionAccepter from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VpcPeeringConnectionAccepter, error)
+	VpcPeeringConnectionAccepterNamespaceListerExpansion
+}
+
+// vpcPeeringConnectionAccepterNamespaceLister implements the VpcPeeringConnectionAccepterNamespaceLister
+// interface.
+type vpcPeeringConnectionAccepterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VpcPeeringConnectionAccepters in the indexer for a given namespace.
+func (s vpcPeeringConnectionAccepterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VpcPeeringConnectionAccepter, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VpcPeeringConnectionAccepter))
+	})
+	return ret, err
+}
+
+// Get retrieves the VpcPeeringConnectionAccepter from the indexer for a given namespace and name.
+func (s vpcPeeringConnectionAccepterNamespaceLister) Get(name string) (*v1alpha1.VpcPeeringConnectionAccepter, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

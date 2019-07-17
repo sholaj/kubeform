@@ -31,6 +31,7 @@ import (
 // FakeStorageBlobs implements StorageBlobInterface
 type FakeStorageBlobs struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var storageblobsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "storageblobs"}
@@ -40,7 +41,8 @@ var storageblobsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Ve
 // Get takes name of the storageBlob, and returns the corresponding storageBlob object, and an error if there is any.
 func (c *FakeStorageBlobs) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageBlob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(storageblobsResource, name), &v1alpha1.StorageBlob{})
+		Invokes(testing.NewGetAction(storageblobsResource, c.ns, name), &v1alpha1.StorageBlob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeStorageBlobs) Get(name string, options v1.GetOptions) (result *v1al
 // List takes label and field selectors, and returns the list of StorageBlobs that match those selectors.
 func (c *FakeStorageBlobs) List(opts v1.ListOptions) (result *v1alpha1.StorageBlobList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(storageblobsResource, storageblobsKind, opts), &v1alpha1.StorageBlobList{})
+		Invokes(testing.NewListAction(storageblobsResource, storageblobsKind, c.ns, opts), &v1alpha1.StorageBlobList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeStorageBlobs) List(opts v1.ListOptions) (result *v1alpha1.StorageBl
 // Watch returns a watch.Interface that watches the requested storageBlobs.
 func (c *FakeStorageBlobs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(storageblobsResource, opts))
+		InvokesWatch(testing.NewWatchAction(storageblobsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a storageBlob and creates it.  Returns the server's representation of the storageBlob, and an error, if there is any.
 func (c *FakeStorageBlobs) Create(storageBlob *v1alpha1.StorageBlob) (result *v1alpha1.StorageBlob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(storageblobsResource, storageBlob), &v1alpha1.StorageBlob{})
+		Invokes(testing.NewCreateAction(storageblobsResource, c.ns, storageBlob), &v1alpha1.StorageBlob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeStorageBlobs) Create(storageBlob *v1alpha1.StorageBlob) (result *v1
 // Update takes the representation of a storageBlob and updates it. Returns the server's representation of the storageBlob, and an error, if there is any.
 func (c *FakeStorageBlobs) Update(storageBlob *v1alpha1.StorageBlob) (result *v1alpha1.StorageBlob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(storageblobsResource, storageBlob), &v1alpha1.StorageBlob{})
+		Invokes(testing.NewUpdateAction(storageblobsResource, c.ns, storageBlob), &v1alpha1.StorageBlob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeStorageBlobs) Update(storageBlob *v1alpha1.StorageBlob) (result *v1
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeStorageBlobs) UpdateStatus(storageBlob *v1alpha1.StorageBlob) (*v1alpha1.StorageBlob, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(storageblobsResource, "status", storageBlob), &v1alpha1.StorageBlob{})
+		Invokes(testing.NewUpdateSubresourceAction(storageblobsResource, "status", c.ns, storageBlob), &v1alpha1.StorageBlob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeStorageBlobs) UpdateStatus(storageBlob *v1alpha1.StorageBlob) (*v1a
 // Delete takes name of the storageBlob and deletes it. Returns an error if one occurs.
 func (c *FakeStorageBlobs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(storageblobsResource, name), &v1alpha1.StorageBlob{})
+		Invokes(testing.NewDeleteAction(storageblobsResource, c.ns, name), &v1alpha1.StorageBlob{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeStorageBlobs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(storageblobsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(storageblobsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.StorageBlobList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeStorageBlobs) DeleteCollection(options *v1.DeleteOptions, listOptio
 // Patch applies the patch and returns the patched storageBlob.
 func (c *FakeStorageBlobs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageBlob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(storageblobsResource, name, pt, data, subresources...), &v1alpha1.StorageBlob{})
+		Invokes(testing.NewPatchSubresourceAction(storageblobsResource, c.ns, name, pt, data, subresources...), &v1alpha1.StorageBlob{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // SsmPatchBaselinesGetter has a method to return a SsmPatchBaselineInterface.
 // A group's client should implement this interface.
 type SsmPatchBaselinesGetter interface {
-	SsmPatchBaselines() SsmPatchBaselineInterface
+	SsmPatchBaselines(namespace string) SsmPatchBaselineInterface
 }
 
 // SsmPatchBaselineInterface has methods to work with SsmPatchBaseline resources.
@@ -52,12 +52,14 @@ type SsmPatchBaselineInterface interface {
 // ssmPatchBaselines implements SsmPatchBaselineInterface
 type ssmPatchBaselines struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSsmPatchBaselines returns a SsmPatchBaselines
-func newSsmPatchBaselines(c *AwsV1alpha1Client) *ssmPatchBaselines {
+func newSsmPatchBaselines(c *AwsV1alpha1Client, namespace string) *ssmPatchBaselines {
 	return &ssmPatchBaselines{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSsmPatchBaselines(c *AwsV1alpha1Client) *ssmPatchBaselines {
 func (c *ssmPatchBaselines) Get(name string, options v1.GetOptions) (result *v1alpha1.SsmPatchBaseline, err error) {
 	result = &v1alpha1.SsmPatchBaseline{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmpatchbaselines").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ssmPatchBaselines) List(opts v1.ListOptions) (result *v1alpha1.SsmPatch
 	}
 	result = &v1alpha1.SsmPatchBaselineList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmpatchbaselines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ssmPatchBaselines) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmpatchbaselines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ssmPatchBaselines) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *ssmPatchBaselines) Create(ssmPatchBaseline *v1alpha1.SsmPatchBaseline) (result *v1alpha1.SsmPatchBaseline, err error) {
 	result = &v1alpha1.SsmPatchBaseline{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ssmpatchbaselines").
 		Body(ssmPatchBaseline).
 		Do().
@@ -118,6 +124,7 @@ func (c *ssmPatchBaselines) Create(ssmPatchBaseline *v1alpha1.SsmPatchBaseline) 
 func (c *ssmPatchBaselines) Update(ssmPatchBaseline *v1alpha1.SsmPatchBaseline) (result *v1alpha1.SsmPatchBaseline, err error) {
 	result = &v1alpha1.SsmPatchBaseline{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ssmpatchbaselines").
 		Name(ssmPatchBaseline.Name).
 		Body(ssmPatchBaseline).
@@ -132,6 +139,7 @@ func (c *ssmPatchBaselines) Update(ssmPatchBaseline *v1alpha1.SsmPatchBaseline) 
 func (c *ssmPatchBaselines) UpdateStatus(ssmPatchBaseline *v1alpha1.SsmPatchBaseline) (result *v1alpha1.SsmPatchBaseline, err error) {
 	result = &v1alpha1.SsmPatchBaseline{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ssmpatchbaselines").
 		Name(ssmPatchBaseline.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ssmPatchBaselines) UpdateStatus(ssmPatchBaseline *v1alpha1.SsmPatchBase
 // Delete takes name of the ssmPatchBaseline and deletes it. Returns an error if one occurs.
 func (c *ssmPatchBaselines) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ssmpatchbaselines").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ssmPatchBaselines) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ssmpatchbaselines").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ssmPatchBaselines) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *ssmPatchBaselines) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SsmPatchBaseline, err error) {
 	result = &v1alpha1.SsmPatchBaseline{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ssmpatchbaselines").
 		SubResource(subresources...).
 		Name(name).

@@ -397,20 +397,36 @@ spec:
           type: object
         spec:
           properties:
-            load_balancer_name:
+            loadBalancerName:
               type: string
-            policy_attribute:
-              items: {}
+            policyAttribute:
+              items:
+                properties:
+                  name:
+                    type: string
+                  value:
+                    type: string
+                type: object
               type: array
               uniqueItems: true
-            policy_name:
+            policyName:
               type: string
-            policy_type_name:
+            policyTypeName:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
           required:
-          - load_balancer_name
-          - policy_name
-          - policy_type_name
+          - loadBalancerName
+          - policyName
+          - policyTypeName
+          - providerRef
           type: object
         status:
           properties:
@@ -421,6 +437,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

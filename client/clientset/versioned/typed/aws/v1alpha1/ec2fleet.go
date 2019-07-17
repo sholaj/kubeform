@@ -32,7 +32,7 @@ import (
 // Ec2FleetsGetter has a method to return a Ec2FleetInterface.
 // A group's client should implement this interface.
 type Ec2FleetsGetter interface {
-	Ec2Fleets() Ec2FleetInterface
+	Ec2Fleets(namespace string) Ec2FleetInterface
 }
 
 // Ec2FleetInterface has methods to work with Ec2Fleet resources.
@@ -52,12 +52,14 @@ type Ec2FleetInterface interface {
 // ec2Fleets implements Ec2FleetInterface
 type ec2Fleets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEc2Fleets returns a Ec2Fleets
-func newEc2Fleets(c *AwsV1alpha1Client) *ec2Fleets {
+func newEc2Fleets(c *AwsV1alpha1Client, namespace string) *ec2Fleets {
 	return &ec2Fleets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEc2Fleets(c *AwsV1alpha1Client) *ec2Fleets {
 func (c *ec2Fleets) Get(name string, options v1.GetOptions) (result *v1alpha1.Ec2Fleet, err error) {
 	result = &v1alpha1.Ec2Fleet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ec2fleets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ec2Fleets) List(opts v1.ListOptions) (result *v1alpha1.Ec2FleetList, er
 	}
 	result = &v1alpha1.Ec2FleetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ec2fleets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ec2Fleets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ec2fleets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ec2Fleets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *ec2Fleets) Create(ec2Fleet *v1alpha1.Ec2Fleet) (result *v1alpha1.Ec2Fleet, err error) {
 	result = &v1alpha1.Ec2Fleet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ec2fleets").
 		Body(ec2Fleet).
 		Do().
@@ -118,6 +124,7 @@ func (c *ec2Fleets) Create(ec2Fleet *v1alpha1.Ec2Fleet) (result *v1alpha1.Ec2Fle
 func (c *ec2Fleets) Update(ec2Fleet *v1alpha1.Ec2Fleet) (result *v1alpha1.Ec2Fleet, err error) {
 	result = &v1alpha1.Ec2Fleet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ec2fleets").
 		Name(ec2Fleet.Name).
 		Body(ec2Fleet).
@@ -132,6 +139,7 @@ func (c *ec2Fleets) Update(ec2Fleet *v1alpha1.Ec2Fleet) (result *v1alpha1.Ec2Fle
 func (c *ec2Fleets) UpdateStatus(ec2Fleet *v1alpha1.Ec2Fleet) (result *v1alpha1.Ec2Fleet, err error) {
 	result = &v1alpha1.Ec2Fleet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ec2fleets").
 		Name(ec2Fleet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ec2Fleets) UpdateStatus(ec2Fleet *v1alpha1.Ec2Fleet) (result *v1alpha1.
 // Delete takes name of the ec2Fleet and deletes it. Returns an error if one occurs.
 func (c *ec2Fleets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ec2fleets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ec2Fleets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ec2fleets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ec2Fleets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 func (c *ec2Fleets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Ec2Fleet, err error) {
 	result = &v1alpha1.Ec2Fleet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ec2fleets").
 		SubResource(subresources...).
 		Name(name).

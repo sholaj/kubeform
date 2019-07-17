@@ -32,7 +32,7 @@ import (
 // AppmeshVirtualNodesGetter has a method to return a AppmeshVirtualNodeInterface.
 // A group's client should implement this interface.
 type AppmeshVirtualNodesGetter interface {
-	AppmeshVirtualNodes() AppmeshVirtualNodeInterface
+	AppmeshVirtualNodes(namespace string) AppmeshVirtualNodeInterface
 }
 
 // AppmeshVirtualNodeInterface has methods to work with AppmeshVirtualNode resources.
@@ -52,12 +52,14 @@ type AppmeshVirtualNodeInterface interface {
 // appmeshVirtualNodes implements AppmeshVirtualNodeInterface
 type appmeshVirtualNodes struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAppmeshVirtualNodes returns a AppmeshVirtualNodes
-func newAppmeshVirtualNodes(c *AwsV1alpha1Client) *appmeshVirtualNodes {
+func newAppmeshVirtualNodes(c *AwsV1alpha1Client, namespace string) *appmeshVirtualNodes {
 	return &appmeshVirtualNodes{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAppmeshVirtualNodes(c *AwsV1alpha1Client) *appmeshVirtualNodes {
 func (c *appmeshVirtualNodes) Get(name string, options v1.GetOptions) (result *v1alpha1.AppmeshVirtualNode, err error) {
 	result = &v1alpha1.AppmeshVirtualNode{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appmeshvirtualnodes").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *appmeshVirtualNodes) List(opts v1.ListOptions) (result *v1alpha1.Appmes
 	}
 	result = &v1alpha1.AppmeshVirtualNodeList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appmeshvirtualnodes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *appmeshVirtualNodes) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("appmeshvirtualnodes").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *appmeshVirtualNodes) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *appmeshVirtualNodes) Create(appmeshVirtualNode *v1alpha1.AppmeshVirtualNode) (result *v1alpha1.AppmeshVirtualNode, err error) {
 	result = &v1alpha1.AppmeshVirtualNode{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("appmeshvirtualnodes").
 		Body(appmeshVirtualNode).
 		Do().
@@ -118,6 +124,7 @@ func (c *appmeshVirtualNodes) Create(appmeshVirtualNode *v1alpha1.AppmeshVirtual
 func (c *appmeshVirtualNodes) Update(appmeshVirtualNode *v1alpha1.AppmeshVirtualNode) (result *v1alpha1.AppmeshVirtualNode, err error) {
 	result = &v1alpha1.AppmeshVirtualNode{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appmeshvirtualnodes").
 		Name(appmeshVirtualNode.Name).
 		Body(appmeshVirtualNode).
@@ -132,6 +139,7 @@ func (c *appmeshVirtualNodes) Update(appmeshVirtualNode *v1alpha1.AppmeshVirtual
 func (c *appmeshVirtualNodes) UpdateStatus(appmeshVirtualNode *v1alpha1.AppmeshVirtualNode) (result *v1alpha1.AppmeshVirtualNode, err error) {
 	result = &v1alpha1.AppmeshVirtualNode{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appmeshvirtualnodes").
 		Name(appmeshVirtualNode.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *appmeshVirtualNodes) UpdateStatus(appmeshVirtualNode *v1alpha1.AppmeshV
 // Delete takes name of the appmeshVirtualNode and deletes it. Returns an error if one occurs.
 func (c *appmeshVirtualNodes) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appmeshvirtualnodes").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *appmeshVirtualNodes) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appmeshvirtualnodes").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *appmeshVirtualNodes) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *appmeshVirtualNodes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppmeshVirtualNode, err error) {
 	result = &v1alpha1.AppmeshVirtualNode{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("appmeshvirtualnodes").
 		SubResource(subresources...).
 		Name(name).

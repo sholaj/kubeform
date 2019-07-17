@@ -32,7 +32,7 @@ import (
 // S3BucketNotificationsGetter has a method to return a S3BucketNotificationInterface.
 // A group's client should implement this interface.
 type S3BucketNotificationsGetter interface {
-	S3BucketNotifications() S3BucketNotificationInterface
+	S3BucketNotifications(namespace string) S3BucketNotificationInterface
 }
 
 // S3BucketNotificationInterface has methods to work with S3BucketNotification resources.
@@ -52,12 +52,14 @@ type S3BucketNotificationInterface interface {
 // s3BucketNotifications implements S3BucketNotificationInterface
 type s3BucketNotifications struct {
 	client rest.Interface
+	ns     string
 }
 
 // newS3BucketNotifications returns a S3BucketNotifications
-func newS3BucketNotifications(c *AwsV1alpha1Client) *s3BucketNotifications {
+func newS3BucketNotifications(c *AwsV1alpha1Client, namespace string) *s3BucketNotifications {
 	return &s3BucketNotifications{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newS3BucketNotifications(c *AwsV1alpha1Client) *s3BucketNotifications {
 func (c *s3BucketNotifications) Get(name string, options v1.GetOptions) (result *v1alpha1.S3BucketNotification, err error) {
 	result = &v1alpha1.S3BucketNotification{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("s3bucketnotifications").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *s3BucketNotifications) List(opts v1.ListOptions) (result *v1alpha1.S3Bu
 	}
 	result = &v1alpha1.S3BucketNotificationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("s3bucketnotifications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *s3BucketNotifications) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("s3bucketnotifications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *s3BucketNotifications) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *s3BucketNotifications) Create(s3BucketNotification *v1alpha1.S3BucketNotification) (result *v1alpha1.S3BucketNotification, err error) {
 	result = &v1alpha1.S3BucketNotification{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("s3bucketnotifications").
 		Body(s3BucketNotification).
 		Do().
@@ -118,6 +124,7 @@ func (c *s3BucketNotifications) Create(s3BucketNotification *v1alpha1.S3BucketNo
 func (c *s3BucketNotifications) Update(s3BucketNotification *v1alpha1.S3BucketNotification) (result *v1alpha1.S3BucketNotification, err error) {
 	result = &v1alpha1.S3BucketNotification{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("s3bucketnotifications").
 		Name(s3BucketNotification.Name).
 		Body(s3BucketNotification).
@@ -132,6 +139,7 @@ func (c *s3BucketNotifications) Update(s3BucketNotification *v1alpha1.S3BucketNo
 func (c *s3BucketNotifications) UpdateStatus(s3BucketNotification *v1alpha1.S3BucketNotification) (result *v1alpha1.S3BucketNotification, err error) {
 	result = &v1alpha1.S3BucketNotification{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("s3bucketnotifications").
 		Name(s3BucketNotification.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *s3BucketNotifications) UpdateStatus(s3BucketNotification *v1alpha1.S3Bu
 // Delete takes name of the s3BucketNotification and deletes it. Returns an error if one occurs.
 func (c *s3BucketNotifications) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("s3bucketnotifications").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *s3BucketNotifications) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("s3bucketnotifications").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *s3BucketNotifications) DeleteCollection(options *v1.DeleteOptions, list
 func (c *s3BucketNotifications) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.S3BucketNotification, err error) {
 	result = &v1alpha1.S3BucketNotification{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("s3bucketnotifications").
 		SubResource(subresources...).
 		Name(name).

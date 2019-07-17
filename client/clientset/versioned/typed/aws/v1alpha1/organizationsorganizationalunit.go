@@ -32,7 +32,7 @@ import (
 // OrganizationsOrganizationalUnitsGetter has a method to return a OrganizationsOrganizationalUnitInterface.
 // A group's client should implement this interface.
 type OrganizationsOrganizationalUnitsGetter interface {
-	OrganizationsOrganizationalUnits() OrganizationsOrganizationalUnitInterface
+	OrganizationsOrganizationalUnits(namespace string) OrganizationsOrganizationalUnitInterface
 }
 
 // OrganizationsOrganizationalUnitInterface has methods to work with OrganizationsOrganizationalUnit resources.
@@ -52,12 +52,14 @@ type OrganizationsOrganizationalUnitInterface interface {
 // organizationsOrganizationalUnits implements OrganizationsOrganizationalUnitInterface
 type organizationsOrganizationalUnits struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOrganizationsOrganizationalUnits returns a OrganizationsOrganizationalUnits
-func newOrganizationsOrganizationalUnits(c *AwsV1alpha1Client) *organizationsOrganizationalUnits {
+func newOrganizationsOrganizationalUnits(c *AwsV1alpha1Client, namespace string) *organizationsOrganizationalUnits {
 	return &organizationsOrganizationalUnits{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOrganizationsOrganizationalUnits(c *AwsV1alpha1Client) *organizationsOrg
 func (c *organizationsOrganizationalUnits) Get(name string, options v1.GetOptions) (result *v1alpha1.OrganizationsOrganizationalUnit, err error) {
 	result = &v1alpha1.OrganizationsOrganizationalUnit{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationsorganizationalunits").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *organizationsOrganizationalUnits) List(opts v1.ListOptions) (result *v1
 	}
 	result = &v1alpha1.OrganizationsOrganizationalUnitList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationsorganizationalunits").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *organizationsOrganizationalUnits) Watch(opts v1.ListOptions) (watch.Int
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationsorganizationalunits").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *organizationsOrganizationalUnits) Watch(opts v1.ListOptions) (watch.Int
 func (c *organizationsOrganizationalUnits) Create(organizationsOrganizationalUnit *v1alpha1.OrganizationsOrganizationalUnit) (result *v1alpha1.OrganizationsOrganizationalUnit, err error) {
 	result = &v1alpha1.OrganizationsOrganizationalUnit{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("organizationsorganizationalunits").
 		Body(organizationsOrganizationalUnit).
 		Do().
@@ -118,6 +124,7 @@ func (c *organizationsOrganizationalUnits) Create(organizationsOrganizationalUni
 func (c *organizationsOrganizationalUnits) Update(organizationsOrganizationalUnit *v1alpha1.OrganizationsOrganizationalUnit) (result *v1alpha1.OrganizationsOrganizationalUnit, err error) {
 	result = &v1alpha1.OrganizationsOrganizationalUnit{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("organizationsorganizationalunits").
 		Name(organizationsOrganizationalUnit.Name).
 		Body(organizationsOrganizationalUnit).
@@ -132,6 +139,7 @@ func (c *organizationsOrganizationalUnits) Update(organizationsOrganizationalUni
 func (c *organizationsOrganizationalUnits) UpdateStatus(organizationsOrganizationalUnit *v1alpha1.OrganizationsOrganizationalUnit) (result *v1alpha1.OrganizationsOrganizationalUnit, err error) {
 	result = &v1alpha1.OrganizationsOrganizationalUnit{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("organizationsorganizationalunits").
 		Name(organizationsOrganizationalUnit.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *organizationsOrganizationalUnits) UpdateStatus(organizationsOrganizatio
 // Delete takes name of the organizationsOrganizationalUnit and deletes it. Returns an error if one occurs.
 func (c *organizationsOrganizationalUnits) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("organizationsorganizationalunits").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *organizationsOrganizationalUnits) DeleteCollection(options *v1.DeleteOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("organizationsorganizationalunits").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *organizationsOrganizationalUnits) DeleteCollection(options *v1.DeleteOp
 func (c *organizationsOrganizationalUnits) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OrganizationsOrganizationalUnit, err error) {
 	result = &v1alpha1.OrganizationsOrganizationalUnit{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("organizationsorganizationalunits").
 		SubResource(subresources...).
 		Name(name).

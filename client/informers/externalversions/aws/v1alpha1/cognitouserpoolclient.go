@@ -41,32 +41,33 @@ type CognitoUserPoolClientInformer interface {
 type cognitoUserPoolClientInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewCognitoUserPoolClientInformer constructs a new informer for CognitoUserPoolClient type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCognitoUserPoolClientInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCognitoUserPoolClientInformer(client, resyncPeriod, indexers, nil)
+func NewCognitoUserPoolClientInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCognitoUserPoolClientInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredCognitoUserPoolClientInformer constructs a new informer for CognitoUserPoolClient type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCognitoUserPoolClientInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCognitoUserPoolClientInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CognitoUserPoolClients().List(options)
+				return client.AwsV1alpha1().CognitoUserPoolClients(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CognitoUserPoolClients().Watch(options)
+				return client.AwsV1alpha1().CognitoUserPoolClients(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.CognitoUserPoolClient{},
@@ -76,7 +77,7 @@ func NewFilteredCognitoUserPoolClientInformer(client versioned.Interface, resync
 }
 
 func (f *cognitoUserPoolClientInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCognitoUserPoolClientInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredCognitoUserPoolClientInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *cognitoUserPoolClientInformer) Informer() cache.SharedIndexInformer {

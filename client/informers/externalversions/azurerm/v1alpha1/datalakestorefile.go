@@ -41,32 +41,33 @@ type DataLakeStoreFileInformer interface {
 type dataLakeStoreFileInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDataLakeStoreFileInformer constructs a new informer for DataLakeStoreFile type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDataLakeStoreFileInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDataLakeStoreFileInformer(client, resyncPeriod, indexers, nil)
+func NewDataLakeStoreFileInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDataLakeStoreFileInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDataLakeStoreFileInformer constructs a new informer for DataLakeStoreFile type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDataLakeStoreFileInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDataLakeStoreFileInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DataLakeStoreFiles().List(options)
+				return client.AzurermV1alpha1().DataLakeStoreFiles(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DataLakeStoreFiles().Watch(options)
+				return client.AzurermV1alpha1().DataLakeStoreFiles(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.DataLakeStoreFile{},
@@ -76,7 +77,7 @@ func NewFilteredDataLakeStoreFileInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *dataLakeStoreFileInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDataLakeStoreFileInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDataLakeStoreFileInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *dataLakeStoreFileInformer) Informer() cache.SharedIndexInformer {

@@ -29,8 +29,8 @@ import (
 type ApiGatewayDocumentationVersionLister interface {
 	// List lists all ApiGatewayDocumentationVersions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayDocumentationVersion, err error)
-	// Get retrieves the ApiGatewayDocumentationVersion from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayDocumentationVersion, error)
+	// ApiGatewayDocumentationVersions returns an object that can list and get ApiGatewayDocumentationVersions.
+	ApiGatewayDocumentationVersions(namespace string) ApiGatewayDocumentationVersionNamespaceLister
 	ApiGatewayDocumentationVersionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiGatewayDocumentationVersionLister) List(selector labels.Selector) (r
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayDocumentationVersion from the index for a given name.
-func (s *apiGatewayDocumentationVersionLister) Get(name string) (*v1alpha1.ApiGatewayDocumentationVersion, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayDocumentationVersions returns an object that can list and get ApiGatewayDocumentationVersions.
+func (s *apiGatewayDocumentationVersionLister) ApiGatewayDocumentationVersions(namespace string) ApiGatewayDocumentationVersionNamespaceLister {
+	return apiGatewayDocumentationVersionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayDocumentationVersionNamespaceLister helps list and get ApiGatewayDocumentationVersions.
+type ApiGatewayDocumentationVersionNamespaceLister interface {
+	// List lists all ApiGatewayDocumentationVersions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayDocumentationVersion, err error)
+	// Get retrieves the ApiGatewayDocumentationVersion from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayDocumentationVersion, error)
+	ApiGatewayDocumentationVersionNamespaceListerExpansion
+}
+
+// apiGatewayDocumentationVersionNamespaceLister implements the ApiGatewayDocumentationVersionNamespaceLister
+// interface.
+type apiGatewayDocumentationVersionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayDocumentationVersions in the indexer for a given namespace.
+func (s apiGatewayDocumentationVersionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayDocumentationVersion, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayDocumentationVersion))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayDocumentationVersion from the indexer for a given namespace and name.
+func (s apiGatewayDocumentationVersionNamespaceLister) Get(name string) (*v1alpha1.ApiGatewayDocumentationVersion, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // KinesisStreamsGetter has a method to return a KinesisStreamInterface.
 // A group's client should implement this interface.
 type KinesisStreamsGetter interface {
-	KinesisStreams() KinesisStreamInterface
+	KinesisStreams(namespace string) KinesisStreamInterface
 }
 
 // KinesisStreamInterface has methods to work with KinesisStream resources.
@@ -52,12 +52,14 @@ type KinesisStreamInterface interface {
 // kinesisStreams implements KinesisStreamInterface
 type kinesisStreams struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKinesisStreams returns a KinesisStreams
-func newKinesisStreams(c *AwsV1alpha1Client) *kinesisStreams {
+func newKinesisStreams(c *AwsV1alpha1Client, namespace string) *kinesisStreams {
 	return &kinesisStreams{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKinesisStreams(c *AwsV1alpha1Client) *kinesisStreams {
 func (c *kinesisStreams) Get(name string, options v1.GetOptions) (result *v1alpha1.KinesisStream, err error) {
 	result = &v1alpha1.KinesisStream{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kinesisstreams").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *kinesisStreams) List(opts v1.ListOptions) (result *v1alpha1.KinesisStre
 	}
 	result = &v1alpha1.KinesisStreamList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kinesisstreams").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *kinesisStreams) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("kinesisstreams").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *kinesisStreams) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *kinesisStreams) Create(kinesisStream *v1alpha1.KinesisStream) (result *v1alpha1.KinesisStream, err error) {
 	result = &v1alpha1.KinesisStream{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("kinesisstreams").
 		Body(kinesisStream).
 		Do().
@@ -118,6 +124,7 @@ func (c *kinesisStreams) Create(kinesisStream *v1alpha1.KinesisStream) (result *
 func (c *kinesisStreams) Update(kinesisStream *v1alpha1.KinesisStream) (result *v1alpha1.KinesisStream, err error) {
 	result = &v1alpha1.KinesisStream{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kinesisstreams").
 		Name(kinesisStream.Name).
 		Body(kinesisStream).
@@ -132,6 +139,7 @@ func (c *kinesisStreams) Update(kinesisStream *v1alpha1.KinesisStream) (result *
 func (c *kinesisStreams) UpdateStatus(kinesisStream *v1alpha1.KinesisStream) (result *v1alpha1.KinesisStream, err error) {
 	result = &v1alpha1.KinesisStream{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kinesisstreams").
 		Name(kinesisStream.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *kinesisStreams) UpdateStatus(kinesisStream *v1alpha1.KinesisStream) (re
 // Delete takes name of the kinesisStream and deletes it. Returns an error if one occurs.
 func (c *kinesisStreams) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kinesisstreams").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *kinesisStreams) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kinesisstreams").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *kinesisStreams) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *kinesisStreams) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KinesisStream, err error) {
 	result = &v1alpha1.KinesisStream{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("kinesisstreams").
 		SubResource(subresources...).
 		Name(name).

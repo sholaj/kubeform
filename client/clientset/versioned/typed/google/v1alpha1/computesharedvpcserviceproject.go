@@ -32,7 +32,7 @@ import (
 // ComputeSharedVpcServiceProjectsGetter has a method to return a ComputeSharedVpcServiceProjectInterface.
 // A group's client should implement this interface.
 type ComputeSharedVpcServiceProjectsGetter interface {
-	ComputeSharedVpcServiceProjects() ComputeSharedVpcServiceProjectInterface
+	ComputeSharedVpcServiceProjects(namespace string) ComputeSharedVpcServiceProjectInterface
 }
 
 // ComputeSharedVpcServiceProjectInterface has methods to work with ComputeSharedVpcServiceProject resources.
@@ -52,12 +52,14 @@ type ComputeSharedVpcServiceProjectInterface interface {
 // computeSharedVpcServiceProjects implements ComputeSharedVpcServiceProjectInterface
 type computeSharedVpcServiceProjects struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeSharedVpcServiceProjects returns a ComputeSharedVpcServiceProjects
-func newComputeSharedVpcServiceProjects(c *GoogleV1alpha1Client) *computeSharedVpcServiceProjects {
+func newComputeSharedVpcServiceProjects(c *GoogleV1alpha1Client, namespace string) *computeSharedVpcServiceProjects {
 	return &computeSharedVpcServiceProjects{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeSharedVpcServiceProjects(c *GoogleV1alpha1Client) *computeSharedV
 func (c *computeSharedVpcServiceProjects) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeSharedVpcServiceProject, err error) {
 	result = &v1alpha1.ComputeSharedVpcServiceProject{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computesharedvpcserviceprojects").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeSharedVpcServiceProjects) List(opts v1.ListOptions) (result *v1a
 	}
 	result = &v1alpha1.ComputeSharedVpcServiceProjectList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computesharedvpcserviceprojects").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeSharedVpcServiceProjects) Watch(opts v1.ListOptions) (watch.Inte
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computesharedvpcserviceprojects").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeSharedVpcServiceProjects) Watch(opts v1.ListOptions) (watch.Inte
 func (c *computeSharedVpcServiceProjects) Create(computeSharedVpcServiceProject *v1alpha1.ComputeSharedVpcServiceProject) (result *v1alpha1.ComputeSharedVpcServiceProject, err error) {
 	result = &v1alpha1.ComputeSharedVpcServiceProject{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computesharedvpcserviceprojects").
 		Body(computeSharedVpcServiceProject).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeSharedVpcServiceProjects) Create(computeSharedVpcServiceProject 
 func (c *computeSharedVpcServiceProjects) Update(computeSharedVpcServiceProject *v1alpha1.ComputeSharedVpcServiceProject) (result *v1alpha1.ComputeSharedVpcServiceProject, err error) {
 	result = &v1alpha1.ComputeSharedVpcServiceProject{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computesharedvpcserviceprojects").
 		Name(computeSharedVpcServiceProject.Name).
 		Body(computeSharedVpcServiceProject).
@@ -132,6 +139,7 @@ func (c *computeSharedVpcServiceProjects) Update(computeSharedVpcServiceProject 
 func (c *computeSharedVpcServiceProjects) UpdateStatus(computeSharedVpcServiceProject *v1alpha1.ComputeSharedVpcServiceProject) (result *v1alpha1.ComputeSharedVpcServiceProject, err error) {
 	result = &v1alpha1.ComputeSharedVpcServiceProject{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computesharedvpcserviceprojects").
 		Name(computeSharedVpcServiceProject.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeSharedVpcServiceProjects) UpdateStatus(computeSharedVpcServicePr
 // Delete takes name of the computeSharedVpcServiceProject and deletes it. Returns an error if one occurs.
 func (c *computeSharedVpcServiceProjects) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computesharedvpcserviceprojects").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeSharedVpcServiceProjects) DeleteCollection(options *v1.DeleteOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computesharedvpcserviceprojects").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeSharedVpcServiceProjects) DeleteCollection(options *v1.DeleteOpt
 func (c *computeSharedVpcServiceProjects) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeSharedVpcServiceProject, err error) {
 	result = &v1alpha1.ComputeSharedVpcServiceProject{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computesharedvpcserviceprojects").
 		SubResource(subresources...).
 		Name(name).

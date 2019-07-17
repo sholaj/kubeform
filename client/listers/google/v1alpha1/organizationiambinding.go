@@ -29,8 +29,8 @@ import (
 type OrganizationIamBindingLister interface {
 	// List lists all OrganizationIamBindings in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OrganizationIamBinding, err error)
-	// Get retrieves the OrganizationIamBinding from the index for a given name.
-	Get(name string) (*v1alpha1.OrganizationIamBinding, error)
+	// OrganizationIamBindings returns an object that can list and get OrganizationIamBindings.
+	OrganizationIamBindings(namespace string) OrganizationIamBindingNamespaceLister
 	OrganizationIamBindingListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *organizationIamBindingLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the OrganizationIamBinding from the index for a given name.
-func (s *organizationIamBindingLister) Get(name string) (*v1alpha1.OrganizationIamBinding, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OrganizationIamBindings returns an object that can list and get OrganizationIamBindings.
+func (s *organizationIamBindingLister) OrganizationIamBindings(namespace string) OrganizationIamBindingNamespaceLister {
+	return organizationIamBindingNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OrganizationIamBindingNamespaceLister helps list and get OrganizationIamBindings.
+type OrganizationIamBindingNamespaceLister interface {
+	// List lists all OrganizationIamBindings in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OrganizationIamBinding, err error)
+	// Get retrieves the OrganizationIamBinding from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OrganizationIamBinding, error)
+	OrganizationIamBindingNamespaceListerExpansion
+}
+
+// organizationIamBindingNamespaceLister implements the OrganizationIamBindingNamespaceLister
+// interface.
+type organizationIamBindingNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OrganizationIamBindings in the indexer for a given namespace.
+func (s organizationIamBindingNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OrganizationIamBinding, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OrganizationIamBinding))
+	})
+	return ret, err
+}
+
+// Get retrieves the OrganizationIamBinding from the indexer for a given namespace and name.
+func (s organizationIamBindingNamespaceLister) Get(name string) (*v1alpha1.OrganizationIamBinding, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // InspectorResourceGroupsGetter has a method to return a InspectorResourceGroupInterface.
 // A group's client should implement this interface.
 type InspectorResourceGroupsGetter interface {
-	InspectorResourceGroups() InspectorResourceGroupInterface
+	InspectorResourceGroups(namespace string) InspectorResourceGroupInterface
 }
 
 // InspectorResourceGroupInterface has methods to work with InspectorResourceGroup resources.
@@ -52,12 +52,14 @@ type InspectorResourceGroupInterface interface {
 // inspectorResourceGroups implements InspectorResourceGroupInterface
 type inspectorResourceGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newInspectorResourceGroups returns a InspectorResourceGroups
-func newInspectorResourceGroups(c *AwsV1alpha1Client) *inspectorResourceGroups {
+func newInspectorResourceGroups(c *AwsV1alpha1Client, namespace string) *inspectorResourceGroups {
 	return &inspectorResourceGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newInspectorResourceGroups(c *AwsV1alpha1Client) *inspectorResourceGroups {
 func (c *inspectorResourceGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.InspectorResourceGroup, err error) {
 	result = &v1alpha1.InspectorResourceGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("inspectorresourcegroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *inspectorResourceGroups) List(opts v1.ListOptions) (result *v1alpha1.In
 	}
 	result = &v1alpha1.InspectorResourceGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("inspectorresourcegroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *inspectorResourceGroups) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("inspectorresourcegroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *inspectorResourceGroups) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *inspectorResourceGroups) Create(inspectorResourceGroup *v1alpha1.InspectorResourceGroup) (result *v1alpha1.InspectorResourceGroup, err error) {
 	result = &v1alpha1.InspectorResourceGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("inspectorresourcegroups").
 		Body(inspectorResourceGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *inspectorResourceGroups) Create(inspectorResourceGroup *v1alpha1.Inspec
 func (c *inspectorResourceGroups) Update(inspectorResourceGroup *v1alpha1.InspectorResourceGroup) (result *v1alpha1.InspectorResourceGroup, err error) {
 	result = &v1alpha1.InspectorResourceGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("inspectorresourcegroups").
 		Name(inspectorResourceGroup.Name).
 		Body(inspectorResourceGroup).
@@ -132,6 +139,7 @@ func (c *inspectorResourceGroups) Update(inspectorResourceGroup *v1alpha1.Inspec
 func (c *inspectorResourceGroups) UpdateStatus(inspectorResourceGroup *v1alpha1.InspectorResourceGroup) (result *v1alpha1.InspectorResourceGroup, err error) {
 	result = &v1alpha1.InspectorResourceGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("inspectorresourcegroups").
 		Name(inspectorResourceGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *inspectorResourceGroups) UpdateStatus(inspectorResourceGroup *v1alpha1.
 // Delete takes name of the inspectorResourceGroup and deletes it. Returns an error if one occurs.
 func (c *inspectorResourceGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("inspectorresourcegroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *inspectorResourceGroups) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("inspectorresourcegroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *inspectorResourceGroups) DeleteCollection(options *v1.DeleteOptions, li
 func (c *inspectorResourceGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.InspectorResourceGroup, err error) {
 	result = &v1alpha1.InspectorResourceGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("inspectorresourcegroups").
 		SubResource(subresources...).
 		Name(name).

@@ -41,32 +41,33 @@ type EmrInstanceGroupInformer interface {
 type emrInstanceGroupInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewEmrInstanceGroupInformer constructs a new informer for EmrInstanceGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewEmrInstanceGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredEmrInstanceGroupInformer(client, resyncPeriod, indexers, nil)
+func NewEmrInstanceGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredEmrInstanceGroupInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredEmrInstanceGroupInformer constructs a new informer for EmrInstanceGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredEmrInstanceGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredEmrInstanceGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().EmrInstanceGroups().List(options)
+				return client.AwsV1alpha1().EmrInstanceGroups(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().EmrInstanceGroups().Watch(options)
+				return client.AwsV1alpha1().EmrInstanceGroups(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.EmrInstanceGroup{},
@@ -76,7 +77,7 @@ func NewFilteredEmrInstanceGroupInformer(client versioned.Interface, resyncPerio
 }
 
 func (f *emrInstanceGroupInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredEmrInstanceGroupInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredEmrInstanceGroupInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *emrInstanceGroupInformer) Informer() cache.SharedIndexInformer {

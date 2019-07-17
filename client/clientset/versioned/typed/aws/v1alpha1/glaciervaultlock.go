@@ -32,7 +32,7 @@ import (
 // GlacierVaultLocksGetter has a method to return a GlacierVaultLockInterface.
 // A group's client should implement this interface.
 type GlacierVaultLocksGetter interface {
-	GlacierVaultLocks() GlacierVaultLockInterface
+	GlacierVaultLocks(namespace string) GlacierVaultLockInterface
 }
 
 // GlacierVaultLockInterface has methods to work with GlacierVaultLock resources.
@@ -52,12 +52,14 @@ type GlacierVaultLockInterface interface {
 // glacierVaultLocks implements GlacierVaultLockInterface
 type glacierVaultLocks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newGlacierVaultLocks returns a GlacierVaultLocks
-func newGlacierVaultLocks(c *AwsV1alpha1Client) *glacierVaultLocks {
+func newGlacierVaultLocks(c *AwsV1alpha1Client, namespace string) *glacierVaultLocks {
 	return &glacierVaultLocks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newGlacierVaultLocks(c *AwsV1alpha1Client) *glacierVaultLocks {
 func (c *glacierVaultLocks) Get(name string, options v1.GetOptions) (result *v1alpha1.GlacierVaultLock, err error) {
 	result = &v1alpha1.GlacierVaultLock{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("glaciervaultlocks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *glacierVaultLocks) List(opts v1.ListOptions) (result *v1alpha1.GlacierV
 	}
 	result = &v1alpha1.GlacierVaultLockList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("glaciervaultlocks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *glacierVaultLocks) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("glaciervaultlocks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *glacierVaultLocks) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *glacierVaultLocks) Create(glacierVaultLock *v1alpha1.GlacierVaultLock) (result *v1alpha1.GlacierVaultLock, err error) {
 	result = &v1alpha1.GlacierVaultLock{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("glaciervaultlocks").
 		Body(glacierVaultLock).
 		Do().
@@ -118,6 +124,7 @@ func (c *glacierVaultLocks) Create(glacierVaultLock *v1alpha1.GlacierVaultLock) 
 func (c *glacierVaultLocks) Update(glacierVaultLock *v1alpha1.GlacierVaultLock) (result *v1alpha1.GlacierVaultLock, err error) {
 	result = &v1alpha1.GlacierVaultLock{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("glaciervaultlocks").
 		Name(glacierVaultLock.Name).
 		Body(glacierVaultLock).
@@ -132,6 +139,7 @@ func (c *glacierVaultLocks) Update(glacierVaultLock *v1alpha1.GlacierVaultLock) 
 func (c *glacierVaultLocks) UpdateStatus(glacierVaultLock *v1alpha1.GlacierVaultLock) (result *v1alpha1.GlacierVaultLock, err error) {
 	result = &v1alpha1.GlacierVaultLock{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("glaciervaultlocks").
 		Name(glacierVaultLock.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *glacierVaultLocks) UpdateStatus(glacierVaultLock *v1alpha1.GlacierVault
 // Delete takes name of the glacierVaultLock and deletes it. Returns an error if one occurs.
 func (c *glacierVaultLocks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("glaciervaultlocks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *glacierVaultLocks) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("glaciervaultlocks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *glacierVaultLocks) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *glacierVaultLocks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GlacierVaultLock, err error) {
 	result = &v1alpha1.GlacierVaultLock{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("glaciervaultlocks").
 		SubResource(subresources...).
 		Name(name).

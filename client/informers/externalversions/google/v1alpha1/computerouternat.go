@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/google/v1alpha1"
 )
 
-// ComputeRouterNatInformer provides access to a shared informer and lister for
-// ComputeRouterNats.
-type ComputeRouterNatInformer interface {
+// ComputeRouterNATInformer provides access to a shared informer and lister for
+// ComputeRouterNATs.
+type ComputeRouterNATInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.ComputeRouterNatLister
+	Lister() v1alpha1.ComputeRouterNATLister
 }
 
-type computeRouterNatInformer struct {
+type computeRouterNATInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewComputeRouterNatInformer constructs a new informer for ComputeRouterNat type.
+// NewComputeRouterNATInformer constructs a new informer for ComputeRouterNAT type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewComputeRouterNatInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredComputeRouterNatInformer(client, resyncPeriod, indexers, nil)
+func NewComputeRouterNATInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredComputeRouterNATInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredComputeRouterNatInformer constructs a new informer for ComputeRouterNat type.
+// NewFilteredComputeRouterNATInformer constructs a new informer for ComputeRouterNAT type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredComputeRouterNatInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredComputeRouterNATInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeRouterNats().List(options)
+				return client.GoogleV1alpha1().ComputeRouterNATs(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ComputeRouterNats().Watch(options)
+				return client.GoogleV1alpha1().ComputeRouterNATs(namespace).Watch(options)
 			},
 		},
-		&googlev1alpha1.ComputeRouterNat{},
+		&googlev1alpha1.ComputeRouterNAT{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *computeRouterNatInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredComputeRouterNatInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *computeRouterNATInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredComputeRouterNATInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *computeRouterNatInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&googlev1alpha1.ComputeRouterNat{}, f.defaultInformer)
+func (f *computeRouterNATInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&googlev1alpha1.ComputeRouterNAT{}, f.defaultInformer)
 }
 
-func (f *computeRouterNatInformer) Lister() v1alpha1.ComputeRouterNatLister {
-	return v1alpha1.NewComputeRouterNatLister(f.Informer().GetIndexer())
+func (f *computeRouterNATInformer) Lister() v1alpha1.ComputeRouterNATLister {
+	return v1alpha1.NewComputeRouterNATLister(f.Informer().GetIndexer())
 }

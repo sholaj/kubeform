@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// WafregionalWebAclAssociationLister helps list WafregionalWebAclAssociations.
-type WafregionalWebAclAssociationLister interface {
-	// List lists all WafregionalWebAclAssociations in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.WafregionalWebAclAssociation, err error)
-	// Get retrieves the WafregionalWebAclAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.WafregionalWebAclAssociation, error)
-	WafregionalWebAclAssociationListerExpansion
+// WafregionalWebACLAssociationLister helps list WafregionalWebACLAssociations.
+type WafregionalWebACLAssociationLister interface {
+	// List lists all WafregionalWebACLAssociations in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.WafregionalWebACLAssociation, err error)
+	// WafregionalWebACLAssociations returns an object that can list and get WafregionalWebACLAssociations.
+	WafregionalWebACLAssociations(namespace string) WafregionalWebACLAssociationNamespaceLister
+	WafregionalWebACLAssociationListerExpansion
 }
 
-// wafregionalWebAclAssociationLister implements the WafregionalWebAclAssociationLister interface.
-type wafregionalWebAclAssociationLister struct {
+// wafregionalWebACLAssociationLister implements the WafregionalWebACLAssociationLister interface.
+type wafregionalWebACLAssociationLister struct {
 	indexer cache.Indexer
 }
 
-// NewWafregionalWebAclAssociationLister returns a new WafregionalWebAclAssociationLister.
-func NewWafregionalWebAclAssociationLister(indexer cache.Indexer) WafregionalWebAclAssociationLister {
-	return &wafregionalWebAclAssociationLister{indexer: indexer}
+// NewWafregionalWebACLAssociationLister returns a new WafregionalWebACLAssociationLister.
+func NewWafregionalWebACLAssociationLister(indexer cache.Indexer) WafregionalWebACLAssociationLister {
+	return &wafregionalWebACLAssociationLister{indexer: indexer}
 }
 
-// List lists all WafregionalWebAclAssociations in the indexer.
-func (s *wafregionalWebAclAssociationLister) List(selector labels.Selector) (ret []*v1alpha1.WafregionalWebAclAssociation, err error) {
+// List lists all WafregionalWebACLAssociations in the indexer.
+func (s *wafregionalWebACLAssociationLister) List(selector labels.Selector) (ret []*v1alpha1.WafregionalWebACLAssociation, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.WafregionalWebAclAssociation))
+		ret = append(ret, m.(*v1alpha1.WafregionalWebACLAssociation))
 	})
 	return ret, err
 }
 
-// Get retrieves the WafregionalWebAclAssociation from the index for a given name.
-func (s *wafregionalWebAclAssociationLister) Get(name string) (*v1alpha1.WafregionalWebAclAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafregionalWebACLAssociations returns an object that can list and get WafregionalWebACLAssociations.
+func (s *wafregionalWebACLAssociationLister) WafregionalWebACLAssociations(namespace string) WafregionalWebACLAssociationNamespaceLister {
+	return wafregionalWebACLAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafregionalWebACLAssociationNamespaceLister helps list and get WafregionalWebACLAssociations.
+type WafregionalWebACLAssociationNamespaceLister interface {
+	// List lists all WafregionalWebACLAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafregionalWebACLAssociation, err error)
+	// Get retrieves the WafregionalWebACLAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafregionalWebACLAssociation, error)
+	WafregionalWebACLAssociationNamespaceListerExpansion
+}
+
+// wafregionalWebACLAssociationNamespaceLister implements the WafregionalWebACLAssociationNamespaceLister
+// interface.
+type wafregionalWebACLAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafregionalWebACLAssociations in the indexer for a given namespace.
+func (s wafregionalWebACLAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafregionalWebACLAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafregionalWebACLAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafregionalWebACLAssociation from the indexer for a given namespace and name.
+func (s wafregionalWebACLAssociationNamespaceLister) Get(name string) (*v1alpha1.WafregionalWebACLAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("wafregionalwebaclassociation"), name)
 	}
-	return obj.(*v1alpha1.WafregionalWebAclAssociation), nil
+	return obj.(*v1alpha1.WafregionalWebACLAssociation), nil
 }

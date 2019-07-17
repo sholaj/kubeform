@@ -32,7 +32,7 @@ import (
 // DataFactoryLinkedServicePostgresqlsGetter has a method to return a DataFactoryLinkedServicePostgresqlInterface.
 // A group's client should implement this interface.
 type DataFactoryLinkedServicePostgresqlsGetter interface {
-	DataFactoryLinkedServicePostgresqls() DataFactoryLinkedServicePostgresqlInterface
+	DataFactoryLinkedServicePostgresqls(namespace string) DataFactoryLinkedServicePostgresqlInterface
 }
 
 // DataFactoryLinkedServicePostgresqlInterface has methods to work with DataFactoryLinkedServicePostgresql resources.
@@ -52,12 +52,14 @@ type DataFactoryLinkedServicePostgresqlInterface interface {
 // dataFactoryLinkedServicePostgresqls implements DataFactoryLinkedServicePostgresqlInterface
 type dataFactoryLinkedServicePostgresqls struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDataFactoryLinkedServicePostgresqls returns a DataFactoryLinkedServicePostgresqls
-func newDataFactoryLinkedServicePostgresqls(c *AzurermV1alpha1Client) *dataFactoryLinkedServicePostgresqls {
+func newDataFactoryLinkedServicePostgresqls(c *AzurermV1alpha1Client, namespace string) *dataFactoryLinkedServicePostgresqls {
 	return &dataFactoryLinkedServicePostgresqls{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDataFactoryLinkedServicePostgresqls(c *AzurermV1alpha1Client) *dataFacto
 func (c *dataFactoryLinkedServicePostgresqls) Get(name string, options v1.GetOptions) (result *v1alpha1.DataFactoryLinkedServicePostgresql, err error) {
 	result = &v1alpha1.DataFactoryLinkedServicePostgresql{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicepostgresqls").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dataFactoryLinkedServicePostgresqls) List(opts v1.ListOptions) (result 
 	}
 	result = &v1alpha1.DataFactoryLinkedServicePostgresqlList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicepostgresqls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dataFactoryLinkedServicePostgresqls) Watch(opts v1.ListOptions) (watch.
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicepostgresqls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dataFactoryLinkedServicePostgresqls) Watch(opts v1.ListOptions) (watch.
 func (c *dataFactoryLinkedServicePostgresqls) Create(dataFactoryLinkedServicePostgresql *v1alpha1.DataFactoryLinkedServicePostgresql) (result *v1alpha1.DataFactoryLinkedServicePostgresql, err error) {
 	result = &v1alpha1.DataFactoryLinkedServicePostgresql{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicepostgresqls").
 		Body(dataFactoryLinkedServicePostgresql).
 		Do().
@@ -118,6 +124,7 @@ func (c *dataFactoryLinkedServicePostgresqls) Create(dataFactoryLinkedServicePos
 func (c *dataFactoryLinkedServicePostgresqls) Update(dataFactoryLinkedServicePostgresql *v1alpha1.DataFactoryLinkedServicePostgresql) (result *v1alpha1.DataFactoryLinkedServicePostgresql, err error) {
 	result = &v1alpha1.DataFactoryLinkedServicePostgresql{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicepostgresqls").
 		Name(dataFactoryLinkedServicePostgresql.Name).
 		Body(dataFactoryLinkedServicePostgresql).
@@ -132,6 +139,7 @@ func (c *dataFactoryLinkedServicePostgresqls) Update(dataFactoryLinkedServicePos
 func (c *dataFactoryLinkedServicePostgresqls) UpdateStatus(dataFactoryLinkedServicePostgresql *v1alpha1.DataFactoryLinkedServicePostgresql) (result *v1alpha1.DataFactoryLinkedServicePostgresql, err error) {
 	result = &v1alpha1.DataFactoryLinkedServicePostgresql{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicepostgresqls").
 		Name(dataFactoryLinkedServicePostgresql.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dataFactoryLinkedServicePostgresqls) UpdateStatus(dataFactoryLinkedServ
 // Delete takes name of the dataFactoryLinkedServicePostgresql and deletes it. Returns an error if one occurs.
 func (c *dataFactoryLinkedServicePostgresqls) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicepostgresqls").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dataFactoryLinkedServicePostgresqls) DeleteCollection(options *v1.Delet
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicepostgresqls").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dataFactoryLinkedServicePostgresqls) DeleteCollection(options *v1.Delet
 func (c *dataFactoryLinkedServicePostgresqls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataFactoryLinkedServicePostgresql, err error) {
 	result = &v1alpha1.DataFactoryLinkedServicePostgresql{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicepostgresqls").
 		SubResource(subresources...).
 		Name(name).

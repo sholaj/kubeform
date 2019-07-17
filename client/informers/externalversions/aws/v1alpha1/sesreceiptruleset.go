@@ -41,32 +41,33 @@ type SesReceiptRuleSetInformer interface {
 type sesReceiptRuleSetInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSesReceiptRuleSetInformer constructs a new informer for SesReceiptRuleSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSesReceiptRuleSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSesReceiptRuleSetInformer(client, resyncPeriod, indexers, nil)
+func NewSesReceiptRuleSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSesReceiptRuleSetInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSesReceiptRuleSetInformer constructs a new informer for SesReceiptRuleSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSesReceiptRuleSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSesReceiptRuleSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SesReceiptRuleSets().List(options)
+				return client.AwsV1alpha1().SesReceiptRuleSets(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SesReceiptRuleSets().Watch(options)
+				return client.AwsV1alpha1().SesReceiptRuleSets(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.SesReceiptRuleSet{},
@@ -76,7 +77,7 @@ func NewFilteredSesReceiptRuleSetInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *sesReceiptRuleSetInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSesReceiptRuleSetInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSesReceiptRuleSetInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *sesReceiptRuleSetInformer) Informer() cache.SharedIndexInformer {

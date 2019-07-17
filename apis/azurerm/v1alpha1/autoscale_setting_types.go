@@ -3,12 +3,12 @@ package v1alpha1
 import (
 	"encoding/json"
 
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -22,102 +22,103 @@ type AutoscaleSetting struct {
 
 type AutoscaleSettingSpecNotificationEmail struct {
 	// +optional
-	CustomEmails []string `json:"custom_emails,omitempty"`
+	CustomEmails []string `json:"customEmails,omitempty" tf:"custom_emails,omitempty"`
 	// +optional
-	SendToSubscriptionAdministrator bool `json:"send_to_subscription_administrator,omitempty"`
+	SendToSubscriptionAdministrator bool `json:"sendToSubscriptionAdministrator,omitempty" tf:"send_to_subscription_administrator,omitempty"`
 	// +optional
-	SendToSubscriptionCoAdministrator bool `json:"send_to_subscription_co_administrator,omitempty"`
+	SendToSubscriptionCoAdministrator bool `json:"sendToSubscriptionCoAdministrator,omitempty" tf:"send_to_subscription_co_administrator,omitempty"`
 }
 
 type AutoscaleSettingSpecNotificationWebhook struct {
 	// +optional
-	Properties map[string]string `json:"properties,omitempty"`
-	ServiceUri string            `json:"service_uri"`
+	Properties map[string]string `json:"properties,omitempty" tf:"properties,omitempty"`
+	ServiceURI string            `json:"serviceURI" tf:"service_uri"`
 }
 
 type AutoscaleSettingSpecNotification struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Email *[]AutoscaleSettingSpecNotification `json:"email,omitempty"`
+	Email []AutoscaleSettingSpecNotificationEmail `json:"email,omitempty" tf:"email,omitempty"`
 	// +optional
-	Webhook *[]AutoscaleSettingSpecNotification `json:"webhook,omitempty"`
+	Webhook []AutoscaleSettingSpecNotificationWebhook `json:"webhook,omitempty" tf:"webhook,omitempty"`
 }
 
 type AutoscaleSettingSpecProfileCapacity struct {
-	Default int `json:"default"`
-	Maximum int `json:"maximum"`
-	Minimum int `json:"minimum"`
+	Default int `json:"default" tf:"default"`
+	Maximum int `json:"maximum" tf:"maximum"`
+	Minimum int `json:"minimum" tf:"minimum"`
 }
 
 type AutoscaleSettingSpecProfileFixedDate struct {
-	End   string `json:"end"`
-	Start string `json:"start"`
+	End   string `json:"end" tf:"end"`
+	Start string `json:"start" tf:"start"`
 	// +optional
-	Timezone string `json:"timezone,omitempty"`
+	Timezone string `json:"timezone,omitempty" tf:"timezone,omitempty"`
 }
 
 type AutoscaleSettingSpecProfileRecurrence struct {
-	Days []string `json:"days"`
+	Days []string `json:"days" tf:"days"`
 	// +kubebuilder:validation:MaxItems=1
-	Hours []int64 `json:"hours"`
+	Hours []int64 `json:"hours" tf:"hours"`
 	// +kubebuilder:validation:MaxItems=1
-	Minutes []int64 `json:"minutes"`
+	Minutes []int64 `json:"minutes" tf:"minutes"`
 	// +optional
-	Timezone string `json:"timezone,omitempty"`
+	Timezone string `json:"timezone,omitempty" tf:"timezone,omitempty"`
 }
 
 type AutoscaleSettingSpecProfileRuleMetricTrigger struct {
-	MetricName       string      `json:"metric_name"`
-	MetricResourceId string      `json:"metric_resource_id"`
-	Operator         string      `json:"operator"`
-	Statistic        string      `json:"statistic"`
-	Threshold        json.Number `json:"threshold"`
-	TimeAggregation  string      `json:"time_aggregation"`
-	TimeGrain        string      `json:"time_grain"`
-	TimeWindow       string      `json:"time_window"`
+	MetricName       string      `json:"metricName" tf:"metric_name"`
+	MetricResourceID string      `json:"metricResourceID" tf:"metric_resource_id"`
+	Operator         string      `json:"operator" tf:"operator"`
+	Statistic        string      `json:"statistic" tf:"statistic"`
+	Threshold        json.Number `json:"threshold" tf:"threshold"`
+	TimeAggregation  string      `json:"timeAggregation" tf:"time_aggregation"`
+	TimeGrain        string      `json:"timeGrain" tf:"time_grain"`
+	TimeWindow       string      `json:"timeWindow" tf:"time_window"`
 }
 
 type AutoscaleSettingSpecProfileRuleScaleAction struct {
-	Cooldown  string `json:"cooldown"`
-	Direction string `json:"direction"`
-	Type      string `json:"type"`
-	Value     int    `json:"value"`
+	Cooldown  string `json:"cooldown" tf:"cooldown"`
+	Direction string `json:"direction" tf:"direction"`
+	Type      string `json:"type" tf:"type"`
+	Value     int    `json:"value" tf:"value"`
 }
 
 type AutoscaleSettingSpecProfileRule struct {
 	// +kubebuilder:validation:MaxItems=1
-	MetricTrigger []AutoscaleSettingSpecProfileRule `json:"metric_trigger"`
+	MetricTrigger []AutoscaleSettingSpecProfileRuleMetricTrigger `json:"metricTrigger" tf:"metric_trigger"`
 	// +kubebuilder:validation:MaxItems=1
-	ScaleAction []AutoscaleSettingSpecProfileRule `json:"scale_action"`
+	ScaleAction []AutoscaleSettingSpecProfileRuleScaleAction `json:"scaleAction" tf:"scale_action"`
 }
 
 type AutoscaleSettingSpecProfile struct {
 	// +kubebuilder:validation:MaxItems=1
-	Capacity []AutoscaleSettingSpecProfile `json:"capacity"`
+	Capacity []AutoscaleSettingSpecProfileCapacity `json:"capacity" tf:"capacity"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	FixedDate *[]AutoscaleSettingSpecProfile `json:"fixed_date,omitempty"`
-	Name      string                         `json:"name"`
+	FixedDate []AutoscaleSettingSpecProfileFixedDate `json:"fixedDate,omitempty" tf:"fixed_date,omitempty"`
+	Name      string                                 `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Recurrence *[]AutoscaleSettingSpecProfile `json:"recurrence,omitempty"`
+	Recurrence []AutoscaleSettingSpecProfileRecurrence `json:"recurrence,omitempty" tf:"recurrence,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=10
-	Rule *[]AutoscaleSettingSpecProfile `json:"rule,omitempty"`
+	Rule []AutoscaleSettingSpecProfileRule `json:"rule,omitempty" tf:"rule,omitempty"`
 }
 
 type AutoscaleSettingSpec struct {
 	// +optional
-	Enabled  bool   `json:"enabled,omitempty"`
-	Location string `json:"location"`
-	Name     string `json:"name"`
+	Enabled  bool   `json:"enabled,omitempty" tf:"enabled,omitempty"`
+	Location string `json:"location" tf:"location"`
+	Name     string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Notification *[]AutoscaleSettingSpec `json:"notification,omitempty"`
+	Notification []AutoscaleSettingSpecNotification `json:"notification,omitempty" tf:"notification,omitempty"`
 	// +kubebuilder:validation:MaxItems=20
-	Profile           []AutoscaleSettingSpec `json:"profile"`
-	ResourceGroupName string                 `json:"resource_group_name"`
-	TargetResourceId  string                 `json:"target_resource_id"`
+	Profile           []AutoscaleSettingSpecProfile `json:"profile" tf:"profile"`
+	ResourceGroupName string                        `json:"resourceGroupName" tf:"resource_group_name"`
+	TargetResourceID  string                        `json:"targetResourceID" tf:"target_resource_id"`
+	ProviderRef       core.LocalObjectReference     `json:"providerRef" tf:"-"`
 }
 
 type AutoscaleSettingStatus struct {
@@ -125,7 +126,9 @@ type AutoscaleSettingStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

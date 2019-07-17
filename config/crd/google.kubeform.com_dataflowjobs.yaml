@@ -397,11 +397,11 @@ spec:
           type: object
         spec:
           properties:
-            max_workers:
+            maxWorkers:
               type: integer
             name:
               type: string
-            on_delete:
+            onDelete:
               type: string
             parameters:
               additionalProperties:
@@ -409,18 +409,28 @@ spec:
               type: object
             project:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             region:
               type: string
-            temp_gcs_location:
+            tempGcsLocation:
               type: string
-            template_gcs_path:
+            templateGcsPath:
               type: string
             zone:
               type: string
           required:
           - name
-          - temp_gcs_location
-          - template_gcs_path
+          - providerRef
+          - tempGcsLocation
+          - templateGcsPath
           type: object
         status:
           properties:
@@ -431,6 +441,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

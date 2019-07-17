@@ -29,8 +29,8 @@ import (
 type BatchAccountLister interface {
 	// List lists all BatchAccounts in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.BatchAccount, err error)
-	// Get retrieves the BatchAccount from the index for a given name.
-	Get(name string) (*v1alpha1.BatchAccount, error)
+	// BatchAccounts returns an object that can list and get BatchAccounts.
+	BatchAccounts(namespace string) BatchAccountNamespaceLister
 	BatchAccountListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *batchAccountLister) List(selector labels.Selector) (ret []*v1alpha1.Bat
 	return ret, err
 }
 
-// Get retrieves the BatchAccount from the index for a given name.
-func (s *batchAccountLister) Get(name string) (*v1alpha1.BatchAccount, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// BatchAccounts returns an object that can list and get BatchAccounts.
+func (s *batchAccountLister) BatchAccounts(namespace string) BatchAccountNamespaceLister {
+	return batchAccountNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// BatchAccountNamespaceLister helps list and get BatchAccounts.
+type BatchAccountNamespaceLister interface {
+	// List lists all BatchAccounts in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.BatchAccount, err error)
+	// Get retrieves the BatchAccount from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.BatchAccount, error)
+	BatchAccountNamespaceListerExpansion
+}
+
+// batchAccountNamespaceLister implements the BatchAccountNamespaceLister
+// interface.
+type batchAccountNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all BatchAccounts in the indexer for a given namespace.
+func (s batchAccountNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.BatchAccount, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.BatchAccount))
+	})
+	return ret, err
+}
+
+// Get retrieves the BatchAccount from the indexer for a given namespace and name.
+func (s batchAccountNamespaceLister) Get(name string) (*v1alpha1.BatchAccount, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

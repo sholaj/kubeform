@@ -32,7 +32,7 @@ import (
 // IamRolesGetter has a method to return a IamRoleInterface.
 // A group's client should implement this interface.
 type IamRolesGetter interface {
-	IamRoles() IamRoleInterface
+	IamRoles(namespace string) IamRoleInterface
 }
 
 // IamRoleInterface has methods to work with IamRole resources.
@@ -52,12 +52,14 @@ type IamRoleInterface interface {
 // iamRoles implements IamRoleInterface
 type iamRoles struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIamRoles returns a IamRoles
-func newIamRoles(c *AwsV1alpha1Client) *iamRoles {
+func newIamRoles(c *AwsV1alpha1Client, namespace string) *iamRoles {
 	return &iamRoles{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIamRoles(c *AwsV1alpha1Client) *iamRoles {
 func (c *iamRoles) Get(name string, options v1.GetOptions) (result *v1alpha1.IamRole, err error) {
 	result = &v1alpha1.IamRole{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamroles").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iamRoles) List(opts v1.ListOptions) (result *v1alpha1.IamRoleList, err 
 	}
 	result = &v1alpha1.IamRoleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamroles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iamRoles) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iamroles").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iamRoles) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *iamRoles) Create(iamRole *v1alpha1.IamRole) (result *v1alpha1.IamRole, err error) {
 	result = &v1alpha1.IamRole{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iamroles").
 		Body(iamRole).
 		Do().
@@ -118,6 +124,7 @@ func (c *iamRoles) Create(iamRole *v1alpha1.IamRole) (result *v1alpha1.IamRole, 
 func (c *iamRoles) Update(iamRole *v1alpha1.IamRole) (result *v1alpha1.IamRole, err error) {
 	result = &v1alpha1.IamRole{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamroles").
 		Name(iamRole.Name).
 		Body(iamRole).
@@ -132,6 +139,7 @@ func (c *iamRoles) Update(iamRole *v1alpha1.IamRole) (result *v1alpha1.IamRole, 
 func (c *iamRoles) UpdateStatus(iamRole *v1alpha1.IamRole) (result *v1alpha1.IamRole, err error) {
 	result = &v1alpha1.IamRole{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamroles").
 		Name(iamRole.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iamRoles) UpdateStatus(iamRole *v1alpha1.IamRole) (result *v1alpha1.Iam
 // Delete takes name of the iamRole and deletes it. Returns an error if one occurs.
 func (c *iamRoles) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamroles").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iamRoles) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamroles").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iamRoles) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 func (c *iamRoles) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamRole, err error) {
 	result = &v1alpha1.IamRole{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iamroles").
 		SubResource(subresources...).
 		Name(name).

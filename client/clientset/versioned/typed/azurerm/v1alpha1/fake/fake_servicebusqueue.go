@@ -31,6 +31,7 @@ import (
 // FakeServicebusQueues implements ServicebusQueueInterface
 type FakeServicebusQueues struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var servicebusqueuesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "servicebusqueues"}
@@ -40,7 +41,8 @@ var servicebusqueuesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com"
 // Get takes name of the servicebusQueue, and returns the corresponding servicebusQueue object, and an error if there is any.
 func (c *FakeServicebusQueues) Get(name string, options v1.GetOptions) (result *v1alpha1.ServicebusQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(servicebusqueuesResource, name), &v1alpha1.ServicebusQueue{})
+		Invokes(testing.NewGetAction(servicebusqueuesResource, c.ns, name), &v1alpha1.ServicebusQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeServicebusQueues) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of ServicebusQueues that match those selectors.
 func (c *FakeServicebusQueues) List(opts v1.ListOptions) (result *v1alpha1.ServicebusQueueList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(servicebusqueuesResource, servicebusqueuesKind, opts), &v1alpha1.ServicebusQueueList{})
+		Invokes(testing.NewListAction(servicebusqueuesResource, servicebusqueuesKind, c.ns, opts), &v1alpha1.ServicebusQueueList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeServicebusQueues) List(opts v1.ListOptions) (result *v1alpha1.Servi
 // Watch returns a watch.Interface that watches the requested servicebusQueues.
 func (c *FakeServicebusQueues) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(servicebusqueuesResource, opts))
+		InvokesWatch(testing.NewWatchAction(servicebusqueuesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a servicebusQueue and creates it.  Returns the server's representation of the servicebusQueue, and an error, if there is any.
 func (c *FakeServicebusQueues) Create(servicebusQueue *v1alpha1.ServicebusQueue) (result *v1alpha1.ServicebusQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(servicebusqueuesResource, servicebusQueue), &v1alpha1.ServicebusQueue{})
+		Invokes(testing.NewCreateAction(servicebusqueuesResource, c.ns, servicebusQueue), &v1alpha1.ServicebusQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeServicebusQueues) Create(servicebusQueue *v1alpha1.ServicebusQueue)
 // Update takes the representation of a servicebusQueue and updates it. Returns the server's representation of the servicebusQueue, and an error, if there is any.
 func (c *FakeServicebusQueues) Update(servicebusQueue *v1alpha1.ServicebusQueue) (result *v1alpha1.ServicebusQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(servicebusqueuesResource, servicebusQueue), &v1alpha1.ServicebusQueue{})
+		Invokes(testing.NewUpdateAction(servicebusqueuesResource, c.ns, servicebusQueue), &v1alpha1.ServicebusQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeServicebusQueues) Update(servicebusQueue *v1alpha1.ServicebusQueue)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeServicebusQueues) UpdateStatus(servicebusQueue *v1alpha1.ServicebusQueue) (*v1alpha1.ServicebusQueue, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(servicebusqueuesResource, "status", servicebusQueue), &v1alpha1.ServicebusQueue{})
+		Invokes(testing.NewUpdateSubresourceAction(servicebusqueuesResource, "status", c.ns, servicebusQueue), &v1alpha1.ServicebusQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeServicebusQueues) UpdateStatus(servicebusQueue *v1alpha1.Servicebus
 // Delete takes name of the servicebusQueue and deletes it. Returns an error if one occurs.
 func (c *FakeServicebusQueues) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(servicebusqueuesResource, name), &v1alpha1.ServicebusQueue{})
+		Invokes(testing.NewDeleteAction(servicebusqueuesResource, c.ns, name), &v1alpha1.ServicebusQueue{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeServicebusQueues) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(servicebusqueuesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(servicebusqueuesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ServicebusQueueList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeServicebusQueues) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched servicebusQueue.
 func (c *FakeServicebusQueues) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServicebusQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(servicebusqueuesResource, name, pt, data, subresources...), &v1alpha1.ServicebusQueue{})
+		Invokes(testing.NewPatchSubresourceAction(servicebusqueuesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ServicebusQueue{})
+
 	if obj == nil {
 		return nil, err
 	}

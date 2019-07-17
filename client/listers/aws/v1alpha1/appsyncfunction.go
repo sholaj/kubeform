@@ -29,8 +29,8 @@ import (
 type AppsyncFunctionLister interface {
 	// List lists all AppsyncFunctions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AppsyncFunction, err error)
-	// Get retrieves the AppsyncFunction from the index for a given name.
-	Get(name string) (*v1alpha1.AppsyncFunction, error)
+	// AppsyncFunctions returns an object that can list and get AppsyncFunctions.
+	AppsyncFunctions(namespace string) AppsyncFunctionNamespaceLister
 	AppsyncFunctionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *appsyncFunctionLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the AppsyncFunction from the index for a given name.
-func (s *appsyncFunctionLister) Get(name string) (*v1alpha1.AppsyncFunction, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AppsyncFunctions returns an object that can list and get AppsyncFunctions.
+func (s *appsyncFunctionLister) AppsyncFunctions(namespace string) AppsyncFunctionNamespaceLister {
+	return appsyncFunctionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AppsyncFunctionNamespaceLister helps list and get AppsyncFunctions.
+type AppsyncFunctionNamespaceLister interface {
+	// List lists all AppsyncFunctions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AppsyncFunction, err error)
+	// Get retrieves the AppsyncFunction from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AppsyncFunction, error)
+	AppsyncFunctionNamespaceListerExpansion
+}
+
+// appsyncFunctionNamespaceLister implements the AppsyncFunctionNamespaceLister
+// interface.
+type appsyncFunctionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AppsyncFunctions in the indexer for a given namespace.
+func (s appsyncFunctionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AppsyncFunction, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AppsyncFunction))
+	})
+	return ret, err
+}
+
+// Get retrieves the AppsyncFunction from the indexer for a given namespace and name.
+func (s appsyncFunctionNamespaceLister) Get(name string) (*v1alpha1.AppsyncFunction, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -397,52 +397,165 @@ spec:
           type: object
         spec:
           properties:
-            account_name:
+            accountName:
               type: string
-            auto_scale:
-              items: {}
+            autoScale:
+              items:
+                properties:
+                  evaluationInterval:
+                    type: string
+                  formula:
+                    type: string
+                required:
+                - formula
+                type: object
               maxItems: 1
               type: array
             certificate:
-              items: {}
+              items:
+                properties:
+                  ID:
+                    type: string
+                  storeLocation:
+                    type: string
+                  storeName:
+                    type: string
+                  visibility:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                required:
+                - ID
+                - storeLocation
+                type: object
               type: array
-            container_configuration:
-              items: {}
+            containerConfiguration:
+              items:
+                properties:
+                  type:
+                    type: string
+                type: object
               maxItems: 1
               type: array
-            display_name:
+            displayName:
               type: string
-            fixed_scale:
-              items: {}
+            fixedScale:
+              items:
+                properties:
+                  resizeTimeout:
+                    type: string
+                  targetDedicatedNodes:
+                    type: integer
+                  targetLowPriorityNodes:
+                    type: integer
+                type: object
               maxItems: 1
               type: array
-            max_tasks_per_node:
+            maxTasksPerNode:
               type: integer
             name:
               type: string
-            node_agent_sku_id:
+            nodeAgentSkuID:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
-            start_task:
-              items: {}
+            startTask:
+              items:
+                properties:
+                  commandLine:
+                    type: string
+                  environment:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  maxTaskRetryCount:
+                    type: integer
+                  resourceFile:
+                    items:
+                      properties:
+                        autoStorageContainerName:
+                          type: string
+                        blobPrefix:
+                          type: string
+                        fileMode:
+                          type: string
+                        filePath:
+                          type: string
+                        httpURL:
+                          type: string
+                        storageContainerURL:
+                          type: string
+                      type: object
+                    type: array
+                  userIdentity:
+                    items:
+                      properties:
+                        autoUser:
+                          items:
+                            properties:
+                              elevationLevel:
+                                type: string
+                              scope:
+                                type: string
+                            type: object
+                          maxItems: 1
+                          type: array
+                        userName:
+                          type: string
+                      type: object
+                    maxItems: 1
+                    type: array
+                  waitForSuccess:
+                    type: boolean
+                required:
+                - commandLine
+                - userIdentity
+                type: object
               maxItems: 1
               type: array
-            stop_pending_resize_operation:
+            stopPendingResizeOperation:
               type: boolean
-            storage_image_reference:
-              items: {}
+            storageImageReference:
+              items:
+                properties:
+                  ID:
+                    type: string
+                  offer:
+                    type: string
+                  publisher:
+                    type: string
+                  sku:
+                    type: string
+                  version:
+                    type: string
+                required:
+                - offer
+                - publisher
+                - sku
+                - version
+                type: object
               maxItems: 1
               type: array
-            vm_size:
+            vmSize:
               type: string
           required:
-          - account_name
+          - accountName
           - name
-          - node_agent_sku_id
-          - resource_group_name
-          - storage_image_reference
-          - vm_size
+          - nodeAgentSkuID
+          - providerRef
+          - resourceGroupName
+          - storageImageReference
+          - vmSize
           type: object
         status:
           properties:
@@ -453,6 +566,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

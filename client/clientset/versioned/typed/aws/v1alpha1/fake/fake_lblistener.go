@@ -31,6 +31,7 @@ import (
 // FakeLbListeners implements LbListenerInterface
 type FakeLbListeners struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var lblistenersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "lblisteners"}
@@ -40,7 +41,8 @@ var lblistenersKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version
 // Get takes name of the lbListener, and returns the corresponding lbListener object, and an error if there is any.
 func (c *FakeLbListeners) Get(name string, options v1.GetOptions) (result *v1alpha1.LbListener, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(lblistenersResource, name), &v1alpha1.LbListener{})
+		Invokes(testing.NewGetAction(lblistenersResource, c.ns, name), &v1alpha1.LbListener{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLbListeners) Get(name string, options v1.GetOptions) (result *v1alp
 // List takes label and field selectors, and returns the list of LbListeners that match those selectors.
 func (c *FakeLbListeners) List(opts v1.ListOptions) (result *v1alpha1.LbListenerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(lblistenersResource, lblistenersKind, opts), &v1alpha1.LbListenerList{})
+		Invokes(testing.NewListAction(lblistenersResource, lblistenersKind, c.ns, opts), &v1alpha1.LbListenerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLbListeners) List(opts v1.ListOptions) (result *v1alpha1.LbListener
 // Watch returns a watch.Interface that watches the requested lbListeners.
 func (c *FakeLbListeners) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(lblistenersResource, opts))
+		InvokesWatch(testing.NewWatchAction(lblistenersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a lbListener and creates it.  Returns the server's representation of the lbListener, and an error, if there is any.
 func (c *FakeLbListeners) Create(lbListener *v1alpha1.LbListener) (result *v1alpha1.LbListener, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(lblistenersResource, lbListener), &v1alpha1.LbListener{})
+		Invokes(testing.NewCreateAction(lblistenersResource, c.ns, lbListener), &v1alpha1.LbListener{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLbListeners) Create(lbListener *v1alpha1.LbListener) (result *v1alp
 // Update takes the representation of a lbListener and updates it. Returns the server's representation of the lbListener, and an error, if there is any.
 func (c *FakeLbListeners) Update(lbListener *v1alpha1.LbListener) (result *v1alpha1.LbListener, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(lblistenersResource, lbListener), &v1alpha1.LbListener{})
+		Invokes(testing.NewUpdateAction(lblistenersResource, c.ns, lbListener), &v1alpha1.LbListener{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLbListeners) Update(lbListener *v1alpha1.LbListener) (result *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLbListeners) UpdateStatus(lbListener *v1alpha1.LbListener) (*v1alpha1.LbListener, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(lblistenersResource, "status", lbListener), &v1alpha1.LbListener{})
+		Invokes(testing.NewUpdateSubresourceAction(lblistenersResource, "status", c.ns, lbListener), &v1alpha1.LbListener{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLbListeners) UpdateStatus(lbListener *v1alpha1.LbListener) (*v1alph
 // Delete takes name of the lbListener and deletes it. Returns an error if one occurs.
 func (c *FakeLbListeners) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(lblistenersResource, name), &v1alpha1.LbListener{})
+		Invokes(testing.NewDeleteAction(lblistenersResource, c.ns, name), &v1alpha1.LbListener{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLbListeners) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(lblistenersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(lblistenersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LbListenerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLbListeners) DeleteCollection(options *v1.DeleteOptions, listOption
 // Patch applies the patch and returns the patched lbListener.
 func (c *FakeLbListeners) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbListener, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(lblistenersResource, name, pt, data, subresources...), &v1alpha1.LbListener{})
+		Invokes(testing.NewPatchSubresourceAction(lblistenersResource, c.ns, name, pt, data, subresources...), &v1alpha1.LbListener{})
+
 	if obj == nil {
 		return nil, err
 	}

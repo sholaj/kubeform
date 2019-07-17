@@ -401,21 +401,31 @@ spec:
               type: string
             description:
               type: string
-            engine_type:
+            engineType:
               type: string
-            engine_version:
+            engineVersion:
               type: string
             name:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             tags:
               additionalProperties:
                 type: string
               type: object
           required:
           - data
-          - engine_type
-          - engine_version
+          - engineType
+          - engineVersion
           - name
+          - providerRef
           type: object
         status:
           properties:
@@ -426,6 +436,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

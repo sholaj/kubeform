@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/azurerm/v1alpha1"
 )
 
-// NetworkInterfaceNatRuleAssociationInformer provides access to a shared informer and lister for
-// NetworkInterfaceNatRuleAssociations.
-type NetworkInterfaceNatRuleAssociationInformer interface {
+// NetworkInterfaceNATRuleAssociationInformer provides access to a shared informer and lister for
+// NetworkInterfaceNATRuleAssociations.
+type NetworkInterfaceNATRuleAssociationInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.NetworkInterfaceNatRuleAssociationLister
+	Lister() v1alpha1.NetworkInterfaceNATRuleAssociationLister
 }
 
-type networkInterfaceNatRuleAssociationInformer struct {
+type networkInterfaceNATRuleAssociationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewNetworkInterfaceNatRuleAssociationInformer constructs a new informer for NetworkInterfaceNatRuleAssociation type.
+// NewNetworkInterfaceNATRuleAssociationInformer constructs a new informer for NetworkInterfaceNATRuleAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewNetworkInterfaceNatRuleAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredNetworkInterfaceNatRuleAssociationInformer(client, resyncPeriod, indexers, nil)
+func NewNetworkInterfaceNATRuleAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredNetworkInterfaceNATRuleAssociationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredNetworkInterfaceNatRuleAssociationInformer constructs a new informer for NetworkInterfaceNatRuleAssociation type.
+// NewFilteredNetworkInterfaceNATRuleAssociationInformer constructs a new informer for NetworkInterfaceNATRuleAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredNetworkInterfaceNatRuleAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredNetworkInterfaceNATRuleAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().NetworkInterfaceNatRuleAssociations().List(options)
+				return client.AzurermV1alpha1().NetworkInterfaceNATRuleAssociations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().NetworkInterfaceNatRuleAssociations().Watch(options)
+				return client.AzurermV1alpha1().NetworkInterfaceNATRuleAssociations(namespace).Watch(options)
 			},
 		},
-		&azurermv1alpha1.NetworkInterfaceNatRuleAssociation{},
+		&azurermv1alpha1.NetworkInterfaceNATRuleAssociation{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *networkInterfaceNatRuleAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredNetworkInterfaceNatRuleAssociationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *networkInterfaceNATRuleAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredNetworkInterfaceNATRuleAssociationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *networkInterfaceNatRuleAssociationInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&azurermv1alpha1.NetworkInterfaceNatRuleAssociation{}, f.defaultInformer)
+func (f *networkInterfaceNATRuleAssociationInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&azurermv1alpha1.NetworkInterfaceNATRuleAssociation{}, f.defaultInformer)
 }
 
-func (f *networkInterfaceNatRuleAssociationInformer) Lister() v1alpha1.NetworkInterfaceNatRuleAssociationLister {
-	return v1alpha1.NewNetworkInterfaceNatRuleAssociationLister(f.Informer().GetIndexer())
+func (f *networkInterfaceNATRuleAssociationInformer) Lister() v1alpha1.NetworkInterfaceNATRuleAssociationLister {
+	return v1alpha1.NewNetworkInterfaceNATRuleAssociationLister(f.Informer().GetIndexer())
 }

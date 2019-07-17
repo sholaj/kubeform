@@ -29,8 +29,8 @@ import (
 type SagemakerEndpointLister interface {
 	// List lists all SagemakerEndpoints in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SagemakerEndpoint, err error)
-	// Get retrieves the SagemakerEndpoint from the index for a given name.
-	Get(name string) (*v1alpha1.SagemakerEndpoint, error)
+	// SagemakerEndpoints returns an object that can list and get SagemakerEndpoints.
+	SagemakerEndpoints(namespace string) SagemakerEndpointNamespaceLister
 	SagemakerEndpointListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sagemakerEndpointLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the SagemakerEndpoint from the index for a given name.
-func (s *sagemakerEndpointLister) Get(name string) (*v1alpha1.SagemakerEndpoint, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SagemakerEndpoints returns an object that can list and get SagemakerEndpoints.
+func (s *sagemakerEndpointLister) SagemakerEndpoints(namespace string) SagemakerEndpointNamespaceLister {
+	return sagemakerEndpointNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SagemakerEndpointNamespaceLister helps list and get SagemakerEndpoints.
+type SagemakerEndpointNamespaceLister interface {
+	// List lists all SagemakerEndpoints in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SagemakerEndpoint, err error)
+	// Get retrieves the SagemakerEndpoint from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SagemakerEndpoint, error)
+	SagemakerEndpointNamespaceListerExpansion
+}
+
+// sagemakerEndpointNamespaceLister implements the SagemakerEndpointNamespaceLister
+// interface.
+type sagemakerEndpointNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SagemakerEndpoints in the indexer for a given namespace.
+func (s sagemakerEndpointNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SagemakerEndpoint, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SagemakerEndpoint))
+	})
+	return ret, err
+}
+
+// Get retrieves the SagemakerEndpoint from the indexer for a given namespace and name.
+func (s sagemakerEndpointNamespaceLister) Get(name string) (*v1alpha1.SagemakerEndpoint, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

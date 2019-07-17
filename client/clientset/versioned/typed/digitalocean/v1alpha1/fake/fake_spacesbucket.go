@@ -31,6 +31,7 @@ import (
 // FakeSpacesBuckets implements SpacesBucketInterface
 type FakeSpacesBuckets struct {
 	Fake *FakeDigitaloceanV1alpha1
+	ns   string
 }
 
 var spacesbucketsResource = schema.GroupVersionResource{Group: "digitalocean.kubeform.com", Version: "v1alpha1", Resource: "spacesbuckets"}
@@ -40,7 +41,8 @@ var spacesbucketsKind = schema.GroupVersionKind{Group: "digitalocean.kubeform.co
 // Get takes name of the spacesBucket, and returns the corresponding spacesBucket object, and an error if there is any.
 func (c *FakeSpacesBuckets) Get(name string, options v1.GetOptions) (result *v1alpha1.SpacesBucket, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(spacesbucketsResource, name), &v1alpha1.SpacesBucket{})
+		Invokes(testing.NewGetAction(spacesbucketsResource, c.ns, name), &v1alpha1.SpacesBucket{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSpacesBuckets) Get(name string, options v1.GetOptions) (result *v1a
 // List takes label and field selectors, and returns the list of SpacesBuckets that match those selectors.
 func (c *FakeSpacesBuckets) List(opts v1.ListOptions) (result *v1alpha1.SpacesBucketList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(spacesbucketsResource, spacesbucketsKind, opts), &v1alpha1.SpacesBucketList{})
+		Invokes(testing.NewListAction(spacesbucketsResource, spacesbucketsKind, c.ns, opts), &v1alpha1.SpacesBucketList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSpacesBuckets) List(opts v1.ListOptions) (result *v1alpha1.SpacesBu
 // Watch returns a watch.Interface that watches the requested spacesBuckets.
 func (c *FakeSpacesBuckets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(spacesbucketsResource, opts))
+		InvokesWatch(testing.NewWatchAction(spacesbucketsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a spacesBucket and creates it.  Returns the server's representation of the spacesBucket, and an error, if there is any.
 func (c *FakeSpacesBuckets) Create(spacesBucket *v1alpha1.SpacesBucket) (result *v1alpha1.SpacesBucket, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(spacesbucketsResource, spacesBucket), &v1alpha1.SpacesBucket{})
+		Invokes(testing.NewCreateAction(spacesbucketsResource, c.ns, spacesBucket), &v1alpha1.SpacesBucket{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSpacesBuckets) Create(spacesBucket *v1alpha1.SpacesBucket) (result 
 // Update takes the representation of a spacesBucket and updates it. Returns the server's representation of the spacesBucket, and an error, if there is any.
 func (c *FakeSpacesBuckets) Update(spacesBucket *v1alpha1.SpacesBucket) (result *v1alpha1.SpacesBucket, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(spacesbucketsResource, spacesBucket), &v1alpha1.SpacesBucket{})
+		Invokes(testing.NewUpdateAction(spacesbucketsResource, c.ns, spacesBucket), &v1alpha1.SpacesBucket{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSpacesBuckets) Update(spacesBucket *v1alpha1.SpacesBucket) (result 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSpacesBuckets) UpdateStatus(spacesBucket *v1alpha1.SpacesBucket) (*v1alpha1.SpacesBucket, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(spacesbucketsResource, "status", spacesBucket), &v1alpha1.SpacesBucket{})
+		Invokes(testing.NewUpdateSubresourceAction(spacesbucketsResource, "status", c.ns, spacesBucket), &v1alpha1.SpacesBucket{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSpacesBuckets) UpdateStatus(spacesBucket *v1alpha1.SpacesBucket) (*
 // Delete takes name of the spacesBucket and deletes it. Returns an error if one occurs.
 func (c *FakeSpacesBuckets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(spacesbucketsResource, name), &v1alpha1.SpacesBucket{})
+		Invokes(testing.NewDeleteAction(spacesbucketsResource, c.ns, name), &v1alpha1.SpacesBucket{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSpacesBuckets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(spacesbucketsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(spacesbucketsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SpacesBucketList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSpacesBuckets) DeleteCollection(options *v1.DeleteOptions, listOpti
 // Patch applies the patch and returns the patched spacesBucket.
 func (c *FakeSpacesBuckets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SpacesBucket, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(spacesbucketsResource, name, pt, data, subresources...), &v1alpha1.SpacesBucket{})
+		Invokes(testing.NewPatchSubresourceAction(spacesbucketsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SpacesBucket{})
+
 	if obj == nil {
 		return nil, err
 	}

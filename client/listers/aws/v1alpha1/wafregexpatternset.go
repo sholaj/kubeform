@@ -29,8 +29,8 @@ import (
 type WafRegexPatternSetLister interface {
 	// List lists all WafRegexPatternSets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.WafRegexPatternSet, err error)
-	// Get retrieves the WafRegexPatternSet from the index for a given name.
-	Get(name string) (*v1alpha1.WafRegexPatternSet, error)
+	// WafRegexPatternSets returns an object that can list and get WafRegexPatternSets.
+	WafRegexPatternSets(namespace string) WafRegexPatternSetNamespaceLister
 	WafRegexPatternSetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *wafRegexPatternSetLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the WafRegexPatternSet from the index for a given name.
-func (s *wafRegexPatternSetLister) Get(name string) (*v1alpha1.WafRegexPatternSet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafRegexPatternSets returns an object that can list and get WafRegexPatternSets.
+func (s *wafRegexPatternSetLister) WafRegexPatternSets(namespace string) WafRegexPatternSetNamespaceLister {
+	return wafRegexPatternSetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafRegexPatternSetNamespaceLister helps list and get WafRegexPatternSets.
+type WafRegexPatternSetNamespaceLister interface {
+	// List lists all WafRegexPatternSets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafRegexPatternSet, err error)
+	// Get retrieves the WafRegexPatternSet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafRegexPatternSet, error)
+	WafRegexPatternSetNamespaceListerExpansion
+}
+
+// wafRegexPatternSetNamespaceLister implements the WafRegexPatternSetNamespaceLister
+// interface.
+type wafRegexPatternSetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafRegexPatternSets in the indexer for a given namespace.
+func (s wafRegexPatternSetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafRegexPatternSet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafRegexPatternSet))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafRegexPatternSet from the indexer for a given namespace and name.
+func (s wafRegexPatternSetNamespaceLister) Get(name string) (*v1alpha1.WafRegexPatternSet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

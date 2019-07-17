@@ -31,6 +31,7 @@ import (
 // FakeSpannerDatabaseIamBindings implements SpannerDatabaseIamBindingInterface
 type FakeSpannerDatabaseIamBindings struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var spannerdatabaseiambindingsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "spannerdatabaseiambindings"}
@@ -40,7 +41,8 @@ var spannerdatabaseiambindingsKind = schema.GroupVersionKind{Group: "google.kube
 // Get takes name of the spannerDatabaseIamBinding, and returns the corresponding spannerDatabaseIamBinding object, and an error if there is any.
 func (c *FakeSpannerDatabaseIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.SpannerDatabaseIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(spannerdatabaseiambindingsResource, name), &v1alpha1.SpannerDatabaseIamBinding{})
+		Invokes(testing.NewGetAction(spannerdatabaseiambindingsResource, c.ns, name), &v1alpha1.SpannerDatabaseIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSpannerDatabaseIamBindings) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of SpannerDatabaseIamBindings that match those selectors.
 func (c *FakeSpannerDatabaseIamBindings) List(opts v1.ListOptions) (result *v1alpha1.SpannerDatabaseIamBindingList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(spannerdatabaseiambindingsResource, spannerdatabaseiambindingsKind, opts), &v1alpha1.SpannerDatabaseIamBindingList{})
+		Invokes(testing.NewListAction(spannerdatabaseiambindingsResource, spannerdatabaseiambindingsKind, c.ns, opts), &v1alpha1.SpannerDatabaseIamBindingList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSpannerDatabaseIamBindings) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested spannerDatabaseIamBindings.
 func (c *FakeSpannerDatabaseIamBindings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(spannerdatabaseiambindingsResource, opts))
+		InvokesWatch(testing.NewWatchAction(spannerdatabaseiambindingsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a spannerDatabaseIamBinding and creates it.  Returns the server's representation of the spannerDatabaseIamBinding, and an error, if there is any.
 func (c *FakeSpannerDatabaseIamBindings) Create(spannerDatabaseIamBinding *v1alpha1.SpannerDatabaseIamBinding) (result *v1alpha1.SpannerDatabaseIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(spannerdatabaseiambindingsResource, spannerDatabaseIamBinding), &v1alpha1.SpannerDatabaseIamBinding{})
+		Invokes(testing.NewCreateAction(spannerdatabaseiambindingsResource, c.ns, spannerDatabaseIamBinding), &v1alpha1.SpannerDatabaseIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSpannerDatabaseIamBindings) Create(spannerDatabaseIamBinding *v1alp
 // Update takes the representation of a spannerDatabaseIamBinding and updates it. Returns the server's representation of the spannerDatabaseIamBinding, and an error, if there is any.
 func (c *FakeSpannerDatabaseIamBindings) Update(spannerDatabaseIamBinding *v1alpha1.SpannerDatabaseIamBinding) (result *v1alpha1.SpannerDatabaseIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(spannerdatabaseiambindingsResource, spannerDatabaseIamBinding), &v1alpha1.SpannerDatabaseIamBinding{})
+		Invokes(testing.NewUpdateAction(spannerdatabaseiambindingsResource, c.ns, spannerDatabaseIamBinding), &v1alpha1.SpannerDatabaseIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSpannerDatabaseIamBindings) Update(spannerDatabaseIamBinding *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSpannerDatabaseIamBindings) UpdateStatus(spannerDatabaseIamBinding *v1alpha1.SpannerDatabaseIamBinding) (*v1alpha1.SpannerDatabaseIamBinding, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(spannerdatabaseiambindingsResource, "status", spannerDatabaseIamBinding), &v1alpha1.SpannerDatabaseIamBinding{})
+		Invokes(testing.NewUpdateSubresourceAction(spannerdatabaseiambindingsResource, "status", c.ns, spannerDatabaseIamBinding), &v1alpha1.SpannerDatabaseIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSpannerDatabaseIamBindings) UpdateStatus(spannerDatabaseIamBinding 
 // Delete takes name of the spannerDatabaseIamBinding and deletes it. Returns an error if one occurs.
 func (c *FakeSpannerDatabaseIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(spannerdatabaseiambindingsResource, name), &v1alpha1.SpannerDatabaseIamBinding{})
+		Invokes(testing.NewDeleteAction(spannerdatabaseiambindingsResource, c.ns, name), &v1alpha1.SpannerDatabaseIamBinding{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSpannerDatabaseIamBindings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(spannerdatabaseiambindingsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(spannerdatabaseiambindingsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SpannerDatabaseIamBindingList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSpannerDatabaseIamBindings) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched spannerDatabaseIamBinding.
 func (c *FakeSpannerDatabaseIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SpannerDatabaseIamBinding, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(spannerdatabaseiambindingsResource, name, pt, data, subresources...), &v1alpha1.SpannerDatabaseIamBinding{})
+		Invokes(testing.NewPatchSubresourceAction(spannerdatabaseiambindingsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SpannerDatabaseIamBinding{})
+
 	if obj == nil {
 		return nil, err
 	}

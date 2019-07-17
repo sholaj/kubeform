@@ -31,6 +31,7 @@ import (
 // FakeStoragegatewayGateways implements StoragegatewayGatewayInterface
 type FakeStoragegatewayGateways struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var storagegatewaygatewaysResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "storagegatewaygateways"}
@@ -40,7 +41,8 @@ var storagegatewaygatewaysKind = schema.GroupVersionKind{Group: "aws.kubeform.co
 // Get takes name of the storagegatewayGateway, and returns the corresponding storagegatewayGateway object, and an error if there is any.
 func (c *FakeStoragegatewayGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.StoragegatewayGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(storagegatewaygatewaysResource, name), &v1alpha1.StoragegatewayGateway{})
+		Invokes(testing.NewGetAction(storagegatewaygatewaysResource, c.ns, name), &v1alpha1.StoragegatewayGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeStoragegatewayGateways) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of StoragegatewayGateways that match those selectors.
 func (c *FakeStoragegatewayGateways) List(opts v1.ListOptions) (result *v1alpha1.StoragegatewayGatewayList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(storagegatewaygatewaysResource, storagegatewaygatewaysKind, opts), &v1alpha1.StoragegatewayGatewayList{})
+		Invokes(testing.NewListAction(storagegatewaygatewaysResource, storagegatewaygatewaysKind, c.ns, opts), &v1alpha1.StoragegatewayGatewayList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeStoragegatewayGateways) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested storagegatewayGateways.
 func (c *FakeStoragegatewayGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(storagegatewaygatewaysResource, opts))
+		InvokesWatch(testing.NewWatchAction(storagegatewaygatewaysResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a storagegatewayGateway and creates it.  Returns the server's representation of the storagegatewayGateway, and an error, if there is any.
 func (c *FakeStoragegatewayGateways) Create(storagegatewayGateway *v1alpha1.StoragegatewayGateway) (result *v1alpha1.StoragegatewayGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(storagegatewaygatewaysResource, storagegatewayGateway), &v1alpha1.StoragegatewayGateway{})
+		Invokes(testing.NewCreateAction(storagegatewaygatewaysResource, c.ns, storagegatewayGateway), &v1alpha1.StoragegatewayGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeStoragegatewayGateways) Create(storagegatewayGateway *v1alpha1.Stor
 // Update takes the representation of a storagegatewayGateway and updates it. Returns the server's representation of the storagegatewayGateway, and an error, if there is any.
 func (c *FakeStoragegatewayGateways) Update(storagegatewayGateway *v1alpha1.StoragegatewayGateway) (result *v1alpha1.StoragegatewayGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(storagegatewaygatewaysResource, storagegatewayGateway), &v1alpha1.StoragegatewayGateway{})
+		Invokes(testing.NewUpdateAction(storagegatewaygatewaysResource, c.ns, storagegatewayGateway), &v1alpha1.StoragegatewayGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeStoragegatewayGateways) Update(storagegatewayGateway *v1alpha1.Stor
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeStoragegatewayGateways) UpdateStatus(storagegatewayGateway *v1alpha1.StoragegatewayGateway) (*v1alpha1.StoragegatewayGateway, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(storagegatewaygatewaysResource, "status", storagegatewayGateway), &v1alpha1.StoragegatewayGateway{})
+		Invokes(testing.NewUpdateSubresourceAction(storagegatewaygatewaysResource, "status", c.ns, storagegatewayGateway), &v1alpha1.StoragegatewayGateway{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeStoragegatewayGateways) UpdateStatus(storagegatewayGateway *v1alpha
 // Delete takes name of the storagegatewayGateway and deletes it. Returns an error if one occurs.
 func (c *FakeStoragegatewayGateways) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(storagegatewaygatewaysResource, name), &v1alpha1.StoragegatewayGateway{})
+		Invokes(testing.NewDeleteAction(storagegatewaygatewaysResource, c.ns, name), &v1alpha1.StoragegatewayGateway{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeStoragegatewayGateways) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(storagegatewaygatewaysResource, listOptions)
+	action := testing.NewDeleteCollectionAction(storagegatewaygatewaysResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.StoragegatewayGatewayList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeStoragegatewayGateways) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched storagegatewayGateway.
 func (c *FakeStoragegatewayGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StoragegatewayGateway, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(storagegatewaygatewaysResource, name, pt, data, subresources...), &v1alpha1.StoragegatewayGateway{})
+		Invokes(testing.NewPatchSubresourceAction(storagegatewaygatewaysResource, c.ns, name, pt, data, subresources...), &v1alpha1.StoragegatewayGateway{})
+
 	if obj == nil {
 		return nil, err
 	}

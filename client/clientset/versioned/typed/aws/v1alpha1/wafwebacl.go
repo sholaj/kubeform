@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// WafWebAclsGetter has a method to return a WafWebAclInterface.
+// WafWebACLsGetter has a method to return a WafWebACLInterface.
 // A group's client should implement this interface.
-type WafWebAclsGetter interface {
-	WafWebAcls() WafWebAclInterface
+type WafWebACLsGetter interface {
+	WafWebACLs(namespace string) WafWebACLInterface
 }
 
-// WafWebAclInterface has methods to work with WafWebAcl resources.
-type WafWebAclInterface interface {
-	Create(*v1alpha1.WafWebAcl) (*v1alpha1.WafWebAcl, error)
-	Update(*v1alpha1.WafWebAcl) (*v1alpha1.WafWebAcl, error)
-	UpdateStatus(*v1alpha1.WafWebAcl) (*v1alpha1.WafWebAcl, error)
+// WafWebACLInterface has methods to work with WafWebACL resources.
+type WafWebACLInterface interface {
+	Create(*v1alpha1.WafWebACL) (*v1alpha1.WafWebACL, error)
+	Update(*v1alpha1.WafWebACL) (*v1alpha1.WafWebACL, error)
+	UpdateStatus(*v1alpha1.WafWebACL) (*v1alpha1.WafWebACL, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.WafWebAcl, error)
-	List(opts v1.ListOptions) (*v1alpha1.WafWebAclList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.WafWebACL, error)
+	List(opts v1.ListOptions) (*v1alpha1.WafWebACLList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafWebAcl, err error)
-	WafWebAclExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafWebACL, err error)
+	WafWebACLExpansion
 }
 
-// wafWebAcls implements WafWebAclInterface
-type wafWebAcls struct {
+// wafWebACLs implements WafWebACLInterface
+type wafWebACLs struct {
 	client rest.Interface
+	ns     string
 }
 
-// newWafWebAcls returns a WafWebAcls
-func newWafWebAcls(c *AwsV1alpha1Client) *wafWebAcls {
-	return &wafWebAcls{
+// newWafWebACLs returns a WafWebACLs
+func newWafWebACLs(c *AwsV1alpha1Client, namespace string) *wafWebACLs {
+	return &wafWebACLs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the wafWebAcl, and returns the corresponding wafWebAcl object, and an error if there is any.
-func (c *wafWebAcls) Get(name string, options v1.GetOptions) (result *v1alpha1.WafWebAcl, err error) {
-	result = &v1alpha1.WafWebAcl{}
+// Get takes name of the wafWebACL, and returns the corresponding wafWebACL object, and an error if there is any.
+func (c *wafWebACLs) Get(name string, options v1.GetOptions) (result *v1alpha1.WafWebACL, err error) {
+	result = &v1alpha1.WafWebACL{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafwebacls").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *wafWebAcls) Get(name string, options v1.GetOptions) (result *v1alpha1.W
 	return
 }
 
-// List takes label and field selectors, and returns the list of WafWebAcls that match those selectors.
-func (c *wafWebAcls) List(opts v1.ListOptions) (result *v1alpha1.WafWebAclList, err error) {
+// List takes label and field selectors, and returns the list of WafWebACLs that match those selectors.
+func (c *wafWebACLs) List(opts v1.ListOptions) (result *v1alpha1.WafWebACLList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.WafWebAclList{}
+	result = &v1alpha1.WafWebACLList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafwebacls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *wafWebAcls) List(opts v1.ListOptions) (result *v1alpha1.WafWebAclList, 
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested wafWebAcls.
-func (c *wafWebAcls) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested wafWebACLs.
+func (c *wafWebACLs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafwebacls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a wafWebAcl and creates it.  Returns the server's representation of the wafWebAcl, and an error, if there is any.
-func (c *wafWebAcls) Create(wafWebAcl *v1alpha1.WafWebAcl) (result *v1alpha1.WafWebAcl, err error) {
-	result = &v1alpha1.WafWebAcl{}
+// Create takes the representation of a wafWebACL and creates it.  Returns the server's representation of the wafWebACL, and an error, if there is any.
+func (c *wafWebACLs) Create(wafWebACL *v1alpha1.WafWebACL) (result *v1alpha1.WafWebACL, err error) {
+	result = &v1alpha1.WafWebACL{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafwebacls").
-		Body(wafWebAcl).
+		Body(wafWebACL).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a wafWebAcl and updates it. Returns the server's representation of the wafWebAcl, and an error, if there is any.
-func (c *wafWebAcls) Update(wafWebAcl *v1alpha1.WafWebAcl) (result *v1alpha1.WafWebAcl, err error) {
-	result = &v1alpha1.WafWebAcl{}
+// Update takes the representation of a wafWebACL and updates it. Returns the server's representation of the wafWebACL, and an error, if there is any.
+func (c *wafWebACLs) Update(wafWebACL *v1alpha1.WafWebACL) (result *v1alpha1.WafWebACL, err error) {
+	result = &v1alpha1.WafWebACL{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafwebacls").
-		Name(wafWebAcl.Name).
-		Body(wafWebAcl).
+		Name(wafWebACL.Name).
+		Body(wafWebACL).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *wafWebAcls) Update(wafWebAcl *v1alpha1.WafWebAcl) (result *v1alpha1.Waf
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *wafWebAcls) UpdateStatus(wafWebAcl *v1alpha1.WafWebAcl) (result *v1alpha1.WafWebAcl, err error) {
-	result = &v1alpha1.WafWebAcl{}
+func (c *wafWebACLs) UpdateStatus(wafWebACL *v1alpha1.WafWebACL) (result *v1alpha1.WafWebACL, err error) {
+	result = &v1alpha1.WafWebACL{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafwebacls").
-		Name(wafWebAcl.Name).
+		Name(wafWebACL.Name).
 		SubResource("status").
-		Body(wafWebAcl).
+		Body(wafWebACL).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the wafWebAcl and deletes it. Returns an error if one occurs.
-func (c *wafWebAcls) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the wafWebACL and deletes it. Returns an error if one occurs.
+func (c *wafWebACLs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafwebacls").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *wafWebAcls) Delete(name string, options *v1.DeleteOptions) error {
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *wafWebAcls) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *wafWebACLs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafwebacls").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *wafWebAcls) DeleteCollection(options *v1.DeleteOptions, listOptions v1.
 		Error()
 }
 
-// Patch applies the patch and returns the patched wafWebAcl.
-func (c *wafWebAcls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafWebAcl, err error) {
-	result = &v1alpha1.WafWebAcl{}
+// Patch applies the patch and returns the patched wafWebACL.
+func (c *wafWebACLs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafWebACL, err error) {
+	result = &v1alpha1.WafWebACL{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafwebacls").
 		SubResource(subresources...).
 		Name(name).

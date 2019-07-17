@@ -29,8 +29,8 @@ import (
 type ComputeImageLister interface {
 	// List lists all ComputeImages in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeImage, err error)
-	// Get retrieves the ComputeImage from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeImage, error)
+	// ComputeImages returns an object that can list and get ComputeImages.
+	ComputeImages(namespace string) ComputeImageNamespaceLister
 	ComputeImageListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeImageLister) List(selector labels.Selector) (ret []*v1alpha1.Com
 	return ret, err
 }
 
-// Get retrieves the ComputeImage from the index for a given name.
-func (s *computeImageLister) Get(name string) (*v1alpha1.ComputeImage, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeImages returns an object that can list and get ComputeImages.
+func (s *computeImageLister) ComputeImages(namespace string) ComputeImageNamespaceLister {
+	return computeImageNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeImageNamespaceLister helps list and get ComputeImages.
+type ComputeImageNamespaceLister interface {
+	// List lists all ComputeImages in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeImage, err error)
+	// Get retrieves the ComputeImage from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeImage, error)
+	ComputeImageNamespaceListerExpansion
+}
+
+// computeImageNamespaceLister implements the ComputeImageNamespaceLister
+// interface.
+type computeImageNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeImages in the indexer for a given namespace.
+func (s computeImageNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeImage, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeImage))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeImage from the indexer for a given namespace and name.
+func (s computeImageNamespaceLister) Get(name string) (*v1alpha1.ComputeImage, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

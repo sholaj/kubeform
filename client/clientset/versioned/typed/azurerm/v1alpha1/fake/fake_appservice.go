@@ -31,6 +31,7 @@ import (
 // FakeAppServices implements AppServiceInterface
 type FakeAppServices struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var appservicesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "appservices"}
@@ -40,7 +41,8 @@ var appservicesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Ver
 // Get takes name of the appService, and returns the corresponding appService object, and an error if there is any.
 func (c *FakeAppServices) Get(name string, options v1.GetOptions) (result *v1alpha1.AppService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(appservicesResource, name), &v1alpha1.AppService{})
+		Invokes(testing.NewGetAction(appservicesResource, c.ns, name), &v1alpha1.AppService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAppServices) Get(name string, options v1.GetOptions) (result *v1alp
 // List takes label and field selectors, and returns the list of AppServices that match those selectors.
 func (c *FakeAppServices) List(opts v1.ListOptions) (result *v1alpha1.AppServiceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(appservicesResource, appservicesKind, opts), &v1alpha1.AppServiceList{})
+		Invokes(testing.NewListAction(appservicesResource, appservicesKind, c.ns, opts), &v1alpha1.AppServiceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAppServices) List(opts v1.ListOptions) (result *v1alpha1.AppService
 // Watch returns a watch.Interface that watches the requested appServices.
 func (c *FakeAppServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(appservicesResource, opts))
+		InvokesWatch(testing.NewWatchAction(appservicesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a appService and creates it.  Returns the server's representation of the appService, and an error, if there is any.
 func (c *FakeAppServices) Create(appService *v1alpha1.AppService) (result *v1alpha1.AppService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(appservicesResource, appService), &v1alpha1.AppService{})
+		Invokes(testing.NewCreateAction(appservicesResource, c.ns, appService), &v1alpha1.AppService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAppServices) Create(appService *v1alpha1.AppService) (result *v1alp
 // Update takes the representation of a appService and updates it. Returns the server's representation of the appService, and an error, if there is any.
 func (c *FakeAppServices) Update(appService *v1alpha1.AppService) (result *v1alpha1.AppService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(appservicesResource, appService), &v1alpha1.AppService{})
+		Invokes(testing.NewUpdateAction(appservicesResource, c.ns, appService), &v1alpha1.AppService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAppServices) Update(appService *v1alpha1.AppService) (result *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAppServices) UpdateStatus(appService *v1alpha1.AppService) (*v1alpha1.AppService, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(appservicesResource, "status", appService), &v1alpha1.AppService{})
+		Invokes(testing.NewUpdateSubresourceAction(appservicesResource, "status", c.ns, appService), &v1alpha1.AppService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAppServices) UpdateStatus(appService *v1alpha1.AppService) (*v1alph
 // Delete takes name of the appService and deletes it. Returns an error if one occurs.
 func (c *FakeAppServices) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(appservicesResource, name), &v1alpha1.AppService{})
+		Invokes(testing.NewDeleteAction(appservicesResource, c.ns, name), &v1alpha1.AppService{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAppServices) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(appservicesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(appservicesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AppServiceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAppServices) DeleteCollection(options *v1.DeleteOptions, listOption
 // Patch applies the patch and returns the patched appService.
 func (c *FakeAppServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(appservicesResource, name, pt, data, subresources...), &v1alpha1.AppService{})
+		Invokes(testing.NewPatchSubresourceAction(appservicesResource, c.ns, name, pt, data, subresources...), &v1alpha1.AppService{})
+
 	if obj == nil {
 		return nil, err
 	}

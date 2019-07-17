@@ -32,7 +32,7 @@ import (
 // Ec2TransitGatewaysGetter has a method to return a Ec2TransitGatewayInterface.
 // A group's client should implement this interface.
 type Ec2TransitGatewaysGetter interface {
-	Ec2TransitGateways() Ec2TransitGatewayInterface
+	Ec2TransitGateways(namespace string) Ec2TransitGatewayInterface
 }
 
 // Ec2TransitGatewayInterface has methods to work with Ec2TransitGateway resources.
@@ -52,12 +52,14 @@ type Ec2TransitGatewayInterface interface {
 // ec2TransitGateways implements Ec2TransitGatewayInterface
 type ec2TransitGateways struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEc2TransitGateways returns a Ec2TransitGateways
-func newEc2TransitGateways(c *AwsV1alpha1Client) *ec2TransitGateways {
+func newEc2TransitGateways(c *AwsV1alpha1Client, namespace string) *ec2TransitGateways {
 	return &ec2TransitGateways{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEc2TransitGateways(c *AwsV1alpha1Client) *ec2TransitGateways {
 func (c *ec2TransitGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.Ec2TransitGateway, err error) {
 	result = &v1alpha1.Ec2TransitGateway{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ec2transitgateways").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ec2TransitGateways) List(opts v1.ListOptions) (result *v1alpha1.Ec2Tran
 	}
 	result = &v1alpha1.Ec2TransitGatewayList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ec2transitgateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ec2TransitGateways) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ec2transitgateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ec2TransitGateways) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *ec2TransitGateways) Create(ec2TransitGateway *v1alpha1.Ec2TransitGateway) (result *v1alpha1.Ec2TransitGateway, err error) {
 	result = &v1alpha1.Ec2TransitGateway{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ec2transitgateways").
 		Body(ec2TransitGateway).
 		Do().
@@ -118,6 +124,7 @@ func (c *ec2TransitGateways) Create(ec2TransitGateway *v1alpha1.Ec2TransitGatewa
 func (c *ec2TransitGateways) Update(ec2TransitGateway *v1alpha1.Ec2TransitGateway) (result *v1alpha1.Ec2TransitGateway, err error) {
 	result = &v1alpha1.Ec2TransitGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ec2transitgateways").
 		Name(ec2TransitGateway.Name).
 		Body(ec2TransitGateway).
@@ -132,6 +139,7 @@ func (c *ec2TransitGateways) Update(ec2TransitGateway *v1alpha1.Ec2TransitGatewa
 func (c *ec2TransitGateways) UpdateStatus(ec2TransitGateway *v1alpha1.Ec2TransitGateway) (result *v1alpha1.Ec2TransitGateway, err error) {
 	result = &v1alpha1.Ec2TransitGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ec2transitgateways").
 		Name(ec2TransitGateway.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ec2TransitGateways) UpdateStatus(ec2TransitGateway *v1alpha1.Ec2Transit
 // Delete takes name of the ec2TransitGateway and deletes it. Returns an error if one occurs.
 func (c *ec2TransitGateways) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ec2transitgateways").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ec2TransitGateways) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ec2transitgateways").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ec2TransitGateways) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *ec2TransitGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Ec2TransitGateway, err error) {
 	result = &v1alpha1.Ec2TransitGateway{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ec2transitgateways").
 		SubResource(subresources...).
 		Name(name).

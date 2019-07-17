@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,22 +20,23 @@ type CloudfunctionsFunction struct {
 
 type CloudfunctionsFunctionSpec struct {
 	// +optional
-	AvailableMemoryMb int `json:"available_memory_mb,omitempty"`
+	AvailableMemoryMb int `json:"availableMemoryMb,omitempty" tf:"available_memory_mb,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	EntryPoint string `json:"entry_point,omitempty"`
+	EntryPoint string `json:"entryPoint,omitempty" tf:"entry_point,omitempty"`
 	// +optional
-	EnvironmentVariables map[string]string `json:"environment_variables,omitempty"`
+	EnvironmentVariables map[string]string `json:"environmentVariables,omitempty" tf:"environment_variables,omitempty"`
 	// +optional
-	Labels              map[string]string `json:"labels,omitempty"`
-	Name                string            `json:"name"`
-	SourceArchiveBucket string            `json:"source_archive_bucket"`
-	SourceArchiveObject string            `json:"source_archive_object"`
+	Labels              map[string]string `json:"labels,omitempty" tf:"labels,omitempty"`
+	Name                string            `json:"name" tf:"name"`
+	SourceArchiveBucket string            `json:"sourceArchiveBucket" tf:"source_archive_bucket"`
+	SourceArchiveObject string            `json:"sourceArchiveObject" tf:"source_archive_object"`
 	// +optional
-	Timeout int `json:"timeout,omitempty"`
+	Timeout int `json:"timeout,omitempty" tf:"timeout,omitempty"`
 	// +optional
-	TriggerHttp bool `json:"trigger_http,omitempty"`
+	TriggerHTTP bool                      `json:"triggerHTTP,omitempty" tf:"trigger_http,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type CloudfunctionsFunctionStatus struct {
@@ -43,7 +44,9 @@ type CloudfunctionsFunctionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

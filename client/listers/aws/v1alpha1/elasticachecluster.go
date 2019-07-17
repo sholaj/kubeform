@@ -29,8 +29,8 @@ import (
 type ElasticacheClusterLister interface {
 	// List lists all ElasticacheClusters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ElasticacheCluster, err error)
-	// Get retrieves the ElasticacheCluster from the index for a given name.
-	Get(name string) (*v1alpha1.ElasticacheCluster, error)
+	// ElasticacheClusters returns an object that can list and get ElasticacheClusters.
+	ElasticacheClusters(namespace string) ElasticacheClusterNamespaceLister
 	ElasticacheClusterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *elasticacheClusterLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the ElasticacheCluster from the index for a given name.
-func (s *elasticacheClusterLister) Get(name string) (*v1alpha1.ElasticacheCluster, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ElasticacheClusters returns an object that can list and get ElasticacheClusters.
+func (s *elasticacheClusterLister) ElasticacheClusters(namespace string) ElasticacheClusterNamespaceLister {
+	return elasticacheClusterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ElasticacheClusterNamespaceLister helps list and get ElasticacheClusters.
+type ElasticacheClusterNamespaceLister interface {
+	// List lists all ElasticacheClusters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ElasticacheCluster, err error)
+	// Get retrieves the ElasticacheCluster from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ElasticacheCluster, error)
+	ElasticacheClusterNamespaceListerExpansion
+}
+
+// elasticacheClusterNamespaceLister implements the ElasticacheClusterNamespaceLister
+// interface.
+type elasticacheClusterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ElasticacheClusters in the indexer for a given namespace.
+func (s elasticacheClusterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ElasticacheCluster, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ElasticacheCluster))
+	})
+	return ret, err
+}
+
+// Get retrieves the ElasticacheCluster from the indexer for a given namespace and name.
+func (s elasticacheClusterNamespaceLister) Get(name string) (*v1alpha1.ElasticacheCluster, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

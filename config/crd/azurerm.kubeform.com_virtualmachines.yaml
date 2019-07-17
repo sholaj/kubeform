@@ -397,53 +397,181 @@ spec:
           type: object
         spec:
           properties:
-            boot_diagnostics:
-              items: {}
+            bootDiagnostics:
+              items:
+                properties:
+                  enabled:
+                    type: boolean
+                  storageURI:
+                    type: string
+                required:
+                - enabled
+                - storageURI
+                type: object
               maxItems: 1
               type: array
-            delete_data_disks_on_termination:
+            deleteDataDisksOnTermination:
               type: boolean
-            delete_os_disk_on_termination:
+            deleteOsDiskOnTermination:
               type: boolean
             location:
               type: string
             name:
               type: string
-            network_interface_ids:
+            networkInterfaceIDS:
               items:
                 type: string
               type: array
-            os_profile:
-              items: {}
+            osProfile:
+              items:
+                properties:
+                  adminPassword:
+                    type: string
+                  adminUsername:
+                    type: string
+                  computerName:
+                    type: string
+                required:
+                - adminUsername
+                - computerName
+                type: object
               maxItems: 1
               type: array
               uniqueItems: true
-            os_profile_linux_config:
-              items: {}
+            osProfileLinuxConfig:
+              items:
+                properties:
+                  disablePasswordAuthentication:
+                    type: boolean
+                  sshKeys:
+                    items:
+                      properties:
+                        keyData:
+                          type: string
+                        path:
+                          type: string
+                      required:
+                      - keyData
+                      - path
+                      type: object
+                    type: array
+                required:
+                - disablePasswordAuthentication
+                type: object
               maxItems: 1
               type: array
               uniqueItems: true
-            os_profile_secrets:
-              items: {}
+            osProfileSecrets:
+              items:
+                properties:
+                  sourceVaultID:
+                    type: string
+                  vaultCertificates:
+                    items:
+                      properties:
+                        certificateStore:
+                          type: string
+                        certificateURL:
+                          type: string
+                      required:
+                      - certificateURL
+                      type: object
+                    type: array
+                required:
+                - sourceVaultID
+                type: object
               type: array
-            os_profile_windows_config:
-              items: {}
+            osProfileWindowsConfig:
+              items:
+                properties:
+                  additionalUnattendConfig:
+                    items:
+                      properties:
+                        component:
+                          type: string
+                        content:
+                          type: string
+                        pass:
+                          type: string
+                        settingName:
+                          type: string
+                      required:
+                      - component
+                      - content
+                      - pass
+                      - settingName
+                      type: object
+                    type: array
+                  enableAutomaticUpgrades:
+                    type: boolean
+                  provisionVmAgent:
+                    type: boolean
+                  timezone:
+                    type: string
+                  winrm:
+                    items:
+                      properties:
+                        certificateURL:
+                          type: string
+                        protocol:
+                          type: string
+                      required:
+                      - protocol
+                      type: object
+                    type: array
+                type: object
               maxItems: 1
               type: array
               uniqueItems: true
             plan:
-              items: {}
+              items:
+                properties:
+                  name:
+                    type: string
+                  product:
+                    type: string
+                  publisher:
+                    type: string
+                required:
+                - name
+                - product
+                - publisher
+                type: object
               maxItems: 1
               type: array
-            primary_network_interface_id:
+            primaryNetworkInterfaceID:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
-            storage_os_disk:
-              items: {}
+            storageOsDisk:
+              items:
+                properties:
+                  createOption:
+                    type: string
+                  imageURI:
+                    type: string
+                  name:
+                    type: string
+                  vhdURI:
+                    type: string
+                  writeAcceleratorEnabled:
+                    type: boolean
+                required:
+                - createOption
+                - name
+                type: object
               maxItems: 1
               type: array
-            vm_size:
+            vmSize:
               type: string
             zones:
               items:
@@ -453,10 +581,11 @@ spec:
           required:
           - location
           - name
-          - network_interface_ids
-          - resource_group_name
-          - storage_os_disk
-          - vm_size
+          - networkInterfaceIDS
+          - providerRef
+          - resourceGroupName
+          - storageOsDisk
+          - vmSize
           type: object
         status:
           properties:
@@ -467,6 +596,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

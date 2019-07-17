@@ -29,8 +29,8 @@ import (
 type OpsworksStaticWebLayerLister interface {
 	// List lists all OpsworksStaticWebLayers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OpsworksStaticWebLayer, err error)
-	// Get retrieves the OpsworksStaticWebLayer from the index for a given name.
-	Get(name string) (*v1alpha1.OpsworksStaticWebLayer, error)
+	// OpsworksStaticWebLayers returns an object that can list and get OpsworksStaticWebLayers.
+	OpsworksStaticWebLayers(namespace string) OpsworksStaticWebLayerNamespaceLister
 	OpsworksStaticWebLayerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *opsworksStaticWebLayerLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the OpsworksStaticWebLayer from the index for a given name.
-func (s *opsworksStaticWebLayerLister) Get(name string) (*v1alpha1.OpsworksStaticWebLayer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OpsworksStaticWebLayers returns an object that can list and get OpsworksStaticWebLayers.
+func (s *opsworksStaticWebLayerLister) OpsworksStaticWebLayers(namespace string) OpsworksStaticWebLayerNamespaceLister {
+	return opsworksStaticWebLayerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OpsworksStaticWebLayerNamespaceLister helps list and get OpsworksStaticWebLayers.
+type OpsworksStaticWebLayerNamespaceLister interface {
+	// List lists all OpsworksStaticWebLayers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OpsworksStaticWebLayer, err error)
+	// Get retrieves the OpsworksStaticWebLayer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OpsworksStaticWebLayer, error)
+	OpsworksStaticWebLayerNamespaceListerExpansion
+}
+
+// opsworksStaticWebLayerNamespaceLister implements the OpsworksStaticWebLayerNamespaceLister
+// interface.
+type opsworksStaticWebLayerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OpsworksStaticWebLayers in the indexer for a given namespace.
+func (s opsworksStaticWebLayerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OpsworksStaticWebLayer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OpsworksStaticWebLayer))
+	})
+	return ret, err
+}
+
+// Get retrieves the OpsworksStaticWebLayer from the indexer for a given namespace and name.
+func (s opsworksStaticWebLayerNamespaceLister) Get(name string) (*v1alpha1.OpsworksStaticWebLayer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

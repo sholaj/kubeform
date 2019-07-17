@@ -29,8 +29,8 @@ import (
 type StorageAccountLister interface {
 	// List lists all StorageAccounts in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StorageAccount, err error)
-	// Get retrieves the StorageAccount from the index for a given name.
-	Get(name string) (*v1alpha1.StorageAccount, error)
+	// StorageAccounts returns an object that can list and get StorageAccounts.
+	StorageAccounts(namespace string) StorageAccountNamespaceLister
 	StorageAccountListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *storageAccountLister) List(selector labels.Selector) (ret []*v1alpha1.S
 	return ret, err
 }
 
-// Get retrieves the StorageAccount from the index for a given name.
-func (s *storageAccountLister) Get(name string) (*v1alpha1.StorageAccount, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StorageAccounts returns an object that can list and get StorageAccounts.
+func (s *storageAccountLister) StorageAccounts(namespace string) StorageAccountNamespaceLister {
+	return storageAccountNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StorageAccountNamespaceLister helps list and get StorageAccounts.
+type StorageAccountNamespaceLister interface {
+	// List lists all StorageAccounts in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StorageAccount, err error)
+	// Get retrieves the StorageAccount from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StorageAccount, error)
+	StorageAccountNamespaceListerExpansion
+}
+
+// storageAccountNamespaceLister implements the StorageAccountNamespaceLister
+// interface.
+type storageAccountNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StorageAccounts in the indexer for a given namespace.
+func (s storageAccountNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StorageAccount, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StorageAccount))
+	})
+	return ret, err
+}
+
+// Get retrieves the StorageAccount from the indexer for a given namespace and name.
+func (s storageAccountNamespaceLister) Get(name string) (*v1alpha1.StorageAccount, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

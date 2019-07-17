@@ -29,8 +29,8 @@ import (
 type BatchJobQueueLister interface {
 	// List lists all BatchJobQueues in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.BatchJobQueue, err error)
-	// Get retrieves the BatchJobQueue from the index for a given name.
-	Get(name string) (*v1alpha1.BatchJobQueue, error)
+	// BatchJobQueues returns an object that can list and get BatchJobQueues.
+	BatchJobQueues(namespace string) BatchJobQueueNamespaceLister
 	BatchJobQueueListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *batchJobQueueLister) List(selector labels.Selector) (ret []*v1alpha1.Ba
 	return ret, err
 }
 
-// Get retrieves the BatchJobQueue from the index for a given name.
-func (s *batchJobQueueLister) Get(name string) (*v1alpha1.BatchJobQueue, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// BatchJobQueues returns an object that can list and get BatchJobQueues.
+func (s *batchJobQueueLister) BatchJobQueues(namespace string) BatchJobQueueNamespaceLister {
+	return batchJobQueueNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// BatchJobQueueNamespaceLister helps list and get BatchJobQueues.
+type BatchJobQueueNamespaceLister interface {
+	// List lists all BatchJobQueues in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.BatchJobQueue, err error)
+	// Get retrieves the BatchJobQueue from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.BatchJobQueue, error)
+	BatchJobQueueNamespaceListerExpansion
+}
+
+// batchJobQueueNamespaceLister implements the BatchJobQueueNamespaceLister
+// interface.
+type batchJobQueueNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all BatchJobQueues in the indexer for a given namespace.
+func (s batchJobQueueNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.BatchJobQueue, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.BatchJobQueue))
+	})
+	return ret, err
+}
+
+// Get retrieves the BatchJobQueue from the indexer for a given namespace and name.
+func (s batchJobQueueNamespaceLister) Get(name string) (*v1alpha1.BatchJobQueue, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // SsmResourceDataSyncsGetter has a method to return a SsmResourceDataSyncInterface.
 // A group's client should implement this interface.
 type SsmResourceDataSyncsGetter interface {
-	SsmResourceDataSyncs() SsmResourceDataSyncInterface
+	SsmResourceDataSyncs(namespace string) SsmResourceDataSyncInterface
 }
 
 // SsmResourceDataSyncInterface has methods to work with SsmResourceDataSync resources.
@@ -52,12 +52,14 @@ type SsmResourceDataSyncInterface interface {
 // ssmResourceDataSyncs implements SsmResourceDataSyncInterface
 type ssmResourceDataSyncs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSsmResourceDataSyncs returns a SsmResourceDataSyncs
-func newSsmResourceDataSyncs(c *AwsV1alpha1Client) *ssmResourceDataSyncs {
+func newSsmResourceDataSyncs(c *AwsV1alpha1Client, namespace string) *ssmResourceDataSyncs {
 	return &ssmResourceDataSyncs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSsmResourceDataSyncs(c *AwsV1alpha1Client) *ssmResourceDataSyncs {
 func (c *ssmResourceDataSyncs) Get(name string, options v1.GetOptions) (result *v1alpha1.SsmResourceDataSync, err error) {
 	result = &v1alpha1.SsmResourceDataSync{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmresourcedatasyncs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ssmResourceDataSyncs) List(opts v1.ListOptions) (result *v1alpha1.SsmRe
 	}
 	result = &v1alpha1.SsmResourceDataSyncList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmresourcedatasyncs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ssmResourceDataSyncs) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ssmresourcedatasyncs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ssmResourceDataSyncs) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *ssmResourceDataSyncs) Create(ssmResourceDataSync *v1alpha1.SsmResourceDataSync) (result *v1alpha1.SsmResourceDataSync, err error) {
 	result = &v1alpha1.SsmResourceDataSync{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ssmresourcedatasyncs").
 		Body(ssmResourceDataSync).
 		Do().
@@ -118,6 +124,7 @@ func (c *ssmResourceDataSyncs) Create(ssmResourceDataSync *v1alpha1.SsmResourceD
 func (c *ssmResourceDataSyncs) Update(ssmResourceDataSync *v1alpha1.SsmResourceDataSync) (result *v1alpha1.SsmResourceDataSync, err error) {
 	result = &v1alpha1.SsmResourceDataSync{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ssmresourcedatasyncs").
 		Name(ssmResourceDataSync.Name).
 		Body(ssmResourceDataSync).
@@ -132,6 +139,7 @@ func (c *ssmResourceDataSyncs) Update(ssmResourceDataSync *v1alpha1.SsmResourceD
 func (c *ssmResourceDataSyncs) UpdateStatus(ssmResourceDataSync *v1alpha1.SsmResourceDataSync) (result *v1alpha1.SsmResourceDataSync, err error) {
 	result = &v1alpha1.SsmResourceDataSync{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ssmresourcedatasyncs").
 		Name(ssmResourceDataSync.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ssmResourceDataSyncs) UpdateStatus(ssmResourceDataSync *v1alpha1.SsmRes
 // Delete takes name of the ssmResourceDataSync and deletes it. Returns an error if one occurs.
 func (c *ssmResourceDataSyncs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ssmresourcedatasyncs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ssmResourceDataSyncs) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ssmresourcedatasyncs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ssmResourceDataSyncs) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *ssmResourceDataSyncs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SsmResourceDataSync, err error) {
 	result = &v1alpha1.SsmResourceDataSync{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ssmresourcedatasyncs").
 		SubResource(subresources...).
 		Name(name).

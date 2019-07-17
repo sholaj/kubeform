@@ -32,7 +32,7 @@ import (
 // AutoscalingAttachmentsGetter has a method to return a AutoscalingAttachmentInterface.
 // A group's client should implement this interface.
 type AutoscalingAttachmentsGetter interface {
-	AutoscalingAttachments() AutoscalingAttachmentInterface
+	AutoscalingAttachments(namespace string) AutoscalingAttachmentInterface
 }
 
 // AutoscalingAttachmentInterface has methods to work with AutoscalingAttachment resources.
@@ -52,12 +52,14 @@ type AutoscalingAttachmentInterface interface {
 // autoscalingAttachments implements AutoscalingAttachmentInterface
 type autoscalingAttachments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAutoscalingAttachments returns a AutoscalingAttachments
-func newAutoscalingAttachments(c *AwsV1alpha1Client) *autoscalingAttachments {
+func newAutoscalingAttachments(c *AwsV1alpha1Client, namespace string) *autoscalingAttachments {
 	return &autoscalingAttachments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAutoscalingAttachments(c *AwsV1alpha1Client) *autoscalingAttachments {
 func (c *autoscalingAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.AutoscalingAttachment, err error) {
 	result = &v1alpha1.AutoscalingAttachment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("autoscalingattachments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *autoscalingAttachments) List(opts v1.ListOptions) (result *v1alpha1.Aut
 	}
 	result = &v1alpha1.AutoscalingAttachmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("autoscalingattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *autoscalingAttachments) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("autoscalingattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *autoscalingAttachments) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *autoscalingAttachments) Create(autoscalingAttachment *v1alpha1.AutoscalingAttachment) (result *v1alpha1.AutoscalingAttachment, err error) {
 	result = &v1alpha1.AutoscalingAttachment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("autoscalingattachments").
 		Body(autoscalingAttachment).
 		Do().
@@ -118,6 +124,7 @@ func (c *autoscalingAttachments) Create(autoscalingAttachment *v1alpha1.Autoscal
 func (c *autoscalingAttachments) Update(autoscalingAttachment *v1alpha1.AutoscalingAttachment) (result *v1alpha1.AutoscalingAttachment, err error) {
 	result = &v1alpha1.AutoscalingAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("autoscalingattachments").
 		Name(autoscalingAttachment.Name).
 		Body(autoscalingAttachment).
@@ -132,6 +139,7 @@ func (c *autoscalingAttachments) Update(autoscalingAttachment *v1alpha1.Autoscal
 func (c *autoscalingAttachments) UpdateStatus(autoscalingAttachment *v1alpha1.AutoscalingAttachment) (result *v1alpha1.AutoscalingAttachment, err error) {
 	result = &v1alpha1.AutoscalingAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("autoscalingattachments").
 		Name(autoscalingAttachment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *autoscalingAttachments) UpdateStatus(autoscalingAttachment *v1alpha1.Au
 // Delete takes name of the autoscalingAttachment and deletes it. Returns an error if one occurs.
 func (c *autoscalingAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("autoscalingattachments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *autoscalingAttachments) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("autoscalingattachments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *autoscalingAttachments) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *autoscalingAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AutoscalingAttachment, err error) {
 	result = &v1alpha1.AutoscalingAttachment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("autoscalingattachments").
 		SubResource(subresources...).
 		Name(name).

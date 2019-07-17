@@ -31,6 +31,7 @@ import (
 // FakeTemplateDeployments implements TemplateDeploymentInterface
 type FakeTemplateDeployments struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var templatedeploymentsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "templatedeployments"}
@@ -40,7 +41,8 @@ var templatedeploymentsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.c
 // Get takes name of the templateDeployment, and returns the corresponding templateDeployment object, and an error if there is any.
 func (c *FakeTemplateDeployments) Get(name string, options v1.GetOptions) (result *v1alpha1.TemplateDeployment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(templatedeploymentsResource, name), &v1alpha1.TemplateDeployment{})
+		Invokes(testing.NewGetAction(templatedeploymentsResource, c.ns, name), &v1alpha1.TemplateDeployment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeTemplateDeployments) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of TemplateDeployments that match those selectors.
 func (c *FakeTemplateDeployments) List(opts v1.ListOptions) (result *v1alpha1.TemplateDeploymentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(templatedeploymentsResource, templatedeploymentsKind, opts), &v1alpha1.TemplateDeploymentList{})
+		Invokes(testing.NewListAction(templatedeploymentsResource, templatedeploymentsKind, c.ns, opts), &v1alpha1.TemplateDeploymentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeTemplateDeployments) List(opts v1.ListOptions) (result *v1alpha1.Te
 // Watch returns a watch.Interface that watches the requested templateDeployments.
 func (c *FakeTemplateDeployments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(templatedeploymentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(templatedeploymentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a templateDeployment and creates it.  Returns the server's representation of the templateDeployment, and an error, if there is any.
 func (c *FakeTemplateDeployments) Create(templateDeployment *v1alpha1.TemplateDeployment) (result *v1alpha1.TemplateDeployment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(templatedeploymentsResource, templateDeployment), &v1alpha1.TemplateDeployment{})
+		Invokes(testing.NewCreateAction(templatedeploymentsResource, c.ns, templateDeployment), &v1alpha1.TemplateDeployment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeTemplateDeployments) Create(templateDeployment *v1alpha1.TemplateDe
 // Update takes the representation of a templateDeployment and updates it. Returns the server's representation of the templateDeployment, and an error, if there is any.
 func (c *FakeTemplateDeployments) Update(templateDeployment *v1alpha1.TemplateDeployment) (result *v1alpha1.TemplateDeployment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(templatedeploymentsResource, templateDeployment), &v1alpha1.TemplateDeployment{})
+		Invokes(testing.NewUpdateAction(templatedeploymentsResource, c.ns, templateDeployment), &v1alpha1.TemplateDeployment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeTemplateDeployments) Update(templateDeployment *v1alpha1.TemplateDe
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeTemplateDeployments) UpdateStatus(templateDeployment *v1alpha1.TemplateDeployment) (*v1alpha1.TemplateDeployment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(templatedeploymentsResource, "status", templateDeployment), &v1alpha1.TemplateDeployment{})
+		Invokes(testing.NewUpdateSubresourceAction(templatedeploymentsResource, "status", c.ns, templateDeployment), &v1alpha1.TemplateDeployment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeTemplateDeployments) UpdateStatus(templateDeployment *v1alpha1.Temp
 // Delete takes name of the templateDeployment and deletes it. Returns an error if one occurs.
 func (c *FakeTemplateDeployments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(templatedeploymentsResource, name), &v1alpha1.TemplateDeployment{})
+		Invokes(testing.NewDeleteAction(templatedeploymentsResource, c.ns, name), &v1alpha1.TemplateDeployment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeTemplateDeployments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(templatedeploymentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(templatedeploymentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.TemplateDeploymentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeTemplateDeployments) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched templateDeployment.
 func (c *FakeTemplateDeployments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.TemplateDeployment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(templatedeploymentsResource, name, pt, data, subresources...), &v1alpha1.TemplateDeployment{})
+		Invokes(testing.NewPatchSubresourceAction(templatedeploymentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.TemplateDeployment{})
+
 	if obj == nil {
 		return nil, err
 	}

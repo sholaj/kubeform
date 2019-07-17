@@ -41,32 +41,33 @@ type StreamAnalyticsStreamInputEventhubInformer interface {
 type streamAnalyticsStreamInputEventhubInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewStreamAnalyticsStreamInputEventhubInformer constructs a new informer for StreamAnalyticsStreamInputEventhub type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewStreamAnalyticsStreamInputEventhubInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredStreamAnalyticsStreamInputEventhubInformer(client, resyncPeriod, indexers, nil)
+func NewStreamAnalyticsStreamInputEventhubInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredStreamAnalyticsStreamInputEventhubInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredStreamAnalyticsStreamInputEventhubInformer constructs a new informer for StreamAnalyticsStreamInputEventhub type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredStreamAnalyticsStreamInputEventhubInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredStreamAnalyticsStreamInputEventhubInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().StreamAnalyticsStreamInputEventhubs().List(options)
+				return client.AzurermV1alpha1().StreamAnalyticsStreamInputEventhubs(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().StreamAnalyticsStreamInputEventhubs().Watch(options)
+				return client.AzurermV1alpha1().StreamAnalyticsStreamInputEventhubs(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.StreamAnalyticsStreamInputEventhub{},
@@ -76,7 +77,7 @@ func NewFilteredStreamAnalyticsStreamInputEventhubInformer(client versioned.Inte
 }
 
 func (f *streamAnalyticsStreamInputEventhubInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredStreamAnalyticsStreamInputEventhubInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredStreamAnalyticsStreamInputEventhubInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *streamAnalyticsStreamInputEventhubInformer) Informer() cache.SharedIndexInformer {

@@ -29,8 +29,8 @@ import (
 type SesDomainIdentityVerificationLister interface {
 	// List lists all SesDomainIdentityVerifications in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SesDomainIdentityVerification, err error)
-	// Get retrieves the SesDomainIdentityVerification from the index for a given name.
-	Get(name string) (*v1alpha1.SesDomainIdentityVerification, error)
+	// SesDomainIdentityVerifications returns an object that can list and get SesDomainIdentityVerifications.
+	SesDomainIdentityVerifications(namespace string) SesDomainIdentityVerificationNamespaceLister
 	SesDomainIdentityVerificationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sesDomainIdentityVerificationLister) List(selector labels.Selector) (re
 	return ret, err
 }
 
-// Get retrieves the SesDomainIdentityVerification from the index for a given name.
-func (s *sesDomainIdentityVerificationLister) Get(name string) (*v1alpha1.SesDomainIdentityVerification, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SesDomainIdentityVerifications returns an object that can list and get SesDomainIdentityVerifications.
+func (s *sesDomainIdentityVerificationLister) SesDomainIdentityVerifications(namespace string) SesDomainIdentityVerificationNamespaceLister {
+	return sesDomainIdentityVerificationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SesDomainIdentityVerificationNamespaceLister helps list and get SesDomainIdentityVerifications.
+type SesDomainIdentityVerificationNamespaceLister interface {
+	// List lists all SesDomainIdentityVerifications in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SesDomainIdentityVerification, err error)
+	// Get retrieves the SesDomainIdentityVerification from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SesDomainIdentityVerification, error)
+	SesDomainIdentityVerificationNamespaceListerExpansion
+}
+
+// sesDomainIdentityVerificationNamespaceLister implements the SesDomainIdentityVerificationNamespaceLister
+// interface.
+type sesDomainIdentityVerificationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SesDomainIdentityVerifications in the indexer for a given namespace.
+func (s sesDomainIdentityVerificationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SesDomainIdentityVerification, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SesDomainIdentityVerification))
+	})
+	return ret, err
+}
+
+// Get retrieves the SesDomainIdentityVerification from the indexer for a given namespace and name.
+func (s sesDomainIdentityVerificationNamespaceLister) Get(name string) (*v1alpha1.SesDomainIdentityVerification, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

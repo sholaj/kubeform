@@ -32,7 +32,7 @@ import (
 // CloudwatchEventRulesGetter has a method to return a CloudwatchEventRuleInterface.
 // A group's client should implement this interface.
 type CloudwatchEventRulesGetter interface {
-	CloudwatchEventRules() CloudwatchEventRuleInterface
+	CloudwatchEventRules(namespace string) CloudwatchEventRuleInterface
 }
 
 // CloudwatchEventRuleInterface has methods to work with CloudwatchEventRule resources.
@@ -52,12 +52,14 @@ type CloudwatchEventRuleInterface interface {
 // cloudwatchEventRules implements CloudwatchEventRuleInterface
 type cloudwatchEventRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCloudwatchEventRules returns a CloudwatchEventRules
-func newCloudwatchEventRules(c *AwsV1alpha1Client) *cloudwatchEventRules {
+func newCloudwatchEventRules(c *AwsV1alpha1Client, namespace string) *cloudwatchEventRules {
 	return &cloudwatchEventRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCloudwatchEventRules(c *AwsV1alpha1Client) *cloudwatchEventRules {
 func (c *cloudwatchEventRules) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudwatchEventRule, err error) {
 	result = &v1alpha1.CloudwatchEventRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatcheventrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cloudwatchEventRules) List(opts v1.ListOptions) (result *v1alpha1.Cloud
 	}
 	result = &v1alpha1.CloudwatchEventRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatcheventrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cloudwatchEventRules) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatcheventrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cloudwatchEventRules) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *cloudwatchEventRules) Create(cloudwatchEventRule *v1alpha1.CloudwatchEventRule) (result *v1alpha1.CloudwatchEventRule, err error) {
 	result = &v1alpha1.CloudwatchEventRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cloudwatcheventrules").
 		Body(cloudwatchEventRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *cloudwatchEventRules) Create(cloudwatchEventRule *v1alpha1.CloudwatchEv
 func (c *cloudwatchEventRules) Update(cloudwatchEventRule *v1alpha1.CloudwatchEventRule) (result *v1alpha1.CloudwatchEventRule, err error) {
 	result = &v1alpha1.CloudwatchEventRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudwatcheventrules").
 		Name(cloudwatchEventRule.Name).
 		Body(cloudwatchEventRule).
@@ -132,6 +139,7 @@ func (c *cloudwatchEventRules) Update(cloudwatchEventRule *v1alpha1.CloudwatchEv
 func (c *cloudwatchEventRules) UpdateStatus(cloudwatchEventRule *v1alpha1.CloudwatchEventRule) (result *v1alpha1.CloudwatchEventRule, err error) {
 	result = &v1alpha1.CloudwatchEventRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudwatcheventrules").
 		Name(cloudwatchEventRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cloudwatchEventRules) UpdateStatus(cloudwatchEventRule *v1alpha1.Cloudw
 // Delete takes name of the cloudwatchEventRule and deletes it. Returns an error if one occurs.
 func (c *cloudwatchEventRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudwatcheventrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cloudwatchEventRules) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudwatcheventrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cloudwatchEventRules) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *cloudwatchEventRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudwatchEventRule, err error) {
 	result = &v1alpha1.CloudwatchEventRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cloudwatcheventrules").
 		SubResource(subresources...).
 		Name(name).

@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// FakeApiGatewayRestApis implements ApiGatewayRestApiInterface
-type FakeApiGatewayRestApis struct {
+// FakeApiGatewayRestAPIs implements ApiGatewayRestAPIInterface
+type FakeApiGatewayRestAPIs struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var apigatewayrestapisResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "apigatewayrestapis"}
 
-var apigatewayrestapisKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "ApiGatewayRestApi"}
+var apigatewayrestapisKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "ApiGatewayRestAPI"}
 
-// Get takes name of the apiGatewayRestApi, and returns the corresponding apiGatewayRestApi object, and an error if there is any.
-func (c *FakeApiGatewayRestApis) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayRestApi, err error) {
+// Get takes name of the apiGatewayRestAPI, and returns the corresponding apiGatewayRestAPI object, and an error if there is any.
+func (c *FakeApiGatewayRestAPIs) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayRestAPI, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apigatewayrestapisResource, name), &v1alpha1.ApiGatewayRestApi{})
+		Invokes(testing.NewGetAction(apigatewayrestapisResource, c.ns, name), &v1alpha1.ApiGatewayRestAPI{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiGatewayRestApi), err
+	return obj.(*v1alpha1.ApiGatewayRestAPI), err
 }
 
-// List takes label and field selectors, and returns the list of ApiGatewayRestApis that match those selectors.
-func (c *FakeApiGatewayRestApis) List(opts v1.ListOptions) (result *v1alpha1.ApiGatewayRestApiList, err error) {
+// List takes label and field selectors, and returns the list of ApiGatewayRestAPIs that match those selectors.
+func (c *FakeApiGatewayRestAPIs) List(opts v1.ListOptions) (result *v1alpha1.ApiGatewayRestAPIList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apigatewayrestapisResource, apigatewayrestapisKind, opts), &v1alpha1.ApiGatewayRestApiList{})
+		Invokes(testing.NewListAction(apigatewayrestapisResource, apigatewayrestapisKind, c.ns, opts), &v1alpha1.ApiGatewayRestAPIList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeApiGatewayRestApis) List(opts v1.ListOptions) (result *v1alpha1.Api
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.ApiGatewayRestApiList{ListMeta: obj.(*v1alpha1.ApiGatewayRestApiList).ListMeta}
-	for _, item := range obj.(*v1alpha1.ApiGatewayRestApiList).Items {
+	list := &v1alpha1.ApiGatewayRestAPIList{ListMeta: obj.(*v1alpha1.ApiGatewayRestAPIList).ListMeta}
+	for _, item := range obj.(*v1alpha1.ApiGatewayRestAPIList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeApiGatewayRestApis) List(opts v1.ListOptions) (result *v1alpha1.Api
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested apiGatewayRestApis.
-func (c *FakeApiGatewayRestApis) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested apiGatewayRestAPIs.
+func (c *FakeApiGatewayRestAPIs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apigatewayrestapisResource, opts))
+		InvokesWatch(testing.NewWatchAction(apigatewayrestapisResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a apiGatewayRestApi and creates it.  Returns the server's representation of the apiGatewayRestApi, and an error, if there is any.
-func (c *FakeApiGatewayRestApis) Create(apiGatewayRestApi *v1alpha1.ApiGatewayRestApi) (result *v1alpha1.ApiGatewayRestApi, err error) {
+// Create takes the representation of a apiGatewayRestAPI and creates it.  Returns the server's representation of the apiGatewayRestAPI, and an error, if there is any.
+func (c *FakeApiGatewayRestAPIs) Create(apiGatewayRestAPI *v1alpha1.ApiGatewayRestAPI) (result *v1alpha1.ApiGatewayRestAPI, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apigatewayrestapisResource, apiGatewayRestApi), &v1alpha1.ApiGatewayRestApi{})
+		Invokes(testing.NewCreateAction(apigatewayrestapisResource, c.ns, apiGatewayRestAPI), &v1alpha1.ApiGatewayRestAPI{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiGatewayRestApi), err
+	return obj.(*v1alpha1.ApiGatewayRestAPI), err
 }
 
-// Update takes the representation of a apiGatewayRestApi and updates it. Returns the server's representation of the apiGatewayRestApi, and an error, if there is any.
-func (c *FakeApiGatewayRestApis) Update(apiGatewayRestApi *v1alpha1.ApiGatewayRestApi) (result *v1alpha1.ApiGatewayRestApi, err error) {
+// Update takes the representation of a apiGatewayRestAPI and updates it. Returns the server's representation of the apiGatewayRestAPI, and an error, if there is any.
+func (c *FakeApiGatewayRestAPIs) Update(apiGatewayRestAPI *v1alpha1.ApiGatewayRestAPI) (result *v1alpha1.ApiGatewayRestAPI, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apigatewayrestapisResource, apiGatewayRestApi), &v1alpha1.ApiGatewayRestApi{})
+		Invokes(testing.NewUpdateAction(apigatewayrestapisResource, c.ns, apiGatewayRestAPI), &v1alpha1.ApiGatewayRestAPI{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiGatewayRestApi), err
+	return obj.(*v1alpha1.ApiGatewayRestAPI), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeApiGatewayRestApis) UpdateStatus(apiGatewayRestApi *v1alpha1.ApiGatewayRestApi) (*v1alpha1.ApiGatewayRestApi, error) {
+func (c *FakeApiGatewayRestAPIs) UpdateStatus(apiGatewayRestAPI *v1alpha1.ApiGatewayRestAPI) (*v1alpha1.ApiGatewayRestAPI, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apigatewayrestapisResource, "status", apiGatewayRestApi), &v1alpha1.ApiGatewayRestApi{})
+		Invokes(testing.NewUpdateSubresourceAction(apigatewayrestapisResource, "status", c.ns, apiGatewayRestAPI), &v1alpha1.ApiGatewayRestAPI{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiGatewayRestApi), err
+	return obj.(*v1alpha1.ApiGatewayRestAPI), err
 }
 
-// Delete takes name of the apiGatewayRestApi and deletes it. Returns an error if one occurs.
-func (c *FakeApiGatewayRestApis) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the apiGatewayRestAPI and deletes it. Returns an error if one occurs.
+func (c *FakeApiGatewayRestAPIs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apigatewayrestapisResource, name), &v1alpha1.ApiGatewayRestApi{})
+		Invokes(testing.NewDeleteAction(apigatewayrestapisResource, c.ns, name), &v1alpha1.ApiGatewayRestAPI{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeApiGatewayRestApis) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apigatewayrestapisResource, listOptions)
+func (c *FakeApiGatewayRestAPIs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(apigatewayrestapisResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.ApiGatewayRestApiList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.ApiGatewayRestAPIList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched apiGatewayRestApi.
-func (c *FakeApiGatewayRestApis) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayRestApi, err error) {
+// Patch applies the patch and returns the patched apiGatewayRestAPI.
+func (c *FakeApiGatewayRestAPIs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayRestAPI, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apigatewayrestapisResource, name, pt, data, subresources...), &v1alpha1.ApiGatewayRestApi{})
+		Invokes(testing.NewPatchSubresourceAction(apigatewayrestapisResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiGatewayRestAPI{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiGatewayRestApi), err
+	return obj.(*v1alpha1.ApiGatewayRestAPI), err
 }

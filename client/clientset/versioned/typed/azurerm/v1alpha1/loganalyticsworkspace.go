@@ -32,7 +32,7 @@ import (
 // LogAnalyticsWorkspacesGetter has a method to return a LogAnalyticsWorkspaceInterface.
 // A group's client should implement this interface.
 type LogAnalyticsWorkspacesGetter interface {
-	LogAnalyticsWorkspaces() LogAnalyticsWorkspaceInterface
+	LogAnalyticsWorkspaces(namespace string) LogAnalyticsWorkspaceInterface
 }
 
 // LogAnalyticsWorkspaceInterface has methods to work with LogAnalyticsWorkspace resources.
@@ -52,12 +52,14 @@ type LogAnalyticsWorkspaceInterface interface {
 // logAnalyticsWorkspaces implements LogAnalyticsWorkspaceInterface
 type logAnalyticsWorkspaces struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLogAnalyticsWorkspaces returns a LogAnalyticsWorkspaces
-func newLogAnalyticsWorkspaces(c *AzurermV1alpha1Client) *logAnalyticsWorkspaces {
+func newLogAnalyticsWorkspaces(c *AzurermV1alpha1Client, namespace string) *logAnalyticsWorkspaces {
 	return &logAnalyticsWorkspaces{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLogAnalyticsWorkspaces(c *AzurermV1alpha1Client) *logAnalyticsWorkspaces
 func (c *logAnalyticsWorkspaces) Get(name string, options v1.GetOptions) (result *v1alpha1.LogAnalyticsWorkspace, err error) {
 	result = &v1alpha1.LogAnalyticsWorkspace{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loganalyticsworkspaces").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *logAnalyticsWorkspaces) List(opts v1.ListOptions) (result *v1alpha1.Log
 	}
 	result = &v1alpha1.LogAnalyticsWorkspaceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("loganalyticsworkspaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *logAnalyticsWorkspaces) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("loganalyticsworkspaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *logAnalyticsWorkspaces) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *logAnalyticsWorkspaces) Create(logAnalyticsWorkspace *v1alpha1.LogAnalyticsWorkspace) (result *v1alpha1.LogAnalyticsWorkspace, err error) {
 	result = &v1alpha1.LogAnalyticsWorkspace{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("loganalyticsworkspaces").
 		Body(logAnalyticsWorkspace).
 		Do().
@@ -118,6 +124,7 @@ func (c *logAnalyticsWorkspaces) Create(logAnalyticsWorkspace *v1alpha1.LogAnaly
 func (c *logAnalyticsWorkspaces) Update(logAnalyticsWorkspace *v1alpha1.LogAnalyticsWorkspace) (result *v1alpha1.LogAnalyticsWorkspace, err error) {
 	result = &v1alpha1.LogAnalyticsWorkspace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loganalyticsworkspaces").
 		Name(logAnalyticsWorkspace.Name).
 		Body(logAnalyticsWorkspace).
@@ -132,6 +139,7 @@ func (c *logAnalyticsWorkspaces) Update(logAnalyticsWorkspace *v1alpha1.LogAnaly
 func (c *logAnalyticsWorkspaces) UpdateStatus(logAnalyticsWorkspace *v1alpha1.LogAnalyticsWorkspace) (result *v1alpha1.LogAnalyticsWorkspace, err error) {
 	result = &v1alpha1.LogAnalyticsWorkspace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("loganalyticsworkspaces").
 		Name(logAnalyticsWorkspace.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *logAnalyticsWorkspaces) UpdateStatus(logAnalyticsWorkspace *v1alpha1.Lo
 // Delete takes name of the logAnalyticsWorkspace and deletes it. Returns an error if one occurs.
 func (c *logAnalyticsWorkspaces) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loganalyticsworkspaces").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *logAnalyticsWorkspaces) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("loganalyticsworkspaces").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *logAnalyticsWorkspaces) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *logAnalyticsWorkspaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogAnalyticsWorkspace, err error) {
 	result = &v1alpha1.LogAnalyticsWorkspace{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("loganalyticsworkspaces").
 		SubResource(subresources...).
 		Name(name).

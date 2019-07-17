@@ -405,21 +405,35 @@ spec:
               type: object
             name:
               type: string
-            snapshot_encryption_key_raw:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            snapshotEncryptionKeyRaw:
               description: Deprecated
               type: string
-            source_disk:
+            sourceDisk:
               type: string
-            source_disk_encryption_key:
-              items: {}
+            sourceDiskEncryptionKey:
+              items:
+                properties:
+                  rawKey:
+                    type: string
+                type: object
               maxItems: 1
               type: array
-            source_disk_encryption_key_raw:
+            sourceDiskEncryptionKeyRaw:
               description: Deprecated
               type: string
           required:
           - name
-          - source_disk
+          - providerRef
+          - sourceDisk
           type: object
         status:
           properties:
@@ -430,6 +444,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

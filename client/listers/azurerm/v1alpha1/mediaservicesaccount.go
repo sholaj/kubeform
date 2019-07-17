@@ -29,8 +29,8 @@ import (
 type MediaServicesAccountLister interface {
 	// List lists all MediaServicesAccounts in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MediaServicesAccount, err error)
-	// Get retrieves the MediaServicesAccount from the index for a given name.
-	Get(name string) (*v1alpha1.MediaServicesAccount, error)
+	// MediaServicesAccounts returns an object that can list and get MediaServicesAccounts.
+	MediaServicesAccounts(namespace string) MediaServicesAccountNamespaceLister
 	MediaServicesAccountListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *mediaServicesAccountLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the MediaServicesAccount from the index for a given name.
-func (s *mediaServicesAccountLister) Get(name string) (*v1alpha1.MediaServicesAccount, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MediaServicesAccounts returns an object that can list and get MediaServicesAccounts.
+func (s *mediaServicesAccountLister) MediaServicesAccounts(namespace string) MediaServicesAccountNamespaceLister {
+	return mediaServicesAccountNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MediaServicesAccountNamespaceLister helps list and get MediaServicesAccounts.
+type MediaServicesAccountNamespaceLister interface {
+	// List lists all MediaServicesAccounts in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MediaServicesAccount, err error)
+	// Get retrieves the MediaServicesAccount from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MediaServicesAccount, error)
+	MediaServicesAccountNamespaceListerExpansion
+}
+
+// mediaServicesAccountNamespaceLister implements the MediaServicesAccountNamespaceLister
+// interface.
+type mediaServicesAccountNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MediaServicesAccounts in the indexer for a given namespace.
+func (s mediaServicesAccountNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MediaServicesAccount, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MediaServicesAccount))
+	})
+	return ret, err
+}
+
+// Get retrieves the MediaServicesAccount from the indexer for a given namespace and name.
+func (s mediaServicesAccountNamespaceLister) Get(name string) (*v1alpha1.MediaServicesAccount, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,14 +19,15 @@ type ApiGatewayMethodResponse struct {
 }
 
 type ApiGatewayMethodResponseSpec struct {
-	HttpMethod string `json:"http_method"`
-	ResourceId string `json:"resource_id"`
+	HttpMethod string `json:"httpMethod" tf:"http_method"`
+	ResourceID string `json:"resourceID" tf:"resource_id"`
 	// +optional
-	ResponseModels map[string]string `json:"response_models,omitempty"`
+	ResponseModels map[string]string `json:"responseModels,omitempty" tf:"response_models,omitempty"`
 	// +optional
-	ResponseParameters map[string]bool `json:"response_parameters,omitempty"`
-	RestApiId          string          `json:"rest_api_id"`
-	StatusCode         string          `json:"status_code"`
+	ResponseParameters map[string]bool           `json:"responseParameters,omitempty" tf:"response_parameters,omitempty"`
+	RestAPIID          string                    `json:"restAPIID" tf:"rest_api_id"`
+	StatusCode         string                    `json:"statusCode" tf:"status_code"`
+	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ApiGatewayMethodResponseStatus struct {
@@ -34,7 +35,9 @@ type ApiGatewayMethodResponseStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

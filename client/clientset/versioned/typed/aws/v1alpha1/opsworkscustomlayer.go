@@ -32,7 +32,7 @@ import (
 // OpsworksCustomLayersGetter has a method to return a OpsworksCustomLayerInterface.
 // A group's client should implement this interface.
 type OpsworksCustomLayersGetter interface {
-	OpsworksCustomLayers() OpsworksCustomLayerInterface
+	OpsworksCustomLayers(namespace string) OpsworksCustomLayerInterface
 }
 
 // OpsworksCustomLayerInterface has methods to work with OpsworksCustomLayer resources.
@@ -52,12 +52,14 @@ type OpsworksCustomLayerInterface interface {
 // opsworksCustomLayers implements OpsworksCustomLayerInterface
 type opsworksCustomLayers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOpsworksCustomLayers returns a OpsworksCustomLayers
-func newOpsworksCustomLayers(c *AwsV1alpha1Client) *opsworksCustomLayers {
+func newOpsworksCustomLayers(c *AwsV1alpha1Client, namespace string) *opsworksCustomLayers {
 	return &opsworksCustomLayers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOpsworksCustomLayers(c *AwsV1alpha1Client) *opsworksCustomLayers {
 func (c *opsworksCustomLayers) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksCustomLayer, err error) {
 	result = &v1alpha1.OpsworksCustomLayer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworkscustomlayers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *opsworksCustomLayers) List(opts v1.ListOptions) (result *v1alpha1.Opswo
 	}
 	result = &v1alpha1.OpsworksCustomLayerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworkscustomlayers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *opsworksCustomLayers) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworkscustomlayers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *opsworksCustomLayers) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *opsworksCustomLayers) Create(opsworksCustomLayer *v1alpha1.OpsworksCustomLayer) (result *v1alpha1.OpsworksCustomLayer, err error) {
 	result = &v1alpha1.OpsworksCustomLayer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("opsworkscustomlayers").
 		Body(opsworksCustomLayer).
 		Do().
@@ -118,6 +124,7 @@ func (c *opsworksCustomLayers) Create(opsworksCustomLayer *v1alpha1.OpsworksCust
 func (c *opsworksCustomLayers) Update(opsworksCustomLayer *v1alpha1.OpsworksCustomLayer) (result *v1alpha1.OpsworksCustomLayer, err error) {
 	result = &v1alpha1.OpsworksCustomLayer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworkscustomlayers").
 		Name(opsworksCustomLayer.Name).
 		Body(opsworksCustomLayer).
@@ -132,6 +139,7 @@ func (c *opsworksCustomLayers) Update(opsworksCustomLayer *v1alpha1.OpsworksCust
 func (c *opsworksCustomLayers) UpdateStatus(opsworksCustomLayer *v1alpha1.OpsworksCustomLayer) (result *v1alpha1.OpsworksCustomLayer, err error) {
 	result = &v1alpha1.OpsworksCustomLayer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworkscustomlayers").
 		Name(opsworksCustomLayer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *opsworksCustomLayers) UpdateStatus(opsworksCustomLayer *v1alpha1.Opswor
 // Delete takes name of the opsworksCustomLayer and deletes it. Returns an error if one occurs.
 func (c *opsworksCustomLayers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworkscustomlayers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *opsworksCustomLayers) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworkscustomlayers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *opsworksCustomLayers) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *opsworksCustomLayers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksCustomLayer, err error) {
 	result = &v1alpha1.OpsworksCustomLayer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("opsworkscustomlayers").
 		SubResource(subresources...).
 		Name(name).

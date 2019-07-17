@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// ApiGatewayApiKeyLister helps list ApiGatewayApiKeys.
-type ApiGatewayApiKeyLister interface {
-	// List lists all ApiGatewayApiKeys in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayApiKey, err error)
-	// Get retrieves the ApiGatewayApiKey from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayApiKey, error)
-	ApiGatewayApiKeyListerExpansion
+// ApiGatewayAPIKeyLister helps list ApiGatewayAPIKeys.
+type ApiGatewayAPIKeyLister interface {
+	// List lists all ApiGatewayAPIKeys in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayAPIKey, err error)
+	// ApiGatewayAPIKeys returns an object that can list and get ApiGatewayAPIKeys.
+	ApiGatewayAPIKeys(namespace string) ApiGatewayAPIKeyNamespaceLister
+	ApiGatewayAPIKeyListerExpansion
 }
 
-// apiGatewayApiKeyLister implements the ApiGatewayApiKeyLister interface.
-type apiGatewayApiKeyLister struct {
+// apiGatewayAPIKeyLister implements the ApiGatewayAPIKeyLister interface.
+type apiGatewayAPIKeyLister struct {
 	indexer cache.Indexer
 }
 
-// NewApiGatewayApiKeyLister returns a new ApiGatewayApiKeyLister.
-func NewApiGatewayApiKeyLister(indexer cache.Indexer) ApiGatewayApiKeyLister {
-	return &apiGatewayApiKeyLister{indexer: indexer}
+// NewApiGatewayAPIKeyLister returns a new ApiGatewayAPIKeyLister.
+func NewApiGatewayAPIKeyLister(indexer cache.Indexer) ApiGatewayAPIKeyLister {
+	return &apiGatewayAPIKeyLister{indexer: indexer}
 }
 
-// List lists all ApiGatewayApiKeys in the indexer.
-func (s *apiGatewayApiKeyLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayApiKey, err error) {
+// List lists all ApiGatewayAPIKeys in the indexer.
+func (s *apiGatewayAPIKeyLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayAPIKey, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ApiGatewayApiKey))
+		ret = append(ret, m.(*v1alpha1.ApiGatewayAPIKey))
 	})
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayApiKey from the index for a given name.
-func (s *apiGatewayApiKeyLister) Get(name string) (*v1alpha1.ApiGatewayApiKey, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayAPIKeys returns an object that can list and get ApiGatewayAPIKeys.
+func (s *apiGatewayAPIKeyLister) ApiGatewayAPIKeys(namespace string) ApiGatewayAPIKeyNamespaceLister {
+	return apiGatewayAPIKeyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayAPIKeyNamespaceLister helps list and get ApiGatewayAPIKeys.
+type ApiGatewayAPIKeyNamespaceLister interface {
+	// List lists all ApiGatewayAPIKeys in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayAPIKey, err error)
+	// Get retrieves the ApiGatewayAPIKey from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayAPIKey, error)
+	ApiGatewayAPIKeyNamespaceListerExpansion
+}
+
+// apiGatewayAPIKeyNamespaceLister implements the ApiGatewayAPIKeyNamespaceLister
+// interface.
+type apiGatewayAPIKeyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayAPIKeys in the indexer for a given namespace.
+func (s apiGatewayAPIKeyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayAPIKey, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayAPIKey))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayAPIKey from the indexer for a given namespace and name.
+func (s apiGatewayAPIKeyNamespaceLister) Get(name string) (*v1alpha1.ApiGatewayAPIKey, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("apigatewayapikey"), name)
 	}
-	return obj.(*v1alpha1.ApiGatewayApiKey), nil
+	return obj.(*v1alpha1.ApiGatewayAPIKey), nil
 }

@@ -41,32 +41,33 @@ type PostgresqlConfigurationInformer interface {
 type postgresqlConfigurationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewPostgresqlConfigurationInformer constructs a new informer for PostgresqlConfiguration type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewPostgresqlConfigurationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredPostgresqlConfigurationInformer(client, resyncPeriod, indexers, nil)
+func NewPostgresqlConfigurationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredPostgresqlConfigurationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredPostgresqlConfigurationInformer constructs a new informer for PostgresqlConfiguration type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredPostgresqlConfigurationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredPostgresqlConfigurationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().PostgresqlConfigurations().List(options)
+				return client.AzurermV1alpha1().PostgresqlConfigurations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().PostgresqlConfigurations().Watch(options)
+				return client.AzurermV1alpha1().PostgresqlConfigurations(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.PostgresqlConfiguration{},
@@ -76,7 +77,7 @@ func NewFilteredPostgresqlConfigurationInformer(client versioned.Interface, resy
 }
 
 func (f *postgresqlConfigurationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredPostgresqlConfigurationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredPostgresqlConfigurationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *postgresqlConfigurationInformer) Informer() cache.SharedIndexInformer {

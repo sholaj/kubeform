@@ -31,6 +31,7 @@ import (
 // FakeAppCookieStickinessPolicies implements AppCookieStickinessPolicyInterface
 type FakeAppCookieStickinessPolicies struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var appcookiestickinesspoliciesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "appcookiestickinesspolicies"}
@@ -40,7 +41,8 @@ var appcookiestickinesspoliciesKind = schema.GroupVersionKind{Group: "aws.kubefo
 // Get takes name of the appCookieStickinessPolicy, and returns the corresponding appCookieStickinessPolicy object, and an error if there is any.
 func (c *FakeAppCookieStickinessPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.AppCookieStickinessPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(appcookiestickinesspoliciesResource, name), &v1alpha1.AppCookieStickinessPolicy{})
+		Invokes(testing.NewGetAction(appcookiestickinesspoliciesResource, c.ns, name), &v1alpha1.AppCookieStickinessPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAppCookieStickinessPolicies) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of AppCookieStickinessPolicies that match those selectors.
 func (c *FakeAppCookieStickinessPolicies) List(opts v1.ListOptions) (result *v1alpha1.AppCookieStickinessPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(appcookiestickinesspoliciesResource, appcookiestickinesspoliciesKind, opts), &v1alpha1.AppCookieStickinessPolicyList{})
+		Invokes(testing.NewListAction(appcookiestickinesspoliciesResource, appcookiestickinesspoliciesKind, c.ns, opts), &v1alpha1.AppCookieStickinessPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAppCookieStickinessPolicies) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested appCookieStickinessPolicies.
 func (c *FakeAppCookieStickinessPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(appcookiestickinesspoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(appcookiestickinesspoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a appCookieStickinessPolicy and creates it.  Returns the server's representation of the appCookieStickinessPolicy, and an error, if there is any.
 func (c *FakeAppCookieStickinessPolicies) Create(appCookieStickinessPolicy *v1alpha1.AppCookieStickinessPolicy) (result *v1alpha1.AppCookieStickinessPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(appcookiestickinesspoliciesResource, appCookieStickinessPolicy), &v1alpha1.AppCookieStickinessPolicy{})
+		Invokes(testing.NewCreateAction(appcookiestickinesspoliciesResource, c.ns, appCookieStickinessPolicy), &v1alpha1.AppCookieStickinessPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAppCookieStickinessPolicies) Create(appCookieStickinessPolicy *v1al
 // Update takes the representation of a appCookieStickinessPolicy and updates it. Returns the server's representation of the appCookieStickinessPolicy, and an error, if there is any.
 func (c *FakeAppCookieStickinessPolicies) Update(appCookieStickinessPolicy *v1alpha1.AppCookieStickinessPolicy) (result *v1alpha1.AppCookieStickinessPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(appcookiestickinesspoliciesResource, appCookieStickinessPolicy), &v1alpha1.AppCookieStickinessPolicy{})
+		Invokes(testing.NewUpdateAction(appcookiestickinesspoliciesResource, c.ns, appCookieStickinessPolicy), &v1alpha1.AppCookieStickinessPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAppCookieStickinessPolicies) Update(appCookieStickinessPolicy *v1al
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAppCookieStickinessPolicies) UpdateStatus(appCookieStickinessPolicy *v1alpha1.AppCookieStickinessPolicy) (*v1alpha1.AppCookieStickinessPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(appcookiestickinesspoliciesResource, "status", appCookieStickinessPolicy), &v1alpha1.AppCookieStickinessPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(appcookiestickinesspoliciesResource, "status", c.ns, appCookieStickinessPolicy), &v1alpha1.AppCookieStickinessPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAppCookieStickinessPolicies) UpdateStatus(appCookieStickinessPolicy
 // Delete takes name of the appCookieStickinessPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeAppCookieStickinessPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(appcookiestickinesspoliciesResource, name), &v1alpha1.AppCookieStickinessPolicy{})
+		Invokes(testing.NewDeleteAction(appcookiestickinesspoliciesResource, c.ns, name), &v1alpha1.AppCookieStickinessPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAppCookieStickinessPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(appcookiestickinesspoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(appcookiestickinesspoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AppCookieStickinessPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAppCookieStickinessPolicies) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched appCookieStickinessPolicy.
 func (c *FakeAppCookieStickinessPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppCookieStickinessPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(appcookiestickinesspoliciesResource, name, pt, data, subresources...), &v1alpha1.AppCookieStickinessPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(appcookiestickinesspoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.AppCookieStickinessPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

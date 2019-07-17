@@ -32,7 +32,7 @@ import (
 // PolicySetDefinitionsGetter has a method to return a PolicySetDefinitionInterface.
 // A group's client should implement this interface.
 type PolicySetDefinitionsGetter interface {
-	PolicySetDefinitions() PolicySetDefinitionInterface
+	PolicySetDefinitions(namespace string) PolicySetDefinitionInterface
 }
 
 // PolicySetDefinitionInterface has methods to work with PolicySetDefinition resources.
@@ -52,12 +52,14 @@ type PolicySetDefinitionInterface interface {
 // policySetDefinitions implements PolicySetDefinitionInterface
 type policySetDefinitions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPolicySetDefinitions returns a PolicySetDefinitions
-func newPolicySetDefinitions(c *AzurermV1alpha1Client) *policySetDefinitions {
+func newPolicySetDefinitions(c *AzurermV1alpha1Client, namespace string) *policySetDefinitions {
 	return &policySetDefinitions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPolicySetDefinitions(c *AzurermV1alpha1Client) *policySetDefinitions {
 func (c *policySetDefinitions) Get(name string, options v1.GetOptions) (result *v1alpha1.PolicySetDefinition, err error) {
 	result = &v1alpha1.PolicySetDefinition{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("policysetdefinitions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *policySetDefinitions) List(opts v1.ListOptions) (result *v1alpha1.Polic
 	}
 	result = &v1alpha1.PolicySetDefinitionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("policysetdefinitions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *policySetDefinitions) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("policysetdefinitions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *policySetDefinitions) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *policySetDefinitions) Create(policySetDefinition *v1alpha1.PolicySetDefinition) (result *v1alpha1.PolicySetDefinition, err error) {
 	result = &v1alpha1.PolicySetDefinition{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("policysetdefinitions").
 		Body(policySetDefinition).
 		Do().
@@ -118,6 +124,7 @@ func (c *policySetDefinitions) Create(policySetDefinition *v1alpha1.PolicySetDef
 func (c *policySetDefinitions) Update(policySetDefinition *v1alpha1.PolicySetDefinition) (result *v1alpha1.PolicySetDefinition, err error) {
 	result = &v1alpha1.PolicySetDefinition{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("policysetdefinitions").
 		Name(policySetDefinition.Name).
 		Body(policySetDefinition).
@@ -132,6 +139,7 @@ func (c *policySetDefinitions) Update(policySetDefinition *v1alpha1.PolicySetDef
 func (c *policySetDefinitions) UpdateStatus(policySetDefinition *v1alpha1.PolicySetDefinition) (result *v1alpha1.PolicySetDefinition, err error) {
 	result = &v1alpha1.PolicySetDefinition{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("policysetdefinitions").
 		Name(policySetDefinition.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *policySetDefinitions) UpdateStatus(policySetDefinition *v1alpha1.Policy
 // Delete takes name of the policySetDefinition and deletes it. Returns an error if one occurs.
 func (c *policySetDefinitions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("policysetdefinitions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *policySetDefinitions) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("policysetdefinitions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *policySetDefinitions) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *policySetDefinitions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PolicySetDefinition, err error) {
 	result = &v1alpha1.PolicySetDefinition{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("policysetdefinitions").
 		SubResource(subresources...).
 		Name(name).

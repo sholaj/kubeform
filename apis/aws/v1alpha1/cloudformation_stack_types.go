@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -21,25 +21,26 @@ type CloudformationStack struct {
 type CloudformationStackSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Capabilities []string `json:"capabilities,omitempty"`
+	Capabilities []string `json:"capabilities,omitempty" tf:"capabilities,omitempty"`
 	// +optional
-	DisableRollback bool `json:"disable_rollback,omitempty"`
+	DisableRollback bool `json:"disableRollback,omitempty" tf:"disable_rollback,omitempty"`
 	// +optional
-	IamRoleArn string `json:"iam_role_arn,omitempty"`
-	Name       string `json:"name"`
+	IamRoleArn string `json:"iamRoleArn,omitempty" tf:"iam_role_arn,omitempty"`
+	Name       string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	NotificationArns []string `json:"notification_arns,omitempty"`
+	NotificationArns []string `json:"notificationArns,omitempty" tf:"notification_arns,omitempty"`
 	// +optional
-	OnFailure string `json:"on_failure,omitempty"`
+	OnFailure string `json:"onFailure,omitempty" tf:"on_failure,omitempty"`
 	// +optional
-	PolicyUrl string `json:"policy_url,omitempty"`
+	PolicyURL string `json:"policyURL,omitempty" tf:"policy_url,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	TemplateUrl string `json:"template_url,omitempty"`
+	TemplateURL string `json:"templateURL,omitempty" tf:"template_url,omitempty"`
 	// +optional
-	TimeoutInMinutes int `json:"timeout_in_minutes,omitempty"`
+	TimeoutInMinutes int                       `json:"timeoutInMinutes,omitempty" tf:"timeout_in_minutes,omitempty"`
+	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type CloudformationStackStatus struct {
@@ -47,7 +48,9 @@ type CloudformationStackStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

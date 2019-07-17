@@ -29,8 +29,8 @@ import (
 type WafregionalRateBasedRuleLister interface {
 	// List lists all WafregionalRateBasedRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.WafregionalRateBasedRule, err error)
-	// Get retrieves the WafregionalRateBasedRule from the index for a given name.
-	Get(name string) (*v1alpha1.WafregionalRateBasedRule, error)
+	// WafregionalRateBasedRules returns an object that can list and get WafregionalRateBasedRules.
+	WafregionalRateBasedRules(namespace string) WafregionalRateBasedRuleNamespaceLister
 	WafregionalRateBasedRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *wafregionalRateBasedRuleLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the WafregionalRateBasedRule from the index for a given name.
-func (s *wafregionalRateBasedRuleLister) Get(name string) (*v1alpha1.WafregionalRateBasedRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafregionalRateBasedRules returns an object that can list and get WafregionalRateBasedRules.
+func (s *wafregionalRateBasedRuleLister) WafregionalRateBasedRules(namespace string) WafregionalRateBasedRuleNamespaceLister {
+	return wafregionalRateBasedRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafregionalRateBasedRuleNamespaceLister helps list and get WafregionalRateBasedRules.
+type WafregionalRateBasedRuleNamespaceLister interface {
+	// List lists all WafregionalRateBasedRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafregionalRateBasedRule, err error)
+	// Get retrieves the WafregionalRateBasedRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafregionalRateBasedRule, error)
+	WafregionalRateBasedRuleNamespaceListerExpansion
+}
+
+// wafregionalRateBasedRuleNamespaceLister implements the WafregionalRateBasedRuleNamespaceLister
+// interface.
+type wafregionalRateBasedRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafregionalRateBasedRules in the indexer for a given namespace.
+func (s wafregionalRateBasedRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafregionalRateBasedRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafregionalRateBasedRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafregionalRateBasedRule from the indexer for a given namespace and name.
+func (s wafregionalRateBasedRuleNamespaceLister) Get(name string) (*v1alpha1.WafregionalRateBasedRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

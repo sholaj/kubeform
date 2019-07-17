@@ -32,7 +32,7 @@ import (
 // EcsClustersGetter has a method to return a EcsClusterInterface.
 // A group's client should implement this interface.
 type EcsClustersGetter interface {
-	EcsClusters() EcsClusterInterface
+	EcsClusters(namespace string) EcsClusterInterface
 }
 
 // EcsClusterInterface has methods to work with EcsCluster resources.
@@ -52,12 +52,14 @@ type EcsClusterInterface interface {
 // ecsClusters implements EcsClusterInterface
 type ecsClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEcsClusters returns a EcsClusters
-func newEcsClusters(c *AwsV1alpha1Client) *ecsClusters {
+func newEcsClusters(c *AwsV1alpha1Client, namespace string) *ecsClusters {
 	return &ecsClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEcsClusters(c *AwsV1alpha1Client) *ecsClusters {
 func (c *ecsClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.EcsCluster, err error) {
 	result = &v1alpha1.EcsCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ecsclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ecsClusters) List(opts v1.ListOptions) (result *v1alpha1.EcsClusterList
 	}
 	result = &v1alpha1.EcsClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ecsclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ecsClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ecsclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ecsClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *ecsClusters) Create(ecsCluster *v1alpha1.EcsCluster) (result *v1alpha1.EcsCluster, err error) {
 	result = &v1alpha1.EcsCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ecsclusters").
 		Body(ecsCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *ecsClusters) Create(ecsCluster *v1alpha1.EcsCluster) (result *v1alpha1.
 func (c *ecsClusters) Update(ecsCluster *v1alpha1.EcsCluster) (result *v1alpha1.EcsCluster, err error) {
 	result = &v1alpha1.EcsCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ecsclusters").
 		Name(ecsCluster.Name).
 		Body(ecsCluster).
@@ -132,6 +139,7 @@ func (c *ecsClusters) Update(ecsCluster *v1alpha1.EcsCluster) (result *v1alpha1.
 func (c *ecsClusters) UpdateStatus(ecsCluster *v1alpha1.EcsCluster) (result *v1alpha1.EcsCluster, err error) {
 	result = &v1alpha1.EcsCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ecsclusters").
 		Name(ecsCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ecsClusters) UpdateStatus(ecsCluster *v1alpha1.EcsCluster) (result *v1a
 // Delete takes name of the ecsCluster and deletes it. Returns an error if one occurs.
 func (c *ecsClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ecsclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ecsClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ecsclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ecsClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *ecsClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EcsCluster, err error) {
 	result = &v1alpha1.EcsCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ecsclusters").
 		SubResource(subresources...).
 		Name(name).

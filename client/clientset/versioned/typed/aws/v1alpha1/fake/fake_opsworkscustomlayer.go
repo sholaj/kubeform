@@ -31,6 +31,7 @@ import (
 // FakeOpsworksCustomLayers implements OpsworksCustomLayerInterface
 type FakeOpsworksCustomLayers struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var opsworkscustomlayersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "opsworkscustomlayers"}
@@ -40,7 +41,8 @@ var opsworkscustomlayersKind = schema.GroupVersionKind{Group: "aws.kubeform.com"
 // Get takes name of the opsworksCustomLayer, and returns the corresponding opsworksCustomLayer object, and an error if there is any.
 func (c *FakeOpsworksCustomLayers) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksCustomLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(opsworkscustomlayersResource, name), &v1alpha1.OpsworksCustomLayer{})
+		Invokes(testing.NewGetAction(opsworkscustomlayersResource, c.ns, name), &v1alpha1.OpsworksCustomLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeOpsworksCustomLayers) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of OpsworksCustomLayers that match those selectors.
 func (c *FakeOpsworksCustomLayers) List(opts v1.ListOptions) (result *v1alpha1.OpsworksCustomLayerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(opsworkscustomlayersResource, opsworkscustomlayersKind, opts), &v1alpha1.OpsworksCustomLayerList{})
+		Invokes(testing.NewListAction(opsworkscustomlayersResource, opsworkscustomlayersKind, c.ns, opts), &v1alpha1.OpsworksCustomLayerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeOpsworksCustomLayers) List(opts v1.ListOptions) (result *v1alpha1.O
 // Watch returns a watch.Interface that watches the requested opsworksCustomLayers.
 func (c *FakeOpsworksCustomLayers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(opsworkscustomlayersResource, opts))
+		InvokesWatch(testing.NewWatchAction(opsworkscustomlayersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a opsworksCustomLayer and creates it.  Returns the server's representation of the opsworksCustomLayer, and an error, if there is any.
 func (c *FakeOpsworksCustomLayers) Create(opsworksCustomLayer *v1alpha1.OpsworksCustomLayer) (result *v1alpha1.OpsworksCustomLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(opsworkscustomlayersResource, opsworksCustomLayer), &v1alpha1.OpsworksCustomLayer{})
+		Invokes(testing.NewCreateAction(opsworkscustomlayersResource, c.ns, opsworksCustomLayer), &v1alpha1.OpsworksCustomLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeOpsworksCustomLayers) Create(opsworksCustomLayer *v1alpha1.Opsworks
 // Update takes the representation of a opsworksCustomLayer and updates it. Returns the server's representation of the opsworksCustomLayer, and an error, if there is any.
 func (c *FakeOpsworksCustomLayers) Update(opsworksCustomLayer *v1alpha1.OpsworksCustomLayer) (result *v1alpha1.OpsworksCustomLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(opsworkscustomlayersResource, opsworksCustomLayer), &v1alpha1.OpsworksCustomLayer{})
+		Invokes(testing.NewUpdateAction(opsworkscustomlayersResource, c.ns, opsworksCustomLayer), &v1alpha1.OpsworksCustomLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeOpsworksCustomLayers) Update(opsworksCustomLayer *v1alpha1.Opsworks
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeOpsworksCustomLayers) UpdateStatus(opsworksCustomLayer *v1alpha1.OpsworksCustomLayer) (*v1alpha1.OpsworksCustomLayer, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(opsworkscustomlayersResource, "status", opsworksCustomLayer), &v1alpha1.OpsworksCustomLayer{})
+		Invokes(testing.NewUpdateSubresourceAction(opsworkscustomlayersResource, "status", c.ns, opsworksCustomLayer), &v1alpha1.OpsworksCustomLayer{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeOpsworksCustomLayers) UpdateStatus(opsworksCustomLayer *v1alpha1.Op
 // Delete takes name of the opsworksCustomLayer and deletes it. Returns an error if one occurs.
 func (c *FakeOpsworksCustomLayers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(opsworkscustomlayersResource, name), &v1alpha1.OpsworksCustomLayer{})
+		Invokes(testing.NewDeleteAction(opsworkscustomlayersResource, c.ns, name), &v1alpha1.OpsworksCustomLayer{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeOpsworksCustomLayers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(opsworkscustomlayersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(opsworkscustomlayersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.OpsworksCustomLayerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeOpsworksCustomLayers) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched opsworksCustomLayer.
 func (c *FakeOpsworksCustomLayers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksCustomLayer, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(opsworkscustomlayersResource, name, pt, data, subresources...), &v1alpha1.OpsworksCustomLayer{})
+		Invokes(testing.NewPatchSubresourceAction(opsworkscustomlayersResource, c.ns, name, pt, data, subresources...), &v1alpha1.OpsworksCustomLayer{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // KinesisAnalyticsApplicationsGetter has a method to return a KinesisAnalyticsApplicationInterface.
 // A group's client should implement this interface.
 type KinesisAnalyticsApplicationsGetter interface {
-	KinesisAnalyticsApplications() KinesisAnalyticsApplicationInterface
+	KinesisAnalyticsApplications(namespace string) KinesisAnalyticsApplicationInterface
 }
 
 // KinesisAnalyticsApplicationInterface has methods to work with KinesisAnalyticsApplication resources.
@@ -52,12 +52,14 @@ type KinesisAnalyticsApplicationInterface interface {
 // kinesisAnalyticsApplications implements KinesisAnalyticsApplicationInterface
 type kinesisAnalyticsApplications struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKinesisAnalyticsApplications returns a KinesisAnalyticsApplications
-func newKinesisAnalyticsApplications(c *AwsV1alpha1Client) *kinesisAnalyticsApplications {
+func newKinesisAnalyticsApplications(c *AwsV1alpha1Client, namespace string) *kinesisAnalyticsApplications {
 	return &kinesisAnalyticsApplications{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKinesisAnalyticsApplications(c *AwsV1alpha1Client) *kinesisAnalyticsAppl
 func (c *kinesisAnalyticsApplications) Get(name string, options v1.GetOptions) (result *v1alpha1.KinesisAnalyticsApplication, err error) {
 	result = &v1alpha1.KinesisAnalyticsApplication{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kinesisanalyticsapplications").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *kinesisAnalyticsApplications) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.KinesisAnalyticsApplicationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kinesisanalyticsapplications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *kinesisAnalyticsApplications) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("kinesisanalyticsapplications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *kinesisAnalyticsApplications) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *kinesisAnalyticsApplications) Create(kinesisAnalyticsApplication *v1alpha1.KinesisAnalyticsApplication) (result *v1alpha1.KinesisAnalyticsApplication, err error) {
 	result = &v1alpha1.KinesisAnalyticsApplication{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("kinesisanalyticsapplications").
 		Body(kinesisAnalyticsApplication).
 		Do().
@@ -118,6 +124,7 @@ func (c *kinesisAnalyticsApplications) Create(kinesisAnalyticsApplication *v1alp
 func (c *kinesisAnalyticsApplications) Update(kinesisAnalyticsApplication *v1alpha1.KinesisAnalyticsApplication) (result *v1alpha1.KinesisAnalyticsApplication, err error) {
 	result = &v1alpha1.KinesisAnalyticsApplication{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kinesisanalyticsapplications").
 		Name(kinesisAnalyticsApplication.Name).
 		Body(kinesisAnalyticsApplication).
@@ -132,6 +139,7 @@ func (c *kinesisAnalyticsApplications) Update(kinesisAnalyticsApplication *v1alp
 func (c *kinesisAnalyticsApplications) UpdateStatus(kinesisAnalyticsApplication *v1alpha1.KinesisAnalyticsApplication) (result *v1alpha1.KinesisAnalyticsApplication, err error) {
 	result = &v1alpha1.KinesisAnalyticsApplication{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kinesisanalyticsapplications").
 		Name(kinesisAnalyticsApplication.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *kinesisAnalyticsApplications) UpdateStatus(kinesisAnalyticsApplication 
 // Delete takes name of the kinesisAnalyticsApplication and deletes it. Returns an error if one occurs.
 func (c *kinesisAnalyticsApplications) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kinesisanalyticsapplications").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *kinesisAnalyticsApplications) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kinesisanalyticsapplications").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *kinesisAnalyticsApplications) DeleteCollection(options *v1.DeleteOption
 func (c *kinesisAnalyticsApplications) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KinesisAnalyticsApplication, err error) {
 	result = &v1alpha1.KinesisAnalyticsApplication{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("kinesisanalyticsapplications").
 		SubResource(subresources...).
 		Name(name).

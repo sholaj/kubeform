@@ -32,7 +32,7 @@ import (
 // AutoscalingLifecycleHooksGetter has a method to return a AutoscalingLifecycleHookInterface.
 // A group's client should implement this interface.
 type AutoscalingLifecycleHooksGetter interface {
-	AutoscalingLifecycleHooks() AutoscalingLifecycleHookInterface
+	AutoscalingLifecycleHooks(namespace string) AutoscalingLifecycleHookInterface
 }
 
 // AutoscalingLifecycleHookInterface has methods to work with AutoscalingLifecycleHook resources.
@@ -52,12 +52,14 @@ type AutoscalingLifecycleHookInterface interface {
 // autoscalingLifecycleHooks implements AutoscalingLifecycleHookInterface
 type autoscalingLifecycleHooks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAutoscalingLifecycleHooks returns a AutoscalingLifecycleHooks
-func newAutoscalingLifecycleHooks(c *AwsV1alpha1Client) *autoscalingLifecycleHooks {
+func newAutoscalingLifecycleHooks(c *AwsV1alpha1Client, namespace string) *autoscalingLifecycleHooks {
 	return &autoscalingLifecycleHooks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAutoscalingLifecycleHooks(c *AwsV1alpha1Client) *autoscalingLifecycleHoo
 func (c *autoscalingLifecycleHooks) Get(name string, options v1.GetOptions) (result *v1alpha1.AutoscalingLifecycleHook, err error) {
 	result = &v1alpha1.AutoscalingLifecycleHook{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("autoscalinglifecyclehooks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *autoscalingLifecycleHooks) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.AutoscalingLifecycleHookList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("autoscalinglifecyclehooks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *autoscalingLifecycleHooks) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("autoscalinglifecyclehooks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *autoscalingLifecycleHooks) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *autoscalingLifecycleHooks) Create(autoscalingLifecycleHook *v1alpha1.AutoscalingLifecycleHook) (result *v1alpha1.AutoscalingLifecycleHook, err error) {
 	result = &v1alpha1.AutoscalingLifecycleHook{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("autoscalinglifecyclehooks").
 		Body(autoscalingLifecycleHook).
 		Do().
@@ -118,6 +124,7 @@ func (c *autoscalingLifecycleHooks) Create(autoscalingLifecycleHook *v1alpha1.Au
 func (c *autoscalingLifecycleHooks) Update(autoscalingLifecycleHook *v1alpha1.AutoscalingLifecycleHook) (result *v1alpha1.AutoscalingLifecycleHook, err error) {
 	result = &v1alpha1.AutoscalingLifecycleHook{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("autoscalinglifecyclehooks").
 		Name(autoscalingLifecycleHook.Name).
 		Body(autoscalingLifecycleHook).
@@ -132,6 +139,7 @@ func (c *autoscalingLifecycleHooks) Update(autoscalingLifecycleHook *v1alpha1.Au
 func (c *autoscalingLifecycleHooks) UpdateStatus(autoscalingLifecycleHook *v1alpha1.AutoscalingLifecycleHook) (result *v1alpha1.AutoscalingLifecycleHook, err error) {
 	result = &v1alpha1.AutoscalingLifecycleHook{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("autoscalinglifecyclehooks").
 		Name(autoscalingLifecycleHook.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *autoscalingLifecycleHooks) UpdateStatus(autoscalingLifecycleHook *v1alp
 // Delete takes name of the autoscalingLifecycleHook and deletes it. Returns an error if one occurs.
 func (c *autoscalingLifecycleHooks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("autoscalinglifecyclehooks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *autoscalingLifecycleHooks) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("autoscalinglifecyclehooks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *autoscalingLifecycleHooks) DeleteCollection(options *v1.DeleteOptions, 
 func (c *autoscalingLifecycleHooks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AutoscalingLifecycleHook, err error) {
 	result = &v1alpha1.AutoscalingLifecycleHook{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("autoscalinglifecyclehooks").
 		SubResource(subresources...).
 		Name(name).

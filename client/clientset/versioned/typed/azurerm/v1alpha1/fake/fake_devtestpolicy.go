@@ -31,6 +31,7 @@ import (
 // FakeDevTestPolicies implements DevTestPolicyInterface
 type FakeDevTestPolicies struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var devtestpoliciesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "devtestpolicies"}
@@ -40,7 +41,8 @@ var devtestpoliciesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com",
 // Get takes name of the devTestPolicy, and returns the corresponding devTestPolicy object, and an error if there is any.
 func (c *FakeDevTestPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.DevTestPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(devtestpoliciesResource, name), &v1alpha1.DevTestPolicy{})
+		Invokes(testing.NewGetAction(devtestpoliciesResource, c.ns, name), &v1alpha1.DevTestPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDevTestPolicies) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of DevTestPolicies that match those selectors.
 func (c *FakeDevTestPolicies) List(opts v1.ListOptions) (result *v1alpha1.DevTestPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(devtestpoliciesResource, devtestpoliciesKind, opts), &v1alpha1.DevTestPolicyList{})
+		Invokes(testing.NewListAction(devtestpoliciesResource, devtestpoliciesKind, c.ns, opts), &v1alpha1.DevTestPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDevTestPolicies) List(opts v1.ListOptions) (result *v1alpha1.DevTes
 // Watch returns a watch.Interface that watches the requested devTestPolicies.
 func (c *FakeDevTestPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(devtestpoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(devtestpoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a devTestPolicy and creates it.  Returns the server's representation of the devTestPolicy, and an error, if there is any.
 func (c *FakeDevTestPolicies) Create(devTestPolicy *v1alpha1.DevTestPolicy) (result *v1alpha1.DevTestPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(devtestpoliciesResource, devTestPolicy), &v1alpha1.DevTestPolicy{})
+		Invokes(testing.NewCreateAction(devtestpoliciesResource, c.ns, devTestPolicy), &v1alpha1.DevTestPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDevTestPolicies) Create(devTestPolicy *v1alpha1.DevTestPolicy) (res
 // Update takes the representation of a devTestPolicy and updates it. Returns the server's representation of the devTestPolicy, and an error, if there is any.
 func (c *FakeDevTestPolicies) Update(devTestPolicy *v1alpha1.DevTestPolicy) (result *v1alpha1.DevTestPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(devtestpoliciesResource, devTestPolicy), &v1alpha1.DevTestPolicy{})
+		Invokes(testing.NewUpdateAction(devtestpoliciesResource, c.ns, devTestPolicy), &v1alpha1.DevTestPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDevTestPolicies) Update(devTestPolicy *v1alpha1.DevTestPolicy) (res
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDevTestPolicies) UpdateStatus(devTestPolicy *v1alpha1.DevTestPolicy) (*v1alpha1.DevTestPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(devtestpoliciesResource, "status", devTestPolicy), &v1alpha1.DevTestPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(devtestpoliciesResource, "status", c.ns, devTestPolicy), &v1alpha1.DevTestPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDevTestPolicies) UpdateStatus(devTestPolicy *v1alpha1.DevTestPolicy
 // Delete takes name of the devTestPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeDevTestPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(devtestpoliciesResource, name), &v1alpha1.DevTestPolicy{})
+		Invokes(testing.NewDeleteAction(devtestpoliciesResource, c.ns, name), &v1alpha1.DevTestPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDevTestPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(devtestpoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(devtestpoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DevTestPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDevTestPolicies) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched devTestPolicy.
 func (c *FakeDevTestPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DevTestPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(devtestpoliciesResource, name, pt, data, subresources...), &v1alpha1.DevTestPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(devtestpoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.DevTestPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

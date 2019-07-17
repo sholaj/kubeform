@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,28 +20,29 @@ type ComputeForwardingRule struct {
 
 type ComputeForwardingRuleSpec struct {
 	// +optional
-	BackendService string `json:"backend_service,omitempty"`
+	BackendService string `json:"backendService,omitempty" tf:"backend_service,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	IpVersion string `json:"ip_version,omitempty"`
+	IpVersion string `json:"ipVersion,omitempty" tf:"ip_version,omitempty"`
 	// +optional
 	// Deprecated
-	Labels map[string]string `json:"labels,omitempty"`
+	Labels map[string]string `json:"labels,omitempty" tf:"labels,omitempty"`
 	// +optional
-	LoadBalancingScheme string `json:"load_balancing_scheme,omitempty"`
-	Name                string `json:"name"`
+	LoadBalancingScheme string `json:"loadBalancingScheme,omitempty" tf:"load_balancing_scheme,omitempty"`
+	Name                string `json:"name" tf:"name"`
 	// +optional
-	PortRange string `json:"port_range,omitempty"`
+	PortRange string `json:"portRange,omitempty" tf:"port_range,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=5
 	// +kubebuilder:validation:UniqueItems=true
-	Ports []string `json:"ports,omitempty"`
+	Ports []string `json:"ports,omitempty" tf:"ports,omitempty"`
 	// +optional
 	// Deprecated
-	ServiceLabel string `json:"service_label,omitempty"`
+	ServiceLabel string `json:"serviceLabel,omitempty" tf:"service_label,omitempty"`
 	// +optional
-	Target string `json:"target,omitempty"`
+	Target      string                    `json:"target,omitempty" tf:"target,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ComputeForwardingRuleStatus struct {
@@ -49,7 +50,9 @@ type ComputeForwardingRuleStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

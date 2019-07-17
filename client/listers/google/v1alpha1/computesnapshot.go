@@ -29,8 +29,8 @@ import (
 type ComputeSnapshotLister interface {
 	// List lists all ComputeSnapshots in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeSnapshot, err error)
-	// Get retrieves the ComputeSnapshot from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeSnapshot, error)
+	// ComputeSnapshots returns an object that can list and get ComputeSnapshots.
+	ComputeSnapshots(namespace string) ComputeSnapshotNamespaceLister
 	ComputeSnapshotListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeSnapshotLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the ComputeSnapshot from the index for a given name.
-func (s *computeSnapshotLister) Get(name string) (*v1alpha1.ComputeSnapshot, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeSnapshots returns an object that can list and get ComputeSnapshots.
+func (s *computeSnapshotLister) ComputeSnapshots(namespace string) ComputeSnapshotNamespaceLister {
+	return computeSnapshotNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeSnapshotNamespaceLister helps list and get ComputeSnapshots.
+type ComputeSnapshotNamespaceLister interface {
+	// List lists all ComputeSnapshots in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeSnapshot, err error)
+	// Get retrieves the ComputeSnapshot from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeSnapshot, error)
+	ComputeSnapshotNamespaceListerExpansion
+}
+
+// computeSnapshotNamespaceLister implements the ComputeSnapshotNamespaceLister
+// interface.
+type computeSnapshotNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeSnapshots in the indexer for a given namespace.
+func (s computeSnapshotNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeSnapshot, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeSnapshot))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeSnapshot from the indexer for a given namespace and name.
+func (s computeSnapshotNamespaceLister) Get(name string) (*v1alpha1.ComputeSnapshot, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

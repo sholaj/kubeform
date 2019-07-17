@@ -32,7 +32,7 @@ import (
 // NetworkSecurityRulesGetter has a method to return a NetworkSecurityRuleInterface.
 // A group's client should implement this interface.
 type NetworkSecurityRulesGetter interface {
-	NetworkSecurityRules() NetworkSecurityRuleInterface
+	NetworkSecurityRules(namespace string) NetworkSecurityRuleInterface
 }
 
 // NetworkSecurityRuleInterface has methods to work with NetworkSecurityRule resources.
@@ -52,12 +52,14 @@ type NetworkSecurityRuleInterface interface {
 // networkSecurityRules implements NetworkSecurityRuleInterface
 type networkSecurityRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNetworkSecurityRules returns a NetworkSecurityRules
-func newNetworkSecurityRules(c *AzurermV1alpha1Client) *networkSecurityRules {
+func newNetworkSecurityRules(c *AzurermV1alpha1Client, namespace string) *networkSecurityRules {
 	return &networkSecurityRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNetworkSecurityRules(c *AzurermV1alpha1Client) *networkSecurityRules {
 func (c *networkSecurityRules) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkSecurityRule, err error) {
 	result = &v1alpha1.NetworkSecurityRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networksecurityrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *networkSecurityRules) List(opts v1.ListOptions) (result *v1alpha1.Netwo
 	}
 	result = &v1alpha1.NetworkSecurityRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networksecurityrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *networkSecurityRules) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("networksecurityrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *networkSecurityRules) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *networkSecurityRules) Create(networkSecurityRule *v1alpha1.NetworkSecurityRule) (result *v1alpha1.NetworkSecurityRule, err error) {
 	result = &v1alpha1.NetworkSecurityRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("networksecurityrules").
 		Body(networkSecurityRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *networkSecurityRules) Create(networkSecurityRule *v1alpha1.NetworkSecur
 func (c *networkSecurityRules) Update(networkSecurityRule *v1alpha1.NetworkSecurityRule) (result *v1alpha1.NetworkSecurityRule, err error) {
 	result = &v1alpha1.NetworkSecurityRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networksecurityrules").
 		Name(networkSecurityRule.Name).
 		Body(networkSecurityRule).
@@ -132,6 +139,7 @@ func (c *networkSecurityRules) Update(networkSecurityRule *v1alpha1.NetworkSecur
 func (c *networkSecurityRules) UpdateStatus(networkSecurityRule *v1alpha1.NetworkSecurityRule) (result *v1alpha1.NetworkSecurityRule, err error) {
 	result = &v1alpha1.NetworkSecurityRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networksecurityrules").
 		Name(networkSecurityRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *networkSecurityRules) UpdateStatus(networkSecurityRule *v1alpha1.Networ
 // Delete takes name of the networkSecurityRule and deletes it. Returns an error if one occurs.
 func (c *networkSecurityRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networksecurityrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *networkSecurityRules) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networksecurityrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *networkSecurityRules) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *networkSecurityRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkSecurityRule, err error) {
 	result = &v1alpha1.NetworkSecurityRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("networksecurityrules").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type ApiGatewayMethodSettingsLister interface {
 	// List lists all ApiGatewayMethodSettingses in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayMethodSettings, err error)
-	// Get retrieves the ApiGatewayMethodSettings from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayMethodSettings, error)
+	// ApiGatewayMethodSettingses returns an object that can list and get ApiGatewayMethodSettingses.
+	ApiGatewayMethodSettingses(namespace string) ApiGatewayMethodSettingsNamespaceLister
 	ApiGatewayMethodSettingsListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiGatewayMethodSettingsLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayMethodSettings from the index for a given name.
-func (s *apiGatewayMethodSettingsLister) Get(name string) (*v1alpha1.ApiGatewayMethodSettings, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayMethodSettingses returns an object that can list and get ApiGatewayMethodSettingses.
+func (s *apiGatewayMethodSettingsLister) ApiGatewayMethodSettingses(namespace string) ApiGatewayMethodSettingsNamespaceLister {
+	return apiGatewayMethodSettingsNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayMethodSettingsNamespaceLister helps list and get ApiGatewayMethodSettingses.
+type ApiGatewayMethodSettingsNamespaceLister interface {
+	// List lists all ApiGatewayMethodSettingses in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayMethodSettings, err error)
+	// Get retrieves the ApiGatewayMethodSettings from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayMethodSettings, error)
+	ApiGatewayMethodSettingsNamespaceListerExpansion
+}
+
+// apiGatewayMethodSettingsNamespaceLister implements the ApiGatewayMethodSettingsNamespaceLister
+// interface.
+type apiGatewayMethodSettingsNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayMethodSettingses in the indexer for a given namespace.
+func (s apiGatewayMethodSettingsNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayMethodSettings, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayMethodSettings))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayMethodSettings from the indexer for a given namespace and name.
+func (s apiGatewayMethodSettingsNamespaceLister) Get(name string) (*v1alpha1.ApiGatewayMethodSettings, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

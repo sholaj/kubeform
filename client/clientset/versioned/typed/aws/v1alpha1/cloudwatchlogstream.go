@@ -32,7 +32,7 @@ import (
 // CloudwatchLogStreamsGetter has a method to return a CloudwatchLogStreamInterface.
 // A group's client should implement this interface.
 type CloudwatchLogStreamsGetter interface {
-	CloudwatchLogStreams() CloudwatchLogStreamInterface
+	CloudwatchLogStreams(namespace string) CloudwatchLogStreamInterface
 }
 
 // CloudwatchLogStreamInterface has methods to work with CloudwatchLogStream resources.
@@ -52,12 +52,14 @@ type CloudwatchLogStreamInterface interface {
 // cloudwatchLogStreams implements CloudwatchLogStreamInterface
 type cloudwatchLogStreams struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCloudwatchLogStreams returns a CloudwatchLogStreams
-func newCloudwatchLogStreams(c *AwsV1alpha1Client) *cloudwatchLogStreams {
+func newCloudwatchLogStreams(c *AwsV1alpha1Client, namespace string) *cloudwatchLogStreams {
 	return &cloudwatchLogStreams{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCloudwatchLogStreams(c *AwsV1alpha1Client) *cloudwatchLogStreams {
 func (c *cloudwatchLogStreams) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudwatchLogStream, err error) {
 	result = &v1alpha1.CloudwatchLogStream{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatchlogstreams").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cloudwatchLogStreams) List(opts v1.ListOptions) (result *v1alpha1.Cloud
 	}
 	result = &v1alpha1.CloudwatchLogStreamList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatchlogstreams").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cloudwatchLogStreams) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudwatchlogstreams").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cloudwatchLogStreams) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *cloudwatchLogStreams) Create(cloudwatchLogStream *v1alpha1.CloudwatchLogStream) (result *v1alpha1.CloudwatchLogStream, err error) {
 	result = &v1alpha1.CloudwatchLogStream{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cloudwatchlogstreams").
 		Body(cloudwatchLogStream).
 		Do().
@@ -118,6 +124,7 @@ func (c *cloudwatchLogStreams) Create(cloudwatchLogStream *v1alpha1.CloudwatchLo
 func (c *cloudwatchLogStreams) Update(cloudwatchLogStream *v1alpha1.CloudwatchLogStream) (result *v1alpha1.CloudwatchLogStream, err error) {
 	result = &v1alpha1.CloudwatchLogStream{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudwatchlogstreams").
 		Name(cloudwatchLogStream.Name).
 		Body(cloudwatchLogStream).
@@ -132,6 +139,7 @@ func (c *cloudwatchLogStreams) Update(cloudwatchLogStream *v1alpha1.CloudwatchLo
 func (c *cloudwatchLogStreams) UpdateStatus(cloudwatchLogStream *v1alpha1.CloudwatchLogStream) (result *v1alpha1.CloudwatchLogStream, err error) {
 	result = &v1alpha1.CloudwatchLogStream{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudwatchlogstreams").
 		Name(cloudwatchLogStream.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cloudwatchLogStreams) UpdateStatus(cloudwatchLogStream *v1alpha1.Cloudw
 // Delete takes name of the cloudwatchLogStream and deletes it. Returns an error if one occurs.
 func (c *cloudwatchLogStreams) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudwatchlogstreams").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cloudwatchLogStreams) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudwatchlogstreams").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cloudwatchLogStreams) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *cloudwatchLogStreams) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudwatchLogStream, err error) {
 	result = &v1alpha1.CloudwatchLogStream{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cloudwatchlogstreams").
 		SubResource(subresources...).
 		Name(name).

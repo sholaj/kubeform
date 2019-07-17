@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,11 +20,12 @@ type DnsManagedZone struct {
 
 type DnsManagedZoneSpec struct {
 	// +optional
-	Description string `json:"description,omitempty"`
-	DnsName     string `json:"dns_name"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
+	DnsName     string `json:"dnsName" tf:"dns_name"`
 	// +optional
-	Labels map[string]string `json:"labels,omitempty"`
-	Name   string            `json:"name"`
+	Labels      map[string]string         `json:"labels,omitempty" tf:"labels,omitempty"`
+	Name        string                    `json:"name" tf:"name"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DnsManagedZoneStatus struct {
@@ -32,7 +33,9 @@ type DnsManagedZoneStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

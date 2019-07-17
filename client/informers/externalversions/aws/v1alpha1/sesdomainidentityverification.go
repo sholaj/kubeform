@@ -41,32 +41,33 @@ type SesDomainIdentityVerificationInformer interface {
 type sesDomainIdentityVerificationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSesDomainIdentityVerificationInformer constructs a new informer for SesDomainIdentityVerification type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSesDomainIdentityVerificationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSesDomainIdentityVerificationInformer(client, resyncPeriod, indexers, nil)
+func NewSesDomainIdentityVerificationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSesDomainIdentityVerificationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSesDomainIdentityVerificationInformer constructs a new informer for SesDomainIdentityVerification type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSesDomainIdentityVerificationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSesDomainIdentityVerificationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SesDomainIdentityVerifications().List(options)
+				return client.AwsV1alpha1().SesDomainIdentityVerifications(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SesDomainIdentityVerifications().Watch(options)
+				return client.AwsV1alpha1().SesDomainIdentityVerifications(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.SesDomainIdentityVerification{},
@@ -76,7 +77,7 @@ func NewFilteredSesDomainIdentityVerificationInformer(client versioned.Interface
 }
 
 func (f *sesDomainIdentityVerificationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSesDomainIdentityVerificationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSesDomainIdentityVerificationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *sesDomainIdentityVerificationInformer) Informer() cache.SharedIndexInformer {

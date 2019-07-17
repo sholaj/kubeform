@@ -41,32 +41,33 @@ type LbOutboundRuleInformer interface {
 type lbOutboundRuleInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewLbOutboundRuleInformer constructs a new informer for LbOutboundRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLbOutboundRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLbOutboundRuleInformer(client, resyncPeriod, indexers, nil)
+func NewLbOutboundRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLbOutboundRuleInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredLbOutboundRuleInformer constructs a new informer for LbOutboundRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLbOutboundRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLbOutboundRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().LbOutboundRules().List(options)
+				return client.AzurermV1alpha1().LbOutboundRules(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().LbOutboundRules().Watch(options)
+				return client.AzurermV1alpha1().LbOutboundRules(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.LbOutboundRule{},
@@ -76,7 +77,7 @@ func NewFilteredLbOutboundRuleInformer(client versioned.Interface, resyncPeriod 
 }
 
 func (f *lbOutboundRuleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLbOutboundRuleInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredLbOutboundRuleInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *lbOutboundRuleInformer) Informer() cache.SharedIndexInformer {

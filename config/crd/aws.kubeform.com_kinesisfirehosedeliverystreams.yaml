@@ -399,30 +399,453 @@ spec:
           properties:
             destination:
               type: string
-            elasticsearch_configuration:
-              items: {}
+            elasticsearchConfiguration:
+              items:
+                properties:
+                  bufferingInterval:
+                    type: integer
+                  bufferingSize:
+                    type: integer
+                  domainArn:
+                    type: string
+                  indexName:
+                    type: string
+                  indexRotationPeriod:
+                    type: string
+                  processingConfiguration:
+                    items:
+                      properties:
+                        enabled:
+                          type: boolean
+                        processors:
+                          items:
+                            properties:
+                              parameters:
+                                items:
+                                  properties:
+                                    parameterName:
+                                      type: string
+                                    parameterValue:
+                                      type: string
+                                  required:
+                                  - parameterName
+                                  - parameterValue
+                                  type: object
+                                type: array
+                              type:
+                                type: string
+                            required:
+                            - type
+                            type: object
+                          type: array
+                      type: object
+                    maxItems: 1
+                    type: array
+                  retryDuration:
+                    type: integer
+                  roleArn:
+                    type: string
+                  s3BackupMode:
+                    type: string
+                  typeName:
+                    type: string
+                required:
+                - domainArn
+                - indexName
+                - roleArn
+                type: object
               maxItems: 1
               type: array
-            extended_s3_configuration:
-              items: {}
+            extendedS3Configuration:
+              items:
+                properties:
+                  bucketArn:
+                    type: string
+                  bufferInterval:
+                    type: integer
+                  bufferSize:
+                    type: integer
+                  compressionFormat:
+                    type: string
+                  dataFormatConversionConfiguration:
+                    items:
+                      properties:
+                        enabled:
+                          type: boolean
+                        inputFormatConfiguration:
+                          items:
+                            properties:
+                              deserializer:
+                                items:
+                                  properties:
+                                    hiveJSONSerDe:
+                                      items:
+                                        properties:
+                                          timestampFormats:
+                                            items:
+                                              type: string
+                                            type: array
+                                        type: object
+                                      maxItems: 1
+                                      type: array
+                                    openXJSONSerDe:
+                                      items:
+                                        properties:
+                                          caseInsensitive:
+                                            type: boolean
+                                          columnToJSONKeyMappings:
+                                            additionalProperties:
+                                              type: string
+                                            type: object
+                                          convertDotsInJSONKeysToUnderscores:
+                                            type: boolean
+                                        type: object
+                                      maxItems: 1
+                                      type: array
+                                  type: object
+                                maxItems: 1
+                                type: array
+                            required:
+                            - deserializer
+                            type: object
+                          maxItems: 1
+                          type: array
+                        outputFormatConfiguration:
+                          items:
+                            properties:
+                              serializer:
+                                items:
+                                  properties:
+                                    orcSerDe:
+                                      items:
+                                        properties:
+                                          blockSizeBytes:
+                                            type: integer
+                                          bloomFilterColumns:
+                                            items:
+                                              type: string
+                                            type: array
+                                          bloomFilterFalsePositiveProbability:
+                                            description: A Number represents a JSON
+                                              number literal.
+                                            type: string
+                                          compression:
+                                            type: string
+                                          dictionaryKeyThreshold:
+                                            description: A Number represents a JSON
+                                              number literal.
+                                            type: string
+                                          enablePadding:
+                                            type: boolean
+                                          formatVersion:
+                                            type: string
+                                          paddingTolerance:
+                                            description: A Number represents a JSON
+                                              number literal.
+                                            type: string
+                                          rowIndexStride:
+                                            type: integer
+                                          stripeSizeBytes:
+                                            type: integer
+                                        type: object
+                                      maxItems: 1
+                                      type: array
+                                    parquetSerDe:
+                                      items:
+                                        properties:
+                                          blockSizeBytes:
+                                            type: integer
+                                          compression:
+                                            type: string
+                                          enableDictionaryCompression:
+                                            type: boolean
+                                          maxPaddingBytes:
+                                            type: integer
+                                          pageSizeBytes:
+                                            type: integer
+                                          writerVersion:
+                                            type: string
+                                        type: object
+                                      maxItems: 1
+                                      type: array
+                                  type: object
+                                maxItems: 1
+                                type: array
+                            required:
+                            - serializer
+                            type: object
+                          maxItems: 1
+                          type: array
+                        schemaConfiguration:
+                          items:
+                            properties:
+                              databaseName:
+                                type: string
+                              roleArn:
+                                type: string
+                              tableName:
+                                type: string
+                              versionID:
+                                type: string
+                            required:
+                            - databaseName
+                            - roleArn
+                            - tableName
+                            type: object
+                          maxItems: 1
+                          type: array
+                      required:
+                      - inputFormatConfiguration
+                      - outputFormatConfiguration
+                      - schemaConfiguration
+                      type: object
+                    maxItems: 1
+                    type: array
+                  errorOutputPrefix:
+                    type: string
+                  kmsKeyArn:
+                    type: string
+                  prefix:
+                    type: string
+                  processingConfiguration:
+                    items:
+                      properties:
+                        enabled:
+                          type: boolean
+                        processors:
+                          items:
+                            properties:
+                              parameters:
+                                items:
+                                  properties:
+                                    parameterName:
+                                      type: string
+                                    parameterValue:
+                                      type: string
+                                  required:
+                                  - parameterName
+                                  - parameterValue
+                                  type: object
+                                type: array
+                              type:
+                                type: string
+                            required:
+                            - type
+                            type: object
+                          type: array
+                      type: object
+                    maxItems: 1
+                    type: array
+                  roleArn:
+                    type: string
+                  s3BackupConfiguration:
+                    items:
+                      properties:
+                        bucketArn:
+                          type: string
+                        bufferInterval:
+                          type: integer
+                        bufferSize:
+                          type: integer
+                        compressionFormat:
+                          type: string
+                        kmsKeyArn:
+                          type: string
+                        prefix:
+                          type: string
+                        roleArn:
+                          type: string
+                      required:
+                      - bucketArn
+                      - roleArn
+                      type: object
+                    maxItems: 1
+                    type: array
+                  s3BackupMode:
+                    type: string
+                required:
+                - bucketArn
+                - roleArn
+                type: object
               maxItems: 1
               type: array
-            kinesis_source_configuration:
-              items: {}
+            kinesisSourceConfiguration:
+              items:
+                properties:
+                  kinesisStreamArn:
+                    type: string
+                  roleArn:
+                    type: string
+                required:
+                - kinesisStreamArn
+                - roleArn
+                type: object
               maxItems: 1
               type: array
             name:
               type: string
-            redshift_configuration:
-              items: {}
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            redshiftConfiguration:
+              items:
+                properties:
+                  clusterJdbcurl:
+                    type: string
+                  copyOptions:
+                    type: string
+                  dataTableColumns:
+                    type: string
+                  dataTableName:
+                    type: string
+                  password:
+                    type: string
+                  processingConfiguration:
+                    items:
+                      properties:
+                        enabled:
+                          type: boolean
+                        processors:
+                          items:
+                            properties:
+                              parameters:
+                                items:
+                                  properties:
+                                    parameterName:
+                                      type: string
+                                    parameterValue:
+                                      type: string
+                                  required:
+                                  - parameterName
+                                  - parameterValue
+                                  type: object
+                                type: array
+                              type:
+                                type: string
+                            required:
+                            - type
+                            type: object
+                          type: array
+                      type: object
+                    maxItems: 1
+                    type: array
+                  retryDuration:
+                    type: integer
+                  roleArn:
+                    type: string
+                  s3BackupConfiguration:
+                    items:
+                      properties:
+                        bucketArn:
+                          type: string
+                        bufferInterval:
+                          type: integer
+                        bufferSize:
+                          type: integer
+                        compressionFormat:
+                          type: string
+                        kmsKeyArn:
+                          type: string
+                        prefix:
+                          type: string
+                        roleArn:
+                          type: string
+                      required:
+                      - bucketArn
+                      - roleArn
+                      type: object
+                    maxItems: 1
+                    type: array
+                  s3BackupMode:
+                    type: string
+                  username:
+                    type: string
+                required:
+                - clusterJdbcurl
+                - dataTableName
+                - password
+                - roleArn
+                - username
+                type: object
               maxItems: 1
               type: array
-            s3_configuration:
-              items: {}
+            s3Configuration:
+              items:
+                properties:
+                  bucketArn:
+                    type: string
+                  bufferInterval:
+                    type: integer
+                  bufferSize:
+                    type: integer
+                  compressionFormat:
+                    type: string
+                  kmsKeyArn:
+                    type: string
+                  prefix:
+                    type: string
+                  roleArn:
+                    type: string
+                required:
+                - bucketArn
+                - roleArn
+                type: object
               maxItems: 1
               type: array
-            splunk_configuration:
-              items: {}
+            splunkConfiguration:
+              items:
+                properties:
+                  hecAcknowledgmentTimeout:
+                    type: integer
+                  hecEndpoint:
+                    type: string
+                  hecEndpointType:
+                    type: string
+                  hecToken:
+                    type: string
+                  processingConfiguration:
+                    items:
+                      properties:
+                        enabled:
+                          type: boolean
+                        processors:
+                          items:
+                            properties:
+                              parameters:
+                                items:
+                                  properties:
+                                    parameterName:
+                                      type: string
+                                    parameterValue:
+                                      type: string
+                                  required:
+                                  - parameterName
+                                  - parameterValue
+                                  type: object
+                                type: array
+                              type:
+                                type: string
+                            required:
+                            - type
+                            type: object
+                          type: array
+                      type: object
+                    maxItems: 1
+                    type: array
+                  retryDuration:
+                    type: integer
+                  s3BackupMode:
+                    type: string
+                required:
+                - hecEndpoint
+                - hecToken
+                type: object
               maxItems: 1
               type: array
             tags:
@@ -432,6 +855,7 @@ spec:
           required:
           - destination
           - name
+          - providerRef
           type: object
         status:
           properties:
@@ -442,6 +866,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -31,6 +31,7 @@ import (
 // FakeNeptuneClusterInstances implements NeptuneClusterInstanceInterface
 type FakeNeptuneClusterInstances struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var neptuneclusterinstancesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "neptuneclusterinstances"}
@@ -40,7 +41,8 @@ var neptuneclusterinstancesKind = schema.GroupVersionKind{Group: "aws.kubeform.c
 // Get takes name of the neptuneClusterInstance, and returns the corresponding neptuneClusterInstance object, and an error if there is any.
 func (c *FakeNeptuneClusterInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.NeptuneClusterInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(neptuneclusterinstancesResource, name), &v1alpha1.NeptuneClusterInstance{})
+		Invokes(testing.NewGetAction(neptuneclusterinstancesResource, c.ns, name), &v1alpha1.NeptuneClusterInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeNeptuneClusterInstances) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of NeptuneClusterInstances that match those selectors.
 func (c *FakeNeptuneClusterInstances) List(opts v1.ListOptions) (result *v1alpha1.NeptuneClusterInstanceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(neptuneclusterinstancesResource, neptuneclusterinstancesKind, opts), &v1alpha1.NeptuneClusterInstanceList{})
+		Invokes(testing.NewListAction(neptuneclusterinstancesResource, neptuneclusterinstancesKind, c.ns, opts), &v1alpha1.NeptuneClusterInstanceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeNeptuneClusterInstances) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested neptuneClusterInstances.
 func (c *FakeNeptuneClusterInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(neptuneclusterinstancesResource, opts))
+		InvokesWatch(testing.NewWatchAction(neptuneclusterinstancesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a neptuneClusterInstance and creates it.  Returns the server's representation of the neptuneClusterInstance, and an error, if there is any.
 func (c *FakeNeptuneClusterInstances) Create(neptuneClusterInstance *v1alpha1.NeptuneClusterInstance) (result *v1alpha1.NeptuneClusterInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(neptuneclusterinstancesResource, neptuneClusterInstance), &v1alpha1.NeptuneClusterInstance{})
+		Invokes(testing.NewCreateAction(neptuneclusterinstancesResource, c.ns, neptuneClusterInstance), &v1alpha1.NeptuneClusterInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeNeptuneClusterInstances) Create(neptuneClusterInstance *v1alpha1.Ne
 // Update takes the representation of a neptuneClusterInstance and updates it. Returns the server's representation of the neptuneClusterInstance, and an error, if there is any.
 func (c *FakeNeptuneClusterInstances) Update(neptuneClusterInstance *v1alpha1.NeptuneClusterInstance) (result *v1alpha1.NeptuneClusterInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(neptuneclusterinstancesResource, neptuneClusterInstance), &v1alpha1.NeptuneClusterInstance{})
+		Invokes(testing.NewUpdateAction(neptuneclusterinstancesResource, c.ns, neptuneClusterInstance), &v1alpha1.NeptuneClusterInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeNeptuneClusterInstances) Update(neptuneClusterInstance *v1alpha1.Ne
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNeptuneClusterInstances) UpdateStatus(neptuneClusterInstance *v1alpha1.NeptuneClusterInstance) (*v1alpha1.NeptuneClusterInstance, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(neptuneclusterinstancesResource, "status", neptuneClusterInstance), &v1alpha1.NeptuneClusterInstance{})
+		Invokes(testing.NewUpdateSubresourceAction(neptuneclusterinstancesResource, "status", c.ns, neptuneClusterInstance), &v1alpha1.NeptuneClusterInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeNeptuneClusterInstances) UpdateStatus(neptuneClusterInstance *v1alp
 // Delete takes name of the neptuneClusterInstance and deletes it. Returns an error if one occurs.
 func (c *FakeNeptuneClusterInstances) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(neptuneclusterinstancesResource, name), &v1alpha1.NeptuneClusterInstance{})
+		Invokes(testing.NewDeleteAction(neptuneclusterinstancesResource, c.ns, name), &v1alpha1.NeptuneClusterInstance{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNeptuneClusterInstances) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(neptuneclusterinstancesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(neptuneclusterinstancesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NeptuneClusterInstanceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeNeptuneClusterInstances) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched neptuneClusterInstance.
 func (c *FakeNeptuneClusterInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NeptuneClusterInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(neptuneclusterinstancesResource, name, pt, data, subresources...), &v1alpha1.NeptuneClusterInstance{})
+		Invokes(testing.NewPatchSubresourceAction(neptuneclusterinstancesResource, c.ns, name, pt, data, subresources...), &v1alpha1.NeptuneClusterInstance{})
+
 	if obj == nil {
 		return nil, err
 	}

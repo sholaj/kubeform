@@ -32,7 +32,7 @@ import (
 // RuntimeconfigConfigsGetter has a method to return a RuntimeconfigConfigInterface.
 // A group's client should implement this interface.
 type RuntimeconfigConfigsGetter interface {
-	RuntimeconfigConfigs() RuntimeconfigConfigInterface
+	RuntimeconfigConfigs(namespace string) RuntimeconfigConfigInterface
 }
 
 // RuntimeconfigConfigInterface has methods to work with RuntimeconfigConfig resources.
@@ -52,12 +52,14 @@ type RuntimeconfigConfigInterface interface {
 // runtimeconfigConfigs implements RuntimeconfigConfigInterface
 type runtimeconfigConfigs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRuntimeconfigConfigs returns a RuntimeconfigConfigs
-func newRuntimeconfigConfigs(c *GoogleV1alpha1Client) *runtimeconfigConfigs {
+func newRuntimeconfigConfigs(c *GoogleV1alpha1Client, namespace string) *runtimeconfigConfigs {
 	return &runtimeconfigConfigs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRuntimeconfigConfigs(c *GoogleV1alpha1Client) *runtimeconfigConfigs {
 func (c *runtimeconfigConfigs) Get(name string, options v1.GetOptions) (result *v1alpha1.RuntimeconfigConfig, err error) {
 	result = &v1alpha1.RuntimeconfigConfig{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("runtimeconfigconfigs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *runtimeconfigConfigs) List(opts v1.ListOptions) (result *v1alpha1.Runti
 	}
 	result = &v1alpha1.RuntimeconfigConfigList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("runtimeconfigconfigs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *runtimeconfigConfigs) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("runtimeconfigconfigs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *runtimeconfigConfigs) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *runtimeconfigConfigs) Create(runtimeconfigConfig *v1alpha1.RuntimeconfigConfig) (result *v1alpha1.RuntimeconfigConfig, err error) {
 	result = &v1alpha1.RuntimeconfigConfig{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("runtimeconfigconfigs").
 		Body(runtimeconfigConfig).
 		Do().
@@ -118,6 +124,7 @@ func (c *runtimeconfigConfigs) Create(runtimeconfigConfig *v1alpha1.Runtimeconfi
 func (c *runtimeconfigConfigs) Update(runtimeconfigConfig *v1alpha1.RuntimeconfigConfig) (result *v1alpha1.RuntimeconfigConfig, err error) {
 	result = &v1alpha1.RuntimeconfigConfig{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("runtimeconfigconfigs").
 		Name(runtimeconfigConfig.Name).
 		Body(runtimeconfigConfig).
@@ -132,6 +139,7 @@ func (c *runtimeconfigConfigs) Update(runtimeconfigConfig *v1alpha1.Runtimeconfi
 func (c *runtimeconfigConfigs) UpdateStatus(runtimeconfigConfig *v1alpha1.RuntimeconfigConfig) (result *v1alpha1.RuntimeconfigConfig, err error) {
 	result = &v1alpha1.RuntimeconfigConfig{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("runtimeconfigconfigs").
 		Name(runtimeconfigConfig.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *runtimeconfigConfigs) UpdateStatus(runtimeconfigConfig *v1alpha1.Runtim
 // Delete takes name of the runtimeconfigConfig and deletes it. Returns an error if one occurs.
 func (c *runtimeconfigConfigs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("runtimeconfigconfigs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *runtimeconfigConfigs) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("runtimeconfigconfigs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *runtimeconfigConfigs) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *runtimeconfigConfigs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RuntimeconfigConfig, err error) {
 	result = &v1alpha1.RuntimeconfigConfig{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("runtimeconfigconfigs").
 		SubResource(subresources...).
 		Name(name).

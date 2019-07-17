@@ -29,8 +29,8 @@ import (
 type ServicebusSubscriptionLister interface {
 	// List lists all ServicebusSubscriptions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ServicebusSubscription, err error)
-	// Get retrieves the ServicebusSubscription from the index for a given name.
-	Get(name string) (*v1alpha1.ServicebusSubscription, error)
+	// ServicebusSubscriptions returns an object that can list and get ServicebusSubscriptions.
+	ServicebusSubscriptions(namespace string) ServicebusSubscriptionNamespaceLister
 	ServicebusSubscriptionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *servicebusSubscriptionLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the ServicebusSubscription from the index for a given name.
-func (s *servicebusSubscriptionLister) Get(name string) (*v1alpha1.ServicebusSubscription, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ServicebusSubscriptions returns an object that can list and get ServicebusSubscriptions.
+func (s *servicebusSubscriptionLister) ServicebusSubscriptions(namespace string) ServicebusSubscriptionNamespaceLister {
+	return servicebusSubscriptionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ServicebusSubscriptionNamespaceLister helps list and get ServicebusSubscriptions.
+type ServicebusSubscriptionNamespaceLister interface {
+	// List lists all ServicebusSubscriptions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ServicebusSubscription, err error)
+	// Get retrieves the ServicebusSubscription from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ServicebusSubscription, error)
+	ServicebusSubscriptionNamespaceListerExpansion
+}
+
+// servicebusSubscriptionNamespaceLister implements the ServicebusSubscriptionNamespaceLister
+// interface.
+type servicebusSubscriptionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ServicebusSubscriptions in the indexer for a given namespace.
+func (s servicebusSubscriptionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServicebusSubscription, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ServicebusSubscription))
+	})
+	return ret, err
+}
+
+// Get retrieves the ServicebusSubscription from the indexer for a given namespace and name.
+func (s servicebusSubscriptionNamespaceLister) Get(name string) (*v1alpha1.ServicebusSubscription, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

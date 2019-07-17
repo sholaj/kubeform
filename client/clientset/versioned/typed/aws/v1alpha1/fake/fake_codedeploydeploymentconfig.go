@@ -31,6 +31,7 @@ import (
 // FakeCodedeployDeploymentConfigs implements CodedeployDeploymentConfigInterface
 type FakeCodedeployDeploymentConfigs struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var codedeploydeploymentconfigsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "codedeploydeploymentconfigs"}
@@ -40,7 +41,8 @@ var codedeploydeploymentconfigsKind = schema.GroupVersionKind{Group: "aws.kubefo
 // Get takes name of the codedeployDeploymentConfig, and returns the corresponding codedeployDeploymentConfig object, and an error if there is any.
 func (c *FakeCodedeployDeploymentConfigs) Get(name string, options v1.GetOptions) (result *v1alpha1.CodedeployDeploymentConfig, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(codedeploydeploymentconfigsResource, name), &v1alpha1.CodedeployDeploymentConfig{})
+		Invokes(testing.NewGetAction(codedeploydeploymentconfigsResource, c.ns, name), &v1alpha1.CodedeployDeploymentConfig{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCodedeployDeploymentConfigs) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of CodedeployDeploymentConfigs that match those selectors.
 func (c *FakeCodedeployDeploymentConfigs) List(opts v1.ListOptions) (result *v1alpha1.CodedeployDeploymentConfigList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(codedeploydeploymentconfigsResource, codedeploydeploymentconfigsKind, opts), &v1alpha1.CodedeployDeploymentConfigList{})
+		Invokes(testing.NewListAction(codedeploydeploymentconfigsResource, codedeploydeploymentconfigsKind, c.ns, opts), &v1alpha1.CodedeployDeploymentConfigList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCodedeployDeploymentConfigs) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested codedeployDeploymentConfigs.
 func (c *FakeCodedeployDeploymentConfigs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(codedeploydeploymentconfigsResource, opts))
+		InvokesWatch(testing.NewWatchAction(codedeploydeploymentconfigsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a codedeployDeploymentConfig and creates it.  Returns the server's representation of the codedeployDeploymentConfig, and an error, if there is any.
 func (c *FakeCodedeployDeploymentConfigs) Create(codedeployDeploymentConfig *v1alpha1.CodedeployDeploymentConfig) (result *v1alpha1.CodedeployDeploymentConfig, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(codedeploydeploymentconfigsResource, codedeployDeploymentConfig), &v1alpha1.CodedeployDeploymentConfig{})
+		Invokes(testing.NewCreateAction(codedeploydeploymentconfigsResource, c.ns, codedeployDeploymentConfig), &v1alpha1.CodedeployDeploymentConfig{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCodedeployDeploymentConfigs) Create(codedeployDeploymentConfig *v1a
 // Update takes the representation of a codedeployDeploymentConfig and updates it. Returns the server's representation of the codedeployDeploymentConfig, and an error, if there is any.
 func (c *FakeCodedeployDeploymentConfigs) Update(codedeployDeploymentConfig *v1alpha1.CodedeployDeploymentConfig) (result *v1alpha1.CodedeployDeploymentConfig, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(codedeploydeploymentconfigsResource, codedeployDeploymentConfig), &v1alpha1.CodedeployDeploymentConfig{})
+		Invokes(testing.NewUpdateAction(codedeploydeploymentconfigsResource, c.ns, codedeployDeploymentConfig), &v1alpha1.CodedeployDeploymentConfig{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCodedeployDeploymentConfigs) Update(codedeployDeploymentConfig *v1a
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCodedeployDeploymentConfigs) UpdateStatus(codedeployDeploymentConfig *v1alpha1.CodedeployDeploymentConfig) (*v1alpha1.CodedeployDeploymentConfig, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(codedeploydeploymentconfigsResource, "status", codedeployDeploymentConfig), &v1alpha1.CodedeployDeploymentConfig{})
+		Invokes(testing.NewUpdateSubresourceAction(codedeploydeploymentconfigsResource, "status", c.ns, codedeployDeploymentConfig), &v1alpha1.CodedeployDeploymentConfig{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCodedeployDeploymentConfigs) UpdateStatus(codedeployDeploymentConfi
 // Delete takes name of the codedeployDeploymentConfig and deletes it. Returns an error if one occurs.
 func (c *FakeCodedeployDeploymentConfigs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(codedeploydeploymentconfigsResource, name), &v1alpha1.CodedeployDeploymentConfig{})
+		Invokes(testing.NewDeleteAction(codedeploydeploymentconfigsResource, c.ns, name), &v1alpha1.CodedeployDeploymentConfig{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCodedeployDeploymentConfigs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(codedeploydeploymentconfigsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(codedeploydeploymentconfigsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CodedeployDeploymentConfigList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCodedeployDeploymentConfigs) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched codedeployDeploymentConfig.
 func (c *FakeCodedeployDeploymentConfigs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CodedeployDeploymentConfig, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(codedeploydeploymentconfigsResource, name, pt, data, subresources...), &v1alpha1.CodedeployDeploymentConfig{})
+		Invokes(testing.NewPatchSubresourceAction(codedeploydeploymentconfigsResource, c.ns, name, pt, data, subresources...), &v1alpha1.CodedeployDeploymentConfig{})
+
 	if obj == nil {
 		return nil, err
 	}

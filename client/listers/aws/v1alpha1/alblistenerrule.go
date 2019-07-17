@@ -29,8 +29,8 @@ import (
 type AlbListenerRuleLister interface {
 	// List lists all AlbListenerRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AlbListenerRule, err error)
-	// Get retrieves the AlbListenerRule from the index for a given name.
-	Get(name string) (*v1alpha1.AlbListenerRule, error)
+	// AlbListenerRules returns an object that can list and get AlbListenerRules.
+	AlbListenerRules(namespace string) AlbListenerRuleNamespaceLister
 	AlbListenerRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *albListenerRuleLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the AlbListenerRule from the index for a given name.
-func (s *albListenerRuleLister) Get(name string) (*v1alpha1.AlbListenerRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AlbListenerRules returns an object that can list and get AlbListenerRules.
+func (s *albListenerRuleLister) AlbListenerRules(namespace string) AlbListenerRuleNamespaceLister {
+	return albListenerRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AlbListenerRuleNamespaceLister helps list and get AlbListenerRules.
+type AlbListenerRuleNamespaceLister interface {
+	// List lists all AlbListenerRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AlbListenerRule, err error)
+	// Get retrieves the AlbListenerRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AlbListenerRule, error)
+	AlbListenerRuleNamespaceListerExpansion
+}
+
+// albListenerRuleNamespaceLister implements the AlbListenerRuleNamespaceLister
+// interface.
+type albListenerRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AlbListenerRules in the indexer for a given namespace.
+func (s albListenerRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AlbListenerRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AlbListenerRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the AlbListenerRule from the indexer for a given namespace and name.
+func (s albListenerRuleNamespaceLister) Get(name string) (*v1alpha1.AlbListenerRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

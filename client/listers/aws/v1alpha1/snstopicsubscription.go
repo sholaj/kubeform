@@ -29,8 +29,8 @@ import (
 type SnsTopicSubscriptionLister interface {
 	// List lists all SnsTopicSubscriptions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SnsTopicSubscription, err error)
-	// Get retrieves the SnsTopicSubscription from the index for a given name.
-	Get(name string) (*v1alpha1.SnsTopicSubscription, error)
+	// SnsTopicSubscriptions returns an object that can list and get SnsTopicSubscriptions.
+	SnsTopicSubscriptions(namespace string) SnsTopicSubscriptionNamespaceLister
 	SnsTopicSubscriptionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *snsTopicSubscriptionLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the SnsTopicSubscription from the index for a given name.
-func (s *snsTopicSubscriptionLister) Get(name string) (*v1alpha1.SnsTopicSubscription, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SnsTopicSubscriptions returns an object that can list and get SnsTopicSubscriptions.
+func (s *snsTopicSubscriptionLister) SnsTopicSubscriptions(namespace string) SnsTopicSubscriptionNamespaceLister {
+	return snsTopicSubscriptionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SnsTopicSubscriptionNamespaceLister helps list and get SnsTopicSubscriptions.
+type SnsTopicSubscriptionNamespaceLister interface {
+	// List lists all SnsTopicSubscriptions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SnsTopicSubscription, err error)
+	// Get retrieves the SnsTopicSubscription from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SnsTopicSubscription, error)
+	SnsTopicSubscriptionNamespaceListerExpansion
+}
+
+// snsTopicSubscriptionNamespaceLister implements the SnsTopicSubscriptionNamespaceLister
+// interface.
+type snsTopicSubscriptionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SnsTopicSubscriptions in the indexer for a given namespace.
+func (s snsTopicSubscriptionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SnsTopicSubscription, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SnsTopicSubscription))
+	})
+	return ret, err
+}
+
+// Get retrieves the SnsTopicSubscription from the indexer for a given namespace and name.
+func (s snsTopicSubscriptionNamespaceLister) Get(name string) (*v1alpha1.SnsTopicSubscription, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

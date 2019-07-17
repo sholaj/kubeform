@@ -32,7 +32,7 @@ import (
 // RamResourceSharesGetter has a method to return a RamResourceShareInterface.
 // A group's client should implement this interface.
 type RamResourceSharesGetter interface {
-	RamResourceShares() RamResourceShareInterface
+	RamResourceShares(namespace string) RamResourceShareInterface
 }
 
 // RamResourceShareInterface has methods to work with RamResourceShare resources.
@@ -52,12 +52,14 @@ type RamResourceShareInterface interface {
 // ramResourceShares implements RamResourceShareInterface
 type ramResourceShares struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRamResourceShares returns a RamResourceShares
-func newRamResourceShares(c *AwsV1alpha1Client) *ramResourceShares {
+func newRamResourceShares(c *AwsV1alpha1Client, namespace string) *ramResourceShares {
 	return &ramResourceShares{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRamResourceShares(c *AwsV1alpha1Client) *ramResourceShares {
 func (c *ramResourceShares) Get(name string, options v1.GetOptions) (result *v1alpha1.RamResourceShare, err error) {
 	result = &v1alpha1.RamResourceShare{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ramresourceshares").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ramResourceShares) List(opts v1.ListOptions) (result *v1alpha1.RamResou
 	}
 	result = &v1alpha1.RamResourceShareList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ramresourceshares").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ramResourceShares) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ramresourceshares").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ramResourceShares) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *ramResourceShares) Create(ramResourceShare *v1alpha1.RamResourceShare) (result *v1alpha1.RamResourceShare, err error) {
 	result = &v1alpha1.RamResourceShare{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ramresourceshares").
 		Body(ramResourceShare).
 		Do().
@@ -118,6 +124,7 @@ func (c *ramResourceShares) Create(ramResourceShare *v1alpha1.RamResourceShare) 
 func (c *ramResourceShares) Update(ramResourceShare *v1alpha1.RamResourceShare) (result *v1alpha1.RamResourceShare, err error) {
 	result = &v1alpha1.RamResourceShare{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ramresourceshares").
 		Name(ramResourceShare.Name).
 		Body(ramResourceShare).
@@ -132,6 +139,7 @@ func (c *ramResourceShares) Update(ramResourceShare *v1alpha1.RamResourceShare) 
 func (c *ramResourceShares) UpdateStatus(ramResourceShare *v1alpha1.RamResourceShare) (result *v1alpha1.RamResourceShare, err error) {
 	result = &v1alpha1.RamResourceShare{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ramresourceshares").
 		Name(ramResourceShare.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ramResourceShares) UpdateStatus(ramResourceShare *v1alpha1.RamResourceS
 // Delete takes name of the ramResourceShare and deletes it. Returns an error if one occurs.
 func (c *ramResourceShares) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ramresourceshares").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ramResourceShares) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ramresourceshares").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ramResourceShares) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *ramResourceShares) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RamResourceShare, err error) {
 	result = &v1alpha1.RamResourceShare{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ramresourceshares").
 		SubResource(subresources...).
 		Name(name).

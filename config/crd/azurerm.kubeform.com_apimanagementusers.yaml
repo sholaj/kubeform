@@ -397,31 +397,41 @@ spec:
           type: object
         spec:
           properties:
-            api_management_name:
+            apiManagementName:
               type: string
             confirmation:
               type: string
             email:
               type: string
-            first_name:
+            firstName:
               type: string
-            last_name:
+            lastName:
               type: string
             note:
               type: string
             password:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
-            user_id:
+            userID:
               type: string
           required:
-          - api_management_name
+          - apiManagementName
           - email
-          - first_name
-          - last_name
-          - resource_group_name
-          - user_id
+          - firstName
+          - lastName
+          - providerRef
+          - resourceGroupName
+          - userID
           type: object
         status:
           properties:
@@ -432,6 +442,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

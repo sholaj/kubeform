@@ -398,35 +398,201 @@ spec:
         spec:
           properties:
             container:
-              items: {}
+              items:
+                properties:
+                  cpu:
+                    description: A Number represents a JSON number literal.
+                    type: string
+                  environmentVariables:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  gpu:
+                    items:
+                      properties:
+                        count:
+                          type: integer
+                        sku:
+                          type: string
+                      type: object
+                    maxItems: 1
+                    type: array
+                  image:
+                    type: string
+                  livenessProbe:
+                    items:
+                      properties:
+                        exec:
+                          items:
+                            type: string
+                          type: array
+                        failureThreshold:
+                          type: integer
+                        httpGet:
+                          items:
+                            properties:
+                              path:
+                                type: string
+                              port:
+                                type: integer
+                              scheme:
+                                type: string
+                            type: object
+                          type: array
+                        initialDelaySeconds:
+                          type: integer
+                        periodSeconds:
+                          type: integer
+                        successThreshold:
+                          type: integer
+                        timeoutSeconds:
+                          type: integer
+                      type: object
+                    maxItems: 1
+                    type: array
+                  memory:
+                    description: A Number represents a JSON number literal.
+                    type: string
+                  name:
+                    type: string
+                  readinessProbe:
+                    items:
+                      properties:
+                        exec:
+                          items:
+                            type: string
+                          type: array
+                        failureThreshold:
+                          type: integer
+                        httpGet:
+                          items:
+                            properties:
+                              path:
+                                type: string
+                              port:
+                                type: integer
+                              scheme:
+                                type: string
+                            type: object
+                          type: array
+                        initialDelaySeconds:
+                          type: integer
+                        periodSeconds:
+                          type: integer
+                        successThreshold:
+                          type: integer
+                        timeoutSeconds:
+                          type: integer
+                      type: object
+                    maxItems: 1
+                    type: array
+                  secureEnvironmentVariables:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  volume:
+                    items:
+                      properties:
+                        mountPath:
+                          type: string
+                        name:
+                          type: string
+                        readOnly:
+                          type: boolean
+                        shareName:
+                          type: string
+                        storageAccountKey:
+                          type: string
+                        storageAccountName:
+                          type: string
+                      required:
+                      - mountPath
+                      - name
+                      - shareName
+                      - storageAccountKey
+                      - storageAccountName
+                      type: object
+                    type: array
+                required:
+                - cpu
+                - image
+                - memory
+                - name
+                type: object
               type: array
             diagnostics:
-              items: {}
+              items:
+                properties:
+                  logAnalytics:
+                    items:
+                      properties:
+                        logType:
+                          type: string
+                        metadata:
+                          additionalProperties:
+                            type: string
+                          type: object
+                        workspaceID:
+                          type: string
+                        workspaceKey:
+                          type: string
+                      required:
+                      - logType
+                      - workspaceID
+                      - workspaceKey
+                      type: object
+                    maxItems: 1
+                    type: array
+                required:
+                - logAnalytics
+                type: object
               maxItems: 1
               type: array
-            dns_name_label:
+            dnsNameLabel:
               type: string
-            image_registry_credential:
-              items: {}
+            imageRegistryCredential:
+              items:
+                properties:
+                  password:
+                    type: string
+                  server:
+                    type: string
+                  username:
+                    type: string
+                required:
+                - password
+                - server
+                - username
+                type: object
               type: array
-            ip_address_type:
+            ipAddressType:
               type: string
             location:
               type: string
             name:
               type: string
-            os_type:
+            osType:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
-            restart_policy:
+            restartPolicy:
               type: string
           required:
           - container
           - location
           - name
-          - os_type
-          - resource_group_name
+          - osType
+          - providerRef
+          - resourceGroupName
           type: object
         status:
           properties:
@@ -437,6 +603,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -399,49 +399,86 @@ spec:
           properties:
             description:
               type: string
-            enable_binary_authorization:
+            enableBinaryAuthorization:
               description: Deprecated
               type: boolean
-            enable_kubernetes_alpha:
+            enableKubernetesAlpha:
               type: boolean
-            enable_legacy_abac:
+            enableLegacyAbac:
               type: boolean
-            enable_tpu:
+            enableTpu:
               description: Deprecated
               type: boolean
-            initial_node_count:
+            initialNodeCount:
               type: integer
-            ip_allocation_policy:
-              items: {}
+            ipAllocationPolicy:
+              items:
+                properties:
+                  createSubnetwork:
+                    type: boolean
+                  subnetworkName:
+                    type: string
+                type: object
               maxItems: 1
               type: array
-            maintenance_policy:
-              items: {}
+            maintenancePolicy:
+              items:
+                properties:
+                  dailyMaintenanceWindow:
+                    items:
+                      properties:
+                        startTime:
+                          type: string
+                      required:
+                      - startTime
+                      type: object
+                    maxItems: 1
+                    type: array
+                required:
+                - dailyMaintenanceWindow
+                type: object
               maxItems: 1
               type: array
-            master_authorized_networks_config:
-              items: {}
+            masterAuthorizedNetworksConfig:
+              items:
+                type: object
               maxItems: 1
               type: array
-            min_master_version:
+            minMasterVersion:
               type: string
             name:
               type: string
             network:
               type: string
-            pod_security_policy_config:
+            podSecurityPolicyConfig:
               description: Deprecated
-              items: {}
+              items:
+                properties:
+                  enabled:
+                    type: boolean
+                required:
+                - enabled
+                type: object
               maxItems: 1
               type: array
-            remove_default_node_pool:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            removeDefaultNodePool:
               type: boolean
-            resource_labels:
+            resourceLabels:
               additionalProperties:
                 type: string
               type: object
           required:
           - name
+          - providerRef
           type: object
         status:
           properties:
@@ -452,6 +489,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

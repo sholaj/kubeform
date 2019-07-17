@@ -31,6 +31,7 @@ import (
 // FakeRoute53ZoneAssociations implements Route53ZoneAssociationInterface
 type FakeRoute53ZoneAssociations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var route53zoneassociationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "route53zoneassociations"}
@@ -40,7 +41,8 @@ var route53zoneassociationsKind = schema.GroupVersionKind{Group: "aws.kubeform.c
 // Get takes name of the route53ZoneAssociation, and returns the corresponding route53ZoneAssociation object, and an error if there is any.
 func (c *FakeRoute53ZoneAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.Route53ZoneAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(route53zoneassociationsResource, name), &v1alpha1.Route53ZoneAssociation{})
+		Invokes(testing.NewGetAction(route53zoneassociationsResource, c.ns, name), &v1alpha1.Route53ZoneAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRoute53ZoneAssociations) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of Route53ZoneAssociations that match those selectors.
 func (c *FakeRoute53ZoneAssociations) List(opts v1.ListOptions) (result *v1alpha1.Route53ZoneAssociationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(route53zoneassociationsResource, route53zoneassociationsKind, opts), &v1alpha1.Route53ZoneAssociationList{})
+		Invokes(testing.NewListAction(route53zoneassociationsResource, route53zoneassociationsKind, c.ns, opts), &v1alpha1.Route53ZoneAssociationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRoute53ZoneAssociations) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested route53ZoneAssociations.
 func (c *FakeRoute53ZoneAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(route53zoneassociationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(route53zoneassociationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a route53ZoneAssociation and creates it.  Returns the server's representation of the route53ZoneAssociation, and an error, if there is any.
 func (c *FakeRoute53ZoneAssociations) Create(route53ZoneAssociation *v1alpha1.Route53ZoneAssociation) (result *v1alpha1.Route53ZoneAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(route53zoneassociationsResource, route53ZoneAssociation), &v1alpha1.Route53ZoneAssociation{})
+		Invokes(testing.NewCreateAction(route53zoneassociationsResource, c.ns, route53ZoneAssociation), &v1alpha1.Route53ZoneAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRoute53ZoneAssociations) Create(route53ZoneAssociation *v1alpha1.Ro
 // Update takes the representation of a route53ZoneAssociation and updates it. Returns the server's representation of the route53ZoneAssociation, and an error, if there is any.
 func (c *FakeRoute53ZoneAssociations) Update(route53ZoneAssociation *v1alpha1.Route53ZoneAssociation) (result *v1alpha1.Route53ZoneAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(route53zoneassociationsResource, route53ZoneAssociation), &v1alpha1.Route53ZoneAssociation{})
+		Invokes(testing.NewUpdateAction(route53zoneassociationsResource, c.ns, route53ZoneAssociation), &v1alpha1.Route53ZoneAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRoute53ZoneAssociations) Update(route53ZoneAssociation *v1alpha1.Ro
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRoute53ZoneAssociations) UpdateStatus(route53ZoneAssociation *v1alpha1.Route53ZoneAssociation) (*v1alpha1.Route53ZoneAssociation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(route53zoneassociationsResource, "status", route53ZoneAssociation), &v1alpha1.Route53ZoneAssociation{})
+		Invokes(testing.NewUpdateSubresourceAction(route53zoneassociationsResource, "status", c.ns, route53ZoneAssociation), &v1alpha1.Route53ZoneAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRoute53ZoneAssociations) UpdateStatus(route53ZoneAssociation *v1alp
 // Delete takes name of the route53ZoneAssociation and deletes it. Returns an error if one occurs.
 func (c *FakeRoute53ZoneAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(route53zoneassociationsResource, name), &v1alpha1.Route53ZoneAssociation{})
+		Invokes(testing.NewDeleteAction(route53zoneassociationsResource, c.ns, name), &v1alpha1.Route53ZoneAssociation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRoute53ZoneAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(route53zoneassociationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(route53zoneassociationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.Route53ZoneAssociationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRoute53ZoneAssociations) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched route53ZoneAssociation.
 func (c *FakeRoute53ZoneAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Route53ZoneAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(route53zoneassociationsResource, name, pt, data, subresources...), &v1alpha1.Route53ZoneAssociation{})
+		Invokes(testing.NewPatchSubresourceAction(route53zoneassociationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.Route53ZoneAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}

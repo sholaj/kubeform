@@ -32,7 +32,7 @@ import (
 // GameliftGameSessionQueuesGetter has a method to return a GameliftGameSessionQueueInterface.
 // A group's client should implement this interface.
 type GameliftGameSessionQueuesGetter interface {
-	GameliftGameSessionQueues() GameliftGameSessionQueueInterface
+	GameliftGameSessionQueues(namespace string) GameliftGameSessionQueueInterface
 }
 
 // GameliftGameSessionQueueInterface has methods to work with GameliftGameSessionQueue resources.
@@ -52,12 +52,14 @@ type GameliftGameSessionQueueInterface interface {
 // gameliftGameSessionQueues implements GameliftGameSessionQueueInterface
 type gameliftGameSessionQueues struct {
 	client rest.Interface
+	ns     string
 }
 
 // newGameliftGameSessionQueues returns a GameliftGameSessionQueues
-func newGameliftGameSessionQueues(c *AwsV1alpha1Client) *gameliftGameSessionQueues {
+func newGameliftGameSessionQueues(c *AwsV1alpha1Client, namespace string) *gameliftGameSessionQueues {
 	return &gameliftGameSessionQueues{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newGameliftGameSessionQueues(c *AwsV1alpha1Client) *gameliftGameSessionQueu
 func (c *gameliftGameSessionQueues) Get(name string, options v1.GetOptions) (result *v1alpha1.GameliftGameSessionQueue, err error) {
 	result = &v1alpha1.GameliftGameSessionQueue{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("gameliftgamesessionqueues").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *gameliftGameSessionQueues) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.GameliftGameSessionQueueList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("gameliftgamesessionqueues").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *gameliftGameSessionQueues) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("gameliftgamesessionqueues").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *gameliftGameSessionQueues) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *gameliftGameSessionQueues) Create(gameliftGameSessionQueue *v1alpha1.GameliftGameSessionQueue) (result *v1alpha1.GameliftGameSessionQueue, err error) {
 	result = &v1alpha1.GameliftGameSessionQueue{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("gameliftgamesessionqueues").
 		Body(gameliftGameSessionQueue).
 		Do().
@@ -118,6 +124,7 @@ func (c *gameliftGameSessionQueues) Create(gameliftGameSessionQueue *v1alpha1.Ga
 func (c *gameliftGameSessionQueues) Update(gameliftGameSessionQueue *v1alpha1.GameliftGameSessionQueue) (result *v1alpha1.GameliftGameSessionQueue, err error) {
 	result = &v1alpha1.GameliftGameSessionQueue{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("gameliftgamesessionqueues").
 		Name(gameliftGameSessionQueue.Name).
 		Body(gameliftGameSessionQueue).
@@ -132,6 +139,7 @@ func (c *gameliftGameSessionQueues) Update(gameliftGameSessionQueue *v1alpha1.Ga
 func (c *gameliftGameSessionQueues) UpdateStatus(gameliftGameSessionQueue *v1alpha1.GameliftGameSessionQueue) (result *v1alpha1.GameliftGameSessionQueue, err error) {
 	result = &v1alpha1.GameliftGameSessionQueue{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("gameliftgamesessionqueues").
 		Name(gameliftGameSessionQueue.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *gameliftGameSessionQueues) UpdateStatus(gameliftGameSessionQueue *v1alp
 // Delete takes name of the gameliftGameSessionQueue and deletes it. Returns an error if one occurs.
 func (c *gameliftGameSessionQueues) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("gameliftgamesessionqueues").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *gameliftGameSessionQueues) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("gameliftgamesessionqueues").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *gameliftGameSessionQueues) DeleteCollection(options *v1.DeleteOptions, 
 func (c *gameliftGameSessionQueues) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GameliftGameSessionQueue, err error) {
 	result = &v1alpha1.GameliftGameSessionQueue{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("gameliftgamesessionqueues").
 		SubResource(subresources...).
 		Name(name).

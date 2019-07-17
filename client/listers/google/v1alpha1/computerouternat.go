@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/google/v1alpha1"
 )
 
-// ComputeRouterNatLister helps list ComputeRouterNats.
-type ComputeRouterNatLister interface {
-	// List lists all ComputeRouterNats in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.ComputeRouterNat, err error)
-	// Get retrieves the ComputeRouterNat from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeRouterNat, error)
-	ComputeRouterNatListerExpansion
+// ComputeRouterNATLister helps list ComputeRouterNATs.
+type ComputeRouterNATLister interface {
+	// List lists all ComputeRouterNATs in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeRouterNAT, err error)
+	// ComputeRouterNATs returns an object that can list and get ComputeRouterNATs.
+	ComputeRouterNATs(namespace string) ComputeRouterNATNamespaceLister
+	ComputeRouterNATListerExpansion
 }
 
-// computeRouterNatLister implements the ComputeRouterNatLister interface.
-type computeRouterNatLister struct {
+// computeRouterNATLister implements the ComputeRouterNATLister interface.
+type computeRouterNATLister struct {
 	indexer cache.Indexer
 }
 
-// NewComputeRouterNatLister returns a new ComputeRouterNatLister.
-func NewComputeRouterNatLister(indexer cache.Indexer) ComputeRouterNatLister {
-	return &computeRouterNatLister{indexer: indexer}
+// NewComputeRouterNATLister returns a new ComputeRouterNATLister.
+func NewComputeRouterNATLister(indexer cache.Indexer) ComputeRouterNATLister {
+	return &computeRouterNATLister{indexer: indexer}
 }
 
-// List lists all ComputeRouterNats in the indexer.
-func (s *computeRouterNatLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeRouterNat, err error) {
+// List lists all ComputeRouterNATs in the indexer.
+func (s *computeRouterNATLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeRouterNAT, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ComputeRouterNat))
+		ret = append(ret, m.(*v1alpha1.ComputeRouterNAT))
 	})
 	return ret, err
 }
 
-// Get retrieves the ComputeRouterNat from the index for a given name.
-func (s *computeRouterNatLister) Get(name string) (*v1alpha1.ComputeRouterNat, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeRouterNATs returns an object that can list and get ComputeRouterNATs.
+func (s *computeRouterNATLister) ComputeRouterNATs(namespace string) ComputeRouterNATNamespaceLister {
+	return computeRouterNATNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeRouterNATNamespaceLister helps list and get ComputeRouterNATs.
+type ComputeRouterNATNamespaceLister interface {
+	// List lists all ComputeRouterNATs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeRouterNAT, err error)
+	// Get retrieves the ComputeRouterNAT from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeRouterNAT, error)
+	ComputeRouterNATNamespaceListerExpansion
+}
+
+// computeRouterNATNamespaceLister implements the ComputeRouterNATNamespaceLister
+// interface.
+type computeRouterNATNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeRouterNATs in the indexer for a given namespace.
+func (s computeRouterNATNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeRouterNAT, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeRouterNAT))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeRouterNAT from the indexer for a given namespace and name.
+func (s computeRouterNATNamespaceLister) Get(name string) (*v1alpha1.ComputeRouterNAT, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("computerouternat"), name)
 	}
-	return obj.(*v1alpha1.ComputeRouterNat), nil
+	return obj.(*v1alpha1.ComputeRouterNAT), nil
 }

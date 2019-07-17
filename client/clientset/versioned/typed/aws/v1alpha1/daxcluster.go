@@ -32,7 +32,7 @@ import (
 // DaxClustersGetter has a method to return a DaxClusterInterface.
 // A group's client should implement this interface.
 type DaxClustersGetter interface {
-	DaxClusters() DaxClusterInterface
+	DaxClusters(namespace string) DaxClusterInterface
 }
 
 // DaxClusterInterface has methods to work with DaxCluster resources.
@@ -52,12 +52,14 @@ type DaxClusterInterface interface {
 // daxClusters implements DaxClusterInterface
 type daxClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDaxClusters returns a DaxClusters
-func newDaxClusters(c *AwsV1alpha1Client) *daxClusters {
+func newDaxClusters(c *AwsV1alpha1Client, namespace string) *daxClusters {
 	return &daxClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDaxClusters(c *AwsV1alpha1Client) *daxClusters {
 func (c *daxClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.DaxCluster, err error) {
 	result = &v1alpha1.DaxCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("daxclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *daxClusters) List(opts v1.ListOptions) (result *v1alpha1.DaxClusterList
 	}
 	result = &v1alpha1.DaxClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("daxclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *daxClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("daxclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *daxClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *daxClusters) Create(daxCluster *v1alpha1.DaxCluster) (result *v1alpha1.DaxCluster, err error) {
 	result = &v1alpha1.DaxCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("daxclusters").
 		Body(daxCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *daxClusters) Create(daxCluster *v1alpha1.DaxCluster) (result *v1alpha1.
 func (c *daxClusters) Update(daxCluster *v1alpha1.DaxCluster) (result *v1alpha1.DaxCluster, err error) {
 	result = &v1alpha1.DaxCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("daxclusters").
 		Name(daxCluster.Name).
 		Body(daxCluster).
@@ -132,6 +139,7 @@ func (c *daxClusters) Update(daxCluster *v1alpha1.DaxCluster) (result *v1alpha1.
 func (c *daxClusters) UpdateStatus(daxCluster *v1alpha1.DaxCluster) (result *v1alpha1.DaxCluster, err error) {
 	result = &v1alpha1.DaxCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("daxclusters").
 		Name(daxCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *daxClusters) UpdateStatus(daxCluster *v1alpha1.DaxCluster) (result *v1a
 // Delete takes name of the daxCluster and deletes it. Returns an error if one occurs.
 func (c *daxClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("daxclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *daxClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("daxclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *daxClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *daxClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DaxCluster, err error) {
 	result = &v1alpha1.DaxCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("daxclusters").
 		SubResource(subresources...).
 		Name(name).

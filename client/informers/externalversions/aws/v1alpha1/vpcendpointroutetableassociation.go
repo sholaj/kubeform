@@ -41,32 +41,33 @@ type VpcEndpointRouteTableAssociationInformer interface {
 type vpcEndpointRouteTableAssociationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewVpcEndpointRouteTableAssociationInformer constructs a new informer for VpcEndpointRouteTableAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewVpcEndpointRouteTableAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredVpcEndpointRouteTableAssociationInformer(client, resyncPeriod, indexers, nil)
+func NewVpcEndpointRouteTableAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredVpcEndpointRouteTableAssociationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredVpcEndpointRouteTableAssociationInformer constructs a new informer for VpcEndpointRouteTableAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredVpcEndpointRouteTableAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredVpcEndpointRouteTableAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().VpcEndpointRouteTableAssociations().List(options)
+				return client.AwsV1alpha1().VpcEndpointRouteTableAssociations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().VpcEndpointRouteTableAssociations().Watch(options)
+				return client.AwsV1alpha1().VpcEndpointRouteTableAssociations(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.VpcEndpointRouteTableAssociation{},
@@ -76,7 +77,7 @@ func NewFilteredVpcEndpointRouteTableAssociationInformer(client versioned.Interf
 }
 
 func (f *vpcEndpointRouteTableAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredVpcEndpointRouteTableAssociationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredVpcEndpointRouteTableAssociationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *vpcEndpointRouteTableAssociationInformer) Informer() cache.SharedIndexInformer {

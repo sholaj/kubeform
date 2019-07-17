@@ -32,7 +32,7 @@ import (
 // ApplicationInsightsWebTestsGetter has a method to return a ApplicationInsightsWebTestInterface.
 // A group's client should implement this interface.
 type ApplicationInsightsWebTestsGetter interface {
-	ApplicationInsightsWebTests() ApplicationInsightsWebTestInterface
+	ApplicationInsightsWebTests(namespace string) ApplicationInsightsWebTestInterface
 }
 
 // ApplicationInsightsWebTestInterface has methods to work with ApplicationInsightsWebTest resources.
@@ -52,12 +52,14 @@ type ApplicationInsightsWebTestInterface interface {
 // applicationInsightsWebTests implements ApplicationInsightsWebTestInterface
 type applicationInsightsWebTests struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApplicationInsightsWebTests returns a ApplicationInsightsWebTests
-func newApplicationInsightsWebTests(c *AzurermV1alpha1Client) *applicationInsightsWebTests {
+func newApplicationInsightsWebTests(c *AzurermV1alpha1Client, namespace string) *applicationInsightsWebTests {
 	return &applicationInsightsWebTests{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApplicationInsightsWebTests(c *AzurermV1alpha1Client) *applicationInsigh
 func (c *applicationInsightsWebTests) Get(name string, options v1.GetOptions) (result *v1alpha1.ApplicationInsightsWebTest, err error) {
 	result = &v1alpha1.ApplicationInsightsWebTest{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("applicationinsightswebtests").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *applicationInsightsWebTests) List(opts v1.ListOptions) (result *v1alpha
 	}
 	result = &v1alpha1.ApplicationInsightsWebTestList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("applicationinsightswebtests").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *applicationInsightsWebTests) Watch(opts v1.ListOptions) (watch.Interfac
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("applicationinsightswebtests").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *applicationInsightsWebTests) Watch(opts v1.ListOptions) (watch.Interfac
 func (c *applicationInsightsWebTests) Create(applicationInsightsWebTest *v1alpha1.ApplicationInsightsWebTest) (result *v1alpha1.ApplicationInsightsWebTest, err error) {
 	result = &v1alpha1.ApplicationInsightsWebTest{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("applicationinsightswebtests").
 		Body(applicationInsightsWebTest).
 		Do().
@@ -118,6 +124,7 @@ func (c *applicationInsightsWebTests) Create(applicationInsightsWebTest *v1alpha
 func (c *applicationInsightsWebTests) Update(applicationInsightsWebTest *v1alpha1.ApplicationInsightsWebTest) (result *v1alpha1.ApplicationInsightsWebTest, err error) {
 	result = &v1alpha1.ApplicationInsightsWebTest{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("applicationinsightswebtests").
 		Name(applicationInsightsWebTest.Name).
 		Body(applicationInsightsWebTest).
@@ -132,6 +139,7 @@ func (c *applicationInsightsWebTests) Update(applicationInsightsWebTest *v1alpha
 func (c *applicationInsightsWebTests) UpdateStatus(applicationInsightsWebTest *v1alpha1.ApplicationInsightsWebTest) (result *v1alpha1.ApplicationInsightsWebTest, err error) {
 	result = &v1alpha1.ApplicationInsightsWebTest{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("applicationinsightswebtests").
 		Name(applicationInsightsWebTest.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *applicationInsightsWebTests) UpdateStatus(applicationInsightsWebTest *v
 // Delete takes name of the applicationInsightsWebTest and deletes it. Returns an error if one occurs.
 func (c *applicationInsightsWebTests) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("applicationinsightswebtests").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *applicationInsightsWebTests) DeleteCollection(options *v1.DeleteOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("applicationinsightswebtests").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *applicationInsightsWebTests) DeleteCollection(options *v1.DeleteOptions
 func (c *applicationInsightsWebTests) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApplicationInsightsWebTest, err error) {
 	result = &v1alpha1.ApplicationInsightsWebTest{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("applicationinsightswebtests").
 		SubResource(subresources...).
 		Name(name).

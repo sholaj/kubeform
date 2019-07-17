@@ -31,6 +31,7 @@ import (
 // FakeDevicefarmProjects implements DevicefarmProjectInterface
 type FakeDevicefarmProjects struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var devicefarmprojectsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "devicefarmprojects"}
@@ -40,7 +41,8 @@ var devicefarmprojectsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", 
 // Get takes name of the devicefarmProject, and returns the corresponding devicefarmProject object, and an error if there is any.
 func (c *FakeDevicefarmProjects) Get(name string, options v1.GetOptions) (result *v1alpha1.DevicefarmProject, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(devicefarmprojectsResource, name), &v1alpha1.DevicefarmProject{})
+		Invokes(testing.NewGetAction(devicefarmprojectsResource, c.ns, name), &v1alpha1.DevicefarmProject{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDevicefarmProjects) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of DevicefarmProjects that match those selectors.
 func (c *FakeDevicefarmProjects) List(opts v1.ListOptions) (result *v1alpha1.DevicefarmProjectList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(devicefarmprojectsResource, devicefarmprojectsKind, opts), &v1alpha1.DevicefarmProjectList{})
+		Invokes(testing.NewListAction(devicefarmprojectsResource, devicefarmprojectsKind, c.ns, opts), &v1alpha1.DevicefarmProjectList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDevicefarmProjects) List(opts v1.ListOptions) (result *v1alpha1.Dev
 // Watch returns a watch.Interface that watches the requested devicefarmProjects.
 func (c *FakeDevicefarmProjects) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(devicefarmprojectsResource, opts))
+		InvokesWatch(testing.NewWatchAction(devicefarmprojectsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a devicefarmProject and creates it.  Returns the server's representation of the devicefarmProject, and an error, if there is any.
 func (c *FakeDevicefarmProjects) Create(devicefarmProject *v1alpha1.DevicefarmProject) (result *v1alpha1.DevicefarmProject, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(devicefarmprojectsResource, devicefarmProject), &v1alpha1.DevicefarmProject{})
+		Invokes(testing.NewCreateAction(devicefarmprojectsResource, c.ns, devicefarmProject), &v1alpha1.DevicefarmProject{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDevicefarmProjects) Create(devicefarmProject *v1alpha1.DevicefarmPr
 // Update takes the representation of a devicefarmProject and updates it. Returns the server's representation of the devicefarmProject, and an error, if there is any.
 func (c *FakeDevicefarmProjects) Update(devicefarmProject *v1alpha1.DevicefarmProject) (result *v1alpha1.DevicefarmProject, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(devicefarmprojectsResource, devicefarmProject), &v1alpha1.DevicefarmProject{})
+		Invokes(testing.NewUpdateAction(devicefarmprojectsResource, c.ns, devicefarmProject), &v1alpha1.DevicefarmProject{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDevicefarmProjects) Update(devicefarmProject *v1alpha1.DevicefarmPr
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDevicefarmProjects) UpdateStatus(devicefarmProject *v1alpha1.DevicefarmProject) (*v1alpha1.DevicefarmProject, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(devicefarmprojectsResource, "status", devicefarmProject), &v1alpha1.DevicefarmProject{})
+		Invokes(testing.NewUpdateSubresourceAction(devicefarmprojectsResource, "status", c.ns, devicefarmProject), &v1alpha1.DevicefarmProject{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDevicefarmProjects) UpdateStatus(devicefarmProject *v1alpha1.Device
 // Delete takes name of the devicefarmProject and deletes it. Returns an error if one occurs.
 func (c *FakeDevicefarmProjects) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(devicefarmprojectsResource, name), &v1alpha1.DevicefarmProject{})
+		Invokes(testing.NewDeleteAction(devicefarmprojectsResource, c.ns, name), &v1alpha1.DevicefarmProject{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDevicefarmProjects) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(devicefarmprojectsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(devicefarmprojectsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DevicefarmProjectList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDevicefarmProjects) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched devicefarmProject.
 func (c *FakeDevicefarmProjects) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DevicefarmProject, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(devicefarmprojectsResource, name, pt, data, subresources...), &v1alpha1.DevicefarmProject{})
+		Invokes(testing.NewPatchSubresourceAction(devicefarmprojectsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DevicefarmProject{})
+
 	if obj == nil {
 		return nil, err
 	}

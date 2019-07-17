@@ -32,7 +32,7 @@ import (
 // LbBackendAddressPoolsGetter has a method to return a LbBackendAddressPoolInterface.
 // A group's client should implement this interface.
 type LbBackendAddressPoolsGetter interface {
-	LbBackendAddressPools() LbBackendAddressPoolInterface
+	LbBackendAddressPools(namespace string) LbBackendAddressPoolInterface
 }
 
 // LbBackendAddressPoolInterface has methods to work with LbBackendAddressPool resources.
@@ -52,12 +52,14 @@ type LbBackendAddressPoolInterface interface {
 // lbBackendAddressPools implements LbBackendAddressPoolInterface
 type lbBackendAddressPools struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLbBackendAddressPools returns a LbBackendAddressPools
-func newLbBackendAddressPools(c *AzurermV1alpha1Client) *lbBackendAddressPools {
+func newLbBackendAddressPools(c *AzurermV1alpha1Client, namespace string) *lbBackendAddressPools {
 	return &lbBackendAddressPools{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLbBackendAddressPools(c *AzurermV1alpha1Client) *lbBackendAddressPools {
 func (c *lbBackendAddressPools) Get(name string, options v1.GetOptions) (result *v1alpha1.LbBackendAddressPool, err error) {
 	result = &v1alpha1.LbBackendAddressPool{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lbbackendaddresspools").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lbBackendAddressPools) List(opts v1.ListOptions) (result *v1alpha1.LbBa
 	}
 	result = &v1alpha1.LbBackendAddressPoolList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lbbackendaddresspools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lbBackendAddressPools) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lbbackendaddresspools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lbBackendAddressPools) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *lbBackendAddressPools) Create(lbBackendAddressPool *v1alpha1.LbBackendAddressPool) (result *v1alpha1.LbBackendAddressPool, err error) {
 	result = &v1alpha1.LbBackendAddressPool{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lbbackendaddresspools").
 		Body(lbBackendAddressPool).
 		Do().
@@ -118,6 +124,7 @@ func (c *lbBackendAddressPools) Create(lbBackendAddressPool *v1alpha1.LbBackendA
 func (c *lbBackendAddressPools) Update(lbBackendAddressPool *v1alpha1.LbBackendAddressPool) (result *v1alpha1.LbBackendAddressPool, err error) {
 	result = &v1alpha1.LbBackendAddressPool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lbbackendaddresspools").
 		Name(lbBackendAddressPool.Name).
 		Body(lbBackendAddressPool).
@@ -132,6 +139,7 @@ func (c *lbBackendAddressPools) Update(lbBackendAddressPool *v1alpha1.LbBackendA
 func (c *lbBackendAddressPools) UpdateStatus(lbBackendAddressPool *v1alpha1.LbBackendAddressPool) (result *v1alpha1.LbBackendAddressPool, err error) {
 	result = &v1alpha1.LbBackendAddressPool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lbbackendaddresspools").
 		Name(lbBackendAddressPool.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lbBackendAddressPools) UpdateStatus(lbBackendAddressPool *v1alpha1.LbBa
 // Delete takes name of the lbBackendAddressPool and deletes it. Returns an error if one occurs.
 func (c *lbBackendAddressPools) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lbbackendaddresspools").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lbBackendAddressPools) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lbbackendaddresspools").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lbBackendAddressPools) DeleteCollection(options *v1.DeleteOptions, list
 func (c *lbBackendAddressPools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbBackendAddressPool, err error) {
 	result = &v1alpha1.LbBackendAddressPool{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lbbackendaddresspools").
 		SubResource(subresources...).
 		Name(name).

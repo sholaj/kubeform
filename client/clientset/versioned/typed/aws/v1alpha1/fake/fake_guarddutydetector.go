@@ -31,6 +31,7 @@ import (
 // FakeGuarddutyDetectors implements GuarddutyDetectorInterface
 type FakeGuarddutyDetectors struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var guarddutydetectorsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "guarddutydetectors"}
@@ -40,7 +41,8 @@ var guarddutydetectorsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", 
 // Get takes name of the guarddutyDetector, and returns the corresponding guarddutyDetector object, and an error if there is any.
 func (c *FakeGuarddutyDetectors) Get(name string, options v1.GetOptions) (result *v1alpha1.GuarddutyDetector, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(guarddutydetectorsResource, name), &v1alpha1.GuarddutyDetector{})
+		Invokes(testing.NewGetAction(guarddutydetectorsResource, c.ns, name), &v1alpha1.GuarddutyDetector{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeGuarddutyDetectors) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of GuarddutyDetectors that match those selectors.
 func (c *FakeGuarddutyDetectors) List(opts v1.ListOptions) (result *v1alpha1.GuarddutyDetectorList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(guarddutydetectorsResource, guarddutydetectorsKind, opts), &v1alpha1.GuarddutyDetectorList{})
+		Invokes(testing.NewListAction(guarddutydetectorsResource, guarddutydetectorsKind, c.ns, opts), &v1alpha1.GuarddutyDetectorList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeGuarddutyDetectors) List(opts v1.ListOptions) (result *v1alpha1.Gua
 // Watch returns a watch.Interface that watches the requested guarddutyDetectors.
 func (c *FakeGuarddutyDetectors) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(guarddutydetectorsResource, opts))
+		InvokesWatch(testing.NewWatchAction(guarddutydetectorsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a guarddutyDetector and creates it.  Returns the server's representation of the guarddutyDetector, and an error, if there is any.
 func (c *FakeGuarddutyDetectors) Create(guarddutyDetector *v1alpha1.GuarddutyDetector) (result *v1alpha1.GuarddutyDetector, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(guarddutydetectorsResource, guarddutyDetector), &v1alpha1.GuarddutyDetector{})
+		Invokes(testing.NewCreateAction(guarddutydetectorsResource, c.ns, guarddutyDetector), &v1alpha1.GuarddutyDetector{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeGuarddutyDetectors) Create(guarddutyDetector *v1alpha1.GuarddutyDet
 // Update takes the representation of a guarddutyDetector and updates it. Returns the server's representation of the guarddutyDetector, and an error, if there is any.
 func (c *FakeGuarddutyDetectors) Update(guarddutyDetector *v1alpha1.GuarddutyDetector) (result *v1alpha1.GuarddutyDetector, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(guarddutydetectorsResource, guarddutyDetector), &v1alpha1.GuarddutyDetector{})
+		Invokes(testing.NewUpdateAction(guarddutydetectorsResource, c.ns, guarddutyDetector), &v1alpha1.GuarddutyDetector{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeGuarddutyDetectors) Update(guarddutyDetector *v1alpha1.GuarddutyDet
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeGuarddutyDetectors) UpdateStatus(guarddutyDetector *v1alpha1.GuarddutyDetector) (*v1alpha1.GuarddutyDetector, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(guarddutydetectorsResource, "status", guarddutyDetector), &v1alpha1.GuarddutyDetector{})
+		Invokes(testing.NewUpdateSubresourceAction(guarddutydetectorsResource, "status", c.ns, guarddutyDetector), &v1alpha1.GuarddutyDetector{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeGuarddutyDetectors) UpdateStatus(guarddutyDetector *v1alpha1.Guardd
 // Delete takes name of the guarddutyDetector and deletes it. Returns an error if one occurs.
 func (c *FakeGuarddutyDetectors) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(guarddutydetectorsResource, name), &v1alpha1.GuarddutyDetector{})
+		Invokes(testing.NewDeleteAction(guarddutydetectorsResource, c.ns, name), &v1alpha1.GuarddutyDetector{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeGuarddutyDetectors) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(guarddutydetectorsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(guarddutydetectorsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.GuarddutyDetectorList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeGuarddutyDetectors) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched guarddutyDetector.
 func (c *FakeGuarddutyDetectors) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GuarddutyDetector, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(guarddutydetectorsResource, name, pt, data, subresources...), &v1alpha1.GuarddutyDetector{})
+		Invokes(testing.NewPatchSubresourceAction(guarddutydetectorsResource, c.ns, name, pt, data, subresources...), &v1alpha1.GuarddutyDetector{})
+
 	if obj == nil {
 		return nil, err
 	}

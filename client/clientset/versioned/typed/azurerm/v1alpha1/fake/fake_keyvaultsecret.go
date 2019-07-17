@@ -31,6 +31,7 @@ import (
 // FakeKeyVaultSecrets implements KeyVaultSecretInterface
 type FakeKeyVaultSecrets struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var keyvaultsecretsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "keyvaultsecrets"}
@@ -40,7 +41,8 @@ var keyvaultsecretsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com",
 // Get takes name of the keyVaultSecret, and returns the corresponding keyVaultSecret object, and an error if there is any.
 func (c *FakeKeyVaultSecrets) Get(name string, options v1.GetOptions) (result *v1alpha1.KeyVaultSecret, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(keyvaultsecretsResource, name), &v1alpha1.KeyVaultSecret{})
+		Invokes(testing.NewGetAction(keyvaultsecretsResource, c.ns, name), &v1alpha1.KeyVaultSecret{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeKeyVaultSecrets) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of KeyVaultSecrets that match those selectors.
 func (c *FakeKeyVaultSecrets) List(opts v1.ListOptions) (result *v1alpha1.KeyVaultSecretList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(keyvaultsecretsResource, keyvaultsecretsKind, opts), &v1alpha1.KeyVaultSecretList{})
+		Invokes(testing.NewListAction(keyvaultsecretsResource, keyvaultsecretsKind, c.ns, opts), &v1alpha1.KeyVaultSecretList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeKeyVaultSecrets) List(opts v1.ListOptions) (result *v1alpha1.KeyVau
 // Watch returns a watch.Interface that watches the requested keyVaultSecrets.
 func (c *FakeKeyVaultSecrets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(keyvaultsecretsResource, opts))
+		InvokesWatch(testing.NewWatchAction(keyvaultsecretsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a keyVaultSecret and creates it.  Returns the server's representation of the keyVaultSecret, and an error, if there is any.
 func (c *FakeKeyVaultSecrets) Create(keyVaultSecret *v1alpha1.KeyVaultSecret) (result *v1alpha1.KeyVaultSecret, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(keyvaultsecretsResource, keyVaultSecret), &v1alpha1.KeyVaultSecret{})
+		Invokes(testing.NewCreateAction(keyvaultsecretsResource, c.ns, keyVaultSecret), &v1alpha1.KeyVaultSecret{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeKeyVaultSecrets) Create(keyVaultSecret *v1alpha1.KeyVaultSecret) (r
 // Update takes the representation of a keyVaultSecret and updates it. Returns the server's representation of the keyVaultSecret, and an error, if there is any.
 func (c *FakeKeyVaultSecrets) Update(keyVaultSecret *v1alpha1.KeyVaultSecret) (result *v1alpha1.KeyVaultSecret, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(keyvaultsecretsResource, keyVaultSecret), &v1alpha1.KeyVaultSecret{})
+		Invokes(testing.NewUpdateAction(keyvaultsecretsResource, c.ns, keyVaultSecret), &v1alpha1.KeyVaultSecret{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeKeyVaultSecrets) Update(keyVaultSecret *v1alpha1.KeyVaultSecret) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeKeyVaultSecrets) UpdateStatus(keyVaultSecret *v1alpha1.KeyVaultSecret) (*v1alpha1.KeyVaultSecret, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(keyvaultsecretsResource, "status", keyVaultSecret), &v1alpha1.KeyVaultSecret{})
+		Invokes(testing.NewUpdateSubresourceAction(keyvaultsecretsResource, "status", c.ns, keyVaultSecret), &v1alpha1.KeyVaultSecret{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeKeyVaultSecrets) UpdateStatus(keyVaultSecret *v1alpha1.KeyVaultSecr
 // Delete takes name of the keyVaultSecret and deletes it. Returns an error if one occurs.
 func (c *FakeKeyVaultSecrets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(keyvaultsecretsResource, name), &v1alpha1.KeyVaultSecret{})
+		Invokes(testing.NewDeleteAction(keyvaultsecretsResource, c.ns, name), &v1alpha1.KeyVaultSecret{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeKeyVaultSecrets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(keyvaultsecretsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(keyvaultsecretsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.KeyVaultSecretList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeKeyVaultSecrets) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched keyVaultSecret.
 func (c *FakeKeyVaultSecrets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KeyVaultSecret, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(keyvaultsecretsResource, name, pt, data, subresources...), &v1alpha1.KeyVaultSecret{})
+		Invokes(testing.NewPatchSubresourceAction(keyvaultsecretsResource, c.ns, name, pt, data, subresources...), &v1alpha1.KeyVaultSecret{})
+
 	if obj == nil {
 		return nil, err
 	}

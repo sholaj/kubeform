@@ -32,7 +32,7 @@ import (
 // SagemakerModelsGetter has a method to return a SagemakerModelInterface.
 // A group's client should implement this interface.
 type SagemakerModelsGetter interface {
-	SagemakerModels() SagemakerModelInterface
+	SagemakerModels(namespace string) SagemakerModelInterface
 }
 
 // SagemakerModelInterface has methods to work with SagemakerModel resources.
@@ -52,12 +52,14 @@ type SagemakerModelInterface interface {
 // sagemakerModels implements SagemakerModelInterface
 type sagemakerModels struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSagemakerModels returns a SagemakerModels
-func newSagemakerModels(c *AwsV1alpha1Client) *sagemakerModels {
+func newSagemakerModels(c *AwsV1alpha1Client, namespace string) *sagemakerModels {
 	return &sagemakerModels{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSagemakerModels(c *AwsV1alpha1Client) *sagemakerModels {
 func (c *sagemakerModels) Get(name string, options v1.GetOptions) (result *v1alpha1.SagemakerModel, err error) {
 	result = &v1alpha1.SagemakerModel{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sagemakermodels").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sagemakerModels) List(opts v1.ListOptions) (result *v1alpha1.SagemakerM
 	}
 	result = &v1alpha1.SagemakerModelList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sagemakermodels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sagemakerModels) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sagemakermodels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sagemakerModels) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *sagemakerModels) Create(sagemakerModel *v1alpha1.SagemakerModel) (result *v1alpha1.SagemakerModel, err error) {
 	result = &v1alpha1.SagemakerModel{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sagemakermodels").
 		Body(sagemakerModel).
 		Do().
@@ -118,6 +124,7 @@ func (c *sagemakerModels) Create(sagemakerModel *v1alpha1.SagemakerModel) (resul
 func (c *sagemakerModels) Update(sagemakerModel *v1alpha1.SagemakerModel) (result *v1alpha1.SagemakerModel, err error) {
 	result = &v1alpha1.SagemakerModel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sagemakermodels").
 		Name(sagemakerModel.Name).
 		Body(sagemakerModel).
@@ -132,6 +139,7 @@ func (c *sagemakerModels) Update(sagemakerModel *v1alpha1.SagemakerModel) (resul
 func (c *sagemakerModels) UpdateStatus(sagemakerModel *v1alpha1.SagemakerModel) (result *v1alpha1.SagemakerModel, err error) {
 	result = &v1alpha1.SagemakerModel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sagemakermodels").
 		Name(sagemakerModel.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sagemakerModels) UpdateStatus(sagemakerModel *v1alpha1.SagemakerModel) 
 // Delete takes name of the sagemakerModel and deletes it. Returns an error if one occurs.
 func (c *sagemakerModels) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sagemakermodels").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sagemakerModels) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sagemakermodels").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sagemakerModels) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *sagemakerModels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SagemakerModel, err error) {
 	result = &v1alpha1.SagemakerModel{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sagemakermodels").
 		SubResource(subresources...).
 		Name(name).

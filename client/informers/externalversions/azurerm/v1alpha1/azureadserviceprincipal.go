@@ -41,32 +41,33 @@ type AzureadServicePrincipalInformer interface {
 type azureadServicePrincipalInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewAzureadServicePrincipalInformer constructs a new informer for AzureadServicePrincipal type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAzureadServicePrincipalInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAzureadServicePrincipalInformer(client, resyncPeriod, indexers, nil)
+func NewAzureadServicePrincipalInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAzureadServicePrincipalInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredAzureadServicePrincipalInformer constructs a new informer for AzureadServicePrincipal type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAzureadServicePrincipalInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAzureadServicePrincipalInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().AzureadServicePrincipals().List(options)
+				return client.AzurermV1alpha1().AzureadServicePrincipals(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().AzureadServicePrincipals().Watch(options)
+				return client.AzurermV1alpha1().AzureadServicePrincipals(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.AzureadServicePrincipal{},
@@ -76,7 +77,7 @@ func NewFilteredAzureadServicePrincipalInformer(client versioned.Interface, resy
 }
 
 func (f *azureadServicePrincipalInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAzureadServicePrincipalInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredAzureadServicePrincipalInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *azureadServicePrincipalInformer) Informer() cache.SharedIndexInformer {

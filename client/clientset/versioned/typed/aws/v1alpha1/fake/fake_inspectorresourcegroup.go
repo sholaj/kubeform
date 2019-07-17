@@ -31,6 +31,7 @@ import (
 // FakeInspectorResourceGroups implements InspectorResourceGroupInterface
 type FakeInspectorResourceGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var inspectorresourcegroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "inspectorresourcegroups"}
@@ -40,7 +41,8 @@ var inspectorresourcegroupsKind = schema.GroupVersionKind{Group: "aws.kubeform.c
 // Get takes name of the inspectorResourceGroup, and returns the corresponding inspectorResourceGroup object, and an error if there is any.
 func (c *FakeInspectorResourceGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.InspectorResourceGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(inspectorresourcegroupsResource, name), &v1alpha1.InspectorResourceGroup{})
+		Invokes(testing.NewGetAction(inspectorresourcegroupsResource, c.ns, name), &v1alpha1.InspectorResourceGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeInspectorResourceGroups) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of InspectorResourceGroups that match those selectors.
 func (c *FakeInspectorResourceGroups) List(opts v1.ListOptions) (result *v1alpha1.InspectorResourceGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(inspectorresourcegroupsResource, inspectorresourcegroupsKind, opts), &v1alpha1.InspectorResourceGroupList{})
+		Invokes(testing.NewListAction(inspectorresourcegroupsResource, inspectorresourcegroupsKind, c.ns, opts), &v1alpha1.InspectorResourceGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeInspectorResourceGroups) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested inspectorResourceGroups.
 func (c *FakeInspectorResourceGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(inspectorresourcegroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(inspectorresourcegroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a inspectorResourceGroup and creates it.  Returns the server's representation of the inspectorResourceGroup, and an error, if there is any.
 func (c *FakeInspectorResourceGroups) Create(inspectorResourceGroup *v1alpha1.InspectorResourceGroup) (result *v1alpha1.InspectorResourceGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(inspectorresourcegroupsResource, inspectorResourceGroup), &v1alpha1.InspectorResourceGroup{})
+		Invokes(testing.NewCreateAction(inspectorresourcegroupsResource, c.ns, inspectorResourceGroup), &v1alpha1.InspectorResourceGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeInspectorResourceGroups) Create(inspectorResourceGroup *v1alpha1.In
 // Update takes the representation of a inspectorResourceGroup and updates it. Returns the server's representation of the inspectorResourceGroup, and an error, if there is any.
 func (c *FakeInspectorResourceGroups) Update(inspectorResourceGroup *v1alpha1.InspectorResourceGroup) (result *v1alpha1.InspectorResourceGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(inspectorresourcegroupsResource, inspectorResourceGroup), &v1alpha1.InspectorResourceGroup{})
+		Invokes(testing.NewUpdateAction(inspectorresourcegroupsResource, c.ns, inspectorResourceGroup), &v1alpha1.InspectorResourceGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeInspectorResourceGroups) Update(inspectorResourceGroup *v1alpha1.In
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeInspectorResourceGroups) UpdateStatus(inspectorResourceGroup *v1alpha1.InspectorResourceGroup) (*v1alpha1.InspectorResourceGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(inspectorresourcegroupsResource, "status", inspectorResourceGroup), &v1alpha1.InspectorResourceGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(inspectorresourcegroupsResource, "status", c.ns, inspectorResourceGroup), &v1alpha1.InspectorResourceGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeInspectorResourceGroups) UpdateStatus(inspectorResourceGroup *v1alp
 // Delete takes name of the inspectorResourceGroup and deletes it. Returns an error if one occurs.
 func (c *FakeInspectorResourceGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(inspectorresourcegroupsResource, name), &v1alpha1.InspectorResourceGroup{})
+		Invokes(testing.NewDeleteAction(inspectorresourcegroupsResource, c.ns, name), &v1alpha1.InspectorResourceGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeInspectorResourceGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(inspectorresourcegroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(inspectorresourcegroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.InspectorResourceGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeInspectorResourceGroups) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched inspectorResourceGroup.
 func (c *FakeInspectorResourceGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.InspectorResourceGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(inspectorresourcegroupsResource, name, pt, data, subresources...), &v1alpha1.InspectorResourceGroup{})
+		Invokes(testing.NewPatchSubresourceAction(inspectorresourcegroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.InspectorResourceGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

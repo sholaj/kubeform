@@ -29,8 +29,8 @@ import (
 type EcrLifecyclePolicyLister interface {
 	// List lists all EcrLifecyclePolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EcrLifecyclePolicy, err error)
-	// Get retrieves the EcrLifecyclePolicy from the index for a given name.
-	Get(name string) (*v1alpha1.EcrLifecyclePolicy, error)
+	// EcrLifecyclePolicies returns an object that can list and get EcrLifecyclePolicies.
+	EcrLifecyclePolicies(namespace string) EcrLifecyclePolicyNamespaceLister
 	EcrLifecyclePolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ecrLifecyclePolicyLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the EcrLifecyclePolicy from the index for a given name.
-func (s *ecrLifecyclePolicyLister) Get(name string) (*v1alpha1.EcrLifecyclePolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EcrLifecyclePolicies returns an object that can list and get EcrLifecyclePolicies.
+func (s *ecrLifecyclePolicyLister) EcrLifecyclePolicies(namespace string) EcrLifecyclePolicyNamespaceLister {
+	return ecrLifecyclePolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EcrLifecyclePolicyNamespaceLister helps list and get EcrLifecyclePolicies.
+type EcrLifecyclePolicyNamespaceLister interface {
+	// List lists all EcrLifecyclePolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EcrLifecyclePolicy, err error)
+	// Get retrieves the EcrLifecyclePolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EcrLifecyclePolicy, error)
+	EcrLifecyclePolicyNamespaceListerExpansion
+}
+
+// ecrLifecyclePolicyNamespaceLister implements the EcrLifecyclePolicyNamespaceLister
+// interface.
+type ecrLifecyclePolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EcrLifecyclePolicies in the indexer for a given namespace.
+func (s ecrLifecyclePolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EcrLifecyclePolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EcrLifecyclePolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the EcrLifecyclePolicy from the indexer for a given namespace and name.
+func (s ecrLifecyclePolicyNamespaceLister) Get(name string) (*v1alpha1.EcrLifecyclePolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

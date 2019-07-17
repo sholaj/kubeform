@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,15 +19,16 @@ type WafIpset struct {
 }
 
 type WafIpsetSpecIpSetDescriptors struct {
-	Type  string `json:"type"`
-	Value string `json:"value"`
+	Type  string `json:"type" tf:"type"`
+	Value string `json:"value" tf:"value"`
 }
 
 type WafIpsetSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	IpSetDescriptors *[]WafIpsetSpec `json:"ip_set_descriptors,omitempty"`
-	Name             string          `json:"name"`
+	IpSetDescriptors []WafIpsetSpecIpSetDescriptors `json:"ipSetDescriptors,omitempty" tf:"ip_set_descriptors,omitempty"`
+	Name             string                         `json:"name" tf:"name"`
+	ProviderRef      core.LocalObjectReference      `json:"providerRef" tf:"-"`
 }
 
 type WafIpsetStatus struct {
@@ -35,7 +36,9 @@ type WafIpsetStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -29,8 +29,8 @@ import (
 type SimpledbDomainLister interface {
 	// List lists all SimpledbDomains in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SimpledbDomain, err error)
-	// Get retrieves the SimpledbDomain from the index for a given name.
-	Get(name string) (*v1alpha1.SimpledbDomain, error)
+	// SimpledbDomains returns an object that can list and get SimpledbDomains.
+	SimpledbDomains(namespace string) SimpledbDomainNamespaceLister
 	SimpledbDomainListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *simpledbDomainLister) List(selector labels.Selector) (ret []*v1alpha1.S
 	return ret, err
 }
 
-// Get retrieves the SimpledbDomain from the index for a given name.
-func (s *simpledbDomainLister) Get(name string) (*v1alpha1.SimpledbDomain, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SimpledbDomains returns an object that can list and get SimpledbDomains.
+func (s *simpledbDomainLister) SimpledbDomains(namespace string) SimpledbDomainNamespaceLister {
+	return simpledbDomainNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SimpledbDomainNamespaceLister helps list and get SimpledbDomains.
+type SimpledbDomainNamespaceLister interface {
+	// List lists all SimpledbDomains in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SimpledbDomain, err error)
+	// Get retrieves the SimpledbDomain from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SimpledbDomain, error)
+	SimpledbDomainNamespaceListerExpansion
+}
+
+// simpledbDomainNamespaceLister implements the SimpledbDomainNamespaceLister
+// interface.
+type simpledbDomainNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SimpledbDomains in the indexer for a given namespace.
+func (s simpledbDomainNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SimpledbDomain, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SimpledbDomain))
+	})
+	return ret, err
+}
+
+// Get retrieves the SimpledbDomain from the indexer for a given namespace and name.
+func (s simpledbDomainNamespaceLister) Get(name string) (*v1alpha1.SimpledbDomain, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

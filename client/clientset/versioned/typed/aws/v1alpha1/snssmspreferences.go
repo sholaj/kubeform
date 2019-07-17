@@ -32,7 +32,7 @@ import (
 // SnsSmsPreferencesesGetter has a method to return a SnsSmsPreferencesInterface.
 // A group's client should implement this interface.
 type SnsSmsPreferencesesGetter interface {
-	SnsSmsPreferenceses() SnsSmsPreferencesInterface
+	SnsSmsPreferenceses(namespace string) SnsSmsPreferencesInterface
 }
 
 // SnsSmsPreferencesInterface has methods to work with SnsSmsPreferences resources.
@@ -52,12 +52,14 @@ type SnsSmsPreferencesInterface interface {
 // snsSmsPreferenceses implements SnsSmsPreferencesInterface
 type snsSmsPreferenceses struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSnsSmsPreferenceses returns a SnsSmsPreferenceses
-func newSnsSmsPreferenceses(c *AwsV1alpha1Client) *snsSmsPreferenceses {
+func newSnsSmsPreferenceses(c *AwsV1alpha1Client, namespace string) *snsSmsPreferenceses {
 	return &snsSmsPreferenceses{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSnsSmsPreferenceses(c *AwsV1alpha1Client) *snsSmsPreferenceses {
 func (c *snsSmsPreferenceses) Get(name string, options v1.GetOptions) (result *v1alpha1.SnsSmsPreferences, err error) {
 	result = &v1alpha1.SnsSmsPreferences{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("snssmspreferenceses").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *snsSmsPreferenceses) List(opts v1.ListOptions) (result *v1alpha1.SnsSms
 	}
 	result = &v1alpha1.SnsSmsPreferencesList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("snssmspreferenceses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *snsSmsPreferenceses) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("snssmspreferenceses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *snsSmsPreferenceses) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *snsSmsPreferenceses) Create(snsSmsPreferences *v1alpha1.SnsSmsPreferences) (result *v1alpha1.SnsSmsPreferences, err error) {
 	result = &v1alpha1.SnsSmsPreferences{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("snssmspreferenceses").
 		Body(snsSmsPreferences).
 		Do().
@@ -118,6 +124,7 @@ func (c *snsSmsPreferenceses) Create(snsSmsPreferences *v1alpha1.SnsSmsPreferenc
 func (c *snsSmsPreferenceses) Update(snsSmsPreferences *v1alpha1.SnsSmsPreferences) (result *v1alpha1.SnsSmsPreferences, err error) {
 	result = &v1alpha1.SnsSmsPreferences{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("snssmspreferenceses").
 		Name(snsSmsPreferences.Name).
 		Body(snsSmsPreferences).
@@ -132,6 +139,7 @@ func (c *snsSmsPreferenceses) Update(snsSmsPreferences *v1alpha1.SnsSmsPreferenc
 func (c *snsSmsPreferenceses) UpdateStatus(snsSmsPreferences *v1alpha1.SnsSmsPreferences) (result *v1alpha1.SnsSmsPreferences, err error) {
 	result = &v1alpha1.SnsSmsPreferences{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("snssmspreferenceses").
 		Name(snsSmsPreferences.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *snsSmsPreferenceses) UpdateStatus(snsSmsPreferences *v1alpha1.SnsSmsPre
 // Delete takes name of the snsSmsPreferences and deletes it. Returns an error if one occurs.
 func (c *snsSmsPreferenceses) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("snssmspreferenceses").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *snsSmsPreferenceses) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("snssmspreferenceses").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *snsSmsPreferenceses) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *snsSmsPreferenceses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SnsSmsPreferences, err error) {
 	result = &v1alpha1.SnsSmsPreferences{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("snssmspreferenceses").
 		SubResource(subresources...).
 		Name(name).

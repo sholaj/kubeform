@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,86 +20,87 @@ type MonitoringUptimeCheckConfig struct {
 
 type MonitoringUptimeCheckConfigSpecContentMatchers struct {
 	// +optional
-	Content string `json:"content,omitempty"`
+	Content string `json:"content,omitempty" tf:"content,omitempty"`
 }
 
 type MonitoringUptimeCheckConfigSpecHttpCheckAuthInfo struct {
 	// +optional
-	Password string `json:"password,omitempty"`
+	Password string `json:"password,omitempty" tf:"password,omitempty"`
 	// +optional
-	Username string `json:"username,omitempty"`
+	Username string `json:"username,omitempty" tf:"username,omitempty"`
 }
 
 type MonitoringUptimeCheckConfigSpecHttpCheck struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	AuthInfo *[]MonitoringUptimeCheckConfigSpecHttpCheck `json:"auth_info,omitempty"`
+	AuthInfo []MonitoringUptimeCheckConfigSpecHttpCheckAuthInfo `json:"authInfo,omitempty" tf:"auth_info,omitempty"`
 	// +optional
-	Headers map[string]string `json:"headers,omitempty"`
+	Headers map[string]string `json:"headers,omitempty" tf:"headers,omitempty"`
 	// +optional
-	MaskHeaders bool `json:"mask_headers,omitempty"`
+	MaskHeaders bool `json:"maskHeaders,omitempty" tf:"mask_headers,omitempty"`
 	// +optional
-	Path string `json:"path,omitempty"`
+	Path string `json:"path,omitempty" tf:"path,omitempty"`
 	// +optional
-	Port int `json:"port,omitempty"`
+	Port int `json:"port,omitempty" tf:"port,omitempty"`
 	// +optional
-	UseSsl bool `json:"use_ssl,omitempty"`
+	UseSsl bool `json:"useSsl,omitempty" tf:"use_ssl,omitempty"`
 }
 
 type MonitoringUptimeCheckConfigSpecInternalCheckers struct {
 	// +optional
-	DisplayName string `json:"display_name,omitempty"`
+	DisplayName string `json:"displayName,omitempty" tf:"display_name,omitempty"`
 	// +optional
-	GcpZone string `json:"gcp_zone,omitempty"`
+	GcpZone string `json:"gcpZone,omitempty" tf:"gcp_zone,omitempty"`
 	// +optional
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" tf:"name,omitempty"`
 	// +optional
-	Network string `json:"network,omitempty"`
+	Network string `json:"network,omitempty" tf:"network,omitempty"`
 	// +optional
-	PeerProjectId string `json:"peer_project_id,omitempty"`
+	PeerProjectID string `json:"peerProjectID,omitempty" tf:"peer_project_id,omitempty"`
 }
 
 type MonitoringUptimeCheckConfigSpecMonitoredResource struct {
-	Labels map[string]string `json:"labels"`
-	Type   string            `json:"type"`
+	Labels map[string]string `json:"labels" tf:"labels"`
+	Type   string            `json:"type" tf:"type"`
 }
 
 type MonitoringUptimeCheckConfigSpecResourceGroup struct {
 	// +optional
-	GroupId string `json:"group_id,omitempty"`
+	GroupID string `json:"groupID,omitempty" tf:"group_id,omitempty"`
 	// +optional
-	ResourceType string `json:"resource_type,omitempty"`
+	ResourceType string `json:"resourceType,omitempty" tf:"resource_type,omitempty"`
 }
 
 type MonitoringUptimeCheckConfigSpecTcpCheck struct {
-	Port int `json:"port"`
+	Port int `json:"port" tf:"port"`
 }
 
 type MonitoringUptimeCheckConfigSpec struct {
 	// +optional
-	ContentMatchers *[]MonitoringUptimeCheckConfigSpec `json:"content_matchers,omitempty"`
-	DisplayName     string                             `json:"display_name"`
+	ContentMatchers []MonitoringUptimeCheckConfigSpecContentMatchers `json:"contentMatchers,omitempty" tf:"content_matchers,omitempty"`
+	DisplayName     string                                           `json:"displayName" tf:"display_name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	HttpCheck *[]MonitoringUptimeCheckConfigSpec `json:"http_check,omitempty"`
+	HttpCheck []MonitoringUptimeCheckConfigSpecHttpCheck `json:"httpCheck,omitempty" tf:"http_check,omitempty"`
 	// +optional
-	InternalCheckers *[]MonitoringUptimeCheckConfigSpec `json:"internal_checkers,omitempty"`
+	InternalCheckers []MonitoringUptimeCheckConfigSpecInternalCheckers `json:"internalCheckers,omitempty" tf:"internal_checkers,omitempty"`
 	// +optional
-	IsInternal bool `json:"is_internal,omitempty"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	MonitoredResource *[]MonitoringUptimeCheckConfigSpec `json:"monitored_resource,omitempty"`
-	// +optional
-	Period string `json:"period,omitempty"`
+	IsInternal bool `json:"isInternal,omitempty" tf:"is_internal,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ResourceGroup *[]MonitoringUptimeCheckConfigSpec `json:"resource_group,omitempty"`
+	MonitoredResource []MonitoringUptimeCheckConfigSpecMonitoredResource `json:"monitoredResource,omitempty" tf:"monitored_resource,omitempty"`
 	// +optional
-	SelectedRegions []string `json:"selected_regions,omitempty"`
+	Period string `json:"period,omitempty" tf:"period,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	TcpCheck *[]MonitoringUptimeCheckConfigSpec `json:"tcp_check,omitempty"`
-	Timeout  string                             `json:"timeout"`
+	ResourceGroup []MonitoringUptimeCheckConfigSpecResourceGroup `json:"resourceGroup,omitempty" tf:"resource_group,omitempty"`
+	// +optional
+	SelectedRegions []string `json:"selectedRegions,omitempty" tf:"selected_regions,omitempty"`
+	// +optional
+	// +kubebuilder:validation:MaxItems=1
+	TcpCheck    []MonitoringUptimeCheckConfigSpecTcpCheck `json:"tcpCheck,omitempty" tf:"tcp_check,omitempty"`
+	Timeout     string                                    `json:"timeout" tf:"timeout"`
+	ProviderRef core.LocalObjectReference                 `json:"providerRef" tf:"-"`
 }
 
 type MonitoringUptimeCheckConfigStatus struct {
@@ -107,7 +108,9 @@ type MonitoringUptimeCheckConfigStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

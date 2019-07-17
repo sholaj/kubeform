@@ -29,8 +29,8 @@ import (
 type DlmLifecyclePolicyLister interface {
 	// List lists all DlmLifecyclePolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DlmLifecyclePolicy, err error)
-	// Get retrieves the DlmLifecyclePolicy from the index for a given name.
-	Get(name string) (*v1alpha1.DlmLifecyclePolicy, error)
+	// DlmLifecyclePolicies returns an object that can list and get DlmLifecyclePolicies.
+	DlmLifecyclePolicies(namespace string) DlmLifecyclePolicyNamespaceLister
 	DlmLifecyclePolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dlmLifecyclePolicyLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the DlmLifecyclePolicy from the index for a given name.
-func (s *dlmLifecyclePolicyLister) Get(name string) (*v1alpha1.DlmLifecyclePolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DlmLifecyclePolicies returns an object that can list and get DlmLifecyclePolicies.
+func (s *dlmLifecyclePolicyLister) DlmLifecyclePolicies(namespace string) DlmLifecyclePolicyNamespaceLister {
+	return dlmLifecyclePolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DlmLifecyclePolicyNamespaceLister helps list and get DlmLifecyclePolicies.
+type DlmLifecyclePolicyNamespaceLister interface {
+	// List lists all DlmLifecyclePolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DlmLifecyclePolicy, err error)
+	// Get retrieves the DlmLifecyclePolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DlmLifecyclePolicy, error)
+	DlmLifecyclePolicyNamespaceListerExpansion
+}
+
+// dlmLifecyclePolicyNamespaceLister implements the DlmLifecyclePolicyNamespaceLister
+// interface.
+type dlmLifecyclePolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DlmLifecyclePolicies in the indexer for a given namespace.
+func (s dlmLifecyclePolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DlmLifecyclePolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DlmLifecyclePolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the DlmLifecyclePolicy from the indexer for a given namespace and name.
+func (s dlmLifecyclePolicyNamespaceLister) Get(name string) (*v1alpha1.DlmLifecyclePolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

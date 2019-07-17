@@ -32,7 +32,7 @@ import (
 // KeyVaultAccessPoliciesGetter has a method to return a KeyVaultAccessPolicyInterface.
 // A group's client should implement this interface.
 type KeyVaultAccessPoliciesGetter interface {
-	KeyVaultAccessPolicies() KeyVaultAccessPolicyInterface
+	KeyVaultAccessPolicies(namespace string) KeyVaultAccessPolicyInterface
 }
 
 // KeyVaultAccessPolicyInterface has methods to work with KeyVaultAccessPolicy resources.
@@ -52,12 +52,14 @@ type KeyVaultAccessPolicyInterface interface {
 // keyVaultAccessPolicies implements KeyVaultAccessPolicyInterface
 type keyVaultAccessPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKeyVaultAccessPolicies returns a KeyVaultAccessPolicies
-func newKeyVaultAccessPolicies(c *AzurermV1alpha1Client) *keyVaultAccessPolicies {
+func newKeyVaultAccessPolicies(c *AzurermV1alpha1Client, namespace string) *keyVaultAccessPolicies {
 	return &keyVaultAccessPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKeyVaultAccessPolicies(c *AzurermV1alpha1Client) *keyVaultAccessPolicies
 func (c *keyVaultAccessPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.KeyVaultAccessPolicy, err error) {
 	result = &v1alpha1.KeyVaultAccessPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("keyvaultaccesspolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *keyVaultAccessPolicies) List(opts v1.ListOptions) (result *v1alpha1.Key
 	}
 	result = &v1alpha1.KeyVaultAccessPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("keyvaultaccesspolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *keyVaultAccessPolicies) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("keyvaultaccesspolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *keyVaultAccessPolicies) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *keyVaultAccessPolicies) Create(keyVaultAccessPolicy *v1alpha1.KeyVaultAccessPolicy) (result *v1alpha1.KeyVaultAccessPolicy, err error) {
 	result = &v1alpha1.KeyVaultAccessPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("keyvaultaccesspolicies").
 		Body(keyVaultAccessPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *keyVaultAccessPolicies) Create(keyVaultAccessPolicy *v1alpha1.KeyVaultA
 func (c *keyVaultAccessPolicies) Update(keyVaultAccessPolicy *v1alpha1.KeyVaultAccessPolicy) (result *v1alpha1.KeyVaultAccessPolicy, err error) {
 	result = &v1alpha1.KeyVaultAccessPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("keyvaultaccesspolicies").
 		Name(keyVaultAccessPolicy.Name).
 		Body(keyVaultAccessPolicy).
@@ -132,6 +139,7 @@ func (c *keyVaultAccessPolicies) Update(keyVaultAccessPolicy *v1alpha1.KeyVaultA
 func (c *keyVaultAccessPolicies) UpdateStatus(keyVaultAccessPolicy *v1alpha1.KeyVaultAccessPolicy) (result *v1alpha1.KeyVaultAccessPolicy, err error) {
 	result = &v1alpha1.KeyVaultAccessPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("keyvaultaccesspolicies").
 		Name(keyVaultAccessPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *keyVaultAccessPolicies) UpdateStatus(keyVaultAccessPolicy *v1alpha1.Key
 // Delete takes name of the keyVaultAccessPolicy and deletes it. Returns an error if one occurs.
 func (c *keyVaultAccessPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("keyvaultaccesspolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *keyVaultAccessPolicies) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("keyvaultaccesspolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *keyVaultAccessPolicies) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *keyVaultAccessPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KeyVaultAccessPolicy, err error) {
 	result = &v1alpha1.KeyVaultAccessPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("keyvaultaccesspolicies").
 		SubResource(subresources...).
 		Name(name).

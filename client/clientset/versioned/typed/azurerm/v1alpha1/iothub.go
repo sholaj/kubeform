@@ -32,7 +32,7 @@ import (
 // IothubsGetter has a method to return a IothubInterface.
 // A group's client should implement this interface.
 type IothubsGetter interface {
-	Iothubs() IothubInterface
+	Iothubs(namespace string) IothubInterface
 }
 
 // IothubInterface has methods to work with Iothub resources.
@@ -52,12 +52,14 @@ type IothubInterface interface {
 // iothubs implements IothubInterface
 type iothubs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIothubs returns a Iothubs
-func newIothubs(c *AzurermV1alpha1Client) *iothubs {
+func newIothubs(c *AzurermV1alpha1Client, namespace string) *iothubs {
 	return &iothubs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIothubs(c *AzurermV1alpha1Client) *iothubs {
 func (c *iothubs) Get(name string, options v1.GetOptions) (result *v1alpha1.Iothub, err error) {
 	result = &v1alpha1.Iothub{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iothubs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iothubs) List(opts v1.ListOptions) (result *v1alpha1.IothubList, err er
 	}
 	result = &v1alpha1.IothubList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iothubs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iothubs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iothubs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iothubs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *iothubs) Create(iothub *v1alpha1.Iothub) (result *v1alpha1.Iothub, err error) {
 	result = &v1alpha1.Iothub{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iothubs").
 		Body(iothub).
 		Do().
@@ -118,6 +124,7 @@ func (c *iothubs) Create(iothub *v1alpha1.Iothub) (result *v1alpha1.Iothub, err 
 func (c *iothubs) Update(iothub *v1alpha1.Iothub) (result *v1alpha1.Iothub, err error) {
 	result = &v1alpha1.Iothub{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iothubs").
 		Name(iothub.Name).
 		Body(iothub).
@@ -132,6 +139,7 @@ func (c *iothubs) Update(iothub *v1alpha1.Iothub) (result *v1alpha1.Iothub, err 
 func (c *iothubs) UpdateStatus(iothub *v1alpha1.Iothub) (result *v1alpha1.Iothub, err error) {
 	result = &v1alpha1.Iothub{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iothubs").
 		Name(iothub.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iothubs) UpdateStatus(iothub *v1alpha1.Iothub) (result *v1alpha1.Iothub
 // Delete takes name of the iothub and deletes it. Returns an error if one occurs.
 func (c *iothubs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iothubs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iothubs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iothubs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iothubs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Lis
 func (c *iothubs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Iothub, err error) {
 	result = &v1alpha1.Iothub{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iothubs").
 		SubResource(subresources...).
 		Name(name).

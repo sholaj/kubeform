@@ -31,6 +31,7 @@ import (
 // FakeSnapshotCreateVolumePermissions implements SnapshotCreateVolumePermissionInterface
 type FakeSnapshotCreateVolumePermissions struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var snapshotcreatevolumepermissionsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "snapshotcreatevolumepermissions"}
@@ -40,7 +41,8 @@ var snapshotcreatevolumepermissionsKind = schema.GroupVersionKind{Group: "aws.ku
 // Get takes name of the snapshotCreateVolumePermission, and returns the corresponding snapshotCreateVolumePermission object, and an error if there is any.
 func (c *FakeSnapshotCreateVolumePermissions) Get(name string, options v1.GetOptions) (result *v1alpha1.SnapshotCreateVolumePermission, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(snapshotcreatevolumepermissionsResource, name), &v1alpha1.SnapshotCreateVolumePermission{})
+		Invokes(testing.NewGetAction(snapshotcreatevolumepermissionsResource, c.ns, name), &v1alpha1.SnapshotCreateVolumePermission{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSnapshotCreateVolumePermissions) Get(name string, options v1.GetOpt
 // List takes label and field selectors, and returns the list of SnapshotCreateVolumePermissions that match those selectors.
 func (c *FakeSnapshotCreateVolumePermissions) List(opts v1.ListOptions) (result *v1alpha1.SnapshotCreateVolumePermissionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(snapshotcreatevolumepermissionsResource, snapshotcreatevolumepermissionsKind, opts), &v1alpha1.SnapshotCreateVolumePermissionList{})
+		Invokes(testing.NewListAction(snapshotcreatevolumepermissionsResource, snapshotcreatevolumepermissionsKind, c.ns, opts), &v1alpha1.SnapshotCreateVolumePermissionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSnapshotCreateVolumePermissions) List(opts v1.ListOptions) (result 
 // Watch returns a watch.Interface that watches the requested snapshotCreateVolumePermissions.
 func (c *FakeSnapshotCreateVolumePermissions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(snapshotcreatevolumepermissionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(snapshotcreatevolumepermissionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a snapshotCreateVolumePermission and creates it.  Returns the server's representation of the snapshotCreateVolumePermission, and an error, if there is any.
 func (c *FakeSnapshotCreateVolumePermissions) Create(snapshotCreateVolumePermission *v1alpha1.SnapshotCreateVolumePermission) (result *v1alpha1.SnapshotCreateVolumePermission, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(snapshotcreatevolumepermissionsResource, snapshotCreateVolumePermission), &v1alpha1.SnapshotCreateVolumePermission{})
+		Invokes(testing.NewCreateAction(snapshotcreatevolumepermissionsResource, c.ns, snapshotCreateVolumePermission), &v1alpha1.SnapshotCreateVolumePermission{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSnapshotCreateVolumePermissions) Create(snapshotCreateVolumePermiss
 // Update takes the representation of a snapshotCreateVolumePermission and updates it. Returns the server's representation of the snapshotCreateVolumePermission, and an error, if there is any.
 func (c *FakeSnapshotCreateVolumePermissions) Update(snapshotCreateVolumePermission *v1alpha1.SnapshotCreateVolumePermission) (result *v1alpha1.SnapshotCreateVolumePermission, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(snapshotcreatevolumepermissionsResource, snapshotCreateVolumePermission), &v1alpha1.SnapshotCreateVolumePermission{})
+		Invokes(testing.NewUpdateAction(snapshotcreatevolumepermissionsResource, c.ns, snapshotCreateVolumePermission), &v1alpha1.SnapshotCreateVolumePermission{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSnapshotCreateVolumePermissions) Update(snapshotCreateVolumePermiss
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSnapshotCreateVolumePermissions) UpdateStatus(snapshotCreateVolumePermission *v1alpha1.SnapshotCreateVolumePermission) (*v1alpha1.SnapshotCreateVolumePermission, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(snapshotcreatevolumepermissionsResource, "status", snapshotCreateVolumePermission), &v1alpha1.SnapshotCreateVolumePermission{})
+		Invokes(testing.NewUpdateSubresourceAction(snapshotcreatevolumepermissionsResource, "status", c.ns, snapshotCreateVolumePermission), &v1alpha1.SnapshotCreateVolumePermission{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSnapshotCreateVolumePermissions) UpdateStatus(snapshotCreateVolumeP
 // Delete takes name of the snapshotCreateVolumePermission and deletes it. Returns an error if one occurs.
 func (c *FakeSnapshotCreateVolumePermissions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(snapshotcreatevolumepermissionsResource, name), &v1alpha1.SnapshotCreateVolumePermission{})
+		Invokes(testing.NewDeleteAction(snapshotcreatevolumepermissionsResource, c.ns, name), &v1alpha1.SnapshotCreateVolumePermission{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSnapshotCreateVolumePermissions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(snapshotcreatevolumepermissionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(snapshotcreatevolumepermissionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SnapshotCreateVolumePermissionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSnapshotCreateVolumePermissions) DeleteCollection(options *v1.Delet
 // Patch applies the patch and returns the patched snapshotCreateVolumePermission.
 func (c *FakeSnapshotCreateVolumePermissions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SnapshotCreateVolumePermission, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(snapshotcreatevolumepermissionsResource, name, pt, data, subresources...), &v1alpha1.SnapshotCreateVolumePermission{})
+		Invokes(testing.NewPatchSubresourceAction(snapshotcreatevolumepermissionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SnapshotCreateVolumePermission{})
+
 	if obj == nil {
 		return nil, err
 	}

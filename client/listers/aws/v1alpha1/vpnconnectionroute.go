@@ -29,8 +29,8 @@ import (
 type VpnConnectionRouteLister interface {
 	// List lists all VpnConnectionRoutes in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.VpnConnectionRoute, err error)
-	// Get retrieves the VpnConnectionRoute from the index for a given name.
-	Get(name string) (*v1alpha1.VpnConnectionRoute, error)
+	// VpnConnectionRoutes returns an object that can list and get VpnConnectionRoutes.
+	VpnConnectionRoutes(namespace string) VpnConnectionRouteNamespaceLister
 	VpnConnectionRouteListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *vpnConnectionRouteLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the VpnConnectionRoute from the index for a given name.
-func (s *vpnConnectionRouteLister) Get(name string) (*v1alpha1.VpnConnectionRoute, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VpnConnectionRoutes returns an object that can list and get VpnConnectionRoutes.
+func (s *vpnConnectionRouteLister) VpnConnectionRoutes(namespace string) VpnConnectionRouteNamespaceLister {
+	return vpnConnectionRouteNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VpnConnectionRouteNamespaceLister helps list and get VpnConnectionRoutes.
+type VpnConnectionRouteNamespaceLister interface {
+	// List lists all VpnConnectionRoutes in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VpnConnectionRoute, err error)
+	// Get retrieves the VpnConnectionRoute from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VpnConnectionRoute, error)
+	VpnConnectionRouteNamespaceListerExpansion
+}
+
+// vpnConnectionRouteNamespaceLister implements the VpnConnectionRouteNamespaceLister
+// interface.
+type vpnConnectionRouteNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VpnConnectionRoutes in the indexer for a given namespace.
+func (s vpnConnectionRouteNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VpnConnectionRoute, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VpnConnectionRoute))
+	})
+	return ret, err
+}
+
+// Get retrieves the VpnConnectionRoute from the indexer for a given namespace and name.
+func (s vpnConnectionRouteNamespaceLister) Get(name string) (*v1alpha1.VpnConnectionRoute, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

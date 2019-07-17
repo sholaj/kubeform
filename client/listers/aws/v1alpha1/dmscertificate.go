@@ -29,8 +29,8 @@ import (
 type DmsCertificateLister interface {
 	// List lists all DmsCertificates in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DmsCertificate, err error)
-	// Get retrieves the DmsCertificate from the index for a given name.
-	Get(name string) (*v1alpha1.DmsCertificate, error)
+	// DmsCertificates returns an object that can list and get DmsCertificates.
+	DmsCertificates(namespace string) DmsCertificateNamespaceLister
 	DmsCertificateListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dmsCertificateLister) List(selector labels.Selector) (ret []*v1alpha1.D
 	return ret, err
 }
 
-// Get retrieves the DmsCertificate from the index for a given name.
-func (s *dmsCertificateLister) Get(name string) (*v1alpha1.DmsCertificate, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DmsCertificates returns an object that can list and get DmsCertificates.
+func (s *dmsCertificateLister) DmsCertificates(namespace string) DmsCertificateNamespaceLister {
+	return dmsCertificateNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DmsCertificateNamespaceLister helps list and get DmsCertificates.
+type DmsCertificateNamespaceLister interface {
+	// List lists all DmsCertificates in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DmsCertificate, err error)
+	// Get retrieves the DmsCertificate from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DmsCertificate, error)
+	DmsCertificateNamespaceListerExpansion
+}
+
+// dmsCertificateNamespaceLister implements the DmsCertificateNamespaceLister
+// interface.
+type dmsCertificateNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DmsCertificates in the indexer for a given namespace.
+func (s dmsCertificateNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DmsCertificate, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DmsCertificate))
+	})
+	return ret, err
+}
+
+// Get retrieves the DmsCertificate from the indexer for a given namespace and name.
+func (s dmsCertificateNamespaceLister) Get(name string) (*v1alpha1.DmsCertificate, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

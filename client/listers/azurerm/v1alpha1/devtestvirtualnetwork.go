@@ -29,8 +29,8 @@ import (
 type DevTestVirtualNetworkLister interface {
 	// List lists all DevTestVirtualNetworks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DevTestVirtualNetwork, err error)
-	// Get retrieves the DevTestVirtualNetwork from the index for a given name.
-	Get(name string) (*v1alpha1.DevTestVirtualNetwork, error)
+	// DevTestVirtualNetworks returns an object that can list and get DevTestVirtualNetworks.
+	DevTestVirtualNetworks(namespace string) DevTestVirtualNetworkNamespaceLister
 	DevTestVirtualNetworkListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *devTestVirtualNetworkLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the DevTestVirtualNetwork from the index for a given name.
-func (s *devTestVirtualNetworkLister) Get(name string) (*v1alpha1.DevTestVirtualNetwork, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DevTestVirtualNetworks returns an object that can list and get DevTestVirtualNetworks.
+func (s *devTestVirtualNetworkLister) DevTestVirtualNetworks(namespace string) DevTestVirtualNetworkNamespaceLister {
+	return devTestVirtualNetworkNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DevTestVirtualNetworkNamespaceLister helps list and get DevTestVirtualNetworks.
+type DevTestVirtualNetworkNamespaceLister interface {
+	// List lists all DevTestVirtualNetworks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DevTestVirtualNetwork, err error)
+	// Get retrieves the DevTestVirtualNetwork from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DevTestVirtualNetwork, error)
+	DevTestVirtualNetworkNamespaceListerExpansion
+}
+
+// devTestVirtualNetworkNamespaceLister implements the DevTestVirtualNetworkNamespaceLister
+// interface.
+type devTestVirtualNetworkNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DevTestVirtualNetworks in the indexer for a given namespace.
+func (s devTestVirtualNetworkNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DevTestVirtualNetwork, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DevTestVirtualNetwork))
+	})
+	return ret, err
+}
+
+// Get retrieves the DevTestVirtualNetwork from the indexer for a given namespace and name.
+func (s devTestVirtualNetworkNamespaceLister) Get(name string) (*v1alpha1.DevTestVirtualNetwork, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

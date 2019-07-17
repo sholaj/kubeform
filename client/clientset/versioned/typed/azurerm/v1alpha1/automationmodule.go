@@ -32,7 +32,7 @@ import (
 // AutomationModulesGetter has a method to return a AutomationModuleInterface.
 // A group's client should implement this interface.
 type AutomationModulesGetter interface {
-	AutomationModules() AutomationModuleInterface
+	AutomationModules(namespace string) AutomationModuleInterface
 }
 
 // AutomationModuleInterface has methods to work with AutomationModule resources.
@@ -52,12 +52,14 @@ type AutomationModuleInterface interface {
 // automationModules implements AutomationModuleInterface
 type automationModules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAutomationModules returns a AutomationModules
-func newAutomationModules(c *AzurermV1alpha1Client) *automationModules {
+func newAutomationModules(c *AzurermV1alpha1Client, namespace string) *automationModules {
 	return &automationModules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAutomationModules(c *AzurermV1alpha1Client) *automationModules {
 func (c *automationModules) Get(name string, options v1.GetOptions) (result *v1alpha1.AutomationModule, err error) {
 	result = &v1alpha1.AutomationModule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("automationmodules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *automationModules) List(opts v1.ListOptions) (result *v1alpha1.Automati
 	}
 	result = &v1alpha1.AutomationModuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("automationmodules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *automationModules) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("automationmodules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *automationModules) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *automationModules) Create(automationModule *v1alpha1.AutomationModule) (result *v1alpha1.AutomationModule, err error) {
 	result = &v1alpha1.AutomationModule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("automationmodules").
 		Body(automationModule).
 		Do().
@@ -118,6 +124,7 @@ func (c *automationModules) Create(automationModule *v1alpha1.AutomationModule) 
 func (c *automationModules) Update(automationModule *v1alpha1.AutomationModule) (result *v1alpha1.AutomationModule, err error) {
 	result = &v1alpha1.AutomationModule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("automationmodules").
 		Name(automationModule.Name).
 		Body(automationModule).
@@ -132,6 +139,7 @@ func (c *automationModules) Update(automationModule *v1alpha1.AutomationModule) 
 func (c *automationModules) UpdateStatus(automationModule *v1alpha1.AutomationModule) (result *v1alpha1.AutomationModule, err error) {
 	result = &v1alpha1.AutomationModule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("automationmodules").
 		Name(automationModule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *automationModules) UpdateStatus(automationModule *v1alpha1.AutomationMo
 // Delete takes name of the automationModule and deletes it. Returns an error if one occurs.
 func (c *automationModules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("automationmodules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *automationModules) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("automationmodules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *automationModules) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *automationModules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AutomationModule, err error) {
 	result = &v1alpha1.AutomationModule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("automationmodules").
 		SubResource(subresources...).
 		Name(name).

@@ -31,6 +31,7 @@ import (
 // FakeBatchPools implements BatchPoolInterface
 type FakeBatchPools struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var batchpoolsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "batchpools"}
@@ -40,7 +41,8 @@ var batchpoolsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Vers
 // Get takes name of the batchPool, and returns the corresponding batchPool object, and an error if there is any.
 func (c *FakeBatchPools) Get(name string, options v1.GetOptions) (result *v1alpha1.BatchPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(batchpoolsResource, name), &v1alpha1.BatchPool{})
+		Invokes(testing.NewGetAction(batchpoolsResource, c.ns, name), &v1alpha1.BatchPool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeBatchPools) Get(name string, options v1.GetOptions) (result *v1alph
 // List takes label and field selectors, and returns the list of BatchPools that match those selectors.
 func (c *FakeBatchPools) List(opts v1.ListOptions) (result *v1alpha1.BatchPoolList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(batchpoolsResource, batchpoolsKind, opts), &v1alpha1.BatchPoolList{})
+		Invokes(testing.NewListAction(batchpoolsResource, batchpoolsKind, c.ns, opts), &v1alpha1.BatchPoolList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeBatchPools) List(opts v1.ListOptions) (result *v1alpha1.BatchPoolLi
 // Watch returns a watch.Interface that watches the requested batchPools.
 func (c *FakeBatchPools) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(batchpoolsResource, opts))
+		InvokesWatch(testing.NewWatchAction(batchpoolsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a batchPool and creates it.  Returns the server's representation of the batchPool, and an error, if there is any.
 func (c *FakeBatchPools) Create(batchPool *v1alpha1.BatchPool) (result *v1alpha1.BatchPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(batchpoolsResource, batchPool), &v1alpha1.BatchPool{})
+		Invokes(testing.NewCreateAction(batchpoolsResource, c.ns, batchPool), &v1alpha1.BatchPool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeBatchPools) Create(batchPool *v1alpha1.BatchPool) (result *v1alpha1
 // Update takes the representation of a batchPool and updates it. Returns the server's representation of the batchPool, and an error, if there is any.
 func (c *FakeBatchPools) Update(batchPool *v1alpha1.BatchPool) (result *v1alpha1.BatchPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(batchpoolsResource, batchPool), &v1alpha1.BatchPool{})
+		Invokes(testing.NewUpdateAction(batchpoolsResource, c.ns, batchPool), &v1alpha1.BatchPool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeBatchPools) Update(batchPool *v1alpha1.BatchPool) (result *v1alpha1
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeBatchPools) UpdateStatus(batchPool *v1alpha1.BatchPool) (*v1alpha1.BatchPool, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(batchpoolsResource, "status", batchPool), &v1alpha1.BatchPool{})
+		Invokes(testing.NewUpdateSubresourceAction(batchpoolsResource, "status", c.ns, batchPool), &v1alpha1.BatchPool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeBatchPools) UpdateStatus(batchPool *v1alpha1.BatchPool) (*v1alpha1.
 // Delete takes name of the batchPool and deletes it. Returns an error if one occurs.
 func (c *FakeBatchPools) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(batchpoolsResource, name), &v1alpha1.BatchPool{})
+		Invokes(testing.NewDeleteAction(batchpoolsResource, c.ns, name), &v1alpha1.BatchPool{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeBatchPools) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(batchpoolsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(batchpoolsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.BatchPoolList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeBatchPools) DeleteCollection(options *v1.DeleteOptions, listOptions
 // Patch applies the patch and returns the patched batchPool.
 func (c *FakeBatchPools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BatchPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(batchpoolsResource, name, pt, data, subresources...), &v1alpha1.BatchPool{})
+		Invokes(testing.NewPatchSubresourceAction(batchpoolsResource, c.ns, name, pt, data, subresources...), &v1alpha1.BatchPool{})
+
 	if obj == nil {
 		return nil, err
 	}

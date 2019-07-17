@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,54 +19,55 @@ type ComputeInstanceGroupManager struct {
 }
 
 type ComputeInstanceGroupManagerSpecAutoHealingPolicies struct {
-	HealthCheck     string `json:"health_check"`
-	InitialDelaySec int    `json:"initial_delay_sec"`
+	HealthCheck     string `json:"healthCheck" tf:"health_check"`
+	InitialDelaySec int    `json:"initialDelaySec" tf:"initial_delay_sec"`
 }
 
 type ComputeInstanceGroupManagerSpecNamedPort struct {
-	Name string `json:"name"`
-	Port int    `json:"port"`
+	Name string `json:"name" tf:"name"`
+	Port int    `json:"port" tf:"port"`
 }
 
 type ComputeInstanceGroupManagerSpecRollingUpdatePolicy struct {
 	// +optional
-	MaxSurgeFixed int `json:"max_surge_fixed,omitempty"`
+	MaxSurgeFixed int `json:"maxSurgeFixed,omitempty" tf:"max_surge_fixed,omitempty"`
 	// +optional
-	MaxSurgePercent int `json:"max_surge_percent,omitempty"`
+	MaxSurgePercent int `json:"maxSurgePercent,omitempty" tf:"max_surge_percent,omitempty"`
 	// +optional
-	MaxUnavailableFixed int `json:"max_unavailable_fixed,omitempty"`
+	MaxUnavailableFixed int `json:"maxUnavailableFixed,omitempty" tf:"max_unavailable_fixed,omitempty"`
 	// +optional
-	MaxUnavailablePercent int `json:"max_unavailable_percent,omitempty"`
+	MaxUnavailablePercent int `json:"maxUnavailablePercent,omitempty" tf:"max_unavailable_percent,omitempty"`
 	// +optional
-	MinReadySec   int    `json:"min_ready_sec,omitempty"`
-	MinimalAction string `json:"minimal_action"`
-	Type          string `json:"type"`
+	MinReadySec   int    `json:"minReadySec,omitempty" tf:"min_ready_sec,omitempty"`
+	MinimalAction string `json:"minimalAction" tf:"minimal_action"`
+	Type          string `json:"type" tf:"type"`
 }
 
 type ComputeInstanceGroupManagerSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	// Deprecated
-	AutoHealingPolicies *[]ComputeInstanceGroupManagerSpec `json:"auto_healing_policies,omitempty"`
-	BaseInstanceName    string                             `json:"base_instance_name"`
+	AutoHealingPolicies []ComputeInstanceGroupManagerSpecAutoHealingPolicies `json:"autoHealingPolicies,omitempty" tf:"auto_healing_policies,omitempty"`
+	BaseInstanceName    string                                               `json:"baseInstanceName" tf:"base_instance_name"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	InstanceTemplate string `json:"instance_template,omitempty"`
-	Name             string `json:"name"`
+	InstanceTemplate string `json:"instanceTemplate,omitempty" tf:"instance_template,omitempty"`
+	Name             string `json:"name" tf:"name"`
 	// +optional
-	NamedPort *[]ComputeInstanceGroupManagerSpec `json:"named_port,omitempty"`
+	NamedPort []ComputeInstanceGroupManagerSpecNamedPort `json:"namedPort,omitempty" tf:"named_port,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	// Deprecated
-	RollingUpdatePolicy *[]ComputeInstanceGroupManagerSpec `json:"rolling_update_policy,omitempty"`
+	RollingUpdatePolicy []ComputeInstanceGroupManagerSpecRollingUpdatePolicy `json:"rollingUpdatePolicy,omitempty" tf:"rolling_update_policy,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	TargetPools []string `json:"target_pools,omitempty"`
+	TargetPools []string `json:"targetPools,omitempty" tf:"target_pools,omitempty"`
 	// +optional
-	UpdateStrategy string `json:"update_strategy,omitempty"`
+	UpdateStrategy string `json:"updateStrategy,omitempty" tf:"update_strategy,omitempty"`
 	// +optional
-	WaitForInstances bool `json:"wait_for_instances,omitempty"`
+	WaitForInstances bool                      `json:"waitForInstances,omitempty" tf:"wait_for_instances,omitempty"`
+	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ComputeInstanceGroupManagerStatus struct {
@@ -74,7 +75,9 @@ type ComputeInstanceGroupManagerStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -3,12 +3,12 @@ package v1alpha1
 import (
 	"encoding/json"
 
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -22,99 +22,100 @@ type MonitoringAlertPolicy struct {
 
 type MonitoringAlertPolicySpecConditionsConditionAbsentAggregations struct {
 	// +optional
-	AlignmentPeriod string `json:"alignment_period,omitempty"`
+	AlignmentPeriod string `json:"alignmentPeriod,omitempty" tf:"alignment_period,omitempty"`
 	// +optional
-	CrossSeriesReducer string `json:"cross_series_reducer,omitempty"`
+	CrossSeriesReducer string `json:"crossSeriesReducer,omitempty" tf:"cross_series_reducer,omitempty"`
 	// +optional
-	GroupByFields []string `json:"group_by_fields,omitempty"`
+	GroupByFields []string `json:"groupByFields,omitempty" tf:"group_by_fields,omitempty"`
 	// +optional
-	PerSeriesAligner string `json:"per_series_aligner,omitempty"`
+	PerSeriesAligner string `json:"perSeriesAligner,omitempty" tf:"per_series_aligner,omitempty"`
 }
 
 type MonitoringAlertPolicySpecConditionsConditionAbsentTrigger struct {
 	// +optional
-	Count int `json:"count,omitempty"`
+	Count int `json:"count,omitempty" tf:"count,omitempty"`
 	// +optional
-	Percent json.Number `json:"percent,omitempty"`
+	Percent json.Number `json:"percent,omitempty" tf:"percent,omitempty"`
 }
 
 type MonitoringAlertPolicySpecConditionsConditionAbsent struct {
 	// +optional
-	Aggregations *[]MonitoringAlertPolicySpecConditionsConditionAbsent `json:"aggregations,omitempty"`
-	Duration     string                                                `json:"duration"`
+	Aggregations []MonitoringAlertPolicySpecConditionsConditionAbsentAggregations `json:"aggregations,omitempty" tf:"aggregations,omitempty"`
+	Duration     string                                                           `json:"duration" tf:"duration"`
 	// +optional
-	Filter string `json:"filter,omitempty"`
+	Filter string `json:"filter,omitempty" tf:"filter,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Trigger *[]MonitoringAlertPolicySpecConditionsConditionAbsent `json:"trigger,omitempty"`
+	Trigger []MonitoringAlertPolicySpecConditionsConditionAbsentTrigger `json:"trigger,omitempty" tf:"trigger,omitempty"`
 }
 
 type MonitoringAlertPolicySpecConditionsConditionThresholdAggregations struct {
 	// +optional
-	AlignmentPeriod string `json:"alignment_period,omitempty"`
+	AlignmentPeriod string `json:"alignmentPeriod,omitempty" tf:"alignment_period,omitempty"`
 	// +optional
-	CrossSeriesReducer string `json:"cross_series_reducer,omitempty"`
+	CrossSeriesReducer string `json:"crossSeriesReducer,omitempty" tf:"cross_series_reducer,omitempty"`
 	// +optional
-	GroupByFields []string `json:"group_by_fields,omitempty"`
+	GroupByFields []string `json:"groupByFields,omitempty" tf:"group_by_fields,omitempty"`
 	// +optional
-	PerSeriesAligner string `json:"per_series_aligner,omitempty"`
+	PerSeriesAligner string `json:"perSeriesAligner,omitempty" tf:"per_series_aligner,omitempty"`
 }
 
 type MonitoringAlertPolicySpecConditionsConditionThresholdDenominatorAggregations struct {
 	// +optional
-	AlignmentPeriod string `json:"alignment_period,omitempty"`
+	AlignmentPeriod string `json:"alignmentPeriod,omitempty" tf:"alignment_period,omitempty"`
 	// +optional
-	CrossSeriesReducer string `json:"cross_series_reducer,omitempty"`
+	CrossSeriesReducer string `json:"crossSeriesReducer,omitempty" tf:"cross_series_reducer,omitempty"`
 	// +optional
-	GroupByFields []string `json:"group_by_fields,omitempty"`
+	GroupByFields []string `json:"groupByFields,omitempty" tf:"group_by_fields,omitempty"`
 	// +optional
-	PerSeriesAligner string `json:"per_series_aligner,omitempty"`
+	PerSeriesAligner string `json:"perSeriesAligner,omitempty" tf:"per_series_aligner,omitempty"`
 }
 
 type MonitoringAlertPolicySpecConditionsConditionThresholdTrigger struct {
 	// +optional
-	Count int `json:"count,omitempty"`
+	Count int `json:"count,omitempty" tf:"count,omitempty"`
 	// +optional
-	Percent json.Number `json:"percent,omitempty"`
+	Percent json.Number `json:"percent,omitempty" tf:"percent,omitempty"`
 }
 
 type MonitoringAlertPolicySpecConditionsConditionThreshold struct {
 	// +optional
-	Aggregations *[]MonitoringAlertPolicySpecConditionsConditionThreshold `json:"aggregations,omitempty"`
-	Comparison   string                                                   `json:"comparison"`
+	Aggregations []MonitoringAlertPolicySpecConditionsConditionThresholdAggregations `json:"aggregations,omitempty" tf:"aggregations,omitempty"`
+	Comparison   string                                                              `json:"comparison" tf:"comparison"`
 	// +optional
-	DenominatorAggregations *[]MonitoringAlertPolicySpecConditionsConditionThreshold `json:"denominator_aggregations,omitempty"`
+	DenominatorAggregations []MonitoringAlertPolicySpecConditionsConditionThresholdDenominatorAggregations `json:"denominatorAggregations,omitempty" tf:"denominator_aggregations,omitempty"`
 	// +optional
-	DenominatorFilter string `json:"denominator_filter,omitempty"`
-	Duration          string `json:"duration"`
+	DenominatorFilter string `json:"denominatorFilter,omitempty" tf:"denominator_filter,omitempty"`
+	Duration          string `json:"duration" tf:"duration"`
 	// +optional
-	Filter string `json:"filter,omitempty"`
+	Filter string `json:"filter,omitempty" tf:"filter,omitempty"`
 	// +optional
-	ThresholdValue json.Number `json:"threshold_value,omitempty"`
+	ThresholdValue json.Number `json:"thresholdValue,omitempty" tf:"threshold_value,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Trigger *[]MonitoringAlertPolicySpecConditionsConditionThreshold `json:"trigger,omitempty"`
+	Trigger []MonitoringAlertPolicySpecConditionsConditionThresholdTrigger `json:"trigger,omitempty" tf:"trigger,omitempty"`
 }
 
 type MonitoringAlertPolicySpecConditions struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ConditionAbsent *[]MonitoringAlertPolicySpecConditions `json:"condition_absent,omitempty"`
+	ConditionAbsent []MonitoringAlertPolicySpecConditionsConditionAbsent `json:"conditionAbsent,omitempty" tf:"condition_absent,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ConditionThreshold *[]MonitoringAlertPolicySpecConditions `json:"condition_threshold,omitempty"`
-	DisplayName        string                                 `json:"display_name"`
+	ConditionThreshold []MonitoringAlertPolicySpecConditionsConditionThreshold `json:"conditionThreshold,omitempty" tf:"condition_threshold,omitempty"`
+	DisplayName        string                                                  `json:"displayName" tf:"display_name"`
 }
 
 type MonitoringAlertPolicySpec struct {
-	Combiner    string                      `json:"combiner"`
-	Conditions  []MonitoringAlertPolicySpec `json:"conditions"`
-	DisplayName string                      `json:"display_name"`
-	Enabled     bool                        `json:"enabled"`
+	Combiner    string                                `json:"combiner" tf:"combiner"`
+	Conditions  []MonitoringAlertPolicySpecConditions `json:"conditions" tf:"conditions"`
+	DisplayName string                                `json:"displayName" tf:"display_name"`
+	Enabled     bool                                  `json:"enabled" tf:"enabled"`
 	// +optional
-	Labels []string `json:"labels,omitempty"`
+	Labels []string `json:"labels,omitempty" tf:"labels,omitempty"`
 	// +optional
-	NotificationChannels []string `json:"notification_channels,omitempty"`
+	NotificationChannels []string                  `json:"notificationChannels,omitempty" tf:"notification_channels,omitempty"`
+	ProviderRef          core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type MonitoringAlertPolicyStatus struct {
@@ -122,7 +123,9 @@ type MonitoringAlertPolicyStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

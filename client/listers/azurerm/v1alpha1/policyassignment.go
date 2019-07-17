@@ -29,8 +29,8 @@ import (
 type PolicyAssignmentLister interface {
 	// List lists all PolicyAssignments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.PolicyAssignment, err error)
-	// Get retrieves the PolicyAssignment from the index for a given name.
-	Get(name string) (*v1alpha1.PolicyAssignment, error)
+	// PolicyAssignments returns an object that can list and get PolicyAssignments.
+	PolicyAssignments(namespace string) PolicyAssignmentNamespaceLister
 	PolicyAssignmentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *policyAssignmentLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the PolicyAssignment from the index for a given name.
-func (s *policyAssignmentLister) Get(name string) (*v1alpha1.PolicyAssignment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// PolicyAssignments returns an object that can list and get PolicyAssignments.
+func (s *policyAssignmentLister) PolicyAssignments(namespace string) PolicyAssignmentNamespaceLister {
+	return policyAssignmentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// PolicyAssignmentNamespaceLister helps list and get PolicyAssignments.
+type PolicyAssignmentNamespaceLister interface {
+	// List lists all PolicyAssignments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.PolicyAssignment, err error)
+	// Get retrieves the PolicyAssignment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.PolicyAssignment, error)
+	PolicyAssignmentNamespaceListerExpansion
+}
+
+// policyAssignmentNamespaceLister implements the PolicyAssignmentNamespaceLister
+// interface.
+type policyAssignmentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all PolicyAssignments in the indexer for a given namespace.
+func (s policyAssignmentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.PolicyAssignment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.PolicyAssignment))
+	})
+	return ret, err
+}
+
+// Get retrieves the PolicyAssignment from the indexer for a given namespace and name.
+func (s policyAssignmentNamespaceLister) Get(name string) (*v1alpha1.PolicyAssignment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

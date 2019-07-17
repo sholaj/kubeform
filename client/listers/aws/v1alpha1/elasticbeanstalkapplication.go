@@ -29,8 +29,8 @@ import (
 type ElasticBeanstalkApplicationLister interface {
 	// List lists all ElasticBeanstalkApplications in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ElasticBeanstalkApplication, err error)
-	// Get retrieves the ElasticBeanstalkApplication from the index for a given name.
-	Get(name string) (*v1alpha1.ElasticBeanstalkApplication, error)
+	// ElasticBeanstalkApplications returns an object that can list and get ElasticBeanstalkApplications.
+	ElasticBeanstalkApplications(namespace string) ElasticBeanstalkApplicationNamespaceLister
 	ElasticBeanstalkApplicationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *elasticBeanstalkApplicationLister) List(selector labels.Selector) (ret 
 	return ret, err
 }
 
-// Get retrieves the ElasticBeanstalkApplication from the index for a given name.
-func (s *elasticBeanstalkApplicationLister) Get(name string) (*v1alpha1.ElasticBeanstalkApplication, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ElasticBeanstalkApplications returns an object that can list and get ElasticBeanstalkApplications.
+func (s *elasticBeanstalkApplicationLister) ElasticBeanstalkApplications(namespace string) ElasticBeanstalkApplicationNamespaceLister {
+	return elasticBeanstalkApplicationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ElasticBeanstalkApplicationNamespaceLister helps list and get ElasticBeanstalkApplications.
+type ElasticBeanstalkApplicationNamespaceLister interface {
+	// List lists all ElasticBeanstalkApplications in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ElasticBeanstalkApplication, err error)
+	// Get retrieves the ElasticBeanstalkApplication from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ElasticBeanstalkApplication, error)
+	ElasticBeanstalkApplicationNamespaceListerExpansion
+}
+
+// elasticBeanstalkApplicationNamespaceLister implements the ElasticBeanstalkApplicationNamespaceLister
+// interface.
+type elasticBeanstalkApplicationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ElasticBeanstalkApplications in the indexer for a given namespace.
+func (s elasticBeanstalkApplicationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ElasticBeanstalkApplication, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ElasticBeanstalkApplication))
+	})
+	return ret, err
+}
+
+// Get retrieves the ElasticBeanstalkApplication from the indexer for a given namespace and name.
+func (s elasticBeanstalkApplicationNamespaceLister) Get(name string) (*v1alpha1.ElasticBeanstalkApplication, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

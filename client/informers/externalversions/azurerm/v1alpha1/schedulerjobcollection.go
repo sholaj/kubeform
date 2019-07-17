@@ -41,32 +41,33 @@ type SchedulerJobCollectionInformer interface {
 type schedulerJobCollectionInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSchedulerJobCollectionInformer constructs a new informer for SchedulerJobCollection type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSchedulerJobCollectionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSchedulerJobCollectionInformer(client, resyncPeriod, indexers, nil)
+func NewSchedulerJobCollectionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSchedulerJobCollectionInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSchedulerJobCollectionInformer constructs a new informer for SchedulerJobCollection type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSchedulerJobCollectionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSchedulerJobCollectionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().SchedulerJobCollections().List(options)
+				return client.AzurermV1alpha1().SchedulerJobCollections(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().SchedulerJobCollections().Watch(options)
+				return client.AzurermV1alpha1().SchedulerJobCollections(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.SchedulerJobCollection{},
@@ -76,7 +77,7 @@ func NewFilteredSchedulerJobCollectionInformer(client versioned.Interface, resyn
 }
 
 func (f *schedulerJobCollectionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSchedulerJobCollectionInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSchedulerJobCollectionInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *schedulerJobCollectionInformer) Informer() cache.SharedIndexInformer {

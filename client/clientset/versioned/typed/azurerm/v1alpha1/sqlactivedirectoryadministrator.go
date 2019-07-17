@@ -32,7 +32,7 @@ import (
 // SqlActiveDirectoryAdministratorsGetter has a method to return a SqlActiveDirectoryAdministratorInterface.
 // A group's client should implement this interface.
 type SqlActiveDirectoryAdministratorsGetter interface {
-	SqlActiveDirectoryAdministrators() SqlActiveDirectoryAdministratorInterface
+	SqlActiveDirectoryAdministrators(namespace string) SqlActiveDirectoryAdministratorInterface
 }
 
 // SqlActiveDirectoryAdministratorInterface has methods to work with SqlActiveDirectoryAdministrator resources.
@@ -52,12 +52,14 @@ type SqlActiveDirectoryAdministratorInterface interface {
 // sqlActiveDirectoryAdministrators implements SqlActiveDirectoryAdministratorInterface
 type sqlActiveDirectoryAdministrators struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSqlActiveDirectoryAdministrators returns a SqlActiveDirectoryAdministrators
-func newSqlActiveDirectoryAdministrators(c *AzurermV1alpha1Client) *sqlActiveDirectoryAdministrators {
+func newSqlActiveDirectoryAdministrators(c *AzurermV1alpha1Client, namespace string) *sqlActiveDirectoryAdministrators {
 	return &sqlActiveDirectoryAdministrators{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSqlActiveDirectoryAdministrators(c *AzurermV1alpha1Client) *sqlActiveDir
 func (c *sqlActiveDirectoryAdministrators) Get(name string, options v1.GetOptions) (result *v1alpha1.SqlActiveDirectoryAdministrator, err error) {
 	result = &v1alpha1.SqlActiveDirectoryAdministrator{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlactivedirectoryadministrators").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sqlActiveDirectoryAdministrators) List(opts v1.ListOptions) (result *v1
 	}
 	result = &v1alpha1.SqlActiveDirectoryAdministratorList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlactivedirectoryadministrators").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sqlActiveDirectoryAdministrators) Watch(opts v1.ListOptions) (watch.Int
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sqlactivedirectoryadministrators").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sqlActiveDirectoryAdministrators) Watch(opts v1.ListOptions) (watch.Int
 func (c *sqlActiveDirectoryAdministrators) Create(sqlActiveDirectoryAdministrator *v1alpha1.SqlActiveDirectoryAdministrator) (result *v1alpha1.SqlActiveDirectoryAdministrator, err error) {
 	result = &v1alpha1.SqlActiveDirectoryAdministrator{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sqlactivedirectoryadministrators").
 		Body(sqlActiveDirectoryAdministrator).
 		Do().
@@ -118,6 +124,7 @@ func (c *sqlActiveDirectoryAdministrators) Create(sqlActiveDirectoryAdministrato
 func (c *sqlActiveDirectoryAdministrators) Update(sqlActiveDirectoryAdministrator *v1alpha1.SqlActiveDirectoryAdministrator) (result *v1alpha1.SqlActiveDirectoryAdministrator, err error) {
 	result = &v1alpha1.SqlActiveDirectoryAdministrator{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqlactivedirectoryadministrators").
 		Name(sqlActiveDirectoryAdministrator.Name).
 		Body(sqlActiveDirectoryAdministrator).
@@ -132,6 +139,7 @@ func (c *sqlActiveDirectoryAdministrators) Update(sqlActiveDirectoryAdministrato
 func (c *sqlActiveDirectoryAdministrators) UpdateStatus(sqlActiveDirectoryAdministrator *v1alpha1.SqlActiveDirectoryAdministrator) (result *v1alpha1.SqlActiveDirectoryAdministrator, err error) {
 	result = &v1alpha1.SqlActiveDirectoryAdministrator{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sqlactivedirectoryadministrators").
 		Name(sqlActiveDirectoryAdministrator.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sqlActiveDirectoryAdministrators) UpdateStatus(sqlActiveDirectoryAdmini
 // Delete takes name of the sqlActiveDirectoryAdministrator and deletes it. Returns an error if one occurs.
 func (c *sqlActiveDirectoryAdministrators) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqlactivedirectoryadministrators").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sqlActiveDirectoryAdministrators) DeleteCollection(options *v1.DeleteOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sqlactivedirectoryadministrators").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sqlActiveDirectoryAdministrators) DeleteCollection(options *v1.DeleteOp
 func (c *sqlActiveDirectoryAdministrators) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SqlActiveDirectoryAdministrator, err error) {
 	result = &v1alpha1.SqlActiveDirectoryAdministrator{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sqlactivedirectoryadministrators").
 		SubResource(subresources...).
 		Name(name).

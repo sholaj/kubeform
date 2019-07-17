@@ -41,32 +41,33 @@ type DataLakeAnalyticsAccountInformer interface {
 type dataLakeAnalyticsAccountInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDataLakeAnalyticsAccountInformer constructs a new informer for DataLakeAnalyticsAccount type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDataLakeAnalyticsAccountInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDataLakeAnalyticsAccountInformer(client, resyncPeriod, indexers, nil)
+func NewDataLakeAnalyticsAccountInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDataLakeAnalyticsAccountInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDataLakeAnalyticsAccountInformer constructs a new informer for DataLakeAnalyticsAccount type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDataLakeAnalyticsAccountInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDataLakeAnalyticsAccountInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DataLakeAnalyticsAccounts().List(options)
+				return client.AzurermV1alpha1().DataLakeAnalyticsAccounts(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DataLakeAnalyticsAccounts().Watch(options)
+				return client.AzurermV1alpha1().DataLakeAnalyticsAccounts(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.DataLakeAnalyticsAccount{},
@@ -76,7 +77,7 @@ func NewFilteredDataLakeAnalyticsAccountInformer(client versioned.Interface, res
 }
 
 func (f *dataLakeAnalyticsAccountInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDataLakeAnalyticsAccountInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDataLakeAnalyticsAccountInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *dataLakeAnalyticsAccountInformer) Informer() cache.SharedIndexInformer {

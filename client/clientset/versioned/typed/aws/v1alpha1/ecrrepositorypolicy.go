@@ -32,7 +32,7 @@ import (
 // EcrRepositoryPoliciesGetter has a method to return a EcrRepositoryPolicyInterface.
 // A group's client should implement this interface.
 type EcrRepositoryPoliciesGetter interface {
-	EcrRepositoryPolicies() EcrRepositoryPolicyInterface
+	EcrRepositoryPolicies(namespace string) EcrRepositoryPolicyInterface
 }
 
 // EcrRepositoryPolicyInterface has methods to work with EcrRepositoryPolicy resources.
@@ -52,12 +52,14 @@ type EcrRepositoryPolicyInterface interface {
 // ecrRepositoryPolicies implements EcrRepositoryPolicyInterface
 type ecrRepositoryPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEcrRepositoryPolicies returns a EcrRepositoryPolicies
-func newEcrRepositoryPolicies(c *AwsV1alpha1Client) *ecrRepositoryPolicies {
+func newEcrRepositoryPolicies(c *AwsV1alpha1Client, namespace string) *ecrRepositoryPolicies {
 	return &ecrRepositoryPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEcrRepositoryPolicies(c *AwsV1alpha1Client) *ecrRepositoryPolicies {
 func (c *ecrRepositoryPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.EcrRepositoryPolicy, err error) {
 	result = &v1alpha1.EcrRepositoryPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ecrrepositorypolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ecrRepositoryPolicies) List(opts v1.ListOptions) (result *v1alpha1.EcrR
 	}
 	result = &v1alpha1.EcrRepositoryPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ecrrepositorypolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ecrRepositoryPolicies) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ecrrepositorypolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ecrRepositoryPolicies) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *ecrRepositoryPolicies) Create(ecrRepositoryPolicy *v1alpha1.EcrRepositoryPolicy) (result *v1alpha1.EcrRepositoryPolicy, err error) {
 	result = &v1alpha1.EcrRepositoryPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ecrrepositorypolicies").
 		Body(ecrRepositoryPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *ecrRepositoryPolicies) Create(ecrRepositoryPolicy *v1alpha1.EcrReposito
 func (c *ecrRepositoryPolicies) Update(ecrRepositoryPolicy *v1alpha1.EcrRepositoryPolicy) (result *v1alpha1.EcrRepositoryPolicy, err error) {
 	result = &v1alpha1.EcrRepositoryPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ecrrepositorypolicies").
 		Name(ecrRepositoryPolicy.Name).
 		Body(ecrRepositoryPolicy).
@@ -132,6 +139,7 @@ func (c *ecrRepositoryPolicies) Update(ecrRepositoryPolicy *v1alpha1.EcrReposito
 func (c *ecrRepositoryPolicies) UpdateStatus(ecrRepositoryPolicy *v1alpha1.EcrRepositoryPolicy) (result *v1alpha1.EcrRepositoryPolicy, err error) {
 	result = &v1alpha1.EcrRepositoryPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ecrrepositorypolicies").
 		Name(ecrRepositoryPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ecrRepositoryPolicies) UpdateStatus(ecrRepositoryPolicy *v1alpha1.EcrRe
 // Delete takes name of the ecrRepositoryPolicy and deletes it. Returns an error if one occurs.
 func (c *ecrRepositoryPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ecrrepositorypolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ecrRepositoryPolicies) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ecrrepositorypolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ecrRepositoryPolicies) DeleteCollection(options *v1.DeleteOptions, list
 func (c *ecrRepositoryPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EcrRepositoryPolicy, err error) {
 	result = &v1alpha1.EcrRepositoryPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ecrrepositorypolicies").
 		SubResource(subresources...).
 		Name(name).

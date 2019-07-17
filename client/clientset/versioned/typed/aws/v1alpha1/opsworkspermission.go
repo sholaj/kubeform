@@ -32,7 +32,7 @@ import (
 // OpsworksPermissionsGetter has a method to return a OpsworksPermissionInterface.
 // A group's client should implement this interface.
 type OpsworksPermissionsGetter interface {
-	OpsworksPermissions() OpsworksPermissionInterface
+	OpsworksPermissions(namespace string) OpsworksPermissionInterface
 }
 
 // OpsworksPermissionInterface has methods to work with OpsworksPermission resources.
@@ -52,12 +52,14 @@ type OpsworksPermissionInterface interface {
 // opsworksPermissions implements OpsworksPermissionInterface
 type opsworksPermissions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOpsworksPermissions returns a OpsworksPermissions
-func newOpsworksPermissions(c *AwsV1alpha1Client) *opsworksPermissions {
+func newOpsworksPermissions(c *AwsV1alpha1Client, namespace string) *opsworksPermissions {
 	return &opsworksPermissions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOpsworksPermissions(c *AwsV1alpha1Client) *opsworksPermissions {
 func (c *opsworksPermissions) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksPermission, err error) {
 	result = &v1alpha1.OpsworksPermission{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworkspermissions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *opsworksPermissions) List(opts v1.ListOptions) (result *v1alpha1.Opswor
 	}
 	result = &v1alpha1.OpsworksPermissionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworkspermissions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *opsworksPermissions) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworkspermissions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *opsworksPermissions) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *opsworksPermissions) Create(opsworksPermission *v1alpha1.OpsworksPermission) (result *v1alpha1.OpsworksPermission, err error) {
 	result = &v1alpha1.OpsworksPermission{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("opsworkspermissions").
 		Body(opsworksPermission).
 		Do().
@@ -118,6 +124,7 @@ func (c *opsworksPermissions) Create(opsworksPermission *v1alpha1.OpsworksPermis
 func (c *opsworksPermissions) Update(opsworksPermission *v1alpha1.OpsworksPermission) (result *v1alpha1.OpsworksPermission, err error) {
 	result = &v1alpha1.OpsworksPermission{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworkspermissions").
 		Name(opsworksPermission.Name).
 		Body(opsworksPermission).
@@ -132,6 +139,7 @@ func (c *opsworksPermissions) Update(opsworksPermission *v1alpha1.OpsworksPermis
 func (c *opsworksPermissions) UpdateStatus(opsworksPermission *v1alpha1.OpsworksPermission) (result *v1alpha1.OpsworksPermission, err error) {
 	result = &v1alpha1.OpsworksPermission{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworkspermissions").
 		Name(opsworksPermission.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *opsworksPermissions) UpdateStatus(opsworksPermission *v1alpha1.Opsworks
 // Delete takes name of the opsworksPermission and deletes it. Returns an error if one occurs.
 func (c *opsworksPermissions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworkspermissions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *opsworksPermissions) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworkspermissions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *opsworksPermissions) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *opsworksPermissions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksPermission, err error) {
 	result = &v1alpha1.OpsworksPermission{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("opsworkspermissions").
 		SubResource(subresources...).
 		Name(name).

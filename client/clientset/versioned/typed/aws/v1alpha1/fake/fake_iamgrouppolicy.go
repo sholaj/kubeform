@@ -31,6 +31,7 @@ import (
 // FakeIamGroupPolicies implements IamGroupPolicyInterface
 type FakeIamGroupPolicies struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var iamgrouppoliciesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "iamgrouppolicies"}
@@ -40,7 +41,8 @@ var iamgrouppoliciesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ve
 // Get takes name of the iamGroupPolicy, and returns the corresponding iamGroupPolicy object, and an error if there is any.
 func (c *FakeIamGroupPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.IamGroupPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iamgrouppoliciesResource, name), &v1alpha1.IamGroupPolicy{})
+		Invokes(testing.NewGetAction(iamgrouppoliciesResource, c.ns, name), &v1alpha1.IamGroupPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIamGroupPolicies) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of IamGroupPolicies that match those selectors.
 func (c *FakeIamGroupPolicies) List(opts v1.ListOptions) (result *v1alpha1.IamGroupPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iamgrouppoliciesResource, iamgrouppoliciesKind, opts), &v1alpha1.IamGroupPolicyList{})
+		Invokes(testing.NewListAction(iamgrouppoliciesResource, iamgrouppoliciesKind, c.ns, opts), &v1alpha1.IamGroupPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIamGroupPolicies) List(opts v1.ListOptions) (result *v1alpha1.IamGr
 // Watch returns a watch.Interface that watches the requested iamGroupPolicies.
 func (c *FakeIamGroupPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iamgrouppoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(iamgrouppoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iamGroupPolicy and creates it.  Returns the server's representation of the iamGroupPolicy, and an error, if there is any.
 func (c *FakeIamGroupPolicies) Create(iamGroupPolicy *v1alpha1.IamGroupPolicy) (result *v1alpha1.IamGroupPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iamgrouppoliciesResource, iamGroupPolicy), &v1alpha1.IamGroupPolicy{})
+		Invokes(testing.NewCreateAction(iamgrouppoliciesResource, c.ns, iamGroupPolicy), &v1alpha1.IamGroupPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIamGroupPolicies) Create(iamGroupPolicy *v1alpha1.IamGroupPolicy) (
 // Update takes the representation of a iamGroupPolicy and updates it. Returns the server's representation of the iamGroupPolicy, and an error, if there is any.
 func (c *FakeIamGroupPolicies) Update(iamGroupPolicy *v1alpha1.IamGroupPolicy) (result *v1alpha1.IamGroupPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iamgrouppoliciesResource, iamGroupPolicy), &v1alpha1.IamGroupPolicy{})
+		Invokes(testing.NewUpdateAction(iamgrouppoliciesResource, c.ns, iamGroupPolicy), &v1alpha1.IamGroupPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIamGroupPolicies) Update(iamGroupPolicy *v1alpha1.IamGroupPolicy) (
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIamGroupPolicies) UpdateStatus(iamGroupPolicy *v1alpha1.IamGroupPolicy) (*v1alpha1.IamGroupPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iamgrouppoliciesResource, "status", iamGroupPolicy), &v1alpha1.IamGroupPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(iamgrouppoliciesResource, "status", c.ns, iamGroupPolicy), &v1alpha1.IamGroupPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIamGroupPolicies) UpdateStatus(iamGroupPolicy *v1alpha1.IamGroupPol
 // Delete takes name of the iamGroupPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeIamGroupPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iamgrouppoliciesResource, name), &v1alpha1.IamGroupPolicy{})
+		Invokes(testing.NewDeleteAction(iamgrouppoliciesResource, c.ns, name), &v1alpha1.IamGroupPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIamGroupPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iamgrouppoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iamgrouppoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IamGroupPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIamGroupPolicies) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched iamGroupPolicy.
 func (c *FakeIamGroupPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamGroupPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iamgrouppoliciesResource, name, pt, data, subresources...), &v1alpha1.IamGroupPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(iamgrouppoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.IamGroupPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

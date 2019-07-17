@@ -29,8 +29,8 @@ import (
 type ExpressRouteCircuitAuthorizationLister interface {
 	// List lists all ExpressRouteCircuitAuthorizations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ExpressRouteCircuitAuthorization, err error)
-	// Get retrieves the ExpressRouteCircuitAuthorization from the index for a given name.
-	Get(name string) (*v1alpha1.ExpressRouteCircuitAuthorization, error)
+	// ExpressRouteCircuitAuthorizations returns an object that can list and get ExpressRouteCircuitAuthorizations.
+	ExpressRouteCircuitAuthorizations(namespace string) ExpressRouteCircuitAuthorizationNamespaceLister
 	ExpressRouteCircuitAuthorizationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *expressRouteCircuitAuthorizationLister) List(selector labels.Selector) 
 	return ret, err
 }
 
-// Get retrieves the ExpressRouteCircuitAuthorization from the index for a given name.
-func (s *expressRouteCircuitAuthorizationLister) Get(name string) (*v1alpha1.ExpressRouteCircuitAuthorization, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ExpressRouteCircuitAuthorizations returns an object that can list and get ExpressRouteCircuitAuthorizations.
+func (s *expressRouteCircuitAuthorizationLister) ExpressRouteCircuitAuthorizations(namespace string) ExpressRouteCircuitAuthorizationNamespaceLister {
+	return expressRouteCircuitAuthorizationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ExpressRouteCircuitAuthorizationNamespaceLister helps list and get ExpressRouteCircuitAuthorizations.
+type ExpressRouteCircuitAuthorizationNamespaceLister interface {
+	// List lists all ExpressRouteCircuitAuthorizations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ExpressRouteCircuitAuthorization, err error)
+	// Get retrieves the ExpressRouteCircuitAuthorization from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ExpressRouteCircuitAuthorization, error)
+	ExpressRouteCircuitAuthorizationNamespaceListerExpansion
+}
+
+// expressRouteCircuitAuthorizationNamespaceLister implements the ExpressRouteCircuitAuthorizationNamespaceLister
+// interface.
+type expressRouteCircuitAuthorizationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ExpressRouteCircuitAuthorizations in the indexer for a given namespace.
+func (s expressRouteCircuitAuthorizationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ExpressRouteCircuitAuthorization, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ExpressRouteCircuitAuthorization))
+	})
+	return ret, err
+}
+
+// Get retrieves the ExpressRouteCircuitAuthorization from the indexer for a given namespace and name.
+func (s expressRouteCircuitAuthorizationNamespaceLister) Get(name string) (*v1alpha1.ExpressRouteCircuitAuthorization, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

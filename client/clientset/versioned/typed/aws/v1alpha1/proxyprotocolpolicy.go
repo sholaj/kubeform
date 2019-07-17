@@ -32,7 +32,7 @@ import (
 // ProxyProtocolPoliciesGetter has a method to return a ProxyProtocolPolicyInterface.
 // A group's client should implement this interface.
 type ProxyProtocolPoliciesGetter interface {
-	ProxyProtocolPolicies() ProxyProtocolPolicyInterface
+	ProxyProtocolPolicies(namespace string) ProxyProtocolPolicyInterface
 }
 
 // ProxyProtocolPolicyInterface has methods to work with ProxyProtocolPolicy resources.
@@ -52,12 +52,14 @@ type ProxyProtocolPolicyInterface interface {
 // proxyProtocolPolicies implements ProxyProtocolPolicyInterface
 type proxyProtocolPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newProxyProtocolPolicies returns a ProxyProtocolPolicies
-func newProxyProtocolPolicies(c *AwsV1alpha1Client) *proxyProtocolPolicies {
+func newProxyProtocolPolicies(c *AwsV1alpha1Client, namespace string) *proxyProtocolPolicies {
 	return &proxyProtocolPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newProxyProtocolPolicies(c *AwsV1alpha1Client) *proxyProtocolPolicies {
 func (c *proxyProtocolPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.ProxyProtocolPolicy, err error) {
 	result = &v1alpha1.ProxyProtocolPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("proxyprotocolpolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *proxyProtocolPolicies) List(opts v1.ListOptions) (result *v1alpha1.Prox
 	}
 	result = &v1alpha1.ProxyProtocolPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("proxyprotocolpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *proxyProtocolPolicies) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("proxyprotocolpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *proxyProtocolPolicies) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *proxyProtocolPolicies) Create(proxyProtocolPolicy *v1alpha1.ProxyProtocolPolicy) (result *v1alpha1.ProxyProtocolPolicy, err error) {
 	result = &v1alpha1.ProxyProtocolPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("proxyprotocolpolicies").
 		Body(proxyProtocolPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *proxyProtocolPolicies) Create(proxyProtocolPolicy *v1alpha1.ProxyProtoc
 func (c *proxyProtocolPolicies) Update(proxyProtocolPolicy *v1alpha1.ProxyProtocolPolicy) (result *v1alpha1.ProxyProtocolPolicy, err error) {
 	result = &v1alpha1.ProxyProtocolPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("proxyprotocolpolicies").
 		Name(proxyProtocolPolicy.Name).
 		Body(proxyProtocolPolicy).
@@ -132,6 +139,7 @@ func (c *proxyProtocolPolicies) Update(proxyProtocolPolicy *v1alpha1.ProxyProtoc
 func (c *proxyProtocolPolicies) UpdateStatus(proxyProtocolPolicy *v1alpha1.ProxyProtocolPolicy) (result *v1alpha1.ProxyProtocolPolicy, err error) {
 	result = &v1alpha1.ProxyProtocolPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("proxyprotocolpolicies").
 		Name(proxyProtocolPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *proxyProtocolPolicies) UpdateStatus(proxyProtocolPolicy *v1alpha1.Proxy
 // Delete takes name of the proxyProtocolPolicy and deletes it. Returns an error if one occurs.
 func (c *proxyProtocolPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("proxyprotocolpolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *proxyProtocolPolicies) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("proxyprotocolpolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *proxyProtocolPolicies) DeleteCollection(options *v1.DeleteOptions, list
 func (c *proxyProtocolPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ProxyProtocolPolicy, err error) {
 	result = &v1alpha1.ProxyProtocolPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("proxyprotocolpolicies").
 		SubResource(subresources...).
 		Name(name).

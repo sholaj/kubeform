@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,15 +19,16 @@ type ApiManagementOpenidConnectProvider struct {
 }
 
 type ApiManagementOpenidConnectProviderSpec struct {
-	ApiManagementName string `json:"api_management_name"`
-	ClientId          string `json:"client_id"`
-	ClientSecret      string `json:"client_secret"`
+	ApiManagementName string `json:"apiManagementName" tf:"api_management_name"`
+	ClientID          string `json:"clientID" tf:"client_id"`
+	ClientSecret      string `json:"clientSecret" tf:"client_secret"`
 	// +optional
-	Description       string `json:"description,omitempty"`
-	DisplayName       string `json:"display_name"`
-	MetadataEndpoint  string `json:"metadata_endpoint"`
-	Name              string `json:"name"`
-	ResourceGroupName string `json:"resource_group_name"`
+	Description       string                    `json:"description,omitempty" tf:"description,omitempty"`
+	DisplayName       string                    `json:"displayName" tf:"display_name"`
+	MetadataEndpoint  string                    `json:"metadataEndpoint" tf:"metadata_endpoint"`
+	Name              string                    `json:"name" tf:"name"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ApiManagementOpenidConnectProviderStatus struct {
@@ -35,7 +36,9 @@ type ApiManagementOpenidConnectProviderStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

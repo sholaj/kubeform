@@ -32,7 +32,7 @@ import (
 // ComputeFirewallsGetter has a method to return a ComputeFirewallInterface.
 // A group's client should implement this interface.
 type ComputeFirewallsGetter interface {
-	ComputeFirewalls() ComputeFirewallInterface
+	ComputeFirewalls(namespace string) ComputeFirewallInterface
 }
 
 // ComputeFirewallInterface has methods to work with ComputeFirewall resources.
@@ -52,12 +52,14 @@ type ComputeFirewallInterface interface {
 // computeFirewalls implements ComputeFirewallInterface
 type computeFirewalls struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeFirewalls returns a ComputeFirewalls
-func newComputeFirewalls(c *GoogleV1alpha1Client) *computeFirewalls {
+func newComputeFirewalls(c *GoogleV1alpha1Client, namespace string) *computeFirewalls {
 	return &computeFirewalls{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeFirewalls(c *GoogleV1alpha1Client) *computeFirewalls {
 func (c *computeFirewalls) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeFirewall, err error) {
 	result = &v1alpha1.ComputeFirewall{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computefirewalls").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeFirewalls) List(opts v1.ListOptions) (result *v1alpha1.ComputeFi
 	}
 	result = &v1alpha1.ComputeFirewallList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computefirewalls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeFirewalls) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computefirewalls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeFirewalls) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *computeFirewalls) Create(computeFirewall *v1alpha1.ComputeFirewall) (result *v1alpha1.ComputeFirewall, err error) {
 	result = &v1alpha1.ComputeFirewall{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computefirewalls").
 		Body(computeFirewall).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeFirewalls) Create(computeFirewall *v1alpha1.ComputeFirewall) (re
 func (c *computeFirewalls) Update(computeFirewall *v1alpha1.ComputeFirewall) (result *v1alpha1.ComputeFirewall, err error) {
 	result = &v1alpha1.ComputeFirewall{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computefirewalls").
 		Name(computeFirewall.Name).
 		Body(computeFirewall).
@@ -132,6 +139,7 @@ func (c *computeFirewalls) Update(computeFirewall *v1alpha1.ComputeFirewall) (re
 func (c *computeFirewalls) UpdateStatus(computeFirewall *v1alpha1.ComputeFirewall) (result *v1alpha1.ComputeFirewall, err error) {
 	result = &v1alpha1.ComputeFirewall{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computefirewalls").
 		Name(computeFirewall.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeFirewalls) UpdateStatus(computeFirewall *v1alpha1.ComputeFirewal
 // Delete takes name of the computeFirewall and deletes it. Returns an error if one occurs.
 func (c *computeFirewalls) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computefirewalls").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeFirewalls) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computefirewalls").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeFirewalls) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *computeFirewalls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeFirewall, err error) {
 	result = &v1alpha1.ComputeFirewall{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computefirewalls").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // ComputeTargetPoolsGetter has a method to return a ComputeTargetPoolInterface.
 // A group's client should implement this interface.
 type ComputeTargetPoolsGetter interface {
-	ComputeTargetPools() ComputeTargetPoolInterface
+	ComputeTargetPools(namespace string) ComputeTargetPoolInterface
 }
 
 // ComputeTargetPoolInterface has methods to work with ComputeTargetPool resources.
@@ -52,12 +52,14 @@ type ComputeTargetPoolInterface interface {
 // computeTargetPools implements ComputeTargetPoolInterface
 type computeTargetPools struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeTargetPools returns a ComputeTargetPools
-func newComputeTargetPools(c *GoogleV1alpha1Client) *computeTargetPools {
+func newComputeTargetPools(c *GoogleV1alpha1Client, namespace string) *computeTargetPools {
 	return &computeTargetPools{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeTargetPools(c *GoogleV1alpha1Client) *computeTargetPools {
 func (c *computeTargetPools) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeTargetPool, err error) {
 	result = &v1alpha1.ComputeTargetPool{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computetargetpools").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeTargetPools) List(opts v1.ListOptions) (result *v1alpha1.Compute
 	}
 	result = &v1alpha1.ComputeTargetPoolList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computetargetpools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeTargetPools) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computetargetpools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeTargetPools) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *computeTargetPools) Create(computeTargetPool *v1alpha1.ComputeTargetPool) (result *v1alpha1.ComputeTargetPool, err error) {
 	result = &v1alpha1.ComputeTargetPool{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computetargetpools").
 		Body(computeTargetPool).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeTargetPools) Create(computeTargetPool *v1alpha1.ComputeTargetPoo
 func (c *computeTargetPools) Update(computeTargetPool *v1alpha1.ComputeTargetPool) (result *v1alpha1.ComputeTargetPool, err error) {
 	result = &v1alpha1.ComputeTargetPool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computetargetpools").
 		Name(computeTargetPool.Name).
 		Body(computeTargetPool).
@@ -132,6 +139,7 @@ func (c *computeTargetPools) Update(computeTargetPool *v1alpha1.ComputeTargetPoo
 func (c *computeTargetPools) UpdateStatus(computeTargetPool *v1alpha1.ComputeTargetPool) (result *v1alpha1.ComputeTargetPool, err error) {
 	result = &v1alpha1.ComputeTargetPool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computetargetpools").
 		Name(computeTargetPool.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeTargetPools) UpdateStatus(computeTargetPool *v1alpha1.ComputeTar
 // Delete takes name of the computeTargetPool and deletes it. Returns an error if one occurs.
 func (c *computeTargetPools) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computetargetpools").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeTargetPools) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computetargetpools").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeTargetPools) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *computeTargetPools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeTargetPool, err error) {
 	result = &v1alpha1.ComputeTargetPool{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computetargetpools").
 		SubResource(subresources...).
 		Name(name).

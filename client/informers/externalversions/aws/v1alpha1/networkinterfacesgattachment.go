@@ -41,32 +41,33 @@ type NetworkInterfaceSgAttachmentInformer interface {
 type networkInterfaceSgAttachmentInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewNetworkInterfaceSgAttachmentInformer constructs a new informer for NetworkInterfaceSgAttachment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewNetworkInterfaceSgAttachmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredNetworkInterfaceSgAttachmentInformer(client, resyncPeriod, indexers, nil)
+func NewNetworkInterfaceSgAttachmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredNetworkInterfaceSgAttachmentInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredNetworkInterfaceSgAttachmentInformer constructs a new informer for NetworkInterfaceSgAttachment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredNetworkInterfaceSgAttachmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredNetworkInterfaceSgAttachmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().NetworkInterfaceSgAttachments().List(options)
+				return client.AwsV1alpha1().NetworkInterfaceSgAttachments(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().NetworkInterfaceSgAttachments().Watch(options)
+				return client.AwsV1alpha1().NetworkInterfaceSgAttachments(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.NetworkInterfaceSgAttachment{},
@@ -76,7 +77,7 @@ func NewFilteredNetworkInterfaceSgAttachmentInformer(client versioned.Interface,
 }
 
 func (f *networkInterfaceSgAttachmentInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredNetworkInterfaceSgAttachmentInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredNetworkInterfaceSgAttachmentInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *networkInterfaceSgAttachmentInformer) Informer() cache.SharedIndexInformer {

@@ -32,7 +32,7 @@ import (
 // ComputeNetworksGetter has a method to return a ComputeNetworkInterface.
 // A group's client should implement this interface.
 type ComputeNetworksGetter interface {
-	ComputeNetworks() ComputeNetworkInterface
+	ComputeNetworks(namespace string) ComputeNetworkInterface
 }
 
 // ComputeNetworkInterface has methods to work with ComputeNetwork resources.
@@ -52,12 +52,14 @@ type ComputeNetworkInterface interface {
 // computeNetworks implements ComputeNetworkInterface
 type computeNetworks struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeNetworks returns a ComputeNetworks
-func newComputeNetworks(c *GoogleV1alpha1Client) *computeNetworks {
+func newComputeNetworks(c *GoogleV1alpha1Client, namespace string) *computeNetworks {
 	return &computeNetworks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeNetworks(c *GoogleV1alpha1Client) *computeNetworks {
 func (c *computeNetworks) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeNetwork, err error) {
 	result = &v1alpha1.ComputeNetwork{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computenetworks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeNetworks) List(opts v1.ListOptions) (result *v1alpha1.ComputeNet
 	}
 	result = &v1alpha1.ComputeNetworkList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computenetworks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeNetworks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computenetworks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeNetworks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *computeNetworks) Create(computeNetwork *v1alpha1.ComputeNetwork) (result *v1alpha1.ComputeNetwork, err error) {
 	result = &v1alpha1.ComputeNetwork{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computenetworks").
 		Body(computeNetwork).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeNetworks) Create(computeNetwork *v1alpha1.ComputeNetwork) (resul
 func (c *computeNetworks) Update(computeNetwork *v1alpha1.ComputeNetwork) (result *v1alpha1.ComputeNetwork, err error) {
 	result = &v1alpha1.ComputeNetwork{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computenetworks").
 		Name(computeNetwork.Name).
 		Body(computeNetwork).
@@ -132,6 +139,7 @@ func (c *computeNetworks) Update(computeNetwork *v1alpha1.ComputeNetwork) (resul
 func (c *computeNetworks) UpdateStatus(computeNetwork *v1alpha1.ComputeNetwork) (result *v1alpha1.ComputeNetwork, err error) {
 	result = &v1alpha1.ComputeNetwork{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computenetworks").
 		Name(computeNetwork.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeNetworks) UpdateStatus(computeNetwork *v1alpha1.ComputeNetwork) 
 // Delete takes name of the computeNetwork and deletes it. Returns an error if one occurs.
 func (c *computeNetworks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computenetworks").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeNetworks) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computenetworks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeNetworks) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *computeNetworks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeNetwork, err error) {
 	result = &v1alpha1.ComputeNetwork{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computenetworks").
 		SubResource(subresources...).
 		Name(name).

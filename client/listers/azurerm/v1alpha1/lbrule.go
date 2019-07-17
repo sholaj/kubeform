@@ -29,8 +29,8 @@ import (
 type LbRuleLister interface {
 	// List lists all LbRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LbRule, err error)
-	// Get retrieves the LbRule from the index for a given name.
-	Get(name string) (*v1alpha1.LbRule, error)
+	// LbRules returns an object that can list and get LbRules.
+	LbRules(namespace string) LbRuleNamespaceLister
 	LbRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *lbRuleLister) List(selector labels.Selector) (ret []*v1alpha1.LbRule, e
 	return ret, err
 }
 
-// Get retrieves the LbRule from the index for a given name.
-func (s *lbRuleLister) Get(name string) (*v1alpha1.LbRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LbRules returns an object that can list and get LbRules.
+func (s *lbRuleLister) LbRules(namespace string) LbRuleNamespaceLister {
+	return lbRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LbRuleNamespaceLister helps list and get LbRules.
+type LbRuleNamespaceLister interface {
+	// List lists all LbRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LbRule, err error)
+	// Get retrieves the LbRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LbRule, error)
+	LbRuleNamespaceListerExpansion
+}
+
+// lbRuleNamespaceLister implements the LbRuleNamespaceLister
+// interface.
+type lbRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LbRules in the indexer for a given namespace.
+func (s lbRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LbRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LbRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the LbRule from the indexer for a given namespace and name.
+func (s lbRuleNamespaceLister) Get(name string) (*v1alpha1.LbRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

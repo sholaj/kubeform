@@ -31,6 +31,7 @@ import (
 // FakeRoute53Records implements Route53RecordInterface
 type FakeRoute53Records struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var route53recordsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "route53records"}
@@ -40,7 +41,8 @@ var route53recordsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Vers
 // Get takes name of the route53Record, and returns the corresponding route53Record object, and an error if there is any.
 func (c *FakeRoute53Records) Get(name string, options v1.GetOptions) (result *v1alpha1.Route53Record, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(route53recordsResource, name), &v1alpha1.Route53Record{})
+		Invokes(testing.NewGetAction(route53recordsResource, c.ns, name), &v1alpha1.Route53Record{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRoute53Records) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of Route53Records that match those selectors.
 func (c *FakeRoute53Records) List(opts v1.ListOptions) (result *v1alpha1.Route53RecordList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(route53recordsResource, route53recordsKind, opts), &v1alpha1.Route53RecordList{})
+		Invokes(testing.NewListAction(route53recordsResource, route53recordsKind, c.ns, opts), &v1alpha1.Route53RecordList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRoute53Records) List(opts v1.ListOptions) (result *v1alpha1.Route53
 // Watch returns a watch.Interface that watches the requested route53Records.
 func (c *FakeRoute53Records) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(route53recordsResource, opts))
+		InvokesWatch(testing.NewWatchAction(route53recordsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a route53Record and creates it.  Returns the server's representation of the route53Record, and an error, if there is any.
 func (c *FakeRoute53Records) Create(route53Record *v1alpha1.Route53Record) (result *v1alpha1.Route53Record, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(route53recordsResource, route53Record), &v1alpha1.Route53Record{})
+		Invokes(testing.NewCreateAction(route53recordsResource, c.ns, route53Record), &v1alpha1.Route53Record{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRoute53Records) Create(route53Record *v1alpha1.Route53Record) (resu
 // Update takes the representation of a route53Record and updates it. Returns the server's representation of the route53Record, and an error, if there is any.
 func (c *FakeRoute53Records) Update(route53Record *v1alpha1.Route53Record) (result *v1alpha1.Route53Record, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(route53recordsResource, route53Record), &v1alpha1.Route53Record{})
+		Invokes(testing.NewUpdateAction(route53recordsResource, c.ns, route53Record), &v1alpha1.Route53Record{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRoute53Records) Update(route53Record *v1alpha1.Route53Record) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRoute53Records) UpdateStatus(route53Record *v1alpha1.Route53Record) (*v1alpha1.Route53Record, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(route53recordsResource, "status", route53Record), &v1alpha1.Route53Record{})
+		Invokes(testing.NewUpdateSubresourceAction(route53recordsResource, "status", c.ns, route53Record), &v1alpha1.Route53Record{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRoute53Records) UpdateStatus(route53Record *v1alpha1.Route53Record)
 // Delete takes name of the route53Record and deletes it. Returns an error if one occurs.
 func (c *FakeRoute53Records) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(route53recordsResource, name), &v1alpha1.Route53Record{})
+		Invokes(testing.NewDeleteAction(route53recordsResource, c.ns, name), &v1alpha1.Route53Record{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRoute53Records) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(route53recordsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(route53recordsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.Route53RecordList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRoute53Records) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched route53Record.
 func (c *FakeRoute53Records) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Route53Record, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(route53recordsResource, name, pt, data, subresources...), &v1alpha1.Route53Record{})
+		Invokes(testing.NewPatchSubresourceAction(route53recordsResource, c.ns, name, pt, data, subresources...), &v1alpha1.Route53Record{})
+
 	if obj == nil {
 		return nil, err
 	}

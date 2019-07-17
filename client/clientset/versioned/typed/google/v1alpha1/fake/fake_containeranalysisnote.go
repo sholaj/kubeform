@@ -31,6 +31,7 @@ import (
 // FakeContainerAnalysisNotes implements ContainerAnalysisNoteInterface
 type FakeContainerAnalysisNotes struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var containeranalysisnotesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "containeranalysisnotes"}
@@ -40,7 +41,8 @@ var containeranalysisnotesKind = schema.GroupVersionKind{Group: "google.kubeform
 // Get takes name of the containerAnalysisNote, and returns the corresponding containerAnalysisNote object, and an error if there is any.
 func (c *FakeContainerAnalysisNotes) Get(name string, options v1.GetOptions) (result *v1alpha1.ContainerAnalysisNote, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(containeranalysisnotesResource, name), &v1alpha1.ContainerAnalysisNote{})
+		Invokes(testing.NewGetAction(containeranalysisnotesResource, c.ns, name), &v1alpha1.ContainerAnalysisNote{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeContainerAnalysisNotes) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of ContainerAnalysisNotes that match those selectors.
 func (c *FakeContainerAnalysisNotes) List(opts v1.ListOptions) (result *v1alpha1.ContainerAnalysisNoteList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(containeranalysisnotesResource, containeranalysisnotesKind, opts), &v1alpha1.ContainerAnalysisNoteList{})
+		Invokes(testing.NewListAction(containeranalysisnotesResource, containeranalysisnotesKind, c.ns, opts), &v1alpha1.ContainerAnalysisNoteList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeContainerAnalysisNotes) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested containerAnalysisNotes.
 func (c *FakeContainerAnalysisNotes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(containeranalysisnotesResource, opts))
+		InvokesWatch(testing.NewWatchAction(containeranalysisnotesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a containerAnalysisNote and creates it.  Returns the server's representation of the containerAnalysisNote, and an error, if there is any.
 func (c *FakeContainerAnalysisNotes) Create(containerAnalysisNote *v1alpha1.ContainerAnalysisNote) (result *v1alpha1.ContainerAnalysisNote, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(containeranalysisnotesResource, containerAnalysisNote), &v1alpha1.ContainerAnalysisNote{})
+		Invokes(testing.NewCreateAction(containeranalysisnotesResource, c.ns, containerAnalysisNote), &v1alpha1.ContainerAnalysisNote{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeContainerAnalysisNotes) Create(containerAnalysisNote *v1alpha1.Cont
 // Update takes the representation of a containerAnalysisNote and updates it. Returns the server's representation of the containerAnalysisNote, and an error, if there is any.
 func (c *FakeContainerAnalysisNotes) Update(containerAnalysisNote *v1alpha1.ContainerAnalysisNote) (result *v1alpha1.ContainerAnalysisNote, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(containeranalysisnotesResource, containerAnalysisNote), &v1alpha1.ContainerAnalysisNote{})
+		Invokes(testing.NewUpdateAction(containeranalysisnotesResource, c.ns, containerAnalysisNote), &v1alpha1.ContainerAnalysisNote{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeContainerAnalysisNotes) Update(containerAnalysisNote *v1alpha1.Cont
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeContainerAnalysisNotes) UpdateStatus(containerAnalysisNote *v1alpha1.ContainerAnalysisNote) (*v1alpha1.ContainerAnalysisNote, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(containeranalysisnotesResource, "status", containerAnalysisNote), &v1alpha1.ContainerAnalysisNote{})
+		Invokes(testing.NewUpdateSubresourceAction(containeranalysisnotesResource, "status", c.ns, containerAnalysisNote), &v1alpha1.ContainerAnalysisNote{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeContainerAnalysisNotes) UpdateStatus(containerAnalysisNote *v1alpha
 // Delete takes name of the containerAnalysisNote and deletes it. Returns an error if one occurs.
 func (c *FakeContainerAnalysisNotes) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(containeranalysisnotesResource, name), &v1alpha1.ContainerAnalysisNote{})
+		Invokes(testing.NewDeleteAction(containeranalysisnotesResource, c.ns, name), &v1alpha1.ContainerAnalysisNote{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeContainerAnalysisNotes) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(containeranalysisnotesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(containeranalysisnotesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ContainerAnalysisNoteList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeContainerAnalysisNotes) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched containerAnalysisNote.
 func (c *FakeContainerAnalysisNotes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ContainerAnalysisNote, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(containeranalysisnotesResource, name, pt, data, subresources...), &v1alpha1.ContainerAnalysisNote{})
+		Invokes(testing.NewPatchSubresourceAction(containeranalysisnotesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ContainerAnalysisNote{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -41,32 +41,33 @@ type DxGatewayAssociationProposalInformer interface {
 type dxGatewayAssociationProposalInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDxGatewayAssociationProposalInformer constructs a new informer for DxGatewayAssociationProposal type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDxGatewayAssociationProposalInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDxGatewayAssociationProposalInformer(client, resyncPeriod, indexers, nil)
+func NewDxGatewayAssociationProposalInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDxGatewayAssociationProposalInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDxGatewayAssociationProposalInformer constructs a new informer for DxGatewayAssociationProposal type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDxGatewayAssociationProposalInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDxGatewayAssociationProposalInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DxGatewayAssociationProposals().List(options)
+				return client.AwsV1alpha1().DxGatewayAssociationProposals(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DxGatewayAssociationProposals().Watch(options)
+				return client.AwsV1alpha1().DxGatewayAssociationProposals(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.DxGatewayAssociationProposal{},
@@ -76,7 +77,7 @@ func NewFilteredDxGatewayAssociationProposalInformer(client versioned.Interface,
 }
 
 func (f *dxGatewayAssociationProposalInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDxGatewayAssociationProposalInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDxGatewayAssociationProposalInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *dxGatewayAssociationProposalInformer) Informer() cache.SharedIndexInformer {

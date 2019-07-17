@@ -31,6 +31,7 @@ import (
 // FakeAppmeshVirtualServices implements AppmeshVirtualServiceInterface
 type FakeAppmeshVirtualServices struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var appmeshvirtualservicesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "appmeshvirtualservices"}
@@ -40,7 +41,8 @@ var appmeshvirtualservicesKind = schema.GroupVersionKind{Group: "aws.kubeform.co
 // Get takes name of the appmeshVirtualService, and returns the corresponding appmeshVirtualService object, and an error if there is any.
 func (c *FakeAppmeshVirtualServices) Get(name string, options v1.GetOptions) (result *v1alpha1.AppmeshVirtualService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(appmeshvirtualservicesResource, name), &v1alpha1.AppmeshVirtualService{})
+		Invokes(testing.NewGetAction(appmeshvirtualservicesResource, c.ns, name), &v1alpha1.AppmeshVirtualService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAppmeshVirtualServices) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of AppmeshVirtualServices that match those selectors.
 func (c *FakeAppmeshVirtualServices) List(opts v1.ListOptions) (result *v1alpha1.AppmeshVirtualServiceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(appmeshvirtualservicesResource, appmeshvirtualservicesKind, opts), &v1alpha1.AppmeshVirtualServiceList{})
+		Invokes(testing.NewListAction(appmeshvirtualservicesResource, appmeshvirtualservicesKind, c.ns, opts), &v1alpha1.AppmeshVirtualServiceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAppmeshVirtualServices) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested appmeshVirtualServices.
 func (c *FakeAppmeshVirtualServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(appmeshvirtualservicesResource, opts))
+		InvokesWatch(testing.NewWatchAction(appmeshvirtualservicesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a appmeshVirtualService and creates it.  Returns the server's representation of the appmeshVirtualService, and an error, if there is any.
 func (c *FakeAppmeshVirtualServices) Create(appmeshVirtualService *v1alpha1.AppmeshVirtualService) (result *v1alpha1.AppmeshVirtualService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(appmeshvirtualservicesResource, appmeshVirtualService), &v1alpha1.AppmeshVirtualService{})
+		Invokes(testing.NewCreateAction(appmeshvirtualservicesResource, c.ns, appmeshVirtualService), &v1alpha1.AppmeshVirtualService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAppmeshVirtualServices) Create(appmeshVirtualService *v1alpha1.Appm
 // Update takes the representation of a appmeshVirtualService and updates it. Returns the server's representation of the appmeshVirtualService, and an error, if there is any.
 func (c *FakeAppmeshVirtualServices) Update(appmeshVirtualService *v1alpha1.AppmeshVirtualService) (result *v1alpha1.AppmeshVirtualService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(appmeshvirtualservicesResource, appmeshVirtualService), &v1alpha1.AppmeshVirtualService{})
+		Invokes(testing.NewUpdateAction(appmeshvirtualservicesResource, c.ns, appmeshVirtualService), &v1alpha1.AppmeshVirtualService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAppmeshVirtualServices) Update(appmeshVirtualService *v1alpha1.Appm
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAppmeshVirtualServices) UpdateStatus(appmeshVirtualService *v1alpha1.AppmeshVirtualService) (*v1alpha1.AppmeshVirtualService, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(appmeshvirtualservicesResource, "status", appmeshVirtualService), &v1alpha1.AppmeshVirtualService{})
+		Invokes(testing.NewUpdateSubresourceAction(appmeshvirtualservicesResource, "status", c.ns, appmeshVirtualService), &v1alpha1.AppmeshVirtualService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAppmeshVirtualServices) UpdateStatus(appmeshVirtualService *v1alpha
 // Delete takes name of the appmeshVirtualService and deletes it. Returns an error if one occurs.
 func (c *FakeAppmeshVirtualServices) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(appmeshvirtualservicesResource, name), &v1alpha1.AppmeshVirtualService{})
+		Invokes(testing.NewDeleteAction(appmeshvirtualservicesResource, c.ns, name), &v1alpha1.AppmeshVirtualService{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAppmeshVirtualServices) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(appmeshvirtualservicesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(appmeshvirtualservicesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AppmeshVirtualServiceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAppmeshVirtualServices) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched appmeshVirtualService.
 func (c *FakeAppmeshVirtualServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppmeshVirtualService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(appmeshvirtualservicesResource, name, pt, data, subresources...), &v1alpha1.AppmeshVirtualService{})
+		Invokes(testing.NewPatchSubresourceAction(appmeshvirtualservicesResource, c.ns, name, pt, data, subresources...), &v1alpha1.AppmeshVirtualService{})
+
 	if obj == nil {
 		return nil, err
 	}

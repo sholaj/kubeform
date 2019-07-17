@@ -29,8 +29,8 @@ import (
 type IamPolicyLister interface {
 	// List lists all IamPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IamPolicy, err error)
-	// Get retrieves the IamPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.IamPolicy, error)
+	// IamPolicies returns an object that can list and get IamPolicies.
+	IamPolicies(namespace string) IamPolicyNamespaceLister
 	IamPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iamPolicyLister) List(selector labels.Selector) (ret []*v1alpha1.IamPol
 	return ret, err
 }
 
-// Get retrieves the IamPolicy from the index for a given name.
-func (s *iamPolicyLister) Get(name string) (*v1alpha1.IamPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IamPolicies returns an object that can list and get IamPolicies.
+func (s *iamPolicyLister) IamPolicies(namespace string) IamPolicyNamespaceLister {
+	return iamPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IamPolicyNamespaceLister helps list and get IamPolicies.
+type IamPolicyNamespaceLister interface {
+	// List lists all IamPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IamPolicy, err error)
+	// Get retrieves the IamPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IamPolicy, error)
+	IamPolicyNamespaceListerExpansion
+}
+
+// iamPolicyNamespaceLister implements the IamPolicyNamespaceLister
+// interface.
+type iamPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IamPolicies in the indexer for a given namespace.
+func (s iamPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IamPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IamPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the IamPolicy from the indexer for a given namespace and name.
+func (s iamPolicyNamespaceLister) Get(name string) (*v1alpha1.IamPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

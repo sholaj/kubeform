@@ -41,32 +41,33 @@ type HdinsightHadoopClusterInformer interface {
 type hdinsightHadoopClusterInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewHdinsightHadoopClusterInformer constructs a new informer for HdinsightHadoopCluster type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewHdinsightHadoopClusterInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredHdinsightHadoopClusterInformer(client, resyncPeriod, indexers, nil)
+func NewHdinsightHadoopClusterInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredHdinsightHadoopClusterInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredHdinsightHadoopClusterInformer constructs a new informer for HdinsightHadoopCluster type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredHdinsightHadoopClusterInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredHdinsightHadoopClusterInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().HdinsightHadoopClusters().List(options)
+				return client.AzurermV1alpha1().HdinsightHadoopClusters(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().HdinsightHadoopClusters().Watch(options)
+				return client.AzurermV1alpha1().HdinsightHadoopClusters(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.HdinsightHadoopCluster{},
@@ -76,7 +77,7 @@ func NewFilteredHdinsightHadoopClusterInformer(client versioned.Interface, resyn
 }
 
 func (f *hdinsightHadoopClusterInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredHdinsightHadoopClusterInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredHdinsightHadoopClusterInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *hdinsightHadoopClusterInformer) Informer() cache.SharedIndexInformer {

@@ -31,6 +31,7 @@ import (
 // FakeServicebusTopicAuthorizationRules implements ServicebusTopicAuthorizationRuleInterface
 type FakeServicebusTopicAuthorizationRules struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var servicebustopicauthorizationrulesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "servicebustopicauthorizationrules"}
@@ -40,7 +41,8 @@ var servicebustopicauthorizationrulesKind = schema.GroupVersionKind{Group: "azur
 // Get takes name of the servicebusTopicAuthorizationRule, and returns the corresponding servicebusTopicAuthorizationRule object, and an error if there is any.
 func (c *FakeServicebusTopicAuthorizationRules) Get(name string, options v1.GetOptions) (result *v1alpha1.ServicebusTopicAuthorizationRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(servicebustopicauthorizationrulesResource, name), &v1alpha1.ServicebusTopicAuthorizationRule{})
+		Invokes(testing.NewGetAction(servicebustopicauthorizationrulesResource, c.ns, name), &v1alpha1.ServicebusTopicAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeServicebusTopicAuthorizationRules) Get(name string, options v1.GetO
 // List takes label and field selectors, and returns the list of ServicebusTopicAuthorizationRules that match those selectors.
 func (c *FakeServicebusTopicAuthorizationRules) List(opts v1.ListOptions) (result *v1alpha1.ServicebusTopicAuthorizationRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(servicebustopicauthorizationrulesResource, servicebustopicauthorizationrulesKind, opts), &v1alpha1.ServicebusTopicAuthorizationRuleList{})
+		Invokes(testing.NewListAction(servicebustopicauthorizationrulesResource, servicebustopicauthorizationrulesKind, c.ns, opts), &v1alpha1.ServicebusTopicAuthorizationRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeServicebusTopicAuthorizationRules) List(opts v1.ListOptions) (resul
 // Watch returns a watch.Interface that watches the requested servicebusTopicAuthorizationRules.
 func (c *FakeServicebusTopicAuthorizationRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(servicebustopicauthorizationrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(servicebustopicauthorizationrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a servicebusTopicAuthorizationRule and creates it.  Returns the server's representation of the servicebusTopicAuthorizationRule, and an error, if there is any.
 func (c *FakeServicebusTopicAuthorizationRules) Create(servicebusTopicAuthorizationRule *v1alpha1.ServicebusTopicAuthorizationRule) (result *v1alpha1.ServicebusTopicAuthorizationRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(servicebustopicauthorizationrulesResource, servicebusTopicAuthorizationRule), &v1alpha1.ServicebusTopicAuthorizationRule{})
+		Invokes(testing.NewCreateAction(servicebustopicauthorizationrulesResource, c.ns, servicebusTopicAuthorizationRule), &v1alpha1.ServicebusTopicAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeServicebusTopicAuthorizationRules) Create(servicebusTopicAuthorizat
 // Update takes the representation of a servicebusTopicAuthorizationRule and updates it. Returns the server's representation of the servicebusTopicAuthorizationRule, and an error, if there is any.
 func (c *FakeServicebusTopicAuthorizationRules) Update(servicebusTopicAuthorizationRule *v1alpha1.ServicebusTopicAuthorizationRule) (result *v1alpha1.ServicebusTopicAuthorizationRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(servicebustopicauthorizationrulesResource, servicebusTopicAuthorizationRule), &v1alpha1.ServicebusTopicAuthorizationRule{})
+		Invokes(testing.NewUpdateAction(servicebustopicauthorizationrulesResource, c.ns, servicebusTopicAuthorizationRule), &v1alpha1.ServicebusTopicAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeServicebusTopicAuthorizationRules) Update(servicebusTopicAuthorizat
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeServicebusTopicAuthorizationRules) UpdateStatus(servicebusTopicAuthorizationRule *v1alpha1.ServicebusTopicAuthorizationRule) (*v1alpha1.ServicebusTopicAuthorizationRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(servicebustopicauthorizationrulesResource, "status", servicebusTopicAuthorizationRule), &v1alpha1.ServicebusTopicAuthorizationRule{})
+		Invokes(testing.NewUpdateSubresourceAction(servicebustopicauthorizationrulesResource, "status", c.ns, servicebusTopicAuthorizationRule), &v1alpha1.ServicebusTopicAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeServicebusTopicAuthorizationRules) UpdateStatus(servicebusTopicAuth
 // Delete takes name of the servicebusTopicAuthorizationRule and deletes it. Returns an error if one occurs.
 func (c *FakeServicebusTopicAuthorizationRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(servicebustopicauthorizationrulesResource, name), &v1alpha1.ServicebusTopicAuthorizationRule{})
+		Invokes(testing.NewDeleteAction(servicebustopicauthorizationrulesResource, c.ns, name), &v1alpha1.ServicebusTopicAuthorizationRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeServicebusTopicAuthorizationRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(servicebustopicauthorizationrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(servicebustopicauthorizationrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ServicebusTopicAuthorizationRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeServicebusTopicAuthorizationRules) DeleteCollection(options *v1.Del
 // Patch applies the patch and returns the patched servicebusTopicAuthorizationRule.
 func (c *FakeServicebusTopicAuthorizationRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServicebusTopicAuthorizationRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(servicebustopicauthorizationrulesResource, name, pt, data, subresources...), &v1alpha1.ServicebusTopicAuthorizationRule{})
+		Invokes(testing.NewPatchSubresourceAction(servicebustopicauthorizationrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ServicebusTopicAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}

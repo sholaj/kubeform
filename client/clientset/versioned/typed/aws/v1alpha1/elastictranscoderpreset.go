@@ -32,7 +32,7 @@ import (
 // ElastictranscoderPresetsGetter has a method to return a ElastictranscoderPresetInterface.
 // A group's client should implement this interface.
 type ElastictranscoderPresetsGetter interface {
-	ElastictranscoderPresets() ElastictranscoderPresetInterface
+	ElastictranscoderPresets(namespace string) ElastictranscoderPresetInterface
 }
 
 // ElastictranscoderPresetInterface has methods to work with ElastictranscoderPreset resources.
@@ -52,12 +52,14 @@ type ElastictranscoderPresetInterface interface {
 // elastictranscoderPresets implements ElastictranscoderPresetInterface
 type elastictranscoderPresets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newElastictranscoderPresets returns a ElastictranscoderPresets
-func newElastictranscoderPresets(c *AwsV1alpha1Client) *elastictranscoderPresets {
+func newElastictranscoderPresets(c *AwsV1alpha1Client, namespace string) *elastictranscoderPresets {
 	return &elastictranscoderPresets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newElastictranscoderPresets(c *AwsV1alpha1Client) *elastictranscoderPresets
 func (c *elastictranscoderPresets) Get(name string, options v1.GetOptions) (result *v1alpha1.ElastictranscoderPreset, err error) {
 	result = &v1alpha1.ElastictranscoderPreset{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elastictranscoderpresets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *elastictranscoderPresets) List(opts v1.ListOptions) (result *v1alpha1.E
 	}
 	result = &v1alpha1.ElastictranscoderPresetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elastictranscoderpresets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *elastictranscoderPresets) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("elastictranscoderpresets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *elastictranscoderPresets) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *elastictranscoderPresets) Create(elastictranscoderPreset *v1alpha1.ElastictranscoderPreset) (result *v1alpha1.ElastictranscoderPreset, err error) {
 	result = &v1alpha1.ElastictranscoderPreset{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("elastictranscoderpresets").
 		Body(elastictranscoderPreset).
 		Do().
@@ -118,6 +124,7 @@ func (c *elastictranscoderPresets) Create(elastictranscoderPreset *v1alpha1.Elas
 func (c *elastictranscoderPresets) Update(elastictranscoderPreset *v1alpha1.ElastictranscoderPreset) (result *v1alpha1.ElastictranscoderPreset, err error) {
 	result = &v1alpha1.ElastictranscoderPreset{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elastictranscoderpresets").
 		Name(elastictranscoderPreset.Name).
 		Body(elastictranscoderPreset).
@@ -132,6 +139,7 @@ func (c *elastictranscoderPresets) Update(elastictranscoderPreset *v1alpha1.Elas
 func (c *elastictranscoderPresets) UpdateStatus(elastictranscoderPreset *v1alpha1.ElastictranscoderPreset) (result *v1alpha1.ElastictranscoderPreset, err error) {
 	result = &v1alpha1.ElastictranscoderPreset{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elastictranscoderpresets").
 		Name(elastictranscoderPreset.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *elastictranscoderPresets) UpdateStatus(elastictranscoderPreset *v1alpha
 // Delete takes name of the elastictranscoderPreset and deletes it. Returns an error if one occurs.
 func (c *elastictranscoderPresets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elastictranscoderpresets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *elastictranscoderPresets) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elastictranscoderpresets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *elastictranscoderPresets) DeleteCollection(options *v1.DeleteOptions, l
 func (c *elastictranscoderPresets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ElastictranscoderPreset, err error) {
 	result = &v1alpha1.ElastictranscoderPreset{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("elastictranscoderpresets").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // OpsworksNodejsAppLayersGetter has a method to return a OpsworksNodejsAppLayerInterface.
 // A group's client should implement this interface.
 type OpsworksNodejsAppLayersGetter interface {
-	OpsworksNodejsAppLayers() OpsworksNodejsAppLayerInterface
+	OpsworksNodejsAppLayers(namespace string) OpsworksNodejsAppLayerInterface
 }
 
 // OpsworksNodejsAppLayerInterface has methods to work with OpsworksNodejsAppLayer resources.
@@ -52,12 +52,14 @@ type OpsworksNodejsAppLayerInterface interface {
 // opsworksNodejsAppLayers implements OpsworksNodejsAppLayerInterface
 type opsworksNodejsAppLayers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOpsworksNodejsAppLayers returns a OpsworksNodejsAppLayers
-func newOpsworksNodejsAppLayers(c *AwsV1alpha1Client) *opsworksNodejsAppLayers {
+func newOpsworksNodejsAppLayers(c *AwsV1alpha1Client, namespace string) *opsworksNodejsAppLayers {
 	return &opsworksNodejsAppLayers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOpsworksNodejsAppLayers(c *AwsV1alpha1Client) *opsworksNodejsAppLayers {
 func (c *opsworksNodejsAppLayers) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksNodejsAppLayer, err error) {
 	result = &v1alpha1.OpsworksNodejsAppLayer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksnodejsapplayers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *opsworksNodejsAppLayers) List(opts v1.ListOptions) (result *v1alpha1.Op
 	}
 	result = &v1alpha1.OpsworksNodejsAppLayerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksnodejsapplayers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *opsworksNodejsAppLayers) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksnodejsapplayers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *opsworksNodejsAppLayers) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *opsworksNodejsAppLayers) Create(opsworksNodejsAppLayer *v1alpha1.OpsworksNodejsAppLayer) (result *v1alpha1.OpsworksNodejsAppLayer, err error) {
 	result = &v1alpha1.OpsworksNodejsAppLayer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("opsworksnodejsapplayers").
 		Body(opsworksNodejsAppLayer).
 		Do().
@@ -118,6 +124,7 @@ func (c *opsworksNodejsAppLayers) Create(opsworksNodejsAppLayer *v1alpha1.Opswor
 func (c *opsworksNodejsAppLayers) Update(opsworksNodejsAppLayer *v1alpha1.OpsworksNodejsAppLayer) (result *v1alpha1.OpsworksNodejsAppLayer, err error) {
 	result = &v1alpha1.OpsworksNodejsAppLayer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksnodejsapplayers").
 		Name(opsworksNodejsAppLayer.Name).
 		Body(opsworksNodejsAppLayer).
@@ -132,6 +139,7 @@ func (c *opsworksNodejsAppLayers) Update(opsworksNodejsAppLayer *v1alpha1.Opswor
 func (c *opsworksNodejsAppLayers) UpdateStatus(opsworksNodejsAppLayer *v1alpha1.OpsworksNodejsAppLayer) (result *v1alpha1.OpsworksNodejsAppLayer, err error) {
 	result = &v1alpha1.OpsworksNodejsAppLayer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksnodejsapplayers").
 		Name(opsworksNodejsAppLayer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *opsworksNodejsAppLayers) UpdateStatus(opsworksNodejsAppLayer *v1alpha1.
 // Delete takes name of the opsworksNodejsAppLayer and deletes it. Returns an error if one occurs.
 func (c *opsworksNodejsAppLayers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksnodejsapplayers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *opsworksNodejsAppLayers) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksnodejsapplayers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *opsworksNodejsAppLayers) DeleteCollection(options *v1.DeleteOptions, li
 func (c *opsworksNodejsAppLayers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksNodejsAppLayer, err error) {
 	result = &v1alpha1.OpsworksNodejsAppLayer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("opsworksnodejsapplayers").
 		SubResource(subresources...).
 		Name(name).

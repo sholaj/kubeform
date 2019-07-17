@@ -29,8 +29,8 @@ import (
 type NatGatewayLister interface {
 	// List lists all NatGateways in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NatGateway, err error)
-	// Get retrieves the NatGateway from the index for a given name.
-	Get(name string) (*v1alpha1.NatGateway, error)
+	// NatGateways returns an object that can list and get NatGateways.
+	NatGateways(namespace string) NatGatewayNamespaceLister
 	NatGatewayListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *natGatewayLister) List(selector labels.Selector) (ret []*v1alpha1.NatGa
 	return ret, err
 }
 
-// Get retrieves the NatGateway from the index for a given name.
-func (s *natGatewayLister) Get(name string) (*v1alpha1.NatGateway, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NatGateways returns an object that can list and get NatGateways.
+func (s *natGatewayLister) NatGateways(namespace string) NatGatewayNamespaceLister {
+	return natGatewayNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NatGatewayNamespaceLister helps list and get NatGateways.
+type NatGatewayNamespaceLister interface {
+	// List lists all NatGateways in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NatGateway, err error)
+	// Get retrieves the NatGateway from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NatGateway, error)
+	NatGatewayNamespaceListerExpansion
+}
+
+// natGatewayNamespaceLister implements the NatGatewayNamespaceLister
+// interface.
+type natGatewayNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NatGateways in the indexer for a given namespace.
+func (s natGatewayNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NatGateway, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NatGateway))
+	})
+	return ret, err
+}
+
+// Get retrieves the NatGateway from the indexer for a given namespace and name.
+func (s natGatewayNamespaceLister) Get(name string) (*v1alpha1.NatGateway, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

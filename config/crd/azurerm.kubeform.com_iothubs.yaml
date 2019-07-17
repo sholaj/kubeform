@@ -398,33 +398,104 @@ spec:
         spec:
           properties:
             endpoint:
-              items: {}
+              items:
+                properties:
+                  batchFrequencyInSeconds:
+                    type: integer
+                  connectionString:
+                    type: string
+                  containerName:
+                    type: string
+                  encoding:
+                    type: string
+                  fileNameFormat:
+                    type: string
+                  maxChunkSizeInBytes:
+                    type: integer
+                  name:
+                    type: string
+                  type:
+                    type: string
+                required:
+                - connectionString
+                - name
+                - type
+                type: object
               type: array
-            file_upload:
-              items: {}
-              maxItems: 1
-              type: array
-            ip_filter_rule:
-              items: {}
+            ipFilterRule:
+              items:
+                properties:
+                  action:
+                    type: string
+                  ipMask:
+                    type: string
+                  name:
+                    type: string
+                required:
+                - action
+                - ipMask
+                - name
+                type: object
               type: array
               uniqueItems: true
             location:
               type: string
             name:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
             route:
-              items: {}
+              items:
+                properties:
+                  condition:
+                    type: string
+                  enabled:
+                    type: boolean
+                  endpointNames:
+                    items:
+                      type: string
+                    type: array
+                  name:
+                    type: string
+                  source:
+                    type: string
+                required:
+                - enabled
+                - endpointNames
+                - name
+                - source
+                type: object
               type: array
             sku:
-              items: {}
+              items:
+                properties:
+                  capacity:
+                    type: integer
+                  name:
+                    type: string
+                  tier:
+                    type: string
+                required:
+                - capacity
+                - name
+                - tier
+                type: object
               maxItems: 1
               type: array
           required:
           - location
           - name
-          - resource_group_name
+          - providerRef
+          - resourceGroupName
           - sku
           type: object
         status:
@@ -436,6 +507,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -32,7 +32,7 @@ import (
 // MysqlFirewallRulesGetter has a method to return a MysqlFirewallRuleInterface.
 // A group's client should implement this interface.
 type MysqlFirewallRulesGetter interface {
-	MysqlFirewallRules() MysqlFirewallRuleInterface
+	MysqlFirewallRules(namespace string) MysqlFirewallRuleInterface
 }
 
 // MysqlFirewallRuleInterface has methods to work with MysqlFirewallRule resources.
@@ -52,12 +52,14 @@ type MysqlFirewallRuleInterface interface {
 // mysqlFirewallRules implements MysqlFirewallRuleInterface
 type mysqlFirewallRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMysqlFirewallRules returns a MysqlFirewallRules
-func newMysqlFirewallRules(c *AzurermV1alpha1Client) *mysqlFirewallRules {
+func newMysqlFirewallRules(c *AzurermV1alpha1Client, namespace string) *mysqlFirewallRules {
 	return &mysqlFirewallRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMysqlFirewallRules(c *AzurermV1alpha1Client) *mysqlFirewallRules {
 func (c *mysqlFirewallRules) Get(name string, options v1.GetOptions) (result *v1alpha1.MysqlFirewallRule, err error) {
 	result = &v1alpha1.MysqlFirewallRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mysqlfirewallrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *mysqlFirewallRules) List(opts v1.ListOptions) (result *v1alpha1.MysqlFi
 	}
 	result = &v1alpha1.MysqlFirewallRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mysqlfirewallrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *mysqlFirewallRules) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("mysqlfirewallrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *mysqlFirewallRules) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *mysqlFirewallRules) Create(mysqlFirewallRule *v1alpha1.MysqlFirewallRule) (result *v1alpha1.MysqlFirewallRule, err error) {
 	result = &v1alpha1.MysqlFirewallRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("mysqlfirewallrules").
 		Body(mysqlFirewallRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *mysqlFirewallRules) Create(mysqlFirewallRule *v1alpha1.MysqlFirewallRul
 func (c *mysqlFirewallRules) Update(mysqlFirewallRule *v1alpha1.MysqlFirewallRule) (result *v1alpha1.MysqlFirewallRule, err error) {
 	result = &v1alpha1.MysqlFirewallRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mysqlfirewallrules").
 		Name(mysqlFirewallRule.Name).
 		Body(mysqlFirewallRule).
@@ -132,6 +139,7 @@ func (c *mysqlFirewallRules) Update(mysqlFirewallRule *v1alpha1.MysqlFirewallRul
 func (c *mysqlFirewallRules) UpdateStatus(mysqlFirewallRule *v1alpha1.MysqlFirewallRule) (result *v1alpha1.MysqlFirewallRule, err error) {
 	result = &v1alpha1.MysqlFirewallRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mysqlfirewallrules").
 		Name(mysqlFirewallRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *mysqlFirewallRules) UpdateStatus(mysqlFirewallRule *v1alpha1.MysqlFirew
 // Delete takes name of the mysqlFirewallRule and deletes it. Returns an error if one occurs.
 func (c *mysqlFirewallRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mysqlfirewallrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *mysqlFirewallRules) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mysqlfirewallrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *mysqlFirewallRules) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *mysqlFirewallRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MysqlFirewallRule, err error) {
 	result = &v1alpha1.MysqlFirewallRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("mysqlfirewallrules").
 		SubResource(subresources...).
 		Name(name).

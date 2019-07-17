@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,39 +19,40 @@ type CdnEndpoint struct {
 }
 
 type CdnEndpointSpecGeoFilter struct {
-	Action       string   `json:"action"`
-	CountryCodes []string `json:"country_codes"`
-	RelativePath string   `json:"relative_path"`
+	Action       string   `json:"action" tf:"action"`
+	CountryCodes []string `json:"countryCodes" tf:"country_codes"`
+	RelativePath string   `json:"relativePath" tf:"relative_path"`
 }
 
 type CdnEndpointSpecOrigin struct {
-	HostName string `json:"host_name"`
+	HostName string `json:"hostName" tf:"host_name"`
 	// +optional
-	HttpPort int `json:"http_port,omitempty"`
+	HttpPort int `json:"httpPort,omitempty" tf:"http_port,omitempty"`
 	// +optional
-	HttpsPort int    `json:"https_port,omitempty"`
-	Name      string `json:"name"`
+	HttpsPort int    `json:"httpsPort,omitempty" tf:"https_port,omitempty"`
+	Name      string `json:"name" tf:"name"`
 }
 
 type CdnEndpointSpec struct {
 	// +optional
-	GeoFilter *[]CdnEndpointSpec `json:"geo_filter,omitempty"`
+	GeoFilter []CdnEndpointSpecGeoFilter `json:"geoFilter,omitempty" tf:"geo_filter,omitempty"`
 	// +optional
-	IsCompressionEnabled bool `json:"is_compression_enabled,omitempty"`
+	IsCompressionEnabled bool `json:"isCompressionEnabled,omitempty" tf:"is_compression_enabled,omitempty"`
 	// +optional
-	IsHttpAllowed bool `json:"is_http_allowed,omitempty"`
+	IsHTTPAllowed bool `json:"isHTTPAllowed,omitempty" tf:"is_http_allowed,omitempty"`
 	// +optional
-	IsHttpsAllowed bool   `json:"is_https_allowed,omitempty"`
-	Location       string `json:"location"`
-	Name           string `json:"name"`
+	IsHTTPSAllowed bool   `json:"isHTTPSAllowed,omitempty" tf:"is_https_allowed,omitempty"`
+	Location       string `json:"location" tf:"location"`
+	Name           string `json:"name" tf:"name"`
 	// +optional
-	OptimizationType string `json:"optimization_type,omitempty"`
+	OptimizationType string `json:"optimizationType,omitempty" tf:"optimization_type,omitempty"`
 	// +kubebuilder:validation:UniqueItems=true
-	Origin      []CdnEndpointSpec `json:"origin"`
-	ProfileName string            `json:"profile_name"`
+	Origin      []CdnEndpointSpecOrigin `json:"origin" tf:"origin"`
+	ProfileName string                  `json:"profileName" tf:"profile_name"`
 	// +optional
-	QuerystringCachingBehaviour string `json:"querystring_caching_behaviour,omitempty"`
-	ResourceGroupName           string `json:"resource_group_name"`
+	QuerystringCachingBehaviour string                    `json:"querystringCachingBehaviour,omitempty" tf:"querystring_caching_behaviour,omitempty"`
+	ResourceGroupName           string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ProviderRef                 core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type CdnEndpointStatus struct {
@@ -59,7 +60,9 @@ type CdnEndpointStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

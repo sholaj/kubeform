@@ -32,7 +32,7 @@ import (
 // IamGroupMembershipsGetter has a method to return a IamGroupMembershipInterface.
 // A group's client should implement this interface.
 type IamGroupMembershipsGetter interface {
-	IamGroupMemberships() IamGroupMembershipInterface
+	IamGroupMemberships(namespace string) IamGroupMembershipInterface
 }
 
 // IamGroupMembershipInterface has methods to work with IamGroupMembership resources.
@@ -52,12 +52,14 @@ type IamGroupMembershipInterface interface {
 // iamGroupMemberships implements IamGroupMembershipInterface
 type iamGroupMemberships struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIamGroupMemberships returns a IamGroupMemberships
-func newIamGroupMemberships(c *AwsV1alpha1Client) *iamGroupMemberships {
+func newIamGroupMemberships(c *AwsV1alpha1Client, namespace string) *iamGroupMemberships {
 	return &iamGroupMemberships{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIamGroupMemberships(c *AwsV1alpha1Client) *iamGroupMemberships {
 func (c *iamGroupMemberships) Get(name string, options v1.GetOptions) (result *v1alpha1.IamGroupMembership, err error) {
 	result = &v1alpha1.IamGroupMembership{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamgroupmemberships").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iamGroupMemberships) List(opts v1.ListOptions) (result *v1alpha1.IamGro
 	}
 	result = &v1alpha1.IamGroupMembershipList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamgroupmemberships").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iamGroupMemberships) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iamgroupmemberships").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iamGroupMemberships) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *iamGroupMemberships) Create(iamGroupMembership *v1alpha1.IamGroupMembership) (result *v1alpha1.IamGroupMembership, err error) {
 	result = &v1alpha1.IamGroupMembership{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iamgroupmemberships").
 		Body(iamGroupMembership).
 		Do().
@@ -118,6 +124,7 @@ func (c *iamGroupMemberships) Create(iamGroupMembership *v1alpha1.IamGroupMember
 func (c *iamGroupMemberships) Update(iamGroupMembership *v1alpha1.IamGroupMembership) (result *v1alpha1.IamGroupMembership, err error) {
 	result = &v1alpha1.IamGroupMembership{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamgroupmemberships").
 		Name(iamGroupMembership.Name).
 		Body(iamGroupMembership).
@@ -132,6 +139,7 @@ func (c *iamGroupMemberships) Update(iamGroupMembership *v1alpha1.IamGroupMember
 func (c *iamGroupMemberships) UpdateStatus(iamGroupMembership *v1alpha1.IamGroupMembership) (result *v1alpha1.IamGroupMembership, err error) {
 	result = &v1alpha1.IamGroupMembership{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamgroupmemberships").
 		Name(iamGroupMembership.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iamGroupMemberships) UpdateStatus(iamGroupMembership *v1alpha1.IamGroup
 // Delete takes name of the iamGroupMembership and deletes it. Returns an error if one occurs.
 func (c *iamGroupMemberships) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamgroupmemberships").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iamGroupMemberships) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamgroupmemberships").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iamGroupMemberships) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *iamGroupMemberships) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamGroupMembership, err error) {
 	result = &v1alpha1.IamGroupMembership{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iamgroupmemberships").
 		SubResource(subresources...).
 		Name(name).

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,27 +20,28 @@ type Droplet struct {
 
 type DropletSpec struct {
 	// +optional
-	Backups bool   `json:"backups,omitempty"`
-	Image   string `json:"image"`
+	Backups bool   `json:"backups,omitempty" tf:"backups,omitempty"`
+	Image   string `json:"image" tf:"image"`
 	// +optional
-	Ipv6 bool `json:"ipv6,omitempty"`
+	Ipv6 bool `json:"ipv6,omitempty" tf:"ipv6,omitempty"`
 	// +optional
-	Monitoring bool   `json:"monitoring,omitempty"`
-	Name       string `json:"name"`
+	Monitoring bool   `json:"monitoring,omitempty" tf:"monitoring,omitempty"`
+	Name       string `json:"name" tf:"name"`
 	// +optional
-	PrivateNetworking bool   `json:"private_networking,omitempty"`
-	Region            string `json:"region"`
+	PrivateNetworking bool   `json:"privateNetworking,omitempty" tf:"private_networking,omitempty"`
+	Region            string `json:"region" tf:"region"`
 	// +optional
-	ResizeDisk bool   `json:"resize_disk,omitempty"`
-	Size       string `json:"size"`
-	// +optional
-	// +kubebuilder:validation:UniqueItems=true
-	SshKeys []string `json:"ssh_keys,omitempty"`
+	ResizeDisk bool   `json:"resizeDisk,omitempty" tf:"resize_disk,omitempty"`
+	Size       string `json:"size" tf:"size"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Tags []string `json:"tags,omitempty"`
+	SshKeys []string `json:"sshKeys,omitempty" tf:"ssh_keys,omitempty"`
 	// +optional
-	UserData string `json:"user_data,omitempty"`
+	// +kubebuilder:validation:UniqueItems=true
+	Tags []string `json:"tags,omitempty" tf:"tags,omitempty"`
+	// +optional
+	UserData    string                    `json:"userData,omitempty" tf:"user_data,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DropletStatus struct {
@@ -48,7 +49,9 @@ type DropletStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

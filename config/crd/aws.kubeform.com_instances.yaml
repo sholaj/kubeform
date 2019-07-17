@@ -399,37 +399,51 @@ spec:
           properties:
             ami:
               type: string
-            credit_specification:
-              items: {}
+            creditSpecification:
+              items:
+                properties:
+                  cpuCredits:
+                    type: string
+                type: object
               maxItems: 1
               type: array
-            disable_api_termination:
+            disableAPITermination:
               type: boolean
-            ebs_optimized:
+            ebsOptimized:
               type: boolean
-            get_password_data:
+            getPasswordData:
               type: boolean
-            iam_instance_profile:
+            iamInstanceProfile:
               type: string
-            instance_initiated_shutdown_behavior:
+            instanceInitiatedShutdownBehavior:
               type: string
-            instance_type:
+            instanceType:
               type: string
             monitoring:
               type: boolean
-            source_dest_check:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            sourceDestCheck:
               type: boolean
             tags:
               additionalProperties:
                 type: string
               type: object
-            user_data:
+            userData:
               type: string
-            user_data_base64:
+            userDataBase64:
               type: string
           required:
           - ami
-          - instance_type
+          - instanceType
+          - providerRef
           type: object
         status:
           properties:
@@ -440,6 +454,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

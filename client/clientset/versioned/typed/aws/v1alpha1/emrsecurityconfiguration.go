@@ -32,7 +32,7 @@ import (
 // EmrSecurityConfigurationsGetter has a method to return a EmrSecurityConfigurationInterface.
 // A group's client should implement this interface.
 type EmrSecurityConfigurationsGetter interface {
-	EmrSecurityConfigurations() EmrSecurityConfigurationInterface
+	EmrSecurityConfigurations(namespace string) EmrSecurityConfigurationInterface
 }
 
 // EmrSecurityConfigurationInterface has methods to work with EmrSecurityConfiguration resources.
@@ -52,12 +52,14 @@ type EmrSecurityConfigurationInterface interface {
 // emrSecurityConfigurations implements EmrSecurityConfigurationInterface
 type emrSecurityConfigurations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEmrSecurityConfigurations returns a EmrSecurityConfigurations
-func newEmrSecurityConfigurations(c *AwsV1alpha1Client) *emrSecurityConfigurations {
+func newEmrSecurityConfigurations(c *AwsV1alpha1Client, namespace string) *emrSecurityConfigurations {
 	return &emrSecurityConfigurations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEmrSecurityConfigurations(c *AwsV1alpha1Client) *emrSecurityConfiguratio
 func (c *emrSecurityConfigurations) Get(name string, options v1.GetOptions) (result *v1alpha1.EmrSecurityConfiguration, err error) {
 	result = &v1alpha1.EmrSecurityConfiguration{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("emrsecurityconfigurations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *emrSecurityConfigurations) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.EmrSecurityConfigurationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("emrsecurityconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *emrSecurityConfigurations) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("emrsecurityconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *emrSecurityConfigurations) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *emrSecurityConfigurations) Create(emrSecurityConfiguration *v1alpha1.EmrSecurityConfiguration) (result *v1alpha1.EmrSecurityConfiguration, err error) {
 	result = &v1alpha1.EmrSecurityConfiguration{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("emrsecurityconfigurations").
 		Body(emrSecurityConfiguration).
 		Do().
@@ -118,6 +124,7 @@ func (c *emrSecurityConfigurations) Create(emrSecurityConfiguration *v1alpha1.Em
 func (c *emrSecurityConfigurations) Update(emrSecurityConfiguration *v1alpha1.EmrSecurityConfiguration) (result *v1alpha1.EmrSecurityConfiguration, err error) {
 	result = &v1alpha1.EmrSecurityConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("emrsecurityconfigurations").
 		Name(emrSecurityConfiguration.Name).
 		Body(emrSecurityConfiguration).
@@ -132,6 +139,7 @@ func (c *emrSecurityConfigurations) Update(emrSecurityConfiguration *v1alpha1.Em
 func (c *emrSecurityConfigurations) UpdateStatus(emrSecurityConfiguration *v1alpha1.EmrSecurityConfiguration) (result *v1alpha1.EmrSecurityConfiguration, err error) {
 	result = &v1alpha1.EmrSecurityConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("emrsecurityconfigurations").
 		Name(emrSecurityConfiguration.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *emrSecurityConfigurations) UpdateStatus(emrSecurityConfiguration *v1alp
 // Delete takes name of the emrSecurityConfiguration and deletes it. Returns an error if one occurs.
 func (c *emrSecurityConfigurations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("emrsecurityconfigurations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *emrSecurityConfigurations) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("emrsecurityconfigurations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *emrSecurityConfigurations) DeleteCollection(options *v1.DeleteOptions, 
 func (c *emrSecurityConfigurations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EmrSecurityConfiguration, err error) {
 	result = &v1alpha1.EmrSecurityConfiguration{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("emrsecurityconfigurations").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // DatapipelinePipelinesGetter has a method to return a DatapipelinePipelineInterface.
 // A group's client should implement this interface.
 type DatapipelinePipelinesGetter interface {
-	DatapipelinePipelines() DatapipelinePipelineInterface
+	DatapipelinePipelines(namespace string) DatapipelinePipelineInterface
 }
 
 // DatapipelinePipelineInterface has methods to work with DatapipelinePipeline resources.
@@ -52,12 +52,14 @@ type DatapipelinePipelineInterface interface {
 // datapipelinePipelines implements DatapipelinePipelineInterface
 type datapipelinePipelines struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDatapipelinePipelines returns a DatapipelinePipelines
-func newDatapipelinePipelines(c *AwsV1alpha1Client) *datapipelinePipelines {
+func newDatapipelinePipelines(c *AwsV1alpha1Client, namespace string) *datapipelinePipelines {
 	return &datapipelinePipelines{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDatapipelinePipelines(c *AwsV1alpha1Client) *datapipelinePipelines {
 func (c *datapipelinePipelines) Get(name string, options v1.GetOptions) (result *v1alpha1.DatapipelinePipeline, err error) {
 	result = &v1alpha1.DatapipelinePipeline{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datapipelinepipelines").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *datapipelinePipelines) List(opts v1.ListOptions) (result *v1alpha1.Data
 	}
 	result = &v1alpha1.DatapipelinePipelineList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datapipelinepipelines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *datapipelinePipelines) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("datapipelinepipelines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *datapipelinePipelines) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *datapipelinePipelines) Create(datapipelinePipeline *v1alpha1.DatapipelinePipeline) (result *v1alpha1.DatapipelinePipeline, err error) {
 	result = &v1alpha1.DatapipelinePipeline{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("datapipelinepipelines").
 		Body(datapipelinePipeline).
 		Do().
@@ -118,6 +124,7 @@ func (c *datapipelinePipelines) Create(datapipelinePipeline *v1alpha1.Datapipeli
 func (c *datapipelinePipelines) Update(datapipelinePipeline *v1alpha1.DatapipelinePipeline) (result *v1alpha1.DatapipelinePipeline, err error) {
 	result = &v1alpha1.DatapipelinePipeline{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datapipelinepipelines").
 		Name(datapipelinePipeline.Name).
 		Body(datapipelinePipeline).
@@ -132,6 +139,7 @@ func (c *datapipelinePipelines) Update(datapipelinePipeline *v1alpha1.Datapipeli
 func (c *datapipelinePipelines) UpdateStatus(datapipelinePipeline *v1alpha1.DatapipelinePipeline) (result *v1alpha1.DatapipelinePipeline, err error) {
 	result = &v1alpha1.DatapipelinePipeline{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datapipelinepipelines").
 		Name(datapipelinePipeline.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *datapipelinePipelines) UpdateStatus(datapipelinePipeline *v1alpha1.Data
 // Delete takes name of the datapipelinePipeline and deletes it. Returns an error if one occurs.
 func (c *datapipelinePipelines) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datapipelinepipelines").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *datapipelinePipelines) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datapipelinepipelines").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *datapipelinePipelines) DeleteCollection(options *v1.DeleteOptions, list
 func (c *datapipelinePipelines) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DatapipelinePipeline, err error) {
 	result = &v1alpha1.DatapipelinePipeline{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("datapipelinepipelines").
 		SubResource(subresources...).
 		Name(name).

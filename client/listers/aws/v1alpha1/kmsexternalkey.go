@@ -29,8 +29,8 @@ import (
 type KmsExternalKeyLister interface {
 	// List lists all KmsExternalKeys in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KmsExternalKey, err error)
-	// Get retrieves the KmsExternalKey from the index for a given name.
-	Get(name string) (*v1alpha1.KmsExternalKey, error)
+	// KmsExternalKeys returns an object that can list and get KmsExternalKeys.
+	KmsExternalKeys(namespace string) KmsExternalKeyNamespaceLister
 	KmsExternalKeyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *kmsExternalKeyLister) List(selector labels.Selector) (ret []*v1alpha1.K
 	return ret, err
 }
 
-// Get retrieves the KmsExternalKey from the index for a given name.
-func (s *kmsExternalKeyLister) Get(name string) (*v1alpha1.KmsExternalKey, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KmsExternalKeys returns an object that can list and get KmsExternalKeys.
+func (s *kmsExternalKeyLister) KmsExternalKeys(namespace string) KmsExternalKeyNamespaceLister {
+	return kmsExternalKeyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KmsExternalKeyNamespaceLister helps list and get KmsExternalKeys.
+type KmsExternalKeyNamespaceLister interface {
+	// List lists all KmsExternalKeys in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KmsExternalKey, err error)
+	// Get retrieves the KmsExternalKey from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KmsExternalKey, error)
+	KmsExternalKeyNamespaceListerExpansion
+}
+
+// kmsExternalKeyNamespaceLister implements the KmsExternalKeyNamespaceLister
+// interface.
+type kmsExternalKeyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KmsExternalKeys in the indexer for a given namespace.
+func (s kmsExternalKeyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KmsExternalKey, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KmsExternalKey))
+	})
+	return ret, err
+}
+
+// Get retrieves the KmsExternalKey from the indexer for a given namespace and name.
+func (s kmsExternalKeyNamespaceLister) Get(name string) (*v1alpha1.KmsExternalKey, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

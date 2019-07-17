@@ -32,7 +32,7 @@ import (
 // DataflowJobsGetter has a method to return a DataflowJobInterface.
 // A group's client should implement this interface.
 type DataflowJobsGetter interface {
-	DataflowJobs() DataflowJobInterface
+	DataflowJobs(namespace string) DataflowJobInterface
 }
 
 // DataflowJobInterface has methods to work with DataflowJob resources.
@@ -52,12 +52,14 @@ type DataflowJobInterface interface {
 // dataflowJobs implements DataflowJobInterface
 type dataflowJobs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDataflowJobs returns a DataflowJobs
-func newDataflowJobs(c *GoogleV1alpha1Client) *dataflowJobs {
+func newDataflowJobs(c *GoogleV1alpha1Client, namespace string) *dataflowJobs {
 	return &dataflowJobs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDataflowJobs(c *GoogleV1alpha1Client) *dataflowJobs {
 func (c *dataflowJobs) Get(name string, options v1.GetOptions) (result *v1alpha1.DataflowJob, err error) {
 	result = &v1alpha1.DataflowJob{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dataflowjobs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dataflowJobs) List(opts v1.ListOptions) (result *v1alpha1.DataflowJobLi
 	}
 	result = &v1alpha1.DataflowJobList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dataflowjobs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dataflowJobs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dataflowjobs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dataflowJobs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *dataflowJobs) Create(dataflowJob *v1alpha1.DataflowJob) (result *v1alpha1.DataflowJob, err error) {
 	result = &v1alpha1.DataflowJob{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dataflowjobs").
 		Body(dataflowJob).
 		Do().
@@ -118,6 +124,7 @@ func (c *dataflowJobs) Create(dataflowJob *v1alpha1.DataflowJob) (result *v1alph
 func (c *dataflowJobs) Update(dataflowJob *v1alpha1.DataflowJob) (result *v1alpha1.DataflowJob, err error) {
 	result = &v1alpha1.DataflowJob{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dataflowjobs").
 		Name(dataflowJob.Name).
 		Body(dataflowJob).
@@ -132,6 +139,7 @@ func (c *dataflowJobs) Update(dataflowJob *v1alpha1.DataflowJob) (result *v1alph
 func (c *dataflowJobs) UpdateStatus(dataflowJob *v1alpha1.DataflowJob) (result *v1alpha1.DataflowJob, err error) {
 	result = &v1alpha1.DataflowJob{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dataflowjobs").
 		Name(dataflowJob.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dataflowJobs) UpdateStatus(dataflowJob *v1alpha1.DataflowJob) (result *
 // Delete takes name of the dataflowJob and deletes it. Returns an error if one occurs.
 func (c *dataflowJobs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dataflowjobs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dataflowJobs) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dataflowjobs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dataflowJobs) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *dataflowJobs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataflowJob, err error) {
 	result = &v1alpha1.DataflowJob{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dataflowjobs").
 		SubResource(subresources...).
 		Name(name).

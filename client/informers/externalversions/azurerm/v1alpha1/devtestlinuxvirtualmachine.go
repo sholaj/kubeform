@@ -41,32 +41,33 @@ type DevTestLinuxVirtualMachineInformer interface {
 type devTestLinuxVirtualMachineInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDevTestLinuxVirtualMachineInformer constructs a new informer for DevTestLinuxVirtualMachine type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDevTestLinuxVirtualMachineInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDevTestLinuxVirtualMachineInformer(client, resyncPeriod, indexers, nil)
+func NewDevTestLinuxVirtualMachineInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDevTestLinuxVirtualMachineInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDevTestLinuxVirtualMachineInformer constructs a new informer for DevTestLinuxVirtualMachine type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDevTestLinuxVirtualMachineInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDevTestLinuxVirtualMachineInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DevTestLinuxVirtualMachines().List(options)
+				return client.AzurermV1alpha1().DevTestLinuxVirtualMachines(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DevTestLinuxVirtualMachines().Watch(options)
+				return client.AzurermV1alpha1().DevTestLinuxVirtualMachines(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.DevTestLinuxVirtualMachine{},
@@ -76,7 +77,7 @@ func NewFilteredDevTestLinuxVirtualMachineInformer(client versioned.Interface, r
 }
 
 func (f *devTestLinuxVirtualMachineInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDevTestLinuxVirtualMachineInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDevTestLinuxVirtualMachineInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *devTestLinuxVirtualMachineInformer) Informer() cache.SharedIndexInformer {

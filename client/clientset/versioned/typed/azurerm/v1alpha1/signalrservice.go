@@ -32,7 +32,7 @@ import (
 // SignalrServicesGetter has a method to return a SignalrServiceInterface.
 // A group's client should implement this interface.
 type SignalrServicesGetter interface {
-	SignalrServices() SignalrServiceInterface
+	SignalrServices(namespace string) SignalrServiceInterface
 }
 
 // SignalrServiceInterface has methods to work with SignalrService resources.
@@ -52,12 +52,14 @@ type SignalrServiceInterface interface {
 // signalrServices implements SignalrServiceInterface
 type signalrServices struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSignalrServices returns a SignalrServices
-func newSignalrServices(c *AzurermV1alpha1Client) *signalrServices {
+func newSignalrServices(c *AzurermV1alpha1Client, namespace string) *signalrServices {
 	return &signalrServices{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSignalrServices(c *AzurermV1alpha1Client) *signalrServices {
 func (c *signalrServices) Get(name string, options v1.GetOptions) (result *v1alpha1.SignalrService, err error) {
 	result = &v1alpha1.SignalrService{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("signalrservices").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *signalrServices) List(opts v1.ListOptions) (result *v1alpha1.SignalrSer
 	}
 	result = &v1alpha1.SignalrServiceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("signalrservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *signalrServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("signalrservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *signalrServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *signalrServices) Create(signalrService *v1alpha1.SignalrService) (result *v1alpha1.SignalrService, err error) {
 	result = &v1alpha1.SignalrService{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("signalrservices").
 		Body(signalrService).
 		Do().
@@ -118,6 +124,7 @@ func (c *signalrServices) Create(signalrService *v1alpha1.SignalrService) (resul
 func (c *signalrServices) Update(signalrService *v1alpha1.SignalrService) (result *v1alpha1.SignalrService, err error) {
 	result = &v1alpha1.SignalrService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("signalrservices").
 		Name(signalrService.Name).
 		Body(signalrService).
@@ -132,6 +139,7 @@ func (c *signalrServices) Update(signalrService *v1alpha1.SignalrService) (resul
 func (c *signalrServices) UpdateStatus(signalrService *v1alpha1.SignalrService) (result *v1alpha1.SignalrService, err error) {
 	result = &v1alpha1.SignalrService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("signalrservices").
 		Name(signalrService.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *signalrServices) UpdateStatus(signalrService *v1alpha1.SignalrService) 
 // Delete takes name of the signalrService and deletes it. Returns an error if one occurs.
 func (c *signalrServices) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("signalrservices").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *signalrServices) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("signalrservices").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *signalrServices) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *signalrServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SignalrService, err error) {
 	result = &v1alpha1.SignalrService{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("signalrservices").
 		SubResource(subresources...).
 		Name(name).

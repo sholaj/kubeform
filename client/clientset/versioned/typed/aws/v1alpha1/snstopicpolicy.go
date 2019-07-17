@@ -32,7 +32,7 @@ import (
 // SnsTopicPoliciesGetter has a method to return a SnsTopicPolicyInterface.
 // A group's client should implement this interface.
 type SnsTopicPoliciesGetter interface {
-	SnsTopicPolicies() SnsTopicPolicyInterface
+	SnsTopicPolicies(namespace string) SnsTopicPolicyInterface
 }
 
 // SnsTopicPolicyInterface has methods to work with SnsTopicPolicy resources.
@@ -52,12 +52,14 @@ type SnsTopicPolicyInterface interface {
 // snsTopicPolicies implements SnsTopicPolicyInterface
 type snsTopicPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSnsTopicPolicies returns a SnsTopicPolicies
-func newSnsTopicPolicies(c *AwsV1alpha1Client) *snsTopicPolicies {
+func newSnsTopicPolicies(c *AwsV1alpha1Client, namespace string) *snsTopicPolicies {
 	return &snsTopicPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSnsTopicPolicies(c *AwsV1alpha1Client) *snsTopicPolicies {
 func (c *snsTopicPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.SnsTopicPolicy, err error) {
 	result = &v1alpha1.SnsTopicPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("snstopicpolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *snsTopicPolicies) List(opts v1.ListOptions) (result *v1alpha1.SnsTopicP
 	}
 	result = &v1alpha1.SnsTopicPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("snstopicpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *snsTopicPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("snstopicpolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *snsTopicPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *snsTopicPolicies) Create(snsTopicPolicy *v1alpha1.SnsTopicPolicy) (result *v1alpha1.SnsTopicPolicy, err error) {
 	result = &v1alpha1.SnsTopicPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("snstopicpolicies").
 		Body(snsTopicPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *snsTopicPolicies) Create(snsTopicPolicy *v1alpha1.SnsTopicPolicy) (resu
 func (c *snsTopicPolicies) Update(snsTopicPolicy *v1alpha1.SnsTopicPolicy) (result *v1alpha1.SnsTopicPolicy, err error) {
 	result = &v1alpha1.SnsTopicPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("snstopicpolicies").
 		Name(snsTopicPolicy.Name).
 		Body(snsTopicPolicy).
@@ -132,6 +139,7 @@ func (c *snsTopicPolicies) Update(snsTopicPolicy *v1alpha1.SnsTopicPolicy) (resu
 func (c *snsTopicPolicies) UpdateStatus(snsTopicPolicy *v1alpha1.SnsTopicPolicy) (result *v1alpha1.SnsTopicPolicy, err error) {
 	result = &v1alpha1.SnsTopicPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("snstopicpolicies").
 		Name(snsTopicPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *snsTopicPolicies) UpdateStatus(snsTopicPolicy *v1alpha1.SnsTopicPolicy)
 // Delete takes name of the snsTopicPolicy and deletes it. Returns an error if one occurs.
 func (c *snsTopicPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("snstopicpolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *snsTopicPolicies) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("snstopicpolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *snsTopicPolicies) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *snsTopicPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SnsTopicPolicy, err error) {
 	result = &v1alpha1.SnsTopicPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("snstopicpolicies").
 		SubResource(subresources...).
 		Name(name).

@@ -31,6 +31,7 @@ import (
 // FakeBatchComputeEnvironments implements BatchComputeEnvironmentInterface
 type FakeBatchComputeEnvironments struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var batchcomputeenvironmentsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "batchcomputeenvironments"}
@@ -40,7 +41,8 @@ var batchcomputeenvironmentsKind = schema.GroupVersionKind{Group: "aws.kubeform.
 // Get takes name of the batchComputeEnvironment, and returns the corresponding batchComputeEnvironment object, and an error if there is any.
 func (c *FakeBatchComputeEnvironments) Get(name string, options v1.GetOptions) (result *v1alpha1.BatchComputeEnvironment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(batchcomputeenvironmentsResource, name), &v1alpha1.BatchComputeEnvironment{})
+		Invokes(testing.NewGetAction(batchcomputeenvironmentsResource, c.ns, name), &v1alpha1.BatchComputeEnvironment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeBatchComputeEnvironments) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of BatchComputeEnvironments that match those selectors.
 func (c *FakeBatchComputeEnvironments) List(opts v1.ListOptions) (result *v1alpha1.BatchComputeEnvironmentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(batchcomputeenvironmentsResource, batchcomputeenvironmentsKind, opts), &v1alpha1.BatchComputeEnvironmentList{})
+		Invokes(testing.NewListAction(batchcomputeenvironmentsResource, batchcomputeenvironmentsKind, c.ns, opts), &v1alpha1.BatchComputeEnvironmentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeBatchComputeEnvironments) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested batchComputeEnvironments.
 func (c *FakeBatchComputeEnvironments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(batchcomputeenvironmentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(batchcomputeenvironmentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a batchComputeEnvironment and creates it.  Returns the server's representation of the batchComputeEnvironment, and an error, if there is any.
 func (c *FakeBatchComputeEnvironments) Create(batchComputeEnvironment *v1alpha1.BatchComputeEnvironment) (result *v1alpha1.BatchComputeEnvironment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(batchcomputeenvironmentsResource, batchComputeEnvironment), &v1alpha1.BatchComputeEnvironment{})
+		Invokes(testing.NewCreateAction(batchcomputeenvironmentsResource, c.ns, batchComputeEnvironment), &v1alpha1.BatchComputeEnvironment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeBatchComputeEnvironments) Create(batchComputeEnvironment *v1alpha1.
 // Update takes the representation of a batchComputeEnvironment and updates it. Returns the server's representation of the batchComputeEnvironment, and an error, if there is any.
 func (c *FakeBatchComputeEnvironments) Update(batchComputeEnvironment *v1alpha1.BatchComputeEnvironment) (result *v1alpha1.BatchComputeEnvironment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(batchcomputeenvironmentsResource, batchComputeEnvironment), &v1alpha1.BatchComputeEnvironment{})
+		Invokes(testing.NewUpdateAction(batchcomputeenvironmentsResource, c.ns, batchComputeEnvironment), &v1alpha1.BatchComputeEnvironment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeBatchComputeEnvironments) Update(batchComputeEnvironment *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeBatchComputeEnvironments) UpdateStatus(batchComputeEnvironment *v1alpha1.BatchComputeEnvironment) (*v1alpha1.BatchComputeEnvironment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(batchcomputeenvironmentsResource, "status", batchComputeEnvironment), &v1alpha1.BatchComputeEnvironment{})
+		Invokes(testing.NewUpdateSubresourceAction(batchcomputeenvironmentsResource, "status", c.ns, batchComputeEnvironment), &v1alpha1.BatchComputeEnvironment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeBatchComputeEnvironments) UpdateStatus(batchComputeEnvironment *v1a
 // Delete takes name of the batchComputeEnvironment and deletes it. Returns an error if one occurs.
 func (c *FakeBatchComputeEnvironments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(batchcomputeenvironmentsResource, name), &v1alpha1.BatchComputeEnvironment{})
+		Invokes(testing.NewDeleteAction(batchcomputeenvironmentsResource, c.ns, name), &v1alpha1.BatchComputeEnvironment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeBatchComputeEnvironments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(batchcomputeenvironmentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(batchcomputeenvironmentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.BatchComputeEnvironmentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeBatchComputeEnvironments) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched batchComputeEnvironment.
 func (c *FakeBatchComputeEnvironments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BatchComputeEnvironment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(batchcomputeenvironmentsResource, name, pt, data, subresources...), &v1alpha1.BatchComputeEnvironment{})
+		Invokes(testing.NewPatchSubresourceAction(batchcomputeenvironmentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.BatchComputeEnvironment{})
+
 	if obj == nil {
 		return nil, err
 	}

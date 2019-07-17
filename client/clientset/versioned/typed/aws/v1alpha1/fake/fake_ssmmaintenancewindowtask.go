@@ -31,6 +31,7 @@ import (
 // FakeSsmMaintenanceWindowTasks implements SsmMaintenanceWindowTaskInterface
 type FakeSsmMaintenanceWindowTasks struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ssmmaintenancewindowtasksResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ssmmaintenancewindowtasks"}
@@ -40,7 +41,8 @@ var ssmmaintenancewindowtasksKind = schema.GroupVersionKind{Group: "aws.kubeform
 // Get takes name of the ssmMaintenanceWindowTask, and returns the corresponding ssmMaintenanceWindowTask object, and an error if there is any.
 func (c *FakeSsmMaintenanceWindowTasks) Get(name string, options v1.GetOptions) (result *v1alpha1.SsmMaintenanceWindowTask, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ssmmaintenancewindowtasksResource, name), &v1alpha1.SsmMaintenanceWindowTask{})
+		Invokes(testing.NewGetAction(ssmmaintenancewindowtasksResource, c.ns, name), &v1alpha1.SsmMaintenanceWindowTask{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSsmMaintenanceWindowTasks) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of SsmMaintenanceWindowTasks that match those selectors.
 func (c *FakeSsmMaintenanceWindowTasks) List(opts v1.ListOptions) (result *v1alpha1.SsmMaintenanceWindowTaskList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ssmmaintenancewindowtasksResource, ssmmaintenancewindowtasksKind, opts), &v1alpha1.SsmMaintenanceWindowTaskList{})
+		Invokes(testing.NewListAction(ssmmaintenancewindowtasksResource, ssmmaintenancewindowtasksKind, c.ns, opts), &v1alpha1.SsmMaintenanceWindowTaskList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSsmMaintenanceWindowTasks) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested ssmMaintenanceWindowTasks.
 func (c *FakeSsmMaintenanceWindowTasks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ssmmaintenancewindowtasksResource, opts))
+		InvokesWatch(testing.NewWatchAction(ssmmaintenancewindowtasksResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ssmMaintenanceWindowTask and creates it.  Returns the server's representation of the ssmMaintenanceWindowTask, and an error, if there is any.
 func (c *FakeSsmMaintenanceWindowTasks) Create(ssmMaintenanceWindowTask *v1alpha1.SsmMaintenanceWindowTask) (result *v1alpha1.SsmMaintenanceWindowTask, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ssmmaintenancewindowtasksResource, ssmMaintenanceWindowTask), &v1alpha1.SsmMaintenanceWindowTask{})
+		Invokes(testing.NewCreateAction(ssmmaintenancewindowtasksResource, c.ns, ssmMaintenanceWindowTask), &v1alpha1.SsmMaintenanceWindowTask{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSsmMaintenanceWindowTasks) Create(ssmMaintenanceWindowTask *v1alpha
 // Update takes the representation of a ssmMaintenanceWindowTask and updates it. Returns the server's representation of the ssmMaintenanceWindowTask, and an error, if there is any.
 func (c *FakeSsmMaintenanceWindowTasks) Update(ssmMaintenanceWindowTask *v1alpha1.SsmMaintenanceWindowTask) (result *v1alpha1.SsmMaintenanceWindowTask, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ssmmaintenancewindowtasksResource, ssmMaintenanceWindowTask), &v1alpha1.SsmMaintenanceWindowTask{})
+		Invokes(testing.NewUpdateAction(ssmmaintenancewindowtasksResource, c.ns, ssmMaintenanceWindowTask), &v1alpha1.SsmMaintenanceWindowTask{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSsmMaintenanceWindowTasks) Update(ssmMaintenanceWindowTask *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSsmMaintenanceWindowTasks) UpdateStatus(ssmMaintenanceWindowTask *v1alpha1.SsmMaintenanceWindowTask) (*v1alpha1.SsmMaintenanceWindowTask, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ssmmaintenancewindowtasksResource, "status", ssmMaintenanceWindowTask), &v1alpha1.SsmMaintenanceWindowTask{})
+		Invokes(testing.NewUpdateSubresourceAction(ssmmaintenancewindowtasksResource, "status", c.ns, ssmMaintenanceWindowTask), &v1alpha1.SsmMaintenanceWindowTask{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSsmMaintenanceWindowTasks) UpdateStatus(ssmMaintenanceWindowTask *v
 // Delete takes name of the ssmMaintenanceWindowTask and deletes it. Returns an error if one occurs.
 func (c *FakeSsmMaintenanceWindowTasks) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ssmmaintenancewindowtasksResource, name), &v1alpha1.SsmMaintenanceWindowTask{})
+		Invokes(testing.NewDeleteAction(ssmmaintenancewindowtasksResource, c.ns, name), &v1alpha1.SsmMaintenanceWindowTask{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSsmMaintenanceWindowTasks) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ssmmaintenancewindowtasksResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ssmmaintenancewindowtasksResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SsmMaintenanceWindowTaskList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSsmMaintenanceWindowTasks) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched ssmMaintenanceWindowTask.
 func (c *FakeSsmMaintenanceWindowTasks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SsmMaintenanceWindowTask, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ssmmaintenancewindowtasksResource, name, pt, data, subresources...), &v1alpha1.SsmMaintenanceWindowTask{})
+		Invokes(testing.NewPatchSubresourceAction(ssmmaintenancewindowtasksResource, c.ns, name, pt, data, subresources...), &v1alpha1.SsmMaintenanceWindowTask{})
+
 	if obj == nil {
 		return nil, err
 	}

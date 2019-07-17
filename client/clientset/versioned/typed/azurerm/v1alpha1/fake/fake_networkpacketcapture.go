@@ -31,6 +31,7 @@ import (
 // FakeNetworkPacketCaptures implements NetworkPacketCaptureInterface
 type FakeNetworkPacketCaptures struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var networkpacketcapturesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "networkpacketcaptures"}
@@ -40,7 +41,8 @@ var networkpacketcapturesKind = schema.GroupVersionKind{Group: "azurerm.kubeform
 // Get takes name of the networkPacketCapture, and returns the corresponding networkPacketCapture object, and an error if there is any.
 func (c *FakeNetworkPacketCaptures) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkPacketCapture, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(networkpacketcapturesResource, name), &v1alpha1.NetworkPacketCapture{})
+		Invokes(testing.NewGetAction(networkpacketcapturesResource, c.ns, name), &v1alpha1.NetworkPacketCapture{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeNetworkPacketCaptures) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of NetworkPacketCaptures that match those selectors.
 func (c *FakeNetworkPacketCaptures) List(opts v1.ListOptions) (result *v1alpha1.NetworkPacketCaptureList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(networkpacketcapturesResource, networkpacketcapturesKind, opts), &v1alpha1.NetworkPacketCaptureList{})
+		Invokes(testing.NewListAction(networkpacketcapturesResource, networkpacketcapturesKind, c.ns, opts), &v1alpha1.NetworkPacketCaptureList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeNetworkPacketCaptures) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested networkPacketCaptures.
 func (c *FakeNetworkPacketCaptures) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(networkpacketcapturesResource, opts))
+		InvokesWatch(testing.NewWatchAction(networkpacketcapturesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a networkPacketCapture and creates it.  Returns the server's representation of the networkPacketCapture, and an error, if there is any.
 func (c *FakeNetworkPacketCaptures) Create(networkPacketCapture *v1alpha1.NetworkPacketCapture) (result *v1alpha1.NetworkPacketCapture, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(networkpacketcapturesResource, networkPacketCapture), &v1alpha1.NetworkPacketCapture{})
+		Invokes(testing.NewCreateAction(networkpacketcapturesResource, c.ns, networkPacketCapture), &v1alpha1.NetworkPacketCapture{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeNetworkPacketCaptures) Create(networkPacketCapture *v1alpha1.Networ
 // Update takes the representation of a networkPacketCapture and updates it. Returns the server's representation of the networkPacketCapture, and an error, if there is any.
 func (c *FakeNetworkPacketCaptures) Update(networkPacketCapture *v1alpha1.NetworkPacketCapture) (result *v1alpha1.NetworkPacketCapture, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(networkpacketcapturesResource, networkPacketCapture), &v1alpha1.NetworkPacketCapture{})
+		Invokes(testing.NewUpdateAction(networkpacketcapturesResource, c.ns, networkPacketCapture), &v1alpha1.NetworkPacketCapture{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeNetworkPacketCaptures) Update(networkPacketCapture *v1alpha1.Networ
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeNetworkPacketCaptures) UpdateStatus(networkPacketCapture *v1alpha1.NetworkPacketCapture) (*v1alpha1.NetworkPacketCapture, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(networkpacketcapturesResource, "status", networkPacketCapture), &v1alpha1.NetworkPacketCapture{})
+		Invokes(testing.NewUpdateSubresourceAction(networkpacketcapturesResource, "status", c.ns, networkPacketCapture), &v1alpha1.NetworkPacketCapture{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeNetworkPacketCaptures) UpdateStatus(networkPacketCapture *v1alpha1.
 // Delete takes name of the networkPacketCapture and deletes it. Returns an error if one occurs.
 func (c *FakeNetworkPacketCaptures) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(networkpacketcapturesResource, name), &v1alpha1.NetworkPacketCapture{})
+		Invokes(testing.NewDeleteAction(networkpacketcapturesResource, c.ns, name), &v1alpha1.NetworkPacketCapture{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeNetworkPacketCaptures) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(networkpacketcapturesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(networkpacketcapturesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NetworkPacketCaptureList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeNetworkPacketCaptures) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched networkPacketCapture.
 func (c *FakeNetworkPacketCaptures) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkPacketCapture, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(networkpacketcapturesResource, name, pt, data, subresources...), &v1alpha1.NetworkPacketCapture{})
+		Invokes(testing.NewPatchSubresourceAction(networkpacketcapturesResource, c.ns, name, pt, data, subresources...), &v1alpha1.NetworkPacketCapture{})
+
 	if obj == nil {
 		return nil, err
 	}

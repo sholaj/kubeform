@@ -31,6 +31,7 @@ import (
 // FakePolicyAssignments implements PolicyAssignmentInterface
 type FakePolicyAssignments struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var policyassignmentsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "policyassignments"}
@@ -40,7 +41,8 @@ var policyassignmentsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com
 // Get takes name of the policyAssignment, and returns the corresponding policyAssignment object, and an error if there is any.
 func (c *FakePolicyAssignments) Get(name string, options v1.GetOptions) (result *v1alpha1.PolicyAssignment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(policyassignmentsResource, name), &v1alpha1.PolicyAssignment{})
+		Invokes(testing.NewGetAction(policyassignmentsResource, c.ns, name), &v1alpha1.PolicyAssignment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakePolicyAssignments) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of PolicyAssignments that match those selectors.
 func (c *FakePolicyAssignments) List(opts v1.ListOptions) (result *v1alpha1.PolicyAssignmentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(policyassignmentsResource, policyassignmentsKind, opts), &v1alpha1.PolicyAssignmentList{})
+		Invokes(testing.NewListAction(policyassignmentsResource, policyassignmentsKind, c.ns, opts), &v1alpha1.PolicyAssignmentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakePolicyAssignments) List(opts v1.ListOptions) (result *v1alpha1.Poli
 // Watch returns a watch.Interface that watches the requested policyAssignments.
 func (c *FakePolicyAssignments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(policyassignmentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(policyassignmentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a policyAssignment and creates it.  Returns the server's representation of the policyAssignment, and an error, if there is any.
 func (c *FakePolicyAssignments) Create(policyAssignment *v1alpha1.PolicyAssignment) (result *v1alpha1.PolicyAssignment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(policyassignmentsResource, policyAssignment), &v1alpha1.PolicyAssignment{})
+		Invokes(testing.NewCreateAction(policyassignmentsResource, c.ns, policyAssignment), &v1alpha1.PolicyAssignment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakePolicyAssignments) Create(policyAssignment *v1alpha1.PolicyAssignme
 // Update takes the representation of a policyAssignment and updates it. Returns the server's representation of the policyAssignment, and an error, if there is any.
 func (c *FakePolicyAssignments) Update(policyAssignment *v1alpha1.PolicyAssignment) (result *v1alpha1.PolicyAssignment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(policyassignmentsResource, policyAssignment), &v1alpha1.PolicyAssignment{})
+		Invokes(testing.NewUpdateAction(policyassignmentsResource, c.ns, policyAssignment), &v1alpha1.PolicyAssignment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakePolicyAssignments) Update(policyAssignment *v1alpha1.PolicyAssignme
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakePolicyAssignments) UpdateStatus(policyAssignment *v1alpha1.PolicyAssignment) (*v1alpha1.PolicyAssignment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(policyassignmentsResource, "status", policyAssignment), &v1alpha1.PolicyAssignment{})
+		Invokes(testing.NewUpdateSubresourceAction(policyassignmentsResource, "status", c.ns, policyAssignment), &v1alpha1.PolicyAssignment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakePolicyAssignments) UpdateStatus(policyAssignment *v1alpha1.PolicyAs
 // Delete takes name of the policyAssignment and deletes it. Returns an error if one occurs.
 func (c *FakePolicyAssignments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(policyassignmentsResource, name), &v1alpha1.PolicyAssignment{})
+		Invokes(testing.NewDeleteAction(policyassignmentsResource, c.ns, name), &v1alpha1.PolicyAssignment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakePolicyAssignments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(policyassignmentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(policyassignmentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PolicyAssignmentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakePolicyAssignments) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched policyAssignment.
 func (c *FakePolicyAssignments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PolicyAssignment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(policyassignmentsResource, name, pt, data, subresources...), &v1alpha1.PolicyAssignment{})
+		Invokes(testing.NewPatchSubresourceAction(policyassignmentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.PolicyAssignment{})
+
 	if obj == nil {
 		return nil, err
 	}

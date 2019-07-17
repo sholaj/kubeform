@@ -31,6 +31,7 @@ import (
 // FakeLoggingOrganizationExclusions implements LoggingOrganizationExclusionInterface
 type FakeLoggingOrganizationExclusions struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var loggingorganizationexclusionsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "loggingorganizationexclusions"}
@@ -40,7 +41,8 @@ var loggingorganizationexclusionsKind = schema.GroupVersionKind{Group: "google.k
 // Get takes name of the loggingOrganizationExclusion, and returns the corresponding loggingOrganizationExclusion object, and an error if there is any.
 func (c *FakeLoggingOrganizationExclusions) Get(name string, options v1.GetOptions) (result *v1alpha1.LoggingOrganizationExclusion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(loggingorganizationexclusionsResource, name), &v1alpha1.LoggingOrganizationExclusion{})
+		Invokes(testing.NewGetAction(loggingorganizationexclusionsResource, c.ns, name), &v1alpha1.LoggingOrganizationExclusion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLoggingOrganizationExclusions) Get(name string, options v1.GetOptio
 // List takes label and field selectors, and returns the list of LoggingOrganizationExclusions that match those selectors.
 func (c *FakeLoggingOrganizationExclusions) List(opts v1.ListOptions) (result *v1alpha1.LoggingOrganizationExclusionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(loggingorganizationexclusionsResource, loggingorganizationexclusionsKind, opts), &v1alpha1.LoggingOrganizationExclusionList{})
+		Invokes(testing.NewListAction(loggingorganizationexclusionsResource, loggingorganizationexclusionsKind, c.ns, opts), &v1alpha1.LoggingOrganizationExclusionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLoggingOrganizationExclusions) List(opts v1.ListOptions) (result *v
 // Watch returns a watch.Interface that watches the requested loggingOrganizationExclusions.
 func (c *FakeLoggingOrganizationExclusions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(loggingorganizationexclusionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(loggingorganizationexclusionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a loggingOrganizationExclusion and creates it.  Returns the server's representation of the loggingOrganizationExclusion, and an error, if there is any.
 func (c *FakeLoggingOrganizationExclusions) Create(loggingOrganizationExclusion *v1alpha1.LoggingOrganizationExclusion) (result *v1alpha1.LoggingOrganizationExclusion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(loggingorganizationexclusionsResource, loggingOrganizationExclusion), &v1alpha1.LoggingOrganizationExclusion{})
+		Invokes(testing.NewCreateAction(loggingorganizationexclusionsResource, c.ns, loggingOrganizationExclusion), &v1alpha1.LoggingOrganizationExclusion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLoggingOrganizationExclusions) Create(loggingOrganizationExclusion 
 // Update takes the representation of a loggingOrganizationExclusion and updates it. Returns the server's representation of the loggingOrganizationExclusion, and an error, if there is any.
 func (c *FakeLoggingOrganizationExclusions) Update(loggingOrganizationExclusion *v1alpha1.LoggingOrganizationExclusion) (result *v1alpha1.LoggingOrganizationExclusion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(loggingorganizationexclusionsResource, loggingOrganizationExclusion), &v1alpha1.LoggingOrganizationExclusion{})
+		Invokes(testing.NewUpdateAction(loggingorganizationexclusionsResource, c.ns, loggingOrganizationExclusion), &v1alpha1.LoggingOrganizationExclusion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLoggingOrganizationExclusions) Update(loggingOrganizationExclusion 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLoggingOrganizationExclusions) UpdateStatus(loggingOrganizationExclusion *v1alpha1.LoggingOrganizationExclusion) (*v1alpha1.LoggingOrganizationExclusion, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(loggingorganizationexclusionsResource, "status", loggingOrganizationExclusion), &v1alpha1.LoggingOrganizationExclusion{})
+		Invokes(testing.NewUpdateSubresourceAction(loggingorganizationexclusionsResource, "status", c.ns, loggingOrganizationExclusion), &v1alpha1.LoggingOrganizationExclusion{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLoggingOrganizationExclusions) UpdateStatus(loggingOrganizationExcl
 // Delete takes name of the loggingOrganizationExclusion and deletes it. Returns an error if one occurs.
 func (c *FakeLoggingOrganizationExclusions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(loggingorganizationexclusionsResource, name), &v1alpha1.LoggingOrganizationExclusion{})
+		Invokes(testing.NewDeleteAction(loggingorganizationexclusionsResource, c.ns, name), &v1alpha1.LoggingOrganizationExclusion{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLoggingOrganizationExclusions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(loggingorganizationexclusionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(loggingorganizationexclusionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LoggingOrganizationExclusionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLoggingOrganizationExclusions) DeleteCollection(options *v1.DeleteO
 // Patch applies the patch and returns the patched loggingOrganizationExclusion.
 func (c *FakeLoggingOrganizationExclusions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LoggingOrganizationExclusion, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(loggingorganizationexclusionsResource, name, pt, data, subresources...), &v1alpha1.LoggingOrganizationExclusion{})
+		Invokes(testing.NewPatchSubresourceAction(loggingorganizationexclusionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.LoggingOrganizationExclusion{})
+
 	if obj == nil {
 		return nil, err
 	}

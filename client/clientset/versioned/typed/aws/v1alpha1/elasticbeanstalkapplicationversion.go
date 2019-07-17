@@ -32,7 +32,7 @@ import (
 // ElasticBeanstalkApplicationVersionsGetter has a method to return a ElasticBeanstalkApplicationVersionInterface.
 // A group's client should implement this interface.
 type ElasticBeanstalkApplicationVersionsGetter interface {
-	ElasticBeanstalkApplicationVersions() ElasticBeanstalkApplicationVersionInterface
+	ElasticBeanstalkApplicationVersions(namespace string) ElasticBeanstalkApplicationVersionInterface
 }
 
 // ElasticBeanstalkApplicationVersionInterface has methods to work with ElasticBeanstalkApplicationVersion resources.
@@ -52,12 +52,14 @@ type ElasticBeanstalkApplicationVersionInterface interface {
 // elasticBeanstalkApplicationVersions implements ElasticBeanstalkApplicationVersionInterface
 type elasticBeanstalkApplicationVersions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newElasticBeanstalkApplicationVersions returns a ElasticBeanstalkApplicationVersions
-func newElasticBeanstalkApplicationVersions(c *AwsV1alpha1Client) *elasticBeanstalkApplicationVersions {
+func newElasticBeanstalkApplicationVersions(c *AwsV1alpha1Client, namespace string) *elasticBeanstalkApplicationVersions {
 	return &elasticBeanstalkApplicationVersions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newElasticBeanstalkApplicationVersions(c *AwsV1alpha1Client) *elasticBeanst
 func (c *elasticBeanstalkApplicationVersions) Get(name string, options v1.GetOptions) (result *v1alpha1.ElasticBeanstalkApplicationVersion, err error) {
 	result = &v1alpha1.ElasticBeanstalkApplicationVersion{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkapplicationversions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *elasticBeanstalkApplicationVersions) List(opts v1.ListOptions) (result 
 	}
 	result = &v1alpha1.ElasticBeanstalkApplicationVersionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkapplicationversions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *elasticBeanstalkApplicationVersions) Watch(opts v1.ListOptions) (watch.
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkapplicationversions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *elasticBeanstalkApplicationVersions) Watch(opts v1.ListOptions) (watch.
 func (c *elasticBeanstalkApplicationVersions) Create(elasticBeanstalkApplicationVersion *v1alpha1.ElasticBeanstalkApplicationVersion) (result *v1alpha1.ElasticBeanstalkApplicationVersion, err error) {
 	result = &v1alpha1.ElasticBeanstalkApplicationVersion{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkapplicationversions").
 		Body(elasticBeanstalkApplicationVersion).
 		Do().
@@ -118,6 +124,7 @@ func (c *elasticBeanstalkApplicationVersions) Create(elasticBeanstalkApplication
 func (c *elasticBeanstalkApplicationVersions) Update(elasticBeanstalkApplicationVersion *v1alpha1.ElasticBeanstalkApplicationVersion) (result *v1alpha1.ElasticBeanstalkApplicationVersion, err error) {
 	result = &v1alpha1.ElasticBeanstalkApplicationVersion{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkapplicationversions").
 		Name(elasticBeanstalkApplicationVersion.Name).
 		Body(elasticBeanstalkApplicationVersion).
@@ -132,6 +139,7 @@ func (c *elasticBeanstalkApplicationVersions) Update(elasticBeanstalkApplication
 func (c *elasticBeanstalkApplicationVersions) UpdateStatus(elasticBeanstalkApplicationVersion *v1alpha1.ElasticBeanstalkApplicationVersion) (result *v1alpha1.ElasticBeanstalkApplicationVersion, err error) {
 	result = &v1alpha1.ElasticBeanstalkApplicationVersion{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkapplicationversions").
 		Name(elasticBeanstalkApplicationVersion.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *elasticBeanstalkApplicationVersions) UpdateStatus(elasticBeanstalkAppli
 // Delete takes name of the elasticBeanstalkApplicationVersion and deletes it. Returns an error if one occurs.
 func (c *elasticBeanstalkApplicationVersions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkapplicationversions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *elasticBeanstalkApplicationVersions) DeleteCollection(options *v1.Delet
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("elasticbeanstalkapplicationversions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *elasticBeanstalkApplicationVersions) DeleteCollection(options *v1.Delet
 func (c *elasticBeanstalkApplicationVersions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ElasticBeanstalkApplicationVersion, err error) {
 	result = &v1alpha1.ElasticBeanstalkApplicationVersion{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("elasticbeanstalkapplicationversions").
 		SubResource(subresources...).
 		Name(name).

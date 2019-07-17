@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// ServiceDiscoveryHttpNamespacesGetter has a method to return a ServiceDiscoveryHttpNamespaceInterface.
+// ServiceDiscoveryHTTPNamespacesGetter has a method to return a ServiceDiscoveryHTTPNamespaceInterface.
 // A group's client should implement this interface.
-type ServiceDiscoveryHttpNamespacesGetter interface {
-	ServiceDiscoveryHttpNamespaces() ServiceDiscoveryHttpNamespaceInterface
+type ServiceDiscoveryHTTPNamespacesGetter interface {
+	ServiceDiscoveryHTTPNamespaces(namespace string) ServiceDiscoveryHTTPNamespaceInterface
 }
 
-// ServiceDiscoveryHttpNamespaceInterface has methods to work with ServiceDiscoveryHttpNamespace resources.
-type ServiceDiscoveryHttpNamespaceInterface interface {
-	Create(*v1alpha1.ServiceDiscoveryHttpNamespace) (*v1alpha1.ServiceDiscoveryHttpNamespace, error)
-	Update(*v1alpha1.ServiceDiscoveryHttpNamespace) (*v1alpha1.ServiceDiscoveryHttpNamespace, error)
-	UpdateStatus(*v1alpha1.ServiceDiscoveryHttpNamespace) (*v1alpha1.ServiceDiscoveryHttpNamespace, error)
+// ServiceDiscoveryHTTPNamespaceInterface has methods to work with ServiceDiscoveryHTTPNamespace resources.
+type ServiceDiscoveryHTTPNamespaceInterface interface {
+	Create(*v1alpha1.ServiceDiscoveryHTTPNamespace) (*v1alpha1.ServiceDiscoveryHTTPNamespace, error)
+	Update(*v1alpha1.ServiceDiscoveryHTTPNamespace) (*v1alpha1.ServiceDiscoveryHTTPNamespace, error)
+	UpdateStatus(*v1alpha1.ServiceDiscoveryHTTPNamespace) (*v1alpha1.ServiceDiscoveryHTTPNamespace, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.ServiceDiscoveryHttpNamespace, error)
-	List(opts v1.ListOptions) (*v1alpha1.ServiceDiscoveryHttpNamespaceList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.ServiceDiscoveryHTTPNamespace, error)
+	List(opts v1.ListOptions) (*v1alpha1.ServiceDiscoveryHTTPNamespaceList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceDiscoveryHttpNamespace, err error)
-	ServiceDiscoveryHttpNamespaceExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceDiscoveryHTTPNamespace, err error)
+	ServiceDiscoveryHTTPNamespaceExpansion
 }
 
-// serviceDiscoveryHttpNamespaces implements ServiceDiscoveryHttpNamespaceInterface
-type serviceDiscoveryHttpNamespaces struct {
+// serviceDiscoveryHTTPNamespaces implements ServiceDiscoveryHTTPNamespaceInterface
+type serviceDiscoveryHTTPNamespaces struct {
 	client rest.Interface
+	ns     string
 }
 
-// newServiceDiscoveryHttpNamespaces returns a ServiceDiscoveryHttpNamespaces
-func newServiceDiscoveryHttpNamespaces(c *AwsV1alpha1Client) *serviceDiscoveryHttpNamespaces {
-	return &serviceDiscoveryHttpNamespaces{
+// newServiceDiscoveryHTTPNamespaces returns a ServiceDiscoveryHTTPNamespaces
+func newServiceDiscoveryHTTPNamespaces(c *AwsV1alpha1Client, namespace string) *serviceDiscoveryHTTPNamespaces {
+	return &serviceDiscoveryHTTPNamespaces{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the serviceDiscoveryHttpNamespace, and returns the corresponding serviceDiscoveryHttpNamespace object, and an error if there is any.
-func (c *serviceDiscoveryHttpNamespaces) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceDiscoveryHttpNamespace, err error) {
-	result = &v1alpha1.ServiceDiscoveryHttpNamespace{}
+// Get takes name of the serviceDiscoveryHTTPNamespace, and returns the corresponding serviceDiscoveryHTTPNamespace object, and an error if there is any.
+func (c *serviceDiscoveryHTTPNamespaces) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceDiscoveryHTTPNamespace, err error) {
+	result = &v1alpha1.ServiceDiscoveryHTTPNamespace{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicediscoveryhttpnamespaces").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *serviceDiscoveryHttpNamespaces) Get(name string, options v1.GetOptions)
 	return
 }
 
-// List takes label and field selectors, and returns the list of ServiceDiscoveryHttpNamespaces that match those selectors.
-func (c *serviceDiscoveryHttpNamespaces) List(opts v1.ListOptions) (result *v1alpha1.ServiceDiscoveryHttpNamespaceList, err error) {
+// List takes label and field selectors, and returns the list of ServiceDiscoveryHTTPNamespaces that match those selectors.
+func (c *serviceDiscoveryHTTPNamespaces) List(opts v1.ListOptions) (result *v1alpha1.ServiceDiscoveryHTTPNamespaceList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.ServiceDiscoveryHttpNamespaceList{}
+	result = &v1alpha1.ServiceDiscoveryHTTPNamespaceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicediscoveryhttpnamespaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *serviceDiscoveryHttpNamespaces) List(opts v1.ListOptions) (result *v1al
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested serviceDiscoveryHttpNamespaces.
-func (c *serviceDiscoveryHttpNamespaces) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested serviceDiscoveryHTTPNamespaces.
+func (c *serviceDiscoveryHTTPNamespaces) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("servicediscoveryhttpnamespaces").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a serviceDiscoveryHttpNamespace and creates it.  Returns the server's representation of the serviceDiscoveryHttpNamespace, and an error, if there is any.
-func (c *serviceDiscoveryHttpNamespaces) Create(serviceDiscoveryHttpNamespace *v1alpha1.ServiceDiscoveryHttpNamespace) (result *v1alpha1.ServiceDiscoveryHttpNamespace, err error) {
-	result = &v1alpha1.ServiceDiscoveryHttpNamespace{}
+// Create takes the representation of a serviceDiscoveryHTTPNamespace and creates it.  Returns the server's representation of the serviceDiscoveryHTTPNamespace, and an error, if there is any.
+func (c *serviceDiscoveryHTTPNamespaces) Create(serviceDiscoveryHTTPNamespace *v1alpha1.ServiceDiscoveryHTTPNamespace) (result *v1alpha1.ServiceDiscoveryHTTPNamespace, err error) {
+	result = &v1alpha1.ServiceDiscoveryHTTPNamespace{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("servicediscoveryhttpnamespaces").
-		Body(serviceDiscoveryHttpNamespace).
+		Body(serviceDiscoveryHTTPNamespace).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a serviceDiscoveryHttpNamespace and updates it. Returns the server's representation of the serviceDiscoveryHttpNamespace, and an error, if there is any.
-func (c *serviceDiscoveryHttpNamespaces) Update(serviceDiscoveryHttpNamespace *v1alpha1.ServiceDiscoveryHttpNamespace) (result *v1alpha1.ServiceDiscoveryHttpNamespace, err error) {
-	result = &v1alpha1.ServiceDiscoveryHttpNamespace{}
+// Update takes the representation of a serviceDiscoveryHTTPNamespace and updates it. Returns the server's representation of the serviceDiscoveryHTTPNamespace, and an error, if there is any.
+func (c *serviceDiscoveryHTTPNamespaces) Update(serviceDiscoveryHTTPNamespace *v1alpha1.ServiceDiscoveryHTTPNamespace) (result *v1alpha1.ServiceDiscoveryHTTPNamespace, err error) {
+	result = &v1alpha1.ServiceDiscoveryHTTPNamespace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicediscoveryhttpnamespaces").
-		Name(serviceDiscoveryHttpNamespace.Name).
-		Body(serviceDiscoveryHttpNamespace).
+		Name(serviceDiscoveryHTTPNamespace.Name).
+		Body(serviceDiscoveryHTTPNamespace).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *serviceDiscoveryHttpNamespaces) Update(serviceDiscoveryHttpNamespace *v
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *serviceDiscoveryHttpNamespaces) UpdateStatus(serviceDiscoveryHttpNamespace *v1alpha1.ServiceDiscoveryHttpNamespace) (result *v1alpha1.ServiceDiscoveryHttpNamespace, err error) {
-	result = &v1alpha1.ServiceDiscoveryHttpNamespace{}
+func (c *serviceDiscoveryHTTPNamespaces) UpdateStatus(serviceDiscoveryHTTPNamespace *v1alpha1.ServiceDiscoveryHTTPNamespace) (result *v1alpha1.ServiceDiscoveryHTTPNamespace, err error) {
+	result = &v1alpha1.ServiceDiscoveryHTTPNamespace{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicediscoveryhttpnamespaces").
-		Name(serviceDiscoveryHttpNamespace.Name).
+		Name(serviceDiscoveryHTTPNamespace.Name).
 		SubResource("status").
-		Body(serviceDiscoveryHttpNamespace).
+		Body(serviceDiscoveryHTTPNamespace).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the serviceDiscoveryHttpNamespace and deletes it. Returns an error if one occurs.
-func (c *serviceDiscoveryHttpNamespaces) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the serviceDiscoveryHTTPNamespace and deletes it. Returns an error if one occurs.
+func (c *serviceDiscoveryHTTPNamespaces) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicediscoveryhttpnamespaces").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *serviceDiscoveryHttpNamespaces) Delete(name string, options *v1.DeleteO
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *serviceDiscoveryHttpNamespaces) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *serviceDiscoveryHTTPNamespaces) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicediscoveryhttpnamespaces").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *serviceDiscoveryHttpNamespaces) DeleteCollection(options *v1.DeleteOpti
 		Error()
 }
 
-// Patch applies the patch and returns the patched serviceDiscoveryHttpNamespace.
-func (c *serviceDiscoveryHttpNamespaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceDiscoveryHttpNamespace, err error) {
-	result = &v1alpha1.ServiceDiscoveryHttpNamespace{}
+// Patch applies the patch and returns the patched serviceDiscoveryHTTPNamespace.
+func (c *serviceDiscoveryHTTPNamespaces) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceDiscoveryHTTPNamespace, err error) {
+	result = &v1alpha1.ServiceDiscoveryHTTPNamespace{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("servicediscoveryhttpnamespaces").
 		SubResource(subresources...).
 		Name(name).

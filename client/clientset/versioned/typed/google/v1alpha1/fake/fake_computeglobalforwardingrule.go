@@ -31,6 +31,7 @@ import (
 // FakeComputeGlobalForwardingRules implements ComputeGlobalForwardingRuleInterface
 type FakeComputeGlobalForwardingRules struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computeglobalforwardingrulesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computeglobalforwardingrules"}
@@ -40,7 +41,8 @@ var computeglobalforwardingrulesKind = schema.GroupVersionKind{Group: "google.ku
 // Get takes name of the computeGlobalForwardingRule, and returns the corresponding computeGlobalForwardingRule object, and an error if there is any.
 func (c *FakeComputeGlobalForwardingRules) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeGlobalForwardingRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computeglobalforwardingrulesResource, name), &v1alpha1.ComputeGlobalForwardingRule{})
+		Invokes(testing.NewGetAction(computeglobalforwardingrulesResource, c.ns, name), &v1alpha1.ComputeGlobalForwardingRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeGlobalForwardingRules) Get(name string, options v1.GetOption
 // List takes label and field selectors, and returns the list of ComputeGlobalForwardingRules that match those selectors.
 func (c *FakeComputeGlobalForwardingRules) List(opts v1.ListOptions) (result *v1alpha1.ComputeGlobalForwardingRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computeglobalforwardingrulesResource, computeglobalforwardingrulesKind, opts), &v1alpha1.ComputeGlobalForwardingRuleList{})
+		Invokes(testing.NewListAction(computeglobalforwardingrulesResource, computeglobalforwardingrulesKind, c.ns, opts), &v1alpha1.ComputeGlobalForwardingRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeGlobalForwardingRules) List(opts v1.ListOptions) (result *v1
 // Watch returns a watch.Interface that watches the requested computeGlobalForwardingRules.
 func (c *FakeComputeGlobalForwardingRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computeglobalforwardingrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(computeglobalforwardingrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeGlobalForwardingRule and creates it.  Returns the server's representation of the computeGlobalForwardingRule, and an error, if there is any.
 func (c *FakeComputeGlobalForwardingRules) Create(computeGlobalForwardingRule *v1alpha1.ComputeGlobalForwardingRule) (result *v1alpha1.ComputeGlobalForwardingRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computeglobalforwardingrulesResource, computeGlobalForwardingRule), &v1alpha1.ComputeGlobalForwardingRule{})
+		Invokes(testing.NewCreateAction(computeglobalforwardingrulesResource, c.ns, computeGlobalForwardingRule), &v1alpha1.ComputeGlobalForwardingRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeGlobalForwardingRules) Create(computeGlobalForwardingRule *v
 // Update takes the representation of a computeGlobalForwardingRule and updates it. Returns the server's representation of the computeGlobalForwardingRule, and an error, if there is any.
 func (c *FakeComputeGlobalForwardingRules) Update(computeGlobalForwardingRule *v1alpha1.ComputeGlobalForwardingRule) (result *v1alpha1.ComputeGlobalForwardingRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computeglobalforwardingrulesResource, computeGlobalForwardingRule), &v1alpha1.ComputeGlobalForwardingRule{})
+		Invokes(testing.NewUpdateAction(computeglobalforwardingrulesResource, c.ns, computeGlobalForwardingRule), &v1alpha1.ComputeGlobalForwardingRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeGlobalForwardingRules) Update(computeGlobalForwardingRule *v
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeGlobalForwardingRules) UpdateStatus(computeGlobalForwardingRule *v1alpha1.ComputeGlobalForwardingRule) (*v1alpha1.ComputeGlobalForwardingRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computeglobalforwardingrulesResource, "status", computeGlobalForwardingRule), &v1alpha1.ComputeGlobalForwardingRule{})
+		Invokes(testing.NewUpdateSubresourceAction(computeglobalforwardingrulesResource, "status", c.ns, computeGlobalForwardingRule), &v1alpha1.ComputeGlobalForwardingRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeGlobalForwardingRules) UpdateStatus(computeGlobalForwardingR
 // Delete takes name of the computeGlobalForwardingRule and deletes it. Returns an error if one occurs.
 func (c *FakeComputeGlobalForwardingRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computeglobalforwardingrulesResource, name), &v1alpha1.ComputeGlobalForwardingRule{})
+		Invokes(testing.NewDeleteAction(computeglobalforwardingrulesResource, c.ns, name), &v1alpha1.ComputeGlobalForwardingRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeGlobalForwardingRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computeglobalforwardingrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computeglobalforwardingrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeGlobalForwardingRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeGlobalForwardingRules) DeleteCollection(options *v1.DeleteOp
 // Patch applies the patch and returns the patched computeGlobalForwardingRule.
 func (c *FakeComputeGlobalForwardingRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeGlobalForwardingRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computeglobalforwardingrulesResource, name, pt, data, subresources...), &v1alpha1.ComputeGlobalForwardingRule{})
+		Invokes(testing.NewPatchSubresourceAction(computeglobalforwardingrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeGlobalForwardingRule{})
+
 	if obj == nil {
 		return nil, err
 	}

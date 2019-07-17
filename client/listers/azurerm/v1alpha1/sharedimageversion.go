@@ -29,8 +29,8 @@ import (
 type SharedImageVersionLister interface {
 	// List lists all SharedImageVersions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SharedImageVersion, err error)
-	// Get retrieves the SharedImageVersion from the index for a given name.
-	Get(name string) (*v1alpha1.SharedImageVersion, error)
+	// SharedImageVersions returns an object that can list and get SharedImageVersions.
+	SharedImageVersions(namespace string) SharedImageVersionNamespaceLister
 	SharedImageVersionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sharedImageVersionLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the SharedImageVersion from the index for a given name.
-func (s *sharedImageVersionLister) Get(name string) (*v1alpha1.SharedImageVersion, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SharedImageVersions returns an object that can list and get SharedImageVersions.
+func (s *sharedImageVersionLister) SharedImageVersions(namespace string) SharedImageVersionNamespaceLister {
+	return sharedImageVersionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SharedImageVersionNamespaceLister helps list and get SharedImageVersions.
+type SharedImageVersionNamespaceLister interface {
+	// List lists all SharedImageVersions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SharedImageVersion, err error)
+	// Get retrieves the SharedImageVersion from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SharedImageVersion, error)
+	SharedImageVersionNamespaceListerExpansion
+}
+
+// sharedImageVersionNamespaceLister implements the SharedImageVersionNamespaceLister
+// interface.
+type sharedImageVersionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SharedImageVersions in the indexer for a given namespace.
+func (s sharedImageVersionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SharedImageVersion, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SharedImageVersion))
+	})
+	return ret, err
+}
+
+// Get retrieves the SharedImageVersion from the indexer for a given namespace and name.
+func (s sharedImageVersionNamespaceLister) Get(name string) (*v1alpha1.SharedImageVersion, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -41,32 +41,33 @@ type IamUserGroupMembershipInformer interface {
 type iamUserGroupMembershipInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewIamUserGroupMembershipInformer constructs a new informer for IamUserGroupMembership type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewIamUserGroupMembershipInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredIamUserGroupMembershipInformer(client, resyncPeriod, indexers, nil)
+func NewIamUserGroupMembershipInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredIamUserGroupMembershipInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredIamUserGroupMembershipInformer constructs a new informer for IamUserGroupMembership type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredIamUserGroupMembershipInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredIamUserGroupMembershipInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().IamUserGroupMemberships().List(options)
+				return client.AwsV1alpha1().IamUserGroupMemberships(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().IamUserGroupMemberships().Watch(options)
+				return client.AwsV1alpha1().IamUserGroupMemberships(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.IamUserGroupMembership{},
@@ -76,7 +77,7 @@ func NewFilteredIamUserGroupMembershipInformer(client versioned.Interface, resyn
 }
 
 func (f *iamUserGroupMembershipInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredIamUserGroupMembershipInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredIamUserGroupMembershipInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *iamUserGroupMembershipInformer) Informer() cache.SharedIndexInformer {

@@ -29,8 +29,8 @@ import (
 type IamAccountAliasLister interface {
 	// List lists all IamAccountAliases in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IamAccountAlias, err error)
-	// Get retrieves the IamAccountAlias from the index for a given name.
-	Get(name string) (*v1alpha1.IamAccountAlias, error)
+	// IamAccountAliases returns an object that can list and get IamAccountAliases.
+	IamAccountAliases(namespace string) IamAccountAliasNamespaceLister
 	IamAccountAliasListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iamAccountAliasLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the IamAccountAlias from the index for a given name.
-func (s *iamAccountAliasLister) Get(name string) (*v1alpha1.IamAccountAlias, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IamAccountAliases returns an object that can list and get IamAccountAliases.
+func (s *iamAccountAliasLister) IamAccountAliases(namespace string) IamAccountAliasNamespaceLister {
+	return iamAccountAliasNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IamAccountAliasNamespaceLister helps list and get IamAccountAliases.
+type IamAccountAliasNamespaceLister interface {
+	// List lists all IamAccountAliases in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IamAccountAlias, err error)
+	// Get retrieves the IamAccountAlias from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IamAccountAlias, error)
+	IamAccountAliasNamespaceListerExpansion
+}
+
+// iamAccountAliasNamespaceLister implements the IamAccountAliasNamespaceLister
+// interface.
+type iamAccountAliasNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IamAccountAliases in the indexer for a given namespace.
+func (s iamAccountAliasNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IamAccountAlias, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IamAccountAlias))
+	})
+	return ret, err
+}
+
+// Get retrieves the IamAccountAlias from the indexer for a given namespace and name.
+func (s iamAccountAliasNamespaceLister) Get(name string) (*v1alpha1.IamAccountAlias, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

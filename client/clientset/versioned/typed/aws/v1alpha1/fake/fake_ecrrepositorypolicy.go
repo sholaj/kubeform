@@ -31,6 +31,7 @@ import (
 // FakeEcrRepositoryPolicies implements EcrRepositoryPolicyInterface
 type FakeEcrRepositoryPolicies struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ecrrepositorypoliciesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ecrrepositorypolicies"}
@@ -40,7 +41,8 @@ var ecrrepositorypoliciesKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the ecrRepositoryPolicy, and returns the corresponding ecrRepositoryPolicy object, and an error if there is any.
 func (c *FakeEcrRepositoryPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.EcrRepositoryPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ecrrepositorypoliciesResource, name), &v1alpha1.EcrRepositoryPolicy{})
+		Invokes(testing.NewGetAction(ecrrepositorypoliciesResource, c.ns, name), &v1alpha1.EcrRepositoryPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEcrRepositoryPolicies) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of EcrRepositoryPolicies that match those selectors.
 func (c *FakeEcrRepositoryPolicies) List(opts v1.ListOptions) (result *v1alpha1.EcrRepositoryPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ecrrepositorypoliciesResource, ecrrepositorypoliciesKind, opts), &v1alpha1.EcrRepositoryPolicyList{})
+		Invokes(testing.NewListAction(ecrrepositorypoliciesResource, ecrrepositorypoliciesKind, c.ns, opts), &v1alpha1.EcrRepositoryPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEcrRepositoryPolicies) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested ecrRepositoryPolicies.
 func (c *FakeEcrRepositoryPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ecrrepositorypoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(ecrrepositorypoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ecrRepositoryPolicy and creates it.  Returns the server's representation of the ecrRepositoryPolicy, and an error, if there is any.
 func (c *FakeEcrRepositoryPolicies) Create(ecrRepositoryPolicy *v1alpha1.EcrRepositoryPolicy) (result *v1alpha1.EcrRepositoryPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ecrrepositorypoliciesResource, ecrRepositoryPolicy), &v1alpha1.EcrRepositoryPolicy{})
+		Invokes(testing.NewCreateAction(ecrrepositorypoliciesResource, c.ns, ecrRepositoryPolicy), &v1alpha1.EcrRepositoryPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEcrRepositoryPolicies) Create(ecrRepositoryPolicy *v1alpha1.EcrRepo
 // Update takes the representation of a ecrRepositoryPolicy and updates it. Returns the server's representation of the ecrRepositoryPolicy, and an error, if there is any.
 func (c *FakeEcrRepositoryPolicies) Update(ecrRepositoryPolicy *v1alpha1.EcrRepositoryPolicy) (result *v1alpha1.EcrRepositoryPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ecrrepositorypoliciesResource, ecrRepositoryPolicy), &v1alpha1.EcrRepositoryPolicy{})
+		Invokes(testing.NewUpdateAction(ecrrepositorypoliciesResource, c.ns, ecrRepositoryPolicy), &v1alpha1.EcrRepositoryPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEcrRepositoryPolicies) Update(ecrRepositoryPolicy *v1alpha1.EcrRepo
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEcrRepositoryPolicies) UpdateStatus(ecrRepositoryPolicy *v1alpha1.EcrRepositoryPolicy) (*v1alpha1.EcrRepositoryPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ecrrepositorypoliciesResource, "status", ecrRepositoryPolicy), &v1alpha1.EcrRepositoryPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(ecrrepositorypoliciesResource, "status", c.ns, ecrRepositoryPolicy), &v1alpha1.EcrRepositoryPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEcrRepositoryPolicies) UpdateStatus(ecrRepositoryPolicy *v1alpha1.E
 // Delete takes name of the ecrRepositoryPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeEcrRepositoryPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ecrrepositorypoliciesResource, name), &v1alpha1.EcrRepositoryPolicy{})
+		Invokes(testing.NewDeleteAction(ecrrepositorypoliciesResource, c.ns, name), &v1alpha1.EcrRepositoryPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEcrRepositoryPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ecrrepositorypoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ecrrepositorypoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.EcrRepositoryPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEcrRepositoryPolicies) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched ecrRepositoryPolicy.
 func (c *FakeEcrRepositoryPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EcrRepositoryPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ecrrepositorypoliciesResource, name, pt, data, subresources...), &v1alpha1.EcrRepositoryPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(ecrrepositorypoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.EcrRepositoryPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

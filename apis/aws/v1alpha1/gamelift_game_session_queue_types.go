@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,19 +19,20 @@ type GameliftGameSessionQueue struct {
 }
 
 type GameliftGameSessionQueueSpecPlayerLatencyPolicy struct {
-	MaximumIndividualPlayerLatencyMilliseconds int `json:"maximum_individual_player_latency_milliseconds"`
+	MaximumIndividualPlayerLatencyMilliseconds int `json:"maximumIndividualPlayerLatencyMilliseconds" tf:"maximum_individual_player_latency_milliseconds"`
 	// +optional
-	PolicyDurationSeconds int `json:"policy_duration_seconds,omitempty"`
+	PolicyDurationSeconds int `json:"policyDurationSeconds,omitempty" tf:"policy_duration_seconds,omitempty"`
 }
 
 type GameliftGameSessionQueueSpec struct {
 	// +optional
-	Destinations []string `json:"destinations,omitempty"`
-	Name         string   `json:"name"`
+	Destinations []string `json:"destinations,omitempty" tf:"destinations,omitempty"`
+	Name         string   `json:"name" tf:"name"`
 	// +optional
-	PlayerLatencyPolicy *[]GameliftGameSessionQueueSpec `json:"player_latency_policy,omitempty"`
+	PlayerLatencyPolicy []GameliftGameSessionQueueSpecPlayerLatencyPolicy `json:"playerLatencyPolicy,omitempty" tf:"player_latency_policy,omitempty"`
 	// +optional
-	TimeoutInSeconds int `json:"timeout_in_seconds,omitempty"`
+	TimeoutInSeconds int                       `json:"timeoutInSeconds,omitempty" tf:"timeout_in_seconds,omitempty"`
+	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type GameliftGameSessionQueueStatus struct {
@@ -39,7 +40,9 @@ type GameliftGameSessionQueueStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -29,8 +29,8 @@ import (
 type IamOpenidConnectProviderLister interface {
 	// List lists all IamOpenidConnectProviders in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IamOpenidConnectProvider, err error)
-	// Get retrieves the IamOpenidConnectProvider from the index for a given name.
-	Get(name string) (*v1alpha1.IamOpenidConnectProvider, error)
+	// IamOpenidConnectProviders returns an object that can list and get IamOpenidConnectProviders.
+	IamOpenidConnectProviders(namespace string) IamOpenidConnectProviderNamespaceLister
 	IamOpenidConnectProviderListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iamOpenidConnectProviderLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the IamOpenidConnectProvider from the index for a given name.
-func (s *iamOpenidConnectProviderLister) Get(name string) (*v1alpha1.IamOpenidConnectProvider, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IamOpenidConnectProviders returns an object that can list and get IamOpenidConnectProviders.
+func (s *iamOpenidConnectProviderLister) IamOpenidConnectProviders(namespace string) IamOpenidConnectProviderNamespaceLister {
+	return iamOpenidConnectProviderNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IamOpenidConnectProviderNamespaceLister helps list and get IamOpenidConnectProviders.
+type IamOpenidConnectProviderNamespaceLister interface {
+	// List lists all IamOpenidConnectProviders in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IamOpenidConnectProvider, err error)
+	// Get retrieves the IamOpenidConnectProvider from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IamOpenidConnectProvider, error)
+	IamOpenidConnectProviderNamespaceListerExpansion
+}
+
+// iamOpenidConnectProviderNamespaceLister implements the IamOpenidConnectProviderNamespaceLister
+// interface.
+type iamOpenidConnectProviderNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IamOpenidConnectProviders in the indexer for a given namespace.
+func (s iamOpenidConnectProviderNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IamOpenidConnectProvider, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IamOpenidConnectProvider))
+	})
+	return ret, err
+}
+
+// Get retrieves the IamOpenidConnectProvider from the indexer for a given namespace and name.
+func (s iamOpenidConnectProviderNamespaceLister) Get(name string) (*v1alpha1.IamOpenidConnectProvider, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

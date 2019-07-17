@@ -397,21 +397,31 @@ spec:
           type: object
         spec:
           properties:
-            assign_ipv6_address_on_creation:
+            assignIpv6AddressOnCreation:
               type: boolean
-            cidr_block:
+            cidrBlock:
               type: string
-            map_public_ip_on_launch:
+            mapPublicIPOnLaunch:
               type: boolean
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             tags:
               additionalProperties:
                 type: string
               type: object
-            vpc_id:
+            vpcID:
               type: string
           required:
-          - cidr_block
-          - vpc_id
+          - cidrBlock
+          - providerRef
+          - vpcID
           type: object
         status:
           properties:
@@ -422,6 +432,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

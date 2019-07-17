@@ -29,8 +29,8 @@ import (
 type S3BucketNotificationLister interface {
 	// List lists all S3BucketNotifications in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.S3BucketNotification, err error)
-	// Get retrieves the S3BucketNotification from the index for a given name.
-	Get(name string) (*v1alpha1.S3BucketNotification, error)
+	// S3BucketNotifications returns an object that can list and get S3BucketNotifications.
+	S3BucketNotifications(namespace string) S3BucketNotificationNamespaceLister
 	S3BucketNotificationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *s3BucketNotificationLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the S3BucketNotification from the index for a given name.
-func (s *s3BucketNotificationLister) Get(name string) (*v1alpha1.S3BucketNotification, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// S3BucketNotifications returns an object that can list and get S3BucketNotifications.
+func (s *s3BucketNotificationLister) S3BucketNotifications(namespace string) S3BucketNotificationNamespaceLister {
+	return s3BucketNotificationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// S3BucketNotificationNamespaceLister helps list and get S3BucketNotifications.
+type S3BucketNotificationNamespaceLister interface {
+	// List lists all S3BucketNotifications in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.S3BucketNotification, err error)
+	// Get retrieves the S3BucketNotification from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.S3BucketNotification, error)
+	S3BucketNotificationNamespaceListerExpansion
+}
+
+// s3BucketNotificationNamespaceLister implements the S3BucketNotificationNamespaceLister
+// interface.
+type s3BucketNotificationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all S3BucketNotifications in the indexer for a given namespace.
+func (s s3BucketNotificationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.S3BucketNotification, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.S3BucketNotification))
+	})
+	return ret, err
+}
+
+// Get retrieves the S3BucketNotification from the indexer for a given namespace and name.
+func (s s3BucketNotificationNamespaceLister) Get(name string) (*v1alpha1.S3BucketNotification, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type IamAccountPasswordPolicyLister interface {
 	// List lists all IamAccountPasswordPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IamAccountPasswordPolicy, err error)
-	// Get retrieves the IamAccountPasswordPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.IamAccountPasswordPolicy, error)
+	// IamAccountPasswordPolicies returns an object that can list and get IamAccountPasswordPolicies.
+	IamAccountPasswordPolicies(namespace string) IamAccountPasswordPolicyNamespaceLister
 	IamAccountPasswordPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iamAccountPasswordPolicyLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the IamAccountPasswordPolicy from the index for a given name.
-func (s *iamAccountPasswordPolicyLister) Get(name string) (*v1alpha1.IamAccountPasswordPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IamAccountPasswordPolicies returns an object that can list and get IamAccountPasswordPolicies.
+func (s *iamAccountPasswordPolicyLister) IamAccountPasswordPolicies(namespace string) IamAccountPasswordPolicyNamespaceLister {
+	return iamAccountPasswordPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IamAccountPasswordPolicyNamespaceLister helps list and get IamAccountPasswordPolicies.
+type IamAccountPasswordPolicyNamespaceLister interface {
+	// List lists all IamAccountPasswordPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IamAccountPasswordPolicy, err error)
+	// Get retrieves the IamAccountPasswordPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IamAccountPasswordPolicy, error)
+	IamAccountPasswordPolicyNamespaceListerExpansion
+}
+
+// iamAccountPasswordPolicyNamespaceLister implements the IamAccountPasswordPolicyNamespaceLister
+// interface.
+type iamAccountPasswordPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IamAccountPasswordPolicies in the indexer for a given namespace.
+func (s iamAccountPasswordPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IamAccountPasswordPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IamAccountPasswordPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the IamAccountPasswordPolicy from the indexer for a given namespace and name.
+func (s iamAccountPasswordPolicyNamespaceLister) Get(name string) (*v1alpha1.IamAccountPasswordPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -41,32 +41,33 @@ type UserAssignedIdentityInformer interface {
 type userAssignedIdentityInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewUserAssignedIdentityInformer constructs a new informer for UserAssignedIdentity type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewUserAssignedIdentityInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredUserAssignedIdentityInformer(client, resyncPeriod, indexers, nil)
+func NewUserAssignedIdentityInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredUserAssignedIdentityInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredUserAssignedIdentityInformer constructs a new informer for UserAssignedIdentity type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredUserAssignedIdentityInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredUserAssignedIdentityInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().UserAssignedIdentities().List(options)
+				return client.AzurermV1alpha1().UserAssignedIdentities(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().UserAssignedIdentities().Watch(options)
+				return client.AzurermV1alpha1().UserAssignedIdentities(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.UserAssignedIdentity{},
@@ -76,7 +77,7 @@ func NewFilteredUserAssignedIdentityInformer(client versioned.Interface, resyncP
 }
 
 func (f *userAssignedIdentityInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredUserAssignedIdentityInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredUserAssignedIdentityInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *userAssignedIdentityInformer) Informer() cache.SharedIndexInformer {

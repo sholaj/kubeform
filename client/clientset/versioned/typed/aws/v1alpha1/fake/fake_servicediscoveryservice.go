@@ -31,6 +31,7 @@ import (
 // FakeServiceDiscoveryServices implements ServiceDiscoveryServiceInterface
 type FakeServiceDiscoveryServices struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var servicediscoveryservicesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "servicediscoveryservices"}
@@ -40,7 +41,8 @@ var servicediscoveryservicesKind = schema.GroupVersionKind{Group: "aws.kubeform.
 // Get takes name of the serviceDiscoveryService, and returns the corresponding serviceDiscoveryService object, and an error if there is any.
 func (c *FakeServiceDiscoveryServices) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceDiscoveryService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(servicediscoveryservicesResource, name), &v1alpha1.ServiceDiscoveryService{})
+		Invokes(testing.NewGetAction(servicediscoveryservicesResource, c.ns, name), &v1alpha1.ServiceDiscoveryService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeServiceDiscoveryServices) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of ServiceDiscoveryServices that match those selectors.
 func (c *FakeServiceDiscoveryServices) List(opts v1.ListOptions) (result *v1alpha1.ServiceDiscoveryServiceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(servicediscoveryservicesResource, servicediscoveryservicesKind, opts), &v1alpha1.ServiceDiscoveryServiceList{})
+		Invokes(testing.NewListAction(servicediscoveryservicesResource, servicediscoveryservicesKind, c.ns, opts), &v1alpha1.ServiceDiscoveryServiceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeServiceDiscoveryServices) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested serviceDiscoveryServices.
 func (c *FakeServiceDiscoveryServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(servicediscoveryservicesResource, opts))
+		InvokesWatch(testing.NewWatchAction(servicediscoveryservicesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a serviceDiscoveryService and creates it.  Returns the server's representation of the serviceDiscoveryService, and an error, if there is any.
 func (c *FakeServiceDiscoveryServices) Create(serviceDiscoveryService *v1alpha1.ServiceDiscoveryService) (result *v1alpha1.ServiceDiscoveryService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(servicediscoveryservicesResource, serviceDiscoveryService), &v1alpha1.ServiceDiscoveryService{})
+		Invokes(testing.NewCreateAction(servicediscoveryservicesResource, c.ns, serviceDiscoveryService), &v1alpha1.ServiceDiscoveryService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeServiceDiscoveryServices) Create(serviceDiscoveryService *v1alpha1.
 // Update takes the representation of a serviceDiscoveryService and updates it. Returns the server's representation of the serviceDiscoveryService, and an error, if there is any.
 func (c *FakeServiceDiscoveryServices) Update(serviceDiscoveryService *v1alpha1.ServiceDiscoveryService) (result *v1alpha1.ServiceDiscoveryService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(servicediscoveryservicesResource, serviceDiscoveryService), &v1alpha1.ServiceDiscoveryService{})
+		Invokes(testing.NewUpdateAction(servicediscoveryservicesResource, c.ns, serviceDiscoveryService), &v1alpha1.ServiceDiscoveryService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeServiceDiscoveryServices) Update(serviceDiscoveryService *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeServiceDiscoveryServices) UpdateStatus(serviceDiscoveryService *v1alpha1.ServiceDiscoveryService) (*v1alpha1.ServiceDiscoveryService, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(servicediscoveryservicesResource, "status", serviceDiscoveryService), &v1alpha1.ServiceDiscoveryService{})
+		Invokes(testing.NewUpdateSubresourceAction(servicediscoveryservicesResource, "status", c.ns, serviceDiscoveryService), &v1alpha1.ServiceDiscoveryService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeServiceDiscoveryServices) UpdateStatus(serviceDiscoveryService *v1a
 // Delete takes name of the serviceDiscoveryService and deletes it. Returns an error if one occurs.
 func (c *FakeServiceDiscoveryServices) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(servicediscoveryservicesResource, name), &v1alpha1.ServiceDiscoveryService{})
+		Invokes(testing.NewDeleteAction(servicediscoveryservicesResource, c.ns, name), &v1alpha1.ServiceDiscoveryService{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeServiceDiscoveryServices) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(servicediscoveryservicesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(servicediscoveryservicesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ServiceDiscoveryServiceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeServiceDiscoveryServices) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched serviceDiscoveryService.
 func (c *FakeServiceDiscoveryServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceDiscoveryService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(servicediscoveryservicesResource, name, pt, data, subresources...), &v1alpha1.ServiceDiscoveryService{})
+		Invokes(testing.NewPatchSubresourceAction(servicediscoveryservicesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ServiceDiscoveryService{})
+
 	if obj == nil {
 		return nil, err
 	}

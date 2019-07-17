@@ -32,7 +32,7 @@ import (
 // ApiGatewayStagesGetter has a method to return a ApiGatewayStageInterface.
 // A group's client should implement this interface.
 type ApiGatewayStagesGetter interface {
-	ApiGatewayStages() ApiGatewayStageInterface
+	ApiGatewayStages(namespace string) ApiGatewayStageInterface
 }
 
 // ApiGatewayStageInterface has methods to work with ApiGatewayStage resources.
@@ -52,12 +52,14 @@ type ApiGatewayStageInterface interface {
 // apiGatewayStages implements ApiGatewayStageInterface
 type apiGatewayStages struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiGatewayStages returns a ApiGatewayStages
-func newApiGatewayStages(c *AwsV1alpha1Client) *apiGatewayStages {
+func newApiGatewayStages(c *AwsV1alpha1Client, namespace string) *apiGatewayStages {
 	return &apiGatewayStages{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiGatewayStages(c *AwsV1alpha1Client) *apiGatewayStages {
 func (c *apiGatewayStages) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayStage, err error) {
 	result = &v1alpha1.ApiGatewayStage{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaystages").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiGatewayStages) List(opts v1.ListOptions) (result *v1alpha1.ApiGatewa
 	}
 	result = &v1alpha1.ApiGatewayStageList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaystages").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiGatewayStages) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewaystages").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiGatewayStages) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *apiGatewayStages) Create(apiGatewayStage *v1alpha1.ApiGatewayStage) (result *v1alpha1.ApiGatewayStage, err error) {
 	result = &v1alpha1.ApiGatewayStage{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apigatewaystages").
 		Body(apiGatewayStage).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiGatewayStages) Create(apiGatewayStage *v1alpha1.ApiGatewayStage) (re
 func (c *apiGatewayStages) Update(apiGatewayStage *v1alpha1.ApiGatewayStage) (result *v1alpha1.ApiGatewayStage, err error) {
 	result = &v1alpha1.ApiGatewayStage{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewaystages").
 		Name(apiGatewayStage.Name).
 		Body(apiGatewayStage).
@@ -132,6 +139,7 @@ func (c *apiGatewayStages) Update(apiGatewayStage *v1alpha1.ApiGatewayStage) (re
 func (c *apiGatewayStages) UpdateStatus(apiGatewayStage *v1alpha1.ApiGatewayStage) (result *v1alpha1.ApiGatewayStage, err error) {
 	result = &v1alpha1.ApiGatewayStage{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewaystages").
 		Name(apiGatewayStage.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiGatewayStages) UpdateStatus(apiGatewayStage *v1alpha1.ApiGatewayStag
 // Delete takes name of the apiGatewayStage and deletes it. Returns an error if one occurs.
 func (c *apiGatewayStages) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewaystages").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiGatewayStages) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewaystages").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiGatewayStages) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *apiGatewayStages) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayStage, err error) {
 	result = &v1alpha1.ApiGatewayStage{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apigatewaystages").
 		SubResource(subresources...).
 		Name(name).

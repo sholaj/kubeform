@@ -41,32 +41,33 @@ type LambdaEventSourceMappingInformer interface {
 type lambdaEventSourceMappingInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewLambdaEventSourceMappingInformer constructs a new informer for LambdaEventSourceMapping type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLambdaEventSourceMappingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLambdaEventSourceMappingInformer(client, resyncPeriod, indexers, nil)
+func NewLambdaEventSourceMappingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLambdaEventSourceMappingInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredLambdaEventSourceMappingInformer constructs a new informer for LambdaEventSourceMapping type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLambdaEventSourceMappingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLambdaEventSourceMappingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().LambdaEventSourceMappings().List(options)
+				return client.AwsV1alpha1().LambdaEventSourceMappings(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().LambdaEventSourceMappings().Watch(options)
+				return client.AwsV1alpha1().LambdaEventSourceMappings(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.LambdaEventSourceMapping{},
@@ -76,7 +77,7 @@ func NewFilteredLambdaEventSourceMappingInformer(client versioned.Interface, res
 }
 
 func (f *lambdaEventSourceMappingInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLambdaEventSourceMappingInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredLambdaEventSourceMappingInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *lambdaEventSourceMappingInformer) Informer() cache.SharedIndexInformer {

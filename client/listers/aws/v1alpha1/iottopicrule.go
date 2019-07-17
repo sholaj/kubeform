@@ -29,8 +29,8 @@ import (
 type IotTopicRuleLister interface {
 	// List lists all IotTopicRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IotTopicRule, err error)
-	// Get retrieves the IotTopicRule from the index for a given name.
-	Get(name string) (*v1alpha1.IotTopicRule, error)
+	// IotTopicRules returns an object that can list and get IotTopicRules.
+	IotTopicRules(namespace string) IotTopicRuleNamespaceLister
 	IotTopicRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iotTopicRuleLister) List(selector labels.Selector) (ret []*v1alpha1.Iot
 	return ret, err
 }
 
-// Get retrieves the IotTopicRule from the index for a given name.
-func (s *iotTopicRuleLister) Get(name string) (*v1alpha1.IotTopicRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IotTopicRules returns an object that can list and get IotTopicRules.
+func (s *iotTopicRuleLister) IotTopicRules(namespace string) IotTopicRuleNamespaceLister {
+	return iotTopicRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IotTopicRuleNamespaceLister helps list and get IotTopicRules.
+type IotTopicRuleNamespaceLister interface {
+	// List lists all IotTopicRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IotTopicRule, err error)
+	// Get retrieves the IotTopicRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IotTopicRule, error)
+	IotTopicRuleNamespaceListerExpansion
+}
+
+// iotTopicRuleNamespaceLister implements the IotTopicRuleNamespaceLister
+// interface.
+type iotTopicRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IotTopicRules in the indexer for a given namespace.
+func (s iotTopicRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IotTopicRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IotTopicRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the IotTopicRule from the indexer for a given namespace and name.
+func (s iotTopicRuleNamespaceLister) Get(name string) (*v1alpha1.IotTopicRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

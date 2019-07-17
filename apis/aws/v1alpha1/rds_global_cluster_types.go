@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,14 +20,15 @@ type RdsGlobalCluster struct {
 
 type RdsGlobalClusterSpec struct {
 	// +optional
-	DatabaseName string `json:"database_name,omitempty"`
+	DatabaseName string `json:"databaseName,omitempty" tf:"database_name,omitempty"`
 	// +optional
-	DeletionProtection bool `json:"deletion_protection,omitempty"`
+	DeletionProtection bool `json:"deletionProtection,omitempty" tf:"deletion_protection,omitempty"`
 	// +optional
-	Engine                  string `json:"engine,omitempty"`
-	GlobalClusterIdentifier string `json:"global_cluster_identifier"`
+	Engine                  string `json:"engine,omitempty" tf:"engine,omitempty"`
+	GlobalClusterIdentifier string `json:"globalClusterIdentifier" tf:"global_cluster_identifier"`
 	// +optional
-	StorageEncrypted bool `json:"storage_encrypted,omitempty"`
+	StorageEncrypted bool                      `json:"storageEncrypted,omitempty" tf:"storage_encrypted,omitempty"`
+	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type RdsGlobalClusterStatus struct {
@@ -35,7 +36,9 @@ type RdsGlobalClusterStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

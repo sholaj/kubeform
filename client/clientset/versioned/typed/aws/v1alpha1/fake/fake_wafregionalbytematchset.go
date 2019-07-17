@@ -31,6 +31,7 @@ import (
 // FakeWafregionalByteMatchSets implements WafregionalByteMatchSetInterface
 type FakeWafregionalByteMatchSets struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var wafregionalbytematchsetsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "wafregionalbytematchsets"}
@@ -40,7 +41,8 @@ var wafregionalbytematchsetsKind = schema.GroupVersionKind{Group: "aws.kubeform.
 // Get takes name of the wafregionalByteMatchSet, and returns the corresponding wafregionalByteMatchSet object, and an error if there is any.
 func (c *FakeWafregionalByteMatchSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafregionalByteMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(wafregionalbytematchsetsResource, name), &v1alpha1.WafregionalByteMatchSet{})
+		Invokes(testing.NewGetAction(wafregionalbytematchsetsResource, c.ns, name), &v1alpha1.WafregionalByteMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeWafregionalByteMatchSets) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of WafregionalByteMatchSets that match those selectors.
 func (c *FakeWafregionalByteMatchSets) List(opts v1.ListOptions) (result *v1alpha1.WafregionalByteMatchSetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(wafregionalbytematchsetsResource, wafregionalbytematchsetsKind, opts), &v1alpha1.WafregionalByteMatchSetList{})
+		Invokes(testing.NewListAction(wafregionalbytematchsetsResource, wafregionalbytematchsetsKind, c.ns, opts), &v1alpha1.WafregionalByteMatchSetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeWafregionalByteMatchSets) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested wafregionalByteMatchSets.
 func (c *FakeWafregionalByteMatchSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(wafregionalbytematchsetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(wafregionalbytematchsetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a wafregionalByteMatchSet and creates it.  Returns the server's representation of the wafregionalByteMatchSet, and an error, if there is any.
 func (c *FakeWafregionalByteMatchSets) Create(wafregionalByteMatchSet *v1alpha1.WafregionalByteMatchSet) (result *v1alpha1.WafregionalByteMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(wafregionalbytematchsetsResource, wafregionalByteMatchSet), &v1alpha1.WafregionalByteMatchSet{})
+		Invokes(testing.NewCreateAction(wafregionalbytematchsetsResource, c.ns, wafregionalByteMatchSet), &v1alpha1.WafregionalByteMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeWafregionalByteMatchSets) Create(wafregionalByteMatchSet *v1alpha1.
 // Update takes the representation of a wafregionalByteMatchSet and updates it. Returns the server's representation of the wafregionalByteMatchSet, and an error, if there is any.
 func (c *FakeWafregionalByteMatchSets) Update(wafregionalByteMatchSet *v1alpha1.WafregionalByteMatchSet) (result *v1alpha1.WafregionalByteMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(wafregionalbytematchsetsResource, wafregionalByteMatchSet), &v1alpha1.WafregionalByteMatchSet{})
+		Invokes(testing.NewUpdateAction(wafregionalbytematchsetsResource, c.ns, wafregionalByteMatchSet), &v1alpha1.WafregionalByteMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeWafregionalByteMatchSets) Update(wafregionalByteMatchSet *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeWafregionalByteMatchSets) UpdateStatus(wafregionalByteMatchSet *v1alpha1.WafregionalByteMatchSet) (*v1alpha1.WafregionalByteMatchSet, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(wafregionalbytematchsetsResource, "status", wafregionalByteMatchSet), &v1alpha1.WafregionalByteMatchSet{})
+		Invokes(testing.NewUpdateSubresourceAction(wafregionalbytematchsetsResource, "status", c.ns, wafregionalByteMatchSet), &v1alpha1.WafregionalByteMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeWafregionalByteMatchSets) UpdateStatus(wafregionalByteMatchSet *v1a
 // Delete takes name of the wafregionalByteMatchSet and deletes it. Returns an error if one occurs.
 func (c *FakeWafregionalByteMatchSets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(wafregionalbytematchsetsResource, name), &v1alpha1.WafregionalByteMatchSet{})
+		Invokes(testing.NewDeleteAction(wafregionalbytematchsetsResource, c.ns, name), &v1alpha1.WafregionalByteMatchSet{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeWafregionalByteMatchSets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(wafregionalbytematchsetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(wafregionalbytematchsetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.WafregionalByteMatchSetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeWafregionalByteMatchSets) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched wafregionalByteMatchSet.
 func (c *FakeWafregionalByteMatchSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafregionalByteMatchSet, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(wafregionalbytematchsetsResource, name, pt, data, subresources...), &v1alpha1.WafregionalByteMatchSet{})
+		Invokes(testing.NewPatchSubresourceAction(wafregionalbytematchsetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.WafregionalByteMatchSet{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -8,7 +8,7 @@ metadata:
 spec:
   group: aws.kubeform.com
   names:
-    kind: VpcDhcpOptions
+    kind: VpcDHCPOptions
     plural: vpcdhcpoptions
   scope: ""
   validation:
@@ -397,26 +397,37 @@ spec:
           type: object
         spec:
           properties:
-            domain_name:
+            domainName:
               type: string
-            domain_name_servers:
+            domainNameServers:
               items:
                 type: string
               type: array
-            netbios_name_servers:
+            netbiosNameServers:
               items:
                 type: string
               type: array
-            netbios_node_type:
+            netbiosNodeType:
               type: string
-            ntp_servers:
+            ntpServers:
               items:
                 type: string
               type: array
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             tags:
               additionalProperties:
                 type: string
               type: object
+          required:
+          - providerRef
           type: object
         status:
           properties:
@@ -427,6 +438,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -397,21 +397,31 @@ spec:
           type: object
         spec:
           properties:
-            batch_size:
+            batchSize:
               type: integer
             enabled:
               type: boolean
-            event_source_arn:
+            eventSourceArn:
               type: string
-            function_name:
+            functionName:
               type: string
-            starting_position:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            startingPosition:
               type: string
-            starting_position_timestamp:
+            startingPositionTimestamp:
               type: string
           required:
-          - event_source_arn
-          - function_name
+          - eventSourceArn
+          - functionName
+          - providerRef
           type: object
         status:
           properties:
@@ -422,6 +432,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

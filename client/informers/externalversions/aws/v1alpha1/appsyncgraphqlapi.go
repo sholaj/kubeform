@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// AppsyncGraphqlApiInformer provides access to a shared informer and lister for
-// AppsyncGraphqlApis.
-type AppsyncGraphqlApiInformer interface {
+// AppsyncGraphqlAPIInformer provides access to a shared informer and lister for
+// AppsyncGraphqlAPIs.
+type AppsyncGraphqlAPIInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.AppsyncGraphqlApiLister
+	Lister() v1alpha1.AppsyncGraphqlAPILister
 }
 
-type appsyncGraphqlApiInformer struct {
+type appsyncGraphqlAPIInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewAppsyncGraphqlApiInformer constructs a new informer for AppsyncGraphqlApi type.
+// NewAppsyncGraphqlAPIInformer constructs a new informer for AppsyncGraphqlAPI type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAppsyncGraphqlApiInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAppsyncGraphqlApiInformer(client, resyncPeriod, indexers, nil)
+func NewAppsyncGraphqlAPIInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAppsyncGraphqlAPIInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredAppsyncGraphqlApiInformer constructs a new informer for AppsyncGraphqlApi type.
+// NewFilteredAppsyncGraphqlAPIInformer constructs a new informer for AppsyncGraphqlAPI type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAppsyncGraphqlApiInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAppsyncGraphqlAPIInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AppsyncGraphqlApis().List(options)
+				return client.AwsV1alpha1().AppsyncGraphqlAPIs(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().AppsyncGraphqlApis().Watch(options)
+				return client.AwsV1alpha1().AppsyncGraphqlAPIs(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.AppsyncGraphqlApi{},
+		&awsv1alpha1.AppsyncGraphqlAPI{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *appsyncGraphqlApiInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAppsyncGraphqlApiInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *appsyncGraphqlAPIInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredAppsyncGraphqlAPIInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *appsyncGraphqlApiInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.AppsyncGraphqlApi{}, f.defaultInformer)
+func (f *appsyncGraphqlAPIInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.AppsyncGraphqlAPI{}, f.defaultInformer)
 }
 
-func (f *appsyncGraphqlApiInformer) Lister() v1alpha1.AppsyncGraphqlApiLister {
-	return v1alpha1.NewAppsyncGraphqlApiLister(f.Informer().GetIndexer())
+func (f *appsyncGraphqlAPIInformer) Lister() v1alpha1.AppsyncGraphqlAPILister {
+	return v1alpha1.NewAppsyncGraphqlAPILister(f.Informer().GetIndexer())
 }

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,18 +19,19 @@ type GameliftBuild struct {
 }
 
 type GameliftBuildSpecStorageLocation struct {
-	Bucket  string `json:"bucket"`
-	Key     string `json:"key"`
-	RoleArn string `json:"role_arn"`
+	Bucket  string `json:"bucket" tf:"bucket"`
+	Key     string `json:"key" tf:"key"`
+	RoleArn string `json:"roleArn" tf:"role_arn"`
 }
 
 type GameliftBuildSpec struct {
-	Name            string `json:"name"`
-	OperatingSystem string `json:"operating_system"`
+	Name            string `json:"name" tf:"name"`
+	OperatingSystem string `json:"operatingSystem" tf:"operating_system"`
 	// +kubebuilder:validation:MaxItems=1
-	StorageLocation []GameliftBuildSpec `json:"storage_location"`
+	StorageLocation []GameliftBuildSpecStorageLocation `json:"storageLocation" tf:"storage_location"`
 	// +optional
-	Version string `json:"version,omitempty"`
+	Version     string                    `json:"version,omitempty" tf:"version,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type GameliftBuildStatus struct {
@@ -38,7 +39,9 @@ type GameliftBuildStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

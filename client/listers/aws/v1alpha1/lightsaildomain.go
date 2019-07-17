@@ -29,8 +29,8 @@ import (
 type LightsailDomainLister interface {
 	// List lists all LightsailDomains in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LightsailDomain, err error)
-	// Get retrieves the LightsailDomain from the index for a given name.
-	Get(name string) (*v1alpha1.LightsailDomain, error)
+	// LightsailDomains returns an object that can list and get LightsailDomains.
+	LightsailDomains(namespace string) LightsailDomainNamespaceLister
 	LightsailDomainListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *lightsailDomainLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the LightsailDomain from the index for a given name.
-func (s *lightsailDomainLister) Get(name string) (*v1alpha1.LightsailDomain, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LightsailDomains returns an object that can list and get LightsailDomains.
+func (s *lightsailDomainLister) LightsailDomains(namespace string) LightsailDomainNamespaceLister {
+	return lightsailDomainNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LightsailDomainNamespaceLister helps list and get LightsailDomains.
+type LightsailDomainNamespaceLister interface {
+	// List lists all LightsailDomains in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LightsailDomain, err error)
+	// Get retrieves the LightsailDomain from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LightsailDomain, error)
+	LightsailDomainNamespaceListerExpansion
+}
+
+// lightsailDomainNamespaceLister implements the LightsailDomainNamespaceLister
+// interface.
+type lightsailDomainNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LightsailDomains in the indexer for a given namespace.
+func (s lightsailDomainNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LightsailDomain, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LightsailDomain))
+	})
+	return ret, err
+}
+
+// Get retrieves the LightsailDomain from the indexer for a given namespace and name.
+func (s lightsailDomainNamespaceLister) Get(name string) (*v1alpha1.LightsailDomain, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

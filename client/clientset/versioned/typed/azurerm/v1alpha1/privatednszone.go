@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// PrivateDnsZonesGetter has a method to return a PrivateDnsZoneInterface.
+// PrivateDNSZonesGetter has a method to return a PrivateDNSZoneInterface.
 // A group's client should implement this interface.
-type PrivateDnsZonesGetter interface {
-	PrivateDnsZones() PrivateDnsZoneInterface
+type PrivateDNSZonesGetter interface {
+	PrivateDNSZones(namespace string) PrivateDNSZoneInterface
 }
 
-// PrivateDnsZoneInterface has methods to work with PrivateDnsZone resources.
-type PrivateDnsZoneInterface interface {
-	Create(*v1alpha1.PrivateDnsZone) (*v1alpha1.PrivateDnsZone, error)
-	Update(*v1alpha1.PrivateDnsZone) (*v1alpha1.PrivateDnsZone, error)
-	UpdateStatus(*v1alpha1.PrivateDnsZone) (*v1alpha1.PrivateDnsZone, error)
+// PrivateDNSZoneInterface has methods to work with PrivateDNSZone resources.
+type PrivateDNSZoneInterface interface {
+	Create(*v1alpha1.PrivateDNSZone) (*v1alpha1.PrivateDNSZone, error)
+	Update(*v1alpha1.PrivateDNSZone) (*v1alpha1.PrivateDNSZone, error)
+	UpdateStatus(*v1alpha1.PrivateDNSZone) (*v1alpha1.PrivateDNSZone, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.PrivateDnsZone, error)
-	List(opts v1.ListOptions) (*v1alpha1.PrivateDnsZoneList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.PrivateDNSZone, error)
+	List(opts v1.ListOptions) (*v1alpha1.PrivateDNSZoneList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PrivateDnsZone, err error)
-	PrivateDnsZoneExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PrivateDNSZone, err error)
+	PrivateDNSZoneExpansion
 }
 
-// privateDnsZones implements PrivateDnsZoneInterface
-type privateDnsZones struct {
+// privateDNSZones implements PrivateDNSZoneInterface
+type privateDNSZones struct {
 	client rest.Interface
+	ns     string
 }
 
-// newPrivateDnsZones returns a PrivateDnsZones
-func newPrivateDnsZones(c *AzurermV1alpha1Client) *privateDnsZones {
-	return &privateDnsZones{
+// newPrivateDNSZones returns a PrivateDNSZones
+func newPrivateDNSZones(c *AzurermV1alpha1Client, namespace string) *privateDNSZones {
+	return &privateDNSZones{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the privateDnsZone, and returns the corresponding privateDnsZone object, and an error if there is any.
-func (c *privateDnsZones) Get(name string, options v1.GetOptions) (result *v1alpha1.PrivateDnsZone, err error) {
-	result = &v1alpha1.PrivateDnsZone{}
+// Get takes name of the privateDNSZone, and returns the corresponding privateDNSZone object, and an error if there is any.
+func (c *privateDNSZones) Get(name string, options v1.GetOptions) (result *v1alpha1.PrivateDNSZone, err error) {
+	result = &v1alpha1.PrivateDNSZone{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("privatednszones").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *privateDnsZones) Get(name string, options v1.GetOptions) (result *v1alp
 	return
 }
 
-// List takes label and field selectors, and returns the list of PrivateDnsZones that match those selectors.
-func (c *privateDnsZones) List(opts v1.ListOptions) (result *v1alpha1.PrivateDnsZoneList, err error) {
+// List takes label and field selectors, and returns the list of PrivateDNSZones that match those selectors.
+func (c *privateDNSZones) List(opts v1.ListOptions) (result *v1alpha1.PrivateDNSZoneList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.PrivateDnsZoneList{}
+	result = &v1alpha1.PrivateDNSZoneList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("privatednszones").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *privateDnsZones) List(opts v1.ListOptions) (result *v1alpha1.PrivateDns
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested privateDnsZones.
-func (c *privateDnsZones) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested privateDNSZones.
+func (c *privateDNSZones) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("privatednszones").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a privateDnsZone and creates it.  Returns the server's representation of the privateDnsZone, and an error, if there is any.
-func (c *privateDnsZones) Create(privateDnsZone *v1alpha1.PrivateDnsZone) (result *v1alpha1.PrivateDnsZone, err error) {
-	result = &v1alpha1.PrivateDnsZone{}
+// Create takes the representation of a privateDNSZone and creates it.  Returns the server's representation of the privateDNSZone, and an error, if there is any.
+func (c *privateDNSZones) Create(privateDNSZone *v1alpha1.PrivateDNSZone) (result *v1alpha1.PrivateDNSZone, err error) {
+	result = &v1alpha1.PrivateDNSZone{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("privatednszones").
-		Body(privateDnsZone).
+		Body(privateDNSZone).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a privateDnsZone and updates it. Returns the server's representation of the privateDnsZone, and an error, if there is any.
-func (c *privateDnsZones) Update(privateDnsZone *v1alpha1.PrivateDnsZone) (result *v1alpha1.PrivateDnsZone, err error) {
-	result = &v1alpha1.PrivateDnsZone{}
+// Update takes the representation of a privateDNSZone and updates it. Returns the server's representation of the privateDNSZone, and an error, if there is any.
+func (c *privateDNSZones) Update(privateDNSZone *v1alpha1.PrivateDNSZone) (result *v1alpha1.PrivateDNSZone, err error) {
+	result = &v1alpha1.PrivateDNSZone{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("privatednszones").
-		Name(privateDnsZone.Name).
-		Body(privateDnsZone).
+		Name(privateDNSZone.Name).
+		Body(privateDNSZone).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *privateDnsZones) Update(privateDnsZone *v1alpha1.PrivateDnsZone) (resul
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *privateDnsZones) UpdateStatus(privateDnsZone *v1alpha1.PrivateDnsZone) (result *v1alpha1.PrivateDnsZone, err error) {
-	result = &v1alpha1.PrivateDnsZone{}
+func (c *privateDNSZones) UpdateStatus(privateDNSZone *v1alpha1.PrivateDNSZone) (result *v1alpha1.PrivateDNSZone, err error) {
+	result = &v1alpha1.PrivateDNSZone{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("privatednszones").
-		Name(privateDnsZone.Name).
+		Name(privateDNSZone.Name).
 		SubResource("status").
-		Body(privateDnsZone).
+		Body(privateDNSZone).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the privateDnsZone and deletes it. Returns an error if one occurs.
-func (c *privateDnsZones) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the privateDNSZone and deletes it. Returns an error if one occurs.
+func (c *privateDNSZones) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("privatednszones").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *privateDnsZones) Delete(name string, options *v1.DeleteOptions) error {
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *privateDnsZones) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *privateDNSZones) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("privatednszones").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *privateDnsZones) DeleteCollection(options *v1.DeleteOptions, listOption
 		Error()
 }
 
-// Patch applies the patch and returns the patched privateDnsZone.
-func (c *privateDnsZones) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PrivateDnsZone, err error) {
-	result = &v1alpha1.PrivateDnsZone{}
+// Patch applies the patch and returns the patched privateDNSZone.
+func (c *privateDNSZones) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PrivateDNSZone, err error) {
+	result = &v1alpha1.PrivateDNSZone{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("privatednszones").
 		SubResource(subresources...).
 		Name(name).

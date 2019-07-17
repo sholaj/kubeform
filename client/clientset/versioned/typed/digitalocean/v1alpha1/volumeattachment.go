@@ -32,7 +32,7 @@ import (
 // VolumeAttachmentsGetter has a method to return a VolumeAttachmentInterface.
 // A group's client should implement this interface.
 type VolumeAttachmentsGetter interface {
-	VolumeAttachments() VolumeAttachmentInterface
+	VolumeAttachments(namespace string) VolumeAttachmentInterface
 }
 
 // VolumeAttachmentInterface has methods to work with VolumeAttachment resources.
@@ -52,12 +52,14 @@ type VolumeAttachmentInterface interface {
 // volumeAttachments implements VolumeAttachmentInterface
 type volumeAttachments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVolumeAttachments returns a VolumeAttachments
-func newVolumeAttachments(c *DigitaloceanV1alpha1Client) *volumeAttachments {
+func newVolumeAttachments(c *DigitaloceanV1alpha1Client, namespace string) *volumeAttachments {
 	return &volumeAttachments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVolumeAttachments(c *DigitaloceanV1alpha1Client) *volumeAttachments {
 func (c *volumeAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.VolumeAttachment, err error) {
 	result = &v1alpha1.VolumeAttachment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("volumeattachments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *volumeAttachments) List(opts v1.ListOptions) (result *v1alpha1.VolumeAt
 	}
 	result = &v1alpha1.VolumeAttachmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("volumeattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *volumeAttachments) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("volumeattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *volumeAttachments) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *volumeAttachments) Create(volumeAttachment *v1alpha1.VolumeAttachment) (result *v1alpha1.VolumeAttachment, err error) {
 	result = &v1alpha1.VolumeAttachment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("volumeattachments").
 		Body(volumeAttachment).
 		Do().
@@ -118,6 +124,7 @@ func (c *volumeAttachments) Create(volumeAttachment *v1alpha1.VolumeAttachment) 
 func (c *volumeAttachments) Update(volumeAttachment *v1alpha1.VolumeAttachment) (result *v1alpha1.VolumeAttachment, err error) {
 	result = &v1alpha1.VolumeAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("volumeattachments").
 		Name(volumeAttachment.Name).
 		Body(volumeAttachment).
@@ -132,6 +139,7 @@ func (c *volumeAttachments) Update(volumeAttachment *v1alpha1.VolumeAttachment) 
 func (c *volumeAttachments) UpdateStatus(volumeAttachment *v1alpha1.VolumeAttachment) (result *v1alpha1.VolumeAttachment, err error) {
 	result = &v1alpha1.VolumeAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("volumeattachments").
 		Name(volumeAttachment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *volumeAttachments) UpdateStatus(volumeAttachment *v1alpha1.VolumeAttach
 // Delete takes name of the volumeAttachment and deletes it. Returns an error if one occurs.
 func (c *volumeAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("volumeattachments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *volumeAttachments) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("volumeattachments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *volumeAttachments) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *volumeAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VolumeAttachment, err error) {
 	result = &v1alpha1.VolumeAttachment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("volumeattachments").
 		SubResource(subresources...).
 		Name(name).

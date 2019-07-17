@@ -29,8 +29,8 @@ import (
 type ElastictranscoderPipelineLister interface {
 	// List lists all ElastictranscoderPipelines in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ElastictranscoderPipeline, err error)
-	// Get retrieves the ElastictranscoderPipeline from the index for a given name.
-	Get(name string) (*v1alpha1.ElastictranscoderPipeline, error)
+	// ElastictranscoderPipelines returns an object that can list and get ElastictranscoderPipelines.
+	ElastictranscoderPipelines(namespace string) ElastictranscoderPipelineNamespaceLister
 	ElastictranscoderPipelineListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *elastictranscoderPipelineLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the ElastictranscoderPipeline from the index for a given name.
-func (s *elastictranscoderPipelineLister) Get(name string) (*v1alpha1.ElastictranscoderPipeline, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ElastictranscoderPipelines returns an object that can list and get ElastictranscoderPipelines.
+func (s *elastictranscoderPipelineLister) ElastictranscoderPipelines(namespace string) ElastictranscoderPipelineNamespaceLister {
+	return elastictranscoderPipelineNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ElastictranscoderPipelineNamespaceLister helps list and get ElastictranscoderPipelines.
+type ElastictranscoderPipelineNamespaceLister interface {
+	// List lists all ElastictranscoderPipelines in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ElastictranscoderPipeline, err error)
+	// Get retrieves the ElastictranscoderPipeline from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ElastictranscoderPipeline, error)
+	ElastictranscoderPipelineNamespaceListerExpansion
+}
+
+// elastictranscoderPipelineNamespaceLister implements the ElastictranscoderPipelineNamespaceLister
+// interface.
+type elastictranscoderPipelineNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ElastictranscoderPipelines in the indexer for a given namespace.
+func (s elastictranscoderPipelineNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ElastictranscoderPipeline, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ElastictranscoderPipeline))
+	})
+	return ret, err
+}
+
+// Get retrieves the ElastictranscoderPipeline from the indexer for a given namespace and name.
+func (s elastictranscoderPipelineNamespaceLister) Get(name string) (*v1alpha1.ElastictranscoderPipeline, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

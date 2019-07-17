@@ -32,7 +32,7 @@ import (
 // VirtualNetworkPeeringsGetter has a method to return a VirtualNetworkPeeringInterface.
 // A group's client should implement this interface.
 type VirtualNetworkPeeringsGetter interface {
-	VirtualNetworkPeerings() VirtualNetworkPeeringInterface
+	VirtualNetworkPeerings(namespace string) VirtualNetworkPeeringInterface
 }
 
 // VirtualNetworkPeeringInterface has methods to work with VirtualNetworkPeering resources.
@@ -52,12 +52,14 @@ type VirtualNetworkPeeringInterface interface {
 // virtualNetworkPeerings implements VirtualNetworkPeeringInterface
 type virtualNetworkPeerings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVirtualNetworkPeerings returns a VirtualNetworkPeerings
-func newVirtualNetworkPeerings(c *AzurermV1alpha1Client) *virtualNetworkPeerings {
+func newVirtualNetworkPeerings(c *AzurermV1alpha1Client, namespace string) *virtualNetworkPeerings {
 	return &virtualNetworkPeerings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVirtualNetworkPeerings(c *AzurermV1alpha1Client) *virtualNetworkPeerings
 func (c *virtualNetworkPeerings) Get(name string, options v1.GetOptions) (result *v1alpha1.VirtualNetworkPeering, err error) {
 	result = &v1alpha1.VirtualNetworkPeering{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("virtualnetworkpeerings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *virtualNetworkPeerings) List(opts v1.ListOptions) (result *v1alpha1.Vir
 	}
 	result = &v1alpha1.VirtualNetworkPeeringList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("virtualnetworkpeerings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *virtualNetworkPeerings) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("virtualnetworkpeerings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *virtualNetworkPeerings) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *virtualNetworkPeerings) Create(virtualNetworkPeering *v1alpha1.VirtualNetworkPeering) (result *v1alpha1.VirtualNetworkPeering, err error) {
 	result = &v1alpha1.VirtualNetworkPeering{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("virtualnetworkpeerings").
 		Body(virtualNetworkPeering).
 		Do().
@@ -118,6 +124,7 @@ func (c *virtualNetworkPeerings) Create(virtualNetworkPeering *v1alpha1.VirtualN
 func (c *virtualNetworkPeerings) Update(virtualNetworkPeering *v1alpha1.VirtualNetworkPeering) (result *v1alpha1.VirtualNetworkPeering, err error) {
 	result = &v1alpha1.VirtualNetworkPeering{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("virtualnetworkpeerings").
 		Name(virtualNetworkPeering.Name).
 		Body(virtualNetworkPeering).
@@ -132,6 +139,7 @@ func (c *virtualNetworkPeerings) Update(virtualNetworkPeering *v1alpha1.VirtualN
 func (c *virtualNetworkPeerings) UpdateStatus(virtualNetworkPeering *v1alpha1.VirtualNetworkPeering) (result *v1alpha1.VirtualNetworkPeering, err error) {
 	result = &v1alpha1.VirtualNetworkPeering{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("virtualnetworkpeerings").
 		Name(virtualNetworkPeering.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *virtualNetworkPeerings) UpdateStatus(virtualNetworkPeering *v1alpha1.Vi
 // Delete takes name of the virtualNetworkPeering and deletes it. Returns an error if one occurs.
 func (c *virtualNetworkPeerings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("virtualnetworkpeerings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *virtualNetworkPeerings) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("virtualnetworkpeerings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *virtualNetworkPeerings) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *virtualNetworkPeerings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VirtualNetworkPeering, err error) {
 	result = &v1alpha1.VirtualNetworkPeering{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("virtualnetworkpeerings").
 		SubResource(subresources...).
 		Name(name).

@@ -31,6 +31,7 @@ import (
 // FakeVpcEndpointServiceAllowedPrincipals implements VpcEndpointServiceAllowedPrincipalInterface
 type FakeVpcEndpointServiceAllowedPrincipals struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var vpcendpointserviceallowedprincipalsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "vpcendpointserviceallowedprincipals"}
@@ -40,7 +41,8 @@ var vpcendpointserviceallowedprincipalsKind = schema.GroupVersionKind{Group: "aw
 // Get takes name of the vpcEndpointServiceAllowedPrincipal, and returns the corresponding vpcEndpointServiceAllowedPrincipal object, and an error if there is any.
 func (c *FakeVpcEndpointServiceAllowedPrincipals) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcEndpointServiceAllowedPrincipal, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(vpcendpointserviceallowedprincipalsResource, name), &v1alpha1.VpcEndpointServiceAllowedPrincipal{})
+		Invokes(testing.NewGetAction(vpcendpointserviceallowedprincipalsResource, c.ns, name), &v1alpha1.VpcEndpointServiceAllowedPrincipal{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeVpcEndpointServiceAllowedPrincipals) Get(name string, options v1.Ge
 // List takes label and field selectors, and returns the list of VpcEndpointServiceAllowedPrincipals that match those selectors.
 func (c *FakeVpcEndpointServiceAllowedPrincipals) List(opts v1.ListOptions) (result *v1alpha1.VpcEndpointServiceAllowedPrincipalList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(vpcendpointserviceallowedprincipalsResource, vpcendpointserviceallowedprincipalsKind, opts), &v1alpha1.VpcEndpointServiceAllowedPrincipalList{})
+		Invokes(testing.NewListAction(vpcendpointserviceallowedprincipalsResource, vpcendpointserviceallowedprincipalsKind, c.ns, opts), &v1alpha1.VpcEndpointServiceAllowedPrincipalList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeVpcEndpointServiceAllowedPrincipals) List(opts v1.ListOptions) (res
 // Watch returns a watch.Interface that watches the requested vpcEndpointServiceAllowedPrincipals.
 func (c *FakeVpcEndpointServiceAllowedPrincipals) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(vpcendpointserviceallowedprincipalsResource, opts))
+		InvokesWatch(testing.NewWatchAction(vpcendpointserviceallowedprincipalsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a vpcEndpointServiceAllowedPrincipal and creates it.  Returns the server's representation of the vpcEndpointServiceAllowedPrincipal, and an error, if there is any.
 func (c *FakeVpcEndpointServiceAllowedPrincipals) Create(vpcEndpointServiceAllowedPrincipal *v1alpha1.VpcEndpointServiceAllowedPrincipal) (result *v1alpha1.VpcEndpointServiceAllowedPrincipal, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(vpcendpointserviceallowedprincipalsResource, vpcEndpointServiceAllowedPrincipal), &v1alpha1.VpcEndpointServiceAllowedPrincipal{})
+		Invokes(testing.NewCreateAction(vpcendpointserviceallowedprincipalsResource, c.ns, vpcEndpointServiceAllowedPrincipal), &v1alpha1.VpcEndpointServiceAllowedPrincipal{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeVpcEndpointServiceAllowedPrincipals) Create(vpcEndpointServiceAllow
 // Update takes the representation of a vpcEndpointServiceAllowedPrincipal and updates it. Returns the server's representation of the vpcEndpointServiceAllowedPrincipal, and an error, if there is any.
 func (c *FakeVpcEndpointServiceAllowedPrincipals) Update(vpcEndpointServiceAllowedPrincipal *v1alpha1.VpcEndpointServiceAllowedPrincipal) (result *v1alpha1.VpcEndpointServiceAllowedPrincipal, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(vpcendpointserviceallowedprincipalsResource, vpcEndpointServiceAllowedPrincipal), &v1alpha1.VpcEndpointServiceAllowedPrincipal{})
+		Invokes(testing.NewUpdateAction(vpcendpointserviceallowedprincipalsResource, c.ns, vpcEndpointServiceAllowedPrincipal), &v1alpha1.VpcEndpointServiceAllowedPrincipal{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeVpcEndpointServiceAllowedPrincipals) Update(vpcEndpointServiceAllow
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeVpcEndpointServiceAllowedPrincipals) UpdateStatus(vpcEndpointServiceAllowedPrincipal *v1alpha1.VpcEndpointServiceAllowedPrincipal) (*v1alpha1.VpcEndpointServiceAllowedPrincipal, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(vpcendpointserviceallowedprincipalsResource, "status", vpcEndpointServiceAllowedPrincipal), &v1alpha1.VpcEndpointServiceAllowedPrincipal{})
+		Invokes(testing.NewUpdateSubresourceAction(vpcendpointserviceallowedprincipalsResource, "status", c.ns, vpcEndpointServiceAllowedPrincipal), &v1alpha1.VpcEndpointServiceAllowedPrincipal{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeVpcEndpointServiceAllowedPrincipals) UpdateStatus(vpcEndpointServic
 // Delete takes name of the vpcEndpointServiceAllowedPrincipal and deletes it. Returns an error if one occurs.
 func (c *FakeVpcEndpointServiceAllowedPrincipals) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(vpcendpointserviceallowedprincipalsResource, name), &v1alpha1.VpcEndpointServiceAllowedPrincipal{})
+		Invokes(testing.NewDeleteAction(vpcendpointserviceallowedprincipalsResource, c.ns, name), &v1alpha1.VpcEndpointServiceAllowedPrincipal{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeVpcEndpointServiceAllowedPrincipals) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(vpcendpointserviceallowedprincipalsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(vpcendpointserviceallowedprincipalsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.VpcEndpointServiceAllowedPrincipalList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeVpcEndpointServiceAllowedPrincipals) DeleteCollection(options *v1.D
 // Patch applies the patch and returns the patched vpcEndpointServiceAllowedPrincipal.
 func (c *FakeVpcEndpointServiceAllowedPrincipals) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcEndpointServiceAllowedPrincipal, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(vpcendpointserviceallowedprincipalsResource, name, pt, data, subresources...), &v1alpha1.VpcEndpointServiceAllowedPrincipal{})
+		Invokes(testing.NewPatchSubresourceAction(vpcendpointserviceallowedprincipalsResource, c.ns, name, pt, data, subresources...), &v1alpha1.VpcEndpointServiceAllowedPrincipal{})
+
 	if obj == nil {
 		return nil, err
 	}

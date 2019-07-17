@@ -32,7 +32,7 @@ import (
 // AcmpcaCertificateAuthoritiesGetter has a method to return a AcmpcaCertificateAuthorityInterface.
 // A group's client should implement this interface.
 type AcmpcaCertificateAuthoritiesGetter interface {
-	AcmpcaCertificateAuthorities() AcmpcaCertificateAuthorityInterface
+	AcmpcaCertificateAuthorities(namespace string) AcmpcaCertificateAuthorityInterface
 }
 
 // AcmpcaCertificateAuthorityInterface has methods to work with AcmpcaCertificateAuthority resources.
@@ -52,12 +52,14 @@ type AcmpcaCertificateAuthorityInterface interface {
 // acmpcaCertificateAuthorities implements AcmpcaCertificateAuthorityInterface
 type acmpcaCertificateAuthorities struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAcmpcaCertificateAuthorities returns a AcmpcaCertificateAuthorities
-func newAcmpcaCertificateAuthorities(c *AwsV1alpha1Client) *acmpcaCertificateAuthorities {
+func newAcmpcaCertificateAuthorities(c *AwsV1alpha1Client, namespace string) *acmpcaCertificateAuthorities {
 	return &acmpcaCertificateAuthorities{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAcmpcaCertificateAuthorities(c *AwsV1alpha1Client) *acmpcaCertificateAut
 func (c *acmpcaCertificateAuthorities) Get(name string, options v1.GetOptions) (result *v1alpha1.AcmpcaCertificateAuthority, err error) {
 	result = &v1alpha1.AcmpcaCertificateAuthority{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("acmpcacertificateauthorities").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *acmpcaCertificateAuthorities) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.AcmpcaCertificateAuthorityList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("acmpcacertificateauthorities").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *acmpcaCertificateAuthorities) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("acmpcacertificateauthorities").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *acmpcaCertificateAuthorities) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *acmpcaCertificateAuthorities) Create(acmpcaCertificateAuthority *v1alpha1.AcmpcaCertificateAuthority) (result *v1alpha1.AcmpcaCertificateAuthority, err error) {
 	result = &v1alpha1.AcmpcaCertificateAuthority{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("acmpcacertificateauthorities").
 		Body(acmpcaCertificateAuthority).
 		Do().
@@ -118,6 +124,7 @@ func (c *acmpcaCertificateAuthorities) Create(acmpcaCertificateAuthority *v1alph
 func (c *acmpcaCertificateAuthorities) Update(acmpcaCertificateAuthority *v1alpha1.AcmpcaCertificateAuthority) (result *v1alpha1.AcmpcaCertificateAuthority, err error) {
 	result = &v1alpha1.AcmpcaCertificateAuthority{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("acmpcacertificateauthorities").
 		Name(acmpcaCertificateAuthority.Name).
 		Body(acmpcaCertificateAuthority).
@@ -132,6 +139,7 @@ func (c *acmpcaCertificateAuthorities) Update(acmpcaCertificateAuthority *v1alph
 func (c *acmpcaCertificateAuthorities) UpdateStatus(acmpcaCertificateAuthority *v1alpha1.AcmpcaCertificateAuthority) (result *v1alpha1.AcmpcaCertificateAuthority, err error) {
 	result = &v1alpha1.AcmpcaCertificateAuthority{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("acmpcacertificateauthorities").
 		Name(acmpcaCertificateAuthority.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *acmpcaCertificateAuthorities) UpdateStatus(acmpcaCertificateAuthority *
 // Delete takes name of the acmpcaCertificateAuthority and deletes it. Returns an error if one occurs.
 func (c *acmpcaCertificateAuthorities) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("acmpcacertificateauthorities").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *acmpcaCertificateAuthorities) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("acmpcacertificateauthorities").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *acmpcaCertificateAuthorities) DeleteCollection(options *v1.DeleteOption
 func (c *acmpcaCertificateAuthorities) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AcmpcaCertificateAuthority, err error) {
 	result = &v1alpha1.AcmpcaCertificateAuthority{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("acmpcacertificateauthorities").
 		SubResource(subresources...).
 		Name(name).

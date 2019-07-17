@@ -3,12 +3,12 @@ package v1alpha1
 import (
 	"encoding/json"
 
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -22,33 +22,34 @@ type ApiGatewayMethodSettings struct {
 
 type ApiGatewayMethodSettingsSpecSettings struct {
 	// +optional
-	CacheDataEncrypted bool `json:"cache_data_encrypted,omitempty"`
+	CacheDataEncrypted bool `json:"cacheDataEncrypted,omitempty" tf:"cache_data_encrypted,omitempty"`
 	// +optional
-	CacheTtlInSeconds int `json:"cache_ttl_in_seconds,omitempty"`
+	CacheTtlInSeconds int `json:"cacheTtlInSeconds,omitempty" tf:"cache_ttl_in_seconds,omitempty"`
 	// +optional
-	CachingEnabled bool `json:"caching_enabled,omitempty"`
+	CachingEnabled bool `json:"cachingEnabled,omitempty" tf:"caching_enabled,omitempty"`
 	// +optional
-	DataTraceEnabled bool `json:"data_trace_enabled,omitempty"`
+	DataTraceEnabled bool `json:"dataTraceEnabled,omitempty" tf:"data_trace_enabled,omitempty"`
 	// +optional
-	LoggingLevel string `json:"logging_level,omitempty"`
+	LoggingLevel string `json:"loggingLevel,omitempty" tf:"logging_level,omitempty"`
 	// +optional
-	MetricsEnabled bool `json:"metrics_enabled,omitempty"`
+	MetricsEnabled bool `json:"metricsEnabled,omitempty" tf:"metrics_enabled,omitempty"`
 	// +optional
-	RequireAuthorizationForCacheControl bool `json:"require_authorization_for_cache_control,omitempty"`
+	RequireAuthorizationForCacheControl bool `json:"requireAuthorizationForCacheControl,omitempty" tf:"require_authorization_for_cache_control,omitempty"`
 	// +optional
-	ThrottlingBurstLimit int `json:"throttling_burst_limit,omitempty"`
+	ThrottlingBurstLimit int `json:"throttlingBurstLimit,omitempty" tf:"throttling_burst_limit,omitempty"`
 	// +optional
-	ThrottlingRateLimit json.Number `json:"throttling_rate_limit,omitempty"`
+	ThrottlingRateLimit json.Number `json:"throttlingRateLimit,omitempty" tf:"throttling_rate_limit,omitempty"`
 	// +optional
-	UnauthorizedCacheControlHeaderStrategy string `json:"unauthorized_cache_control_header_strategy,omitempty"`
+	UnauthorizedCacheControlHeaderStrategy string `json:"unauthorizedCacheControlHeaderStrategy,omitempty" tf:"unauthorized_cache_control_header_strategy,omitempty"`
 }
 
 type ApiGatewayMethodSettingsSpec struct {
-	MethodPath string `json:"method_path"`
-	RestApiId  string `json:"rest_api_id"`
+	MethodPath string `json:"methodPath" tf:"method_path"`
+	RestAPIID  string `json:"restAPIID" tf:"rest_api_id"`
 	// +kubebuilder:validation:MaxItems=1
-	Settings  []ApiGatewayMethodSettingsSpec `json:"settings"`
-	StageName string                         `json:"stage_name"`
+	Settings    []ApiGatewayMethodSettingsSpecSettings `json:"settings" tf:"settings"`
+	StageName   string                                 `json:"stageName" tf:"stage_name"`
+	ProviderRef core.LocalObjectReference              `json:"providerRef" tf:"-"`
 }
 
 type ApiGatewayMethodSettingsStatus struct {
@@ -56,7 +57,9 @@ type ApiGatewayMethodSettingsStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

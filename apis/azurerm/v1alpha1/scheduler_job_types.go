@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,147 +19,148 @@ type SchedulerJob struct {
 }
 
 type SchedulerJobSpecActionStorageQueue struct {
-	Message            string `json:"message"`
-	SasToken           string `json:"sas_token"`
-	StorageAccountName string `json:"storage_account_name"`
-	StorageQueueName   string `json:"storage_queue_name"`
+	Message            string `json:"message" tf:"message"`
+	SasToken           string `json:"sasToken" tf:"sas_token"`
+	StorageAccountName string `json:"storageAccountName" tf:"storage_account_name"`
+	StorageQueueName   string `json:"storageQueueName" tf:"storage_queue_name"`
 }
 
 type SchedulerJobSpecActionWebAuthenticationActiveDirectory struct {
-	ClientId string `json:"client_id"`
-	Secret   string `json:"secret"`
-	TenantId string `json:"tenant_id"`
+	ClientID string `json:"clientID" tf:"client_id"`
+	Secret   string `json:"secret" tf:"secret"`
+	TenantID string `json:"tenantID" tf:"tenant_id"`
 }
 
 type SchedulerJobSpecActionWebAuthenticationBasic struct {
-	Password string `json:"password"`
-	Username string `json:"username"`
+	Password string `json:"password" tf:"password"`
+	Username string `json:"username" tf:"username"`
 }
 
 type SchedulerJobSpecActionWebAuthenticationCertificate struct {
-	Password string `json:"password"`
-	Pfx      string `json:"pfx"`
+	Password string `json:"password" tf:"password"`
+	Pfx      string `json:"pfx" tf:"pfx"`
 }
 
 type SchedulerJobSpecActionWeb struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	AuthenticationActiveDirectory *[]SchedulerJobSpecActionWeb `json:"authentication_active_directory,omitempty"`
+	AuthenticationActiveDirectory []SchedulerJobSpecActionWebAuthenticationActiveDirectory `json:"authenticationActiveDirectory,omitempty" tf:"authentication_active_directory,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	AuthenticationBasic *[]SchedulerJobSpecActionWeb `json:"authentication_basic,omitempty"`
+	AuthenticationBasic []SchedulerJobSpecActionWebAuthenticationBasic `json:"authenticationBasic,omitempty" tf:"authentication_basic,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	AuthenticationCertificate *[]SchedulerJobSpecActionWeb `json:"authentication_certificate,omitempty"`
+	AuthenticationCertificate []SchedulerJobSpecActionWebAuthenticationCertificate `json:"authenticationCertificate,omitempty" tf:"authentication_certificate,omitempty"`
 	// +optional
-	Body string `json:"body,omitempty"`
+	Body string `json:"body,omitempty" tf:"body,omitempty"`
 	// +optional
-	Headers map[string]string `json:"headers,omitempty"`
-	Method  string            `json:"method"`
-	Url     string            `json:"url"`
+	Headers map[string]string `json:"headers,omitempty" tf:"headers,omitempty"`
+	Method  string            `json:"method" tf:"method"`
+	Url     string            `json:"url" tf:"url"`
 }
 
 type SchedulerJobSpecErrorActionStorageQueue struct {
-	Message            string `json:"message"`
-	SasToken           string `json:"sas_token"`
-	StorageAccountName string `json:"storage_account_name"`
-	StorageQueueName   string `json:"storage_queue_name"`
+	Message            string `json:"message" tf:"message"`
+	SasToken           string `json:"sasToken" tf:"sas_token"`
+	StorageAccountName string `json:"storageAccountName" tf:"storage_account_name"`
+	StorageQueueName   string `json:"storageQueueName" tf:"storage_queue_name"`
 }
 
 type SchedulerJobSpecErrorActionWebAuthenticationActiveDirectory struct {
-	ClientId string `json:"client_id"`
-	Secret   string `json:"secret"`
-	TenantId string `json:"tenant_id"`
+	ClientID string `json:"clientID" tf:"client_id"`
+	Secret   string `json:"secret" tf:"secret"`
+	TenantID string `json:"tenantID" tf:"tenant_id"`
 }
 
 type SchedulerJobSpecErrorActionWebAuthenticationBasic struct {
-	Password string `json:"password"`
-	Username string `json:"username"`
+	Password string `json:"password" tf:"password"`
+	Username string `json:"username" tf:"username"`
 }
 
 type SchedulerJobSpecErrorActionWebAuthenticationCertificate struct {
-	Password string `json:"password"`
-	Pfx      string `json:"pfx"`
+	Password string `json:"password" tf:"password"`
+	Pfx      string `json:"pfx" tf:"pfx"`
 }
 
 type SchedulerJobSpecErrorActionWeb struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	AuthenticationActiveDirectory *[]SchedulerJobSpecErrorActionWeb `json:"authentication_active_directory,omitempty"`
+	AuthenticationActiveDirectory []SchedulerJobSpecErrorActionWebAuthenticationActiveDirectory `json:"authenticationActiveDirectory,omitempty" tf:"authentication_active_directory,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	AuthenticationBasic *[]SchedulerJobSpecErrorActionWeb `json:"authentication_basic,omitempty"`
+	AuthenticationBasic []SchedulerJobSpecErrorActionWebAuthenticationBasic `json:"authenticationBasic,omitempty" tf:"authentication_basic,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	AuthenticationCertificate *[]SchedulerJobSpecErrorActionWeb `json:"authentication_certificate,omitempty"`
+	AuthenticationCertificate []SchedulerJobSpecErrorActionWebAuthenticationCertificate `json:"authenticationCertificate,omitempty" tf:"authentication_certificate,omitempty"`
 	// +optional
-	Body string `json:"body,omitempty"`
+	Body string `json:"body,omitempty" tf:"body,omitempty"`
 	// +optional
-	Headers map[string]string `json:"headers,omitempty"`
-	Method  string            `json:"method"`
-	Url     string            `json:"url"`
+	Headers map[string]string `json:"headers,omitempty" tf:"headers,omitempty"`
+	Method  string            `json:"method" tf:"method"`
+	Url     string            `json:"url" tf:"url"`
 }
 
 type SchedulerJobSpecRecurrenceMonthlyOccurrences struct {
-	Day        string `json:"day"`
-	Occurrence int    `json:"occurrence"`
+	Day        string `json:"day" tf:"day"`
+	Occurrence int    `json:"occurrence" tf:"occurrence"`
 }
 
 type SchedulerJobSpecRecurrence struct {
 	// +optional
-	Count     int    `json:"count,omitempty"`
-	Frequency string `json:"frequency"`
+	Count     int    `json:"count,omitempty" tf:"count,omitempty"`
+	Frequency string `json:"frequency" tf:"frequency"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Hours []int64 `json:"hours,omitempty"`
+	Hours []int64 `json:"hours,omitempty" tf:"hours,omitempty"`
 	// +optional
-	Interval int `json:"interval,omitempty"`
+	Interval int `json:"interval,omitempty" tf:"interval,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Minutes []int64 `json:"minutes,omitempty"`
+	Minutes []int64 `json:"minutes,omitempty" tf:"minutes,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	MonthDays []int64 `json:"month_days,omitempty"`
+	MonthDays []int64 `json:"monthDays,omitempty" tf:"month_days,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	MonthlyOccurrences *[]SchedulerJobSpecRecurrence `json:"monthly_occurrences,omitempty"`
+	MonthlyOccurrences []SchedulerJobSpecRecurrenceMonthlyOccurrences `json:"monthlyOccurrences,omitempty" tf:"monthly_occurrences,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	WeekDays []string `json:"week_days,omitempty"`
+	WeekDays []string `json:"weekDays,omitempty" tf:"week_days,omitempty"`
 }
 
 type SchedulerJobSpecRetry struct {
 	// +optional
-	Count int `json:"count,omitempty"`
+	Count int `json:"count,omitempty" tf:"count,omitempty"`
 	// +optional
-	Interval string `json:"interval,omitempty"`
+	Interval string `json:"interval,omitempty" tf:"interval,omitempty"`
 }
 
 type SchedulerJobSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ActionStorageQueue *[]SchedulerJobSpec `json:"action_storage_queue,omitempty"`
+	ActionStorageQueue []SchedulerJobSpecActionStorageQueue `json:"actionStorageQueue,omitempty" tf:"action_storage_queue,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ActionWeb *[]SchedulerJobSpec `json:"action_web,omitempty"`
+	ActionWeb []SchedulerJobSpecActionWeb `json:"actionWeb,omitempty" tf:"action_web,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ErrorActionStorageQueue *[]SchedulerJobSpec `json:"error_action_storage_queue,omitempty"`
+	ErrorActionStorageQueue []SchedulerJobSpecErrorActionStorageQueue `json:"errorActionStorageQueue,omitempty" tf:"error_action_storage_queue,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ErrorActionWeb    *[]SchedulerJobSpec `json:"error_action_web,omitempty"`
-	JobCollectionName string              `json:"job_collection_name"`
-	Name              string              `json:"name"`
+	ErrorActionWeb    []SchedulerJobSpecErrorActionWeb `json:"errorActionWeb,omitempty" tf:"error_action_web,omitempty"`
+	JobCollectionName string                           `json:"jobCollectionName" tf:"job_collection_name"`
+	Name              string                           `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	Recurrence        *[]SchedulerJobSpec `json:"recurrence,omitempty"`
-	ResourceGroupName string              `json:"resource_group_name"`
+	Recurrence        []SchedulerJobSpecRecurrence `json:"recurrence,omitempty" tf:"recurrence,omitempty"`
+	ResourceGroupName string                       `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Retry *[]SchedulerJobSpec `json:"retry,omitempty"`
+	Retry       []SchedulerJobSpecRetry   `json:"retry,omitempty" tf:"retry,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SchedulerJobStatus struct {
@@ -167,7 +168,9 @@ type SchedulerJobStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

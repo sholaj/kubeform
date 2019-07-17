@@ -31,6 +31,7 @@ import (
 // FakeS3AccountPublicAccessBlocks implements S3AccountPublicAccessBlockInterface
 type FakeS3AccountPublicAccessBlocks struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var s3accountpublicaccessblocksResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "s3accountpublicaccessblocks"}
@@ -40,7 +41,8 @@ var s3accountpublicaccessblocksKind = schema.GroupVersionKind{Group: "aws.kubefo
 // Get takes name of the s3AccountPublicAccessBlock, and returns the corresponding s3AccountPublicAccessBlock object, and an error if there is any.
 func (c *FakeS3AccountPublicAccessBlocks) Get(name string, options v1.GetOptions) (result *v1alpha1.S3AccountPublicAccessBlock, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(s3accountpublicaccessblocksResource, name), &v1alpha1.S3AccountPublicAccessBlock{})
+		Invokes(testing.NewGetAction(s3accountpublicaccessblocksResource, c.ns, name), &v1alpha1.S3AccountPublicAccessBlock{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeS3AccountPublicAccessBlocks) Get(name string, options v1.GetOptions
 // List takes label and field selectors, and returns the list of S3AccountPublicAccessBlocks that match those selectors.
 func (c *FakeS3AccountPublicAccessBlocks) List(opts v1.ListOptions) (result *v1alpha1.S3AccountPublicAccessBlockList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(s3accountpublicaccessblocksResource, s3accountpublicaccessblocksKind, opts), &v1alpha1.S3AccountPublicAccessBlockList{})
+		Invokes(testing.NewListAction(s3accountpublicaccessblocksResource, s3accountpublicaccessblocksKind, c.ns, opts), &v1alpha1.S3AccountPublicAccessBlockList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeS3AccountPublicAccessBlocks) List(opts v1.ListOptions) (result *v1a
 // Watch returns a watch.Interface that watches the requested s3AccountPublicAccessBlocks.
 func (c *FakeS3AccountPublicAccessBlocks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(s3accountpublicaccessblocksResource, opts))
+		InvokesWatch(testing.NewWatchAction(s3accountpublicaccessblocksResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a s3AccountPublicAccessBlock and creates it.  Returns the server's representation of the s3AccountPublicAccessBlock, and an error, if there is any.
 func (c *FakeS3AccountPublicAccessBlocks) Create(s3AccountPublicAccessBlock *v1alpha1.S3AccountPublicAccessBlock) (result *v1alpha1.S3AccountPublicAccessBlock, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(s3accountpublicaccessblocksResource, s3AccountPublicAccessBlock), &v1alpha1.S3AccountPublicAccessBlock{})
+		Invokes(testing.NewCreateAction(s3accountpublicaccessblocksResource, c.ns, s3AccountPublicAccessBlock), &v1alpha1.S3AccountPublicAccessBlock{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeS3AccountPublicAccessBlocks) Create(s3AccountPublicAccessBlock *v1a
 // Update takes the representation of a s3AccountPublicAccessBlock and updates it. Returns the server's representation of the s3AccountPublicAccessBlock, and an error, if there is any.
 func (c *FakeS3AccountPublicAccessBlocks) Update(s3AccountPublicAccessBlock *v1alpha1.S3AccountPublicAccessBlock) (result *v1alpha1.S3AccountPublicAccessBlock, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(s3accountpublicaccessblocksResource, s3AccountPublicAccessBlock), &v1alpha1.S3AccountPublicAccessBlock{})
+		Invokes(testing.NewUpdateAction(s3accountpublicaccessblocksResource, c.ns, s3AccountPublicAccessBlock), &v1alpha1.S3AccountPublicAccessBlock{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeS3AccountPublicAccessBlocks) Update(s3AccountPublicAccessBlock *v1a
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeS3AccountPublicAccessBlocks) UpdateStatus(s3AccountPublicAccessBlock *v1alpha1.S3AccountPublicAccessBlock) (*v1alpha1.S3AccountPublicAccessBlock, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(s3accountpublicaccessblocksResource, "status", s3AccountPublicAccessBlock), &v1alpha1.S3AccountPublicAccessBlock{})
+		Invokes(testing.NewUpdateSubresourceAction(s3accountpublicaccessblocksResource, "status", c.ns, s3AccountPublicAccessBlock), &v1alpha1.S3AccountPublicAccessBlock{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeS3AccountPublicAccessBlocks) UpdateStatus(s3AccountPublicAccessBloc
 // Delete takes name of the s3AccountPublicAccessBlock and deletes it. Returns an error if one occurs.
 func (c *FakeS3AccountPublicAccessBlocks) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(s3accountpublicaccessblocksResource, name), &v1alpha1.S3AccountPublicAccessBlock{})
+		Invokes(testing.NewDeleteAction(s3accountpublicaccessblocksResource, c.ns, name), &v1alpha1.S3AccountPublicAccessBlock{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeS3AccountPublicAccessBlocks) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(s3accountpublicaccessblocksResource, listOptions)
+	action := testing.NewDeleteCollectionAction(s3accountpublicaccessblocksResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.S3AccountPublicAccessBlockList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeS3AccountPublicAccessBlocks) DeleteCollection(options *v1.DeleteOpt
 // Patch applies the patch and returns the patched s3AccountPublicAccessBlock.
 func (c *FakeS3AccountPublicAccessBlocks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.S3AccountPublicAccessBlock, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(s3accountpublicaccessblocksResource, name, pt, data, subresources...), &v1alpha1.S3AccountPublicAccessBlock{})
+		Invokes(testing.NewPatchSubresourceAction(s3accountpublicaccessblocksResource, c.ns, name, pt, data, subresources...), &v1alpha1.S3AccountPublicAccessBlock{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // IamGroupsGetter has a method to return a IamGroupInterface.
 // A group's client should implement this interface.
 type IamGroupsGetter interface {
-	IamGroups() IamGroupInterface
+	IamGroups(namespace string) IamGroupInterface
 }
 
 // IamGroupInterface has methods to work with IamGroup resources.
@@ -52,12 +52,14 @@ type IamGroupInterface interface {
 // iamGroups implements IamGroupInterface
 type iamGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIamGroups returns a IamGroups
-func newIamGroups(c *AwsV1alpha1Client) *iamGroups {
+func newIamGroups(c *AwsV1alpha1Client, namespace string) *iamGroups {
 	return &iamGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIamGroups(c *AwsV1alpha1Client) *iamGroups {
 func (c *iamGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.IamGroup, err error) {
 	result = &v1alpha1.IamGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamgroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iamGroups) List(opts v1.ListOptions) (result *v1alpha1.IamGroupList, er
 	}
 	result = &v1alpha1.IamGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iamGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iamgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iamGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *iamGroups) Create(iamGroup *v1alpha1.IamGroup) (result *v1alpha1.IamGroup, err error) {
 	result = &v1alpha1.IamGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iamgroups").
 		Body(iamGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *iamGroups) Create(iamGroup *v1alpha1.IamGroup) (result *v1alpha1.IamGro
 func (c *iamGroups) Update(iamGroup *v1alpha1.IamGroup) (result *v1alpha1.IamGroup, err error) {
 	result = &v1alpha1.IamGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamgroups").
 		Name(iamGroup.Name).
 		Body(iamGroup).
@@ -132,6 +139,7 @@ func (c *iamGroups) Update(iamGroup *v1alpha1.IamGroup) (result *v1alpha1.IamGro
 func (c *iamGroups) UpdateStatus(iamGroup *v1alpha1.IamGroup) (result *v1alpha1.IamGroup, err error) {
 	result = &v1alpha1.IamGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamgroups").
 		Name(iamGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iamGroups) UpdateStatus(iamGroup *v1alpha1.IamGroup) (result *v1alpha1.
 // Delete takes name of the iamGroup and deletes it. Returns an error if one occurs.
 func (c *iamGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamgroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iamGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamgroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iamGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 func (c *iamGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamGroup, err error) {
 	result = &v1alpha1.IamGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iamgroups").
 		SubResource(subresources...).
 		Name(name).

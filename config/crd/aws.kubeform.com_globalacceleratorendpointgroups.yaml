@@ -397,28 +397,44 @@ spec:
           type: object
         spec:
           properties:
-            endpoint_configuration:
-              items: {}
+            endpointConfiguration:
+              items:
+                properties:
+                  endpointID:
+                    type: string
+                  weight:
+                    type: integer
+                type: object
               maxItems: 10
               type: array
               uniqueItems: true
-            health_check_interval_seconds:
+            healthCheckIntervalSeconds:
               type: integer
-            health_check_path:
+            healthCheckPath:
               type: string
-            health_check_port:
+            healthCheckPort:
               type: integer
-            health_check_protocol:
+            healthCheckProtocol:
               type: string
-            listener_arn:
+            listenerArn:
               type: string
-            threshold_count:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            thresholdCount:
               type: integer
-            traffic_dial_percentage:
+            trafficDialPercentage:
               description: A Number represents a JSON number literal.
               type: string
           required:
-          - listener_arn
+          - listenerArn
+          - providerRef
           type: object
         status:
           properties:
@@ -429,6 +445,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

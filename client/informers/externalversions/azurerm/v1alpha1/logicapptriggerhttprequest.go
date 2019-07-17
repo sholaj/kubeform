@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/azurerm/v1alpha1"
 )
 
-// LogicAppTriggerHttpRequestInformer provides access to a shared informer and lister for
-// LogicAppTriggerHttpRequests.
-type LogicAppTriggerHttpRequestInformer interface {
+// LogicAppTriggerHTTPRequestInformer provides access to a shared informer and lister for
+// LogicAppTriggerHTTPRequests.
+type LogicAppTriggerHTTPRequestInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.LogicAppTriggerHttpRequestLister
+	Lister() v1alpha1.LogicAppTriggerHTTPRequestLister
 }
 
-type logicAppTriggerHttpRequestInformer struct {
+type logicAppTriggerHTTPRequestInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewLogicAppTriggerHttpRequestInformer constructs a new informer for LogicAppTriggerHttpRequest type.
+// NewLogicAppTriggerHTTPRequestInformer constructs a new informer for LogicAppTriggerHTTPRequest type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLogicAppTriggerHttpRequestInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLogicAppTriggerHttpRequestInformer(client, resyncPeriod, indexers, nil)
+func NewLogicAppTriggerHTTPRequestInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLogicAppTriggerHTTPRequestInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredLogicAppTriggerHttpRequestInformer constructs a new informer for LogicAppTriggerHttpRequest type.
+// NewFilteredLogicAppTriggerHTTPRequestInformer constructs a new informer for LogicAppTriggerHTTPRequest type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLogicAppTriggerHttpRequestInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLogicAppTriggerHTTPRequestInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().LogicAppTriggerHttpRequests().List(options)
+				return client.AzurermV1alpha1().LogicAppTriggerHTTPRequests(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().LogicAppTriggerHttpRequests().Watch(options)
+				return client.AzurermV1alpha1().LogicAppTriggerHTTPRequests(namespace).Watch(options)
 			},
 		},
-		&azurermv1alpha1.LogicAppTriggerHttpRequest{},
+		&azurermv1alpha1.LogicAppTriggerHTTPRequest{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *logicAppTriggerHttpRequestInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLogicAppTriggerHttpRequestInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *logicAppTriggerHTTPRequestInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredLogicAppTriggerHTTPRequestInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *logicAppTriggerHttpRequestInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&azurermv1alpha1.LogicAppTriggerHttpRequest{}, f.defaultInformer)
+func (f *logicAppTriggerHTTPRequestInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&azurermv1alpha1.LogicAppTriggerHTTPRequest{}, f.defaultInformer)
 }
 
-func (f *logicAppTriggerHttpRequestInformer) Lister() v1alpha1.LogicAppTriggerHttpRequestLister {
-	return v1alpha1.NewLogicAppTriggerHttpRequestLister(f.Informer().GetIndexer())
+func (f *logicAppTriggerHTTPRequestInformer) Lister() v1alpha1.LogicAppTriggerHTTPRequestLister {
+	return v1alpha1.NewLogicAppTriggerHTTPRequestLister(f.Informer().GetIndexer())
 }

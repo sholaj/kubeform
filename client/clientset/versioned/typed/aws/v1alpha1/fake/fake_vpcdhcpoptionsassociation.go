@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// FakeVpcDhcpOptionsAssociations implements VpcDhcpOptionsAssociationInterface
-type FakeVpcDhcpOptionsAssociations struct {
+// FakeVpcDHCPOptionsAssociations implements VpcDHCPOptionsAssociationInterface
+type FakeVpcDHCPOptionsAssociations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var vpcdhcpoptionsassociationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "vpcdhcpoptionsassociations"}
 
-var vpcdhcpoptionsassociationsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "VpcDhcpOptionsAssociation"}
+var vpcdhcpoptionsassociationsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "VpcDHCPOptionsAssociation"}
 
-// Get takes name of the vpcDhcpOptionsAssociation, and returns the corresponding vpcDhcpOptionsAssociation object, and an error if there is any.
-func (c *FakeVpcDhcpOptionsAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcDhcpOptionsAssociation, err error) {
+// Get takes name of the vpcDHCPOptionsAssociation, and returns the corresponding vpcDHCPOptionsAssociation object, and an error if there is any.
+func (c *FakeVpcDHCPOptionsAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcDHCPOptionsAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(vpcdhcpoptionsassociationsResource, name), &v1alpha1.VpcDhcpOptionsAssociation{})
+		Invokes(testing.NewGetAction(vpcdhcpoptionsassociationsResource, c.ns, name), &v1alpha1.VpcDHCPOptionsAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.VpcDhcpOptionsAssociation), err
+	return obj.(*v1alpha1.VpcDHCPOptionsAssociation), err
 }
 
-// List takes label and field selectors, and returns the list of VpcDhcpOptionsAssociations that match those selectors.
-func (c *FakeVpcDhcpOptionsAssociations) List(opts v1.ListOptions) (result *v1alpha1.VpcDhcpOptionsAssociationList, err error) {
+// List takes label and field selectors, and returns the list of VpcDHCPOptionsAssociations that match those selectors.
+func (c *FakeVpcDHCPOptionsAssociations) List(opts v1.ListOptions) (result *v1alpha1.VpcDHCPOptionsAssociationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(vpcdhcpoptionsassociationsResource, vpcdhcpoptionsassociationsKind, opts), &v1alpha1.VpcDhcpOptionsAssociationList{})
+		Invokes(testing.NewListAction(vpcdhcpoptionsassociationsResource, vpcdhcpoptionsassociationsKind, c.ns, opts), &v1alpha1.VpcDHCPOptionsAssociationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeVpcDhcpOptionsAssociations) List(opts v1.ListOptions) (result *v1al
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.VpcDhcpOptionsAssociationList{ListMeta: obj.(*v1alpha1.VpcDhcpOptionsAssociationList).ListMeta}
-	for _, item := range obj.(*v1alpha1.VpcDhcpOptionsAssociationList).Items {
+	list := &v1alpha1.VpcDHCPOptionsAssociationList{ListMeta: obj.(*v1alpha1.VpcDHCPOptionsAssociationList).ListMeta}
+	for _, item := range obj.(*v1alpha1.VpcDHCPOptionsAssociationList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeVpcDhcpOptionsAssociations) List(opts v1.ListOptions) (result *v1al
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested vpcDhcpOptionsAssociations.
-func (c *FakeVpcDhcpOptionsAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested vpcDHCPOptionsAssociations.
+func (c *FakeVpcDHCPOptionsAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(vpcdhcpoptionsassociationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(vpcdhcpoptionsassociationsResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a vpcDhcpOptionsAssociation and creates it.  Returns the server's representation of the vpcDhcpOptionsAssociation, and an error, if there is any.
-func (c *FakeVpcDhcpOptionsAssociations) Create(vpcDhcpOptionsAssociation *v1alpha1.VpcDhcpOptionsAssociation) (result *v1alpha1.VpcDhcpOptionsAssociation, err error) {
+// Create takes the representation of a vpcDHCPOptionsAssociation and creates it.  Returns the server's representation of the vpcDHCPOptionsAssociation, and an error, if there is any.
+func (c *FakeVpcDHCPOptionsAssociations) Create(vpcDHCPOptionsAssociation *v1alpha1.VpcDHCPOptionsAssociation) (result *v1alpha1.VpcDHCPOptionsAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(vpcdhcpoptionsassociationsResource, vpcDhcpOptionsAssociation), &v1alpha1.VpcDhcpOptionsAssociation{})
+		Invokes(testing.NewCreateAction(vpcdhcpoptionsassociationsResource, c.ns, vpcDHCPOptionsAssociation), &v1alpha1.VpcDHCPOptionsAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.VpcDhcpOptionsAssociation), err
+	return obj.(*v1alpha1.VpcDHCPOptionsAssociation), err
 }
 
-// Update takes the representation of a vpcDhcpOptionsAssociation and updates it. Returns the server's representation of the vpcDhcpOptionsAssociation, and an error, if there is any.
-func (c *FakeVpcDhcpOptionsAssociations) Update(vpcDhcpOptionsAssociation *v1alpha1.VpcDhcpOptionsAssociation) (result *v1alpha1.VpcDhcpOptionsAssociation, err error) {
+// Update takes the representation of a vpcDHCPOptionsAssociation and updates it. Returns the server's representation of the vpcDHCPOptionsAssociation, and an error, if there is any.
+func (c *FakeVpcDHCPOptionsAssociations) Update(vpcDHCPOptionsAssociation *v1alpha1.VpcDHCPOptionsAssociation) (result *v1alpha1.VpcDHCPOptionsAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(vpcdhcpoptionsassociationsResource, vpcDhcpOptionsAssociation), &v1alpha1.VpcDhcpOptionsAssociation{})
+		Invokes(testing.NewUpdateAction(vpcdhcpoptionsassociationsResource, c.ns, vpcDHCPOptionsAssociation), &v1alpha1.VpcDHCPOptionsAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.VpcDhcpOptionsAssociation), err
+	return obj.(*v1alpha1.VpcDHCPOptionsAssociation), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeVpcDhcpOptionsAssociations) UpdateStatus(vpcDhcpOptionsAssociation *v1alpha1.VpcDhcpOptionsAssociation) (*v1alpha1.VpcDhcpOptionsAssociation, error) {
+func (c *FakeVpcDHCPOptionsAssociations) UpdateStatus(vpcDHCPOptionsAssociation *v1alpha1.VpcDHCPOptionsAssociation) (*v1alpha1.VpcDHCPOptionsAssociation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(vpcdhcpoptionsassociationsResource, "status", vpcDhcpOptionsAssociation), &v1alpha1.VpcDhcpOptionsAssociation{})
+		Invokes(testing.NewUpdateSubresourceAction(vpcdhcpoptionsassociationsResource, "status", c.ns, vpcDHCPOptionsAssociation), &v1alpha1.VpcDHCPOptionsAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.VpcDhcpOptionsAssociation), err
+	return obj.(*v1alpha1.VpcDHCPOptionsAssociation), err
 }
 
-// Delete takes name of the vpcDhcpOptionsAssociation and deletes it. Returns an error if one occurs.
-func (c *FakeVpcDhcpOptionsAssociations) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the vpcDHCPOptionsAssociation and deletes it. Returns an error if one occurs.
+func (c *FakeVpcDHCPOptionsAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(vpcdhcpoptionsassociationsResource, name), &v1alpha1.VpcDhcpOptionsAssociation{})
+		Invokes(testing.NewDeleteAction(vpcdhcpoptionsassociationsResource, c.ns, name), &v1alpha1.VpcDHCPOptionsAssociation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeVpcDhcpOptionsAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(vpcdhcpoptionsassociationsResource, listOptions)
+func (c *FakeVpcDHCPOptionsAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(vpcdhcpoptionsassociationsResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.VpcDhcpOptionsAssociationList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.VpcDHCPOptionsAssociationList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched vpcDhcpOptionsAssociation.
-func (c *FakeVpcDhcpOptionsAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcDhcpOptionsAssociation, err error) {
+// Patch applies the patch and returns the patched vpcDHCPOptionsAssociation.
+func (c *FakeVpcDHCPOptionsAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcDHCPOptionsAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(vpcdhcpoptionsassociationsResource, name, pt, data, subresources...), &v1alpha1.VpcDhcpOptionsAssociation{})
+		Invokes(testing.NewPatchSubresourceAction(vpcdhcpoptionsassociationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.VpcDHCPOptionsAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.VpcDhcpOptionsAssociation), err
+	return obj.(*v1alpha1.VpcDHCPOptionsAssociation), err
 }

@@ -32,7 +32,7 @@ import (
 // SnapshotsGetter has a method to return a SnapshotInterface.
 // A group's client should implement this interface.
 type SnapshotsGetter interface {
-	Snapshots() SnapshotInterface
+	Snapshots(namespace string) SnapshotInterface
 }
 
 // SnapshotInterface has methods to work with Snapshot resources.
@@ -52,12 +52,14 @@ type SnapshotInterface interface {
 // snapshots implements SnapshotInterface
 type snapshots struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSnapshots returns a Snapshots
-func newSnapshots(c *AzurermV1alpha1Client) *snapshots {
+func newSnapshots(c *AzurermV1alpha1Client, namespace string) *snapshots {
 	return &snapshots{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSnapshots(c *AzurermV1alpha1Client) *snapshots {
 func (c *snapshots) Get(name string, options v1.GetOptions) (result *v1alpha1.Snapshot, err error) {
 	result = &v1alpha1.Snapshot{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("snapshots").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *snapshots) List(opts v1.ListOptions) (result *v1alpha1.SnapshotList, er
 	}
 	result = &v1alpha1.SnapshotList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("snapshots").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *snapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("snapshots").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *snapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *snapshots) Create(snapshot *v1alpha1.Snapshot) (result *v1alpha1.Snapshot, err error) {
 	result = &v1alpha1.Snapshot{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("snapshots").
 		Body(snapshot).
 		Do().
@@ -118,6 +124,7 @@ func (c *snapshots) Create(snapshot *v1alpha1.Snapshot) (result *v1alpha1.Snapsh
 func (c *snapshots) Update(snapshot *v1alpha1.Snapshot) (result *v1alpha1.Snapshot, err error) {
 	result = &v1alpha1.Snapshot{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("snapshots").
 		Name(snapshot.Name).
 		Body(snapshot).
@@ -132,6 +139,7 @@ func (c *snapshots) Update(snapshot *v1alpha1.Snapshot) (result *v1alpha1.Snapsh
 func (c *snapshots) UpdateStatus(snapshot *v1alpha1.Snapshot) (result *v1alpha1.Snapshot, err error) {
 	result = &v1alpha1.Snapshot{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("snapshots").
 		Name(snapshot.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *snapshots) UpdateStatus(snapshot *v1alpha1.Snapshot) (result *v1alpha1.
 // Delete takes name of the snapshot and deletes it. Returns an error if one occurs.
 func (c *snapshots) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("snapshots").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *snapshots) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("snapshots").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *snapshots) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 func (c *snapshots) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Snapshot, err error) {
 	result = &v1alpha1.Snapshot{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("snapshots").
 		SubResource(subresources...).
 		Name(name).

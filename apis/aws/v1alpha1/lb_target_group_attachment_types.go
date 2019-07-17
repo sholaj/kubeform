@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,11 +20,12 @@ type LbTargetGroupAttachment struct {
 
 type LbTargetGroupAttachmentSpec struct {
 	// +optional
-	AvailabilityZone string `json:"availability_zone,omitempty"`
+	AvailabilityZone string `json:"availabilityZone,omitempty" tf:"availability_zone,omitempty"`
 	// +optional
-	Port           int    `json:"port,omitempty"`
-	TargetGroupArn string `json:"target_group_arn"`
-	TargetId       string `json:"target_id"`
+	Port           int                       `json:"port,omitempty" tf:"port,omitempty"`
+	TargetGroupArn string                    `json:"targetGroupArn" tf:"target_group_arn"`
+	TargetID       string                    `json:"targetID" tf:"target_id"`
+	ProviderRef    core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type LbTargetGroupAttachmentStatus struct {
@@ -32,7 +33,9 @@ type LbTargetGroupAttachmentStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -29,8 +29,8 @@ import (
 type BatchJobDefinitionLister interface {
 	// List lists all BatchJobDefinitions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.BatchJobDefinition, err error)
-	// Get retrieves the BatchJobDefinition from the index for a given name.
-	Get(name string) (*v1alpha1.BatchJobDefinition, error)
+	// BatchJobDefinitions returns an object that can list and get BatchJobDefinitions.
+	BatchJobDefinitions(namespace string) BatchJobDefinitionNamespaceLister
 	BatchJobDefinitionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *batchJobDefinitionLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the BatchJobDefinition from the index for a given name.
-func (s *batchJobDefinitionLister) Get(name string) (*v1alpha1.BatchJobDefinition, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// BatchJobDefinitions returns an object that can list and get BatchJobDefinitions.
+func (s *batchJobDefinitionLister) BatchJobDefinitions(namespace string) BatchJobDefinitionNamespaceLister {
+	return batchJobDefinitionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// BatchJobDefinitionNamespaceLister helps list and get BatchJobDefinitions.
+type BatchJobDefinitionNamespaceLister interface {
+	// List lists all BatchJobDefinitions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.BatchJobDefinition, err error)
+	// Get retrieves the BatchJobDefinition from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.BatchJobDefinition, error)
+	BatchJobDefinitionNamespaceListerExpansion
+}
+
+// batchJobDefinitionNamespaceLister implements the BatchJobDefinitionNamespaceLister
+// interface.
+type batchJobDefinitionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all BatchJobDefinitions in the indexer for a given namespace.
+func (s batchJobDefinitionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.BatchJobDefinition, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.BatchJobDefinition))
+	})
+	return ret, err
+}
+
+// Get retrieves the BatchJobDefinition from the indexer for a given namespace and name.
+func (s batchJobDefinitionNamespaceLister) Get(name string) (*v1alpha1.BatchJobDefinition, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

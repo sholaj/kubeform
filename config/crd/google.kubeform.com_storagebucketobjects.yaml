@@ -399,25 +399,35 @@ spec:
           properties:
             bucket:
               type: string
-            cache_control:
+            cacheControl:
               type: string
             content:
               type: string
-            content_disposition:
+            contentDisposition:
               type: string
-            content_encoding:
+            contentEncoding:
               type: string
-            content_language:
+            contentLanguage:
               type: string
-            detect_md5hash:
+            detectMd5hash:
               type: string
             name:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             source:
               type: string
           required:
           - bucket
           - name
+          - providerRef
           type: object
         status:
           properties:
@@ -428,6 +438,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

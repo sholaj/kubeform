@@ -31,6 +31,7 @@ import (
 // FakeElasticBeanstalkApplications implements ElasticBeanstalkApplicationInterface
 type FakeElasticBeanstalkApplications struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var elasticbeanstalkapplicationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "elasticbeanstalkapplications"}
@@ -40,7 +41,8 @@ var elasticbeanstalkapplicationsKind = schema.GroupVersionKind{Group: "aws.kubef
 // Get takes name of the elasticBeanstalkApplication, and returns the corresponding elasticBeanstalkApplication object, and an error if there is any.
 func (c *FakeElasticBeanstalkApplications) Get(name string, options v1.GetOptions) (result *v1alpha1.ElasticBeanstalkApplication, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(elasticbeanstalkapplicationsResource, name), &v1alpha1.ElasticBeanstalkApplication{})
+		Invokes(testing.NewGetAction(elasticbeanstalkapplicationsResource, c.ns, name), &v1alpha1.ElasticBeanstalkApplication{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeElasticBeanstalkApplications) Get(name string, options v1.GetOption
 // List takes label and field selectors, and returns the list of ElasticBeanstalkApplications that match those selectors.
 func (c *FakeElasticBeanstalkApplications) List(opts v1.ListOptions) (result *v1alpha1.ElasticBeanstalkApplicationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(elasticbeanstalkapplicationsResource, elasticbeanstalkapplicationsKind, opts), &v1alpha1.ElasticBeanstalkApplicationList{})
+		Invokes(testing.NewListAction(elasticbeanstalkapplicationsResource, elasticbeanstalkapplicationsKind, c.ns, opts), &v1alpha1.ElasticBeanstalkApplicationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeElasticBeanstalkApplications) List(opts v1.ListOptions) (result *v1
 // Watch returns a watch.Interface that watches the requested elasticBeanstalkApplications.
 func (c *FakeElasticBeanstalkApplications) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(elasticbeanstalkapplicationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(elasticbeanstalkapplicationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a elasticBeanstalkApplication and creates it.  Returns the server's representation of the elasticBeanstalkApplication, and an error, if there is any.
 func (c *FakeElasticBeanstalkApplications) Create(elasticBeanstalkApplication *v1alpha1.ElasticBeanstalkApplication) (result *v1alpha1.ElasticBeanstalkApplication, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(elasticbeanstalkapplicationsResource, elasticBeanstalkApplication), &v1alpha1.ElasticBeanstalkApplication{})
+		Invokes(testing.NewCreateAction(elasticbeanstalkapplicationsResource, c.ns, elasticBeanstalkApplication), &v1alpha1.ElasticBeanstalkApplication{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeElasticBeanstalkApplications) Create(elasticBeanstalkApplication *v
 // Update takes the representation of a elasticBeanstalkApplication and updates it. Returns the server's representation of the elasticBeanstalkApplication, and an error, if there is any.
 func (c *FakeElasticBeanstalkApplications) Update(elasticBeanstalkApplication *v1alpha1.ElasticBeanstalkApplication) (result *v1alpha1.ElasticBeanstalkApplication, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(elasticbeanstalkapplicationsResource, elasticBeanstalkApplication), &v1alpha1.ElasticBeanstalkApplication{})
+		Invokes(testing.NewUpdateAction(elasticbeanstalkapplicationsResource, c.ns, elasticBeanstalkApplication), &v1alpha1.ElasticBeanstalkApplication{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeElasticBeanstalkApplications) Update(elasticBeanstalkApplication *v
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeElasticBeanstalkApplications) UpdateStatus(elasticBeanstalkApplication *v1alpha1.ElasticBeanstalkApplication) (*v1alpha1.ElasticBeanstalkApplication, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(elasticbeanstalkapplicationsResource, "status", elasticBeanstalkApplication), &v1alpha1.ElasticBeanstalkApplication{})
+		Invokes(testing.NewUpdateSubresourceAction(elasticbeanstalkapplicationsResource, "status", c.ns, elasticBeanstalkApplication), &v1alpha1.ElasticBeanstalkApplication{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeElasticBeanstalkApplications) UpdateStatus(elasticBeanstalkApplicat
 // Delete takes name of the elasticBeanstalkApplication and deletes it. Returns an error if one occurs.
 func (c *FakeElasticBeanstalkApplications) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(elasticbeanstalkapplicationsResource, name), &v1alpha1.ElasticBeanstalkApplication{})
+		Invokes(testing.NewDeleteAction(elasticbeanstalkapplicationsResource, c.ns, name), &v1alpha1.ElasticBeanstalkApplication{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeElasticBeanstalkApplications) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(elasticbeanstalkapplicationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(elasticbeanstalkapplicationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ElasticBeanstalkApplicationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeElasticBeanstalkApplications) DeleteCollection(options *v1.DeleteOp
 // Patch applies the patch and returns the patched elasticBeanstalkApplication.
 func (c *FakeElasticBeanstalkApplications) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ElasticBeanstalkApplication, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(elasticbeanstalkapplicationsResource, name, pt, data, subresources...), &v1alpha1.ElasticBeanstalkApplication{})
+		Invokes(testing.NewPatchSubresourceAction(elasticbeanstalkapplicationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ElasticBeanstalkApplication{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // XraySamplingRulesGetter has a method to return a XraySamplingRuleInterface.
 // A group's client should implement this interface.
 type XraySamplingRulesGetter interface {
-	XraySamplingRules() XraySamplingRuleInterface
+	XraySamplingRules(namespace string) XraySamplingRuleInterface
 }
 
 // XraySamplingRuleInterface has methods to work with XraySamplingRule resources.
@@ -52,12 +52,14 @@ type XraySamplingRuleInterface interface {
 // xraySamplingRules implements XraySamplingRuleInterface
 type xraySamplingRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newXraySamplingRules returns a XraySamplingRules
-func newXraySamplingRules(c *AwsV1alpha1Client) *xraySamplingRules {
+func newXraySamplingRules(c *AwsV1alpha1Client, namespace string) *xraySamplingRules {
 	return &xraySamplingRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newXraySamplingRules(c *AwsV1alpha1Client) *xraySamplingRules {
 func (c *xraySamplingRules) Get(name string, options v1.GetOptions) (result *v1alpha1.XraySamplingRule, err error) {
 	result = &v1alpha1.XraySamplingRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("xraysamplingrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *xraySamplingRules) List(opts v1.ListOptions) (result *v1alpha1.XraySamp
 	}
 	result = &v1alpha1.XraySamplingRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("xraysamplingrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *xraySamplingRules) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("xraysamplingrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *xraySamplingRules) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *xraySamplingRules) Create(xraySamplingRule *v1alpha1.XraySamplingRule) (result *v1alpha1.XraySamplingRule, err error) {
 	result = &v1alpha1.XraySamplingRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("xraysamplingrules").
 		Body(xraySamplingRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *xraySamplingRules) Create(xraySamplingRule *v1alpha1.XraySamplingRule) 
 func (c *xraySamplingRules) Update(xraySamplingRule *v1alpha1.XraySamplingRule) (result *v1alpha1.XraySamplingRule, err error) {
 	result = &v1alpha1.XraySamplingRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("xraysamplingrules").
 		Name(xraySamplingRule.Name).
 		Body(xraySamplingRule).
@@ -132,6 +139,7 @@ func (c *xraySamplingRules) Update(xraySamplingRule *v1alpha1.XraySamplingRule) 
 func (c *xraySamplingRules) UpdateStatus(xraySamplingRule *v1alpha1.XraySamplingRule) (result *v1alpha1.XraySamplingRule, err error) {
 	result = &v1alpha1.XraySamplingRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("xraysamplingrules").
 		Name(xraySamplingRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *xraySamplingRules) UpdateStatus(xraySamplingRule *v1alpha1.XraySampling
 // Delete takes name of the xraySamplingRule and deletes it. Returns an error if one occurs.
 func (c *xraySamplingRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("xraysamplingrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *xraySamplingRules) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("xraysamplingrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *xraySamplingRules) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *xraySamplingRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.XraySamplingRule, err error) {
 	result = &v1alpha1.XraySamplingRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("xraysamplingrules").
 		SubResource(subresources...).
 		Name(name).

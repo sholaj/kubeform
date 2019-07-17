@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,9 +19,10 @@ type NetworkInterfaceAttachment struct {
 }
 
 type NetworkInterfaceAttachmentSpec struct {
-	DeviceIndex        int    `json:"device_index"`
-	InstanceId         string `json:"instance_id"`
-	NetworkInterfaceId string `json:"network_interface_id"`
+	DeviceIndex        int                       `json:"deviceIndex" tf:"device_index"`
+	InstanceID         string                    `json:"instanceID" tf:"instance_id"`
+	NetworkInterfaceID string                    `json:"networkInterfaceID" tf:"network_interface_id"`
+	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type NetworkInterfaceAttachmentStatus struct {
@@ -29,7 +30,9 @@ type NetworkInterfaceAttachmentStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

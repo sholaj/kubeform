@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// DxBgpPeerLister helps list DxBgpPeers.
-type DxBgpPeerLister interface {
-	// List lists all DxBgpPeers in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.DxBgpPeer, err error)
-	// Get retrieves the DxBgpPeer from the index for a given name.
-	Get(name string) (*v1alpha1.DxBgpPeer, error)
-	DxBgpPeerListerExpansion
+// DxBGPPeerLister helps list DxBGPPeers.
+type DxBGPPeerLister interface {
+	// List lists all DxBGPPeers in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.DxBGPPeer, err error)
+	// DxBGPPeers returns an object that can list and get DxBGPPeers.
+	DxBGPPeers(namespace string) DxBGPPeerNamespaceLister
+	DxBGPPeerListerExpansion
 }
 
-// dxBgpPeerLister implements the DxBgpPeerLister interface.
-type dxBgpPeerLister struct {
+// dxBGPPeerLister implements the DxBGPPeerLister interface.
+type dxBGPPeerLister struct {
 	indexer cache.Indexer
 }
 
-// NewDxBgpPeerLister returns a new DxBgpPeerLister.
-func NewDxBgpPeerLister(indexer cache.Indexer) DxBgpPeerLister {
-	return &dxBgpPeerLister{indexer: indexer}
+// NewDxBGPPeerLister returns a new DxBGPPeerLister.
+func NewDxBGPPeerLister(indexer cache.Indexer) DxBGPPeerLister {
+	return &dxBGPPeerLister{indexer: indexer}
 }
 
-// List lists all DxBgpPeers in the indexer.
-func (s *dxBgpPeerLister) List(selector labels.Selector) (ret []*v1alpha1.DxBgpPeer, err error) {
+// List lists all DxBGPPeers in the indexer.
+func (s *dxBGPPeerLister) List(selector labels.Selector) (ret []*v1alpha1.DxBGPPeer, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.DxBgpPeer))
+		ret = append(ret, m.(*v1alpha1.DxBGPPeer))
 	})
 	return ret, err
 }
 
-// Get retrieves the DxBgpPeer from the index for a given name.
-func (s *dxBgpPeerLister) Get(name string) (*v1alpha1.DxBgpPeer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DxBGPPeers returns an object that can list and get DxBGPPeers.
+func (s *dxBGPPeerLister) DxBGPPeers(namespace string) DxBGPPeerNamespaceLister {
+	return dxBGPPeerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DxBGPPeerNamespaceLister helps list and get DxBGPPeers.
+type DxBGPPeerNamespaceLister interface {
+	// List lists all DxBGPPeers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DxBGPPeer, err error)
+	// Get retrieves the DxBGPPeer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DxBGPPeer, error)
+	DxBGPPeerNamespaceListerExpansion
+}
+
+// dxBGPPeerNamespaceLister implements the DxBGPPeerNamespaceLister
+// interface.
+type dxBGPPeerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DxBGPPeers in the indexer for a given namespace.
+func (s dxBGPPeerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DxBGPPeer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DxBGPPeer))
+	})
+	return ret, err
+}
+
+// Get retrieves the DxBGPPeer from the indexer for a given namespace and name.
+func (s dxBGPPeerNamespaceLister) Get(name string) (*v1alpha1.DxBGPPeer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("dxbgppeer"), name)
 	}
-	return obj.(*v1alpha1.DxBgpPeer), nil
+	return obj.(*v1alpha1.DxBGPPeer), nil
 }

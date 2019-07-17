@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// StorageBucketAclsGetter has a method to return a StorageBucketAclInterface.
+// StorageBucketACLsGetter has a method to return a StorageBucketACLInterface.
 // A group's client should implement this interface.
-type StorageBucketAclsGetter interface {
-	StorageBucketAcls() StorageBucketAclInterface
+type StorageBucketACLsGetter interface {
+	StorageBucketACLs(namespace string) StorageBucketACLInterface
 }
 
-// StorageBucketAclInterface has methods to work with StorageBucketAcl resources.
-type StorageBucketAclInterface interface {
-	Create(*v1alpha1.StorageBucketAcl) (*v1alpha1.StorageBucketAcl, error)
-	Update(*v1alpha1.StorageBucketAcl) (*v1alpha1.StorageBucketAcl, error)
-	UpdateStatus(*v1alpha1.StorageBucketAcl) (*v1alpha1.StorageBucketAcl, error)
+// StorageBucketACLInterface has methods to work with StorageBucketACL resources.
+type StorageBucketACLInterface interface {
+	Create(*v1alpha1.StorageBucketACL) (*v1alpha1.StorageBucketACL, error)
+	Update(*v1alpha1.StorageBucketACL) (*v1alpha1.StorageBucketACL, error)
+	UpdateStatus(*v1alpha1.StorageBucketACL) (*v1alpha1.StorageBucketACL, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.StorageBucketAcl, error)
-	List(opts v1.ListOptions) (*v1alpha1.StorageBucketAclList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.StorageBucketACL, error)
+	List(opts v1.ListOptions) (*v1alpha1.StorageBucketACLList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageBucketAcl, err error)
-	StorageBucketAclExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageBucketACL, err error)
+	StorageBucketACLExpansion
 }
 
-// storageBucketAcls implements StorageBucketAclInterface
-type storageBucketAcls struct {
+// storageBucketACLs implements StorageBucketACLInterface
+type storageBucketACLs struct {
 	client rest.Interface
+	ns     string
 }
 
-// newStorageBucketAcls returns a StorageBucketAcls
-func newStorageBucketAcls(c *GoogleV1alpha1Client) *storageBucketAcls {
-	return &storageBucketAcls{
+// newStorageBucketACLs returns a StorageBucketACLs
+func newStorageBucketACLs(c *GoogleV1alpha1Client, namespace string) *storageBucketACLs {
+	return &storageBucketACLs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the storageBucketAcl, and returns the corresponding storageBucketAcl object, and an error if there is any.
-func (c *storageBucketAcls) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageBucketAcl, err error) {
-	result = &v1alpha1.StorageBucketAcl{}
+// Get takes name of the storageBucketACL, and returns the corresponding storageBucketACL object, and an error if there is any.
+func (c *storageBucketACLs) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageBucketACL, err error) {
+	result = &v1alpha1.StorageBucketACL{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagebucketacls").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *storageBucketAcls) Get(name string, options v1.GetOptions) (result *v1a
 	return
 }
 
-// List takes label and field selectors, and returns the list of StorageBucketAcls that match those selectors.
-func (c *storageBucketAcls) List(opts v1.ListOptions) (result *v1alpha1.StorageBucketAclList, err error) {
+// List takes label and field selectors, and returns the list of StorageBucketACLs that match those selectors.
+func (c *storageBucketACLs) List(opts v1.ListOptions) (result *v1alpha1.StorageBucketACLList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.StorageBucketAclList{}
+	result = &v1alpha1.StorageBucketACLList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagebucketacls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *storageBucketAcls) List(opts v1.ListOptions) (result *v1alpha1.StorageB
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested storageBucketAcls.
-func (c *storageBucketAcls) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested storageBucketACLs.
+func (c *storageBucketACLs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storagebucketacls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a storageBucketAcl and creates it.  Returns the server's representation of the storageBucketAcl, and an error, if there is any.
-func (c *storageBucketAcls) Create(storageBucketAcl *v1alpha1.StorageBucketAcl) (result *v1alpha1.StorageBucketAcl, err error) {
-	result = &v1alpha1.StorageBucketAcl{}
+// Create takes the representation of a storageBucketACL and creates it.  Returns the server's representation of the storageBucketACL, and an error, if there is any.
+func (c *storageBucketACLs) Create(storageBucketACL *v1alpha1.StorageBucketACL) (result *v1alpha1.StorageBucketACL, err error) {
+	result = &v1alpha1.StorageBucketACL{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storagebucketacls").
-		Body(storageBucketAcl).
+		Body(storageBucketACL).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a storageBucketAcl and updates it. Returns the server's representation of the storageBucketAcl, and an error, if there is any.
-func (c *storageBucketAcls) Update(storageBucketAcl *v1alpha1.StorageBucketAcl) (result *v1alpha1.StorageBucketAcl, err error) {
-	result = &v1alpha1.StorageBucketAcl{}
+// Update takes the representation of a storageBucketACL and updates it. Returns the server's representation of the storageBucketACL, and an error, if there is any.
+func (c *storageBucketACLs) Update(storageBucketACL *v1alpha1.StorageBucketACL) (result *v1alpha1.StorageBucketACL, err error) {
+	result = &v1alpha1.StorageBucketACL{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagebucketacls").
-		Name(storageBucketAcl.Name).
-		Body(storageBucketAcl).
+		Name(storageBucketACL.Name).
+		Body(storageBucketACL).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *storageBucketAcls) Update(storageBucketAcl *v1alpha1.StorageBucketAcl) 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *storageBucketAcls) UpdateStatus(storageBucketAcl *v1alpha1.StorageBucketAcl) (result *v1alpha1.StorageBucketAcl, err error) {
-	result = &v1alpha1.StorageBucketAcl{}
+func (c *storageBucketACLs) UpdateStatus(storageBucketACL *v1alpha1.StorageBucketACL) (result *v1alpha1.StorageBucketACL, err error) {
+	result = &v1alpha1.StorageBucketACL{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagebucketacls").
-		Name(storageBucketAcl.Name).
+		Name(storageBucketACL.Name).
 		SubResource("status").
-		Body(storageBucketAcl).
+		Body(storageBucketACL).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the storageBucketAcl and deletes it. Returns an error if one occurs.
-func (c *storageBucketAcls) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the storageBucketACL and deletes it. Returns an error if one occurs.
+func (c *storageBucketACLs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagebucketacls").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *storageBucketAcls) Delete(name string, options *v1.DeleteOptions) error
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *storageBucketAcls) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *storageBucketACLs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagebucketacls").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *storageBucketAcls) DeleteCollection(options *v1.DeleteOptions, listOpti
 		Error()
 }
 
-// Patch applies the patch and returns the patched storageBucketAcl.
-func (c *storageBucketAcls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageBucketAcl, err error) {
-	result = &v1alpha1.StorageBucketAcl{}
+// Patch applies the patch and returns the patched storageBucketACL.
+func (c *storageBucketACLs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageBucketACL, err error) {
+	result = &v1alpha1.StorageBucketACL{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storagebucketacls").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // LogicAppTriggerCustomsGetter has a method to return a LogicAppTriggerCustomInterface.
 // A group's client should implement this interface.
 type LogicAppTriggerCustomsGetter interface {
-	LogicAppTriggerCustoms() LogicAppTriggerCustomInterface
+	LogicAppTriggerCustoms(namespace string) LogicAppTriggerCustomInterface
 }
 
 // LogicAppTriggerCustomInterface has methods to work with LogicAppTriggerCustom resources.
@@ -52,12 +52,14 @@ type LogicAppTriggerCustomInterface interface {
 // logicAppTriggerCustoms implements LogicAppTriggerCustomInterface
 type logicAppTriggerCustoms struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLogicAppTriggerCustoms returns a LogicAppTriggerCustoms
-func newLogicAppTriggerCustoms(c *AzurermV1alpha1Client) *logicAppTriggerCustoms {
+func newLogicAppTriggerCustoms(c *AzurermV1alpha1Client, namespace string) *logicAppTriggerCustoms {
 	return &logicAppTriggerCustoms{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLogicAppTriggerCustoms(c *AzurermV1alpha1Client) *logicAppTriggerCustoms
 func (c *logicAppTriggerCustoms) Get(name string, options v1.GetOptions) (result *v1alpha1.LogicAppTriggerCustom, err error) {
 	result = &v1alpha1.LogicAppTriggerCustom{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("logicapptriggercustoms").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *logicAppTriggerCustoms) List(opts v1.ListOptions) (result *v1alpha1.Log
 	}
 	result = &v1alpha1.LogicAppTriggerCustomList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("logicapptriggercustoms").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *logicAppTriggerCustoms) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("logicapptriggercustoms").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *logicAppTriggerCustoms) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *logicAppTriggerCustoms) Create(logicAppTriggerCustom *v1alpha1.LogicAppTriggerCustom) (result *v1alpha1.LogicAppTriggerCustom, err error) {
 	result = &v1alpha1.LogicAppTriggerCustom{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("logicapptriggercustoms").
 		Body(logicAppTriggerCustom).
 		Do().
@@ -118,6 +124,7 @@ func (c *logicAppTriggerCustoms) Create(logicAppTriggerCustom *v1alpha1.LogicApp
 func (c *logicAppTriggerCustoms) Update(logicAppTriggerCustom *v1alpha1.LogicAppTriggerCustom) (result *v1alpha1.LogicAppTriggerCustom, err error) {
 	result = &v1alpha1.LogicAppTriggerCustom{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("logicapptriggercustoms").
 		Name(logicAppTriggerCustom.Name).
 		Body(logicAppTriggerCustom).
@@ -132,6 +139,7 @@ func (c *logicAppTriggerCustoms) Update(logicAppTriggerCustom *v1alpha1.LogicApp
 func (c *logicAppTriggerCustoms) UpdateStatus(logicAppTriggerCustom *v1alpha1.LogicAppTriggerCustom) (result *v1alpha1.LogicAppTriggerCustom, err error) {
 	result = &v1alpha1.LogicAppTriggerCustom{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("logicapptriggercustoms").
 		Name(logicAppTriggerCustom.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *logicAppTriggerCustoms) UpdateStatus(logicAppTriggerCustom *v1alpha1.Lo
 // Delete takes name of the logicAppTriggerCustom and deletes it. Returns an error if one occurs.
 func (c *logicAppTriggerCustoms) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("logicapptriggercustoms").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *logicAppTriggerCustoms) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("logicapptriggercustoms").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *logicAppTriggerCustoms) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *logicAppTriggerCustoms) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogicAppTriggerCustom, err error) {
 	result = &v1alpha1.LogicAppTriggerCustom{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("logicapptriggercustoms").
 		SubResource(subresources...).
 		Name(name).

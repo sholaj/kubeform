@@ -32,7 +32,7 @@ import (
 // LambdaPermissionsGetter has a method to return a LambdaPermissionInterface.
 // A group's client should implement this interface.
 type LambdaPermissionsGetter interface {
-	LambdaPermissions() LambdaPermissionInterface
+	LambdaPermissions(namespace string) LambdaPermissionInterface
 }
 
 // LambdaPermissionInterface has methods to work with LambdaPermission resources.
@@ -52,12 +52,14 @@ type LambdaPermissionInterface interface {
 // lambdaPermissions implements LambdaPermissionInterface
 type lambdaPermissions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLambdaPermissions returns a LambdaPermissions
-func newLambdaPermissions(c *AwsV1alpha1Client) *lambdaPermissions {
+func newLambdaPermissions(c *AwsV1alpha1Client, namespace string) *lambdaPermissions {
 	return &lambdaPermissions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLambdaPermissions(c *AwsV1alpha1Client) *lambdaPermissions {
 func (c *lambdaPermissions) Get(name string, options v1.GetOptions) (result *v1alpha1.LambdaPermission, err error) {
 	result = &v1alpha1.LambdaPermission{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lambdapermissions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lambdaPermissions) List(opts v1.ListOptions) (result *v1alpha1.LambdaPe
 	}
 	result = &v1alpha1.LambdaPermissionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lambdapermissions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lambdaPermissions) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lambdapermissions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lambdaPermissions) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *lambdaPermissions) Create(lambdaPermission *v1alpha1.LambdaPermission) (result *v1alpha1.LambdaPermission, err error) {
 	result = &v1alpha1.LambdaPermission{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lambdapermissions").
 		Body(lambdaPermission).
 		Do().
@@ -118,6 +124,7 @@ func (c *lambdaPermissions) Create(lambdaPermission *v1alpha1.LambdaPermission) 
 func (c *lambdaPermissions) Update(lambdaPermission *v1alpha1.LambdaPermission) (result *v1alpha1.LambdaPermission, err error) {
 	result = &v1alpha1.LambdaPermission{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lambdapermissions").
 		Name(lambdaPermission.Name).
 		Body(lambdaPermission).
@@ -132,6 +139,7 @@ func (c *lambdaPermissions) Update(lambdaPermission *v1alpha1.LambdaPermission) 
 func (c *lambdaPermissions) UpdateStatus(lambdaPermission *v1alpha1.LambdaPermission) (result *v1alpha1.LambdaPermission, err error) {
 	result = &v1alpha1.LambdaPermission{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lambdapermissions").
 		Name(lambdaPermission.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lambdaPermissions) UpdateStatus(lambdaPermission *v1alpha1.LambdaPermis
 // Delete takes name of the lambdaPermission and deletes it. Returns an error if one occurs.
 func (c *lambdaPermissions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lambdapermissions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lambdaPermissions) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lambdapermissions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lambdaPermissions) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *lambdaPermissions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LambdaPermission, err error) {
 	result = &v1alpha1.LambdaPermission{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lambdapermissions").
 		SubResource(subresources...).
 		Name(name).

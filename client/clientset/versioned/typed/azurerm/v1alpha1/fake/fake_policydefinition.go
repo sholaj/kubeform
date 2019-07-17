@@ -31,6 +31,7 @@ import (
 // FakePolicyDefinitions implements PolicyDefinitionInterface
 type FakePolicyDefinitions struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var policydefinitionsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "policydefinitions"}
@@ -40,7 +41,8 @@ var policydefinitionsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com
 // Get takes name of the policyDefinition, and returns the corresponding policyDefinition object, and an error if there is any.
 func (c *FakePolicyDefinitions) Get(name string, options v1.GetOptions) (result *v1alpha1.PolicyDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(policydefinitionsResource, name), &v1alpha1.PolicyDefinition{})
+		Invokes(testing.NewGetAction(policydefinitionsResource, c.ns, name), &v1alpha1.PolicyDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakePolicyDefinitions) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of PolicyDefinitions that match those selectors.
 func (c *FakePolicyDefinitions) List(opts v1.ListOptions) (result *v1alpha1.PolicyDefinitionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(policydefinitionsResource, policydefinitionsKind, opts), &v1alpha1.PolicyDefinitionList{})
+		Invokes(testing.NewListAction(policydefinitionsResource, policydefinitionsKind, c.ns, opts), &v1alpha1.PolicyDefinitionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakePolicyDefinitions) List(opts v1.ListOptions) (result *v1alpha1.Poli
 // Watch returns a watch.Interface that watches the requested policyDefinitions.
 func (c *FakePolicyDefinitions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(policydefinitionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(policydefinitionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a policyDefinition and creates it.  Returns the server's representation of the policyDefinition, and an error, if there is any.
 func (c *FakePolicyDefinitions) Create(policyDefinition *v1alpha1.PolicyDefinition) (result *v1alpha1.PolicyDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(policydefinitionsResource, policyDefinition), &v1alpha1.PolicyDefinition{})
+		Invokes(testing.NewCreateAction(policydefinitionsResource, c.ns, policyDefinition), &v1alpha1.PolicyDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakePolicyDefinitions) Create(policyDefinition *v1alpha1.PolicyDefiniti
 // Update takes the representation of a policyDefinition and updates it. Returns the server's representation of the policyDefinition, and an error, if there is any.
 func (c *FakePolicyDefinitions) Update(policyDefinition *v1alpha1.PolicyDefinition) (result *v1alpha1.PolicyDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(policydefinitionsResource, policyDefinition), &v1alpha1.PolicyDefinition{})
+		Invokes(testing.NewUpdateAction(policydefinitionsResource, c.ns, policyDefinition), &v1alpha1.PolicyDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakePolicyDefinitions) Update(policyDefinition *v1alpha1.PolicyDefiniti
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakePolicyDefinitions) UpdateStatus(policyDefinition *v1alpha1.PolicyDefinition) (*v1alpha1.PolicyDefinition, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(policydefinitionsResource, "status", policyDefinition), &v1alpha1.PolicyDefinition{})
+		Invokes(testing.NewUpdateSubresourceAction(policydefinitionsResource, "status", c.ns, policyDefinition), &v1alpha1.PolicyDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakePolicyDefinitions) UpdateStatus(policyDefinition *v1alpha1.PolicyDe
 // Delete takes name of the policyDefinition and deletes it. Returns an error if one occurs.
 func (c *FakePolicyDefinitions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(policydefinitionsResource, name), &v1alpha1.PolicyDefinition{})
+		Invokes(testing.NewDeleteAction(policydefinitionsResource, c.ns, name), &v1alpha1.PolicyDefinition{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakePolicyDefinitions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(policydefinitionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(policydefinitionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PolicyDefinitionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakePolicyDefinitions) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched policyDefinition.
 func (c *FakePolicyDefinitions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PolicyDefinition, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(policydefinitionsResource, name, pt, data, subresources...), &v1alpha1.PolicyDefinition{})
+		Invokes(testing.NewPatchSubresourceAction(policydefinitionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.PolicyDefinition{})
+
 	if obj == nil {
 		return nil, err
 	}

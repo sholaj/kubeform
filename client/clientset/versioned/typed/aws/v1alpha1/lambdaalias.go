@@ -32,7 +32,7 @@ import (
 // LambdaAliasesGetter has a method to return a LambdaAliasInterface.
 // A group's client should implement this interface.
 type LambdaAliasesGetter interface {
-	LambdaAliases() LambdaAliasInterface
+	LambdaAliases(namespace string) LambdaAliasInterface
 }
 
 // LambdaAliasInterface has methods to work with LambdaAlias resources.
@@ -52,12 +52,14 @@ type LambdaAliasInterface interface {
 // lambdaAliases implements LambdaAliasInterface
 type lambdaAliases struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLambdaAliases returns a LambdaAliases
-func newLambdaAliases(c *AwsV1alpha1Client) *lambdaAliases {
+func newLambdaAliases(c *AwsV1alpha1Client, namespace string) *lambdaAliases {
 	return &lambdaAliases{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLambdaAliases(c *AwsV1alpha1Client) *lambdaAliases {
 func (c *lambdaAliases) Get(name string, options v1.GetOptions) (result *v1alpha1.LambdaAlias, err error) {
 	result = &v1alpha1.LambdaAlias{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lambdaaliases").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lambdaAliases) List(opts v1.ListOptions) (result *v1alpha1.LambdaAliasL
 	}
 	result = &v1alpha1.LambdaAliasList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lambdaaliases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lambdaAliases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lambdaaliases").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lambdaAliases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *lambdaAliases) Create(lambdaAlias *v1alpha1.LambdaAlias) (result *v1alpha1.LambdaAlias, err error) {
 	result = &v1alpha1.LambdaAlias{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lambdaaliases").
 		Body(lambdaAlias).
 		Do().
@@ -118,6 +124,7 @@ func (c *lambdaAliases) Create(lambdaAlias *v1alpha1.LambdaAlias) (result *v1alp
 func (c *lambdaAliases) Update(lambdaAlias *v1alpha1.LambdaAlias) (result *v1alpha1.LambdaAlias, err error) {
 	result = &v1alpha1.LambdaAlias{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lambdaaliases").
 		Name(lambdaAlias.Name).
 		Body(lambdaAlias).
@@ -132,6 +139,7 @@ func (c *lambdaAliases) Update(lambdaAlias *v1alpha1.LambdaAlias) (result *v1alp
 func (c *lambdaAliases) UpdateStatus(lambdaAlias *v1alpha1.LambdaAlias) (result *v1alpha1.LambdaAlias, err error) {
 	result = &v1alpha1.LambdaAlias{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lambdaaliases").
 		Name(lambdaAlias.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lambdaAliases) UpdateStatus(lambdaAlias *v1alpha1.LambdaAlias) (result 
 // Delete takes name of the lambdaAlias and deletes it. Returns an error if one occurs.
 func (c *lambdaAliases) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lambdaaliases").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lambdaAliases) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lambdaaliases").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lambdaAliases) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *lambdaAliases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LambdaAlias, err error) {
 	result = &v1alpha1.LambdaAlias{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lambdaaliases").
 		SubResource(subresources...).
 		Name(name).

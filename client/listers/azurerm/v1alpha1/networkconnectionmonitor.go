@@ -29,8 +29,8 @@ import (
 type NetworkConnectionMonitorLister interface {
 	// List lists all NetworkConnectionMonitors in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NetworkConnectionMonitor, err error)
-	// Get retrieves the NetworkConnectionMonitor from the index for a given name.
-	Get(name string) (*v1alpha1.NetworkConnectionMonitor, error)
+	// NetworkConnectionMonitors returns an object that can list and get NetworkConnectionMonitors.
+	NetworkConnectionMonitors(namespace string) NetworkConnectionMonitorNamespaceLister
 	NetworkConnectionMonitorListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *networkConnectionMonitorLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the NetworkConnectionMonitor from the index for a given name.
-func (s *networkConnectionMonitorLister) Get(name string) (*v1alpha1.NetworkConnectionMonitor, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NetworkConnectionMonitors returns an object that can list and get NetworkConnectionMonitors.
+func (s *networkConnectionMonitorLister) NetworkConnectionMonitors(namespace string) NetworkConnectionMonitorNamespaceLister {
+	return networkConnectionMonitorNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NetworkConnectionMonitorNamespaceLister helps list and get NetworkConnectionMonitors.
+type NetworkConnectionMonitorNamespaceLister interface {
+	// List lists all NetworkConnectionMonitors in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NetworkConnectionMonitor, err error)
+	// Get retrieves the NetworkConnectionMonitor from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NetworkConnectionMonitor, error)
+	NetworkConnectionMonitorNamespaceListerExpansion
+}
+
+// networkConnectionMonitorNamespaceLister implements the NetworkConnectionMonitorNamespaceLister
+// interface.
+type networkConnectionMonitorNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NetworkConnectionMonitors in the indexer for a given namespace.
+func (s networkConnectionMonitorNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NetworkConnectionMonitor, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NetworkConnectionMonitor))
+	})
+	return ret, err
+}
+
+// Get retrieves the NetworkConnectionMonitor from the indexer for a given namespace and name.
+func (s networkConnectionMonitorNamespaceLister) Get(name string) (*v1alpha1.NetworkConnectionMonitor, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

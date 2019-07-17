@@ -29,8 +29,8 @@ import (
 type CloudwatchLogSubscriptionFilterLister interface {
 	// List lists all CloudwatchLogSubscriptionFilters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CloudwatchLogSubscriptionFilter, err error)
-	// Get retrieves the CloudwatchLogSubscriptionFilter from the index for a given name.
-	Get(name string) (*v1alpha1.CloudwatchLogSubscriptionFilter, error)
+	// CloudwatchLogSubscriptionFilters returns an object that can list and get CloudwatchLogSubscriptionFilters.
+	CloudwatchLogSubscriptionFilters(namespace string) CloudwatchLogSubscriptionFilterNamespaceLister
 	CloudwatchLogSubscriptionFilterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cloudwatchLogSubscriptionFilterLister) List(selector labels.Selector) (
 	return ret, err
 }
 
-// Get retrieves the CloudwatchLogSubscriptionFilter from the index for a given name.
-func (s *cloudwatchLogSubscriptionFilterLister) Get(name string) (*v1alpha1.CloudwatchLogSubscriptionFilter, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CloudwatchLogSubscriptionFilters returns an object that can list and get CloudwatchLogSubscriptionFilters.
+func (s *cloudwatchLogSubscriptionFilterLister) CloudwatchLogSubscriptionFilters(namespace string) CloudwatchLogSubscriptionFilterNamespaceLister {
+	return cloudwatchLogSubscriptionFilterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CloudwatchLogSubscriptionFilterNamespaceLister helps list and get CloudwatchLogSubscriptionFilters.
+type CloudwatchLogSubscriptionFilterNamespaceLister interface {
+	// List lists all CloudwatchLogSubscriptionFilters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CloudwatchLogSubscriptionFilter, err error)
+	// Get retrieves the CloudwatchLogSubscriptionFilter from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CloudwatchLogSubscriptionFilter, error)
+	CloudwatchLogSubscriptionFilterNamespaceListerExpansion
+}
+
+// cloudwatchLogSubscriptionFilterNamespaceLister implements the CloudwatchLogSubscriptionFilterNamespaceLister
+// interface.
+type cloudwatchLogSubscriptionFilterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CloudwatchLogSubscriptionFilters in the indexer for a given namespace.
+func (s cloudwatchLogSubscriptionFilterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CloudwatchLogSubscriptionFilter, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CloudwatchLogSubscriptionFilter))
+	})
+	return ret, err
+}
+
+// Get retrieves the CloudwatchLogSubscriptionFilter from the indexer for a given namespace and name.
+func (s cloudwatchLogSubscriptionFilterNamespaceLister) Get(name string) (*v1alpha1.CloudwatchLogSubscriptionFilter, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

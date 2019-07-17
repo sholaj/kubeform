@@ -32,7 +32,7 @@ import (
 // Route53ResolverRuleAssociationsGetter has a method to return a Route53ResolverRuleAssociationInterface.
 // A group's client should implement this interface.
 type Route53ResolverRuleAssociationsGetter interface {
-	Route53ResolverRuleAssociations() Route53ResolverRuleAssociationInterface
+	Route53ResolverRuleAssociations(namespace string) Route53ResolverRuleAssociationInterface
 }
 
 // Route53ResolverRuleAssociationInterface has methods to work with Route53ResolverRuleAssociation resources.
@@ -52,12 +52,14 @@ type Route53ResolverRuleAssociationInterface interface {
 // route53ResolverRuleAssociations implements Route53ResolverRuleAssociationInterface
 type route53ResolverRuleAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRoute53ResolverRuleAssociations returns a Route53ResolverRuleAssociations
-func newRoute53ResolverRuleAssociations(c *AwsV1alpha1Client) *route53ResolverRuleAssociations {
+func newRoute53ResolverRuleAssociations(c *AwsV1alpha1Client, namespace string) *route53ResolverRuleAssociations {
 	return &route53ResolverRuleAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRoute53ResolverRuleAssociations(c *AwsV1alpha1Client) *route53ResolverRu
 func (c *route53ResolverRuleAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.Route53ResolverRuleAssociation, err error) {
 	result = &v1alpha1.Route53ResolverRuleAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("route53resolverruleassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *route53ResolverRuleAssociations) List(opts v1.ListOptions) (result *v1a
 	}
 	result = &v1alpha1.Route53ResolverRuleAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("route53resolverruleassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *route53ResolverRuleAssociations) Watch(opts v1.ListOptions) (watch.Inte
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("route53resolverruleassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *route53ResolverRuleAssociations) Watch(opts v1.ListOptions) (watch.Inte
 func (c *route53ResolverRuleAssociations) Create(route53ResolverRuleAssociation *v1alpha1.Route53ResolverRuleAssociation) (result *v1alpha1.Route53ResolverRuleAssociation, err error) {
 	result = &v1alpha1.Route53ResolverRuleAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("route53resolverruleassociations").
 		Body(route53ResolverRuleAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *route53ResolverRuleAssociations) Create(route53ResolverRuleAssociation 
 func (c *route53ResolverRuleAssociations) Update(route53ResolverRuleAssociation *v1alpha1.Route53ResolverRuleAssociation) (result *v1alpha1.Route53ResolverRuleAssociation, err error) {
 	result = &v1alpha1.Route53ResolverRuleAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("route53resolverruleassociations").
 		Name(route53ResolverRuleAssociation.Name).
 		Body(route53ResolverRuleAssociation).
@@ -132,6 +139,7 @@ func (c *route53ResolverRuleAssociations) Update(route53ResolverRuleAssociation 
 func (c *route53ResolverRuleAssociations) UpdateStatus(route53ResolverRuleAssociation *v1alpha1.Route53ResolverRuleAssociation) (result *v1alpha1.Route53ResolverRuleAssociation, err error) {
 	result = &v1alpha1.Route53ResolverRuleAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("route53resolverruleassociations").
 		Name(route53ResolverRuleAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *route53ResolverRuleAssociations) UpdateStatus(route53ResolverRuleAssoci
 // Delete takes name of the route53ResolverRuleAssociation and deletes it. Returns an error if one occurs.
 func (c *route53ResolverRuleAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("route53resolverruleassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *route53ResolverRuleAssociations) DeleteCollection(options *v1.DeleteOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("route53resolverruleassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *route53ResolverRuleAssociations) DeleteCollection(options *v1.DeleteOpt
 func (c *route53ResolverRuleAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Route53ResolverRuleAssociation, err error) {
 	result = &v1alpha1.Route53ResolverRuleAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("route53resolverruleassociations").
 		SubResource(subresources...).
 		Name(name).

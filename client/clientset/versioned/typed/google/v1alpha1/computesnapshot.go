@@ -32,7 +32,7 @@ import (
 // ComputeSnapshotsGetter has a method to return a ComputeSnapshotInterface.
 // A group's client should implement this interface.
 type ComputeSnapshotsGetter interface {
-	ComputeSnapshots() ComputeSnapshotInterface
+	ComputeSnapshots(namespace string) ComputeSnapshotInterface
 }
 
 // ComputeSnapshotInterface has methods to work with ComputeSnapshot resources.
@@ -52,12 +52,14 @@ type ComputeSnapshotInterface interface {
 // computeSnapshots implements ComputeSnapshotInterface
 type computeSnapshots struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeSnapshots returns a ComputeSnapshots
-func newComputeSnapshots(c *GoogleV1alpha1Client) *computeSnapshots {
+func newComputeSnapshots(c *GoogleV1alpha1Client, namespace string) *computeSnapshots {
 	return &computeSnapshots{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeSnapshots(c *GoogleV1alpha1Client) *computeSnapshots {
 func (c *computeSnapshots) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeSnapshot, err error) {
 	result = &v1alpha1.ComputeSnapshot{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computesnapshots").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeSnapshots) List(opts v1.ListOptions) (result *v1alpha1.ComputeSn
 	}
 	result = &v1alpha1.ComputeSnapshotList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computesnapshots").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computesnapshots").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *computeSnapshots) Create(computeSnapshot *v1alpha1.ComputeSnapshot) (result *v1alpha1.ComputeSnapshot, err error) {
 	result = &v1alpha1.ComputeSnapshot{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computesnapshots").
 		Body(computeSnapshot).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeSnapshots) Create(computeSnapshot *v1alpha1.ComputeSnapshot) (re
 func (c *computeSnapshots) Update(computeSnapshot *v1alpha1.ComputeSnapshot) (result *v1alpha1.ComputeSnapshot, err error) {
 	result = &v1alpha1.ComputeSnapshot{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computesnapshots").
 		Name(computeSnapshot.Name).
 		Body(computeSnapshot).
@@ -132,6 +139,7 @@ func (c *computeSnapshots) Update(computeSnapshot *v1alpha1.ComputeSnapshot) (re
 func (c *computeSnapshots) UpdateStatus(computeSnapshot *v1alpha1.ComputeSnapshot) (result *v1alpha1.ComputeSnapshot, err error) {
 	result = &v1alpha1.ComputeSnapshot{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computesnapshots").
 		Name(computeSnapshot.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeSnapshots) UpdateStatus(computeSnapshot *v1alpha1.ComputeSnapsho
 // Delete takes name of the computeSnapshot and deletes it. Returns an error if one occurs.
 func (c *computeSnapshots) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computesnapshots").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeSnapshots) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computesnapshots").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeSnapshots) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *computeSnapshots) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeSnapshot, err error) {
 	result = &v1alpha1.ComputeSnapshot{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computesnapshots").
 		SubResource(subresources...).
 		Name(name).

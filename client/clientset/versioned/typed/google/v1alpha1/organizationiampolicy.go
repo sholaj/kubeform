@@ -32,7 +32,7 @@ import (
 // OrganizationIamPoliciesGetter has a method to return a OrganizationIamPolicyInterface.
 // A group's client should implement this interface.
 type OrganizationIamPoliciesGetter interface {
-	OrganizationIamPolicies() OrganizationIamPolicyInterface
+	OrganizationIamPolicies(namespace string) OrganizationIamPolicyInterface
 }
 
 // OrganizationIamPolicyInterface has methods to work with OrganizationIamPolicy resources.
@@ -52,12 +52,14 @@ type OrganizationIamPolicyInterface interface {
 // organizationIamPolicies implements OrganizationIamPolicyInterface
 type organizationIamPolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOrganizationIamPolicies returns a OrganizationIamPolicies
-func newOrganizationIamPolicies(c *GoogleV1alpha1Client) *organizationIamPolicies {
+func newOrganizationIamPolicies(c *GoogleV1alpha1Client, namespace string) *organizationIamPolicies {
 	return &organizationIamPolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOrganizationIamPolicies(c *GoogleV1alpha1Client) *organizationIamPolicie
 func (c *organizationIamPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.OrganizationIamPolicy, err error) {
 	result = &v1alpha1.OrganizationIamPolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationiampolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *organizationIamPolicies) List(opts v1.ListOptions) (result *v1alpha1.Or
 	}
 	result = &v1alpha1.OrganizationIamPolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationiampolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *organizationIamPolicies) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationiampolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *organizationIamPolicies) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *organizationIamPolicies) Create(organizationIamPolicy *v1alpha1.OrganizationIamPolicy) (result *v1alpha1.OrganizationIamPolicy, err error) {
 	result = &v1alpha1.OrganizationIamPolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("organizationiampolicies").
 		Body(organizationIamPolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *organizationIamPolicies) Create(organizationIamPolicy *v1alpha1.Organiz
 func (c *organizationIamPolicies) Update(organizationIamPolicy *v1alpha1.OrganizationIamPolicy) (result *v1alpha1.OrganizationIamPolicy, err error) {
 	result = &v1alpha1.OrganizationIamPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("organizationiampolicies").
 		Name(organizationIamPolicy.Name).
 		Body(organizationIamPolicy).
@@ -132,6 +139,7 @@ func (c *organizationIamPolicies) Update(organizationIamPolicy *v1alpha1.Organiz
 func (c *organizationIamPolicies) UpdateStatus(organizationIamPolicy *v1alpha1.OrganizationIamPolicy) (result *v1alpha1.OrganizationIamPolicy, err error) {
 	result = &v1alpha1.OrganizationIamPolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("organizationiampolicies").
 		Name(organizationIamPolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *organizationIamPolicies) UpdateStatus(organizationIamPolicy *v1alpha1.O
 // Delete takes name of the organizationIamPolicy and deletes it. Returns an error if one occurs.
 func (c *organizationIamPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("organizationiampolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *organizationIamPolicies) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("organizationiampolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *organizationIamPolicies) DeleteCollection(options *v1.DeleteOptions, li
 func (c *organizationIamPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OrganizationIamPolicy, err error) {
 	result = &v1alpha1.OrganizationIamPolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("organizationiampolicies").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type VirtualNetworkLister interface {
 	// List lists all VirtualNetworks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.VirtualNetwork, err error)
-	// Get retrieves the VirtualNetwork from the index for a given name.
-	Get(name string) (*v1alpha1.VirtualNetwork, error)
+	// VirtualNetworks returns an object that can list and get VirtualNetworks.
+	VirtualNetworks(namespace string) VirtualNetworkNamespaceLister
 	VirtualNetworkListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *virtualNetworkLister) List(selector labels.Selector) (ret []*v1alpha1.V
 	return ret, err
 }
 
-// Get retrieves the VirtualNetwork from the index for a given name.
-func (s *virtualNetworkLister) Get(name string) (*v1alpha1.VirtualNetwork, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VirtualNetworks returns an object that can list and get VirtualNetworks.
+func (s *virtualNetworkLister) VirtualNetworks(namespace string) VirtualNetworkNamespaceLister {
+	return virtualNetworkNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VirtualNetworkNamespaceLister helps list and get VirtualNetworks.
+type VirtualNetworkNamespaceLister interface {
+	// List lists all VirtualNetworks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VirtualNetwork, err error)
+	// Get retrieves the VirtualNetwork from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VirtualNetwork, error)
+	VirtualNetworkNamespaceListerExpansion
+}
+
+// virtualNetworkNamespaceLister implements the VirtualNetworkNamespaceLister
+// interface.
+type virtualNetworkNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VirtualNetworks in the indexer for a given namespace.
+func (s virtualNetworkNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VirtualNetwork, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VirtualNetwork))
+	})
+	return ret, err
+}
+
+// Get retrieves the VirtualNetwork from the indexer for a given namespace and name.
+func (s virtualNetworkNamespaceLister) Get(name string) (*v1alpha1.VirtualNetwork, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

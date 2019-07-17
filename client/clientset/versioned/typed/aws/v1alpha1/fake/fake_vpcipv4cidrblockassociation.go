@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// FakeVpcIpv4CidrBlockAssociations implements VpcIpv4CidrBlockAssociationInterface
-type FakeVpcIpv4CidrBlockAssociations struct {
+// FakeVpcIpv4CIDRBlockAssociations implements VpcIpv4CIDRBlockAssociationInterface
+type FakeVpcIpv4CIDRBlockAssociations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var vpcipv4cidrblockassociationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "vpcipv4cidrblockassociations"}
 
-var vpcipv4cidrblockassociationsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "VpcIpv4CidrBlockAssociation"}
+var vpcipv4cidrblockassociationsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "VpcIpv4CIDRBlockAssociation"}
 
-// Get takes name of the vpcIpv4CidrBlockAssociation, and returns the corresponding vpcIpv4CidrBlockAssociation object, and an error if there is any.
-func (c *FakeVpcIpv4CidrBlockAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcIpv4CidrBlockAssociation, err error) {
+// Get takes name of the vpcIpv4CIDRBlockAssociation, and returns the corresponding vpcIpv4CIDRBlockAssociation object, and an error if there is any.
+func (c *FakeVpcIpv4CIDRBlockAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcIpv4CIDRBlockAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(vpcipv4cidrblockassociationsResource, name), &v1alpha1.VpcIpv4CidrBlockAssociation{})
+		Invokes(testing.NewGetAction(vpcipv4cidrblockassociationsResource, c.ns, name), &v1alpha1.VpcIpv4CIDRBlockAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.VpcIpv4CidrBlockAssociation), err
+	return obj.(*v1alpha1.VpcIpv4CIDRBlockAssociation), err
 }
 
-// List takes label and field selectors, and returns the list of VpcIpv4CidrBlockAssociations that match those selectors.
-func (c *FakeVpcIpv4CidrBlockAssociations) List(opts v1.ListOptions) (result *v1alpha1.VpcIpv4CidrBlockAssociationList, err error) {
+// List takes label and field selectors, and returns the list of VpcIpv4CIDRBlockAssociations that match those selectors.
+func (c *FakeVpcIpv4CIDRBlockAssociations) List(opts v1.ListOptions) (result *v1alpha1.VpcIpv4CIDRBlockAssociationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(vpcipv4cidrblockassociationsResource, vpcipv4cidrblockassociationsKind, opts), &v1alpha1.VpcIpv4CidrBlockAssociationList{})
+		Invokes(testing.NewListAction(vpcipv4cidrblockassociationsResource, vpcipv4cidrblockassociationsKind, c.ns, opts), &v1alpha1.VpcIpv4CIDRBlockAssociationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeVpcIpv4CidrBlockAssociations) List(opts v1.ListOptions) (result *v1
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.VpcIpv4CidrBlockAssociationList{ListMeta: obj.(*v1alpha1.VpcIpv4CidrBlockAssociationList).ListMeta}
-	for _, item := range obj.(*v1alpha1.VpcIpv4CidrBlockAssociationList).Items {
+	list := &v1alpha1.VpcIpv4CIDRBlockAssociationList{ListMeta: obj.(*v1alpha1.VpcIpv4CIDRBlockAssociationList).ListMeta}
+	for _, item := range obj.(*v1alpha1.VpcIpv4CIDRBlockAssociationList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeVpcIpv4CidrBlockAssociations) List(opts v1.ListOptions) (result *v1
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested vpcIpv4CidrBlockAssociations.
-func (c *FakeVpcIpv4CidrBlockAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested vpcIpv4CIDRBlockAssociations.
+func (c *FakeVpcIpv4CIDRBlockAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(vpcipv4cidrblockassociationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(vpcipv4cidrblockassociationsResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a vpcIpv4CidrBlockAssociation and creates it.  Returns the server's representation of the vpcIpv4CidrBlockAssociation, and an error, if there is any.
-func (c *FakeVpcIpv4CidrBlockAssociations) Create(vpcIpv4CidrBlockAssociation *v1alpha1.VpcIpv4CidrBlockAssociation) (result *v1alpha1.VpcIpv4CidrBlockAssociation, err error) {
+// Create takes the representation of a vpcIpv4CIDRBlockAssociation and creates it.  Returns the server's representation of the vpcIpv4CIDRBlockAssociation, and an error, if there is any.
+func (c *FakeVpcIpv4CIDRBlockAssociations) Create(vpcIpv4CIDRBlockAssociation *v1alpha1.VpcIpv4CIDRBlockAssociation) (result *v1alpha1.VpcIpv4CIDRBlockAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(vpcipv4cidrblockassociationsResource, vpcIpv4CidrBlockAssociation), &v1alpha1.VpcIpv4CidrBlockAssociation{})
+		Invokes(testing.NewCreateAction(vpcipv4cidrblockassociationsResource, c.ns, vpcIpv4CIDRBlockAssociation), &v1alpha1.VpcIpv4CIDRBlockAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.VpcIpv4CidrBlockAssociation), err
+	return obj.(*v1alpha1.VpcIpv4CIDRBlockAssociation), err
 }
 
-// Update takes the representation of a vpcIpv4CidrBlockAssociation and updates it. Returns the server's representation of the vpcIpv4CidrBlockAssociation, and an error, if there is any.
-func (c *FakeVpcIpv4CidrBlockAssociations) Update(vpcIpv4CidrBlockAssociation *v1alpha1.VpcIpv4CidrBlockAssociation) (result *v1alpha1.VpcIpv4CidrBlockAssociation, err error) {
+// Update takes the representation of a vpcIpv4CIDRBlockAssociation and updates it. Returns the server's representation of the vpcIpv4CIDRBlockAssociation, and an error, if there is any.
+func (c *FakeVpcIpv4CIDRBlockAssociations) Update(vpcIpv4CIDRBlockAssociation *v1alpha1.VpcIpv4CIDRBlockAssociation) (result *v1alpha1.VpcIpv4CIDRBlockAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(vpcipv4cidrblockassociationsResource, vpcIpv4CidrBlockAssociation), &v1alpha1.VpcIpv4CidrBlockAssociation{})
+		Invokes(testing.NewUpdateAction(vpcipv4cidrblockassociationsResource, c.ns, vpcIpv4CIDRBlockAssociation), &v1alpha1.VpcIpv4CIDRBlockAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.VpcIpv4CidrBlockAssociation), err
+	return obj.(*v1alpha1.VpcIpv4CIDRBlockAssociation), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeVpcIpv4CidrBlockAssociations) UpdateStatus(vpcIpv4CidrBlockAssociation *v1alpha1.VpcIpv4CidrBlockAssociation) (*v1alpha1.VpcIpv4CidrBlockAssociation, error) {
+func (c *FakeVpcIpv4CIDRBlockAssociations) UpdateStatus(vpcIpv4CIDRBlockAssociation *v1alpha1.VpcIpv4CIDRBlockAssociation) (*v1alpha1.VpcIpv4CIDRBlockAssociation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(vpcipv4cidrblockassociationsResource, "status", vpcIpv4CidrBlockAssociation), &v1alpha1.VpcIpv4CidrBlockAssociation{})
+		Invokes(testing.NewUpdateSubresourceAction(vpcipv4cidrblockassociationsResource, "status", c.ns, vpcIpv4CIDRBlockAssociation), &v1alpha1.VpcIpv4CIDRBlockAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.VpcIpv4CidrBlockAssociation), err
+	return obj.(*v1alpha1.VpcIpv4CIDRBlockAssociation), err
 }
 
-// Delete takes name of the vpcIpv4CidrBlockAssociation and deletes it. Returns an error if one occurs.
-func (c *FakeVpcIpv4CidrBlockAssociations) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the vpcIpv4CIDRBlockAssociation and deletes it. Returns an error if one occurs.
+func (c *FakeVpcIpv4CIDRBlockAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(vpcipv4cidrblockassociationsResource, name), &v1alpha1.VpcIpv4CidrBlockAssociation{})
+		Invokes(testing.NewDeleteAction(vpcipv4cidrblockassociationsResource, c.ns, name), &v1alpha1.VpcIpv4CIDRBlockAssociation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeVpcIpv4CidrBlockAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(vpcipv4cidrblockassociationsResource, listOptions)
+func (c *FakeVpcIpv4CIDRBlockAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(vpcipv4cidrblockassociationsResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.VpcIpv4CidrBlockAssociationList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.VpcIpv4CIDRBlockAssociationList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched vpcIpv4CidrBlockAssociation.
-func (c *FakeVpcIpv4CidrBlockAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcIpv4CidrBlockAssociation, err error) {
+// Patch applies the patch and returns the patched vpcIpv4CIDRBlockAssociation.
+func (c *FakeVpcIpv4CIDRBlockAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcIpv4CIDRBlockAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(vpcipv4cidrblockassociationsResource, name, pt, data, subresources...), &v1alpha1.VpcIpv4CidrBlockAssociation{})
+		Invokes(testing.NewPatchSubresourceAction(vpcipv4cidrblockassociationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.VpcIpv4CIDRBlockAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.VpcIpv4CidrBlockAssociation), err
+	return obj.(*v1alpha1.VpcIpv4CIDRBlockAssociation), err
 }

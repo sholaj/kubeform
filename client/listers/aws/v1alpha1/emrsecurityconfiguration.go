@@ -29,8 +29,8 @@ import (
 type EmrSecurityConfigurationLister interface {
 	// List lists all EmrSecurityConfigurations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EmrSecurityConfiguration, err error)
-	// Get retrieves the EmrSecurityConfiguration from the index for a given name.
-	Get(name string) (*v1alpha1.EmrSecurityConfiguration, error)
+	// EmrSecurityConfigurations returns an object that can list and get EmrSecurityConfigurations.
+	EmrSecurityConfigurations(namespace string) EmrSecurityConfigurationNamespaceLister
 	EmrSecurityConfigurationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *emrSecurityConfigurationLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the EmrSecurityConfiguration from the index for a given name.
-func (s *emrSecurityConfigurationLister) Get(name string) (*v1alpha1.EmrSecurityConfiguration, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EmrSecurityConfigurations returns an object that can list and get EmrSecurityConfigurations.
+func (s *emrSecurityConfigurationLister) EmrSecurityConfigurations(namespace string) EmrSecurityConfigurationNamespaceLister {
+	return emrSecurityConfigurationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EmrSecurityConfigurationNamespaceLister helps list and get EmrSecurityConfigurations.
+type EmrSecurityConfigurationNamespaceLister interface {
+	// List lists all EmrSecurityConfigurations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EmrSecurityConfiguration, err error)
+	// Get retrieves the EmrSecurityConfiguration from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EmrSecurityConfiguration, error)
+	EmrSecurityConfigurationNamespaceListerExpansion
+}
+
+// emrSecurityConfigurationNamespaceLister implements the EmrSecurityConfigurationNamespaceLister
+// interface.
+type emrSecurityConfigurationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EmrSecurityConfigurations in the indexer for a given namespace.
+func (s emrSecurityConfigurationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EmrSecurityConfiguration, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EmrSecurityConfiguration))
+	})
+	return ret, err
+}
+
+// Get retrieves the EmrSecurityConfiguration from the indexer for a given namespace and name.
+func (s emrSecurityConfigurationNamespaceLister) Get(name string) (*v1alpha1.EmrSecurityConfiguration, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

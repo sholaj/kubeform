@@ -403,11 +403,20 @@ spec:
               items:
                 type: string
               type: array
-            is_public:
+            isPublic:
               type: boolean
             label:
               type: string
-            rev_note:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            revNote:
               type: string
             script:
               type: string
@@ -415,6 +424,7 @@ spec:
           - description
           - images
           - label
+          - providerRef
           - script
           type: object
         status:
@@ -426,6 +436,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

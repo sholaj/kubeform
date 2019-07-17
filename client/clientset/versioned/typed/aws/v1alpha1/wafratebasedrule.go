@@ -32,7 +32,7 @@ import (
 // WafRateBasedRulesGetter has a method to return a WafRateBasedRuleInterface.
 // A group's client should implement this interface.
 type WafRateBasedRulesGetter interface {
-	WafRateBasedRules() WafRateBasedRuleInterface
+	WafRateBasedRules(namespace string) WafRateBasedRuleInterface
 }
 
 // WafRateBasedRuleInterface has methods to work with WafRateBasedRule resources.
@@ -52,12 +52,14 @@ type WafRateBasedRuleInterface interface {
 // wafRateBasedRules implements WafRateBasedRuleInterface
 type wafRateBasedRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWafRateBasedRules returns a WafRateBasedRules
-func newWafRateBasedRules(c *AwsV1alpha1Client) *wafRateBasedRules {
+func newWafRateBasedRules(c *AwsV1alpha1Client, namespace string) *wafRateBasedRules {
 	return &wafRateBasedRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWafRateBasedRules(c *AwsV1alpha1Client) *wafRateBasedRules {
 func (c *wafRateBasedRules) Get(name string, options v1.GetOptions) (result *v1alpha1.WafRateBasedRule, err error) {
 	result = &v1alpha1.WafRateBasedRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafratebasedrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *wafRateBasedRules) List(opts v1.ListOptions) (result *v1alpha1.WafRateB
 	}
 	result = &v1alpha1.WafRateBasedRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafratebasedrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *wafRateBasedRules) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafratebasedrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *wafRateBasedRules) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *wafRateBasedRules) Create(wafRateBasedRule *v1alpha1.WafRateBasedRule) (result *v1alpha1.WafRateBasedRule, err error) {
 	result = &v1alpha1.WafRateBasedRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafratebasedrules").
 		Body(wafRateBasedRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *wafRateBasedRules) Create(wafRateBasedRule *v1alpha1.WafRateBasedRule) 
 func (c *wafRateBasedRules) Update(wafRateBasedRule *v1alpha1.WafRateBasedRule) (result *v1alpha1.WafRateBasedRule, err error) {
 	result = &v1alpha1.WafRateBasedRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafratebasedrules").
 		Name(wafRateBasedRule.Name).
 		Body(wafRateBasedRule).
@@ -132,6 +139,7 @@ func (c *wafRateBasedRules) Update(wafRateBasedRule *v1alpha1.WafRateBasedRule) 
 func (c *wafRateBasedRules) UpdateStatus(wafRateBasedRule *v1alpha1.WafRateBasedRule) (result *v1alpha1.WafRateBasedRule, err error) {
 	result = &v1alpha1.WafRateBasedRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafratebasedrules").
 		Name(wafRateBasedRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *wafRateBasedRules) UpdateStatus(wafRateBasedRule *v1alpha1.WafRateBased
 // Delete takes name of the wafRateBasedRule and deletes it. Returns an error if one occurs.
 func (c *wafRateBasedRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafratebasedrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *wafRateBasedRules) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafratebasedrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *wafRateBasedRules) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *wafRateBasedRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafRateBasedRule, err error) {
 	result = &v1alpha1.WafRateBasedRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafratebasedrules").
 		SubResource(subresources...).
 		Name(name).

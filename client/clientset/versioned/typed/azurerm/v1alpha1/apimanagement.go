@@ -32,7 +32,7 @@ import (
 // ApiManagementsGetter has a method to return a ApiManagementInterface.
 // A group's client should implement this interface.
 type ApiManagementsGetter interface {
-	ApiManagements() ApiManagementInterface
+	ApiManagements(namespace string) ApiManagementInterface
 }
 
 // ApiManagementInterface has methods to work with ApiManagement resources.
@@ -52,12 +52,14 @@ type ApiManagementInterface interface {
 // apiManagements implements ApiManagementInterface
 type apiManagements struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiManagements returns a ApiManagements
-func newApiManagements(c *AzurermV1alpha1Client) *apiManagements {
+func newApiManagements(c *AzurermV1alpha1Client, namespace string) *apiManagements {
 	return &apiManagements{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiManagements(c *AzurermV1alpha1Client) *apiManagements {
 func (c *apiManagements) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagement, err error) {
 	result = &v1alpha1.ApiManagement{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagements").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiManagements) List(opts v1.ListOptions) (result *v1alpha1.ApiManageme
 	}
 	result = &v1alpha1.ApiManagementList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagements").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiManagements) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagements").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiManagements) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *apiManagements) Create(apiManagement *v1alpha1.ApiManagement) (result *v1alpha1.ApiManagement, err error) {
 	result = &v1alpha1.ApiManagement{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apimanagements").
 		Body(apiManagement).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiManagements) Create(apiManagement *v1alpha1.ApiManagement) (result *
 func (c *apiManagements) Update(apiManagement *v1alpha1.ApiManagement) (result *v1alpha1.ApiManagement, err error) {
 	result = &v1alpha1.ApiManagement{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagements").
 		Name(apiManagement.Name).
 		Body(apiManagement).
@@ -132,6 +139,7 @@ func (c *apiManagements) Update(apiManagement *v1alpha1.ApiManagement) (result *
 func (c *apiManagements) UpdateStatus(apiManagement *v1alpha1.ApiManagement) (result *v1alpha1.ApiManagement, err error) {
 	result = &v1alpha1.ApiManagement{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagements").
 		Name(apiManagement.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiManagements) UpdateStatus(apiManagement *v1alpha1.ApiManagement) (re
 // Delete takes name of the apiManagement and deletes it. Returns an error if one occurs.
 func (c *apiManagements) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagements").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiManagements) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagements").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiManagements) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *apiManagements) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagement, err error) {
 	result = &v1alpha1.ApiManagement{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apimanagements").
 		SubResource(subresources...).
 		Name(name).

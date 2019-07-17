@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,40 +20,41 @@ type EventgridDomain struct {
 
 type EventgridDomainSpecInputMappingDefaultValues struct {
 	// +optional
-	DataVersion string `json:"data_version,omitempty"`
+	DataVersion string `json:"dataVersion,omitempty" tf:"data_version,omitempty"`
 	// +optional
-	EventType string `json:"event_type,omitempty"`
+	EventType string `json:"eventType,omitempty" tf:"event_type,omitempty"`
 	// +optional
-	Subject string `json:"subject,omitempty"`
+	Subject string `json:"subject,omitempty" tf:"subject,omitempty"`
 }
 
 type EventgridDomainSpecInputMappingFields struct {
 	// +optional
-	DataVersion string `json:"data_version,omitempty"`
+	DataVersion string `json:"dataVersion,omitempty" tf:"data_version,omitempty"`
 	// +optional
-	EventTime string `json:"event_time,omitempty"`
+	EventTime string `json:"eventTime,omitempty" tf:"event_time,omitempty"`
 	// +optional
-	EventType string `json:"event_type,omitempty"`
+	EventType string `json:"eventType,omitempty" tf:"event_type,omitempty"`
 	// +optional
-	Id string `json:"id,omitempty"`
+	ID string `json:"ID,omitempty" tf:"id,omitempty"`
 	// +optional
-	Subject string `json:"subject,omitempty"`
+	Subject string `json:"subject,omitempty" tf:"subject,omitempty"`
 	// +optional
-	Topic string `json:"topic,omitempty"`
+	Topic string `json:"topic,omitempty" tf:"topic,omitempty"`
 }
 
 type EventgridDomainSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	InputMappingDefaultValues *[]EventgridDomainSpec `json:"input_mapping_default_values,omitempty"`
+	InputMappingDefaultValues []EventgridDomainSpecInputMappingDefaultValues `json:"inputMappingDefaultValues,omitempty" tf:"input_mapping_default_values,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	InputMappingFields *[]EventgridDomainSpec `json:"input_mapping_fields,omitempty"`
+	InputMappingFields []EventgridDomainSpecInputMappingFields `json:"inputMappingFields,omitempty" tf:"input_mapping_fields,omitempty"`
 	// +optional
-	InputSchema       string `json:"input_schema,omitempty"`
-	Location          string `json:"location"`
-	Name              string `json:"name"`
-	ResourceGroupName string `json:"resource_group_name"`
+	InputSchema       string                    `json:"inputSchema,omitempty" tf:"input_schema,omitempty"`
+	Location          string                    `json:"location" tf:"location"`
+	Name              string                    `json:"name" tf:"name"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type EventgridDomainStatus struct {
@@ -61,7 +62,9 @@ type EventgridDomainStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -29,8 +29,8 @@ import (
 type DevTestWindowsVirtualMachineLister interface {
 	// List lists all DevTestWindowsVirtualMachines in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DevTestWindowsVirtualMachine, err error)
-	// Get retrieves the DevTestWindowsVirtualMachine from the index for a given name.
-	Get(name string) (*v1alpha1.DevTestWindowsVirtualMachine, error)
+	// DevTestWindowsVirtualMachines returns an object that can list and get DevTestWindowsVirtualMachines.
+	DevTestWindowsVirtualMachines(namespace string) DevTestWindowsVirtualMachineNamespaceLister
 	DevTestWindowsVirtualMachineListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *devTestWindowsVirtualMachineLister) List(selector labels.Selector) (ret
 	return ret, err
 }
 
-// Get retrieves the DevTestWindowsVirtualMachine from the index for a given name.
-func (s *devTestWindowsVirtualMachineLister) Get(name string) (*v1alpha1.DevTestWindowsVirtualMachine, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DevTestWindowsVirtualMachines returns an object that can list and get DevTestWindowsVirtualMachines.
+func (s *devTestWindowsVirtualMachineLister) DevTestWindowsVirtualMachines(namespace string) DevTestWindowsVirtualMachineNamespaceLister {
+	return devTestWindowsVirtualMachineNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DevTestWindowsVirtualMachineNamespaceLister helps list and get DevTestWindowsVirtualMachines.
+type DevTestWindowsVirtualMachineNamespaceLister interface {
+	// List lists all DevTestWindowsVirtualMachines in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DevTestWindowsVirtualMachine, err error)
+	// Get retrieves the DevTestWindowsVirtualMachine from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DevTestWindowsVirtualMachine, error)
+	DevTestWindowsVirtualMachineNamespaceListerExpansion
+}
+
+// devTestWindowsVirtualMachineNamespaceLister implements the DevTestWindowsVirtualMachineNamespaceLister
+// interface.
+type devTestWindowsVirtualMachineNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DevTestWindowsVirtualMachines in the indexer for a given namespace.
+func (s devTestWindowsVirtualMachineNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DevTestWindowsVirtualMachine, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DevTestWindowsVirtualMachine))
+	})
+	return ret, err
+}
+
+// Get retrieves the DevTestWindowsVirtualMachine from the indexer for a given namespace and name.
+func (s devTestWindowsVirtualMachineNamespaceLister) Get(name string) (*v1alpha1.DevTestWindowsVirtualMachine, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

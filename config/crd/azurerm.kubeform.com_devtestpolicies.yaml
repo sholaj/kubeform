@@ -399,26 +399,36 @@ spec:
           properties:
             description:
               type: string
-            evaluator_type:
+            evaluatorType:
               type: string
-            fact_data:
+            factData:
               type: string
-            lab_name:
+            labName:
               type: string
             name:
               type: string
-            policy_set_name:
+            policySetName:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
             threshold:
               type: string
           required:
-          - evaluator_type
-          - lab_name
+          - evaluatorType
+          - labName
           - name
-          - policy_set_name
-          - resource_group_name
+          - policySetName
+          - providerRef
+          - resourceGroupName
           - threshold
           type: object
         status:
@@ -430,6 +440,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

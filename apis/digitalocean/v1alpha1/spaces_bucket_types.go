@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,12 +20,13 @@ type SpacesBucket struct {
 
 type SpacesBucketSpec struct {
 	// +optional
-	Acl string `json:"acl,omitempty"`
+	Acl string `json:"acl,omitempty" tf:"acl,omitempty"`
 	// +optional
-	ForceDestroy bool   `json:"force_destroy,omitempty"`
-	Name         string `json:"name"`
+	ForceDestroy bool   `json:"forceDestroy,omitempty" tf:"force_destroy,omitempty"`
+	Name         string `json:"name" tf:"name"`
 	// +optional
-	Region string `json:"region,omitempty"`
+	Region      string                    `json:"region,omitempty" tf:"region,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SpacesBucketStatus struct {
@@ -33,7 +34,9 @@ type SpacesBucketStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -29,8 +29,8 @@ import (
 type Route53ZoneLister interface {
 	// List lists all Route53Zones in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Route53Zone, err error)
-	// Get retrieves the Route53Zone from the index for a given name.
-	Get(name string) (*v1alpha1.Route53Zone, error)
+	// Route53Zones returns an object that can list and get Route53Zones.
+	Route53Zones(namespace string) Route53ZoneNamespaceLister
 	Route53ZoneListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *route53ZoneLister) List(selector labels.Selector) (ret []*v1alpha1.Rout
 	return ret, err
 }
 
-// Get retrieves the Route53Zone from the index for a given name.
-func (s *route53ZoneLister) Get(name string) (*v1alpha1.Route53Zone, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Route53Zones returns an object that can list and get Route53Zones.
+func (s *route53ZoneLister) Route53Zones(namespace string) Route53ZoneNamespaceLister {
+	return route53ZoneNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// Route53ZoneNamespaceLister helps list and get Route53Zones.
+type Route53ZoneNamespaceLister interface {
+	// List lists all Route53Zones in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Route53Zone, err error)
+	// Get retrieves the Route53Zone from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Route53Zone, error)
+	Route53ZoneNamespaceListerExpansion
+}
+
+// route53ZoneNamespaceLister implements the Route53ZoneNamespaceLister
+// interface.
+type route53ZoneNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Route53Zones in the indexer for a given namespace.
+func (s route53ZoneNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Route53Zone, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Route53Zone))
+	})
+	return ret, err
+}
+
+// Get retrieves the Route53Zone from the indexer for a given namespace and name.
+func (s route53ZoneNamespaceLister) Get(name string) (*v1alpha1.Route53Zone, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

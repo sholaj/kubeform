@@ -32,7 +32,7 @@ import (
 // DbInstanceRoleAssociationsGetter has a method to return a DbInstanceRoleAssociationInterface.
 // A group's client should implement this interface.
 type DbInstanceRoleAssociationsGetter interface {
-	DbInstanceRoleAssociations() DbInstanceRoleAssociationInterface
+	DbInstanceRoleAssociations(namespace string) DbInstanceRoleAssociationInterface
 }
 
 // DbInstanceRoleAssociationInterface has methods to work with DbInstanceRoleAssociation resources.
@@ -52,12 +52,14 @@ type DbInstanceRoleAssociationInterface interface {
 // dbInstanceRoleAssociations implements DbInstanceRoleAssociationInterface
 type dbInstanceRoleAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDbInstanceRoleAssociations returns a DbInstanceRoleAssociations
-func newDbInstanceRoleAssociations(c *AwsV1alpha1Client) *dbInstanceRoleAssociations {
+func newDbInstanceRoleAssociations(c *AwsV1alpha1Client, namespace string) *dbInstanceRoleAssociations {
 	return &dbInstanceRoleAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDbInstanceRoleAssociations(c *AwsV1alpha1Client) *dbInstanceRoleAssociat
 func (c *dbInstanceRoleAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.DbInstanceRoleAssociation, err error) {
 	result = &v1alpha1.DbInstanceRoleAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dbinstanceroleassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dbInstanceRoleAssociations) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.DbInstanceRoleAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dbinstanceroleassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dbInstanceRoleAssociations) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dbinstanceroleassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dbInstanceRoleAssociations) Watch(opts v1.ListOptions) (watch.Interface
 func (c *dbInstanceRoleAssociations) Create(dbInstanceRoleAssociation *v1alpha1.DbInstanceRoleAssociation) (result *v1alpha1.DbInstanceRoleAssociation, err error) {
 	result = &v1alpha1.DbInstanceRoleAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dbinstanceroleassociations").
 		Body(dbInstanceRoleAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *dbInstanceRoleAssociations) Create(dbInstanceRoleAssociation *v1alpha1.
 func (c *dbInstanceRoleAssociations) Update(dbInstanceRoleAssociation *v1alpha1.DbInstanceRoleAssociation) (result *v1alpha1.DbInstanceRoleAssociation, err error) {
 	result = &v1alpha1.DbInstanceRoleAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dbinstanceroleassociations").
 		Name(dbInstanceRoleAssociation.Name).
 		Body(dbInstanceRoleAssociation).
@@ -132,6 +139,7 @@ func (c *dbInstanceRoleAssociations) Update(dbInstanceRoleAssociation *v1alpha1.
 func (c *dbInstanceRoleAssociations) UpdateStatus(dbInstanceRoleAssociation *v1alpha1.DbInstanceRoleAssociation) (result *v1alpha1.DbInstanceRoleAssociation, err error) {
 	result = &v1alpha1.DbInstanceRoleAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dbinstanceroleassociations").
 		Name(dbInstanceRoleAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dbInstanceRoleAssociations) UpdateStatus(dbInstanceRoleAssociation *v1a
 // Delete takes name of the dbInstanceRoleAssociation and deletes it. Returns an error if one occurs.
 func (c *dbInstanceRoleAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dbinstanceroleassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dbInstanceRoleAssociations) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dbinstanceroleassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dbInstanceRoleAssociations) DeleteCollection(options *v1.DeleteOptions,
 func (c *dbInstanceRoleAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DbInstanceRoleAssociation, err error) {
 	result = &v1alpha1.DbInstanceRoleAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dbinstanceroleassociations").
 		SubResource(subresources...).
 		Name(name).

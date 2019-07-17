@@ -29,8 +29,8 @@ import (
 type SecurityhubAccountLister interface {
 	// List lists all SecurityhubAccounts in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SecurityhubAccount, err error)
-	// Get retrieves the SecurityhubAccount from the index for a given name.
-	Get(name string) (*v1alpha1.SecurityhubAccount, error)
+	// SecurityhubAccounts returns an object that can list and get SecurityhubAccounts.
+	SecurityhubAccounts(namespace string) SecurityhubAccountNamespaceLister
 	SecurityhubAccountListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *securityhubAccountLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the SecurityhubAccount from the index for a given name.
-func (s *securityhubAccountLister) Get(name string) (*v1alpha1.SecurityhubAccount, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SecurityhubAccounts returns an object that can list and get SecurityhubAccounts.
+func (s *securityhubAccountLister) SecurityhubAccounts(namespace string) SecurityhubAccountNamespaceLister {
+	return securityhubAccountNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SecurityhubAccountNamespaceLister helps list and get SecurityhubAccounts.
+type SecurityhubAccountNamespaceLister interface {
+	// List lists all SecurityhubAccounts in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SecurityhubAccount, err error)
+	// Get retrieves the SecurityhubAccount from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SecurityhubAccount, error)
+	SecurityhubAccountNamespaceListerExpansion
+}
+
+// securityhubAccountNamespaceLister implements the SecurityhubAccountNamespaceLister
+// interface.
+type securityhubAccountNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SecurityhubAccounts in the indexer for a given namespace.
+func (s securityhubAccountNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SecurityhubAccount, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SecurityhubAccount))
+	})
+	return ret, err
+}
+
+// Get retrieves the SecurityhubAccount from the indexer for a given namespace and name.
+func (s securityhubAccountNamespaceLister) Get(name string) (*v1alpha1.SecurityhubAccount, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type DevspaceControllerLister interface {
 	// List lists all DevspaceControllers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DevspaceController, err error)
-	// Get retrieves the DevspaceController from the index for a given name.
-	Get(name string) (*v1alpha1.DevspaceController, error)
+	// DevspaceControllers returns an object that can list and get DevspaceControllers.
+	DevspaceControllers(namespace string) DevspaceControllerNamespaceLister
 	DevspaceControllerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *devspaceControllerLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the DevspaceController from the index for a given name.
-func (s *devspaceControllerLister) Get(name string) (*v1alpha1.DevspaceController, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DevspaceControllers returns an object that can list and get DevspaceControllers.
+func (s *devspaceControllerLister) DevspaceControllers(namespace string) DevspaceControllerNamespaceLister {
+	return devspaceControllerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DevspaceControllerNamespaceLister helps list and get DevspaceControllers.
+type DevspaceControllerNamespaceLister interface {
+	// List lists all DevspaceControllers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DevspaceController, err error)
+	// Get retrieves the DevspaceController from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DevspaceController, error)
+	DevspaceControllerNamespaceListerExpansion
+}
+
+// devspaceControllerNamespaceLister implements the DevspaceControllerNamespaceLister
+// interface.
+type devspaceControllerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DevspaceControllers in the indexer for a given namespace.
+func (s devspaceControllerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DevspaceController, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DevspaceController))
+	})
+	return ret, err
+}
+
+// Get retrieves the DevspaceController from the indexer for a given namespace and name.
+func (s devspaceControllerNamespaceLister) Get(name string) (*v1alpha1.DevspaceController, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

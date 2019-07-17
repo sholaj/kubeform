@@ -31,6 +31,7 @@ import (
 // FakeSnsSmsPreferenceses implements SnsSmsPreferencesInterface
 type FakeSnsSmsPreferenceses struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var snssmspreferencesesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "snssmspreferenceses"}
@@ -40,7 +41,8 @@ var snssmspreferencesesKind = schema.GroupVersionKind{Group: "aws.kubeform.com",
 // Get takes name of the snsSmsPreferences, and returns the corresponding snsSmsPreferences object, and an error if there is any.
 func (c *FakeSnsSmsPreferenceses) Get(name string, options v1.GetOptions) (result *v1alpha1.SnsSmsPreferences, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(snssmspreferencesesResource, name), &v1alpha1.SnsSmsPreferences{})
+		Invokes(testing.NewGetAction(snssmspreferencesesResource, c.ns, name), &v1alpha1.SnsSmsPreferences{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSnsSmsPreferenceses) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of SnsSmsPreferenceses that match those selectors.
 func (c *FakeSnsSmsPreferenceses) List(opts v1.ListOptions) (result *v1alpha1.SnsSmsPreferencesList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(snssmspreferencesesResource, snssmspreferencesesKind, opts), &v1alpha1.SnsSmsPreferencesList{})
+		Invokes(testing.NewListAction(snssmspreferencesesResource, snssmspreferencesesKind, c.ns, opts), &v1alpha1.SnsSmsPreferencesList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSnsSmsPreferenceses) List(opts v1.ListOptions) (result *v1alpha1.Sn
 // Watch returns a watch.Interface that watches the requested snsSmsPreferenceses.
 func (c *FakeSnsSmsPreferenceses) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(snssmspreferencesesResource, opts))
+		InvokesWatch(testing.NewWatchAction(snssmspreferencesesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a snsSmsPreferences and creates it.  Returns the server's representation of the snsSmsPreferences, and an error, if there is any.
 func (c *FakeSnsSmsPreferenceses) Create(snsSmsPreferences *v1alpha1.SnsSmsPreferences) (result *v1alpha1.SnsSmsPreferences, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(snssmspreferencesesResource, snsSmsPreferences), &v1alpha1.SnsSmsPreferences{})
+		Invokes(testing.NewCreateAction(snssmspreferencesesResource, c.ns, snsSmsPreferences), &v1alpha1.SnsSmsPreferences{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSnsSmsPreferenceses) Create(snsSmsPreferences *v1alpha1.SnsSmsPrefe
 // Update takes the representation of a snsSmsPreferences and updates it. Returns the server's representation of the snsSmsPreferences, and an error, if there is any.
 func (c *FakeSnsSmsPreferenceses) Update(snsSmsPreferences *v1alpha1.SnsSmsPreferences) (result *v1alpha1.SnsSmsPreferences, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(snssmspreferencesesResource, snsSmsPreferences), &v1alpha1.SnsSmsPreferences{})
+		Invokes(testing.NewUpdateAction(snssmspreferencesesResource, c.ns, snsSmsPreferences), &v1alpha1.SnsSmsPreferences{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSnsSmsPreferenceses) Update(snsSmsPreferences *v1alpha1.SnsSmsPrefe
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSnsSmsPreferenceses) UpdateStatus(snsSmsPreferences *v1alpha1.SnsSmsPreferences) (*v1alpha1.SnsSmsPreferences, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(snssmspreferencesesResource, "status", snsSmsPreferences), &v1alpha1.SnsSmsPreferences{})
+		Invokes(testing.NewUpdateSubresourceAction(snssmspreferencesesResource, "status", c.ns, snsSmsPreferences), &v1alpha1.SnsSmsPreferences{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSnsSmsPreferenceses) UpdateStatus(snsSmsPreferences *v1alpha1.SnsSm
 // Delete takes name of the snsSmsPreferences and deletes it. Returns an error if one occurs.
 func (c *FakeSnsSmsPreferenceses) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(snssmspreferencesesResource, name), &v1alpha1.SnsSmsPreferences{})
+		Invokes(testing.NewDeleteAction(snssmspreferencesesResource, c.ns, name), &v1alpha1.SnsSmsPreferences{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSnsSmsPreferenceses) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(snssmspreferencesesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(snssmspreferencesesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SnsSmsPreferencesList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSnsSmsPreferenceses) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched snsSmsPreferences.
 func (c *FakeSnsSmsPreferenceses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SnsSmsPreferences, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(snssmspreferencesesResource, name, pt, data, subresources...), &v1alpha1.SnsSmsPreferences{})
+		Invokes(testing.NewPatchSubresourceAction(snssmspreferencesesResource, c.ns, name, pt, data, subresources...), &v1alpha1.SnsSmsPreferences{})
+
 	if obj == nil {
 		return nil, err
 	}

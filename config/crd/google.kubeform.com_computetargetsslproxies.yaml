@@ -397,25 +397,35 @@ spec:
           type: object
         spec:
           properties:
-            backend_service:
+            backendService:
               type: string
             description:
               type: string
             name:
               type: string
-            proxy_header:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            proxyHeader:
               type: string
-            ssl_certificates:
+            sslCertificates:
               items:
                 type: string
               maxItems: 1
               type: array
-            ssl_policy:
+            sslPolicy:
               type: string
           required:
-          - backend_service
+          - backendService
           - name
-          - ssl_certificates
+          - providerRef
+          - sslCertificates
           type: object
         status:
           properties:
@@ -426,6 +436,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

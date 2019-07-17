@@ -31,6 +31,7 @@ import (
 // FakeDataFactoryDatasetMysqls implements DataFactoryDatasetMysqlInterface
 type FakeDataFactoryDatasetMysqls struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var datafactorydatasetmysqlsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "datafactorydatasetmysqls"}
@@ -40,7 +41,8 @@ var datafactorydatasetmysqlsKind = schema.GroupVersionKind{Group: "azurerm.kubef
 // Get takes name of the dataFactoryDatasetMysql, and returns the corresponding dataFactoryDatasetMysql object, and an error if there is any.
 func (c *FakeDataFactoryDatasetMysqls) Get(name string, options v1.GetOptions) (result *v1alpha1.DataFactoryDatasetMysql, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(datafactorydatasetmysqlsResource, name), &v1alpha1.DataFactoryDatasetMysql{})
+		Invokes(testing.NewGetAction(datafactorydatasetmysqlsResource, c.ns, name), &v1alpha1.DataFactoryDatasetMysql{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDataFactoryDatasetMysqls) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of DataFactoryDatasetMysqls that match those selectors.
 func (c *FakeDataFactoryDatasetMysqls) List(opts v1.ListOptions) (result *v1alpha1.DataFactoryDatasetMysqlList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(datafactorydatasetmysqlsResource, datafactorydatasetmysqlsKind, opts), &v1alpha1.DataFactoryDatasetMysqlList{})
+		Invokes(testing.NewListAction(datafactorydatasetmysqlsResource, datafactorydatasetmysqlsKind, c.ns, opts), &v1alpha1.DataFactoryDatasetMysqlList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDataFactoryDatasetMysqls) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested dataFactoryDatasetMysqls.
 func (c *FakeDataFactoryDatasetMysqls) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(datafactorydatasetmysqlsResource, opts))
+		InvokesWatch(testing.NewWatchAction(datafactorydatasetmysqlsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dataFactoryDatasetMysql and creates it.  Returns the server's representation of the dataFactoryDatasetMysql, and an error, if there is any.
 func (c *FakeDataFactoryDatasetMysqls) Create(dataFactoryDatasetMysql *v1alpha1.DataFactoryDatasetMysql) (result *v1alpha1.DataFactoryDatasetMysql, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(datafactorydatasetmysqlsResource, dataFactoryDatasetMysql), &v1alpha1.DataFactoryDatasetMysql{})
+		Invokes(testing.NewCreateAction(datafactorydatasetmysqlsResource, c.ns, dataFactoryDatasetMysql), &v1alpha1.DataFactoryDatasetMysql{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDataFactoryDatasetMysqls) Create(dataFactoryDatasetMysql *v1alpha1.
 // Update takes the representation of a dataFactoryDatasetMysql and updates it. Returns the server's representation of the dataFactoryDatasetMysql, and an error, if there is any.
 func (c *FakeDataFactoryDatasetMysqls) Update(dataFactoryDatasetMysql *v1alpha1.DataFactoryDatasetMysql) (result *v1alpha1.DataFactoryDatasetMysql, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(datafactorydatasetmysqlsResource, dataFactoryDatasetMysql), &v1alpha1.DataFactoryDatasetMysql{})
+		Invokes(testing.NewUpdateAction(datafactorydatasetmysqlsResource, c.ns, dataFactoryDatasetMysql), &v1alpha1.DataFactoryDatasetMysql{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDataFactoryDatasetMysqls) Update(dataFactoryDatasetMysql *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDataFactoryDatasetMysqls) UpdateStatus(dataFactoryDatasetMysql *v1alpha1.DataFactoryDatasetMysql) (*v1alpha1.DataFactoryDatasetMysql, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(datafactorydatasetmysqlsResource, "status", dataFactoryDatasetMysql), &v1alpha1.DataFactoryDatasetMysql{})
+		Invokes(testing.NewUpdateSubresourceAction(datafactorydatasetmysqlsResource, "status", c.ns, dataFactoryDatasetMysql), &v1alpha1.DataFactoryDatasetMysql{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDataFactoryDatasetMysqls) UpdateStatus(dataFactoryDatasetMysql *v1a
 // Delete takes name of the dataFactoryDatasetMysql and deletes it. Returns an error if one occurs.
 func (c *FakeDataFactoryDatasetMysqls) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(datafactorydatasetmysqlsResource, name), &v1alpha1.DataFactoryDatasetMysql{})
+		Invokes(testing.NewDeleteAction(datafactorydatasetmysqlsResource, c.ns, name), &v1alpha1.DataFactoryDatasetMysql{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDataFactoryDatasetMysqls) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(datafactorydatasetmysqlsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(datafactorydatasetmysqlsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DataFactoryDatasetMysqlList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDataFactoryDatasetMysqls) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched dataFactoryDatasetMysql.
 func (c *FakeDataFactoryDatasetMysqls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataFactoryDatasetMysql, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(datafactorydatasetmysqlsResource, name, pt, data, subresources...), &v1alpha1.DataFactoryDatasetMysql{})
+		Invokes(testing.NewPatchSubresourceAction(datafactorydatasetmysqlsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DataFactoryDatasetMysql{})
+
 	if obj == nil {
 		return nil, err
 	}

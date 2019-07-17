@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,53 +19,54 @@ type CosmosdbAccount struct {
 }
 
 type CosmosdbAccountSpecCapabilities struct {
-	Name string `json:"name"`
+	Name string `json:"name" tf:"name"`
 }
 
 type CosmosdbAccountSpecConsistencyPolicy struct {
-	ConsistencyLevel string `json:"consistency_level"`
+	ConsistencyLevel string `json:"consistencyLevel" tf:"consistency_level"`
 	// +optional
-	MaxIntervalInSeconds int `json:"max_interval_in_seconds,omitempty"`
+	MaxIntervalInSeconds int `json:"maxIntervalInSeconds,omitempty" tf:"max_interval_in_seconds,omitempty"`
 	// +optional
-	MaxStalenessPrefix int `json:"max_staleness_prefix,omitempty"`
+	MaxStalenessPrefix int `json:"maxStalenessPrefix,omitempty" tf:"max_staleness_prefix,omitempty"`
 }
 
 type CosmosdbAccountSpecFailoverPolicy struct {
-	Location string `json:"location"`
-	Priority int    `json:"priority"`
+	Location string `json:"location" tf:"location"`
+	Priority int    `json:"priority" tf:"priority"`
 }
 
 type CosmosdbAccountSpecVirtualNetworkRule struct {
-	Id string `json:"id"`
+	ID string `json:"ID" tf:"id"`
 }
 
 type CosmosdbAccountSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Capabilities *[]CosmosdbAccountSpec `json:"capabilities,omitempty"`
+	Capabilities []CosmosdbAccountSpecCapabilities `json:"capabilities,omitempty" tf:"capabilities,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
-	ConsistencyPolicy []CosmosdbAccountSpec `json:"consistency_policy"`
+	ConsistencyPolicy []CosmosdbAccountSpecConsistencyPolicy `json:"consistencyPolicy" tf:"consistency_policy"`
 	// +optional
-	EnableAutomaticFailover bool `json:"enable_automatic_failover,omitempty"`
+	EnableAutomaticFailover bool `json:"enableAutomaticFailover,omitempty" tf:"enable_automatic_failover,omitempty"`
 	// +optional
-	EnableMultipleWriteLocations bool `json:"enable_multiple_write_locations,omitempty"`
+	EnableMultipleWriteLocations bool `json:"enableMultipleWriteLocations,omitempty" tf:"enable_multiple_write_locations,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
 	// Deprecated
-	FailoverPolicy *[]CosmosdbAccountSpec `json:"failover_policy,omitempty"`
+	FailoverPolicy []CosmosdbAccountSpecFailoverPolicy `json:"failoverPolicy,omitempty" tf:"failover_policy,omitempty"`
 	// +optional
-	IpRangeFilter string `json:"ip_range_filter,omitempty"`
+	IpRangeFilter string `json:"ipRangeFilter,omitempty" tf:"ip_range_filter,omitempty"`
 	// +optional
-	IsVirtualNetworkFilterEnabled bool `json:"is_virtual_network_filter_enabled,omitempty"`
+	IsVirtualNetworkFilterEnabled bool `json:"isVirtualNetworkFilterEnabled,omitempty" tf:"is_virtual_network_filter_enabled,omitempty"`
 	// +optional
-	Kind              string `json:"kind,omitempty"`
-	Location          string `json:"location"`
-	Name              string `json:"name"`
-	OfferType         string `json:"offer_type"`
-	ResourceGroupName string `json:"resource_group_name"`
+	Kind              string `json:"kind,omitempty" tf:"kind,omitempty"`
+	Location          string `json:"location" tf:"location"`
+	Name              string `json:"name" tf:"name"`
+	OfferType         string `json:"offerType" tf:"offer_type"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	VirtualNetworkRule *[]CosmosdbAccountSpec `json:"virtual_network_rule,omitempty"`
+	VirtualNetworkRule []CosmosdbAccountSpecVirtualNetworkRule `json:"virtualNetworkRule,omitempty" tf:"virtual_network_rule,omitempty"`
+	ProviderRef        core.LocalObjectReference               `json:"providerRef" tf:"-"`
 }
 
 type CosmosdbAccountStatus struct {
@@ -73,7 +74,9 @@ type CosmosdbAccountStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

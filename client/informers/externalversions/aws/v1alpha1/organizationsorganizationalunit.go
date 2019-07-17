@@ -41,32 +41,33 @@ type OrganizationsOrganizationalUnitInformer interface {
 type organizationsOrganizationalUnitInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewOrganizationsOrganizationalUnitInformer constructs a new informer for OrganizationsOrganizationalUnit type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewOrganizationsOrganizationalUnitInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredOrganizationsOrganizationalUnitInformer(client, resyncPeriod, indexers, nil)
+func NewOrganizationsOrganizationalUnitInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredOrganizationsOrganizationalUnitInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredOrganizationsOrganizationalUnitInformer constructs a new informer for OrganizationsOrganizationalUnit type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredOrganizationsOrganizationalUnitInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredOrganizationsOrganizationalUnitInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().OrganizationsOrganizationalUnits().List(options)
+				return client.AwsV1alpha1().OrganizationsOrganizationalUnits(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().OrganizationsOrganizationalUnits().Watch(options)
+				return client.AwsV1alpha1().OrganizationsOrganizationalUnits(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.OrganizationsOrganizationalUnit{},
@@ -76,7 +77,7 @@ func NewFilteredOrganizationsOrganizationalUnitInformer(client versioned.Interfa
 }
 
 func (f *organizationsOrganizationalUnitInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredOrganizationsOrganizationalUnitInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredOrganizationsOrganizationalUnitInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *organizationsOrganizationalUnitInformer) Informer() cache.SharedIndexInformer {

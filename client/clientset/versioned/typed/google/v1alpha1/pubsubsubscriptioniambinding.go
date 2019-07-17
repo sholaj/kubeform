@@ -32,7 +32,7 @@ import (
 // PubsubSubscriptionIamBindingsGetter has a method to return a PubsubSubscriptionIamBindingInterface.
 // A group's client should implement this interface.
 type PubsubSubscriptionIamBindingsGetter interface {
-	PubsubSubscriptionIamBindings() PubsubSubscriptionIamBindingInterface
+	PubsubSubscriptionIamBindings(namespace string) PubsubSubscriptionIamBindingInterface
 }
 
 // PubsubSubscriptionIamBindingInterface has methods to work with PubsubSubscriptionIamBinding resources.
@@ -52,12 +52,14 @@ type PubsubSubscriptionIamBindingInterface interface {
 // pubsubSubscriptionIamBindings implements PubsubSubscriptionIamBindingInterface
 type pubsubSubscriptionIamBindings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPubsubSubscriptionIamBindings returns a PubsubSubscriptionIamBindings
-func newPubsubSubscriptionIamBindings(c *GoogleV1alpha1Client) *pubsubSubscriptionIamBindings {
+func newPubsubSubscriptionIamBindings(c *GoogleV1alpha1Client, namespace string) *pubsubSubscriptionIamBindings {
 	return &pubsubSubscriptionIamBindings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPubsubSubscriptionIamBindings(c *GoogleV1alpha1Client) *pubsubSubscripti
 func (c *pubsubSubscriptionIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.PubsubSubscriptionIamBinding, err error) {
 	result = &v1alpha1.PubsubSubscriptionIamBinding{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptioniambindings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *pubsubSubscriptionIamBindings) List(opts v1.ListOptions) (result *v1alp
 	}
 	result = &v1alpha1.PubsubSubscriptionIamBindingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptioniambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *pubsubSubscriptionIamBindings) Watch(opts v1.ListOptions) (watch.Interf
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptioniambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *pubsubSubscriptionIamBindings) Watch(opts v1.ListOptions) (watch.Interf
 func (c *pubsubSubscriptionIamBindings) Create(pubsubSubscriptionIamBinding *v1alpha1.PubsubSubscriptionIamBinding) (result *v1alpha1.PubsubSubscriptionIamBinding, err error) {
 	result = &v1alpha1.PubsubSubscriptionIamBinding{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptioniambindings").
 		Body(pubsubSubscriptionIamBinding).
 		Do().
@@ -118,6 +124,7 @@ func (c *pubsubSubscriptionIamBindings) Create(pubsubSubscriptionIamBinding *v1a
 func (c *pubsubSubscriptionIamBindings) Update(pubsubSubscriptionIamBinding *v1alpha1.PubsubSubscriptionIamBinding) (result *v1alpha1.PubsubSubscriptionIamBinding, err error) {
 	result = &v1alpha1.PubsubSubscriptionIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptioniambindings").
 		Name(pubsubSubscriptionIamBinding.Name).
 		Body(pubsubSubscriptionIamBinding).
@@ -132,6 +139,7 @@ func (c *pubsubSubscriptionIamBindings) Update(pubsubSubscriptionIamBinding *v1a
 func (c *pubsubSubscriptionIamBindings) UpdateStatus(pubsubSubscriptionIamBinding *v1alpha1.PubsubSubscriptionIamBinding) (result *v1alpha1.PubsubSubscriptionIamBinding, err error) {
 	result = &v1alpha1.PubsubSubscriptionIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptioniambindings").
 		Name(pubsubSubscriptionIamBinding.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *pubsubSubscriptionIamBindings) UpdateStatus(pubsubSubscriptionIamBindin
 // Delete takes name of the pubsubSubscriptionIamBinding and deletes it. Returns an error if one occurs.
 func (c *pubsubSubscriptionIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptioniambindings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *pubsubSubscriptionIamBindings) DeleteCollection(options *v1.DeleteOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("pubsubsubscriptioniambindings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *pubsubSubscriptionIamBindings) DeleteCollection(options *v1.DeleteOptio
 func (c *pubsubSubscriptionIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PubsubSubscriptionIamBinding, err error) {
 	result = &v1alpha1.PubsubSubscriptionIamBinding{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("pubsubsubscriptioniambindings").
 		SubResource(subresources...).
 		Name(name).

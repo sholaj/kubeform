@@ -32,7 +32,7 @@ import (
 // KmsExternalKeysGetter has a method to return a KmsExternalKeyInterface.
 // A group's client should implement this interface.
 type KmsExternalKeysGetter interface {
-	KmsExternalKeys() KmsExternalKeyInterface
+	KmsExternalKeys(namespace string) KmsExternalKeyInterface
 }
 
 // KmsExternalKeyInterface has methods to work with KmsExternalKey resources.
@@ -52,12 +52,14 @@ type KmsExternalKeyInterface interface {
 // kmsExternalKeys implements KmsExternalKeyInterface
 type kmsExternalKeys struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKmsExternalKeys returns a KmsExternalKeys
-func newKmsExternalKeys(c *AwsV1alpha1Client) *kmsExternalKeys {
+func newKmsExternalKeys(c *AwsV1alpha1Client, namespace string) *kmsExternalKeys {
 	return &kmsExternalKeys{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKmsExternalKeys(c *AwsV1alpha1Client) *kmsExternalKeys {
 func (c *kmsExternalKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.KmsExternalKey, err error) {
 	result = &v1alpha1.KmsExternalKey{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmsexternalkeys").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *kmsExternalKeys) List(opts v1.ListOptions) (result *v1alpha1.KmsExterna
 	}
 	result = &v1alpha1.KmsExternalKeyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmsexternalkeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *kmsExternalKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("kmsexternalkeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *kmsExternalKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *kmsExternalKeys) Create(kmsExternalKey *v1alpha1.KmsExternalKey) (result *v1alpha1.KmsExternalKey, err error) {
 	result = &v1alpha1.KmsExternalKey{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("kmsexternalkeys").
 		Body(kmsExternalKey).
 		Do().
@@ -118,6 +124,7 @@ func (c *kmsExternalKeys) Create(kmsExternalKey *v1alpha1.KmsExternalKey) (resul
 func (c *kmsExternalKeys) Update(kmsExternalKey *v1alpha1.KmsExternalKey) (result *v1alpha1.KmsExternalKey, err error) {
 	result = &v1alpha1.KmsExternalKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmsexternalkeys").
 		Name(kmsExternalKey.Name).
 		Body(kmsExternalKey).
@@ -132,6 +139,7 @@ func (c *kmsExternalKeys) Update(kmsExternalKey *v1alpha1.KmsExternalKey) (resul
 func (c *kmsExternalKeys) UpdateStatus(kmsExternalKey *v1alpha1.KmsExternalKey) (result *v1alpha1.KmsExternalKey, err error) {
 	result = &v1alpha1.KmsExternalKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmsexternalkeys").
 		Name(kmsExternalKey.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *kmsExternalKeys) UpdateStatus(kmsExternalKey *v1alpha1.KmsExternalKey) 
 // Delete takes name of the kmsExternalKey and deletes it. Returns an error if one occurs.
 func (c *kmsExternalKeys) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmsexternalkeys").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *kmsExternalKeys) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmsexternalkeys").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *kmsExternalKeys) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *kmsExternalKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KmsExternalKey, err error) {
 	result = &v1alpha1.KmsExternalKey{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("kmsexternalkeys").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // InspectorAssessmentTemplatesGetter has a method to return a InspectorAssessmentTemplateInterface.
 // A group's client should implement this interface.
 type InspectorAssessmentTemplatesGetter interface {
-	InspectorAssessmentTemplates() InspectorAssessmentTemplateInterface
+	InspectorAssessmentTemplates(namespace string) InspectorAssessmentTemplateInterface
 }
 
 // InspectorAssessmentTemplateInterface has methods to work with InspectorAssessmentTemplate resources.
@@ -52,12 +52,14 @@ type InspectorAssessmentTemplateInterface interface {
 // inspectorAssessmentTemplates implements InspectorAssessmentTemplateInterface
 type inspectorAssessmentTemplates struct {
 	client rest.Interface
+	ns     string
 }
 
 // newInspectorAssessmentTemplates returns a InspectorAssessmentTemplates
-func newInspectorAssessmentTemplates(c *AwsV1alpha1Client) *inspectorAssessmentTemplates {
+func newInspectorAssessmentTemplates(c *AwsV1alpha1Client, namespace string) *inspectorAssessmentTemplates {
 	return &inspectorAssessmentTemplates{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newInspectorAssessmentTemplates(c *AwsV1alpha1Client) *inspectorAssessmentT
 func (c *inspectorAssessmentTemplates) Get(name string, options v1.GetOptions) (result *v1alpha1.InspectorAssessmentTemplate, err error) {
 	result = &v1alpha1.InspectorAssessmentTemplate{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("inspectorassessmenttemplates").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *inspectorAssessmentTemplates) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.InspectorAssessmentTemplateList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("inspectorassessmenttemplates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *inspectorAssessmentTemplates) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("inspectorassessmenttemplates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *inspectorAssessmentTemplates) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *inspectorAssessmentTemplates) Create(inspectorAssessmentTemplate *v1alpha1.InspectorAssessmentTemplate) (result *v1alpha1.InspectorAssessmentTemplate, err error) {
 	result = &v1alpha1.InspectorAssessmentTemplate{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("inspectorassessmenttemplates").
 		Body(inspectorAssessmentTemplate).
 		Do().
@@ -118,6 +124,7 @@ func (c *inspectorAssessmentTemplates) Create(inspectorAssessmentTemplate *v1alp
 func (c *inspectorAssessmentTemplates) Update(inspectorAssessmentTemplate *v1alpha1.InspectorAssessmentTemplate) (result *v1alpha1.InspectorAssessmentTemplate, err error) {
 	result = &v1alpha1.InspectorAssessmentTemplate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("inspectorassessmenttemplates").
 		Name(inspectorAssessmentTemplate.Name).
 		Body(inspectorAssessmentTemplate).
@@ -132,6 +139,7 @@ func (c *inspectorAssessmentTemplates) Update(inspectorAssessmentTemplate *v1alp
 func (c *inspectorAssessmentTemplates) UpdateStatus(inspectorAssessmentTemplate *v1alpha1.InspectorAssessmentTemplate) (result *v1alpha1.InspectorAssessmentTemplate, err error) {
 	result = &v1alpha1.InspectorAssessmentTemplate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("inspectorassessmenttemplates").
 		Name(inspectorAssessmentTemplate.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *inspectorAssessmentTemplates) UpdateStatus(inspectorAssessmentTemplate 
 // Delete takes name of the inspectorAssessmentTemplate and deletes it. Returns an error if one occurs.
 func (c *inspectorAssessmentTemplates) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("inspectorassessmenttemplates").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *inspectorAssessmentTemplates) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("inspectorassessmenttemplates").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *inspectorAssessmentTemplates) DeleteCollection(options *v1.DeleteOption
 func (c *inspectorAssessmentTemplates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.InspectorAssessmentTemplate, err error) {
 	result = &v1alpha1.InspectorAssessmentTemplate{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("inspectorassessmenttemplates").
 		SubResource(subresources...).
 		Name(name).

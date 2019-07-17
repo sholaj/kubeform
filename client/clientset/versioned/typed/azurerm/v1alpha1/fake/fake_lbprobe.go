@@ -31,6 +31,7 @@ import (
 // FakeLbProbes implements LbProbeInterface
 type FakeLbProbes struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var lbprobesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "lbprobes"}
@@ -40,7 +41,8 @@ var lbprobesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Versio
 // Get takes name of the lbProbe, and returns the corresponding lbProbe object, and an error if there is any.
 func (c *FakeLbProbes) Get(name string, options v1.GetOptions) (result *v1alpha1.LbProbe, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(lbprobesResource, name), &v1alpha1.LbProbe{})
+		Invokes(testing.NewGetAction(lbprobesResource, c.ns, name), &v1alpha1.LbProbe{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLbProbes) Get(name string, options v1.GetOptions) (result *v1alpha1
 // List takes label and field selectors, and returns the list of LbProbes that match those selectors.
 func (c *FakeLbProbes) List(opts v1.ListOptions) (result *v1alpha1.LbProbeList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(lbprobesResource, lbprobesKind, opts), &v1alpha1.LbProbeList{})
+		Invokes(testing.NewListAction(lbprobesResource, lbprobesKind, c.ns, opts), &v1alpha1.LbProbeList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLbProbes) List(opts v1.ListOptions) (result *v1alpha1.LbProbeList, 
 // Watch returns a watch.Interface that watches the requested lbProbes.
 func (c *FakeLbProbes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(lbprobesResource, opts))
+		InvokesWatch(testing.NewWatchAction(lbprobesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a lbProbe and creates it.  Returns the server's representation of the lbProbe, and an error, if there is any.
 func (c *FakeLbProbes) Create(lbProbe *v1alpha1.LbProbe) (result *v1alpha1.LbProbe, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(lbprobesResource, lbProbe), &v1alpha1.LbProbe{})
+		Invokes(testing.NewCreateAction(lbprobesResource, c.ns, lbProbe), &v1alpha1.LbProbe{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLbProbes) Create(lbProbe *v1alpha1.LbProbe) (result *v1alpha1.LbPro
 // Update takes the representation of a lbProbe and updates it. Returns the server's representation of the lbProbe, and an error, if there is any.
 func (c *FakeLbProbes) Update(lbProbe *v1alpha1.LbProbe) (result *v1alpha1.LbProbe, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(lbprobesResource, lbProbe), &v1alpha1.LbProbe{})
+		Invokes(testing.NewUpdateAction(lbprobesResource, c.ns, lbProbe), &v1alpha1.LbProbe{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLbProbes) Update(lbProbe *v1alpha1.LbProbe) (result *v1alpha1.LbPro
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLbProbes) UpdateStatus(lbProbe *v1alpha1.LbProbe) (*v1alpha1.LbProbe, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(lbprobesResource, "status", lbProbe), &v1alpha1.LbProbe{})
+		Invokes(testing.NewUpdateSubresourceAction(lbprobesResource, "status", c.ns, lbProbe), &v1alpha1.LbProbe{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLbProbes) UpdateStatus(lbProbe *v1alpha1.LbProbe) (*v1alpha1.LbProb
 // Delete takes name of the lbProbe and deletes it. Returns an error if one occurs.
 func (c *FakeLbProbes) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(lbprobesResource, name), &v1alpha1.LbProbe{})
+		Invokes(testing.NewDeleteAction(lbprobesResource, c.ns, name), &v1alpha1.LbProbe{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLbProbes) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(lbprobesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(lbprobesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LbProbeList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLbProbes) DeleteCollection(options *v1.DeleteOptions, listOptions v
 // Patch applies the patch and returns the patched lbProbe.
 func (c *FakeLbProbes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbProbe, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(lbprobesResource, name, pt, data, subresources...), &v1alpha1.LbProbe{})
+		Invokes(testing.NewPatchSubresourceAction(lbprobesResource, c.ns, name, pt, data, subresources...), &v1alpha1.LbProbe{})
+
 	if obj == nil {
 		return nil, err
 	}

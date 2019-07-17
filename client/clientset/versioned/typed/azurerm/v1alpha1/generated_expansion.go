@@ -20,21 +20,19 @@ package v1alpha1
 
 type ApiManagementExpansion interface{}
 
-type ApiManagementApiExpansion interface{}
+type ApiManagementAPIExpansion interface{}
 
-type ApiManagementApiOperationExpansion interface{}
+type ApiManagementAPIOperationExpansion interface{}
 
-type ApiManagementApiOperationPolicyExpansion interface{}
+type ApiManagementAPIOperationPolicyExpansion interface{}
 
-type ApiManagementApiPolicyExpansion interface{}
+type ApiManagementAPIPolicyExpansion interface{}
 
-type ApiManagementApiSchemaExpansion interface{}
+type ApiManagementAPISchemaExpansion interface{}
 
-type ApiManagementApiVersionSetExpansion interface{}
+type ApiManagementAPIVersionSetExpansion interface{}
 
 type ApiManagementAuthorizationServerExpansion interface{}
-
-type ApiManagementBackendExpansion interface{}
 
 type ApiManagementCertificateExpansion interface{}
 
@@ -48,7 +46,7 @@ type ApiManagementOpenidConnectProviderExpansion interface{}
 
 type ApiManagementProductExpansion interface{}
 
-type ApiManagementProductApiExpansion interface{}
+type ApiManagementProductAPIExpansion interface{}
 
 type ApiManagementProductGroupExpansion interface{}
 
@@ -74,7 +72,7 @@ type ApplicationGatewayExpansion interface{}
 
 type ApplicationInsightsExpansion interface{}
 
-type ApplicationInsightsApiKeyExpansion interface{}
+type ApplicationInsightsAPIKeyExpansion interface{}
 
 type ApplicationInsightsWebTestExpansion interface{}
 
@@ -114,8 +112,6 @@ type AzureadServicePrincipalPasswordExpansion interface{}
 
 type BatchAccountExpansion interface{}
 
-type BatchApplicationExpansion interface{}
-
 type BatchCertificateExpansion interface{}
 
 type BatchPoolExpansion interface{}
@@ -142,7 +138,7 @@ type CosmosdbMongoCollectionExpansion interface{}
 
 type CosmosdbMongoDatabaseExpansion interface{}
 
-type CosmosdbSqlDatabaseExpansion interface{}
+type CosmosdbSQLDatabaseExpansion interface{}
 
 type CosmosdbTableExpansion interface{}
 
@@ -152,7 +148,7 @@ type DataFactoryDatasetMysqlExpansion interface{}
 
 type DataFactoryDatasetPostgresqlExpansion interface{}
 
-type DataFactoryDatasetSqlServerTableExpansion interface{}
+type DataFactoryDatasetSQLServerTableExpansion interface{}
 
 type DataFactoryLinkedServiceDataLakeStorageGen2Expansion interface{}
 
@@ -160,7 +156,7 @@ type DataFactoryLinkedServiceMysqlExpansion interface{}
 
 type DataFactoryLinkedServicePostgresqlExpansion interface{}
 
-type DataFactoryLinkedServiceSqlServerExpansion interface{}
+type DataFactoryLinkedServiceSQLServerExpansion interface{}
 
 type DataFactoryPipelineExpansion interface{}
 
@@ -236,7 +232,7 @@ type FirewallExpansion interface{}
 
 type FirewallApplicationRuleCollectionExpansion interface{}
 
-type FirewallNatRuleCollectionExpansion interface{}
+type FirewallNATRuleCollectionExpansion interface{}
 
 type FirewallNetworkRuleCollectionExpansion interface{}
 
@@ -286,9 +282,9 @@ type LbExpansion interface{}
 
 type LbBackendAddressPoolExpansion interface{}
 
-type LbNatPoolExpansion interface{}
+type LbNATPoolExpansion interface{}
 
-type LbNatRuleExpansion interface{}
+type LbNATRuleExpansion interface{}
 
 type LbOutboundRuleExpansion interface{}
 
@@ -308,11 +304,11 @@ type LogAnalyticsWorkspaceLinkedServiceExpansion interface{}
 
 type LogicAppActionCustomExpansion interface{}
 
-type LogicAppActionHttpExpansion interface{}
+type LogicAppActionHTTPExpansion interface{}
 
 type LogicAppTriggerCustomExpansion interface{}
 
-type LogicAppTriggerHttpRequestExpansion interface{}
+type LogicAppTriggerHTTPRequestExpansion interface{}
 
 type LogicAppTriggerRecurrenceExpansion interface{}
 
@@ -372,7 +368,7 @@ type NetworkInterfaceApplicationSecurityGroupAssociationExpansion interface{}
 
 type NetworkInterfaceBackendAddressPoolAssociationExpansion interface{}
 
-type NetworkInterfaceNatRuleAssociationExpansion interface{}
+type NetworkInterfaceNATRuleAssociationExpansion interface{}
 
 type NetworkPacketCaptureExpansion interface{}
 
@@ -408,11 +404,11 @@ type PostgresqlServerExpansion interface{}
 
 type PostgresqlVirtualNetworkRuleExpansion interface{}
 
-type PrivateDnsZoneExpansion interface{}
+type PrivateDNSZoneExpansion interface{}
 
-type PublicIpExpansion interface{}
+type PublicIPExpansion interface{}
 
-type PublicIpPrefixExpansion interface{}
+type PublicIPPrefixExpansion interface{}
 
 type RecoveryServicesProtectedVmExpansion interface{}
 
@@ -498,11 +494,7 @@ type StorageQueueExpansion interface{}
 
 type StorageShareExpansion interface{}
 
-type StorageShareDirectoryExpansion interface{}
-
 type StorageTableExpansion interface{}
-
-type StorageTableEntityExpansion interface{}
 
 type StreamAnalyticsFunctionJavascriptUdfExpansion interface{}
 

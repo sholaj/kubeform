@@ -29,8 +29,8 @@ import (
 type CodepipelineLister interface {
 	// List lists all Codepipelines in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Codepipeline, err error)
-	// Get retrieves the Codepipeline from the index for a given name.
-	Get(name string) (*v1alpha1.Codepipeline, error)
+	// Codepipelines returns an object that can list and get Codepipelines.
+	Codepipelines(namespace string) CodepipelineNamespaceLister
 	CodepipelineListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *codepipelineLister) List(selector labels.Selector) (ret []*v1alpha1.Cod
 	return ret, err
 }
 
-// Get retrieves the Codepipeline from the index for a given name.
-func (s *codepipelineLister) Get(name string) (*v1alpha1.Codepipeline, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Codepipelines returns an object that can list and get Codepipelines.
+func (s *codepipelineLister) Codepipelines(namespace string) CodepipelineNamespaceLister {
+	return codepipelineNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CodepipelineNamespaceLister helps list and get Codepipelines.
+type CodepipelineNamespaceLister interface {
+	// List lists all Codepipelines in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Codepipeline, err error)
+	// Get retrieves the Codepipeline from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Codepipeline, error)
+	CodepipelineNamespaceListerExpansion
+}
+
+// codepipelineNamespaceLister implements the CodepipelineNamespaceLister
+// interface.
+type codepipelineNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Codepipelines in the indexer for a given namespace.
+func (s codepipelineNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Codepipeline, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Codepipeline))
+	})
+	return ret, err
+}
+
+// Get retrieves the Codepipeline from the indexer for a given namespace and name.
+func (s codepipelineNamespaceLister) Get(name string) (*v1alpha1.Codepipeline, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

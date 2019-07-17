@@ -29,8 +29,8 @@ import (
 type SesIdentityNotificationTopicLister interface {
 	// List lists all SesIdentityNotificationTopics in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SesIdentityNotificationTopic, err error)
-	// Get retrieves the SesIdentityNotificationTopic from the index for a given name.
-	Get(name string) (*v1alpha1.SesIdentityNotificationTopic, error)
+	// SesIdentityNotificationTopics returns an object that can list and get SesIdentityNotificationTopics.
+	SesIdentityNotificationTopics(namespace string) SesIdentityNotificationTopicNamespaceLister
 	SesIdentityNotificationTopicListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sesIdentityNotificationTopicLister) List(selector labels.Selector) (ret
 	return ret, err
 }
 
-// Get retrieves the SesIdentityNotificationTopic from the index for a given name.
-func (s *sesIdentityNotificationTopicLister) Get(name string) (*v1alpha1.SesIdentityNotificationTopic, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SesIdentityNotificationTopics returns an object that can list and get SesIdentityNotificationTopics.
+func (s *sesIdentityNotificationTopicLister) SesIdentityNotificationTopics(namespace string) SesIdentityNotificationTopicNamespaceLister {
+	return sesIdentityNotificationTopicNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SesIdentityNotificationTopicNamespaceLister helps list and get SesIdentityNotificationTopics.
+type SesIdentityNotificationTopicNamespaceLister interface {
+	// List lists all SesIdentityNotificationTopics in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SesIdentityNotificationTopic, err error)
+	// Get retrieves the SesIdentityNotificationTopic from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SesIdentityNotificationTopic, error)
+	SesIdentityNotificationTopicNamespaceListerExpansion
+}
+
+// sesIdentityNotificationTopicNamespaceLister implements the SesIdentityNotificationTopicNamespaceLister
+// interface.
+type sesIdentityNotificationTopicNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SesIdentityNotificationTopics in the indexer for a given namespace.
+func (s sesIdentityNotificationTopicNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SesIdentityNotificationTopic, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SesIdentityNotificationTopic))
+	})
+	return ret, err
+}
+
+// Get retrieves the SesIdentityNotificationTopic from the indexer for a given namespace and name.
+func (s sesIdentityNotificationTopicNamespaceLister) Get(name string) (*v1alpha1.SesIdentityNotificationTopic, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

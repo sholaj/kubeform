@@ -29,8 +29,8 @@ import (
 type LocalNetworkGatewayLister interface {
 	// List lists all LocalNetworkGateways in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LocalNetworkGateway, err error)
-	// Get retrieves the LocalNetworkGateway from the index for a given name.
-	Get(name string) (*v1alpha1.LocalNetworkGateway, error)
+	// LocalNetworkGateways returns an object that can list and get LocalNetworkGateways.
+	LocalNetworkGateways(namespace string) LocalNetworkGatewayNamespaceLister
 	LocalNetworkGatewayListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *localNetworkGatewayLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the LocalNetworkGateway from the index for a given name.
-func (s *localNetworkGatewayLister) Get(name string) (*v1alpha1.LocalNetworkGateway, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LocalNetworkGateways returns an object that can list and get LocalNetworkGateways.
+func (s *localNetworkGatewayLister) LocalNetworkGateways(namespace string) LocalNetworkGatewayNamespaceLister {
+	return localNetworkGatewayNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LocalNetworkGatewayNamespaceLister helps list and get LocalNetworkGateways.
+type LocalNetworkGatewayNamespaceLister interface {
+	// List lists all LocalNetworkGateways in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LocalNetworkGateway, err error)
+	// Get retrieves the LocalNetworkGateway from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LocalNetworkGateway, error)
+	LocalNetworkGatewayNamespaceListerExpansion
+}
+
+// localNetworkGatewayNamespaceLister implements the LocalNetworkGatewayNamespaceLister
+// interface.
+type localNetworkGatewayNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LocalNetworkGateways in the indexer for a given namespace.
+func (s localNetworkGatewayNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LocalNetworkGateway, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LocalNetworkGateway))
+	})
+	return ret, err
+}
+
+// Get retrieves the LocalNetworkGateway from the indexer for a given namespace and name.
+func (s localNetworkGatewayNamespaceLister) Get(name string) (*v1alpha1.LocalNetworkGateway, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

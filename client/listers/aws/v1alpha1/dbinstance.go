@@ -29,8 +29,8 @@ import (
 type DbInstanceLister interface {
 	// List lists all DbInstances in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DbInstance, err error)
-	// Get retrieves the DbInstance from the index for a given name.
-	Get(name string) (*v1alpha1.DbInstance, error)
+	// DbInstances returns an object that can list and get DbInstances.
+	DbInstances(namespace string) DbInstanceNamespaceLister
 	DbInstanceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dbInstanceLister) List(selector labels.Selector) (ret []*v1alpha1.DbIns
 	return ret, err
 }
 
-// Get retrieves the DbInstance from the index for a given name.
-func (s *dbInstanceLister) Get(name string) (*v1alpha1.DbInstance, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DbInstances returns an object that can list and get DbInstances.
+func (s *dbInstanceLister) DbInstances(namespace string) DbInstanceNamespaceLister {
+	return dbInstanceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DbInstanceNamespaceLister helps list and get DbInstances.
+type DbInstanceNamespaceLister interface {
+	// List lists all DbInstances in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DbInstance, err error)
+	// Get retrieves the DbInstance from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DbInstance, error)
+	DbInstanceNamespaceListerExpansion
+}
+
+// dbInstanceNamespaceLister implements the DbInstanceNamespaceLister
+// interface.
+type dbInstanceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DbInstances in the indexer for a given namespace.
+func (s dbInstanceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DbInstance, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DbInstance))
+	})
+	return ret, err
+}
+
+// Get retrieves the DbInstance from the indexer for a given namespace and name.
+func (s dbInstanceNamespaceLister) Get(name string) (*v1alpha1.DbInstance, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

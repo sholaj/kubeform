@@ -32,7 +32,7 @@ import (
 // MqBrokersGetter has a method to return a MqBrokerInterface.
 // A group's client should implement this interface.
 type MqBrokersGetter interface {
-	MqBrokers() MqBrokerInterface
+	MqBrokers(namespace string) MqBrokerInterface
 }
 
 // MqBrokerInterface has methods to work with MqBroker resources.
@@ -52,12 +52,14 @@ type MqBrokerInterface interface {
 // mqBrokers implements MqBrokerInterface
 type mqBrokers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMqBrokers returns a MqBrokers
-func newMqBrokers(c *AwsV1alpha1Client) *mqBrokers {
+func newMqBrokers(c *AwsV1alpha1Client, namespace string) *mqBrokers {
 	return &mqBrokers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMqBrokers(c *AwsV1alpha1Client) *mqBrokers {
 func (c *mqBrokers) Get(name string, options v1.GetOptions) (result *v1alpha1.MqBroker, err error) {
 	result = &v1alpha1.MqBroker{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mqbrokers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *mqBrokers) List(opts v1.ListOptions) (result *v1alpha1.MqBrokerList, er
 	}
 	result = &v1alpha1.MqBrokerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mqbrokers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *mqBrokers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("mqbrokers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *mqBrokers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *mqBrokers) Create(mqBroker *v1alpha1.MqBroker) (result *v1alpha1.MqBroker, err error) {
 	result = &v1alpha1.MqBroker{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("mqbrokers").
 		Body(mqBroker).
 		Do().
@@ -118,6 +124,7 @@ func (c *mqBrokers) Create(mqBroker *v1alpha1.MqBroker) (result *v1alpha1.MqBrok
 func (c *mqBrokers) Update(mqBroker *v1alpha1.MqBroker) (result *v1alpha1.MqBroker, err error) {
 	result = &v1alpha1.MqBroker{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mqbrokers").
 		Name(mqBroker.Name).
 		Body(mqBroker).
@@ -132,6 +139,7 @@ func (c *mqBrokers) Update(mqBroker *v1alpha1.MqBroker) (result *v1alpha1.MqBrok
 func (c *mqBrokers) UpdateStatus(mqBroker *v1alpha1.MqBroker) (result *v1alpha1.MqBroker, err error) {
 	result = &v1alpha1.MqBroker{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mqbrokers").
 		Name(mqBroker.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *mqBrokers) UpdateStatus(mqBroker *v1alpha1.MqBroker) (result *v1alpha1.
 // Delete takes name of the mqBroker and deletes it. Returns an error if one occurs.
 func (c *mqBrokers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mqbrokers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *mqBrokers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mqbrokers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *mqBrokers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 func (c *mqBrokers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MqBroker, err error) {
 	result = &v1alpha1.MqBroker{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("mqbrokers").
 		SubResource(subresources...).
 		Name(name).

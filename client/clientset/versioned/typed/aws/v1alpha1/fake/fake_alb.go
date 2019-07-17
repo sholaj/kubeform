@@ -31,6 +31,7 @@ import (
 // FakeAlbs implements AlbInterface
 type FakeAlbs struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var albsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "albs"}
@@ -40,7 +41,8 @@ var albsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1al
 // Get takes name of the alb, and returns the corresponding alb object, and an error if there is any.
 func (c *FakeAlbs) Get(name string, options v1.GetOptions) (result *v1alpha1.Alb, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(albsResource, name), &v1alpha1.Alb{})
+		Invokes(testing.NewGetAction(albsResource, c.ns, name), &v1alpha1.Alb{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAlbs) Get(name string, options v1.GetOptions) (result *v1alpha1.Alb
 // List takes label and field selectors, and returns the list of Albs that match those selectors.
 func (c *FakeAlbs) List(opts v1.ListOptions) (result *v1alpha1.AlbList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(albsResource, albsKind, opts), &v1alpha1.AlbList{})
+		Invokes(testing.NewListAction(albsResource, albsKind, c.ns, opts), &v1alpha1.AlbList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAlbs) List(opts v1.ListOptions) (result *v1alpha1.AlbList, err erro
 // Watch returns a watch.Interface that watches the requested albs.
 func (c *FakeAlbs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(albsResource, opts))
+		InvokesWatch(testing.NewWatchAction(albsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a alb and creates it.  Returns the server's representation of the alb, and an error, if there is any.
 func (c *FakeAlbs) Create(alb *v1alpha1.Alb) (result *v1alpha1.Alb, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(albsResource, alb), &v1alpha1.Alb{})
+		Invokes(testing.NewCreateAction(albsResource, c.ns, alb), &v1alpha1.Alb{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAlbs) Create(alb *v1alpha1.Alb) (result *v1alpha1.Alb, err error) {
 // Update takes the representation of a alb and updates it. Returns the server's representation of the alb, and an error, if there is any.
 func (c *FakeAlbs) Update(alb *v1alpha1.Alb) (result *v1alpha1.Alb, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(albsResource, alb), &v1alpha1.Alb{})
+		Invokes(testing.NewUpdateAction(albsResource, c.ns, alb), &v1alpha1.Alb{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAlbs) Update(alb *v1alpha1.Alb) (result *v1alpha1.Alb, err error) {
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAlbs) UpdateStatus(alb *v1alpha1.Alb) (*v1alpha1.Alb, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(albsResource, "status", alb), &v1alpha1.Alb{})
+		Invokes(testing.NewUpdateSubresourceAction(albsResource, "status", c.ns, alb), &v1alpha1.Alb{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAlbs) UpdateStatus(alb *v1alpha1.Alb) (*v1alpha1.Alb, error) {
 // Delete takes name of the alb and deletes it. Returns an error if one occurs.
 func (c *FakeAlbs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(albsResource, name), &v1alpha1.Alb{})
+		Invokes(testing.NewDeleteAction(albsResource, c.ns, name), &v1alpha1.Alb{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAlbs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(albsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(albsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AlbList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAlbs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 // Patch applies the patch and returns the patched alb.
 func (c *FakeAlbs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Alb, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(albsResource, name, pt, data, subresources...), &v1alpha1.Alb{})
+		Invokes(testing.NewPatchSubresourceAction(albsResource, c.ns, name, pt, data, subresources...), &v1alpha1.Alb{})
+
 	if obj == nil {
 		return nil, err
 	}

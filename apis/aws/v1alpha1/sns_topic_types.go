@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,39 +20,40 @@ type SnsTopic struct {
 
 type SnsTopicSpec struct {
 	// +optional
-	ApplicationFailureFeedbackRoleArn string `json:"application_failure_feedback_role_arn,omitempty"`
+	ApplicationFailureFeedbackRoleArn string `json:"applicationFailureFeedbackRoleArn,omitempty" tf:"application_failure_feedback_role_arn,omitempty"`
 	// +optional
-	ApplicationSuccessFeedbackRoleArn string `json:"application_success_feedback_role_arn,omitempty"`
+	ApplicationSuccessFeedbackRoleArn string `json:"applicationSuccessFeedbackRoleArn,omitempty" tf:"application_success_feedback_role_arn,omitempty"`
 	// +optional
-	ApplicationSuccessFeedbackSampleRate int `json:"application_success_feedback_sample_rate,omitempty"`
+	ApplicationSuccessFeedbackSampleRate int `json:"applicationSuccessFeedbackSampleRate,omitempty" tf:"application_success_feedback_sample_rate,omitempty"`
 	// +optional
-	DeliveryPolicy string `json:"delivery_policy,omitempty"`
+	DeliveryPolicy string `json:"deliveryPolicy,omitempty" tf:"delivery_policy,omitempty"`
 	// +optional
-	DisplayName string `json:"display_name,omitempty"`
+	DisplayName string `json:"displayName,omitempty" tf:"display_name,omitempty"`
 	// +optional
-	HttpFailureFeedbackRoleArn string `json:"http_failure_feedback_role_arn,omitempty"`
+	HttpFailureFeedbackRoleArn string `json:"httpFailureFeedbackRoleArn,omitempty" tf:"http_failure_feedback_role_arn,omitempty"`
 	// +optional
-	HttpSuccessFeedbackRoleArn string `json:"http_success_feedback_role_arn,omitempty"`
+	HttpSuccessFeedbackRoleArn string `json:"httpSuccessFeedbackRoleArn,omitempty" tf:"http_success_feedback_role_arn,omitempty"`
 	// +optional
-	HttpSuccessFeedbackSampleRate int `json:"http_success_feedback_sample_rate,omitempty"`
+	HttpSuccessFeedbackSampleRate int `json:"httpSuccessFeedbackSampleRate,omitempty" tf:"http_success_feedback_sample_rate,omitempty"`
 	// +optional
-	KmsMasterKeyId string `json:"kms_master_key_id,omitempty"`
+	KmsMasterKeyID string `json:"kmsMasterKeyID,omitempty" tf:"kms_master_key_id,omitempty"`
 	// +optional
-	LambdaFailureFeedbackRoleArn string `json:"lambda_failure_feedback_role_arn,omitempty"`
+	LambdaFailureFeedbackRoleArn string `json:"lambdaFailureFeedbackRoleArn,omitempty" tf:"lambda_failure_feedback_role_arn,omitempty"`
 	// +optional
-	LambdaSuccessFeedbackRoleArn string `json:"lambda_success_feedback_role_arn,omitempty"`
+	LambdaSuccessFeedbackRoleArn string `json:"lambdaSuccessFeedbackRoleArn,omitempty" tf:"lambda_success_feedback_role_arn,omitempty"`
 	// +optional
-	LambdaSuccessFeedbackSampleRate int `json:"lambda_success_feedback_sample_rate,omitempty"`
+	LambdaSuccessFeedbackSampleRate int `json:"lambdaSuccessFeedbackSampleRate,omitempty" tf:"lambda_success_feedback_sample_rate,omitempty"`
 	// +optional
-	NamePrefix string `json:"name_prefix,omitempty"`
+	NamePrefix string `json:"namePrefix,omitempty" tf:"name_prefix,omitempty"`
 	// +optional
-	SqsFailureFeedbackRoleArn string `json:"sqs_failure_feedback_role_arn,omitempty"`
+	SqsFailureFeedbackRoleArn string `json:"sqsFailureFeedbackRoleArn,omitempty" tf:"sqs_failure_feedback_role_arn,omitempty"`
 	// +optional
-	SqsSuccessFeedbackRoleArn string `json:"sqs_success_feedback_role_arn,omitempty"`
+	SqsSuccessFeedbackRoleArn string `json:"sqsSuccessFeedbackRoleArn,omitempty" tf:"sqs_success_feedback_role_arn,omitempty"`
 	// +optional
-	SqsSuccessFeedbackSampleRate int `json:"sqs_success_feedback_sample_rate,omitempty"`
+	SqsSuccessFeedbackSampleRate int `json:"sqsSuccessFeedbackSampleRate,omitempty" tf:"sqs_success_feedback_sample_rate,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SnsTopicStatus struct {
@@ -60,7 +61,9 @@ type SnsTopicStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

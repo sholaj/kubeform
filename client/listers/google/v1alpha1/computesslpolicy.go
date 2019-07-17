@@ -29,8 +29,8 @@ import (
 type ComputeSslPolicyLister interface {
 	// List lists all ComputeSslPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeSslPolicy, err error)
-	// Get retrieves the ComputeSslPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeSslPolicy, error)
+	// ComputeSslPolicies returns an object that can list and get ComputeSslPolicies.
+	ComputeSslPolicies(namespace string) ComputeSslPolicyNamespaceLister
 	ComputeSslPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeSslPolicyLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the ComputeSslPolicy from the index for a given name.
-func (s *computeSslPolicyLister) Get(name string) (*v1alpha1.ComputeSslPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeSslPolicies returns an object that can list and get ComputeSslPolicies.
+func (s *computeSslPolicyLister) ComputeSslPolicies(namespace string) ComputeSslPolicyNamespaceLister {
+	return computeSslPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeSslPolicyNamespaceLister helps list and get ComputeSslPolicies.
+type ComputeSslPolicyNamespaceLister interface {
+	// List lists all ComputeSslPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeSslPolicy, err error)
+	// Get retrieves the ComputeSslPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeSslPolicy, error)
+	ComputeSslPolicyNamespaceListerExpansion
+}
+
+// computeSslPolicyNamespaceLister implements the ComputeSslPolicyNamespaceLister
+// interface.
+type computeSslPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeSslPolicies in the indexer for a given namespace.
+func (s computeSslPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeSslPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeSslPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeSslPolicy from the indexer for a given namespace and name.
+func (s computeSslPolicyNamespaceLister) Get(name string) (*v1alpha1.ComputeSslPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

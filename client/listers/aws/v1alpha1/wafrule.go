@@ -29,8 +29,8 @@ import (
 type WafRuleLister interface {
 	// List lists all WafRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.WafRule, err error)
-	// Get retrieves the WafRule from the index for a given name.
-	Get(name string) (*v1alpha1.WafRule, error)
+	// WafRules returns an object that can list and get WafRules.
+	WafRules(namespace string) WafRuleNamespaceLister
 	WafRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *wafRuleLister) List(selector labels.Selector) (ret []*v1alpha1.WafRule,
 	return ret, err
 }
 
-// Get retrieves the WafRule from the index for a given name.
-func (s *wafRuleLister) Get(name string) (*v1alpha1.WafRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafRules returns an object that can list and get WafRules.
+func (s *wafRuleLister) WafRules(namespace string) WafRuleNamespaceLister {
+	return wafRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafRuleNamespaceLister helps list and get WafRules.
+type WafRuleNamespaceLister interface {
+	// List lists all WafRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafRule, err error)
+	// Get retrieves the WafRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafRule, error)
+	WafRuleNamespaceListerExpansion
+}
+
+// wafRuleNamespaceLister implements the WafRuleNamespaceLister
+// interface.
+type wafRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafRules in the indexer for a given namespace.
+func (s wafRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafRule from the indexer for a given namespace and name.
+func (s wafRuleNamespaceLister) Get(name string) (*v1alpha1.WafRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

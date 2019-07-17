@@ -29,8 +29,8 @@ import (
 type ComputeRegionDiskLister interface {
 	// List lists all ComputeRegionDisks in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeRegionDisk, err error)
-	// Get retrieves the ComputeRegionDisk from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeRegionDisk, error)
+	// ComputeRegionDisks returns an object that can list and get ComputeRegionDisks.
+	ComputeRegionDisks(namespace string) ComputeRegionDiskNamespaceLister
 	ComputeRegionDiskListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeRegionDiskLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the ComputeRegionDisk from the index for a given name.
-func (s *computeRegionDiskLister) Get(name string) (*v1alpha1.ComputeRegionDisk, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeRegionDisks returns an object that can list and get ComputeRegionDisks.
+func (s *computeRegionDiskLister) ComputeRegionDisks(namespace string) ComputeRegionDiskNamespaceLister {
+	return computeRegionDiskNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeRegionDiskNamespaceLister helps list and get ComputeRegionDisks.
+type ComputeRegionDiskNamespaceLister interface {
+	// List lists all ComputeRegionDisks in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeRegionDisk, err error)
+	// Get retrieves the ComputeRegionDisk from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeRegionDisk, error)
+	ComputeRegionDiskNamespaceListerExpansion
+}
+
+// computeRegionDiskNamespaceLister implements the ComputeRegionDiskNamespaceLister
+// interface.
+type computeRegionDiskNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeRegionDisks in the indexer for a given namespace.
+func (s computeRegionDiskNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeRegionDisk, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeRegionDisk))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeRegionDisk from the indexer for a given namespace and name.
+func (s computeRegionDiskNamespaceLister) Get(name string) (*v1alpha1.ComputeRegionDisk, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

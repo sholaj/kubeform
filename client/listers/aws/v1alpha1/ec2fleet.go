@@ -29,8 +29,8 @@ import (
 type Ec2FleetLister interface {
 	// List lists all Ec2Fleets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Ec2Fleet, err error)
-	// Get retrieves the Ec2Fleet from the index for a given name.
-	Get(name string) (*v1alpha1.Ec2Fleet, error)
+	// Ec2Fleets returns an object that can list and get Ec2Fleets.
+	Ec2Fleets(namespace string) Ec2FleetNamespaceLister
 	Ec2FleetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ec2FleetLister) List(selector labels.Selector) (ret []*v1alpha1.Ec2Flee
 	return ret, err
 }
 
-// Get retrieves the Ec2Fleet from the index for a given name.
-func (s *ec2FleetLister) Get(name string) (*v1alpha1.Ec2Fleet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Ec2Fleets returns an object that can list and get Ec2Fleets.
+func (s *ec2FleetLister) Ec2Fleets(namespace string) Ec2FleetNamespaceLister {
+	return ec2FleetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// Ec2FleetNamespaceLister helps list and get Ec2Fleets.
+type Ec2FleetNamespaceLister interface {
+	// List lists all Ec2Fleets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Ec2Fleet, err error)
+	// Get retrieves the Ec2Fleet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Ec2Fleet, error)
+	Ec2FleetNamespaceListerExpansion
+}
+
+// ec2FleetNamespaceLister implements the Ec2FleetNamespaceLister
+// interface.
+type ec2FleetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Ec2Fleets in the indexer for a given namespace.
+func (s ec2FleetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Ec2Fleet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Ec2Fleet))
+	})
+	return ret, err
+}
+
+// Get retrieves the Ec2Fleet from the indexer for a given namespace and name.
+func (s ec2FleetNamespaceLister) Get(name string) (*v1alpha1.Ec2Fleet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

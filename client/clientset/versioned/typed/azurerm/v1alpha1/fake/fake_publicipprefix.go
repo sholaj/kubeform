@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// FakePublicIpPrefixes implements PublicIpPrefixInterface
-type FakePublicIpPrefixes struct {
+// FakePublicIPPrefixes implements PublicIPPrefixInterface
+type FakePublicIPPrefixes struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var publicipprefixesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "publicipprefixes"}
 
-var publicipprefixesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "PublicIpPrefix"}
+var publicipprefixesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "PublicIPPrefix"}
 
-// Get takes name of the publicIpPrefix, and returns the corresponding publicIpPrefix object, and an error if there is any.
-func (c *FakePublicIpPrefixes) Get(name string, options v1.GetOptions) (result *v1alpha1.PublicIpPrefix, err error) {
+// Get takes name of the publicIPPrefix, and returns the corresponding publicIPPrefix object, and an error if there is any.
+func (c *FakePublicIPPrefixes) Get(name string, options v1.GetOptions) (result *v1alpha1.PublicIPPrefix, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(publicipprefixesResource, name), &v1alpha1.PublicIpPrefix{})
+		Invokes(testing.NewGetAction(publicipprefixesResource, c.ns, name), &v1alpha1.PublicIPPrefix{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.PublicIpPrefix), err
+	return obj.(*v1alpha1.PublicIPPrefix), err
 }
 
-// List takes label and field selectors, and returns the list of PublicIpPrefixes that match those selectors.
-func (c *FakePublicIpPrefixes) List(opts v1.ListOptions) (result *v1alpha1.PublicIpPrefixList, err error) {
+// List takes label and field selectors, and returns the list of PublicIPPrefixes that match those selectors.
+func (c *FakePublicIPPrefixes) List(opts v1.ListOptions) (result *v1alpha1.PublicIPPrefixList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(publicipprefixesResource, publicipprefixesKind, opts), &v1alpha1.PublicIpPrefixList{})
+		Invokes(testing.NewListAction(publicipprefixesResource, publicipprefixesKind, c.ns, opts), &v1alpha1.PublicIPPrefixList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakePublicIpPrefixes) List(opts v1.ListOptions) (result *v1alpha1.Publi
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.PublicIpPrefixList{ListMeta: obj.(*v1alpha1.PublicIpPrefixList).ListMeta}
-	for _, item := range obj.(*v1alpha1.PublicIpPrefixList).Items {
+	list := &v1alpha1.PublicIPPrefixList{ListMeta: obj.(*v1alpha1.PublicIPPrefixList).ListMeta}
+	for _, item := range obj.(*v1alpha1.PublicIPPrefixList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakePublicIpPrefixes) List(opts v1.ListOptions) (result *v1alpha1.Publi
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested publicIpPrefixes.
-func (c *FakePublicIpPrefixes) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested publicIPPrefixes.
+func (c *FakePublicIPPrefixes) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(publicipprefixesResource, opts))
+		InvokesWatch(testing.NewWatchAction(publicipprefixesResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a publicIpPrefix and creates it.  Returns the server's representation of the publicIpPrefix, and an error, if there is any.
-func (c *FakePublicIpPrefixes) Create(publicIpPrefix *v1alpha1.PublicIpPrefix) (result *v1alpha1.PublicIpPrefix, err error) {
+// Create takes the representation of a publicIPPrefix and creates it.  Returns the server's representation of the publicIPPrefix, and an error, if there is any.
+func (c *FakePublicIPPrefixes) Create(publicIPPrefix *v1alpha1.PublicIPPrefix) (result *v1alpha1.PublicIPPrefix, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(publicipprefixesResource, publicIpPrefix), &v1alpha1.PublicIpPrefix{})
+		Invokes(testing.NewCreateAction(publicipprefixesResource, c.ns, publicIPPrefix), &v1alpha1.PublicIPPrefix{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.PublicIpPrefix), err
+	return obj.(*v1alpha1.PublicIPPrefix), err
 }
 
-// Update takes the representation of a publicIpPrefix and updates it. Returns the server's representation of the publicIpPrefix, and an error, if there is any.
-func (c *FakePublicIpPrefixes) Update(publicIpPrefix *v1alpha1.PublicIpPrefix) (result *v1alpha1.PublicIpPrefix, err error) {
+// Update takes the representation of a publicIPPrefix and updates it. Returns the server's representation of the publicIPPrefix, and an error, if there is any.
+func (c *FakePublicIPPrefixes) Update(publicIPPrefix *v1alpha1.PublicIPPrefix) (result *v1alpha1.PublicIPPrefix, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(publicipprefixesResource, publicIpPrefix), &v1alpha1.PublicIpPrefix{})
+		Invokes(testing.NewUpdateAction(publicipprefixesResource, c.ns, publicIPPrefix), &v1alpha1.PublicIPPrefix{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.PublicIpPrefix), err
+	return obj.(*v1alpha1.PublicIPPrefix), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakePublicIpPrefixes) UpdateStatus(publicIpPrefix *v1alpha1.PublicIpPrefix) (*v1alpha1.PublicIpPrefix, error) {
+func (c *FakePublicIPPrefixes) UpdateStatus(publicIPPrefix *v1alpha1.PublicIPPrefix) (*v1alpha1.PublicIPPrefix, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(publicipprefixesResource, "status", publicIpPrefix), &v1alpha1.PublicIpPrefix{})
+		Invokes(testing.NewUpdateSubresourceAction(publicipprefixesResource, "status", c.ns, publicIPPrefix), &v1alpha1.PublicIPPrefix{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.PublicIpPrefix), err
+	return obj.(*v1alpha1.PublicIPPrefix), err
 }
 
-// Delete takes name of the publicIpPrefix and deletes it. Returns an error if one occurs.
-func (c *FakePublicIpPrefixes) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the publicIPPrefix and deletes it. Returns an error if one occurs.
+func (c *FakePublicIPPrefixes) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(publicipprefixesResource, name), &v1alpha1.PublicIpPrefix{})
+		Invokes(testing.NewDeleteAction(publicipprefixesResource, c.ns, name), &v1alpha1.PublicIPPrefix{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakePublicIpPrefixes) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(publicipprefixesResource, listOptions)
+func (c *FakePublicIPPrefixes) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(publicipprefixesResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.PublicIpPrefixList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.PublicIPPrefixList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched publicIpPrefix.
-func (c *FakePublicIpPrefixes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PublicIpPrefix, err error) {
+// Patch applies the patch and returns the patched publicIPPrefix.
+func (c *FakePublicIPPrefixes) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PublicIPPrefix, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(publicipprefixesResource, name, pt, data, subresources...), &v1alpha1.PublicIpPrefix{})
+		Invokes(testing.NewPatchSubresourceAction(publicipprefixesResource, c.ns, name, pt, data, subresources...), &v1alpha1.PublicIPPrefix{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.PublicIpPrefix), err
+	return obj.(*v1alpha1.PublicIPPrefix), err
 }

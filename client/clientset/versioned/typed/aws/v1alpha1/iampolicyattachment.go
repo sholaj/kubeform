@@ -32,7 +32,7 @@ import (
 // IamPolicyAttachmentsGetter has a method to return a IamPolicyAttachmentInterface.
 // A group's client should implement this interface.
 type IamPolicyAttachmentsGetter interface {
-	IamPolicyAttachments() IamPolicyAttachmentInterface
+	IamPolicyAttachments(namespace string) IamPolicyAttachmentInterface
 }
 
 // IamPolicyAttachmentInterface has methods to work with IamPolicyAttachment resources.
@@ -52,12 +52,14 @@ type IamPolicyAttachmentInterface interface {
 // iamPolicyAttachments implements IamPolicyAttachmentInterface
 type iamPolicyAttachments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIamPolicyAttachments returns a IamPolicyAttachments
-func newIamPolicyAttachments(c *AwsV1alpha1Client) *iamPolicyAttachments {
+func newIamPolicyAttachments(c *AwsV1alpha1Client, namespace string) *iamPolicyAttachments {
 	return &iamPolicyAttachments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIamPolicyAttachments(c *AwsV1alpha1Client) *iamPolicyAttachments {
 func (c *iamPolicyAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.IamPolicyAttachment, err error) {
 	result = &v1alpha1.IamPolicyAttachment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iampolicyattachments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iamPolicyAttachments) List(opts v1.ListOptions) (result *v1alpha1.IamPo
 	}
 	result = &v1alpha1.IamPolicyAttachmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iampolicyattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iamPolicyAttachments) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iampolicyattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iamPolicyAttachments) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *iamPolicyAttachments) Create(iamPolicyAttachment *v1alpha1.IamPolicyAttachment) (result *v1alpha1.IamPolicyAttachment, err error) {
 	result = &v1alpha1.IamPolicyAttachment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iampolicyattachments").
 		Body(iamPolicyAttachment).
 		Do().
@@ -118,6 +124,7 @@ func (c *iamPolicyAttachments) Create(iamPolicyAttachment *v1alpha1.IamPolicyAtt
 func (c *iamPolicyAttachments) Update(iamPolicyAttachment *v1alpha1.IamPolicyAttachment) (result *v1alpha1.IamPolicyAttachment, err error) {
 	result = &v1alpha1.IamPolicyAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iampolicyattachments").
 		Name(iamPolicyAttachment.Name).
 		Body(iamPolicyAttachment).
@@ -132,6 +139,7 @@ func (c *iamPolicyAttachments) Update(iamPolicyAttachment *v1alpha1.IamPolicyAtt
 func (c *iamPolicyAttachments) UpdateStatus(iamPolicyAttachment *v1alpha1.IamPolicyAttachment) (result *v1alpha1.IamPolicyAttachment, err error) {
 	result = &v1alpha1.IamPolicyAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iampolicyattachments").
 		Name(iamPolicyAttachment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iamPolicyAttachments) UpdateStatus(iamPolicyAttachment *v1alpha1.IamPol
 // Delete takes name of the iamPolicyAttachment and deletes it. Returns an error if one occurs.
 func (c *iamPolicyAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iampolicyattachments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iamPolicyAttachments) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iampolicyattachments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iamPolicyAttachments) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *iamPolicyAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamPolicyAttachment, err error) {
 	result = &v1alpha1.IamPolicyAttachment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iampolicyattachments").
 		SubResource(subresources...).
 		Name(name).

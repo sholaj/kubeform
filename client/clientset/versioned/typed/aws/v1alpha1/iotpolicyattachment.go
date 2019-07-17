@@ -32,7 +32,7 @@ import (
 // IotPolicyAttachmentsGetter has a method to return a IotPolicyAttachmentInterface.
 // A group's client should implement this interface.
 type IotPolicyAttachmentsGetter interface {
-	IotPolicyAttachments() IotPolicyAttachmentInterface
+	IotPolicyAttachments(namespace string) IotPolicyAttachmentInterface
 }
 
 // IotPolicyAttachmentInterface has methods to work with IotPolicyAttachment resources.
@@ -52,12 +52,14 @@ type IotPolicyAttachmentInterface interface {
 // iotPolicyAttachments implements IotPolicyAttachmentInterface
 type iotPolicyAttachments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIotPolicyAttachments returns a IotPolicyAttachments
-func newIotPolicyAttachments(c *AwsV1alpha1Client) *iotPolicyAttachments {
+func newIotPolicyAttachments(c *AwsV1alpha1Client, namespace string) *iotPolicyAttachments {
 	return &iotPolicyAttachments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIotPolicyAttachments(c *AwsV1alpha1Client) *iotPolicyAttachments {
 func (c *iotPolicyAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.IotPolicyAttachment, err error) {
 	result = &v1alpha1.IotPolicyAttachment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iotpolicyattachments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iotPolicyAttachments) List(opts v1.ListOptions) (result *v1alpha1.IotPo
 	}
 	result = &v1alpha1.IotPolicyAttachmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iotpolicyattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iotPolicyAttachments) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iotpolicyattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iotPolicyAttachments) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *iotPolicyAttachments) Create(iotPolicyAttachment *v1alpha1.IotPolicyAttachment) (result *v1alpha1.IotPolicyAttachment, err error) {
 	result = &v1alpha1.IotPolicyAttachment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iotpolicyattachments").
 		Body(iotPolicyAttachment).
 		Do().
@@ -118,6 +124,7 @@ func (c *iotPolicyAttachments) Create(iotPolicyAttachment *v1alpha1.IotPolicyAtt
 func (c *iotPolicyAttachments) Update(iotPolicyAttachment *v1alpha1.IotPolicyAttachment) (result *v1alpha1.IotPolicyAttachment, err error) {
 	result = &v1alpha1.IotPolicyAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iotpolicyattachments").
 		Name(iotPolicyAttachment.Name).
 		Body(iotPolicyAttachment).
@@ -132,6 +139,7 @@ func (c *iotPolicyAttachments) Update(iotPolicyAttachment *v1alpha1.IotPolicyAtt
 func (c *iotPolicyAttachments) UpdateStatus(iotPolicyAttachment *v1alpha1.IotPolicyAttachment) (result *v1alpha1.IotPolicyAttachment, err error) {
 	result = &v1alpha1.IotPolicyAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iotpolicyattachments").
 		Name(iotPolicyAttachment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iotPolicyAttachments) UpdateStatus(iotPolicyAttachment *v1alpha1.IotPol
 // Delete takes name of the iotPolicyAttachment and deletes it. Returns an error if one occurs.
 func (c *iotPolicyAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iotpolicyattachments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iotPolicyAttachments) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iotpolicyattachments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iotPolicyAttachments) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *iotPolicyAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IotPolicyAttachment, err error) {
 	result = &v1alpha1.IotPolicyAttachment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iotpolicyattachments").
 		SubResource(subresources...).
 		Name(name).

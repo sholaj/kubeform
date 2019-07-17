@@ -29,8 +29,8 @@ import (
 type SecurityhubStandardsSubscriptionLister interface {
 	// List lists all SecurityhubStandardsSubscriptions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SecurityhubStandardsSubscription, err error)
-	// Get retrieves the SecurityhubStandardsSubscription from the index for a given name.
-	Get(name string) (*v1alpha1.SecurityhubStandardsSubscription, error)
+	// SecurityhubStandardsSubscriptions returns an object that can list and get SecurityhubStandardsSubscriptions.
+	SecurityhubStandardsSubscriptions(namespace string) SecurityhubStandardsSubscriptionNamespaceLister
 	SecurityhubStandardsSubscriptionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *securityhubStandardsSubscriptionLister) List(selector labels.Selector) 
 	return ret, err
 }
 
-// Get retrieves the SecurityhubStandardsSubscription from the index for a given name.
-func (s *securityhubStandardsSubscriptionLister) Get(name string) (*v1alpha1.SecurityhubStandardsSubscription, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SecurityhubStandardsSubscriptions returns an object that can list and get SecurityhubStandardsSubscriptions.
+func (s *securityhubStandardsSubscriptionLister) SecurityhubStandardsSubscriptions(namespace string) SecurityhubStandardsSubscriptionNamespaceLister {
+	return securityhubStandardsSubscriptionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SecurityhubStandardsSubscriptionNamespaceLister helps list and get SecurityhubStandardsSubscriptions.
+type SecurityhubStandardsSubscriptionNamespaceLister interface {
+	// List lists all SecurityhubStandardsSubscriptions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SecurityhubStandardsSubscription, err error)
+	// Get retrieves the SecurityhubStandardsSubscription from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SecurityhubStandardsSubscription, error)
+	SecurityhubStandardsSubscriptionNamespaceListerExpansion
+}
+
+// securityhubStandardsSubscriptionNamespaceLister implements the SecurityhubStandardsSubscriptionNamespaceLister
+// interface.
+type securityhubStandardsSubscriptionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SecurityhubStandardsSubscriptions in the indexer for a given namespace.
+func (s securityhubStandardsSubscriptionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SecurityhubStandardsSubscription, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SecurityhubStandardsSubscription))
+	})
+	return ret, err
+}
+
+// Get retrieves the SecurityhubStandardsSubscription from the indexer for a given namespace and name.
+func (s securityhubStandardsSubscriptionNamespaceLister) Get(name string) (*v1alpha1.SecurityhubStandardsSubscription, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

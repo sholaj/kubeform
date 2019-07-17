@@ -32,7 +32,7 @@ import (
 // AppautoscalingScheduledActionsGetter has a method to return a AppautoscalingScheduledActionInterface.
 // A group's client should implement this interface.
 type AppautoscalingScheduledActionsGetter interface {
-	AppautoscalingScheduledActions() AppautoscalingScheduledActionInterface
+	AppautoscalingScheduledActions(namespace string) AppautoscalingScheduledActionInterface
 }
 
 // AppautoscalingScheduledActionInterface has methods to work with AppautoscalingScheduledAction resources.
@@ -52,12 +52,14 @@ type AppautoscalingScheduledActionInterface interface {
 // appautoscalingScheduledActions implements AppautoscalingScheduledActionInterface
 type appautoscalingScheduledActions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAppautoscalingScheduledActions returns a AppautoscalingScheduledActions
-func newAppautoscalingScheduledActions(c *AwsV1alpha1Client) *appautoscalingScheduledActions {
+func newAppautoscalingScheduledActions(c *AwsV1alpha1Client, namespace string) *appautoscalingScheduledActions {
 	return &appautoscalingScheduledActions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAppautoscalingScheduledActions(c *AwsV1alpha1Client) *appautoscalingSche
 func (c *appautoscalingScheduledActions) Get(name string, options v1.GetOptions) (result *v1alpha1.AppautoscalingScheduledAction, err error) {
 	result = &v1alpha1.AppautoscalingScheduledAction{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appautoscalingscheduledactions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *appautoscalingScheduledActions) List(opts v1.ListOptions) (result *v1al
 	}
 	result = &v1alpha1.AppautoscalingScheduledActionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appautoscalingscheduledactions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *appautoscalingScheduledActions) Watch(opts v1.ListOptions) (watch.Inter
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("appautoscalingscheduledactions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *appautoscalingScheduledActions) Watch(opts v1.ListOptions) (watch.Inter
 func (c *appautoscalingScheduledActions) Create(appautoscalingScheduledAction *v1alpha1.AppautoscalingScheduledAction) (result *v1alpha1.AppautoscalingScheduledAction, err error) {
 	result = &v1alpha1.AppautoscalingScheduledAction{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("appautoscalingscheduledactions").
 		Body(appautoscalingScheduledAction).
 		Do().
@@ -118,6 +124,7 @@ func (c *appautoscalingScheduledActions) Create(appautoscalingScheduledAction *v
 func (c *appautoscalingScheduledActions) Update(appautoscalingScheduledAction *v1alpha1.AppautoscalingScheduledAction) (result *v1alpha1.AppautoscalingScheduledAction, err error) {
 	result = &v1alpha1.AppautoscalingScheduledAction{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appautoscalingscheduledactions").
 		Name(appautoscalingScheduledAction.Name).
 		Body(appautoscalingScheduledAction).
@@ -132,6 +139,7 @@ func (c *appautoscalingScheduledActions) Update(appautoscalingScheduledAction *v
 func (c *appautoscalingScheduledActions) UpdateStatus(appautoscalingScheduledAction *v1alpha1.AppautoscalingScheduledAction) (result *v1alpha1.AppautoscalingScheduledAction, err error) {
 	result = &v1alpha1.AppautoscalingScheduledAction{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appautoscalingscheduledactions").
 		Name(appautoscalingScheduledAction.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *appautoscalingScheduledActions) UpdateStatus(appautoscalingScheduledAct
 // Delete takes name of the appautoscalingScheduledAction and deletes it. Returns an error if one occurs.
 func (c *appautoscalingScheduledActions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appautoscalingscheduledactions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *appautoscalingScheduledActions) DeleteCollection(options *v1.DeleteOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appautoscalingscheduledactions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *appautoscalingScheduledActions) DeleteCollection(options *v1.DeleteOpti
 func (c *appautoscalingScheduledActions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppautoscalingScheduledAction, err error) {
 	result = &v1alpha1.AppautoscalingScheduledAction{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("appautoscalingscheduledactions").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type SqlSslCertLister interface {
 	// List lists all SqlSslCerts in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SqlSslCert, err error)
-	// Get retrieves the SqlSslCert from the index for a given name.
-	Get(name string) (*v1alpha1.SqlSslCert, error)
+	// SqlSslCerts returns an object that can list and get SqlSslCerts.
+	SqlSslCerts(namespace string) SqlSslCertNamespaceLister
 	SqlSslCertListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sqlSslCertLister) List(selector labels.Selector) (ret []*v1alpha1.SqlSs
 	return ret, err
 }
 
-// Get retrieves the SqlSslCert from the index for a given name.
-func (s *sqlSslCertLister) Get(name string) (*v1alpha1.SqlSslCert, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SqlSslCerts returns an object that can list and get SqlSslCerts.
+func (s *sqlSslCertLister) SqlSslCerts(namespace string) SqlSslCertNamespaceLister {
+	return sqlSslCertNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SqlSslCertNamespaceLister helps list and get SqlSslCerts.
+type SqlSslCertNamespaceLister interface {
+	// List lists all SqlSslCerts in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SqlSslCert, err error)
+	// Get retrieves the SqlSslCert from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SqlSslCert, error)
+	SqlSslCertNamespaceListerExpansion
+}
+
+// sqlSslCertNamespaceLister implements the SqlSslCertNamespaceLister
+// interface.
+type sqlSslCertNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SqlSslCerts in the indexer for a given namespace.
+func (s sqlSslCertNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SqlSslCert, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SqlSslCert))
+	})
+	return ret, err
+}
+
+// Get retrieves the SqlSslCert from the indexer for a given namespace and name.
+func (s sqlSslCertNamespaceLister) Get(name string) (*v1alpha1.SqlSslCert, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

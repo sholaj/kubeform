@@ -32,7 +32,7 @@ import (
 // VpnGatewaysGetter has a method to return a VpnGatewayInterface.
 // A group's client should implement this interface.
 type VpnGatewaysGetter interface {
-	VpnGateways() VpnGatewayInterface
+	VpnGateways(namespace string) VpnGatewayInterface
 }
 
 // VpnGatewayInterface has methods to work with VpnGateway resources.
@@ -52,12 +52,14 @@ type VpnGatewayInterface interface {
 // vpnGateways implements VpnGatewayInterface
 type vpnGateways struct {
 	client rest.Interface
+	ns     string
 }
 
 // newVpnGateways returns a VpnGateways
-func newVpnGateways(c *AwsV1alpha1Client) *vpnGateways {
+func newVpnGateways(c *AwsV1alpha1Client, namespace string) *vpnGateways {
 	return &vpnGateways{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newVpnGateways(c *AwsV1alpha1Client) *vpnGateways {
 func (c *vpnGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.VpnGateway, err error) {
 	result = &v1alpha1.VpnGateway{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpngateways").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *vpnGateways) List(opts v1.ListOptions) (result *v1alpha1.VpnGatewayList
 	}
 	result = &v1alpha1.VpnGatewayList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpngateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *vpnGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("vpngateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *vpnGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *vpnGateways) Create(vpnGateway *v1alpha1.VpnGateway) (result *v1alpha1.VpnGateway, err error) {
 	result = &v1alpha1.VpnGateway{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("vpngateways").
 		Body(vpnGateway).
 		Do().
@@ -118,6 +124,7 @@ func (c *vpnGateways) Create(vpnGateway *v1alpha1.VpnGateway) (result *v1alpha1.
 func (c *vpnGateways) Update(vpnGateway *v1alpha1.VpnGateway) (result *v1alpha1.VpnGateway, err error) {
 	result = &v1alpha1.VpnGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpngateways").
 		Name(vpnGateway.Name).
 		Body(vpnGateway).
@@ -132,6 +139,7 @@ func (c *vpnGateways) Update(vpnGateway *v1alpha1.VpnGateway) (result *v1alpha1.
 func (c *vpnGateways) UpdateStatus(vpnGateway *v1alpha1.VpnGateway) (result *v1alpha1.VpnGateway, err error) {
 	result = &v1alpha1.VpnGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpngateways").
 		Name(vpnGateway.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *vpnGateways) UpdateStatus(vpnGateway *v1alpha1.VpnGateway) (result *v1a
 // Delete takes name of the vpnGateway and deletes it. Returns an error if one occurs.
 func (c *vpnGateways) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpngateways").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *vpnGateways) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpngateways").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *vpnGateways) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *vpnGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpnGateway, err error) {
 	result = &v1alpha1.VpnGateway{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("vpngateways").
 		SubResource(subresources...).
 		Name(name).

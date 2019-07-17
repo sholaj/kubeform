@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// LightsailStaticIpAttachmentsGetter has a method to return a LightsailStaticIpAttachmentInterface.
+// LightsailStaticIPAttachmentsGetter has a method to return a LightsailStaticIPAttachmentInterface.
 // A group's client should implement this interface.
-type LightsailStaticIpAttachmentsGetter interface {
-	LightsailStaticIpAttachments() LightsailStaticIpAttachmentInterface
+type LightsailStaticIPAttachmentsGetter interface {
+	LightsailStaticIPAttachments(namespace string) LightsailStaticIPAttachmentInterface
 }
 
-// LightsailStaticIpAttachmentInterface has methods to work with LightsailStaticIpAttachment resources.
-type LightsailStaticIpAttachmentInterface interface {
-	Create(*v1alpha1.LightsailStaticIpAttachment) (*v1alpha1.LightsailStaticIpAttachment, error)
-	Update(*v1alpha1.LightsailStaticIpAttachment) (*v1alpha1.LightsailStaticIpAttachment, error)
-	UpdateStatus(*v1alpha1.LightsailStaticIpAttachment) (*v1alpha1.LightsailStaticIpAttachment, error)
+// LightsailStaticIPAttachmentInterface has methods to work with LightsailStaticIPAttachment resources.
+type LightsailStaticIPAttachmentInterface interface {
+	Create(*v1alpha1.LightsailStaticIPAttachment) (*v1alpha1.LightsailStaticIPAttachment, error)
+	Update(*v1alpha1.LightsailStaticIPAttachment) (*v1alpha1.LightsailStaticIPAttachment, error)
+	UpdateStatus(*v1alpha1.LightsailStaticIPAttachment) (*v1alpha1.LightsailStaticIPAttachment, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.LightsailStaticIpAttachment, error)
-	List(opts v1.ListOptions) (*v1alpha1.LightsailStaticIpAttachmentList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.LightsailStaticIPAttachment, error)
+	List(opts v1.ListOptions) (*v1alpha1.LightsailStaticIPAttachmentList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LightsailStaticIpAttachment, err error)
-	LightsailStaticIpAttachmentExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LightsailStaticIPAttachment, err error)
+	LightsailStaticIPAttachmentExpansion
 }
 
-// lightsailStaticIpAttachments implements LightsailStaticIpAttachmentInterface
-type lightsailStaticIpAttachments struct {
+// lightsailStaticIPAttachments implements LightsailStaticIPAttachmentInterface
+type lightsailStaticIPAttachments struct {
 	client rest.Interface
+	ns     string
 }
 
-// newLightsailStaticIpAttachments returns a LightsailStaticIpAttachments
-func newLightsailStaticIpAttachments(c *AwsV1alpha1Client) *lightsailStaticIpAttachments {
-	return &lightsailStaticIpAttachments{
+// newLightsailStaticIPAttachments returns a LightsailStaticIPAttachments
+func newLightsailStaticIPAttachments(c *AwsV1alpha1Client, namespace string) *lightsailStaticIPAttachments {
+	return &lightsailStaticIPAttachments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the lightsailStaticIpAttachment, and returns the corresponding lightsailStaticIpAttachment object, and an error if there is any.
-func (c *lightsailStaticIpAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.LightsailStaticIpAttachment, err error) {
-	result = &v1alpha1.LightsailStaticIpAttachment{}
+// Get takes name of the lightsailStaticIPAttachment, and returns the corresponding lightsailStaticIPAttachment object, and an error if there is any.
+func (c *lightsailStaticIPAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.LightsailStaticIPAttachment, err error) {
+	result = &v1alpha1.LightsailStaticIPAttachment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lightsailstaticipattachments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *lightsailStaticIpAttachments) Get(name string, options v1.GetOptions) (
 	return
 }
 
-// List takes label and field selectors, and returns the list of LightsailStaticIpAttachments that match those selectors.
-func (c *lightsailStaticIpAttachments) List(opts v1.ListOptions) (result *v1alpha1.LightsailStaticIpAttachmentList, err error) {
+// List takes label and field selectors, and returns the list of LightsailStaticIPAttachments that match those selectors.
+func (c *lightsailStaticIPAttachments) List(opts v1.ListOptions) (result *v1alpha1.LightsailStaticIPAttachmentList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.LightsailStaticIpAttachmentList{}
+	result = &v1alpha1.LightsailStaticIPAttachmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lightsailstaticipattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *lightsailStaticIpAttachments) List(opts v1.ListOptions) (result *v1alph
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested lightsailStaticIpAttachments.
-func (c *lightsailStaticIpAttachments) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested lightsailStaticIPAttachments.
+func (c *lightsailStaticIPAttachments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lightsailstaticipattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a lightsailStaticIpAttachment and creates it.  Returns the server's representation of the lightsailStaticIpAttachment, and an error, if there is any.
-func (c *lightsailStaticIpAttachments) Create(lightsailStaticIpAttachment *v1alpha1.LightsailStaticIpAttachment) (result *v1alpha1.LightsailStaticIpAttachment, err error) {
-	result = &v1alpha1.LightsailStaticIpAttachment{}
+// Create takes the representation of a lightsailStaticIPAttachment and creates it.  Returns the server's representation of the lightsailStaticIPAttachment, and an error, if there is any.
+func (c *lightsailStaticIPAttachments) Create(lightsailStaticIPAttachment *v1alpha1.LightsailStaticIPAttachment) (result *v1alpha1.LightsailStaticIPAttachment, err error) {
+	result = &v1alpha1.LightsailStaticIPAttachment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lightsailstaticipattachments").
-		Body(lightsailStaticIpAttachment).
+		Body(lightsailStaticIPAttachment).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a lightsailStaticIpAttachment and updates it. Returns the server's representation of the lightsailStaticIpAttachment, and an error, if there is any.
-func (c *lightsailStaticIpAttachments) Update(lightsailStaticIpAttachment *v1alpha1.LightsailStaticIpAttachment) (result *v1alpha1.LightsailStaticIpAttachment, err error) {
-	result = &v1alpha1.LightsailStaticIpAttachment{}
+// Update takes the representation of a lightsailStaticIPAttachment and updates it. Returns the server's representation of the lightsailStaticIPAttachment, and an error, if there is any.
+func (c *lightsailStaticIPAttachments) Update(lightsailStaticIPAttachment *v1alpha1.LightsailStaticIPAttachment) (result *v1alpha1.LightsailStaticIPAttachment, err error) {
+	result = &v1alpha1.LightsailStaticIPAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lightsailstaticipattachments").
-		Name(lightsailStaticIpAttachment.Name).
-		Body(lightsailStaticIpAttachment).
+		Name(lightsailStaticIPAttachment.Name).
+		Body(lightsailStaticIPAttachment).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *lightsailStaticIpAttachments) Update(lightsailStaticIpAttachment *v1alp
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *lightsailStaticIpAttachments) UpdateStatus(lightsailStaticIpAttachment *v1alpha1.LightsailStaticIpAttachment) (result *v1alpha1.LightsailStaticIpAttachment, err error) {
-	result = &v1alpha1.LightsailStaticIpAttachment{}
+func (c *lightsailStaticIPAttachments) UpdateStatus(lightsailStaticIPAttachment *v1alpha1.LightsailStaticIPAttachment) (result *v1alpha1.LightsailStaticIPAttachment, err error) {
+	result = &v1alpha1.LightsailStaticIPAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lightsailstaticipattachments").
-		Name(lightsailStaticIpAttachment.Name).
+		Name(lightsailStaticIPAttachment.Name).
 		SubResource("status").
-		Body(lightsailStaticIpAttachment).
+		Body(lightsailStaticIPAttachment).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the lightsailStaticIpAttachment and deletes it. Returns an error if one occurs.
-func (c *lightsailStaticIpAttachments) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the lightsailStaticIPAttachment and deletes it. Returns an error if one occurs.
+func (c *lightsailStaticIPAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lightsailstaticipattachments").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *lightsailStaticIpAttachments) Delete(name string, options *v1.DeleteOpt
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *lightsailStaticIpAttachments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *lightsailStaticIPAttachments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lightsailstaticipattachments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *lightsailStaticIpAttachments) DeleteCollection(options *v1.DeleteOption
 		Error()
 }
 
-// Patch applies the patch and returns the patched lightsailStaticIpAttachment.
-func (c *lightsailStaticIpAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LightsailStaticIpAttachment, err error) {
-	result = &v1alpha1.LightsailStaticIpAttachment{}
+// Patch applies the patch and returns the patched lightsailStaticIPAttachment.
+func (c *lightsailStaticIPAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LightsailStaticIPAttachment, err error) {
+	result = &v1alpha1.LightsailStaticIPAttachment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lightsailstaticipattachments").
 		SubResource(subresources...).
 		Name(name).

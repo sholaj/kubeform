@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,252 +20,253 @@ type CloudfrontDistribution struct {
 
 type CloudfrontDistributionSpecCustomErrorResponse struct {
 	// +optional
-	ErrorCachingMinTtl int `json:"error_caching_min_ttl,omitempty"`
-	ErrorCode          int `json:"error_code"`
+	ErrorCachingMinTtl int `json:"errorCachingMinTtl,omitempty" tf:"error_caching_min_ttl,omitempty"`
+	ErrorCode          int `json:"errorCode" tf:"error_code"`
 	// +optional
-	ResponseCode int `json:"response_code,omitempty"`
+	ResponseCode int `json:"responseCode,omitempty" tf:"response_code,omitempty"`
 	// +optional
-	ResponsePagePath string `json:"response_page_path,omitempty"`
+	ResponsePagePath string `json:"responsePagePath,omitempty" tf:"response_page_path,omitempty"`
 }
 
 type CloudfrontDistributionSpecDefaultCacheBehaviorForwardedValuesCookies struct {
-	Forward string `json:"forward"`
+	Forward string `json:"forward" tf:"forward"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	WhitelistedNames []string `json:"whitelisted_names,omitempty"`
+	WhitelistedNames []string `json:"whitelistedNames,omitempty" tf:"whitelisted_names,omitempty"`
 }
 
 type CloudfrontDistributionSpecDefaultCacheBehaviorForwardedValues struct {
 	// +kubebuilder:validation:MaxItems=1
-	Cookies []CloudfrontDistributionSpecDefaultCacheBehaviorForwardedValues `json:"cookies"`
+	Cookies []CloudfrontDistributionSpecDefaultCacheBehaviorForwardedValuesCookies `json:"cookies" tf:"cookies"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Headers     []string `json:"headers,omitempty"`
-	QueryString bool     `json:"query_string"`
+	Headers     []string `json:"headers,omitempty" tf:"headers,omitempty"`
+	QueryString bool     `json:"queryString" tf:"query_string"`
 	// +optional
-	QueryStringCacheKeys []string `json:"query_string_cache_keys,omitempty"`
+	QueryStringCacheKeys []string `json:"queryStringCacheKeys,omitempty" tf:"query_string_cache_keys,omitempty"`
 }
 
 type CloudfrontDistributionSpecDefaultCacheBehaviorLambdaFunctionAssociation struct {
-	EventType string `json:"event_type"`
+	EventType string `json:"eventType" tf:"event_type"`
 	// +optional
-	IncludeBody bool   `json:"include_body,omitempty"`
-	LambdaArn   string `json:"lambda_arn"`
+	IncludeBody bool   `json:"includeBody,omitempty" tf:"include_body,omitempty"`
+	LambdaArn   string `json:"lambdaArn" tf:"lambda_arn"`
 }
 
 type CloudfrontDistributionSpecDefaultCacheBehavior struct {
 	// +kubebuilder:validation:UniqueItems=true
-	AllowedMethods []string `json:"allowed_methods"`
+	AllowedMethods []string `json:"allowedMethods" tf:"allowed_methods"`
 	// +kubebuilder:validation:UniqueItems=true
-	CachedMethods []string `json:"cached_methods"`
+	CachedMethods []string `json:"cachedMethods" tf:"cached_methods"`
 	// +optional
-	Compress bool `json:"compress,omitempty"`
+	Compress bool `json:"compress,omitempty" tf:"compress,omitempty"`
 	// +optional
-	DefaultTtl int `json:"default_ttl,omitempty"`
+	DefaultTtl int `json:"defaultTtl,omitempty" tf:"default_ttl,omitempty"`
 	// +optional
-	FieldLevelEncryptionId string `json:"field_level_encryption_id,omitempty"`
+	FieldLevelEncryptionID string `json:"fieldLevelEncryptionID,omitempty" tf:"field_level_encryption_id,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
-	ForwardedValues []CloudfrontDistributionSpecDefaultCacheBehavior `json:"forwarded_values"`
+	ForwardedValues []CloudfrontDistributionSpecDefaultCacheBehaviorForwardedValues `json:"forwardedValues" tf:"forwarded_values"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=4
 	// +kubebuilder:validation:UniqueItems=true
-	LambdaFunctionAssociation *[]CloudfrontDistributionSpecDefaultCacheBehavior `json:"lambda_function_association,omitempty"`
+	LambdaFunctionAssociation []CloudfrontDistributionSpecDefaultCacheBehaviorLambdaFunctionAssociation `json:"lambdaFunctionAssociation,omitempty" tf:"lambda_function_association,omitempty"`
 	// +optional
-	MaxTtl int `json:"max_ttl,omitempty"`
+	MaxTtl int `json:"maxTtl,omitempty" tf:"max_ttl,omitempty"`
 	// +optional
-	MinTtl int `json:"min_ttl,omitempty"`
+	MinTtl int `json:"minTtl,omitempty" tf:"min_ttl,omitempty"`
 	// +optional
-	SmoothStreaming bool   `json:"smooth_streaming,omitempty"`
-	TargetOriginId  string `json:"target_origin_id"`
+	SmoothStreaming bool   `json:"smoothStreaming,omitempty" tf:"smooth_streaming,omitempty"`
+	TargetOriginID  string `json:"targetOriginID" tf:"target_origin_id"`
 	// +optional
-	TrustedSigners       []string `json:"trusted_signers,omitempty"`
-	ViewerProtocolPolicy string   `json:"viewer_protocol_policy"`
+	TrustedSigners       []string `json:"trustedSigners,omitempty" tf:"trusted_signers,omitempty"`
+	ViewerProtocolPolicy string   `json:"viewerProtocolPolicy" tf:"viewer_protocol_policy"`
 }
 
 type CloudfrontDistributionSpecLoggingConfig struct {
-	Bucket string `json:"bucket"`
+	Bucket string `json:"bucket" tf:"bucket"`
 	// +optional
-	IncludeCookies bool `json:"include_cookies,omitempty"`
+	IncludeCookies bool `json:"includeCookies,omitempty" tf:"include_cookies,omitempty"`
 	// +optional
-	Prefix string `json:"prefix,omitempty"`
+	Prefix string `json:"prefix,omitempty" tf:"prefix,omitempty"`
 }
 
 type CloudfrontDistributionSpecOrderedCacheBehaviorForwardedValuesCookies struct {
-	Forward string `json:"forward"`
+	Forward string `json:"forward" tf:"forward"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	WhitelistedNames []string `json:"whitelisted_names,omitempty"`
+	WhitelistedNames []string `json:"whitelistedNames,omitempty" tf:"whitelisted_names,omitempty"`
 }
 
 type CloudfrontDistributionSpecOrderedCacheBehaviorForwardedValues struct {
 	// +kubebuilder:validation:MaxItems=1
-	Cookies []CloudfrontDistributionSpecOrderedCacheBehaviorForwardedValues `json:"cookies"`
+	Cookies []CloudfrontDistributionSpecOrderedCacheBehaviorForwardedValuesCookies `json:"cookies" tf:"cookies"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Headers     []string `json:"headers,omitempty"`
-	QueryString bool     `json:"query_string"`
+	Headers     []string `json:"headers,omitempty" tf:"headers,omitempty"`
+	QueryString bool     `json:"queryString" tf:"query_string"`
 	// +optional
-	QueryStringCacheKeys []string `json:"query_string_cache_keys,omitempty"`
+	QueryStringCacheKeys []string `json:"queryStringCacheKeys,omitempty" tf:"query_string_cache_keys,omitempty"`
 }
 
 type CloudfrontDistributionSpecOrderedCacheBehaviorLambdaFunctionAssociation struct {
-	EventType string `json:"event_type"`
+	EventType string `json:"eventType" tf:"event_type"`
 	// +optional
-	IncludeBody bool   `json:"include_body,omitempty"`
-	LambdaArn   string `json:"lambda_arn"`
+	IncludeBody bool   `json:"includeBody,omitempty" tf:"include_body,omitempty"`
+	LambdaArn   string `json:"lambdaArn" tf:"lambda_arn"`
 }
 
 type CloudfrontDistributionSpecOrderedCacheBehavior struct {
 	// +kubebuilder:validation:UniqueItems=true
-	AllowedMethods []string `json:"allowed_methods"`
+	AllowedMethods []string `json:"allowedMethods" tf:"allowed_methods"`
 	// +kubebuilder:validation:UniqueItems=true
-	CachedMethods []string `json:"cached_methods"`
+	CachedMethods []string `json:"cachedMethods" tf:"cached_methods"`
 	// +optional
-	Compress bool `json:"compress,omitempty"`
+	Compress bool `json:"compress,omitempty" tf:"compress,omitempty"`
 	// +optional
-	DefaultTtl int `json:"default_ttl,omitempty"`
+	DefaultTtl int `json:"defaultTtl,omitempty" tf:"default_ttl,omitempty"`
 	// +optional
-	FieldLevelEncryptionId string `json:"field_level_encryption_id,omitempty"`
+	FieldLevelEncryptionID string `json:"fieldLevelEncryptionID,omitempty" tf:"field_level_encryption_id,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
-	ForwardedValues []CloudfrontDistributionSpecOrderedCacheBehavior `json:"forwarded_values"`
+	ForwardedValues []CloudfrontDistributionSpecOrderedCacheBehaviorForwardedValues `json:"forwardedValues" tf:"forwarded_values"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=4
 	// +kubebuilder:validation:UniqueItems=true
-	LambdaFunctionAssociation *[]CloudfrontDistributionSpecOrderedCacheBehavior `json:"lambda_function_association,omitempty"`
+	LambdaFunctionAssociation []CloudfrontDistributionSpecOrderedCacheBehaviorLambdaFunctionAssociation `json:"lambdaFunctionAssociation,omitempty" tf:"lambda_function_association,omitempty"`
 	// +optional
-	MaxTtl int `json:"max_ttl,omitempty"`
+	MaxTtl int `json:"maxTtl,omitempty" tf:"max_ttl,omitempty"`
 	// +optional
-	MinTtl      int    `json:"min_ttl,omitempty"`
-	PathPattern string `json:"path_pattern"`
+	MinTtl      int    `json:"minTtl,omitempty" tf:"min_ttl,omitempty"`
+	PathPattern string `json:"pathPattern" tf:"path_pattern"`
 	// +optional
-	SmoothStreaming bool   `json:"smooth_streaming,omitempty"`
-	TargetOriginId  string `json:"target_origin_id"`
+	SmoothStreaming bool   `json:"smoothStreaming,omitempty" tf:"smooth_streaming,omitempty"`
+	TargetOriginID  string `json:"targetOriginID" tf:"target_origin_id"`
 	// +optional
-	TrustedSigners       []string `json:"trusted_signers,omitempty"`
-	ViewerProtocolPolicy string   `json:"viewer_protocol_policy"`
+	TrustedSigners       []string `json:"trustedSigners,omitempty" tf:"trusted_signers,omitempty"`
+	ViewerProtocolPolicy string   `json:"viewerProtocolPolicy" tf:"viewer_protocol_policy"`
 }
 
 type CloudfrontDistributionSpecOriginCustomHeader struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
+	Name  string `json:"name" tf:"name"`
+	Value string `json:"value" tf:"value"`
 }
 
 type CloudfrontDistributionSpecOriginCustomOriginConfig struct {
-	HttpPort  int `json:"http_port"`
-	HttpsPort int `json:"https_port"`
+	HttpPort  int `json:"httpPort" tf:"http_port"`
+	HttpsPort int `json:"httpsPort" tf:"https_port"`
 	// +optional
-	OriginKeepaliveTimeout int    `json:"origin_keepalive_timeout,omitempty"`
-	OriginProtocolPolicy   string `json:"origin_protocol_policy"`
+	OriginKeepaliveTimeout int    `json:"originKeepaliveTimeout,omitempty" tf:"origin_keepalive_timeout,omitempty"`
+	OriginProtocolPolicy   string `json:"originProtocolPolicy" tf:"origin_protocol_policy"`
 	// +optional
-	OriginReadTimeout int `json:"origin_read_timeout,omitempty"`
+	OriginReadTimeout int `json:"originReadTimeout,omitempty" tf:"origin_read_timeout,omitempty"`
 	// +kubebuilder:validation:UniqueItems=true
-	OriginSslProtocols []string `json:"origin_ssl_protocols"`
+	OriginSslProtocols []string `json:"originSslProtocols" tf:"origin_ssl_protocols"`
 }
 
 type CloudfrontDistributionSpecOriginS3OriginConfig struct {
-	OriginAccessIdentity string `json:"origin_access_identity"`
+	OriginAccessIdentity string `json:"originAccessIdentity" tf:"origin_access_identity"`
 }
 
 type CloudfrontDistributionSpecOrigin struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	CustomHeader *[]CloudfrontDistributionSpecOrigin `json:"custom_header,omitempty"`
+	CustomHeader []CloudfrontDistributionSpecOriginCustomHeader `json:"customHeader,omitempty" tf:"custom_header,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	CustomOriginConfig *[]CloudfrontDistributionSpecOrigin `json:"custom_origin_config,omitempty"`
-	DomainName         string                              `json:"domain_name"`
-	OriginId           string                              `json:"origin_id"`
+	CustomOriginConfig []CloudfrontDistributionSpecOriginCustomOriginConfig `json:"customOriginConfig,omitempty" tf:"custom_origin_config,omitempty"`
+	DomainName         string                                               `json:"domainName" tf:"domain_name"`
+	OriginID           string                                               `json:"originID" tf:"origin_id"`
 	// +optional
-	OriginPath string `json:"origin_path,omitempty"`
+	OriginPath string `json:"originPath,omitempty" tf:"origin_path,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	S3OriginConfig *[]CloudfrontDistributionSpecOrigin `json:"s3_origin_config,omitempty"`
+	S3OriginConfig []CloudfrontDistributionSpecOriginS3OriginConfig `json:"s3OriginConfig,omitempty" tf:"s3_origin_config,omitempty"`
 }
 
 type CloudfrontDistributionSpecOriginGroupFailoverCriteria struct {
 	// +kubebuilder:validation:UniqueItems=true
-	StatusCodes []int64 `json:"status_codes"`
+	StatusCodes []int64 `json:"statusCodes" tf:"status_codes"`
 }
 
 type CloudfrontDistributionSpecOriginGroupMember struct {
-	OriginId string `json:"origin_id"`
+	OriginID string `json:"originID" tf:"origin_id"`
 }
 
 type CloudfrontDistributionSpecOriginGroup struct {
 	// +kubebuilder:validation:MaxItems=1
-	FailoverCriteria []CloudfrontDistributionSpecOriginGroup `json:"failover_criteria"`
+	FailoverCriteria []CloudfrontDistributionSpecOriginGroupFailoverCriteria `json:"failoverCriteria" tf:"failover_criteria"`
 	// +kubebuilder:validation:MinItems=2
-	Member   []CloudfrontDistributionSpecOriginGroup `json:"member"`
-	OriginId string                                  `json:"origin_id"`
+	Member   []CloudfrontDistributionSpecOriginGroupMember `json:"member" tf:"member"`
+	OriginID string                                        `json:"originID" tf:"origin_id"`
 }
 
 type CloudfrontDistributionSpecRestrictionsGeoRestriction struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Locations       []string `json:"locations,omitempty"`
-	RestrictionType string   `json:"restriction_type"`
+	Locations       []string `json:"locations,omitempty" tf:"locations,omitempty"`
+	RestrictionType string   `json:"restrictionType" tf:"restriction_type"`
 }
 
 type CloudfrontDistributionSpecRestrictions struct {
 	// +kubebuilder:validation:MaxItems=1
-	GeoRestriction []CloudfrontDistributionSpecRestrictions `json:"geo_restriction"`
+	GeoRestriction []CloudfrontDistributionSpecRestrictionsGeoRestriction `json:"geoRestriction" tf:"geo_restriction"`
 }
 
 type CloudfrontDistributionSpecViewerCertificate struct {
 	// +optional
-	AcmCertificateArn string `json:"acm_certificate_arn,omitempty"`
+	AcmCertificateArn string `json:"acmCertificateArn,omitempty" tf:"acm_certificate_arn,omitempty"`
 	// +optional
-	CloudfrontDefaultCertificate bool `json:"cloudfront_default_certificate,omitempty"`
+	CloudfrontDefaultCertificate bool `json:"cloudfrontDefaultCertificate,omitempty" tf:"cloudfront_default_certificate,omitempty"`
 	// +optional
-	IamCertificateId string `json:"iam_certificate_id,omitempty"`
+	IamCertificateID string `json:"iamCertificateID,omitempty" tf:"iam_certificate_id,omitempty"`
 	// +optional
-	MinimumProtocolVersion string `json:"minimum_protocol_version,omitempty"`
+	MinimumProtocolVersion string `json:"minimumProtocolVersion,omitempty" tf:"minimum_protocol_version,omitempty"`
 	// +optional
-	SslSupportMethod string `json:"ssl_support_method,omitempty"`
+	SslSupportMethod string `json:"sslSupportMethod,omitempty" tf:"ssl_support_method,omitempty"`
 }
 
 type CloudfrontDistributionSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Aliases []string `json:"aliases,omitempty"`
+	Aliases []string `json:"aliases,omitempty" tf:"aliases,omitempty"`
 	// +optional
-	Comment string `json:"comment,omitempty"`
-	// +optional
-	// +kubebuilder:validation:UniqueItems=true
-	CustomErrorResponse *[]CloudfrontDistributionSpec `json:"custom_error_response,omitempty"`
-	// +kubebuilder:validation:MaxItems=1
-	DefaultCacheBehavior []CloudfrontDistributionSpec `json:"default_cache_behavior"`
-	// +optional
-	DefaultRootObject string `json:"default_root_object,omitempty"`
-	Enabled           bool   `json:"enabled"`
-	// +optional
-	HttpVersion string `json:"http_version,omitempty"`
-	// +optional
-	IsIpv6Enabled bool `json:"is_ipv6_enabled,omitempty"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	LoggingConfig *[]CloudfrontDistributionSpec `json:"logging_config,omitempty"`
-	// +optional
-	OrderedCacheBehavior *[]CloudfrontDistributionSpec `json:"ordered_cache_behavior,omitempty"`
-	// +kubebuilder:validation:UniqueItems=true
-	Origin []CloudfrontDistributionSpec `json:"origin"`
+	Comment string `json:"comment,omitempty" tf:"comment,omitempty"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	OriginGroup *[]CloudfrontDistributionSpec `json:"origin_group,omitempty"`
-	// +optional
-	PriceClass string `json:"price_class,omitempty"`
+	CustomErrorResponse []CloudfrontDistributionSpecCustomErrorResponse `json:"customErrorResponse,omitempty" tf:"custom_error_response,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
-	Restrictions []CloudfrontDistributionSpec `json:"restrictions"`
+	DefaultCacheBehavior []CloudfrontDistributionSpecDefaultCacheBehavior `json:"defaultCacheBehavior" tf:"default_cache_behavior"`
 	// +optional
-	RetainOnDelete bool `json:"retain_on_delete,omitempty"`
+	DefaultRootObject string `json:"defaultRootObject,omitempty" tf:"default_root_object,omitempty"`
+	Enabled           bool   `json:"enabled" tf:"enabled"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	HttpVersion string `json:"httpVersion,omitempty" tf:"http_version,omitempty"`
+	// +optional
+	IsIpv6Enabled bool `json:"isIpv6Enabled,omitempty" tf:"is_ipv6_enabled,omitempty"`
+	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	ViewerCertificate []CloudfrontDistributionSpec `json:"viewer_certificate"`
+	LoggingConfig []CloudfrontDistributionSpecLoggingConfig `json:"loggingConfig,omitempty" tf:"logging_config,omitempty"`
 	// +optional
-	WaitForDeployment bool `json:"wait_for_deployment,omitempty"`
+	OrderedCacheBehavior []CloudfrontDistributionSpecOrderedCacheBehavior `json:"orderedCacheBehavior,omitempty" tf:"ordered_cache_behavior,omitempty"`
+	// +kubebuilder:validation:UniqueItems=true
+	Origin []CloudfrontDistributionSpecOrigin `json:"origin" tf:"origin"`
 	// +optional
-	WebAclId string `json:"web_acl_id,omitempty"`
+	// +kubebuilder:validation:UniqueItems=true
+	OriginGroup []CloudfrontDistributionSpecOriginGroup `json:"originGroup,omitempty" tf:"origin_group,omitempty"`
+	// +optional
+	PriceClass string `json:"priceClass,omitempty" tf:"price_class,omitempty"`
+	// +kubebuilder:validation:MaxItems=1
+	Restrictions []CloudfrontDistributionSpecRestrictions `json:"restrictions" tf:"restrictions"`
+	// +optional
+	RetainOnDelete bool `json:"retainOnDelete,omitempty" tf:"retain_on_delete,omitempty"`
+	// +optional
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
+	// +kubebuilder:validation:MaxItems=1
+	ViewerCertificate []CloudfrontDistributionSpecViewerCertificate `json:"viewerCertificate" tf:"viewer_certificate"`
+	// +optional
+	WaitForDeployment bool `json:"waitForDeployment,omitempty" tf:"wait_for_deployment,omitempty"`
+	// +optional
+	WebACLID    string                    `json:"webACLID,omitempty" tf:"web_acl_id,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type CloudfrontDistributionStatus struct {
@@ -273,7 +274,9 @@ type CloudfrontDistributionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

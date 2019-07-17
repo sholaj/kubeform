@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,12 +19,13 @@ type SqlServer struct {
 }
 
 type SqlServerSpec struct {
-	AdministratorLogin         string `json:"administrator_login"`
-	AdministratorLoginPassword string `json:"administrator_login_password"`
-	Location                   string `json:"location"`
-	Name                       string `json:"name"`
-	ResourceGroupName          string `json:"resource_group_name"`
-	Version                    string `json:"version"`
+	AdministratorLogin         string                    `json:"administratorLogin" tf:"administrator_login"`
+	AdministratorLoginPassword string                    `json:"administratorLoginPassword" tf:"administrator_login_password"`
+	Location                   string                    `json:"location" tf:"location"`
+	Name                       string                    `json:"name" tf:"name"`
+	ResourceGroupName          string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	Version                    string                    `json:"version" tf:"version"`
+	ProviderRef                core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SqlServerStatus struct {
@@ -32,7 +33,9 @@ type SqlServerStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

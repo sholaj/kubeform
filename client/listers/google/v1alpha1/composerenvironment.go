@@ -29,8 +29,8 @@ import (
 type ComposerEnvironmentLister interface {
 	// List lists all ComposerEnvironments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComposerEnvironment, err error)
-	// Get retrieves the ComposerEnvironment from the index for a given name.
-	Get(name string) (*v1alpha1.ComposerEnvironment, error)
+	// ComposerEnvironments returns an object that can list and get ComposerEnvironments.
+	ComposerEnvironments(namespace string) ComposerEnvironmentNamespaceLister
 	ComposerEnvironmentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *composerEnvironmentLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the ComposerEnvironment from the index for a given name.
-func (s *composerEnvironmentLister) Get(name string) (*v1alpha1.ComposerEnvironment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComposerEnvironments returns an object that can list and get ComposerEnvironments.
+func (s *composerEnvironmentLister) ComposerEnvironments(namespace string) ComposerEnvironmentNamespaceLister {
+	return composerEnvironmentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComposerEnvironmentNamespaceLister helps list and get ComposerEnvironments.
+type ComposerEnvironmentNamespaceLister interface {
+	// List lists all ComposerEnvironments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComposerEnvironment, err error)
+	// Get retrieves the ComposerEnvironment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComposerEnvironment, error)
+	ComposerEnvironmentNamespaceListerExpansion
+}
+
+// composerEnvironmentNamespaceLister implements the ComposerEnvironmentNamespaceLister
+// interface.
+type composerEnvironmentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComposerEnvironments in the indexer for a given namespace.
+func (s composerEnvironmentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComposerEnvironment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComposerEnvironment))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComposerEnvironment from the indexer for a given namespace and name.
+func (s composerEnvironmentNamespaceLister) Get(name string) (*v1alpha1.ComposerEnvironment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

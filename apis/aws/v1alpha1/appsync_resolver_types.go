@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,22 +20,23 @@ type AppsyncResolver struct {
 
 type AppsyncResolverSpecPipelineConfig struct {
 	// +optional
-	Functions []string `json:"functions,omitempty"`
+	Functions []string `json:"functions,omitempty" tf:"functions,omitempty"`
 }
 
 type AppsyncResolverSpec struct {
-	ApiId string `json:"api_id"`
+	ApiID string `json:"apiID" tf:"api_id"`
 	// +optional
-	DataSource string `json:"data_source,omitempty"`
-	Field      string `json:"field"`
+	DataSource string `json:"dataSource,omitempty" tf:"data_source,omitempty"`
+	Field      string `json:"field" tf:"field"`
 	// +optional
-	Kind string `json:"kind,omitempty"`
+	Kind string `json:"kind,omitempty" tf:"kind,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	PipelineConfig   *[]AppsyncResolverSpec `json:"pipeline_config,omitempty"`
-	RequestTemplate  string                 `json:"request_template"`
-	ResponseTemplate string                 `json:"response_template"`
-	Type             string                 `json:"type"`
+	PipelineConfig   []AppsyncResolverSpecPipelineConfig `json:"pipelineConfig,omitempty" tf:"pipeline_config,omitempty"`
+	RequestTemplate  string                              `json:"requestTemplate" tf:"request_template"`
+	ResponseTemplate string                              `json:"responseTemplate" tf:"response_template"`
+	Type             string                              `json:"type" tf:"type"`
+	ProviderRef      core.LocalObjectReference           `json:"providerRef" tf:"-"`
 }
 
 type AppsyncResolverStatus struct {
@@ -43,7 +44,9 @@ type AppsyncResolverStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

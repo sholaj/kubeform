@@ -29,8 +29,8 @@ import (
 type MediaStoreContainerPolicyLister interface {
 	// List lists all MediaStoreContainerPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MediaStoreContainerPolicy, err error)
-	// Get retrieves the MediaStoreContainerPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.MediaStoreContainerPolicy, error)
+	// MediaStoreContainerPolicies returns an object that can list and get MediaStoreContainerPolicies.
+	MediaStoreContainerPolicies(namespace string) MediaStoreContainerPolicyNamespaceLister
 	MediaStoreContainerPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *mediaStoreContainerPolicyLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the MediaStoreContainerPolicy from the index for a given name.
-func (s *mediaStoreContainerPolicyLister) Get(name string) (*v1alpha1.MediaStoreContainerPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MediaStoreContainerPolicies returns an object that can list and get MediaStoreContainerPolicies.
+func (s *mediaStoreContainerPolicyLister) MediaStoreContainerPolicies(namespace string) MediaStoreContainerPolicyNamespaceLister {
+	return mediaStoreContainerPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MediaStoreContainerPolicyNamespaceLister helps list and get MediaStoreContainerPolicies.
+type MediaStoreContainerPolicyNamespaceLister interface {
+	// List lists all MediaStoreContainerPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MediaStoreContainerPolicy, err error)
+	// Get retrieves the MediaStoreContainerPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MediaStoreContainerPolicy, error)
+	MediaStoreContainerPolicyNamespaceListerExpansion
+}
+
+// mediaStoreContainerPolicyNamespaceLister implements the MediaStoreContainerPolicyNamespaceLister
+// interface.
+type mediaStoreContainerPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MediaStoreContainerPolicies in the indexer for a given namespace.
+func (s mediaStoreContainerPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MediaStoreContainerPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MediaStoreContainerPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the MediaStoreContainerPolicy from the indexer for a given namespace and name.
+func (s mediaStoreContainerPolicyNamespaceLister) Get(name string) (*v1alpha1.MediaStoreContainerPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

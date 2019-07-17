@@ -32,7 +32,7 @@ import (
 // OrganizationIamBindingsGetter has a method to return a OrganizationIamBindingInterface.
 // A group's client should implement this interface.
 type OrganizationIamBindingsGetter interface {
-	OrganizationIamBindings() OrganizationIamBindingInterface
+	OrganizationIamBindings(namespace string) OrganizationIamBindingInterface
 }
 
 // OrganizationIamBindingInterface has methods to work with OrganizationIamBinding resources.
@@ -52,12 +52,14 @@ type OrganizationIamBindingInterface interface {
 // organizationIamBindings implements OrganizationIamBindingInterface
 type organizationIamBindings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOrganizationIamBindings returns a OrganizationIamBindings
-func newOrganizationIamBindings(c *GoogleV1alpha1Client) *organizationIamBindings {
+func newOrganizationIamBindings(c *GoogleV1alpha1Client, namespace string) *organizationIamBindings {
 	return &organizationIamBindings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOrganizationIamBindings(c *GoogleV1alpha1Client) *organizationIamBinding
 func (c *organizationIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.OrganizationIamBinding, err error) {
 	result = &v1alpha1.OrganizationIamBinding{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationiambindings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *organizationIamBindings) List(opts v1.ListOptions) (result *v1alpha1.Or
 	}
 	result = &v1alpha1.OrganizationIamBindingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationiambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *organizationIamBindings) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("organizationiambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *organizationIamBindings) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *organizationIamBindings) Create(organizationIamBinding *v1alpha1.OrganizationIamBinding) (result *v1alpha1.OrganizationIamBinding, err error) {
 	result = &v1alpha1.OrganizationIamBinding{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("organizationiambindings").
 		Body(organizationIamBinding).
 		Do().
@@ -118,6 +124,7 @@ func (c *organizationIamBindings) Create(organizationIamBinding *v1alpha1.Organi
 func (c *organizationIamBindings) Update(organizationIamBinding *v1alpha1.OrganizationIamBinding) (result *v1alpha1.OrganizationIamBinding, err error) {
 	result = &v1alpha1.OrganizationIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("organizationiambindings").
 		Name(organizationIamBinding.Name).
 		Body(organizationIamBinding).
@@ -132,6 +139,7 @@ func (c *organizationIamBindings) Update(organizationIamBinding *v1alpha1.Organi
 func (c *organizationIamBindings) UpdateStatus(organizationIamBinding *v1alpha1.OrganizationIamBinding) (result *v1alpha1.OrganizationIamBinding, err error) {
 	result = &v1alpha1.OrganizationIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("organizationiambindings").
 		Name(organizationIamBinding.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *organizationIamBindings) UpdateStatus(organizationIamBinding *v1alpha1.
 // Delete takes name of the organizationIamBinding and deletes it. Returns an error if one occurs.
 func (c *organizationIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("organizationiambindings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *organizationIamBindings) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("organizationiambindings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *organizationIamBindings) DeleteCollection(options *v1.DeleteOptions, li
 func (c *organizationIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OrganizationIamBinding, err error) {
 	result = &v1alpha1.OrganizationIamBinding{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("organizationiambindings").
 		SubResource(subresources...).
 		Name(name).

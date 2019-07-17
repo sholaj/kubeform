@@ -29,8 +29,8 @@ import (
 type LoggingFolderExclusionLister interface {
 	// List lists all LoggingFolderExclusions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LoggingFolderExclusion, err error)
-	// Get retrieves the LoggingFolderExclusion from the index for a given name.
-	Get(name string) (*v1alpha1.LoggingFolderExclusion, error)
+	// LoggingFolderExclusions returns an object that can list and get LoggingFolderExclusions.
+	LoggingFolderExclusions(namespace string) LoggingFolderExclusionNamespaceLister
 	LoggingFolderExclusionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *loggingFolderExclusionLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the LoggingFolderExclusion from the index for a given name.
-func (s *loggingFolderExclusionLister) Get(name string) (*v1alpha1.LoggingFolderExclusion, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LoggingFolderExclusions returns an object that can list and get LoggingFolderExclusions.
+func (s *loggingFolderExclusionLister) LoggingFolderExclusions(namespace string) LoggingFolderExclusionNamespaceLister {
+	return loggingFolderExclusionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LoggingFolderExclusionNamespaceLister helps list and get LoggingFolderExclusions.
+type LoggingFolderExclusionNamespaceLister interface {
+	// List lists all LoggingFolderExclusions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LoggingFolderExclusion, err error)
+	// Get retrieves the LoggingFolderExclusion from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LoggingFolderExclusion, error)
+	LoggingFolderExclusionNamespaceListerExpansion
+}
+
+// loggingFolderExclusionNamespaceLister implements the LoggingFolderExclusionNamespaceLister
+// interface.
+type loggingFolderExclusionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LoggingFolderExclusions in the indexer for a given namespace.
+func (s loggingFolderExclusionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LoggingFolderExclusion, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LoggingFolderExclusion))
+	})
+	return ret, err
+}
+
+// Get retrieves the LoggingFolderExclusion from the indexer for a given namespace and name.
+func (s loggingFolderExclusionNamespaceLister) Get(name string) (*v1alpha1.LoggingFolderExclusion, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

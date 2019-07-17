@@ -29,8 +29,8 @@ import (
 type DxPublicVirtualInterfaceLister interface {
 	// List lists all DxPublicVirtualInterfaces in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DxPublicVirtualInterface, err error)
-	// Get retrieves the DxPublicVirtualInterface from the index for a given name.
-	Get(name string) (*v1alpha1.DxPublicVirtualInterface, error)
+	// DxPublicVirtualInterfaces returns an object that can list and get DxPublicVirtualInterfaces.
+	DxPublicVirtualInterfaces(namespace string) DxPublicVirtualInterfaceNamespaceLister
 	DxPublicVirtualInterfaceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dxPublicVirtualInterfaceLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the DxPublicVirtualInterface from the index for a given name.
-func (s *dxPublicVirtualInterfaceLister) Get(name string) (*v1alpha1.DxPublicVirtualInterface, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DxPublicVirtualInterfaces returns an object that can list and get DxPublicVirtualInterfaces.
+func (s *dxPublicVirtualInterfaceLister) DxPublicVirtualInterfaces(namespace string) DxPublicVirtualInterfaceNamespaceLister {
+	return dxPublicVirtualInterfaceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DxPublicVirtualInterfaceNamespaceLister helps list and get DxPublicVirtualInterfaces.
+type DxPublicVirtualInterfaceNamespaceLister interface {
+	// List lists all DxPublicVirtualInterfaces in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DxPublicVirtualInterface, err error)
+	// Get retrieves the DxPublicVirtualInterface from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DxPublicVirtualInterface, error)
+	DxPublicVirtualInterfaceNamespaceListerExpansion
+}
+
+// dxPublicVirtualInterfaceNamespaceLister implements the DxPublicVirtualInterfaceNamespaceLister
+// interface.
+type dxPublicVirtualInterfaceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DxPublicVirtualInterfaces in the indexer for a given namespace.
+func (s dxPublicVirtualInterfaceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DxPublicVirtualInterface, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DxPublicVirtualInterface))
+	})
+	return ret, err
+}
+
+// Get retrieves the DxPublicVirtualInterface from the indexer for a given namespace and name.
+func (s dxPublicVirtualInterfaceNamespaceLister) Get(name string) (*v1alpha1.DxPublicVirtualInterface, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

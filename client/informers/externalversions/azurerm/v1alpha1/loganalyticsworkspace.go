@@ -41,32 +41,33 @@ type LogAnalyticsWorkspaceInformer interface {
 type logAnalyticsWorkspaceInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewLogAnalyticsWorkspaceInformer constructs a new informer for LogAnalyticsWorkspace type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLogAnalyticsWorkspaceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLogAnalyticsWorkspaceInformer(client, resyncPeriod, indexers, nil)
+func NewLogAnalyticsWorkspaceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLogAnalyticsWorkspaceInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredLogAnalyticsWorkspaceInformer constructs a new informer for LogAnalyticsWorkspace type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLogAnalyticsWorkspaceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLogAnalyticsWorkspaceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().LogAnalyticsWorkspaces().List(options)
+				return client.AzurermV1alpha1().LogAnalyticsWorkspaces(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().LogAnalyticsWorkspaces().Watch(options)
+				return client.AzurermV1alpha1().LogAnalyticsWorkspaces(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.LogAnalyticsWorkspace{},
@@ -76,7 +77,7 @@ func NewFilteredLogAnalyticsWorkspaceInformer(client versioned.Interface, resync
 }
 
 func (f *logAnalyticsWorkspaceInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLogAnalyticsWorkspaceInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredLogAnalyticsWorkspaceInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *logAnalyticsWorkspaceInformer) Informer() cache.SharedIndexInformer {

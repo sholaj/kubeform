@@ -29,8 +29,8 @@ import (
 type MonitoringAlertPolicyLister interface {
 	// List lists all MonitoringAlertPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MonitoringAlertPolicy, err error)
-	// Get retrieves the MonitoringAlertPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.MonitoringAlertPolicy, error)
+	// MonitoringAlertPolicies returns an object that can list and get MonitoringAlertPolicies.
+	MonitoringAlertPolicies(namespace string) MonitoringAlertPolicyNamespaceLister
 	MonitoringAlertPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *monitoringAlertPolicyLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the MonitoringAlertPolicy from the index for a given name.
-func (s *monitoringAlertPolicyLister) Get(name string) (*v1alpha1.MonitoringAlertPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MonitoringAlertPolicies returns an object that can list and get MonitoringAlertPolicies.
+func (s *monitoringAlertPolicyLister) MonitoringAlertPolicies(namespace string) MonitoringAlertPolicyNamespaceLister {
+	return monitoringAlertPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MonitoringAlertPolicyNamespaceLister helps list and get MonitoringAlertPolicies.
+type MonitoringAlertPolicyNamespaceLister interface {
+	// List lists all MonitoringAlertPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MonitoringAlertPolicy, err error)
+	// Get retrieves the MonitoringAlertPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MonitoringAlertPolicy, error)
+	MonitoringAlertPolicyNamespaceListerExpansion
+}
+
+// monitoringAlertPolicyNamespaceLister implements the MonitoringAlertPolicyNamespaceLister
+// interface.
+type monitoringAlertPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MonitoringAlertPolicies in the indexer for a given namespace.
+func (s monitoringAlertPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MonitoringAlertPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MonitoringAlertPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the MonitoringAlertPolicy from the indexer for a given namespace and name.
+func (s monitoringAlertPolicyNamespaceLister) Get(name string) (*v1alpha1.MonitoringAlertPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

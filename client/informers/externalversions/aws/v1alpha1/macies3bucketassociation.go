@@ -41,32 +41,33 @@ type MacieS3BucketAssociationInformer interface {
 type macieS3BucketAssociationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewMacieS3BucketAssociationInformer constructs a new informer for MacieS3BucketAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewMacieS3BucketAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredMacieS3BucketAssociationInformer(client, resyncPeriod, indexers, nil)
+func NewMacieS3BucketAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredMacieS3BucketAssociationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredMacieS3BucketAssociationInformer constructs a new informer for MacieS3BucketAssociation type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredMacieS3BucketAssociationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredMacieS3BucketAssociationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().MacieS3BucketAssociations().List(options)
+				return client.AwsV1alpha1().MacieS3BucketAssociations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().MacieS3BucketAssociations().Watch(options)
+				return client.AwsV1alpha1().MacieS3BucketAssociations(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.MacieS3BucketAssociation{},
@@ -76,7 +77,7 @@ func NewFilteredMacieS3BucketAssociationInformer(client versioned.Interface, res
 }
 
 func (f *macieS3BucketAssociationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredMacieS3BucketAssociationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredMacieS3BucketAssociationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *macieS3BucketAssociationInformer) Informer() cache.SharedIndexInformer {

@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/google/v1alpha1"
 )
 
-// FakeComputeRouterNats implements ComputeRouterNatInterface
-type FakeComputeRouterNats struct {
+// FakeComputeRouterNATs implements ComputeRouterNATInterface
+type FakeComputeRouterNATs struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computerouternatsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computerouternats"}
 
-var computerouternatsKind = schema.GroupVersionKind{Group: "google.kubeform.com", Version: "v1alpha1", Kind: "ComputeRouterNat"}
+var computerouternatsKind = schema.GroupVersionKind{Group: "google.kubeform.com", Version: "v1alpha1", Kind: "ComputeRouterNAT"}
 
-// Get takes name of the computeRouterNat, and returns the corresponding computeRouterNat object, and an error if there is any.
-func (c *FakeComputeRouterNats) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeRouterNat, err error) {
+// Get takes name of the computeRouterNAT, and returns the corresponding computeRouterNAT object, and an error if there is any.
+func (c *FakeComputeRouterNATs) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeRouterNAT, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computerouternatsResource, name), &v1alpha1.ComputeRouterNat{})
+		Invokes(testing.NewGetAction(computerouternatsResource, c.ns, name), &v1alpha1.ComputeRouterNAT{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeRouterNat), err
+	return obj.(*v1alpha1.ComputeRouterNAT), err
 }
 
-// List takes label and field selectors, and returns the list of ComputeRouterNats that match those selectors.
-func (c *FakeComputeRouterNats) List(opts v1.ListOptions) (result *v1alpha1.ComputeRouterNatList, err error) {
+// List takes label and field selectors, and returns the list of ComputeRouterNATs that match those selectors.
+func (c *FakeComputeRouterNATs) List(opts v1.ListOptions) (result *v1alpha1.ComputeRouterNATList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computerouternatsResource, computerouternatsKind, opts), &v1alpha1.ComputeRouterNatList{})
+		Invokes(testing.NewListAction(computerouternatsResource, computerouternatsKind, c.ns, opts), &v1alpha1.ComputeRouterNATList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeComputeRouterNats) List(opts v1.ListOptions) (result *v1alpha1.Comp
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.ComputeRouterNatList{ListMeta: obj.(*v1alpha1.ComputeRouterNatList).ListMeta}
-	for _, item := range obj.(*v1alpha1.ComputeRouterNatList).Items {
+	list := &v1alpha1.ComputeRouterNATList{ListMeta: obj.(*v1alpha1.ComputeRouterNATList).ListMeta}
+	for _, item := range obj.(*v1alpha1.ComputeRouterNATList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeComputeRouterNats) List(opts v1.ListOptions) (result *v1alpha1.Comp
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested computeRouterNats.
-func (c *FakeComputeRouterNats) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested computeRouterNATs.
+func (c *FakeComputeRouterNATs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computerouternatsResource, opts))
+		InvokesWatch(testing.NewWatchAction(computerouternatsResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a computeRouterNat and creates it.  Returns the server's representation of the computeRouterNat, and an error, if there is any.
-func (c *FakeComputeRouterNats) Create(computeRouterNat *v1alpha1.ComputeRouterNat) (result *v1alpha1.ComputeRouterNat, err error) {
+// Create takes the representation of a computeRouterNAT and creates it.  Returns the server's representation of the computeRouterNAT, and an error, if there is any.
+func (c *FakeComputeRouterNATs) Create(computeRouterNAT *v1alpha1.ComputeRouterNAT) (result *v1alpha1.ComputeRouterNAT, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computerouternatsResource, computeRouterNat), &v1alpha1.ComputeRouterNat{})
+		Invokes(testing.NewCreateAction(computerouternatsResource, c.ns, computeRouterNAT), &v1alpha1.ComputeRouterNAT{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeRouterNat), err
+	return obj.(*v1alpha1.ComputeRouterNAT), err
 }
 
-// Update takes the representation of a computeRouterNat and updates it. Returns the server's representation of the computeRouterNat, and an error, if there is any.
-func (c *FakeComputeRouterNats) Update(computeRouterNat *v1alpha1.ComputeRouterNat) (result *v1alpha1.ComputeRouterNat, err error) {
+// Update takes the representation of a computeRouterNAT and updates it. Returns the server's representation of the computeRouterNAT, and an error, if there is any.
+func (c *FakeComputeRouterNATs) Update(computeRouterNAT *v1alpha1.ComputeRouterNAT) (result *v1alpha1.ComputeRouterNAT, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computerouternatsResource, computeRouterNat), &v1alpha1.ComputeRouterNat{})
+		Invokes(testing.NewUpdateAction(computerouternatsResource, c.ns, computeRouterNAT), &v1alpha1.ComputeRouterNAT{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeRouterNat), err
+	return obj.(*v1alpha1.ComputeRouterNAT), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeComputeRouterNats) UpdateStatus(computeRouterNat *v1alpha1.ComputeRouterNat) (*v1alpha1.ComputeRouterNat, error) {
+func (c *FakeComputeRouterNATs) UpdateStatus(computeRouterNAT *v1alpha1.ComputeRouterNAT) (*v1alpha1.ComputeRouterNAT, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computerouternatsResource, "status", computeRouterNat), &v1alpha1.ComputeRouterNat{})
+		Invokes(testing.NewUpdateSubresourceAction(computerouternatsResource, "status", c.ns, computeRouterNAT), &v1alpha1.ComputeRouterNAT{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeRouterNat), err
+	return obj.(*v1alpha1.ComputeRouterNAT), err
 }
 
-// Delete takes name of the computeRouterNat and deletes it. Returns an error if one occurs.
-func (c *FakeComputeRouterNats) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the computeRouterNAT and deletes it. Returns an error if one occurs.
+func (c *FakeComputeRouterNATs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computerouternatsResource, name), &v1alpha1.ComputeRouterNat{})
+		Invokes(testing.NewDeleteAction(computerouternatsResource, c.ns, name), &v1alpha1.ComputeRouterNAT{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeComputeRouterNats) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computerouternatsResource, listOptions)
+func (c *FakeComputeRouterNATs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(computerouternatsResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeRouterNatList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeRouterNATList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched computeRouterNat.
-func (c *FakeComputeRouterNats) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeRouterNat, err error) {
+// Patch applies the patch and returns the patched computeRouterNAT.
+func (c *FakeComputeRouterNATs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeRouterNAT, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computerouternatsResource, name, pt, data, subresources...), &v1alpha1.ComputeRouterNat{})
+		Invokes(testing.NewPatchSubresourceAction(computerouternatsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeRouterNAT{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ComputeRouterNat), err
+	return obj.(*v1alpha1.ComputeRouterNAT), err
 }

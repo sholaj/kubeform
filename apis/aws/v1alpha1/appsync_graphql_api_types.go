@@ -1,78 +1,81 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type AppsyncGraphqlApi struct {
+type AppsyncGraphqlAPI struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              AppsyncGraphqlApiSpec   `json:"spec,omitempty"`
-	Status            AppsyncGraphqlApiStatus `json:"status,omitempty"`
+	Spec              AppsyncGraphqlAPISpec   `json:"spec,omitempty"`
+	Status            AppsyncGraphqlAPIStatus `json:"status,omitempty"`
 }
 
-type AppsyncGraphqlApiSpecLogConfig struct {
-	CloudwatchLogsRoleArn string `json:"cloudwatch_logs_role_arn"`
-	FieldLogLevel         string `json:"field_log_level"`
+type AppsyncGraphqlAPISpecLogConfig struct {
+	CloudwatchLogsRoleArn string `json:"cloudwatchLogsRoleArn" tf:"cloudwatch_logs_role_arn"`
+	FieldLogLevel         string `json:"fieldLogLevel" tf:"field_log_level"`
 }
 
-type AppsyncGraphqlApiSpecOpenidConnectConfig struct {
+type AppsyncGraphqlAPISpecOpenidConnectConfig struct {
 	// +optional
-	AuthTtl int `json:"auth_ttl,omitempty"`
+	AuthTtl int `json:"authTtl,omitempty" tf:"auth_ttl,omitempty"`
 	// +optional
-	ClientId string `json:"client_id,omitempty"`
+	ClientID string `json:"clientID,omitempty" tf:"client_id,omitempty"`
 	// +optional
-	IatTtl int    `json:"iat_ttl,omitempty"`
-	Issuer string `json:"issuer"`
+	IatTtl int    `json:"iatTtl,omitempty" tf:"iat_ttl,omitempty"`
+	Issuer string `json:"issuer" tf:"issuer"`
 }
 
-type AppsyncGraphqlApiSpecUserPoolConfig struct {
+type AppsyncGraphqlAPISpecUserPoolConfig struct {
 	// +optional
-	AppIdClientRegex string `json:"app_id_client_regex,omitempty"`
-	DefaultAction    string `json:"default_action"`
-	UserPoolId       string `json:"user_pool_id"`
+	AppIDClientRegex string `json:"appIDClientRegex,omitempty" tf:"app_id_client_regex,omitempty"`
+	DefaultAction    string `json:"defaultAction" tf:"default_action"`
+	UserPoolID       string `json:"userPoolID" tf:"user_pool_id"`
 }
 
-type AppsyncGraphqlApiSpec struct {
-	AuthenticationType string `json:"authentication_type"`
+type AppsyncGraphqlAPISpec struct {
+	AuthenticationType string `json:"authenticationType" tf:"authentication_type"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	LogConfig *[]AppsyncGraphqlApiSpec `json:"log_config,omitempty"`
-	Name      string                   `json:"name"`
+	LogConfig []AppsyncGraphqlAPISpecLogConfig `json:"logConfig,omitempty" tf:"log_config,omitempty"`
+	Name      string                           `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	OpenidConnectConfig *[]AppsyncGraphqlApiSpec `json:"openid_connect_config,omitempty"`
+	OpenidConnectConfig []AppsyncGraphqlAPISpecOpenidConnectConfig `json:"openidConnectConfig,omitempty" tf:"openid_connect_config,omitempty"`
 	// +optional
-	Schema string `json:"schema,omitempty"`
+	Schema string `json:"schema,omitempty" tf:"schema,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	UserPoolConfig *[]AppsyncGraphqlApiSpec `json:"user_pool_config,omitempty"`
+	UserPoolConfig []AppsyncGraphqlAPISpecUserPoolConfig `json:"userPoolConfig,omitempty" tf:"user_pool_config,omitempty"`
+	ProviderRef    core.LocalObjectReference             `json:"providerRef" tf:"-"`
 }
 
-type AppsyncGraphqlApiStatus struct {
+type AppsyncGraphqlAPIStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// AppsyncGraphqlApiList is a list of AppsyncGraphqlApis
-type AppsyncGraphqlApiList struct {
+// AppsyncGraphqlAPIList is a list of AppsyncGraphqlAPIs
+type AppsyncGraphqlAPIList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of AppsyncGraphqlApi CRD objects
-	Items []AppsyncGraphqlApi `json:"items,omitempty"`
+	// Items is a list of AppsyncGraphqlAPI CRD objects
+	Items []AppsyncGraphqlAPI `json:"items,omitempty"`
 }

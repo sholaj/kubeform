@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,16 +20,17 @@ type DataLakeStore struct {
 
 type DataLakeStoreSpec struct {
 	// +optional
-	EncryptionState string `json:"encryption_state,omitempty"`
+	EncryptionState string `json:"encryptionState,omitempty" tf:"encryption_state,omitempty"`
 	// +optional
-	FirewallAllowAzureIps string `json:"firewall_allow_azure_ips,omitempty"`
+	FirewallAllowAzureIPS string `json:"firewallAllowAzureIPS,omitempty" tf:"firewall_allow_azure_ips,omitempty"`
 	// +optional
-	FirewallState     string `json:"firewall_state,omitempty"`
-	Location          string `json:"location"`
-	Name              string `json:"name"`
-	ResourceGroupName string `json:"resource_group_name"`
+	FirewallState     string `json:"firewallState,omitempty" tf:"firewall_state,omitempty"`
+	Location          string `json:"location" tf:"location"`
+	Name              string `json:"name" tf:"name"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	Tier string `json:"tier,omitempty"`
+	Tier        string                    `json:"tier,omitempty" tf:"tier,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DataLakeStoreStatus struct {
@@ -37,7 +38,9 @@ type DataLakeStoreStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

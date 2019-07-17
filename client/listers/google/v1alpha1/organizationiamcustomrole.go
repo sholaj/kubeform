@@ -29,8 +29,8 @@ import (
 type OrganizationIamCustomRoleLister interface {
 	// List lists all OrganizationIamCustomRoles in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OrganizationIamCustomRole, err error)
-	// Get retrieves the OrganizationIamCustomRole from the index for a given name.
-	Get(name string) (*v1alpha1.OrganizationIamCustomRole, error)
+	// OrganizationIamCustomRoles returns an object that can list and get OrganizationIamCustomRoles.
+	OrganizationIamCustomRoles(namespace string) OrganizationIamCustomRoleNamespaceLister
 	OrganizationIamCustomRoleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *organizationIamCustomRoleLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the OrganizationIamCustomRole from the index for a given name.
-func (s *organizationIamCustomRoleLister) Get(name string) (*v1alpha1.OrganizationIamCustomRole, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OrganizationIamCustomRoles returns an object that can list and get OrganizationIamCustomRoles.
+func (s *organizationIamCustomRoleLister) OrganizationIamCustomRoles(namespace string) OrganizationIamCustomRoleNamespaceLister {
+	return organizationIamCustomRoleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OrganizationIamCustomRoleNamespaceLister helps list and get OrganizationIamCustomRoles.
+type OrganizationIamCustomRoleNamespaceLister interface {
+	// List lists all OrganizationIamCustomRoles in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OrganizationIamCustomRole, err error)
+	// Get retrieves the OrganizationIamCustomRole from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OrganizationIamCustomRole, error)
+	OrganizationIamCustomRoleNamespaceListerExpansion
+}
+
+// organizationIamCustomRoleNamespaceLister implements the OrganizationIamCustomRoleNamespaceLister
+// interface.
+type organizationIamCustomRoleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OrganizationIamCustomRoles in the indexer for a given namespace.
+func (s organizationIamCustomRoleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OrganizationIamCustomRole, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OrganizationIamCustomRole))
+	})
+	return ret, err
+}
+
+// Get retrieves the OrganizationIamCustomRole from the indexer for a given namespace and name.
+func (s organizationIamCustomRoleNamespaceLister) Get(name string) (*v1alpha1.OrganizationIamCustomRole, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

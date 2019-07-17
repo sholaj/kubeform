@@ -41,32 +41,33 @@ type OpsworksRailsAppLayerInformer interface {
 type opsworksRailsAppLayerInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewOpsworksRailsAppLayerInformer constructs a new informer for OpsworksRailsAppLayer type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewOpsworksRailsAppLayerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredOpsworksRailsAppLayerInformer(client, resyncPeriod, indexers, nil)
+func NewOpsworksRailsAppLayerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredOpsworksRailsAppLayerInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredOpsworksRailsAppLayerInformer constructs a new informer for OpsworksRailsAppLayer type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredOpsworksRailsAppLayerInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredOpsworksRailsAppLayerInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().OpsworksRailsAppLayers().List(options)
+				return client.AwsV1alpha1().OpsworksRailsAppLayers(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().OpsworksRailsAppLayers().Watch(options)
+				return client.AwsV1alpha1().OpsworksRailsAppLayers(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.OpsworksRailsAppLayer{},
@@ -76,7 +77,7 @@ func NewFilteredOpsworksRailsAppLayerInformer(client versioned.Interface, resync
 }
 
 func (f *opsworksRailsAppLayerInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredOpsworksRailsAppLayerInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredOpsworksRailsAppLayerInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *opsworksRailsAppLayerInformer) Informer() cache.SharedIndexInformer {

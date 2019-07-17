@@ -31,6 +31,7 @@ import (
 // FakeCognitoUserPoolClients implements CognitoUserPoolClientInterface
 type FakeCognitoUserPoolClients struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var cognitouserpoolclientsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "cognitouserpoolclients"}
@@ -40,7 +41,8 @@ var cognitouserpoolclientsKind = schema.GroupVersionKind{Group: "aws.kubeform.co
 // Get takes name of the cognitoUserPoolClient, and returns the corresponding cognitoUserPoolClient object, and an error if there is any.
 func (c *FakeCognitoUserPoolClients) Get(name string, options v1.GetOptions) (result *v1alpha1.CognitoUserPoolClient, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cognitouserpoolclientsResource, name), &v1alpha1.CognitoUserPoolClient{})
+		Invokes(testing.NewGetAction(cognitouserpoolclientsResource, c.ns, name), &v1alpha1.CognitoUserPoolClient{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCognitoUserPoolClients) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of CognitoUserPoolClients that match those selectors.
 func (c *FakeCognitoUserPoolClients) List(opts v1.ListOptions) (result *v1alpha1.CognitoUserPoolClientList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cognitouserpoolclientsResource, cognitouserpoolclientsKind, opts), &v1alpha1.CognitoUserPoolClientList{})
+		Invokes(testing.NewListAction(cognitouserpoolclientsResource, cognitouserpoolclientsKind, c.ns, opts), &v1alpha1.CognitoUserPoolClientList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCognitoUserPoolClients) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested cognitoUserPoolClients.
 func (c *FakeCognitoUserPoolClients) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cognitouserpoolclientsResource, opts))
+		InvokesWatch(testing.NewWatchAction(cognitouserpoolclientsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cognitoUserPoolClient and creates it.  Returns the server's representation of the cognitoUserPoolClient, and an error, if there is any.
 func (c *FakeCognitoUserPoolClients) Create(cognitoUserPoolClient *v1alpha1.CognitoUserPoolClient) (result *v1alpha1.CognitoUserPoolClient, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cognitouserpoolclientsResource, cognitoUserPoolClient), &v1alpha1.CognitoUserPoolClient{})
+		Invokes(testing.NewCreateAction(cognitouserpoolclientsResource, c.ns, cognitoUserPoolClient), &v1alpha1.CognitoUserPoolClient{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCognitoUserPoolClients) Create(cognitoUserPoolClient *v1alpha1.Cogn
 // Update takes the representation of a cognitoUserPoolClient and updates it. Returns the server's representation of the cognitoUserPoolClient, and an error, if there is any.
 func (c *FakeCognitoUserPoolClients) Update(cognitoUserPoolClient *v1alpha1.CognitoUserPoolClient) (result *v1alpha1.CognitoUserPoolClient, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cognitouserpoolclientsResource, cognitoUserPoolClient), &v1alpha1.CognitoUserPoolClient{})
+		Invokes(testing.NewUpdateAction(cognitouserpoolclientsResource, c.ns, cognitoUserPoolClient), &v1alpha1.CognitoUserPoolClient{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCognitoUserPoolClients) Update(cognitoUserPoolClient *v1alpha1.Cogn
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCognitoUserPoolClients) UpdateStatus(cognitoUserPoolClient *v1alpha1.CognitoUserPoolClient) (*v1alpha1.CognitoUserPoolClient, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cognitouserpoolclientsResource, "status", cognitoUserPoolClient), &v1alpha1.CognitoUserPoolClient{})
+		Invokes(testing.NewUpdateSubresourceAction(cognitouserpoolclientsResource, "status", c.ns, cognitoUserPoolClient), &v1alpha1.CognitoUserPoolClient{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCognitoUserPoolClients) UpdateStatus(cognitoUserPoolClient *v1alpha
 // Delete takes name of the cognitoUserPoolClient and deletes it. Returns an error if one occurs.
 func (c *FakeCognitoUserPoolClients) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cognitouserpoolclientsResource, name), &v1alpha1.CognitoUserPoolClient{})
+		Invokes(testing.NewDeleteAction(cognitouserpoolclientsResource, c.ns, name), &v1alpha1.CognitoUserPoolClient{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCognitoUserPoolClients) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cognitouserpoolclientsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cognitouserpoolclientsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CognitoUserPoolClientList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCognitoUserPoolClients) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched cognitoUserPoolClient.
 func (c *FakeCognitoUserPoolClients) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CognitoUserPoolClient, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cognitouserpoolclientsResource, name, pt, data, subresources...), &v1alpha1.CognitoUserPoolClient{})
+		Invokes(testing.NewPatchSubresourceAction(cognitouserpoolclientsResource, c.ns, name, pt, data, subresources...), &v1alpha1.CognitoUserPoolClient{})
+
 	if obj == nil {
 		return nil, err
 	}

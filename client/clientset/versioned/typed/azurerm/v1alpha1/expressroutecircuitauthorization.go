@@ -32,7 +32,7 @@ import (
 // ExpressRouteCircuitAuthorizationsGetter has a method to return a ExpressRouteCircuitAuthorizationInterface.
 // A group's client should implement this interface.
 type ExpressRouteCircuitAuthorizationsGetter interface {
-	ExpressRouteCircuitAuthorizations() ExpressRouteCircuitAuthorizationInterface
+	ExpressRouteCircuitAuthorizations(namespace string) ExpressRouteCircuitAuthorizationInterface
 }
 
 // ExpressRouteCircuitAuthorizationInterface has methods to work with ExpressRouteCircuitAuthorization resources.
@@ -52,12 +52,14 @@ type ExpressRouteCircuitAuthorizationInterface interface {
 // expressRouteCircuitAuthorizations implements ExpressRouteCircuitAuthorizationInterface
 type expressRouteCircuitAuthorizations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newExpressRouteCircuitAuthorizations returns a ExpressRouteCircuitAuthorizations
-func newExpressRouteCircuitAuthorizations(c *AzurermV1alpha1Client) *expressRouteCircuitAuthorizations {
+func newExpressRouteCircuitAuthorizations(c *AzurermV1alpha1Client, namespace string) *expressRouteCircuitAuthorizations {
 	return &expressRouteCircuitAuthorizations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newExpressRouteCircuitAuthorizations(c *AzurermV1alpha1Client) *expressRout
 func (c *expressRouteCircuitAuthorizations) Get(name string, options v1.GetOptions) (result *v1alpha1.ExpressRouteCircuitAuthorization, err error) {
 	result = &v1alpha1.ExpressRouteCircuitAuthorization{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("expressroutecircuitauthorizations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *expressRouteCircuitAuthorizations) List(opts v1.ListOptions) (result *v
 	}
 	result = &v1alpha1.ExpressRouteCircuitAuthorizationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("expressroutecircuitauthorizations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *expressRouteCircuitAuthorizations) Watch(opts v1.ListOptions) (watch.In
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("expressroutecircuitauthorizations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *expressRouteCircuitAuthorizations) Watch(opts v1.ListOptions) (watch.In
 func (c *expressRouteCircuitAuthorizations) Create(expressRouteCircuitAuthorization *v1alpha1.ExpressRouteCircuitAuthorization) (result *v1alpha1.ExpressRouteCircuitAuthorization, err error) {
 	result = &v1alpha1.ExpressRouteCircuitAuthorization{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("expressroutecircuitauthorizations").
 		Body(expressRouteCircuitAuthorization).
 		Do().
@@ -118,6 +124,7 @@ func (c *expressRouteCircuitAuthorizations) Create(expressRouteCircuitAuthorizat
 func (c *expressRouteCircuitAuthorizations) Update(expressRouteCircuitAuthorization *v1alpha1.ExpressRouteCircuitAuthorization) (result *v1alpha1.ExpressRouteCircuitAuthorization, err error) {
 	result = &v1alpha1.ExpressRouteCircuitAuthorization{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("expressroutecircuitauthorizations").
 		Name(expressRouteCircuitAuthorization.Name).
 		Body(expressRouteCircuitAuthorization).
@@ -132,6 +139,7 @@ func (c *expressRouteCircuitAuthorizations) Update(expressRouteCircuitAuthorizat
 func (c *expressRouteCircuitAuthorizations) UpdateStatus(expressRouteCircuitAuthorization *v1alpha1.ExpressRouteCircuitAuthorization) (result *v1alpha1.ExpressRouteCircuitAuthorization, err error) {
 	result = &v1alpha1.ExpressRouteCircuitAuthorization{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("expressroutecircuitauthorizations").
 		Name(expressRouteCircuitAuthorization.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *expressRouteCircuitAuthorizations) UpdateStatus(expressRouteCircuitAuth
 // Delete takes name of the expressRouteCircuitAuthorization and deletes it. Returns an error if one occurs.
 func (c *expressRouteCircuitAuthorizations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("expressroutecircuitauthorizations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *expressRouteCircuitAuthorizations) DeleteCollection(options *v1.DeleteO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("expressroutecircuitauthorizations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *expressRouteCircuitAuthorizations) DeleteCollection(options *v1.DeleteO
 func (c *expressRouteCircuitAuthorizations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ExpressRouteCircuitAuthorization, err error) {
 	result = &v1alpha1.ExpressRouteCircuitAuthorization{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("expressroutecircuitauthorizations").
 		SubResource(subresources...).
 		Name(name).

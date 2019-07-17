@@ -29,8 +29,8 @@ import (
 type NetworkWatcherLister interface {
 	// List lists all NetworkWatchers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NetworkWatcher, err error)
-	// Get retrieves the NetworkWatcher from the index for a given name.
-	Get(name string) (*v1alpha1.NetworkWatcher, error)
+	// NetworkWatchers returns an object that can list and get NetworkWatchers.
+	NetworkWatchers(namespace string) NetworkWatcherNamespaceLister
 	NetworkWatcherListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *networkWatcherLister) List(selector labels.Selector) (ret []*v1alpha1.N
 	return ret, err
 }
 
-// Get retrieves the NetworkWatcher from the index for a given name.
-func (s *networkWatcherLister) Get(name string) (*v1alpha1.NetworkWatcher, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NetworkWatchers returns an object that can list and get NetworkWatchers.
+func (s *networkWatcherLister) NetworkWatchers(namespace string) NetworkWatcherNamespaceLister {
+	return networkWatcherNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NetworkWatcherNamespaceLister helps list and get NetworkWatchers.
+type NetworkWatcherNamespaceLister interface {
+	// List lists all NetworkWatchers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NetworkWatcher, err error)
+	// Get retrieves the NetworkWatcher from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NetworkWatcher, error)
+	NetworkWatcherNamespaceListerExpansion
+}
+
+// networkWatcherNamespaceLister implements the NetworkWatcherNamespaceLister
+// interface.
+type networkWatcherNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NetworkWatchers in the indexer for a given namespace.
+func (s networkWatcherNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NetworkWatcher, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NetworkWatcher))
+	})
+	return ret, err
+}
+
+// Get retrieves the NetworkWatcher from the indexer for a given namespace and name.
+func (s networkWatcherNamespaceLister) Get(name string) (*v1alpha1.NetworkWatcher, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

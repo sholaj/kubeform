@@ -31,6 +31,7 @@ import (
 // FakeRamResourceAssociations implements RamResourceAssociationInterface
 type FakeRamResourceAssociations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ramresourceassociationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ramresourceassociations"}
@@ -40,7 +41,8 @@ var ramresourceassociationsKind = schema.GroupVersionKind{Group: "aws.kubeform.c
 // Get takes name of the ramResourceAssociation, and returns the corresponding ramResourceAssociation object, and an error if there is any.
 func (c *FakeRamResourceAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.RamResourceAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ramresourceassociationsResource, name), &v1alpha1.RamResourceAssociation{})
+		Invokes(testing.NewGetAction(ramresourceassociationsResource, c.ns, name), &v1alpha1.RamResourceAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRamResourceAssociations) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of RamResourceAssociations that match those selectors.
 func (c *FakeRamResourceAssociations) List(opts v1.ListOptions) (result *v1alpha1.RamResourceAssociationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ramresourceassociationsResource, ramresourceassociationsKind, opts), &v1alpha1.RamResourceAssociationList{})
+		Invokes(testing.NewListAction(ramresourceassociationsResource, ramresourceassociationsKind, c.ns, opts), &v1alpha1.RamResourceAssociationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRamResourceAssociations) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested ramResourceAssociations.
 func (c *FakeRamResourceAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ramresourceassociationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(ramresourceassociationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ramResourceAssociation and creates it.  Returns the server's representation of the ramResourceAssociation, and an error, if there is any.
 func (c *FakeRamResourceAssociations) Create(ramResourceAssociation *v1alpha1.RamResourceAssociation) (result *v1alpha1.RamResourceAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ramresourceassociationsResource, ramResourceAssociation), &v1alpha1.RamResourceAssociation{})
+		Invokes(testing.NewCreateAction(ramresourceassociationsResource, c.ns, ramResourceAssociation), &v1alpha1.RamResourceAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRamResourceAssociations) Create(ramResourceAssociation *v1alpha1.Ra
 // Update takes the representation of a ramResourceAssociation and updates it. Returns the server's representation of the ramResourceAssociation, and an error, if there is any.
 func (c *FakeRamResourceAssociations) Update(ramResourceAssociation *v1alpha1.RamResourceAssociation) (result *v1alpha1.RamResourceAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ramresourceassociationsResource, ramResourceAssociation), &v1alpha1.RamResourceAssociation{})
+		Invokes(testing.NewUpdateAction(ramresourceassociationsResource, c.ns, ramResourceAssociation), &v1alpha1.RamResourceAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRamResourceAssociations) Update(ramResourceAssociation *v1alpha1.Ra
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRamResourceAssociations) UpdateStatus(ramResourceAssociation *v1alpha1.RamResourceAssociation) (*v1alpha1.RamResourceAssociation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ramresourceassociationsResource, "status", ramResourceAssociation), &v1alpha1.RamResourceAssociation{})
+		Invokes(testing.NewUpdateSubresourceAction(ramresourceassociationsResource, "status", c.ns, ramResourceAssociation), &v1alpha1.RamResourceAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRamResourceAssociations) UpdateStatus(ramResourceAssociation *v1alp
 // Delete takes name of the ramResourceAssociation and deletes it. Returns an error if one occurs.
 func (c *FakeRamResourceAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ramresourceassociationsResource, name), &v1alpha1.RamResourceAssociation{})
+		Invokes(testing.NewDeleteAction(ramresourceassociationsResource, c.ns, name), &v1alpha1.RamResourceAssociation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRamResourceAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ramresourceassociationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ramresourceassociationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.RamResourceAssociationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRamResourceAssociations) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched ramResourceAssociation.
 func (c *FakeRamResourceAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RamResourceAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ramresourceassociationsResource, name, pt, data, subresources...), &v1alpha1.RamResourceAssociation{})
+		Invokes(testing.NewPatchSubresourceAction(ramresourceassociationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.RamResourceAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}

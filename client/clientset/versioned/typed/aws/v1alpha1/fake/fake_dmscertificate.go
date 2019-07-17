@@ -31,6 +31,7 @@ import (
 // FakeDmsCertificates implements DmsCertificateInterface
 type FakeDmsCertificates struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var dmscertificatesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "dmscertificates"}
@@ -40,7 +41,8 @@ var dmscertificatesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ver
 // Get takes name of the dmsCertificate, and returns the corresponding dmsCertificate object, and an error if there is any.
 func (c *FakeDmsCertificates) Get(name string, options v1.GetOptions) (result *v1alpha1.DmsCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(dmscertificatesResource, name), &v1alpha1.DmsCertificate{})
+		Invokes(testing.NewGetAction(dmscertificatesResource, c.ns, name), &v1alpha1.DmsCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDmsCertificates) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of DmsCertificates that match those selectors.
 func (c *FakeDmsCertificates) List(opts v1.ListOptions) (result *v1alpha1.DmsCertificateList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(dmscertificatesResource, dmscertificatesKind, opts), &v1alpha1.DmsCertificateList{})
+		Invokes(testing.NewListAction(dmscertificatesResource, dmscertificatesKind, c.ns, opts), &v1alpha1.DmsCertificateList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDmsCertificates) List(opts v1.ListOptions) (result *v1alpha1.DmsCer
 // Watch returns a watch.Interface that watches the requested dmsCertificates.
 func (c *FakeDmsCertificates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(dmscertificatesResource, opts))
+		InvokesWatch(testing.NewWatchAction(dmscertificatesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dmsCertificate and creates it.  Returns the server's representation of the dmsCertificate, and an error, if there is any.
 func (c *FakeDmsCertificates) Create(dmsCertificate *v1alpha1.DmsCertificate) (result *v1alpha1.DmsCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(dmscertificatesResource, dmsCertificate), &v1alpha1.DmsCertificate{})
+		Invokes(testing.NewCreateAction(dmscertificatesResource, c.ns, dmsCertificate), &v1alpha1.DmsCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDmsCertificates) Create(dmsCertificate *v1alpha1.DmsCertificate) (r
 // Update takes the representation of a dmsCertificate and updates it. Returns the server's representation of the dmsCertificate, and an error, if there is any.
 func (c *FakeDmsCertificates) Update(dmsCertificate *v1alpha1.DmsCertificate) (result *v1alpha1.DmsCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(dmscertificatesResource, dmsCertificate), &v1alpha1.DmsCertificate{})
+		Invokes(testing.NewUpdateAction(dmscertificatesResource, c.ns, dmsCertificate), &v1alpha1.DmsCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDmsCertificates) Update(dmsCertificate *v1alpha1.DmsCertificate) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDmsCertificates) UpdateStatus(dmsCertificate *v1alpha1.DmsCertificate) (*v1alpha1.DmsCertificate, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(dmscertificatesResource, "status", dmsCertificate), &v1alpha1.DmsCertificate{})
+		Invokes(testing.NewUpdateSubresourceAction(dmscertificatesResource, "status", c.ns, dmsCertificate), &v1alpha1.DmsCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDmsCertificates) UpdateStatus(dmsCertificate *v1alpha1.DmsCertifica
 // Delete takes name of the dmsCertificate and deletes it. Returns an error if one occurs.
 func (c *FakeDmsCertificates) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(dmscertificatesResource, name), &v1alpha1.DmsCertificate{})
+		Invokes(testing.NewDeleteAction(dmscertificatesResource, c.ns, name), &v1alpha1.DmsCertificate{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDmsCertificates) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(dmscertificatesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(dmscertificatesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DmsCertificateList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDmsCertificates) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched dmsCertificate.
 func (c *FakeDmsCertificates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DmsCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(dmscertificatesResource, name, pt, data, subresources...), &v1alpha1.DmsCertificate{})
+		Invokes(testing.NewPatchSubresourceAction(dmscertificatesResource, c.ns, name, pt, data, subresources...), &v1alpha1.DmsCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}

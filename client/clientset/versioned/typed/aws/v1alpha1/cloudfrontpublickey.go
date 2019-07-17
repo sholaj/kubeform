@@ -32,7 +32,7 @@ import (
 // CloudfrontPublicKeysGetter has a method to return a CloudfrontPublicKeyInterface.
 // A group's client should implement this interface.
 type CloudfrontPublicKeysGetter interface {
-	CloudfrontPublicKeys() CloudfrontPublicKeyInterface
+	CloudfrontPublicKeys(namespace string) CloudfrontPublicKeyInterface
 }
 
 // CloudfrontPublicKeyInterface has methods to work with CloudfrontPublicKey resources.
@@ -52,12 +52,14 @@ type CloudfrontPublicKeyInterface interface {
 // cloudfrontPublicKeys implements CloudfrontPublicKeyInterface
 type cloudfrontPublicKeys struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCloudfrontPublicKeys returns a CloudfrontPublicKeys
-func newCloudfrontPublicKeys(c *AwsV1alpha1Client) *cloudfrontPublicKeys {
+func newCloudfrontPublicKeys(c *AwsV1alpha1Client, namespace string) *cloudfrontPublicKeys {
 	return &cloudfrontPublicKeys{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCloudfrontPublicKeys(c *AwsV1alpha1Client) *cloudfrontPublicKeys {
 func (c *cloudfrontPublicKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudfrontPublicKey, err error) {
 	result = &v1alpha1.CloudfrontPublicKey{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudfrontpublickeys").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cloudfrontPublicKeys) List(opts v1.ListOptions) (result *v1alpha1.Cloud
 	}
 	result = &v1alpha1.CloudfrontPublicKeyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudfrontpublickeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cloudfrontPublicKeys) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudfrontpublickeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cloudfrontPublicKeys) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *cloudfrontPublicKeys) Create(cloudfrontPublicKey *v1alpha1.CloudfrontPublicKey) (result *v1alpha1.CloudfrontPublicKey, err error) {
 	result = &v1alpha1.CloudfrontPublicKey{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cloudfrontpublickeys").
 		Body(cloudfrontPublicKey).
 		Do().
@@ -118,6 +124,7 @@ func (c *cloudfrontPublicKeys) Create(cloudfrontPublicKey *v1alpha1.CloudfrontPu
 func (c *cloudfrontPublicKeys) Update(cloudfrontPublicKey *v1alpha1.CloudfrontPublicKey) (result *v1alpha1.CloudfrontPublicKey, err error) {
 	result = &v1alpha1.CloudfrontPublicKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudfrontpublickeys").
 		Name(cloudfrontPublicKey.Name).
 		Body(cloudfrontPublicKey).
@@ -132,6 +139,7 @@ func (c *cloudfrontPublicKeys) Update(cloudfrontPublicKey *v1alpha1.CloudfrontPu
 func (c *cloudfrontPublicKeys) UpdateStatus(cloudfrontPublicKey *v1alpha1.CloudfrontPublicKey) (result *v1alpha1.CloudfrontPublicKey, err error) {
 	result = &v1alpha1.CloudfrontPublicKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudfrontpublickeys").
 		Name(cloudfrontPublicKey.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cloudfrontPublicKeys) UpdateStatus(cloudfrontPublicKey *v1alpha1.Cloudf
 // Delete takes name of the cloudfrontPublicKey and deletes it. Returns an error if one occurs.
 func (c *cloudfrontPublicKeys) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudfrontpublickeys").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cloudfrontPublicKeys) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudfrontpublickeys").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cloudfrontPublicKeys) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *cloudfrontPublicKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudfrontPublicKey, err error) {
 	result = &v1alpha1.CloudfrontPublicKey{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cloudfrontpublickeys").
 		SubResource(subresources...).
 		Name(name).

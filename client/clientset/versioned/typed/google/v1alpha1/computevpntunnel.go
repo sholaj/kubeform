@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// ComputeVpnTunnelsGetter has a method to return a ComputeVpnTunnelInterface.
+// ComputeVPNTunnelsGetter has a method to return a ComputeVPNTunnelInterface.
 // A group's client should implement this interface.
-type ComputeVpnTunnelsGetter interface {
-	ComputeVpnTunnels() ComputeVpnTunnelInterface
+type ComputeVPNTunnelsGetter interface {
+	ComputeVPNTunnels(namespace string) ComputeVPNTunnelInterface
 }
 
-// ComputeVpnTunnelInterface has methods to work with ComputeVpnTunnel resources.
-type ComputeVpnTunnelInterface interface {
-	Create(*v1alpha1.ComputeVpnTunnel) (*v1alpha1.ComputeVpnTunnel, error)
-	Update(*v1alpha1.ComputeVpnTunnel) (*v1alpha1.ComputeVpnTunnel, error)
-	UpdateStatus(*v1alpha1.ComputeVpnTunnel) (*v1alpha1.ComputeVpnTunnel, error)
+// ComputeVPNTunnelInterface has methods to work with ComputeVPNTunnel resources.
+type ComputeVPNTunnelInterface interface {
+	Create(*v1alpha1.ComputeVPNTunnel) (*v1alpha1.ComputeVPNTunnel, error)
+	Update(*v1alpha1.ComputeVPNTunnel) (*v1alpha1.ComputeVPNTunnel, error)
+	UpdateStatus(*v1alpha1.ComputeVPNTunnel) (*v1alpha1.ComputeVPNTunnel, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.ComputeVpnTunnel, error)
-	List(opts v1.ListOptions) (*v1alpha1.ComputeVpnTunnelList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.ComputeVPNTunnel, error)
+	List(opts v1.ListOptions) (*v1alpha1.ComputeVPNTunnelList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeVpnTunnel, err error)
-	ComputeVpnTunnelExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeVPNTunnel, err error)
+	ComputeVPNTunnelExpansion
 }
 
-// computeVpnTunnels implements ComputeVpnTunnelInterface
-type computeVpnTunnels struct {
+// computeVPNTunnels implements ComputeVPNTunnelInterface
+type computeVPNTunnels struct {
 	client rest.Interface
+	ns     string
 }
 
-// newComputeVpnTunnels returns a ComputeVpnTunnels
-func newComputeVpnTunnels(c *GoogleV1alpha1Client) *computeVpnTunnels {
-	return &computeVpnTunnels{
+// newComputeVPNTunnels returns a ComputeVPNTunnels
+func newComputeVPNTunnels(c *GoogleV1alpha1Client, namespace string) *computeVPNTunnels {
+	return &computeVPNTunnels{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the computeVpnTunnel, and returns the corresponding computeVpnTunnel object, and an error if there is any.
-func (c *computeVpnTunnels) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeVpnTunnel, err error) {
-	result = &v1alpha1.ComputeVpnTunnel{}
+// Get takes name of the computeVPNTunnel, and returns the corresponding computeVPNTunnel object, and an error if there is any.
+func (c *computeVPNTunnels) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeVPNTunnel, err error) {
+	result = &v1alpha1.ComputeVPNTunnel{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computevpntunnels").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *computeVpnTunnels) Get(name string, options v1.GetOptions) (result *v1a
 	return
 }
 
-// List takes label and field selectors, and returns the list of ComputeVpnTunnels that match those selectors.
-func (c *computeVpnTunnels) List(opts v1.ListOptions) (result *v1alpha1.ComputeVpnTunnelList, err error) {
+// List takes label and field selectors, and returns the list of ComputeVPNTunnels that match those selectors.
+func (c *computeVPNTunnels) List(opts v1.ListOptions) (result *v1alpha1.ComputeVPNTunnelList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.ComputeVpnTunnelList{}
+	result = &v1alpha1.ComputeVPNTunnelList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computevpntunnels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *computeVpnTunnels) List(opts v1.ListOptions) (result *v1alpha1.ComputeV
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested computeVpnTunnels.
-func (c *computeVpnTunnels) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested computeVPNTunnels.
+func (c *computeVPNTunnels) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computevpntunnels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a computeVpnTunnel and creates it.  Returns the server's representation of the computeVpnTunnel, and an error, if there is any.
-func (c *computeVpnTunnels) Create(computeVpnTunnel *v1alpha1.ComputeVpnTunnel) (result *v1alpha1.ComputeVpnTunnel, err error) {
-	result = &v1alpha1.ComputeVpnTunnel{}
+// Create takes the representation of a computeVPNTunnel and creates it.  Returns the server's representation of the computeVPNTunnel, and an error, if there is any.
+func (c *computeVPNTunnels) Create(computeVPNTunnel *v1alpha1.ComputeVPNTunnel) (result *v1alpha1.ComputeVPNTunnel, err error) {
+	result = &v1alpha1.ComputeVPNTunnel{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computevpntunnels").
-		Body(computeVpnTunnel).
+		Body(computeVPNTunnel).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a computeVpnTunnel and updates it. Returns the server's representation of the computeVpnTunnel, and an error, if there is any.
-func (c *computeVpnTunnels) Update(computeVpnTunnel *v1alpha1.ComputeVpnTunnel) (result *v1alpha1.ComputeVpnTunnel, err error) {
-	result = &v1alpha1.ComputeVpnTunnel{}
+// Update takes the representation of a computeVPNTunnel and updates it. Returns the server's representation of the computeVPNTunnel, and an error, if there is any.
+func (c *computeVPNTunnels) Update(computeVPNTunnel *v1alpha1.ComputeVPNTunnel) (result *v1alpha1.ComputeVPNTunnel, err error) {
+	result = &v1alpha1.ComputeVPNTunnel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computevpntunnels").
-		Name(computeVpnTunnel.Name).
-		Body(computeVpnTunnel).
+		Name(computeVPNTunnel.Name).
+		Body(computeVPNTunnel).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *computeVpnTunnels) Update(computeVpnTunnel *v1alpha1.ComputeVpnTunnel) 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *computeVpnTunnels) UpdateStatus(computeVpnTunnel *v1alpha1.ComputeVpnTunnel) (result *v1alpha1.ComputeVpnTunnel, err error) {
-	result = &v1alpha1.ComputeVpnTunnel{}
+func (c *computeVPNTunnels) UpdateStatus(computeVPNTunnel *v1alpha1.ComputeVPNTunnel) (result *v1alpha1.ComputeVPNTunnel, err error) {
+	result = &v1alpha1.ComputeVPNTunnel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computevpntunnels").
-		Name(computeVpnTunnel.Name).
+		Name(computeVPNTunnel.Name).
 		SubResource("status").
-		Body(computeVpnTunnel).
+		Body(computeVPNTunnel).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the computeVpnTunnel and deletes it. Returns an error if one occurs.
-func (c *computeVpnTunnels) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the computeVPNTunnel and deletes it. Returns an error if one occurs.
+func (c *computeVPNTunnels) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computevpntunnels").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *computeVpnTunnels) Delete(name string, options *v1.DeleteOptions) error
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *computeVpnTunnels) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *computeVPNTunnels) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computevpntunnels").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *computeVpnTunnels) DeleteCollection(options *v1.DeleteOptions, listOpti
 		Error()
 }
 
-// Patch applies the patch and returns the patched computeVpnTunnel.
-func (c *computeVpnTunnels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeVpnTunnel, err error) {
-	result = &v1alpha1.ComputeVpnTunnel{}
+// Patch applies the patch and returns the patched computeVPNTunnel.
+func (c *computeVPNTunnels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeVPNTunnel, err error) {
+	result = &v1alpha1.ComputeVPNTunnel{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computevpntunnels").
 		SubResource(subresources...).
 		Name(name).

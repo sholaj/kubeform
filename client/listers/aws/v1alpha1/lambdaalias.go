@@ -29,8 +29,8 @@ import (
 type LambdaAliasLister interface {
 	// List lists all LambdaAliases in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LambdaAlias, err error)
-	// Get retrieves the LambdaAlias from the index for a given name.
-	Get(name string) (*v1alpha1.LambdaAlias, error)
+	// LambdaAliases returns an object that can list and get LambdaAliases.
+	LambdaAliases(namespace string) LambdaAliasNamespaceLister
 	LambdaAliasListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *lambdaAliasLister) List(selector labels.Selector) (ret []*v1alpha1.Lamb
 	return ret, err
 }
 
-// Get retrieves the LambdaAlias from the index for a given name.
-func (s *lambdaAliasLister) Get(name string) (*v1alpha1.LambdaAlias, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LambdaAliases returns an object that can list and get LambdaAliases.
+func (s *lambdaAliasLister) LambdaAliases(namespace string) LambdaAliasNamespaceLister {
+	return lambdaAliasNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LambdaAliasNamespaceLister helps list and get LambdaAliases.
+type LambdaAliasNamespaceLister interface {
+	// List lists all LambdaAliases in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LambdaAlias, err error)
+	// Get retrieves the LambdaAlias from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LambdaAlias, error)
+	LambdaAliasNamespaceListerExpansion
+}
+
+// lambdaAliasNamespaceLister implements the LambdaAliasNamespaceLister
+// interface.
+type lambdaAliasNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LambdaAliases in the indexer for a given namespace.
+func (s lambdaAliasNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LambdaAlias, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LambdaAlias))
+	})
+	return ret, err
+}
+
+// Get retrieves the LambdaAlias from the indexer for a given namespace and name.
+func (s lambdaAliasNamespaceLister) Get(name string) (*v1alpha1.LambdaAlias, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

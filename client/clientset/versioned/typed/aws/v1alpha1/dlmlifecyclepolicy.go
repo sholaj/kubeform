@@ -32,7 +32,7 @@ import (
 // DlmLifecyclePoliciesGetter has a method to return a DlmLifecyclePolicyInterface.
 // A group's client should implement this interface.
 type DlmLifecyclePoliciesGetter interface {
-	DlmLifecyclePolicies() DlmLifecyclePolicyInterface
+	DlmLifecyclePolicies(namespace string) DlmLifecyclePolicyInterface
 }
 
 // DlmLifecyclePolicyInterface has methods to work with DlmLifecyclePolicy resources.
@@ -52,12 +52,14 @@ type DlmLifecyclePolicyInterface interface {
 // dlmLifecyclePolicies implements DlmLifecyclePolicyInterface
 type dlmLifecyclePolicies struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDlmLifecyclePolicies returns a DlmLifecyclePolicies
-func newDlmLifecyclePolicies(c *AwsV1alpha1Client) *dlmLifecyclePolicies {
+func newDlmLifecyclePolicies(c *AwsV1alpha1Client, namespace string) *dlmLifecyclePolicies {
 	return &dlmLifecyclePolicies{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDlmLifecyclePolicies(c *AwsV1alpha1Client) *dlmLifecyclePolicies {
 func (c *dlmLifecyclePolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.DlmLifecyclePolicy, err error) {
 	result = &v1alpha1.DlmLifecyclePolicy{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dlmlifecyclepolicies").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dlmLifecyclePolicies) List(opts v1.ListOptions) (result *v1alpha1.DlmLi
 	}
 	result = &v1alpha1.DlmLifecyclePolicyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("dlmlifecyclepolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dlmLifecyclePolicies) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("dlmlifecyclepolicies").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dlmLifecyclePolicies) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *dlmLifecyclePolicies) Create(dlmLifecyclePolicy *v1alpha1.DlmLifecyclePolicy) (result *v1alpha1.DlmLifecyclePolicy, err error) {
 	result = &v1alpha1.DlmLifecyclePolicy{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("dlmlifecyclepolicies").
 		Body(dlmLifecyclePolicy).
 		Do().
@@ -118,6 +124,7 @@ func (c *dlmLifecyclePolicies) Create(dlmLifecyclePolicy *v1alpha1.DlmLifecycleP
 func (c *dlmLifecyclePolicies) Update(dlmLifecyclePolicy *v1alpha1.DlmLifecyclePolicy) (result *v1alpha1.DlmLifecyclePolicy, err error) {
 	result = &v1alpha1.DlmLifecyclePolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dlmlifecyclepolicies").
 		Name(dlmLifecyclePolicy.Name).
 		Body(dlmLifecyclePolicy).
@@ -132,6 +139,7 @@ func (c *dlmLifecyclePolicies) Update(dlmLifecyclePolicy *v1alpha1.DlmLifecycleP
 func (c *dlmLifecyclePolicies) UpdateStatus(dlmLifecyclePolicy *v1alpha1.DlmLifecyclePolicy) (result *v1alpha1.DlmLifecyclePolicy, err error) {
 	result = &v1alpha1.DlmLifecyclePolicy{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("dlmlifecyclepolicies").
 		Name(dlmLifecyclePolicy.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dlmLifecyclePolicies) UpdateStatus(dlmLifecyclePolicy *v1alpha1.DlmLife
 // Delete takes name of the dlmLifecyclePolicy and deletes it. Returns an error if one occurs.
 func (c *dlmLifecyclePolicies) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dlmlifecyclepolicies").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dlmLifecyclePolicies) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("dlmlifecyclepolicies").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dlmLifecyclePolicies) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *dlmLifecyclePolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DlmLifecyclePolicy, err error) {
 	result = &v1alpha1.DlmLifecyclePolicy{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("dlmlifecyclepolicies").
 		SubResource(subresources...).
 		Name(name).

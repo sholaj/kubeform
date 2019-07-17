@@ -32,7 +32,7 @@ import (
 // ContainerClustersGetter has a method to return a ContainerClusterInterface.
 // A group's client should implement this interface.
 type ContainerClustersGetter interface {
-	ContainerClusters() ContainerClusterInterface
+	ContainerClusters(namespace string) ContainerClusterInterface
 }
 
 // ContainerClusterInterface has methods to work with ContainerCluster resources.
@@ -52,12 +52,14 @@ type ContainerClusterInterface interface {
 // containerClusters implements ContainerClusterInterface
 type containerClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newContainerClusters returns a ContainerClusters
-func newContainerClusters(c *GoogleV1alpha1Client) *containerClusters {
+func newContainerClusters(c *GoogleV1alpha1Client, namespace string) *containerClusters {
 	return &containerClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newContainerClusters(c *GoogleV1alpha1Client) *containerClusters {
 func (c *containerClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.ContainerCluster, err error) {
 	result = &v1alpha1.ContainerCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("containerclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *containerClusters) List(opts v1.ListOptions) (result *v1alpha1.Containe
 	}
 	result = &v1alpha1.ContainerClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("containerclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *containerClusters) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("containerclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *containerClusters) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *containerClusters) Create(containerCluster *v1alpha1.ContainerCluster) (result *v1alpha1.ContainerCluster, err error) {
 	result = &v1alpha1.ContainerCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("containerclusters").
 		Body(containerCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *containerClusters) Create(containerCluster *v1alpha1.ContainerCluster) 
 func (c *containerClusters) Update(containerCluster *v1alpha1.ContainerCluster) (result *v1alpha1.ContainerCluster, err error) {
 	result = &v1alpha1.ContainerCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("containerclusters").
 		Name(containerCluster.Name).
 		Body(containerCluster).
@@ -132,6 +139,7 @@ func (c *containerClusters) Update(containerCluster *v1alpha1.ContainerCluster) 
 func (c *containerClusters) UpdateStatus(containerCluster *v1alpha1.ContainerCluster) (result *v1alpha1.ContainerCluster, err error) {
 	result = &v1alpha1.ContainerCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("containerclusters").
 		Name(containerCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *containerClusters) UpdateStatus(containerCluster *v1alpha1.ContainerClu
 // Delete takes name of the containerCluster and deletes it. Returns an error if one occurs.
 func (c *containerClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("containerclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *containerClusters) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("containerclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *containerClusters) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *containerClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ContainerCluster, err error) {
 	result = &v1alpha1.ContainerCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("containerclusters").
 		SubResource(subresources...).
 		Name(name).

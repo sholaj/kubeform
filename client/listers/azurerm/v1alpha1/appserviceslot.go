@@ -29,8 +29,8 @@ import (
 type AppServiceSlotLister interface {
 	// List lists all AppServiceSlots in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AppServiceSlot, err error)
-	// Get retrieves the AppServiceSlot from the index for a given name.
-	Get(name string) (*v1alpha1.AppServiceSlot, error)
+	// AppServiceSlots returns an object that can list and get AppServiceSlots.
+	AppServiceSlots(namespace string) AppServiceSlotNamespaceLister
 	AppServiceSlotListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *appServiceSlotLister) List(selector labels.Selector) (ret []*v1alpha1.A
 	return ret, err
 }
 
-// Get retrieves the AppServiceSlot from the index for a given name.
-func (s *appServiceSlotLister) Get(name string) (*v1alpha1.AppServiceSlot, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AppServiceSlots returns an object that can list and get AppServiceSlots.
+func (s *appServiceSlotLister) AppServiceSlots(namespace string) AppServiceSlotNamespaceLister {
+	return appServiceSlotNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AppServiceSlotNamespaceLister helps list and get AppServiceSlots.
+type AppServiceSlotNamespaceLister interface {
+	// List lists all AppServiceSlots in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AppServiceSlot, err error)
+	// Get retrieves the AppServiceSlot from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AppServiceSlot, error)
+	AppServiceSlotNamespaceListerExpansion
+}
+
+// appServiceSlotNamespaceLister implements the AppServiceSlotNamespaceLister
+// interface.
+type appServiceSlotNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AppServiceSlots in the indexer for a given namespace.
+func (s appServiceSlotNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AppServiceSlot, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AppServiceSlot))
+	})
+	return ret, err
+}
+
+// Get retrieves the AppServiceSlot from the indexer for a given namespace and name.
+func (s appServiceSlotNamespaceLister) Get(name string) (*v1alpha1.AppServiceSlot, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -397,31 +397,41 @@ spec:
           type: object
         spec:
           properties:
-            content_handling:
+            contentHandling:
               type: string
-            http_method:
+            httpMethod:
               type: string
-            resource_id:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceID:
               type: string
-            response_parameters:
+            responseParameters:
               additionalProperties:
                 type: string
               type: object
-            response_templates:
+            responseTemplates:
               additionalProperties:
                 type: string
               type: object
-            rest_api_id:
+            restAPIID:
               type: string
-            selection_pattern:
+            selectionPattern:
               type: string
-            status_code:
+            statusCode:
               type: string
           required:
-          - http_method
-          - resource_id
-          - rest_api_id
-          - status_code
+          - httpMethod
+          - providerRef
+          - resourceID
+          - restAPIID
+          - statusCode
           type: object
         status:
           properties:
@@ -432,6 +442,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

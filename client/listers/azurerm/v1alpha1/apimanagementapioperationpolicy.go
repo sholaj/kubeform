@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// ApiManagementApiOperationPolicyLister helps list ApiManagementApiOperationPolicies.
-type ApiManagementApiOperationPolicyLister interface {
-	// List lists all ApiManagementApiOperationPolicies in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementApiOperationPolicy, err error)
-	// Get retrieves the ApiManagementApiOperationPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.ApiManagementApiOperationPolicy, error)
-	ApiManagementApiOperationPolicyListerExpansion
+// ApiManagementAPIOperationPolicyLister helps list ApiManagementAPIOperationPolicies.
+type ApiManagementAPIOperationPolicyLister interface {
+	// List lists all ApiManagementAPIOperationPolicies in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPIOperationPolicy, err error)
+	// ApiManagementAPIOperationPolicies returns an object that can list and get ApiManagementAPIOperationPolicies.
+	ApiManagementAPIOperationPolicies(namespace string) ApiManagementAPIOperationPolicyNamespaceLister
+	ApiManagementAPIOperationPolicyListerExpansion
 }
 
-// apiManagementApiOperationPolicyLister implements the ApiManagementApiOperationPolicyLister interface.
-type apiManagementApiOperationPolicyLister struct {
+// apiManagementAPIOperationPolicyLister implements the ApiManagementAPIOperationPolicyLister interface.
+type apiManagementAPIOperationPolicyLister struct {
 	indexer cache.Indexer
 }
 
-// NewApiManagementApiOperationPolicyLister returns a new ApiManagementApiOperationPolicyLister.
-func NewApiManagementApiOperationPolicyLister(indexer cache.Indexer) ApiManagementApiOperationPolicyLister {
-	return &apiManagementApiOperationPolicyLister{indexer: indexer}
+// NewApiManagementAPIOperationPolicyLister returns a new ApiManagementAPIOperationPolicyLister.
+func NewApiManagementAPIOperationPolicyLister(indexer cache.Indexer) ApiManagementAPIOperationPolicyLister {
+	return &apiManagementAPIOperationPolicyLister{indexer: indexer}
 }
 
-// List lists all ApiManagementApiOperationPolicies in the indexer.
-func (s *apiManagementApiOperationPolicyLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementApiOperationPolicy, err error) {
+// List lists all ApiManagementAPIOperationPolicies in the indexer.
+func (s *apiManagementAPIOperationPolicyLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPIOperationPolicy, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ApiManagementApiOperationPolicy))
+		ret = append(ret, m.(*v1alpha1.ApiManagementAPIOperationPolicy))
 	})
 	return ret, err
 }
 
-// Get retrieves the ApiManagementApiOperationPolicy from the index for a given name.
-func (s *apiManagementApiOperationPolicyLister) Get(name string) (*v1alpha1.ApiManagementApiOperationPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiManagementAPIOperationPolicies returns an object that can list and get ApiManagementAPIOperationPolicies.
+func (s *apiManagementAPIOperationPolicyLister) ApiManagementAPIOperationPolicies(namespace string) ApiManagementAPIOperationPolicyNamespaceLister {
+	return apiManagementAPIOperationPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiManagementAPIOperationPolicyNamespaceLister helps list and get ApiManagementAPIOperationPolicies.
+type ApiManagementAPIOperationPolicyNamespaceLister interface {
+	// List lists all ApiManagementAPIOperationPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPIOperationPolicy, err error)
+	// Get retrieves the ApiManagementAPIOperationPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiManagementAPIOperationPolicy, error)
+	ApiManagementAPIOperationPolicyNamespaceListerExpansion
+}
+
+// apiManagementAPIOperationPolicyNamespaceLister implements the ApiManagementAPIOperationPolicyNamespaceLister
+// interface.
+type apiManagementAPIOperationPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiManagementAPIOperationPolicies in the indexer for a given namespace.
+func (s apiManagementAPIOperationPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementAPIOperationPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiManagementAPIOperationPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiManagementAPIOperationPolicy from the indexer for a given namespace and name.
+func (s apiManagementAPIOperationPolicyNamespaceLister) Get(name string) (*v1alpha1.ApiManagementAPIOperationPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("apimanagementapioperationpolicy"), name)
 	}
-	return obj.(*v1alpha1.ApiManagementApiOperationPolicy), nil
+	return obj.(*v1alpha1.ApiManagementAPIOperationPolicy), nil
 }

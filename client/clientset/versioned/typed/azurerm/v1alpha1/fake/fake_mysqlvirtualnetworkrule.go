@@ -31,6 +31,7 @@ import (
 // FakeMysqlVirtualNetworkRules implements MysqlVirtualNetworkRuleInterface
 type FakeMysqlVirtualNetworkRules struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var mysqlvirtualnetworkrulesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "mysqlvirtualnetworkrules"}
@@ -40,7 +41,8 @@ var mysqlvirtualnetworkrulesKind = schema.GroupVersionKind{Group: "azurerm.kubef
 // Get takes name of the mysqlVirtualNetworkRule, and returns the corresponding mysqlVirtualNetworkRule object, and an error if there is any.
 func (c *FakeMysqlVirtualNetworkRules) Get(name string, options v1.GetOptions) (result *v1alpha1.MysqlVirtualNetworkRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(mysqlvirtualnetworkrulesResource, name), &v1alpha1.MysqlVirtualNetworkRule{})
+		Invokes(testing.NewGetAction(mysqlvirtualnetworkrulesResource, c.ns, name), &v1alpha1.MysqlVirtualNetworkRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMysqlVirtualNetworkRules) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of MysqlVirtualNetworkRules that match those selectors.
 func (c *FakeMysqlVirtualNetworkRules) List(opts v1.ListOptions) (result *v1alpha1.MysqlVirtualNetworkRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(mysqlvirtualnetworkrulesResource, mysqlvirtualnetworkrulesKind, opts), &v1alpha1.MysqlVirtualNetworkRuleList{})
+		Invokes(testing.NewListAction(mysqlvirtualnetworkrulesResource, mysqlvirtualnetworkrulesKind, c.ns, opts), &v1alpha1.MysqlVirtualNetworkRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMysqlVirtualNetworkRules) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested mysqlVirtualNetworkRules.
 func (c *FakeMysqlVirtualNetworkRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(mysqlvirtualnetworkrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(mysqlvirtualnetworkrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a mysqlVirtualNetworkRule and creates it.  Returns the server's representation of the mysqlVirtualNetworkRule, and an error, if there is any.
 func (c *FakeMysqlVirtualNetworkRules) Create(mysqlVirtualNetworkRule *v1alpha1.MysqlVirtualNetworkRule) (result *v1alpha1.MysqlVirtualNetworkRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(mysqlvirtualnetworkrulesResource, mysqlVirtualNetworkRule), &v1alpha1.MysqlVirtualNetworkRule{})
+		Invokes(testing.NewCreateAction(mysqlvirtualnetworkrulesResource, c.ns, mysqlVirtualNetworkRule), &v1alpha1.MysqlVirtualNetworkRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMysqlVirtualNetworkRules) Create(mysqlVirtualNetworkRule *v1alpha1.
 // Update takes the representation of a mysqlVirtualNetworkRule and updates it. Returns the server's representation of the mysqlVirtualNetworkRule, and an error, if there is any.
 func (c *FakeMysqlVirtualNetworkRules) Update(mysqlVirtualNetworkRule *v1alpha1.MysqlVirtualNetworkRule) (result *v1alpha1.MysqlVirtualNetworkRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(mysqlvirtualnetworkrulesResource, mysqlVirtualNetworkRule), &v1alpha1.MysqlVirtualNetworkRule{})
+		Invokes(testing.NewUpdateAction(mysqlvirtualnetworkrulesResource, c.ns, mysqlVirtualNetworkRule), &v1alpha1.MysqlVirtualNetworkRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMysqlVirtualNetworkRules) Update(mysqlVirtualNetworkRule *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMysqlVirtualNetworkRules) UpdateStatus(mysqlVirtualNetworkRule *v1alpha1.MysqlVirtualNetworkRule) (*v1alpha1.MysqlVirtualNetworkRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(mysqlvirtualnetworkrulesResource, "status", mysqlVirtualNetworkRule), &v1alpha1.MysqlVirtualNetworkRule{})
+		Invokes(testing.NewUpdateSubresourceAction(mysqlvirtualnetworkrulesResource, "status", c.ns, mysqlVirtualNetworkRule), &v1alpha1.MysqlVirtualNetworkRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMysqlVirtualNetworkRules) UpdateStatus(mysqlVirtualNetworkRule *v1a
 // Delete takes name of the mysqlVirtualNetworkRule and deletes it. Returns an error if one occurs.
 func (c *FakeMysqlVirtualNetworkRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(mysqlvirtualnetworkrulesResource, name), &v1alpha1.MysqlVirtualNetworkRule{})
+		Invokes(testing.NewDeleteAction(mysqlvirtualnetworkrulesResource, c.ns, name), &v1alpha1.MysqlVirtualNetworkRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMysqlVirtualNetworkRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(mysqlvirtualnetworkrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(mysqlvirtualnetworkrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MysqlVirtualNetworkRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMysqlVirtualNetworkRules) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched mysqlVirtualNetworkRule.
 func (c *FakeMysqlVirtualNetworkRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MysqlVirtualNetworkRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(mysqlvirtualnetworkrulesResource, name, pt, data, subresources...), &v1alpha1.MysqlVirtualNetworkRule{})
+		Invokes(testing.NewPatchSubresourceAction(mysqlvirtualnetworkrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.MysqlVirtualNetworkRule{})
+
 	if obj == nil {
 		return nil, err
 	}

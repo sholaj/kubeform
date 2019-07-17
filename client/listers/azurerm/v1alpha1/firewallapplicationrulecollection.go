@@ -29,8 +29,8 @@ import (
 type FirewallApplicationRuleCollectionLister interface {
 	// List lists all FirewallApplicationRuleCollections in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.FirewallApplicationRuleCollection, err error)
-	// Get retrieves the FirewallApplicationRuleCollection from the index for a given name.
-	Get(name string) (*v1alpha1.FirewallApplicationRuleCollection, error)
+	// FirewallApplicationRuleCollections returns an object that can list and get FirewallApplicationRuleCollections.
+	FirewallApplicationRuleCollections(namespace string) FirewallApplicationRuleCollectionNamespaceLister
 	FirewallApplicationRuleCollectionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *firewallApplicationRuleCollectionLister) List(selector labels.Selector)
 	return ret, err
 }
 
-// Get retrieves the FirewallApplicationRuleCollection from the index for a given name.
-func (s *firewallApplicationRuleCollectionLister) Get(name string) (*v1alpha1.FirewallApplicationRuleCollection, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// FirewallApplicationRuleCollections returns an object that can list and get FirewallApplicationRuleCollections.
+func (s *firewallApplicationRuleCollectionLister) FirewallApplicationRuleCollections(namespace string) FirewallApplicationRuleCollectionNamespaceLister {
+	return firewallApplicationRuleCollectionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// FirewallApplicationRuleCollectionNamespaceLister helps list and get FirewallApplicationRuleCollections.
+type FirewallApplicationRuleCollectionNamespaceLister interface {
+	// List lists all FirewallApplicationRuleCollections in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.FirewallApplicationRuleCollection, err error)
+	// Get retrieves the FirewallApplicationRuleCollection from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.FirewallApplicationRuleCollection, error)
+	FirewallApplicationRuleCollectionNamespaceListerExpansion
+}
+
+// firewallApplicationRuleCollectionNamespaceLister implements the FirewallApplicationRuleCollectionNamespaceLister
+// interface.
+type firewallApplicationRuleCollectionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all FirewallApplicationRuleCollections in the indexer for a given namespace.
+func (s firewallApplicationRuleCollectionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.FirewallApplicationRuleCollection, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.FirewallApplicationRuleCollection))
+	})
+	return ret, err
+}
+
+// Get retrieves the FirewallApplicationRuleCollection from the indexer for a given namespace and name.
+func (s firewallApplicationRuleCollectionNamespaceLister) Get(name string) (*v1alpha1.FirewallApplicationRuleCollection, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

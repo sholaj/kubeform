@@ -32,7 +32,7 @@ import (
 // ProjectServicesesGetter has a method to return a ProjectServicesInterface.
 // A group's client should implement this interface.
 type ProjectServicesesGetter interface {
-	ProjectServiceses() ProjectServicesInterface
+	ProjectServiceses(namespace string) ProjectServicesInterface
 }
 
 // ProjectServicesInterface has methods to work with ProjectServices resources.
@@ -52,12 +52,14 @@ type ProjectServicesInterface interface {
 // projectServiceses implements ProjectServicesInterface
 type projectServiceses struct {
 	client rest.Interface
+	ns     string
 }
 
 // newProjectServiceses returns a ProjectServiceses
-func newProjectServiceses(c *GoogleV1alpha1Client) *projectServiceses {
+func newProjectServiceses(c *GoogleV1alpha1Client, namespace string) *projectServiceses {
 	return &projectServiceses{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newProjectServiceses(c *GoogleV1alpha1Client) *projectServiceses {
 func (c *projectServiceses) Get(name string, options v1.GetOptions) (result *v1alpha1.ProjectServices, err error) {
 	result = &v1alpha1.ProjectServices{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("projectserviceses").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *projectServiceses) List(opts v1.ListOptions) (result *v1alpha1.ProjectS
 	}
 	result = &v1alpha1.ProjectServicesList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("projectserviceses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *projectServiceses) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("projectserviceses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *projectServiceses) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *projectServiceses) Create(projectServices *v1alpha1.ProjectServices) (result *v1alpha1.ProjectServices, err error) {
 	result = &v1alpha1.ProjectServices{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("projectserviceses").
 		Body(projectServices).
 		Do().
@@ -118,6 +124,7 @@ func (c *projectServiceses) Create(projectServices *v1alpha1.ProjectServices) (r
 func (c *projectServiceses) Update(projectServices *v1alpha1.ProjectServices) (result *v1alpha1.ProjectServices, err error) {
 	result = &v1alpha1.ProjectServices{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("projectserviceses").
 		Name(projectServices.Name).
 		Body(projectServices).
@@ -132,6 +139,7 @@ func (c *projectServiceses) Update(projectServices *v1alpha1.ProjectServices) (r
 func (c *projectServiceses) UpdateStatus(projectServices *v1alpha1.ProjectServices) (result *v1alpha1.ProjectServices, err error) {
 	result = &v1alpha1.ProjectServices{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("projectserviceses").
 		Name(projectServices.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *projectServiceses) UpdateStatus(projectServices *v1alpha1.ProjectServic
 // Delete takes name of the projectServices and deletes it. Returns an error if one occurs.
 func (c *projectServiceses) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("projectserviceses").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *projectServiceses) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("projectserviceses").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *projectServiceses) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *projectServiceses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ProjectServices, err error) {
 	result = &v1alpha1.ProjectServices{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("projectserviceses").
 		SubResource(subresources...).
 		Name(name).

@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// AppsyncApiKeyLister helps list AppsyncApiKeys.
-type AppsyncApiKeyLister interface {
-	// List lists all AppsyncApiKeys in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.AppsyncApiKey, err error)
-	// Get retrieves the AppsyncApiKey from the index for a given name.
-	Get(name string) (*v1alpha1.AppsyncApiKey, error)
-	AppsyncApiKeyListerExpansion
+// AppsyncAPIKeyLister helps list AppsyncAPIKeys.
+type AppsyncAPIKeyLister interface {
+	// List lists all AppsyncAPIKeys in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.AppsyncAPIKey, err error)
+	// AppsyncAPIKeys returns an object that can list and get AppsyncAPIKeys.
+	AppsyncAPIKeys(namespace string) AppsyncAPIKeyNamespaceLister
+	AppsyncAPIKeyListerExpansion
 }
 
-// appsyncApiKeyLister implements the AppsyncApiKeyLister interface.
-type appsyncApiKeyLister struct {
+// appsyncAPIKeyLister implements the AppsyncAPIKeyLister interface.
+type appsyncAPIKeyLister struct {
 	indexer cache.Indexer
 }
 
-// NewAppsyncApiKeyLister returns a new AppsyncApiKeyLister.
-func NewAppsyncApiKeyLister(indexer cache.Indexer) AppsyncApiKeyLister {
-	return &appsyncApiKeyLister{indexer: indexer}
+// NewAppsyncAPIKeyLister returns a new AppsyncAPIKeyLister.
+func NewAppsyncAPIKeyLister(indexer cache.Indexer) AppsyncAPIKeyLister {
+	return &appsyncAPIKeyLister{indexer: indexer}
 }
 
-// List lists all AppsyncApiKeys in the indexer.
-func (s *appsyncApiKeyLister) List(selector labels.Selector) (ret []*v1alpha1.AppsyncApiKey, err error) {
+// List lists all AppsyncAPIKeys in the indexer.
+func (s *appsyncAPIKeyLister) List(selector labels.Selector) (ret []*v1alpha1.AppsyncAPIKey, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.AppsyncApiKey))
+		ret = append(ret, m.(*v1alpha1.AppsyncAPIKey))
 	})
 	return ret, err
 }
 
-// Get retrieves the AppsyncApiKey from the index for a given name.
-func (s *appsyncApiKeyLister) Get(name string) (*v1alpha1.AppsyncApiKey, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AppsyncAPIKeys returns an object that can list and get AppsyncAPIKeys.
+func (s *appsyncAPIKeyLister) AppsyncAPIKeys(namespace string) AppsyncAPIKeyNamespaceLister {
+	return appsyncAPIKeyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AppsyncAPIKeyNamespaceLister helps list and get AppsyncAPIKeys.
+type AppsyncAPIKeyNamespaceLister interface {
+	// List lists all AppsyncAPIKeys in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AppsyncAPIKey, err error)
+	// Get retrieves the AppsyncAPIKey from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AppsyncAPIKey, error)
+	AppsyncAPIKeyNamespaceListerExpansion
+}
+
+// appsyncAPIKeyNamespaceLister implements the AppsyncAPIKeyNamespaceLister
+// interface.
+type appsyncAPIKeyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AppsyncAPIKeys in the indexer for a given namespace.
+func (s appsyncAPIKeyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AppsyncAPIKey, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AppsyncAPIKey))
+	})
+	return ret, err
+}
+
+// Get retrieves the AppsyncAPIKey from the indexer for a given namespace and name.
+func (s appsyncAPIKeyNamespaceLister) Get(name string) (*v1alpha1.AppsyncAPIKey, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("appsyncapikey"), name)
 	}
-	return obj.(*v1alpha1.AppsyncApiKey), nil
+	return obj.(*v1alpha1.AppsyncAPIKey), nil
 }

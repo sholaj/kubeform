@@ -32,7 +32,7 @@ import (
 // CosmosdbAccountsGetter has a method to return a CosmosdbAccountInterface.
 // A group's client should implement this interface.
 type CosmosdbAccountsGetter interface {
-	CosmosdbAccounts() CosmosdbAccountInterface
+	CosmosdbAccounts(namespace string) CosmosdbAccountInterface
 }
 
 // CosmosdbAccountInterface has methods to work with CosmosdbAccount resources.
@@ -52,12 +52,14 @@ type CosmosdbAccountInterface interface {
 // cosmosdbAccounts implements CosmosdbAccountInterface
 type cosmosdbAccounts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCosmosdbAccounts returns a CosmosdbAccounts
-func newCosmosdbAccounts(c *AzurermV1alpha1Client) *cosmosdbAccounts {
+func newCosmosdbAccounts(c *AzurermV1alpha1Client, namespace string) *cosmosdbAccounts {
 	return &cosmosdbAccounts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCosmosdbAccounts(c *AzurermV1alpha1Client) *cosmosdbAccounts {
 func (c *cosmosdbAccounts) Get(name string, options v1.GetOptions) (result *v1alpha1.CosmosdbAccount, err error) {
 	result = &v1alpha1.CosmosdbAccount{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cosmosdbaccounts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cosmosdbAccounts) List(opts v1.ListOptions) (result *v1alpha1.CosmosdbA
 	}
 	result = &v1alpha1.CosmosdbAccountList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cosmosdbaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cosmosdbAccounts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cosmosdbaccounts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cosmosdbAccounts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *cosmosdbAccounts) Create(cosmosdbAccount *v1alpha1.CosmosdbAccount) (result *v1alpha1.CosmosdbAccount, err error) {
 	result = &v1alpha1.CosmosdbAccount{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cosmosdbaccounts").
 		Body(cosmosdbAccount).
 		Do().
@@ -118,6 +124,7 @@ func (c *cosmosdbAccounts) Create(cosmosdbAccount *v1alpha1.CosmosdbAccount) (re
 func (c *cosmosdbAccounts) Update(cosmosdbAccount *v1alpha1.CosmosdbAccount) (result *v1alpha1.CosmosdbAccount, err error) {
 	result = &v1alpha1.CosmosdbAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cosmosdbaccounts").
 		Name(cosmosdbAccount.Name).
 		Body(cosmosdbAccount).
@@ -132,6 +139,7 @@ func (c *cosmosdbAccounts) Update(cosmosdbAccount *v1alpha1.CosmosdbAccount) (re
 func (c *cosmosdbAccounts) UpdateStatus(cosmosdbAccount *v1alpha1.CosmosdbAccount) (result *v1alpha1.CosmosdbAccount, err error) {
 	result = &v1alpha1.CosmosdbAccount{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cosmosdbaccounts").
 		Name(cosmosdbAccount.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cosmosdbAccounts) UpdateStatus(cosmosdbAccount *v1alpha1.CosmosdbAccoun
 // Delete takes name of the cosmosdbAccount and deletes it. Returns an error if one occurs.
 func (c *cosmosdbAccounts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cosmosdbaccounts").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cosmosdbAccounts) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cosmosdbaccounts").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cosmosdbAccounts) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *cosmosdbAccounts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CosmosdbAccount, err error) {
 	result = &v1alpha1.CosmosdbAccount{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cosmosdbaccounts").
 		SubResource(subresources...).
 		Name(name).

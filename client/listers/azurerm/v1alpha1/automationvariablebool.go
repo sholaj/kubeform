@@ -29,8 +29,8 @@ import (
 type AutomationVariableBoolLister interface {
 	// List lists all AutomationVariableBools in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AutomationVariableBool, err error)
-	// Get retrieves the AutomationVariableBool from the index for a given name.
-	Get(name string) (*v1alpha1.AutomationVariableBool, error)
+	// AutomationVariableBools returns an object that can list and get AutomationVariableBools.
+	AutomationVariableBools(namespace string) AutomationVariableBoolNamespaceLister
 	AutomationVariableBoolListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *automationVariableBoolLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the AutomationVariableBool from the index for a given name.
-func (s *automationVariableBoolLister) Get(name string) (*v1alpha1.AutomationVariableBool, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AutomationVariableBools returns an object that can list and get AutomationVariableBools.
+func (s *automationVariableBoolLister) AutomationVariableBools(namespace string) AutomationVariableBoolNamespaceLister {
+	return automationVariableBoolNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AutomationVariableBoolNamespaceLister helps list and get AutomationVariableBools.
+type AutomationVariableBoolNamespaceLister interface {
+	// List lists all AutomationVariableBools in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AutomationVariableBool, err error)
+	// Get retrieves the AutomationVariableBool from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AutomationVariableBool, error)
+	AutomationVariableBoolNamespaceListerExpansion
+}
+
+// automationVariableBoolNamespaceLister implements the AutomationVariableBoolNamespaceLister
+// interface.
+type automationVariableBoolNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AutomationVariableBools in the indexer for a given namespace.
+func (s automationVariableBoolNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AutomationVariableBool, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AutomationVariableBool))
+	})
+	return ret, err
+}
+
+// Get retrieves the AutomationVariableBool from the indexer for a given namespace and name.
+func (s automationVariableBoolNamespaceLister) Get(name string) (*v1alpha1.AutomationVariableBool, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

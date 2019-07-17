@@ -29,8 +29,8 @@ import (
 type OrganizationsOrganizationalUnitLister interface {
 	// List lists all OrganizationsOrganizationalUnits in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OrganizationsOrganizationalUnit, err error)
-	// Get retrieves the OrganizationsOrganizationalUnit from the index for a given name.
-	Get(name string) (*v1alpha1.OrganizationsOrganizationalUnit, error)
+	// OrganizationsOrganizationalUnits returns an object that can list and get OrganizationsOrganizationalUnits.
+	OrganizationsOrganizationalUnits(namespace string) OrganizationsOrganizationalUnitNamespaceLister
 	OrganizationsOrganizationalUnitListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *organizationsOrganizationalUnitLister) List(selector labels.Selector) (
 	return ret, err
 }
 
-// Get retrieves the OrganizationsOrganizationalUnit from the index for a given name.
-func (s *organizationsOrganizationalUnitLister) Get(name string) (*v1alpha1.OrganizationsOrganizationalUnit, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OrganizationsOrganizationalUnits returns an object that can list and get OrganizationsOrganizationalUnits.
+func (s *organizationsOrganizationalUnitLister) OrganizationsOrganizationalUnits(namespace string) OrganizationsOrganizationalUnitNamespaceLister {
+	return organizationsOrganizationalUnitNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OrganizationsOrganizationalUnitNamespaceLister helps list and get OrganizationsOrganizationalUnits.
+type OrganizationsOrganizationalUnitNamespaceLister interface {
+	// List lists all OrganizationsOrganizationalUnits in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OrganizationsOrganizationalUnit, err error)
+	// Get retrieves the OrganizationsOrganizationalUnit from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OrganizationsOrganizationalUnit, error)
+	OrganizationsOrganizationalUnitNamespaceListerExpansion
+}
+
+// organizationsOrganizationalUnitNamespaceLister implements the OrganizationsOrganizationalUnitNamespaceLister
+// interface.
+type organizationsOrganizationalUnitNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OrganizationsOrganizationalUnits in the indexer for a given namespace.
+func (s organizationsOrganizationalUnitNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OrganizationsOrganizationalUnit, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OrganizationsOrganizationalUnit))
+	})
+	return ret, err
+}
+
+// Get retrieves the OrganizationsOrganizationalUnit from the indexer for a given namespace and name.
+func (s organizationsOrganizationalUnitNamespaceLister) Get(name string) (*v1alpha1.OrganizationsOrganizationalUnit, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

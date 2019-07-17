@@ -32,7 +32,7 @@ import (
 // ComputeSubnetworkIamBindingsGetter has a method to return a ComputeSubnetworkIamBindingInterface.
 // A group's client should implement this interface.
 type ComputeSubnetworkIamBindingsGetter interface {
-	ComputeSubnetworkIamBindings() ComputeSubnetworkIamBindingInterface
+	ComputeSubnetworkIamBindings(namespace string) ComputeSubnetworkIamBindingInterface
 }
 
 // ComputeSubnetworkIamBindingInterface has methods to work with ComputeSubnetworkIamBinding resources.
@@ -52,12 +52,14 @@ type ComputeSubnetworkIamBindingInterface interface {
 // computeSubnetworkIamBindings implements ComputeSubnetworkIamBindingInterface
 type computeSubnetworkIamBindings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeSubnetworkIamBindings returns a ComputeSubnetworkIamBindings
-func newComputeSubnetworkIamBindings(c *GoogleV1alpha1Client) *computeSubnetworkIamBindings {
+func newComputeSubnetworkIamBindings(c *GoogleV1alpha1Client, namespace string) *computeSubnetworkIamBindings {
 	return &computeSubnetworkIamBindings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeSubnetworkIamBindings(c *GoogleV1alpha1Client) *computeSubnetwork
 func (c *computeSubnetworkIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeSubnetworkIamBinding, err error) {
 	result = &v1alpha1.ComputeSubnetworkIamBinding{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computesubnetworkiambindings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeSubnetworkIamBindings) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.ComputeSubnetworkIamBindingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computesubnetworkiambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeSubnetworkIamBindings) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computesubnetworkiambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeSubnetworkIamBindings) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *computeSubnetworkIamBindings) Create(computeSubnetworkIamBinding *v1alpha1.ComputeSubnetworkIamBinding) (result *v1alpha1.ComputeSubnetworkIamBinding, err error) {
 	result = &v1alpha1.ComputeSubnetworkIamBinding{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computesubnetworkiambindings").
 		Body(computeSubnetworkIamBinding).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeSubnetworkIamBindings) Create(computeSubnetworkIamBinding *v1alp
 func (c *computeSubnetworkIamBindings) Update(computeSubnetworkIamBinding *v1alpha1.ComputeSubnetworkIamBinding) (result *v1alpha1.ComputeSubnetworkIamBinding, err error) {
 	result = &v1alpha1.ComputeSubnetworkIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computesubnetworkiambindings").
 		Name(computeSubnetworkIamBinding.Name).
 		Body(computeSubnetworkIamBinding).
@@ -132,6 +139,7 @@ func (c *computeSubnetworkIamBindings) Update(computeSubnetworkIamBinding *v1alp
 func (c *computeSubnetworkIamBindings) UpdateStatus(computeSubnetworkIamBinding *v1alpha1.ComputeSubnetworkIamBinding) (result *v1alpha1.ComputeSubnetworkIamBinding, err error) {
 	result = &v1alpha1.ComputeSubnetworkIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computesubnetworkiambindings").
 		Name(computeSubnetworkIamBinding.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeSubnetworkIamBindings) UpdateStatus(computeSubnetworkIamBinding 
 // Delete takes name of the computeSubnetworkIamBinding and deletes it. Returns an error if one occurs.
 func (c *computeSubnetworkIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computesubnetworkiambindings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeSubnetworkIamBindings) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computesubnetworkiambindings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeSubnetworkIamBindings) DeleteCollection(options *v1.DeleteOption
 func (c *computeSubnetworkIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeSubnetworkIamBinding, err error) {
 	result = &v1alpha1.ComputeSubnetworkIamBinding{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computesubnetworkiambindings").
 		SubResource(subresources...).
 		Name(name).

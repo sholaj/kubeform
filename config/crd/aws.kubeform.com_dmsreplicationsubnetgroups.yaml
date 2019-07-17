@@ -397,11 +397,20 @@ spec:
           type: object
         spec:
           properties:
-            replication_subnet_group_description:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            replicationSubnetGroupDescription:
               type: string
-            replication_subnet_group_id:
+            replicationSubnetGroupID:
               type: string
-            subnet_ids:
+            subnetIDS:
               items:
                 type: string
               type: array
@@ -411,9 +420,10 @@ spec:
                 type: string
               type: object
           required:
-          - replication_subnet_group_description
-          - replication_subnet_group_id
-          - subnet_ids
+          - providerRef
+          - replicationSubnetGroupDescription
+          - replicationSubnetGroupID
+          - subnetIDS
           type: object
         status:
           properties:
@@ -424,6 +434,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

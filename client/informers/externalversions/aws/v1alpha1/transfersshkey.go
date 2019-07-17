@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// TransferSshKeyInformer provides access to a shared informer and lister for
-// TransferSshKeys.
-type TransferSshKeyInformer interface {
+// TransferSSHKeyInformer provides access to a shared informer and lister for
+// TransferSSHKeys.
+type TransferSSHKeyInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.TransferSshKeyLister
+	Lister() v1alpha1.TransferSSHKeyLister
 }
 
-type transferSshKeyInformer struct {
+type transferSSHKeyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewTransferSshKeyInformer constructs a new informer for TransferSshKey type.
+// NewTransferSSHKeyInformer constructs a new informer for TransferSSHKey type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewTransferSshKeyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredTransferSshKeyInformer(client, resyncPeriod, indexers, nil)
+func NewTransferSSHKeyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredTransferSSHKeyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredTransferSshKeyInformer constructs a new informer for TransferSshKey type.
+// NewFilteredTransferSSHKeyInformer constructs a new informer for TransferSSHKey type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredTransferSshKeyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredTransferSSHKeyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().TransferSshKeys().List(options)
+				return client.AwsV1alpha1().TransferSSHKeys(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().TransferSshKeys().Watch(options)
+				return client.AwsV1alpha1().TransferSSHKeys(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.TransferSshKey{},
+		&awsv1alpha1.TransferSSHKey{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *transferSshKeyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredTransferSshKeyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *transferSSHKeyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredTransferSSHKeyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *transferSshKeyInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.TransferSshKey{}, f.defaultInformer)
+func (f *transferSSHKeyInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.TransferSSHKey{}, f.defaultInformer)
 }
 
-func (f *transferSshKeyInformer) Lister() v1alpha1.TransferSshKeyLister {
-	return v1alpha1.NewTransferSshKeyLister(f.Informer().GetIndexer())
+func (f *transferSSHKeyInformer) Lister() v1alpha1.TransferSSHKeyLister {
+	return v1alpha1.NewTransferSSHKeyLister(f.Informer().GetIndexer())
 }

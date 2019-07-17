@@ -41,32 +41,33 @@ type IamOpenidConnectProviderInformer interface {
 type iamOpenidConnectProviderInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewIamOpenidConnectProviderInformer constructs a new informer for IamOpenidConnectProvider type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewIamOpenidConnectProviderInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredIamOpenidConnectProviderInformer(client, resyncPeriod, indexers, nil)
+func NewIamOpenidConnectProviderInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredIamOpenidConnectProviderInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredIamOpenidConnectProviderInformer constructs a new informer for IamOpenidConnectProvider type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredIamOpenidConnectProviderInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredIamOpenidConnectProviderInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().IamOpenidConnectProviders().List(options)
+				return client.AwsV1alpha1().IamOpenidConnectProviders(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().IamOpenidConnectProviders().Watch(options)
+				return client.AwsV1alpha1().IamOpenidConnectProviders(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.IamOpenidConnectProvider{},
@@ -76,7 +77,7 @@ func NewFilteredIamOpenidConnectProviderInformer(client versioned.Interface, res
 }
 
 func (f *iamOpenidConnectProviderInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredIamOpenidConnectProviderInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredIamOpenidConnectProviderInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *iamOpenidConnectProviderInformer) Informer() cache.SharedIndexInformer {

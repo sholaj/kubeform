@@ -32,7 +32,7 @@ import (
 // RedisCachesGetter has a method to return a RedisCacheInterface.
 // A group's client should implement this interface.
 type RedisCachesGetter interface {
-	RedisCaches() RedisCacheInterface
+	RedisCaches(namespace string) RedisCacheInterface
 }
 
 // RedisCacheInterface has methods to work with RedisCache resources.
@@ -52,12 +52,14 @@ type RedisCacheInterface interface {
 // redisCaches implements RedisCacheInterface
 type redisCaches struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRedisCaches returns a RedisCaches
-func newRedisCaches(c *AzurermV1alpha1Client) *redisCaches {
+func newRedisCaches(c *AzurermV1alpha1Client, namespace string) *redisCaches {
 	return &redisCaches{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRedisCaches(c *AzurermV1alpha1Client) *redisCaches {
 func (c *redisCaches) Get(name string, options v1.GetOptions) (result *v1alpha1.RedisCache, err error) {
 	result = &v1alpha1.RedisCache{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("rediscaches").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *redisCaches) List(opts v1.ListOptions) (result *v1alpha1.RedisCacheList
 	}
 	result = &v1alpha1.RedisCacheList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("rediscaches").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *redisCaches) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("rediscaches").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *redisCaches) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *redisCaches) Create(redisCache *v1alpha1.RedisCache) (result *v1alpha1.RedisCache, err error) {
 	result = &v1alpha1.RedisCache{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("rediscaches").
 		Body(redisCache).
 		Do().
@@ -118,6 +124,7 @@ func (c *redisCaches) Create(redisCache *v1alpha1.RedisCache) (result *v1alpha1.
 func (c *redisCaches) Update(redisCache *v1alpha1.RedisCache) (result *v1alpha1.RedisCache, err error) {
 	result = &v1alpha1.RedisCache{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("rediscaches").
 		Name(redisCache.Name).
 		Body(redisCache).
@@ -132,6 +139,7 @@ func (c *redisCaches) Update(redisCache *v1alpha1.RedisCache) (result *v1alpha1.
 func (c *redisCaches) UpdateStatus(redisCache *v1alpha1.RedisCache) (result *v1alpha1.RedisCache, err error) {
 	result = &v1alpha1.RedisCache{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("rediscaches").
 		Name(redisCache.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *redisCaches) UpdateStatus(redisCache *v1alpha1.RedisCache) (result *v1a
 // Delete takes name of the redisCache and deletes it. Returns an error if one occurs.
 func (c *redisCaches) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("rediscaches").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *redisCaches) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("rediscaches").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *redisCaches) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *redisCaches) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RedisCache, err error) {
 	result = &v1alpha1.RedisCache{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("rediscaches").
 		SubResource(subresources...).
 		Name(name).

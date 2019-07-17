@@ -32,7 +32,7 @@ import (
 // AlbListenerRulesGetter has a method to return a AlbListenerRuleInterface.
 // A group's client should implement this interface.
 type AlbListenerRulesGetter interface {
-	AlbListenerRules() AlbListenerRuleInterface
+	AlbListenerRules(namespace string) AlbListenerRuleInterface
 }
 
 // AlbListenerRuleInterface has methods to work with AlbListenerRule resources.
@@ -52,12 +52,14 @@ type AlbListenerRuleInterface interface {
 // albListenerRules implements AlbListenerRuleInterface
 type albListenerRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAlbListenerRules returns a AlbListenerRules
-func newAlbListenerRules(c *AwsV1alpha1Client) *albListenerRules {
+func newAlbListenerRules(c *AwsV1alpha1Client, namespace string) *albListenerRules {
 	return &albListenerRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAlbListenerRules(c *AwsV1alpha1Client) *albListenerRules {
 func (c *albListenerRules) Get(name string, options v1.GetOptions) (result *v1alpha1.AlbListenerRule, err error) {
 	result = &v1alpha1.AlbListenerRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("alblistenerrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *albListenerRules) List(opts v1.ListOptions) (result *v1alpha1.AlbListen
 	}
 	result = &v1alpha1.AlbListenerRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("alblistenerrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *albListenerRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("alblistenerrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *albListenerRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *albListenerRules) Create(albListenerRule *v1alpha1.AlbListenerRule) (result *v1alpha1.AlbListenerRule, err error) {
 	result = &v1alpha1.AlbListenerRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("alblistenerrules").
 		Body(albListenerRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *albListenerRules) Create(albListenerRule *v1alpha1.AlbListenerRule) (re
 func (c *albListenerRules) Update(albListenerRule *v1alpha1.AlbListenerRule) (result *v1alpha1.AlbListenerRule, err error) {
 	result = &v1alpha1.AlbListenerRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("alblistenerrules").
 		Name(albListenerRule.Name).
 		Body(albListenerRule).
@@ -132,6 +139,7 @@ func (c *albListenerRules) Update(albListenerRule *v1alpha1.AlbListenerRule) (re
 func (c *albListenerRules) UpdateStatus(albListenerRule *v1alpha1.AlbListenerRule) (result *v1alpha1.AlbListenerRule, err error) {
 	result = &v1alpha1.AlbListenerRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("alblistenerrules").
 		Name(albListenerRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *albListenerRules) UpdateStatus(albListenerRule *v1alpha1.AlbListenerRul
 // Delete takes name of the albListenerRule and deletes it. Returns an error if one occurs.
 func (c *albListenerRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("alblistenerrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *albListenerRules) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("alblistenerrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *albListenerRules) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *albListenerRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AlbListenerRule, err error) {
 	result = &v1alpha1.AlbListenerRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("alblistenerrules").
 		SubResource(subresources...).
 		Name(name).

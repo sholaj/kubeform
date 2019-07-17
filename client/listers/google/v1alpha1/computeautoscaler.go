@@ -29,8 +29,8 @@ import (
 type ComputeAutoscalerLister interface {
 	// List lists all ComputeAutoscalers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeAutoscaler, err error)
-	// Get retrieves the ComputeAutoscaler from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeAutoscaler, error)
+	// ComputeAutoscalers returns an object that can list and get ComputeAutoscalers.
+	ComputeAutoscalers(namespace string) ComputeAutoscalerNamespaceLister
 	ComputeAutoscalerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeAutoscalerLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the ComputeAutoscaler from the index for a given name.
-func (s *computeAutoscalerLister) Get(name string) (*v1alpha1.ComputeAutoscaler, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeAutoscalers returns an object that can list and get ComputeAutoscalers.
+func (s *computeAutoscalerLister) ComputeAutoscalers(namespace string) ComputeAutoscalerNamespaceLister {
+	return computeAutoscalerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeAutoscalerNamespaceLister helps list and get ComputeAutoscalers.
+type ComputeAutoscalerNamespaceLister interface {
+	// List lists all ComputeAutoscalers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeAutoscaler, err error)
+	// Get retrieves the ComputeAutoscaler from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeAutoscaler, error)
+	ComputeAutoscalerNamespaceListerExpansion
+}
+
+// computeAutoscalerNamespaceLister implements the ComputeAutoscalerNamespaceLister
+// interface.
+type computeAutoscalerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeAutoscalers in the indexer for a given namespace.
+func (s computeAutoscalerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeAutoscaler, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeAutoscaler))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeAutoscaler from the indexer for a given namespace and name.
+func (s computeAutoscalerNamespaceLister) Get(name string) (*v1alpha1.ComputeAutoscaler, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // DocdbClustersGetter has a method to return a DocdbClusterInterface.
 // A group's client should implement this interface.
 type DocdbClustersGetter interface {
-	DocdbClusters() DocdbClusterInterface
+	DocdbClusters(namespace string) DocdbClusterInterface
 }
 
 // DocdbClusterInterface has methods to work with DocdbCluster resources.
@@ -52,12 +52,14 @@ type DocdbClusterInterface interface {
 // docdbClusters implements DocdbClusterInterface
 type docdbClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDocdbClusters returns a DocdbClusters
-func newDocdbClusters(c *AwsV1alpha1Client) *docdbClusters {
+func newDocdbClusters(c *AwsV1alpha1Client, namespace string) *docdbClusters {
 	return &docdbClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDocdbClusters(c *AwsV1alpha1Client) *docdbClusters {
 func (c *docdbClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.DocdbCluster, err error) {
 	result = &v1alpha1.DocdbCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("docdbclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *docdbClusters) List(opts v1.ListOptions) (result *v1alpha1.DocdbCluster
 	}
 	result = &v1alpha1.DocdbClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("docdbclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *docdbClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("docdbclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *docdbClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *docdbClusters) Create(docdbCluster *v1alpha1.DocdbCluster) (result *v1alpha1.DocdbCluster, err error) {
 	result = &v1alpha1.DocdbCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("docdbclusters").
 		Body(docdbCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *docdbClusters) Create(docdbCluster *v1alpha1.DocdbCluster) (result *v1a
 func (c *docdbClusters) Update(docdbCluster *v1alpha1.DocdbCluster) (result *v1alpha1.DocdbCluster, err error) {
 	result = &v1alpha1.DocdbCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("docdbclusters").
 		Name(docdbCluster.Name).
 		Body(docdbCluster).
@@ -132,6 +139,7 @@ func (c *docdbClusters) Update(docdbCluster *v1alpha1.DocdbCluster) (result *v1a
 func (c *docdbClusters) UpdateStatus(docdbCluster *v1alpha1.DocdbCluster) (result *v1alpha1.DocdbCluster, err error) {
 	result = &v1alpha1.DocdbCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("docdbclusters").
 		Name(docdbCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *docdbClusters) UpdateStatus(docdbCluster *v1alpha1.DocdbCluster) (resul
 // Delete takes name of the docdbCluster and deletes it. Returns an error if one occurs.
 func (c *docdbClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("docdbclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *docdbClusters) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("docdbclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *docdbClusters) DeleteCollection(options *v1.DeleteOptions, listOptions 
 func (c *docdbClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DocdbCluster, err error) {
 	result = &v1alpha1.DocdbCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("docdbclusters").
 		SubResource(subresources...).
 		Name(name).

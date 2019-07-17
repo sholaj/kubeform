@@ -29,8 +29,8 @@ import (
 type PubsubTopicLister interface {
 	// List lists all PubsubTopics in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.PubsubTopic, err error)
-	// Get retrieves the PubsubTopic from the index for a given name.
-	Get(name string) (*v1alpha1.PubsubTopic, error)
+	// PubsubTopics returns an object that can list and get PubsubTopics.
+	PubsubTopics(namespace string) PubsubTopicNamespaceLister
 	PubsubTopicListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *pubsubTopicLister) List(selector labels.Selector) (ret []*v1alpha1.Pubs
 	return ret, err
 }
 
-// Get retrieves the PubsubTopic from the index for a given name.
-func (s *pubsubTopicLister) Get(name string) (*v1alpha1.PubsubTopic, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// PubsubTopics returns an object that can list and get PubsubTopics.
+func (s *pubsubTopicLister) PubsubTopics(namespace string) PubsubTopicNamespaceLister {
+	return pubsubTopicNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// PubsubTopicNamespaceLister helps list and get PubsubTopics.
+type PubsubTopicNamespaceLister interface {
+	// List lists all PubsubTopics in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.PubsubTopic, err error)
+	// Get retrieves the PubsubTopic from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.PubsubTopic, error)
+	PubsubTopicNamespaceListerExpansion
+}
+
+// pubsubTopicNamespaceLister implements the PubsubTopicNamespaceLister
+// interface.
+type pubsubTopicNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all PubsubTopics in the indexer for a given namespace.
+func (s pubsubTopicNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.PubsubTopic, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.PubsubTopic))
+	})
+	return ret, err
+}
+
+// Get retrieves the PubsubTopic from the indexer for a given namespace and name.
+func (s pubsubTopicNamespaceLister) Get(name string) (*v1alpha1.PubsubTopic, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

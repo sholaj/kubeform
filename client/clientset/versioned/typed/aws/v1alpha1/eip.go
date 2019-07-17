@@ -32,7 +32,7 @@ import (
 // EipsGetter has a method to return a EipInterface.
 // A group's client should implement this interface.
 type EipsGetter interface {
-	Eips() EipInterface
+	Eips(namespace string) EipInterface
 }
 
 // EipInterface has methods to work with Eip resources.
@@ -52,12 +52,14 @@ type EipInterface interface {
 // eips implements EipInterface
 type eips struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEips returns a Eips
-func newEips(c *AwsV1alpha1Client) *eips {
+func newEips(c *AwsV1alpha1Client, namespace string) *eips {
 	return &eips{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEips(c *AwsV1alpha1Client) *eips {
 func (c *eips) Get(name string, options v1.GetOptions) (result *v1alpha1.Eip, err error) {
 	result = &v1alpha1.Eip{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eips").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *eips) List(opts v1.ListOptions) (result *v1alpha1.EipList, err error) {
 	}
 	result = &v1alpha1.EipList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eips").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *eips) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("eips").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *eips) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *eips) Create(eip *v1alpha1.Eip) (result *v1alpha1.Eip, err error) {
 	result = &v1alpha1.Eip{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("eips").
 		Body(eip).
 		Do().
@@ -118,6 +124,7 @@ func (c *eips) Create(eip *v1alpha1.Eip) (result *v1alpha1.Eip, err error) {
 func (c *eips) Update(eip *v1alpha1.Eip) (result *v1alpha1.Eip, err error) {
 	result = &v1alpha1.Eip{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eips").
 		Name(eip.Name).
 		Body(eip).
@@ -132,6 +139,7 @@ func (c *eips) Update(eip *v1alpha1.Eip) (result *v1alpha1.Eip, err error) {
 func (c *eips) UpdateStatus(eip *v1alpha1.Eip) (result *v1alpha1.Eip, err error) {
 	result = &v1alpha1.Eip{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eips").
 		Name(eip.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *eips) UpdateStatus(eip *v1alpha1.Eip) (result *v1alpha1.Eip, err error)
 // Delete takes name of the eip and deletes it. Returns an error if one occurs.
 func (c *eips) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eips").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *eips) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eips").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *eips) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOp
 func (c *eips) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Eip, err error) {
 	result = &v1alpha1.Eip{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("eips").
 		SubResource(subresources...).
 		Name(name).

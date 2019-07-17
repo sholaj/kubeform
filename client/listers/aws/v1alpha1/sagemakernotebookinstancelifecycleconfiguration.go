@@ -29,8 +29,8 @@ import (
 type SagemakerNotebookInstanceLifecycleConfigurationLister interface {
 	// List lists all SagemakerNotebookInstanceLifecycleConfigurations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration, err error)
-	// Get retrieves the SagemakerNotebookInstanceLifecycleConfiguration from the index for a given name.
-	Get(name string) (*v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration, error)
+	// SagemakerNotebookInstanceLifecycleConfigurations returns an object that can list and get SagemakerNotebookInstanceLifecycleConfigurations.
+	SagemakerNotebookInstanceLifecycleConfigurations(namespace string) SagemakerNotebookInstanceLifecycleConfigurationNamespaceLister
 	SagemakerNotebookInstanceLifecycleConfigurationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *sagemakerNotebookInstanceLifecycleConfigurationLister) List(selector la
 	return ret, err
 }
 
-// Get retrieves the SagemakerNotebookInstanceLifecycleConfiguration from the index for a given name.
-func (s *sagemakerNotebookInstanceLifecycleConfigurationLister) Get(name string) (*v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SagemakerNotebookInstanceLifecycleConfigurations returns an object that can list and get SagemakerNotebookInstanceLifecycleConfigurations.
+func (s *sagemakerNotebookInstanceLifecycleConfigurationLister) SagemakerNotebookInstanceLifecycleConfigurations(namespace string) SagemakerNotebookInstanceLifecycleConfigurationNamespaceLister {
+	return sagemakerNotebookInstanceLifecycleConfigurationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SagemakerNotebookInstanceLifecycleConfigurationNamespaceLister helps list and get SagemakerNotebookInstanceLifecycleConfigurations.
+type SagemakerNotebookInstanceLifecycleConfigurationNamespaceLister interface {
+	// List lists all SagemakerNotebookInstanceLifecycleConfigurations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration, err error)
+	// Get retrieves the SagemakerNotebookInstanceLifecycleConfiguration from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration, error)
+	SagemakerNotebookInstanceLifecycleConfigurationNamespaceListerExpansion
+}
+
+// sagemakerNotebookInstanceLifecycleConfigurationNamespaceLister implements the SagemakerNotebookInstanceLifecycleConfigurationNamespaceLister
+// interface.
+type sagemakerNotebookInstanceLifecycleConfigurationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SagemakerNotebookInstanceLifecycleConfigurations in the indexer for a given namespace.
+func (s sagemakerNotebookInstanceLifecycleConfigurationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration))
+	})
+	return ret, err
+}
+
+// Get retrieves the SagemakerNotebookInstanceLifecycleConfiguration from the indexer for a given namespace and name.
+func (s sagemakerNotebookInstanceLifecycleConfigurationNamespaceLister) Get(name string) (*v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

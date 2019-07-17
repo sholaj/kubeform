@@ -41,32 +41,33 @@ type ProjectOrganizationPolicyInformer interface {
 type projectOrganizationPolicyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewProjectOrganizationPolicyInformer constructs a new informer for ProjectOrganizationPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewProjectOrganizationPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredProjectOrganizationPolicyInformer(client, resyncPeriod, indexers, nil)
+func NewProjectOrganizationPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredProjectOrganizationPolicyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredProjectOrganizationPolicyInformer constructs a new informer for ProjectOrganizationPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredProjectOrganizationPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredProjectOrganizationPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ProjectOrganizationPolicies().List(options)
+				return client.GoogleV1alpha1().ProjectOrganizationPolicies(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().ProjectOrganizationPolicies().Watch(options)
+				return client.GoogleV1alpha1().ProjectOrganizationPolicies(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.ProjectOrganizationPolicy{},
@@ -76,7 +77,7 @@ func NewFilteredProjectOrganizationPolicyInformer(client versioned.Interface, re
 }
 
 func (f *projectOrganizationPolicyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredProjectOrganizationPolicyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredProjectOrganizationPolicyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *projectOrganizationPolicyInformer) Informer() cache.SharedIndexInformer {

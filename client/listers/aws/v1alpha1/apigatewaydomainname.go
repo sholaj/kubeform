@@ -29,8 +29,8 @@ import (
 type ApiGatewayDomainNameLister interface {
 	// List lists all ApiGatewayDomainNames in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayDomainName, err error)
-	// Get retrieves the ApiGatewayDomainName from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayDomainName, error)
+	// ApiGatewayDomainNames returns an object that can list and get ApiGatewayDomainNames.
+	ApiGatewayDomainNames(namespace string) ApiGatewayDomainNameNamespaceLister
 	ApiGatewayDomainNameListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiGatewayDomainNameLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayDomainName from the index for a given name.
-func (s *apiGatewayDomainNameLister) Get(name string) (*v1alpha1.ApiGatewayDomainName, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayDomainNames returns an object that can list and get ApiGatewayDomainNames.
+func (s *apiGatewayDomainNameLister) ApiGatewayDomainNames(namespace string) ApiGatewayDomainNameNamespaceLister {
+	return apiGatewayDomainNameNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayDomainNameNamespaceLister helps list and get ApiGatewayDomainNames.
+type ApiGatewayDomainNameNamespaceLister interface {
+	// List lists all ApiGatewayDomainNames in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayDomainName, err error)
+	// Get retrieves the ApiGatewayDomainName from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayDomainName, error)
+	ApiGatewayDomainNameNamespaceListerExpansion
+}
+
+// apiGatewayDomainNameNamespaceLister implements the ApiGatewayDomainNameNamespaceLister
+// interface.
+type apiGatewayDomainNameNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayDomainNames in the indexer for a given namespace.
+func (s apiGatewayDomainNameNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayDomainName, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayDomainName))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayDomainName from the indexer for a given namespace and name.
+func (s apiGatewayDomainNameNamespaceLister) Get(name string) (*v1alpha1.ApiGatewayDomainName, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakePostgresqlVirtualNetworkRules implements PostgresqlVirtualNetworkRuleInterface
 type FakePostgresqlVirtualNetworkRules struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var postgresqlvirtualnetworkrulesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "postgresqlvirtualnetworkrules"}
@@ -40,7 +41,8 @@ var postgresqlvirtualnetworkrulesKind = schema.GroupVersionKind{Group: "azurerm.
 // Get takes name of the postgresqlVirtualNetworkRule, and returns the corresponding postgresqlVirtualNetworkRule object, and an error if there is any.
 func (c *FakePostgresqlVirtualNetworkRules) Get(name string, options v1.GetOptions) (result *v1alpha1.PostgresqlVirtualNetworkRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(postgresqlvirtualnetworkrulesResource, name), &v1alpha1.PostgresqlVirtualNetworkRule{})
+		Invokes(testing.NewGetAction(postgresqlvirtualnetworkrulesResource, c.ns, name), &v1alpha1.PostgresqlVirtualNetworkRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakePostgresqlVirtualNetworkRules) Get(name string, options v1.GetOptio
 // List takes label and field selectors, and returns the list of PostgresqlVirtualNetworkRules that match those selectors.
 func (c *FakePostgresqlVirtualNetworkRules) List(opts v1.ListOptions) (result *v1alpha1.PostgresqlVirtualNetworkRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(postgresqlvirtualnetworkrulesResource, postgresqlvirtualnetworkrulesKind, opts), &v1alpha1.PostgresqlVirtualNetworkRuleList{})
+		Invokes(testing.NewListAction(postgresqlvirtualnetworkrulesResource, postgresqlvirtualnetworkrulesKind, c.ns, opts), &v1alpha1.PostgresqlVirtualNetworkRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakePostgresqlVirtualNetworkRules) List(opts v1.ListOptions) (result *v
 // Watch returns a watch.Interface that watches the requested postgresqlVirtualNetworkRules.
 func (c *FakePostgresqlVirtualNetworkRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(postgresqlvirtualnetworkrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(postgresqlvirtualnetworkrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a postgresqlVirtualNetworkRule and creates it.  Returns the server's representation of the postgresqlVirtualNetworkRule, and an error, if there is any.
 func (c *FakePostgresqlVirtualNetworkRules) Create(postgresqlVirtualNetworkRule *v1alpha1.PostgresqlVirtualNetworkRule) (result *v1alpha1.PostgresqlVirtualNetworkRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(postgresqlvirtualnetworkrulesResource, postgresqlVirtualNetworkRule), &v1alpha1.PostgresqlVirtualNetworkRule{})
+		Invokes(testing.NewCreateAction(postgresqlvirtualnetworkrulesResource, c.ns, postgresqlVirtualNetworkRule), &v1alpha1.PostgresqlVirtualNetworkRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakePostgresqlVirtualNetworkRules) Create(postgresqlVirtualNetworkRule 
 // Update takes the representation of a postgresqlVirtualNetworkRule and updates it. Returns the server's representation of the postgresqlVirtualNetworkRule, and an error, if there is any.
 func (c *FakePostgresqlVirtualNetworkRules) Update(postgresqlVirtualNetworkRule *v1alpha1.PostgresqlVirtualNetworkRule) (result *v1alpha1.PostgresqlVirtualNetworkRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(postgresqlvirtualnetworkrulesResource, postgresqlVirtualNetworkRule), &v1alpha1.PostgresqlVirtualNetworkRule{})
+		Invokes(testing.NewUpdateAction(postgresqlvirtualnetworkrulesResource, c.ns, postgresqlVirtualNetworkRule), &v1alpha1.PostgresqlVirtualNetworkRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakePostgresqlVirtualNetworkRules) Update(postgresqlVirtualNetworkRule 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakePostgresqlVirtualNetworkRules) UpdateStatus(postgresqlVirtualNetworkRule *v1alpha1.PostgresqlVirtualNetworkRule) (*v1alpha1.PostgresqlVirtualNetworkRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(postgresqlvirtualnetworkrulesResource, "status", postgresqlVirtualNetworkRule), &v1alpha1.PostgresqlVirtualNetworkRule{})
+		Invokes(testing.NewUpdateSubresourceAction(postgresqlvirtualnetworkrulesResource, "status", c.ns, postgresqlVirtualNetworkRule), &v1alpha1.PostgresqlVirtualNetworkRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakePostgresqlVirtualNetworkRules) UpdateStatus(postgresqlVirtualNetwor
 // Delete takes name of the postgresqlVirtualNetworkRule and deletes it. Returns an error if one occurs.
 func (c *FakePostgresqlVirtualNetworkRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(postgresqlvirtualnetworkrulesResource, name), &v1alpha1.PostgresqlVirtualNetworkRule{})
+		Invokes(testing.NewDeleteAction(postgresqlvirtualnetworkrulesResource, c.ns, name), &v1alpha1.PostgresqlVirtualNetworkRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakePostgresqlVirtualNetworkRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(postgresqlvirtualnetworkrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(postgresqlvirtualnetworkrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PostgresqlVirtualNetworkRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakePostgresqlVirtualNetworkRules) DeleteCollection(options *v1.DeleteO
 // Patch applies the patch and returns the patched postgresqlVirtualNetworkRule.
 func (c *FakePostgresqlVirtualNetworkRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PostgresqlVirtualNetworkRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(postgresqlvirtualnetworkrulesResource, name, pt, data, subresources...), &v1alpha1.PostgresqlVirtualNetworkRule{})
+		Invokes(testing.NewPatchSubresourceAction(postgresqlvirtualnetworkrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.PostgresqlVirtualNetworkRule{})
+
 	if obj == nil {
 		return nil, err
 	}

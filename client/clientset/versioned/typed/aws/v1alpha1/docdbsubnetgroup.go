@@ -32,7 +32,7 @@ import (
 // DocdbSubnetGroupsGetter has a method to return a DocdbSubnetGroupInterface.
 // A group's client should implement this interface.
 type DocdbSubnetGroupsGetter interface {
-	DocdbSubnetGroups() DocdbSubnetGroupInterface
+	DocdbSubnetGroups(namespace string) DocdbSubnetGroupInterface
 }
 
 // DocdbSubnetGroupInterface has methods to work with DocdbSubnetGroup resources.
@@ -52,12 +52,14 @@ type DocdbSubnetGroupInterface interface {
 // docdbSubnetGroups implements DocdbSubnetGroupInterface
 type docdbSubnetGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDocdbSubnetGroups returns a DocdbSubnetGroups
-func newDocdbSubnetGroups(c *AwsV1alpha1Client) *docdbSubnetGroups {
+func newDocdbSubnetGroups(c *AwsV1alpha1Client, namespace string) *docdbSubnetGroups {
 	return &docdbSubnetGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDocdbSubnetGroups(c *AwsV1alpha1Client) *docdbSubnetGroups {
 func (c *docdbSubnetGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.DocdbSubnetGroup, err error) {
 	result = &v1alpha1.DocdbSubnetGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("docdbsubnetgroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *docdbSubnetGroups) List(opts v1.ListOptions) (result *v1alpha1.DocdbSub
 	}
 	result = &v1alpha1.DocdbSubnetGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("docdbsubnetgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *docdbSubnetGroups) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("docdbsubnetgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *docdbSubnetGroups) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *docdbSubnetGroups) Create(docdbSubnetGroup *v1alpha1.DocdbSubnetGroup) (result *v1alpha1.DocdbSubnetGroup, err error) {
 	result = &v1alpha1.DocdbSubnetGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("docdbsubnetgroups").
 		Body(docdbSubnetGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *docdbSubnetGroups) Create(docdbSubnetGroup *v1alpha1.DocdbSubnetGroup) 
 func (c *docdbSubnetGroups) Update(docdbSubnetGroup *v1alpha1.DocdbSubnetGroup) (result *v1alpha1.DocdbSubnetGroup, err error) {
 	result = &v1alpha1.DocdbSubnetGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("docdbsubnetgroups").
 		Name(docdbSubnetGroup.Name).
 		Body(docdbSubnetGroup).
@@ -132,6 +139,7 @@ func (c *docdbSubnetGroups) Update(docdbSubnetGroup *v1alpha1.DocdbSubnetGroup) 
 func (c *docdbSubnetGroups) UpdateStatus(docdbSubnetGroup *v1alpha1.DocdbSubnetGroup) (result *v1alpha1.DocdbSubnetGroup, err error) {
 	result = &v1alpha1.DocdbSubnetGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("docdbsubnetgroups").
 		Name(docdbSubnetGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *docdbSubnetGroups) UpdateStatus(docdbSubnetGroup *v1alpha1.DocdbSubnetG
 // Delete takes name of the docdbSubnetGroup and deletes it. Returns an error if one occurs.
 func (c *docdbSubnetGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("docdbsubnetgroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *docdbSubnetGroups) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("docdbsubnetgroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *docdbSubnetGroups) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *docdbSubnetGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DocdbSubnetGroup, err error) {
 	result = &v1alpha1.DocdbSubnetGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("docdbsubnetgroups").
 		SubResource(subresources...).
 		Name(name).

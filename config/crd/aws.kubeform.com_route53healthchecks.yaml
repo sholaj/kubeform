@@ -397,43 +397,52 @@ spec:
           type: object
         spec:
           properties:
-            child_health_threshold:
+            childHealthThreshold:
               type: integer
-            child_healthchecks:
+            childHealthchecks:
               items:
                 type: string
               type: array
               uniqueItems: true
-            cloudwatch_alarm_name:
+            cloudwatchAlarmName:
               type: string
-            cloudwatch_alarm_region:
+            cloudwatchAlarmRegion:
               type: string
-            failure_threshold:
+            failureThreshold:
               type: integer
             fqdn:
               type: string
-            insufficient_data_health_status:
+            insufficientDataHealthStatus:
               type: string
-            invert_healthcheck:
+            invertHealthcheck:
               type: boolean
-            ip_address:
+            ipAddress:
               type: string
-            measure_latency:
+            measureLatency:
               type: boolean
             port:
               type: integer
-            reference_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            referenceName:
               type: string
             regions:
               items:
                 type: string
               type: array
               uniqueItems: true
-            request_interval:
+            requestInterval:
               type: integer
-            resource_path:
+            resourcePath:
               type: string
-            search_string:
+            searchString:
               type: string
             tags:
               additionalProperties:
@@ -442,6 +451,7 @@ spec:
             type:
               type: string
           required:
+          - providerRef
           - type
           type: object
         status:
@@ -453,6 +463,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

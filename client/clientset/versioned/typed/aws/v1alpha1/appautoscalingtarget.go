@@ -32,7 +32,7 @@ import (
 // AppautoscalingTargetsGetter has a method to return a AppautoscalingTargetInterface.
 // A group's client should implement this interface.
 type AppautoscalingTargetsGetter interface {
-	AppautoscalingTargets() AppautoscalingTargetInterface
+	AppautoscalingTargets(namespace string) AppautoscalingTargetInterface
 }
 
 // AppautoscalingTargetInterface has methods to work with AppautoscalingTarget resources.
@@ -52,12 +52,14 @@ type AppautoscalingTargetInterface interface {
 // appautoscalingTargets implements AppautoscalingTargetInterface
 type appautoscalingTargets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAppautoscalingTargets returns a AppautoscalingTargets
-func newAppautoscalingTargets(c *AwsV1alpha1Client) *appautoscalingTargets {
+func newAppautoscalingTargets(c *AwsV1alpha1Client, namespace string) *appautoscalingTargets {
 	return &appautoscalingTargets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAppautoscalingTargets(c *AwsV1alpha1Client) *appautoscalingTargets {
 func (c *appautoscalingTargets) Get(name string, options v1.GetOptions) (result *v1alpha1.AppautoscalingTarget, err error) {
 	result = &v1alpha1.AppautoscalingTarget{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appautoscalingtargets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *appautoscalingTargets) List(opts v1.ListOptions) (result *v1alpha1.Appa
 	}
 	result = &v1alpha1.AppautoscalingTargetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appautoscalingtargets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *appautoscalingTargets) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("appautoscalingtargets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *appautoscalingTargets) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *appautoscalingTargets) Create(appautoscalingTarget *v1alpha1.AppautoscalingTarget) (result *v1alpha1.AppautoscalingTarget, err error) {
 	result = &v1alpha1.AppautoscalingTarget{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("appautoscalingtargets").
 		Body(appautoscalingTarget).
 		Do().
@@ -118,6 +124,7 @@ func (c *appautoscalingTargets) Create(appautoscalingTarget *v1alpha1.Appautosca
 func (c *appautoscalingTargets) Update(appautoscalingTarget *v1alpha1.AppautoscalingTarget) (result *v1alpha1.AppautoscalingTarget, err error) {
 	result = &v1alpha1.AppautoscalingTarget{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appautoscalingtargets").
 		Name(appautoscalingTarget.Name).
 		Body(appautoscalingTarget).
@@ -132,6 +139,7 @@ func (c *appautoscalingTargets) Update(appautoscalingTarget *v1alpha1.Appautosca
 func (c *appautoscalingTargets) UpdateStatus(appautoscalingTarget *v1alpha1.AppautoscalingTarget) (result *v1alpha1.AppautoscalingTarget, err error) {
 	result = &v1alpha1.AppautoscalingTarget{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appautoscalingtargets").
 		Name(appautoscalingTarget.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *appautoscalingTargets) UpdateStatus(appautoscalingTarget *v1alpha1.Appa
 // Delete takes name of the appautoscalingTarget and deletes it. Returns an error if one occurs.
 func (c *appautoscalingTargets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appautoscalingtargets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *appautoscalingTargets) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appautoscalingtargets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *appautoscalingTargets) DeleteCollection(options *v1.DeleteOptions, list
 func (c *appautoscalingTargets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppautoscalingTarget, err error) {
 	result = &v1alpha1.AppautoscalingTarget{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("appautoscalingtargets").
 		SubResource(subresources...).
 		Name(name).

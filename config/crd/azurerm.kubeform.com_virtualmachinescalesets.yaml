@@ -397,71 +397,311 @@ spec:
           type: object
         spec:
           properties:
-            automatic_os_upgrade:
+            automaticOsUpgrade:
               type: boolean
-            boot_diagnostics:
-              items: {}
+            bootDiagnostics:
+              items:
+                properties:
+                  enabled:
+                    type: boolean
+                  storageURI:
+                    type: string
+                required:
+                - storageURI
+                type: object
               maxItems: 1
               type: array
-            eviction_policy:
+            evictionPolicy:
               type: string
             extension:
-              items: {}
+              items:
+                properties:
+                  autoUpgradeMinorVersion:
+                    type: boolean
+                  name:
+                    type: string
+                  protectedSettings:
+                    type: string
+                  provisionAfterExtensions:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                  publisher:
+                    type: string
+                  settings:
+                    type: string
+                  type:
+                    type: string
+                  typeHandlerVersion:
+                    type: string
+                required:
+                - name
+                - publisher
+                - type
+                - typeHandlerVersion
+                type: object
               type: array
               uniqueItems: true
-            health_probe_id:
+            healthProbeID:
               type: string
             location:
               type: string
             name:
               type: string
-            network_profile:
-              items: {}
+            networkProfile:
+              items:
+                properties:
+                  acceleratedNetworking:
+                    type: boolean
+                  dnsSettings:
+                    items:
+                      properties:
+                        dnsServers:
+                          items:
+                            type: string
+                          type: array
+                      required:
+                      - dnsServers
+                      type: object
+                    maxItems: 1
+                    type: array
+                  ipConfiguration:
+                    items:
+                      properties:
+                        applicationGatewayBackendAddressPoolIDS:
+                          items:
+                            type: string
+                          type: array
+                          uniqueItems: true
+                        applicationSecurityGroupIDS:
+                          items:
+                            type: string
+                          maxItems: 20
+                          type: array
+                          uniqueItems: true
+                        loadBalancerBackendAddressPoolIDS:
+                          items:
+                            type: string
+                          type: array
+                          uniqueItems: true
+                        name:
+                          type: string
+                        primary:
+                          type: boolean
+                        publicIPAddressConfiguration:
+                          items:
+                            properties:
+                              domainNameLabel:
+                                type: string
+                              idleTimeout:
+                                type: integer
+                              name:
+                                type: string
+                            required:
+                            - domainNameLabel
+                            - idleTimeout
+                            - name
+                            type: object
+                          maxItems: 1
+                          type: array
+                        subnetID:
+                          type: string
+                      required:
+                      - name
+                      - primary
+                      - subnetID
+                      type: object
+                    type: array
+                  ipForwarding:
+                    type: boolean
+                  name:
+                    type: string
+                  networkSecurityGroupID:
+                    type: string
+                  primary:
+                    type: boolean
+                required:
+                - ipConfiguration
+                - name
+                - primary
+                type: object
               type: array
               uniqueItems: true
-            os_profile:
-              items: {}
+            osProfile:
+              items:
+                properties:
+                  adminPassword:
+                    type: string
+                  adminUsername:
+                    type: string
+                  computerNamePrefix:
+                    type: string
+                  customData:
+                    type: string
+                required:
+                - adminUsername
+                - computerNamePrefix
+                type: object
               maxItems: 1
               type: array
-            os_profile_secrets:
-              items: {}
+            osProfileSecrets:
+              items:
+                properties:
+                  sourceVaultID:
+                    type: string
+                  vaultCertificates:
+                    items:
+                      properties:
+                        certificateStore:
+                          type: string
+                        certificateURL:
+                          type: string
+                      required:
+                      - certificateURL
+                      type: object
+                    type: array
+                required:
+                - sourceVaultID
+                type: object
               type: array
               uniqueItems: true
-            os_profile_windows_config:
-              items: {}
+            osProfileWindowsConfig:
+              items:
+                properties:
+                  additionalUnattendConfig:
+                    items:
+                      properties:
+                        component:
+                          type: string
+                        content:
+                          type: string
+                        pass:
+                          type: string
+                        settingName:
+                          type: string
+                      required:
+                      - component
+                      - content
+                      - pass
+                      - settingName
+                      type: object
+                    type: array
+                  enableAutomaticUpgrades:
+                    type: boolean
+                  provisionVmAgent:
+                    type: boolean
+                  winrm:
+                    items:
+                      properties:
+                        certificateURL:
+                          type: string
+                        protocol:
+                          type: string
+                      required:
+                      - protocol
+                      type: object
+                    type: array
+                type: object
               maxItems: 1
               type: array
               uniqueItems: true
             overprovision:
               type: boolean
             plan:
-              items: {}
+              items:
+                properties:
+                  name:
+                    type: string
+                  product:
+                    type: string
+                  publisher:
+                    type: string
+                required:
+                - name
+                - product
+                - publisher
+                type: object
               maxItems: 1
               type: array
               uniqueItems: true
             priority:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
-            rolling_upgrade_policy:
-              items: {}
+            rollingUpgradePolicy:
+              items:
+                properties:
+                  maxBatchInstancePercent:
+                    type: integer
+                  maxUnhealthyInstancePercent:
+                    type: integer
+                  maxUnhealthyUpgradedInstancePercent:
+                    type: integer
+                  pauseTimeBetweenBatches:
+                    type: string
+                type: object
               maxItems: 1
               type: array
-            single_placement_group:
+            singlePlacementGroup:
               type: boolean
             sku:
-              items: {}
+              items:
+                properties:
+                  capacity:
+                    type: integer
+                  name:
+                    type: string
+                required:
+                - capacity
+                - name
+                type: object
               maxItems: 1
               type: array
-            storage_profile_data_disk:
-              items: {}
+            storageProfileDataDisk:
+              items:
+                properties:
+                  createOption:
+                    type: string
+                  lun:
+                    type: integer
+                required:
+                - createOption
+                - lun
+                type: object
               type: array
-            storage_profile_os_disk:
-              items: {}
+            storageProfileOsDisk:
+              items:
+                properties:
+                  createOption:
+                    type: string
+                  image:
+                    type: string
+                  name:
+                    type: string
+                  osType:
+                    type: string
+                  vhdContainers:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                required:
+                - createOption
+                type: object
               maxItems: 1
               type: array
               uniqueItems: true
-            upgrade_policy_mode:
+            upgradePolicyMode:
               type: string
             zones:
               items:
@@ -470,12 +710,13 @@ spec:
           required:
           - location
           - name
-          - network_profile
-          - os_profile
-          - resource_group_name
+          - networkProfile
+          - osProfile
+          - providerRef
+          - resourceGroupName
           - sku
-          - storage_profile_os_disk
-          - upgrade_policy_mode
+          - storageProfileOsDisk
+          - upgradePolicyMode
           type: object
         status:
           properties:
@@ -486,6 +727,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -31,6 +31,7 @@ import (
 // FakeCosmosdbMongoDatabases implements CosmosdbMongoDatabaseInterface
 type FakeCosmosdbMongoDatabases struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var cosmosdbmongodatabasesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "cosmosdbmongodatabases"}
@@ -40,7 +41,8 @@ var cosmosdbmongodatabasesKind = schema.GroupVersionKind{Group: "azurerm.kubefor
 // Get takes name of the cosmosdbMongoDatabase, and returns the corresponding cosmosdbMongoDatabase object, and an error if there is any.
 func (c *FakeCosmosdbMongoDatabases) Get(name string, options v1.GetOptions) (result *v1alpha1.CosmosdbMongoDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cosmosdbmongodatabasesResource, name), &v1alpha1.CosmosdbMongoDatabase{})
+		Invokes(testing.NewGetAction(cosmosdbmongodatabasesResource, c.ns, name), &v1alpha1.CosmosdbMongoDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCosmosdbMongoDatabases) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of CosmosdbMongoDatabases that match those selectors.
 func (c *FakeCosmosdbMongoDatabases) List(opts v1.ListOptions) (result *v1alpha1.CosmosdbMongoDatabaseList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cosmosdbmongodatabasesResource, cosmosdbmongodatabasesKind, opts), &v1alpha1.CosmosdbMongoDatabaseList{})
+		Invokes(testing.NewListAction(cosmosdbmongodatabasesResource, cosmosdbmongodatabasesKind, c.ns, opts), &v1alpha1.CosmosdbMongoDatabaseList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCosmosdbMongoDatabases) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested cosmosdbMongoDatabases.
 func (c *FakeCosmosdbMongoDatabases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cosmosdbmongodatabasesResource, opts))
+		InvokesWatch(testing.NewWatchAction(cosmosdbmongodatabasesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cosmosdbMongoDatabase and creates it.  Returns the server's representation of the cosmosdbMongoDatabase, and an error, if there is any.
 func (c *FakeCosmosdbMongoDatabases) Create(cosmosdbMongoDatabase *v1alpha1.CosmosdbMongoDatabase) (result *v1alpha1.CosmosdbMongoDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cosmosdbmongodatabasesResource, cosmosdbMongoDatabase), &v1alpha1.CosmosdbMongoDatabase{})
+		Invokes(testing.NewCreateAction(cosmosdbmongodatabasesResource, c.ns, cosmosdbMongoDatabase), &v1alpha1.CosmosdbMongoDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCosmosdbMongoDatabases) Create(cosmosdbMongoDatabase *v1alpha1.Cosm
 // Update takes the representation of a cosmosdbMongoDatabase and updates it. Returns the server's representation of the cosmosdbMongoDatabase, and an error, if there is any.
 func (c *FakeCosmosdbMongoDatabases) Update(cosmosdbMongoDatabase *v1alpha1.CosmosdbMongoDatabase) (result *v1alpha1.CosmosdbMongoDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cosmosdbmongodatabasesResource, cosmosdbMongoDatabase), &v1alpha1.CosmosdbMongoDatabase{})
+		Invokes(testing.NewUpdateAction(cosmosdbmongodatabasesResource, c.ns, cosmosdbMongoDatabase), &v1alpha1.CosmosdbMongoDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCosmosdbMongoDatabases) Update(cosmosdbMongoDatabase *v1alpha1.Cosm
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCosmosdbMongoDatabases) UpdateStatus(cosmosdbMongoDatabase *v1alpha1.CosmosdbMongoDatabase) (*v1alpha1.CosmosdbMongoDatabase, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cosmosdbmongodatabasesResource, "status", cosmosdbMongoDatabase), &v1alpha1.CosmosdbMongoDatabase{})
+		Invokes(testing.NewUpdateSubresourceAction(cosmosdbmongodatabasesResource, "status", c.ns, cosmosdbMongoDatabase), &v1alpha1.CosmosdbMongoDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCosmosdbMongoDatabases) UpdateStatus(cosmosdbMongoDatabase *v1alpha
 // Delete takes name of the cosmosdbMongoDatabase and deletes it. Returns an error if one occurs.
 func (c *FakeCosmosdbMongoDatabases) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cosmosdbmongodatabasesResource, name), &v1alpha1.CosmosdbMongoDatabase{})
+		Invokes(testing.NewDeleteAction(cosmosdbmongodatabasesResource, c.ns, name), &v1alpha1.CosmosdbMongoDatabase{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCosmosdbMongoDatabases) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cosmosdbmongodatabasesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cosmosdbmongodatabasesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CosmosdbMongoDatabaseList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCosmosdbMongoDatabases) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched cosmosdbMongoDatabase.
 func (c *FakeCosmosdbMongoDatabases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CosmosdbMongoDatabase, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cosmosdbmongodatabasesResource, name, pt, data, subresources...), &v1alpha1.CosmosdbMongoDatabase{})
+		Invokes(testing.NewPatchSubresourceAction(cosmosdbmongodatabasesResource, c.ns, name, pt, data, subresources...), &v1alpha1.CosmosdbMongoDatabase{})
+
 	if obj == nil {
 		return nil, err
 	}

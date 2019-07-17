@@ -31,6 +31,7 @@ import (
 // FakeSesDomainIdentities implements SesDomainIdentityInterface
 type FakeSesDomainIdentities struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var sesdomainidentitiesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "sesdomainidentities"}
@@ -40,7 +41,8 @@ var sesdomainidentitiesKind = schema.GroupVersionKind{Group: "aws.kubeform.com",
 // Get takes name of the sesDomainIdentity, and returns the corresponding sesDomainIdentity object, and an error if there is any.
 func (c *FakeSesDomainIdentities) Get(name string, options v1.GetOptions) (result *v1alpha1.SesDomainIdentity, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sesdomainidentitiesResource, name), &v1alpha1.SesDomainIdentity{})
+		Invokes(testing.NewGetAction(sesdomainidentitiesResource, c.ns, name), &v1alpha1.SesDomainIdentity{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSesDomainIdentities) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of SesDomainIdentities that match those selectors.
 func (c *FakeSesDomainIdentities) List(opts v1.ListOptions) (result *v1alpha1.SesDomainIdentityList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sesdomainidentitiesResource, sesdomainidentitiesKind, opts), &v1alpha1.SesDomainIdentityList{})
+		Invokes(testing.NewListAction(sesdomainidentitiesResource, sesdomainidentitiesKind, c.ns, opts), &v1alpha1.SesDomainIdentityList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSesDomainIdentities) List(opts v1.ListOptions) (result *v1alpha1.Se
 // Watch returns a watch.Interface that watches the requested sesDomainIdentities.
 func (c *FakeSesDomainIdentities) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sesdomainidentitiesResource, opts))
+		InvokesWatch(testing.NewWatchAction(sesdomainidentitiesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sesDomainIdentity and creates it.  Returns the server's representation of the sesDomainIdentity, and an error, if there is any.
 func (c *FakeSesDomainIdentities) Create(sesDomainIdentity *v1alpha1.SesDomainIdentity) (result *v1alpha1.SesDomainIdentity, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sesdomainidentitiesResource, sesDomainIdentity), &v1alpha1.SesDomainIdentity{})
+		Invokes(testing.NewCreateAction(sesdomainidentitiesResource, c.ns, sesDomainIdentity), &v1alpha1.SesDomainIdentity{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSesDomainIdentities) Create(sesDomainIdentity *v1alpha1.SesDomainId
 // Update takes the representation of a sesDomainIdentity and updates it. Returns the server's representation of the sesDomainIdentity, and an error, if there is any.
 func (c *FakeSesDomainIdentities) Update(sesDomainIdentity *v1alpha1.SesDomainIdentity) (result *v1alpha1.SesDomainIdentity, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sesdomainidentitiesResource, sesDomainIdentity), &v1alpha1.SesDomainIdentity{})
+		Invokes(testing.NewUpdateAction(sesdomainidentitiesResource, c.ns, sesDomainIdentity), &v1alpha1.SesDomainIdentity{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSesDomainIdentities) Update(sesDomainIdentity *v1alpha1.SesDomainId
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSesDomainIdentities) UpdateStatus(sesDomainIdentity *v1alpha1.SesDomainIdentity) (*v1alpha1.SesDomainIdentity, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sesdomainidentitiesResource, "status", sesDomainIdentity), &v1alpha1.SesDomainIdentity{})
+		Invokes(testing.NewUpdateSubresourceAction(sesdomainidentitiesResource, "status", c.ns, sesDomainIdentity), &v1alpha1.SesDomainIdentity{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSesDomainIdentities) UpdateStatus(sesDomainIdentity *v1alpha1.SesDo
 // Delete takes name of the sesDomainIdentity and deletes it. Returns an error if one occurs.
 func (c *FakeSesDomainIdentities) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sesdomainidentitiesResource, name), &v1alpha1.SesDomainIdentity{})
+		Invokes(testing.NewDeleteAction(sesdomainidentitiesResource, c.ns, name), &v1alpha1.SesDomainIdentity{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSesDomainIdentities) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sesdomainidentitiesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sesdomainidentitiesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SesDomainIdentityList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSesDomainIdentities) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched sesDomainIdentity.
 func (c *FakeSesDomainIdentities) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesDomainIdentity, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sesdomainidentitiesResource, name, pt, data, subresources...), &v1alpha1.SesDomainIdentity{})
+		Invokes(testing.NewPatchSubresourceAction(sesdomainidentitiesResource, c.ns, name, pt, data, subresources...), &v1alpha1.SesDomainIdentity{})
+
 	if obj == nil {
 		return nil, err
 	}

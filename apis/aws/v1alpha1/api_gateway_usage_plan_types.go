@@ -3,12 +3,12 @@ package v1alpha1
 import (
 	"encoding/json"
 
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -21,40 +21,41 @@ type ApiGatewayUsagePlan struct {
 }
 
 type ApiGatewayUsagePlanSpecApiStages struct {
-	ApiId string `json:"api_id"`
-	Stage string `json:"stage"`
+	ApiID string `json:"apiID" tf:"api_id"`
+	Stage string `json:"stage" tf:"stage"`
 }
 
 type ApiGatewayUsagePlanSpecQuotaSettings struct {
-	Limit int `json:"limit"`
+	Limit int `json:"limit" tf:"limit"`
 	// +optional
-	Offset int    `json:"offset,omitempty"`
-	Period string `json:"period"`
+	Offset int    `json:"offset,omitempty" tf:"offset,omitempty"`
+	Period string `json:"period" tf:"period"`
 }
 
 type ApiGatewayUsagePlanSpecThrottleSettings struct {
 	// +optional
-	BurstLimit int `json:"burst_limit,omitempty"`
+	BurstLimit int `json:"burstLimit,omitempty" tf:"burst_limit,omitempty"`
 	// +optional
-	RateLimit json.Number `json:"rate_limit,omitempty"`
+	RateLimit json.Number `json:"rateLimit,omitempty" tf:"rate_limit,omitempty"`
 }
 
 type ApiGatewayUsagePlanSpec struct {
 	// +optional
-	ApiStages *[]ApiGatewayUsagePlanSpec `json:"api_stages,omitempty"`
+	ApiStages []ApiGatewayUsagePlanSpecApiStages `json:"apiStages,omitempty" tf:"api_stages,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
-	Name        string `json:"name"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
+	Name        string `json:"name" tf:"name"`
 	// +optional
-	ProductCode string `json:"product_code,omitempty"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
-	QuotaSettings *[]ApiGatewayUsagePlanSpec `json:"quota_settings,omitempty"`
+	ProductCode string `json:"productCode,omitempty" tf:"product_code,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	ThrottleSettings *[]ApiGatewayUsagePlanSpec `json:"throttle_settings,omitempty"`
+	QuotaSettings []ApiGatewayUsagePlanSpecQuotaSettings `json:"quotaSettings,omitempty" tf:"quota_settings,omitempty"`
+	// +optional
+	// +kubebuilder:validation:MaxItems=1
+	// +kubebuilder:validation:UniqueItems=true
+	ThrottleSettings []ApiGatewayUsagePlanSpecThrottleSettings `json:"throttleSettings,omitempty" tf:"throttle_settings,omitempty"`
+	ProviderRef      core.LocalObjectReference                 `json:"providerRef" tf:"-"`
 }
 
 type ApiGatewayUsagePlanStatus struct {
@@ -62,7 +63,9 @@ type ApiGatewayUsagePlanStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

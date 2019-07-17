@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// Ec2ClientVpnNetworkAssociationLister helps list Ec2ClientVpnNetworkAssociations.
-type Ec2ClientVpnNetworkAssociationLister interface {
-	// List lists all Ec2ClientVpnNetworkAssociations in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.Ec2ClientVpnNetworkAssociation, err error)
-	// Get retrieves the Ec2ClientVpnNetworkAssociation from the index for a given name.
-	Get(name string) (*v1alpha1.Ec2ClientVpnNetworkAssociation, error)
-	Ec2ClientVpnNetworkAssociationListerExpansion
+// Ec2ClientVPNNetworkAssociationLister helps list Ec2ClientVPNNetworkAssociations.
+type Ec2ClientVPNNetworkAssociationLister interface {
+	// List lists all Ec2ClientVPNNetworkAssociations in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.Ec2ClientVPNNetworkAssociation, err error)
+	// Ec2ClientVPNNetworkAssociations returns an object that can list and get Ec2ClientVPNNetworkAssociations.
+	Ec2ClientVPNNetworkAssociations(namespace string) Ec2ClientVPNNetworkAssociationNamespaceLister
+	Ec2ClientVPNNetworkAssociationListerExpansion
 }
 
-// ec2ClientVpnNetworkAssociationLister implements the Ec2ClientVpnNetworkAssociationLister interface.
-type ec2ClientVpnNetworkAssociationLister struct {
+// ec2ClientVPNNetworkAssociationLister implements the Ec2ClientVPNNetworkAssociationLister interface.
+type ec2ClientVPNNetworkAssociationLister struct {
 	indexer cache.Indexer
 }
 
-// NewEc2ClientVpnNetworkAssociationLister returns a new Ec2ClientVpnNetworkAssociationLister.
-func NewEc2ClientVpnNetworkAssociationLister(indexer cache.Indexer) Ec2ClientVpnNetworkAssociationLister {
-	return &ec2ClientVpnNetworkAssociationLister{indexer: indexer}
+// NewEc2ClientVPNNetworkAssociationLister returns a new Ec2ClientVPNNetworkAssociationLister.
+func NewEc2ClientVPNNetworkAssociationLister(indexer cache.Indexer) Ec2ClientVPNNetworkAssociationLister {
+	return &ec2ClientVPNNetworkAssociationLister{indexer: indexer}
 }
 
-// List lists all Ec2ClientVpnNetworkAssociations in the indexer.
-func (s *ec2ClientVpnNetworkAssociationLister) List(selector labels.Selector) (ret []*v1alpha1.Ec2ClientVpnNetworkAssociation, err error) {
+// List lists all Ec2ClientVPNNetworkAssociations in the indexer.
+func (s *ec2ClientVPNNetworkAssociationLister) List(selector labels.Selector) (ret []*v1alpha1.Ec2ClientVPNNetworkAssociation, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.Ec2ClientVpnNetworkAssociation))
+		ret = append(ret, m.(*v1alpha1.Ec2ClientVPNNetworkAssociation))
 	})
 	return ret, err
 }
 
-// Get retrieves the Ec2ClientVpnNetworkAssociation from the index for a given name.
-func (s *ec2ClientVpnNetworkAssociationLister) Get(name string) (*v1alpha1.Ec2ClientVpnNetworkAssociation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Ec2ClientVPNNetworkAssociations returns an object that can list and get Ec2ClientVPNNetworkAssociations.
+func (s *ec2ClientVPNNetworkAssociationLister) Ec2ClientVPNNetworkAssociations(namespace string) Ec2ClientVPNNetworkAssociationNamespaceLister {
+	return ec2ClientVPNNetworkAssociationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// Ec2ClientVPNNetworkAssociationNamespaceLister helps list and get Ec2ClientVPNNetworkAssociations.
+type Ec2ClientVPNNetworkAssociationNamespaceLister interface {
+	// List lists all Ec2ClientVPNNetworkAssociations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Ec2ClientVPNNetworkAssociation, err error)
+	// Get retrieves the Ec2ClientVPNNetworkAssociation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Ec2ClientVPNNetworkAssociation, error)
+	Ec2ClientVPNNetworkAssociationNamespaceListerExpansion
+}
+
+// ec2ClientVPNNetworkAssociationNamespaceLister implements the Ec2ClientVPNNetworkAssociationNamespaceLister
+// interface.
+type ec2ClientVPNNetworkAssociationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Ec2ClientVPNNetworkAssociations in the indexer for a given namespace.
+func (s ec2ClientVPNNetworkAssociationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Ec2ClientVPNNetworkAssociation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Ec2ClientVPNNetworkAssociation))
+	})
+	return ret, err
+}
+
+// Get retrieves the Ec2ClientVPNNetworkAssociation from the indexer for a given namespace and name.
+func (s ec2ClientVPNNetworkAssociationNamespaceLister) Get(name string) (*v1alpha1.Ec2ClientVPNNetworkAssociation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("ec2clientvpnnetworkassociation"), name)
 	}
-	return obj.(*v1alpha1.Ec2ClientVpnNetworkAssociation), nil
+	return obj.(*v1alpha1.Ec2ClientVPNNetworkAssociation), nil
 }

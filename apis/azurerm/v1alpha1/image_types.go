@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,35 +20,36 @@ type Image struct {
 
 type ImageSpecDataDisk struct {
 	// +optional
-	Caching string `json:"caching,omitempty"`
+	Caching string `json:"caching,omitempty" tf:"caching,omitempty"`
 	// +optional
-	Lun int `json:"lun,omitempty"`
+	Lun int `json:"lun,omitempty" tf:"lun,omitempty"`
 	// +optional
-	ManagedDiskId string `json:"managed_disk_id,omitempty"`
+	ManagedDiskID string `json:"managedDiskID,omitempty" tf:"managed_disk_id,omitempty"`
 }
 
 type ImageSpecOsDisk struct {
 	// +optional
-	Caching string `json:"caching,omitempty"`
+	Caching string `json:"caching,omitempty" tf:"caching,omitempty"`
 	// +optional
-	OsState string `json:"os_state,omitempty"`
+	OsState string `json:"osState,omitempty" tf:"os_state,omitempty"`
 	// +optional
-	OsType string `json:"os_type,omitempty"`
+	OsType string `json:"osType,omitempty" tf:"os_type,omitempty"`
 }
 
 type ImageSpec struct {
 	// +optional
-	DataDisk *[]ImageSpec `json:"data_disk,omitempty"`
-	Location string       `json:"location"`
-	Name     string       `json:"name"`
+	DataDisk []ImageSpecDataDisk `json:"dataDisk,omitempty" tf:"data_disk,omitempty"`
+	Location string              `json:"location" tf:"location"`
+	Name     string              `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	OsDisk            *[]ImageSpec `json:"os_disk,omitempty"`
-	ResourceGroupName string       `json:"resource_group_name"`
+	OsDisk            []ImageSpecOsDisk `json:"osDisk,omitempty" tf:"os_disk,omitempty"`
+	ResourceGroupName string            `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	SourceVirtualMachineId string `json:"source_virtual_machine_id,omitempty"`
+	SourceVirtualMachineID string `json:"sourceVirtualMachineID,omitempty" tf:"source_virtual_machine_id,omitempty"`
 	// +optional
-	ZoneResilient bool `json:"zone_resilient,omitempty"`
+	ZoneResilient bool                      `json:"zoneResilient,omitempty" tf:"zone_resilient,omitempty"`
+	ProviderRef   core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ImageStatus struct {
@@ -56,7 +57,9 @@ type ImageStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

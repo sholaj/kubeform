@@ -32,7 +32,7 @@ import (
 // MqConfigurationsGetter has a method to return a MqConfigurationInterface.
 // A group's client should implement this interface.
 type MqConfigurationsGetter interface {
-	MqConfigurations() MqConfigurationInterface
+	MqConfigurations(namespace string) MqConfigurationInterface
 }
 
 // MqConfigurationInterface has methods to work with MqConfiguration resources.
@@ -52,12 +52,14 @@ type MqConfigurationInterface interface {
 // mqConfigurations implements MqConfigurationInterface
 type mqConfigurations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMqConfigurations returns a MqConfigurations
-func newMqConfigurations(c *AwsV1alpha1Client) *mqConfigurations {
+func newMqConfigurations(c *AwsV1alpha1Client, namespace string) *mqConfigurations {
 	return &mqConfigurations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMqConfigurations(c *AwsV1alpha1Client) *mqConfigurations {
 func (c *mqConfigurations) Get(name string, options v1.GetOptions) (result *v1alpha1.MqConfiguration, err error) {
 	result = &v1alpha1.MqConfiguration{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mqconfigurations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *mqConfigurations) List(opts v1.ListOptions) (result *v1alpha1.MqConfigu
 	}
 	result = &v1alpha1.MqConfigurationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mqconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *mqConfigurations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("mqconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *mqConfigurations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *mqConfigurations) Create(mqConfiguration *v1alpha1.MqConfiguration) (result *v1alpha1.MqConfiguration, err error) {
 	result = &v1alpha1.MqConfiguration{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("mqconfigurations").
 		Body(mqConfiguration).
 		Do().
@@ -118,6 +124,7 @@ func (c *mqConfigurations) Create(mqConfiguration *v1alpha1.MqConfiguration) (re
 func (c *mqConfigurations) Update(mqConfiguration *v1alpha1.MqConfiguration) (result *v1alpha1.MqConfiguration, err error) {
 	result = &v1alpha1.MqConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mqconfigurations").
 		Name(mqConfiguration.Name).
 		Body(mqConfiguration).
@@ -132,6 +139,7 @@ func (c *mqConfigurations) Update(mqConfiguration *v1alpha1.MqConfiguration) (re
 func (c *mqConfigurations) UpdateStatus(mqConfiguration *v1alpha1.MqConfiguration) (result *v1alpha1.MqConfiguration, err error) {
 	result = &v1alpha1.MqConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mqconfigurations").
 		Name(mqConfiguration.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *mqConfigurations) UpdateStatus(mqConfiguration *v1alpha1.MqConfiguratio
 // Delete takes name of the mqConfiguration and deletes it. Returns an error if one occurs.
 func (c *mqConfigurations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mqconfigurations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *mqConfigurations) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mqconfigurations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *mqConfigurations) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *mqConfigurations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MqConfiguration, err error) {
 	result = &v1alpha1.MqConfiguration{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("mqconfigurations").
 		SubResource(subresources...).
 		Name(name).

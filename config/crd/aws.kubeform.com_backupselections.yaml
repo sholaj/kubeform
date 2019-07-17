@@ -397,25 +397,47 @@ spec:
           type: object
         spec:
           properties:
-            iam_role_arn:
+            iamRoleArn:
               type: string
             name:
               type: string
-            plan_id:
+            planID:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             resources:
               items:
                 type: string
               type: array
               uniqueItems: true
-            selection_tag:
-              items: {}
+            selectionTag:
+              items:
+                properties:
+                  key:
+                    type: string
+                  type:
+                    type: string
+                  value:
+                    type: string
+                required:
+                - key
+                - type
+                - value
+                type: object
               type: array
               uniqueItems: true
           required:
-          - iam_role_arn
+          - iamRoleArn
           - name
-          - plan_id
+          - planID
+          - providerRef
           type: object
         status:
           properties:
@@ -426,6 +448,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

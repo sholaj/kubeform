@@ -31,6 +31,7 @@ import (
 // FakeRedisCaches implements RedisCacheInterface
 type FakeRedisCaches struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var rediscachesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "rediscaches"}
@@ -40,7 +41,8 @@ var rediscachesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Ver
 // Get takes name of the redisCache, and returns the corresponding redisCache object, and an error if there is any.
 func (c *FakeRedisCaches) Get(name string, options v1.GetOptions) (result *v1alpha1.RedisCache, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(rediscachesResource, name), &v1alpha1.RedisCache{})
+		Invokes(testing.NewGetAction(rediscachesResource, c.ns, name), &v1alpha1.RedisCache{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRedisCaches) Get(name string, options v1.GetOptions) (result *v1alp
 // List takes label and field selectors, and returns the list of RedisCaches that match those selectors.
 func (c *FakeRedisCaches) List(opts v1.ListOptions) (result *v1alpha1.RedisCacheList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(rediscachesResource, rediscachesKind, opts), &v1alpha1.RedisCacheList{})
+		Invokes(testing.NewListAction(rediscachesResource, rediscachesKind, c.ns, opts), &v1alpha1.RedisCacheList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRedisCaches) List(opts v1.ListOptions) (result *v1alpha1.RedisCache
 // Watch returns a watch.Interface that watches the requested redisCaches.
 func (c *FakeRedisCaches) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(rediscachesResource, opts))
+		InvokesWatch(testing.NewWatchAction(rediscachesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a redisCache and creates it.  Returns the server's representation of the redisCache, and an error, if there is any.
 func (c *FakeRedisCaches) Create(redisCache *v1alpha1.RedisCache) (result *v1alpha1.RedisCache, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(rediscachesResource, redisCache), &v1alpha1.RedisCache{})
+		Invokes(testing.NewCreateAction(rediscachesResource, c.ns, redisCache), &v1alpha1.RedisCache{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRedisCaches) Create(redisCache *v1alpha1.RedisCache) (result *v1alp
 // Update takes the representation of a redisCache and updates it. Returns the server's representation of the redisCache, and an error, if there is any.
 func (c *FakeRedisCaches) Update(redisCache *v1alpha1.RedisCache) (result *v1alpha1.RedisCache, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(rediscachesResource, redisCache), &v1alpha1.RedisCache{})
+		Invokes(testing.NewUpdateAction(rediscachesResource, c.ns, redisCache), &v1alpha1.RedisCache{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRedisCaches) Update(redisCache *v1alpha1.RedisCache) (result *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRedisCaches) UpdateStatus(redisCache *v1alpha1.RedisCache) (*v1alpha1.RedisCache, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(rediscachesResource, "status", redisCache), &v1alpha1.RedisCache{})
+		Invokes(testing.NewUpdateSubresourceAction(rediscachesResource, "status", c.ns, redisCache), &v1alpha1.RedisCache{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRedisCaches) UpdateStatus(redisCache *v1alpha1.RedisCache) (*v1alph
 // Delete takes name of the redisCache and deletes it. Returns an error if one occurs.
 func (c *FakeRedisCaches) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(rediscachesResource, name), &v1alpha1.RedisCache{})
+		Invokes(testing.NewDeleteAction(rediscachesResource, c.ns, name), &v1alpha1.RedisCache{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRedisCaches) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(rediscachesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(rediscachesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.RedisCacheList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRedisCaches) DeleteCollection(options *v1.DeleteOptions, listOption
 // Patch applies the patch and returns the patched redisCache.
 func (c *FakeRedisCaches) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RedisCache, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(rediscachesResource, name, pt, data, subresources...), &v1alpha1.RedisCache{})
+		Invokes(testing.NewPatchSubresourceAction(rediscachesResource, c.ns, name, pt, data, subresources...), &v1alpha1.RedisCache{})
+
 	if obj == nil {
 		return nil, err
 	}

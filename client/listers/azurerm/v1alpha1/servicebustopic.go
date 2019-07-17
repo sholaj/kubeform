@@ -29,8 +29,8 @@ import (
 type ServicebusTopicLister interface {
 	// List lists all ServicebusTopics in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ServicebusTopic, err error)
-	// Get retrieves the ServicebusTopic from the index for a given name.
-	Get(name string) (*v1alpha1.ServicebusTopic, error)
+	// ServicebusTopics returns an object that can list and get ServicebusTopics.
+	ServicebusTopics(namespace string) ServicebusTopicNamespaceLister
 	ServicebusTopicListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *servicebusTopicLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the ServicebusTopic from the index for a given name.
-func (s *servicebusTopicLister) Get(name string) (*v1alpha1.ServicebusTopic, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ServicebusTopics returns an object that can list and get ServicebusTopics.
+func (s *servicebusTopicLister) ServicebusTopics(namespace string) ServicebusTopicNamespaceLister {
+	return servicebusTopicNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ServicebusTopicNamespaceLister helps list and get ServicebusTopics.
+type ServicebusTopicNamespaceLister interface {
+	// List lists all ServicebusTopics in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ServicebusTopic, err error)
+	// Get retrieves the ServicebusTopic from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ServicebusTopic, error)
+	ServicebusTopicNamespaceListerExpansion
+}
+
+// servicebusTopicNamespaceLister implements the ServicebusTopicNamespaceLister
+// interface.
+type servicebusTopicNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ServicebusTopics in the indexer for a given namespace.
+func (s servicebusTopicNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ServicebusTopic, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ServicebusTopic))
+	})
+	return ret, err
+}
+
+// Get retrieves the ServicebusTopic from the indexer for a given namespace and name.
+func (s servicebusTopicNamespaceLister) Get(name string) (*v1alpha1.ServicebusTopic, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

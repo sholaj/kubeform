@@ -31,6 +31,7 @@ import (
 // FakeCloudiotRegistries implements CloudiotRegistryInterface
 type FakeCloudiotRegistries struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var cloudiotregistriesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "cloudiotregistries"}
@@ -40,7 +41,8 @@ var cloudiotregistriesKind = schema.GroupVersionKind{Group: "google.kubeform.com
 // Get takes name of the cloudiotRegistry, and returns the corresponding cloudiotRegistry object, and an error if there is any.
 func (c *FakeCloudiotRegistries) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudiotRegistry, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cloudiotregistriesResource, name), &v1alpha1.CloudiotRegistry{})
+		Invokes(testing.NewGetAction(cloudiotregistriesResource, c.ns, name), &v1alpha1.CloudiotRegistry{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCloudiotRegistries) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of CloudiotRegistries that match those selectors.
 func (c *FakeCloudiotRegistries) List(opts v1.ListOptions) (result *v1alpha1.CloudiotRegistryList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cloudiotregistriesResource, cloudiotregistriesKind, opts), &v1alpha1.CloudiotRegistryList{})
+		Invokes(testing.NewListAction(cloudiotregistriesResource, cloudiotregistriesKind, c.ns, opts), &v1alpha1.CloudiotRegistryList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCloudiotRegistries) List(opts v1.ListOptions) (result *v1alpha1.Clo
 // Watch returns a watch.Interface that watches the requested cloudiotRegistries.
 func (c *FakeCloudiotRegistries) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cloudiotregistriesResource, opts))
+		InvokesWatch(testing.NewWatchAction(cloudiotregistriesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cloudiotRegistry and creates it.  Returns the server's representation of the cloudiotRegistry, and an error, if there is any.
 func (c *FakeCloudiotRegistries) Create(cloudiotRegistry *v1alpha1.CloudiotRegistry) (result *v1alpha1.CloudiotRegistry, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cloudiotregistriesResource, cloudiotRegistry), &v1alpha1.CloudiotRegistry{})
+		Invokes(testing.NewCreateAction(cloudiotregistriesResource, c.ns, cloudiotRegistry), &v1alpha1.CloudiotRegistry{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCloudiotRegistries) Create(cloudiotRegistry *v1alpha1.CloudiotRegis
 // Update takes the representation of a cloudiotRegistry and updates it. Returns the server's representation of the cloudiotRegistry, and an error, if there is any.
 func (c *FakeCloudiotRegistries) Update(cloudiotRegistry *v1alpha1.CloudiotRegistry) (result *v1alpha1.CloudiotRegistry, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cloudiotregistriesResource, cloudiotRegistry), &v1alpha1.CloudiotRegistry{})
+		Invokes(testing.NewUpdateAction(cloudiotregistriesResource, c.ns, cloudiotRegistry), &v1alpha1.CloudiotRegistry{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCloudiotRegistries) Update(cloudiotRegistry *v1alpha1.CloudiotRegis
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCloudiotRegistries) UpdateStatus(cloudiotRegistry *v1alpha1.CloudiotRegistry) (*v1alpha1.CloudiotRegistry, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cloudiotregistriesResource, "status", cloudiotRegistry), &v1alpha1.CloudiotRegistry{})
+		Invokes(testing.NewUpdateSubresourceAction(cloudiotregistriesResource, "status", c.ns, cloudiotRegistry), &v1alpha1.CloudiotRegistry{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCloudiotRegistries) UpdateStatus(cloudiotRegistry *v1alpha1.Cloudio
 // Delete takes name of the cloudiotRegistry and deletes it. Returns an error if one occurs.
 func (c *FakeCloudiotRegistries) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cloudiotregistriesResource, name), &v1alpha1.CloudiotRegistry{})
+		Invokes(testing.NewDeleteAction(cloudiotregistriesResource, c.ns, name), &v1alpha1.CloudiotRegistry{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCloudiotRegistries) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cloudiotregistriesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cloudiotregistriesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CloudiotRegistryList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCloudiotRegistries) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched cloudiotRegistry.
 func (c *FakeCloudiotRegistries) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudiotRegistry, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cloudiotregistriesResource, name, pt, data, subresources...), &v1alpha1.CloudiotRegistry{})
+		Invokes(testing.NewPatchSubresourceAction(cloudiotregistriesResource, c.ns, name, pt, data, subresources...), &v1alpha1.CloudiotRegistry{})
+
 	if obj == nil {
 		return nil, err
 	}

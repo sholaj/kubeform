@@ -31,6 +31,7 @@ import (
 // FakeBatchJobQueues implements BatchJobQueueInterface
 type FakeBatchJobQueues struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var batchjobqueuesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "batchjobqueues"}
@@ -40,7 +41,8 @@ var batchjobqueuesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Vers
 // Get takes name of the batchJobQueue, and returns the corresponding batchJobQueue object, and an error if there is any.
 func (c *FakeBatchJobQueues) Get(name string, options v1.GetOptions) (result *v1alpha1.BatchJobQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(batchjobqueuesResource, name), &v1alpha1.BatchJobQueue{})
+		Invokes(testing.NewGetAction(batchjobqueuesResource, c.ns, name), &v1alpha1.BatchJobQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeBatchJobQueues) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of BatchJobQueues that match those selectors.
 func (c *FakeBatchJobQueues) List(opts v1.ListOptions) (result *v1alpha1.BatchJobQueueList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(batchjobqueuesResource, batchjobqueuesKind, opts), &v1alpha1.BatchJobQueueList{})
+		Invokes(testing.NewListAction(batchjobqueuesResource, batchjobqueuesKind, c.ns, opts), &v1alpha1.BatchJobQueueList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeBatchJobQueues) List(opts v1.ListOptions) (result *v1alpha1.BatchJo
 // Watch returns a watch.Interface that watches the requested batchJobQueues.
 func (c *FakeBatchJobQueues) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(batchjobqueuesResource, opts))
+		InvokesWatch(testing.NewWatchAction(batchjobqueuesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a batchJobQueue and creates it.  Returns the server's representation of the batchJobQueue, and an error, if there is any.
 func (c *FakeBatchJobQueues) Create(batchJobQueue *v1alpha1.BatchJobQueue) (result *v1alpha1.BatchJobQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(batchjobqueuesResource, batchJobQueue), &v1alpha1.BatchJobQueue{})
+		Invokes(testing.NewCreateAction(batchjobqueuesResource, c.ns, batchJobQueue), &v1alpha1.BatchJobQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeBatchJobQueues) Create(batchJobQueue *v1alpha1.BatchJobQueue) (resu
 // Update takes the representation of a batchJobQueue and updates it. Returns the server's representation of the batchJobQueue, and an error, if there is any.
 func (c *FakeBatchJobQueues) Update(batchJobQueue *v1alpha1.BatchJobQueue) (result *v1alpha1.BatchJobQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(batchjobqueuesResource, batchJobQueue), &v1alpha1.BatchJobQueue{})
+		Invokes(testing.NewUpdateAction(batchjobqueuesResource, c.ns, batchJobQueue), &v1alpha1.BatchJobQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeBatchJobQueues) Update(batchJobQueue *v1alpha1.BatchJobQueue) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeBatchJobQueues) UpdateStatus(batchJobQueue *v1alpha1.BatchJobQueue) (*v1alpha1.BatchJobQueue, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(batchjobqueuesResource, "status", batchJobQueue), &v1alpha1.BatchJobQueue{})
+		Invokes(testing.NewUpdateSubresourceAction(batchjobqueuesResource, "status", c.ns, batchJobQueue), &v1alpha1.BatchJobQueue{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeBatchJobQueues) UpdateStatus(batchJobQueue *v1alpha1.BatchJobQueue)
 // Delete takes name of the batchJobQueue and deletes it. Returns an error if one occurs.
 func (c *FakeBatchJobQueues) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(batchjobqueuesResource, name), &v1alpha1.BatchJobQueue{})
+		Invokes(testing.NewDeleteAction(batchjobqueuesResource, c.ns, name), &v1alpha1.BatchJobQueue{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeBatchJobQueues) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(batchjobqueuesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(batchjobqueuesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.BatchJobQueueList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeBatchJobQueues) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched batchJobQueue.
 func (c *FakeBatchJobQueues) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BatchJobQueue, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(batchjobqueuesResource, name, pt, data, subresources...), &v1alpha1.BatchJobQueue{})
+		Invokes(testing.NewPatchSubresourceAction(batchjobqueuesResource, c.ns, name, pt, data, subresources...), &v1alpha1.BatchJobQueue{})
+
 	if obj == nil {
 		return nil, err
 	}

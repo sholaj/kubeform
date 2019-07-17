@@ -397,24 +397,33 @@ spec:
           type: object
         spec:
           properties:
-            availability_zone:
+            availabilityZone:
               type: string
-            ebs_optimized:
+            ebsOptimized:
               type: boolean
-            end_date:
+            endDate:
               type: string
-            end_date_type:
+            endDateType:
               type: string
-            ephemeral_storage:
+            ephemeralStorage:
               type: boolean
-            instance_count:
+            instanceCount:
               type: integer
-            instance_match_criteria:
+            instanceMatchCriteria:
               type: string
-            instance_platform:
+            instancePlatform:
               type: string
-            instance_type:
+            instanceType:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             tags:
               additionalProperties:
                 type: string
@@ -422,10 +431,11 @@ spec:
             tenancy:
               type: string
           required:
-          - availability_zone
-          - instance_count
-          - instance_platform
-          - instance_type
+          - availabilityZone
+          - instanceCount
+          - instancePlatform
+          - instanceType
+          - providerRef
           type: object
         status:
           properties:
@@ -436,6 +446,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

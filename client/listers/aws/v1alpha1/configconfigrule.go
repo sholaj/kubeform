@@ -29,8 +29,8 @@ import (
 type ConfigConfigRuleLister interface {
 	// List lists all ConfigConfigRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ConfigConfigRule, err error)
-	// Get retrieves the ConfigConfigRule from the index for a given name.
-	Get(name string) (*v1alpha1.ConfigConfigRule, error)
+	// ConfigConfigRules returns an object that can list and get ConfigConfigRules.
+	ConfigConfigRules(namespace string) ConfigConfigRuleNamespaceLister
 	ConfigConfigRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *configConfigRuleLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the ConfigConfigRule from the index for a given name.
-func (s *configConfigRuleLister) Get(name string) (*v1alpha1.ConfigConfigRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ConfigConfigRules returns an object that can list and get ConfigConfigRules.
+func (s *configConfigRuleLister) ConfigConfigRules(namespace string) ConfigConfigRuleNamespaceLister {
+	return configConfigRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ConfigConfigRuleNamespaceLister helps list and get ConfigConfigRules.
+type ConfigConfigRuleNamespaceLister interface {
+	// List lists all ConfigConfigRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ConfigConfigRule, err error)
+	// Get retrieves the ConfigConfigRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ConfigConfigRule, error)
+	ConfigConfigRuleNamespaceListerExpansion
+}
+
+// configConfigRuleNamespaceLister implements the ConfigConfigRuleNamespaceLister
+// interface.
+type configConfigRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ConfigConfigRules in the indexer for a given namespace.
+func (s configConfigRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ConfigConfigRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ConfigConfigRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the ConfigConfigRule from the indexer for a given namespace and name.
+func (s configConfigRuleNamespaceLister) Get(name string) (*v1alpha1.ConfigConfigRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

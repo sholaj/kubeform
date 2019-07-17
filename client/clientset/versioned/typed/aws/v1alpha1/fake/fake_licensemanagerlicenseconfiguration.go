@@ -31,6 +31,7 @@ import (
 // FakeLicensemanagerLicenseConfigurations implements LicensemanagerLicenseConfigurationInterface
 type FakeLicensemanagerLicenseConfigurations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var licensemanagerlicenseconfigurationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "licensemanagerlicenseconfigurations"}
@@ -40,7 +41,8 @@ var licensemanagerlicenseconfigurationsKind = schema.GroupVersionKind{Group: "aw
 // Get takes name of the licensemanagerLicenseConfiguration, and returns the corresponding licensemanagerLicenseConfiguration object, and an error if there is any.
 func (c *FakeLicensemanagerLicenseConfigurations) Get(name string, options v1.GetOptions) (result *v1alpha1.LicensemanagerLicenseConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(licensemanagerlicenseconfigurationsResource, name), &v1alpha1.LicensemanagerLicenseConfiguration{})
+		Invokes(testing.NewGetAction(licensemanagerlicenseconfigurationsResource, c.ns, name), &v1alpha1.LicensemanagerLicenseConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLicensemanagerLicenseConfigurations) Get(name string, options v1.Ge
 // List takes label and field selectors, and returns the list of LicensemanagerLicenseConfigurations that match those selectors.
 func (c *FakeLicensemanagerLicenseConfigurations) List(opts v1.ListOptions) (result *v1alpha1.LicensemanagerLicenseConfigurationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(licensemanagerlicenseconfigurationsResource, licensemanagerlicenseconfigurationsKind, opts), &v1alpha1.LicensemanagerLicenseConfigurationList{})
+		Invokes(testing.NewListAction(licensemanagerlicenseconfigurationsResource, licensemanagerlicenseconfigurationsKind, c.ns, opts), &v1alpha1.LicensemanagerLicenseConfigurationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLicensemanagerLicenseConfigurations) List(opts v1.ListOptions) (res
 // Watch returns a watch.Interface that watches the requested licensemanagerLicenseConfigurations.
 func (c *FakeLicensemanagerLicenseConfigurations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(licensemanagerlicenseconfigurationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(licensemanagerlicenseconfigurationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a licensemanagerLicenseConfiguration and creates it.  Returns the server's representation of the licensemanagerLicenseConfiguration, and an error, if there is any.
 func (c *FakeLicensemanagerLicenseConfigurations) Create(licensemanagerLicenseConfiguration *v1alpha1.LicensemanagerLicenseConfiguration) (result *v1alpha1.LicensemanagerLicenseConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(licensemanagerlicenseconfigurationsResource, licensemanagerLicenseConfiguration), &v1alpha1.LicensemanagerLicenseConfiguration{})
+		Invokes(testing.NewCreateAction(licensemanagerlicenseconfigurationsResource, c.ns, licensemanagerLicenseConfiguration), &v1alpha1.LicensemanagerLicenseConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLicensemanagerLicenseConfigurations) Create(licensemanagerLicenseCo
 // Update takes the representation of a licensemanagerLicenseConfiguration and updates it. Returns the server's representation of the licensemanagerLicenseConfiguration, and an error, if there is any.
 func (c *FakeLicensemanagerLicenseConfigurations) Update(licensemanagerLicenseConfiguration *v1alpha1.LicensemanagerLicenseConfiguration) (result *v1alpha1.LicensemanagerLicenseConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(licensemanagerlicenseconfigurationsResource, licensemanagerLicenseConfiguration), &v1alpha1.LicensemanagerLicenseConfiguration{})
+		Invokes(testing.NewUpdateAction(licensemanagerlicenseconfigurationsResource, c.ns, licensemanagerLicenseConfiguration), &v1alpha1.LicensemanagerLicenseConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLicensemanagerLicenseConfigurations) Update(licensemanagerLicenseCo
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLicensemanagerLicenseConfigurations) UpdateStatus(licensemanagerLicenseConfiguration *v1alpha1.LicensemanagerLicenseConfiguration) (*v1alpha1.LicensemanagerLicenseConfiguration, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(licensemanagerlicenseconfigurationsResource, "status", licensemanagerLicenseConfiguration), &v1alpha1.LicensemanagerLicenseConfiguration{})
+		Invokes(testing.NewUpdateSubresourceAction(licensemanagerlicenseconfigurationsResource, "status", c.ns, licensemanagerLicenseConfiguration), &v1alpha1.LicensemanagerLicenseConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLicensemanagerLicenseConfigurations) UpdateStatus(licensemanagerLic
 // Delete takes name of the licensemanagerLicenseConfiguration and deletes it. Returns an error if one occurs.
 func (c *FakeLicensemanagerLicenseConfigurations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(licensemanagerlicenseconfigurationsResource, name), &v1alpha1.LicensemanagerLicenseConfiguration{})
+		Invokes(testing.NewDeleteAction(licensemanagerlicenseconfigurationsResource, c.ns, name), &v1alpha1.LicensemanagerLicenseConfiguration{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLicensemanagerLicenseConfigurations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(licensemanagerlicenseconfigurationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(licensemanagerlicenseconfigurationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LicensemanagerLicenseConfigurationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLicensemanagerLicenseConfigurations) DeleteCollection(options *v1.D
 // Patch applies the patch and returns the patched licensemanagerLicenseConfiguration.
 func (c *FakeLicensemanagerLicenseConfigurations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LicensemanagerLicenseConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(licensemanagerlicenseconfigurationsResource, name, pt, data, subresources...), &v1alpha1.LicensemanagerLicenseConfiguration{})
+		Invokes(testing.NewPatchSubresourceAction(licensemanagerlicenseconfigurationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.LicensemanagerLicenseConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type MysqlConfigurationLister interface {
 	// List lists all MysqlConfigurations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MysqlConfiguration, err error)
-	// Get retrieves the MysqlConfiguration from the index for a given name.
-	Get(name string) (*v1alpha1.MysqlConfiguration, error)
+	// MysqlConfigurations returns an object that can list and get MysqlConfigurations.
+	MysqlConfigurations(namespace string) MysqlConfigurationNamespaceLister
 	MysqlConfigurationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *mysqlConfigurationLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the MysqlConfiguration from the index for a given name.
-func (s *mysqlConfigurationLister) Get(name string) (*v1alpha1.MysqlConfiguration, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MysqlConfigurations returns an object that can list and get MysqlConfigurations.
+func (s *mysqlConfigurationLister) MysqlConfigurations(namespace string) MysqlConfigurationNamespaceLister {
+	return mysqlConfigurationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MysqlConfigurationNamespaceLister helps list and get MysqlConfigurations.
+type MysqlConfigurationNamespaceLister interface {
+	// List lists all MysqlConfigurations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MysqlConfiguration, err error)
+	// Get retrieves the MysqlConfiguration from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MysqlConfiguration, error)
+	MysqlConfigurationNamespaceListerExpansion
+}
+
+// mysqlConfigurationNamespaceLister implements the MysqlConfigurationNamespaceLister
+// interface.
+type mysqlConfigurationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MysqlConfigurations in the indexer for a given namespace.
+func (s mysqlConfigurationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MysqlConfiguration, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MysqlConfiguration))
+	})
+	return ret, err
+}
+
+// Get retrieves the MysqlConfiguration from the indexer for a given namespace and name.
+func (s mysqlConfigurationNamespaceLister) Get(name string) (*v1alpha1.MysqlConfiguration, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

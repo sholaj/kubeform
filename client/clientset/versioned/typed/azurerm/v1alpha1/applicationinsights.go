@@ -32,7 +32,7 @@ import (
 // ApplicationInsightsesGetter has a method to return a ApplicationInsightsInterface.
 // A group's client should implement this interface.
 type ApplicationInsightsesGetter interface {
-	ApplicationInsightses() ApplicationInsightsInterface
+	ApplicationInsightses(namespace string) ApplicationInsightsInterface
 }
 
 // ApplicationInsightsInterface has methods to work with ApplicationInsights resources.
@@ -52,12 +52,14 @@ type ApplicationInsightsInterface interface {
 // applicationInsightses implements ApplicationInsightsInterface
 type applicationInsightses struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApplicationInsightses returns a ApplicationInsightses
-func newApplicationInsightses(c *AzurermV1alpha1Client) *applicationInsightses {
+func newApplicationInsightses(c *AzurermV1alpha1Client, namespace string) *applicationInsightses {
 	return &applicationInsightses{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApplicationInsightses(c *AzurermV1alpha1Client) *applicationInsightses {
 func (c *applicationInsightses) Get(name string, options v1.GetOptions) (result *v1alpha1.ApplicationInsights, err error) {
 	result = &v1alpha1.ApplicationInsights{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("applicationinsightses").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *applicationInsightses) List(opts v1.ListOptions) (result *v1alpha1.Appl
 	}
 	result = &v1alpha1.ApplicationInsightsList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("applicationinsightses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *applicationInsightses) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("applicationinsightses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *applicationInsightses) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *applicationInsightses) Create(applicationInsights *v1alpha1.ApplicationInsights) (result *v1alpha1.ApplicationInsights, err error) {
 	result = &v1alpha1.ApplicationInsights{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("applicationinsightses").
 		Body(applicationInsights).
 		Do().
@@ -118,6 +124,7 @@ func (c *applicationInsightses) Create(applicationInsights *v1alpha1.Application
 func (c *applicationInsightses) Update(applicationInsights *v1alpha1.ApplicationInsights) (result *v1alpha1.ApplicationInsights, err error) {
 	result = &v1alpha1.ApplicationInsights{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("applicationinsightses").
 		Name(applicationInsights.Name).
 		Body(applicationInsights).
@@ -132,6 +139,7 @@ func (c *applicationInsightses) Update(applicationInsights *v1alpha1.Application
 func (c *applicationInsightses) UpdateStatus(applicationInsights *v1alpha1.ApplicationInsights) (result *v1alpha1.ApplicationInsights, err error) {
 	result = &v1alpha1.ApplicationInsights{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("applicationinsightses").
 		Name(applicationInsights.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *applicationInsightses) UpdateStatus(applicationInsights *v1alpha1.Appli
 // Delete takes name of the applicationInsights and deletes it. Returns an error if one occurs.
 func (c *applicationInsightses) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("applicationinsightses").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *applicationInsightses) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("applicationinsightses").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *applicationInsightses) DeleteCollection(options *v1.DeleteOptions, list
 func (c *applicationInsightses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApplicationInsights, err error) {
 	result = &v1alpha1.ApplicationInsights{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("applicationinsightses").
 		SubResource(subresources...).
 		Name(name).

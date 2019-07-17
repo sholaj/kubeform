@@ -32,7 +32,7 @@ import (
 // MonitorActivityLogAlertsGetter has a method to return a MonitorActivityLogAlertInterface.
 // A group's client should implement this interface.
 type MonitorActivityLogAlertsGetter interface {
-	MonitorActivityLogAlerts() MonitorActivityLogAlertInterface
+	MonitorActivityLogAlerts(namespace string) MonitorActivityLogAlertInterface
 }
 
 // MonitorActivityLogAlertInterface has methods to work with MonitorActivityLogAlert resources.
@@ -52,12 +52,14 @@ type MonitorActivityLogAlertInterface interface {
 // monitorActivityLogAlerts implements MonitorActivityLogAlertInterface
 type monitorActivityLogAlerts struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMonitorActivityLogAlerts returns a MonitorActivityLogAlerts
-func newMonitorActivityLogAlerts(c *AzurermV1alpha1Client) *monitorActivityLogAlerts {
+func newMonitorActivityLogAlerts(c *AzurermV1alpha1Client, namespace string) *monitorActivityLogAlerts {
 	return &monitorActivityLogAlerts{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMonitorActivityLogAlerts(c *AzurermV1alpha1Client) *monitorActivityLogAl
 func (c *monitorActivityLogAlerts) Get(name string, options v1.GetOptions) (result *v1alpha1.MonitorActivityLogAlert, err error) {
 	result = &v1alpha1.MonitorActivityLogAlert{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitoractivitylogalerts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *monitorActivityLogAlerts) List(opts v1.ListOptions) (result *v1alpha1.M
 	}
 	result = &v1alpha1.MonitorActivityLogAlertList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("monitoractivitylogalerts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *monitorActivityLogAlerts) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("monitoractivitylogalerts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *monitorActivityLogAlerts) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *monitorActivityLogAlerts) Create(monitorActivityLogAlert *v1alpha1.MonitorActivityLogAlert) (result *v1alpha1.MonitorActivityLogAlert, err error) {
 	result = &v1alpha1.MonitorActivityLogAlert{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("monitoractivitylogalerts").
 		Body(monitorActivityLogAlert).
 		Do().
@@ -118,6 +124,7 @@ func (c *monitorActivityLogAlerts) Create(monitorActivityLogAlert *v1alpha1.Moni
 func (c *monitorActivityLogAlerts) Update(monitorActivityLogAlert *v1alpha1.MonitorActivityLogAlert) (result *v1alpha1.MonitorActivityLogAlert, err error) {
 	result = &v1alpha1.MonitorActivityLogAlert{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitoractivitylogalerts").
 		Name(monitorActivityLogAlert.Name).
 		Body(monitorActivityLogAlert).
@@ -132,6 +139,7 @@ func (c *monitorActivityLogAlerts) Update(monitorActivityLogAlert *v1alpha1.Moni
 func (c *monitorActivityLogAlerts) UpdateStatus(monitorActivityLogAlert *v1alpha1.MonitorActivityLogAlert) (result *v1alpha1.MonitorActivityLogAlert, err error) {
 	result = &v1alpha1.MonitorActivityLogAlert{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("monitoractivitylogalerts").
 		Name(monitorActivityLogAlert.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *monitorActivityLogAlerts) UpdateStatus(monitorActivityLogAlert *v1alpha
 // Delete takes name of the monitorActivityLogAlert and deletes it. Returns an error if one occurs.
 func (c *monitorActivityLogAlerts) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitoractivitylogalerts").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *monitorActivityLogAlerts) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("monitoractivitylogalerts").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *monitorActivityLogAlerts) DeleteCollection(options *v1.DeleteOptions, l
 func (c *monitorActivityLogAlerts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MonitorActivityLogAlert, err error) {
 	result = &v1alpha1.MonitorActivityLogAlert{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("monitoractivitylogalerts").
 		SubResource(subresources...).
 		Name(name).

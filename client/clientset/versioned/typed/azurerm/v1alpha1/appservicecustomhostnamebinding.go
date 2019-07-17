@@ -32,7 +32,7 @@ import (
 // AppServiceCustomHostnameBindingsGetter has a method to return a AppServiceCustomHostnameBindingInterface.
 // A group's client should implement this interface.
 type AppServiceCustomHostnameBindingsGetter interface {
-	AppServiceCustomHostnameBindings() AppServiceCustomHostnameBindingInterface
+	AppServiceCustomHostnameBindings(namespace string) AppServiceCustomHostnameBindingInterface
 }
 
 // AppServiceCustomHostnameBindingInterface has methods to work with AppServiceCustomHostnameBinding resources.
@@ -52,12 +52,14 @@ type AppServiceCustomHostnameBindingInterface interface {
 // appServiceCustomHostnameBindings implements AppServiceCustomHostnameBindingInterface
 type appServiceCustomHostnameBindings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAppServiceCustomHostnameBindings returns a AppServiceCustomHostnameBindings
-func newAppServiceCustomHostnameBindings(c *AzurermV1alpha1Client) *appServiceCustomHostnameBindings {
+func newAppServiceCustomHostnameBindings(c *AzurermV1alpha1Client, namespace string) *appServiceCustomHostnameBindings {
 	return &appServiceCustomHostnameBindings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAppServiceCustomHostnameBindings(c *AzurermV1alpha1Client) *appServiceCu
 func (c *appServiceCustomHostnameBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.AppServiceCustomHostnameBinding, err error) {
 	result = &v1alpha1.AppServiceCustomHostnameBinding{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appservicecustomhostnamebindings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *appServiceCustomHostnameBindings) List(opts v1.ListOptions) (result *v1
 	}
 	result = &v1alpha1.AppServiceCustomHostnameBindingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("appservicecustomhostnamebindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *appServiceCustomHostnameBindings) Watch(opts v1.ListOptions) (watch.Int
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("appservicecustomhostnamebindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *appServiceCustomHostnameBindings) Watch(opts v1.ListOptions) (watch.Int
 func (c *appServiceCustomHostnameBindings) Create(appServiceCustomHostnameBinding *v1alpha1.AppServiceCustomHostnameBinding) (result *v1alpha1.AppServiceCustomHostnameBinding, err error) {
 	result = &v1alpha1.AppServiceCustomHostnameBinding{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("appservicecustomhostnamebindings").
 		Body(appServiceCustomHostnameBinding).
 		Do().
@@ -118,6 +124,7 @@ func (c *appServiceCustomHostnameBindings) Create(appServiceCustomHostnameBindin
 func (c *appServiceCustomHostnameBindings) Update(appServiceCustomHostnameBinding *v1alpha1.AppServiceCustomHostnameBinding) (result *v1alpha1.AppServiceCustomHostnameBinding, err error) {
 	result = &v1alpha1.AppServiceCustomHostnameBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appservicecustomhostnamebindings").
 		Name(appServiceCustomHostnameBinding.Name).
 		Body(appServiceCustomHostnameBinding).
@@ -132,6 +139,7 @@ func (c *appServiceCustomHostnameBindings) Update(appServiceCustomHostnameBindin
 func (c *appServiceCustomHostnameBindings) UpdateStatus(appServiceCustomHostnameBinding *v1alpha1.AppServiceCustomHostnameBinding) (result *v1alpha1.AppServiceCustomHostnameBinding, err error) {
 	result = &v1alpha1.AppServiceCustomHostnameBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("appservicecustomhostnamebindings").
 		Name(appServiceCustomHostnameBinding.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *appServiceCustomHostnameBindings) UpdateStatus(appServiceCustomHostname
 // Delete takes name of the appServiceCustomHostnameBinding and deletes it. Returns an error if one occurs.
 func (c *appServiceCustomHostnameBindings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appservicecustomhostnamebindings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *appServiceCustomHostnameBindings) DeleteCollection(options *v1.DeleteOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("appservicecustomhostnamebindings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *appServiceCustomHostnameBindings) DeleteCollection(options *v1.DeleteOp
 func (c *appServiceCustomHostnameBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AppServiceCustomHostnameBinding, err error) {
 	result = &v1alpha1.AppServiceCustomHostnameBinding{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("appservicecustomhostnamebindings").
 		SubResource(subresources...).
 		Name(name).

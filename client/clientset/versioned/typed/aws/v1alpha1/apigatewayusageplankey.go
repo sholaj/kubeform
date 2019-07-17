@@ -32,7 +32,7 @@ import (
 // ApiGatewayUsagePlanKeysGetter has a method to return a ApiGatewayUsagePlanKeyInterface.
 // A group's client should implement this interface.
 type ApiGatewayUsagePlanKeysGetter interface {
-	ApiGatewayUsagePlanKeys() ApiGatewayUsagePlanKeyInterface
+	ApiGatewayUsagePlanKeys(namespace string) ApiGatewayUsagePlanKeyInterface
 }
 
 // ApiGatewayUsagePlanKeyInterface has methods to work with ApiGatewayUsagePlanKey resources.
@@ -52,12 +52,14 @@ type ApiGatewayUsagePlanKeyInterface interface {
 // apiGatewayUsagePlanKeys implements ApiGatewayUsagePlanKeyInterface
 type apiGatewayUsagePlanKeys struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiGatewayUsagePlanKeys returns a ApiGatewayUsagePlanKeys
-func newApiGatewayUsagePlanKeys(c *AwsV1alpha1Client) *apiGatewayUsagePlanKeys {
+func newApiGatewayUsagePlanKeys(c *AwsV1alpha1Client, namespace string) *apiGatewayUsagePlanKeys {
 	return &apiGatewayUsagePlanKeys{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiGatewayUsagePlanKeys(c *AwsV1alpha1Client) *apiGatewayUsagePlanKeys {
 func (c *apiGatewayUsagePlanKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayUsagePlanKey, err error) {
 	result = &v1alpha1.ApiGatewayUsagePlanKey{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayusageplankeys").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiGatewayUsagePlanKeys) List(opts v1.ListOptions) (result *v1alpha1.Ap
 	}
 	result = &v1alpha1.ApiGatewayUsagePlanKeyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayusageplankeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiGatewayUsagePlanKeys) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apigatewayusageplankeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiGatewayUsagePlanKeys) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *apiGatewayUsagePlanKeys) Create(apiGatewayUsagePlanKey *v1alpha1.ApiGatewayUsagePlanKey) (result *v1alpha1.ApiGatewayUsagePlanKey, err error) {
 	result = &v1alpha1.ApiGatewayUsagePlanKey{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apigatewayusageplankeys").
 		Body(apiGatewayUsagePlanKey).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiGatewayUsagePlanKeys) Create(apiGatewayUsagePlanKey *v1alpha1.ApiGat
 func (c *apiGatewayUsagePlanKeys) Update(apiGatewayUsagePlanKey *v1alpha1.ApiGatewayUsagePlanKey) (result *v1alpha1.ApiGatewayUsagePlanKey, err error) {
 	result = &v1alpha1.ApiGatewayUsagePlanKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewayusageplankeys").
 		Name(apiGatewayUsagePlanKey.Name).
 		Body(apiGatewayUsagePlanKey).
@@ -132,6 +139,7 @@ func (c *apiGatewayUsagePlanKeys) Update(apiGatewayUsagePlanKey *v1alpha1.ApiGat
 func (c *apiGatewayUsagePlanKeys) UpdateStatus(apiGatewayUsagePlanKey *v1alpha1.ApiGatewayUsagePlanKey) (result *v1alpha1.ApiGatewayUsagePlanKey, err error) {
 	result = &v1alpha1.ApiGatewayUsagePlanKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apigatewayusageplankeys").
 		Name(apiGatewayUsagePlanKey.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiGatewayUsagePlanKeys) UpdateStatus(apiGatewayUsagePlanKey *v1alpha1.
 // Delete takes name of the apiGatewayUsagePlanKey and deletes it. Returns an error if one occurs.
 func (c *apiGatewayUsagePlanKeys) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewayusageplankeys").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiGatewayUsagePlanKeys) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apigatewayusageplankeys").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiGatewayUsagePlanKeys) DeleteCollection(options *v1.DeleteOptions, li
 func (c *apiGatewayUsagePlanKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayUsagePlanKey, err error) {
 	result = &v1alpha1.ApiGatewayUsagePlanKey{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apigatewayusageplankeys").
 		SubResource(subresources...).
 		Name(name).

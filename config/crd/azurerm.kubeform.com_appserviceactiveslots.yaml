@@ -397,16 +397,26 @@ spec:
           type: object
         spec:
           properties:
-            app_service_name:
+            appServiceName:
               type: string
-            app_service_slot_name:
+            appServiceSlotName:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
           required:
-          - app_service_name
-          - app_service_slot_name
-          - resource_group_name
+          - appServiceName
+          - appServiceSlotName
+          - providerRef
+          - resourceGroupName
           type: object
         status:
           properties:
@@ -417,6 +427,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

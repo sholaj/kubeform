@@ -31,6 +31,7 @@ import (
 // FakeCloudtrails implements CloudtrailInterface
 type FakeCloudtrails struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var cloudtrailsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "cloudtrails"}
@@ -40,7 +41,8 @@ var cloudtrailsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version
 // Get takes name of the cloudtrail, and returns the corresponding cloudtrail object, and an error if there is any.
 func (c *FakeCloudtrails) Get(name string, options v1.GetOptions) (result *v1alpha1.Cloudtrail, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cloudtrailsResource, name), &v1alpha1.Cloudtrail{})
+		Invokes(testing.NewGetAction(cloudtrailsResource, c.ns, name), &v1alpha1.Cloudtrail{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCloudtrails) Get(name string, options v1.GetOptions) (result *v1alp
 // List takes label and field selectors, and returns the list of Cloudtrails that match those selectors.
 func (c *FakeCloudtrails) List(opts v1.ListOptions) (result *v1alpha1.CloudtrailList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cloudtrailsResource, cloudtrailsKind, opts), &v1alpha1.CloudtrailList{})
+		Invokes(testing.NewListAction(cloudtrailsResource, cloudtrailsKind, c.ns, opts), &v1alpha1.CloudtrailList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCloudtrails) List(opts v1.ListOptions) (result *v1alpha1.Cloudtrail
 // Watch returns a watch.Interface that watches the requested cloudtrails.
 func (c *FakeCloudtrails) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cloudtrailsResource, opts))
+		InvokesWatch(testing.NewWatchAction(cloudtrailsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cloudtrail and creates it.  Returns the server's representation of the cloudtrail, and an error, if there is any.
 func (c *FakeCloudtrails) Create(cloudtrail *v1alpha1.Cloudtrail) (result *v1alpha1.Cloudtrail, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cloudtrailsResource, cloudtrail), &v1alpha1.Cloudtrail{})
+		Invokes(testing.NewCreateAction(cloudtrailsResource, c.ns, cloudtrail), &v1alpha1.Cloudtrail{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCloudtrails) Create(cloudtrail *v1alpha1.Cloudtrail) (result *v1alp
 // Update takes the representation of a cloudtrail and updates it. Returns the server's representation of the cloudtrail, and an error, if there is any.
 func (c *FakeCloudtrails) Update(cloudtrail *v1alpha1.Cloudtrail) (result *v1alpha1.Cloudtrail, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cloudtrailsResource, cloudtrail), &v1alpha1.Cloudtrail{})
+		Invokes(testing.NewUpdateAction(cloudtrailsResource, c.ns, cloudtrail), &v1alpha1.Cloudtrail{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCloudtrails) Update(cloudtrail *v1alpha1.Cloudtrail) (result *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCloudtrails) UpdateStatus(cloudtrail *v1alpha1.Cloudtrail) (*v1alpha1.Cloudtrail, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cloudtrailsResource, "status", cloudtrail), &v1alpha1.Cloudtrail{})
+		Invokes(testing.NewUpdateSubresourceAction(cloudtrailsResource, "status", c.ns, cloudtrail), &v1alpha1.Cloudtrail{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCloudtrails) UpdateStatus(cloudtrail *v1alpha1.Cloudtrail) (*v1alph
 // Delete takes name of the cloudtrail and deletes it. Returns an error if one occurs.
 func (c *FakeCloudtrails) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cloudtrailsResource, name), &v1alpha1.Cloudtrail{})
+		Invokes(testing.NewDeleteAction(cloudtrailsResource, c.ns, name), &v1alpha1.Cloudtrail{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCloudtrails) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cloudtrailsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cloudtrailsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CloudtrailList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCloudtrails) DeleteCollection(options *v1.DeleteOptions, listOption
 // Patch applies the patch and returns the patched cloudtrail.
 func (c *FakeCloudtrails) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Cloudtrail, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cloudtrailsResource, name, pt, data, subresources...), &v1alpha1.Cloudtrail{})
+		Invokes(testing.NewPatchSubresourceAction(cloudtrailsResource, c.ns, name, pt, data, subresources...), &v1alpha1.Cloudtrail{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -397,30 +397,40 @@ spec:
           type: object
         spec:
           properties:
-            authorizer_credentials:
+            authorizerCredentials:
               type: string
-            authorizer_result_ttl_in_seconds:
+            authorizerResultTtlInSeconds:
               type: integer
-            authorizer_uri:
+            authorizerURI:
               type: string
-            identity_source:
+            identitySource:
               type: string
-            identity_validation_expression:
+            identityValidationExpression:
               type: string
             name:
               type: string
-            provider_arns:
+            providerArns:
               items:
                 type: string
               type: array
               uniqueItems: true
-            rest_api_id:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            restAPIID:
               type: string
             type:
               type: string
           required:
           - name
-          - rest_api_id
+          - providerRef
+          - restAPIID
           type: object
         status:
           properties:
@@ -431,6 +441,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

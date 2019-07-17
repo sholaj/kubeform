@@ -41,32 +41,33 @@ type EcsTaskDefinitionInformer interface {
 type ecsTaskDefinitionInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewEcsTaskDefinitionInformer constructs a new informer for EcsTaskDefinition type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewEcsTaskDefinitionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredEcsTaskDefinitionInformer(client, resyncPeriod, indexers, nil)
+func NewEcsTaskDefinitionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredEcsTaskDefinitionInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredEcsTaskDefinitionInformer constructs a new informer for EcsTaskDefinition type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredEcsTaskDefinitionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredEcsTaskDefinitionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().EcsTaskDefinitions().List(options)
+				return client.AwsV1alpha1().EcsTaskDefinitions(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().EcsTaskDefinitions().Watch(options)
+				return client.AwsV1alpha1().EcsTaskDefinitions(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.EcsTaskDefinition{},
@@ -76,7 +77,7 @@ func NewFilteredEcsTaskDefinitionInformer(client versioned.Interface, resyncPeri
 }
 
 func (f *ecsTaskDefinitionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredEcsTaskDefinitionInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredEcsTaskDefinitionInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *ecsTaskDefinitionInformer) Informer() cache.SharedIndexInformer {

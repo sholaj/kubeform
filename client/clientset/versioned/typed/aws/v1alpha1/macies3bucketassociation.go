@@ -32,7 +32,7 @@ import (
 // MacieS3BucketAssociationsGetter has a method to return a MacieS3BucketAssociationInterface.
 // A group's client should implement this interface.
 type MacieS3BucketAssociationsGetter interface {
-	MacieS3BucketAssociations() MacieS3BucketAssociationInterface
+	MacieS3BucketAssociations(namespace string) MacieS3BucketAssociationInterface
 }
 
 // MacieS3BucketAssociationInterface has methods to work with MacieS3BucketAssociation resources.
@@ -52,12 +52,14 @@ type MacieS3BucketAssociationInterface interface {
 // macieS3BucketAssociations implements MacieS3BucketAssociationInterface
 type macieS3BucketAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMacieS3BucketAssociations returns a MacieS3BucketAssociations
-func newMacieS3BucketAssociations(c *AwsV1alpha1Client) *macieS3BucketAssociations {
+func newMacieS3BucketAssociations(c *AwsV1alpha1Client, namespace string) *macieS3BucketAssociations {
 	return &macieS3BucketAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMacieS3BucketAssociations(c *AwsV1alpha1Client) *macieS3BucketAssociatio
 func (c *macieS3BucketAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.MacieS3BucketAssociation, err error) {
 	result = &v1alpha1.MacieS3BucketAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("macies3bucketassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *macieS3BucketAssociations) List(opts v1.ListOptions) (result *v1alpha1.
 	}
 	result = &v1alpha1.MacieS3BucketAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("macies3bucketassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *macieS3BucketAssociations) Watch(opts v1.ListOptions) (watch.Interface,
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("macies3bucketassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *macieS3BucketAssociations) Watch(opts v1.ListOptions) (watch.Interface,
 func (c *macieS3BucketAssociations) Create(macieS3BucketAssociation *v1alpha1.MacieS3BucketAssociation) (result *v1alpha1.MacieS3BucketAssociation, err error) {
 	result = &v1alpha1.MacieS3BucketAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("macies3bucketassociations").
 		Body(macieS3BucketAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *macieS3BucketAssociations) Create(macieS3BucketAssociation *v1alpha1.Ma
 func (c *macieS3BucketAssociations) Update(macieS3BucketAssociation *v1alpha1.MacieS3BucketAssociation) (result *v1alpha1.MacieS3BucketAssociation, err error) {
 	result = &v1alpha1.MacieS3BucketAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("macies3bucketassociations").
 		Name(macieS3BucketAssociation.Name).
 		Body(macieS3BucketAssociation).
@@ -132,6 +139,7 @@ func (c *macieS3BucketAssociations) Update(macieS3BucketAssociation *v1alpha1.Ma
 func (c *macieS3BucketAssociations) UpdateStatus(macieS3BucketAssociation *v1alpha1.MacieS3BucketAssociation) (result *v1alpha1.MacieS3BucketAssociation, err error) {
 	result = &v1alpha1.MacieS3BucketAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("macies3bucketassociations").
 		Name(macieS3BucketAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *macieS3BucketAssociations) UpdateStatus(macieS3BucketAssociation *v1alp
 // Delete takes name of the macieS3BucketAssociation and deletes it. Returns an error if one occurs.
 func (c *macieS3BucketAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("macies3bucketassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *macieS3BucketAssociations) DeleteCollection(options *v1.DeleteOptions, 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("macies3bucketassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *macieS3BucketAssociations) DeleteCollection(options *v1.DeleteOptions, 
 func (c *macieS3BucketAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MacieS3BucketAssociation, err error) {
 	result = &v1alpha1.MacieS3BucketAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("macies3bucketassociations").
 		SubResource(subresources...).
 		Name(name).

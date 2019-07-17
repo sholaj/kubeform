@@ -32,7 +32,7 @@ import (
 // LbTargetGroupsGetter has a method to return a LbTargetGroupInterface.
 // A group's client should implement this interface.
 type LbTargetGroupsGetter interface {
-	LbTargetGroups() LbTargetGroupInterface
+	LbTargetGroups(namespace string) LbTargetGroupInterface
 }
 
 // LbTargetGroupInterface has methods to work with LbTargetGroup resources.
@@ -52,12 +52,14 @@ type LbTargetGroupInterface interface {
 // lbTargetGroups implements LbTargetGroupInterface
 type lbTargetGroups struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLbTargetGroups returns a LbTargetGroups
-func newLbTargetGroups(c *AwsV1alpha1Client) *lbTargetGroups {
+func newLbTargetGroups(c *AwsV1alpha1Client, namespace string) *lbTargetGroups {
 	return &lbTargetGroups{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLbTargetGroups(c *AwsV1alpha1Client) *lbTargetGroups {
 func (c *lbTargetGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.LbTargetGroup, err error) {
 	result = &v1alpha1.LbTargetGroup{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lbtargetgroups").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lbTargetGroups) List(opts v1.ListOptions) (result *v1alpha1.LbTargetGro
 	}
 	result = &v1alpha1.LbTargetGroupList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lbtargetgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lbTargetGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lbtargetgroups").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lbTargetGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *lbTargetGroups) Create(lbTargetGroup *v1alpha1.LbTargetGroup) (result *v1alpha1.LbTargetGroup, err error) {
 	result = &v1alpha1.LbTargetGroup{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lbtargetgroups").
 		Body(lbTargetGroup).
 		Do().
@@ -118,6 +124,7 @@ func (c *lbTargetGroups) Create(lbTargetGroup *v1alpha1.LbTargetGroup) (result *
 func (c *lbTargetGroups) Update(lbTargetGroup *v1alpha1.LbTargetGroup) (result *v1alpha1.LbTargetGroup, err error) {
 	result = &v1alpha1.LbTargetGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lbtargetgroups").
 		Name(lbTargetGroup.Name).
 		Body(lbTargetGroup).
@@ -132,6 +139,7 @@ func (c *lbTargetGroups) Update(lbTargetGroup *v1alpha1.LbTargetGroup) (result *
 func (c *lbTargetGroups) UpdateStatus(lbTargetGroup *v1alpha1.LbTargetGroup) (result *v1alpha1.LbTargetGroup, err error) {
 	result = &v1alpha1.LbTargetGroup{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lbtargetgroups").
 		Name(lbTargetGroup.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lbTargetGroups) UpdateStatus(lbTargetGroup *v1alpha1.LbTargetGroup) (re
 // Delete takes name of the lbTargetGroup and deletes it. Returns an error if one occurs.
 func (c *lbTargetGroups) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lbtargetgroups").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lbTargetGroups) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lbtargetgroups").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lbTargetGroups) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *lbTargetGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbTargetGroup, err error) {
 	result = &v1alpha1.LbTargetGroup{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lbtargetgroups").
 		SubResource(subresources...).
 		Name(name).

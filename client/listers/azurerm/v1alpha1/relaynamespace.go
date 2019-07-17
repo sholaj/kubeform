@@ -29,8 +29,8 @@ import (
 type RelayNamespaceLister interface {
 	// List lists all RelayNamespaces in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RelayNamespace, err error)
-	// Get retrieves the RelayNamespace from the index for a given name.
-	Get(name string) (*v1alpha1.RelayNamespace, error)
+	// RelayNamespaces returns an object that can list and get RelayNamespaces.
+	RelayNamespaces(namespace string) RelayNamespaceNamespaceLister
 	RelayNamespaceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *relayNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.R
 	return ret, err
 }
 
-// Get retrieves the RelayNamespace from the index for a given name.
-func (s *relayNamespaceLister) Get(name string) (*v1alpha1.RelayNamespace, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RelayNamespaces returns an object that can list and get RelayNamespaces.
+func (s *relayNamespaceLister) RelayNamespaces(namespace string) RelayNamespaceNamespaceLister {
+	return relayNamespaceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RelayNamespaceNamespaceLister helps list and get RelayNamespaces.
+type RelayNamespaceNamespaceLister interface {
+	// List lists all RelayNamespaces in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RelayNamespace, err error)
+	// Get retrieves the RelayNamespace from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RelayNamespace, error)
+	RelayNamespaceNamespaceListerExpansion
+}
+
+// relayNamespaceNamespaceLister implements the RelayNamespaceNamespaceLister
+// interface.
+type relayNamespaceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RelayNamespaces in the indexer for a given namespace.
+func (s relayNamespaceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RelayNamespace, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RelayNamespace))
+	})
+	return ret, err
+}
+
+// Get retrieves the RelayNamespace from the indexer for a given namespace and name.
+func (s relayNamespaceNamespaceLister) Get(name string) (*v1alpha1.RelayNamespace, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

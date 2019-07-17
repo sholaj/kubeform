@@ -41,32 +41,33 @@ type ExpressRouteCircuitAuthorizationInformer interface {
 type expressRouteCircuitAuthorizationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewExpressRouteCircuitAuthorizationInformer constructs a new informer for ExpressRouteCircuitAuthorization type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewExpressRouteCircuitAuthorizationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredExpressRouteCircuitAuthorizationInformer(client, resyncPeriod, indexers, nil)
+func NewExpressRouteCircuitAuthorizationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredExpressRouteCircuitAuthorizationInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredExpressRouteCircuitAuthorizationInformer constructs a new informer for ExpressRouteCircuitAuthorization type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredExpressRouteCircuitAuthorizationInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredExpressRouteCircuitAuthorizationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ExpressRouteCircuitAuthorizations().List(options)
+				return client.AzurermV1alpha1().ExpressRouteCircuitAuthorizations(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ExpressRouteCircuitAuthorizations().Watch(options)
+				return client.AzurermV1alpha1().ExpressRouteCircuitAuthorizations(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.ExpressRouteCircuitAuthorization{},
@@ -76,7 +77,7 @@ func NewFilteredExpressRouteCircuitAuthorizationInformer(client versioned.Interf
 }
 
 func (f *expressRouteCircuitAuthorizationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredExpressRouteCircuitAuthorizationInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredExpressRouteCircuitAuthorizationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *expressRouteCircuitAuthorizationInformer) Informer() cache.SharedIndexInformer {

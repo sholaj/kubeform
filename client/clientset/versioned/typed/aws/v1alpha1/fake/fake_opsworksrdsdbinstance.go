@@ -31,6 +31,7 @@ import (
 // FakeOpsworksRdsDbInstances implements OpsworksRdsDbInstanceInterface
 type FakeOpsworksRdsDbInstances struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var opsworksrdsdbinstancesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "opsworksrdsdbinstances"}
@@ -40,7 +41,8 @@ var opsworksrdsdbinstancesKind = schema.GroupVersionKind{Group: "aws.kubeform.co
 // Get takes name of the opsworksRdsDbInstance, and returns the corresponding opsworksRdsDbInstance object, and an error if there is any.
 func (c *FakeOpsworksRdsDbInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksRdsDbInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(opsworksrdsdbinstancesResource, name), &v1alpha1.OpsworksRdsDbInstance{})
+		Invokes(testing.NewGetAction(opsworksrdsdbinstancesResource, c.ns, name), &v1alpha1.OpsworksRdsDbInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeOpsworksRdsDbInstances) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of OpsworksRdsDbInstances that match those selectors.
 func (c *FakeOpsworksRdsDbInstances) List(opts v1.ListOptions) (result *v1alpha1.OpsworksRdsDbInstanceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(opsworksrdsdbinstancesResource, opsworksrdsdbinstancesKind, opts), &v1alpha1.OpsworksRdsDbInstanceList{})
+		Invokes(testing.NewListAction(opsworksrdsdbinstancesResource, opsworksrdsdbinstancesKind, c.ns, opts), &v1alpha1.OpsworksRdsDbInstanceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeOpsworksRdsDbInstances) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested opsworksRdsDbInstances.
 func (c *FakeOpsworksRdsDbInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(opsworksrdsdbinstancesResource, opts))
+		InvokesWatch(testing.NewWatchAction(opsworksrdsdbinstancesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a opsworksRdsDbInstance and creates it.  Returns the server's representation of the opsworksRdsDbInstance, and an error, if there is any.
 func (c *FakeOpsworksRdsDbInstances) Create(opsworksRdsDbInstance *v1alpha1.OpsworksRdsDbInstance) (result *v1alpha1.OpsworksRdsDbInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(opsworksrdsdbinstancesResource, opsworksRdsDbInstance), &v1alpha1.OpsworksRdsDbInstance{})
+		Invokes(testing.NewCreateAction(opsworksrdsdbinstancesResource, c.ns, opsworksRdsDbInstance), &v1alpha1.OpsworksRdsDbInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeOpsworksRdsDbInstances) Create(opsworksRdsDbInstance *v1alpha1.Opsw
 // Update takes the representation of a opsworksRdsDbInstance and updates it. Returns the server's representation of the opsworksRdsDbInstance, and an error, if there is any.
 func (c *FakeOpsworksRdsDbInstances) Update(opsworksRdsDbInstance *v1alpha1.OpsworksRdsDbInstance) (result *v1alpha1.OpsworksRdsDbInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(opsworksrdsdbinstancesResource, opsworksRdsDbInstance), &v1alpha1.OpsworksRdsDbInstance{})
+		Invokes(testing.NewUpdateAction(opsworksrdsdbinstancesResource, c.ns, opsworksRdsDbInstance), &v1alpha1.OpsworksRdsDbInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeOpsworksRdsDbInstances) Update(opsworksRdsDbInstance *v1alpha1.Opsw
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeOpsworksRdsDbInstances) UpdateStatus(opsworksRdsDbInstance *v1alpha1.OpsworksRdsDbInstance) (*v1alpha1.OpsworksRdsDbInstance, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(opsworksrdsdbinstancesResource, "status", opsworksRdsDbInstance), &v1alpha1.OpsworksRdsDbInstance{})
+		Invokes(testing.NewUpdateSubresourceAction(opsworksrdsdbinstancesResource, "status", c.ns, opsworksRdsDbInstance), &v1alpha1.OpsworksRdsDbInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeOpsworksRdsDbInstances) UpdateStatus(opsworksRdsDbInstance *v1alpha
 // Delete takes name of the opsworksRdsDbInstance and deletes it. Returns an error if one occurs.
 func (c *FakeOpsworksRdsDbInstances) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(opsworksrdsdbinstancesResource, name), &v1alpha1.OpsworksRdsDbInstance{})
+		Invokes(testing.NewDeleteAction(opsworksrdsdbinstancesResource, c.ns, name), &v1alpha1.OpsworksRdsDbInstance{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeOpsworksRdsDbInstances) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(opsworksrdsdbinstancesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(opsworksrdsdbinstancesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.OpsworksRdsDbInstanceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeOpsworksRdsDbInstances) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched opsworksRdsDbInstance.
 func (c *FakeOpsworksRdsDbInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksRdsDbInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(opsworksrdsdbinstancesResource, name, pt, data, subresources...), &v1alpha1.OpsworksRdsDbInstance{})
+		Invokes(testing.NewPatchSubresourceAction(opsworksrdsdbinstancesResource, c.ns, name, pt, data, subresources...), &v1alpha1.OpsworksRdsDbInstance{})
+
 	if obj == nil {
 		return nil, err
 	}

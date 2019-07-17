@@ -29,8 +29,8 @@ import (
 type CloudfrontPublicKeyLister interface {
 	// List lists all CloudfrontPublicKeys in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CloudfrontPublicKey, err error)
-	// Get retrieves the CloudfrontPublicKey from the index for a given name.
-	Get(name string) (*v1alpha1.CloudfrontPublicKey, error)
+	// CloudfrontPublicKeys returns an object that can list and get CloudfrontPublicKeys.
+	CloudfrontPublicKeys(namespace string) CloudfrontPublicKeyNamespaceLister
 	CloudfrontPublicKeyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cloudfrontPublicKeyLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the CloudfrontPublicKey from the index for a given name.
-func (s *cloudfrontPublicKeyLister) Get(name string) (*v1alpha1.CloudfrontPublicKey, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CloudfrontPublicKeys returns an object that can list and get CloudfrontPublicKeys.
+func (s *cloudfrontPublicKeyLister) CloudfrontPublicKeys(namespace string) CloudfrontPublicKeyNamespaceLister {
+	return cloudfrontPublicKeyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CloudfrontPublicKeyNamespaceLister helps list and get CloudfrontPublicKeys.
+type CloudfrontPublicKeyNamespaceLister interface {
+	// List lists all CloudfrontPublicKeys in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CloudfrontPublicKey, err error)
+	// Get retrieves the CloudfrontPublicKey from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CloudfrontPublicKey, error)
+	CloudfrontPublicKeyNamespaceListerExpansion
+}
+
+// cloudfrontPublicKeyNamespaceLister implements the CloudfrontPublicKeyNamespaceLister
+// interface.
+type cloudfrontPublicKeyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CloudfrontPublicKeys in the indexer for a given namespace.
+func (s cloudfrontPublicKeyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CloudfrontPublicKey, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CloudfrontPublicKey))
+	})
+	return ret, err
+}
+
+// Get retrieves the CloudfrontPublicKey from the indexer for a given namespace and name.
+func (s cloudfrontPublicKeyNamespaceLister) Get(name string) (*v1alpha1.CloudfrontPublicKey, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

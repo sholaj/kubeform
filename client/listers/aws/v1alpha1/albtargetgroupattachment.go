@@ -29,8 +29,8 @@ import (
 type AlbTargetGroupAttachmentLister interface {
 	// List lists all AlbTargetGroupAttachments in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AlbTargetGroupAttachment, err error)
-	// Get retrieves the AlbTargetGroupAttachment from the index for a given name.
-	Get(name string) (*v1alpha1.AlbTargetGroupAttachment, error)
+	// AlbTargetGroupAttachments returns an object that can list and get AlbTargetGroupAttachments.
+	AlbTargetGroupAttachments(namespace string) AlbTargetGroupAttachmentNamespaceLister
 	AlbTargetGroupAttachmentListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *albTargetGroupAttachmentLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the AlbTargetGroupAttachment from the index for a given name.
-func (s *albTargetGroupAttachmentLister) Get(name string) (*v1alpha1.AlbTargetGroupAttachment, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AlbTargetGroupAttachments returns an object that can list and get AlbTargetGroupAttachments.
+func (s *albTargetGroupAttachmentLister) AlbTargetGroupAttachments(namespace string) AlbTargetGroupAttachmentNamespaceLister {
+	return albTargetGroupAttachmentNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AlbTargetGroupAttachmentNamespaceLister helps list and get AlbTargetGroupAttachments.
+type AlbTargetGroupAttachmentNamespaceLister interface {
+	// List lists all AlbTargetGroupAttachments in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AlbTargetGroupAttachment, err error)
+	// Get retrieves the AlbTargetGroupAttachment from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AlbTargetGroupAttachment, error)
+	AlbTargetGroupAttachmentNamespaceListerExpansion
+}
+
+// albTargetGroupAttachmentNamespaceLister implements the AlbTargetGroupAttachmentNamespaceLister
+// interface.
+type albTargetGroupAttachmentNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AlbTargetGroupAttachments in the indexer for a given namespace.
+func (s albTargetGroupAttachmentNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AlbTargetGroupAttachment, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AlbTargetGroupAttachment))
+	})
+	return ret, err
+}
+
+// Get retrieves the AlbTargetGroupAttachment from the indexer for a given namespace and name.
+func (s albTargetGroupAttachmentNamespaceLister) Get(name string) (*v1alpha1.AlbTargetGroupAttachment, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

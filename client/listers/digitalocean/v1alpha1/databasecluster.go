@@ -29,8 +29,8 @@ import (
 type DatabaseClusterLister interface {
 	// List lists all DatabaseClusters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DatabaseCluster, err error)
-	// Get retrieves the DatabaseCluster from the index for a given name.
-	Get(name string) (*v1alpha1.DatabaseCluster, error)
+	// DatabaseClusters returns an object that can list and get DatabaseClusters.
+	DatabaseClusters(namespace string) DatabaseClusterNamespaceLister
 	DatabaseClusterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *databaseClusterLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the DatabaseCluster from the index for a given name.
-func (s *databaseClusterLister) Get(name string) (*v1alpha1.DatabaseCluster, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DatabaseClusters returns an object that can list and get DatabaseClusters.
+func (s *databaseClusterLister) DatabaseClusters(namespace string) DatabaseClusterNamespaceLister {
+	return databaseClusterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DatabaseClusterNamespaceLister helps list and get DatabaseClusters.
+type DatabaseClusterNamespaceLister interface {
+	// List lists all DatabaseClusters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DatabaseCluster, err error)
+	// Get retrieves the DatabaseCluster from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DatabaseCluster, error)
+	DatabaseClusterNamespaceListerExpansion
+}
+
+// databaseClusterNamespaceLister implements the DatabaseClusterNamespaceLister
+// interface.
+type databaseClusterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DatabaseClusters in the indexer for a given namespace.
+func (s databaseClusterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DatabaseCluster, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DatabaseCluster))
+	})
+	return ret, err
+}
+
+// Get retrieves the DatabaseCluster from the indexer for a given namespace and name.
+func (s databaseClusterNamespaceLister) Get(name string) (*v1alpha1.DatabaseCluster, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

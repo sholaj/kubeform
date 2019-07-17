@@ -29,8 +29,8 @@ import (
 type SecretsmanagerSecretLister interface {
 	// List lists all SecretsmanagerSecrets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SecretsmanagerSecret, err error)
-	// Get retrieves the SecretsmanagerSecret from the index for a given name.
-	Get(name string) (*v1alpha1.SecretsmanagerSecret, error)
+	// SecretsmanagerSecrets returns an object that can list and get SecretsmanagerSecrets.
+	SecretsmanagerSecrets(namespace string) SecretsmanagerSecretNamespaceLister
 	SecretsmanagerSecretListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *secretsmanagerSecretLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the SecretsmanagerSecret from the index for a given name.
-func (s *secretsmanagerSecretLister) Get(name string) (*v1alpha1.SecretsmanagerSecret, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SecretsmanagerSecrets returns an object that can list and get SecretsmanagerSecrets.
+func (s *secretsmanagerSecretLister) SecretsmanagerSecrets(namespace string) SecretsmanagerSecretNamespaceLister {
+	return secretsmanagerSecretNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SecretsmanagerSecretNamespaceLister helps list and get SecretsmanagerSecrets.
+type SecretsmanagerSecretNamespaceLister interface {
+	// List lists all SecretsmanagerSecrets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SecretsmanagerSecret, err error)
+	// Get retrieves the SecretsmanagerSecret from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SecretsmanagerSecret, error)
+	SecretsmanagerSecretNamespaceListerExpansion
+}
+
+// secretsmanagerSecretNamespaceLister implements the SecretsmanagerSecretNamespaceLister
+// interface.
+type secretsmanagerSecretNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SecretsmanagerSecrets in the indexer for a given namespace.
+func (s secretsmanagerSecretNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SecretsmanagerSecret, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SecretsmanagerSecret))
+	})
+	return ret, err
+}
+
+// Get retrieves the SecretsmanagerSecret from the indexer for a given namespace and name.
+func (s secretsmanagerSecretNamespaceLister) Get(name string) (*v1alpha1.SecretsmanagerSecret, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

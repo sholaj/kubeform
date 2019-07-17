@@ -31,6 +31,7 @@ import (
 // FakeRoute53HealthChecks implements Route53HealthCheckInterface
 type FakeRoute53HealthChecks struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var route53healthchecksResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "route53healthchecks"}
@@ -40,7 +41,8 @@ var route53healthchecksKind = schema.GroupVersionKind{Group: "aws.kubeform.com",
 // Get takes name of the route53HealthCheck, and returns the corresponding route53HealthCheck object, and an error if there is any.
 func (c *FakeRoute53HealthChecks) Get(name string, options v1.GetOptions) (result *v1alpha1.Route53HealthCheck, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(route53healthchecksResource, name), &v1alpha1.Route53HealthCheck{})
+		Invokes(testing.NewGetAction(route53healthchecksResource, c.ns, name), &v1alpha1.Route53HealthCheck{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRoute53HealthChecks) Get(name string, options v1.GetOptions) (resul
 // List takes label and field selectors, and returns the list of Route53HealthChecks that match those selectors.
 func (c *FakeRoute53HealthChecks) List(opts v1.ListOptions) (result *v1alpha1.Route53HealthCheckList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(route53healthchecksResource, route53healthchecksKind, opts), &v1alpha1.Route53HealthCheckList{})
+		Invokes(testing.NewListAction(route53healthchecksResource, route53healthchecksKind, c.ns, opts), &v1alpha1.Route53HealthCheckList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRoute53HealthChecks) List(opts v1.ListOptions) (result *v1alpha1.Ro
 // Watch returns a watch.Interface that watches the requested route53HealthChecks.
 func (c *FakeRoute53HealthChecks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(route53healthchecksResource, opts))
+		InvokesWatch(testing.NewWatchAction(route53healthchecksResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a route53HealthCheck and creates it.  Returns the server's representation of the route53HealthCheck, and an error, if there is any.
 func (c *FakeRoute53HealthChecks) Create(route53HealthCheck *v1alpha1.Route53HealthCheck) (result *v1alpha1.Route53HealthCheck, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(route53healthchecksResource, route53HealthCheck), &v1alpha1.Route53HealthCheck{})
+		Invokes(testing.NewCreateAction(route53healthchecksResource, c.ns, route53HealthCheck), &v1alpha1.Route53HealthCheck{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRoute53HealthChecks) Create(route53HealthCheck *v1alpha1.Route53Hea
 // Update takes the representation of a route53HealthCheck and updates it. Returns the server's representation of the route53HealthCheck, and an error, if there is any.
 func (c *FakeRoute53HealthChecks) Update(route53HealthCheck *v1alpha1.Route53HealthCheck) (result *v1alpha1.Route53HealthCheck, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(route53healthchecksResource, route53HealthCheck), &v1alpha1.Route53HealthCheck{})
+		Invokes(testing.NewUpdateAction(route53healthchecksResource, c.ns, route53HealthCheck), &v1alpha1.Route53HealthCheck{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRoute53HealthChecks) Update(route53HealthCheck *v1alpha1.Route53Hea
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRoute53HealthChecks) UpdateStatus(route53HealthCheck *v1alpha1.Route53HealthCheck) (*v1alpha1.Route53HealthCheck, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(route53healthchecksResource, "status", route53HealthCheck), &v1alpha1.Route53HealthCheck{})
+		Invokes(testing.NewUpdateSubresourceAction(route53healthchecksResource, "status", c.ns, route53HealthCheck), &v1alpha1.Route53HealthCheck{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRoute53HealthChecks) UpdateStatus(route53HealthCheck *v1alpha1.Rout
 // Delete takes name of the route53HealthCheck and deletes it. Returns an error if one occurs.
 func (c *FakeRoute53HealthChecks) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(route53healthchecksResource, name), &v1alpha1.Route53HealthCheck{})
+		Invokes(testing.NewDeleteAction(route53healthchecksResource, c.ns, name), &v1alpha1.Route53HealthCheck{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRoute53HealthChecks) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(route53healthchecksResource, listOptions)
+	action := testing.NewDeleteCollectionAction(route53healthchecksResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.Route53HealthCheckList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRoute53HealthChecks) DeleteCollection(options *v1.DeleteOptions, li
 // Patch applies the patch and returns the patched route53HealthCheck.
 func (c *FakeRoute53HealthChecks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Route53HealthCheck, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(route53healthchecksResource, name, pt, data, subresources...), &v1alpha1.Route53HealthCheck{})
+		Invokes(testing.NewPatchSubresourceAction(route53healthchecksResource, c.ns, name, pt, data, subresources...), &v1alpha1.Route53HealthCheck{})
+
 	if obj == nil {
 		return nil, err
 	}

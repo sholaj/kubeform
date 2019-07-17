@@ -29,8 +29,8 @@ import (
 type ExpressRouteCircuitLister interface {
 	// List lists all ExpressRouteCircuits in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ExpressRouteCircuit, err error)
-	// Get retrieves the ExpressRouteCircuit from the index for a given name.
-	Get(name string) (*v1alpha1.ExpressRouteCircuit, error)
+	// ExpressRouteCircuits returns an object that can list and get ExpressRouteCircuits.
+	ExpressRouteCircuits(namespace string) ExpressRouteCircuitNamespaceLister
 	ExpressRouteCircuitListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *expressRouteCircuitLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the ExpressRouteCircuit from the index for a given name.
-func (s *expressRouteCircuitLister) Get(name string) (*v1alpha1.ExpressRouteCircuit, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ExpressRouteCircuits returns an object that can list and get ExpressRouteCircuits.
+func (s *expressRouteCircuitLister) ExpressRouteCircuits(namespace string) ExpressRouteCircuitNamespaceLister {
+	return expressRouteCircuitNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ExpressRouteCircuitNamespaceLister helps list and get ExpressRouteCircuits.
+type ExpressRouteCircuitNamespaceLister interface {
+	// List lists all ExpressRouteCircuits in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ExpressRouteCircuit, err error)
+	// Get retrieves the ExpressRouteCircuit from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ExpressRouteCircuit, error)
+	ExpressRouteCircuitNamespaceListerExpansion
+}
+
+// expressRouteCircuitNamespaceLister implements the ExpressRouteCircuitNamespaceLister
+// interface.
+type expressRouteCircuitNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ExpressRouteCircuits in the indexer for a given namespace.
+func (s expressRouteCircuitNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ExpressRouteCircuit, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ExpressRouteCircuit))
+	})
+	return ret, err
+}
+
+// Get retrieves the ExpressRouteCircuit from the indexer for a given namespace and name.
+func (s expressRouteCircuitNamespaceLister) Get(name string) (*v1alpha1.ExpressRouteCircuit, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/azurerm/v1alpha1"
 )
 
-// PublicIpPrefixInformer provides access to a shared informer and lister for
-// PublicIpPrefixes.
-type PublicIpPrefixInformer interface {
+// PublicIPPrefixInformer provides access to a shared informer and lister for
+// PublicIPPrefixes.
+type PublicIPPrefixInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.PublicIpPrefixLister
+	Lister() v1alpha1.PublicIPPrefixLister
 }
 
-type publicIpPrefixInformer struct {
+type publicIPPrefixInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewPublicIpPrefixInformer constructs a new informer for PublicIpPrefix type.
+// NewPublicIPPrefixInformer constructs a new informer for PublicIPPrefix type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewPublicIpPrefixInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredPublicIpPrefixInformer(client, resyncPeriod, indexers, nil)
+func NewPublicIPPrefixInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredPublicIPPrefixInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredPublicIpPrefixInformer constructs a new informer for PublicIpPrefix type.
+// NewFilteredPublicIPPrefixInformer constructs a new informer for PublicIPPrefix type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredPublicIpPrefixInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredPublicIPPrefixInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().PublicIpPrefixes().List(options)
+				return client.AzurermV1alpha1().PublicIPPrefixes(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().PublicIpPrefixes().Watch(options)
+				return client.AzurermV1alpha1().PublicIPPrefixes(namespace).Watch(options)
 			},
 		},
-		&azurermv1alpha1.PublicIpPrefix{},
+		&azurermv1alpha1.PublicIPPrefix{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *publicIpPrefixInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredPublicIpPrefixInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *publicIPPrefixInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredPublicIPPrefixInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *publicIpPrefixInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&azurermv1alpha1.PublicIpPrefix{}, f.defaultInformer)
+func (f *publicIPPrefixInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&azurermv1alpha1.PublicIPPrefix{}, f.defaultInformer)
 }
 
-func (f *publicIpPrefixInformer) Lister() v1alpha1.PublicIpPrefixLister {
-	return v1alpha1.NewPublicIpPrefixLister(f.Informer().GetIndexer())
+func (f *publicIPPrefixInformer) Lister() v1alpha1.PublicIPPrefixLister {
+	return v1alpha1.NewPublicIPPrefixLister(f.Informer().GetIndexer())
 }

@@ -32,7 +32,7 @@ import (
 // GlueClassifiersGetter has a method to return a GlueClassifierInterface.
 // A group's client should implement this interface.
 type GlueClassifiersGetter interface {
-	GlueClassifiers() GlueClassifierInterface
+	GlueClassifiers(namespace string) GlueClassifierInterface
 }
 
 // GlueClassifierInterface has methods to work with GlueClassifier resources.
@@ -52,12 +52,14 @@ type GlueClassifierInterface interface {
 // glueClassifiers implements GlueClassifierInterface
 type glueClassifiers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newGlueClassifiers returns a GlueClassifiers
-func newGlueClassifiers(c *AwsV1alpha1Client) *glueClassifiers {
+func newGlueClassifiers(c *AwsV1alpha1Client, namespace string) *glueClassifiers {
 	return &glueClassifiers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newGlueClassifiers(c *AwsV1alpha1Client) *glueClassifiers {
 func (c *glueClassifiers) Get(name string, options v1.GetOptions) (result *v1alpha1.GlueClassifier, err error) {
 	result = &v1alpha1.GlueClassifier{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("glueclassifiers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *glueClassifiers) List(opts v1.ListOptions) (result *v1alpha1.GlueClassi
 	}
 	result = &v1alpha1.GlueClassifierList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("glueclassifiers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *glueClassifiers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("glueclassifiers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *glueClassifiers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *glueClassifiers) Create(glueClassifier *v1alpha1.GlueClassifier) (result *v1alpha1.GlueClassifier, err error) {
 	result = &v1alpha1.GlueClassifier{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("glueclassifiers").
 		Body(glueClassifier).
 		Do().
@@ -118,6 +124,7 @@ func (c *glueClassifiers) Create(glueClassifier *v1alpha1.GlueClassifier) (resul
 func (c *glueClassifiers) Update(glueClassifier *v1alpha1.GlueClassifier) (result *v1alpha1.GlueClassifier, err error) {
 	result = &v1alpha1.GlueClassifier{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("glueclassifiers").
 		Name(glueClassifier.Name).
 		Body(glueClassifier).
@@ -132,6 +139,7 @@ func (c *glueClassifiers) Update(glueClassifier *v1alpha1.GlueClassifier) (resul
 func (c *glueClassifiers) UpdateStatus(glueClassifier *v1alpha1.GlueClassifier) (result *v1alpha1.GlueClassifier, err error) {
 	result = &v1alpha1.GlueClassifier{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("glueclassifiers").
 		Name(glueClassifier.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *glueClassifiers) UpdateStatus(glueClassifier *v1alpha1.GlueClassifier) 
 // Delete takes name of the glueClassifier and deletes it. Returns an error if one occurs.
 func (c *glueClassifiers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("glueclassifiers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *glueClassifiers) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("glueclassifiers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *glueClassifiers) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *glueClassifiers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GlueClassifier, err error) {
 	result = &v1alpha1.GlueClassifier{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("glueclassifiers").
 		SubResource(subresources...).
 		Name(name).

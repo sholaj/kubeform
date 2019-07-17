@@ -32,7 +32,7 @@ import (
 // IotDpsCertificatesGetter has a method to return a IotDpsCertificateInterface.
 // A group's client should implement this interface.
 type IotDpsCertificatesGetter interface {
-	IotDpsCertificates() IotDpsCertificateInterface
+	IotDpsCertificates(namespace string) IotDpsCertificateInterface
 }
 
 // IotDpsCertificateInterface has methods to work with IotDpsCertificate resources.
@@ -52,12 +52,14 @@ type IotDpsCertificateInterface interface {
 // iotDpsCertificates implements IotDpsCertificateInterface
 type iotDpsCertificates struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIotDpsCertificates returns a IotDpsCertificates
-func newIotDpsCertificates(c *AzurermV1alpha1Client) *iotDpsCertificates {
+func newIotDpsCertificates(c *AzurermV1alpha1Client, namespace string) *iotDpsCertificates {
 	return &iotDpsCertificates{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIotDpsCertificates(c *AzurermV1alpha1Client) *iotDpsCertificates {
 func (c *iotDpsCertificates) Get(name string, options v1.GetOptions) (result *v1alpha1.IotDpsCertificate, err error) {
 	result = &v1alpha1.IotDpsCertificate{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iotdpscertificates").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iotDpsCertificates) List(opts v1.ListOptions) (result *v1alpha1.IotDpsC
 	}
 	result = &v1alpha1.IotDpsCertificateList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iotdpscertificates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iotDpsCertificates) Watch(opts v1.ListOptions) (watch.Interface, error)
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iotdpscertificates").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iotDpsCertificates) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *iotDpsCertificates) Create(iotDpsCertificate *v1alpha1.IotDpsCertificate) (result *v1alpha1.IotDpsCertificate, err error) {
 	result = &v1alpha1.IotDpsCertificate{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iotdpscertificates").
 		Body(iotDpsCertificate).
 		Do().
@@ -118,6 +124,7 @@ func (c *iotDpsCertificates) Create(iotDpsCertificate *v1alpha1.IotDpsCertificat
 func (c *iotDpsCertificates) Update(iotDpsCertificate *v1alpha1.IotDpsCertificate) (result *v1alpha1.IotDpsCertificate, err error) {
 	result = &v1alpha1.IotDpsCertificate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iotdpscertificates").
 		Name(iotDpsCertificate.Name).
 		Body(iotDpsCertificate).
@@ -132,6 +139,7 @@ func (c *iotDpsCertificates) Update(iotDpsCertificate *v1alpha1.IotDpsCertificat
 func (c *iotDpsCertificates) UpdateStatus(iotDpsCertificate *v1alpha1.IotDpsCertificate) (result *v1alpha1.IotDpsCertificate, err error) {
 	result = &v1alpha1.IotDpsCertificate{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iotdpscertificates").
 		Name(iotDpsCertificate.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iotDpsCertificates) UpdateStatus(iotDpsCertificate *v1alpha1.IotDpsCert
 // Delete takes name of the iotDpsCertificate and deletes it. Returns an error if one occurs.
 func (c *iotDpsCertificates) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iotdpscertificates").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iotDpsCertificates) DeleteCollection(options *v1.DeleteOptions, listOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iotdpscertificates").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iotDpsCertificates) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *iotDpsCertificates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IotDpsCertificate, err error) {
 	result = &v1alpha1.IotDpsCertificate{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iotdpscertificates").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type VpnGatewayRoutePropagationLister interface {
 	// List lists all VpnGatewayRoutePropagations in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.VpnGatewayRoutePropagation, err error)
-	// Get retrieves the VpnGatewayRoutePropagation from the index for a given name.
-	Get(name string) (*v1alpha1.VpnGatewayRoutePropagation, error)
+	// VpnGatewayRoutePropagations returns an object that can list and get VpnGatewayRoutePropagations.
+	VpnGatewayRoutePropagations(namespace string) VpnGatewayRoutePropagationNamespaceLister
 	VpnGatewayRoutePropagationListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *vpnGatewayRoutePropagationLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the VpnGatewayRoutePropagation from the index for a given name.
-func (s *vpnGatewayRoutePropagationLister) Get(name string) (*v1alpha1.VpnGatewayRoutePropagation, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VpnGatewayRoutePropagations returns an object that can list and get VpnGatewayRoutePropagations.
+func (s *vpnGatewayRoutePropagationLister) VpnGatewayRoutePropagations(namespace string) VpnGatewayRoutePropagationNamespaceLister {
+	return vpnGatewayRoutePropagationNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VpnGatewayRoutePropagationNamespaceLister helps list and get VpnGatewayRoutePropagations.
+type VpnGatewayRoutePropagationNamespaceLister interface {
+	// List lists all VpnGatewayRoutePropagations in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VpnGatewayRoutePropagation, err error)
+	// Get retrieves the VpnGatewayRoutePropagation from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VpnGatewayRoutePropagation, error)
+	VpnGatewayRoutePropagationNamespaceListerExpansion
+}
+
+// vpnGatewayRoutePropagationNamespaceLister implements the VpnGatewayRoutePropagationNamespaceLister
+// interface.
+type vpnGatewayRoutePropagationNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VpnGatewayRoutePropagations in the indexer for a given namespace.
+func (s vpnGatewayRoutePropagationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VpnGatewayRoutePropagation, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VpnGatewayRoutePropagation))
+	})
+	return ret, err
+}
+
+// Get retrieves the VpnGatewayRoutePropagation from the indexer for a given namespace and name.
+func (s vpnGatewayRoutePropagationNamespaceLister) Get(name string) (*v1alpha1.VpnGatewayRoutePropagation, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

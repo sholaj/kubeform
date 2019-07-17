@@ -32,7 +32,7 @@ import (
 // ServiceFabricClustersGetter has a method to return a ServiceFabricClusterInterface.
 // A group's client should implement this interface.
 type ServiceFabricClustersGetter interface {
-	ServiceFabricClusters() ServiceFabricClusterInterface
+	ServiceFabricClusters(namespace string) ServiceFabricClusterInterface
 }
 
 // ServiceFabricClusterInterface has methods to work with ServiceFabricCluster resources.
@@ -52,12 +52,14 @@ type ServiceFabricClusterInterface interface {
 // serviceFabricClusters implements ServiceFabricClusterInterface
 type serviceFabricClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newServiceFabricClusters returns a ServiceFabricClusters
-func newServiceFabricClusters(c *AzurermV1alpha1Client) *serviceFabricClusters {
+func newServiceFabricClusters(c *AzurermV1alpha1Client, namespace string) *serviceFabricClusters {
 	return &serviceFabricClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newServiceFabricClusters(c *AzurermV1alpha1Client) *serviceFabricClusters {
 func (c *serviceFabricClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceFabricCluster, err error) {
 	result = &v1alpha1.ServiceFabricCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicefabricclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *serviceFabricClusters) List(opts v1.ListOptions) (result *v1alpha1.Serv
 	}
 	result = &v1alpha1.ServiceFabricClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicefabricclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *serviceFabricClusters) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("servicefabricclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *serviceFabricClusters) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *serviceFabricClusters) Create(serviceFabricCluster *v1alpha1.ServiceFabricCluster) (result *v1alpha1.ServiceFabricCluster, err error) {
 	result = &v1alpha1.ServiceFabricCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("servicefabricclusters").
 		Body(serviceFabricCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *serviceFabricClusters) Create(serviceFabricCluster *v1alpha1.ServiceFab
 func (c *serviceFabricClusters) Update(serviceFabricCluster *v1alpha1.ServiceFabricCluster) (result *v1alpha1.ServiceFabricCluster, err error) {
 	result = &v1alpha1.ServiceFabricCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicefabricclusters").
 		Name(serviceFabricCluster.Name).
 		Body(serviceFabricCluster).
@@ -132,6 +139,7 @@ func (c *serviceFabricClusters) Update(serviceFabricCluster *v1alpha1.ServiceFab
 func (c *serviceFabricClusters) UpdateStatus(serviceFabricCluster *v1alpha1.ServiceFabricCluster) (result *v1alpha1.ServiceFabricCluster, err error) {
 	result = &v1alpha1.ServiceFabricCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicefabricclusters").
 		Name(serviceFabricCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *serviceFabricClusters) UpdateStatus(serviceFabricCluster *v1alpha1.Serv
 // Delete takes name of the serviceFabricCluster and deletes it. Returns an error if one occurs.
 func (c *serviceFabricClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicefabricclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *serviceFabricClusters) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicefabricclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *serviceFabricClusters) DeleteCollection(options *v1.DeleteOptions, list
 func (c *serviceFabricClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceFabricCluster, err error) {
 	result = &v1alpha1.ServiceFabricCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("servicefabricclusters").
 		SubResource(subresources...).
 		Name(name).

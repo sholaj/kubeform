@@ -397,29 +397,71 @@ spec:
           type: object
         spec:
           properties:
-            create_option:
+            createOption:
               type: string
-            encryption_settings:
-              items: {}
+            encryptionSettings:
+              items:
+                properties:
+                  diskEncryptionKey:
+                    items:
+                      properties:
+                        secretURL:
+                          type: string
+                        sourceVaultID:
+                          type: string
+                      required:
+                      - secretURL
+                      - sourceVaultID
+                      type: object
+                    maxItems: 1
+                    type: array
+                  enabled:
+                    type: boolean
+                  keyEncryptionKey:
+                    items:
+                      properties:
+                        keyURL:
+                          type: string
+                        sourceVaultID:
+                          type: string
+                      required:
+                      - keyURL
+                      - sourceVaultID
+                      type: object
+                    maxItems: 1
+                    type: array
+                required:
+                - enabled
+                type: object
               maxItems: 1
               type: array
             location:
               type: string
             name:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
-            source_resource_id:
+            sourceResourceID:
               type: string
-            source_uri:
+            sourceURI:
               type: string
-            storage_account_id:
+            storageAccountID:
               type: string
           required:
-          - create_option
+          - createOption
           - location
           - name
-          - resource_group_name
+          - providerRef
+          - resourceGroupName
           type: object
         status:
           properties:
@@ -430,6 +472,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

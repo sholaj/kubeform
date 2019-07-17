@@ -397,22 +397,38 @@ spec:
           type: object
         spec:
           properties:
-            accelerator_arn:
+            acceleratorArn:
               type: string
-            client_affinity:
+            clientAffinity:
               type: string
-            port_range:
-              items: {}
+            portRange:
+              items:
+                properties:
+                  fromPort:
+                    type: integer
+                  toPort:
+                    type: integer
+                type: object
               maxItems: 10
               minItems: 1
               type: array
               uniqueItems: true
             protocol:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
           required:
-          - accelerator_arn
-          - port_range
+          - acceleratorArn
+          - portRange
           - protocol
+          - providerRef
           type: object
         status:
           properties:
@@ -423,6 +439,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

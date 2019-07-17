@@ -32,7 +32,7 @@ import (
 // SshKeysGetter has a method to return a SshKeyInterface.
 // A group's client should implement this interface.
 type SshKeysGetter interface {
-	SshKeys() SshKeyInterface
+	SshKeys(namespace string) SshKeyInterface
 }
 
 // SshKeyInterface has methods to work with SshKey resources.
@@ -52,12 +52,14 @@ type SshKeyInterface interface {
 // sshKeys implements SshKeyInterface
 type sshKeys struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSshKeys returns a SshKeys
-func newSshKeys(c *DigitaloceanV1alpha1Client) *sshKeys {
+func newSshKeys(c *DigitaloceanV1alpha1Client, namespace string) *sshKeys {
 	return &sshKeys{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSshKeys(c *DigitaloceanV1alpha1Client) *sshKeys {
 func (c *sshKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.SshKey, err error) {
 	result = &v1alpha1.SshKey{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sshkeys").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sshKeys) List(opts v1.ListOptions) (result *v1alpha1.SshKeyList, err er
 	}
 	result = &v1alpha1.SshKeyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sshkeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sshKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sshkeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sshKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *sshKeys) Create(sshKey *v1alpha1.SshKey) (result *v1alpha1.SshKey, err error) {
 	result = &v1alpha1.SshKey{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sshkeys").
 		Body(sshKey).
 		Do().
@@ -118,6 +124,7 @@ func (c *sshKeys) Create(sshKey *v1alpha1.SshKey) (result *v1alpha1.SshKey, err 
 func (c *sshKeys) Update(sshKey *v1alpha1.SshKey) (result *v1alpha1.SshKey, err error) {
 	result = &v1alpha1.SshKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sshkeys").
 		Name(sshKey.Name).
 		Body(sshKey).
@@ -132,6 +139,7 @@ func (c *sshKeys) Update(sshKey *v1alpha1.SshKey) (result *v1alpha1.SshKey, err 
 func (c *sshKeys) UpdateStatus(sshKey *v1alpha1.SshKey) (result *v1alpha1.SshKey, err error) {
 	result = &v1alpha1.SshKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sshkeys").
 		Name(sshKey.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sshKeys) UpdateStatus(sshKey *v1alpha1.SshKey) (result *v1alpha1.SshKey
 // Delete takes name of the sshKey and deletes it. Returns an error if one occurs.
 func (c *sshKeys) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sshkeys").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sshKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sshkeys").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sshKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Lis
 func (c *sshKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SshKey, err error) {
 	result = &v1alpha1.SshKey{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sshkeys").
 		SubResource(subresources...).
 		Name(name).

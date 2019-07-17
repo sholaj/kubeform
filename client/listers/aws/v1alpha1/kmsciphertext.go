@@ -29,8 +29,8 @@ import (
 type KmsCiphertextLister interface {
 	// List lists all KmsCiphertexts in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KmsCiphertext, err error)
-	// Get retrieves the KmsCiphertext from the index for a given name.
-	Get(name string) (*v1alpha1.KmsCiphertext, error)
+	// KmsCiphertexts returns an object that can list and get KmsCiphertexts.
+	KmsCiphertexts(namespace string) KmsCiphertextNamespaceLister
 	KmsCiphertextListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *kmsCiphertextLister) List(selector labels.Selector) (ret []*v1alpha1.Km
 	return ret, err
 }
 
-// Get retrieves the KmsCiphertext from the index for a given name.
-func (s *kmsCiphertextLister) Get(name string) (*v1alpha1.KmsCiphertext, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KmsCiphertexts returns an object that can list and get KmsCiphertexts.
+func (s *kmsCiphertextLister) KmsCiphertexts(namespace string) KmsCiphertextNamespaceLister {
+	return kmsCiphertextNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KmsCiphertextNamespaceLister helps list and get KmsCiphertexts.
+type KmsCiphertextNamespaceLister interface {
+	// List lists all KmsCiphertexts in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KmsCiphertext, err error)
+	// Get retrieves the KmsCiphertext from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KmsCiphertext, error)
+	KmsCiphertextNamespaceListerExpansion
+}
+
+// kmsCiphertextNamespaceLister implements the KmsCiphertextNamespaceLister
+// interface.
+type kmsCiphertextNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KmsCiphertexts in the indexer for a given namespace.
+func (s kmsCiphertextNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KmsCiphertext, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KmsCiphertext))
+	})
+	return ret, err
+}
+
+// Get retrieves the KmsCiphertext from the indexer for a given namespace and name.
+func (s kmsCiphertextNamespaceLister) Get(name string) (*v1alpha1.KmsCiphertext, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

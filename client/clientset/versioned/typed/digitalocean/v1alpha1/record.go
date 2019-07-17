@@ -32,7 +32,7 @@ import (
 // RecordsGetter has a method to return a RecordInterface.
 // A group's client should implement this interface.
 type RecordsGetter interface {
-	Records() RecordInterface
+	Records(namespace string) RecordInterface
 }
 
 // RecordInterface has methods to work with Record resources.
@@ -52,12 +52,14 @@ type RecordInterface interface {
 // records implements RecordInterface
 type records struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRecords returns a Records
-func newRecords(c *DigitaloceanV1alpha1Client) *records {
+func newRecords(c *DigitaloceanV1alpha1Client, namespace string) *records {
 	return &records{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRecords(c *DigitaloceanV1alpha1Client) *records {
 func (c *records) Get(name string, options v1.GetOptions) (result *v1alpha1.Record, err error) {
 	result = &v1alpha1.Record{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("records").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *records) List(opts v1.ListOptions) (result *v1alpha1.RecordList, err er
 	}
 	result = &v1alpha1.RecordList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("records").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *records) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("records").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *records) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *records) Create(record *v1alpha1.Record) (result *v1alpha1.Record, err error) {
 	result = &v1alpha1.Record{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("records").
 		Body(record).
 		Do().
@@ -118,6 +124,7 @@ func (c *records) Create(record *v1alpha1.Record) (result *v1alpha1.Record, err 
 func (c *records) Update(record *v1alpha1.Record) (result *v1alpha1.Record, err error) {
 	result = &v1alpha1.Record{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("records").
 		Name(record.Name).
 		Body(record).
@@ -132,6 +139,7 @@ func (c *records) Update(record *v1alpha1.Record) (result *v1alpha1.Record, err 
 func (c *records) UpdateStatus(record *v1alpha1.Record) (result *v1alpha1.Record, err error) {
 	result = &v1alpha1.Record{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("records").
 		Name(record.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *records) UpdateStatus(record *v1alpha1.Record) (result *v1alpha1.Record
 // Delete takes name of the record and deletes it. Returns an error if one occurs.
 func (c *records) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("records").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *records) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("records").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *records) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Lis
 func (c *records) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Record, err error) {
 	result = &v1alpha1.Record{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("records").
 		SubResource(subresources...).
 		Name(name).

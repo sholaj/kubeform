@@ -41,32 +41,33 @@ type GlueCatalogDatabaseInformer interface {
 type glueCatalogDatabaseInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewGlueCatalogDatabaseInformer constructs a new informer for GlueCatalogDatabase type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewGlueCatalogDatabaseInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredGlueCatalogDatabaseInformer(client, resyncPeriod, indexers, nil)
+func NewGlueCatalogDatabaseInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredGlueCatalogDatabaseInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredGlueCatalogDatabaseInformer constructs a new informer for GlueCatalogDatabase type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredGlueCatalogDatabaseInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredGlueCatalogDatabaseInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().GlueCatalogDatabases().List(options)
+				return client.AwsV1alpha1().GlueCatalogDatabases(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().GlueCatalogDatabases().Watch(options)
+				return client.AwsV1alpha1().GlueCatalogDatabases(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.GlueCatalogDatabase{},
@@ -76,7 +77,7 @@ func NewFilteredGlueCatalogDatabaseInformer(client versioned.Interface, resyncPe
 }
 
 func (f *glueCatalogDatabaseInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredGlueCatalogDatabaseInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredGlueCatalogDatabaseInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *glueCatalogDatabaseInformer) Informer() cache.SharedIndexInformer {

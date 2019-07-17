@@ -32,7 +32,7 @@ import (
 // WafRegexPatternSetsGetter has a method to return a WafRegexPatternSetInterface.
 // A group's client should implement this interface.
 type WafRegexPatternSetsGetter interface {
-	WafRegexPatternSets() WafRegexPatternSetInterface
+	WafRegexPatternSets(namespace string) WafRegexPatternSetInterface
 }
 
 // WafRegexPatternSetInterface has methods to work with WafRegexPatternSet resources.
@@ -52,12 +52,14 @@ type WafRegexPatternSetInterface interface {
 // wafRegexPatternSets implements WafRegexPatternSetInterface
 type wafRegexPatternSets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newWafRegexPatternSets returns a WafRegexPatternSets
-func newWafRegexPatternSets(c *AwsV1alpha1Client) *wafRegexPatternSets {
+func newWafRegexPatternSets(c *AwsV1alpha1Client, namespace string) *wafRegexPatternSets {
 	return &wafRegexPatternSets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newWafRegexPatternSets(c *AwsV1alpha1Client) *wafRegexPatternSets {
 func (c *wafRegexPatternSets) Get(name string, options v1.GetOptions) (result *v1alpha1.WafRegexPatternSet, err error) {
 	result = &v1alpha1.WafRegexPatternSet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregexpatternsets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *wafRegexPatternSets) List(opts v1.ListOptions) (result *v1alpha1.WafReg
 	}
 	result = &v1alpha1.WafRegexPatternSetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregexpatternsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *wafRegexPatternSets) Watch(opts v1.ListOptions) (watch.Interface, error
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("wafregexpatternsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *wafRegexPatternSets) Watch(opts v1.ListOptions) (watch.Interface, error
 func (c *wafRegexPatternSets) Create(wafRegexPatternSet *v1alpha1.WafRegexPatternSet) (result *v1alpha1.WafRegexPatternSet, err error) {
 	result = &v1alpha1.WafRegexPatternSet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("wafregexpatternsets").
 		Body(wafRegexPatternSet).
 		Do().
@@ -118,6 +124,7 @@ func (c *wafRegexPatternSets) Create(wafRegexPatternSet *v1alpha1.WafRegexPatter
 func (c *wafRegexPatternSets) Update(wafRegexPatternSet *v1alpha1.WafRegexPatternSet) (result *v1alpha1.WafRegexPatternSet, err error) {
 	result = &v1alpha1.WafRegexPatternSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregexpatternsets").
 		Name(wafRegexPatternSet.Name).
 		Body(wafRegexPatternSet).
@@ -132,6 +139,7 @@ func (c *wafRegexPatternSets) Update(wafRegexPatternSet *v1alpha1.WafRegexPatter
 func (c *wafRegexPatternSets) UpdateStatus(wafRegexPatternSet *v1alpha1.WafRegexPatternSet) (result *v1alpha1.WafRegexPatternSet, err error) {
 	result = &v1alpha1.WafRegexPatternSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("wafregexpatternsets").
 		Name(wafRegexPatternSet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *wafRegexPatternSets) UpdateStatus(wafRegexPatternSet *v1alpha1.WafRegex
 // Delete takes name of the wafRegexPatternSet and deletes it. Returns an error if one occurs.
 func (c *wafRegexPatternSets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregexpatternsets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *wafRegexPatternSets) DeleteCollection(options *v1.DeleteOptions, listOp
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("wafregexpatternsets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *wafRegexPatternSets) DeleteCollection(options *v1.DeleteOptions, listOp
 func (c *wafRegexPatternSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.WafRegexPatternSet, err error) {
 	result = &v1alpha1.WafRegexPatternSet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("wafregexpatternsets").
 		SubResource(subresources...).
 		Name(name).

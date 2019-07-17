@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,15 +19,16 @@ type GuarddutyMember struct {
 }
 
 type GuarddutyMemberSpec struct {
-	AccountId  string `json:"account_id"`
-	DetectorId string `json:"detector_id"`
+	AccountID  string `json:"accountID" tf:"account_id"`
+	DetectorID string `json:"detectorID" tf:"detector_id"`
 	// +optional
-	DisableEmailNotification bool   `json:"disable_email_notification,omitempty"`
-	Email                    string `json:"email"`
+	DisableEmailNotification bool   `json:"disableEmailNotification,omitempty" tf:"disable_email_notification,omitempty"`
+	Email                    string `json:"email" tf:"email"`
 	// +optional
-	InvitationMessage string `json:"invitation_message,omitempty"`
+	InvitationMessage string `json:"invitationMessage,omitempty" tf:"invitation_message,omitempty"`
 	// +optional
-	Invite bool `json:"invite,omitempty"`
+	Invite      bool                      `json:"invite,omitempty" tf:"invite,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type GuarddutyMemberStatus struct {
@@ -35,7 +36,9 @@ type GuarddutyMemberStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

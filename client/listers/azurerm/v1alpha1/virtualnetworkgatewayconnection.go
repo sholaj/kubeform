@@ -29,8 +29,8 @@ import (
 type VirtualNetworkGatewayConnectionLister interface {
 	// List lists all VirtualNetworkGatewayConnections in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.VirtualNetworkGatewayConnection, err error)
-	// Get retrieves the VirtualNetworkGatewayConnection from the index for a given name.
-	Get(name string) (*v1alpha1.VirtualNetworkGatewayConnection, error)
+	// VirtualNetworkGatewayConnections returns an object that can list and get VirtualNetworkGatewayConnections.
+	VirtualNetworkGatewayConnections(namespace string) VirtualNetworkGatewayConnectionNamespaceLister
 	VirtualNetworkGatewayConnectionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *virtualNetworkGatewayConnectionLister) List(selector labels.Selector) (
 	return ret, err
 }
 
-// Get retrieves the VirtualNetworkGatewayConnection from the index for a given name.
-func (s *virtualNetworkGatewayConnectionLister) Get(name string) (*v1alpha1.VirtualNetworkGatewayConnection, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// VirtualNetworkGatewayConnections returns an object that can list and get VirtualNetworkGatewayConnections.
+func (s *virtualNetworkGatewayConnectionLister) VirtualNetworkGatewayConnections(namespace string) VirtualNetworkGatewayConnectionNamespaceLister {
+	return virtualNetworkGatewayConnectionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// VirtualNetworkGatewayConnectionNamespaceLister helps list and get VirtualNetworkGatewayConnections.
+type VirtualNetworkGatewayConnectionNamespaceLister interface {
+	// List lists all VirtualNetworkGatewayConnections in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.VirtualNetworkGatewayConnection, err error)
+	// Get retrieves the VirtualNetworkGatewayConnection from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.VirtualNetworkGatewayConnection, error)
+	VirtualNetworkGatewayConnectionNamespaceListerExpansion
+}
+
+// virtualNetworkGatewayConnectionNamespaceLister implements the VirtualNetworkGatewayConnectionNamespaceLister
+// interface.
+type virtualNetworkGatewayConnectionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all VirtualNetworkGatewayConnections in the indexer for a given namespace.
+func (s virtualNetworkGatewayConnectionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.VirtualNetworkGatewayConnection, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.VirtualNetworkGatewayConnection))
+	})
+	return ret, err
+}
+
+// Get retrieves the VirtualNetworkGatewayConnection from the indexer for a given namespace and name.
+func (s virtualNetworkGatewayConnectionNamespaceLister) Get(name string) (*v1alpha1.VirtualNetworkGatewayConnection, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

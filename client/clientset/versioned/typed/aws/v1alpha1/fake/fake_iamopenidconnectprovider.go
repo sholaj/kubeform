@@ -31,6 +31,7 @@ import (
 // FakeIamOpenidConnectProviders implements IamOpenidConnectProviderInterface
 type FakeIamOpenidConnectProviders struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var iamopenidconnectprovidersResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "iamopenidconnectproviders"}
@@ -40,7 +41,8 @@ var iamopenidconnectprovidersKind = schema.GroupVersionKind{Group: "aws.kubeform
 // Get takes name of the iamOpenidConnectProvider, and returns the corresponding iamOpenidConnectProvider object, and an error if there is any.
 func (c *FakeIamOpenidConnectProviders) Get(name string, options v1.GetOptions) (result *v1alpha1.IamOpenidConnectProvider, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iamopenidconnectprovidersResource, name), &v1alpha1.IamOpenidConnectProvider{})
+		Invokes(testing.NewGetAction(iamopenidconnectprovidersResource, c.ns, name), &v1alpha1.IamOpenidConnectProvider{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIamOpenidConnectProviders) Get(name string, options v1.GetOptions) 
 // List takes label and field selectors, and returns the list of IamOpenidConnectProviders that match those selectors.
 func (c *FakeIamOpenidConnectProviders) List(opts v1.ListOptions) (result *v1alpha1.IamOpenidConnectProviderList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iamopenidconnectprovidersResource, iamopenidconnectprovidersKind, opts), &v1alpha1.IamOpenidConnectProviderList{})
+		Invokes(testing.NewListAction(iamopenidconnectprovidersResource, iamopenidconnectprovidersKind, c.ns, opts), &v1alpha1.IamOpenidConnectProviderList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIamOpenidConnectProviders) List(opts v1.ListOptions) (result *v1alp
 // Watch returns a watch.Interface that watches the requested iamOpenidConnectProviders.
 func (c *FakeIamOpenidConnectProviders) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iamopenidconnectprovidersResource, opts))
+		InvokesWatch(testing.NewWatchAction(iamopenidconnectprovidersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iamOpenidConnectProvider and creates it.  Returns the server's representation of the iamOpenidConnectProvider, and an error, if there is any.
 func (c *FakeIamOpenidConnectProviders) Create(iamOpenidConnectProvider *v1alpha1.IamOpenidConnectProvider) (result *v1alpha1.IamOpenidConnectProvider, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iamopenidconnectprovidersResource, iamOpenidConnectProvider), &v1alpha1.IamOpenidConnectProvider{})
+		Invokes(testing.NewCreateAction(iamopenidconnectprovidersResource, c.ns, iamOpenidConnectProvider), &v1alpha1.IamOpenidConnectProvider{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIamOpenidConnectProviders) Create(iamOpenidConnectProvider *v1alpha
 // Update takes the representation of a iamOpenidConnectProvider and updates it. Returns the server's representation of the iamOpenidConnectProvider, and an error, if there is any.
 func (c *FakeIamOpenidConnectProviders) Update(iamOpenidConnectProvider *v1alpha1.IamOpenidConnectProvider) (result *v1alpha1.IamOpenidConnectProvider, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iamopenidconnectprovidersResource, iamOpenidConnectProvider), &v1alpha1.IamOpenidConnectProvider{})
+		Invokes(testing.NewUpdateAction(iamopenidconnectprovidersResource, c.ns, iamOpenidConnectProvider), &v1alpha1.IamOpenidConnectProvider{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIamOpenidConnectProviders) Update(iamOpenidConnectProvider *v1alpha
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIamOpenidConnectProviders) UpdateStatus(iamOpenidConnectProvider *v1alpha1.IamOpenidConnectProvider) (*v1alpha1.IamOpenidConnectProvider, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iamopenidconnectprovidersResource, "status", iamOpenidConnectProvider), &v1alpha1.IamOpenidConnectProvider{})
+		Invokes(testing.NewUpdateSubresourceAction(iamopenidconnectprovidersResource, "status", c.ns, iamOpenidConnectProvider), &v1alpha1.IamOpenidConnectProvider{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIamOpenidConnectProviders) UpdateStatus(iamOpenidConnectProvider *v
 // Delete takes name of the iamOpenidConnectProvider and deletes it. Returns an error if one occurs.
 func (c *FakeIamOpenidConnectProviders) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iamopenidconnectprovidersResource, name), &v1alpha1.IamOpenidConnectProvider{})
+		Invokes(testing.NewDeleteAction(iamopenidconnectprovidersResource, c.ns, name), &v1alpha1.IamOpenidConnectProvider{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIamOpenidConnectProviders) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iamopenidconnectprovidersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iamopenidconnectprovidersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IamOpenidConnectProviderList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIamOpenidConnectProviders) DeleteCollection(options *v1.DeleteOptio
 // Patch applies the patch and returns the patched iamOpenidConnectProvider.
 func (c *FakeIamOpenidConnectProviders) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamOpenidConnectProvider, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iamopenidconnectprovidersResource, name, pt, data, subresources...), &v1alpha1.IamOpenidConnectProvider{})
+		Invokes(testing.NewPatchSubresourceAction(iamopenidconnectprovidersResource, c.ns, name, pt, data, subresources...), &v1alpha1.IamOpenidConnectProvider{})
+
 	if obj == nil {
 		return nil, err
 	}

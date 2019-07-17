@@ -397,63 +397,151 @@ spec:
           type: object
         spec:
           properties:
-            enabled_metrics:
+            enabledMetrics:
               items:
                 type: string
               type: array
               uniqueItems: true
-            force_delete:
+            forceDelete:
               type: boolean
-            health_check_grace_period:
+            healthCheckGracePeriod:
               type: integer
-            initial_lifecycle_hook:
-              items: {}
+            initialLifecycleHook:
+              items:
+                properties:
+                  heartbeatTimeout:
+                    type: integer
+                  lifecycleTransition:
+                    type: string
+                  name:
+                    type: string
+                  notificationMetadata:
+                    type: string
+                  notificationTargetArn:
+                    type: string
+                  roleArn:
+                    type: string
+                required:
+                - lifecycleTransition
+                - name
+                type: object
               type: array
               uniqueItems: true
-            launch_configuration:
+            launchConfiguration:
               type: string
-            launch_template:
-              items: {}
+            launchTemplate:
+              items:
+                properties:
+                  version:
+                    type: string
+                type: object
               maxItems: 1
               type: array
-            max_size:
+            maxSize:
               type: integer
-            metrics_granularity:
+            metricsGranularity:
               type: string
-            min_elb_capacity:
+            minElbCapacity:
               type: integer
-            min_size:
+            minSize:
               type: integer
-            mixed_instances_policy:
-              items: {}
+            mixedInstancesPolicy:
+              items:
+                properties:
+                  instancesDistribution:
+                    items:
+                      properties:
+                        onDemandAllocationStrategy:
+                          type: string
+                        onDemandBaseCapacity:
+                          type: integer
+                        onDemandPercentageAboveBaseCapacity:
+                          type: integer
+                        spotAllocationStrategy:
+                          type: string
+                        spotMaxPrice:
+                          type: string
+                      type: object
+                    maxItems: 1
+                    type: array
+                  launchTemplate:
+                    items:
+                      properties:
+                        launchTemplateSpecification:
+                          items:
+                            properties:
+                              version:
+                                type: string
+                            type: object
+                          maxItems: 1
+                          minItems: 1
+                          type: array
+                        override:
+                          items:
+                            properties:
+                              instanceType:
+                                type: string
+                            type: object
+                          type: array
+                      required:
+                      - launchTemplateSpecification
+                      type: object
+                    maxItems: 1
+                    minItems: 1
+                    type: array
+                required:
+                - launchTemplate
+                type: object
               maxItems: 1
               type: array
-            name_prefix:
+            namePrefix:
               type: string
-            placement_group:
+            placementGroup:
               type: string
-            protect_from_scale_in:
+            protectFromScaleIn:
               type: boolean
-            suspended_processes:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            suspendedProcesses:
               items:
                 type: string
               type: array
               uniqueItems: true
             tag:
-              items: {}
+              items:
+                properties:
+                  key:
+                    type: string
+                  propagateAtLaunch:
+                    type: boolean
+                  value:
+                    type: string
+                required:
+                - key
+                - propagateAtLaunch
+                - value
+                type: object
               type: array
               uniqueItems: true
-            termination_policies:
+            terminationPolicies:
               items:
                 type: string
               type: array
-            wait_for_capacity_timeout:
+            waitForCapacityTimeout:
               type: string
-            wait_for_elb_capacity:
+            waitForElbCapacity:
               type: integer
           required:
-          - max_size
-          - min_size
+          - maxSize
+          - minSize
+          - providerRef
           type: object
         status:
           properties:
@@ -464,6 +552,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

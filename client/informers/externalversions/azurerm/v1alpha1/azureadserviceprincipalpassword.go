@@ -41,32 +41,33 @@ type AzureadServicePrincipalPasswordInformer interface {
 type azureadServicePrincipalPasswordInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewAzureadServicePrincipalPasswordInformer constructs a new informer for AzureadServicePrincipalPassword type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAzureadServicePrincipalPasswordInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAzureadServicePrincipalPasswordInformer(client, resyncPeriod, indexers, nil)
+func NewAzureadServicePrincipalPasswordInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAzureadServicePrincipalPasswordInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredAzureadServicePrincipalPasswordInformer constructs a new informer for AzureadServicePrincipalPassword type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAzureadServicePrincipalPasswordInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAzureadServicePrincipalPasswordInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().AzureadServicePrincipalPasswords().List(options)
+				return client.AzurermV1alpha1().AzureadServicePrincipalPasswords(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().AzureadServicePrincipalPasswords().Watch(options)
+				return client.AzurermV1alpha1().AzureadServicePrincipalPasswords(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.AzureadServicePrincipalPassword{},
@@ -76,7 +77,7 @@ func NewFilteredAzureadServicePrincipalPasswordInformer(client versioned.Interfa
 }
 
 func (f *azureadServicePrincipalPasswordInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAzureadServicePrincipalPasswordInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredAzureadServicePrincipalPasswordInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *azureadServicePrincipalPasswordInformer) Informer() cache.SharedIndexInformer {

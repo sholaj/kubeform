@@ -32,7 +32,7 @@ import (
 // SesDomainIdentityVerificationsGetter has a method to return a SesDomainIdentityVerificationInterface.
 // A group's client should implement this interface.
 type SesDomainIdentityVerificationsGetter interface {
-	SesDomainIdentityVerifications() SesDomainIdentityVerificationInterface
+	SesDomainIdentityVerifications(namespace string) SesDomainIdentityVerificationInterface
 }
 
 // SesDomainIdentityVerificationInterface has methods to work with SesDomainIdentityVerification resources.
@@ -52,12 +52,14 @@ type SesDomainIdentityVerificationInterface interface {
 // sesDomainIdentityVerifications implements SesDomainIdentityVerificationInterface
 type sesDomainIdentityVerifications struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSesDomainIdentityVerifications returns a SesDomainIdentityVerifications
-func newSesDomainIdentityVerifications(c *AwsV1alpha1Client) *sesDomainIdentityVerifications {
+func newSesDomainIdentityVerifications(c *AwsV1alpha1Client, namespace string) *sesDomainIdentityVerifications {
 	return &sesDomainIdentityVerifications{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSesDomainIdentityVerifications(c *AwsV1alpha1Client) *sesDomainIdentityV
 func (c *sesDomainIdentityVerifications) Get(name string, options v1.GetOptions) (result *v1alpha1.SesDomainIdentityVerification, err error) {
 	result = &v1alpha1.SesDomainIdentityVerification{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sesdomainidentityverifications").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sesDomainIdentityVerifications) List(opts v1.ListOptions) (result *v1al
 	}
 	result = &v1alpha1.SesDomainIdentityVerificationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sesdomainidentityverifications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sesDomainIdentityVerifications) Watch(opts v1.ListOptions) (watch.Inter
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sesdomainidentityverifications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sesDomainIdentityVerifications) Watch(opts v1.ListOptions) (watch.Inter
 func (c *sesDomainIdentityVerifications) Create(sesDomainIdentityVerification *v1alpha1.SesDomainIdentityVerification) (result *v1alpha1.SesDomainIdentityVerification, err error) {
 	result = &v1alpha1.SesDomainIdentityVerification{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sesdomainidentityverifications").
 		Body(sesDomainIdentityVerification).
 		Do().
@@ -118,6 +124,7 @@ func (c *sesDomainIdentityVerifications) Create(sesDomainIdentityVerification *v
 func (c *sesDomainIdentityVerifications) Update(sesDomainIdentityVerification *v1alpha1.SesDomainIdentityVerification) (result *v1alpha1.SesDomainIdentityVerification, err error) {
 	result = &v1alpha1.SesDomainIdentityVerification{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sesdomainidentityverifications").
 		Name(sesDomainIdentityVerification.Name).
 		Body(sesDomainIdentityVerification).
@@ -132,6 +139,7 @@ func (c *sesDomainIdentityVerifications) Update(sesDomainIdentityVerification *v
 func (c *sesDomainIdentityVerifications) UpdateStatus(sesDomainIdentityVerification *v1alpha1.SesDomainIdentityVerification) (result *v1alpha1.SesDomainIdentityVerification, err error) {
 	result = &v1alpha1.SesDomainIdentityVerification{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sesdomainidentityverifications").
 		Name(sesDomainIdentityVerification.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sesDomainIdentityVerifications) UpdateStatus(sesDomainIdentityVerificat
 // Delete takes name of the sesDomainIdentityVerification and deletes it. Returns an error if one occurs.
 func (c *sesDomainIdentityVerifications) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sesdomainidentityverifications").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sesDomainIdentityVerifications) DeleteCollection(options *v1.DeleteOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sesdomainidentityverifications").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sesDomainIdentityVerifications) DeleteCollection(options *v1.DeleteOpti
 func (c *sesDomainIdentityVerifications) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SesDomainIdentityVerification, err error) {
 	result = &v1alpha1.SesDomainIdentityVerification{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sesdomainidentityverifications").
 		SubResource(subresources...).
 		Name(name).

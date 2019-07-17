@@ -397,20 +397,30 @@ spec:
           type: object
         spec:
           properties:
-            assign_generated_ipv6_cidr_block:
+            assignGeneratedIpv6CIDRBlock:
               type: boolean
-            cidr_block:
+            cidrBlock:
               type: string
-            enable_dns_support:
+            enableDNSSupport:
               type: boolean
-            instance_tenancy:
+            instanceTenancy:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             tags:
               additionalProperties:
                 type: string
               type: object
           required:
-          - cidr_block
+          - cidrBlock
+          - providerRef
           type: object
         status:
           properties:
@@ -421,6 +431,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

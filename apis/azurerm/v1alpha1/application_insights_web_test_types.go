@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,24 +19,25 @@ type ApplicationInsightsWebTest struct {
 }
 
 type ApplicationInsightsWebTestSpec struct {
-	ApplicationInsightsId string `json:"application_insights_id"`
-	Configuration         string `json:"configuration"`
+	ApplicationInsightsID string `json:"applicationInsightsID" tf:"application_insights_id"`
+	Configuration         string `json:"configuration" tf:"configuration"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
 	// +optional
-	Frequency int `json:"frequency,omitempty"`
+	Frequency int `json:"frequency,omitempty" tf:"frequency,omitempty"`
 	// +kubebuilder:validation:MinItems=1
-	GeoLocations      []string `json:"geo_locations"`
-	Kind              string   `json:"kind"`
-	Location          string   `json:"location"`
-	Name              string   `json:"name"`
-	ResourceGroupName string   `json:"resource_group_name"`
+	GeoLocations      []string `json:"geoLocations" tf:"geo_locations"`
+	Kind              string   `json:"kind" tf:"kind"`
+	Location          string   `json:"location" tf:"location"`
+	Name              string   `json:"name" tf:"name"`
+	ResourceGroupName string   `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	RetryEnabled bool `json:"retry_enabled,omitempty"`
+	RetryEnabled bool `json:"retryEnabled,omitempty" tf:"retry_enabled,omitempty"`
 	// +optional
-	Timeout int `json:"timeout,omitempty"`
+	Timeout     int                       `json:"timeout,omitempty" tf:"timeout,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ApplicationInsightsWebTestStatus struct {
@@ -44,7 +45,9 @@ type ApplicationInsightsWebTestStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

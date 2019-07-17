@@ -32,7 +32,7 @@ import (
 // PostgresqlServersGetter has a method to return a PostgresqlServerInterface.
 // A group's client should implement this interface.
 type PostgresqlServersGetter interface {
-	PostgresqlServers() PostgresqlServerInterface
+	PostgresqlServers(namespace string) PostgresqlServerInterface
 }
 
 // PostgresqlServerInterface has methods to work with PostgresqlServer resources.
@@ -52,12 +52,14 @@ type PostgresqlServerInterface interface {
 // postgresqlServers implements PostgresqlServerInterface
 type postgresqlServers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newPostgresqlServers returns a PostgresqlServers
-func newPostgresqlServers(c *AzurermV1alpha1Client) *postgresqlServers {
+func newPostgresqlServers(c *AzurermV1alpha1Client, namespace string) *postgresqlServers {
 	return &postgresqlServers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newPostgresqlServers(c *AzurermV1alpha1Client) *postgresqlServers {
 func (c *postgresqlServers) Get(name string, options v1.GetOptions) (result *v1alpha1.PostgresqlServer, err error) {
 	result = &v1alpha1.PostgresqlServer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("postgresqlservers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *postgresqlServers) List(opts v1.ListOptions) (result *v1alpha1.Postgres
 	}
 	result = &v1alpha1.PostgresqlServerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("postgresqlservers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *postgresqlServers) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("postgresqlservers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *postgresqlServers) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *postgresqlServers) Create(postgresqlServer *v1alpha1.PostgresqlServer) (result *v1alpha1.PostgresqlServer, err error) {
 	result = &v1alpha1.PostgresqlServer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("postgresqlservers").
 		Body(postgresqlServer).
 		Do().
@@ -118,6 +124,7 @@ func (c *postgresqlServers) Create(postgresqlServer *v1alpha1.PostgresqlServer) 
 func (c *postgresqlServers) Update(postgresqlServer *v1alpha1.PostgresqlServer) (result *v1alpha1.PostgresqlServer, err error) {
 	result = &v1alpha1.PostgresqlServer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("postgresqlservers").
 		Name(postgresqlServer.Name).
 		Body(postgresqlServer).
@@ -132,6 +139,7 @@ func (c *postgresqlServers) Update(postgresqlServer *v1alpha1.PostgresqlServer) 
 func (c *postgresqlServers) UpdateStatus(postgresqlServer *v1alpha1.PostgresqlServer) (result *v1alpha1.PostgresqlServer, err error) {
 	result = &v1alpha1.PostgresqlServer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("postgresqlservers").
 		Name(postgresqlServer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *postgresqlServers) UpdateStatus(postgresqlServer *v1alpha1.PostgresqlSe
 // Delete takes name of the postgresqlServer and deletes it. Returns an error if one occurs.
 func (c *postgresqlServers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("postgresqlservers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *postgresqlServers) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("postgresqlservers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *postgresqlServers) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *postgresqlServers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PostgresqlServer, err error) {
 	result = &v1alpha1.PostgresqlServer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("postgresqlservers").
 		SubResource(subresources...).
 		Name(name).

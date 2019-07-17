@@ -397,25 +397,47 @@ spec:
           type: object
         spec:
           properties:
-            gateway_name:
+            gatewayName:
               type: string
-            gateway_timezone:
+            gatewayTimezone:
               type: string
-            gateway_type:
+            gatewayType:
               type: string
-            medium_changer_type:
+            mediumChangerType:
               type: string
-            smb_active_directory_settings:
-              items: {}
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            smbActiveDirectorySettings:
+              items:
+                properties:
+                  domainName:
+                    type: string
+                  password:
+                    type: string
+                  username:
+                    type: string
+                required:
+                - domainName
+                - password
+                - username
+                type: object
               maxItems: 1
               type: array
-            smb_guest_password:
+            smbGuestPassword:
               type: string
-            tape_drive_type:
+            tapeDriveType:
               type: string
           required:
-          - gateway_name
-          - gateway_timezone
+          - gatewayName
+          - gatewayTimezone
+          - providerRef
           type: object
         status:
           properties:
@@ -426,6 +448,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

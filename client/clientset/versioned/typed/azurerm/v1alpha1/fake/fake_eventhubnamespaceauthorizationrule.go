@@ -31,6 +31,7 @@ import (
 // FakeEventhubNamespaceAuthorizationRules implements EventhubNamespaceAuthorizationRuleInterface
 type FakeEventhubNamespaceAuthorizationRules struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var eventhubnamespaceauthorizationrulesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "eventhubnamespaceauthorizationrules"}
@@ -40,7 +41,8 @@ var eventhubnamespaceauthorizationrulesKind = schema.GroupVersionKind{Group: "az
 // Get takes name of the eventhubNamespaceAuthorizationRule, and returns the corresponding eventhubNamespaceAuthorizationRule object, and an error if there is any.
 func (c *FakeEventhubNamespaceAuthorizationRules) Get(name string, options v1.GetOptions) (result *v1alpha1.EventhubNamespaceAuthorizationRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(eventhubnamespaceauthorizationrulesResource, name), &v1alpha1.EventhubNamespaceAuthorizationRule{})
+		Invokes(testing.NewGetAction(eventhubnamespaceauthorizationrulesResource, c.ns, name), &v1alpha1.EventhubNamespaceAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEventhubNamespaceAuthorizationRules) Get(name string, options v1.Ge
 // List takes label and field selectors, and returns the list of EventhubNamespaceAuthorizationRules that match those selectors.
 func (c *FakeEventhubNamespaceAuthorizationRules) List(opts v1.ListOptions) (result *v1alpha1.EventhubNamespaceAuthorizationRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(eventhubnamespaceauthorizationrulesResource, eventhubnamespaceauthorizationrulesKind, opts), &v1alpha1.EventhubNamespaceAuthorizationRuleList{})
+		Invokes(testing.NewListAction(eventhubnamespaceauthorizationrulesResource, eventhubnamespaceauthorizationrulesKind, c.ns, opts), &v1alpha1.EventhubNamespaceAuthorizationRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEventhubNamespaceAuthorizationRules) List(opts v1.ListOptions) (res
 // Watch returns a watch.Interface that watches the requested eventhubNamespaceAuthorizationRules.
 func (c *FakeEventhubNamespaceAuthorizationRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(eventhubnamespaceauthorizationrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(eventhubnamespaceauthorizationrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a eventhubNamespaceAuthorizationRule and creates it.  Returns the server's representation of the eventhubNamespaceAuthorizationRule, and an error, if there is any.
 func (c *FakeEventhubNamespaceAuthorizationRules) Create(eventhubNamespaceAuthorizationRule *v1alpha1.EventhubNamespaceAuthorizationRule) (result *v1alpha1.EventhubNamespaceAuthorizationRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(eventhubnamespaceauthorizationrulesResource, eventhubNamespaceAuthorizationRule), &v1alpha1.EventhubNamespaceAuthorizationRule{})
+		Invokes(testing.NewCreateAction(eventhubnamespaceauthorizationrulesResource, c.ns, eventhubNamespaceAuthorizationRule), &v1alpha1.EventhubNamespaceAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEventhubNamespaceAuthorizationRules) Create(eventhubNamespaceAuthor
 // Update takes the representation of a eventhubNamespaceAuthorizationRule and updates it. Returns the server's representation of the eventhubNamespaceAuthorizationRule, and an error, if there is any.
 func (c *FakeEventhubNamespaceAuthorizationRules) Update(eventhubNamespaceAuthorizationRule *v1alpha1.EventhubNamespaceAuthorizationRule) (result *v1alpha1.EventhubNamespaceAuthorizationRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(eventhubnamespaceauthorizationrulesResource, eventhubNamespaceAuthorizationRule), &v1alpha1.EventhubNamespaceAuthorizationRule{})
+		Invokes(testing.NewUpdateAction(eventhubnamespaceauthorizationrulesResource, c.ns, eventhubNamespaceAuthorizationRule), &v1alpha1.EventhubNamespaceAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEventhubNamespaceAuthorizationRules) Update(eventhubNamespaceAuthor
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEventhubNamespaceAuthorizationRules) UpdateStatus(eventhubNamespaceAuthorizationRule *v1alpha1.EventhubNamespaceAuthorizationRule) (*v1alpha1.EventhubNamespaceAuthorizationRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(eventhubnamespaceauthorizationrulesResource, "status", eventhubNamespaceAuthorizationRule), &v1alpha1.EventhubNamespaceAuthorizationRule{})
+		Invokes(testing.NewUpdateSubresourceAction(eventhubnamespaceauthorizationrulesResource, "status", c.ns, eventhubNamespaceAuthorizationRule), &v1alpha1.EventhubNamespaceAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEventhubNamespaceAuthorizationRules) UpdateStatus(eventhubNamespace
 // Delete takes name of the eventhubNamespaceAuthorizationRule and deletes it. Returns an error if one occurs.
 func (c *FakeEventhubNamespaceAuthorizationRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(eventhubnamespaceauthorizationrulesResource, name), &v1alpha1.EventhubNamespaceAuthorizationRule{})
+		Invokes(testing.NewDeleteAction(eventhubnamespaceauthorizationrulesResource, c.ns, name), &v1alpha1.EventhubNamespaceAuthorizationRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEventhubNamespaceAuthorizationRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(eventhubnamespaceauthorizationrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(eventhubnamespaceauthorizationrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.EventhubNamespaceAuthorizationRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEventhubNamespaceAuthorizationRules) DeleteCollection(options *v1.D
 // Patch applies the patch and returns the patched eventhubNamespaceAuthorizationRule.
 func (c *FakeEventhubNamespaceAuthorizationRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EventhubNamespaceAuthorizationRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(eventhubnamespaceauthorizationrulesResource, name, pt, data, subresources...), &v1alpha1.EventhubNamespaceAuthorizationRule{})
+		Invokes(testing.NewPatchSubresourceAction(eventhubnamespaceauthorizationrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.EventhubNamespaceAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}

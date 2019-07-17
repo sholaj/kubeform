@@ -32,7 +32,7 @@ import (
 // LbsGetter has a method to return a LbInterface.
 // A group's client should implement this interface.
 type LbsGetter interface {
-	Lbs() LbInterface
+	Lbs(namespace string) LbInterface
 }
 
 // LbInterface has methods to work with Lb resources.
@@ -52,12 +52,14 @@ type LbInterface interface {
 // lbs implements LbInterface
 type lbs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLbs returns a Lbs
-func newLbs(c *AwsV1alpha1Client) *lbs {
+func newLbs(c *AwsV1alpha1Client, namespace string) *lbs {
 	return &lbs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLbs(c *AwsV1alpha1Client) *lbs {
 func (c *lbs) Get(name string, options v1.GetOptions) (result *v1alpha1.Lb, err error) {
 	result = &v1alpha1.Lb{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lbs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *lbs) List(opts v1.ListOptions) (result *v1alpha1.LbList, err error) {
 	}
 	result = &v1alpha1.LbList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lbs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *lbs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lbs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *lbs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *lbs) Create(lb *v1alpha1.Lb) (result *v1alpha1.Lb, err error) {
 	result = &v1alpha1.Lb{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lbs").
 		Body(lb).
 		Do().
@@ -118,6 +124,7 @@ func (c *lbs) Create(lb *v1alpha1.Lb) (result *v1alpha1.Lb, err error) {
 func (c *lbs) Update(lb *v1alpha1.Lb) (result *v1alpha1.Lb, err error) {
 	result = &v1alpha1.Lb{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lbs").
 		Name(lb.Name).
 		Body(lb).
@@ -132,6 +139,7 @@ func (c *lbs) Update(lb *v1alpha1.Lb) (result *v1alpha1.Lb, err error) {
 func (c *lbs) UpdateStatus(lb *v1alpha1.Lb) (result *v1alpha1.Lb, err error) {
 	result = &v1alpha1.Lb{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lbs").
 		Name(lb.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *lbs) UpdateStatus(lb *v1alpha1.Lb) (result *v1alpha1.Lb, err error) {
 // Delete takes name of the lb and deletes it. Returns an error if one occurs.
 func (c *lbs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lbs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *lbs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lbs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *lbs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOpt
 func (c *lbs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Lb, err error) {
 	result = &v1alpha1.Lb{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lbs").
 		SubResource(subresources...).
 		Name(name).

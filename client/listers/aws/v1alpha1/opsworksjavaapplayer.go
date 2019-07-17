@@ -29,8 +29,8 @@ import (
 type OpsworksJavaAppLayerLister interface {
 	// List lists all OpsworksJavaAppLayers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OpsworksJavaAppLayer, err error)
-	// Get retrieves the OpsworksJavaAppLayer from the index for a given name.
-	Get(name string) (*v1alpha1.OpsworksJavaAppLayer, error)
+	// OpsworksJavaAppLayers returns an object that can list and get OpsworksJavaAppLayers.
+	OpsworksJavaAppLayers(namespace string) OpsworksJavaAppLayerNamespaceLister
 	OpsworksJavaAppLayerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *opsworksJavaAppLayerLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the OpsworksJavaAppLayer from the index for a given name.
-func (s *opsworksJavaAppLayerLister) Get(name string) (*v1alpha1.OpsworksJavaAppLayer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OpsworksJavaAppLayers returns an object that can list and get OpsworksJavaAppLayers.
+func (s *opsworksJavaAppLayerLister) OpsworksJavaAppLayers(namespace string) OpsworksJavaAppLayerNamespaceLister {
+	return opsworksJavaAppLayerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OpsworksJavaAppLayerNamespaceLister helps list and get OpsworksJavaAppLayers.
+type OpsworksJavaAppLayerNamespaceLister interface {
+	// List lists all OpsworksJavaAppLayers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OpsworksJavaAppLayer, err error)
+	// Get retrieves the OpsworksJavaAppLayer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OpsworksJavaAppLayer, error)
+	OpsworksJavaAppLayerNamespaceListerExpansion
+}
+
+// opsworksJavaAppLayerNamespaceLister implements the OpsworksJavaAppLayerNamespaceLister
+// interface.
+type opsworksJavaAppLayerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OpsworksJavaAppLayers in the indexer for a given namespace.
+func (s opsworksJavaAppLayerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OpsworksJavaAppLayer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OpsworksJavaAppLayer))
+	})
+	return ret, err
+}
+
+// Get retrieves the OpsworksJavaAppLayer from the indexer for a given namespace and name.
+func (s opsworksJavaAppLayerNamespaceLister) Get(name string) (*v1alpha1.OpsworksJavaAppLayer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

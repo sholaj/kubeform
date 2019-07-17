@@ -32,7 +32,7 @@ import (
 // FolderIamMembersGetter has a method to return a FolderIamMemberInterface.
 // A group's client should implement this interface.
 type FolderIamMembersGetter interface {
-	FolderIamMembers() FolderIamMemberInterface
+	FolderIamMembers(namespace string) FolderIamMemberInterface
 }
 
 // FolderIamMemberInterface has methods to work with FolderIamMember resources.
@@ -52,12 +52,14 @@ type FolderIamMemberInterface interface {
 // folderIamMembers implements FolderIamMemberInterface
 type folderIamMembers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newFolderIamMembers returns a FolderIamMembers
-func newFolderIamMembers(c *GoogleV1alpha1Client) *folderIamMembers {
+func newFolderIamMembers(c *GoogleV1alpha1Client, namespace string) *folderIamMembers {
 	return &folderIamMembers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newFolderIamMembers(c *GoogleV1alpha1Client) *folderIamMembers {
 func (c *folderIamMembers) Get(name string, options v1.GetOptions) (result *v1alpha1.FolderIamMember, err error) {
 	result = &v1alpha1.FolderIamMember{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("folderiammembers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *folderIamMembers) List(opts v1.ListOptions) (result *v1alpha1.FolderIam
 	}
 	result = &v1alpha1.FolderIamMemberList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("folderiammembers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *folderIamMembers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("folderiammembers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *folderIamMembers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *folderIamMembers) Create(folderIamMember *v1alpha1.FolderIamMember) (result *v1alpha1.FolderIamMember, err error) {
 	result = &v1alpha1.FolderIamMember{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("folderiammembers").
 		Body(folderIamMember).
 		Do().
@@ -118,6 +124,7 @@ func (c *folderIamMembers) Create(folderIamMember *v1alpha1.FolderIamMember) (re
 func (c *folderIamMembers) Update(folderIamMember *v1alpha1.FolderIamMember) (result *v1alpha1.FolderIamMember, err error) {
 	result = &v1alpha1.FolderIamMember{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("folderiammembers").
 		Name(folderIamMember.Name).
 		Body(folderIamMember).
@@ -132,6 +139,7 @@ func (c *folderIamMembers) Update(folderIamMember *v1alpha1.FolderIamMember) (re
 func (c *folderIamMembers) UpdateStatus(folderIamMember *v1alpha1.FolderIamMember) (result *v1alpha1.FolderIamMember, err error) {
 	result = &v1alpha1.FolderIamMember{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("folderiammembers").
 		Name(folderIamMember.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *folderIamMembers) UpdateStatus(folderIamMember *v1alpha1.FolderIamMembe
 // Delete takes name of the folderIamMember and deletes it. Returns an error if one occurs.
 func (c *folderIamMembers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("folderiammembers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *folderIamMembers) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("folderiammembers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *folderIamMembers) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *folderIamMembers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FolderIamMember, err error) {
 	result = &v1alpha1.FolderIamMember{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("folderiammembers").
 		SubResource(subresources...).
 		Name(name).

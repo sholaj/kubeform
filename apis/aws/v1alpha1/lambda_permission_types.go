@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,19 +19,20 @@ type LambdaPermission struct {
 }
 
 type LambdaPermissionSpec struct {
-	Action string `json:"action"`
+	Action string `json:"action" tf:"action"`
 	// +optional
-	EventSourceToken string `json:"event_source_token,omitempty"`
-	FunctionName     string `json:"function_name"`
-	Principal        string `json:"principal"`
+	EventSourceToken string `json:"eventSourceToken,omitempty" tf:"event_source_token,omitempty"`
+	FunctionName     string `json:"functionName" tf:"function_name"`
+	Principal        string `json:"principal" tf:"principal"`
 	// +optional
-	Qualifier string `json:"qualifier,omitempty"`
+	Qualifier string `json:"qualifier,omitempty" tf:"qualifier,omitempty"`
 	// +optional
-	SourceAccount string `json:"source_account,omitempty"`
+	SourceAccount string `json:"sourceAccount,omitempty" tf:"source_account,omitempty"`
 	// +optional
-	SourceArn string `json:"source_arn,omitempty"`
+	SourceArn string `json:"sourceArn,omitempty" tf:"source_arn,omitempty"`
 	// +optional
-	StatementIdPrefix string `json:"statement_id_prefix,omitempty"`
+	StatementIDPrefix string                    `json:"statementIDPrefix,omitempty" tf:"statement_id_prefix,omitempty"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type LambdaPermissionStatus struct {
@@ -39,7 +40,9 @@ type LambdaPermissionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

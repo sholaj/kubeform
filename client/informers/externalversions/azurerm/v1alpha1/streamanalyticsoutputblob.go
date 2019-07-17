@@ -41,32 +41,33 @@ type StreamAnalyticsOutputBlobInformer interface {
 type streamAnalyticsOutputBlobInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewStreamAnalyticsOutputBlobInformer constructs a new informer for StreamAnalyticsOutputBlob type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewStreamAnalyticsOutputBlobInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredStreamAnalyticsOutputBlobInformer(client, resyncPeriod, indexers, nil)
+func NewStreamAnalyticsOutputBlobInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredStreamAnalyticsOutputBlobInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredStreamAnalyticsOutputBlobInformer constructs a new informer for StreamAnalyticsOutputBlob type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredStreamAnalyticsOutputBlobInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredStreamAnalyticsOutputBlobInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().StreamAnalyticsOutputBlobs().List(options)
+				return client.AzurermV1alpha1().StreamAnalyticsOutputBlobs(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().StreamAnalyticsOutputBlobs().Watch(options)
+				return client.AzurermV1alpha1().StreamAnalyticsOutputBlobs(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.StreamAnalyticsOutputBlob{},
@@ -76,7 +77,7 @@ func NewFilteredStreamAnalyticsOutputBlobInformer(client versioned.Interface, re
 }
 
 func (f *streamAnalyticsOutputBlobInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredStreamAnalyticsOutputBlobInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredStreamAnalyticsOutputBlobInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *streamAnalyticsOutputBlobInformer) Informer() cache.SharedIndexInformer {

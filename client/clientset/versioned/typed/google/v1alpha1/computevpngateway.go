@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// ComputeVpnGatewaysGetter has a method to return a ComputeVpnGatewayInterface.
+// ComputeVPNGatewaysGetter has a method to return a ComputeVPNGatewayInterface.
 // A group's client should implement this interface.
-type ComputeVpnGatewaysGetter interface {
-	ComputeVpnGateways() ComputeVpnGatewayInterface
+type ComputeVPNGatewaysGetter interface {
+	ComputeVPNGateways(namespace string) ComputeVPNGatewayInterface
 }
 
-// ComputeVpnGatewayInterface has methods to work with ComputeVpnGateway resources.
-type ComputeVpnGatewayInterface interface {
-	Create(*v1alpha1.ComputeVpnGateway) (*v1alpha1.ComputeVpnGateway, error)
-	Update(*v1alpha1.ComputeVpnGateway) (*v1alpha1.ComputeVpnGateway, error)
-	UpdateStatus(*v1alpha1.ComputeVpnGateway) (*v1alpha1.ComputeVpnGateway, error)
+// ComputeVPNGatewayInterface has methods to work with ComputeVPNGateway resources.
+type ComputeVPNGatewayInterface interface {
+	Create(*v1alpha1.ComputeVPNGateway) (*v1alpha1.ComputeVPNGateway, error)
+	Update(*v1alpha1.ComputeVPNGateway) (*v1alpha1.ComputeVPNGateway, error)
+	UpdateStatus(*v1alpha1.ComputeVPNGateway) (*v1alpha1.ComputeVPNGateway, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.ComputeVpnGateway, error)
-	List(opts v1.ListOptions) (*v1alpha1.ComputeVpnGatewayList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.ComputeVPNGateway, error)
+	List(opts v1.ListOptions) (*v1alpha1.ComputeVPNGatewayList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeVpnGateway, err error)
-	ComputeVpnGatewayExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeVPNGateway, err error)
+	ComputeVPNGatewayExpansion
 }
 
-// computeVpnGateways implements ComputeVpnGatewayInterface
-type computeVpnGateways struct {
+// computeVPNGateways implements ComputeVPNGatewayInterface
+type computeVPNGateways struct {
 	client rest.Interface
+	ns     string
 }
 
-// newComputeVpnGateways returns a ComputeVpnGateways
-func newComputeVpnGateways(c *GoogleV1alpha1Client) *computeVpnGateways {
-	return &computeVpnGateways{
+// newComputeVPNGateways returns a ComputeVPNGateways
+func newComputeVPNGateways(c *GoogleV1alpha1Client, namespace string) *computeVPNGateways {
+	return &computeVPNGateways{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the computeVpnGateway, and returns the corresponding computeVpnGateway object, and an error if there is any.
-func (c *computeVpnGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeVpnGateway, err error) {
-	result = &v1alpha1.ComputeVpnGateway{}
+// Get takes name of the computeVPNGateway, and returns the corresponding computeVPNGateway object, and an error if there is any.
+func (c *computeVPNGateways) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeVPNGateway, err error) {
+	result = &v1alpha1.ComputeVPNGateway{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computevpngateways").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *computeVpnGateways) Get(name string, options v1.GetOptions) (result *v1
 	return
 }
 
-// List takes label and field selectors, and returns the list of ComputeVpnGateways that match those selectors.
-func (c *computeVpnGateways) List(opts v1.ListOptions) (result *v1alpha1.ComputeVpnGatewayList, err error) {
+// List takes label and field selectors, and returns the list of ComputeVPNGateways that match those selectors.
+func (c *computeVPNGateways) List(opts v1.ListOptions) (result *v1alpha1.ComputeVPNGatewayList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.ComputeVpnGatewayList{}
+	result = &v1alpha1.ComputeVPNGatewayList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computevpngateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *computeVpnGateways) List(opts v1.ListOptions) (result *v1alpha1.Compute
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested computeVpnGateways.
-func (c *computeVpnGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested computeVPNGateways.
+func (c *computeVPNGateways) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computevpngateways").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a computeVpnGateway and creates it.  Returns the server's representation of the computeVpnGateway, and an error, if there is any.
-func (c *computeVpnGateways) Create(computeVpnGateway *v1alpha1.ComputeVpnGateway) (result *v1alpha1.ComputeVpnGateway, err error) {
-	result = &v1alpha1.ComputeVpnGateway{}
+// Create takes the representation of a computeVPNGateway and creates it.  Returns the server's representation of the computeVPNGateway, and an error, if there is any.
+func (c *computeVPNGateways) Create(computeVPNGateway *v1alpha1.ComputeVPNGateway) (result *v1alpha1.ComputeVPNGateway, err error) {
+	result = &v1alpha1.ComputeVPNGateway{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computevpngateways").
-		Body(computeVpnGateway).
+		Body(computeVPNGateway).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a computeVpnGateway and updates it. Returns the server's representation of the computeVpnGateway, and an error, if there is any.
-func (c *computeVpnGateways) Update(computeVpnGateway *v1alpha1.ComputeVpnGateway) (result *v1alpha1.ComputeVpnGateway, err error) {
-	result = &v1alpha1.ComputeVpnGateway{}
+// Update takes the representation of a computeVPNGateway and updates it. Returns the server's representation of the computeVPNGateway, and an error, if there is any.
+func (c *computeVPNGateways) Update(computeVPNGateway *v1alpha1.ComputeVPNGateway) (result *v1alpha1.ComputeVPNGateway, err error) {
+	result = &v1alpha1.ComputeVPNGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computevpngateways").
-		Name(computeVpnGateway.Name).
-		Body(computeVpnGateway).
+		Name(computeVPNGateway.Name).
+		Body(computeVPNGateway).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *computeVpnGateways) Update(computeVpnGateway *v1alpha1.ComputeVpnGatewa
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *computeVpnGateways) UpdateStatus(computeVpnGateway *v1alpha1.ComputeVpnGateway) (result *v1alpha1.ComputeVpnGateway, err error) {
-	result = &v1alpha1.ComputeVpnGateway{}
+func (c *computeVPNGateways) UpdateStatus(computeVPNGateway *v1alpha1.ComputeVPNGateway) (result *v1alpha1.ComputeVPNGateway, err error) {
+	result = &v1alpha1.ComputeVPNGateway{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computevpngateways").
-		Name(computeVpnGateway.Name).
+		Name(computeVPNGateway.Name).
 		SubResource("status").
-		Body(computeVpnGateway).
+		Body(computeVPNGateway).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the computeVpnGateway and deletes it. Returns an error if one occurs.
-func (c *computeVpnGateways) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the computeVPNGateway and deletes it. Returns an error if one occurs.
+func (c *computeVPNGateways) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computevpngateways").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *computeVpnGateways) Delete(name string, options *v1.DeleteOptions) erro
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *computeVpnGateways) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *computeVPNGateways) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computevpngateways").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *computeVpnGateways) DeleteCollection(options *v1.DeleteOptions, listOpt
 		Error()
 }
 
-// Patch applies the patch and returns the patched computeVpnGateway.
-func (c *computeVpnGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeVpnGateway, err error) {
-	result = &v1alpha1.ComputeVpnGateway{}
+// Patch applies the patch and returns the patched computeVPNGateway.
+func (c *computeVPNGateways) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeVPNGateway, err error) {
+	result = &v1alpha1.ComputeVPNGateway{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computevpngateways").
 		SubResource(subresources...).
 		Name(name).

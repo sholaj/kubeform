@@ -397,36 +397,46 @@ spec:
           type: object
         spec:
           properties:
-            dead_lettering_on_filter_evaluation_exceptions:
+            deadLetteringOnFilterEvaluationExceptions:
               description: Deprecated
               type: boolean
-            dead_lettering_on_message_expiration:
+            deadLetteringOnMessageExpiration:
               type: boolean
-            enable_batched_operations:
+            enableBatchedOperations:
               type: boolean
-            forward_to:
+            forwardTo:
               type: string
             location:
               description: Deprecated
               type: string
-            max_delivery_count:
+            maxDeliveryCount:
               type: integer
             name:
               type: string
-            namespace_name:
+            namespaceName:
               type: string
-            requires_session:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            requiresSession:
               type: boolean
-            resource_group_name:
+            resourceGroupName:
               type: string
-            topic_name:
+            topicName:
               type: string
           required:
-          - max_delivery_count
+          - maxDeliveryCount
           - name
-          - namespace_name
-          - resource_group_name
-          - topic_name
+          - namespaceName
+          - providerRef
+          - resourceGroupName
+          - topicName
           type: object
         status:
           properties:
@@ -437,6 +447,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

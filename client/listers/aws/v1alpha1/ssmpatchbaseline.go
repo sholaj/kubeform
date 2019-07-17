@@ -29,8 +29,8 @@ import (
 type SsmPatchBaselineLister interface {
 	// List lists all SsmPatchBaselines in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SsmPatchBaseline, err error)
-	// Get retrieves the SsmPatchBaseline from the index for a given name.
-	Get(name string) (*v1alpha1.SsmPatchBaseline, error)
+	// SsmPatchBaselines returns an object that can list and get SsmPatchBaselines.
+	SsmPatchBaselines(namespace string) SsmPatchBaselineNamespaceLister
 	SsmPatchBaselineListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ssmPatchBaselineLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the SsmPatchBaseline from the index for a given name.
-func (s *ssmPatchBaselineLister) Get(name string) (*v1alpha1.SsmPatchBaseline, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SsmPatchBaselines returns an object that can list and get SsmPatchBaselines.
+func (s *ssmPatchBaselineLister) SsmPatchBaselines(namespace string) SsmPatchBaselineNamespaceLister {
+	return ssmPatchBaselineNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SsmPatchBaselineNamespaceLister helps list and get SsmPatchBaselines.
+type SsmPatchBaselineNamespaceLister interface {
+	// List lists all SsmPatchBaselines in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SsmPatchBaseline, err error)
+	// Get retrieves the SsmPatchBaseline from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SsmPatchBaseline, error)
+	SsmPatchBaselineNamespaceListerExpansion
+}
+
+// ssmPatchBaselineNamespaceLister implements the SsmPatchBaselineNamespaceLister
+// interface.
+type ssmPatchBaselineNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SsmPatchBaselines in the indexer for a given namespace.
+func (s ssmPatchBaselineNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SsmPatchBaseline, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SsmPatchBaseline))
+	})
+	return ret, err
+}
+
+// Get retrieves the SsmPatchBaseline from the indexer for a given namespace and name.
+func (s ssmPatchBaselineNamespaceLister) Get(name string) (*v1alpha1.SsmPatchBaseline, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

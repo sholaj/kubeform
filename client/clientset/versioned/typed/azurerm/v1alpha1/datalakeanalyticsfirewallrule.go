@@ -32,7 +32,7 @@ import (
 // DataLakeAnalyticsFirewallRulesGetter has a method to return a DataLakeAnalyticsFirewallRuleInterface.
 // A group's client should implement this interface.
 type DataLakeAnalyticsFirewallRulesGetter interface {
-	DataLakeAnalyticsFirewallRules() DataLakeAnalyticsFirewallRuleInterface
+	DataLakeAnalyticsFirewallRules(namespace string) DataLakeAnalyticsFirewallRuleInterface
 }
 
 // DataLakeAnalyticsFirewallRuleInterface has methods to work with DataLakeAnalyticsFirewallRule resources.
@@ -52,12 +52,14 @@ type DataLakeAnalyticsFirewallRuleInterface interface {
 // dataLakeAnalyticsFirewallRules implements DataLakeAnalyticsFirewallRuleInterface
 type dataLakeAnalyticsFirewallRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDataLakeAnalyticsFirewallRules returns a DataLakeAnalyticsFirewallRules
-func newDataLakeAnalyticsFirewallRules(c *AzurermV1alpha1Client) *dataLakeAnalyticsFirewallRules {
+func newDataLakeAnalyticsFirewallRules(c *AzurermV1alpha1Client, namespace string) *dataLakeAnalyticsFirewallRules {
 	return &dataLakeAnalyticsFirewallRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDataLakeAnalyticsFirewallRules(c *AzurermV1alpha1Client) *dataLakeAnalyt
 func (c *dataLakeAnalyticsFirewallRules) Get(name string, options v1.GetOptions) (result *v1alpha1.DataLakeAnalyticsFirewallRule, err error) {
 	result = &v1alpha1.DataLakeAnalyticsFirewallRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datalakeanalyticsfirewallrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dataLakeAnalyticsFirewallRules) List(opts v1.ListOptions) (result *v1al
 	}
 	result = &v1alpha1.DataLakeAnalyticsFirewallRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datalakeanalyticsfirewallrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dataLakeAnalyticsFirewallRules) Watch(opts v1.ListOptions) (watch.Inter
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("datalakeanalyticsfirewallrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dataLakeAnalyticsFirewallRules) Watch(opts v1.ListOptions) (watch.Inter
 func (c *dataLakeAnalyticsFirewallRules) Create(dataLakeAnalyticsFirewallRule *v1alpha1.DataLakeAnalyticsFirewallRule) (result *v1alpha1.DataLakeAnalyticsFirewallRule, err error) {
 	result = &v1alpha1.DataLakeAnalyticsFirewallRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("datalakeanalyticsfirewallrules").
 		Body(dataLakeAnalyticsFirewallRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *dataLakeAnalyticsFirewallRules) Create(dataLakeAnalyticsFirewallRule *v
 func (c *dataLakeAnalyticsFirewallRules) Update(dataLakeAnalyticsFirewallRule *v1alpha1.DataLakeAnalyticsFirewallRule) (result *v1alpha1.DataLakeAnalyticsFirewallRule, err error) {
 	result = &v1alpha1.DataLakeAnalyticsFirewallRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datalakeanalyticsfirewallrules").
 		Name(dataLakeAnalyticsFirewallRule.Name).
 		Body(dataLakeAnalyticsFirewallRule).
@@ -132,6 +139,7 @@ func (c *dataLakeAnalyticsFirewallRules) Update(dataLakeAnalyticsFirewallRule *v
 func (c *dataLakeAnalyticsFirewallRules) UpdateStatus(dataLakeAnalyticsFirewallRule *v1alpha1.DataLakeAnalyticsFirewallRule) (result *v1alpha1.DataLakeAnalyticsFirewallRule, err error) {
 	result = &v1alpha1.DataLakeAnalyticsFirewallRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datalakeanalyticsfirewallrules").
 		Name(dataLakeAnalyticsFirewallRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dataLakeAnalyticsFirewallRules) UpdateStatus(dataLakeAnalyticsFirewallR
 // Delete takes name of the dataLakeAnalyticsFirewallRule and deletes it. Returns an error if one occurs.
 func (c *dataLakeAnalyticsFirewallRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datalakeanalyticsfirewallrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dataLakeAnalyticsFirewallRules) DeleteCollection(options *v1.DeleteOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datalakeanalyticsfirewallrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dataLakeAnalyticsFirewallRules) DeleteCollection(options *v1.DeleteOpti
 func (c *dataLakeAnalyticsFirewallRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataLakeAnalyticsFirewallRule, err error) {
 	result = &v1alpha1.DataLakeAnalyticsFirewallRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("datalakeanalyticsfirewallrules").
 		SubResource(subresources...).
 		Name(name).

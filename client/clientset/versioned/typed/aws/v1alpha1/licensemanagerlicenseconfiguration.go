@@ -32,7 +32,7 @@ import (
 // LicensemanagerLicenseConfigurationsGetter has a method to return a LicensemanagerLicenseConfigurationInterface.
 // A group's client should implement this interface.
 type LicensemanagerLicenseConfigurationsGetter interface {
-	LicensemanagerLicenseConfigurations() LicensemanagerLicenseConfigurationInterface
+	LicensemanagerLicenseConfigurations(namespace string) LicensemanagerLicenseConfigurationInterface
 }
 
 // LicensemanagerLicenseConfigurationInterface has methods to work with LicensemanagerLicenseConfiguration resources.
@@ -52,12 +52,14 @@ type LicensemanagerLicenseConfigurationInterface interface {
 // licensemanagerLicenseConfigurations implements LicensemanagerLicenseConfigurationInterface
 type licensemanagerLicenseConfigurations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newLicensemanagerLicenseConfigurations returns a LicensemanagerLicenseConfigurations
-func newLicensemanagerLicenseConfigurations(c *AwsV1alpha1Client) *licensemanagerLicenseConfigurations {
+func newLicensemanagerLicenseConfigurations(c *AwsV1alpha1Client, namespace string) *licensemanagerLicenseConfigurations {
 	return &licensemanagerLicenseConfigurations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newLicensemanagerLicenseConfigurations(c *AwsV1alpha1Client) *licensemanage
 func (c *licensemanagerLicenseConfigurations) Get(name string, options v1.GetOptions) (result *v1alpha1.LicensemanagerLicenseConfiguration, err error) {
 	result = &v1alpha1.LicensemanagerLicenseConfiguration{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("licensemanagerlicenseconfigurations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *licensemanagerLicenseConfigurations) List(opts v1.ListOptions) (result 
 	}
 	result = &v1alpha1.LicensemanagerLicenseConfigurationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("licensemanagerlicenseconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *licensemanagerLicenseConfigurations) Watch(opts v1.ListOptions) (watch.
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("licensemanagerlicenseconfigurations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *licensemanagerLicenseConfigurations) Watch(opts v1.ListOptions) (watch.
 func (c *licensemanagerLicenseConfigurations) Create(licensemanagerLicenseConfiguration *v1alpha1.LicensemanagerLicenseConfiguration) (result *v1alpha1.LicensemanagerLicenseConfiguration, err error) {
 	result = &v1alpha1.LicensemanagerLicenseConfiguration{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("licensemanagerlicenseconfigurations").
 		Body(licensemanagerLicenseConfiguration).
 		Do().
@@ -118,6 +124,7 @@ func (c *licensemanagerLicenseConfigurations) Create(licensemanagerLicenseConfig
 func (c *licensemanagerLicenseConfigurations) Update(licensemanagerLicenseConfiguration *v1alpha1.LicensemanagerLicenseConfiguration) (result *v1alpha1.LicensemanagerLicenseConfiguration, err error) {
 	result = &v1alpha1.LicensemanagerLicenseConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("licensemanagerlicenseconfigurations").
 		Name(licensemanagerLicenseConfiguration.Name).
 		Body(licensemanagerLicenseConfiguration).
@@ -132,6 +139,7 @@ func (c *licensemanagerLicenseConfigurations) Update(licensemanagerLicenseConfig
 func (c *licensemanagerLicenseConfigurations) UpdateStatus(licensemanagerLicenseConfiguration *v1alpha1.LicensemanagerLicenseConfiguration) (result *v1alpha1.LicensemanagerLicenseConfiguration, err error) {
 	result = &v1alpha1.LicensemanagerLicenseConfiguration{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("licensemanagerlicenseconfigurations").
 		Name(licensemanagerLicenseConfiguration.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *licensemanagerLicenseConfigurations) UpdateStatus(licensemanagerLicense
 // Delete takes name of the licensemanagerLicenseConfiguration and deletes it. Returns an error if one occurs.
 func (c *licensemanagerLicenseConfigurations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("licensemanagerlicenseconfigurations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *licensemanagerLicenseConfigurations) DeleteCollection(options *v1.Delet
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("licensemanagerlicenseconfigurations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *licensemanagerLicenseConfigurations) DeleteCollection(options *v1.Delet
 func (c *licensemanagerLicenseConfigurations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LicensemanagerLicenseConfiguration, err error) {
 	result = &v1alpha1.LicensemanagerLicenseConfiguration{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("licensemanagerlicenseconfigurations").
 		SubResource(subresources...).
 		Name(name).

@@ -397,22 +397,32 @@ spec:
           type: object
         spec:
           properties:
-            end_ip_address:
+            endIPAddress:
               type: string
             name:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
-            server_name:
+            serverName:
               type: string
-            start_ip_address:
+            startIPAddress:
               type: string
           required:
-          - end_ip_address
+          - endIPAddress
           - name
-          - resource_group_name
-          - server_name
-          - start_ip_address
+          - providerRef
+          - resourceGroupName
+          - serverName
+          - startIPAddress
           type: object
         status:
           properties:
@@ -423,6 +433,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

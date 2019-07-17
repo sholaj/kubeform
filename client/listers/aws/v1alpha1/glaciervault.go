@@ -29,8 +29,8 @@ import (
 type GlacierVaultLister interface {
 	// List lists all GlacierVaults in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GlacierVault, err error)
-	// Get retrieves the GlacierVault from the index for a given name.
-	Get(name string) (*v1alpha1.GlacierVault, error)
+	// GlacierVaults returns an object that can list and get GlacierVaults.
+	GlacierVaults(namespace string) GlacierVaultNamespaceLister
 	GlacierVaultListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *glacierVaultLister) List(selector labels.Selector) (ret []*v1alpha1.Gla
 	return ret, err
 }
 
-// Get retrieves the GlacierVault from the index for a given name.
-func (s *glacierVaultLister) Get(name string) (*v1alpha1.GlacierVault, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GlacierVaults returns an object that can list and get GlacierVaults.
+func (s *glacierVaultLister) GlacierVaults(namespace string) GlacierVaultNamespaceLister {
+	return glacierVaultNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GlacierVaultNamespaceLister helps list and get GlacierVaults.
+type GlacierVaultNamespaceLister interface {
+	// List lists all GlacierVaults in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GlacierVault, err error)
+	// Get retrieves the GlacierVault from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GlacierVault, error)
+	GlacierVaultNamespaceListerExpansion
+}
+
+// glacierVaultNamespaceLister implements the GlacierVaultNamespaceLister
+// interface.
+type glacierVaultNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GlacierVaults in the indexer for a given namespace.
+func (s glacierVaultNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GlacierVault, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GlacierVault))
+	})
+	return ret, err
+}
+
+// Get retrieves the GlacierVault from the indexer for a given namespace and name.
+func (s glacierVaultNamespaceLister) Get(name string) (*v1alpha1.GlacierVault, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

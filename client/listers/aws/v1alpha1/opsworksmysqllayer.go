@@ -29,8 +29,8 @@ import (
 type OpsworksMysqlLayerLister interface {
 	// List lists all OpsworksMysqlLayers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OpsworksMysqlLayer, err error)
-	// Get retrieves the OpsworksMysqlLayer from the index for a given name.
-	Get(name string) (*v1alpha1.OpsworksMysqlLayer, error)
+	// OpsworksMysqlLayers returns an object that can list and get OpsworksMysqlLayers.
+	OpsworksMysqlLayers(namespace string) OpsworksMysqlLayerNamespaceLister
 	OpsworksMysqlLayerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *opsworksMysqlLayerLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the OpsworksMysqlLayer from the index for a given name.
-func (s *opsworksMysqlLayerLister) Get(name string) (*v1alpha1.OpsworksMysqlLayer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OpsworksMysqlLayers returns an object that can list and get OpsworksMysqlLayers.
+func (s *opsworksMysqlLayerLister) OpsworksMysqlLayers(namespace string) OpsworksMysqlLayerNamespaceLister {
+	return opsworksMysqlLayerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OpsworksMysqlLayerNamespaceLister helps list and get OpsworksMysqlLayers.
+type OpsworksMysqlLayerNamespaceLister interface {
+	// List lists all OpsworksMysqlLayers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OpsworksMysqlLayer, err error)
+	// Get retrieves the OpsworksMysqlLayer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OpsworksMysqlLayer, error)
+	OpsworksMysqlLayerNamespaceListerExpansion
+}
+
+// opsworksMysqlLayerNamespaceLister implements the OpsworksMysqlLayerNamespaceLister
+// interface.
+type opsworksMysqlLayerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OpsworksMysqlLayers in the indexer for a given namespace.
+func (s opsworksMysqlLayerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OpsworksMysqlLayer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OpsworksMysqlLayer))
+	})
+	return ret, err
+}
+
+// Get retrieves the OpsworksMysqlLayer from the indexer for a given namespace and name.
+func (s opsworksMysqlLayerNamespaceLister) Get(name string) (*v1alpha1.OpsworksMysqlLayer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

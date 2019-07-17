@@ -31,6 +31,7 @@ import (
 // FakeLightsailDomains implements LightsailDomainInterface
 type FakeLightsailDomains struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var lightsaildomainsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "lightsaildomains"}
@@ -40,7 +41,8 @@ var lightsaildomainsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ve
 // Get takes name of the lightsailDomain, and returns the corresponding lightsailDomain object, and an error if there is any.
 func (c *FakeLightsailDomains) Get(name string, options v1.GetOptions) (result *v1alpha1.LightsailDomain, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(lightsaildomainsResource, name), &v1alpha1.LightsailDomain{})
+		Invokes(testing.NewGetAction(lightsaildomainsResource, c.ns, name), &v1alpha1.LightsailDomain{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLightsailDomains) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of LightsailDomains that match those selectors.
 func (c *FakeLightsailDomains) List(opts v1.ListOptions) (result *v1alpha1.LightsailDomainList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(lightsaildomainsResource, lightsaildomainsKind, opts), &v1alpha1.LightsailDomainList{})
+		Invokes(testing.NewListAction(lightsaildomainsResource, lightsaildomainsKind, c.ns, opts), &v1alpha1.LightsailDomainList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLightsailDomains) List(opts v1.ListOptions) (result *v1alpha1.Light
 // Watch returns a watch.Interface that watches the requested lightsailDomains.
 func (c *FakeLightsailDomains) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(lightsaildomainsResource, opts))
+		InvokesWatch(testing.NewWatchAction(lightsaildomainsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a lightsailDomain and creates it.  Returns the server's representation of the lightsailDomain, and an error, if there is any.
 func (c *FakeLightsailDomains) Create(lightsailDomain *v1alpha1.LightsailDomain) (result *v1alpha1.LightsailDomain, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(lightsaildomainsResource, lightsailDomain), &v1alpha1.LightsailDomain{})
+		Invokes(testing.NewCreateAction(lightsaildomainsResource, c.ns, lightsailDomain), &v1alpha1.LightsailDomain{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLightsailDomains) Create(lightsailDomain *v1alpha1.LightsailDomain)
 // Update takes the representation of a lightsailDomain and updates it. Returns the server's representation of the lightsailDomain, and an error, if there is any.
 func (c *FakeLightsailDomains) Update(lightsailDomain *v1alpha1.LightsailDomain) (result *v1alpha1.LightsailDomain, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(lightsaildomainsResource, lightsailDomain), &v1alpha1.LightsailDomain{})
+		Invokes(testing.NewUpdateAction(lightsaildomainsResource, c.ns, lightsailDomain), &v1alpha1.LightsailDomain{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLightsailDomains) Update(lightsailDomain *v1alpha1.LightsailDomain)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLightsailDomains) UpdateStatus(lightsailDomain *v1alpha1.LightsailDomain) (*v1alpha1.LightsailDomain, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(lightsaildomainsResource, "status", lightsailDomain), &v1alpha1.LightsailDomain{})
+		Invokes(testing.NewUpdateSubresourceAction(lightsaildomainsResource, "status", c.ns, lightsailDomain), &v1alpha1.LightsailDomain{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLightsailDomains) UpdateStatus(lightsailDomain *v1alpha1.LightsailD
 // Delete takes name of the lightsailDomain and deletes it. Returns an error if one occurs.
 func (c *FakeLightsailDomains) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(lightsaildomainsResource, name), &v1alpha1.LightsailDomain{})
+		Invokes(testing.NewDeleteAction(lightsaildomainsResource, c.ns, name), &v1alpha1.LightsailDomain{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLightsailDomains) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(lightsaildomainsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(lightsaildomainsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LightsailDomainList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLightsailDomains) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched lightsailDomain.
 func (c *FakeLightsailDomains) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LightsailDomain, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(lightsaildomainsResource, name, pt, data, subresources...), &v1alpha1.LightsailDomain{})
+		Invokes(testing.NewPatchSubresourceAction(lightsaildomainsResource, c.ns, name, pt, data, subresources...), &v1alpha1.LightsailDomain{})
+
 	if obj == nil {
 		return nil, err
 	}

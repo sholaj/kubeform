@@ -41,32 +41,33 @@ type LogicAppWorkflowInformer interface {
 type logicAppWorkflowInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewLogicAppWorkflowInformer constructs a new informer for LogicAppWorkflow type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLogicAppWorkflowInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLogicAppWorkflowInformer(client, resyncPeriod, indexers, nil)
+func NewLogicAppWorkflowInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLogicAppWorkflowInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredLogicAppWorkflowInformer constructs a new informer for LogicAppWorkflow type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLogicAppWorkflowInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLogicAppWorkflowInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().LogicAppWorkflows().List(options)
+				return client.AzurermV1alpha1().LogicAppWorkflows(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().LogicAppWorkflows().Watch(options)
+				return client.AzurermV1alpha1().LogicAppWorkflows(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.LogicAppWorkflow{},
@@ -76,7 +77,7 @@ func NewFilteredLogicAppWorkflowInformer(client versioned.Interface, resyncPerio
 }
 
 func (f *logicAppWorkflowInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLogicAppWorkflowInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredLogicAppWorkflowInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *logicAppWorkflowInformer) Informer() cache.SharedIndexInformer {

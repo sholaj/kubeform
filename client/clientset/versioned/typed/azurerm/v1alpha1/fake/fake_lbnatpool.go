@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// FakeLbNatPools implements LbNatPoolInterface
-type FakeLbNatPools struct {
+// FakeLbNATPools implements LbNATPoolInterface
+type FakeLbNATPools struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var lbnatpoolsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "lbnatpools"}
 
-var lbnatpoolsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "LbNatPool"}
+var lbnatpoolsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", Version: "v1alpha1", Kind: "LbNATPool"}
 
-// Get takes name of the lbNatPool, and returns the corresponding lbNatPool object, and an error if there is any.
-func (c *FakeLbNatPools) Get(name string, options v1.GetOptions) (result *v1alpha1.LbNatPool, err error) {
+// Get takes name of the lbNATPool, and returns the corresponding lbNATPool object, and an error if there is any.
+func (c *FakeLbNATPools) Get(name string, options v1.GetOptions) (result *v1alpha1.LbNATPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(lbnatpoolsResource, name), &v1alpha1.LbNatPool{})
+		Invokes(testing.NewGetAction(lbnatpoolsResource, c.ns, name), &v1alpha1.LbNATPool{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LbNatPool), err
+	return obj.(*v1alpha1.LbNATPool), err
 }
 
-// List takes label and field selectors, and returns the list of LbNatPools that match those selectors.
-func (c *FakeLbNatPools) List(opts v1.ListOptions) (result *v1alpha1.LbNatPoolList, err error) {
+// List takes label and field selectors, and returns the list of LbNATPools that match those selectors.
+func (c *FakeLbNATPools) List(opts v1.ListOptions) (result *v1alpha1.LbNATPoolList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(lbnatpoolsResource, lbnatpoolsKind, opts), &v1alpha1.LbNatPoolList{})
+		Invokes(testing.NewListAction(lbnatpoolsResource, lbnatpoolsKind, c.ns, opts), &v1alpha1.LbNATPoolList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeLbNatPools) List(opts v1.ListOptions) (result *v1alpha1.LbNatPoolLi
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.LbNatPoolList{ListMeta: obj.(*v1alpha1.LbNatPoolList).ListMeta}
-	for _, item := range obj.(*v1alpha1.LbNatPoolList).Items {
+	list := &v1alpha1.LbNATPoolList{ListMeta: obj.(*v1alpha1.LbNATPoolList).ListMeta}
+	for _, item := range obj.(*v1alpha1.LbNATPoolList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeLbNatPools) List(opts v1.ListOptions) (result *v1alpha1.LbNatPoolLi
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested lbNatPools.
-func (c *FakeLbNatPools) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested lbNATPools.
+func (c *FakeLbNATPools) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(lbnatpoolsResource, opts))
+		InvokesWatch(testing.NewWatchAction(lbnatpoolsResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a lbNatPool and creates it.  Returns the server's representation of the lbNatPool, and an error, if there is any.
-func (c *FakeLbNatPools) Create(lbNatPool *v1alpha1.LbNatPool) (result *v1alpha1.LbNatPool, err error) {
+// Create takes the representation of a lbNATPool and creates it.  Returns the server's representation of the lbNATPool, and an error, if there is any.
+func (c *FakeLbNATPools) Create(lbNATPool *v1alpha1.LbNATPool) (result *v1alpha1.LbNATPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(lbnatpoolsResource, lbNatPool), &v1alpha1.LbNatPool{})
+		Invokes(testing.NewCreateAction(lbnatpoolsResource, c.ns, lbNATPool), &v1alpha1.LbNATPool{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LbNatPool), err
+	return obj.(*v1alpha1.LbNATPool), err
 }
 
-// Update takes the representation of a lbNatPool and updates it. Returns the server's representation of the lbNatPool, and an error, if there is any.
-func (c *FakeLbNatPools) Update(lbNatPool *v1alpha1.LbNatPool) (result *v1alpha1.LbNatPool, err error) {
+// Update takes the representation of a lbNATPool and updates it. Returns the server's representation of the lbNATPool, and an error, if there is any.
+func (c *FakeLbNATPools) Update(lbNATPool *v1alpha1.LbNATPool) (result *v1alpha1.LbNATPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(lbnatpoolsResource, lbNatPool), &v1alpha1.LbNatPool{})
+		Invokes(testing.NewUpdateAction(lbnatpoolsResource, c.ns, lbNATPool), &v1alpha1.LbNATPool{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LbNatPool), err
+	return obj.(*v1alpha1.LbNATPool), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeLbNatPools) UpdateStatus(lbNatPool *v1alpha1.LbNatPool) (*v1alpha1.LbNatPool, error) {
+func (c *FakeLbNATPools) UpdateStatus(lbNATPool *v1alpha1.LbNATPool) (*v1alpha1.LbNATPool, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(lbnatpoolsResource, "status", lbNatPool), &v1alpha1.LbNatPool{})
+		Invokes(testing.NewUpdateSubresourceAction(lbnatpoolsResource, "status", c.ns, lbNATPool), &v1alpha1.LbNATPool{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LbNatPool), err
+	return obj.(*v1alpha1.LbNATPool), err
 }
 
-// Delete takes name of the lbNatPool and deletes it. Returns an error if one occurs.
-func (c *FakeLbNatPools) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the lbNATPool and deletes it. Returns an error if one occurs.
+func (c *FakeLbNATPools) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(lbnatpoolsResource, name), &v1alpha1.LbNatPool{})
+		Invokes(testing.NewDeleteAction(lbnatpoolsResource, c.ns, name), &v1alpha1.LbNATPool{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeLbNatPools) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(lbnatpoolsResource, listOptions)
+func (c *FakeLbNATPools) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(lbnatpoolsResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.LbNatPoolList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.LbNATPoolList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched lbNatPool.
-func (c *FakeLbNatPools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbNatPool, err error) {
+// Patch applies the patch and returns the patched lbNATPool.
+func (c *FakeLbNATPools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LbNATPool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(lbnatpoolsResource, name, pt, data, subresources...), &v1alpha1.LbNatPool{})
+		Invokes(testing.NewPatchSubresourceAction(lbnatpoolsResource, c.ns, name, pt, data, subresources...), &v1alpha1.LbNATPool{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.LbNatPool), err
+	return obj.(*v1alpha1.LbNATPool), err
 }

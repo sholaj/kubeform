@@ -31,6 +31,7 @@ import (
 // FakeSimpledbDomains implements SimpledbDomainInterface
 type FakeSimpledbDomains struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var simpledbdomainsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "simpledbdomains"}
@@ -40,7 +41,8 @@ var simpledbdomainsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ver
 // Get takes name of the simpledbDomain, and returns the corresponding simpledbDomain object, and an error if there is any.
 func (c *FakeSimpledbDomains) Get(name string, options v1.GetOptions) (result *v1alpha1.SimpledbDomain, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(simpledbdomainsResource, name), &v1alpha1.SimpledbDomain{})
+		Invokes(testing.NewGetAction(simpledbdomainsResource, c.ns, name), &v1alpha1.SimpledbDomain{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSimpledbDomains) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of SimpledbDomains that match those selectors.
 func (c *FakeSimpledbDomains) List(opts v1.ListOptions) (result *v1alpha1.SimpledbDomainList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(simpledbdomainsResource, simpledbdomainsKind, opts), &v1alpha1.SimpledbDomainList{})
+		Invokes(testing.NewListAction(simpledbdomainsResource, simpledbdomainsKind, c.ns, opts), &v1alpha1.SimpledbDomainList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSimpledbDomains) List(opts v1.ListOptions) (result *v1alpha1.Simple
 // Watch returns a watch.Interface that watches the requested simpledbDomains.
 func (c *FakeSimpledbDomains) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(simpledbdomainsResource, opts))
+		InvokesWatch(testing.NewWatchAction(simpledbdomainsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a simpledbDomain and creates it.  Returns the server's representation of the simpledbDomain, and an error, if there is any.
 func (c *FakeSimpledbDomains) Create(simpledbDomain *v1alpha1.SimpledbDomain) (result *v1alpha1.SimpledbDomain, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(simpledbdomainsResource, simpledbDomain), &v1alpha1.SimpledbDomain{})
+		Invokes(testing.NewCreateAction(simpledbdomainsResource, c.ns, simpledbDomain), &v1alpha1.SimpledbDomain{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSimpledbDomains) Create(simpledbDomain *v1alpha1.SimpledbDomain) (r
 // Update takes the representation of a simpledbDomain and updates it. Returns the server's representation of the simpledbDomain, and an error, if there is any.
 func (c *FakeSimpledbDomains) Update(simpledbDomain *v1alpha1.SimpledbDomain) (result *v1alpha1.SimpledbDomain, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(simpledbdomainsResource, simpledbDomain), &v1alpha1.SimpledbDomain{})
+		Invokes(testing.NewUpdateAction(simpledbdomainsResource, c.ns, simpledbDomain), &v1alpha1.SimpledbDomain{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSimpledbDomains) Update(simpledbDomain *v1alpha1.SimpledbDomain) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSimpledbDomains) UpdateStatus(simpledbDomain *v1alpha1.SimpledbDomain) (*v1alpha1.SimpledbDomain, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(simpledbdomainsResource, "status", simpledbDomain), &v1alpha1.SimpledbDomain{})
+		Invokes(testing.NewUpdateSubresourceAction(simpledbdomainsResource, "status", c.ns, simpledbDomain), &v1alpha1.SimpledbDomain{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSimpledbDomains) UpdateStatus(simpledbDomain *v1alpha1.SimpledbDoma
 // Delete takes name of the simpledbDomain and deletes it. Returns an error if one occurs.
 func (c *FakeSimpledbDomains) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(simpledbdomainsResource, name), &v1alpha1.SimpledbDomain{})
+		Invokes(testing.NewDeleteAction(simpledbdomainsResource, c.ns, name), &v1alpha1.SimpledbDomain{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSimpledbDomains) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(simpledbdomainsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(simpledbdomainsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SimpledbDomainList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSimpledbDomains) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched simpledbDomain.
 func (c *FakeSimpledbDomains) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SimpledbDomain, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(simpledbdomainsResource, name, pt, data, subresources...), &v1alpha1.SimpledbDomain{})
+		Invokes(testing.NewPatchSubresourceAction(simpledbdomainsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SimpledbDomain{})
+
 	if obj == nil {
 		return nil, err
 	}

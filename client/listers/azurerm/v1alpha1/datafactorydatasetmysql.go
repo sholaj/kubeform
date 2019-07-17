@@ -29,8 +29,8 @@ import (
 type DataFactoryDatasetMysqlLister interface {
 	// List lists all DataFactoryDatasetMysqls in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DataFactoryDatasetMysql, err error)
-	// Get retrieves the DataFactoryDatasetMysql from the index for a given name.
-	Get(name string) (*v1alpha1.DataFactoryDatasetMysql, error)
+	// DataFactoryDatasetMysqls returns an object that can list and get DataFactoryDatasetMysqls.
+	DataFactoryDatasetMysqls(namespace string) DataFactoryDatasetMysqlNamespaceLister
 	DataFactoryDatasetMysqlListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dataFactoryDatasetMysqlLister) List(selector labels.Selector) (ret []*v
 	return ret, err
 }
 
-// Get retrieves the DataFactoryDatasetMysql from the index for a given name.
-func (s *dataFactoryDatasetMysqlLister) Get(name string) (*v1alpha1.DataFactoryDatasetMysql, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DataFactoryDatasetMysqls returns an object that can list and get DataFactoryDatasetMysqls.
+func (s *dataFactoryDatasetMysqlLister) DataFactoryDatasetMysqls(namespace string) DataFactoryDatasetMysqlNamespaceLister {
+	return dataFactoryDatasetMysqlNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DataFactoryDatasetMysqlNamespaceLister helps list and get DataFactoryDatasetMysqls.
+type DataFactoryDatasetMysqlNamespaceLister interface {
+	// List lists all DataFactoryDatasetMysqls in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DataFactoryDatasetMysql, err error)
+	// Get retrieves the DataFactoryDatasetMysql from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DataFactoryDatasetMysql, error)
+	DataFactoryDatasetMysqlNamespaceListerExpansion
+}
+
+// dataFactoryDatasetMysqlNamespaceLister implements the DataFactoryDatasetMysqlNamespaceLister
+// interface.
+type dataFactoryDatasetMysqlNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DataFactoryDatasetMysqls in the indexer for a given namespace.
+func (s dataFactoryDatasetMysqlNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DataFactoryDatasetMysql, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DataFactoryDatasetMysql))
+	})
+	return ret, err
+}
+
+// Get retrieves the DataFactoryDatasetMysql from the indexer for a given namespace and name.
+func (s dataFactoryDatasetMysqlNamespaceLister) Get(name string) (*v1alpha1.DataFactoryDatasetMysql, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

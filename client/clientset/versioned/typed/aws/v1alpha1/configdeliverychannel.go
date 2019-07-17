@@ -32,7 +32,7 @@ import (
 // ConfigDeliveryChannelsGetter has a method to return a ConfigDeliveryChannelInterface.
 // A group's client should implement this interface.
 type ConfigDeliveryChannelsGetter interface {
-	ConfigDeliveryChannels() ConfigDeliveryChannelInterface
+	ConfigDeliveryChannels(namespace string) ConfigDeliveryChannelInterface
 }
 
 // ConfigDeliveryChannelInterface has methods to work with ConfigDeliveryChannel resources.
@@ -52,12 +52,14 @@ type ConfigDeliveryChannelInterface interface {
 // configDeliveryChannels implements ConfigDeliveryChannelInterface
 type configDeliveryChannels struct {
 	client rest.Interface
+	ns     string
 }
 
 // newConfigDeliveryChannels returns a ConfigDeliveryChannels
-func newConfigDeliveryChannels(c *AwsV1alpha1Client) *configDeliveryChannels {
+func newConfigDeliveryChannels(c *AwsV1alpha1Client, namespace string) *configDeliveryChannels {
 	return &configDeliveryChannels{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newConfigDeliveryChannels(c *AwsV1alpha1Client) *configDeliveryChannels {
 func (c *configDeliveryChannels) Get(name string, options v1.GetOptions) (result *v1alpha1.ConfigDeliveryChannel, err error) {
 	result = &v1alpha1.ConfigDeliveryChannel{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("configdeliverychannels").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *configDeliveryChannels) List(opts v1.ListOptions) (result *v1alpha1.Con
 	}
 	result = &v1alpha1.ConfigDeliveryChannelList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("configdeliverychannels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *configDeliveryChannels) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("configdeliverychannels").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *configDeliveryChannels) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *configDeliveryChannels) Create(configDeliveryChannel *v1alpha1.ConfigDeliveryChannel) (result *v1alpha1.ConfigDeliveryChannel, err error) {
 	result = &v1alpha1.ConfigDeliveryChannel{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("configdeliverychannels").
 		Body(configDeliveryChannel).
 		Do().
@@ -118,6 +124,7 @@ func (c *configDeliveryChannels) Create(configDeliveryChannel *v1alpha1.ConfigDe
 func (c *configDeliveryChannels) Update(configDeliveryChannel *v1alpha1.ConfigDeliveryChannel) (result *v1alpha1.ConfigDeliveryChannel, err error) {
 	result = &v1alpha1.ConfigDeliveryChannel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("configdeliverychannels").
 		Name(configDeliveryChannel.Name).
 		Body(configDeliveryChannel).
@@ -132,6 +139,7 @@ func (c *configDeliveryChannels) Update(configDeliveryChannel *v1alpha1.ConfigDe
 func (c *configDeliveryChannels) UpdateStatus(configDeliveryChannel *v1alpha1.ConfigDeliveryChannel) (result *v1alpha1.ConfigDeliveryChannel, err error) {
 	result = &v1alpha1.ConfigDeliveryChannel{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("configdeliverychannels").
 		Name(configDeliveryChannel.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *configDeliveryChannels) UpdateStatus(configDeliveryChannel *v1alpha1.Co
 // Delete takes name of the configDeliveryChannel and deletes it. Returns an error if one occurs.
 func (c *configDeliveryChannels) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("configdeliverychannels").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *configDeliveryChannels) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("configdeliverychannels").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *configDeliveryChannels) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *configDeliveryChannels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ConfigDeliveryChannel, err error) {
 	result = &v1alpha1.ConfigDeliveryChannel{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("configdeliverychannels").
 		SubResource(subresources...).
 		Name(name).

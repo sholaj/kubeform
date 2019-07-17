@@ -29,8 +29,8 @@ import (
 type AppmeshVirtualRouterLister interface {
 	// List lists all AppmeshVirtualRouters in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AppmeshVirtualRouter, err error)
-	// Get retrieves the AppmeshVirtualRouter from the index for a given name.
-	Get(name string) (*v1alpha1.AppmeshVirtualRouter, error)
+	// AppmeshVirtualRouters returns an object that can list and get AppmeshVirtualRouters.
+	AppmeshVirtualRouters(namespace string) AppmeshVirtualRouterNamespaceLister
 	AppmeshVirtualRouterListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *appmeshVirtualRouterLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the AppmeshVirtualRouter from the index for a given name.
-func (s *appmeshVirtualRouterLister) Get(name string) (*v1alpha1.AppmeshVirtualRouter, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AppmeshVirtualRouters returns an object that can list and get AppmeshVirtualRouters.
+func (s *appmeshVirtualRouterLister) AppmeshVirtualRouters(namespace string) AppmeshVirtualRouterNamespaceLister {
+	return appmeshVirtualRouterNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AppmeshVirtualRouterNamespaceLister helps list and get AppmeshVirtualRouters.
+type AppmeshVirtualRouterNamespaceLister interface {
+	// List lists all AppmeshVirtualRouters in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AppmeshVirtualRouter, err error)
+	// Get retrieves the AppmeshVirtualRouter from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AppmeshVirtualRouter, error)
+	AppmeshVirtualRouterNamespaceListerExpansion
+}
+
+// appmeshVirtualRouterNamespaceLister implements the AppmeshVirtualRouterNamespaceLister
+// interface.
+type appmeshVirtualRouterNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AppmeshVirtualRouters in the indexer for a given namespace.
+func (s appmeshVirtualRouterNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AppmeshVirtualRouter, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AppmeshVirtualRouter))
+	})
+	return ret, err
+}
+
+// Get retrieves the AppmeshVirtualRouter from the indexer for a given namespace and name.
+func (s appmeshVirtualRouterNamespaceLister) Get(name string) (*v1alpha1.AppmeshVirtualRouter, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

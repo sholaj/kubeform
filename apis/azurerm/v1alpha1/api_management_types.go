@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,41 +19,42 @@ type ApiManagement struct {
 }
 
 type ApiManagementSpecAdditionalLocation struct {
-	Location string `json:"location"`
+	Location string `json:"location" tf:"location"`
 }
 
 type ApiManagementSpecCertificate struct {
-	CertificatePassword string `json:"certificate_password"`
-	EncodedCertificate  string `json:"encoded_certificate"`
-	StoreName           string `json:"store_name"`
+	CertificatePassword string `json:"certificatePassword" tf:"certificate_password"`
+	EncodedCertificate  string `json:"encodedCertificate" tf:"encoded_certificate"`
+	StoreName           string `json:"storeName" tf:"store_name"`
 }
 
 type ApiManagementSpecIdentity struct {
-	Type string `json:"type"`
+	Type string `json:"type" tf:"type"`
 }
 
 type ApiManagementSpecSku struct {
-	Capacity int    `json:"capacity"`
-	Name     string `json:"name"`
+	Capacity int    `json:"capacity" tf:"capacity"`
+	Name     string `json:"name" tf:"name"`
 }
 
 type ApiManagementSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	AdditionalLocation *[]ApiManagementSpec `json:"additional_location,omitempty"`
+	AdditionalLocation []ApiManagementSpecAdditionalLocation `json:"additionalLocation,omitempty" tf:"additional_location,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=10
-	Certificate *[]ApiManagementSpec `json:"certificate,omitempty"`
+	Certificate []ApiManagementSpecCertificate `json:"certificate,omitempty" tf:"certificate,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Identity          *[]ApiManagementSpec `json:"identity,omitempty"`
-	Location          string               `json:"location"`
-	Name              string               `json:"name"`
-	PublisherEmail    string               `json:"publisher_email"`
-	PublisherName     string               `json:"publisher_name"`
-	ResourceGroupName string               `json:"resource_group_name"`
+	Identity          []ApiManagementSpecIdentity `json:"identity,omitempty" tf:"identity,omitempty"`
+	Location          string                      `json:"location" tf:"location"`
+	Name              string                      `json:"name" tf:"name"`
+	PublisherEmail    string                      `json:"publisherEmail" tf:"publisher_email"`
+	PublisherName     string                      `json:"publisherName" tf:"publisher_name"`
+	ResourceGroupName string                      `json:"resourceGroupName" tf:"resource_group_name"`
 	// +kubebuilder:validation:MaxItems=1
-	Sku []ApiManagementSpec `json:"sku"`
+	Sku         []ApiManagementSpecSku    `json:"sku" tf:"sku"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ApiManagementStatus struct {
@@ -61,7 +62,9 @@ type ApiManagementStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

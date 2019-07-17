@@ -29,8 +29,8 @@ import (
 type AcmpcaCertificateAuthorityLister interface {
 	// List lists all AcmpcaCertificateAuthorities in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.AcmpcaCertificateAuthority, err error)
-	// Get retrieves the AcmpcaCertificateAuthority from the index for a given name.
-	Get(name string) (*v1alpha1.AcmpcaCertificateAuthority, error)
+	// AcmpcaCertificateAuthorities returns an object that can list and get AcmpcaCertificateAuthorities.
+	AcmpcaCertificateAuthorities(namespace string) AcmpcaCertificateAuthorityNamespaceLister
 	AcmpcaCertificateAuthorityListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *acmpcaCertificateAuthorityLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the AcmpcaCertificateAuthority from the index for a given name.
-func (s *acmpcaCertificateAuthorityLister) Get(name string) (*v1alpha1.AcmpcaCertificateAuthority, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// AcmpcaCertificateAuthorities returns an object that can list and get AcmpcaCertificateAuthorities.
+func (s *acmpcaCertificateAuthorityLister) AcmpcaCertificateAuthorities(namespace string) AcmpcaCertificateAuthorityNamespaceLister {
+	return acmpcaCertificateAuthorityNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// AcmpcaCertificateAuthorityNamespaceLister helps list and get AcmpcaCertificateAuthorities.
+type AcmpcaCertificateAuthorityNamespaceLister interface {
+	// List lists all AcmpcaCertificateAuthorities in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.AcmpcaCertificateAuthority, err error)
+	// Get retrieves the AcmpcaCertificateAuthority from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.AcmpcaCertificateAuthority, error)
+	AcmpcaCertificateAuthorityNamespaceListerExpansion
+}
+
+// acmpcaCertificateAuthorityNamespaceLister implements the AcmpcaCertificateAuthorityNamespaceLister
+// interface.
+type acmpcaCertificateAuthorityNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all AcmpcaCertificateAuthorities in the indexer for a given namespace.
+func (s acmpcaCertificateAuthorityNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AcmpcaCertificateAuthority, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.AcmpcaCertificateAuthority))
+	})
+	return ret, err
+}
+
+// Get retrieves the AcmpcaCertificateAuthority from the indexer for a given namespace and name.
+func (s acmpcaCertificateAuthorityNamespaceLister) Get(name string) (*v1alpha1.AcmpcaCertificateAuthority, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

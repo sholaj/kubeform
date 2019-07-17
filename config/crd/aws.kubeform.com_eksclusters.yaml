@@ -397,24 +397,53 @@ spec:
           type: object
         spec:
           properties:
-            enabled_cluster_log_types:
+            enabledClusterLogTypes:
               items:
                 type: string
               type: array
               uniqueItems: true
             name:
               type: string
-            role_arn:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            roleArn:
               type: string
-            vpc_config:
-              items: {}
+            vpcConfig:
+              items:
+                properties:
+                  endpointPrivateAccess:
+                    type: boolean
+                  endpointPublicAccess:
+                    type: boolean
+                  securityGroupIDS:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
+                  subnetIDS:
+                    items:
+                      type: string
+                    minItems: 1
+                    type: array
+                    uniqueItems: true
+                required:
+                - subnetIDS
+                type: object
               maxItems: 1
               minItems: 1
               type: array
           required:
           - name
-          - role_arn
-          - vpc_config
+          - providerRef
+          - roleArn
+          - vpcConfig
           type: object
         status:
           properties:
@@ -425,6 +454,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -32,7 +32,7 @@ import (
 // IamRolePolicyAttachmentsGetter has a method to return a IamRolePolicyAttachmentInterface.
 // A group's client should implement this interface.
 type IamRolePolicyAttachmentsGetter interface {
-	IamRolePolicyAttachments() IamRolePolicyAttachmentInterface
+	IamRolePolicyAttachments(namespace string) IamRolePolicyAttachmentInterface
 }
 
 // IamRolePolicyAttachmentInterface has methods to work with IamRolePolicyAttachment resources.
@@ -52,12 +52,14 @@ type IamRolePolicyAttachmentInterface interface {
 // iamRolePolicyAttachments implements IamRolePolicyAttachmentInterface
 type iamRolePolicyAttachments struct {
 	client rest.Interface
+	ns     string
 }
 
 // newIamRolePolicyAttachments returns a IamRolePolicyAttachments
-func newIamRolePolicyAttachments(c *AwsV1alpha1Client) *iamRolePolicyAttachments {
+func newIamRolePolicyAttachments(c *AwsV1alpha1Client, namespace string) *iamRolePolicyAttachments {
 	return &iamRolePolicyAttachments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newIamRolePolicyAttachments(c *AwsV1alpha1Client) *iamRolePolicyAttachments
 func (c *iamRolePolicyAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.IamRolePolicyAttachment, err error) {
 	result = &v1alpha1.IamRolePolicyAttachment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamrolepolicyattachments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *iamRolePolicyAttachments) List(opts v1.ListOptions) (result *v1alpha1.I
 	}
 	result = &v1alpha1.IamRolePolicyAttachmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("iamrolepolicyattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *iamRolePolicyAttachments) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("iamrolepolicyattachments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *iamRolePolicyAttachments) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *iamRolePolicyAttachments) Create(iamRolePolicyAttachment *v1alpha1.IamRolePolicyAttachment) (result *v1alpha1.IamRolePolicyAttachment, err error) {
 	result = &v1alpha1.IamRolePolicyAttachment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("iamrolepolicyattachments").
 		Body(iamRolePolicyAttachment).
 		Do().
@@ -118,6 +124,7 @@ func (c *iamRolePolicyAttachments) Create(iamRolePolicyAttachment *v1alpha1.IamR
 func (c *iamRolePolicyAttachments) Update(iamRolePolicyAttachment *v1alpha1.IamRolePolicyAttachment) (result *v1alpha1.IamRolePolicyAttachment, err error) {
 	result = &v1alpha1.IamRolePolicyAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamrolepolicyattachments").
 		Name(iamRolePolicyAttachment.Name).
 		Body(iamRolePolicyAttachment).
@@ -132,6 +139,7 @@ func (c *iamRolePolicyAttachments) Update(iamRolePolicyAttachment *v1alpha1.IamR
 func (c *iamRolePolicyAttachments) UpdateStatus(iamRolePolicyAttachment *v1alpha1.IamRolePolicyAttachment) (result *v1alpha1.IamRolePolicyAttachment, err error) {
 	result = &v1alpha1.IamRolePolicyAttachment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("iamrolepolicyattachments").
 		Name(iamRolePolicyAttachment.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *iamRolePolicyAttachments) UpdateStatus(iamRolePolicyAttachment *v1alpha
 // Delete takes name of the iamRolePolicyAttachment and deletes it. Returns an error if one occurs.
 func (c *iamRolePolicyAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamrolepolicyattachments").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *iamRolePolicyAttachments) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("iamrolepolicyattachments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *iamRolePolicyAttachments) DeleteCollection(options *v1.DeleteOptions, l
 func (c *iamRolePolicyAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamRolePolicyAttachment, err error) {
 	result = &v1alpha1.IamRolePolicyAttachment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("iamrolepolicyattachments").
 		SubResource(subresources...).
 		Name(name).

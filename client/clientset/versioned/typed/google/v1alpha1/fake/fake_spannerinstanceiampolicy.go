@@ -31,6 +31,7 @@ import (
 // FakeSpannerInstanceIamPolicies implements SpannerInstanceIamPolicyInterface
 type FakeSpannerInstanceIamPolicies struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var spannerinstanceiampoliciesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "spannerinstanceiampolicies"}
@@ -40,7 +41,8 @@ var spannerinstanceiampoliciesKind = schema.GroupVersionKind{Group: "google.kube
 // Get takes name of the spannerInstanceIamPolicy, and returns the corresponding spannerInstanceIamPolicy object, and an error if there is any.
 func (c *FakeSpannerInstanceIamPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.SpannerInstanceIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(spannerinstanceiampoliciesResource, name), &v1alpha1.SpannerInstanceIamPolicy{})
+		Invokes(testing.NewGetAction(spannerinstanceiampoliciesResource, c.ns, name), &v1alpha1.SpannerInstanceIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSpannerInstanceIamPolicies) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of SpannerInstanceIamPolicies that match those selectors.
 func (c *FakeSpannerInstanceIamPolicies) List(opts v1.ListOptions) (result *v1alpha1.SpannerInstanceIamPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(spannerinstanceiampoliciesResource, spannerinstanceiampoliciesKind, opts), &v1alpha1.SpannerInstanceIamPolicyList{})
+		Invokes(testing.NewListAction(spannerinstanceiampoliciesResource, spannerinstanceiampoliciesKind, c.ns, opts), &v1alpha1.SpannerInstanceIamPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSpannerInstanceIamPolicies) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested spannerInstanceIamPolicies.
 func (c *FakeSpannerInstanceIamPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(spannerinstanceiampoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(spannerinstanceiampoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a spannerInstanceIamPolicy and creates it.  Returns the server's representation of the spannerInstanceIamPolicy, and an error, if there is any.
 func (c *FakeSpannerInstanceIamPolicies) Create(spannerInstanceIamPolicy *v1alpha1.SpannerInstanceIamPolicy) (result *v1alpha1.SpannerInstanceIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(spannerinstanceiampoliciesResource, spannerInstanceIamPolicy), &v1alpha1.SpannerInstanceIamPolicy{})
+		Invokes(testing.NewCreateAction(spannerinstanceiampoliciesResource, c.ns, spannerInstanceIamPolicy), &v1alpha1.SpannerInstanceIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSpannerInstanceIamPolicies) Create(spannerInstanceIamPolicy *v1alph
 // Update takes the representation of a spannerInstanceIamPolicy and updates it. Returns the server's representation of the spannerInstanceIamPolicy, and an error, if there is any.
 func (c *FakeSpannerInstanceIamPolicies) Update(spannerInstanceIamPolicy *v1alpha1.SpannerInstanceIamPolicy) (result *v1alpha1.SpannerInstanceIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(spannerinstanceiampoliciesResource, spannerInstanceIamPolicy), &v1alpha1.SpannerInstanceIamPolicy{})
+		Invokes(testing.NewUpdateAction(spannerinstanceiampoliciesResource, c.ns, spannerInstanceIamPolicy), &v1alpha1.SpannerInstanceIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSpannerInstanceIamPolicies) Update(spannerInstanceIamPolicy *v1alph
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSpannerInstanceIamPolicies) UpdateStatus(spannerInstanceIamPolicy *v1alpha1.SpannerInstanceIamPolicy) (*v1alpha1.SpannerInstanceIamPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(spannerinstanceiampoliciesResource, "status", spannerInstanceIamPolicy), &v1alpha1.SpannerInstanceIamPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(spannerinstanceiampoliciesResource, "status", c.ns, spannerInstanceIamPolicy), &v1alpha1.SpannerInstanceIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSpannerInstanceIamPolicies) UpdateStatus(spannerInstanceIamPolicy *
 // Delete takes name of the spannerInstanceIamPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeSpannerInstanceIamPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(spannerinstanceiampoliciesResource, name), &v1alpha1.SpannerInstanceIamPolicy{})
+		Invokes(testing.NewDeleteAction(spannerinstanceiampoliciesResource, c.ns, name), &v1alpha1.SpannerInstanceIamPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSpannerInstanceIamPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(spannerinstanceiampoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(spannerinstanceiampoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SpannerInstanceIamPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSpannerInstanceIamPolicies) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched spannerInstanceIamPolicy.
 func (c *FakeSpannerInstanceIamPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SpannerInstanceIamPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(spannerinstanceiampoliciesResource, name, pt, data, subresources...), &v1alpha1.SpannerInstanceIamPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(spannerinstanceiampoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.SpannerInstanceIamPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

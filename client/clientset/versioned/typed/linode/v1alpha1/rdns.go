@@ -32,7 +32,7 @@ import (
 // RdnsesGetter has a method to return a RdnsInterface.
 // A group's client should implement this interface.
 type RdnsesGetter interface {
-	Rdnses() RdnsInterface
+	Rdnses(namespace string) RdnsInterface
 }
 
 // RdnsInterface has methods to work with Rdns resources.
@@ -52,12 +52,14 @@ type RdnsInterface interface {
 // rdnses implements RdnsInterface
 type rdnses struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRdnses returns a Rdnses
-func newRdnses(c *LinodeV1alpha1Client) *rdnses {
+func newRdnses(c *LinodeV1alpha1Client, namespace string) *rdnses {
 	return &rdnses{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRdnses(c *LinodeV1alpha1Client) *rdnses {
 func (c *rdnses) Get(name string, options v1.GetOptions) (result *v1alpha1.Rdns, err error) {
 	result = &v1alpha1.Rdns{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("rdnses").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *rdnses) List(opts v1.ListOptions) (result *v1alpha1.RdnsList, err error
 	}
 	result = &v1alpha1.RdnsList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("rdnses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *rdnses) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("rdnses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *rdnses) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *rdnses) Create(rdns *v1alpha1.Rdns) (result *v1alpha1.Rdns, err error) {
 	result = &v1alpha1.Rdns{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("rdnses").
 		Body(rdns).
 		Do().
@@ -118,6 +124,7 @@ func (c *rdnses) Create(rdns *v1alpha1.Rdns) (result *v1alpha1.Rdns, err error) 
 func (c *rdnses) Update(rdns *v1alpha1.Rdns) (result *v1alpha1.Rdns, err error) {
 	result = &v1alpha1.Rdns{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("rdnses").
 		Name(rdns.Name).
 		Body(rdns).
@@ -132,6 +139,7 @@ func (c *rdnses) Update(rdns *v1alpha1.Rdns) (result *v1alpha1.Rdns, err error) 
 func (c *rdnses) UpdateStatus(rdns *v1alpha1.Rdns) (result *v1alpha1.Rdns, err error) {
 	result = &v1alpha1.Rdns{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("rdnses").
 		Name(rdns.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *rdnses) UpdateStatus(rdns *v1alpha1.Rdns) (result *v1alpha1.Rdns, err e
 // Delete takes name of the rdns and deletes it. Returns an error if one occurs.
 func (c *rdnses) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("rdnses").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *rdnses) DeleteCollection(options *v1.DeleteOptions, listOptions v1.List
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("rdnses").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *rdnses) DeleteCollection(options *v1.DeleteOptions, listOptions v1.List
 func (c *rdnses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Rdns, err error) {
 	result = &v1alpha1.Rdns{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("rdnses").
 		SubResource(subresources...).
 		Name(name).

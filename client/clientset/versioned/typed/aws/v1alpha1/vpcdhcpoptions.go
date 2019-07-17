@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// VpcDhcpOptionsesGetter has a method to return a VpcDhcpOptionsInterface.
+// VpcDHCPOptionsesGetter has a method to return a VpcDHCPOptionsInterface.
 // A group's client should implement this interface.
-type VpcDhcpOptionsesGetter interface {
-	VpcDhcpOptionses() VpcDhcpOptionsInterface
+type VpcDHCPOptionsesGetter interface {
+	VpcDHCPOptionses(namespace string) VpcDHCPOptionsInterface
 }
 
-// VpcDhcpOptionsInterface has methods to work with VpcDhcpOptions resources.
-type VpcDhcpOptionsInterface interface {
-	Create(*v1alpha1.VpcDhcpOptions) (*v1alpha1.VpcDhcpOptions, error)
-	Update(*v1alpha1.VpcDhcpOptions) (*v1alpha1.VpcDhcpOptions, error)
-	UpdateStatus(*v1alpha1.VpcDhcpOptions) (*v1alpha1.VpcDhcpOptions, error)
+// VpcDHCPOptionsInterface has methods to work with VpcDHCPOptions resources.
+type VpcDHCPOptionsInterface interface {
+	Create(*v1alpha1.VpcDHCPOptions) (*v1alpha1.VpcDHCPOptions, error)
+	Update(*v1alpha1.VpcDHCPOptions) (*v1alpha1.VpcDHCPOptions, error)
+	UpdateStatus(*v1alpha1.VpcDHCPOptions) (*v1alpha1.VpcDHCPOptions, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.VpcDhcpOptions, error)
-	List(opts v1.ListOptions) (*v1alpha1.VpcDhcpOptionsList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.VpcDHCPOptions, error)
+	List(opts v1.ListOptions) (*v1alpha1.VpcDHCPOptionsList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcDhcpOptions, err error)
-	VpcDhcpOptionsExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcDHCPOptions, err error)
+	VpcDHCPOptionsExpansion
 }
 
-// vpcDhcpOptionses implements VpcDhcpOptionsInterface
-type vpcDhcpOptionses struct {
+// vpcDHCPOptionses implements VpcDHCPOptionsInterface
+type vpcDHCPOptionses struct {
 	client rest.Interface
+	ns     string
 }
 
-// newVpcDhcpOptionses returns a VpcDhcpOptionses
-func newVpcDhcpOptionses(c *AwsV1alpha1Client) *vpcDhcpOptionses {
-	return &vpcDhcpOptionses{
+// newVpcDHCPOptionses returns a VpcDHCPOptionses
+func newVpcDHCPOptionses(c *AwsV1alpha1Client, namespace string) *vpcDHCPOptionses {
+	return &vpcDHCPOptionses{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the vpcDhcpOptions, and returns the corresponding vpcDhcpOptions object, and an error if there is any.
-func (c *vpcDhcpOptionses) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcDhcpOptions, err error) {
-	result = &v1alpha1.VpcDhcpOptions{}
+// Get takes name of the vpcDHCPOptions, and returns the corresponding vpcDHCPOptions object, and an error if there is any.
+func (c *vpcDHCPOptionses) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcDHCPOptions, err error) {
+	result = &v1alpha1.VpcDHCPOptions{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcdhcpoptionses").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *vpcDhcpOptionses) Get(name string, options v1.GetOptions) (result *v1al
 	return
 }
 
-// List takes label and field selectors, and returns the list of VpcDhcpOptionses that match those selectors.
-func (c *vpcDhcpOptionses) List(opts v1.ListOptions) (result *v1alpha1.VpcDhcpOptionsList, err error) {
+// List takes label and field selectors, and returns the list of VpcDHCPOptionses that match those selectors.
+func (c *vpcDHCPOptionses) List(opts v1.ListOptions) (result *v1alpha1.VpcDHCPOptionsList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.VpcDhcpOptionsList{}
+	result = &v1alpha1.VpcDHCPOptionsList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcdhcpoptionses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *vpcDhcpOptionses) List(opts v1.ListOptions) (result *v1alpha1.VpcDhcpOp
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested vpcDhcpOptionses.
-func (c *vpcDhcpOptionses) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested vpcDHCPOptionses.
+func (c *vpcDHCPOptionses) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("vpcdhcpoptionses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a vpcDhcpOptions and creates it.  Returns the server's representation of the vpcDhcpOptions, and an error, if there is any.
-func (c *vpcDhcpOptionses) Create(vpcDhcpOptions *v1alpha1.VpcDhcpOptions) (result *v1alpha1.VpcDhcpOptions, err error) {
-	result = &v1alpha1.VpcDhcpOptions{}
+// Create takes the representation of a vpcDHCPOptions and creates it.  Returns the server's representation of the vpcDHCPOptions, and an error, if there is any.
+func (c *vpcDHCPOptionses) Create(vpcDHCPOptions *v1alpha1.VpcDHCPOptions) (result *v1alpha1.VpcDHCPOptions, err error) {
+	result = &v1alpha1.VpcDHCPOptions{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("vpcdhcpoptionses").
-		Body(vpcDhcpOptions).
+		Body(vpcDHCPOptions).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a vpcDhcpOptions and updates it. Returns the server's representation of the vpcDhcpOptions, and an error, if there is any.
-func (c *vpcDhcpOptionses) Update(vpcDhcpOptions *v1alpha1.VpcDhcpOptions) (result *v1alpha1.VpcDhcpOptions, err error) {
-	result = &v1alpha1.VpcDhcpOptions{}
+// Update takes the representation of a vpcDHCPOptions and updates it. Returns the server's representation of the vpcDHCPOptions, and an error, if there is any.
+func (c *vpcDHCPOptionses) Update(vpcDHCPOptions *v1alpha1.VpcDHCPOptions) (result *v1alpha1.VpcDHCPOptions, err error) {
+	result = &v1alpha1.VpcDHCPOptions{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcdhcpoptionses").
-		Name(vpcDhcpOptions.Name).
-		Body(vpcDhcpOptions).
+		Name(vpcDHCPOptions.Name).
+		Body(vpcDHCPOptions).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *vpcDhcpOptionses) Update(vpcDhcpOptions *v1alpha1.VpcDhcpOptions) (resu
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *vpcDhcpOptionses) UpdateStatus(vpcDhcpOptions *v1alpha1.VpcDhcpOptions) (result *v1alpha1.VpcDhcpOptions, err error) {
-	result = &v1alpha1.VpcDhcpOptions{}
+func (c *vpcDHCPOptionses) UpdateStatus(vpcDHCPOptions *v1alpha1.VpcDHCPOptions) (result *v1alpha1.VpcDHCPOptions, err error) {
+	result = &v1alpha1.VpcDHCPOptions{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("vpcdhcpoptionses").
-		Name(vpcDhcpOptions.Name).
+		Name(vpcDHCPOptions.Name).
 		SubResource("status").
-		Body(vpcDhcpOptions).
+		Body(vpcDHCPOptions).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the vpcDhcpOptions and deletes it. Returns an error if one occurs.
-func (c *vpcDhcpOptionses) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the vpcDHCPOptions and deletes it. Returns an error if one occurs.
+func (c *vpcDHCPOptionses) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcdhcpoptionses").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *vpcDhcpOptionses) Delete(name string, options *v1.DeleteOptions) error 
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *vpcDhcpOptionses) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *vpcDHCPOptionses) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("vpcdhcpoptionses").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *vpcDhcpOptionses) DeleteCollection(options *v1.DeleteOptions, listOptio
 		Error()
 }
 
-// Patch applies the patch and returns the patched vpcDhcpOptions.
-func (c *vpcDhcpOptionses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcDhcpOptions, err error) {
-	result = &v1alpha1.VpcDhcpOptions{}
+// Patch applies the patch and returns the patched vpcDHCPOptions.
+func (c *vpcDHCPOptionses) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcDHCPOptions, err error) {
+	result = &v1alpha1.VpcDHCPOptions{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("vpcdhcpoptionses").
 		SubResource(subresources...).
 		Name(name).

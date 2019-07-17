@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,20 +20,21 @@ type DataflowJob struct {
 
 type DataflowJobSpec struct {
 	// +optional
-	MaxWorkers int    `json:"max_workers,omitempty"`
-	Name       string `json:"name"`
+	MaxWorkers int    `json:"maxWorkers,omitempty" tf:"max_workers,omitempty"`
+	Name       string `json:"name" tf:"name"`
 	// +optional
-	OnDelete string `json:"on_delete,omitempty"`
+	OnDelete string `json:"onDelete,omitempty" tf:"on_delete,omitempty"`
 	// +optional
-	Parameters map[string]string `json:"parameters,omitempty"`
+	Parameters map[string]string `json:"parameters,omitempty" tf:"parameters,omitempty"`
 	// +optional
-	Project string `json:"project,omitempty"`
+	Project string `json:"project,omitempty" tf:"project,omitempty"`
 	// +optional
-	Region          string `json:"region,omitempty"`
-	TempGcsLocation string `json:"temp_gcs_location"`
-	TemplateGcsPath string `json:"template_gcs_path"`
+	Region          string `json:"region,omitempty" tf:"region,omitempty"`
+	TempGcsLocation string `json:"tempGcsLocation" tf:"temp_gcs_location"`
+	TemplateGcsPath string `json:"templateGcsPath" tf:"template_gcs_path"`
 	// +optional
-	Zone string `json:"zone,omitempty"`
+	Zone        string                    `json:"zone,omitempty" tf:"zone,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DataflowJobStatus struct {
@@ -41,7 +42,9 @@ type DataflowJobStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

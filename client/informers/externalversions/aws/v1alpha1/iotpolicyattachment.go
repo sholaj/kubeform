@@ -41,32 +41,33 @@ type IotPolicyAttachmentInformer interface {
 type iotPolicyAttachmentInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewIotPolicyAttachmentInformer constructs a new informer for IotPolicyAttachment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewIotPolicyAttachmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredIotPolicyAttachmentInformer(client, resyncPeriod, indexers, nil)
+func NewIotPolicyAttachmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredIotPolicyAttachmentInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredIotPolicyAttachmentInformer constructs a new informer for IotPolicyAttachment type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredIotPolicyAttachmentInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredIotPolicyAttachmentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().IotPolicyAttachments().List(options)
+				return client.AwsV1alpha1().IotPolicyAttachments(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().IotPolicyAttachments().Watch(options)
+				return client.AwsV1alpha1().IotPolicyAttachments(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.IotPolicyAttachment{},
@@ -76,7 +77,7 @@ func NewFilteredIotPolicyAttachmentInformer(client versioned.Interface, resyncPe
 }
 
 func (f *iotPolicyAttachmentInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredIotPolicyAttachmentInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredIotPolicyAttachmentInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *iotPolicyAttachmentInformer) Informer() cache.SharedIndexInformer {

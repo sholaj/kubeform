@@ -29,8 +29,8 @@ import (
 type DmsReplicationSubnetGroupLister interface {
 	// List lists all DmsReplicationSubnetGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DmsReplicationSubnetGroup, err error)
-	// Get retrieves the DmsReplicationSubnetGroup from the index for a given name.
-	Get(name string) (*v1alpha1.DmsReplicationSubnetGroup, error)
+	// DmsReplicationSubnetGroups returns an object that can list and get DmsReplicationSubnetGroups.
+	DmsReplicationSubnetGroups(namespace string) DmsReplicationSubnetGroupNamespaceLister
 	DmsReplicationSubnetGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dmsReplicationSubnetGroupLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the DmsReplicationSubnetGroup from the index for a given name.
-func (s *dmsReplicationSubnetGroupLister) Get(name string) (*v1alpha1.DmsReplicationSubnetGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DmsReplicationSubnetGroups returns an object that can list and get DmsReplicationSubnetGroups.
+func (s *dmsReplicationSubnetGroupLister) DmsReplicationSubnetGroups(namespace string) DmsReplicationSubnetGroupNamespaceLister {
+	return dmsReplicationSubnetGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DmsReplicationSubnetGroupNamespaceLister helps list and get DmsReplicationSubnetGroups.
+type DmsReplicationSubnetGroupNamespaceLister interface {
+	// List lists all DmsReplicationSubnetGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DmsReplicationSubnetGroup, err error)
+	// Get retrieves the DmsReplicationSubnetGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DmsReplicationSubnetGroup, error)
+	DmsReplicationSubnetGroupNamespaceListerExpansion
+}
+
+// dmsReplicationSubnetGroupNamespaceLister implements the DmsReplicationSubnetGroupNamespaceLister
+// interface.
+type dmsReplicationSubnetGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DmsReplicationSubnetGroups in the indexer for a given namespace.
+func (s dmsReplicationSubnetGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DmsReplicationSubnetGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DmsReplicationSubnetGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the DmsReplicationSubnetGroup from the indexer for a given namespace and name.
+func (s dmsReplicationSubnetGroupNamespaceLister) Get(name string) (*v1alpha1.DmsReplicationSubnetGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

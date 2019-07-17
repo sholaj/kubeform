@@ -32,7 +32,7 @@ import (
 // ServicebusNamespaceAuthorizationRulesGetter has a method to return a ServicebusNamespaceAuthorizationRuleInterface.
 // A group's client should implement this interface.
 type ServicebusNamespaceAuthorizationRulesGetter interface {
-	ServicebusNamespaceAuthorizationRules() ServicebusNamespaceAuthorizationRuleInterface
+	ServicebusNamespaceAuthorizationRules(namespace string) ServicebusNamespaceAuthorizationRuleInterface
 }
 
 // ServicebusNamespaceAuthorizationRuleInterface has methods to work with ServicebusNamespaceAuthorizationRule resources.
@@ -52,12 +52,14 @@ type ServicebusNamespaceAuthorizationRuleInterface interface {
 // servicebusNamespaceAuthorizationRules implements ServicebusNamespaceAuthorizationRuleInterface
 type servicebusNamespaceAuthorizationRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newServicebusNamespaceAuthorizationRules returns a ServicebusNamespaceAuthorizationRules
-func newServicebusNamespaceAuthorizationRules(c *AzurermV1alpha1Client) *servicebusNamespaceAuthorizationRules {
+func newServicebusNamespaceAuthorizationRules(c *AzurermV1alpha1Client, namespace string) *servicebusNamespaceAuthorizationRules {
 	return &servicebusNamespaceAuthorizationRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newServicebusNamespaceAuthorizationRules(c *AzurermV1alpha1Client) *service
 func (c *servicebusNamespaceAuthorizationRules) Get(name string, options v1.GetOptions) (result *v1alpha1.ServicebusNamespaceAuthorizationRule, err error) {
 	result = &v1alpha1.ServicebusNamespaceAuthorizationRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicebusnamespaceauthorizationrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *servicebusNamespaceAuthorizationRules) List(opts v1.ListOptions) (resul
 	}
 	result = &v1alpha1.ServicebusNamespaceAuthorizationRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicebusnamespaceauthorizationrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *servicebusNamespaceAuthorizationRules) Watch(opts v1.ListOptions) (watc
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("servicebusnamespaceauthorizationrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *servicebusNamespaceAuthorizationRules) Watch(opts v1.ListOptions) (watc
 func (c *servicebusNamespaceAuthorizationRules) Create(servicebusNamespaceAuthorizationRule *v1alpha1.ServicebusNamespaceAuthorizationRule) (result *v1alpha1.ServicebusNamespaceAuthorizationRule, err error) {
 	result = &v1alpha1.ServicebusNamespaceAuthorizationRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("servicebusnamespaceauthorizationrules").
 		Body(servicebusNamespaceAuthorizationRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *servicebusNamespaceAuthorizationRules) Create(servicebusNamespaceAuthor
 func (c *servicebusNamespaceAuthorizationRules) Update(servicebusNamespaceAuthorizationRule *v1alpha1.ServicebusNamespaceAuthorizationRule) (result *v1alpha1.ServicebusNamespaceAuthorizationRule, err error) {
 	result = &v1alpha1.ServicebusNamespaceAuthorizationRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicebusnamespaceauthorizationrules").
 		Name(servicebusNamespaceAuthorizationRule.Name).
 		Body(servicebusNamespaceAuthorizationRule).
@@ -132,6 +139,7 @@ func (c *servicebusNamespaceAuthorizationRules) Update(servicebusNamespaceAuthor
 func (c *servicebusNamespaceAuthorizationRules) UpdateStatus(servicebusNamespaceAuthorizationRule *v1alpha1.ServicebusNamespaceAuthorizationRule) (result *v1alpha1.ServicebusNamespaceAuthorizationRule, err error) {
 	result = &v1alpha1.ServicebusNamespaceAuthorizationRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicebusnamespaceauthorizationrules").
 		Name(servicebusNamespaceAuthorizationRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *servicebusNamespaceAuthorizationRules) UpdateStatus(servicebusNamespace
 // Delete takes name of the servicebusNamespaceAuthorizationRule and deletes it. Returns an error if one occurs.
 func (c *servicebusNamespaceAuthorizationRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicebusnamespaceauthorizationrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *servicebusNamespaceAuthorizationRules) DeleteCollection(options *v1.Del
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicebusnamespaceauthorizationrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *servicebusNamespaceAuthorizationRules) DeleteCollection(options *v1.Del
 func (c *servicebusNamespaceAuthorizationRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServicebusNamespaceAuthorizationRule, err error) {
 	result = &v1alpha1.ServicebusNamespaceAuthorizationRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("servicebusnamespaceauthorizationrules").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type DefaultVpcLister interface {
 	// List lists all DefaultVpcs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DefaultVpc, err error)
-	// Get retrieves the DefaultVpc from the index for a given name.
-	Get(name string) (*v1alpha1.DefaultVpc, error)
+	// DefaultVpcs returns an object that can list and get DefaultVpcs.
+	DefaultVpcs(namespace string) DefaultVpcNamespaceLister
 	DefaultVpcListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *defaultVpcLister) List(selector labels.Selector) (ret []*v1alpha1.Defau
 	return ret, err
 }
 
-// Get retrieves the DefaultVpc from the index for a given name.
-func (s *defaultVpcLister) Get(name string) (*v1alpha1.DefaultVpc, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DefaultVpcs returns an object that can list and get DefaultVpcs.
+func (s *defaultVpcLister) DefaultVpcs(namespace string) DefaultVpcNamespaceLister {
+	return defaultVpcNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DefaultVpcNamespaceLister helps list and get DefaultVpcs.
+type DefaultVpcNamespaceLister interface {
+	// List lists all DefaultVpcs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DefaultVpc, err error)
+	// Get retrieves the DefaultVpc from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DefaultVpc, error)
+	DefaultVpcNamespaceListerExpansion
+}
+
+// defaultVpcNamespaceLister implements the DefaultVpcNamespaceLister
+// interface.
+type defaultVpcNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DefaultVpcs in the indexer for a given namespace.
+func (s defaultVpcNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DefaultVpc, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DefaultVpc))
+	})
+	return ret, err
+}
+
+// Get retrieves the DefaultVpc from the indexer for a given namespace and name.
+func (s defaultVpcNamespaceLister) Get(name string) (*v1alpha1.DefaultVpc, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -397,29 +397,68 @@ spec:
           type: object
         spec:
           properties:
-            database_name:
+            databaseName:
               type: string
-            endpoint_id:
+            endpointID:
               type: string
-            endpoint_type:
+            endpointType:
               type: string
-            engine_name:
+            engineName:
               type: string
-            mongodb_settings:
-              items: {}
+            mongodbSettings:
+              items:
+                properties:
+                  authMechanism:
+                    type: string
+                  authSource:
+                    type: string
+                  authType:
+                    type: string
+                  docsToInvestigate:
+                    type: string
+                  extractDocID:
+                    type: string
+                  nestingLevel:
+                    type: string
+                type: object
               maxItems: 1
               type: array
             password:
               type: string
             port:
               type: integer
-            s3_settings:
-              items: {}
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            s3Settings:
+              items:
+                properties:
+                  bucketFolder:
+                    type: string
+                  bucketName:
+                    type: string
+                  compressionType:
+                    type: string
+                  csvDelimiter:
+                    type: string
+                  csvRowDelimiter:
+                    type: string
+                  externalTableDefinition:
+                    type: string
+                  serviceAccessRoleArn:
+                    type: string
+                type: object
               maxItems: 1
               type: array
-            server_name:
+            serverName:
               type: string
-            service_access_role:
+            serviceAccessRole:
               type: string
             tags:
               additionalProperties:
@@ -428,9 +467,10 @@ spec:
             username:
               type: string
           required:
-          - endpoint_id
-          - endpoint_type
-          - engine_name
+          - endpointID
+          - endpointType
+          - engineName
+          - providerRef
           type: object
         status:
           properties:
@@ -441,6 +481,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

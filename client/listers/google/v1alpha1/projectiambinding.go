@@ -29,8 +29,8 @@ import (
 type ProjectIamBindingLister interface {
 	// List lists all ProjectIamBindings in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ProjectIamBinding, err error)
-	// Get retrieves the ProjectIamBinding from the index for a given name.
-	Get(name string) (*v1alpha1.ProjectIamBinding, error)
+	// ProjectIamBindings returns an object that can list and get ProjectIamBindings.
+	ProjectIamBindings(namespace string) ProjectIamBindingNamespaceLister
 	ProjectIamBindingListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *projectIamBindingLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the ProjectIamBinding from the index for a given name.
-func (s *projectIamBindingLister) Get(name string) (*v1alpha1.ProjectIamBinding, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ProjectIamBindings returns an object that can list and get ProjectIamBindings.
+func (s *projectIamBindingLister) ProjectIamBindings(namespace string) ProjectIamBindingNamespaceLister {
+	return projectIamBindingNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ProjectIamBindingNamespaceLister helps list and get ProjectIamBindings.
+type ProjectIamBindingNamespaceLister interface {
+	// List lists all ProjectIamBindings in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ProjectIamBinding, err error)
+	// Get retrieves the ProjectIamBinding from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ProjectIamBinding, error)
+	ProjectIamBindingNamespaceListerExpansion
+}
+
+// projectIamBindingNamespaceLister implements the ProjectIamBindingNamespaceLister
+// interface.
+type projectIamBindingNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ProjectIamBindings in the indexer for a given namespace.
+func (s projectIamBindingNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ProjectIamBinding, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ProjectIamBinding))
+	})
+	return ret, err
+}
+
+// Get retrieves the ProjectIamBinding from the indexer for a given namespace and name.
+func (s projectIamBindingNamespaceLister) Get(name string) (*v1alpha1.ProjectIamBinding, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

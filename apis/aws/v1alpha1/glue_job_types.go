@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,27 +20,28 @@ type GlueJob struct {
 
 type GlueJobSpecCommand struct {
 	// +optional
-	Name           string `json:"name,omitempty"`
-	ScriptLocation string `json:"script_location"`
+	Name           string `json:"name,omitempty" tf:"name,omitempty"`
+	ScriptLocation string `json:"scriptLocation" tf:"script_location"`
 }
 
 type GlueJobSpec struct {
 	// +kubebuilder:validation:MaxItems=1
-	Command []GlueJobSpec `json:"command"`
+	Command []GlueJobSpecCommand `json:"command" tf:"command"`
 	// +optional
-	Connections []string `json:"connections,omitempty"`
+	Connections []string `json:"connections,omitempty" tf:"connections,omitempty"`
 	// +optional
-	DefaultArguments map[string]string `json:"default_arguments,omitempty"`
+	DefaultArguments map[string]string `json:"defaultArguments,omitempty" tf:"default_arguments,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	MaxRetries int    `json:"max_retries,omitempty"`
-	Name       string `json:"name"`
-	RoleArn    string `json:"role_arn"`
+	MaxRetries int    `json:"maxRetries,omitempty" tf:"max_retries,omitempty"`
+	Name       string `json:"name" tf:"name"`
+	RoleArn    string `json:"roleArn" tf:"role_arn"`
 	// +optional
-	SecurityConfiguration string `json:"security_configuration,omitempty"`
+	SecurityConfiguration string `json:"securityConfiguration,omitempty" tf:"security_configuration,omitempty"`
 	// +optional
-	Timeout int `json:"timeout,omitempty"`
+	Timeout     int                       `json:"timeout,omitempty" tf:"timeout,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type GlueJobStatus struct {
@@ -48,7 +49,9 @@ type GlueJobStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

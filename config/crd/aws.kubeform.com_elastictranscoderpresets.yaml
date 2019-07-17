@@ -398,12 +398,34 @@ spec:
         spec:
           properties:
             audio:
-              items: {}
+              items:
+                properties:
+                  audioPackingMode:
+                    type: string
+                  bitRate:
+                    type: string
+                  channels:
+                    type: string
+                  codec:
+                    type: string
+                  sampleRate:
+                    type: string
+                type: object
               maxItems: 1
               type: array
               uniqueItems: true
-            audio_codec_options:
-              items: {}
+            audioCodecOptions:
+              items:
+                properties:
+                  bitDepth:
+                    type: string
+                  bitOrder:
+                    type: string
+                  profile:
+                    type: string
+                  signed:
+                    type: string
+                type: object
               maxItems: 1
               type: array
               uniqueItems: true
@@ -411,26 +433,104 @@ spec:
               type: string
             description:
               type: string
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             thumbnails:
-              items: {}
+              items:
+                properties:
+                  aspectRatio:
+                    type: string
+                  format:
+                    type: string
+                  interval:
+                    type: string
+                  maxHeight:
+                    type: string
+                  maxWidth:
+                    type: string
+                  paddingPolicy:
+                    type: string
+                  resolution:
+                    type: string
+                  sizingPolicy:
+                    type: string
+                type: object
               maxItems: 1
               type: array
               uniqueItems: true
             video:
-              items: {}
+              items:
+                properties:
+                  aspectRatio:
+                    type: string
+                  bitRate:
+                    type: string
+                  codec:
+                    type: string
+                  displayAspectRatio:
+                    type: string
+                  fixedGop:
+                    type: string
+                  frameRate:
+                    type: string
+                  keyframesMaxDist:
+                    type: string
+                  maxFrameRate:
+                    type: string
+                  maxHeight:
+                    type: string
+                  maxWidth:
+                    type: string
+                  paddingPolicy:
+                    type: string
+                  resolution:
+                    type: string
+                  sizingPolicy:
+                    type: string
+                type: object
               maxItems: 1
               type: array
               uniqueItems: true
-            video_codec_options:
+            videoCodecOptions:
               additionalProperties:
                 type: string
               type: object
-            video_watermarks:
-              items: {}
+            videoWatermarks:
+              items:
+                properties:
+                  ID:
+                    type: string
+                  horizontalAlign:
+                    type: string
+                  horizontalOffset:
+                    type: string
+                  maxHeight:
+                    type: string
+                  maxWidth:
+                    type: string
+                  opacity:
+                    type: string
+                  sizingPolicy:
+                    type: string
+                  target:
+                    type: string
+                  verticalAlign:
+                    type: string
+                  verticalOffset:
+                    type: string
+                type: object
               type: array
               uniqueItems: true
           required:
           - container
+          - providerRef
           type: object
         status:
           properties:
@@ -441,6 +541,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

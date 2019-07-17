@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,16 +19,17 @@ type ComputeTargetSslProxy struct {
 }
 
 type ComputeTargetSslProxySpec struct {
-	BackendService string `json:"backend_service"`
+	BackendService string `json:"backendService" tf:"backend_service"`
 	// +optional
-	Description string `json:"description,omitempty"`
-	Name        string `json:"name"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
+	Name        string `json:"name" tf:"name"`
 	// +optional
-	ProxyHeader string `json:"proxy_header,omitempty"`
+	ProxyHeader string `json:"proxyHeader,omitempty" tf:"proxy_header,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
-	SslCertificates []string `json:"ssl_certificates"`
+	SslCertificates []string `json:"sslCertificates" tf:"ssl_certificates"`
 	// +optional
-	SslPolicy string `json:"ssl_policy,omitempty"`
+	SslPolicy   string                    `json:"sslPolicy,omitempty" tf:"ssl_policy,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ComputeTargetSslProxyStatus struct {
@@ -36,7 +37,9 @@ type ComputeTargetSslProxyStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

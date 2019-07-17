@@ -31,6 +31,7 @@ import (
 // FakeBigqueryDatasets implements BigqueryDatasetInterface
 type FakeBigqueryDatasets struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var bigquerydatasetsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "bigquerydatasets"}
@@ -40,7 +41,8 @@ var bigquerydatasetsKind = schema.GroupVersionKind{Group: "google.kubeform.com",
 // Get takes name of the bigqueryDataset, and returns the corresponding bigqueryDataset object, and an error if there is any.
 func (c *FakeBigqueryDatasets) Get(name string, options v1.GetOptions) (result *v1alpha1.BigqueryDataset, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(bigquerydatasetsResource, name), &v1alpha1.BigqueryDataset{})
+		Invokes(testing.NewGetAction(bigquerydatasetsResource, c.ns, name), &v1alpha1.BigqueryDataset{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeBigqueryDatasets) Get(name string, options v1.GetOptions) (result *
 // List takes label and field selectors, and returns the list of BigqueryDatasets that match those selectors.
 func (c *FakeBigqueryDatasets) List(opts v1.ListOptions) (result *v1alpha1.BigqueryDatasetList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(bigquerydatasetsResource, bigquerydatasetsKind, opts), &v1alpha1.BigqueryDatasetList{})
+		Invokes(testing.NewListAction(bigquerydatasetsResource, bigquerydatasetsKind, c.ns, opts), &v1alpha1.BigqueryDatasetList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeBigqueryDatasets) List(opts v1.ListOptions) (result *v1alpha1.Bigqu
 // Watch returns a watch.Interface that watches the requested bigqueryDatasets.
 func (c *FakeBigqueryDatasets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(bigquerydatasetsResource, opts))
+		InvokesWatch(testing.NewWatchAction(bigquerydatasetsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a bigqueryDataset and creates it.  Returns the server's representation of the bigqueryDataset, and an error, if there is any.
 func (c *FakeBigqueryDatasets) Create(bigqueryDataset *v1alpha1.BigqueryDataset) (result *v1alpha1.BigqueryDataset, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(bigquerydatasetsResource, bigqueryDataset), &v1alpha1.BigqueryDataset{})
+		Invokes(testing.NewCreateAction(bigquerydatasetsResource, c.ns, bigqueryDataset), &v1alpha1.BigqueryDataset{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeBigqueryDatasets) Create(bigqueryDataset *v1alpha1.BigqueryDataset)
 // Update takes the representation of a bigqueryDataset and updates it. Returns the server's representation of the bigqueryDataset, and an error, if there is any.
 func (c *FakeBigqueryDatasets) Update(bigqueryDataset *v1alpha1.BigqueryDataset) (result *v1alpha1.BigqueryDataset, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(bigquerydatasetsResource, bigqueryDataset), &v1alpha1.BigqueryDataset{})
+		Invokes(testing.NewUpdateAction(bigquerydatasetsResource, c.ns, bigqueryDataset), &v1alpha1.BigqueryDataset{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeBigqueryDatasets) Update(bigqueryDataset *v1alpha1.BigqueryDataset)
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeBigqueryDatasets) UpdateStatus(bigqueryDataset *v1alpha1.BigqueryDataset) (*v1alpha1.BigqueryDataset, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(bigquerydatasetsResource, "status", bigqueryDataset), &v1alpha1.BigqueryDataset{})
+		Invokes(testing.NewUpdateSubresourceAction(bigquerydatasetsResource, "status", c.ns, bigqueryDataset), &v1alpha1.BigqueryDataset{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeBigqueryDatasets) UpdateStatus(bigqueryDataset *v1alpha1.BigqueryDa
 // Delete takes name of the bigqueryDataset and deletes it. Returns an error if one occurs.
 func (c *FakeBigqueryDatasets) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(bigquerydatasetsResource, name), &v1alpha1.BigqueryDataset{})
+		Invokes(testing.NewDeleteAction(bigquerydatasetsResource, c.ns, name), &v1alpha1.BigqueryDataset{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeBigqueryDatasets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(bigquerydatasetsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(bigquerydatasetsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.BigqueryDatasetList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeBigqueryDatasets) DeleteCollection(options *v1.DeleteOptions, listO
 // Patch applies the patch and returns the patched bigqueryDataset.
 func (c *FakeBigqueryDatasets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BigqueryDataset, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(bigquerydatasetsResource, name, pt, data, subresources...), &v1alpha1.BigqueryDataset{})
+		Invokes(testing.NewPatchSubresourceAction(bigquerydatasetsResource, c.ns, name, pt, data, subresources...), &v1alpha1.BigqueryDataset{})
+
 	if obj == nil {
 		return nil, err
 	}

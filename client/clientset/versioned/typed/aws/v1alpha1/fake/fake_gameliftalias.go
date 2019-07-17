@@ -31,6 +31,7 @@ import (
 // FakeGameliftAliases implements GameliftAliasInterface
 type FakeGameliftAliases struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var gameliftaliasesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "gameliftaliases"}
@@ -40,7 +41,8 @@ var gameliftaliasesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Ver
 // Get takes name of the gameliftAlias, and returns the corresponding gameliftAlias object, and an error if there is any.
 func (c *FakeGameliftAliases) Get(name string, options v1.GetOptions) (result *v1alpha1.GameliftAlias, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(gameliftaliasesResource, name), &v1alpha1.GameliftAlias{})
+		Invokes(testing.NewGetAction(gameliftaliasesResource, c.ns, name), &v1alpha1.GameliftAlias{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeGameliftAliases) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of GameliftAliases that match those selectors.
 func (c *FakeGameliftAliases) List(opts v1.ListOptions) (result *v1alpha1.GameliftAliasList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(gameliftaliasesResource, gameliftaliasesKind, opts), &v1alpha1.GameliftAliasList{})
+		Invokes(testing.NewListAction(gameliftaliasesResource, gameliftaliasesKind, c.ns, opts), &v1alpha1.GameliftAliasList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeGameliftAliases) List(opts v1.ListOptions) (result *v1alpha1.Gameli
 // Watch returns a watch.Interface that watches the requested gameliftAliases.
 func (c *FakeGameliftAliases) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(gameliftaliasesResource, opts))
+		InvokesWatch(testing.NewWatchAction(gameliftaliasesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a gameliftAlias and creates it.  Returns the server's representation of the gameliftAlias, and an error, if there is any.
 func (c *FakeGameliftAliases) Create(gameliftAlias *v1alpha1.GameliftAlias) (result *v1alpha1.GameliftAlias, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(gameliftaliasesResource, gameliftAlias), &v1alpha1.GameliftAlias{})
+		Invokes(testing.NewCreateAction(gameliftaliasesResource, c.ns, gameliftAlias), &v1alpha1.GameliftAlias{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeGameliftAliases) Create(gameliftAlias *v1alpha1.GameliftAlias) (res
 // Update takes the representation of a gameliftAlias and updates it. Returns the server's representation of the gameliftAlias, and an error, if there is any.
 func (c *FakeGameliftAliases) Update(gameliftAlias *v1alpha1.GameliftAlias) (result *v1alpha1.GameliftAlias, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(gameliftaliasesResource, gameliftAlias), &v1alpha1.GameliftAlias{})
+		Invokes(testing.NewUpdateAction(gameliftaliasesResource, c.ns, gameliftAlias), &v1alpha1.GameliftAlias{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeGameliftAliases) Update(gameliftAlias *v1alpha1.GameliftAlias) (res
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeGameliftAliases) UpdateStatus(gameliftAlias *v1alpha1.GameliftAlias) (*v1alpha1.GameliftAlias, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(gameliftaliasesResource, "status", gameliftAlias), &v1alpha1.GameliftAlias{})
+		Invokes(testing.NewUpdateSubresourceAction(gameliftaliasesResource, "status", c.ns, gameliftAlias), &v1alpha1.GameliftAlias{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeGameliftAliases) UpdateStatus(gameliftAlias *v1alpha1.GameliftAlias
 // Delete takes name of the gameliftAlias and deletes it. Returns an error if one occurs.
 func (c *FakeGameliftAliases) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(gameliftaliasesResource, name), &v1alpha1.GameliftAlias{})
+		Invokes(testing.NewDeleteAction(gameliftaliasesResource, c.ns, name), &v1alpha1.GameliftAlias{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeGameliftAliases) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(gameliftaliasesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(gameliftaliasesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.GameliftAliasList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeGameliftAliases) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched gameliftAlias.
 func (c *FakeGameliftAliases) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GameliftAlias, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(gameliftaliasesResource, name, pt, data, subresources...), &v1alpha1.GameliftAlias{})
+		Invokes(testing.NewPatchSubresourceAction(gameliftaliasesResource, c.ns, name, pt, data, subresources...), &v1alpha1.GameliftAlias{})
+
 	if obj == nil {
 		return nil, err
 	}

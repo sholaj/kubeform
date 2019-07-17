@@ -29,8 +29,8 @@ import (
 type EcrRepositoryPolicyLister interface {
 	// List lists all EcrRepositoryPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.EcrRepositoryPolicy, err error)
-	// Get retrieves the EcrRepositoryPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.EcrRepositoryPolicy, error)
+	// EcrRepositoryPolicies returns an object that can list and get EcrRepositoryPolicies.
+	EcrRepositoryPolicies(namespace string) EcrRepositoryPolicyNamespaceLister
 	EcrRepositoryPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *ecrRepositoryPolicyLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the EcrRepositoryPolicy from the index for a given name.
-func (s *ecrRepositoryPolicyLister) Get(name string) (*v1alpha1.EcrRepositoryPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// EcrRepositoryPolicies returns an object that can list and get EcrRepositoryPolicies.
+func (s *ecrRepositoryPolicyLister) EcrRepositoryPolicies(namespace string) EcrRepositoryPolicyNamespaceLister {
+	return ecrRepositoryPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// EcrRepositoryPolicyNamespaceLister helps list and get EcrRepositoryPolicies.
+type EcrRepositoryPolicyNamespaceLister interface {
+	// List lists all EcrRepositoryPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.EcrRepositoryPolicy, err error)
+	// Get retrieves the EcrRepositoryPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.EcrRepositoryPolicy, error)
+	EcrRepositoryPolicyNamespaceListerExpansion
+}
+
+// ecrRepositoryPolicyNamespaceLister implements the EcrRepositoryPolicyNamespaceLister
+// interface.
+type ecrRepositoryPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all EcrRepositoryPolicies in the indexer for a given namespace.
+func (s ecrRepositoryPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.EcrRepositoryPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.EcrRepositoryPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the EcrRepositoryPolicy from the indexer for a given namespace and name.
+func (s ecrRepositoryPolicyNamespaceLister) Get(name string) (*v1alpha1.EcrRepositoryPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

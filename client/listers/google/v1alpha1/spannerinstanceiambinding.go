@@ -29,8 +29,8 @@ import (
 type SpannerInstanceIamBindingLister interface {
 	// List lists all SpannerInstanceIamBindings in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SpannerInstanceIamBinding, err error)
-	// Get retrieves the SpannerInstanceIamBinding from the index for a given name.
-	Get(name string) (*v1alpha1.SpannerInstanceIamBinding, error)
+	// SpannerInstanceIamBindings returns an object that can list and get SpannerInstanceIamBindings.
+	SpannerInstanceIamBindings(namespace string) SpannerInstanceIamBindingNamespaceLister
 	SpannerInstanceIamBindingListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *spannerInstanceIamBindingLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the SpannerInstanceIamBinding from the index for a given name.
-func (s *spannerInstanceIamBindingLister) Get(name string) (*v1alpha1.SpannerInstanceIamBinding, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SpannerInstanceIamBindings returns an object that can list and get SpannerInstanceIamBindings.
+func (s *spannerInstanceIamBindingLister) SpannerInstanceIamBindings(namespace string) SpannerInstanceIamBindingNamespaceLister {
+	return spannerInstanceIamBindingNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SpannerInstanceIamBindingNamespaceLister helps list and get SpannerInstanceIamBindings.
+type SpannerInstanceIamBindingNamespaceLister interface {
+	// List lists all SpannerInstanceIamBindings in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SpannerInstanceIamBinding, err error)
+	// Get retrieves the SpannerInstanceIamBinding from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SpannerInstanceIamBinding, error)
+	SpannerInstanceIamBindingNamespaceListerExpansion
+}
+
+// spannerInstanceIamBindingNamespaceLister implements the SpannerInstanceIamBindingNamespaceLister
+// interface.
+type spannerInstanceIamBindingNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SpannerInstanceIamBindings in the indexer for a given namespace.
+func (s spannerInstanceIamBindingNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SpannerInstanceIamBinding, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SpannerInstanceIamBinding))
+	})
+	return ret, err
+}
+
+// Get retrieves the SpannerInstanceIamBinding from the indexer for a given namespace and name.
+func (s spannerInstanceIamBindingNamespaceLister) Get(name string) (*v1alpha1.SpannerInstanceIamBinding, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

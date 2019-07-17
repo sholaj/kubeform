@@ -29,8 +29,8 @@ import (
 type CdnLister interface {
 	// List lists all Cdns in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.Cdn, err error)
-	// Get retrieves the Cdn from the index for a given name.
-	Get(name string) (*v1alpha1.Cdn, error)
+	// Cdns returns an object that can list and get Cdns.
+	Cdns(namespace string) CdnNamespaceLister
 	CdnListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cdnLister) List(selector labels.Selector) (ret []*v1alpha1.Cdn, err err
 	return ret, err
 }
 
-// Get retrieves the Cdn from the index for a given name.
-func (s *cdnLister) Get(name string) (*v1alpha1.Cdn, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// Cdns returns an object that can list and get Cdns.
+func (s *cdnLister) Cdns(namespace string) CdnNamespaceLister {
+	return cdnNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CdnNamespaceLister helps list and get Cdns.
+type CdnNamespaceLister interface {
+	// List lists all Cdns in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.Cdn, err error)
+	// Get retrieves the Cdn from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.Cdn, error)
+	CdnNamespaceListerExpansion
+}
+
+// cdnNamespaceLister implements the CdnNamespaceLister
+// interface.
+type cdnNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all Cdns in the indexer for a given namespace.
+func (s cdnNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Cdn, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.Cdn))
+	})
+	return ret, err
+}
+
+// Get retrieves the Cdn from the indexer for a given namespace and name.
+func (s cdnNamespaceLister) Get(name string) (*v1alpha1.Cdn, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

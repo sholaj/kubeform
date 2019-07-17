@@ -31,6 +31,7 @@ import (
 // FakeCloudwatchDashboards implements CloudwatchDashboardInterface
 type FakeCloudwatchDashboards struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var cloudwatchdashboardsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "cloudwatchdashboards"}
@@ -40,7 +41,8 @@ var cloudwatchdashboardsKind = schema.GroupVersionKind{Group: "aws.kubeform.com"
 // Get takes name of the cloudwatchDashboard, and returns the corresponding cloudwatchDashboard object, and an error if there is any.
 func (c *FakeCloudwatchDashboards) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudwatchDashboard, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cloudwatchdashboardsResource, name), &v1alpha1.CloudwatchDashboard{})
+		Invokes(testing.NewGetAction(cloudwatchdashboardsResource, c.ns, name), &v1alpha1.CloudwatchDashboard{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCloudwatchDashboards) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of CloudwatchDashboards that match those selectors.
 func (c *FakeCloudwatchDashboards) List(opts v1.ListOptions) (result *v1alpha1.CloudwatchDashboardList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cloudwatchdashboardsResource, cloudwatchdashboardsKind, opts), &v1alpha1.CloudwatchDashboardList{})
+		Invokes(testing.NewListAction(cloudwatchdashboardsResource, cloudwatchdashboardsKind, c.ns, opts), &v1alpha1.CloudwatchDashboardList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCloudwatchDashboards) List(opts v1.ListOptions) (result *v1alpha1.C
 // Watch returns a watch.Interface that watches the requested cloudwatchDashboards.
 func (c *FakeCloudwatchDashboards) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cloudwatchdashboardsResource, opts))
+		InvokesWatch(testing.NewWatchAction(cloudwatchdashboardsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cloudwatchDashboard and creates it.  Returns the server's representation of the cloudwatchDashboard, and an error, if there is any.
 func (c *FakeCloudwatchDashboards) Create(cloudwatchDashboard *v1alpha1.CloudwatchDashboard) (result *v1alpha1.CloudwatchDashboard, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cloudwatchdashboardsResource, cloudwatchDashboard), &v1alpha1.CloudwatchDashboard{})
+		Invokes(testing.NewCreateAction(cloudwatchdashboardsResource, c.ns, cloudwatchDashboard), &v1alpha1.CloudwatchDashboard{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCloudwatchDashboards) Create(cloudwatchDashboard *v1alpha1.Cloudwat
 // Update takes the representation of a cloudwatchDashboard and updates it. Returns the server's representation of the cloudwatchDashboard, and an error, if there is any.
 func (c *FakeCloudwatchDashboards) Update(cloudwatchDashboard *v1alpha1.CloudwatchDashboard) (result *v1alpha1.CloudwatchDashboard, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cloudwatchdashboardsResource, cloudwatchDashboard), &v1alpha1.CloudwatchDashboard{})
+		Invokes(testing.NewUpdateAction(cloudwatchdashboardsResource, c.ns, cloudwatchDashboard), &v1alpha1.CloudwatchDashboard{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCloudwatchDashboards) Update(cloudwatchDashboard *v1alpha1.Cloudwat
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCloudwatchDashboards) UpdateStatus(cloudwatchDashboard *v1alpha1.CloudwatchDashboard) (*v1alpha1.CloudwatchDashboard, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cloudwatchdashboardsResource, "status", cloudwatchDashboard), &v1alpha1.CloudwatchDashboard{})
+		Invokes(testing.NewUpdateSubresourceAction(cloudwatchdashboardsResource, "status", c.ns, cloudwatchDashboard), &v1alpha1.CloudwatchDashboard{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCloudwatchDashboards) UpdateStatus(cloudwatchDashboard *v1alpha1.Cl
 // Delete takes name of the cloudwatchDashboard and deletes it. Returns an error if one occurs.
 func (c *FakeCloudwatchDashboards) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cloudwatchdashboardsResource, name), &v1alpha1.CloudwatchDashboard{})
+		Invokes(testing.NewDeleteAction(cloudwatchdashboardsResource, c.ns, name), &v1alpha1.CloudwatchDashboard{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCloudwatchDashboards) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cloudwatchdashboardsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cloudwatchdashboardsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CloudwatchDashboardList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCloudwatchDashboards) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched cloudwatchDashboard.
 func (c *FakeCloudwatchDashboards) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudwatchDashboard, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cloudwatchdashboardsResource, name, pt, data, subresources...), &v1alpha1.CloudwatchDashboard{})
+		Invokes(testing.NewPatchSubresourceAction(cloudwatchdashboardsResource, c.ns, name, pt, data, subresources...), &v1alpha1.CloudwatchDashboard{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type ApiManagementCertificateLister interface {
 	// List lists all ApiManagementCertificates in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementCertificate, err error)
-	// Get retrieves the ApiManagementCertificate from the index for a given name.
-	Get(name string) (*v1alpha1.ApiManagementCertificate, error)
+	// ApiManagementCertificates returns an object that can list and get ApiManagementCertificates.
+	ApiManagementCertificates(namespace string) ApiManagementCertificateNamespaceLister
 	ApiManagementCertificateListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiManagementCertificateLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the ApiManagementCertificate from the index for a given name.
-func (s *apiManagementCertificateLister) Get(name string) (*v1alpha1.ApiManagementCertificate, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiManagementCertificates returns an object that can list and get ApiManagementCertificates.
+func (s *apiManagementCertificateLister) ApiManagementCertificates(namespace string) ApiManagementCertificateNamespaceLister {
+	return apiManagementCertificateNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiManagementCertificateNamespaceLister helps list and get ApiManagementCertificates.
+type ApiManagementCertificateNamespaceLister interface {
+	// List lists all ApiManagementCertificates in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiManagementCertificate, err error)
+	// Get retrieves the ApiManagementCertificate from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiManagementCertificate, error)
+	ApiManagementCertificateNamespaceListerExpansion
+}
+
+// apiManagementCertificateNamespaceLister implements the ApiManagementCertificateNamespaceLister
+// interface.
+type apiManagementCertificateNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiManagementCertificates in the indexer for a given namespace.
+func (s apiManagementCertificateNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiManagementCertificate, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiManagementCertificate))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiManagementCertificate from the indexer for a given namespace and name.
+func (s apiManagementCertificateNamespaceLister) Get(name string) (*v1alpha1.ApiManagementCertificate, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

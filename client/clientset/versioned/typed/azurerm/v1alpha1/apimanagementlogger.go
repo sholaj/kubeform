@@ -32,7 +32,7 @@ import (
 // ApiManagementLoggersGetter has a method to return a ApiManagementLoggerInterface.
 // A group's client should implement this interface.
 type ApiManagementLoggersGetter interface {
-	ApiManagementLoggers() ApiManagementLoggerInterface
+	ApiManagementLoggers(namespace string) ApiManagementLoggerInterface
 }
 
 // ApiManagementLoggerInterface has methods to work with ApiManagementLogger resources.
@@ -52,12 +52,14 @@ type ApiManagementLoggerInterface interface {
 // apiManagementLoggers implements ApiManagementLoggerInterface
 type apiManagementLoggers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiManagementLoggers returns a ApiManagementLoggers
-func newApiManagementLoggers(c *AzurermV1alpha1Client) *apiManagementLoggers {
+func newApiManagementLoggers(c *AzurermV1alpha1Client, namespace string) *apiManagementLoggers {
 	return &apiManagementLoggers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiManagementLoggers(c *AzurermV1alpha1Client) *apiManagementLoggers {
 func (c *apiManagementLoggers) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementLogger, err error) {
 	result = &v1alpha1.ApiManagementLogger{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementloggers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiManagementLoggers) List(opts v1.ListOptions) (result *v1alpha1.ApiMa
 	}
 	result = &v1alpha1.ApiManagementLoggerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementloggers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiManagementLoggers) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementloggers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiManagementLoggers) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *apiManagementLoggers) Create(apiManagementLogger *v1alpha1.ApiManagementLogger) (result *v1alpha1.ApiManagementLogger, err error) {
 	result = &v1alpha1.ApiManagementLogger{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apimanagementloggers").
 		Body(apiManagementLogger).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiManagementLoggers) Create(apiManagementLogger *v1alpha1.ApiManagemen
 func (c *apiManagementLoggers) Update(apiManagementLogger *v1alpha1.ApiManagementLogger) (result *v1alpha1.ApiManagementLogger, err error) {
 	result = &v1alpha1.ApiManagementLogger{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementloggers").
 		Name(apiManagementLogger.Name).
 		Body(apiManagementLogger).
@@ -132,6 +139,7 @@ func (c *apiManagementLoggers) Update(apiManagementLogger *v1alpha1.ApiManagemen
 func (c *apiManagementLoggers) UpdateStatus(apiManagementLogger *v1alpha1.ApiManagementLogger) (result *v1alpha1.ApiManagementLogger, err error) {
 	result = &v1alpha1.ApiManagementLogger{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementloggers").
 		Name(apiManagementLogger.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiManagementLoggers) UpdateStatus(apiManagementLogger *v1alpha1.ApiMan
 // Delete takes name of the apiManagementLogger and deletes it. Returns an error if one occurs.
 func (c *apiManagementLoggers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementloggers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiManagementLoggers) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementloggers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiManagementLoggers) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *apiManagementLoggers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementLogger, err error) {
 	result = &v1alpha1.ApiManagementLogger{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apimanagementloggers").
 		SubResource(subresources...).
 		Name(name).

@@ -31,6 +31,7 @@ import (
 // FakeElastictranscoderPipelines implements ElastictranscoderPipelineInterface
 type FakeElastictranscoderPipelines struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var elastictranscoderpipelinesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "elastictranscoderpipelines"}
@@ -40,7 +41,8 @@ var elastictranscoderpipelinesKind = schema.GroupVersionKind{Group: "aws.kubefor
 // Get takes name of the elastictranscoderPipeline, and returns the corresponding elastictranscoderPipeline object, and an error if there is any.
 func (c *FakeElastictranscoderPipelines) Get(name string, options v1.GetOptions) (result *v1alpha1.ElastictranscoderPipeline, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(elastictranscoderpipelinesResource, name), &v1alpha1.ElastictranscoderPipeline{})
+		Invokes(testing.NewGetAction(elastictranscoderpipelinesResource, c.ns, name), &v1alpha1.ElastictranscoderPipeline{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeElastictranscoderPipelines) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of ElastictranscoderPipelines that match those selectors.
 func (c *FakeElastictranscoderPipelines) List(opts v1.ListOptions) (result *v1alpha1.ElastictranscoderPipelineList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(elastictranscoderpipelinesResource, elastictranscoderpipelinesKind, opts), &v1alpha1.ElastictranscoderPipelineList{})
+		Invokes(testing.NewListAction(elastictranscoderpipelinesResource, elastictranscoderpipelinesKind, c.ns, opts), &v1alpha1.ElastictranscoderPipelineList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeElastictranscoderPipelines) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested elastictranscoderPipelines.
 func (c *FakeElastictranscoderPipelines) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(elastictranscoderpipelinesResource, opts))
+		InvokesWatch(testing.NewWatchAction(elastictranscoderpipelinesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a elastictranscoderPipeline and creates it.  Returns the server's representation of the elastictranscoderPipeline, and an error, if there is any.
 func (c *FakeElastictranscoderPipelines) Create(elastictranscoderPipeline *v1alpha1.ElastictranscoderPipeline) (result *v1alpha1.ElastictranscoderPipeline, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(elastictranscoderpipelinesResource, elastictranscoderPipeline), &v1alpha1.ElastictranscoderPipeline{})
+		Invokes(testing.NewCreateAction(elastictranscoderpipelinesResource, c.ns, elastictranscoderPipeline), &v1alpha1.ElastictranscoderPipeline{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeElastictranscoderPipelines) Create(elastictranscoderPipeline *v1alp
 // Update takes the representation of a elastictranscoderPipeline and updates it. Returns the server's representation of the elastictranscoderPipeline, and an error, if there is any.
 func (c *FakeElastictranscoderPipelines) Update(elastictranscoderPipeline *v1alpha1.ElastictranscoderPipeline) (result *v1alpha1.ElastictranscoderPipeline, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(elastictranscoderpipelinesResource, elastictranscoderPipeline), &v1alpha1.ElastictranscoderPipeline{})
+		Invokes(testing.NewUpdateAction(elastictranscoderpipelinesResource, c.ns, elastictranscoderPipeline), &v1alpha1.ElastictranscoderPipeline{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeElastictranscoderPipelines) Update(elastictranscoderPipeline *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeElastictranscoderPipelines) UpdateStatus(elastictranscoderPipeline *v1alpha1.ElastictranscoderPipeline) (*v1alpha1.ElastictranscoderPipeline, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(elastictranscoderpipelinesResource, "status", elastictranscoderPipeline), &v1alpha1.ElastictranscoderPipeline{})
+		Invokes(testing.NewUpdateSubresourceAction(elastictranscoderpipelinesResource, "status", c.ns, elastictranscoderPipeline), &v1alpha1.ElastictranscoderPipeline{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeElastictranscoderPipelines) UpdateStatus(elastictranscoderPipeline 
 // Delete takes name of the elastictranscoderPipeline and deletes it. Returns an error if one occurs.
 func (c *FakeElastictranscoderPipelines) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(elastictranscoderpipelinesResource, name), &v1alpha1.ElastictranscoderPipeline{})
+		Invokes(testing.NewDeleteAction(elastictranscoderpipelinesResource, c.ns, name), &v1alpha1.ElastictranscoderPipeline{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeElastictranscoderPipelines) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(elastictranscoderpipelinesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(elastictranscoderpipelinesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ElastictranscoderPipelineList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeElastictranscoderPipelines) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched elastictranscoderPipeline.
 func (c *FakeElastictranscoderPipelines) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ElastictranscoderPipeline, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(elastictranscoderpipelinesResource, name, pt, data, subresources...), &v1alpha1.ElastictranscoderPipeline{})
+		Invokes(testing.NewPatchSubresourceAction(elastictranscoderpipelinesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ElastictranscoderPipeline{})
+
 	if obj == nil {
 		return nil, err
 	}

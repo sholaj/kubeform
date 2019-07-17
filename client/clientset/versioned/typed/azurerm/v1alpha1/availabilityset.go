@@ -32,7 +32,7 @@ import (
 // AvailabilitySetsGetter has a method to return a AvailabilitySetInterface.
 // A group's client should implement this interface.
 type AvailabilitySetsGetter interface {
-	AvailabilitySets() AvailabilitySetInterface
+	AvailabilitySets(namespace string) AvailabilitySetInterface
 }
 
 // AvailabilitySetInterface has methods to work with AvailabilitySet resources.
@@ -52,12 +52,14 @@ type AvailabilitySetInterface interface {
 // availabilitySets implements AvailabilitySetInterface
 type availabilitySets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAvailabilitySets returns a AvailabilitySets
-func newAvailabilitySets(c *AzurermV1alpha1Client) *availabilitySets {
+func newAvailabilitySets(c *AzurermV1alpha1Client, namespace string) *availabilitySets {
 	return &availabilitySets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newAvailabilitySets(c *AzurermV1alpha1Client) *availabilitySets {
 func (c *availabilitySets) Get(name string, options v1.GetOptions) (result *v1alpha1.AvailabilitySet, err error) {
 	result = &v1alpha1.AvailabilitySet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("availabilitysets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *availabilitySets) List(opts v1.ListOptions) (result *v1alpha1.Availabil
 	}
 	result = &v1alpha1.AvailabilitySetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("availabilitysets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *availabilitySets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("availabilitysets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *availabilitySets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *availabilitySets) Create(availabilitySet *v1alpha1.AvailabilitySet) (result *v1alpha1.AvailabilitySet, err error) {
 	result = &v1alpha1.AvailabilitySet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("availabilitysets").
 		Body(availabilitySet).
 		Do().
@@ -118,6 +124,7 @@ func (c *availabilitySets) Create(availabilitySet *v1alpha1.AvailabilitySet) (re
 func (c *availabilitySets) Update(availabilitySet *v1alpha1.AvailabilitySet) (result *v1alpha1.AvailabilitySet, err error) {
 	result = &v1alpha1.AvailabilitySet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("availabilitysets").
 		Name(availabilitySet.Name).
 		Body(availabilitySet).
@@ -132,6 +139,7 @@ func (c *availabilitySets) Update(availabilitySet *v1alpha1.AvailabilitySet) (re
 func (c *availabilitySets) UpdateStatus(availabilitySet *v1alpha1.AvailabilitySet) (result *v1alpha1.AvailabilitySet, err error) {
 	result = &v1alpha1.AvailabilitySet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("availabilitysets").
 		Name(availabilitySet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *availabilitySets) UpdateStatus(availabilitySet *v1alpha1.AvailabilitySe
 // Delete takes name of the availabilitySet and deletes it. Returns an error if one occurs.
 func (c *availabilitySets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("availabilitysets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *availabilitySets) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("availabilitysets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *availabilitySets) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *availabilitySets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AvailabilitySet, err error) {
 	result = &v1alpha1.AvailabilitySet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("availabilitysets").
 		SubResource(subresources...).
 		Name(name).

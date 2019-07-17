@@ -29,8 +29,8 @@ import (
 type CosmosdbAccountLister interface {
 	// List lists all CosmosdbAccounts in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CosmosdbAccount, err error)
-	// Get retrieves the CosmosdbAccount from the index for a given name.
-	Get(name string) (*v1alpha1.CosmosdbAccount, error)
+	// CosmosdbAccounts returns an object that can list and get CosmosdbAccounts.
+	CosmosdbAccounts(namespace string) CosmosdbAccountNamespaceLister
 	CosmosdbAccountListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cosmosdbAccountLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the CosmosdbAccount from the index for a given name.
-func (s *cosmosdbAccountLister) Get(name string) (*v1alpha1.CosmosdbAccount, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CosmosdbAccounts returns an object that can list and get CosmosdbAccounts.
+func (s *cosmosdbAccountLister) CosmosdbAccounts(namespace string) CosmosdbAccountNamespaceLister {
+	return cosmosdbAccountNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CosmosdbAccountNamespaceLister helps list and get CosmosdbAccounts.
+type CosmosdbAccountNamespaceLister interface {
+	// List lists all CosmosdbAccounts in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CosmosdbAccount, err error)
+	// Get retrieves the CosmosdbAccount from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CosmosdbAccount, error)
+	CosmosdbAccountNamespaceListerExpansion
+}
+
+// cosmosdbAccountNamespaceLister implements the CosmosdbAccountNamespaceLister
+// interface.
+type cosmosdbAccountNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CosmosdbAccounts in the indexer for a given namespace.
+func (s cosmosdbAccountNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CosmosdbAccount, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CosmosdbAccount))
+	})
+	return ret, err
+}
+
+// Get retrieves the CosmosdbAccount from the indexer for a given namespace and name.
+func (s cosmosdbAccountNamespaceLister) Get(name string) (*v1alpha1.CosmosdbAccount, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

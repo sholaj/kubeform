@@ -31,6 +31,7 @@ import (
 // FakeRouteTableAssociations implements RouteTableAssociationInterface
 type FakeRouteTableAssociations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var routetableassociationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "routetableassociations"}
@@ -40,7 +41,8 @@ var routetableassociationsKind = schema.GroupVersionKind{Group: "aws.kubeform.co
 // Get takes name of the routeTableAssociation, and returns the corresponding routeTableAssociation object, and an error if there is any.
 func (c *FakeRouteTableAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.RouteTableAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(routetableassociationsResource, name), &v1alpha1.RouteTableAssociation{})
+		Invokes(testing.NewGetAction(routetableassociationsResource, c.ns, name), &v1alpha1.RouteTableAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRouteTableAssociations) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of RouteTableAssociations that match those selectors.
 func (c *FakeRouteTableAssociations) List(opts v1.ListOptions) (result *v1alpha1.RouteTableAssociationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(routetableassociationsResource, routetableassociationsKind, opts), &v1alpha1.RouteTableAssociationList{})
+		Invokes(testing.NewListAction(routetableassociationsResource, routetableassociationsKind, c.ns, opts), &v1alpha1.RouteTableAssociationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRouteTableAssociations) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested routeTableAssociations.
 func (c *FakeRouteTableAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(routetableassociationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(routetableassociationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a routeTableAssociation and creates it.  Returns the server's representation of the routeTableAssociation, and an error, if there is any.
 func (c *FakeRouteTableAssociations) Create(routeTableAssociation *v1alpha1.RouteTableAssociation) (result *v1alpha1.RouteTableAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(routetableassociationsResource, routeTableAssociation), &v1alpha1.RouteTableAssociation{})
+		Invokes(testing.NewCreateAction(routetableassociationsResource, c.ns, routeTableAssociation), &v1alpha1.RouteTableAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRouteTableAssociations) Create(routeTableAssociation *v1alpha1.Rout
 // Update takes the representation of a routeTableAssociation and updates it. Returns the server's representation of the routeTableAssociation, and an error, if there is any.
 func (c *FakeRouteTableAssociations) Update(routeTableAssociation *v1alpha1.RouteTableAssociation) (result *v1alpha1.RouteTableAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(routetableassociationsResource, routeTableAssociation), &v1alpha1.RouteTableAssociation{})
+		Invokes(testing.NewUpdateAction(routetableassociationsResource, c.ns, routeTableAssociation), &v1alpha1.RouteTableAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRouteTableAssociations) Update(routeTableAssociation *v1alpha1.Rout
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRouteTableAssociations) UpdateStatus(routeTableAssociation *v1alpha1.RouteTableAssociation) (*v1alpha1.RouteTableAssociation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(routetableassociationsResource, "status", routeTableAssociation), &v1alpha1.RouteTableAssociation{})
+		Invokes(testing.NewUpdateSubresourceAction(routetableassociationsResource, "status", c.ns, routeTableAssociation), &v1alpha1.RouteTableAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRouteTableAssociations) UpdateStatus(routeTableAssociation *v1alpha
 // Delete takes name of the routeTableAssociation and deletes it. Returns an error if one occurs.
 func (c *FakeRouteTableAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(routetableassociationsResource, name), &v1alpha1.RouteTableAssociation{})
+		Invokes(testing.NewDeleteAction(routetableassociationsResource, c.ns, name), &v1alpha1.RouteTableAssociation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRouteTableAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(routetableassociationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(routetableassociationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.RouteTableAssociationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRouteTableAssociations) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched routeTableAssociation.
 func (c *FakeRouteTableAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RouteTableAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(routetableassociationsResource, name, pt, data, subresources...), &v1alpha1.RouteTableAssociation{})
+		Invokes(testing.NewPatchSubresourceAction(routetableassociationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.RouteTableAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}

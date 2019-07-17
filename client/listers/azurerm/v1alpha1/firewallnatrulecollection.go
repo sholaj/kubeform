@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// FirewallNatRuleCollectionLister helps list FirewallNatRuleCollections.
-type FirewallNatRuleCollectionLister interface {
-	// List lists all FirewallNatRuleCollections in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.FirewallNatRuleCollection, err error)
-	// Get retrieves the FirewallNatRuleCollection from the index for a given name.
-	Get(name string) (*v1alpha1.FirewallNatRuleCollection, error)
-	FirewallNatRuleCollectionListerExpansion
+// FirewallNATRuleCollectionLister helps list FirewallNATRuleCollections.
+type FirewallNATRuleCollectionLister interface {
+	// List lists all FirewallNATRuleCollections in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.FirewallNATRuleCollection, err error)
+	// FirewallNATRuleCollections returns an object that can list and get FirewallNATRuleCollections.
+	FirewallNATRuleCollections(namespace string) FirewallNATRuleCollectionNamespaceLister
+	FirewallNATRuleCollectionListerExpansion
 }
 
-// firewallNatRuleCollectionLister implements the FirewallNatRuleCollectionLister interface.
-type firewallNatRuleCollectionLister struct {
+// firewallNATRuleCollectionLister implements the FirewallNATRuleCollectionLister interface.
+type firewallNATRuleCollectionLister struct {
 	indexer cache.Indexer
 }
 
-// NewFirewallNatRuleCollectionLister returns a new FirewallNatRuleCollectionLister.
-func NewFirewallNatRuleCollectionLister(indexer cache.Indexer) FirewallNatRuleCollectionLister {
-	return &firewallNatRuleCollectionLister{indexer: indexer}
+// NewFirewallNATRuleCollectionLister returns a new FirewallNATRuleCollectionLister.
+func NewFirewallNATRuleCollectionLister(indexer cache.Indexer) FirewallNATRuleCollectionLister {
+	return &firewallNATRuleCollectionLister{indexer: indexer}
 }
 
-// List lists all FirewallNatRuleCollections in the indexer.
-func (s *firewallNatRuleCollectionLister) List(selector labels.Selector) (ret []*v1alpha1.FirewallNatRuleCollection, err error) {
+// List lists all FirewallNATRuleCollections in the indexer.
+func (s *firewallNATRuleCollectionLister) List(selector labels.Selector) (ret []*v1alpha1.FirewallNATRuleCollection, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.FirewallNatRuleCollection))
+		ret = append(ret, m.(*v1alpha1.FirewallNATRuleCollection))
 	})
 	return ret, err
 }
 
-// Get retrieves the FirewallNatRuleCollection from the index for a given name.
-func (s *firewallNatRuleCollectionLister) Get(name string) (*v1alpha1.FirewallNatRuleCollection, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// FirewallNATRuleCollections returns an object that can list and get FirewallNATRuleCollections.
+func (s *firewallNATRuleCollectionLister) FirewallNATRuleCollections(namespace string) FirewallNATRuleCollectionNamespaceLister {
+	return firewallNATRuleCollectionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// FirewallNATRuleCollectionNamespaceLister helps list and get FirewallNATRuleCollections.
+type FirewallNATRuleCollectionNamespaceLister interface {
+	// List lists all FirewallNATRuleCollections in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.FirewallNATRuleCollection, err error)
+	// Get retrieves the FirewallNATRuleCollection from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.FirewallNATRuleCollection, error)
+	FirewallNATRuleCollectionNamespaceListerExpansion
+}
+
+// firewallNATRuleCollectionNamespaceLister implements the FirewallNATRuleCollectionNamespaceLister
+// interface.
+type firewallNATRuleCollectionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all FirewallNATRuleCollections in the indexer for a given namespace.
+func (s firewallNATRuleCollectionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.FirewallNATRuleCollection, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.FirewallNATRuleCollection))
+	})
+	return ret, err
+}
+
+// Get retrieves the FirewallNATRuleCollection from the indexer for a given namespace and name.
+func (s firewallNATRuleCollectionNamespaceLister) Get(name string) (*v1alpha1.FirewallNATRuleCollection, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("firewallnatrulecollection"), name)
 	}
-	return obj.(*v1alpha1.FirewallNatRuleCollection), nil
+	return obj.(*v1alpha1.FirewallNATRuleCollection), nil
 }

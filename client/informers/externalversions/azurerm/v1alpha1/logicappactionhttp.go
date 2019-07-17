@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/azurerm/v1alpha1"
 )
 
-// LogicAppActionHttpInformer provides access to a shared informer and lister for
-// LogicAppActionHttps.
-type LogicAppActionHttpInformer interface {
+// LogicAppActionHTTPInformer provides access to a shared informer and lister for
+// LogicAppActionHTTPs.
+type LogicAppActionHTTPInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.LogicAppActionHttpLister
+	Lister() v1alpha1.LogicAppActionHTTPLister
 }
 
-type logicAppActionHttpInformer struct {
+type logicAppActionHTTPInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewLogicAppActionHttpInformer constructs a new informer for LogicAppActionHttp type.
+// NewLogicAppActionHTTPInformer constructs a new informer for LogicAppActionHTTP type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewLogicAppActionHttpInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredLogicAppActionHttpInformer(client, resyncPeriod, indexers, nil)
+func NewLogicAppActionHTTPInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredLogicAppActionHTTPInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredLogicAppActionHttpInformer constructs a new informer for LogicAppActionHttp type.
+// NewFilteredLogicAppActionHTTPInformer constructs a new informer for LogicAppActionHTTP type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredLogicAppActionHttpInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredLogicAppActionHTTPInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().LogicAppActionHttps().List(options)
+				return client.AzurermV1alpha1().LogicAppActionHTTPs(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().LogicAppActionHttps().Watch(options)
+				return client.AzurermV1alpha1().LogicAppActionHTTPs(namespace).Watch(options)
 			},
 		},
-		&azurermv1alpha1.LogicAppActionHttp{},
+		&azurermv1alpha1.LogicAppActionHTTP{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *logicAppActionHttpInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredLogicAppActionHttpInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *logicAppActionHTTPInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredLogicAppActionHTTPInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *logicAppActionHttpInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&azurermv1alpha1.LogicAppActionHttp{}, f.defaultInformer)
+func (f *logicAppActionHTTPInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&azurermv1alpha1.LogicAppActionHTTP{}, f.defaultInformer)
 }
 
-func (f *logicAppActionHttpInformer) Lister() v1alpha1.LogicAppActionHttpLister {
-	return v1alpha1.NewLogicAppActionHttpLister(f.Informer().GetIndexer())
+func (f *logicAppActionHTTPInformer) Lister() v1alpha1.LogicAppActionHTTPLister {
+	return v1alpha1.NewLogicAppActionHTTPLister(f.Informer().GetIndexer())
 }

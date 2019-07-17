@@ -32,7 +32,7 @@ import (
 // FlowLogsGetter has a method to return a FlowLogInterface.
 // A group's client should implement this interface.
 type FlowLogsGetter interface {
-	FlowLogs() FlowLogInterface
+	FlowLogs(namespace string) FlowLogInterface
 }
 
 // FlowLogInterface has methods to work with FlowLog resources.
@@ -52,12 +52,14 @@ type FlowLogInterface interface {
 // flowLogs implements FlowLogInterface
 type flowLogs struct {
 	client rest.Interface
+	ns     string
 }
 
 // newFlowLogs returns a FlowLogs
-func newFlowLogs(c *AwsV1alpha1Client) *flowLogs {
+func newFlowLogs(c *AwsV1alpha1Client, namespace string) *flowLogs {
 	return &flowLogs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newFlowLogs(c *AwsV1alpha1Client) *flowLogs {
 func (c *flowLogs) Get(name string, options v1.GetOptions) (result *v1alpha1.FlowLog, err error) {
 	result = &v1alpha1.FlowLog{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("flowlogs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *flowLogs) List(opts v1.ListOptions) (result *v1alpha1.FlowLogList, err 
 	}
 	result = &v1alpha1.FlowLogList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("flowlogs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *flowLogs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("flowlogs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *flowLogs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *flowLogs) Create(flowLog *v1alpha1.FlowLog) (result *v1alpha1.FlowLog, err error) {
 	result = &v1alpha1.FlowLog{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("flowlogs").
 		Body(flowLog).
 		Do().
@@ -118,6 +124,7 @@ func (c *flowLogs) Create(flowLog *v1alpha1.FlowLog) (result *v1alpha1.FlowLog, 
 func (c *flowLogs) Update(flowLog *v1alpha1.FlowLog) (result *v1alpha1.FlowLog, err error) {
 	result = &v1alpha1.FlowLog{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("flowlogs").
 		Name(flowLog.Name).
 		Body(flowLog).
@@ -132,6 +139,7 @@ func (c *flowLogs) Update(flowLog *v1alpha1.FlowLog) (result *v1alpha1.FlowLog, 
 func (c *flowLogs) UpdateStatus(flowLog *v1alpha1.FlowLog) (result *v1alpha1.FlowLog, err error) {
 	result = &v1alpha1.FlowLog{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("flowlogs").
 		Name(flowLog.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *flowLogs) UpdateStatus(flowLog *v1alpha1.FlowLog) (result *v1alpha1.Flo
 // Delete takes name of the flowLog and deletes it. Returns an error if one occurs.
 func (c *flowLogs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("flowlogs").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *flowLogs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("flowlogs").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *flowLogs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 func (c *flowLogs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FlowLog, err error) {
 	result = &v1alpha1.FlowLog{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("flowlogs").
 		SubResource(subresources...).
 		Name(name).

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,11 +19,12 @@ type DynamodbTableItem struct {
 }
 
 type DynamodbTableItemSpec struct {
-	HashKey string `json:"hash_key"`
-	Item    string `json:"item"`
+	HashKey string `json:"hashKey" tf:"hash_key"`
+	Item    string `json:"item" tf:"item"`
 	// +optional
-	RangeKey  string `json:"range_key,omitempty"`
-	TableName string `json:"table_name"`
+	RangeKey    string                    `json:"rangeKey,omitempty" tf:"range_key,omitempty"`
+	TableName   string                    `json:"tableName" tf:"table_name"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DynamodbTableItemStatus struct {
@@ -31,7 +32,9 @@ type DynamodbTableItemStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

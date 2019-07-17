@@ -29,8 +29,8 @@ import (
 type PinpointApnsSandboxChannelLister interface {
 	// List lists all PinpointApnsSandboxChannels in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.PinpointApnsSandboxChannel, err error)
-	// Get retrieves the PinpointApnsSandboxChannel from the index for a given name.
-	Get(name string) (*v1alpha1.PinpointApnsSandboxChannel, error)
+	// PinpointApnsSandboxChannels returns an object that can list and get PinpointApnsSandboxChannels.
+	PinpointApnsSandboxChannels(namespace string) PinpointApnsSandboxChannelNamespaceLister
 	PinpointApnsSandboxChannelListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *pinpointApnsSandboxChannelLister) List(selector labels.Selector) (ret [
 	return ret, err
 }
 
-// Get retrieves the PinpointApnsSandboxChannel from the index for a given name.
-func (s *pinpointApnsSandboxChannelLister) Get(name string) (*v1alpha1.PinpointApnsSandboxChannel, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// PinpointApnsSandboxChannels returns an object that can list and get PinpointApnsSandboxChannels.
+func (s *pinpointApnsSandboxChannelLister) PinpointApnsSandboxChannels(namespace string) PinpointApnsSandboxChannelNamespaceLister {
+	return pinpointApnsSandboxChannelNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// PinpointApnsSandboxChannelNamespaceLister helps list and get PinpointApnsSandboxChannels.
+type PinpointApnsSandboxChannelNamespaceLister interface {
+	// List lists all PinpointApnsSandboxChannels in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.PinpointApnsSandboxChannel, err error)
+	// Get retrieves the PinpointApnsSandboxChannel from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.PinpointApnsSandboxChannel, error)
+	PinpointApnsSandboxChannelNamespaceListerExpansion
+}
+
+// pinpointApnsSandboxChannelNamespaceLister implements the PinpointApnsSandboxChannelNamespaceLister
+// interface.
+type pinpointApnsSandboxChannelNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all PinpointApnsSandboxChannels in the indexer for a given namespace.
+func (s pinpointApnsSandboxChannelNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.PinpointApnsSandboxChannel, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.PinpointApnsSandboxChannel))
+	})
+	return ret, err
+}
+
+// Get retrieves the PinpointApnsSandboxChannel from the indexer for a given namespace and name.
+func (s pinpointApnsSandboxChannelNamespaceLister) Get(name string) (*v1alpha1.PinpointApnsSandboxChannel, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

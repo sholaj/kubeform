@@ -32,7 +32,7 @@ import (
 // StorageBucketObjectsGetter has a method to return a StorageBucketObjectInterface.
 // A group's client should implement this interface.
 type StorageBucketObjectsGetter interface {
-	StorageBucketObjects() StorageBucketObjectInterface
+	StorageBucketObjects(namespace string) StorageBucketObjectInterface
 }
 
 // StorageBucketObjectInterface has methods to work with StorageBucketObject resources.
@@ -52,12 +52,14 @@ type StorageBucketObjectInterface interface {
 // storageBucketObjects implements StorageBucketObjectInterface
 type storageBucketObjects struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStorageBucketObjects returns a StorageBucketObjects
-func newStorageBucketObjects(c *GoogleV1alpha1Client) *storageBucketObjects {
+func newStorageBucketObjects(c *GoogleV1alpha1Client, namespace string) *storageBucketObjects {
 	return &storageBucketObjects{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStorageBucketObjects(c *GoogleV1alpha1Client) *storageBucketObjects {
 func (c *storageBucketObjects) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageBucketObject, err error) {
 	result = &v1alpha1.StorageBucketObject{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagebucketobjects").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *storageBucketObjects) List(opts v1.ListOptions) (result *v1alpha1.Stora
 	}
 	result = &v1alpha1.StorageBucketObjectList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagebucketobjects").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *storageBucketObjects) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storagebucketobjects").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *storageBucketObjects) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *storageBucketObjects) Create(storageBucketObject *v1alpha1.StorageBucketObject) (result *v1alpha1.StorageBucketObject, err error) {
 	result = &v1alpha1.StorageBucketObject{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storagebucketobjects").
 		Body(storageBucketObject).
 		Do().
@@ -118,6 +124,7 @@ func (c *storageBucketObjects) Create(storageBucketObject *v1alpha1.StorageBucke
 func (c *storageBucketObjects) Update(storageBucketObject *v1alpha1.StorageBucketObject) (result *v1alpha1.StorageBucketObject, err error) {
 	result = &v1alpha1.StorageBucketObject{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagebucketobjects").
 		Name(storageBucketObject.Name).
 		Body(storageBucketObject).
@@ -132,6 +139,7 @@ func (c *storageBucketObjects) Update(storageBucketObject *v1alpha1.StorageBucke
 func (c *storageBucketObjects) UpdateStatus(storageBucketObject *v1alpha1.StorageBucketObject) (result *v1alpha1.StorageBucketObject, err error) {
 	result = &v1alpha1.StorageBucketObject{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagebucketobjects").
 		Name(storageBucketObject.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *storageBucketObjects) UpdateStatus(storageBucketObject *v1alpha1.Storag
 // Delete takes name of the storageBucketObject and deletes it. Returns an error if one occurs.
 func (c *storageBucketObjects) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagebucketobjects").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *storageBucketObjects) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagebucketobjects").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *storageBucketObjects) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *storageBucketObjects) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageBucketObject, err error) {
 	result = &v1alpha1.StorageBucketObject{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storagebucketobjects").
 		SubResource(subresources...).
 		Name(name).

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,21 +20,22 @@ type Ec2TransitGateway struct {
 
 type Ec2TransitGatewaySpec struct {
 	// +optional
-	AmazonSideAsn int `json:"amazon_side_asn,omitempty"`
+	AmazonSideAsn int `json:"amazonSideAsn,omitempty" tf:"amazon_side_asn,omitempty"`
 	// +optional
-	AutoAcceptSharedAttachments string `json:"auto_accept_shared_attachments,omitempty"`
+	AutoAcceptSharedAttachments string `json:"autoAcceptSharedAttachments,omitempty" tf:"auto_accept_shared_attachments,omitempty"`
 	// +optional
-	DefaultRouteTableAssociation string `json:"default_route_table_association,omitempty"`
+	DefaultRouteTableAssociation string `json:"defaultRouteTableAssociation,omitempty" tf:"default_route_table_association,omitempty"`
 	// +optional
-	DefaultRouteTablePropagation string `json:"default_route_table_propagation,omitempty"`
+	DefaultRouteTablePropagation string `json:"defaultRouteTablePropagation,omitempty" tf:"default_route_table_propagation,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	DnsSupport string `json:"dns_support,omitempty"`
+	DnsSupport string `json:"dnsSupport,omitempty" tf:"dns_support,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	VpnEcmpSupport string `json:"vpn_ecmp_support,omitempty"`
+	VpnEcmpSupport string                    `json:"vpnEcmpSupport,omitempty" tf:"vpn_ecmp_support,omitempty"`
+	ProviderRef    core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type Ec2TransitGatewayStatus struct {
@@ -42,7 +43,9 @@ type Ec2TransitGatewayStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

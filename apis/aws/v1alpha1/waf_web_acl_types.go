@@ -1,95 +1,98 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type WafWebAcl struct {
+type WafWebACL struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              WafWebAclSpec   `json:"spec,omitempty"`
-	Status            WafWebAclStatus `json:"status,omitempty"`
+	Spec              WafWebACLSpec   `json:"spec,omitempty"`
+	Status            WafWebACLStatus `json:"status,omitempty"`
 }
 
-type WafWebAclSpecDefaultAction struct {
-	Type string `json:"type"`
+type WafWebACLSpecDefaultAction struct {
+	Type string `json:"type" tf:"type"`
 }
 
-type WafWebAclSpecLoggingConfigurationRedactedFieldsFieldToMatch struct {
+type WafWebACLSpecLoggingConfigurationRedactedFieldsFieldToMatch struct {
 	// +optional
-	Data string `json:"data,omitempty"`
-	Type string `json:"type"`
+	Data string `json:"data,omitempty" tf:"data,omitempty"`
+	Type string `json:"type" tf:"type"`
 }
 
-type WafWebAclSpecLoggingConfigurationRedactedFields struct {
+type WafWebACLSpecLoggingConfigurationRedactedFields struct {
 	// +kubebuilder:validation:UniqueItems=true
-	FieldToMatch []WafWebAclSpecLoggingConfigurationRedactedFields `json:"field_to_match"`
+	FieldToMatch []WafWebACLSpecLoggingConfigurationRedactedFieldsFieldToMatch `json:"fieldToMatch" tf:"field_to_match"`
 }
 
-type WafWebAclSpecLoggingConfiguration struct {
-	LogDestination string `json:"log_destination"`
+type WafWebACLSpecLoggingConfiguration struct {
+	LogDestination string `json:"logDestination" tf:"log_destination"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	RedactedFields *[]WafWebAclSpecLoggingConfiguration `json:"redacted_fields,omitempty"`
+	RedactedFields []WafWebACLSpecLoggingConfigurationRedactedFields `json:"redactedFields,omitempty" tf:"redacted_fields,omitempty"`
 }
 
-type WafWebAclSpecRulesAction struct {
-	Type string `json:"type"`
+type WafWebACLSpecRulesAction struct {
+	Type string `json:"type" tf:"type"`
 }
 
-type WafWebAclSpecRulesOverrideAction struct {
-	Type string `json:"type"`
+type WafWebACLSpecRulesOverrideAction struct {
+	Type string `json:"type" tf:"type"`
 }
 
-type WafWebAclSpecRules struct {
+type WafWebACLSpecRules struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Action *[]WafWebAclSpecRules `json:"action,omitempty"`
+	Action []WafWebACLSpecRulesAction `json:"action,omitempty" tf:"action,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	OverrideAction *[]WafWebAclSpecRules `json:"override_action,omitempty"`
-	Priority       int                   `json:"priority"`
-	RuleId         string                `json:"rule_id"`
+	OverrideAction []WafWebACLSpecRulesOverrideAction `json:"overrideAction,omitempty" tf:"override_action,omitempty"`
+	Priority       int                                `json:"priority" tf:"priority"`
+	RuleID         string                             `json:"ruleID" tf:"rule_id"`
 	// +optional
-	Type string `json:"type,omitempty"`
+	Type string `json:"type,omitempty" tf:"type,omitempty"`
 }
 
-type WafWebAclSpec struct {
+type WafWebACLSpec struct {
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	DefaultAction []WafWebAclSpec `json:"default_action"`
+	DefaultAction []WafWebACLSpecDefaultAction `json:"defaultAction" tf:"default_action"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	LoggingConfiguration *[]WafWebAclSpec `json:"logging_configuration,omitempty"`
-	MetricName           string           `json:"metric_name"`
-	Name                 string           `json:"name"`
+	LoggingConfiguration []WafWebACLSpecLoggingConfiguration `json:"loggingConfiguration,omitempty" tf:"logging_configuration,omitempty"`
+	MetricName           string                              `json:"metricName" tf:"metric_name"`
+	Name                 string                              `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Rules *[]WafWebAclSpec `json:"rules,omitempty"`
+	Rules       []WafWebACLSpecRules      `json:"rules,omitempty" tf:"rules,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
-type WafWebAclStatus struct {
+type WafWebACLStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// WafWebAclList is a list of WafWebAcls
-type WafWebAclList struct {
+// WafWebACLList is a list of WafWebACLs
+type WafWebACLList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of WafWebAcl CRD objects
-	Items []WafWebAcl `json:"items,omitempty"`
+	// Items is a list of WafWebACL CRD objects
+	Items []WafWebACL `json:"items,omitempty"`
 }

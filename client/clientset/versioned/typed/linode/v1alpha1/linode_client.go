@@ -46,52 +46,52 @@ type LinodeV1alpha1Client struct {
 	restClient rest.Interface
 }
 
-func (c *LinodeV1alpha1Client) Domains() DomainInterface {
-	return newDomains(c)
+func (c *LinodeV1alpha1Client) Domains(namespace string) DomainInterface {
+	return newDomains(c, namespace)
 }
 
-func (c *LinodeV1alpha1Client) DomainRecords() DomainRecordInterface {
-	return newDomainRecords(c)
+func (c *LinodeV1alpha1Client) DomainRecords(namespace string) DomainRecordInterface {
+	return newDomainRecords(c, namespace)
 }
 
-func (c *LinodeV1alpha1Client) Images() ImageInterface {
-	return newImages(c)
+func (c *LinodeV1alpha1Client) Images(namespace string) ImageInterface {
+	return newImages(c, namespace)
 }
 
-func (c *LinodeV1alpha1Client) Instances() InstanceInterface {
-	return newInstances(c)
+func (c *LinodeV1alpha1Client) Instances(namespace string) InstanceInterface {
+	return newInstances(c, namespace)
 }
 
-func (c *LinodeV1alpha1Client) Nodebalancers() NodebalancerInterface {
-	return newNodebalancers(c)
+func (c *LinodeV1alpha1Client) Nodebalancers(namespace string) NodebalancerInterface {
+	return newNodebalancers(c, namespace)
 }
 
-func (c *LinodeV1alpha1Client) NodebalancerConfigs() NodebalancerConfigInterface {
-	return newNodebalancerConfigs(c)
+func (c *LinodeV1alpha1Client) NodebalancerConfigs(namespace string) NodebalancerConfigInterface {
+	return newNodebalancerConfigs(c, namespace)
 }
 
-func (c *LinodeV1alpha1Client) NodebalancerNodes() NodebalancerNodeInterface {
-	return newNodebalancerNodes(c)
+func (c *LinodeV1alpha1Client) NodebalancerNodes(namespace string) NodebalancerNodeInterface {
+	return newNodebalancerNodes(c, namespace)
 }
 
-func (c *LinodeV1alpha1Client) Rdnses() RdnsInterface {
-	return newRdnses(c)
+func (c *LinodeV1alpha1Client) Rdnses(namespace string) RdnsInterface {
+	return newRdnses(c, namespace)
 }
 
-func (c *LinodeV1alpha1Client) Sshkeys() SshkeyInterface {
-	return newSshkeys(c)
+func (c *LinodeV1alpha1Client) Sshkeys(namespace string) SshkeyInterface {
+	return newSshkeys(c, namespace)
 }
 
-func (c *LinodeV1alpha1Client) Stackscripts() StackscriptInterface {
-	return newStackscripts(c)
+func (c *LinodeV1alpha1Client) Stackscripts(namespace string) StackscriptInterface {
+	return newStackscripts(c, namespace)
 }
 
-func (c *LinodeV1alpha1Client) Tokens() TokenInterface {
-	return newTokens(c)
+func (c *LinodeV1alpha1Client) Tokens(namespace string) TokenInterface {
+	return newTokens(c, namespace)
 }
 
-func (c *LinodeV1alpha1Client) Volumes() VolumeInterface {
-	return newVolumes(c)
+func (c *LinodeV1alpha1Client) Volumes(namespace string) VolumeInterface {
+	return newVolumes(c, namespace)
 }
 
 // NewForConfig creates a new LinodeV1alpha1Client for the given config.

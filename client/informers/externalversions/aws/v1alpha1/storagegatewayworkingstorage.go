@@ -41,32 +41,33 @@ type StoragegatewayWorkingStorageInformer interface {
 type storagegatewayWorkingStorageInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewStoragegatewayWorkingStorageInformer constructs a new informer for StoragegatewayWorkingStorage type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewStoragegatewayWorkingStorageInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredStoragegatewayWorkingStorageInformer(client, resyncPeriod, indexers, nil)
+func NewStoragegatewayWorkingStorageInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredStoragegatewayWorkingStorageInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredStoragegatewayWorkingStorageInformer constructs a new informer for StoragegatewayWorkingStorage type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredStoragegatewayWorkingStorageInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredStoragegatewayWorkingStorageInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().StoragegatewayWorkingStorages().List(options)
+				return client.AwsV1alpha1().StoragegatewayWorkingStorages(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().StoragegatewayWorkingStorages().Watch(options)
+				return client.AwsV1alpha1().StoragegatewayWorkingStorages(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.StoragegatewayWorkingStorage{},
@@ -76,7 +77,7 @@ func NewFilteredStoragegatewayWorkingStorageInformer(client versioned.Interface,
 }
 
 func (f *storagegatewayWorkingStorageInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredStoragegatewayWorkingStorageInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredStoragegatewayWorkingStorageInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *storagegatewayWorkingStorageInformer) Informer() cache.SharedIndexInformer {

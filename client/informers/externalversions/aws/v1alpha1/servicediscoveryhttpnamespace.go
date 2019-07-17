@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// ServiceDiscoveryHttpNamespaceInformer provides access to a shared informer and lister for
-// ServiceDiscoveryHttpNamespaces.
-type ServiceDiscoveryHttpNamespaceInformer interface {
+// ServiceDiscoveryHTTPNamespaceInformer provides access to a shared informer and lister for
+// ServiceDiscoveryHTTPNamespaces.
+type ServiceDiscoveryHTTPNamespaceInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.ServiceDiscoveryHttpNamespaceLister
+	Lister() v1alpha1.ServiceDiscoveryHTTPNamespaceLister
 }
 
-type serviceDiscoveryHttpNamespaceInformer struct {
+type serviceDiscoveryHTTPNamespaceInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewServiceDiscoveryHttpNamespaceInformer constructs a new informer for ServiceDiscoveryHttpNamespace type.
+// NewServiceDiscoveryHTTPNamespaceInformer constructs a new informer for ServiceDiscoveryHTTPNamespace type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewServiceDiscoveryHttpNamespaceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredServiceDiscoveryHttpNamespaceInformer(client, resyncPeriod, indexers, nil)
+func NewServiceDiscoveryHTTPNamespaceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredServiceDiscoveryHTTPNamespaceInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredServiceDiscoveryHttpNamespaceInformer constructs a new informer for ServiceDiscoveryHttpNamespace type.
+// NewFilteredServiceDiscoveryHTTPNamespaceInformer constructs a new informer for ServiceDiscoveryHTTPNamespace type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredServiceDiscoveryHttpNamespaceInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredServiceDiscoveryHTTPNamespaceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ServiceDiscoveryHttpNamespaces().List(options)
+				return client.AwsV1alpha1().ServiceDiscoveryHTTPNamespaces(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().ServiceDiscoveryHttpNamespaces().Watch(options)
+				return client.AwsV1alpha1().ServiceDiscoveryHTTPNamespaces(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.ServiceDiscoveryHttpNamespace{},
+		&awsv1alpha1.ServiceDiscoveryHTTPNamespace{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *serviceDiscoveryHttpNamespaceInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredServiceDiscoveryHttpNamespaceInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *serviceDiscoveryHTTPNamespaceInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredServiceDiscoveryHTTPNamespaceInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *serviceDiscoveryHttpNamespaceInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.ServiceDiscoveryHttpNamespace{}, f.defaultInformer)
+func (f *serviceDiscoveryHTTPNamespaceInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.ServiceDiscoveryHTTPNamespace{}, f.defaultInformer)
 }
 
-func (f *serviceDiscoveryHttpNamespaceInformer) Lister() v1alpha1.ServiceDiscoveryHttpNamespaceLister {
-	return v1alpha1.NewServiceDiscoveryHttpNamespaceLister(f.Informer().GetIndexer())
+func (f *serviceDiscoveryHTTPNamespaceInformer) Lister() v1alpha1.ServiceDiscoveryHTTPNamespaceLister {
+	return v1alpha1.NewServiceDiscoveryHTTPNamespaceLister(f.Informer().GetIndexer())
 }

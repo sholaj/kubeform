@@ -31,6 +31,7 @@ import (
 // FakeComputeNetworks implements ComputeNetworkInterface
 type FakeComputeNetworks struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computenetworksResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computenetworks"}
@@ -40,7 +41,8 @@ var computenetworksKind = schema.GroupVersionKind{Group: "google.kubeform.com", 
 // Get takes name of the computeNetwork, and returns the corresponding computeNetwork object, and an error if there is any.
 func (c *FakeComputeNetworks) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeNetwork, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computenetworksResource, name), &v1alpha1.ComputeNetwork{})
+		Invokes(testing.NewGetAction(computenetworksResource, c.ns, name), &v1alpha1.ComputeNetwork{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeNetworks) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of ComputeNetworks that match those selectors.
 func (c *FakeComputeNetworks) List(opts v1.ListOptions) (result *v1alpha1.ComputeNetworkList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computenetworksResource, computenetworksKind, opts), &v1alpha1.ComputeNetworkList{})
+		Invokes(testing.NewListAction(computenetworksResource, computenetworksKind, c.ns, opts), &v1alpha1.ComputeNetworkList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeNetworks) List(opts v1.ListOptions) (result *v1alpha1.Comput
 // Watch returns a watch.Interface that watches the requested computeNetworks.
 func (c *FakeComputeNetworks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computenetworksResource, opts))
+		InvokesWatch(testing.NewWatchAction(computenetworksResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeNetwork and creates it.  Returns the server's representation of the computeNetwork, and an error, if there is any.
 func (c *FakeComputeNetworks) Create(computeNetwork *v1alpha1.ComputeNetwork) (result *v1alpha1.ComputeNetwork, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computenetworksResource, computeNetwork), &v1alpha1.ComputeNetwork{})
+		Invokes(testing.NewCreateAction(computenetworksResource, c.ns, computeNetwork), &v1alpha1.ComputeNetwork{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeNetworks) Create(computeNetwork *v1alpha1.ComputeNetwork) (r
 // Update takes the representation of a computeNetwork and updates it. Returns the server's representation of the computeNetwork, and an error, if there is any.
 func (c *FakeComputeNetworks) Update(computeNetwork *v1alpha1.ComputeNetwork) (result *v1alpha1.ComputeNetwork, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computenetworksResource, computeNetwork), &v1alpha1.ComputeNetwork{})
+		Invokes(testing.NewUpdateAction(computenetworksResource, c.ns, computeNetwork), &v1alpha1.ComputeNetwork{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeNetworks) Update(computeNetwork *v1alpha1.ComputeNetwork) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeNetworks) UpdateStatus(computeNetwork *v1alpha1.ComputeNetwork) (*v1alpha1.ComputeNetwork, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computenetworksResource, "status", computeNetwork), &v1alpha1.ComputeNetwork{})
+		Invokes(testing.NewUpdateSubresourceAction(computenetworksResource, "status", c.ns, computeNetwork), &v1alpha1.ComputeNetwork{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeNetworks) UpdateStatus(computeNetwork *v1alpha1.ComputeNetwo
 // Delete takes name of the computeNetwork and deletes it. Returns an error if one occurs.
 func (c *FakeComputeNetworks) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computenetworksResource, name), &v1alpha1.ComputeNetwork{})
+		Invokes(testing.NewDeleteAction(computenetworksResource, c.ns, name), &v1alpha1.ComputeNetwork{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeNetworks) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computenetworksResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computenetworksResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeNetworkList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeNetworks) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched computeNetwork.
 func (c *FakeComputeNetworks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeNetwork, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computenetworksResource, name, pt, data, subresources...), &v1alpha1.ComputeNetwork{})
+		Invokes(testing.NewPatchSubresourceAction(computenetworksResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeNetwork{})
+
 	if obj == nil {
 		return nil, err
 	}

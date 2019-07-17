@@ -1,43 +1,46 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-type PrivateDnsZone struct {
+type PrivateDNSZone struct {
 	metav1.TypeMeta   `json:",inline,omitempty"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              PrivateDnsZoneSpec   `json:"spec,omitempty"`
-	Status            PrivateDnsZoneStatus `json:"status,omitempty"`
+	Spec              PrivateDNSZoneSpec   `json:"spec,omitempty"`
+	Status            PrivateDNSZoneStatus `json:"status,omitempty"`
 }
 
-type PrivateDnsZoneSpec struct {
-	Name              string `json:"name"`
-	ResourceGroupName string `json:"resource_group_name"`
+type PrivateDNSZoneSpec struct {
+	Name              string                    `json:"name" tf:"name"`
+	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
-type PrivateDnsZoneStatus struct {
+type PrivateDNSZoneStatus struct {
 	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// PrivateDnsZoneList is a list of PrivateDnsZones
-type PrivateDnsZoneList struct {
+// PrivateDNSZoneList is a list of PrivateDNSZones
+type PrivateDNSZoneList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	// Items is a list of PrivateDnsZone CRD objects
-	Items []PrivateDnsZone `json:"items,omitempty"`
+	// Items is a list of PrivateDNSZone CRD objects
+	Items []PrivateDNSZone `json:"items,omitempty"`
 }

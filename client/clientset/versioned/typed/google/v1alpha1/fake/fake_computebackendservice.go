@@ -31,6 +31,7 @@ import (
 // FakeComputeBackendServices implements ComputeBackendServiceInterface
 type FakeComputeBackendServices struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computebackendservicesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computebackendservices"}
@@ -40,7 +41,8 @@ var computebackendservicesKind = schema.GroupVersionKind{Group: "google.kubeform
 // Get takes name of the computeBackendService, and returns the corresponding computeBackendService object, and an error if there is any.
 func (c *FakeComputeBackendServices) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeBackendService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computebackendservicesResource, name), &v1alpha1.ComputeBackendService{})
+		Invokes(testing.NewGetAction(computebackendservicesResource, c.ns, name), &v1alpha1.ComputeBackendService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeBackendServices) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of ComputeBackendServices that match those selectors.
 func (c *FakeComputeBackendServices) List(opts v1.ListOptions) (result *v1alpha1.ComputeBackendServiceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computebackendservicesResource, computebackendservicesKind, opts), &v1alpha1.ComputeBackendServiceList{})
+		Invokes(testing.NewListAction(computebackendservicesResource, computebackendservicesKind, c.ns, opts), &v1alpha1.ComputeBackendServiceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeBackendServices) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested computeBackendServices.
 func (c *FakeComputeBackendServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computebackendservicesResource, opts))
+		InvokesWatch(testing.NewWatchAction(computebackendservicesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeBackendService and creates it.  Returns the server's representation of the computeBackendService, and an error, if there is any.
 func (c *FakeComputeBackendServices) Create(computeBackendService *v1alpha1.ComputeBackendService) (result *v1alpha1.ComputeBackendService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computebackendservicesResource, computeBackendService), &v1alpha1.ComputeBackendService{})
+		Invokes(testing.NewCreateAction(computebackendservicesResource, c.ns, computeBackendService), &v1alpha1.ComputeBackendService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeBackendServices) Create(computeBackendService *v1alpha1.Comp
 // Update takes the representation of a computeBackendService and updates it. Returns the server's representation of the computeBackendService, and an error, if there is any.
 func (c *FakeComputeBackendServices) Update(computeBackendService *v1alpha1.ComputeBackendService) (result *v1alpha1.ComputeBackendService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computebackendservicesResource, computeBackendService), &v1alpha1.ComputeBackendService{})
+		Invokes(testing.NewUpdateAction(computebackendservicesResource, c.ns, computeBackendService), &v1alpha1.ComputeBackendService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeBackendServices) Update(computeBackendService *v1alpha1.Comp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeBackendServices) UpdateStatus(computeBackendService *v1alpha1.ComputeBackendService) (*v1alpha1.ComputeBackendService, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computebackendservicesResource, "status", computeBackendService), &v1alpha1.ComputeBackendService{})
+		Invokes(testing.NewUpdateSubresourceAction(computebackendservicesResource, "status", c.ns, computeBackendService), &v1alpha1.ComputeBackendService{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeBackendServices) UpdateStatus(computeBackendService *v1alpha
 // Delete takes name of the computeBackendService and deletes it. Returns an error if one occurs.
 func (c *FakeComputeBackendServices) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computebackendservicesResource, name), &v1alpha1.ComputeBackendService{})
+		Invokes(testing.NewDeleteAction(computebackendservicesResource, c.ns, name), &v1alpha1.ComputeBackendService{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeBackendServices) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computebackendservicesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computebackendservicesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeBackendServiceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeBackendServices) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched computeBackendService.
 func (c *FakeComputeBackendServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeBackendService, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computebackendservicesResource, name, pt, data, subresources...), &v1alpha1.ComputeBackendService{})
+		Invokes(testing.NewPatchSubresourceAction(computebackendservicesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeBackendService{})
+
 	if obj == nil {
 		return nil, err
 	}

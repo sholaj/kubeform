@@ -31,6 +31,7 @@ import (
 // FakeFirewalls implements FirewallInterface
 type FakeFirewalls struct {
 	Fake *FakeDigitaloceanV1alpha1
+	ns   string
 }
 
 var firewallsResource = schema.GroupVersionResource{Group: "digitalocean.kubeform.com", Version: "v1alpha1", Resource: "firewalls"}
@@ -40,7 +41,8 @@ var firewallsKind = schema.GroupVersionKind{Group: "digitalocean.kubeform.com", 
 // Get takes name of the firewall, and returns the corresponding firewall object, and an error if there is any.
 func (c *FakeFirewalls) Get(name string, options v1.GetOptions) (result *v1alpha1.Firewall, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(firewallsResource, name), &v1alpha1.Firewall{})
+		Invokes(testing.NewGetAction(firewallsResource, c.ns, name), &v1alpha1.Firewall{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeFirewalls) Get(name string, options v1.GetOptions) (result *v1alpha
 // List takes label and field selectors, and returns the list of Firewalls that match those selectors.
 func (c *FakeFirewalls) List(opts v1.ListOptions) (result *v1alpha1.FirewallList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(firewallsResource, firewallsKind, opts), &v1alpha1.FirewallList{})
+		Invokes(testing.NewListAction(firewallsResource, firewallsKind, c.ns, opts), &v1alpha1.FirewallList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeFirewalls) List(opts v1.ListOptions) (result *v1alpha1.FirewallList
 // Watch returns a watch.Interface that watches the requested firewalls.
 func (c *FakeFirewalls) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(firewallsResource, opts))
+		InvokesWatch(testing.NewWatchAction(firewallsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a firewall and creates it.  Returns the server's representation of the firewall, and an error, if there is any.
 func (c *FakeFirewalls) Create(firewall *v1alpha1.Firewall) (result *v1alpha1.Firewall, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(firewallsResource, firewall), &v1alpha1.Firewall{})
+		Invokes(testing.NewCreateAction(firewallsResource, c.ns, firewall), &v1alpha1.Firewall{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeFirewalls) Create(firewall *v1alpha1.Firewall) (result *v1alpha1.Fi
 // Update takes the representation of a firewall and updates it. Returns the server's representation of the firewall, and an error, if there is any.
 func (c *FakeFirewalls) Update(firewall *v1alpha1.Firewall) (result *v1alpha1.Firewall, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(firewallsResource, firewall), &v1alpha1.Firewall{})
+		Invokes(testing.NewUpdateAction(firewallsResource, c.ns, firewall), &v1alpha1.Firewall{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeFirewalls) Update(firewall *v1alpha1.Firewall) (result *v1alpha1.Fi
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeFirewalls) UpdateStatus(firewall *v1alpha1.Firewall) (*v1alpha1.Firewall, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(firewallsResource, "status", firewall), &v1alpha1.Firewall{})
+		Invokes(testing.NewUpdateSubresourceAction(firewallsResource, "status", c.ns, firewall), &v1alpha1.Firewall{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeFirewalls) UpdateStatus(firewall *v1alpha1.Firewall) (*v1alpha1.Fir
 // Delete takes name of the firewall and deletes it. Returns an error if one occurs.
 func (c *FakeFirewalls) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(firewallsResource, name), &v1alpha1.Firewall{})
+		Invokes(testing.NewDeleteAction(firewallsResource, c.ns, name), &v1alpha1.Firewall{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeFirewalls) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(firewallsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(firewallsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.FirewallList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeFirewalls) DeleteCollection(options *v1.DeleteOptions, listOptions 
 // Patch applies the patch and returns the patched firewall.
 func (c *FakeFirewalls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Firewall, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(firewallsResource, name, pt, data, subresources...), &v1alpha1.Firewall{})
+		Invokes(testing.NewPatchSubresourceAction(firewallsResource, c.ns, name, pt, data, subresources...), &v1alpha1.Firewall{})
+
 	if obj == nil {
 		return nil, err
 	}

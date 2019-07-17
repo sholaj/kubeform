@@ -31,6 +31,7 @@ import (
 // FakeApiManagementProductPolicies implements ApiManagementProductPolicyInterface
 type FakeApiManagementProductPolicies struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var apimanagementproductpoliciesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "apimanagementproductpolicies"}
@@ -40,7 +41,8 @@ var apimanagementproductpoliciesKind = schema.GroupVersionKind{Group: "azurerm.k
 // Get takes name of the apiManagementProductPolicy, and returns the corresponding apiManagementProductPolicy object, and an error if there is any.
 func (c *FakeApiManagementProductPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementProductPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apimanagementproductpoliciesResource, name), &v1alpha1.ApiManagementProductPolicy{})
+		Invokes(testing.NewGetAction(apimanagementproductpoliciesResource, c.ns, name), &v1alpha1.ApiManagementProductPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApiManagementProductPolicies) Get(name string, options v1.GetOption
 // List takes label and field selectors, and returns the list of ApiManagementProductPolicies that match those selectors.
 func (c *FakeApiManagementProductPolicies) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementProductPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apimanagementproductpoliciesResource, apimanagementproductpoliciesKind, opts), &v1alpha1.ApiManagementProductPolicyList{})
+		Invokes(testing.NewListAction(apimanagementproductpoliciesResource, apimanagementproductpoliciesKind, c.ns, opts), &v1alpha1.ApiManagementProductPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApiManagementProductPolicies) List(opts v1.ListOptions) (result *v1
 // Watch returns a watch.Interface that watches the requested apiManagementProductPolicies.
 func (c *FakeApiManagementProductPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apimanagementproductpoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(apimanagementproductpoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a apiManagementProductPolicy and creates it.  Returns the server's representation of the apiManagementProductPolicy, and an error, if there is any.
 func (c *FakeApiManagementProductPolicies) Create(apiManagementProductPolicy *v1alpha1.ApiManagementProductPolicy) (result *v1alpha1.ApiManagementProductPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apimanagementproductpoliciesResource, apiManagementProductPolicy), &v1alpha1.ApiManagementProductPolicy{})
+		Invokes(testing.NewCreateAction(apimanagementproductpoliciesResource, c.ns, apiManagementProductPolicy), &v1alpha1.ApiManagementProductPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApiManagementProductPolicies) Create(apiManagementProductPolicy *v1
 // Update takes the representation of a apiManagementProductPolicy and updates it. Returns the server's representation of the apiManagementProductPolicy, and an error, if there is any.
 func (c *FakeApiManagementProductPolicies) Update(apiManagementProductPolicy *v1alpha1.ApiManagementProductPolicy) (result *v1alpha1.ApiManagementProductPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apimanagementproductpoliciesResource, apiManagementProductPolicy), &v1alpha1.ApiManagementProductPolicy{})
+		Invokes(testing.NewUpdateAction(apimanagementproductpoliciesResource, c.ns, apiManagementProductPolicy), &v1alpha1.ApiManagementProductPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApiManagementProductPolicies) Update(apiManagementProductPolicy *v1
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApiManagementProductPolicies) UpdateStatus(apiManagementProductPolicy *v1alpha1.ApiManagementProductPolicy) (*v1alpha1.ApiManagementProductPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apimanagementproductpoliciesResource, "status", apiManagementProductPolicy), &v1alpha1.ApiManagementProductPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(apimanagementproductpoliciesResource, "status", c.ns, apiManagementProductPolicy), &v1alpha1.ApiManagementProductPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApiManagementProductPolicies) UpdateStatus(apiManagementProductPoli
 // Delete takes name of the apiManagementProductPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeApiManagementProductPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apimanagementproductpoliciesResource, name), &v1alpha1.ApiManagementProductPolicy{})
+		Invokes(testing.NewDeleteAction(apimanagementproductpoliciesResource, c.ns, name), &v1alpha1.ApiManagementProductPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApiManagementProductPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apimanagementproductpoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(apimanagementproductpoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApiManagementProductPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApiManagementProductPolicies) DeleteCollection(options *v1.DeleteOp
 // Patch applies the patch and returns the patched apiManagementProductPolicy.
 func (c *FakeApiManagementProductPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementProductPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apimanagementproductpoliciesResource, name, pt, data, subresources...), &v1alpha1.ApiManagementProductPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(apimanagementproductpoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiManagementProductPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

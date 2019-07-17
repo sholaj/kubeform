@@ -29,8 +29,8 @@ import (
 type BudgetsBudgetLister interface {
 	// List lists all BudgetsBudgets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.BudgetsBudget, err error)
-	// Get retrieves the BudgetsBudget from the index for a given name.
-	Get(name string) (*v1alpha1.BudgetsBudget, error)
+	// BudgetsBudgets returns an object that can list and get BudgetsBudgets.
+	BudgetsBudgets(namespace string) BudgetsBudgetNamespaceLister
 	BudgetsBudgetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *budgetsBudgetLister) List(selector labels.Selector) (ret []*v1alpha1.Bu
 	return ret, err
 }
 
-// Get retrieves the BudgetsBudget from the index for a given name.
-func (s *budgetsBudgetLister) Get(name string) (*v1alpha1.BudgetsBudget, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// BudgetsBudgets returns an object that can list and get BudgetsBudgets.
+func (s *budgetsBudgetLister) BudgetsBudgets(namespace string) BudgetsBudgetNamespaceLister {
+	return budgetsBudgetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// BudgetsBudgetNamespaceLister helps list and get BudgetsBudgets.
+type BudgetsBudgetNamespaceLister interface {
+	// List lists all BudgetsBudgets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.BudgetsBudget, err error)
+	// Get retrieves the BudgetsBudget from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.BudgetsBudget, error)
+	BudgetsBudgetNamespaceListerExpansion
+}
+
+// budgetsBudgetNamespaceLister implements the BudgetsBudgetNamespaceLister
+// interface.
+type budgetsBudgetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all BudgetsBudgets in the indexer for a given namespace.
+func (s budgetsBudgetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.BudgetsBudget, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.BudgetsBudget))
+	})
+	return ret, err
+}
+
+// Get retrieves the BudgetsBudget from the indexer for a given namespace and name.
+func (s budgetsBudgetNamespaceLister) Get(name string) (*v1alpha1.BudgetsBudget, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

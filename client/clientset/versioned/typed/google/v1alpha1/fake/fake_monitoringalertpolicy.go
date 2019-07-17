@@ -31,6 +31,7 @@ import (
 // FakeMonitoringAlertPolicies implements MonitoringAlertPolicyInterface
 type FakeMonitoringAlertPolicies struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var monitoringalertpoliciesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "monitoringalertpolicies"}
@@ -40,7 +41,8 @@ var monitoringalertpoliciesKind = schema.GroupVersionKind{Group: "google.kubefor
 // Get takes name of the monitoringAlertPolicy, and returns the corresponding monitoringAlertPolicy object, and an error if there is any.
 func (c *FakeMonitoringAlertPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.MonitoringAlertPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(monitoringalertpoliciesResource, name), &v1alpha1.MonitoringAlertPolicy{})
+		Invokes(testing.NewGetAction(monitoringalertpoliciesResource, c.ns, name), &v1alpha1.MonitoringAlertPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMonitoringAlertPolicies) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of MonitoringAlertPolicies that match those selectors.
 func (c *FakeMonitoringAlertPolicies) List(opts v1.ListOptions) (result *v1alpha1.MonitoringAlertPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(monitoringalertpoliciesResource, monitoringalertpoliciesKind, opts), &v1alpha1.MonitoringAlertPolicyList{})
+		Invokes(testing.NewListAction(monitoringalertpoliciesResource, monitoringalertpoliciesKind, c.ns, opts), &v1alpha1.MonitoringAlertPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMonitoringAlertPolicies) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested monitoringAlertPolicies.
 func (c *FakeMonitoringAlertPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(monitoringalertpoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(monitoringalertpoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a monitoringAlertPolicy and creates it.  Returns the server's representation of the monitoringAlertPolicy, and an error, if there is any.
 func (c *FakeMonitoringAlertPolicies) Create(monitoringAlertPolicy *v1alpha1.MonitoringAlertPolicy) (result *v1alpha1.MonitoringAlertPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(monitoringalertpoliciesResource, monitoringAlertPolicy), &v1alpha1.MonitoringAlertPolicy{})
+		Invokes(testing.NewCreateAction(monitoringalertpoliciesResource, c.ns, monitoringAlertPolicy), &v1alpha1.MonitoringAlertPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMonitoringAlertPolicies) Create(monitoringAlertPolicy *v1alpha1.Mon
 // Update takes the representation of a monitoringAlertPolicy and updates it. Returns the server's representation of the monitoringAlertPolicy, and an error, if there is any.
 func (c *FakeMonitoringAlertPolicies) Update(monitoringAlertPolicy *v1alpha1.MonitoringAlertPolicy) (result *v1alpha1.MonitoringAlertPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(monitoringalertpoliciesResource, monitoringAlertPolicy), &v1alpha1.MonitoringAlertPolicy{})
+		Invokes(testing.NewUpdateAction(monitoringalertpoliciesResource, c.ns, monitoringAlertPolicy), &v1alpha1.MonitoringAlertPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMonitoringAlertPolicies) Update(monitoringAlertPolicy *v1alpha1.Mon
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMonitoringAlertPolicies) UpdateStatus(monitoringAlertPolicy *v1alpha1.MonitoringAlertPolicy) (*v1alpha1.MonitoringAlertPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(monitoringalertpoliciesResource, "status", monitoringAlertPolicy), &v1alpha1.MonitoringAlertPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(monitoringalertpoliciesResource, "status", c.ns, monitoringAlertPolicy), &v1alpha1.MonitoringAlertPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMonitoringAlertPolicies) UpdateStatus(monitoringAlertPolicy *v1alph
 // Delete takes name of the monitoringAlertPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeMonitoringAlertPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(monitoringalertpoliciesResource, name), &v1alpha1.MonitoringAlertPolicy{})
+		Invokes(testing.NewDeleteAction(monitoringalertpoliciesResource, c.ns, name), &v1alpha1.MonitoringAlertPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMonitoringAlertPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(monitoringalertpoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(monitoringalertpoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MonitoringAlertPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMonitoringAlertPolicies) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched monitoringAlertPolicy.
 func (c *FakeMonitoringAlertPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MonitoringAlertPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(monitoringalertpoliciesResource, name, pt, data, subresources...), &v1alpha1.MonitoringAlertPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(monitoringalertpoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.MonitoringAlertPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

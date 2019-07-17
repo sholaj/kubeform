@@ -31,6 +31,7 @@ import (
 // FakeDataprocJobs implements DataprocJobInterface
 type FakeDataprocJobs struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var dataprocjobsResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "dataprocjobs"}
@@ -40,7 +41,8 @@ var dataprocjobsKind = schema.GroupVersionKind{Group: "google.kubeform.com", Ver
 // Get takes name of the dataprocJob, and returns the corresponding dataprocJob object, and an error if there is any.
 func (c *FakeDataprocJobs) Get(name string, options v1.GetOptions) (result *v1alpha1.DataprocJob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(dataprocjobsResource, name), &v1alpha1.DataprocJob{})
+		Invokes(testing.NewGetAction(dataprocjobsResource, c.ns, name), &v1alpha1.DataprocJob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDataprocJobs) Get(name string, options v1.GetOptions) (result *v1al
 // List takes label and field selectors, and returns the list of DataprocJobs that match those selectors.
 func (c *FakeDataprocJobs) List(opts v1.ListOptions) (result *v1alpha1.DataprocJobList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(dataprocjobsResource, dataprocjobsKind, opts), &v1alpha1.DataprocJobList{})
+		Invokes(testing.NewListAction(dataprocjobsResource, dataprocjobsKind, c.ns, opts), &v1alpha1.DataprocJobList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDataprocJobs) List(opts v1.ListOptions) (result *v1alpha1.DataprocJ
 // Watch returns a watch.Interface that watches the requested dataprocJobs.
 func (c *FakeDataprocJobs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(dataprocjobsResource, opts))
+		InvokesWatch(testing.NewWatchAction(dataprocjobsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dataprocJob and creates it.  Returns the server's representation of the dataprocJob, and an error, if there is any.
 func (c *FakeDataprocJobs) Create(dataprocJob *v1alpha1.DataprocJob) (result *v1alpha1.DataprocJob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(dataprocjobsResource, dataprocJob), &v1alpha1.DataprocJob{})
+		Invokes(testing.NewCreateAction(dataprocjobsResource, c.ns, dataprocJob), &v1alpha1.DataprocJob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDataprocJobs) Create(dataprocJob *v1alpha1.DataprocJob) (result *v1
 // Update takes the representation of a dataprocJob and updates it. Returns the server's representation of the dataprocJob, and an error, if there is any.
 func (c *FakeDataprocJobs) Update(dataprocJob *v1alpha1.DataprocJob) (result *v1alpha1.DataprocJob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(dataprocjobsResource, dataprocJob), &v1alpha1.DataprocJob{})
+		Invokes(testing.NewUpdateAction(dataprocjobsResource, c.ns, dataprocJob), &v1alpha1.DataprocJob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDataprocJobs) Update(dataprocJob *v1alpha1.DataprocJob) (result *v1
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDataprocJobs) UpdateStatus(dataprocJob *v1alpha1.DataprocJob) (*v1alpha1.DataprocJob, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(dataprocjobsResource, "status", dataprocJob), &v1alpha1.DataprocJob{})
+		Invokes(testing.NewUpdateSubresourceAction(dataprocjobsResource, "status", c.ns, dataprocJob), &v1alpha1.DataprocJob{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDataprocJobs) UpdateStatus(dataprocJob *v1alpha1.DataprocJob) (*v1a
 // Delete takes name of the dataprocJob and deletes it. Returns an error if one occurs.
 func (c *FakeDataprocJobs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(dataprocjobsResource, name), &v1alpha1.DataprocJob{})
+		Invokes(testing.NewDeleteAction(dataprocjobsResource, c.ns, name), &v1alpha1.DataprocJob{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDataprocJobs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(dataprocjobsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(dataprocjobsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DataprocJobList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDataprocJobs) DeleteCollection(options *v1.DeleteOptions, listOptio
 // Patch applies the patch and returns the patched dataprocJob.
 func (c *FakeDataprocJobs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataprocJob, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(dataprocjobsResource, name, pt, data, subresources...), &v1alpha1.DataprocJob{})
+		Invokes(testing.NewPatchSubresourceAction(dataprocjobsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DataprocJob{})
+
 	if obj == nil {
 		return nil, err
 	}

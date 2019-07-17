@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,21 +19,22 @@ type ExpressRouteCircuit struct {
 }
 
 type ExpressRouteCircuitSpecSku struct {
-	Family string `json:"family"`
-	Tier   string `json:"tier"`
+	Family string `json:"family" tf:"family"`
+	Tier   string `json:"tier" tf:"tier"`
 }
 
 type ExpressRouteCircuitSpec struct {
 	// +optional
-	AllowClassicOperations bool   `json:"allow_classic_operations,omitempty"`
-	BandwidthInMbps        int    `json:"bandwidth_in_mbps"`
-	Location               string `json:"location"`
-	Name                   string `json:"name"`
-	PeeringLocation        string `json:"peering_location"`
-	ResourceGroupName      string `json:"resource_group_name"`
-	ServiceProviderName    string `json:"service_provider_name"`
+	AllowClassicOperations bool   `json:"allowClassicOperations,omitempty" tf:"allow_classic_operations,omitempty"`
+	BandwidthInMbps        int    `json:"bandwidthInMbps" tf:"bandwidth_in_mbps"`
+	Location               string `json:"location" tf:"location"`
+	Name                   string `json:"name" tf:"name"`
+	PeeringLocation        string `json:"peeringLocation" tf:"peering_location"`
+	ResourceGroupName      string `json:"resourceGroupName" tf:"resource_group_name"`
+	ServiceProviderName    string `json:"serviceProviderName" tf:"service_provider_name"`
 	// +kubebuilder:validation:MaxItems=1
-	Sku []ExpressRouteCircuitSpec `json:"sku"`
+	Sku         []ExpressRouteCircuitSpecSku `json:"sku" tf:"sku"`
+	ProviderRef core.LocalObjectReference    `json:"providerRef" tf:"-"`
 }
 
 type ExpressRouteCircuitStatus struct {
@@ -41,7 +42,9 @@ type ExpressRouteCircuitStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

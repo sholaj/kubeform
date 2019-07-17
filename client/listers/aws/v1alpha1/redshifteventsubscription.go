@@ -29,8 +29,8 @@ import (
 type RedshiftEventSubscriptionLister interface {
 	// List lists all RedshiftEventSubscriptions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RedshiftEventSubscription, err error)
-	// Get retrieves the RedshiftEventSubscription from the index for a given name.
-	Get(name string) (*v1alpha1.RedshiftEventSubscription, error)
+	// RedshiftEventSubscriptions returns an object that can list and get RedshiftEventSubscriptions.
+	RedshiftEventSubscriptions(namespace string) RedshiftEventSubscriptionNamespaceLister
 	RedshiftEventSubscriptionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *redshiftEventSubscriptionLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the RedshiftEventSubscription from the index for a given name.
-func (s *redshiftEventSubscriptionLister) Get(name string) (*v1alpha1.RedshiftEventSubscription, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RedshiftEventSubscriptions returns an object that can list and get RedshiftEventSubscriptions.
+func (s *redshiftEventSubscriptionLister) RedshiftEventSubscriptions(namespace string) RedshiftEventSubscriptionNamespaceLister {
+	return redshiftEventSubscriptionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RedshiftEventSubscriptionNamespaceLister helps list and get RedshiftEventSubscriptions.
+type RedshiftEventSubscriptionNamespaceLister interface {
+	// List lists all RedshiftEventSubscriptions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RedshiftEventSubscription, err error)
+	// Get retrieves the RedshiftEventSubscription from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RedshiftEventSubscription, error)
+	RedshiftEventSubscriptionNamespaceListerExpansion
+}
+
+// redshiftEventSubscriptionNamespaceLister implements the RedshiftEventSubscriptionNamespaceLister
+// interface.
+type redshiftEventSubscriptionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RedshiftEventSubscriptions in the indexer for a given namespace.
+func (s redshiftEventSubscriptionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RedshiftEventSubscription, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RedshiftEventSubscription))
+	})
+	return ret, err
+}
+
+// Get retrieves the RedshiftEventSubscription from the indexer for a given namespace and name.
+func (s redshiftEventSubscriptionNamespaceLister) Get(name string) (*v1alpha1.RedshiftEventSubscription, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -29,8 +29,8 @@ import (
 type ConfigConfigurationRecorderStatus_Lister interface {
 	// List lists all ConfigConfigurationRecorderStatus_s in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ConfigConfigurationRecorderStatus_, err error)
-	// Get retrieves the ConfigConfigurationRecorderStatus_ from the index for a given name.
-	Get(name string) (*v1alpha1.ConfigConfigurationRecorderStatus_, error)
+	// ConfigConfigurationRecorderStatus_s returns an object that can list and get ConfigConfigurationRecorderStatus_s.
+	ConfigConfigurationRecorderStatus_s(namespace string) ConfigConfigurationRecorderStatus_NamespaceLister
 	ConfigConfigurationRecorderStatus_ListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *configConfigurationRecorderStatus_Lister) List(selector labels.Selector
 	return ret, err
 }
 
-// Get retrieves the ConfigConfigurationRecorderStatus_ from the index for a given name.
-func (s *configConfigurationRecorderStatus_Lister) Get(name string) (*v1alpha1.ConfigConfigurationRecorderStatus_, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ConfigConfigurationRecorderStatus_s returns an object that can list and get ConfigConfigurationRecorderStatus_s.
+func (s *configConfigurationRecorderStatus_Lister) ConfigConfigurationRecorderStatus_s(namespace string) ConfigConfigurationRecorderStatus_NamespaceLister {
+	return configConfigurationRecorderStatus_NamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ConfigConfigurationRecorderStatus_NamespaceLister helps list and get ConfigConfigurationRecorderStatus_s.
+type ConfigConfigurationRecorderStatus_NamespaceLister interface {
+	// List lists all ConfigConfigurationRecorderStatus_s in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ConfigConfigurationRecorderStatus_, err error)
+	// Get retrieves the ConfigConfigurationRecorderStatus_ from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ConfigConfigurationRecorderStatus_, error)
+	ConfigConfigurationRecorderStatus_NamespaceListerExpansion
+}
+
+// configConfigurationRecorderStatus_NamespaceLister implements the ConfigConfigurationRecorderStatus_NamespaceLister
+// interface.
+type configConfigurationRecorderStatus_NamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ConfigConfigurationRecorderStatus_s in the indexer for a given namespace.
+func (s configConfigurationRecorderStatus_NamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ConfigConfigurationRecorderStatus_, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ConfigConfigurationRecorderStatus_))
+	})
+	return ret, err
+}
+
+// Get retrieves the ConfigConfigurationRecorderStatus_ from the indexer for a given namespace and name.
+func (s configConfigurationRecorderStatus_NamespaceLister) Get(name string) (*v1alpha1.ConfigConfigurationRecorderStatus_, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

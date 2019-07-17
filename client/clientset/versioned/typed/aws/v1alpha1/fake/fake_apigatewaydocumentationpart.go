@@ -31,6 +31,7 @@ import (
 // FakeApiGatewayDocumentationParts implements ApiGatewayDocumentationPartInterface
 type FakeApiGatewayDocumentationParts struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var apigatewaydocumentationpartsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "apigatewaydocumentationparts"}
@@ -40,7 +41,8 @@ var apigatewaydocumentationpartsKind = schema.GroupVersionKind{Group: "aws.kubef
 // Get takes name of the apiGatewayDocumentationPart, and returns the corresponding apiGatewayDocumentationPart object, and an error if there is any.
 func (c *FakeApiGatewayDocumentationParts) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayDocumentationPart, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apigatewaydocumentationpartsResource, name), &v1alpha1.ApiGatewayDocumentationPart{})
+		Invokes(testing.NewGetAction(apigatewaydocumentationpartsResource, c.ns, name), &v1alpha1.ApiGatewayDocumentationPart{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApiGatewayDocumentationParts) Get(name string, options v1.GetOption
 // List takes label and field selectors, and returns the list of ApiGatewayDocumentationParts that match those selectors.
 func (c *FakeApiGatewayDocumentationParts) List(opts v1.ListOptions) (result *v1alpha1.ApiGatewayDocumentationPartList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apigatewaydocumentationpartsResource, apigatewaydocumentationpartsKind, opts), &v1alpha1.ApiGatewayDocumentationPartList{})
+		Invokes(testing.NewListAction(apigatewaydocumentationpartsResource, apigatewaydocumentationpartsKind, c.ns, opts), &v1alpha1.ApiGatewayDocumentationPartList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApiGatewayDocumentationParts) List(opts v1.ListOptions) (result *v1
 // Watch returns a watch.Interface that watches the requested apiGatewayDocumentationParts.
 func (c *FakeApiGatewayDocumentationParts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apigatewaydocumentationpartsResource, opts))
+		InvokesWatch(testing.NewWatchAction(apigatewaydocumentationpartsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a apiGatewayDocumentationPart and creates it.  Returns the server's representation of the apiGatewayDocumentationPart, and an error, if there is any.
 func (c *FakeApiGatewayDocumentationParts) Create(apiGatewayDocumentationPart *v1alpha1.ApiGatewayDocumentationPart) (result *v1alpha1.ApiGatewayDocumentationPart, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apigatewaydocumentationpartsResource, apiGatewayDocumentationPart), &v1alpha1.ApiGatewayDocumentationPart{})
+		Invokes(testing.NewCreateAction(apigatewaydocumentationpartsResource, c.ns, apiGatewayDocumentationPart), &v1alpha1.ApiGatewayDocumentationPart{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApiGatewayDocumentationParts) Create(apiGatewayDocumentationPart *v
 // Update takes the representation of a apiGatewayDocumentationPart and updates it. Returns the server's representation of the apiGatewayDocumentationPart, and an error, if there is any.
 func (c *FakeApiGatewayDocumentationParts) Update(apiGatewayDocumentationPart *v1alpha1.ApiGatewayDocumentationPart) (result *v1alpha1.ApiGatewayDocumentationPart, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apigatewaydocumentationpartsResource, apiGatewayDocumentationPart), &v1alpha1.ApiGatewayDocumentationPart{})
+		Invokes(testing.NewUpdateAction(apigatewaydocumentationpartsResource, c.ns, apiGatewayDocumentationPart), &v1alpha1.ApiGatewayDocumentationPart{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApiGatewayDocumentationParts) Update(apiGatewayDocumentationPart *v
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApiGatewayDocumentationParts) UpdateStatus(apiGatewayDocumentationPart *v1alpha1.ApiGatewayDocumentationPart) (*v1alpha1.ApiGatewayDocumentationPart, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apigatewaydocumentationpartsResource, "status", apiGatewayDocumentationPart), &v1alpha1.ApiGatewayDocumentationPart{})
+		Invokes(testing.NewUpdateSubresourceAction(apigatewaydocumentationpartsResource, "status", c.ns, apiGatewayDocumentationPart), &v1alpha1.ApiGatewayDocumentationPart{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApiGatewayDocumentationParts) UpdateStatus(apiGatewayDocumentationP
 // Delete takes name of the apiGatewayDocumentationPart and deletes it. Returns an error if one occurs.
 func (c *FakeApiGatewayDocumentationParts) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apigatewaydocumentationpartsResource, name), &v1alpha1.ApiGatewayDocumentationPart{})
+		Invokes(testing.NewDeleteAction(apigatewaydocumentationpartsResource, c.ns, name), &v1alpha1.ApiGatewayDocumentationPart{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApiGatewayDocumentationParts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apigatewaydocumentationpartsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(apigatewaydocumentationpartsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApiGatewayDocumentationPartList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApiGatewayDocumentationParts) DeleteCollection(options *v1.DeleteOp
 // Patch applies the patch and returns the patched apiGatewayDocumentationPart.
 func (c *FakeApiGatewayDocumentationParts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayDocumentationPart, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apigatewaydocumentationpartsResource, name, pt, data, subresources...), &v1alpha1.ApiGatewayDocumentationPart{})
+		Invokes(testing.NewPatchSubresourceAction(apigatewaydocumentationpartsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiGatewayDocumentationPart{})
+
 	if obj == nil {
 		return nil, err
 	}

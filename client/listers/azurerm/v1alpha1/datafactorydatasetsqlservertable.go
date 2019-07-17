@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// DataFactoryDatasetSqlServerTableLister helps list DataFactoryDatasetSqlServerTables.
-type DataFactoryDatasetSqlServerTableLister interface {
-	// List lists all DataFactoryDatasetSqlServerTables in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.DataFactoryDatasetSqlServerTable, err error)
-	// Get retrieves the DataFactoryDatasetSqlServerTable from the index for a given name.
-	Get(name string) (*v1alpha1.DataFactoryDatasetSqlServerTable, error)
-	DataFactoryDatasetSqlServerTableListerExpansion
+// DataFactoryDatasetSQLServerTableLister helps list DataFactoryDatasetSQLServerTables.
+type DataFactoryDatasetSQLServerTableLister interface {
+	// List lists all DataFactoryDatasetSQLServerTables in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.DataFactoryDatasetSQLServerTable, err error)
+	// DataFactoryDatasetSQLServerTables returns an object that can list and get DataFactoryDatasetSQLServerTables.
+	DataFactoryDatasetSQLServerTables(namespace string) DataFactoryDatasetSQLServerTableNamespaceLister
+	DataFactoryDatasetSQLServerTableListerExpansion
 }
 
-// dataFactoryDatasetSqlServerTableLister implements the DataFactoryDatasetSqlServerTableLister interface.
-type dataFactoryDatasetSqlServerTableLister struct {
+// dataFactoryDatasetSQLServerTableLister implements the DataFactoryDatasetSQLServerTableLister interface.
+type dataFactoryDatasetSQLServerTableLister struct {
 	indexer cache.Indexer
 }
 
-// NewDataFactoryDatasetSqlServerTableLister returns a new DataFactoryDatasetSqlServerTableLister.
-func NewDataFactoryDatasetSqlServerTableLister(indexer cache.Indexer) DataFactoryDatasetSqlServerTableLister {
-	return &dataFactoryDatasetSqlServerTableLister{indexer: indexer}
+// NewDataFactoryDatasetSQLServerTableLister returns a new DataFactoryDatasetSQLServerTableLister.
+func NewDataFactoryDatasetSQLServerTableLister(indexer cache.Indexer) DataFactoryDatasetSQLServerTableLister {
+	return &dataFactoryDatasetSQLServerTableLister{indexer: indexer}
 }
 
-// List lists all DataFactoryDatasetSqlServerTables in the indexer.
-func (s *dataFactoryDatasetSqlServerTableLister) List(selector labels.Selector) (ret []*v1alpha1.DataFactoryDatasetSqlServerTable, err error) {
+// List lists all DataFactoryDatasetSQLServerTables in the indexer.
+func (s *dataFactoryDatasetSQLServerTableLister) List(selector labels.Selector) (ret []*v1alpha1.DataFactoryDatasetSQLServerTable, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.DataFactoryDatasetSqlServerTable))
+		ret = append(ret, m.(*v1alpha1.DataFactoryDatasetSQLServerTable))
 	})
 	return ret, err
 }
 
-// Get retrieves the DataFactoryDatasetSqlServerTable from the index for a given name.
-func (s *dataFactoryDatasetSqlServerTableLister) Get(name string) (*v1alpha1.DataFactoryDatasetSqlServerTable, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DataFactoryDatasetSQLServerTables returns an object that can list and get DataFactoryDatasetSQLServerTables.
+func (s *dataFactoryDatasetSQLServerTableLister) DataFactoryDatasetSQLServerTables(namespace string) DataFactoryDatasetSQLServerTableNamespaceLister {
+	return dataFactoryDatasetSQLServerTableNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DataFactoryDatasetSQLServerTableNamespaceLister helps list and get DataFactoryDatasetSQLServerTables.
+type DataFactoryDatasetSQLServerTableNamespaceLister interface {
+	// List lists all DataFactoryDatasetSQLServerTables in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DataFactoryDatasetSQLServerTable, err error)
+	// Get retrieves the DataFactoryDatasetSQLServerTable from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DataFactoryDatasetSQLServerTable, error)
+	DataFactoryDatasetSQLServerTableNamespaceListerExpansion
+}
+
+// dataFactoryDatasetSQLServerTableNamespaceLister implements the DataFactoryDatasetSQLServerTableNamespaceLister
+// interface.
+type dataFactoryDatasetSQLServerTableNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DataFactoryDatasetSQLServerTables in the indexer for a given namespace.
+func (s dataFactoryDatasetSQLServerTableNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DataFactoryDatasetSQLServerTable, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DataFactoryDatasetSQLServerTable))
+	})
+	return ret, err
+}
+
+// Get retrieves the DataFactoryDatasetSQLServerTable from the indexer for a given namespace and name.
+func (s dataFactoryDatasetSQLServerTableNamespaceLister) Get(name string) (*v1alpha1.DataFactoryDatasetSQLServerTable, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("datafactorydatasetsqlservertable"), name)
 	}
-	return obj.(*v1alpha1.DataFactoryDatasetSqlServerTable), nil
+	return obj.(*v1alpha1.DataFactoryDatasetSQLServerTable), nil
 }

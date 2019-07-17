@@ -29,8 +29,8 @@ import (
 type NetworkSecurityRuleLister interface {
 	// List lists all NetworkSecurityRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NetworkSecurityRule, err error)
-	// Get retrieves the NetworkSecurityRule from the index for a given name.
-	Get(name string) (*v1alpha1.NetworkSecurityRule, error)
+	// NetworkSecurityRules returns an object that can list and get NetworkSecurityRules.
+	NetworkSecurityRules(namespace string) NetworkSecurityRuleNamespaceLister
 	NetworkSecurityRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *networkSecurityRuleLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the NetworkSecurityRule from the index for a given name.
-func (s *networkSecurityRuleLister) Get(name string) (*v1alpha1.NetworkSecurityRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NetworkSecurityRules returns an object that can list and get NetworkSecurityRules.
+func (s *networkSecurityRuleLister) NetworkSecurityRules(namespace string) NetworkSecurityRuleNamespaceLister {
+	return networkSecurityRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NetworkSecurityRuleNamespaceLister helps list and get NetworkSecurityRules.
+type NetworkSecurityRuleNamespaceLister interface {
+	// List lists all NetworkSecurityRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NetworkSecurityRule, err error)
+	// Get retrieves the NetworkSecurityRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NetworkSecurityRule, error)
+	NetworkSecurityRuleNamespaceListerExpansion
+}
+
+// networkSecurityRuleNamespaceLister implements the NetworkSecurityRuleNamespaceLister
+// interface.
+type networkSecurityRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NetworkSecurityRules in the indexer for a given namespace.
+func (s networkSecurityRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NetworkSecurityRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NetworkSecurityRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the NetworkSecurityRule from the indexer for a given namespace and name.
+func (s networkSecurityRuleNamespaceLister) Get(name string) (*v1alpha1.NetworkSecurityRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

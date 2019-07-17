@@ -29,8 +29,8 @@ import (
 type NeptuneClusterSnapshotLister interface {
 	// List lists all NeptuneClusterSnapshots in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NeptuneClusterSnapshot, err error)
-	// Get retrieves the NeptuneClusterSnapshot from the index for a given name.
-	Get(name string) (*v1alpha1.NeptuneClusterSnapshot, error)
+	// NeptuneClusterSnapshots returns an object that can list and get NeptuneClusterSnapshots.
+	NeptuneClusterSnapshots(namespace string) NeptuneClusterSnapshotNamespaceLister
 	NeptuneClusterSnapshotListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *neptuneClusterSnapshotLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the NeptuneClusterSnapshot from the index for a given name.
-func (s *neptuneClusterSnapshotLister) Get(name string) (*v1alpha1.NeptuneClusterSnapshot, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NeptuneClusterSnapshots returns an object that can list and get NeptuneClusterSnapshots.
+func (s *neptuneClusterSnapshotLister) NeptuneClusterSnapshots(namespace string) NeptuneClusterSnapshotNamespaceLister {
+	return neptuneClusterSnapshotNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NeptuneClusterSnapshotNamespaceLister helps list and get NeptuneClusterSnapshots.
+type NeptuneClusterSnapshotNamespaceLister interface {
+	// List lists all NeptuneClusterSnapshots in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NeptuneClusterSnapshot, err error)
+	// Get retrieves the NeptuneClusterSnapshot from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NeptuneClusterSnapshot, error)
+	NeptuneClusterSnapshotNamespaceListerExpansion
+}
+
+// neptuneClusterSnapshotNamespaceLister implements the NeptuneClusterSnapshotNamespaceLister
+// interface.
+type neptuneClusterSnapshotNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NeptuneClusterSnapshots in the indexer for a given namespace.
+func (s neptuneClusterSnapshotNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NeptuneClusterSnapshot, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NeptuneClusterSnapshot))
+	})
+	return ret, err
+}
+
+// Get retrieves the NeptuneClusterSnapshot from the indexer for a given namespace and name.
+func (s neptuneClusterSnapshotNamespaceLister) Get(name string) (*v1alpha1.NeptuneClusterSnapshot, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

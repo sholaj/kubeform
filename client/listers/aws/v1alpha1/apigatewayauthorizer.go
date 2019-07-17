@@ -29,8 +29,8 @@ import (
 type ApiGatewayAuthorizerLister interface {
 	// List lists all ApiGatewayAuthorizers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayAuthorizer, err error)
-	// Get retrieves the ApiGatewayAuthorizer from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayAuthorizer, error)
+	// ApiGatewayAuthorizers returns an object that can list and get ApiGatewayAuthorizers.
+	ApiGatewayAuthorizers(namespace string) ApiGatewayAuthorizerNamespaceLister
 	ApiGatewayAuthorizerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiGatewayAuthorizerLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayAuthorizer from the index for a given name.
-func (s *apiGatewayAuthorizerLister) Get(name string) (*v1alpha1.ApiGatewayAuthorizer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayAuthorizers returns an object that can list and get ApiGatewayAuthorizers.
+func (s *apiGatewayAuthorizerLister) ApiGatewayAuthorizers(namespace string) ApiGatewayAuthorizerNamespaceLister {
+	return apiGatewayAuthorizerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayAuthorizerNamespaceLister helps list and get ApiGatewayAuthorizers.
+type ApiGatewayAuthorizerNamespaceLister interface {
+	// List lists all ApiGatewayAuthorizers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayAuthorizer, err error)
+	// Get retrieves the ApiGatewayAuthorizer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayAuthorizer, error)
+	ApiGatewayAuthorizerNamespaceListerExpansion
+}
+
+// apiGatewayAuthorizerNamespaceLister implements the ApiGatewayAuthorizerNamespaceLister
+// interface.
+type apiGatewayAuthorizerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayAuthorizers in the indexer for a given namespace.
+func (s apiGatewayAuthorizerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayAuthorizer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayAuthorizer))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayAuthorizer from the indexer for a given namespace and name.
+func (s apiGatewayAuthorizerNamespaceLister) Get(name string) (*v1alpha1.ApiGatewayAuthorizer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

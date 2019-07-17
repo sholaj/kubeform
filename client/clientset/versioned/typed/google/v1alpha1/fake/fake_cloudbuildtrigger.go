@@ -31,6 +31,7 @@ import (
 // FakeCloudbuildTriggers implements CloudbuildTriggerInterface
 type FakeCloudbuildTriggers struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var cloudbuildtriggersResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "cloudbuildtriggers"}
@@ -40,7 +41,8 @@ var cloudbuildtriggersKind = schema.GroupVersionKind{Group: "google.kubeform.com
 // Get takes name of the cloudbuildTrigger, and returns the corresponding cloudbuildTrigger object, and an error if there is any.
 func (c *FakeCloudbuildTriggers) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudbuildTrigger, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cloudbuildtriggersResource, name), &v1alpha1.CloudbuildTrigger{})
+		Invokes(testing.NewGetAction(cloudbuildtriggersResource, c.ns, name), &v1alpha1.CloudbuildTrigger{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCloudbuildTriggers) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of CloudbuildTriggers that match those selectors.
 func (c *FakeCloudbuildTriggers) List(opts v1.ListOptions) (result *v1alpha1.CloudbuildTriggerList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cloudbuildtriggersResource, cloudbuildtriggersKind, opts), &v1alpha1.CloudbuildTriggerList{})
+		Invokes(testing.NewListAction(cloudbuildtriggersResource, cloudbuildtriggersKind, c.ns, opts), &v1alpha1.CloudbuildTriggerList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCloudbuildTriggers) List(opts v1.ListOptions) (result *v1alpha1.Clo
 // Watch returns a watch.Interface that watches the requested cloudbuildTriggers.
 func (c *FakeCloudbuildTriggers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cloudbuildtriggersResource, opts))
+		InvokesWatch(testing.NewWatchAction(cloudbuildtriggersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cloudbuildTrigger and creates it.  Returns the server's representation of the cloudbuildTrigger, and an error, if there is any.
 func (c *FakeCloudbuildTriggers) Create(cloudbuildTrigger *v1alpha1.CloudbuildTrigger) (result *v1alpha1.CloudbuildTrigger, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cloudbuildtriggersResource, cloudbuildTrigger), &v1alpha1.CloudbuildTrigger{})
+		Invokes(testing.NewCreateAction(cloudbuildtriggersResource, c.ns, cloudbuildTrigger), &v1alpha1.CloudbuildTrigger{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCloudbuildTriggers) Create(cloudbuildTrigger *v1alpha1.CloudbuildTr
 // Update takes the representation of a cloudbuildTrigger and updates it. Returns the server's representation of the cloudbuildTrigger, and an error, if there is any.
 func (c *FakeCloudbuildTriggers) Update(cloudbuildTrigger *v1alpha1.CloudbuildTrigger) (result *v1alpha1.CloudbuildTrigger, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cloudbuildtriggersResource, cloudbuildTrigger), &v1alpha1.CloudbuildTrigger{})
+		Invokes(testing.NewUpdateAction(cloudbuildtriggersResource, c.ns, cloudbuildTrigger), &v1alpha1.CloudbuildTrigger{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCloudbuildTriggers) Update(cloudbuildTrigger *v1alpha1.CloudbuildTr
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCloudbuildTriggers) UpdateStatus(cloudbuildTrigger *v1alpha1.CloudbuildTrigger) (*v1alpha1.CloudbuildTrigger, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cloudbuildtriggersResource, "status", cloudbuildTrigger), &v1alpha1.CloudbuildTrigger{})
+		Invokes(testing.NewUpdateSubresourceAction(cloudbuildtriggersResource, "status", c.ns, cloudbuildTrigger), &v1alpha1.CloudbuildTrigger{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCloudbuildTriggers) UpdateStatus(cloudbuildTrigger *v1alpha1.Cloudb
 // Delete takes name of the cloudbuildTrigger and deletes it. Returns an error if one occurs.
 func (c *FakeCloudbuildTriggers) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cloudbuildtriggersResource, name), &v1alpha1.CloudbuildTrigger{})
+		Invokes(testing.NewDeleteAction(cloudbuildtriggersResource, c.ns, name), &v1alpha1.CloudbuildTrigger{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCloudbuildTriggers) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cloudbuildtriggersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cloudbuildtriggersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CloudbuildTriggerList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCloudbuildTriggers) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched cloudbuildTrigger.
 func (c *FakeCloudbuildTriggers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudbuildTrigger, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cloudbuildtriggersResource, name, pt, data, subresources...), &v1alpha1.CloudbuildTrigger{})
+		Invokes(testing.NewPatchSubresourceAction(cloudbuildtriggersResource, c.ns, name, pt, data, subresources...), &v1alpha1.CloudbuildTrigger{})
+
 	if obj == nil {
 		return nil, err
 	}

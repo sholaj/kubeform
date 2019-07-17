@@ -29,8 +29,8 @@ import (
 type WafGeoMatchSetLister interface {
 	// List lists all WafGeoMatchSets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.WafGeoMatchSet, err error)
-	// Get retrieves the WafGeoMatchSet from the index for a given name.
-	Get(name string) (*v1alpha1.WafGeoMatchSet, error)
+	// WafGeoMatchSets returns an object that can list and get WafGeoMatchSets.
+	WafGeoMatchSets(namespace string) WafGeoMatchSetNamespaceLister
 	WafGeoMatchSetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *wafGeoMatchSetLister) List(selector labels.Selector) (ret []*v1alpha1.W
 	return ret, err
 }
 
-// Get retrieves the WafGeoMatchSet from the index for a given name.
-func (s *wafGeoMatchSetLister) Get(name string) (*v1alpha1.WafGeoMatchSet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafGeoMatchSets returns an object that can list and get WafGeoMatchSets.
+func (s *wafGeoMatchSetLister) WafGeoMatchSets(namespace string) WafGeoMatchSetNamespaceLister {
+	return wafGeoMatchSetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafGeoMatchSetNamespaceLister helps list and get WafGeoMatchSets.
+type WafGeoMatchSetNamespaceLister interface {
+	// List lists all WafGeoMatchSets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafGeoMatchSet, err error)
+	// Get retrieves the WafGeoMatchSet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafGeoMatchSet, error)
+	WafGeoMatchSetNamespaceListerExpansion
+}
+
+// wafGeoMatchSetNamespaceLister implements the WafGeoMatchSetNamespaceLister
+// interface.
+type wafGeoMatchSetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafGeoMatchSets in the indexer for a given namespace.
+func (s wafGeoMatchSetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafGeoMatchSet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafGeoMatchSet))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafGeoMatchSet from the indexer for a given namespace and name.
+func (s wafGeoMatchSetNamespaceLister) Get(name string) (*v1alpha1.WafGeoMatchSet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

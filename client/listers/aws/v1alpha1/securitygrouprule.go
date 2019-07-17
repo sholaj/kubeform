@@ -29,8 +29,8 @@ import (
 type SecurityGroupRuleLister interface {
 	// List lists all SecurityGroupRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SecurityGroupRule, err error)
-	// Get retrieves the SecurityGroupRule from the index for a given name.
-	Get(name string) (*v1alpha1.SecurityGroupRule, error)
+	// SecurityGroupRules returns an object that can list and get SecurityGroupRules.
+	SecurityGroupRules(namespace string) SecurityGroupRuleNamespaceLister
 	SecurityGroupRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *securityGroupRuleLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// Get retrieves the SecurityGroupRule from the index for a given name.
-func (s *securityGroupRuleLister) Get(name string) (*v1alpha1.SecurityGroupRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SecurityGroupRules returns an object that can list and get SecurityGroupRules.
+func (s *securityGroupRuleLister) SecurityGroupRules(namespace string) SecurityGroupRuleNamespaceLister {
+	return securityGroupRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SecurityGroupRuleNamespaceLister helps list and get SecurityGroupRules.
+type SecurityGroupRuleNamespaceLister interface {
+	// List lists all SecurityGroupRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SecurityGroupRule, err error)
+	// Get retrieves the SecurityGroupRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SecurityGroupRule, error)
+	SecurityGroupRuleNamespaceListerExpansion
+}
+
+// securityGroupRuleNamespaceLister implements the SecurityGroupRuleNamespaceLister
+// interface.
+type securityGroupRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SecurityGroupRules in the indexer for a given namespace.
+func (s securityGroupRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SecurityGroupRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SecurityGroupRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the SecurityGroupRule from the indexer for a given namespace and name.
+func (s securityGroupRuleNamespaceLister) Get(name string) (*v1alpha1.SecurityGroupRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

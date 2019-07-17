@@ -31,6 +31,7 @@ import (
 // FakeHdinsightHbaseClusters implements HdinsightHbaseClusterInterface
 type FakeHdinsightHbaseClusters struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var hdinsighthbaseclustersResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "hdinsighthbaseclusters"}
@@ -40,7 +41,8 @@ var hdinsighthbaseclustersKind = schema.GroupVersionKind{Group: "azurerm.kubefor
 // Get takes name of the hdinsightHbaseCluster, and returns the corresponding hdinsightHbaseCluster object, and an error if there is any.
 func (c *FakeHdinsightHbaseClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.HdinsightHbaseCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(hdinsighthbaseclustersResource, name), &v1alpha1.HdinsightHbaseCluster{})
+		Invokes(testing.NewGetAction(hdinsighthbaseclustersResource, c.ns, name), &v1alpha1.HdinsightHbaseCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeHdinsightHbaseClusters) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of HdinsightHbaseClusters that match those selectors.
 func (c *FakeHdinsightHbaseClusters) List(opts v1.ListOptions) (result *v1alpha1.HdinsightHbaseClusterList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(hdinsighthbaseclustersResource, hdinsighthbaseclustersKind, opts), &v1alpha1.HdinsightHbaseClusterList{})
+		Invokes(testing.NewListAction(hdinsighthbaseclustersResource, hdinsighthbaseclustersKind, c.ns, opts), &v1alpha1.HdinsightHbaseClusterList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeHdinsightHbaseClusters) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested hdinsightHbaseClusters.
 func (c *FakeHdinsightHbaseClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(hdinsighthbaseclustersResource, opts))
+		InvokesWatch(testing.NewWatchAction(hdinsighthbaseclustersResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a hdinsightHbaseCluster and creates it.  Returns the server's representation of the hdinsightHbaseCluster, and an error, if there is any.
 func (c *FakeHdinsightHbaseClusters) Create(hdinsightHbaseCluster *v1alpha1.HdinsightHbaseCluster) (result *v1alpha1.HdinsightHbaseCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(hdinsighthbaseclustersResource, hdinsightHbaseCluster), &v1alpha1.HdinsightHbaseCluster{})
+		Invokes(testing.NewCreateAction(hdinsighthbaseclustersResource, c.ns, hdinsightHbaseCluster), &v1alpha1.HdinsightHbaseCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeHdinsightHbaseClusters) Create(hdinsightHbaseCluster *v1alpha1.Hdin
 // Update takes the representation of a hdinsightHbaseCluster and updates it. Returns the server's representation of the hdinsightHbaseCluster, and an error, if there is any.
 func (c *FakeHdinsightHbaseClusters) Update(hdinsightHbaseCluster *v1alpha1.HdinsightHbaseCluster) (result *v1alpha1.HdinsightHbaseCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(hdinsighthbaseclustersResource, hdinsightHbaseCluster), &v1alpha1.HdinsightHbaseCluster{})
+		Invokes(testing.NewUpdateAction(hdinsighthbaseclustersResource, c.ns, hdinsightHbaseCluster), &v1alpha1.HdinsightHbaseCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeHdinsightHbaseClusters) Update(hdinsightHbaseCluster *v1alpha1.Hdin
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeHdinsightHbaseClusters) UpdateStatus(hdinsightHbaseCluster *v1alpha1.HdinsightHbaseCluster) (*v1alpha1.HdinsightHbaseCluster, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(hdinsighthbaseclustersResource, "status", hdinsightHbaseCluster), &v1alpha1.HdinsightHbaseCluster{})
+		Invokes(testing.NewUpdateSubresourceAction(hdinsighthbaseclustersResource, "status", c.ns, hdinsightHbaseCluster), &v1alpha1.HdinsightHbaseCluster{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeHdinsightHbaseClusters) UpdateStatus(hdinsightHbaseCluster *v1alpha
 // Delete takes name of the hdinsightHbaseCluster and deletes it. Returns an error if one occurs.
 func (c *FakeHdinsightHbaseClusters) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(hdinsighthbaseclustersResource, name), &v1alpha1.HdinsightHbaseCluster{})
+		Invokes(testing.NewDeleteAction(hdinsighthbaseclustersResource, c.ns, name), &v1alpha1.HdinsightHbaseCluster{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeHdinsightHbaseClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(hdinsighthbaseclustersResource, listOptions)
+	action := testing.NewDeleteCollectionAction(hdinsighthbaseclustersResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.HdinsightHbaseClusterList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeHdinsightHbaseClusters) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched hdinsightHbaseCluster.
 func (c *FakeHdinsightHbaseClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.HdinsightHbaseCluster, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(hdinsighthbaseclustersResource, name, pt, data, subresources...), &v1alpha1.HdinsightHbaseCluster{})
+		Invokes(testing.NewPatchSubresourceAction(hdinsighthbaseclustersResource, c.ns, name, pt, data, subresources...), &v1alpha1.HdinsightHbaseCluster{})
+
 	if obj == nil {
 		return nil, err
 	}

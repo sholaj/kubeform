@@ -31,6 +31,7 @@ import (
 // FakeConfigConfigRules implements ConfigConfigRuleInterface
 type FakeConfigConfigRules struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var configconfigrulesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "configconfigrules"}
@@ -40,7 +41,8 @@ var configconfigrulesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", V
 // Get takes name of the configConfigRule, and returns the corresponding configConfigRule object, and an error if there is any.
 func (c *FakeConfigConfigRules) Get(name string, options v1.GetOptions) (result *v1alpha1.ConfigConfigRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(configconfigrulesResource, name), &v1alpha1.ConfigConfigRule{})
+		Invokes(testing.NewGetAction(configconfigrulesResource, c.ns, name), &v1alpha1.ConfigConfigRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeConfigConfigRules) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of ConfigConfigRules that match those selectors.
 func (c *FakeConfigConfigRules) List(opts v1.ListOptions) (result *v1alpha1.ConfigConfigRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(configconfigrulesResource, configconfigrulesKind, opts), &v1alpha1.ConfigConfigRuleList{})
+		Invokes(testing.NewListAction(configconfigrulesResource, configconfigrulesKind, c.ns, opts), &v1alpha1.ConfigConfigRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeConfigConfigRules) List(opts v1.ListOptions) (result *v1alpha1.Conf
 // Watch returns a watch.Interface that watches the requested configConfigRules.
 func (c *FakeConfigConfigRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(configconfigrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(configconfigrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a configConfigRule and creates it.  Returns the server's representation of the configConfigRule, and an error, if there is any.
 func (c *FakeConfigConfigRules) Create(configConfigRule *v1alpha1.ConfigConfigRule) (result *v1alpha1.ConfigConfigRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(configconfigrulesResource, configConfigRule), &v1alpha1.ConfigConfigRule{})
+		Invokes(testing.NewCreateAction(configconfigrulesResource, c.ns, configConfigRule), &v1alpha1.ConfigConfigRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeConfigConfigRules) Create(configConfigRule *v1alpha1.ConfigConfigRu
 // Update takes the representation of a configConfigRule and updates it. Returns the server's representation of the configConfigRule, and an error, if there is any.
 func (c *FakeConfigConfigRules) Update(configConfigRule *v1alpha1.ConfigConfigRule) (result *v1alpha1.ConfigConfigRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(configconfigrulesResource, configConfigRule), &v1alpha1.ConfigConfigRule{})
+		Invokes(testing.NewUpdateAction(configconfigrulesResource, c.ns, configConfigRule), &v1alpha1.ConfigConfigRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeConfigConfigRules) Update(configConfigRule *v1alpha1.ConfigConfigRu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeConfigConfigRules) UpdateStatus(configConfigRule *v1alpha1.ConfigConfigRule) (*v1alpha1.ConfigConfigRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(configconfigrulesResource, "status", configConfigRule), &v1alpha1.ConfigConfigRule{})
+		Invokes(testing.NewUpdateSubresourceAction(configconfigrulesResource, "status", c.ns, configConfigRule), &v1alpha1.ConfigConfigRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeConfigConfigRules) UpdateStatus(configConfigRule *v1alpha1.ConfigCo
 // Delete takes name of the configConfigRule and deletes it. Returns an error if one occurs.
 func (c *FakeConfigConfigRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(configconfigrulesResource, name), &v1alpha1.ConfigConfigRule{})
+		Invokes(testing.NewDeleteAction(configconfigrulesResource, c.ns, name), &v1alpha1.ConfigConfigRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeConfigConfigRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(configconfigrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(configconfigrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ConfigConfigRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeConfigConfigRules) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched configConfigRule.
 func (c *FakeConfigConfigRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ConfigConfigRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(configconfigrulesResource, name, pt, data, subresources...), &v1alpha1.ConfigConfigRule{})
+		Invokes(testing.NewPatchSubresourceAction(configconfigrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ConfigConfigRule{})
+
 	if obj == nil {
 		return nil, err
 	}

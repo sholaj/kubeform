@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,24 +20,25 @@ type Ami struct {
 
 type AmiSpec struct {
 	// +optional
-	Architecture string `json:"architecture,omitempty"`
+	Architecture string `json:"architecture,omitempty" tf:"architecture,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	EnaSupport bool `json:"ena_support,omitempty"`
+	EnaSupport bool `json:"enaSupport,omitempty" tf:"ena_support,omitempty"`
 	// +optional
-	KernelId string `json:"kernel_id,omitempty"`
-	Name     string `json:"name"`
+	KernelID string `json:"kernelID,omitempty" tf:"kernel_id,omitempty"`
+	Name     string `json:"name" tf:"name"`
 	// +optional
-	RamdiskId string `json:"ramdisk_id,omitempty"`
+	RamdiskID string `json:"ramdiskID,omitempty" tf:"ramdisk_id,omitempty"`
 	// +optional
-	RootDeviceName string `json:"root_device_name,omitempty"`
+	RootDeviceName string `json:"rootDeviceName,omitempty" tf:"root_device_name,omitempty"`
 	// +optional
-	SriovNetSupport string `json:"sriov_net_support,omitempty"`
+	SriovNetSupport string `json:"sriovNetSupport,omitempty" tf:"sriov_net_support,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	VirtualizationType string `json:"virtualization_type,omitempty"`
+	VirtualizationType string                    `json:"virtualizationType,omitempty" tf:"virtualization_type,omitempty"`
+	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type AmiStatus struct {
@@ -45,7 +46,9 @@ type AmiStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

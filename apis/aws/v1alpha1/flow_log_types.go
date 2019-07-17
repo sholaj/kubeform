@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,16 +20,17 @@ type FlowLog struct {
 
 type FlowLogSpec struct {
 	// +optional
-	EniId string `json:"eni_id,omitempty"`
+	EniID string `json:"eniID,omitempty" tf:"eni_id,omitempty"`
 	// +optional
-	IamRoleArn string `json:"iam_role_arn,omitempty"`
+	IamRoleArn string `json:"iamRoleArn,omitempty" tf:"iam_role_arn,omitempty"`
 	// +optional
-	LogDestinationType string `json:"log_destination_type,omitempty"`
+	LogDestinationType string `json:"logDestinationType,omitempty" tf:"log_destination_type,omitempty"`
 	// +optional
-	SubnetId    string `json:"subnet_id,omitempty"`
-	TrafficType string `json:"traffic_type"`
+	SubnetID    string `json:"subnetID,omitempty" tf:"subnet_id,omitempty"`
+	TrafficType string `json:"trafficType" tf:"traffic_type"`
 	// +optional
-	VpcId string `json:"vpc_id,omitempty"`
+	VpcID       string                    `json:"vpcID,omitempty" tf:"vpc_id,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type FlowLogStatus struct {
@@ -37,7 +38,9 @@ type FlowLogStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

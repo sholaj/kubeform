@@ -31,6 +31,7 @@ import (
 // FakeRecoveryServicesVaults implements RecoveryServicesVaultInterface
 type FakeRecoveryServicesVaults struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var recoveryservicesvaultsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "recoveryservicesvaults"}
@@ -40,7 +41,8 @@ var recoveryservicesvaultsKind = schema.GroupVersionKind{Group: "azurerm.kubefor
 // Get takes name of the recoveryServicesVault, and returns the corresponding recoveryServicesVault object, and an error if there is any.
 func (c *FakeRecoveryServicesVaults) Get(name string, options v1.GetOptions) (result *v1alpha1.RecoveryServicesVault, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(recoveryservicesvaultsResource, name), &v1alpha1.RecoveryServicesVault{})
+		Invokes(testing.NewGetAction(recoveryservicesvaultsResource, c.ns, name), &v1alpha1.RecoveryServicesVault{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRecoveryServicesVaults) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of RecoveryServicesVaults that match those selectors.
 func (c *FakeRecoveryServicesVaults) List(opts v1.ListOptions) (result *v1alpha1.RecoveryServicesVaultList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(recoveryservicesvaultsResource, recoveryservicesvaultsKind, opts), &v1alpha1.RecoveryServicesVaultList{})
+		Invokes(testing.NewListAction(recoveryservicesvaultsResource, recoveryservicesvaultsKind, c.ns, opts), &v1alpha1.RecoveryServicesVaultList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRecoveryServicesVaults) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested recoveryServicesVaults.
 func (c *FakeRecoveryServicesVaults) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(recoveryservicesvaultsResource, opts))
+		InvokesWatch(testing.NewWatchAction(recoveryservicesvaultsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a recoveryServicesVault and creates it.  Returns the server's representation of the recoveryServicesVault, and an error, if there is any.
 func (c *FakeRecoveryServicesVaults) Create(recoveryServicesVault *v1alpha1.RecoveryServicesVault) (result *v1alpha1.RecoveryServicesVault, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(recoveryservicesvaultsResource, recoveryServicesVault), &v1alpha1.RecoveryServicesVault{})
+		Invokes(testing.NewCreateAction(recoveryservicesvaultsResource, c.ns, recoveryServicesVault), &v1alpha1.RecoveryServicesVault{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRecoveryServicesVaults) Create(recoveryServicesVault *v1alpha1.Reco
 // Update takes the representation of a recoveryServicesVault and updates it. Returns the server's representation of the recoveryServicesVault, and an error, if there is any.
 func (c *FakeRecoveryServicesVaults) Update(recoveryServicesVault *v1alpha1.RecoveryServicesVault) (result *v1alpha1.RecoveryServicesVault, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(recoveryservicesvaultsResource, recoveryServicesVault), &v1alpha1.RecoveryServicesVault{})
+		Invokes(testing.NewUpdateAction(recoveryservicesvaultsResource, c.ns, recoveryServicesVault), &v1alpha1.RecoveryServicesVault{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRecoveryServicesVaults) Update(recoveryServicesVault *v1alpha1.Reco
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRecoveryServicesVaults) UpdateStatus(recoveryServicesVault *v1alpha1.RecoveryServicesVault) (*v1alpha1.RecoveryServicesVault, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(recoveryservicesvaultsResource, "status", recoveryServicesVault), &v1alpha1.RecoveryServicesVault{})
+		Invokes(testing.NewUpdateSubresourceAction(recoveryservicesvaultsResource, "status", c.ns, recoveryServicesVault), &v1alpha1.RecoveryServicesVault{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRecoveryServicesVaults) UpdateStatus(recoveryServicesVault *v1alpha
 // Delete takes name of the recoveryServicesVault and deletes it. Returns an error if one occurs.
 func (c *FakeRecoveryServicesVaults) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(recoveryservicesvaultsResource, name), &v1alpha1.RecoveryServicesVault{})
+		Invokes(testing.NewDeleteAction(recoveryservicesvaultsResource, c.ns, name), &v1alpha1.RecoveryServicesVault{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRecoveryServicesVaults) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(recoveryservicesvaultsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(recoveryservicesvaultsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.RecoveryServicesVaultList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRecoveryServicesVaults) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched recoveryServicesVault.
 func (c *FakeRecoveryServicesVaults) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RecoveryServicesVault, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(recoveryservicesvaultsResource, name, pt, data, subresources...), &v1alpha1.RecoveryServicesVault{})
+		Invokes(testing.NewPatchSubresourceAction(recoveryservicesvaultsResource, c.ns, name, pt, data, subresources...), &v1alpha1.RecoveryServicesVault{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// DefaultNetworkAclLister helps list DefaultNetworkAcls.
-type DefaultNetworkAclLister interface {
-	// List lists all DefaultNetworkAcls in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.DefaultNetworkAcl, err error)
-	// Get retrieves the DefaultNetworkAcl from the index for a given name.
-	Get(name string) (*v1alpha1.DefaultNetworkAcl, error)
-	DefaultNetworkAclListerExpansion
+// DefaultNetworkACLLister helps list DefaultNetworkACLs.
+type DefaultNetworkACLLister interface {
+	// List lists all DefaultNetworkACLs in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.DefaultNetworkACL, err error)
+	// DefaultNetworkACLs returns an object that can list and get DefaultNetworkACLs.
+	DefaultNetworkACLs(namespace string) DefaultNetworkACLNamespaceLister
+	DefaultNetworkACLListerExpansion
 }
 
-// defaultNetworkAclLister implements the DefaultNetworkAclLister interface.
-type defaultNetworkAclLister struct {
+// defaultNetworkACLLister implements the DefaultNetworkACLLister interface.
+type defaultNetworkACLLister struct {
 	indexer cache.Indexer
 }
 
-// NewDefaultNetworkAclLister returns a new DefaultNetworkAclLister.
-func NewDefaultNetworkAclLister(indexer cache.Indexer) DefaultNetworkAclLister {
-	return &defaultNetworkAclLister{indexer: indexer}
+// NewDefaultNetworkACLLister returns a new DefaultNetworkACLLister.
+func NewDefaultNetworkACLLister(indexer cache.Indexer) DefaultNetworkACLLister {
+	return &defaultNetworkACLLister{indexer: indexer}
 }
 
-// List lists all DefaultNetworkAcls in the indexer.
-func (s *defaultNetworkAclLister) List(selector labels.Selector) (ret []*v1alpha1.DefaultNetworkAcl, err error) {
+// List lists all DefaultNetworkACLs in the indexer.
+func (s *defaultNetworkACLLister) List(selector labels.Selector) (ret []*v1alpha1.DefaultNetworkACL, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.DefaultNetworkAcl))
+		ret = append(ret, m.(*v1alpha1.DefaultNetworkACL))
 	})
 	return ret, err
 }
 
-// Get retrieves the DefaultNetworkAcl from the index for a given name.
-func (s *defaultNetworkAclLister) Get(name string) (*v1alpha1.DefaultNetworkAcl, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DefaultNetworkACLs returns an object that can list and get DefaultNetworkACLs.
+func (s *defaultNetworkACLLister) DefaultNetworkACLs(namespace string) DefaultNetworkACLNamespaceLister {
+	return defaultNetworkACLNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DefaultNetworkACLNamespaceLister helps list and get DefaultNetworkACLs.
+type DefaultNetworkACLNamespaceLister interface {
+	// List lists all DefaultNetworkACLs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DefaultNetworkACL, err error)
+	// Get retrieves the DefaultNetworkACL from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DefaultNetworkACL, error)
+	DefaultNetworkACLNamespaceListerExpansion
+}
+
+// defaultNetworkACLNamespaceLister implements the DefaultNetworkACLNamespaceLister
+// interface.
+type defaultNetworkACLNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DefaultNetworkACLs in the indexer for a given namespace.
+func (s defaultNetworkACLNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DefaultNetworkACL, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DefaultNetworkACL))
+	})
+	return ret, err
+}
+
+// Get retrieves the DefaultNetworkACL from the indexer for a given namespace and name.
+func (s defaultNetworkACLNamespaceLister) Get(name string) (*v1alpha1.DefaultNetworkACL, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("defaultnetworkacl"), name)
 	}
-	return obj.(*v1alpha1.DefaultNetworkAcl), nil
+	return obj.(*v1alpha1.DefaultNetworkACL), nil
 }

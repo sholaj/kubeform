@@ -29,8 +29,8 @@ import (
 type KmsKeyRingIamMemberLister interface {
 	// List lists all KmsKeyRingIamMembers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KmsKeyRingIamMember, err error)
-	// Get retrieves the KmsKeyRingIamMember from the index for a given name.
-	Get(name string) (*v1alpha1.KmsKeyRingIamMember, error)
+	// KmsKeyRingIamMembers returns an object that can list and get KmsKeyRingIamMembers.
+	KmsKeyRingIamMembers(namespace string) KmsKeyRingIamMemberNamespaceLister
 	KmsKeyRingIamMemberListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *kmsKeyRingIamMemberLister) List(selector labels.Selector) (ret []*v1alp
 	return ret, err
 }
 
-// Get retrieves the KmsKeyRingIamMember from the index for a given name.
-func (s *kmsKeyRingIamMemberLister) Get(name string) (*v1alpha1.KmsKeyRingIamMember, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KmsKeyRingIamMembers returns an object that can list and get KmsKeyRingIamMembers.
+func (s *kmsKeyRingIamMemberLister) KmsKeyRingIamMembers(namespace string) KmsKeyRingIamMemberNamespaceLister {
+	return kmsKeyRingIamMemberNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KmsKeyRingIamMemberNamespaceLister helps list and get KmsKeyRingIamMembers.
+type KmsKeyRingIamMemberNamespaceLister interface {
+	// List lists all KmsKeyRingIamMembers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KmsKeyRingIamMember, err error)
+	// Get retrieves the KmsKeyRingIamMember from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KmsKeyRingIamMember, error)
+	KmsKeyRingIamMemberNamespaceListerExpansion
+}
+
+// kmsKeyRingIamMemberNamespaceLister implements the KmsKeyRingIamMemberNamespaceLister
+// interface.
+type kmsKeyRingIamMemberNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KmsKeyRingIamMembers in the indexer for a given namespace.
+func (s kmsKeyRingIamMemberNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KmsKeyRingIamMember, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KmsKeyRingIamMember))
+	})
+	return ret, err
+}
+
+// Get retrieves the KmsKeyRingIamMember from the indexer for a given namespace and name.
+func (s kmsKeyRingIamMemberNamespaceLister) Get(name string) (*v1alpha1.KmsKeyRingIamMember, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

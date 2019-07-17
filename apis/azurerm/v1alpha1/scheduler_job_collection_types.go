@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,22 +20,23 @@ type SchedulerJobCollection struct {
 
 type SchedulerJobCollectionSpecQuota struct {
 	// +optional
-	MaxJobCount            int    `json:"max_job_count,omitempty"`
-	MaxRecurrenceFrequency string `json:"max_recurrence_frequency"`
+	MaxJobCount            int    `json:"maxJobCount,omitempty" tf:"max_job_count,omitempty"`
+	MaxRecurrenceFrequency string `json:"maxRecurrenceFrequency" tf:"max_recurrence_frequency"`
 	// +optional
-	MaxRecurrenceInterval int `json:"max_recurrence_interval,omitempty"`
+	MaxRecurrenceInterval int `json:"maxRecurrenceInterval,omitempty" tf:"max_recurrence_interval,omitempty"`
 }
 
 type SchedulerJobCollectionSpec struct {
-	Location string `json:"location"`
-	Name     string `json:"name"`
+	Location string `json:"location" tf:"location"`
+	Name     string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Quota             *[]SchedulerJobCollectionSpec `json:"quota,omitempty"`
-	ResourceGroupName string                        `json:"resource_group_name"`
-	Sku               string                        `json:"sku"`
+	Quota             []SchedulerJobCollectionSpecQuota `json:"quota,omitempty" tf:"quota,omitempty"`
+	ResourceGroupName string                            `json:"resourceGroupName" tf:"resource_group_name"`
+	Sku               string                            `json:"sku" tf:"sku"`
 	// +optional
-	State string `json:"state,omitempty"`
+	State       string                    `json:"state,omitempty" tf:"state,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SchedulerJobCollectionStatus struct {
@@ -43,7 +44,9 @@ type SchedulerJobCollectionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -31,6 +31,7 @@ import (
 // FakeSagemakerNotebookInstanceLifecycleConfigurations implements SagemakerNotebookInstanceLifecycleConfigurationInterface
 type FakeSagemakerNotebookInstanceLifecycleConfigurations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var sagemakernotebookinstancelifecycleconfigurationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "sagemakernotebookinstancelifecycleconfigurations"}
@@ -40,7 +41,8 @@ var sagemakernotebookinstancelifecycleconfigurationsKind = schema.GroupVersionKi
 // Get takes name of the sagemakerNotebookInstanceLifecycleConfiguration, and returns the corresponding sagemakerNotebookInstanceLifecycleConfiguration object, and an error if there is any.
 func (c *FakeSagemakerNotebookInstanceLifecycleConfigurations) Get(name string, options v1.GetOptions) (result *v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sagemakernotebookinstancelifecycleconfigurationsResource, name), &v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration{})
+		Invokes(testing.NewGetAction(sagemakernotebookinstancelifecycleconfigurationsResource, c.ns, name), &v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSagemakerNotebookInstanceLifecycleConfigurations) Get(name string, 
 // List takes label and field selectors, and returns the list of SagemakerNotebookInstanceLifecycleConfigurations that match those selectors.
 func (c *FakeSagemakerNotebookInstanceLifecycleConfigurations) List(opts v1.ListOptions) (result *v1alpha1.SagemakerNotebookInstanceLifecycleConfigurationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sagemakernotebookinstancelifecycleconfigurationsResource, sagemakernotebookinstancelifecycleconfigurationsKind, opts), &v1alpha1.SagemakerNotebookInstanceLifecycleConfigurationList{})
+		Invokes(testing.NewListAction(sagemakernotebookinstancelifecycleconfigurationsResource, sagemakernotebookinstancelifecycleconfigurationsKind, c.ns, opts), &v1alpha1.SagemakerNotebookInstanceLifecycleConfigurationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSagemakerNotebookInstanceLifecycleConfigurations) List(opts v1.List
 // Watch returns a watch.Interface that watches the requested sagemakerNotebookInstanceLifecycleConfigurations.
 func (c *FakeSagemakerNotebookInstanceLifecycleConfigurations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sagemakernotebookinstancelifecycleconfigurationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(sagemakernotebookinstancelifecycleconfigurationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sagemakerNotebookInstanceLifecycleConfiguration and creates it.  Returns the server's representation of the sagemakerNotebookInstanceLifecycleConfiguration, and an error, if there is any.
 func (c *FakeSagemakerNotebookInstanceLifecycleConfigurations) Create(sagemakerNotebookInstanceLifecycleConfiguration *v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration) (result *v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sagemakernotebookinstancelifecycleconfigurationsResource, sagemakerNotebookInstanceLifecycleConfiguration), &v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration{})
+		Invokes(testing.NewCreateAction(sagemakernotebookinstancelifecycleconfigurationsResource, c.ns, sagemakerNotebookInstanceLifecycleConfiguration), &v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSagemakerNotebookInstanceLifecycleConfigurations) Create(sagemakerN
 // Update takes the representation of a sagemakerNotebookInstanceLifecycleConfiguration and updates it. Returns the server's representation of the sagemakerNotebookInstanceLifecycleConfiguration, and an error, if there is any.
 func (c *FakeSagemakerNotebookInstanceLifecycleConfigurations) Update(sagemakerNotebookInstanceLifecycleConfiguration *v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration) (result *v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sagemakernotebookinstancelifecycleconfigurationsResource, sagemakerNotebookInstanceLifecycleConfiguration), &v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration{})
+		Invokes(testing.NewUpdateAction(sagemakernotebookinstancelifecycleconfigurationsResource, c.ns, sagemakerNotebookInstanceLifecycleConfiguration), &v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSagemakerNotebookInstanceLifecycleConfigurations) Update(sagemakerN
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSagemakerNotebookInstanceLifecycleConfigurations) UpdateStatus(sagemakerNotebookInstanceLifecycleConfiguration *v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration) (*v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sagemakernotebookinstancelifecycleconfigurationsResource, "status", sagemakerNotebookInstanceLifecycleConfiguration), &v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration{})
+		Invokes(testing.NewUpdateSubresourceAction(sagemakernotebookinstancelifecycleconfigurationsResource, "status", c.ns, sagemakerNotebookInstanceLifecycleConfiguration), &v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSagemakerNotebookInstanceLifecycleConfigurations) UpdateStatus(sage
 // Delete takes name of the sagemakerNotebookInstanceLifecycleConfiguration and deletes it. Returns an error if one occurs.
 func (c *FakeSagemakerNotebookInstanceLifecycleConfigurations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sagemakernotebookinstancelifecycleconfigurationsResource, name), &v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration{})
+		Invokes(testing.NewDeleteAction(sagemakernotebookinstancelifecycleconfigurationsResource, c.ns, name), &v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSagemakerNotebookInstanceLifecycleConfigurations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sagemakernotebookinstancelifecycleconfigurationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sagemakernotebookinstancelifecycleconfigurationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SagemakerNotebookInstanceLifecycleConfigurationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSagemakerNotebookInstanceLifecycleConfigurations) DeleteCollection(
 // Patch applies the patch and returns the patched sagemakerNotebookInstanceLifecycleConfiguration.
 func (c *FakeSagemakerNotebookInstanceLifecycleConfigurations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sagemakernotebookinstancelifecycleconfigurationsResource, name, pt, data, subresources...), &v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration{})
+		Invokes(testing.NewPatchSubresourceAction(sagemakernotebookinstancelifecycleconfigurationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SagemakerNotebookInstanceLifecycleConfiguration{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // DefaultSubnetsGetter has a method to return a DefaultSubnetInterface.
 // A group's client should implement this interface.
 type DefaultSubnetsGetter interface {
-	DefaultSubnets() DefaultSubnetInterface
+	DefaultSubnets(namespace string) DefaultSubnetInterface
 }
 
 // DefaultSubnetInterface has methods to work with DefaultSubnet resources.
@@ -52,12 +52,14 @@ type DefaultSubnetInterface interface {
 // defaultSubnets implements DefaultSubnetInterface
 type defaultSubnets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDefaultSubnets returns a DefaultSubnets
-func newDefaultSubnets(c *AwsV1alpha1Client) *defaultSubnets {
+func newDefaultSubnets(c *AwsV1alpha1Client, namespace string) *defaultSubnets {
 	return &defaultSubnets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDefaultSubnets(c *AwsV1alpha1Client) *defaultSubnets {
 func (c *defaultSubnets) Get(name string, options v1.GetOptions) (result *v1alpha1.DefaultSubnet, err error) {
 	result = &v1alpha1.DefaultSubnet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("defaultsubnets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *defaultSubnets) List(opts v1.ListOptions) (result *v1alpha1.DefaultSubn
 	}
 	result = &v1alpha1.DefaultSubnetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("defaultsubnets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *defaultSubnets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("defaultsubnets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *defaultSubnets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *defaultSubnets) Create(defaultSubnet *v1alpha1.DefaultSubnet) (result *v1alpha1.DefaultSubnet, err error) {
 	result = &v1alpha1.DefaultSubnet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("defaultsubnets").
 		Body(defaultSubnet).
 		Do().
@@ -118,6 +124,7 @@ func (c *defaultSubnets) Create(defaultSubnet *v1alpha1.DefaultSubnet) (result *
 func (c *defaultSubnets) Update(defaultSubnet *v1alpha1.DefaultSubnet) (result *v1alpha1.DefaultSubnet, err error) {
 	result = &v1alpha1.DefaultSubnet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("defaultsubnets").
 		Name(defaultSubnet.Name).
 		Body(defaultSubnet).
@@ -132,6 +139,7 @@ func (c *defaultSubnets) Update(defaultSubnet *v1alpha1.DefaultSubnet) (result *
 func (c *defaultSubnets) UpdateStatus(defaultSubnet *v1alpha1.DefaultSubnet) (result *v1alpha1.DefaultSubnet, err error) {
 	result = &v1alpha1.DefaultSubnet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("defaultsubnets").
 		Name(defaultSubnet.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *defaultSubnets) UpdateStatus(defaultSubnet *v1alpha1.DefaultSubnet) (re
 // Delete takes name of the defaultSubnet and deletes it. Returns an error if one occurs.
 func (c *defaultSubnets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("defaultsubnets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *defaultSubnets) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("defaultsubnets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *defaultSubnets) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *defaultSubnets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DefaultSubnet, err error) {
 	result = &v1alpha1.DefaultSubnet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("defaultsubnets").
 		SubResource(subresources...).
 		Name(name).

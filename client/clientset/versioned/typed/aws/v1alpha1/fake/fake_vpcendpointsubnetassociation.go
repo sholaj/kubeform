@@ -31,6 +31,7 @@ import (
 // FakeVpcEndpointSubnetAssociations implements VpcEndpointSubnetAssociationInterface
 type FakeVpcEndpointSubnetAssociations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var vpcendpointsubnetassociationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "vpcendpointsubnetassociations"}
@@ -40,7 +41,8 @@ var vpcendpointsubnetassociationsKind = schema.GroupVersionKind{Group: "aws.kube
 // Get takes name of the vpcEndpointSubnetAssociation, and returns the corresponding vpcEndpointSubnetAssociation object, and an error if there is any.
 func (c *FakeVpcEndpointSubnetAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcEndpointSubnetAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(vpcendpointsubnetassociationsResource, name), &v1alpha1.VpcEndpointSubnetAssociation{})
+		Invokes(testing.NewGetAction(vpcendpointsubnetassociationsResource, c.ns, name), &v1alpha1.VpcEndpointSubnetAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeVpcEndpointSubnetAssociations) Get(name string, options v1.GetOptio
 // List takes label and field selectors, and returns the list of VpcEndpointSubnetAssociations that match those selectors.
 func (c *FakeVpcEndpointSubnetAssociations) List(opts v1.ListOptions) (result *v1alpha1.VpcEndpointSubnetAssociationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(vpcendpointsubnetassociationsResource, vpcendpointsubnetassociationsKind, opts), &v1alpha1.VpcEndpointSubnetAssociationList{})
+		Invokes(testing.NewListAction(vpcendpointsubnetassociationsResource, vpcendpointsubnetassociationsKind, c.ns, opts), &v1alpha1.VpcEndpointSubnetAssociationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeVpcEndpointSubnetAssociations) List(opts v1.ListOptions) (result *v
 // Watch returns a watch.Interface that watches the requested vpcEndpointSubnetAssociations.
 func (c *FakeVpcEndpointSubnetAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(vpcendpointsubnetassociationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(vpcendpointsubnetassociationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a vpcEndpointSubnetAssociation and creates it.  Returns the server's representation of the vpcEndpointSubnetAssociation, and an error, if there is any.
 func (c *FakeVpcEndpointSubnetAssociations) Create(vpcEndpointSubnetAssociation *v1alpha1.VpcEndpointSubnetAssociation) (result *v1alpha1.VpcEndpointSubnetAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(vpcendpointsubnetassociationsResource, vpcEndpointSubnetAssociation), &v1alpha1.VpcEndpointSubnetAssociation{})
+		Invokes(testing.NewCreateAction(vpcendpointsubnetassociationsResource, c.ns, vpcEndpointSubnetAssociation), &v1alpha1.VpcEndpointSubnetAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeVpcEndpointSubnetAssociations) Create(vpcEndpointSubnetAssociation 
 // Update takes the representation of a vpcEndpointSubnetAssociation and updates it. Returns the server's representation of the vpcEndpointSubnetAssociation, and an error, if there is any.
 func (c *FakeVpcEndpointSubnetAssociations) Update(vpcEndpointSubnetAssociation *v1alpha1.VpcEndpointSubnetAssociation) (result *v1alpha1.VpcEndpointSubnetAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(vpcendpointsubnetassociationsResource, vpcEndpointSubnetAssociation), &v1alpha1.VpcEndpointSubnetAssociation{})
+		Invokes(testing.NewUpdateAction(vpcendpointsubnetassociationsResource, c.ns, vpcEndpointSubnetAssociation), &v1alpha1.VpcEndpointSubnetAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeVpcEndpointSubnetAssociations) Update(vpcEndpointSubnetAssociation 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeVpcEndpointSubnetAssociations) UpdateStatus(vpcEndpointSubnetAssociation *v1alpha1.VpcEndpointSubnetAssociation) (*v1alpha1.VpcEndpointSubnetAssociation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(vpcendpointsubnetassociationsResource, "status", vpcEndpointSubnetAssociation), &v1alpha1.VpcEndpointSubnetAssociation{})
+		Invokes(testing.NewUpdateSubresourceAction(vpcendpointsubnetassociationsResource, "status", c.ns, vpcEndpointSubnetAssociation), &v1alpha1.VpcEndpointSubnetAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeVpcEndpointSubnetAssociations) UpdateStatus(vpcEndpointSubnetAssoci
 // Delete takes name of the vpcEndpointSubnetAssociation and deletes it. Returns an error if one occurs.
 func (c *FakeVpcEndpointSubnetAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(vpcendpointsubnetassociationsResource, name), &v1alpha1.VpcEndpointSubnetAssociation{})
+		Invokes(testing.NewDeleteAction(vpcendpointsubnetassociationsResource, c.ns, name), &v1alpha1.VpcEndpointSubnetAssociation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeVpcEndpointSubnetAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(vpcendpointsubnetassociationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(vpcendpointsubnetassociationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.VpcEndpointSubnetAssociationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeVpcEndpointSubnetAssociations) DeleteCollection(options *v1.DeleteO
 // Patch applies the patch and returns the patched vpcEndpointSubnetAssociation.
 func (c *FakeVpcEndpointSubnetAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcEndpointSubnetAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(vpcendpointsubnetassociationsResource, name, pt, data, subresources...), &v1alpha1.VpcEndpointSubnetAssociation{})
+		Invokes(testing.NewPatchSubresourceAction(vpcendpointsubnetassociationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.VpcEndpointSubnetAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}

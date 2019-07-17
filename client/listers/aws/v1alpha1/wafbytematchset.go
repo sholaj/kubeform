@@ -29,8 +29,8 @@ import (
 type WafByteMatchSetLister interface {
 	// List lists all WafByteMatchSets in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.WafByteMatchSet, err error)
-	// Get retrieves the WafByteMatchSet from the index for a given name.
-	Get(name string) (*v1alpha1.WafByteMatchSet, error)
+	// WafByteMatchSets returns an object that can list and get WafByteMatchSets.
+	WafByteMatchSets(namespace string) WafByteMatchSetNamespaceLister
 	WafByteMatchSetListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *wafByteMatchSetLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the WafByteMatchSet from the index for a given name.
-func (s *wafByteMatchSetLister) Get(name string) (*v1alpha1.WafByteMatchSet, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// WafByteMatchSets returns an object that can list and get WafByteMatchSets.
+func (s *wafByteMatchSetLister) WafByteMatchSets(namespace string) WafByteMatchSetNamespaceLister {
+	return wafByteMatchSetNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// WafByteMatchSetNamespaceLister helps list and get WafByteMatchSets.
+type WafByteMatchSetNamespaceLister interface {
+	// List lists all WafByteMatchSets in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.WafByteMatchSet, err error)
+	// Get retrieves the WafByteMatchSet from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.WafByteMatchSet, error)
+	WafByteMatchSetNamespaceListerExpansion
+}
+
+// wafByteMatchSetNamespaceLister implements the WafByteMatchSetNamespaceLister
+// interface.
+type wafByteMatchSetNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all WafByteMatchSets in the indexer for a given namespace.
+func (s wafByteMatchSetNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.WafByteMatchSet, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.WafByteMatchSet))
+	})
+	return ret, err
+}
+
+// Get retrieves the WafByteMatchSet from the indexer for a given namespace and name.
+func (s wafByteMatchSetNamespaceLister) Get(name string) (*v1alpha1.WafByteMatchSet, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

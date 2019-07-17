@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// DefaultNetworkAclsGetter has a method to return a DefaultNetworkAclInterface.
+// DefaultNetworkACLsGetter has a method to return a DefaultNetworkACLInterface.
 // A group's client should implement this interface.
-type DefaultNetworkAclsGetter interface {
-	DefaultNetworkAcls() DefaultNetworkAclInterface
+type DefaultNetworkACLsGetter interface {
+	DefaultNetworkACLs(namespace string) DefaultNetworkACLInterface
 }
 
-// DefaultNetworkAclInterface has methods to work with DefaultNetworkAcl resources.
-type DefaultNetworkAclInterface interface {
-	Create(*v1alpha1.DefaultNetworkAcl) (*v1alpha1.DefaultNetworkAcl, error)
-	Update(*v1alpha1.DefaultNetworkAcl) (*v1alpha1.DefaultNetworkAcl, error)
-	UpdateStatus(*v1alpha1.DefaultNetworkAcl) (*v1alpha1.DefaultNetworkAcl, error)
+// DefaultNetworkACLInterface has methods to work with DefaultNetworkACL resources.
+type DefaultNetworkACLInterface interface {
+	Create(*v1alpha1.DefaultNetworkACL) (*v1alpha1.DefaultNetworkACL, error)
+	Update(*v1alpha1.DefaultNetworkACL) (*v1alpha1.DefaultNetworkACL, error)
+	UpdateStatus(*v1alpha1.DefaultNetworkACL) (*v1alpha1.DefaultNetworkACL, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.DefaultNetworkAcl, error)
-	List(opts v1.ListOptions) (*v1alpha1.DefaultNetworkAclList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.DefaultNetworkACL, error)
+	List(opts v1.ListOptions) (*v1alpha1.DefaultNetworkACLList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DefaultNetworkAcl, err error)
-	DefaultNetworkAclExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DefaultNetworkACL, err error)
+	DefaultNetworkACLExpansion
 }
 
-// defaultNetworkAcls implements DefaultNetworkAclInterface
-type defaultNetworkAcls struct {
+// defaultNetworkACLs implements DefaultNetworkACLInterface
+type defaultNetworkACLs struct {
 	client rest.Interface
+	ns     string
 }
 
-// newDefaultNetworkAcls returns a DefaultNetworkAcls
-func newDefaultNetworkAcls(c *AwsV1alpha1Client) *defaultNetworkAcls {
-	return &defaultNetworkAcls{
+// newDefaultNetworkACLs returns a DefaultNetworkACLs
+func newDefaultNetworkACLs(c *AwsV1alpha1Client, namespace string) *defaultNetworkACLs {
+	return &defaultNetworkACLs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the defaultNetworkAcl, and returns the corresponding defaultNetworkAcl object, and an error if there is any.
-func (c *defaultNetworkAcls) Get(name string, options v1.GetOptions) (result *v1alpha1.DefaultNetworkAcl, err error) {
-	result = &v1alpha1.DefaultNetworkAcl{}
+// Get takes name of the defaultNetworkACL, and returns the corresponding defaultNetworkACL object, and an error if there is any.
+func (c *defaultNetworkACLs) Get(name string, options v1.GetOptions) (result *v1alpha1.DefaultNetworkACL, err error) {
+	result = &v1alpha1.DefaultNetworkACL{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("defaultnetworkacls").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *defaultNetworkAcls) Get(name string, options v1.GetOptions) (result *v1
 	return
 }
 
-// List takes label and field selectors, and returns the list of DefaultNetworkAcls that match those selectors.
-func (c *defaultNetworkAcls) List(opts v1.ListOptions) (result *v1alpha1.DefaultNetworkAclList, err error) {
+// List takes label and field selectors, and returns the list of DefaultNetworkACLs that match those selectors.
+func (c *defaultNetworkACLs) List(opts v1.ListOptions) (result *v1alpha1.DefaultNetworkACLList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.DefaultNetworkAclList{}
+	result = &v1alpha1.DefaultNetworkACLList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("defaultnetworkacls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *defaultNetworkAcls) List(opts v1.ListOptions) (result *v1alpha1.Default
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested defaultNetworkAcls.
-func (c *defaultNetworkAcls) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested defaultNetworkACLs.
+func (c *defaultNetworkACLs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("defaultnetworkacls").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a defaultNetworkAcl and creates it.  Returns the server's representation of the defaultNetworkAcl, and an error, if there is any.
-func (c *defaultNetworkAcls) Create(defaultNetworkAcl *v1alpha1.DefaultNetworkAcl) (result *v1alpha1.DefaultNetworkAcl, err error) {
-	result = &v1alpha1.DefaultNetworkAcl{}
+// Create takes the representation of a defaultNetworkACL and creates it.  Returns the server's representation of the defaultNetworkACL, and an error, if there is any.
+func (c *defaultNetworkACLs) Create(defaultNetworkACL *v1alpha1.DefaultNetworkACL) (result *v1alpha1.DefaultNetworkACL, err error) {
+	result = &v1alpha1.DefaultNetworkACL{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("defaultnetworkacls").
-		Body(defaultNetworkAcl).
+		Body(defaultNetworkACL).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a defaultNetworkAcl and updates it. Returns the server's representation of the defaultNetworkAcl, and an error, if there is any.
-func (c *defaultNetworkAcls) Update(defaultNetworkAcl *v1alpha1.DefaultNetworkAcl) (result *v1alpha1.DefaultNetworkAcl, err error) {
-	result = &v1alpha1.DefaultNetworkAcl{}
+// Update takes the representation of a defaultNetworkACL and updates it. Returns the server's representation of the defaultNetworkACL, and an error, if there is any.
+func (c *defaultNetworkACLs) Update(defaultNetworkACL *v1alpha1.DefaultNetworkACL) (result *v1alpha1.DefaultNetworkACL, err error) {
+	result = &v1alpha1.DefaultNetworkACL{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("defaultnetworkacls").
-		Name(defaultNetworkAcl.Name).
-		Body(defaultNetworkAcl).
+		Name(defaultNetworkACL.Name).
+		Body(defaultNetworkACL).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *defaultNetworkAcls) Update(defaultNetworkAcl *v1alpha1.DefaultNetworkAc
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *defaultNetworkAcls) UpdateStatus(defaultNetworkAcl *v1alpha1.DefaultNetworkAcl) (result *v1alpha1.DefaultNetworkAcl, err error) {
-	result = &v1alpha1.DefaultNetworkAcl{}
+func (c *defaultNetworkACLs) UpdateStatus(defaultNetworkACL *v1alpha1.DefaultNetworkACL) (result *v1alpha1.DefaultNetworkACL, err error) {
+	result = &v1alpha1.DefaultNetworkACL{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("defaultnetworkacls").
-		Name(defaultNetworkAcl.Name).
+		Name(defaultNetworkACL.Name).
 		SubResource("status").
-		Body(defaultNetworkAcl).
+		Body(defaultNetworkACL).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the defaultNetworkAcl and deletes it. Returns an error if one occurs.
-func (c *defaultNetworkAcls) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the defaultNetworkACL and deletes it. Returns an error if one occurs.
+func (c *defaultNetworkACLs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("defaultnetworkacls").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *defaultNetworkAcls) Delete(name string, options *v1.DeleteOptions) erro
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *defaultNetworkAcls) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *defaultNetworkACLs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("defaultnetworkacls").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *defaultNetworkAcls) DeleteCollection(options *v1.DeleteOptions, listOpt
 		Error()
 }
 
-// Patch applies the patch and returns the patched defaultNetworkAcl.
-func (c *defaultNetworkAcls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DefaultNetworkAcl, err error) {
-	result = &v1alpha1.DefaultNetworkAcl{}
+// Patch applies the patch and returns the patched defaultNetworkACL.
+func (c *defaultNetworkACLs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DefaultNetworkACL, err error) {
+	result = &v1alpha1.DefaultNetworkACL{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("defaultnetworkacls").
 		SubResource(subresources...).
 		Name(name).

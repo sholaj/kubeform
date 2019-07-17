@@ -31,6 +31,7 @@ import (
 // FakeDataFactories implements DataFactoryInterface
 type FakeDataFactories struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var datafactoriesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "datafactories"}
@@ -40,7 +41,8 @@ var datafactoriesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", V
 // Get takes name of the dataFactory, and returns the corresponding dataFactory object, and an error if there is any.
 func (c *FakeDataFactories) Get(name string, options v1.GetOptions) (result *v1alpha1.DataFactory, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(datafactoriesResource, name), &v1alpha1.DataFactory{})
+		Invokes(testing.NewGetAction(datafactoriesResource, c.ns, name), &v1alpha1.DataFactory{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDataFactories) Get(name string, options v1.GetOptions) (result *v1a
 // List takes label and field selectors, and returns the list of DataFactories that match those selectors.
 func (c *FakeDataFactories) List(opts v1.ListOptions) (result *v1alpha1.DataFactoryList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(datafactoriesResource, datafactoriesKind, opts), &v1alpha1.DataFactoryList{})
+		Invokes(testing.NewListAction(datafactoriesResource, datafactoriesKind, c.ns, opts), &v1alpha1.DataFactoryList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDataFactories) List(opts v1.ListOptions) (result *v1alpha1.DataFact
 // Watch returns a watch.Interface that watches the requested dataFactories.
 func (c *FakeDataFactories) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(datafactoriesResource, opts))
+		InvokesWatch(testing.NewWatchAction(datafactoriesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dataFactory and creates it.  Returns the server's representation of the dataFactory, and an error, if there is any.
 func (c *FakeDataFactories) Create(dataFactory *v1alpha1.DataFactory) (result *v1alpha1.DataFactory, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(datafactoriesResource, dataFactory), &v1alpha1.DataFactory{})
+		Invokes(testing.NewCreateAction(datafactoriesResource, c.ns, dataFactory), &v1alpha1.DataFactory{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDataFactories) Create(dataFactory *v1alpha1.DataFactory) (result *v
 // Update takes the representation of a dataFactory and updates it. Returns the server's representation of the dataFactory, and an error, if there is any.
 func (c *FakeDataFactories) Update(dataFactory *v1alpha1.DataFactory) (result *v1alpha1.DataFactory, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(datafactoriesResource, dataFactory), &v1alpha1.DataFactory{})
+		Invokes(testing.NewUpdateAction(datafactoriesResource, c.ns, dataFactory), &v1alpha1.DataFactory{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDataFactories) Update(dataFactory *v1alpha1.DataFactory) (result *v
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDataFactories) UpdateStatus(dataFactory *v1alpha1.DataFactory) (*v1alpha1.DataFactory, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(datafactoriesResource, "status", dataFactory), &v1alpha1.DataFactory{})
+		Invokes(testing.NewUpdateSubresourceAction(datafactoriesResource, "status", c.ns, dataFactory), &v1alpha1.DataFactory{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDataFactories) UpdateStatus(dataFactory *v1alpha1.DataFactory) (*v1
 // Delete takes name of the dataFactory and deletes it. Returns an error if one occurs.
 func (c *FakeDataFactories) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(datafactoriesResource, name), &v1alpha1.DataFactory{})
+		Invokes(testing.NewDeleteAction(datafactoriesResource, c.ns, name), &v1alpha1.DataFactory{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDataFactories) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(datafactoriesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(datafactoriesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DataFactoryList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDataFactories) DeleteCollection(options *v1.DeleteOptions, listOpti
 // Patch applies the patch and returns the patched dataFactory.
 func (c *FakeDataFactories) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataFactory, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(datafactoriesResource, name, pt, data, subresources...), &v1alpha1.DataFactory{})
+		Invokes(testing.NewPatchSubresourceAction(datafactoriesResource, c.ns, name, pt, data, subresources...), &v1alpha1.DataFactory{})
+
 	if obj == nil {
 		return nil, err
 	}

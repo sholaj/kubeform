@@ -29,8 +29,8 @@ import (
 type LaunchTemplateLister interface {
 	// List lists all LaunchTemplates in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.LaunchTemplate, err error)
-	// Get retrieves the LaunchTemplate from the index for a given name.
-	Get(name string) (*v1alpha1.LaunchTemplate, error)
+	// LaunchTemplates returns an object that can list and get LaunchTemplates.
+	LaunchTemplates(namespace string) LaunchTemplateNamespaceLister
 	LaunchTemplateListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *launchTemplateLister) List(selector labels.Selector) (ret []*v1alpha1.L
 	return ret, err
 }
 
-// Get retrieves the LaunchTemplate from the index for a given name.
-func (s *launchTemplateLister) Get(name string) (*v1alpha1.LaunchTemplate, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LaunchTemplates returns an object that can list and get LaunchTemplates.
+func (s *launchTemplateLister) LaunchTemplates(namespace string) LaunchTemplateNamespaceLister {
+	return launchTemplateNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LaunchTemplateNamespaceLister helps list and get LaunchTemplates.
+type LaunchTemplateNamespaceLister interface {
+	// List lists all LaunchTemplates in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LaunchTemplate, err error)
+	// Get retrieves the LaunchTemplate from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LaunchTemplate, error)
+	LaunchTemplateNamespaceListerExpansion
+}
+
+// launchTemplateNamespaceLister implements the LaunchTemplateNamespaceLister
+// interface.
+type launchTemplateNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LaunchTemplates in the indexer for a given namespace.
+func (s launchTemplateNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LaunchTemplate, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LaunchTemplate))
+	})
+	return ret, err
+}
+
+// Get retrieves the LaunchTemplate from the indexer for a given namespace and name.
+func (s launchTemplateNamespaceLister) Get(name string) (*v1alpha1.LaunchTemplate, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

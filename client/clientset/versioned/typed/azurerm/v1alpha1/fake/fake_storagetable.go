@@ -31,6 +31,7 @@ import (
 // FakeStorageTables implements StorageTableInterface
 type FakeStorageTables struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var storagetablesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "storagetables"}
@@ -40,7 +41,8 @@ var storagetablesKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com", V
 // Get takes name of the storageTable, and returns the corresponding storageTable object, and an error if there is any.
 func (c *FakeStorageTables) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageTable, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(storagetablesResource, name), &v1alpha1.StorageTable{})
+		Invokes(testing.NewGetAction(storagetablesResource, c.ns, name), &v1alpha1.StorageTable{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeStorageTables) Get(name string, options v1.GetOptions) (result *v1a
 // List takes label and field selectors, and returns the list of StorageTables that match those selectors.
 func (c *FakeStorageTables) List(opts v1.ListOptions) (result *v1alpha1.StorageTableList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(storagetablesResource, storagetablesKind, opts), &v1alpha1.StorageTableList{})
+		Invokes(testing.NewListAction(storagetablesResource, storagetablesKind, c.ns, opts), &v1alpha1.StorageTableList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeStorageTables) List(opts v1.ListOptions) (result *v1alpha1.StorageT
 // Watch returns a watch.Interface that watches the requested storageTables.
 func (c *FakeStorageTables) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(storagetablesResource, opts))
+		InvokesWatch(testing.NewWatchAction(storagetablesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a storageTable and creates it.  Returns the server's representation of the storageTable, and an error, if there is any.
 func (c *FakeStorageTables) Create(storageTable *v1alpha1.StorageTable) (result *v1alpha1.StorageTable, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(storagetablesResource, storageTable), &v1alpha1.StorageTable{})
+		Invokes(testing.NewCreateAction(storagetablesResource, c.ns, storageTable), &v1alpha1.StorageTable{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeStorageTables) Create(storageTable *v1alpha1.StorageTable) (result 
 // Update takes the representation of a storageTable and updates it. Returns the server's representation of the storageTable, and an error, if there is any.
 func (c *FakeStorageTables) Update(storageTable *v1alpha1.StorageTable) (result *v1alpha1.StorageTable, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(storagetablesResource, storageTable), &v1alpha1.StorageTable{})
+		Invokes(testing.NewUpdateAction(storagetablesResource, c.ns, storageTable), &v1alpha1.StorageTable{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeStorageTables) Update(storageTable *v1alpha1.StorageTable) (result 
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeStorageTables) UpdateStatus(storageTable *v1alpha1.StorageTable) (*v1alpha1.StorageTable, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(storagetablesResource, "status", storageTable), &v1alpha1.StorageTable{})
+		Invokes(testing.NewUpdateSubresourceAction(storagetablesResource, "status", c.ns, storageTable), &v1alpha1.StorageTable{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeStorageTables) UpdateStatus(storageTable *v1alpha1.StorageTable) (*
 // Delete takes name of the storageTable and deletes it. Returns an error if one occurs.
 func (c *FakeStorageTables) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(storagetablesResource, name), &v1alpha1.StorageTable{})
+		Invokes(testing.NewDeleteAction(storagetablesResource, c.ns, name), &v1alpha1.StorageTable{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeStorageTables) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(storagetablesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(storagetablesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.StorageTableList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeStorageTables) DeleteCollection(options *v1.DeleteOptions, listOpti
 // Patch applies the patch and returns the patched storageTable.
 func (c *FakeStorageTables) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageTable, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(storagetablesResource, name, pt, data, subresources...), &v1alpha1.StorageTable{})
+		Invokes(testing.NewPatchSubresourceAction(storagetablesResource, c.ns, name, pt, data, subresources...), &v1alpha1.StorageTable{})
+
 	if obj == nil {
 		return nil, err
 	}

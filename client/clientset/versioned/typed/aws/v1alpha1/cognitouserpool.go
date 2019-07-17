@@ -32,7 +32,7 @@ import (
 // CognitoUserPoolsGetter has a method to return a CognitoUserPoolInterface.
 // A group's client should implement this interface.
 type CognitoUserPoolsGetter interface {
-	CognitoUserPools() CognitoUserPoolInterface
+	CognitoUserPools(namespace string) CognitoUserPoolInterface
 }
 
 // CognitoUserPoolInterface has methods to work with CognitoUserPool resources.
@@ -52,12 +52,14 @@ type CognitoUserPoolInterface interface {
 // cognitoUserPools implements CognitoUserPoolInterface
 type cognitoUserPools struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCognitoUserPools returns a CognitoUserPools
-func newCognitoUserPools(c *AwsV1alpha1Client) *cognitoUserPools {
+func newCognitoUserPools(c *AwsV1alpha1Client, namespace string) *cognitoUserPools {
 	return &cognitoUserPools{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCognitoUserPools(c *AwsV1alpha1Client) *cognitoUserPools {
 func (c *cognitoUserPools) Get(name string, options v1.GetOptions) (result *v1alpha1.CognitoUserPool, err error) {
 	result = &v1alpha1.CognitoUserPool{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitouserpools").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cognitoUserPools) List(opts v1.ListOptions) (result *v1alpha1.CognitoUs
 	}
 	result = &v1alpha1.CognitoUserPoolList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitouserpools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cognitoUserPools) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cognitouserpools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cognitoUserPools) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *cognitoUserPools) Create(cognitoUserPool *v1alpha1.CognitoUserPool) (result *v1alpha1.CognitoUserPool, err error) {
 	result = &v1alpha1.CognitoUserPool{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cognitouserpools").
 		Body(cognitoUserPool).
 		Do().
@@ -118,6 +124,7 @@ func (c *cognitoUserPools) Create(cognitoUserPool *v1alpha1.CognitoUserPool) (re
 func (c *cognitoUserPools) Update(cognitoUserPool *v1alpha1.CognitoUserPool) (result *v1alpha1.CognitoUserPool, err error) {
 	result = &v1alpha1.CognitoUserPool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cognitouserpools").
 		Name(cognitoUserPool.Name).
 		Body(cognitoUserPool).
@@ -132,6 +139,7 @@ func (c *cognitoUserPools) Update(cognitoUserPool *v1alpha1.CognitoUserPool) (re
 func (c *cognitoUserPools) UpdateStatus(cognitoUserPool *v1alpha1.CognitoUserPool) (result *v1alpha1.CognitoUserPool, err error) {
 	result = &v1alpha1.CognitoUserPool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cognitouserpools").
 		Name(cognitoUserPool.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cognitoUserPools) UpdateStatus(cognitoUserPool *v1alpha1.CognitoUserPoo
 // Delete takes name of the cognitoUserPool and deletes it. Returns an error if one occurs.
 func (c *cognitoUserPools) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cognitouserpools").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cognitoUserPools) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cognitouserpools").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cognitoUserPools) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *cognitoUserPools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CognitoUserPool, err error) {
 	result = &v1alpha1.CognitoUserPool{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cognitouserpools").
 		SubResource(subresources...).
 		Name(name).

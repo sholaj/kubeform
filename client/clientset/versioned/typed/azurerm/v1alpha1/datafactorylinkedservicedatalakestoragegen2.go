@@ -32,7 +32,7 @@ import (
 // DataFactoryLinkedServiceDataLakeStorageGen2sGetter has a method to return a DataFactoryLinkedServiceDataLakeStorageGen2Interface.
 // A group's client should implement this interface.
 type DataFactoryLinkedServiceDataLakeStorageGen2sGetter interface {
-	DataFactoryLinkedServiceDataLakeStorageGen2s() DataFactoryLinkedServiceDataLakeStorageGen2Interface
+	DataFactoryLinkedServiceDataLakeStorageGen2s(namespace string) DataFactoryLinkedServiceDataLakeStorageGen2Interface
 }
 
 // DataFactoryLinkedServiceDataLakeStorageGen2Interface has methods to work with DataFactoryLinkedServiceDataLakeStorageGen2 resources.
@@ -52,12 +52,14 @@ type DataFactoryLinkedServiceDataLakeStorageGen2Interface interface {
 // dataFactoryLinkedServiceDataLakeStorageGen2s implements DataFactoryLinkedServiceDataLakeStorageGen2Interface
 type dataFactoryLinkedServiceDataLakeStorageGen2s struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDataFactoryLinkedServiceDataLakeStorageGen2s returns a DataFactoryLinkedServiceDataLakeStorageGen2s
-func newDataFactoryLinkedServiceDataLakeStorageGen2s(c *AzurermV1alpha1Client) *dataFactoryLinkedServiceDataLakeStorageGen2s {
+func newDataFactoryLinkedServiceDataLakeStorageGen2s(c *AzurermV1alpha1Client, namespace string) *dataFactoryLinkedServiceDataLakeStorageGen2s {
 	return &dataFactoryLinkedServiceDataLakeStorageGen2s{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDataFactoryLinkedServiceDataLakeStorageGen2s(c *AzurermV1alpha1Client) *
 func (c *dataFactoryLinkedServiceDataLakeStorageGen2s) Get(name string, options v1.GetOptions) (result *v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2, err error) {
 	result = &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicedatalakestoragegen2s").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *dataFactoryLinkedServiceDataLakeStorageGen2s) List(opts v1.ListOptions)
 	}
 	result = &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2List{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicedatalakestoragegen2s").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *dataFactoryLinkedServiceDataLakeStorageGen2s) Watch(opts v1.ListOptions
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicedatalakestoragegen2s").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *dataFactoryLinkedServiceDataLakeStorageGen2s) Watch(opts v1.ListOptions
 func (c *dataFactoryLinkedServiceDataLakeStorageGen2s) Create(dataFactoryLinkedServiceDataLakeStorageGen2 *v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2) (result *v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2, err error) {
 	result = &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicedatalakestoragegen2s").
 		Body(dataFactoryLinkedServiceDataLakeStorageGen2).
 		Do().
@@ -118,6 +124,7 @@ func (c *dataFactoryLinkedServiceDataLakeStorageGen2s) Create(dataFactoryLinkedS
 func (c *dataFactoryLinkedServiceDataLakeStorageGen2s) Update(dataFactoryLinkedServiceDataLakeStorageGen2 *v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2) (result *v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2, err error) {
 	result = &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicedatalakestoragegen2s").
 		Name(dataFactoryLinkedServiceDataLakeStorageGen2.Name).
 		Body(dataFactoryLinkedServiceDataLakeStorageGen2).
@@ -132,6 +139,7 @@ func (c *dataFactoryLinkedServiceDataLakeStorageGen2s) Update(dataFactoryLinkedS
 func (c *dataFactoryLinkedServiceDataLakeStorageGen2s) UpdateStatus(dataFactoryLinkedServiceDataLakeStorageGen2 *v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2) (result *v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2, err error) {
 	result = &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicedatalakestoragegen2s").
 		Name(dataFactoryLinkedServiceDataLakeStorageGen2.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *dataFactoryLinkedServiceDataLakeStorageGen2s) UpdateStatus(dataFactoryL
 // Delete takes name of the dataFactoryLinkedServiceDataLakeStorageGen2 and deletes it. Returns an error if one occurs.
 func (c *dataFactoryLinkedServiceDataLakeStorageGen2s) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicedatalakestoragegen2s").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *dataFactoryLinkedServiceDataLakeStorageGen2s) DeleteCollection(options 
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicedatalakestoragegen2s").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *dataFactoryLinkedServiceDataLakeStorageGen2s) DeleteCollection(options 
 func (c *dataFactoryLinkedServiceDataLakeStorageGen2s) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2, err error) {
 	result = &v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("datafactorylinkedservicedatalakestoragegen2s").
 		SubResource(subresources...).
 		Name(name).

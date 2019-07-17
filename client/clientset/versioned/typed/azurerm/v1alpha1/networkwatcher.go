@@ -32,7 +32,7 @@ import (
 // NetworkWatchersGetter has a method to return a NetworkWatcherInterface.
 // A group's client should implement this interface.
 type NetworkWatchersGetter interface {
-	NetworkWatchers() NetworkWatcherInterface
+	NetworkWatchers(namespace string) NetworkWatcherInterface
 }
 
 // NetworkWatcherInterface has methods to work with NetworkWatcher resources.
@@ -52,12 +52,14 @@ type NetworkWatcherInterface interface {
 // networkWatchers implements NetworkWatcherInterface
 type networkWatchers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newNetworkWatchers returns a NetworkWatchers
-func newNetworkWatchers(c *AzurermV1alpha1Client) *networkWatchers {
+func newNetworkWatchers(c *AzurermV1alpha1Client, namespace string) *networkWatchers {
 	return &networkWatchers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newNetworkWatchers(c *AzurermV1alpha1Client) *networkWatchers {
 func (c *networkWatchers) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkWatcher, err error) {
 	result = &v1alpha1.NetworkWatcher{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkwatchers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *networkWatchers) List(opts v1.ListOptions) (result *v1alpha1.NetworkWat
 	}
 	result = &v1alpha1.NetworkWatcherList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("networkwatchers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *networkWatchers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("networkwatchers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *networkWatchers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *networkWatchers) Create(networkWatcher *v1alpha1.NetworkWatcher) (result *v1alpha1.NetworkWatcher, err error) {
 	result = &v1alpha1.NetworkWatcher{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("networkwatchers").
 		Body(networkWatcher).
 		Do().
@@ -118,6 +124,7 @@ func (c *networkWatchers) Create(networkWatcher *v1alpha1.NetworkWatcher) (resul
 func (c *networkWatchers) Update(networkWatcher *v1alpha1.NetworkWatcher) (result *v1alpha1.NetworkWatcher, err error) {
 	result = &v1alpha1.NetworkWatcher{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkwatchers").
 		Name(networkWatcher.Name).
 		Body(networkWatcher).
@@ -132,6 +139,7 @@ func (c *networkWatchers) Update(networkWatcher *v1alpha1.NetworkWatcher) (resul
 func (c *networkWatchers) UpdateStatus(networkWatcher *v1alpha1.NetworkWatcher) (result *v1alpha1.NetworkWatcher, err error) {
 	result = &v1alpha1.NetworkWatcher{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("networkwatchers").
 		Name(networkWatcher.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *networkWatchers) UpdateStatus(networkWatcher *v1alpha1.NetworkWatcher) 
 // Delete takes name of the networkWatcher and deletes it. Returns an error if one occurs.
 func (c *networkWatchers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkwatchers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *networkWatchers) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("networkwatchers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *networkWatchers) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *networkWatchers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkWatcher, err error) {
 	result = &v1alpha1.NetworkWatcher{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("networkwatchers").
 		SubResource(subresources...).
 		Name(name).

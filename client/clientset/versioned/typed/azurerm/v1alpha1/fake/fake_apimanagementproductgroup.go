@@ -31,6 +31,7 @@ import (
 // FakeApiManagementProductGroups implements ApiManagementProductGroupInterface
 type FakeApiManagementProductGroups struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var apimanagementproductgroupsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "apimanagementproductgroups"}
@@ -40,7 +41,8 @@ var apimanagementproductgroupsKind = schema.GroupVersionKind{Group: "azurerm.kub
 // Get takes name of the apiManagementProductGroup, and returns the corresponding apiManagementProductGroup object, and an error if there is any.
 func (c *FakeApiManagementProductGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementProductGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apimanagementproductgroupsResource, name), &v1alpha1.ApiManagementProductGroup{})
+		Invokes(testing.NewGetAction(apimanagementproductgroupsResource, c.ns, name), &v1alpha1.ApiManagementProductGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeApiManagementProductGroups) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of ApiManagementProductGroups that match those selectors.
 func (c *FakeApiManagementProductGroups) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementProductGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apimanagementproductgroupsResource, apimanagementproductgroupsKind, opts), &v1alpha1.ApiManagementProductGroupList{})
+		Invokes(testing.NewListAction(apimanagementproductgroupsResource, apimanagementproductgroupsKind, c.ns, opts), &v1alpha1.ApiManagementProductGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeApiManagementProductGroups) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested apiManagementProductGroups.
 func (c *FakeApiManagementProductGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apimanagementproductgroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(apimanagementproductgroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a apiManagementProductGroup and creates it.  Returns the server's representation of the apiManagementProductGroup, and an error, if there is any.
 func (c *FakeApiManagementProductGroups) Create(apiManagementProductGroup *v1alpha1.ApiManagementProductGroup) (result *v1alpha1.ApiManagementProductGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apimanagementproductgroupsResource, apiManagementProductGroup), &v1alpha1.ApiManagementProductGroup{})
+		Invokes(testing.NewCreateAction(apimanagementproductgroupsResource, c.ns, apiManagementProductGroup), &v1alpha1.ApiManagementProductGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeApiManagementProductGroups) Create(apiManagementProductGroup *v1alp
 // Update takes the representation of a apiManagementProductGroup and updates it. Returns the server's representation of the apiManagementProductGroup, and an error, if there is any.
 func (c *FakeApiManagementProductGroups) Update(apiManagementProductGroup *v1alpha1.ApiManagementProductGroup) (result *v1alpha1.ApiManagementProductGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apimanagementproductgroupsResource, apiManagementProductGroup), &v1alpha1.ApiManagementProductGroup{})
+		Invokes(testing.NewUpdateAction(apimanagementproductgroupsResource, c.ns, apiManagementProductGroup), &v1alpha1.ApiManagementProductGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeApiManagementProductGroups) Update(apiManagementProductGroup *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeApiManagementProductGroups) UpdateStatus(apiManagementProductGroup *v1alpha1.ApiManagementProductGroup) (*v1alpha1.ApiManagementProductGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apimanagementproductgroupsResource, "status", apiManagementProductGroup), &v1alpha1.ApiManagementProductGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(apimanagementproductgroupsResource, "status", c.ns, apiManagementProductGroup), &v1alpha1.ApiManagementProductGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeApiManagementProductGroups) UpdateStatus(apiManagementProductGroup 
 // Delete takes name of the apiManagementProductGroup and deletes it. Returns an error if one occurs.
 func (c *FakeApiManagementProductGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apimanagementproductgroupsResource, name), &v1alpha1.ApiManagementProductGroup{})
+		Invokes(testing.NewDeleteAction(apimanagementproductgroupsResource, c.ns, name), &v1alpha1.ApiManagementProductGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeApiManagementProductGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apimanagementproductgroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(apimanagementproductgroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ApiManagementProductGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeApiManagementProductGroups) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched apiManagementProductGroup.
 func (c *FakeApiManagementProductGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementProductGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apimanagementproductgroupsResource, name, pt, data, subresources...), &v1alpha1.ApiManagementProductGroup{})
+		Invokes(testing.NewPatchSubresourceAction(apimanagementproductgroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiManagementProductGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ import (
 // ServiceDiscoveryServicesGetter has a method to return a ServiceDiscoveryServiceInterface.
 // A group's client should implement this interface.
 type ServiceDiscoveryServicesGetter interface {
-	ServiceDiscoveryServices() ServiceDiscoveryServiceInterface
+	ServiceDiscoveryServices(namespace string) ServiceDiscoveryServiceInterface
 }
 
 // ServiceDiscoveryServiceInterface has methods to work with ServiceDiscoveryService resources.
@@ -52,12 +52,14 @@ type ServiceDiscoveryServiceInterface interface {
 // serviceDiscoveryServices implements ServiceDiscoveryServiceInterface
 type serviceDiscoveryServices struct {
 	client rest.Interface
+	ns     string
 }
 
 // newServiceDiscoveryServices returns a ServiceDiscoveryServices
-func newServiceDiscoveryServices(c *AwsV1alpha1Client) *serviceDiscoveryServices {
+func newServiceDiscoveryServices(c *AwsV1alpha1Client, namespace string) *serviceDiscoveryServices {
 	return &serviceDiscoveryServices{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newServiceDiscoveryServices(c *AwsV1alpha1Client) *serviceDiscoveryServices
 func (c *serviceDiscoveryServices) Get(name string, options v1.GetOptions) (result *v1alpha1.ServiceDiscoveryService, err error) {
 	result = &v1alpha1.ServiceDiscoveryService{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicediscoveryservices").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *serviceDiscoveryServices) List(opts v1.ListOptions) (result *v1alpha1.S
 	}
 	result = &v1alpha1.ServiceDiscoveryServiceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("servicediscoveryservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *serviceDiscoveryServices) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("servicediscoveryservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *serviceDiscoveryServices) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *serviceDiscoveryServices) Create(serviceDiscoveryService *v1alpha1.ServiceDiscoveryService) (result *v1alpha1.ServiceDiscoveryService, err error) {
 	result = &v1alpha1.ServiceDiscoveryService{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("servicediscoveryservices").
 		Body(serviceDiscoveryService).
 		Do().
@@ -118,6 +124,7 @@ func (c *serviceDiscoveryServices) Create(serviceDiscoveryService *v1alpha1.Serv
 func (c *serviceDiscoveryServices) Update(serviceDiscoveryService *v1alpha1.ServiceDiscoveryService) (result *v1alpha1.ServiceDiscoveryService, err error) {
 	result = &v1alpha1.ServiceDiscoveryService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicediscoveryservices").
 		Name(serviceDiscoveryService.Name).
 		Body(serviceDiscoveryService).
@@ -132,6 +139,7 @@ func (c *serviceDiscoveryServices) Update(serviceDiscoveryService *v1alpha1.Serv
 func (c *serviceDiscoveryServices) UpdateStatus(serviceDiscoveryService *v1alpha1.ServiceDiscoveryService) (result *v1alpha1.ServiceDiscoveryService, err error) {
 	result = &v1alpha1.ServiceDiscoveryService{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("servicediscoveryservices").
 		Name(serviceDiscoveryService.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *serviceDiscoveryServices) UpdateStatus(serviceDiscoveryService *v1alpha
 // Delete takes name of the serviceDiscoveryService and deletes it. Returns an error if one occurs.
 func (c *serviceDiscoveryServices) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicediscoveryservices").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *serviceDiscoveryServices) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("servicediscoveryservices").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *serviceDiscoveryServices) DeleteCollection(options *v1.DeleteOptions, l
 func (c *serviceDiscoveryServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ServiceDiscoveryService, err error) {
 	result = &v1alpha1.ServiceDiscoveryService{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("servicediscoveryservices").
 		SubResource(subresources...).
 		Name(name).

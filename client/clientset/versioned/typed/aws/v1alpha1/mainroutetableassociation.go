@@ -32,7 +32,7 @@ import (
 // MainRouteTableAssociationsGetter has a method to return a MainRouteTableAssociationInterface.
 // A group's client should implement this interface.
 type MainRouteTableAssociationsGetter interface {
-	MainRouteTableAssociations() MainRouteTableAssociationInterface
+	MainRouteTableAssociations(namespace string) MainRouteTableAssociationInterface
 }
 
 // MainRouteTableAssociationInterface has methods to work with MainRouteTableAssociation resources.
@@ -52,12 +52,14 @@ type MainRouteTableAssociationInterface interface {
 // mainRouteTableAssociations implements MainRouteTableAssociationInterface
 type mainRouteTableAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newMainRouteTableAssociations returns a MainRouteTableAssociations
-func newMainRouteTableAssociations(c *AwsV1alpha1Client) *mainRouteTableAssociations {
+func newMainRouteTableAssociations(c *AwsV1alpha1Client, namespace string) *mainRouteTableAssociations {
 	return &mainRouteTableAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newMainRouteTableAssociations(c *AwsV1alpha1Client) *mainRouteTableAssociat
 func (c *mainRouteTableAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.MainRouteTableAssociation, err error) {
 	result = &v1alpha1.MainRouteTableAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mainroutetableassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *mainRouteTableAssociations) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.MainRouteTableAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("mainroutetableassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *mainRouteTableAssociations) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("mainroutetableassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *mainRouteTableAssociations) Watch(opts v1.ListOptions) (watch.Interface
 func (c *mainRouteTableAssociations) Create(mainRouteTableAssociation *v1alpha1.MainRouteTableAssociation) (result *v1alpha1.MainRouteTableAssociation, err error) {
 	result = &v1alpha1.MainRouteTableAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("mainroutetableassociations").
 		Body(mainRouteTableAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *mainRouteTableAssociations) Create(mainRouteTableAssociation *v1alpha1.
 func (c *mainRouteTableAssociations) Update(mainRouteTableAssociation *v1alpha1.MainRouteTableAssociation) (result *v1alpha1.MainRouteTableAssociation, err error) {
 	result = &v1alpha1.MainRouteTableAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mainroutetableassociations").
 		Name(mainRouteTableAssociation.Name).
 		Body(mainRouteTableAssociation).
@@ -132,6 +139,7 @@ func (c *mainRouteTableAssociations) Update(mainRouteTableAssociation *v1alpha1.
 func (c *mainRouteTableAssociations) UpdateStatus(mainRouteTableAssociation *v1alpha1.MainRouteTableAssociation) (result *v1alpha1.MainRouteTableAssociation, err error) {
 	result = &v1alpha1.MainRouteTableAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("mainroutetableassociations").
 		Name(mainRouteTableAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *mainRouteTableAssociations) UpdateStatus(mainRouteTableAssociation *v1a
 // Delete takes name of the mainRouteTableAssociation and deletes it. Returns an error if one occurs.
 func (c *mainRouteTableAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mainroutetableassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *mainRouteTableAssociations) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("mainroutetableassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *mainRouteTableAssociations) DeleteCollection(options *v1.DeleteOptions,
 func (c *mainRouteTableAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MainRouteTableAssociation, err error) {
 	result = &v1alpha1.MainRouteTableAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("mainroutetableassociations").
 		SubResource(subresources...).
 		Name(name).

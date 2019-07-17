@@ -29,8 +29,8 @@ import (
 type IotPolicyLister interface {
 	// List lists all IotPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IotPolicy, err error)
-	// Get retrieves the IotPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.IotPolicy, error)
+	// IotPolicies returns an object that can list and get IotPolicies.
+	IotPolicies(namespace string) IotPolicyNamespaceLister
 	IotPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iotPolicyLister) List(selector labels.Selector) (ret []*v1alpha1.IotPol
 	return ret, err
 }
 
-// Get retrieves the IotPolicy from the index for a given name.
-func (s *iotPolicyLister) Get(name string) (*v1alpha1.IotPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IotPolicies returns an object that can list and get IotPolicies.
+func (s *iotPolicyLister) IotPolicies(namespace string) IotPolicyNamespaceLister {
+	return iotPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IotPolicyNamespaceLister helps list and get IotPolicies.
+type IotPolicyNamespaceLister interface {
+	// List lists all IotPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IotPolicy, err error)
+	// Get retrieves the IotPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IotPolicy, error)
+	IotPolicyNamespaceListerExpansion
+}
+
+// iotPolicyNamespaceLister implements the IotPolicyNamespaceLister
+// interface.
+type iotPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IotPolicies in the indexer for a given namespace.
+func (s iotPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IotPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IotPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the IotPolicy from the indexer for a given namespace and name.
+func (s iotPolicyNamespaceLister) Get(name string) (*v1alpha1.IotPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

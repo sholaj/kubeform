@@ -32,7 +32,7 @@ import (
 // GlueCrawlersGetter has a method to return a GlueCrawlerInterface.
 // A group's client should implement this interface.
 type GlueCrawlersGetter interface {
-	GlueCrawlers() GlueCrawlerInterface
+	GlueCrawlers(namespace string) GlueCrawlerInterface
 }
 
 // GlueCrawlerInterface has methods to work with GlueCrawler resources.
@@ -52,12 +52,14 @@ type GlueCrawlerInterface interface {
 // glueCrawlers implements GlueCrawlerInterface
 type glueCrawlers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newGlueCrawlers returns a GlueCrawlers
-func newGlueCrawlers(c *AwsV1alpha1Client) *glueCrawlers {
+func newGlueCrawlers(c *AwsV1alpha1Client, namespace string) *glueCrawlers {
 	return &glueCrawlers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newGlueCrawlers(c *AwsV1alpha1Client) *glueCrawlers {
 func (c *glueCrawlers) Get(name string, options v1.GetOptions) (result *v1alpha1.GlueCrawler, err error) {
 	result = &v1alpha1.GlueCrawler{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("gluecrawlers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *glueCrawlers) List(opts v1.ListOptions) (result *v1alpha1.GlueCrawlerLi
 	}
 	result = &v1alpha1.GlueCrawlerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("gluecrawlers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *glueCrawlers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("gluecrawlers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *glueCrawlers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *glueCrawlers) Create(glueCrawler *v1alpha1.GlueCrawler) (result *v1alpha1.GlueCrawler, err error) {
 	result = &v1alpha1.GlueCrawler{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("gluecrawlers").
 		Body(glueCrawler).
 		Do().
@@ -118,6 +124,7 @@ func (c *glueCrawlers) Create(glueCrawler *v1alpha1.GlueCrawler) (result *v1alph
 func (c *glueCrawlers) Update(glueCrawler *v1alpha1.GlueCrawler) (result *v1alpha1.GlueCrawler, err error) {
 	result = &v1alpha1.GlueCrawler{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("gluecrawlers").
 		Name(glueCrawler.Name).
 		Body(glueCrawler).
@@ -132,6 +139,7 @@ func (c *glueCrawlers) Update(glueCrawler *v1alpha1.GlueCrawler) (result *v1alph
 func (c *glueCrawlers) UpdateStatus(glueCrawler *v1alpha1.GlueCrawler) (result *v1alpha1.GlueCrawler, err error) {
 	result = &v1alpha1.GlueCrawler{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("gluecrawlers").
 		Name(glueCrawler.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *glueCrawlers) UpdateStatus(glueCrawler *v1alpha1.GlueCrawler) (result *
 // Delete takes name of the glueCrawler and deletes it. Returns an error if one occurs.
 func (c *glueCrawlers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("gluecrawlers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *glueCrawlers) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("gluecrawlers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *glueCrawlers) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *glueCrawlers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GlueCrawler, err error) {
 	result = &v1alpha1.GlueCrawler{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("gluecrawlers").
 		SubResource(subresources...).
 		Name(name).

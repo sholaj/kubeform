@@ -31,6 +31,7 @@ import (
 // FakeRamPrincipalAssociations implements RamPrincipalAssociationInterface
 type FakeRamPrincipalAssociations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ramprincipalassociationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ramprincipalassociations"}
@@ -40,7 +41,8 @@ var ramprincipalassociationsKind = schema.GroupVersionKind{Group: "aws.kubeform.
 // Get takes name of the ramPrincipalAssociation, and returns the corresponding ramPrincipalAssociation object, and an error if there is any.
 func (c *FakeRamPrincipalAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.RamPrincipalAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ramprincipalassociationsResource, name), &v1alpha1.RamPrincipalAssociation{})
+		Invokes(testing.NewGetAction(ramprincipalassociationsResource, c.ns, name), &v1alpha1.RamPrincipalAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRamPrincipalAssociations) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of RamPrincipalAssociations that match those selectors.
 func (c *FakeRamPrincipalAssociations) List(opts v1.ListOptions) (result *v1alpha1.RamPrincipalAssociationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ramprincipalassociationsResource, ramprincipalassociationsKind, opts), &v1alpha1.RamPrincipalAssociationList{})
+		Invokes(testing.NewListAction(ramprincipalassociationsResource, ramprincipalassociationsKind, c.ns, opts), &v1alpha1.RamPrincipalAssociationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRamPrincipalAssociations) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested ramPrincipalAssociations.
 func (c *FakeRamPrincipalAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ramprincipalassociationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(ramprincipalassociationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ramPrincipalAssociation and creates it.  Returns the server's representation of the ramPrincipalAssociation, and an error, if there is any.
 func (c *FakeRamPrincipalAssociations) Create(ramPrincipalAssociation *v1alpha1.RamPrincipalAssociation) (result *v1alpha1.RamPrincipalAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ramprincipalassociationsResource, ramPrincipalAssociation), &v1alpha1.RamPrincipalAssociation{})
+		Invokes(testing.NewCreateAction(ramprincipalassociationsResource, c.ns, ramPrincipalAssociation), &v1alpha1.RamPrincipalAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRamPrincipalAssociations) Create(ramPrincipalAssociation *v1alpha1.
 // Update takes the representation of a ramPrincipalAssociation and updates it. Returns the server's representation of the ramPrincipalAssociation, and an error, if there is any.
 func (c *FakeRamPrincipalAssociations) Update(ramPrincipalAssociation *v1alpha1.RamPrincipalAssociation) (result *v1alpha1.RamPrincipalAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ramprincipalassociationsResource, ramPrincipalAssociation), &v1alpha1.RamPrincipalAssociation{})
+		Invokes(testing.NewUpdateAction(ramprincipalassociationsResource, c.ns, ramPrincipalAssociation), &v1alpha1.RamPrincipalAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRamPrincipalAssociations) Update(ramPrincipalAssociation *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRamPrincipalAssociations) UpdateStatus(ramPrincipalAssociation *v1alpha1.RamPrincipalAssociation) (*v1alpha1.RamPrincipalAssociation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ramprincipalassociationsResource, "status", ramPrincipalAssociation), &v1alpha1.RamPrincipalAssociation{})
+		Invokes(testing.NewUpdateSubresourceAction(ramprincipalassociationsResource, "status", c.ns, ramPrincipalAssociation), &v1alpha1.RamPrincipalAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRamPrincipalAssociations) UpdateStatus(ramPrincipalAssociation *v1a
 // Delete takes name of the ramPrincipalAssociation and deletes it. Returns an error if one occurs.
 func (c *FakeRamPrincipalAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ramprincipalassociationsResource, name), &v1alpha1.RamPrincipalAssociation{})
+		Invokes(testing.NewDeleteAction(ramprincipalassociationsResource, c.ns, name), &v1alpha1.RamPrincipalAssociation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRamPrincipalAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ramprincipalassociationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ramprincipalassociationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.RamPrincipalAssociationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRamPrincipalAssociations) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched ramPrincipalAssociation.
 func (c *FakeRamPrincipalAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RamPrincipalAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ramprincipalassociationsResource, name, pt, data, subresources...), &v1alpha1.RamPrincipalAssociation{})
+		Invokes(testing.NewPatchSubresourceAction(ramprincipalassociationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.RamPrincipalAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}

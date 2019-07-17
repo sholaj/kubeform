@@ -32,7 +32,7 @@ import (
 // EmrClustersGetter has a method to return a EmrClusterInterface.
 // A group's client should implement this interface.
 type EmrClustersGetter interface {
-	EmrClusters() EmrClusterInterface
+	EmrClusters(namespace string) EmrClusterInterface
 }
 
 // EmrClusterInterface has methods to work with EmrCluster resources.
@@ -52,12 +52,14 @@ type EmrClusterInterface interface {
 // emrClusters implements EmrClusterInterface
 type emrClusters struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEmrClusters returns a EmrClusters
-func newEmrClusters(c *AwsV1alpha1Client) *emrClusters {
+func newEmrClusters(c *AwsV1alpha1Client, namespace string) *emrClusters {
 	return &emrClusters{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEmrClusters(c *AwsV1alpha1Client) *emrClusters {
 func (c *emrClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.EmrCluster, err error) {
 	result = &v1alpha1.EmrCluster{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("emrclusters").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *emrClusters) List(opts v1.ListOptions) (result *v1alpha1.EmrClusterList
 	}
 	result = &v1alpha1.EmrClusterList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("emrclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *emrClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("emrclusters").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *emrClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *emrClusters) Create(emrCluster *v1alpha1.EmrCluster) (result *v1alpha1.EmrCluster, err error) {
 	result = &v1alpha1.EmrCluster{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("emrclusters").
 		Body(emrCluster).
 		Do().
@@ -118,6 +124,7 @@ func (c *emrClusters) Create(emrCluster *v1alpha1.EmrCluster) (result *v1alpha1.
 func (c *emrClusters) Update(emrCluster *v1alpha1.EmrCluster) (result *v1alpha1.EmrCluster, err error) {
 	result = &v1alpha1.EmrCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("emrclusters").
 		Name(emrCluster.Name).
 		Body(emrCluster).
@@ -132,6 +139,7 @@ func (c *emrClusters) Update(emrCluster *v1alpha1.EmrCluster) (result *v1alpha1.
 func (c *emrClusters) UpdateStatus(emrCluster *v1alpha1.EmrCluster) (result *v1alpha1.EmrCluster, err error) {
 	result = &v1alpha1.EmrCluster{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("emrclusters").
 		Name(emrCluster.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *emrClusters) UpdateStatus(emrCluster *v1alpha1.EmrCluster) (result *v1a
 // Delete takes name of the emrCluster and deletes it. Returns an error if one occurs.
 func (c *emrClusters) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("emrclusters").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *emrClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("emrclusters").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *emrClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *emrClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EmrCluster, err error) {
 	result = &v1alpha1.EmrCluster{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("emrclusters").
 		SubResource(subresources...).
 		Name(name).

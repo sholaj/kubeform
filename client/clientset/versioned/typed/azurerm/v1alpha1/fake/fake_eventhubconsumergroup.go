@@ -31,6 +31,7 @@ import (
 // FakeEventhubConsumerGroups implements EventhubConsumerGroupInterface
 type FakeEventhubConsumerGroups struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var eventhubconsumergroupsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "eventhubconsumergroups"}
@@ -40,7 +41,8 @@ var eventhubconsumergroupsKind = schema.GroupVersionKind{Group: "azurerm.kubefor
 // Get takes name of the eventhubConsumerGroup, and returns the corresponding eventhubConsumerGroup object, and an error if there is any.
 func (c *FakeEventhubConsumerGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.EventhubConsumerGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(eventhubconsumergroupsResource, name), &v1alpha1.EventhubConsumerGroup{})
+		Invokes(testing.NewGetAction(eventhubconsumergroupsResource, c.ns, name), &v1alpha1.EventhubConsumerGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEventhubConsumerGroups) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of EventhubConsumerGroups that match those selectors.
 func (c *FakeEventhubConsumerGroups) List(opts v1.ListOptions) (result *v1alpha1.EventhubConsumerGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(eventhubconsumergroupsResource, eventhubconsumergroupsKind, opts), &v1alpha1.EventhubConsumerGroupList{})
+		Invokes(testing.NewListAction(eventhubconsumergroupsResource, eventhubconsumergroupsKind, c.ns, opts), &v1alpha1.EventhubConsumerGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEventhubConsumerGroups) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested eventhubConsumerGroups.
 func (c *FakeEventhubConsumerGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(eventhubconsumergroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(eventhubconsumergroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a eventhubConsumerGroup and creates it.  Returns the server's representation of the eventhubConsumerGroup, and an error, if there is any.
 func (c *FakeEventhubConsumerGroups) Create(eventhubConsumerGroup *v1alpha1.EventhubConsumerGroup) (result *v1alpha1.EventhubConsumerGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(eventhubconsumergroupsResource, eventhubConsumerGroup), &v1alpha1.EventhubConsumerGroup{})
+		Invokes(testing.NewCreateAction(eventhubconsumergroupsResource, c.ns, eventhubConsumerGroup), &v1alpha1.EventhubConsumerGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEventhubConsumerGroups) Create(eventhubConsumerGroup *v1alpha1.Even
 // Update takes the representation of a eventhubConsumerGroup and updates it. Returns the server's representation of the eventhubConsumerGroup, and an error, if there is any.
 func (c *FakeEventhubConsumerGroups) Update(eventhubConsumerGroup *v1alpha1.EventhubConsumerGroup) (result *v1alpha1.EventhubConsumerGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(eventhubconsumergroupsResource, eventhubConsumerGroup), &v1alpha1.EventhubConsumerGroup{})
+		Invokes(testing.NewUpdateAction(eventhubconsumergroupsResource, c.ns, eventhubConsumerGroup), &v1alpha1.EventhubConsumerGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEventhubConsumerGroups) Update(eventhubConsumerGroup *v1alpha1.Even
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEventhubConsumerGroups) UpdateStatus(eventhubConsumerGroup *v1alpha1.EventhubConsumerGroup) (*v1alpha1.EventhubConsumerGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(eventhubconsumergroupsResource, "status", eventhubConsumerGroup), &v1alpha1.EventhubConsumerGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(eventhubconsumergroupsResource, "status", c.ns, eventhubConsumerGroup), &v1alpha1.EventhubConsumerGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEventhubConsumerGroups) UpdateStatus(eventhubConsumerGroup *v1alpha
 // Delete takes name of the eventhubConsumerGroup and deletes it. Returns an error if one occurs.
 func (c *FakeEventhubConsumerGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(eventhubconsumergroupsResource, name), &v1alpha1.EventhubConsumerGroup{})
+		Invokes(testing.NewDeleteAction(eventhubconsumergroupsResource, c.ns, name), &v1alpha1.EventhubConsumerGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEventhubConsumerGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(eventhubconsumergroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(eventhubconsumergroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.EventhubConsumerGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEventhubConsumerGroups) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched eventhubConsumerGroup.
 func (c *FakeEventhubConsumerGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EventhubConsumerGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(eventhubconsumergroupsResource, name, pt, data, subresources...), &v1alpha1.EventhubConsumerGroup{})
+		Invokes(testing.NewPatchSubresourceAction(eventhubconsumergroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.EventhubConsumerGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

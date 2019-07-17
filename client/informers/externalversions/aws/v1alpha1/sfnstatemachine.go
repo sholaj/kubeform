@@ -41,32 +41,33 @@ type SfnStateMachineInformer interface {
 type sfnStateMachineInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewSfnStateMachineInformer constructs a new informer for SfnStateMachine type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewSfnStateMachineInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredSfnStateMachineInformer(client, resyncPeriod, indexers, nil)
+func NewSfnStateMachineInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSfnStateMachineInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredSfnStateMachineInformer constructs a new informer for SfnStateMachine type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredSfnStateMachineInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSfnStateMachineInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SfnStateMachines().List(options)
+				return client.AwsV1alpha1().SfnStateMachines(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().SfnStateMachines().Watch(options)
+				return client.AwsV1alpha1().SfnStateMachines(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.SfnStateMachine{},
@@ -76,7 +77,7 @@ func NewFilteredSfnStateMachineInformer(client versioned.Interface, resyncPeriod
 }
 
 func (f *sfnStateMachineInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredSfnStateMachineInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredSfnStateMachineInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *sfnStateMachineInformer) Informer() cache.SharedIndexInformer {

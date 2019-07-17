@@ -29,8 +29,8 @@ import (
 type ComputeFirewallLister interface {
 	// List lists all ComputeFirewalls in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ComputeFirewall, err error)
-	// Get retrieves the ComputeFirewall from the index for a given name.
-	Get(name string) (*v1alpha1.ComputeFirewall, error)
+	// ComputeFirewalls returns an object that can list and get ComputeFirewalls.
+	ComputeFirewalls(namespace string) ComputeFirewallNamespaceLister
 	ComputeFirewallListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *computeFirewallLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the ComputeFirewall from the index for a given name.
-func (s *computeFirewallLister) Get(name string) (*v1alpha1.ComputeFirewall, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ComputeFirewalls returns an object that can list and get ComputeFirewalls.
+func (s *computeFirewallLister) ComputeFirewalls(namespace string) ComputeFirewallNamespaceLister {
+	return computeFirewallNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ComputeFirewallNamespaceLister helps list and get ComputeFirewalls.
+type ComputeFirewallNamespaceLister interface {
+	// List lists all ComputeFirewalls in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ComputeFirewall, err error)
+	// Get retrieves the ComputeFirewall from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ComputeFirewall, error)
+	ComputeFirewallNamespaceListerExpansion
+}
+
+// computeFirewallNamespaceLister implements the ComputeFirewallNamespaceLister
+// interface.
+type computeFirewallNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ComputeFirewalls in the indexer for a given namespace.
+func (s computeFirewallNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ComputeFirewall, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ComputeFirewall))
+	})
+	return ret, err
+}
+
+// Get retrieves the ComputeFirewall from the indexer for a given namespace and name.
+func (s computeFirewallNamespaceLister) Get(name string) (*v1alpha1.ComputeFirewall, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

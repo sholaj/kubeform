@@ -32,7 +32,7 @@ import (
 // SourcerepoRepositoriesGetter has a method to return a SourcerepoRepositoryInterface.
 // A group's client should implement this interface.
 type SourcerepoRepositoriesGetter interface {
-	SourcerepoRepositories() SourcerepoRepositoryInterface
+	SourcerepoRepositories(namespace string) SourcerepoRepositoryInterface
 }
 
 // SourcerepoRepositoryInterface has methods to work with SourcerepoRepository resources.
@@ -52,12 +52,14 @@ type SourcerepoRepositoryInterface interface {
 // sourcerepoRepositories implements SourcerepoRepositoryInterface
 type sourcerepoRepositories struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSourcerepoRepositories returns a SourcerepoRepositories
-func newSourcerepoRepositories(c *GoogleV1alpha1Client) *sourcerepoRepositories {
+func newSourcerepoRepositories(c *GoogleV1alpha1Client, namespace string) *sourcerepoRepositories {
 	return &sourcerepoRepositories{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSourcerepoRepositories(c *GoogleV1alpha1Client) *sourcerepoRepositories 
 func (c *sourcerepoRepositories) Get(name string, options v1.GetOptions) (result *v1alpha1.SourcerepoRepository, err error) {
 	result = &v1alpha1.SourcerepoRepository{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sourcereporepositories").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *sourcerepoRepositories) List(opts v1.ListOptions) (result *v1alpha1.Sou
 	}
 	result = &v1alpha1.SourcerepoRepositoryList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("sourcereporepositories").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *sourcerepoRepositories) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("sourcereporepositories").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *sourcerepoRepositories) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *sourcerepoRepositories) Create(sourcerepoRepository *v1alpha1.SourcerepoRepository) (result *v1alpha1.SourcerepoRepository, err error) {
 	result = &v1alpha1.SourcerepoRepository{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("sourcereporepositories").
 		Body(sourcerepoRepository).
 		Do().
@@ -118,6 +124,7 @@ func (c *sourcerepoRepositories) Create(sourcerepoRepository *v1alpha1.Sourcerep
 func (c *sourcerepoRepositories) Update(sourcerepoRepository *v1alpha1.SourcerepoRepository) (result *v1alpha1.SourcerepoRepository, err error) {
 	result = &v1alpha1.SourcerepoRepository{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sourcereporepositories").
 		Name(sourcerepoRepository.Name).
 		Body(sourcerepoRepository).
@@ -132,6 +139,7 @@ func (c *sourcerepoRepositories) Update(sourcerepoRepository *v1alpha1.Sourcerep
 func (c *sourcerepoRepositories) UpdateStatus(sourcerepoRepository *v1alpha1.SourcerepoRepository) (result *v1alpha1.SourcerepoRepository, err error) {
 	result = &v1alpha1.SourcerepoRepository{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("sourcereporepositories").
 		Name(sourcerepoRepository.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *sourcerepoRepositories) UpdateStatus(sourcerepoRepository *v1alpha1.Sou
 // Delete takes name of the sourcerepoRepository and deletes it. Returns an error if one occurs.
 func (c *sourcerepoRepositories) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sourcereporepositories").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *sourcerepoRepositories) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("sourcereporepositories").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *sourcerepoRepositories) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *sourcerepoRepositories) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SourcerepoRepository, err error) {
 	result = &v1alpha1.SourcerepoRepository{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("sourcereporepositories").
 		SubResource(subresources...).
 		Name(name).

@@ -32,7 +32,7 @@ import (
 // OpsworksHaproxyLayersGetter has a method to return a OpsworksHaproxyLayerInterface.
 // A group's client should implement this interface.
 type OpsworksHaproxyLayersGetter interface {
-	OpsworksHaproxyLayers() OpsworksHaproxyLayerInterface
+	OpsworksHaproxyLayers(namespace string) OpsworksHaproxyLayerInterface
 }
 
 // OpsworksHaproxyLayerInterface has methods to work with OpsworksHaproxyLayer resources.
@@ -52,12 +52,14 @@ type OpsworksHaproxyLayerInterface interface {
 // opsworksHaproxyLayers implements OpsworksHaproxyLayerInterface
 type opsworksHaproxyLayers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOpsworksHaproxyLayers returns a OpsworksHaproxyLayers
-func newOpsworksHaproxyLayers(c *AwsV1alpha1Client) *opsworksHaproxyLayers {
+func newOpsworksHaproxyLayers(c *AwsV1alpha1Client, namespace string) *opsworksHaproxyLayers {
 	return &opsworksHaproxyLayers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOpsworksHaproxyLayers(c *AwsV1alpha1Client) *opsworksHaproxyLayers {
 func (c *opsworksHaproxyLayers) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksHaproxyLayer, err error) {
 	result = &v1alpha1.OpsworksHaproxyLayer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworkshaproxylayers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *opsworksHaproxyLayers) List(opts v1.ListOptions) (result *v1alpha1.Opsw
 	}
 	result = &v1alpha1.OpsworksHaproxyLayerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworkshaproxylayers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *opsworksHaproxyLayers) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworkshaproxylayers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *opsworksHaproxyLayers) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *opsworksHaproxyLayers) Create(opsworksHaproxyLayer *v1alpha1.OpsworksHaproxyLayer) (result *v1alpha1.OpsworksHaproxyLayer, err error) {
 	result = &v1alpha1.OpsworksHaproxyLayer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("opsworkshaproxylayers").
 		Body(opsworksHaproxyLayer).
 		Do().
@@ -118,6 +124,7 @@ func (c *opsworksHaproxyLayers) Create(opsworksHaproxyLayer *v1alpha1.OpsworksHa
 func (c *opsworksHaproxyLayers) Update(opsworksHaproxyLayer *v1alpha1.OpsworksHaproxyLayer) (result *v1alpha1.OpsworksHaproxyLayer, err error) {
 	result = &v1alpha1.OpsworksHaproxyLayer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworkshaproxylayers").
 		Name(opsworksHaproxyLayer.Name).
 		Body(opsworksHaproxyLayer).
@@ -132,6 +139,7 @@ func (c *opsworksHaproxyLayers) Update(opsworksHaproxyLayer *v1alpha1.OpsworksHa
 func (c *opsworksHaproxyLayers) UpdateStatus(opsworksHaproxyLayer *v1alpha1.OpsworksHaproxyLayer) (result *v1alpha1.OpsworksHaproxyLayer, err error) {
 	result = &v1alpha1.OpsworksHaproxyLayer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworkshaproxylayers").
 		Name(opsworksHaproxyLayer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *opsworksHaproxyLayers) UpdateStatus(opsworksHaproxyLayer *v1alpha1.Opsw
 // Delete takes name of the opsworksHaproxyLayer and deletes it. Returns an error if one occurs.
 func (c *opsworksHaproxyLayers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworkshaproxylayers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *opsworksHaproxyLayers) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworkshaproxylayers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *opsworksHaproxyLayers) DeleteCollection(options *v1.DeleteOptions, list
 func (c *opsworksHaproxyLayers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksHaproxyLayer, err error) {
 	result = &v1alpha1.OpsworksHaproxyLayer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("opsworkshaproxylayers").
 		SubResource(subresources...).
 		Name(name).

@@ -29,8 +29,8 @@ import (
 type DataFactoryLinkedServiceDataLakeStorageGen2Lister interface {
 	// List lists all DataFactoryLinkedServiceDataLakeStorageGen2s in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2, err error)
-	// Get retrieves the DataFactoryLinkedServiceDataLakeStorageGen2 from the index for a given name.
-	Get(name string) (*v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2, error)
+	// DataFactoryLinkedServiceDataLakeStorageGen2s returns an object that can list and get DataFactoryLinkedServiceDataLakeStorageGen2s.
+	DataFactoryLinkedServiceDataLakeStorageGen2s(namespace string) DataFactoryLinkedServiceDataLakeStorageGen2NamespaceLister
 	DataFactoryLinkedServiceDataLakeStorageGen2ListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dataFactoryLinkedServiceDataLakeStorageGen2Lister) List(selector labels
 	return ret, err
 }
 
-// Get retrieves the DataFactoryLinkedServiceDataLakeStorageGen2 from the index for a given name.
-func (s *dataFactoryLinkedServiceDataLakeStorageGen2Lister) Get(name string) (*v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DataFactoryLinkedServiceDataLakeStorageGen2s returns an object that can list and get DataFactoryLinkedServiceDataLakeStorageGen2s.
+func (s *dataFactoryLinkedServiceDataLakeStorageGen2Lister) DataFactoryLinkedServiceDataLakeStorageGen2s(namespace string) DataFactoryLinkedServiceDataLakeStorageGen2NamespaceLister {
+	return dataFactoryLinkedServiceDataLakeStorageGen2NamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DataFactoryLinkedServiceDataLakeStorageGen2NamespaceLister helps list and get DataFactoryLinkedServiceDataLakeStorageGen2s.
+type DataFactoryLinkedServiceDataLakeStorageGen2NamespaceLister interface {
+	// List lists all DataFactoryLinkedServiceDataLakeStorageGen2s in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2, err error)
+	// Get retrieves the DataFactoryLinkedServiceDataLakeStorageGen2 from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2, error)
+	DataFactoryLinkedServiceDataLakeStorageGen2NamespaceListerExpansion
+}
+
+// dataFactoryLinkedServiceDataLakeStorageGen2NamespaceLister implements the DataFactoryLinkedServiceDataLakeStorageGen2NamespaceLister
+// interface.
+type dataFactoryLinkedServiceDataLakeStorageGen2NamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DataFactoryLinkedServiceDataLakeStorageGen2s in the indexer for a given namespace.
+func (s dataFactoryLinkedServiceDataLakeStorageGen2NamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2))
+	})
+	return ret, err
+}
+
+// Get retrieves the DataFactoryLinkedServiceDataLakeStorageGen2 from the indexer for a given namespace and name.
+func (s dataFactoryLinkedServiceDataLakeStorageGen2NamespaceLister) Get(name string) (*v1alpha1.DataFactoryLinkedServiceDataLakeStorageGen2, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

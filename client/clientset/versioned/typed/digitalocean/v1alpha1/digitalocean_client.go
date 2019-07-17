@@ -34,8 +34,8 @@ type DigitaloceanV1alpha1Interface interface {
 	DropletsGetter
 	DropletSnapshotsGetter
 	FirewallsGetter
-	FloatingIpsGetter
-	FloatingIpAssignmentsGetter
+	FloatingIPsGetter
+	FloatingIPAssignmentsGetter
 	KubernetesClustersGetter
 	KubernetesNodePoolsGetter
 	LoadbalancersGetter
@@ -54,84 +54,84 @@ type DigitaloceanV1alpha1Client struct {
 	restClient rest.Interface
 }
 
-func (c *DigitaloceanV1alpha1Client) Cdns() CdnInterface {
-	return newCdns(c)
+func (c *DigitaloceanV1alpha1Client) Cdns(namespace string) CdnInterface {
+	return newCdns(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) Certificates() CertificateInterface {
-	return newCertificates(c)
+func (c *DigitaloceanV1alpha1Client) Certificates(namespace string) CertificateInterface {
+	return newCertificates(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) DatabaseClusters() DatabaseClusterInterface {
-	return newDatabaseClusters(c)
+func (c *DigitaloceanV1alpha1Client) DatabaseClusters(namespace string) DatabaseClusterInterface {
+	return newDatabaseClusters(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) Domains() DomainInterface {
-	return newDomains(c)
+func (c *DigitaloceanV1alpha1Client) Domains(namespace string) DomainInterface {
+	return newDomains(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) Droplets() DropletInterface {
-	return newDroplets(c)
+func (c *DigitaloceanV1alpha1Client) Droplets(namespace string) DropletInterface {
+	return newDroplets(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) DropletSnapshots() DropletSnapshotInterface {
-	return newDropletSnapshots(c)
+func (c *DigitaloceanV1alpha1Client) DropletSnapshots(namespace string) DropletSnapshotInterface {
+	return newDropletSnapshots(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) Firewalls() FirewallInterface {
-	return newFirewalls(c)
+func (c *DigitaloceanV1alpha1Client) Firewalls(namespace string) FirewallInterface {
+	return newFirewalls(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) FloatingIps() FloatingIpInterface {
-	return newFloatingIps(c)
+func (c *DigitaloceanV1alpha1Client) FloatingIPs(namespace string) FloatingIPInterface {
+	return newFloatingIPs(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) FloatingIpAssignments() FloatingIpAssignmentInterface {
-	return newFloatingIpAssignments(c)
+func (c *DigitaloceanV1alpha1Client) FloatingIPAssignments(namespace string) FloatingIPAssignmentInterface {
+	return newFloatingIPAssignments(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) KubernetesClusters() KubernetesClusterInterface {
-	return newKubernetesClusters(c)
+func (c *DigitaloceanV1alpha1Client) KubernetesClusters(namespace string) KubernetesClusterInterface {
+	return newKubernetesClusters(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) KubernetesNodePools() KubernetesNodePoolInterface {
-	return newKubernetesNodePools(c)
+func (c *DigitaloceanV1alpha1Client) KubernetesNodePools(namespace string) KubernetesNodePoolInterface {
+	return newKubernetesNodePools(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) Loadbalancers() LoadbalancerInterface {
-	return newLoadbalancers(c)
+func (c *DigitaloceanV1alpha1Client) Loadbalancers(namespace string) LoadbalancerInterface {
+	return newLoadbalancers(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) Projects() ProjectInterface {
-	return newProjects(c)
+func (c *DigitaloceanV1alpha1Client) Projects(namespace string) ProjectInterface {
+	return newProjects(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) Records() RecordInterface {
-	return newRecords(c)
+func (c *DigitaloceanV1alpha1Client) Records(namespace string) RecordInterface {
+	return newRecords(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) SpacesBuckets() SpacesBucketInterface {
-	return newSpacesBuckets(c)
+func (c *DigitaloceanV1alpha1Client) SpacesBuckets(namespace string) SpacesBucketInterface {
+	return newSpacesBuckets(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) SshKeys() SshKeyInterface {
-	return newSshKeys(c)
+func (c *DigitaloceanV1alpha1Client) SshKeys(namespace string) SshKeyInterface {
+	return newSshKeys(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) Tags() TagInterface {
-	return newTags(c)
+func (c *DigitaloceanV1alpha1Client) Tags(namespace string) TagInterface {
+	return newTags(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) Volumes() VolumeInterface {
-	return newVolumes(c)
+func (c *DigitaloceanV1alpha1Client) Volumes(namespace string) VolumeInterface {
+	return newVolumes(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) VolumeAttachments() VolumeAttachmentInterface {
-	return newVolumeAttachments(c)
+func (c *DigitaloceanV1alpha1Client) VolumeAttachments(namespace string) VolumeAttachmentInterface {
+	return newVolumeAttachments(c, namespace)
 }
 
-func (c *DigitaloceanV1alpha1Client) VolumeSnapshots() VolumeSnapshotInterface {
-	return newVolumeSnapshots(c)
+func (c *DigitaloceanV1alpha1Client) VolumeSnapshots(namespace string) VolumeSnapshotInterface {
+	return newVolumeSnapshots(c, namespace)
 }
 
 // NewForConfig creates a new DigitaloceanV1alpha1Client for the given config.

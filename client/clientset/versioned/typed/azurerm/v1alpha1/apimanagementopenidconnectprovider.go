@@ -32,7 +32,7 @@ import (
 // ApiManagementOpenidConnectProvidersGetter has a method to return a ApiManagementOpenidConnectProviderInterface.
 // A group's client should implement this interface.
 type ApiManagementOpenidConnectProvidersGetter interface {
-	ApiManagementOpenidConnectProviders() ApiManagementOpenidConnectProviderInterface
+	ApiManagementOpenidConnectProviders(namespace string) ApiManagementOpenidConnectProviderInterface
 }
 
 // ApiManagementOpenidConnectProviderInterface has methods to work with ApiManagementOpenidConnectProvider resources.
@@ -52,12 +52,14 @@ type ApiManagementOpenidConnectProviderInterface interface {
 // apiManagementOpenidConnectProviders implements ApiManagementOpenidConnectProviderInterface
 type apiManagementOpenidConnectProviders struct {
 	client rest.Interface
+	ns     string
 }
 
 // newApiManagementOpenidConnectProviders returns a ApiManagementOpenidConnectProviders
-func newApiManagementOpenidConnectProviders(c *AzurermV1alpha1Client) *apiManagementOpenidConnectProviders {
+func newApiManagementOpenidConnectProviders(c *AzurermV1alpha1Client, namespace string) *apiManagementOpenidConnectProviders {
 	return &apiManagementOpenidConnectProviders{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newApiManagementOpenidConnectProviders(c *AzurermV1alpha1Client) *apiManage
 func (c *apiManagementOpenidConnectProviders) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementOpenidConnectProvider, err error) {
 	result = &v1alpha1.ApiManagementOpenidConnectProvider{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementopenidconnectproviders").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *apiManagementOpenidConnectProviders) List(opts v1.ListOptions) (result 
 	}
 	result = &v1alpha1.ApiManagementOpenidConnectProviderList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementopenidconnectproviders").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *apiManagementOpenidConnectProviders) Watch(opts v1.ListOptions) (watch.
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementopenidconnectproviders").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *apiManagementOpenidConnectProviders) Watch(opts v1.ListOptions) (watch.
 func (c *apiManagementOpenidConnectProviders) Create(apiManagementOpenidConnectProvider *v1alpha1.ApiManagementOpenidConnectProvider) (result *v1alpha1.ApiManagementOpenidConnectProvider, err error) {
 	result = &v1alpha1.ApiManagementOpenidConnectProvider{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apimanagementopenidconnectproviders").
 		Body(apiManagementOpenidConnectProvider).
 		Do().
@@ -118,6 +124,7 @@ func (c *apiManagementOpenidConnectProviders) Create(apiManagementOpenidConnectP
 func (c *apiManagementOpenidConnectProviders) Update(apiManagementOpenidConnectProvider *v1alpha1.ApiManagementOpenidConnectProvider) (result *v1alpha1.ApiManagementOpenidConnectProvider, err error) {
 	result = &v1alpha1.ApiManagementOpenidConnectProvider{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementopenidconnectproviders").
 		Name(apiManagementOpenidConnectProvider.Name).
 		Body(apiManagementOpenidConnectProvider).
@@ -132,6 +139,7 @@ func (c *apiManagementOpenidConnectProviders) Update(apiManagementOpenidConnectP
 func (c *apiManagementOpenidConnectProviders) UpdateStatus(apiManagementOpenidConnectProvider *v1alpha1.ApiManagementOpenidConnectProvider) (result *v1alpha1.ApiManagementOpenidConnectProvider, err error) {
 	result = &v1alpha1.ApiManagementOpenidConnectProvider{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementopenidconnectproviders").
 		Name(apiManagementOpenidConnectProvider.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *apiManagementOpenidConnectProviders) UpdateStatus(apiManagementOpenidCo
 // Delete takes name of the apiManagementOpenidConnectProvider and deletes it. Returns an error if one occurs.
 func (c *apiManagementOpenidConnectProviders) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementopenidconnectproviders").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *apiManagementOpenidConnectProviders) DeleteCollection(options *v1.Delet
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementopenidconnectproviders").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *apiManagementOpenidConnectProviders) DeleteCollection(options *v1.Delet
 func (c *apiManagementOpenidConnectProviders) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementOpenidConnectProvider, err error) {
 	result = &v1alpha1.ApiManagementOpenidConnectProvider{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apimanagementopenidconnectproviders").
 		SubResource(subresources...).
 		Name(name).

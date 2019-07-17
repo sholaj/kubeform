@@ -29,8 +29,8 @@ import (
 type ApiGatewayResourceLister interface {
 	// List lists all ApiGatewayResources in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayResource, err error)
-	// Get retrieves the ApiGatewayResource from the index for a given name.
-	Get(name string) (*v1alpha1.ApiGatewayResource, error)
+	// ApiGatewayResources returns an object that can list and get ApiGatewayResources.
+	ApiGatewayResources(namespace string) ApiGatewayResourceNamespaceLister
 	ApiGatewayResourceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *apiGatewayResourceLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the ApiGatewayResource from the index for a given name.
-func (s *apiGatewayResourceLister) Get(name string) (*v1alpha1.ApiGatewayResource, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ApiGatewayResources returns an object that can list and get ApiGatewayResources.
+func (s *apiGatewayResourceLister) ApiGatewayResources(namespace string) ApiGatewayResourceNamespaceLister {
+	return apiGatewayResourceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ApiGatewayResourceNamespaceLister helps list and get ApiGatewayResources.
+type ApiGatewayResourceNamespaceLister interface {
+	// List lists all ApiGatewayResources in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayResource, err error)
+	// Get retrieves the ApiGatewayResource from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ApiGatewayResource, error)
+	ApiGatewayResourceNamespaceListerExpansion
+}
+
+// apiGatewayResourceNamespaceLister implements the ApiGatewayResourceNamespaceLister
+// interface.
+type apiGatewayResourceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ApiGatewayResources in the indexer for a given namespace.
+func (s apiGatewayResourceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ApiGatewayResource, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ApiGatewayResource))
+	})
+	return ret, err
+}
+
+// Get retrieves the ApiGatewayResource from the indexer for a given namespace and name.
+func (s apiGatewayResourceNamespaceLister) Get(name string) (*v1alpha1.ApiGatewayResource, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

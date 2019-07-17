@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,9 +19,10 @@ type DataLakeStoreFile struct {
 }
 
 type DataLakeStoreFileSpec struct {
-	AccountName    string `json:"account_name"`
-	LocalFilePath  string `json:"local_file_path"`
-	RemoteFilePath string `json:"remote_file_path"`
+	AccountName    string                    `json:"accountName" tf:"account_name"`
+	LocalFilePath  string                    `json:"localFilePath" tf:"local_file_path"`
+	RemoteFilePath string                    `json:"remoteFilePath" tf:"remote_file_path"`
+	ProviderRef    core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DataLakeStoreFileStatus struct {
@@ -29,7 +30,9 @@ type DataLakeStoreFileStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

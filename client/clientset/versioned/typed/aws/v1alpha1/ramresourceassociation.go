@@ -32,7 +32,7 @@ import (
 // RamResourceAssociationsGetter has a method to return a RamResourceAssociationInterface.
 // A group's client should implement this interface.
 type RamResourceAssociationsGetter interface {
-	RamResourceAssociations() RamResourceAssociationInterface
+	RamResourceAssociations(namespace string) RamResourceAssociationInterface
 }
 
 // RamResourceAssociationInterface has methods to work with RamResourceAssociation resources.
@@ -52,12 +52,14 @@ type RamResourceAssociationInterface interface {
 // ramResourceAssociations implements RamResourceAssociationInterface
 type ramResourceAssociations struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRamResourceAssociations returns a RamResourceAssociations
-func newRamResourceAssociations(c *AwsV1alpha1Client) *ramResourceAssociations {
+func newRamResourceAssociations(c *AwsV1alpha1Client, namespace string) *ramResourceAssociations {
 	return &ramResourceAssociations{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRamResourceAssociations(c *AwsV1alpha1Client) *ramResourceAssociations {
 func (c *ramResourceAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.RamResourceAssociation, err error) {
 	result = &v1alpha1.RamResourceAssociation{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ramresourceassociations").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ramResourceAssociations) List(opts v1.ListOptions) (result *v1alpha1.Ra
 	}
 	result = &v1alpha1.RamResourceAssociationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ramresourceassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ramResourceAssociations) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ramresourceassociations").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ramResourceAssociations) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *ramResourceAssociations) Create(ramResourceAssociation *v1alpha1.RamResourceAssociation) (result *v1alpha1.RamResourceAssociation, err error) {
 	result = &v1alpha1.RamResourceAssociation{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ramresourceassociations").
 		Body(ramResourceAssociation).
 		Do().
@@ -118,6 +124,7 @@ func (c *ramResourceAssociations) Create(ramResourceAssociation *v1alpha1.RamRes
 func (c *ramResourceAssociations) Update(ramResourceAssociation *v1alpha1.RamResourceAssociation) (result *v1alpha1.RamResourceAssociation, err error) {
 	result = &v1alpha1.RamResourceAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ramresourceassociations").
 		Name(ramResourceAssociation.Name).
 		Body(ramResourceAssociation).
@@ -132,6 +139,7 @@ func (c *ramResourceAssociations) Update(ramResourceAssociation *v1alpha1.RamRes
 func (c *ramResourceAssociations) UpdateStatus(ramResourceAssociation *v1alpha1.RamResourceAssociation) (result *v1alpha1.RamResourceAssociation, err error) {
 	result = &v1alpha1.RamResourceAssociation{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ramresourceassociations").
 		Name(ramResourceAssociation.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ramResourceAssociations) UpdateStatus(ramResourceAssociation *v1alpha1.
 // Delete takes name of the ramResourceAssociation and deletes it. Returns an error if one occurs.
 func (c *ramResourceAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ramresourceassociations").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ramResourceAssociations) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ramresourceassociations").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ramResourceAssociations) DeleteCollection(options *v1.DeleteOptions, li
 func (c *ramResourceAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RamResourceAssociation, err error) {
 	result = &v1alpha1.RamResourceAssociation{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ramresourceassociations").
 		SubResource(subresources...).
 		Name(name).

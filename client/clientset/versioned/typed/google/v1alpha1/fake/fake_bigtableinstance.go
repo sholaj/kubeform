@@ -31,6 +31,7 @@ import (
 // FakeBigtableInstances implements BigtableInstanceInterface
 type FakeBigtableInstances struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var bigtableinstancesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "bigtableinstances"}
@@ -40,7 +41,8 @@ var bigtableinstancesKind = schema.GroupVersionKind{Group: "google.kubeform.com"
 // Get takes name of the bigtableInstance, and returns the corresponding bigtableInstance object, and an error if there is any.
 func (c *FakeBigtableInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.BigtableInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(bigtableinstancesResource, name), &v1alpha1.BigtableInstance{})
+		Invokes(testing.NewGetAction(bigtableinstancesResource, c.ns, name), &v1alpha1.BigtableInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeBigtableInstances) Get(name string, options v1.GetOptions) (result 
 // List takes label and field selectors, and returns the list of BigtableInstances that match those selectors.
 func (c *FakeBigtableInstances) List(opts v1.ListOptions) (result *v1alpha1.BigtableInstanceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(bigtableinstancesResource, bigtableinstancesKind, opts), &v1alpha1.BigtableInstanceList{})
+		Invokes(testing.NewListAction(bigtableinstancesResource, bigtableinstancesKind, c.ns, opts), &v1alpha1.BigtableInstanceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeBigtableInstances) List(opts v1.ListOptions) (result *v1alpha1.Bigt
 // Watch returns a watch.Interface that watches the requested bigtableInstances.
 func (c *FakeBigtableInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(bigtableinstancesResource, opts))
+		InvokesWatch(testing.NewWatchAction(bigtableinstancesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a bigtableInstance and creates it.  Returns the server's representation of the bigtableInstance, and an error, if there is any.
 func (c *FakeBigtableInstances) Create(bigtableInstance *v1alpha1.BigtableInstance) (result *v1alpha1.BigtableInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(bigtableinstancesResource, bigtableInstance), &v1alpha1.BigtableInstance{})
+		Invokes(testing.NewCreateAction(bigtableinstancesResource, c.ns, bigtableInstance), &v1alpha1.BigtableInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeBigtableInstances) Create(bigtableInstance *v1alpha1.BigtableInstan
 // Update takes the representation of a bigtableInstance and updates it. Returns the server's representation of the bigtableInstance, and an error, if there is any.
 func (c *FakeBigtableInstances) Update(bigtableInstance *v1alpha1.BigtableInstance) (result *v1alpha1.BigtableInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(bigtableinstancesResource, bigtableInstance), &v1alpha1.BigtableInstance{})
+		Invokes(testing.NewUpdateAction(bigtableinstancesResource, c.ns, bigtableInstance), &v1alpha1.BigtableInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeBigtableInstances) Update(bigtableInstance *v1alpha1.BigtableInstan
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeBigtableInstances) UpdateStatus(bigtableInstance *v1alpha1.BigtableInstance) (*v1alpha1.BigtableInstance, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(bigtableinstancesResource, "status", bigtableInstance), &v1alpha1.BigtableInstance{})
+		Invokes(testing.NewUpdateSubresourceAction(bigtableinstancesResource, "status", c.ns, bigtableInstance), &v1alpha1.BigtableInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeBigtableInstances) UpdateStatus(bigtableInstance *v1alpha1.Bigtable
 // Delete takes name of the bigtableInstance and deletes it. Returns an error if one occurs.
 func (c *FakeBigtableInstances) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(bigtableinstancesResource, name), &v1alpha1.BigtableInstance{})
+		Invokes(testing.NewDeleteAction(bigtableinstancesResource, c.ns, name), &v1alpha1.BigtableInstance{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeBigtableInstances) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(bigtableinstancesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(bigtableinstancesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.BigtableInstanceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeBigtableInstances) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched bigtableInstance.
 func (c *FakeBigtableInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BigtableInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(bigtableinstancesResource, name, pt, data, subresources...), &v1alpha1.BigtableInstance{})
+		Invokes(testing.NewPatchSubresourceAction(bigtableinstancesResource, c.ns, name, pt, data, subresources...), &v1alpha1.BigtableInstance{})
+
 	if obj == nil {
 		return nil, err
 	}

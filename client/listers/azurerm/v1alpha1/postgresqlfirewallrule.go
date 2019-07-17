@@ -29,8 +29,8 @@ import (
 type PostgresqlFirewallRuleLister interface {
 	// List lists all PostgresqlFirewallRules in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.PostgresqlFirewallRule, err error)
-	// Get retrieves the PostgresqlFirewallRule from the index for a given name.
-	Get(name string) (*v1alpha1.PostgresqlFirewallRule, error)
+	// PostgresqlFirewallRules returns an object that can list and get PostgresqlFirewallRules.
+	PostgresqlFirewallRules(namespace string) PostgresqlFirewallRuleNamespaceLister
 	PostgresqlFirewallRuleListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *postgresqlFirewallRuleLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the PostgresqlFirewallRule from the index for a given name.
-func (s *postgresqlFirewallRuleLister) Get(name string) (*v1alpha1.PostgresqlFirewallRule, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// PostgresqlFirewallRules returns an object that can list and get PostgresqlFirewallRules.
+func (s *postgresqlFirewallRuleLister) PostgresqlFirewallRules(namespace string) PostgresqlFirewallRuleNamespaceLister {
+	return postgresqlFirewallRuleNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// PostgresqlFirewallRuleNamespaceLister helps list and get PostgresqlFirewallRules.
+type PostgresqlFirewallRuleNamespaceLister interface {
+	// List lists all PostgresqlFirewallRules in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.PostgresqlFirewallRule, err error)
+	// Get retrieves the PostgresqlFirewallRule from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.PostgresqlFirewallRule, error)
+	PostgresqlFirewallRuleNamespaceListerExpansion
+}
+
+// postgresqlFirewallRuleNamespaceLister implements the PostgresqlFirewallRuleNamespaceLister
+// interface.
+type postgresqlFirewallRuleNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all PostgresqlFirewallRules in the indexer for a given namespace.
+func (s postgresqlFirewallRuleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.PostgresqlFirewallRule, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.PostgresqlFirewallRule))
+	})
+	return ret, err
+}
+
+// Get retrieves the PostgresqlFirewallRule from the indexer for a given namespace and name.
+func (s postgresqlFirewallRuleNamespaceLister) Get(name string) (*v1alpha1.PostgresqlFirewallRule, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

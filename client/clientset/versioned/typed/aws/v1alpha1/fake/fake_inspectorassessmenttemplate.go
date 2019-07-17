@@ -31,6 +31,7 @@ import (
 // FakeInspectorAssessmentTemplates implements InspectorAssessmentTemplateInterface
 type FakeInspectorAssessmentTemplates struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var inspectorassessmenttemplatesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "inspectorassessmenttemplates"}
@@ -40,7 +41,8 @@ var inspectorassessmenttemplatesKind = schema.GroupVersionKind{Group: "aws.kubef
 // Get takes name of the inspectorAssessmentTemplate, and returns the corresponding inspectorAssessmentTemplate object, and an error if there is any.
 func (c *FakeInspectorAssessmentTemplates) Get(name string, options v1.GetOptions) (result *v1alpha1.InspectorAssessmentTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(inspectorassessmenttemplatesResource, name), &v1alpha1.InspectorAssessmentTemplate{})
+		Invokes(testing.NewGetAction(inspectorassessmenttemplatesResource, c.ns, name), &v1alpha1.InspectorAssessmentTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeInspectorAssessmentTemplates) Get(name string, options v1.GetOption
 // List takes label and field selectors, and returns the list of InspectorAssessmentTemplates that match those selectors.
 func (c *FakeInspectorAssessmentTemplates) List(opts v1.ListOptions) (result *v1alpha1.InspectorAssessmentTemplateList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(inspectorassessmenttemplatesResource, inspectorassessmenttemplatesKind, opts), &v1alpha1.InspectorAssessmentTemplateList{})
+		Invokes(testing.NewListAction(inspectorassessmenttemplatesResource, inspectorassessmenttemplatesKind, c.ns, opts), &v1alpha1.InspectorAssessmentTemplateList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeInspectorAssessmentTemplates) List(opts v1.ListOptions) (result *v1
 // Watch returns a watch.Interface that watches the requested inspectorAssessmentTemplates.
 func (c *FakeInspectorAssessmentTemplates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(inspectorassessmenttemplatesResource, opts))
+		InvokesWatch(testing.NewWatchAction(inspectorassessmenttemplatesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a inspectorAssessmentTemplate and creates it.  Returns the server's representation of the inspectorAssessmentTemplate, and an error, if there is any.
 func (c *FakeInspectorAssessmentTemplates) Create(inspectorAssessmentTemplate *v1alpha1.InspectorAssessmentTemplate) (result *v1alpha1.InspectorAssessmentTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(inspectorassessmenttemplatesResource, inspectorAssessmentTemplate), &v1alpha1.InspectorAssessmentTemplate{})
+		Invokes(testing.NewCreateAction(inspectorassessmenttemplatesResource, c.ns, inspectorAssessmentTemplate), &v1alpha1.InspectorAssessmentTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeInspectorAssessmentTemplates) Create(inspectorAssessmentTemplate *v
 // Update takes the representation of a inspectorAssessmentTemplate and updates it. Returns the server's representation of the inspectorAssessmentTemplate, and an error, if there is any.
 func (c *FakeInspectorAssessmentTemplates) Update(inspectorAssessmentTemplate *v1alpha1.InspectorAssessmentTemplate) (result *v1alpha1.InspectorAssessmentTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(inspectorassessmenttemplatesResource, inspectorAssessmentTemplate), &v1alpha1.InspectorAssessmentTemplate{})
+		Invokes(testing.NewUpdateAction(inspectorassessmenttemplatesResource, c.ns, inspectorAssessmentTemplate), &v1alpha1.InspectorAssessmentTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeInspectorAssessmentTemplates) Update(inspectorAssessmentTemplate *v
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeInspectorAssessmentTemplates) UpdateStatus(inspectorAssessmentTemplate *v1alpha1.InspectorAssessmentTemplate) (*v1alpha1.InspectorAssessmentTemplate, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(inspectorassessmenttemplatesResource, "status", inspectorAssessmentTemplate), &v1alpha1.InspectorAssessmentTemplate{})
+		Invokes(testing.NewUpdateSubresourceAction(inspectorassessmenttemplatesResource, "status", c.ns, inspectorAssessmentTemplate), &v1alpha1.InspectorAssessmentTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeInspectorAssessmentTemplates) UpdateStatus(inspectorAssessmentTempl
 // Delete takes name of the inspectorAssessmentTemplate and deletes it. Returns an error if one occurs.
 func (c *FakeInspectorAssessmentTemplates) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(inspectorassessmenttemplatesResource, name), &v1alpha1.InspectorAssessmentTemplate{})
+		Invokes(testing.NewDeleteAction(inspectorassessmenttemplatesResource, c.ns, name), &v1alpha1.InspectorAssessmentTemplate{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeInspectorAssessmentTemplates) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(inspectorassessmenttemplatesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(inspectorassessmenttemplatesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.InspectorAssessmentTemplateList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeInspectorAssessmentTemplates) DeleteCollection(options *v1.DeleteOp
 // Patch applies the patch and returns the patched inspectorAssessmentTemplate.
 func (c *FakeInspectorAssessmentTemplates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.InspectorAssessmentTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(inspectorassessmenttemplatesResource, name, pt, data, subresources...), &v1alpha1.InspectorAssessmentTemplate{})
+		Invokes(testing.NewPatchSubresourceAction(inspectorassessmenttemplatesResource, c.ns, name, pt, data, subresources...), &v1alpha1.InspectorAssessmentTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}

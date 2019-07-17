@@ -29,8 +29,8 @@ import (
 type RoleDefinitionLister interface {
 	// List lists all RoleDefinitions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.RoleDefinition, err error)
-	// Get retrieves the RoleDefinition from the index for a given name.
-	Get(name string) (*v1alpha1.RoleDefinition, error)
+	// RoleDefinitions returns an object that can list and get RoleDefinitions.
+	RoleDefinitions(namespace string) RoleDefinitionNamespaceLister
 	RoleDefinitionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *roleDefinitionLister) List(selector labels.Selector) (ret []*v1alpha1.R
 	return ret, err
 }
 
-// Get retrieves the RoleDefinition from the index for a given name.
-func (s *roleDefinitionLister) Get(name string) (*v1alpha1.RoleDefinition, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// RoleDefinitions returns an object that can list and get RoleDefinitions.
+func (s *roleDefinitionLister) RoleDefinitions(namespace string) RoleDefinitionNamespaceLister {
+	return roleDefinitionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// RoleDefinitionNamespaceLister helps list and get RoleDefinitions.
+type RoleDefinitionNamespaceLister interface {
+	// List lists all RoleDefinitions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.RoleDefinition, err error)
+	// Get retrieves the RoleDefinition from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.RoleDefinition, error)
+	RoleDefinitionNamespaceListerExpansion
+}
+
+// roleDefinitionNamespaceLister implements the RoleDefinitionNamespaceLister
+// interface.
+type roleDefinitionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all RoleDefinitions in the indexer for a given namespace.
+func (s roleDefinitionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.RoleDefinition, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.RoleDefinition))
+	})
+	return ret, err
+}
+
+// Get retrieves the RoleDefinition from the indexer for a given namespace and name.
+func (s roleDefinitionNamespaceLister) Get(name string) (*v1alpha1.RoleDefinition, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

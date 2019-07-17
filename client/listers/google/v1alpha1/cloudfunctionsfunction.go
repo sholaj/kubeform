@@ -29,8 +29,8 @@ import (
 type CloudfunctionsFunctionLister interface {
 	// List lists all CloudfunctionsFunctions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CloudfunctionsFunction, err error)
-	// Get retrieves the CloudfunctionsFunction from the index for a given name.
-	Get(name string) (*v1alpha1.CloudfunctionsFunction, error)
+	// CloudfunctionsFunctions returns an object that can list and get CloudfunctionsFunctions.
+	CloudfunctionsFunctions(namespace string) CloudfunctionsFunctionNamespaceLister
 	CloudfunctionsFunctionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cloudfunctionsFunctionLister) List(selector labels.Selector) (ret []*v1
 	return ret, err
 }
 
-// Get retrieves the CloudfunctionsFunction from the index for a given name.
-func (s *cloudfunctionsFunctionLister) Get(name string) (*v1alpha1.CloudfunctionsFunction, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CloudfunctionsFunctions returns an object that can list and get CloudfunctionsFunctions.
+func (s *cloudfunctionsFunctionLister) CloudfunctionsFunctions(namespace string) CloudfunctionsFunctionNamespaceLister {
+	return cloudfunctionsFunctionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CloudfunctionsFunctionNamespaceLister helps list and get CloudfunctionsFunctions.
+type CloudfunctionsFunctionNamespaceLister interface {
+	// List lists all CloudfunctionsFunctions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CloudfunctionsFunction, err error)
+	// Get retrieves the CloudfunctionsFunction from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CloudfunctionsFunction, error)
+	CloudfunctionsFunctionNamespaceListerExpansion
+}
+
+// cloudfunctionsFunctionNamespaceLister implements the CloudfunctionsFunctionNamespaceLister
+// interface.
+type cloudfunctionsFunctionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CloudfunctionsFunctions in the indexer for a given namespace.
+func (s cloudfunctionsFunctionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CloudfunctionsFunction, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CloudfunctionsFunction))
+	})
+	return ret, err
+}
+
+// Get retrieves the CloudfunctionsFunction from the indexer for a given namespace and name.
+func (s cloudfunctionsFunctionNamespaceLister) Get(name string) (*v1alpha1.CloudfunctionsFunction, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

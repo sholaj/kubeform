@@ -32,7 +32,7 @@ import (
 // StorageBucketIamBindingsGetter has a method to return a StorageBucketIamBindingInterface.
 // A group's client should implement this interface.
 type StorageBucketIamBindingsGetter interface {
-	StorageBucketIamBindings() StorageBucketIamBindingInterface
+	StorageBucketIamBindings(namespace string) StorageBucketIamBindingInterface
 }
 
 // StorageBucketIamBindingInterface has methods to work with StorageBucketIamBinding resources.
@@ -52,12 +52,14 @@ type StorageBucketIamBindingInterface interface {
 // storageBucketIamBindings implements StorageBucketIamBindingInterface
 type storageBucketIamBindings struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStorageBucketIamBindings returns a StorageBucketIamBindings
-func newStorageBucketIamBindings(c *GoogleV1alpha1Client) *storageBucketIamBindings {
+func newStorageBucketIamBindings(c *GoogleV1alpha1Client, namespace string) *storageBucketIamBindings {
 	return &storageBucketIamBindings{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStorageBucketIamBindings(c *GoogleV1alpha1Client) *storageBucketIamBindi
 func (c *storageBucketIamBindings) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageBucketIamBinding, err error) {
 	result = &v1alpha1.StorageBucketIamBinding{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagebucketiambindings").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *storageBucketIamBindings) List(opts v1.ListOptions) (result *v1alpha1.S
 	}
 	result = &v1alpha1.StorageBucketIamBindingList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagebucketiambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *storageBucketIamBindings) Watch(opts v1.ListOptions) (watch.Interface, 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storagebucketiambindings").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *storageBucketIamBindings) Watch(opts v1.ListOptions) (watch.Interface, 
 func (c *storageBucketIamBindings) Create(storageBucketIamBinding *v1alpha1.StorageBucketIamBinding) (result *v1alpha1.StorageBucketIamBinding, err error) {
 	result = &v1alpha1.StorageBucketIamBinding{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storagebucketiambindings").
 		Body(storageBucketIamBinding).
 		Do().
@@ -118,6 +124,7 @@ func (c *storageBucketIamBindings) Create(storageBucketIamBinding *v1alpha1.Stor
 func (c *storageBucketIamBindings) Update(storageBucketIamBinding *v1alpha1.StorageBucketIamBinding) (result *v1alpha1.StorageBucketIamBinding, err error) {
 	result = &v1alpha1.StorageBucketIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagebucketiambindings").
 		Name(storageBucketIamBinding.Name).
 		Body(storageBucketIamBinding).
@@ -132,6 +139,7 @@ func (c *storageBucketIamBindings) Update(storageBucketIamBinding *v1alpha1.Stor
 func (c *storageBucketIamBindings) UpdateStatus(storageBucketIamBinding *v1alpha1.StorageBucketIamBinding) (result *v1alpha1.StorageBucketIamBinding, err error) {
 	result = &v1alpha1.StorageBucketIamBinding{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagebucketiambindings").
 		Name(storageBucketIamBinding.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *storageBucketIamBindings) UpdateStatus(storageBucketIamBinding *v1alpha
 // Delete takes name of the storageBucketIamBinding and deletes it. Returns an error if one occurs.
 func (c *storageBucketIamBindings) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagebucketiambindings").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *storageBucketIamBindings) DeleteCollection(options *v1.DeleteOptions, l
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagebucketiambindings").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *storageBucketIamBindings) DeleteCollection(options *v1.DeleteOptions, l
 func (c *storageBucketIamBindings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageBucketIamBinding, err error) {
 	result = &v1alpha1.StorageBucketIamBinding{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storagebucketiambindings").
 		SubResource(subresources...).
 		Name(name).

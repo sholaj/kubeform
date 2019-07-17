@@ -41,32 +41,33 @@ type PubsubTopicIamBindingInformer interface {
 type pubsubTopicIamBindingInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewPubsubTopicIamBindingInformer constructs a new informer for PubsubTopicIamBinding type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewPubsubTopicIamBindingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredPubsubTopicIamBindingInformer(client, resyncPeriod, indexers, nil)
+func NewPubsubTopicIamBindingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredPubsubTopicIamBindingInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredPubsubTopicIamBindingInformer constructs a new informer for PubsubTopicIamBinding type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredPubsubTopicIamBindingInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredPubsubTopicIamBindingInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().PubsubTopicIamBindings().List(options)
+				return client.GoogleV1alpha1().PubsubTopicIamBindings(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.GoogleV1alpha1().PubsubTopicIamBindings().Watch(options)
+				return client.GoogleV1alpha1().PubsubTopicIamBindings(namespace).Watch(options)
 			},
 		},
 		&googlev1alpha1.PubsubTopicIamBinding{},
@@ -76,7 +77,7 @@ func NewFilteredPubsubTopicIamBindingInformer(client versioned.Interface, resync
 }
 
 func (f *pubsubTopicIamBindingInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredPubsubTopicIamBindingInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredPubsubTopicIamBindingInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *pubsubTopicIamBindingInformer) Informer() cache.SharedIndexInformer {

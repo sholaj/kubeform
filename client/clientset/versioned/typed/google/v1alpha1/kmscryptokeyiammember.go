@@ -32,7 +32,7 @@ import (
 // KmsCryptoKeyIamMembersGetter has a method to return a KmsCryptoKeyIamMemberInterface.
 // A group's client should implement this interface.
 type KmsCryptoKeyIamMembersGetter interface {
-	KmsCryptoKeyIamMembers() KmsCryptoKeyIamMemberInterface
+	KmsCryptoKeyIamMembers(namespace string) KmsCryptoKeyIamMemberInterface
 }
 
 // KmsCryptoKeyIamMemberInterface has methods to work with KmsCryptoKeyIamMember resources.
@@ -52,12 +52,14 @@ type KmsCryptoKeyIamMemberInterface interface {
 // kmsCryptoKeyIamMembers implements KmsCryptoKeyIamMemberInterface
 type kmsCryptoKeyIamMembers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKmsCryptoKeyIamMembers returns a KmsCryptoKeyIamMembers
-func newKmsCryptoKeyIamMembers(c *GoogleV1alpha1Client) *kmsCryptoKeyIamMembers {
+func newKmsCryptoKeyIamMembers(c *GoogleV1alpha1Client, namespace string) *kmsCryptoKeyIamMembers {
 	return &kmsCryptoKeyIamMembers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKmsCryptoKeyIamMembers(c *GoogleV1alpha1Client) *kmsCryptoKeyIamMembers 
 func (c *kmsCryptoKeyIamMembers) Get(name string, options v1.GetOptions) (result *v1alpha1.KmsCryptoKeyIamMember, err error) {
 	result = &v1alpha1.KmsCryptoKeyIamMember{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmscryptokeyiammembers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *kmsCryptoKeyIamMembers) List(opts v1.ListOptions) (result *v1alpha1.Kms
 	}
 	result = &v1alpha1.KmsCryptoKeyIamMemberList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("kmscryptokeyiammembers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *kmsCryptoKeyIamMembers) Watch(opts v1.ListOptions) (watch.Interface, er
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("kmscryptokeyiammembers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *kmsCryptoKeyIamMembers) Watch(opts v1.ListOptions) (watch.Interface, er
 func (c *kmsCryptoKeyIamMembers) Create(kmsCryptoKeyIamMember *v1alpha1.KmsCryptoKeyIamMember) (result *v1alpha1.KmsCryptoKeyIamMember, err error) {
 	result = &v1alpha1.KmsCryptoKeyIamMember{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("kmscryptokeyiammembers").
 		Body(kmsCryptoKeyIamMember).
 		Do().
@@ -118,6 +124,7 @@ func (c *kmsCryptoKeyIamMembers) Create(kmsCryptoKeyIamMember *v1alpha1.KmsCrypt
 func (c *kmsCryptoKeyIamMembers) Update(kmsCryptoKeyIamMember *v1alpha1.KmsCryptoKeyIamMember) (result *v1alpha1.KmsCryptoKeyIamMember, err error) {
 	result = &v1alpha1.KmsCryptoKeyIamMember{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmscryptokeyiammembers").
 		Name(kmsCryptoKeyIamMember.Name).
 		Body(kmsCryptoKeyIamMember).
@@ -132,6 +139,7 @@ func (c *kmsCryptoKeyIamMembers) Update(kmsCryptoKeyIamMember *v1alpha1.KmsCrypt
 func (c *kmsCryptoKeyIamMembers) UpdateStatus(kmsCryptoKeyIamMember *v1alpha1.KmsCryptoKeyIamMember) (result *v1alpha1.KmsCryptoKeyIamMember, err error) {
 	result = &v1alpha1.KmsCryptoKeyIamMember{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("kmscryptokeyiammembers").
 		Name(kmsCryptoKeyIamMember.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *kmsCryptoKeyIamMembers) UpdateStatus(kmsCryptoKeyIamMember *v1alpha1.Km
 // Delete takes name of the kmsCryptoKeyIamMember and deletes it. Returns an error if one occurs.
 func (c *kmsCryptoKeyIamMembers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmscryptokeyiammembers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *kmsCryptoKeyIamMembers) DeleteCollection(options *v1.DeleteOptions, lis
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("kmscryptokeyiammembers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *kmsCryptoKeyIamMembers) DeleteCollection(options *v1.DeleteOptions, lis
 func (c *kmsCryptoKeyIamMembers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KmsCryptoKeyIamMember, err error) {
 	result = &v1alpha1.KmsCryptoKeyIamMember{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("kmscryptokeyiammembers").
 		SubResource(subresources...).
 		Name(name).

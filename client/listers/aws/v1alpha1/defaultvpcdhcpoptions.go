@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// DefaultVpcDhcpOptionsLister helps list DefaultVpcDhcpOptionses.
-type DefaultVpcDhcpOptionsLister interface {
-	// List lists all DefaultVpcDhcpOptionses in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.DefaultVpcDhcpOptions, err error)
-	// Get retrieves the DefaultVpcDhcpOptions from the index for a given name.
-	Get(name string) (*v1alpha1.DefaultVpcDhcpOptions, error)
-	DefaultVpcDhcpOptionsListerExpansion
+// DefaultVpcDHCPOptionsLister helps list DefaultVpcDHCPOptionses.
+type DefaultVpcDHCPOptionsLister interface {
+	// List lists all DefaultVpcDHCPOptionses in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.DefaultVpcDHCPOptions, err error)
+	// DefaultVpcDHCPOptionses returns an object that can list and get DefaultVpcDHCPOptionses.
+	DefaultVpcDHCPOptionses(namespace string) DefaultVpcDHCPOptionsNamespaceLister
+	DefaultVpcDHCPOptionsListerExpansion
 }
 
-// defaultVpcDhcpOptionsLister implements the DefaultVpcDhcpOptionsLister interface.
-type defaultVpcDhcpOptionsLister struct {
+// defaultVpcDHCPOptionsLister implements the DefaultVpcDHCPOptionsLister interface.
+type defaultVpcDHCPOptionsLister struct {
 	indexer cache.Indexer
 }
 
-// NewDefaultVpcDhcpOptionsLister returns a new DefaultVpcDhcpOptionsLister.
-func NewDefaultVpcDhcpOptionsLister(indexer cache.Indexer) DefaultVpcDhcpOptionsLister {
-	return &defaultVpcDhcpOptionsLister{indexer: indexer}
+// NewDefaultVpcDHCPOptionsLister returns a new DefaultVpcDHCPOptionsLister.
+func NewDefaultVpcDHCPOptionsLister(indexer cache.Indexer) DefaultVpcDHCPOptionsLister {
+	return &defaultVpcDHCPOptionsLister{indexer: indexer}
 }
 
-// List lists all DefaultVpcDhcpOptionses in the indexer.
-func (s *defaultVpcDhcpOptionsLister) List(selector labels.Selector) (ret []*v1alpha1.DefaultVpcDhcpOptions, err error) {
+// List lists all DefaultVpcDHCPOptionses in the indexer.
+func (s *defaultVpcDHCPOptionsLister) List(selector labels.Selector) (ret []*v1alpha1.DefaultVpcDHCPOptions, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.DefaultVpcDhcpOptions))
+		ret = append(ret, m.(*v1alpha1.DefaultVpcDHCPOptions))
 	})
 	return ret, err
 }
 
-// Get retrieves the DefaultVpcDhcpOptions from the index for a given name.
-func (s *defaultVpcDhcpOptionsLister) Get(name string) (*v1alpha1.DefaultVpcDhcpOptions, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DefaultVpcDHCPOptionses returns an object that can list and get DefaultVpcDHCPOptionses.
+func (s *defaultVpcDHCPOptionsLister) DefaultVpcDHCPOptionses(namespace string) DefaultVpcDHCPOptionsNamespaceLister {
+	return defaultVpcDHCPOptionsNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DefaultVpcDHCPOptionsNamespaceLister helps list and get DefaultVpcDHCPOptionses.
+type DefaultVpcDHCPOptionsNamespaceLister interface {
+	// List lists all DefaultVpcDHCPOptionses in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DefaultVpcDHCPOptions, err error)
+	// Get retrieves the DefaultVpcDHCPOptions from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DefaultVpcDHCPOptions, error)
+	DefaultVpcDHCPOptionsNamespaceListerExpansion
+}
+
+// defaultVpcDHCPOptionsNamespaceLister implements the DefaultVpcDHCPOptionsNamespaceLister
+// interface.
+type defaultVpcDHCPOptionsNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DefaultVpcDHCPOptionses in the indexer for a given namespace.
+func (s defaultVpcDHCPOptionsNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DefaultVpcDHCPOptions, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DefaultVpcDHCPOptions))
+	})
+	return ret, err
+}
+
+// Get retrieves the DefaultVpcDHCPOptions from the indexer for a given namespace and name.
+func (s defaultVpcDHCPOptionsNamespaceLister) Get(name string) (*v1alpha1.DefaultVpcDHCPOptions, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("defaultvpcdhcpoptions"), name)
 	}
-	return obj.(*v1alpha1.DefaultVpcDhcpOptions), nil
+	return obj.(*v1alpha1.DefaultVpcDHCPOptions), nil
 }

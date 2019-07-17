@@ -32,7 +32,7 @@ import (
 // CloudfunctionsFunctionsGetter has a method to return a CloudfunctionsFunctionInterface.
 // A group's client should implement this interface.
 type CloudfunctionsFunctionsGetter interface {
-	CloudfunctionsFunctions() CloudfunctionsFunctionInterface
+	CloudfunctionsFunctions(namespace string) CloudfunctionsFunctionInterface
 }
 
 // CloudfunctionsFunctionInterface has methods to work with CloudfunctionsFunction resources.
@@ -52,12 +52,14 @@ type CloudfunctionsFunctionInterface interface {
 // cloudfunctionsFunctions implements CloudfunctionsFunctionInterface
 type cloudfunctionsFunctions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCloudfunctionsFunctions returns a CloudfunctionsFunctions
-func newCloudfunctionsFunctions(c *GoogleV1alpha1Client) *cloudfunctionsFunctions {
+func newCloudfunctionsFunctions(c *GoogleV1alpha1Client, namespace string) *cloudfunctionsFunctions {
 	return &cloudfunctionsFunctions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCloudfunctionsFunctions(c *GoogleV1alpha1Client) *cloudfunctionsFunction
 func (c *cloudfunctionsFunctions) Get(name string, options v1.GetOptions) (result *v1alpha1.CloudfunctionsFunction, err error) {
 	result = &v1alpha1.CloudfunctionsFunction{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudfunctionsfunctions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cloudfunctionsFunctions) List(opts v1.ListOptions) (result *v1alpha1.Cl
 	}
 	result = &v1alpha1.CloudfunctionsFunctionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudfunctionsfunctions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cloudfunctionsFunctions) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cloudfunctionsfunctions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cloudfunctionsFunctions) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *cloudfunctionsFunctions) Create(cloudfunctionsFunction *v1alpha1.CloudfunctionsFunction) (result *v1alpha1.CloudfunctionsFunction, err error) {
 	result = &v1alpha1.CloudfunctionsFunction{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cloudfunctionsfunctions").
 		Body(cloudfunctionsFunction).
 		Do().
@@ -118,6 +124,7 @@ func (c *cloudfunctionsFunctions) Create(cloudfunctionsFunction *v1alpha1.Cloudf
 func (c *cloudfunctionsFunctions) Update(cloudfunctionsFunction *v1alpha1.CloudfunctionsFunction) (result *v1alpha1.CloudfunctionsFunction, err error) {
 	result = &v1alpha1.CloudfunctionsFunction{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudfunctionsfunctions").
 		Name(cloudfunctionsFunction.Name).
 		Body(cloudfunctionsFunction).
@@ -132,6 +139,7 @@ func (c *cloudfunctionsFunctions) Update(cloudfunctionsFunction *v1alpha1.Cloudf
 func (c *cloudfunctionsFunctions) UpdateStatus(cloudfunctionsFunction *v1alpha1.CloudfunctionsFunction) (result *v1alpha1.CloudfunctionsFunction, err error) {
 	result = &v1alpha1.CloudfunctionsFunction{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cloudfunctionsfunctions").
 		Name(cloudfunctionsFunction.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cloudfunctionsFunctions) UpdateStatus(cloudfunctionsFunction *v1alpha1.
 // Delete takes name of the cloudfunctionsFunction and deletes it. Returns an error if one occurs.
 func (c *cloudfunctionsFunctions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudfunctionsfunctions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cloudfunctionsFunctions) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cloudfunctionsfunctions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cloudfunctionsFunctions) DeleteCollection(options *v1.DeleteOptions, li
 func (c *cloudfunctionsFunctions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CloudfunctionsFunction, err error) {
 	result = &v1alpha1.CloudfunctionsFunction{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cloudfunctionsfunctions").
 		SubResource(subresources...).
 		Name(name).

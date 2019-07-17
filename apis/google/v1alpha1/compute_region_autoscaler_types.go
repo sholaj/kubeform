@@ -3,12 +3,12 @@ package v1alpha1
 import (
 	"encoding/json"
 
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -21,34 +21,35 @@ type ComputeRegionAutoscaler struct {
 }
 
 type ComputeRegionAutoscalerSpecAutoscalingPolicyLoadBalancingUtilization struct {
-	Target json.Number `json:"target"`
+	Target json.Number `json:"target" tf:"target"`
 }
 
 type ComputeRegionAutoscalerSpecAutoscalingPolicyMetric struct {
-	Name   string      `json:"name"`
-	Target json.Number `json:"target"`
-	Type   string      `json:"type"`
+	Name   string      `json:"name" tf:"name"`
+	Target json.Number `json:"target" tf:"target"`
+	Type   string      `json:"type" tf:"type"`
 }
 
 type ComputeRegionAutoscalerSpecAutoscalingPolicy struct {
 	// +optional
-	CooldownPeriod int `json:"cooldown_period,omitempty"`
+	CooldownPeriod int `json:"cooldownPeriod,omitempty" tf:"cooldown_period,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	LoadBalancingUtilization *[]ComputeRegionAutoscalerSpecAutoscalingPolicy `json:"load_balancing_utilization,omitempty"`
-	MaxReplicas              int                                             `json:"max_replicas"`
+	LoadBalancingUtilization []ComputeRegionAutoscalerSpecAutoscalingPolicyLoadBalancingUtilization `json:"loadBalancingUtilization,omitempty" tf:"load_balancing_utilization,omitempty"`
+	MaxReplicas              int                                                                    `json:"maxReplicas" tf:"max_replicas"`
 	// +optional
-	Metric      *[]ComputeRegionAutoscalerSpecAutoscalingPolicy `json:"metric,omitempty"`
-	MinReplicas int                                             `json:"min_replicas"`
+	Metric      []ComputeRegionAutoscalerSpecAutoscalingPolicyMetric `json:"metric,omitempty" tf:"metric,omitempty"`
+	MinReplicas int                                                  `json:"minReplicas" tf:"min_replicas"`
 }
 
 type ComputeRegionAutoscalerSpec struct {
 	// +kubebuilder:validation:MaxItems=1
-	AutoscalingPolicy []ComputeRegionAutoscalerSpec `json:"autoscaling_policy"`
+	AutoscalingPolicy []ComputeRegionAutoscalerSpecAutoscalingPolicy `json:"autoscalingPolicy" tf:"autoscaling_policy"`
 	// +optional
-	Description string `json:"description,omitempty"`
-	Name        string `json:"name"`
-	Target      string `json:"target"`
+	Description string                    `json:"description,omitempty" tf:"description,omitempty"`
+	Name        string                    `json:"name" tf:"name"`
+	Target      string                    `json:"target" tf:"target"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ComputeRegionAutoscalerStatus struct {
@@ -56,7 +57,9 @@ type ComputeRegionAutoscalerStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

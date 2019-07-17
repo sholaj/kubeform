@@ -32,7 +32,7 @@ import (
 // EventgridDomainsGetter has a method to return a EventgridDomainInterface.
 // A group's client should implement this interface.
 type EventgridDomainsGetter interface {
-	EventgridDomains() EventgridDomainInterface
+	EventgridDomains(namespace string) EventgridDomainInterface
 }
 
 // EventgridDomainInterface has methods to work with EventgridDomain resources.
@@ -52,12 +52,14 @@ type EventgridDomainInterface interface {
 // eventgridDomains implements EventgridDomainInterface
 type eventgridDomains struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEventgridDomains returns a EventgridDomains
-func newEventgridDomains(c *AzurermV1alpha1Client) *eventgridDomains {
+func newEventgridDomains(c *AzurermV1alpha1Client, namespace string) *eventgridDomains {
 	return &eventgridDomains{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEventgridDomains(c *AzurermV1alpha1Client) *eventgridDomains {
 func (c *eventgridDomains) Get(name string, options v1.GetOptions) (result *v1alpha1.EventgridDomain, err error) {
 	result = &v1alpha1.EventgridDomain{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eventgriddomains").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *eventgridDomains) List(opts v1.ListOptions) (result *v1alpha1.Eventgrid
 	}
 	result = &v1alpha1.EventgridDomainList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eventgriddomains").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *eventgridDomains) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("eventgriddomains").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *eventgridDomains) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *eventgridDomains) Create(eventgridDomain *v1alpha1.EventgridDomain) (result *v1alpha1.EventgridDomain, err error) {
 	result = &v1alpha1.EventgridDomain{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("eventgriddomains").
 		Body(eventgridDomain).
 		Do().
@@ -118,6 +124,7 @@ func (c *eventgridDomains) Create(eventgridDomain *v1alpha1.EventgridDomain) (re
 func (c *eventgridDomains) Update(eventgridDomain *v1alpha1.EventgridDomain) (result *v1alpha1.EventgridDomain, err error) {
 	result = &v1alpha1.EventgridDomain{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eventgriddomains").
 		Name(eventgridDomain.Name).
 		Body(eventgridDomain).
@@ -132,6 +139,7 @@ func (c *eventgridDomains) Update(eventgridDomain *v1alpha1.EventgridDomain) (re
 func (c *eventgridDomains) UpdateStatus(eventgridDomain *v1alpha1.EventgridDomain) (result *v1alpha1.EventgridDomain, err error) {
 	result = &v1alpha1.EventgridDomain{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eventgriddomains").
 		Name(eventgridDomain.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *eventgridDomains) UpdateStatus(eventgridDomain *v1alpha1.EventgridDomai
 // Delete takes name of the eventgridDomain and deletes it. Returns an error if one occurs.
 func (c *eventgridDomains) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eventgriddomains").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *eventgridDomains) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eventgriddomains").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *eventgridDomains) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *eventgridDomains) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EventgridDomain, err error) {
 	result = &v1alpha1.EventgridDomain{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("eventgriddomains").
 		SubResource(subresources...).
 		Name(name).

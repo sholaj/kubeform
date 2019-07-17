@@ -31,6 +31,7 @@ import (
 // FakeElasticBeanstalkConfigurationTemplates implements ElasticBeanstalkConfigurationTemplateInterface
 type FakeElasticBeanstalkConfigurationTemplates struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var elasticbeanstalkconfigurationtemplatesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "elasticbeanstalkconfigurationtemplates"}
@@ -40,7 +41,8 @@ var elasticbeanstalkconfigurationtemplatesKind = schema.GroupVersionKind{Group: 
 // Get takes name of the elasticBeanstalkConfigurationTemplate, and returns the corresponding elasticBeanstalkConfigurationTemplate object, and an error if there is any.
 func (c *FakeElasticBeanstalkConfigurationTemplates) Get(name string, options v1.GetOptions) (result *v1alpha1.ElasticBeanstalkConfigurationTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(elasticbeanstalkconfigurationtemplatesResource, name), &v1alpha1.ElasticBeanstalkConfigurationTemplate{})
+		Invokes(testing.NewGetAction(elasticbeanstalkconfigurationtemplatesResource, c.ns, name), &v1alpha1.ElasticBeanstalkConfigurationTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeElasticBeanstalkConfigurationTemplates) Get(name string, options v1
 // List takes label and field selectors, and returns the list of ElasticBeanstalkConfigurationTemplates that match those selectors.
 func (c *FakeElasticBeanstalkConfigurationTemplates) List(opts v1.ListOptions) (result *v1alpha1.ElasticBeanstalkConfigurationTemplateList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(elasticbeanstalkconfigurationtemplatesResource, elasticbeanstalkconfigurationtemplatesKind, opts), &v1alpha1.ElasticBeanstalkConfigurationTemplateList{})
+		Invokes(testing.NewListAction(elasticbeanstalkconfigurationtemplatesResource, elasticbeanstalkconfigurationtemplatesKind, c.ns, opts), &v1alpha1.ElasticBeanstalkConfigurationTemplateList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeElasticBeanstalkConfigurationTemplates) List(opts v1.ListOptions) (
 // Watch returns a watch.Interface that watches the requested elasticBeanstalkConfigurationTemplates.
 func (c *FakeElasticBeanstalkConfigurationTemplates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(elasticbeanstalkconfigurationtemplatesResource, opts))
+		InvokesWatch(testing.NewWatchAction(elasticbeanstalkconfigurationtemplatesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a elasticBeanstalkConfigurationTemplate and creates it.  Returns the server's representation of the elasticBeanstalkConfigurationTemplate, and an error, if there is any.
 func (c *FakeElasticBeanstalkConfigurationTemplates) Create(elasticBeanstalkConfigurationTemplate *v1alpha1.ElasticBeanstalkConfigurationTemplate) (result *v1alpha1.ElasticBeanstalkConfigurationTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(elasticbeanstalkconfigurationtemplatesResource, elasticBeanstalkConfigurationTemplate), &v1alpha1.ElasticBeanstalkConfigurationTemplate{})
+		Invokes(testing.NewCreateAction(elasticbeanstalkconfigurationtemplatesResource, c.ns, elasticBeanstalkConfigurationTemplate), &v1alpha1.ElasticBeanstalkConfigurationTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeElasticBeanstalkConfigurationTemplates) Create(elasticBeanstalkConf
 // Update takes the representation of a elasticBeanstalkConfigurationTemplate and updates it. Returns the server's representation of the elasticBeanstalkConfigurationTemplate, and an error, if there is any.
 func (c *FakeElasticBeanstalkConfigurationTemplates) Update(elasticBeanstalkConfigurationTemplate *v1alpha1.ElasticBeanstalkConfigurationTemplate) (result *v1alpha1.ElasticBeanstalkConfigurationTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(elasticbeanstalkconfigurationtemplatesResource, elasticBeanstalkConfigurationTemplate), &v1alpha1.ElasticBeanstalkConfigurationTemplate{})
+		Invokes(testing.NewUpdateAction(elasticbeanstalkconfigurationtemplatesResource, c.ns, elasticBeanstalkConfigurationTemplate), &v1alpha1.ElasticBeanstalkConfigurationTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeElasticBeanstalkConfigurationTemplates) Update(elasticBeanstalkConf
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeElasticBeanstalkConfigurationTemplates) UpdateStatus(elasticBeanstalkConfigurationTemplate *v1alpha1.ElasticBeanstalkConfigurationTemplate) (*v1alpha1.ElasticBeanstalkConfigurationTemplate, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(elasticbeanstalkconfigurationtemplatesResource, "status", elasticBeanstalkConfigurationTemplate), &v1alpha1.ElasticBeanstalkConfigurationTemplate{})
+		Invokes(testing.NewUpdateSubresourceAction(elasticbeanstalkconfigurationtemplatesResource, "status", c.ns, elasticBeanstalkConfigurationTemplate), &v1alpha1.ElasticBeanstalkConfigurationTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeElasticBeanstalkConfigurationTemplates) UpdateStatus(elasticBeansta
 // Delete takes name of the elasticBeanstalkConfigurationTemplate and deletes it. Returns an error if one occurs.
 func (c *FakeElasticBeanstalkConfigurationTemplates) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(elasticbeanstalkconfigurationtemplatesResource, name), &v1alpha1.ElasticBeanstalkConfigurationTemplate{})
+		Invokes(testing.NewDeleteAction(elasticbeanstalkconfigurationtemplatesResource, c.ns, name), &v1alpha1.ElasticBeanstalkConfigurationTemplate{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeElasticBeanstalkConfigurationTemplates) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(elasticbeanstalkconfigurationtemplatesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(elasticbeanstalkconfigurationtemplatesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ElasticBeanstalkConfigurationTemplateList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeElasticBeanstalkConfigurationTemplates) DeleteCollection(options *v
 // Patch applies the patch and returns the patched elasticBeanstalkConfigurationTemplate.
 func (c *FakeElasticBeanstalkConfigurationTemplates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ElasticBeanstalkConfigurationTemplate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(elasticbeanstalkconfigurationtemplatesResource, name, pt, data, subresources...), &v1alpha1.ElasticBeanstalkConfigurationTemplate{})
+		Invokes(testing.NewPatchSubresourceAction(elasticbeanstalkconfigurationtemplatesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ElasticBeanstalkConfigurationTemplate{})
+
 	if obj == nil {
 		return nil, err
 	}

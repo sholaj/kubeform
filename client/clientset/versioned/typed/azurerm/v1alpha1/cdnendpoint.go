@@ -32,7 +32,7 @@ import (
 // CdnEndpointsGetter has a method to return a CdnEndpointInterface.
 // A group's client should implement this interface.
 type CdnEndpointsGetter interface {
-	CdnEndpoints() CdnEndpointInterface
+	CdnEndpoints(namespace string) CdnEndpointInterface
 }
 
 // CdnEndpointInterface has methods to work with CdnEndpoint resources.
@@ -52,12 +52,14 @@ type CdnEndpointInterface interface {
 // cdnEndpoints implements CdnEndpointInterface
 type cdnEndpoints struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCdnEndpoints returns a CdnEndpoints
-func newCdnEndpoints(c *AzurermV1alpha1Client) *cdnEndpoints {
+func newCdnEndpoints(c *AzurermV1alpha1Client, namespace string) *cdnEndpoints {
 	return &cdnEndpoints{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCdnEndpoints(c *AzurermV1alpha1Client) *cdnEndpoints {
 func (c *cdnEndpoints) Get(name string, options v1.GetOptions) (result *v1alpha1.CdnEndpoint, err error) {
 	result = &v1alpha1.CdnEndpoint{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cdnendpoints").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cdnEndpoints) List(opts v1.ListOptions) (result *v1alpha1.CdnEndpointLi
 	}
 	result = &v1alpha1.CdnEndpointList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cdnendpoints").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cdnEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cdnendpoints").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cdnEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *cdnEndpoints) Create(cdnEndpoint *v1alpha1.CdnEndpoint) (result *v1alpha1.CdnEndpoint, err error) {
 	result = &v1alpha1.CdnEndpoint{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cdnendpoints").
 		Body(cdnEndpoint).
 		Do().
@@ -118,6 +124,7 @@ func (c *cdnEndpoints) Create(cdnEndpoint *v1alpha1.CdnEndpoint) (result *v1alph
 func (c *cdnEndpoints) Update(cdnEndpoint *v1alpha1.CdnEndpoint) (result *v1alpha1.CdnEndpoint, err error) {
 	result = &v1alpha1.CdnEndpoint{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cdnendpoints").
 		Name(cdnEndpoint.Name).
 		Body(cdnEndpoint).
@@ -132,6 +139,7 @@ func (c *cdnEndpoints) Update(cdnEndpoint *v1alpha1.CdnEndpoint) (result *v1alph
 func (c *cdnEndpoints) UpdateStatus(cdnEndpoint *v1alpha1.CdnEndpoint) (result *v1alpha1.CdnEndpoint, err error) {
 	result = &v1alpha1.CdnEndpoint{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cdnendpoints").
 		Name(cdnEndpoint.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cdnEndpoints) UpdateStatus(cdnEndpoint *v1alpha1.CdnEndpoint) (result *
 // Delete takes name of the cdnEndpoint and deletes it. Returns an error if one occurs.
 func (c *cdnEndpoints) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cdnendpoints").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cdnEndpoints) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cdnendpoints").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cdnEndpoints) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *cdnEndpoints) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CdnEndpoint, err error) {
 	result = &v1alpha1.CdnEndpoint{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cdnendpoints").
 		SubResource(subresources...).
 		Name(name).

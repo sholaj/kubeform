@@ -32,7 +32,7 @@ import (
 // ComputeRegionInstanceGroupManagersGetter has a method to return a ComputeRegionInstanceGroupManagerInterface.
 // A group's client should implement this interface.
 type ComputeRegionInstanceGroupManagersGetter interface {
-	ComputeRegionInstanceGroupManagers() ComputeRegionInstanceGroupManagerInterface
+	ComputeRegionInstanceGroupManagers(namespace string) ComputeRegionInstanceGroupManagerInterface
 }
 
 // ComputeRegionInstanceGroupManagerInterface has methods to work with ComputeRegionInstanceGroupManager resources.
@@ -52,12 +52,14 @@ type ComputeRegionInstanceGroupManagerInterface interface {
 // computeRegionInstanceGroupManagers implements ComputeRegionInstanceGroupManagerInterface
 type computeRegionInstanceGroupManagers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newComputeRegionInstanceGroupManagers returns a ComputeRegionInstanceGroupManagers
-func newComputeRegionInstanceGroupManagers(c *GoogleV1alpha1Client) *computeRegionInstanceGroupManagers {
+func newComputeRegionInstanceGroupManagers(c *GoogleV1alpha1Client, namespace string) *computeRegionInstanceGroupManagers {
 	return &computeRegionInstanceGroupManagers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newComputeRegionInstanceGroupManagers(c *GoogleV1alpha1Client) *computeRegi
 func (c *computeRegionInstanceGroupManagers) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeRegionInstanceGroupManager, err error) {
 	result = &v1alpha1.ComputeRegionInstanceGroupManager{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeregioninstancegroupmanagers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *computeRegionInstanceGroupManagers) List(opts v1.ListOptions) (result *
 	}
 	result = &v1alpha1.ComputeRegionInstanceGroupManagerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computeregioninstancegroupmanagers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *computeRegionInstanceGroupManagers) Watch(opts v1.ListOptions) (watch.I
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computeregioninstancegroupmanagers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *computeRegionInstanceGroupManagers) Watch(opts v1.ListOptions) (watch.I
 func (c *computeRegionInstanceGroupManagers) Create(computeRegionInstanceGroupManager *v1alpha1.ComputeRegionInstanceGroupManager) (result *v1alpha1.ComputeRegionInstanceGroupManager, err error) {
 	result = &v1alpha1.ComputeRegionInstanceGroupManager{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computeregioninstancegroupmanagers").
 		Body(computeRegionInstanceGroupManager).
 		Do().
@@ -118,6 +124,7 @@ func (c *computeRegionInstanceGroupManagers) Create(computeRegionInstanceGroupMa
 func (c *computeRegionInstanceGroupManagers) Update(computeRegionInstanceGroupManager *v1alpha1.ComputeRegionInstanceGroupManager) (result *v1alpha1.ComputeRegionInstanceGroupManager, err error) {
 	result = &v1alpha1.ComputeRegionInstanceGroupManager{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeregioninstancegroupmanagers").
 		Name(computeRegionInstanceGroupManager.Name).
 		Body(computeRegionInstanceGroupManager).
@@ -132,6 +139,7 @@ func (c *computeRegionInstanceGroupManagers) Update(computeRegionInstanceGroupMa
 func (c *computeRegionInstanceGroupManagers) UpdateStatus(computeRegionInstanceGroupManager *v1alpha1.ComputeRegionInstanceGroupManager) (result *v1alpha1.ComputeRegionInstanceGroupManager, err error) {
 	result = &v1alpha1.ComputeRegionInstanceGroupManager{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computeregioninstancegroupmanagers").
 		Name(computeRegionInstanceGroupManager.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *computeRegionInstanceGroupManagers) UpdateStatus(computeRegionInstanceG
 // Delete takes name of the computeRegionInstanceGroupManager and deletes it. Returns an error if one occurs.
 func (c *computeRegionInstanceGroupManagers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeregioninstancegroupmanagers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *computeRegionInstanceGroupManagers) DeleteCollection(options *v1.Delete
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computeregioninstancegroupmanagers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *computeRegionInstanceGroupManagers) DeleteCollection(options *v1.Delete
 func (c *computeRegionInstanceGroupManagers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeRegionInstanceGroupManager, err error) {
 	result = &v1alpha1.ComputeRegionInstanceGroupManager{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computeregioninstancegroupmanagers").
 		SubResource(subresources...).
 		Name(name).

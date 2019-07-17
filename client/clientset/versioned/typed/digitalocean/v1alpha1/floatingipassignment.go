@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// FloatingIpAssignmentsGetter has a method to return a FloatingIpAssignmentInterface.
+// FloatingIPAssignmentsGetter has a method to return a FloatingIPAssignmentInterface.
 // A group's client should implement this interface.
-type FloatingIpAssignmentsGetter interface {
-	FloatingIpAssignments() FloatingIpAssignmentInterface
+type FloatingIPAssignmentsGetter interface {
+	FloatingIPAssignments(namespace string) FloatingIPAssignmentInterface
 }
 
-// FloatingIpAssignmentInterface has methods to work with FloatingIpAssignment resources.
-type FloatingIpAssignmentInterface interface {
-	Create(*v1alpha1.FloatingIpAssignment) (*v1alpha1.FloatingIpAssignment, error)
-	Update(*v1alpha1.FloatingIpAssignment) (*v1alpha1.FloatingIpAssignment, error)
-	UpdateStatus(*v1alpha1.FloatingIpAssignment) (*v1alpha1.FloatingIpAssignment, error)
+// FloatingIPAssignmentInterface has methods to work with FloatingIPAssignment resources.
+type FloatingIPAssignmentInterface interface {
+	Create(*v1alpha1.FloatingIPAssignment) (*v1alpha1.FloatingIPAssignment, error)
+	Update(*v1alpha1.FloatingIPAssignment) (*v1alpha1.FloatingIPAssignment, error)
+	UpdateStatus(*v1alpha1.FloatingIPAssignment) (*v1alpha1.FloatingIPAssignment, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.FloatingIpAssignment, error)
-	List(opts v1.ListOptions) (*v1alpha1.FloatingIpAssignmentList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.FloatingIPAssignment, error)
+	List(opts v1.ListOptions) (*v1alpha1.FloatingIPAssignmentList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FloatingIpAssignment, err error)
-	FloatingIpAssignmentExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FloatingIPAssignment, err error)
+	FloatingIPAssignmentExpansion
 }
 
-// floatingIpAssignments implements FloatingIpAssignmentInterface
-type floatingIpAssignments struct {
+// floatingIPAssignments implements FloatingIPAssignmentInterface
+type floatingIPAssignments struct {
 	client rest.Interface
+	ns     string
 }
 
-// newFloatingIpAssignments returns a FloatingIpAssignments
-func newFloatingIpAssignments(c *DigitaloceanV1alpha1Client) *floatingIpAssignments {
-	return &floatingIpAssignments{
+// newFloatingIPAssignments returns a FloatingIPAssignments
+func newFloatingIPAssignments(c *DigitaloceanV1alpha1Client, namespace string) *floatingIPAssignments {
+	return &floatingIPAssignments{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the floatingIpAssignment, and returns the corresponding floatingIpAssignment object, and an error if there is any.
-func (c *floatingIpAssignments) Get(name string, options v1.GetOptions) (result *v1alpha1.FloatingIpAssignment, err error) {
-	result = &v1alpha1.FloatingIpAssignment{}
+// Get takes name of the floatingIPAssignment, and returns the corresponding floatingIPAssignment object, and an error if there is any.
+func (c *floatingIPAssignments) Get(name string, options v1.GetOptions) (result *v1alpha1.FloatingIPAssignment, err error) {
+	result = &v1alpha1.FloatingIPAssignment{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("floatingipassignments").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *floatingIpAssignments) Get(name string, options v1.GetOptions) (result 
 	return
 }
 
-// List takes label and field selectors, and returns the list of FloatingIpAssignments that match those selectors.
-func (c *floatingIpAssignments) List(opts v1.ListOptions) (result *v1alpha1.FloatingIpAssignmentList, err error) {
+// List takes label and field selectors, and returns the list of FloatingIPAssignments that match those selectors.
+func (c *floatingIPAssignments) List(opts v1.ListOptions) (result *v1alpha1.FloatingIPAssignmentList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.FloatingIpAssignmentList{}
+	result = &v1alpha1.FloatingIPAssignmentList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("floatingipassignments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *floatingIpAssignments) List(opts v1.ListOptions) (result *v1alpha1.Floa
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested floatingIpAssignments.
-func (c *floatingIpAssignments) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested floatingIPAssignments.
+func (c *floatingIPAssignments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("floatingipassignments").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a floatingIpAssignment and creates it.  Returns the server's representation of the floatingIpAssignment, and an error, if there is any.
-func (c *floatingIpAssignments) Create(floatingIpAssignment *v1alpha1.FloatingIpAssignment) (result *v1alpha1.FloatingIpAssignment, err error) {
-	result = &v1alpha1.FloatingIpAssignment{}
+// Create takes the representation of a floatingIPAssignment and creates it.  Returns the server's representation of the floatingIPAssignment, and an error, if there is any.
+func (c *floatingIPAssignments) Create(floatingIPAssignment *v1alpha1.FloatingIPAssignment) (result *v1alpha1.FloatingIPAssignment, err error) {
+	result = &v1alpha1.FloatingIPAssignment{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("floatingipassignments").
-		Body(floatingIpAssignment).
+		Body(floatingIPAssignment).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a floatingIpAssignment and updates it. Returns the server's representation of the floatingIpAssignment, and an error, if there is any.
-func (c *floatingIpAssignments) Update(floatingIpAssignment *v1alpha1.FloatingIpAssignment) (result *v1alpha1.FloatingIpAssignment, err error) {
-	result = &v1alpha1.FloatingIpAssignment{}
+// Update takes the representation of a floatingIPAssignment and updates it. Returns the server's representation of the floatingIPAssignment, and an error, if there is any.
+func (c *floatingIPAssignments) Update(floatingIPAssignment *v1alpha1.FloatingIPAssignment) (result *v1alpha1.FloatingIPAssignment, err error) {
+	result = &v1alpha1.FloatingIPAssignment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("floatingipassignments").
-		Name(floatingIpAssignment.Name).
-		Body(floatingIpAssignment).
+		Name(floatingIPAssignment.Name).
+		Body(floatingIPAssignment).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *floatingIpAssignments) Update(floatingIpAssignment *v1alpha1.FloatingIp
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *floatingIpAssignments) UpdateStatus(floatingIpAssignment *v1alpha1.FloatingIpAssignment) (result *v1alpha1.FloatingIpAssignment, err error) {
-	result = &v1alpha1.FloatingIpAssignment{}
+func (c *floatingIPAssignments) UpdateStatus(floatingIPAssignment *v1alpha1.FloatingIPAssignment) (result *v1alpha1.FloatingIPAssignment, err error) {
+	result = &v1alpha1.FloatingIPAssignment{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("floatingipassignments").
-		Name(floatingIpAssignment.Name).
+		Name(floatingIPAssignment.Name).
 		SubResource("status").
-		Body(floatingIpAssignment).
+		Body(floatingIPAssignment).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the floatingIpAssignment and deletes it. Returns an error if one occurs.
-func (c *floatingIpAssignments) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the floatingIPAssignment and deletes it. Returns an error if one occurs.
+func (c *floatingIPAssignments) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("floatingipassignments").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *floatingIpAssignments) Delete(name string, options *v1.DeleteOptions) e
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *floatingIpAssignments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *floatingIPAssignments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("floatingipassignments").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *floatingIpAssignments) DeleteCollection(options *v1.DeleteOptions, list
 		Error()
 }
 
-// Patch applies the patch and returns the patched floatingIpAssignment.
-func (c *floatingIpAssignments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FloatingIpAssignment, err error) {
-	result = &v1alpha1.FloatingIpAssignment{}
+// Patch applies the patch and returns the patched floatingIPAssignment.
+func (c *floatingIPAssignments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.FloatingIPAssignment, err error) {
+	result = &v1alpha1.FloatingIPAssignment{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("floatingipassignments").
 		SubResource(subresources...).
 		Name(name).

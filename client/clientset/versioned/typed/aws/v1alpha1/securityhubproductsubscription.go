@@ -32,7 +32,7 @@ import (
 // SecurityhubProductSubscriptionsGetter has a method to return a SecurityhubProductSubscriptionInterface.
 // A group's client should implement this interface.
 type SecurityhubProductSubscriptionsGetter interface {
-	SecurityhubProductSubscriptions() SecurityhubProductSubscriptionInterface
+	SecurityhubProductSubscriptions(namespace string) SecurityhubProductSubscriptionInterface
 }
 
 // SecurityhubProductSubscriptionInterface has methods to work with SecurityhubProductSubscription resources.
@@ -52,12 +52,14 @@ type SecurityhubProductSubscriptionInterface interface {
 // securityhubProductSubscriptions implements SecurityhubProductSubscriptionInterface
 type securityhubProductSubscriptions struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSecurityhubProductSubscriptions returns a SecurityhubProductSubscriptions
-func newSecurityhubProductSubscriptions(c *AwsV1alpha1Client) *securityhubProductSubscriptions {
+func newSecurityhubProductSubscriptions(c *AwsV1alpha1Client, namespace string) *securityhubProductSubscriptions {
 	return &securityhubProductSubscriptions{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSecurityhubProductSubscriptions(c *AwsV1alpha1Client) *securityhubProduc
 func (c *securityhubProductSubscriptions) Get(name string, options v1.GetOptions) (result *v1alpha1.SecurityhubProductSubscription, err error) {
 	result = &v1alpha1.SecurityhubProductSubscription{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("securityhubproductsubscriptions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *securityhubProductSubscriptions) List(opts v1.ListOptions) (result *v1a
 	}
 	result = &v1alpha1.SecurityhubProductSubscriptionList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("securityhubproductsubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *securityhubProductSubscriptions) Watch(opts v1.ListOptions) (watch.Inte
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("securityhubproductsubscriptions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *securityhubProductSubscriptions) Watch(opts v1.ListOptions) (watch.Inte
 func (c *securityhubProductSubscriptions) Create(securityhubProductSubscription *v1alpha1.SecurityhubProductSubscription) (result *v1alpha1.SecurityhubProductSubscription, err error) {
 	result = &v1alpha1.SecurityhubProductSubscription{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("securityhubproductsubscriptions").
 		Body(securityhubProductSubscription).
 		Do().
@@ -118,6 +124,7 @@ func (c *securityhubProductSubscriptions) Create(securityhubProductSubscription 
 func (c *securityhubProductSubscriptions) Update(securityhubProductSubscription *v1alpha1.SecurityhubProductSubscription) (result *v1alpha1.SecurityhubProductSubscription, err error) {
 	result = &v1alpha1.SecurityhubProductSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("securityhubproductsubscriptions").
 		Name(securityhubProductSubscription.Name).
 		Body(securityhubProductSubscription).
@@ -132,6 +139,7 @@ func (c *securityhubProductSubscriptions) Update(securityhubProductSubscription 
 func (c *securityhubProductSubscriptions) UpdateStatus(securityhubProductSubscription *v1alpha1.SecurityhubProductSubscription) (result *v1alpha1.SecurityhubProductSubscription, err error) {
 	result = &v1alpha1.SecurityhubProductSubscription{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("securityhubproductsubscriptions").
 		Name(securityhubProductSubscription.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *securityhubProductSubscriptions) UpdateStatus(securityhubProductSubscri
 // Delete takes name of the securityhubProductSubscription and deletes it. Returns an error if one occurs.
 func (c *securityhubProductSubscriptions) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("securityhubproductsubscriptions").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *securityhubProductSubscriptions) DeleteCollection(options *v1.DeleteOpt
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("securityhubproductsubscriptions").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *securityhubProductSubscriptions) DeleteCollection(options *v1.DeleteOpt
 func (c *securityhubProductSubscriptions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SecurityhubProductSubscription, err error) {
 	result = &v1alpha1.SecurityhubProductSubscription{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("securityhubproductsubscriptions").
 		SubResource(subresources...).
 		Name(name).

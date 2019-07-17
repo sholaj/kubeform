@@ -31,6 +31,7 @@ import (
 // FakeDxConnectionAssociations implements DxConnectionAssociationInterface
 type FakeDxConnectionAssociations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var dxconnectionassociationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "dxconnectionassociations"}
@@ -40,7 +41,8 @@ var dxconnectionassociationsKind = schema.GroupVersionKind{Group: "aws.kubeform.
 // Get takes name of the dxConnectionAssociation, and returns the corresponding dxConnectionAssociation object, and an error if there is any.
 func (c *FakeDxConnectionAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.DxConnectionAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(dxconnectionassociationsResource, name), &v1alpha1.DxConnectionAssociation{})
+		Invokes(testing.NewGetAction(dxconnectionassociationsResource, c.ns, name), &v1alpha1.DxConnectionAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeDxConnectionAssociations) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of DxConnectionAssociations that match those selectors.
 func (c *FakeDxConnectionAssociations) List(opts v1.ListOptions) (result *v1alpha1.DxConnectionAssociationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(dxconnectionassociationsResource, dxconnectionassociationsKind, opts), &v1alpha1.DxConnectionAssociationList{})
+		Invokes(testing.NewListAction(dxconnectionassociationsResource, dxconnectionassociationsKind, c.ns, opts), &v1alpha1.DxConnectionAssociationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeDxConnectionAssociations) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested dxConnectionAssociations.
 func (c *FakeDxConnectionAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(dxconnectionassociationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(dxconnectionassociationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a dxConnectionAssociation and creates it.  Returns the server's representation of the dxConnectionAssociation, and an error, if there is any.
 func (c *FakeDxConnectionAssociations) Create(dxConnectionAssociation *v1alpha1.DxConnectionAssociation) (result *v1alpha1.DxConnectionAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(dxconnectionassociationsResource, dxConnectionAssociation), &v1alpha1.DxConnectionAssociation{})
+		Invokes(testing.NewCreateAction(dxconnectionassociationsResource, c.ns, dxConnectionAssociation), &v1alpha1.DxConnectionAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeDxConnectionAssociations) Create(dxConnectionAssociation *v1alpha1.
 // Update takes the representation of a dxConnectionAssociation and updates it. Returns the server's representation of the dxConnectionAssociation, and an error, if there is any.
 func (c *FakeDxConnectionAssociations) Update(dxConnectionAssociation *v1alpha1.DxConnectionAssociation) (result *v1alpha1.DxConnectionAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(dxconnectionassociationsResource, dxConnectionAssociation), &v1alpha1.DxConnectionAssociation{})
+		Invokes(testing.NewUpdateAction(dxconnectionassociationsResource, c.ns, dxConnectionAssociation), &v1alpha1.DxConnectionAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeDxConnectionAssociations) Update(dxConnectionAssociation *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeDxConnectionAssociations) UpdateStatus(dxConnectionAssociation *v1alpha1.DxConnectionAssociation) (*v1alpha1.DxConnectionAssociation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(dxconnectionassociationsResource, "status", dxConnectionAssociation), &v1alpha1.DxConnectionAssociation{})
+		Invokes(testing.NewUpdateSubresourceAction(dxconnectionassociationsResource, "status", c.ns, dxConnectionAssociation), &v1alpha1.DxConnectionAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeDxConnectionAssociations) UpdateStatus(dxConnectionAssociation *v1a
 // Delete takes name of the dxConnectionAssociation and deletes it. Returns an error if one occurs.
 func (c *FakeDxConnectionAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(dxconnectionassociationsResource, name), &v1alpha1.DxConnectionAssociation{})
+		Invokes(testing.NewDeleteAction(dxconnectionassociationsResource, c.ns, name), &v1alpha1.DxConnectionAssociation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeDxConnectionAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(dxconnectionassociationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(dxconnectionassociationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.DxConnectionAssociationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeDxConnectionAssociations) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched dxConnectionAssociation.
 func (c *FakeDxConnectionAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DxConnectionAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(dxconnectionassociationsResource, name, pt, data, subresources...), &v1alpha1.DxConnectionAssociation{})
+		Invokes(testing.NewPatchSubresourceAction(dxconnectionassociationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DxConnectionAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}

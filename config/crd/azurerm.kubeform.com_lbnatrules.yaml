@@ -8,7 +8,7 @@ metadata:
 spec:
   group: azurerm.kubeform.com
   names:
-    kind: LbNatRule
+    kind: LbNATRule
     plural: lbnatrules
   scope: ""
   validation:
@@ -397,13 +397,13 @@ spec:
           type: object
         spec:
           properties:
-            backend_port:
+            backendPort:
               type: integer
-            frontend_ip_configuration_name:
+            frontendIPConfigurationName:
               type: string
-            frontend_port:
+            frontendPort:
               type: integer
-            loadbalancer_id:
+            loadbalancerID:
               type: string
             location:
               description: Deprecated
@@ -412,16 +412,26 @@ spec:
               type: string
             protocol:
               type: string
-            resource_group_name:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            resourceGroupName:
               type: string
           required:
-          - backend_port
-          - frontend_ip_configuration_name
-          - frontend_port
-          - loadbalancer_id
+          - backendPort
+          - frontendIPConfigurationName
+          - frontendPort
+          - loadbalancerID
           - name
           - protocol
-          - resource_group_name
+          - providerRef
+          - resourceGroupName
           type: object
         status:
           properties:
@@ -432,6 +442,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

@@ -29,8 +29,8 @@ import (
 type DataprocJobLister interface {
 	// List lists all DataprocJobs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.DataprocJob, err error)
-	// Get retrieves the DataprocJob from the index for a given name.
-	Get(name string) (*v1alpha1.DataprocJob, error)
+	// DataprocJobs returns an object that can list and get DataprocJobs.
+	DataprocJobs(namespace string) DataprocJobNamespaceLister
 	DataprocJobListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *dataprocJobLister) List(selector labels.Selector) (ret []*v1alpha1.Data
 	return ret, err
 }
 
-// Get retrieves the DataprocJob from the index for a given name.
-func (s *dataprocJobLister) Get(name string) (*v1alpha1.DataprocJob, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// DataprocJobs returns an object that can list and get DataprocJobs.
+func (s *dataprocJobLister) DataprocJobs(namespace string) DataprocJobNamespaceLister {
+	return dataprocJobNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// DataprocJobNamespaceLister helps list and get DataprocJobs.
+type DataprocJobNamespaceLister interface {
+	// List lists all DataprocJobs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.DataprocJob, err error)
+	// Get retrieves the DataprocJob from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.DataprocJob, error)
+	DataprocJobNamespaceListerExpansion
+}
+
+// dataprocJobNamespaceLister implements the DataprocJobNamespaceLister
+// interface.
+type dataprocJobNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all DataprocJobs in the indexer for a given namespace.
+func (s dataprocJobNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.DataprocJob, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.DataprocJob))
+	})
+	return ret, err
+}
+
+// Get retrieves the DataprocJob from the indexer for a given namespace and name.
+func (s dataprocJobNamespaceLister) Get(name string) (*v1alpha1.DataprocJob, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

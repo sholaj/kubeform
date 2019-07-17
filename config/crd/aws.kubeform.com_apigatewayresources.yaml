@@ -397,16 +397,26 @@ spec:
           type: object
         spec:
           properties:
-            parent_id:
+            parentID:
               type: string
-            path_part:
+            pathPart:
               type: string
-            rest_api_id:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            restAPIID:
               type: string
           required:
-          - parent_id
-          - path_part
-          - rest_api_id
+          - parentID
+          - pathPart
+          - providerRef
+          - restAPIID
           type: object
         status:
           properties:
@@ -417,6 +427,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

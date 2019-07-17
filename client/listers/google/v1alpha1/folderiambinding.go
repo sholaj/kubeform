@@ -29,8 +29,8 @@ import (
 type FolderIamBindingLister interface {
 	// List lists all FolderIamBindings in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.FolderIamBinding, err error)
-	// Get retrieves the FolderIamBinding from the index for a given name.
-	Get(name string) (*v1alpha1.FolderIamBinding, error)
+	// FolderIamBindings returns an object that can list and get FolderIamBindings.
+	FolderIamBindings(namespace string) FolderIamBindingNamespaceLister
 	FolderIamBindingListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *folderIamBindingLister) List(selector labels.Selector) (ret []*v1alpha1
 	return ret, err
 }
 
-// Get retrieves the FolderIamBinding from the index for a given name.
-func (s *folderIamBindingLister) Get(name string) (*v1alpha1.FolderIamBinding, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// FolderIamBindings returns an object that can list and get FolderIamBindings.
+func (s *folderIamBindingLister) FolderIamBindings(namespace string) FolderIamBindingNamespaceLister {
+	return folderIamBindingNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// FolderIamBindingNamespaceLister helps list and get FolderIamBindings.
+type FolderIamBindingNamespaceLister interface {
+	// List lists all FolderIamBindings in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.FolderIamBinding, err error)
+	// Get retrieves the FolderIamBinding from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.FolderIamBinding, error)
+	FolderIamBindingNamespaceListerExpansion
+}
+
+// folderIamBindingNamespaceLister implements the FolderIamBindingNamespaceLister
+// interface.
+type folderIamBindingNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all FolderIamBindings in the indexer for a given namespace.
+func (s folderIamBindingNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.FolderIamBinding, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.FolderIamBinding))
+	})
+	return ret, err
+}
+
+// Get retrieves the FolderIamBinding from the indexer for a given namespace and name.
+func (s folderIamBindingNamespaceLister) Get(name string) (*v1alpha1.FolderIamBinding, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -28,21 +28,20 @@ import (
 type AzurermV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	ApiManagementsGetter
-	ApiManagementApisGetter
-	ApiManagementApiOperationsGetter
-	ApiManagementApiOperationPoliciesGetter
-	ApiManagementApiPoliciesGetter
-	ApiManagementApiSchemasGetter
-	ApiManagementApiVersionSetsGetter
+	ApiManagementAPIsGetter
+	ApiManagementAPIOperationsGetter
+	ApiManagementAPIOperationPoliciesGetter
+	ApiManagementAPIPoliciesGetter
+	ApiManagementAPISchemasGetter
+	ApiManagementAPIVersionSetsGetter
 	ApiManagementAuthorizationServersGetter
-	ApiManagementBackendsGetter
 	ApiManagementCertificatesGetter
 	ApiManagementGroupsGetter
 	ApiManagementGroupUsersGetter
 	ApiManagementLoggersGetter
 	ApiManagementOpenidConnectProvidersGetter
 	ApiManagementProductsGetter
-	ApiManagementProductApisGetter
+	ApiManagementProductAPIsGetter
 	ApiManagementProductGroupsGetter
 	ApiManagementProductPoliciesGetter
 	ApiManagementPropertiesGetter
@@ -55,7 +54,7 @@ type AzurermV1alpha1Interface interface {
 	AppServiceSlotsGetter
 	ApplicationGatewaysGetter
 	ApplicationInsightsesGetter
-	ApplicationInsightsApiKeysGetter
+	ApplicationInsightsAPIKeysGetter
 	ApplicationInsightsWebTestsGetter
 	ApplicationSecurityGroupsGetter
 	AutomationAccountsGetter
@@ -75,7 +74,6 @@ type AzurermV1alpha1Interface interface {
 	AzureadServicePrincipalsGetter
 	AzureadServicePrincipalPasswordsGetter
 	BatchAccountsGetter
-	BatchApplicationsGetter
 	BatchCertificatesGetter
 	BatchPoolsGetter
 	CdnEndpointsGetter
@@ -89,16 +87,16 @@ type AzurermV1alpha1Interface interface {
 	CosmosdbCassandraKeyspacesGetter
 	CosmosdbMongoCollectionsGetter
 	CosmosdbMongoDatabasesGetter
-	CosmosdbSqlDatabasesGetter
+	CosmosdbSQLDatabasesGetter
 	CosmosdbTablesGetter
 	DataFactoriesGetter
 	DataFactoryDatasetMysqlsGetter
 	DataFactoryDatasetPostgresqlsGetter
-	DataFactoryDatasetSqlServerTablesGetter
+	DataFactoryDatasetSQLServerTablesGetter
 	DataFactoryLinkedServiceDataLakeStorageGen2sGetter
 	DataFactoryLinkedServiceMysqlsGetter
 	DataFactoryLinkedServicePostgresqlsGetter
-	DataFactoryLinkedServiceSqlServersGetter
+	DataFactoryLinkedServiceSQLServersGetter
 	DataFactoryPipelinesGetter
 	DataLakeAnalyticsAccountsGetter
 	DataLakeAnalyticsFirewallRulesGetter
@@ -136,7 +134,7 @@ type AzurermV1alpha1Interface interface {
 	ExpressRouteCircuitPeeringsGetter
 	FirewallsGetter
 	FirewallApplicationRuleCollectionsGetter
-	FirewallNatRuleCollectionsGetter
+	FirewallNATRuleCollectionsGetter
 	FirewallNetworkRuleCollectionsGetter
 	FunctionAppsGetter
 	HdinsightHadoopClustersGetter
@@ -161,8 +159,8 @@ type AzurermV1alpha1Interface interface {
 	KubernetesClustersGetter
 	LbsGetter
 	LbBackendAddressPoolsGetter
-	LbNatPoolsGetter
-	LbNatRulesGetter
+	LbNATPoolsGetter
+	LbNATRulesGetter
 	LbOutboundRulesGetter
 	LbProbesGetter
 	LbRulesGetter
@@ -172,9 +170,9 @@ type AzurermV1alpha1Interface interface {
 	LogAnalyticsWorkspacesGetter
 	LogAnalyticsWorkspaceLinkedServicesGetter
 	LogicAppActionCustomsGetter
-	LogicAppActionHttpsGetter
+	LogicAppActionHTTPsGetter
 	LogicAppTriggerCustomsGetter
-	LogicAppTriggerHttpRequestsGetter
+	LogicAppTriggerHTTPRequestsGetter
 	LogicAppTriggerRecurrencesGetter
 	LogicAppWorkflowsGetter
 	ManagedDisksGetter
@@ -204,7 +202,7 @@ type AzurermV1alpha1Interface interface {
 	NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationsGetter
 	NetworkInterfaceApplicationSecurityGroupAssociationsGetter
 	NetworkInterfaceBackendAddressPoolAssociationsGetter
-	NetworkInterfaceNatRuleAssociationsGetter
+	NetworkInterfaceNATRuleAssociationsGetter
 	NetworkPacketCapturesGetter
 	NetworkProfilesGetter
 	NetworkSecurityGroupsGetter
@@ -222,9 +220,9 @@ type AzurermV1alpha1Interface interface {
 	PostgresqlFirewallRulesGetter
 	PostgresqlServersGetter
 	PostgresqlVirtualNetworkRulesGetter
-	PrivateDnsZonesGetter
-	PublicIpsGetter
-	PublicIpPrefixesGetter
+	PrivateDNSZonesGetter
+	PublicIPsGetter
+	PublicIPPrefixesGetter
 	RecoveryServicesProtectedVmsGetter
 	RecoveryServicesProtectionPolicyVmsGetter
 	RecoveryServicesVaultsGetter
@@ -267,9 +265,7 @@ type AzurermV1alpha1Interface interface {
 	StorageContainersGetter
 	StorageQueuesGetter
 	StorageSharesGetter
-	StorageShareDirectoriesGetter
 	StorageTablesGetter
-	StorageTableEntitiesGetter
 	StreamAnalyticsFunctionJavascriptUdvesGetter
 	StreamAnalyticsJobsGetter
 	StreamAnalyticsOutputBlobsGetter
@@ -301,1072 +297,1056 @@ type AzurermV1alpha1Client struct {
 	restClient rest.Interface
 }
 
-func (c *AzurermV1alpha1Client) ApiManagements() ApiManagementInterface {
-	return newApiManagements(c)
+func (c *AzurermV1alpha1Client) ApiManagements(namespace string) ApiManagementInterface {
+	return newApiManagements(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementApis() ApiManagementApiInterface {
-	return newApiManagementApis(c)
+func (c *AzurermV1alpha1Client) ApiManagementAPIs(namespace string) ApiManagementAPIInterface {
+	return newApiManagementAPIs(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementApiOperations() ApiManagementApiOperationInterface {
-	return newApiManagementApiOperations(c)
+func (c *AzurermV1alpha1Client) ApiManagementAPIOperations(namespace string) ApiManagementAPIOperationInterface {
+	return newApiManagementAPIOperations(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementApiOperationPolicies() ApiManagementApiOperationPolicyInterface {
-	return newApiManagementApiOperationPolicies(c)
+func (c *AzurermV1alpha1Client) ApiManagementAPIOperationPolicies(namespace string) ApiManagementAPIOperationPolicyInterface {
+	return newApiManagementAPIOperationPolicies(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementApiPolicies() ApiManagementApiPolicyInterface {
-	return newApiManagementApiPolicies(c)
+func (c *AzurermV1alpha1Client) ApiManagementAPIPolicies(namespace string) ApiManagementAPIPolicyInterface {
+	return newApiManagementAPIPolicies(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementApiSchemas() ApiManagementApiSchemaInterface {
-	return newApiManagementApiSchemas(c)
+func (c *AzurermV1alpha1Client) ApiManagementAPISchemas(namespace string) ApiManagementAPISchemaInterface {
+	return newApiManagementAPISchemas(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementApiVersionSets() ApiManagementApiVersionSetInterface {
-	return newApiManagementApiVersionSets(c)
+func (c *AzurermV1alpha1Client) ApiManagementAPIVersionSets(namespace string) ApiManagementAPIVersionSetInterface {
+	return newApiManagementAPIVersionSets(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementAuthorizationServers() ApiManagementAuthorizationServerInterface {
-	return newApiManagementAuthorizationServers(c)
+func (c *AzurermV1alpha1Client) ApiManagementAuthorizationServers(namespace string) ApiManagementAuthorizationServerInterface {
+	return newApiManagementAuthorizationServers(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementBackends() ApiManagementBackendInterface {
-	return newApiManagementBackends(c)
+func (c *AzurermV1alpha1Client) ApiManagementCertificates(namespace string) ApiManagementCertificateInterface {
+	return newApiManagementCertificates(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementCertificates() ApiManagementCertificateInterface {
-	return newApiManagementCertificates(c)
+func (c *AzurermV1alpha1Client) ApiManagementGroups(namespace string) ApiManagementGroupInterface {
+	return newApiManagementGroups(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementGroups() ApiManagementGroupInterface {
-	return newApiManagementGroups(c)
+func (c *AzurermV1alpha1Client) ApiManagementGroupUsers(namespace string) ApiManagementGroupUserInterface {
+	return newApiManagementGroupUsers(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementGroupUsers() ApiManagementGroupUserInterface {
-	return newApiManagementGroupUsers(c)
+func (c *AzurermV1alpha1Client) ApiManagementLoggers(namespace string) ApiManagementLoggerInterface {
+	return newApiManagementLoggers(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementLoggers() ApiManagementLoggerInterface {
-	return newApiManagementLoggers(c)
+func (c *AzurermV1alpha1Client) ApiManagementOpenidConnectProviders(namespace string) ApiManagementOpenidConnectProviderInterface {
+	return newApiManagementOpenidConnectProviders(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementOpenidConnectProviders() ApiManagementOpenidConnectProviderInterface {
-	return newApiManagementOpenidConnectProviders(c)
+func (c *AzurermV1alpha1Client) ApiManagementProducts(namespace string) ApiManagementProductInterface {
+	return newApiManagementProducts(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementProducts() ApiManagementProductInterface {
-	return newApiManagementProducts(c)
+func (c *AzurermV1alpha1Client) ApiManagementProductAPIs(namespace string) ApiManagementProductAPIInterface {
+	return newApiManagementProductAPIs(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementProductApis() ApiManagementProductApiInterface {
-	return newApiManagementProductApis(c)
+func (c *AzurermV1alpha1Client) ApiManagementProductGroups(namespace string) ApiManagementProductGroupInterface {
+	return newApiManagementProductGroups(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementProductGroups() ApiManagementProductGroupInterface {
-	return newApiManagementProductGroups(c)
+func (c *AzurermV1alpha1Client) ApiManagementProductPolicies(namespace string) ApiManagementProductPolicyInterface {
+	return newApiManagementProductPolicies(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementProductPolicies() ApiManagementProductPolicyInterface {
-	return newApiManagementProductPolicies(c)
+func (c *AzurermV1alpha1Client) ApiManagementProperties(namespace string) ApiManagementPropertyInterface {
+	return newApiManagementProperties(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementProperties() ApiManagementPropertyInterface {
-	return newApiManagementProperties(c)
+func (c *AzurermV1alpha1Client) ApiManagementSubscriptions(namespace string) ApiManagementSubscriptionInterface {
+	return newApiManagementSubscriptions(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementSubscriptions() ApiManagementSubscriptionInterface {
-	return newApiManagementSubscriptions(c)
+func (c *AzurermV1alpha1Client) ApiManagementUsers(namespace string) ApiManagementUserInterface {
+	return newApiManagementUsers(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApiManagementUsers() ApiManagementUserInterface {
-	return newApiManagementUsers(c)
+func (c *AzurermV1alpha1Client) AppServices(namespace string) AppServiceInterface {
+	return newAppServices(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AppServices() AppServiceInterface {
-	return newAppServices(c)
+func (c *AzurermV1alpha1Client) AppServiceActiveSlots(namespace string) AppServiceActiveSlotInterface {
+	return newAppServiceActiveSlots(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AppServiceActiveSlots() AppServiceActiveSlotInterface {
-	return newAppServiceActiveSlots(c)
+func (c *AzurermV1alpha1Client) AppServiceCustomHostnameBindings(namespace string) AppServiceCustomHostnameBindingInterface {
+	return newAppServiceCustomHostnameBindings(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AppServiceCustomHostnameBindings() AppServiceCustomHostnameBindingInterface {
-	return newAppServiceCustomHostnameBindings(c)
+func (c *AzurermV1alpha1Client) AppServicePlans(namespace string) AppServicePlanInterface {
+	return newAppServicePlans(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AppServicePlans() AppServicePlanInterface {
-	return newAppServicePlans(c)
+func (c *AzurermV1alpha1Client) AppServiceSlots(namespace string) AppServiceSlotInterface {
+	return newAppServiceSlots(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AppServiceSlots() AppServiceSlotInterface {
-	return newAppServiceSlots(c)
+func (c *AzurermV1alpha1Client) ApplicationGateways(namespace string) ApplicationGatewayInterface {
+	return newApplicationGateways(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApplicationGateways() ApplicationGatewayInterface {
-	return newApplicationGateways(c)
+func (c *AzurermV1alpha1Client) ApplicationInsightses(namespace string) ApplicationInsightsInterface {
+	return newApplicationInsightses(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApplicationInsightses() ApplicationInsightsInterface {
-	return newApplicationInsightses(c)
+func (c *AzurermV1alpha1Client) ApplicationInsightsAPIKeys(namespace string) ApplicationInsightsAPIKeyInterface {
+	return newApplicationInsightsAPIKeys(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApplicationInsightsApiKeys() ApplicationInsightsApiKeyInterface {
-	return newApplicationInsightsApiKeys(c)
+func (c *AzurermV1alpha1Client) ApplicationInsightsWebTests(namespace string) ApplicationInsightsWebTestInterface {
+	return newApplicationInsightsWebTests(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApplicationInsightsWebTests() ApplicationInsightsWebTestInterface {
-	return newApplicationInsightsWebTests(c)
+func (c *AzurermV1alpha1Client) ApplicationSecurityGroups(namespace string) ApplicationSecurityGroupInterface {
+	return newApplicationSecurityGroups(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ApplicationSecurityGroups() ApplicationSecurityGroupInterface {
-	return newApplicationSecurityGroups(c)
+func (c *AzurermV1alpha1Client) AutomationAccounts(namespace string) AutomationAccountInterface {
+	return newAutomationAccounts(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AutomationAccounts() AutomationAccountInterface {
-	return newAutomationAccounts(c)
+func (c *AzurermV1alpha1Client) AutomationCredentials(namespace string) AutomationCredentialInterface {
+	return newAutomationCredentials(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AutomationCredentials() AutomationCredentialInterface {
-	return newAutomationCredentials(c)
+func (c *AzurermV1alpha1Client) AutomationDscConfigurations(namespace string) AutomationDscConfigurationInterface {
+	return newAutomationDscConfigurations(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AutomationDscConfigurations() AutomationDscConfigurationInterface {
-	return newAutomationDscConfigurations(c)
+func (c *AzurermV1alpha1Client) AutomationDscNodeconfigurations(namespace string) AutomationDscNodeconfigurationInterface {
+	return newAutomationDscNodeconfigurations(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AutomationDscNodeconfigurations() AutomationDscNodeconfigurationInterface {
-	return newAutomationDscNodeconfigurations(c)
+func (c *AzurermV1alpha1Client) AutomationModules(namespace string) AutomationModuleInterface {
+	return newAutomationModules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AutomationModules() AutomationModuleInterface {
-	return newAutomationModules(c)
+func (c *AzurermV1alpha1Client) AutomationRunbooks(namespace string) AutomationRunbookInterface {
+	return newAutomationRunbooks(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AutomationRunbooks() AutomationRunbookInterface {
-	return newAutomationRunbooks(c)
+func (c *AzurermV1alpha1Client) AutomationSchedules(namespace string) AutomationScheduleInterface {
+	return newAutomationSchedules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AutomationSchedules() AutomationScheduleInterface {
-	return newAutomationSchedules(c)
+func (c *AzurermV1alpha1Client) AutomationVariableBools(namespace string) AutomationVariableBoolInterface {
+	return newAutomationVariableBools(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AutomationVariableBools() AutomationVariableBoolInterface {
-	return newAutomationVariableBools(c)
+func (c *AzurermV1alpha1Client) AutomationVariableDatetimes(namespace string) AutomationVariableDatetimeInterface {
+	return newAutomationVariableDatetimes(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AutomationVariableDatetimes() AutomationVariableDatetimeInterface {
-	return newAutomationVariableDatetimes(c)
+func (c *AzurermV1alpha1Client) AutomationVariableInts(namespace string) AutomationVariableIntInterface {
+	return newAutomationVariableInts(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AutomationVariableInts() AutomationVariableIntInterface {
-	return newAutomationVariableInts(c)
+func (c *AzurermV1alpha1Client) AutomationVariableStrings(namespace string) AutomationVariableStringInterface {
+	return newAutomationVariableStrings(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AutomationVariableStrings() AutomationVariableStringInterface {
-	return newAutomationVariableStrings(c)
+func (c *AzurermV1alpha1Client) AutoscaleSettings(namespace string) AutoscaleSettingInterface {
+	return newAutoscaleSettings(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AutoscaleSettings() AutoscaleSettingInterface {
-	return newAutoscaleSettings(c)
+func (c *AzurermV1alpha1Client) AvailabilitySets(namespace string) AvailabilitySetInterface {
+	return newAvailabilitySets(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AvailabilitySets() AvailabilitySetInterface {
-	return newAvailabilitySets(c)
+func (c *AzurermV1alpha1Client) AzureadApplications(namespace string) AzureadApplicationInterface {
+	return newAzureadApplications(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AzureadApplications() AzureadApplicationInterface {
-	return newAzureadApplications(c)
+func (c *AzurermV1alpha1Client) AzureadServicePrincipals(namespace string) AzureadServicePrincipalInterface {
+	return newAzureadServicePrincipals(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AzureadServicePrincipals() AzureadServicePrincipalInterface {
-	return newAzureadServicePrincipals(c)
+func (c *AzurermV1alpha1Client) AzureadServicePrincipalPasswords(namespace string) AzureadServicePrincipalPasswordInterface {
+	return newAzureadServicePrincipalPasswords(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) AzureadServicePrincipalPasswords() AzureadServicePrincipalPasswordInterface {
-	return newAzureadServicePrincipalPasswords(c)
+func (c *AzurermV1alpha1Client) BatchAccounts(namespace string) BatchAccountInterface {
+	return newBatchAccounts(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) BatchAccounts() BatchAccountInterface {
-	return newBatchAccounts(c)
+func (c *AzurermV1alpha1Client) BatchCertificates(namespace string) BatchCertificateInterface {
+	return newBatchCertificates(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) BatchApplications() BatchApplicationInterface {
-	return newBatchApplications(c)
+func (c *AzurermV1alpha1Client) BatchPools(namespace string) BatchPoolInterface {
+	return newBatchPools(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) BatchCertificates() BatchCertificateInterface {
-	return newBatchCertificates(c)
+func (c *AzurermV1alpha1Client) CdnEndpoints(namespace string) CdnEndpointInterface {
+	return newCdnEndpoints(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) BatchPools() BatchPoolInterface {
-	return newBatchPools(c)
+func (c *AzurermV1alpha1Client) CdnProfiles(namespace string) CdnProfileInterface {
+	return newCdnProfiles(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) CdnEndpoints() CdnEndpointInterface {
-	return newCdnEndpoints(c)
+func (c *AzurermV1alpha1Client) CognitiveAccounts(namespace string) CognitiveAccountInterface {
+	return newCognitiveAccounts(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) CdnProfiles() CdnProfileInterface {
-	return newCdnProfiles(c)
+func (c *AzurermV1alpha1Client) ConnectionMonitors(namespace string) ConnectionMonitorInterface {
+	return newConnectionMonitors(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) CognitiveAccounts() CognitiveAccountInterface {
-	return newCognitiveAccounts(c)
+func (c *AzurermV1alpha1Client) ContainerGroups(namespace string) ContainerGroupInterface {
+	return newContainerGroups(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ConnectionMonitors() ConnectionMonitorInterface {
-	return newConnectionMonitors(c)
+func (c *AzurermV1alpha1Client) ContainerRegistries(namespace string) ContainerRegistryInterface {
+	return newContainerRegistries(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ContainerGroups() ContainerGroupInterface {
-	return newContainerGroups(c)
+func (c *AzurermV1alpha1Client) ContainerServices(namespace string) ContainerServiceInterface {
+	return newContainerServices(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ContainerRegistries() ContainerRegistryInterface {
-	return newContainerRegistries(c)
+func (c *AzurermV1alpha1Client) CosmosdbAccounts(namespace string) CosmosdbAccountInterface {
+	return newCosmosdbAccounts(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ContainerServices() ContainerServiceInterface {
-	return newContainerServices(c)
+func (c *AzurermV1alpha1Client) CosmosdbCassandraKeyspaces(namespace string) CosmosdbCassandraKeyspaceInterface {
+	return newCosmosdbCassandraKeyspaces(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) CosmosdbAccounts() CosmosdbAccountInterface {
-	return newCosmosdbAccounts(c)
+func (c *AzurermV1alpha1Client) CosmosdbMongoCollections(namespace string) CosmosdbMongoCollectionInterface {
+	return newCosmosdbMongoCollections(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) CosmosdbCassandraKeyspaces() CosmosdbCassandraKeyspaceInterface {
-	return newCosmosdbCassandraKeyspaces(c)
+func (c *AzurermV1alpha1Client) CosmosdbMongoDatabases(namespace string) CosmosdbMongoDatabaseInterface {
+	return newCosmosdbMongoDatabases(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) CosmosdbMongoCollections() CosmosdbMongoCollectionInterface {
-	return newCosmosdbMongoCollections(c)
+func (c *AzurermV1alpha1Client) CosmosdbSQLDatabases(namespace string) CosmosdbSQLDatabaseInterface {
+	return newCosmosdbSQLDatabases(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) CosmosdbMongoDatabases() CosmosdbMongoDatabaseInterface {
-	return newCosmosdbMongoDatabases(c)
+func (c *AzurermV1alpha1Client) CosmosdbTables(namespace string) CosmosdbTableInterface {
+	return newCosmosdbTables(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) CosmosdbSqlDatabases() CosmosdbSqlDatabaseInterface {
-	return newCosmosdbSqlDatabases(c)
+func (c *AzurermV1alpha1Client) DataFactories(namespace string) DataFactoryInterface {
+	return newDataFactories(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) CosmosdbTables() CosmosdbTableInterface {
-	return newCosmosdbTables(c)
+func (c *AzurermV1alpha1Client) DataFactoryDatasetMysqls(namespace string) DataFactoryDatasetMysqlInterface {
+	return newDataFactoryDatasetMysqls(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DataFactories() DataFactoryInterface {
-	return newDataFactories(c)
+func (c *AzurermV1alpha1Client) DataFactoryDatasetPostgresqls(namespace string) DataFactoryDatasetPostgresqlInterface {
+	return newDataFactoryDatasetPostgresqls(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DataFactoryDatasetMysqls() DataFactoryDatasetMysqlInterface {
-	return newDataFactoryDatasetMysqls(c)
+func (c *AzurermV1alpha1Client) DataFactoryDatasetSQLServerTables(namespace string) DataFactoryDatasetSQLServerTableInterface {
+	return newDataFactoryDatasetSQLServerTables(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DataFactoryDatasetPostgresqls() DataFactoryDatasetPostgresqlInterface {
-	return newDataFactoryDatasetPostgresqls(c)
+func (c *AzurermV1alpha1Client) DataFactoryLinkedServiceDataLakeStorageGen2s(namespace string) DataFactoryLinkedServiceDataLakeStorageGen2Interface {
+	return newDataFactoryLinkedServiceDataLakeStorageGen2s(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DataFactoryDatasetSqlServerTables() DataFactoryDatasetSqlServerTableInterface {
-	return newDataFactoryDatasetSqlServerTables(c)
+func (c *AzurermV1alpha1Client) DataFactoryLinkedServiceMysqls(namespace string) DataFactoryLinkedServiceMysqlInterface {
+	return newDataFactoryLinkedServiceMysqls(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DataFactoryLinkedServiceDataLakeStorageGen2s() DataFactoryLinkedServiceDataLakeStorageGen2Interface {
-	return newDataFactoryLinkedServiceDataLakeStorageGen2s(c)
+func (c *AzurermV1alpha1Client) DataFactoryLinkedServicePostgresqls(namespace string) DataFactoryLinkedServicePostgresqlInterface {
+	return newDataFactoryLinkedServicePostgresqls(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DataFactoryLinkedServiceMysqls() DataFactoryLinkedServiceMysqlInterface {
-	return newDataFactoryLinkedServiceMysqls(c)
+func (c *AzurermV1alpha1Client) DataFactoryLinkedServiceSQLServers(namespace string) DataFactoryLinkedServiceSQLServerInterface {
+	return newDataFactoryLinkedServiceSQLServers(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DataFactoryLinkedServicePostgresqls() DataFactoryLinkedServicePostgresqlInterface {
-	return newDataFactoryLinkedServicePostgresqls(c)
+func (c *AzurermV1alpha1Client) DataFactoryPipelines(namespace string) DataFactoryPipelineInterface {
+	return newDataFactoryPipelines(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DataFactoryLinkedServiceSqlServers() DataFactoryLinkedServiceSqlServerInterface {
-	return newDataFactoryLinkedServiceSqlServers(c)
+func (c *AzurermV1alpha1Client) DataLakeAnalyticsAccounts(namespace string) DataLakeAnalyticsAccountInterface {
+	return newDataLakeAnalyticsAccounts(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DataFactoryPipelines() DataFactoryPipelineInterface {
-	return newDataFactoryPipelines(c)
+func (c *AzurermV1alpha1Client) DataLakeAnalyticsFirewallRules(namespace string) DataLakeAnalyticsFirewallRuleInterface {
+	return newDataLakeAnalyticsFirewallRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DataLakeAnalyticsAccounts() DataLakeAnalyticsAccountInterface {
-	return newDataLakeAnalyticsAccounts(c)
+func (c *AzurermV1alpha1Client) DataLakeStores(namespace string) DataLakeStoreInterface {
+	return newDataLakeStores(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DataLakeAnalyticsFirewallRules() DataLakeAnalyticsFirewallRuleInterface {
-	return newDataLakeAnalyticsFirewallRules(c)
+func (c *AzurermV1alpha1Client) DataLakeStoreFiles(namespace string) DataLakeStoreFileInterface {
+	return newDataLakeStoreFiles(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DataLakeStores() DataLakeStoreInterface {
-	return newDataLakeStores(c)
+func (c *AzurermV1alpha1Client) DataLakeStoreFirewallRules(namespace string) DataLakeStoreFirewallRuleInterface {
+	return newDataLakeStoreFirewallRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DataLakeStoreFiles() DataLakeStoreFileInterface {
-	return newDataLakeStoreFiles(c)
+func (c *AzurermV1alpha1Client) DatabricksWorkspaces(namespace string) DatabricksWorkspaceInterface {
+	return newDatabricksWorkspaces(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DataLakeStoreFirewallRules() DataLakeStoreFirewallRuleInterface {
-	return newDataLakeStoreFirewallRules(c)
+func (c *AzurermV1alpha1Client) DdosProtectionPlans(namespace string) DdosProtectionPlanInterface {
+	return newDdosProtectionPlans(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DatabricksWorkspaces() DatabricksWorkspaceInterface {
-	return newDatabricksWorkspaces(c)
+func (c *AzurermV1alpha1Client) DevTestLabs(namespace string) DevTestLabInterface {
+	return newDevTestLabs(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DdosProtectionPlans() DdosProtectionPlanInterface {
-	return newDdosProtectionPlans(c)
+func (c *AzurermV1alpha1Client) DevTestLinuxVirtualMachines(namespace string) DevTestLinuxVirtualMachineInterface {
+	return newDevTestLinuxVirtualMachines(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DevTestLabs() DevTestLabInterface {
-	return newDevTestLabs(c)
+func (c *AzurermV1alpha1Client) DevTestPolicies(namespace string) DevTestPolicyInterface {
+	return newDevTestPolicies(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DevTestLinuxVirtualMachines() DevTestLinuxVirtualMachineInterface {
-	return newDevTestLinuxVirtualMachines(c)
+func (c *AzurermV1alpha1Client) DevTestVirtualNetworks(namespace string) DevTestVirtualNetworkInterface {
+	return newDevTestVirtualNetworks(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DevTestPolicies() DevTestPolicyInterface {
-	return newDevTestPolicies(c)
+func (c *AzurermV1alpha1Client) DevTestWindowsVirtualMachines(namespace string) DevTestWindowsVirtualMachineInterface {
+	return newDevTestWindowsVirtualMachines(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DevTestVirtualNetworks() DevTestVirtualNetworkInterface {
-	return newDevTestVirtualNetworks(c)
+func (c *AzurermV1alpha1Client) DevspaceControllers(namespace string) DevspaceControllerInterface {
+	return newDevspaceControllers(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DevTestWindowsVirtualMachines() DevTestWindowsVirtualMachineInterface {
-	return newDevTestWindowsVirtualMachines(c)
+func (c *AzurermV1alpha1Client) DnsARecords(namespace string) DnsARecordInterface {
+	return newDnsARecords(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DevspaceControllers() DevspaceControllerInterface {
-	return newDevspaceControllers(c)
+func (c *AzurermV1alpha1Client) DnsAaaaRecords(namespace string) DnsAaaaRecordInterface {
+	return newDnsAaaaRecords(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DnsARecords() DnsARecordInterface {
-	return newDnsARecords(c)
+func (c *AzurermV1alpha1Client) DnsCaaRecords(namespace string) DnsCaaRecordInterface {
+	return newDnsCaaRecords(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DnsAaaaRecords() DnsAaaaRecordInterface {
-	return newDnsAaaaRecords(c)
+func (c *AzurermV1alpha1Client) DnsCnameRecords(namespace string) DnsCnameRecordInterface {
+	return newDnsCnameRecords(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DnsCaaRecords() DnsCaaRecordInterface {
-	return newDnsCaaRecords(c)
+func (c *AzurermV1alpha1Client) DnsMxRecords(namespace string) DnsMxRecordInterface {
+	return newDnsMxRecords(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DnsCnameRecords() DnsCnameRecordInterface {
-	return newDnsCnameRecords(c)
+func (c *AzurermV1alpha1Client) DnsNsRecords(namespace string) DnsNsRecordInterface {
+	return newDnsNsRecords(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DnsMxRecords() DnsMxRecordInterface {
-	return newDnsMxRecords(c)
+func (c *AzurermV1alpha1Client) DnsPtrRecords(namespace string) DnsPtrRecordInterface {
+	return newDnsPtrRecords(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DnsNsRecords() DnsNsRecordInterface {
-	return newDnsNsRecords(c)
+func (c *AzurermV1alpha1Client) DnsSrvRecords(namespace string) DnsSrvRecordInterface {
+	return newDnsSrvRecords(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DnsPtrRecords() DnsPtrRecordInterface {
-	return newDnsPtrRecords(c)
+func (c *AzurermV1alpha1Client) DnsTxtRecords(namespace string) DnsTxtRecordInterface {
+	return newDnsTxtRecords(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DnsSrvRecords() DnsSrvRecordInterface {
-	return newDnsSrvRecords(c)
+func (c *AzurermV1alpha1Client) DnsZones(namespace string) DnsZoneInterface {
+	return newDnsZones(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DnsTxtRecords() DnsTxtRecordInterface {
-	return newDnsTxtRecords(c)
+func (c *AzurermV1alpha1Client) EventgridDomains(namespace string) EventgridDomainInterface {
+	return newEventgridDomains(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) DnsZones() DnsZoneInterface {
-	return newDnsZones(c)
+func (c *AzurermV1alpha1Client) EventgridEventSubscriptions(namespace string) EventgridEventSubscriptionInterface {
+	return newEventgridEventSubscriptions(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) EventgridDomains() EventgridDomainInterface {
-	return newEventgridDomains(c)
+func (c *AzurermV1alpha1Client) EventgridTopics(namespace string) EventgridTopicInterface {
+	return newEventgridTopics(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) EventgridEventSubscriptions() EventgridEventSubscriptionInterface {
-	return newEventgridEventSubscriptions(c)
+func (c *AzurermV1alpha1Client) Eventhubs(namespace string) EventhubInterface {
+	return newEventhubs(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) EventgridTopics() EventgridTopicInterface {
-	return newEventgridTopics(c)
+func (c *AzurermV1alpha1Client) EventhubAuthorizationRules(namespace string) EventhubAuthorizationRuleInterface {
+	return newEventhubAuthorizationRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) Eventhubs() EventhubInterface {
-	return newEventhubs(c)
+func (c *AzurermV1alpha1Client) EventhubConsumerGroups(namespace string) EventhubConsumerGroupInterface {
+	return newEventhubConsumerGroups(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) EventhubAuthorizationRules() EventhubAuthorizationRuleInterface {
-	return newEventhubAuthorizationRules(c)
+func (c *AzurermV1alpha1Client) EventhubNamespaces(namespace string) EventhubNamespaceInterface {
+	return newEventhubNamespaces(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) EventhubConsumerGroups() EventhubConsumerGroupInterface {
-	return newEventhubConsumerGroups(c)
+func (c *AzurermV1alpha1Client) EventhubNamespaceAuthorizationRules(namespace string) EventhubNamespaceAuthorizationRuleInterface {
+	return newEventhubNamespaceAuthorizationRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) EventhubNamespaces() EventhubNamespaceInterface {
-	return newEventhubNamespaces(c)
+func (c *AzurermV1alpha1Client) ExpressRouteCircuits(namespace string) ExpressRouteCircuitInterface {
+	return newExpressRouteCircuits(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) EventhubNamespaceAuthorizationRules() EventhubNamespaceAuthorizationRuleInterface {
-	return newEventhubNamespaceAuthorizationRules(c)
+func (c *AzurermV1alpha1Client) ExpressRouteCircuitAuthorizations(namespace string) ExpressRouteCircuitAuthorizationInterface {
+	return newExpressRouteCircuitAuthorizations(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ExpressRouteCircuits() ExpressRouteCircuitInterface {
-	return newExpressRouteCircuits(c)
+func (c *AzurermV1alpha1Client) ExpressRouteCircuitPeerings(namespace string) ExpressRouteCircuitPeeringInterface {
+	return newExpressRouteCircuitPeerings(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ExpressRouteCircuitAuthorizations() ExpressRouteCircuitAuthorizationInterface {
-	return newExpressRouteCircuitAuthorizations(c)
+func (c *AzurermV1alpha1Client) Firewalls(namespace string) FirewallInterface {
+	return newFirewalls(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ExpressRouteCircuitPeerings() ExpressRouteCircuitPeeringInterface {
-	return newExpressRouteCircuitPeerings(c)
+func (c *AzurermV1alpha1Client) FirewallApplicationRuleCollections(namespace string) FirewallApplicationRuleCollectionInterface {
+	return newFirewallApplicationRuleCollections(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) Firewalls() FirewallInterface {
-	return newFirewalls(c)
+func (c *AzurermV1alpha1Client) FirewallNATRuleCollections(namespace string) FirewallNATRuleCollectionInterface {
+	return newFirewallNATRuleCollections(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) FirewallApplicationRuleCollections() FirewallApplicationRuleCollectionInterface {
-	return newFirewallApplicationRuleCollections(c)
+func (c *AzurermV1alpha1Client) FirewallNetworkRuleCollections(namespace string) FirewallNetworkRuleCollectionInterface {
+	return newFirewallNetworkRuleCollections(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) FirewallNatRuleCollections() FirewallNatRuleCollectionInterface {
-	return newFirewallNatRuleCollections(c)
+func (c *AzurermV1alpha1Client) FunctionApps(namespace string) FunctionAppInterface {
+	return newFunctionApps(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) FirewallNetworkRuleCollections() FirewallNetworkRuleCollectionInterface {
-	return newFirewallNetworkRuleCollections(c)
+func (c *AzurermV1alpha1Client) HdinsightHadoopClusters(namespace string) HdinsightHadoopClusterInterface {
+	return newHdinsightHadoopClusters(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) FunctionApps() FunctionAppInterface {
-	return newFunctionApps(c)
+func (c *AzurermV1alpha1Client) HdinsightHbaseClusters(namespace string) HdinsightHbaseClusterInterface {
+	return newHdinsightHbaseClusters(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) HdinsightHadoopClusters() HdinsightHadoopClusterInterface {
-	return newHdinsightHadoopClusters(c)
+func (c *AzurermV1alpha1Client) HdinsightInteractiveQueryClusters(namespace string) HdinsightInteractiveQueryClusterInterface {
+	return newHdinsightInteractiveQueryClusters(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) HdinsightHbaseClusters() HdinsightHbaseClusterInterface {
-	return newHdinsightHbaseClusters(c)
+func (c *AzurermV1alpha1Client) HdinsightKafkaClusters(namespace string) HdinsightKafkaClusterInterface {
+	return newHdinsightKafkaClusters(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) HdinsightInteractiveQueryClusters() HdinsightInteractiveQueryClusterInterface {
-	return newHdinsightInteractiveQueryClusters(c)
+func (c *AzurermV1alpha1Client) HdinsightMlServicesClusters(namespace string) HdinsightMlServicesClusterInterface {
+	return newHdinsightMlServicesClusters(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) HdinsightKafkaClusters() HdinsightKafkaClusterInterface {
-	return newHdinsightKafkaClusters(c)
+func (c *AzurermV1alpha1Client) HdinsightRserverClusters(namespace string) HdinsightRserverClusterInterface {
+	return newHdinsightRserverClusters(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) HdinsightMlServicesClusters() HdinsightMlServicesClusterInterface {
-	return newHdinsightMlServicesClusters(c)
+func (c *AzurermV1alpha1Client) HdinsightSparkClusters(namespace string) HdinsightSparkClusterInterface {
+	return newHdinsightSparkClusters(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) HdinsightRserverClusters() HdinsightRserverClusterInterface {
-	return newHdinsightRserverClusters(c)
+func (c *AzurermV1alpha1Client) HdinsightStormClusters(namespace string) HdinsightStormClusterInterface {
+	return newHdinsightStormClusters(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) HdinsightSparkClusters() HdinsightSparkClusterInterface {
-	return newHdinsightSparkClusters(c)
+func (c *AzurermV1alpha1Client) Images(namespace string) ImageInterface {
+	return newImages(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) HdinsightStormClusters() HdinsightStormClusterInterface {
-	return newHdinsightStormClusters(c)
+func (c *AzurermV1alpha1Client) IotDpses(namespace string) IotDpsInterface {
+	return newIotDpses(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) Images() ImageInterface {
-	return newImages(c)
+func (c *AzurermV1alpha1Client) IotDpsCertificates(namespace string) IotDpsCertificateInterface {
+	return newIotDpsCertificates(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) IotDpses() IotDpsInterface {
-	return newIotDpses(c)
+func (c *AzurermV1alpha1Client) Iothubs(namespace string) IothubInterface {
+	return newIothubs(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) IotDpsCertificates() IotDpsCertificateInterface {
-	return newIotDpsCertificates(c)
+func (c *AzurermV1alpha1Client) IothubConsumerGroups(namespace string) IothubConsumerGroupInterface {
+	return newIothubConsumerGroups(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) Iothubs() IothubInterface {
-	return newIothubs(c)
+func (c *AzurermV1alpha1Client) IothubSharedAccessPolicies(namespace string) IothubSharedAccessPolicyInterface {
+	return newIothubSharedAccessPolicies(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) IothubConsumerGroups() IothubConsumerGroupInterface {
-	return newIothubConsumerGroups(c)
+func (c *AzurermV1alpha1Client) KeyVaults(namespace string) KeyVaultInterface {
+	return newKeyVaults(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) IothubSharedAccessPolicies() IothubSharedAccessPolicyInterface {
-	return newIothubSharedAccessPolicies(c)
+func (c *AzurermV1alpha1Client) KeyVaultAccessPolicies(namespace string) KeyVaultAccessPolicyInterface {
+	return newKeyVaultAccessPolicies(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) KeyVaults() KeyVaultInterface {
-	return newKeyVaults(c)
+func (c *AzurermV1alpha1Client) KeyVaultCertificates(namespace string) KeyVaultCertificateInterface {
+	return newKeyVaultCertificates(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) KeyVaultAccessPolicies() KeyVaultAccessPolicyInterface {
-	return newKeyVaultAccessPolicies(c)
+func (c *AzurermV1alpha1Client) KeyVaultKeys(namespace string) KeyVaultKeyInterface {
+	return newKeyVaultKeys(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) KeyVaultCertificates() KeyVaultCertificateInterface {
-	return newKeyVaultCertificates(c)
+func (c *AzurermV1alpha1Client) KeyVaultSecrets(namespace string) KeyVaultSecretInterface {
+	return newKeyVaultSecrets(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) KeyVaultKeys() KeyVaultKeyInterface {
-	return newKeyVaultKeys(c)
+func (c *AzurermV1alpha1Client) KubernetesClusters(namespace string) KubernetesClusterInterface {
+	return newKubernetesClusters(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) KeyVaultSecrets() KeyVaultSecretInterface {
-	return newKeyVaultSecrets(c)
+func (c *AzurermV1alpha1Client) Lbs(namespace string) LbInterface {
+	return newLbs(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) KubernetesClusters() KubernetesClusterInterface {
-	return newKubernetesClusters(c)
+func (c *AzurermV1alpha1Client) LbBackendAddressPools(namespace string) LbBackendAddressPoolInterface {
+	return newLbBackendAddressPools(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) Lbs() LbInterface {
-	return newLbs(c)
+func (c *AzurermV1alpha1Client) LbNATPools(namespace string) LbNATPoolInterface {
+	return newLbNATPools(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) LbBackendAddressPools() LbBackendAddressPoolInterface {
-	return newLbBackendAddressPools(c)
+func (c *AzurermV1alpha1Client) LbNATRules(namespace string) LbNATRuleInterface {
+	return newLbNATRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) LbNatPools() LbNatPoolInterface {
-	return newLbNatPools(c)
+func (c *AzurermV1alpha1Client) LbOutboundRules(namespace string) LbOutboundRuleInterface {
+	return newLbOutboundRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) LbNatRules() LbNatRuleInterface {
-	return newLbNatRules(c)
+func (c *AzurermV1alpha1Client) LbProbes(namespace string) LbProbeInterface {
+	return newLbProbes(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) LbOutboundRules() LbOutboundRuleInterface {
-	return newLbOutboundRules(c)
+func (c *AzurermV1alpha1Client) LbRules(namespace string) LbRuleInterface {
+	return newLbRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) LbProbes() LbProbeInterface {
-	return newLbProbes(c)
+func (c *AzurermV1alpha1Client) LocalNetworkGateways(namespace string) LocalNetworkGatewayInterface {
+	return newLocalNetworkGateways(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) LbRules() LbRuleInterface {
-	return newLbRules(c)
+func (c *AzurermV1alpha1Client) LogAnalyticsLinkedServices(namespace string) LogAnalyticsLinkedServiceInterface {
+	return newLogAnalyticsLinkedServices(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) LocalNetworkGateways() LocalNetworkGatewayInterface {
-	return newLocalNetworkGateways(c)
+func (c *AzurermV1alpha1Client) LogAnalyticsSolutions(namespace string) LogAnalyticsSolutionInterface {
+	return newLogAnalyticsSolutions(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) LogAnalyticsLinkedServices() LogAnalyticsLinkedServiceInterface {
-	return newLogAnalyticsLinkedServices(c)
+func (c *AzurermV1alpha1Client) LogAnalyticsWorkspaces(namespace string) LogAnalyticsWorkspaceInterface {
+	return newLogAnalyticsWorkspaces(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) LogAnalyticsSolutions() LogAnalyticsSolutionInterface {
-	return newLogAnalyticsSolutions(c)
+func (c *AzurermV1alpha1Client) LogAnalyticsWorkspaceLinkedServices(namespace string) LogAnalyticsWorkspaceLinkedServiceInterface {
+	return newLogAnalyticsWorkspaceLinkedServices(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) LogAnalyticsWorkspaces() LogAnalyticsWorkspaceInterface {
-	return newLogAnalyticsWorkspaces(c)
+func (c *AzurermV1alpha1Client) LogicAppActionCustoms(namespace string) LogicAppActionCustomInterface {
+	return newLogicAppActionCustoms(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) LogAnalyticsWorkspaceLinkedServices() LogAnalyticsWorkspaceLinkedServiceInterface {
-	return newLogAnalyticsWorkspaceLinkedServices(c)
+func (c *AzurermV1alpha1Client) LogicAppActionHTTPs(namespace string) LogicAppActionHTTPInterface {
+	return newLogicAppActionHTTPs(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) LogicAppActionCustoms() LogicAppActionCustomInterface {
-	return newLogicAppActionCustoms(c)
+func (c *AzurermV1alpha1Client) LogicAppTriggerCustoms(namespace string) LogicAppTriggerCustomInterface {
+	return newLogicAppTriggerCustoms(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) LogicAppActionHttps() LogicAppActionHttpInterface {
-	return newLogicAppActionHttps(c)
+func (c *AzurermV1alpha1Client) LogicAppTriggerHTTPRequests(namespace string) LogicAppTriggerHTTPRequestInterface {
+	return newLogicAppTriggerHTTPRequests(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) LogicAppTriggerCustoms() LogicAppTriggerCustomInterface {
-	return newLogicAppTriggerCustoms(c)
+func (c *AzurermV1alpha1Client) LogicAppTriggerRecurrences(namespace string) LogicAppTriggerRecurrenceInterface {
+	return newLogicAppTriggerRecurrences(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) LogicAppTriggerHttpRequests() LogicAppTriggerHttpRequestInterface {
-	return newLogicAppTriggerHttpRequests(c)
+func (c *AzurermV1alpha1Client) LogicAppWorkflows(namespace string) LogicAppWorkflowInterface {
+	return newLogicAppWorkflows(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) LogicAppTriggerRecurrences() LogicAppTriggerRecurrenceInterface {
-	return newLogicAppTriggerRecurrences(c)
+func (c *AzurermV1alpha1Client) ManagedDisks(namespace string) ManagedDiskInterface {
+	return newManagedDisks(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) LogicAppWorkflows() LogicAppWorkflowInterface {
-	return newLogicAppWorkflows(c)
+func (c *AzurermV1alpha1Client) ManagementGroups(namespace string) ManagementGroupInterface {
+	return newManagementGroups(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ManagedDisks() ManagedDiskInterface {
-	return newManagedDisks(c)
+func (c *AzurermV1alpha1Client) ManagementLocks(namespace string) ManagementLockInterface {
+	return newManagementLocks(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ManagementGroups() ManagementGroupInterface {
-	return newManagementGroups(c)
+func (c *AzurermV1alpha1Client) MariadbDatabases(namespace string) MariadbDatabaseInterface {
+	return newMariadbDatabases(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ManagementLocks() ManagementLockInterface {
-	return newManagementLocks(c)
+func (c *AzurermV1alpha1Client) MariadbFirewallRules(namespace string) MariadbFirewallRuleInterface {
+	return newMariadbFirewallRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) MariadbDatabases() MariadbDatabaseInterface {
-	return newMariadbDatabases(c)
+func (c *AzurermV1alpha1Client) MariadbServers(namespace string) MariadbServerInterface {
+	return newMariadbServers(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) MariadbFirewallRules() MariadbFirewallRuleInterface {
-	return newMariadbFirewallRules(c)
+func (c *AzurermV1alpha1Client) MediaServicesAccounts(namespace string) MediaServicesAccountInterface {
+	return newMediaServicesAccounts(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) MariadbServers() MariadbServerInterface {
-	return newMariadbServers(c)
+func (c *AzurermV1alpha1Client) MetricAlertrules(namespace string) MetricAlertruleInterface {
+	return newMetricAlertrules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) MediaServicesAccounts() MediaServicesAccountInterface {
-	return newMediaServicesAccounts(c)
+func (c *AzurermV1alpha1Client) MonitorActionGroups(namespace string) MonitorActionGroupInterface {
+	return newMonitorActionGroups(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) MetricAlertrules() MetricAlertruleInterface {
-	return newMetricAlertrules(c)
+func (c *AzurermV1alpha1Client) MonitorActivityLogAlerts(namespace string) MonitorActivityLogAlertInterface {
+	return newMonitorActivityLogAlerts(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) MonitorActionGroups() MonitorActionGroupInterface {
-	return newMonitorActionGroups(c)
+func (c *AzurermV1alpha1Client) MonitorAutoscaleSettings(namespace string) MonitorAutoscaleSettingInterface {
+	return newMonitorAutoscaleSettings(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) MonitorActivityLogAlerts() MonitorActivityLogAlertInterface {
-	return newMonitorActivityLogAlerts(c)
+func (c *AzurermV1alpha1Client) MonitorDiagnosticSettings(namespace string) MonitorDiagnosticSettingInterface {
+	return newMonitorDiagnosticSettings(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) MonitorAutoscaleSettings() MonitorAutoscaleSettingInterface {
-	return newMonitorAutoscaleSettings(c)
+func (c *AzurermV1alpha1Client) MonitorLogProfiles(namespace string) MonitorLogProfileInterface {
+	return newMonitorLogProfiles(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) MonitorDiagnosticSettings() MonitorDiagnosticSettingInterface {
-	return newMonitorDiagnosticSettings(c)
+func (c *AzurermV1alpha1Client) MonitorMetricAlerts(namespace string) MonitorMetricAlertInterface {
+	return newMonitorMetricAlerts(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) MonitorLogProfiles() MonitorLogProfileInterface {
-	return newMonitorLogProfiles(c)
+func (c *AzurermV1alpha1Client) MonitorMetricAlertrules(namespace string) MonitorMetricAlertruleInterface {
+	return newMonitorMetricAlertrules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) MonitorMetricAlerts() MonitorMetricAlertInterface {
-	return newMonitorMetricAlerts(c)
+func (c *AzurermV1alpha1Client) MssqlElasticpools(namespace string) MssqlElasticpoolInterface {
+	return newMssqlElasticpools(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) MonitorMetricAlertrules() MonitorMetricAlertruleInterface {
-	return newMonitorMetricAlertrules(c)
+func (c *AzurermV1alpha1Client) MysqlConfigurations(namespace string) MysqlConfigurationInterface {
+	return newMysqlConfigurations(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) MssqlElasticpools() MssqlElasticpoolInterface {
-	return newMssqlElasticpools(c)
+func (c *AzurermV1alpha1Client) MysqlDatabases(namespace string) MysqlDatabaseInterface {
+	return newMysqlDatabases(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) MysqlConfigurations() MysqlConfigurationInterface {
-	return newMysqlConfigurations(c)
+func (c *AzurermV1alpha1Client) MysqlFirewallRules(namespace string) MysqlFirewallRuleInterface {
+	return newMysqlFirewallRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) MysqlDatabases() MysqlDatabaseInterface {
-	return newMysqlDatabases(c)
+func (c *AzurermV1alpha1Client) MysqlServers(namespace string) MysqlServerInterface {
+	return newMysqlServers(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) MysqlFirewallRules() MysqlFirewallRuleInterface {
-	return newMysqlFirewallRules(c)
+func (c *AzurermV1alpha1Client) MysqlVirtualNetworkRules(namespace string) MysqlVirtualNetworkRuleInterface {
+	return newMysqlVirtualNetworkRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) MysqlServers() MysqlServerInterface {
-	return newMysqlServers(c)
+func (c *AzurermV1alpha1Client) NetworkConnectionMonitors(namespace string) NetworkConnectionMonitorInterface {
+	return newNetworkConnectionMonitors(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) MysqlVirtualNetworkRules() MysqlVirtualNetworkRuleInterface {
-	return newMysqlVirtualNetworkRules(c)
+func (c *AzurermV1alpha1Client) NetworkDdosProtectionPlans(namespace string) NetworkDdosProtectionPlanInterface {
+	return newNetworkDdosProtectionPlans(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) NetworkConnectionMonitors() NetworkConnectionMonitorInterface {
-	return newNetworkConnectionMonitors(c)
+func (c *AzurermV1alpha1Client) NetworkInterfaces(namespace string) NetworkInterfaceInterface {
+	return newNetworkInterfaces(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) NetworkDdosProtectionPlans() NetworkDdosProtectionPlanInterface {
-	return newNetworkDdosProtectionPlans(c)
+func (c *AzurermV1alpha1Client) NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations(namespace string) NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInterface {
+	return newNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) NetworkInterfaces() NetworkInterfaceInterface {
-	return newNetworkInterfaces(c)
+func (c *AzurermV1alpha1Client) NetworkInterfaceApplicationSecurityGroupAssociations(namespace string) NetworkInterfaceApplicationSecurityGroupAssociationInterface {
+	return newNetworkInterfaceApplicationSecurityGroupAssociations(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) NetworkInterfaceApplicationGatewayBackendAddressPoolAssociations() NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationInterface {
-	return newNetworkInterfaceApplicationGatewayBackendAddressPoolAssociations(c)
+func (c *AzurermV1alpha1Client) NetworkInterfaceBackendAddressPoolAssociations(namespace string) NetworkInterfaceBackendAddressPoolAssociationInterface {
+	return newNetworkInterfaceBackendAddressPoolAssociations(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) NetworkInterfaceApplicationSecurityGroupAssociations() NetworkInterfaceApplicationSecurityGroupAssociationInterface {
-	return newNetworkInterfaceApplicationSecurityGroupAssociations(c)
+func (c *AzurermV1alpha1Client) NetworkInterfaceNATRuleAssociations(namespace string) NetworkInterfaceNATRuleAssociationInterface {
+	return newNetworkInterfaceNATRuleAssociations(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) NetworkInterfaceBackendAddressPoolAssociations() NetworkInterfaceBackendAddressPoolAssociationInterface {
-	return newNetworkInterfaceBackendAddressPoolAssociations(c)
+func (c *AzurermV1alpha1Client) NetworkPacketCaptures(namespace string) NetworkPacketCaptureInterface {
+	return newNetworkPacketCaptures(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) NetworkInterfaceNatRuleAssociations() NetworkInterfaceNatRuleAssociationInterface {
-	return newNetworkInterfaceNatRuleAssociations(c)
+func (c *AzurermV1alpha1Client) NetworkProfiles(namespace string) NetworkProfileInterface {
+	return newNetworkProfiles(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) NetworkPacketCaptures() NetworkPacketCaptureInterface {
-	return newNetworkPacketCaptures(c)
+func (c *AzurermV1alpha1Client) NetworkSecurityGroups(namespace string) NetworkSecurityGroupInterface {
+	return newNetworkSecurityGroups(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) NetworkProfiles() NetworkProfileInterface {
-	return newNetworkProfiles(c)
+func (c *AzurermV1alpha1Client) NetworkSecurityRules(namespace string) NetworkSecurityRuleInterface {
+	return newNetworkSecurityRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) NetworkSecurityGroups() NetworkSecurityGroupInterface {
-	return newNetworkSecurityGroups(c)
+func (c *AzurermV1alpha1Client) NetworkWatchers(namespace string) NetworkWatcherInterface {
+	return newNetworkWatchers(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) NetworkSecurityRules() NetworkSecurityRuleInterface {
-	return newNetworkSecurityRules(c)
+func (c *AzurermV1alpha1Client) NotificationHubs(namespace string) NotificationHubInterface {
+	return newNotificationHubs(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) NetworkWatchers() NetworkWatcherInterface {
-	return newNetworkWatchers(c)
+func (c *AzurermV1alpha1Client) NotificationHubAuthorizationRules(namespace string) NotificationHubAuthorizationRuleInterface {
+	return newNotificationHubAuthorizationRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) NotificationHubs() NotificationHubInterface {
-	return newNotificationHubs(c)
+func (c *AzurermV1alpha1Client) NotificationHubNamespaces(namespace string) NotificationHubNamespaceInterface {
+	return newNotificationHubNamespaces(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) NotificationHubAuthorizationRules() NotificationHubAuthorizationRuleInterface {
-	return newNotificationHubAuthorizationRules(c)
+func (c *AzurermV1alpha1Client) PacketCaptures(namespace string) PacketCaptureInterface {
+	return newPacketCaptures(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) NotificationHubNamespaces() NotificationHubNamespaceInterface {
-	return newNotificationHubNamespaces(c)
+func (c *AzurermV1alpha1Client) PolicyAssignments(namespace string) PolicyAssignmentInterface {
+	return newPolicyAssignments(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) PacketCaptures() PacketCaptureInterface {
-	return newPacketCaptures(c)
+func (c *AzurermV1alpha1Client) PolicyDefinitions(namespace string) PolicyDefinitionInterface {
+	return newPolicyDefinitions(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) PolicyAssignments() PolicyAssignmentInterface {
-	return newPolicyAssignments(c)
+func (c *AzurermV1alpha1Client) PolicySetDefinitions(namespace string) PolicySetDefinitionInterface {
+	return newPolicySetDefinitions(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) PolicyDefinitions() PolicyDefinitionInterface {
-	return newPolicyDefinitions(c)
+func (c *AzurermV1alpha1Client) PostgresqlConfigurations(namespace string) PostgresqlConfigurationInterface {
+	return newPostgresqlConfigurations(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) PolicySetDefinitions() PolicySetDefinitionInterface {
-	return newPolicySetDefinitions(c)
+func (c *AzurermV1alpha1Client) PostgresqlDatabases(namespace string) PostgresqlDatabaseInterface {
+	return newPostgresqlDatabases(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) PostgresqlConfigurations() PostgresqlConfigurationInterface {
-	return newPostgresqlConfigurations(c)
+func (c *AzurermV1alpha1Client) PostgresqlFirewallRules(namespace string) PostgresqlFirewallRuleInterface {
+	return newPostgresqlFirewallRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) PostgresqlDatabases() PostgresqlDatabaseInterface {
-	return newPostgresqlDatabases(c)
+func (c *AzurermV1alpha1Client) PostgresqlServers(namespace string) PostgresqlServerInterface {
+	return newPostgresqlServers(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) PostgresqlFirewallRules() PostgresqlFirewallRuleInterface {
-	return newPostgresqlFirewallRules(c)
+func (c *AzurermV1alpha1Client) PostgresqlVirtualNetworkRules(namespace string) PostgresqlVirtualNetworkRuleInterface {
+	return newPostgresqlVirtualNetworkRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) PostgresqlServers() PostgresqlServerInterface {
-	return newPostgresqlServers(c)
+func (c *AzurermV1alpha1Client) PrivateDNSZones(namespace string) PrivateDNSZoneInterface {
+	return newPrivateDNSZones(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) PostgresqlVirtualNetworkRules() PostgresqlVirtualNetworkRuleInterface {
-	return newPostgresqlVirtualNetworkRules(c)
+func (c *AzurermV1alpha1Client) PublicIPs(namespace string) PublicIPInterface {
+	return newPublicIPs(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) PrivateDnsZones() PrivateDnsZoneInterface {
-	return newPrivateDnsZones(c)
+func (c *AzurermV1alpha1Client) PublicIPPrefixes(namespace string) PublicIPPrefixInterface {
+	return newPublicIPPrefixes(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) PublicIps() PublicIpInterface {
-	return newPublicIps(c)
+func (c *AzurermV1alpha1Client) RecoveryServicesProtectedVms(namespace string) RecoveryServicesProtectedVmInterface {
+	return newRecoveryServicesProtectedVms(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) PublicIpPrefixes() PublicIpPrefixInterface {
-	return newPublicIpPrefixes(c)
+func (c *AzurermV1alpha1Client) RecoveryServicesProtectionPolicyVms(namespace string) RecoveryServicesProtectionPolicyVmInterface {
+	return newRecoveryServicesProtectionPolicyVms(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) RecoveryServicesProtectedVms() RecoveryServicesProtectedVmInterface {
-	return newRecoveryServicesProtectedVms(c)
+func (c *AzurermV1alpha1Client) RecoveryServicesVaults(namespace string) RecoveryServicesVaultInterface {
+	return newRecoveryServicesVaults(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) RecoveryServicesProtectionPolicyVms() RecoveryServicesProtectionPolicyVmInterface {
-	return newRecoveryServicesProtectionPolicyVms(c)
+func (c *AzurermV1alpha1Client) RedisCaches(namespace string) RedisCacheInterface {
+	return newRedisCaches(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) RecoveryServicesVaults() RecoveryServicesVaultInterface {
-	return newRecoveryServicesVaults(c)
+func (c *AzurermV1alpha1Client) RedisFirewallRules(namespace string) RedisFirewallRuleInterface {
+	return newRedisFirewallRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) RedisCaches() RedisCacheInterface {
-	return newRedisCaches(c)
+func (c *AzurermV1alpha1Client) RelayNamespaces(namespace string) RelayNamespaceInterface {
+	return newRelayNamespaces(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) RedisFirewallRules() RedisFirewallRuleInterface {
-	return newRedisFirewallRules(c)
+func (c *AzurermV1alpha1Client) ResourceGroups(namespace string) ResourceGroupInterface {
+	return newResourceGroups(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) RelayNamespaces() RelayNamespaceInterface {
-	return newRelayNamespaces(c)
+func (c *AzurermV1alpha1Client) RoleAssignments(namespace string) RoleAssignmentInterface {
+	return newRoleAssignments(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ResourceGroups() ResourceGroupInterface {
-	return newResourceGroups(c)
+func (c *AzurermV1alpha1Client) RoleDefinitions(namespace string) RoleDefinitionInterface {
+	return newRoleDefinitions(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) RoleAssignments() RoleAssignmentInterface {
-	return newRoleAssignments(c)
+func (c *AzurermV1alpha1Client) Routes(namespace string) RouteInterface {
+	return newRoutes(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) RoleDefinitions() RoleDefinitionInterface {
-	return newRoleDefinitions(c)
+func (c *AzurermV1alpha1Client) RouteTables(namespace string) RouteTableInterface {
+	return newRouteTables(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) Routes() RouteInterface {
-	return newRoutes(c)
+func (c *AzurermV1alpha1Client) SchedulerJobs(namespace string) SchedulerJobInterface {
+	return newSchedulerJobs(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) RouteTables() RouteTableInterface {
-	return newRouteTables(c)
+func (c *AzurermV1alpha1Client) SchedulerJobCollections(namespace string) SchedulerJobCollectionInterface {
+	return newSchedulerJobCollections(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) SchedulerJobs() SchedulerJobInterface {
-	return newSchedulerJobs(c)
+func (c *AzurermV1alpha1Client) SearchServices(namespace string) SearchServiceInterface {
+	return newSearchServices(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) SchedulerJobCollections() SchedulerJobCollectionInterface {
-	return newSchedulerJobCollections(c)
+func (c *AzurermV1alpha1Client) SecurityCenterContacts(namespace string) SecurityCenterContactInterface {
+	return newSecurityCenterContacts(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) SearchServices() SearchServiceInterface {
-	return newSearchServices(c)
+func (c *AzurermV1alpha1Client) SecurityCenterSubscriptionPricings(namespace string) SecurityCenterSubscriptionPricingInterface {
+	return newSecurityCenterSubscriptionPricings(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) SecurityCenterContacts() SecurityCenterContactInterface {
-	return newSecurityCenterContacts(c)
+func (c *AzurermV1alpha1Client) SecurityCenterWorkspaces(namespace string) SecurityCenterWorkspaceInterface {
+	return newSecurityCenterWorkspaces(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) SecurityCenterSubscriptionPricings() SecurityCenterSubscriptionPricingInterface {
-	return newSecurityCenterSubscriptionPricings(c)
+func (c *AzurermV1alpha1Client) ServiceFabricClusters(namespace string) ServiceFabricClusterInterface {
+	return newServiceFabricClusters(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) SecurityCenterWorkspaces() SecurityCenterWorkspaceInterface {
-	return newSecurityCenterWorkspaces(c)
+func (c *AzurermV1alpha1Client) ServicebusNamespaces(namespace string) ServicebusNamespaceInterface {
+	return newServicebusNamespaces(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ServiceFabricClusters() ServiceFabricClusterInterface {
-	return newServiceFabricClusters(c)
+func (c *AzurermV1alpha1Client) ServicebusNamespaceAuthorizationRules(namespace string) ServicebusNamespaceAuthorizationRuleInterface {
+	return newServicebusNamespaceAuthorizationRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ServicebusNamespaces() ServicebusNamespaceInterface {
-	return newServicebusNamespaces(c)
+func (c *AzurermV1alpha1Client) ServicebusQueues(namespace string) ServicebusQueueInterface {
+	return newServicebusQueues(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ServicebusNamespaceAuthorizationRules() ServicebusNamespaceAuthorizationRuleInterface {
-	return newServicebusNamespaceAuthorizationRules(c)
+func (c *AzurermV1alpha1Client) ServicebusQueueAuthorizationRules(namespace string) ServicebusQueueAuthorizationRuleInterface {
+	return newServicebusQueueAuthorizationRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ServicebusQueues() ServicebusQueueInterface {
-	return newServicebusQueues(c)
+func (c *AzurermV1alpha1Client) ServicebusSubscriptions(namespace string) ServicebusSubscriptionInterface {
+	return newServicebusSubscriptions(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ServicebusQueueAuthorizationRules() ServicebusQueueAuthorizationRuleInterface {
-	return newServicebusQueueAuthorizationRules(c)
+func (c *AzurermV1alpha1Client) ServicebusSubscriptionRules(namespace string) ServicebusSubscriptionRuleInterface {
+	return newServicebusSubscriptionRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ServicebusSubscriptions() ServicebusSubscriptionInterface {
-	return newServicebusSubscriptions(c)
+func (c *AzurermV1alpha1Client) ServicebusTopics(namespace string) ServicebusTopicInterface {
+	return newServicebusTopics(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ServicebusSubscriptionRules() ServicebusSubscriptionRuleInterface {
-	return newServicebusSubscriptionRules(c)
+func (c *AzurermV1alpha1Client) ServicebusTopicAuthorizationRules(namespace string) ServicebusTopicAuthorizationRuleInterface {
+	return newServicebusTopicAuthorizationRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ServicebusTopics() ServicebusTopicInterface {
-	return newServicebusTopics(c)
+func (c *AzurermV1alpha1Client) SharedImages(namespace string) SharedImageInterface {
+	return newSharedImages(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) ServicebusTopicAuthorizationRules() ServicebusTopicAuthorizationRuleInterface {
-	return newServicebusTopicAuthorizationRules(c)
+func (c *AzurermV1alpha1Client) SharedImageGalleries(namespace string) SharedImageGalleryInterface {
+	return newSharedImageGalleries(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) SharedImages() SharedImageInterface {
-	return newSharedImages(c)
+func (c *AzurermV1alpha1Client) SharedImageVersions(namespace string) SharedImageVersionInterface {
+	return newSharedImageVersions(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) SharedImageGalleries() SharedImageGalleryInterface {
-	return newSharedImageGalleries(c)
+func (c *AzurermV1alpha1Client) SignalrServices(namespace string) SignalrServiceInterface {
+	return newSignalrServices(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) SharedImageVersions() SharedImageVersionInterface {
-	return newSharedImageVersions(c)
+func (c *AzurermV1alpha1Client) Snapshots(namespace string) SnapshotInterface {
+	return newSnapshots(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) SignalrServices() SignalrServiceInterface {
-	return newSignalrServices(c)
+func (c *AzurermV1alpha1Client) SqlActiveDirectoryAdministrators(namespace string) SqlActiveDirectoryAdministratorInterface {
+	return newSqlActiveDirectoryAdministrators(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) Snapshots() SnapshotInterface {
-	return newSnapshots(c)
+func (c *AzurermV1alpha1Client) SqlDatabases(namespace string) SqlDatabaseInterface {
+	return newSqlDatabases(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) SqlActiveDirectoryAdministrators() SqlActiveDirectoryAdministratorInterface {
-	return newSqlActiveDirectoryAdministrators(c)
+func (c *AzurermV1alpha1Client) SqlElasticpools(namespace string) SqlElasticpoolInterface {
+	return newSqlElasticpools(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) SqlDatabases() SqlDatabaseInterface {
-	return newSqlDatabases(c)
+func (c *AzurermV1alpha1Client) SqlFirewallRules(namespace string) SqlFirewallRuleInterface {
+	return newSqlFirewallRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) SqlElasticpools() SqlElasticpoolInterface {
-	return newSqlElasticpools(c)
+func (c *AzurermV1alpha1Client) SqlServers(namespace string) SqlServerInterface {
+	return newSqlServers(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) SqlFirewallRules() SqlFirewallRuleInterface {
-	return newSqlFirewallRules(c)
+func (c *AzurermV1alpha1Client) SqlVirtualNetworkRules(namespace string) SqlVirtualNetworkRuleInterface {
+	return newSqlVirtualNetworkRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) SqlServers() SqlServerInterface {
-	return newSqlServers(c)
+func (c *AzurermV1alpha1Client) StorageAccounts(namespace string) StorageAccountInterface {
+	return newStorageAccounts(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) SqlVirtualNetworkRules() SqlVirtualNetworkRuleInterface {
-	return newSqlVirtualNetworkRules(c)
+func (c *AzurermV1alpha1Client) StorageBlobs(namespace string) StorageBlobInterface {
+	return newStorageBlobs(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) StorageAccounts() StorageAccountInterface {
-	return newStorageAccounts(c)
+func (c *AzurermV1alpha1Client) StorageContainers(namespace string) StorageContainerInterface {
+	return newStorageContainers(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) StorageBlobs() StorageBlobInterface {
-	return newStorageBlobs(c)
+func (c *AzurermV1alpha1Client) StorageQueues(namespace string) StorageQueueInterface {
+	return newStorageQueues(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) StorageContainers() StorageContainerInterface {
-	return newStorageContainers(c)
+func (c *AzurermV1alpha1Client) StorageShares(namespace string) StorageShareInterface {
+	return newStorageShares(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) StorageQueues() StorageQueueInterface {
-	return newStorageQueues(c)
+func (c *AzurermV1alpha1Client) StorageTables(namespace string) StorageTableInterface {
+	return newStorageTables(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) StorageShares() StorageShareInterface {
-	return newStorageShares(c)
+func (c *AzurermV1alpha1Client) StreamAnalyticsFunctionJavascriptUdves(namespace string) StreamAnalyticsFunctionJavascriptUdfInterface {
+	return newStreamAnalyticsFunctionJavascriptUdves(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) StorageShareDirectories() StorageShareDirectoryInterface {
-	return newStorageShareDirectories(c)
+func (c *AzurermV1alpha1Client) StreamAnalyticsJobs(namespace string) StreamAnalyticsJobInterface {
+	return newStreamAnalyticsJobs(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) StorageTables() StorageTableInterface {
-	return newStorageTables(c)
+func (c *AzurermV1alpha1Client) StreamAnalyticsOutputBlobs(namespace string) StreamAnalyticsOutputBlobInterface {
+	return newStreamAnalyticsOutputBlobs(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) StorageTableEntities() StorageTableEntityInterface {
-	return newStorageTableEntities(c)
+func (c *AzurermV1alpha1Client) StreamAnalyticsOutputEventhubs(namespace string) StreamAnalyticsOutputEventhubInterface {
+	return newStreamAnalyticsOutputEventhubs(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) StreamAnalyticsFunctionJavascriptUdves() StreamAnalyticsFunctionJavascriptUdfInterface {
-	return newStreamAnalyticsFunctionJavascriptUdves(c)
+func (c *AzurermV1alpha1Client) StreamAnalyticsOutputMssqls(namespace string) StreamAnalyticsOutputMssqlInterface {
+	return newStreamAnalyticsOutputMssqls(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) StreamAnalyticsJobs() StreamAnalyticsJobInterface {
-	return newStreamAnalyticsJobs(c)
+func (c *AzurermV1alpha1Client) StreamAnalyticsOutputServicebusQueues(namespace string) StreamAnalyticsOutputServicebusQueueInterface {
+	return newStreamAnalyticsOutputServicebusQueues(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) StreamAnalyticsOutputBlobs() StreamAnalyticsOutputBlobInterface {
-	return newStreamAnalyticsOutputBlobs(c)
+func (c *AzurermV1alpha1Client) StreamAnalyticsStreamInputBlobs(namespace string) StreamAnalyticsStreamInputBlobInterface {
+	return newStreamAnalyticsStreamInputBlobs(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) StreamAnalyticsOutputEventhubs() StreamAnalyticsOutputEventhubInterface {
-	return newStreamAnalyticsOutputEventhubs(c)
+func (c *AzurermV1alpha1Client) StreamAnalyticsStreamInputEventhubs(namespace string) StreamAnalyticsStreamInputEventhubInterface {
+	return newStreamAnalyticsStreamInputEventhubs(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) StreamAnalyticsOutputMssqls() StreamAnalyticsOutputMssqlInterface {
-	return newStreamAnalyticsOutputMssqls(c)
+func (c *AzurermV1alpha1Client) StreamAnalyticsStreamInputIothubs(namespace string) StreamAnalyticsStreamInputIothubInterface {
+	return newStreamAnalyticsStreamInputIothubs(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) StreamAnalyticsOutputServicebusQueues() StreamAnalyticsOutputServicebusQueueInterface {
-	return newStreamAnalyticsOutputServicebusQueues(c)
+func (c *AzurermV1alpha1Client) Subnets(namespace string) SubnetInterface {
+	return newSubnets(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) StreamAnalyticsStreamInputBlobs() StreamAnalyticsStreamInputBlobInterface {
-	return newStreamAnalyticsStreamInputBlobs(c)
+func (c *AzurermV1alpha1Client) SubnetNetworkSecurityGroupAssociations(namespace string) SubnetNetworkSecurityGroupAssociationInterface {
+	return newSubnetNetworkSecurityGroupAssociations(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) StreamAnalyticsStreamInputEventhubs() StreamAnalyticsStreamInputEventhubInterface {
-	return newStreamAnalyticsStreamInputEventhubs(c)
+func (c *AzurermV1alpha1Client) SubnetRouteTableAssociations(namespace string) SubnetRouteTableAssociationInterface {
+	return newSubnetRouteTableAssociations(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) StreamAnalyticsStreamInputIothubs() StreamAnalyticsStreamInputIothubInterface {
-	return newStreamAnalyticsStreamInputIothubs(c)
+func (c *AzurermV1alpha1Client) TemplateDeployments(namespace string) TemplateDeploymentInterface {
+	return newTemplateDeployments(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) Subnets() SubnetInterface {
-	return newSubnets(c)
+func (c *AzurermV1alpha1Client) TrafficManagerEndpoints(namespace string) TrafficManagerEndpointInterface {
+	return newTrafficManagerEndpoints(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) SubnetNetworkSecurityGroupAssociations() SubnetNetworkSecurityGroupAssociationInterface {
-	return newSubnetNetworkSecurityGroupAssociations(c)
+func (c *AzurermV1alpha1Client) TrafficManagerProfiles(namespace string) TrafficManagerProfileInterface {
+	return newTrafficManagerProfiles(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) SubnetRouteTableAssociations() SubnetRouteTableAssociationInterface {
-	return newSubnetRouteTableAssociations(c)
+func (c *AzurermV1alpha1Client) UserAssignedIdentities(namespace string) UserAssignedIdentityInterface {
+	return newUserAssignedIdentities(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) TemplateDeployments() TemplateDeploymentInterface {
-	return newTemplateDeployments(c)
+func (c *AzurermV1alpha1Client) VirtualMachines(namespace string) VirtualMachineInterface {
+	return newVirtualMachines(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) TrafficManagerEndpoints() TrafficManagerEndpointInterface {
-	return newTrafficManagerEndpoints(c)
+func (c *AzurermV1alpha1Client) VirtualMachineDataDiskAttachments(namespace string) VirtualMachineDataDiskAttachmentInterface {
+	return newVirtualMachineDataDiskAttachments(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) TrafficManagerProfiles() TrafficManagerProfileInterface {
-	return newTrafficManagerProfiles(c)
+func (c *AzurermV1alpha1Client) VirtualMachineExtensions(namespace string) VirtualMachineExtensionInterface {
+	return newVirtualMachineExtensions(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) UserAssignedIdentities() UserAssignedIdentityInterface {
-	return newUserAssignedIdentities(c)
+func (c *AzurermV1alpha1Client) VirtualMachineScaleSets(namespace string) VirtualMachineScaleSetInterface {
+	return newVirtualMachineScaleSets(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) VirtualMachines() VirtualMachineInterface {
-	return newVirtualMachines(c)
+func (c *AzurermV1alpha1Client) VirtualNetworks(namespace string) VirtualNetworkInterface {
+	return newVirtualNetworks(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) VirtualMachineDataDiskAttachments() VirtualMachineDataDiskAttachmentInterface {
-	return newVirtualMachineDataDiskAttachments(c)
+func (c *AzurermV1alpha1Client) VirtualNetworkGateways(namespace string) VirtualNetworkGatewayInterface {
+	return newVirtualNetworkGateways(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) VirtualMachineExtensions() VirtualMachineExtensionInterface {
-	return newVirtualMachineExtensions(c)
+func (c *AzurermV1alpha1Client) VirtualNetworkGatewayConnections(namespace string) VirtualNetworkGatewayConnectionInterface {
+	return newVirtualNetworkGatewayConnections(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) VirtualMachineScaleSets() VirtualMachineScaleSetInterface {
-	return newVirtualMachineScaleSets(c)
-}
-
-func (c *AzurermV1alpha1Client) VirtualNetworks() VirtualNetworkInterface {
-	return newVirtualNetworks(c)
-}
-
-func (c *AzurermV1alpha1Client) VirtualNetworkGateways() VirtualNetworkGatewayInterface {
-	return newVirtualNetworkGateways(c)
-}
-
-func (c *AzurermV1alpha1Client) VirtualNetworkGatewayConnections() VirtualNetworkGatewayConnectionInterface {
-	return newVirtualNetworkGatewayConnections(c)
-}
-
-func (c *AzurermV1alpha1Client) VirtualNetworkPeerings() VirtualNetworkPeeringInterface {
-	return newVirtualNetworkPeerings(c)
+func (c *AzurermV1alpha1Client) VirtualNetworkPeerings(namespace string) VirtualNetworkPeeringInterface {
+	return newVirtualNetworkPeerings(c, namespace)
 }
 
 // NewForConfig creates a new AzurermV1alpha1Client for the given config.

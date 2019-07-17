@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// Ec2ClientVpnEndpointsGetter has a method to return a Ec2ClientVpnEndpointInterface.
+// Ec2ClientVPNEndpointsGetter has a method to return a Ec2ClientVPNEndpointInterface.
 // A group's client should implement this interface.
-type Ec2ClientVpnEndpointsGetter interface {
-	Ec2ClientVpnEndpoints() Ec2ClientVpnEndpointInterface
+type Ec2ClientVPNEndpointsGetter interface {
+	Ec2ClientVPNEndpoints(namespace string) Ec2ClientVPNEndpointInterface
 }
 
-// Ec2ClientVpnEndpointInterface has methods to work with Ec2ClientVpnEndpoint resources.
-type Ec2ClientVpnEndpointInterface interface {
-	Create(*v1alpha1.Ec2ClientVpnEndpoint) (*v1alpha1.Ec2ClientVpnEndpoint, error)
-	Update(*v1alpha1.Ec2ClientVpnEndpoint) (*v1alpha1.Ec2ClientVpnEndpoint, error)
-	UpdateStatus(*v1alpha1.Ec2ClientVpnEndpoint) (*v1alpha1.Ec2ClientVpnEndpoint, error)
+// Ec2ClientVPNEndpointInterface has methods to work with Ec2ClientVPNEndpoint resources.
+type Ec2ClientVPNEndpointInterface interface {
+	Create(*v1alpha1.Ec2ClientVPNEndpoint) (*v1alpha1.Ec2ClientVPNEndpoint, error)
+	Update(*v1alpha1.Ec2ClientVPNEndpoint) (*v1alpha1.Ec2ClientVPNEndpoint, error)
+	UpdateStatus(*v1alpha1.Ec2ClientVPNEndpoint) (*v1alpha1.Ec2ClientVPNEndpoint, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.Ec2ClientVpnEndpoint, error)
-	List(opts v1.ListOptions) (*v1alpha1.Ec2ClientVpnEndpointList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.Ec2ClientVPNEndpoint, error)
+	List(opts v1.ListOptions) (*v1alpha1.Ec2ClientVPNEndpointList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Ec2ClientVpnEndpoint, err error)
-	Ec2ClientVpnEndpointExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Ec2ClientVPNEndpoint, err error)
+	Ec2ClientVPNEndpointExpansion
 }
 
-// ec2ClientVpnEndpoints implements Ec2ClientVpnEndpointInterface
-type ec2ClientVpnEndpoints struct {
+// ec2ClientVPNEndpoints implements Ec2ClientVPNEndpointInterface
+type ec2ClientVPNEndpoints struct {
 	client rest.Interface
+	ns     string
 }
 
-// newEc2ClientVpnEndpoints returns a Ec2ClientVpnEndpoints
-func newEc2ClientVpnEndpoints(c *AwsV1alpha1Client) *ec2ClientVpnEndpoints {
-	return &ec2ClientVpnEndpoints{
+// newEc2ClientVPNEndpoints returns a Ec2ClientVPNEndpoints
+func newEc2ClientVPNEndpoints(c *AwsV1alpha1Client, namespace string) *ec2ClientVPNEndpoints {
+	return &ec2ClientVPNEndpoints{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the ec2ClientVpnEndpoint, and returns the corresponding ec2ClientVpnEndpoint object, and an error if there is any.
-func (c *ec2ClientVpnEndpoints) Get(name string, options v1.GetOptions) (result *v1alpha1.Ec2ClientVpnEndpoint, err error) {
-	result = &v1alpha1.Ec2ClientVpnEndpoint{}
+// Get takes name of the ec2ClientVPNEndpoint, and returns the corresponding ec2ClientVPNEndpoint object, and an error if there is any.
+func (c *ec2ClientVPNEndpoints) Get(name string, options v1.GetOptions) (result *v1alpha1.Ec2ClientVPNEndpoint, err error) {
+	result = &v1alpha1.Ec2ClientVPNEndpoint{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ec2clientvpnendpoints").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *ec2ClientVpnEndpoints) Get(name string, options v1.GetOptions) (result 
 	return
 }
 
-// List takes label and field selectors, and returns the list of Ec2ClientVpnEndpoints that match those selectors.
-func (c *ec2ClientVpnEndpoints) List(opts v1.ListOptions) (result *v1alpha1.Ec2ClientVpnEndpointList, err error) {
+// List takes label and field selectors, and returns the list of Ec2ClientVPNEndpoints that match those selectors.
+func (c *ec2ClientVPNEndpoints) List(opts v1.ListOptions) (result *v1alpha1.Ec2ClientVPNEndpointList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.Ec2ClientVpnEndpointList{}
+	result = &v1alpha1.Ec2ClientVPNEndpointList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ec2clientvpnendpoints").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *ec2ClientVpnEndpoints) List(opts v1.ListOptions) (result *v1alpha1.Ec2C
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested ec2ClientVpnEndpoints.
-func (c *ec2ClientVpnEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested ec2ClientVPNEndpoints.
+func (c *ec2ClientVPNEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ec2clientvpnendpoints").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a ec2ClientVpnEndpoint and creates it.  Returns the server's representation of the ec2ClientVpnEndpoint, and an error, if there is any.
-func (c *ec2ClientVpnEndpoints) Create(ec2ClientVpnEndpoint *v1alpha1.Ec2ClientVpnEndpoint) (result *v1alpha1.Ec2ClientVpnEndpoint, err error) {
-	result = &v1alpha1.Ec2ClientVpnEndpoint{}
+// Create takes the representation of a ec2ClientVPNEndpoint and creates it.  Returns the server's representation of the ec2ClientVPNEndpoint, and an error, if there is any.
+func (c *ec2ClientVPNEndpoints) Create(ec2ClientVPNEndpoint *v1alpha1.Ec2ClientVPNEndpoint) (result *v1alpha1.Ec2ClientVPNEndpoint, err error) {
+	result = &v1alpha1.Ec2ClientVPNEndpoint{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ec2clientvpnendpoints").
-		Body(ec2ClientVpnEndpoint).
+		Body(ec2ClientVPNEndpoint).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a ec2ClientVpnEndpoint and updates it. Returns the server's representation of the ec2ClientVpnEndpoint, and an error, if there is any.
-func (c *ec2ClientVpnEndpoints) Update(ec2ClientVpnEndpoint *v1alpha1.Ec2ClientVpnEndpoint) (result *v1alpha1.Ec2ClientVpnEndpoint, err error) {
-	result = &v1alpha1.Ec2ClientVpnEndpoint{}
+// Update takes the representation of a ec2ClientVPNEndpoint and updates it. Returns the server's representation of the ec2ClientVPNEndpoint, and an error, if there is any.
+func (c *ec2ClientVPNEndpoints) Update(ec2ClientVPNEndpoint *v1alpha1.Ec2ClientVPNEndpoint) (result *v1alpha1.Ec2ClientVPNEndpoint, err error) {
+	result = &v1alpha1.Ec2ClientVPNEndpoint{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ec2clientvpnendpoints").
-		Name(ec2ClientVpnEndpoint.Name).
-		Body(ec2ClientVpnEndpoint).
+		Name(ec2ClientVPNEndpoint.Name).
+		Body(ec2ClientVPNEndpoint).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *ec2ClientVpnEndpoints) Update(ec2ClientVpnEndpoint *v1alpha1.Ec2ClientV
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *ec2ClientVpnEndpoints) UpdateStatus(ec2ClientVpnEndpoint *v1alpha1.Ec2ClientVpnEndpoint) (result *v1alpha1.Ec2ClientVpnEndpoint, err error) {
-	result = &v1alpha1.Ec2ClientVpnEndpoint{}
+func (c *ec2ClientVPNEndpoints) UpdateStatus(ec2ClientVPNEndpoint *v1alpha1.Ec2ClientVPNEndpoint) (result *v1alpha1.Ec2ClientVPNEndpoint, err error) {
+	result = &v1alpha1.Ec2ClientVPNEndpoint{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ec2clientvpnendpoints").
-		Name(ec2ClientVpnEndpoint.Name).
+		Name(ec2ClientVPNEndpoint.Name).
 		SubResource("status").
-		Body(ec2ClientVpnEndpoint).
+		Body(ec2ClientVPNEndpoint).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the ec2ClientVpnEndpoint and deletes it. Returns an error if one occurs.
-func (c *ec2ClientVpnEndpoints) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the ec2ClientVPNEndpoint and deletes it. Returns an error if one occurs.
+func (c *ec2ClientVPNEndpoints) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ec2clientvpnendpoints").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *ec2ClientVpnEndpoints) Delete(name string, options *v1.DeleteOptions) e
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *ec2ClientVpnEndpoints) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *ec2ClientVPNEndpoints) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ec2clientvpnendpoints").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *ec2ClientVpnEndpoints) DeleteCollection(options *v1.DeleteOptions, list
 		Error()
 }
 
-// Patch applies the patch and returns the patched ec2ClientVpnEndpoint.
-func (c *ec2ClientVpnEndpoints) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Ec2ClientVpnEndpoint, err error) {
-	result = &v1alpha1.Ec2ClientVpnEndpoint{}
+// Patch applies the patch and returns the patched ec2ClientVPNEndpoint.
+func (c *ec2ClientVPNEndpoints) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Ec2ClientVPNEndpoint, err error) {
+	result = &v1alpha1.Ec2ClientVPNEndpoint{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ec2clientvpnendpoints").
 		SubResource(subresources...).
 		Name(name).

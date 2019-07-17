@@ -32,7 +32,7 @@ import (
 // EbsDefaultKmsKeysGetter has a method to return a EbsDefaultKmsKeyInterface.
 // A group's client should implement this interface.
 type EbsDefaultKmsKeysGetter interface {
-	EbsDefaultKmsKeys() EbsDefaultKmsKeyInterface
+	EbsDefaultKmsKeys(namespace string) EbsDefaultKmsKeyInterface
 }
 
 // EbsDefaultKmsKeyInterface has methods to work with EbsDefaultKmsKey resources.
@@ -52,12 +52,14 @@ type EbsDefaultKmsKeyInterface interface {
 // ebsDefaultKmsKeys implements EbsDefaultKmsKeyInterface
 type ebsDefaultKmsKeys struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEbsDefaultKmsKeys returns a EbsDefaultKmsKeys
-func newEbsDefaultKmsKeys(c *AwsV1alpha1Client) *ebsDefaultKmsKeys {
+func newEbsDefaultKmsKeys(c *AwsV1alpha1Client, namespace string) *ebsDefaultKmsKeys {
 	return &ebsDefaultKmsKeys{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEbsDefaultKmsKeys(c *AwsV1alpha1Client) *ebsDefaultKmsKeys {
 func (c *ebsDefaultKmsKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.EbsDefaultKmsKey, err error) {
 	result = &v1alpha1.EbsDefaultKmsKey{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ebsdefaultkmskeys").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *ebsDefaultKmsKeys) List(opts v1.ListOptions) (result *v1alpha1.EbsDefau
 	}
 	result = &v1alpha1.EbsDefaultKmsKeyList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("ebsdefaultkmskeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *ebsDefaultKmsKeys) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("ebsdefaultkmskeys").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *ebsDefaultKmsKeys) Watch(opts v1.ListOptions) (watch.Interface, error) 
 func (c *ebsDefaultKmsKeys) Create(ebsDefaultKmsKey *v1alpha1.EbsDefaultKmsKey) (result *v1alpha1.EbsDefaultKmsKey, err error) {
 	result = &v1alpha1.EbsDefaultKmsKey{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("ebsdefaultkmskeys").
 		Body(ebsDefaultKmsKey).
 		Do().
@@ -118,6 +124,7 @@ func (c *ebsDefaultKmsKeys) Create(ebsDefaultKmsKey *v1alpha1.EbsDefaultKmsKey) 
 func (c *ebsDefaultKmsKeys) Update(ebsDefaultKmsKey *v1alpha1.EbsDefaultKmsKey) (result *v1alpha1.EbsDefaultKmsKey, err error) {
 	result = &v1alpha1.EbsDefaultKmsKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ebsdefaultkmskeys").
 		Name(ebsDefaultKmsKey.Name).
 		Body(ebsDefaultKmsKey).
@@ -132,6 +139,7 @@ func (c *ebsDefaultKmsKeys) Update(ebsDefaultKmsKey *v1alpha1.EbsDefaultKmsKey) 
 func (c *ebsDefaultKmsKeys) UpdateStatus(ebsDefaultKmsKey *v1alpha1.EbsDefaultKmsKey) (result *v1alpha1.EbsDefaultKmsKey, err error) {
 	result = &v1alpha1.EbsDefaultKmsKey{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("ebsdefaultkmskeys").
 		Name(ebsDefaultKmsKey.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *ebsDefaultKmsKeys) UpdateStatus(ebsDefaultKmsKey *v1alpha1.EbsDefaultKm
 // Delete takes name of the ebsDefaultKmsKey and deletes it. Returns an error if one occurs.
 func (c *ebsDefaultKmsKeys) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ebsdefaultkmskeys").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *ebsDefaultKmsKeys) DeleteCollection(options *v1.DeleteOptions, listOpti
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("ebsdefaultkmskeys").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *ebsDefaultKmsKeys) DeleteCollection(options *v1.DeleteOptions, listOpti
 func (c *ebsDefaultKmsKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EbsDefaultKmsKey, err error) {
 	result = &v1alpha1.EbsDefaultKmsKey{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("ebsdefaultkmskeys").
 		SubResource(subresources...).
 		Name(name).

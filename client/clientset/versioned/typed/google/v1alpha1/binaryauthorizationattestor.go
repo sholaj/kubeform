@@ -32,7 +32,7 @@ import (
 // BinaryAuthorizationAttestorsGetter has a method to return a BinaryAuthorizationAttestorInterface.
 // A group's client should implement this interface.
 type BinaryAuthorizationAttestorsGetter interface {
-	BinaryAuthorizationAttestors() BinaryAuthorizationAttestorInterface
+	BinaryAuthorizationAttestors(namespace string) BinaryAuthorizationAttestorInterface
 }
 
 // BinaryAuthorizationAttestorInterface has methods to work with BinaryAuthorizationAttestor resources.
@@ -52,12 +52,14 @@ type BinaryAuthorizationAttestorInterface interface {
 // binaryAuthorizationAttestors implements BinaryAuthorizationAttestorInterface
 type binaryAuthorizationAttestors struct {
 	client rest.Interface
+	ns     string
 }
 
 // newBinaryAuthorizationAttestors returns a BinaryAuthorizationAttestors
-func newBinaryAuthorizationAttestors(c *GoogleV1alpha1Client) *binaryAuthorizationAttestors {
+func newBinaryAuthorizationAttestors(c *GoogleV1alpha1Client, namespace string) *binaryAuthorizationAttestors {
 	return &binaryAuthorizationAttestors{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newBinaryAuthorizationAttestors(c *GoogleV1alpha1Client) *binaryAuthorizati
 func (c *binaryAuthorizationAttestors) Get(name string, options v1.GetOptions) (result *v1alpha1.BinaryAuthorizationAttestor, err error) {
 	result = &v1alpha1.BinaryAuthorizationAttestor{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("binaryauthorizationattestors").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *binaryAuthorizationAttestors) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.BinaryAuthorizationAttestorList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("binaryauthorizationattestors").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *binaryAuthorizationAttestors) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("binaryauthorizationattestors").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *binaryAuthorizationAttestors) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *binaryAuthorizationAttestors) Create(binaryAuthorizationAttestor *v1alpha1.BinaryAuthorizationAttestor) (result *v1alpha1.BinaryAuthorizationAttestor, err error) {
 	result = &v1alpha1.BinaryAuthorizationAttestor{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("binaryauthorizationattestors").
 		Body(binaryAuthorizationAttestor).
 		Do().
@@ -118,6 +124,7 @@ func (c *binaryAuthorizationAttestors) Create(binaryAuthorizationAttestor *v1alp
 func (c *binaryAuthorizationAttestors) Update(binaryAuthorizationAttestor *v1alpha1.BinaryAuthorizationAttestor) (result *v1alpha1.BinaryAuthorizationAttestor, err error) {
 	result = &v1alpha1.BinaryAuthorizationAttestor{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("binaryauthorizationattestors").
 		Name(binaryAuthorizationAttestor.Name).
 		Body(binaryAuthorizationAttestor).
@@ -132,6 +139,7 @@ func (c *binaryAuthorizationAttestors) Update(binaryAuthorizationAttestor *v1alp
 func (c *binaryAuthorizationAttestors) UpdateStatus(binaryAuthorizationAttestor *v1alpha1.BinaryAuthorizationAttestor) (result *v1alpha1.BinaryAuthorizationAttestor, err error) {
 	result = &v1alpha1.BinaryAuthorizationAttestor{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("binaryauthorizationattestors").
 		Name(binaryAuthorizationAttestor.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *binaryAuthorizationAttestors) UpdateStatus(binaryAuthorizationAttestor 
 // Delete takes name of the binaryAuthorizationAttestor and deletes it. Returns an error if one occurs.
 func (c *binaryAuthorizationAttestors) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("binaryauthorizationattestors").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *binaryAuthorizationAttestors) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("binaryauthorizationattestors").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *binaryAuthorizationAttestors) DeleteCollection(options *v1.DeleteOption
 func (c *binaryAuthorizationAttestors) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BinaryAuthorizationAttestor, err error) {
 	result = &v1alpha1.BinaryAuthorizationAttestor{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("binaryauthorizationattestors").
 		SubResource(subresources...).
 		Name(name).

@@ -41,32 +41,33 @@ type Route53DelegationSetInformer interface {
 type route53DelegationSetInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewRoute53DelegationSetInformer constructs a new informer for Route53DelegationSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewRoute53DelegationSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredRoute53DelegationSetInformer(client, resyncPeriod, indexers, nil)
+func NewRoute53DelegationSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredRoute53DelegationSetInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredRoute53DelegationSetInformer constructs a new informer for Route53DelegationSet type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredRoute53DelegationSetInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredRoute53DelegationSetInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().Route53DelegationSets().List(options)
+				return client.AwsV1alpha1().Route53DelegationSets(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().Route53DelegationSets().Watch(options)
+				return client.AwsV1alpha1().Route53DelegationSets(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.Route53DelegationSet{},
@@ -76,7 +77,7 @@ func NewFilteredRoute53DelegationSetInformer(client versioned.Interface, resyncP
 }
 
 func (f *route53DelegationSetInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredRoute53DelegationSetInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredRoute53DelegationSetInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *route53DelegationSetInformer) Informer() cache.SharedIndexInformer {

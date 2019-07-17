@@ -32,7 +32,7 @@ import (
 // SecretsmanagerSecretsGetter has a method to return a SecretsmanagerSecretInterface.
 // A group's client should implement this interface.
 type SecretsmanagerSecretsGetter interface {
-	SecretsmanagerSecrets() SecretsmanagerSecretInterface
+	SecretsmanagerSecrets(namespace string) SecretsmanagerSecretInterface
 }
 
 // SecretsmanagerSecretInterface has methods to work with SecretsmanagerSecret resources.
@@ -52,12 +52,14 @@ type SecretsmanagerSecretInterface interface {
 // secretsmanagerSecrets implements SecretsmanagerSecretInterface
 type secretsmanagerSecrets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSecretsmanagerSecrets returns a SecretsmanagerSecrets
-func newSecretsmanagerSecrets(c *AwsV1alpha1Client) *secretsmanagerSecrets {
+func newSecretsmanagerSecrets(c *AwsV1alpha1Client, namespace string) *secretsmanagerSecrets {
 	return &secretsmanagerSecrets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSecretsmanagerSecrets(c *AwsV1alpha1Client) *secretsmanagerSecrets {
 func (c *secretsmanagerSecrets) Get(name string, options v1.GetOptions) (result *v1alpha1.SecretsmanagerSecret, err error) {
 	result = &v1alpha1.SecretsmanagerSecret{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("secretsmanagersecrets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *secretsmanagerSecrets) List(opts v1.ListOptions) (result *v1alpha1.Secr
 	}
 	result = &v1alpha1.SecretsmanagerSecretList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("secretsmanagersecrets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *secretsmanagerSecrets) Watch(opts v1.ListOptions) (watch.Interface, err
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("secretsmanagersecrets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *secretsmanagerSecrets) Watch(opts v1.ListOptions) (watch.Interface, err
 func (c *secretsmanagerSecrets) Create(secretsmanagerSecret *v1alpha1.SecretsmanagerSecret) (result *v1alpha1.SecretsmanagerSecret, err error) {
 	result = &v1alpha1.SecretsmanagerSecret{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("secretsmanagersecrets").
 		Body(secretsmanagerSecret).
 		Do().
@@ -118,6 +124,7 @@ func (c *secretsmanagerSecrets) Create(secretsmanagerSecret *v1alpha1.Secretsman
 func (c *secretsmanagerSecrets) Update(secretsmanagerSecret *v1alpha1.SecretsmanagerSecret) (result *v1alpha1.SecretsmanagerSecret, err error) {
 	result = &v1alpha1.SecretsmanagerSecret{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("secretsmanagersecrets").
 		Name(secretsmanagerSecret.Name).
 		Body(secretsmanagerSecret).
@@ -132,6 +139,7 @@ func (c *secretsmanagerSecrets) Update(secretsmanagerSecret *v1alpha1.Secretsman
 func (c *secretsmanagerSecrets) UpdateStatus(secretsmanagerSecret *v1alpha1.SecretsmanagerSecret) (result *v1alpha1.SecretsmanagerSecret, err error) {
 	result = &v1alpha1.SecretsmanagerSecret{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("secretsmanagersecrets").
 		Name(secretsmanagerSecret.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *secretsmanagerSecrets) UpdateStatus(secretsmanagerSecret *v1alpha1.Secr
 // Delete takes name of the secretsmanagerSecret and deletes it. Returns an error if one occurs.
 func (c *secretsmanagerSecrets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("secretsmanagersecrets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *secretsmanagerSecrets) DeleteCollection(options *v1.DeleteOptions, list
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("secretsmanagersecrets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *secretsmanagerSecrets) DeleteCollection(options *v1.DeleteOptions, list
 func (c *secretsmanagerSecrets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SecretsmanagerSecret, err error) {
 	result = &v1alpha1.SecretsmanagerSecret{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("secretsmanagersecrets").
 		SubResource(subresources...).
 		Name(name).

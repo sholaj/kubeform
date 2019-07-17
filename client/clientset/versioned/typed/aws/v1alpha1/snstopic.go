@@ -32,7 +32,7 @@ import (
 // SnsTopicsGetter has a method to return a SnsTopicInterface.
 // A group's client should implement this interface.
 type SnsTopicsGetter interface {
-	SnsTopics() SnsTopicInterface
+	SnsTopics(namespace string) SnsTopicInterface
 }
 
 // SnsTopicInterface has methods to work with SnsTopic resources.
@@ -52,12 +52,14 @@ type SnsTopicInterface interface {
 // snsTopics implements SnsTopicInterface
 type snsTopics struct {
 	client rest.Interface
+	ns     string
 }
 
 // newSnsTopics returns a SnsTopics
-func newSnsTopics(c *AwsV1alpha1Client) *snsTopics {
+func newSnsTopics(c *AwsV1alpha1Client, namespace string) *snsTopics {
 	return &snsTopics{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newSnsTopics(c *AwsV1alpha1Client) *snsTopics {
 func (c *snsTopics) Get(name string, options v1.GetOptions) (result *v1alpha1.SnsTopic, err error) {
 	result = &v1alpha1.SnsTopic{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("snstopics").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *snsTopics) List(opts v1.ListOptions) (result *v1alpha1.SnsTopicList, er
 	}
 	result = &v1alpha1.SnsTopicList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("snstopics").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *snsTopics) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("snstopics").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *snsTopics) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *snsTopics) Create(snsTopic *v1alpha1.SnsTopic) (result *v1alpha1.SnsTopic, err error) {
 	result = &v1alpha1.SnsTopic{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("snstopics").
 		Body(snsTopic).
 		Do().
@@ -118,6 +124,7 @@ func (c *snsTopics) Create(snsTopic *v1alpha1.SnsTopic) (result *v1alpha1.SnsTop
 func (c *snsTopics) Update(snsTopic *v1alpha1.SnsTopic) (result *v1alpha1.SnsTopic, err error) {
 	result = &v1alpha1.SnsTopic{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("snstopics").
 		Name(snsTopic.Name).
 		Body(snsTopic).
@@ -132,6 +139,7 @@ func (c *snsTopics) Update(snsTopic *v1alpha1.SnsTopic) (result *v1alpha1.SnsTop
 func (c *snsTopics) UpdateStatus(snsTopic *v1alpha1.SnsTopic) (result *v1alpha1.SnsTopic, err error) {
 	result = &v1alpha1.SnsTopic{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("snstopics").
 		Name(snsTopic.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *snsTopics) UpdateStatus(snsTopic *v1alpha1.SnsTopic) (result *v1alpha1.
 // Delete takes name of the snsTopic and deletes it. Returns an error if one occurs.
 func (c *snsTopics) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("snstopics").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *snsTopics) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("snstopics").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *snsTopics) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 func (c *snsTopics) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SnsTopic, err error) {
 	result = &v1alpha1.SnsTopic{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("snstopics").
 		SubResource(subresources...).
 		Name(name).

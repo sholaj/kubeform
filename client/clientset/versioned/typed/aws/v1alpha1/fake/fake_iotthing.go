@@ -31,6 +31,7 @@ import (
 // FakeIotThings implements IotThingInterface
 type FakeIotThings struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var iotthingsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "iotthings"}
@@ -40,7 +41,8 @@ var iotthingsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: 
 // Get takes name of the iotThing, and returns the corresponding iotThing object, and an error if there is any.
 func (c *FakeIotThings) Get(name string, options v1.GetOptions) (result *v1alpha1.IotThing, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iotthingsResource, name), &v1alpha1.IotThing{})
+		Invokes(testing.NewGetAction(iotthingsResource, c.ns, name), &v1alpha1.IotThing{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIotThings) Get(name string, options v1.GetOptions) (result *v1alpha
 // List takes label and field selectors, and returns the list of IotThings that match those selectors.
 func (c *FakeIotThings) List(opts v1.ListOptions) (result *v1alpha1.IotThingList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iotthingsResource, iotthingsKind, opts), &v1alpha1.IotThingList{})
+		Invokes(testing.NewListAction(iotthingsResource, iotthingsKind, c.ns, opts), &v1alpha1.IotThingList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIotThings) List(opts v1.ListOptions) (result *v1alpha1.IotThingList
 // Watch returns a watch.Interface that watches the requested iotThings.
 func (c *FakeIotThings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iotthingsResource, opts))
+		InvokesWatch(testing.NewWatchAction(iotthingsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iotThing and creates it.  Returns the server's representation of the iotThing, and an error, if there is any.
 func (c *FakeIotThings) Create(iotThing *v1alpha1.IotThing) (result *v1alpha1.IotThing, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iotthingsResource, iotThing), &v1alpha1.IotThing{})
+		Invokes(testing.NewCreateAction(iotthingsResource, c.ns, iotThing), &v1alpha1.IotThing{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIotThings) Create(iotThing *v1alpha1.IotThing) (result *v1alpha1.Io
 // Update takes the representation of a iotThing and updates it. Returns the server's representation of the iotThing, and an error, if there is any.
 func (c *FakeIotThings) Update(iotThing *v1alpha1.IotThing) (result *v1alpha1.IotThing, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iotthingsResource, iotThing), &v1alpha1.IotThing{})
+		Invokes(testing.NewUpdateAction(iotthingsResource, c.ns, iotThing), &v1alpha1.IotThing{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIotThings) Update(iotThing *v1alpha1.IotThing) (result *v1alpha1.Io
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIotThings) UpdateStatus(iotThing *v1alpha1.IotThing) (*v1alpha1.IotThing, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iotthingsResource, "status", iotThing), &v1alpha1.IotThing{})
+		Invokes(testing.NewUpdateSubresourceAction(iotthingsResource, "status", c.ns, iotThing), &v1alpha1.IotThing{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIotThings) UpdateStatus(iotThing *v1alpha1.IotThing) (*v1alpha1.Iot
 // Delete takes name of the iotThing and deletes it. Returns an error if one occurs.
 func (c *FakeIotThings) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iotthingsResource, name), &v1alpha1.IotThing{})
+		Invokes(testing.NewDeleteAction(iotthingsResource, c.ns, name), &v1alpha1.IotThing{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIotThings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iotthingsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iotthingsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IotThingList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIotThings) DeleteCollection(options *v1.DeleteOptions, listOptions 
 // Patch applies the patch and returns the patched iotThing.
 func (c *FakeIotThings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IotThing, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iotthingsResource, name, pt, data, subresources...), &v1alpha1.IotThing{})
+		Invokes(testing.NewPatchSubresourceAction(iotthingsResource, c.ns, name, pt, data, subresources...), &v1alpha1.IotThing{})
+
 	if obj == nil {
 		return nil, err
 	}

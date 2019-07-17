@@ -31,6 +31,7 @@ import (
 // FakeSecurityCenterSubscriptionPricings implements SecurityCenterSubscriptionPricingInterface
 type FakeSecurityCenterSubscriptionPricings struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var securitycentersubscriptionpricingsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "securitycentersubscriptionpricings"}
@@ -40,7 +41,8 @@ var securitycentersubscriptionpricingsKind = schema.GroupVersionKind{Group: "azu
 // Get takes name of the securityCenterSubscriptionPricing, and returns the corresponding securityCenterSubscriptionPricing object, and an error if there is any.
 func (c *FakeSecurityCenterSubscriptionPricings) Get(name string, options v1.GetOptions) (result *v1alpha1.SecurityCenterSubscriptionPricing, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(securitycentersubscriptionpricingsResource, name), &v1alpha1.SecurityCenterSubscriptionPricing{})
+		Invokes(testing.NewGetAction(securitycentersubscriptionpricingsResource, c.ns, name), &v1alpha1.SecurityCenterSubscriptionPricing{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSecurityCenterSubscriptionPricings) Get(name string, options v1.Get
 // List takes label and field selectors, and returns the list of SecurityCenterSubscriptionPricings that match those selectors.
 func (c *FakeSecurityCenterSubscriptionPricings) List(opts v1.ListOptions) (result *v1alpha1.SecurityCenterSubscriptionPricingList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(securitycentersubscriptionpricingsResource, securitycentersubscriptionpricingsKind, opts), &v1alpha1.SecurityCenterSubscriptionPricingList{})
+		Invokes(testing.NewListAction(securitycentersubscriptionpricingsResource, securitycentersubscriptionpricingsKind, c.ns, opts), &v1alpha1.SecurityCenterSubscriptionPricingList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSecurityCenterSubscriptionPricings) List(opts v1.ListOptions) (resu
 // Watch returns a watch.Interface that watches the requested securityCenterSubscriptionPricings.
 func (c *FakeSecurityCenterSubscriptionPricings) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(securitycentersubscriptionpricingsResource, opts))
+		InvokesWatch(testing.NewWatchAction(securitycentersubscriptionpricingsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a securityCenterSubscriptionPricing and creates it.  Returns the server's representation of the securityCenterSubscriptionPricing, and an error, if there is any.
 func (c *FakeSecurityCenterSubscriptionPricings) Create(securityCenterSubscriptionPricing *v1alpha1.SecurityCenterSubscriptionPricing) (result *v1alpha1.SecurityCenterSubscriptionPricing, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(securitycentersubscriptionpricingsResource, securityCenterSubscriptionPricing), &v1alpha1.SecurityCenterSubscriptionPricing{})
+		Invokes(testing.NewCreateAction(securitycentersubscriptionpricingsResource, c.ns, securityCenterSubscriptionPricing), &v1alpha1.SecurityCenterSubscriptionPricing{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSecurityCenterSubscriptionPricings) Create(securityCenterSubscripti
 // Update takes the representation of a securityCenterSubscriptionPricing and updates it. Returns the server's representation of the securityCenterSubscriptionPricing, and an error, if there is any.
 func (c *FakeSecurityCenterSubscriptionPricings) Update(securityCenterSubscriptionPricing *v1alpha1.SecurityCenterSubscriptionPricing) (result *v1alpha1.SecurityCenterSubscriptionPricing, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(securitycentersubscriptionpricingsResource, securityCenterSubscriptionPricing), &v1alpha1.SecurityCenterSubscriptionPricing{})
+		Invokes(testing.NewUpdateAction(securitycentersubscriptionpricingsResource, c.ns, securityCenterSubscriptionPricing), &v1alpha1.SecurityCenterSubscriptionPricing{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSecurityCenterSubscriptionPricings) Update(securityCenterSubscripti
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSecurityCenterSubscriptionPricings) UpdateStatus(securityCenterSubscriptionPricing *v1alpha1.SecurityCenterSubscriptionPricing) (*v1alpha1.SecurityCenterSubscriptionPricing, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(securitycentersubscriptionpricingsResource, "status", securityCenterSubscriptionPricing), &v1alpha1.SecurityCenterSubscriptionPricing{})
+		Invokes(testing.NewUpdateSubresourceAction(securitycentersubscriptionpricingsResource, "status", c.ns, securityCenterSubscriptionPricing), &v1alpha1.SecurityCenterSubscriptionPricing{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSecurityCenterSubscriptionPricings) UpdateStatus(securityCenterSubs
 // Delete takes name of the securityCenterSubscriptionPricing and deletes it. Returns an error if one occurs.
 func (c *FakeSecurityCenterSubscriptionPricings) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(securitycentersubscriptionpricingsResource, name), &v1alpha1.SecurityCenterSubscriptionPricing{})
+		Invokes(testing.NewDeleteAction(securitycentersubscriptionpricingsResource, c.ns, name), &v1alpha1.SecurityCenterSubscriptionPricing{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSecurityCenterSubscriptionPricings) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(securitycentersubscriptionpricingsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(securitycentersubscriptionpricingsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SecurityCenterSubscriptionPricingList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSecurityCenterSubscriptionPricings) DeleteCollection(options *v1.De
 // Patch applies the patch and returns the patched securityCenterSubscriptionPricing.
 func (c *FakeSecurityCenterSubscriptionPricings) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SecurityCenterSubscriptionPricing, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(securitycentersubscriptionpricingsResource, name, pt, data, subresources...), &v1alpha1.SecurityCenterSubscriptionPricing{})
+		Invokes(testing.NewPatchSubresourceAction(securitycentersubscriptionpricingsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SecurityCenterSubscriptionPricing{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ import (
 // FakeComputeSslCertificates implements ComputeSslCertificateInterface
 type FakeComputeSslCertificates struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var computesslcertificatesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "computesslcertificates"}
@@ -40,7 +41,8 @@ var computesslcertificatesKind = schema.GroupVersionKind{Group: "google.kubeform
 // Get takes name of the computeSslCertificate, and returns the corresponding computeSslCertificate object, and an error if there is any.
 func (c *FakeComputeSslCertificates) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeSslCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(computesslcertificatesResource, name), &v1alpha1.ComputeSslCertificate{})
+		Invokes(testing.NewGetAction(computesslcertificatesResource, c.ns, name), &v1alpha1.ComputeSslCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeComputeSslCertificates) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of ComputeSslCertificates that match those selectors.
 func (c *FakeComputeSslCertificates) List(opts v1.ListOptions) (result *v1alpha1.ComputeSslCertificateList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(computesslcertificatesResource, computesslcertificatesKind, opts), &v1alpha1.ComputeSslCertificateList{})
+		Invokes(testing.NewListAction(computesslcertificatesResource, computesslcertificatesKind, c.ns, opts), &v1alpha1.ComputeSslCertificateList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeComputeSslCertificates) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested computeSslCertificates.
 func (c *FakeComputeSslCertificates) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(computesslcertificatesResource, opts))
+		InvokesWatch(testing.NewWatchAction(computesslcertificatesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a computeSslCertificate and creates it.  Returns the server's representation of the computeSslCertificate, and an error, if there is any.
 func (c *FakeComputeSslCertificates) Create(computeSslCertificate *v1alpha1.ComputeSslCertificate) (result *v1alpha1.ComputeSslCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(computesslcertificatesResource, computeSslCertificate), &v1alpha1.ComputeSslCertificate{})
+		Invokes(testing.NewCreateAction(computesslcertificatesResource, c.ns, computeSslCertificate), &v1alpha1.ComputeSslCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeComputeSslCertificates) Create(computeSslCertificate *v1alpha1.Comp
 // Update takes the representation of a computeSslCertificate and updates it. Returns the server's representation of the computeSslCertificate, and an error, if there is any.
 func (c *FakeComputeSslCertificates) Update(computeSslCertificate *v1alpha1.ComputeSslCertificate) (result *v1alpha1.ComputeSslCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(computesslcertificatesResource, computeSslCertificate), &v1alpha1.ComputeSslCertificate{})
+		Invokes(testing.NewUpdateAction(computesslcertificatesResource, c.ns, computeSslCertificate), &v1alpha1.ComputeSslCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeComputeSslCertificates) Update(computeSslCertificate *v1alpha1.Comp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeComputeSslCertificates) UpdateStatus(computeSslCertificate *v1alpha1.ComputeSslCertificate) (*v1alpha1.ComputeSslCertificate, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(computesslcertificatesResource, "status", computeSslCertificate), &v1alpha1.ComputeSslCertificate{})
+		Invokes(testing.NewUpdateSubresourceAction(computesslcertificatesResource, "status", c.ns, computeSslCertificate), &v1alpha1.ComputeSslCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeComputeSslCertificates) UpdateStatus(computeSslCertificate *v1alpha
 // Delete takes name of the computeSslCertificate and deletes it. Returns an error if one occurs.
 func (c *FakeComputeSslCertificates) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(computesslcertificatesResource, name), &v1alpha1.ComputeSslCertificate{})
+		Invokes(testing.NewDeleteAction(computesslcertificatesResource, c.ns, name), &v1alpha1.ComputeSslCertificate{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeComputeSslCertificates) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(computesslcertificatesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(computesslcertificatesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ComputeSslCertificateList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeComputeSslCertificates) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched computeSslCertificate.
 func (c *FakeComputeSslCertificates) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeSslCertificate, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(computesslcertificatesResource, name, pt, data, subresources...), &v1alpha1.ComputeSslCertificate{})
+		Invokes(testing.NewPatchSubresourceAction(computesslcertificatesResource, c.ns, name, pt, data, subresources...), &v1alpha1.ComputeSslCertificate{})
+
 	if obj == nil {
 		return nil, err
 	}

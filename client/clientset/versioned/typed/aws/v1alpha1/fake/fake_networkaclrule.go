@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// FakeNetworkAclRules implements NetworkAclRuleInterface
-type FakeNetworkAclRules struct {
+// FakeNetworkACLRules implements NetworkACLRuleInterface
+type FakeNetworkACLRules struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var networkaclrulesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "networkaclrules"}
 
-var networkaclrulesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "NetworkAclRule"}
+var networkaclrulesKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "NetworkACLRule"}
 
-// Get takes name of the networkAclRule, and returns the corresponding networkAclRule object, and an error if there is any.
-func (c *FakeNetworkAclRules) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkAclRule, err error) {
+// Get takes name of the networkACLRule, and returns the corresponding networkACLRule object, and an error if there is any.
+func (c *FakeNetworkACLRules) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkACLRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(networkaclrulesResource, name), &v1alpha1.NetworkAclRule{})
+		Invokes(testing.NewGetAction(networkaclrulesResource, c.ns, name), &v1alpha1.NetworkACLRule{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.NetworkAclRule), err
+	return obj.(*v1alpha1.NetworkACLRule), err
 }
 
-// List takes label and field selectors, and returns the list of NetworkAclRules that match those selectors.
-func (c *FakeNetworkAclRules) List(opts v1.ListOptions) (result *v1alpha1.NetworkAclRuleList, err error) {
+// List takes label and field selectors, and returns the list of NetworkACLRules that match those selectors.
+func (c *FakeNetworkACLRules) List(opts v1.ListOptions) (result *v1alpha1.NetworkACLRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(networkaclrulesResource, networkaclrulesKind, opts), &v1alpha1.NetworkAclRuleList{})
+		Invokes(testing.NewListAction(networkaclrulesResource, networkaclrulesKind, c.ns, opts), &v1alpha1.NetworkACLRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeNetworkAclRules) List(opts v1.ListOptions) (result *v1alpha1.Networ
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.NetworkAclRuleList{ListMeta: obj.(*v1alpha1.NetworkAclRuleList).ListMeta}
-	for _, item := range obj.(*v1alpha1.NetworkAclRuleList).Items {
+	list := &v1alpha1.NetworkACLRuleList{ListMeta: obj.(*v1alpha1.NetworkACLRuleList).ListMeta}
+	for _, item := range obj.(*v1alpha1.NetworkACLRuleList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeNetworkAclRules) List(opts v1.ListOptions) (result *v1alpha1.Networ
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested networkAclRules.
-func (c *FakeNetworkAclRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested networkACLRules.
+func (c *FakeNetworkACLRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(networkaclrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(networkaclrulesResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a networkAclRule and creates it.  Returns the server's representation of the networkAclRule, and an error, if there is any.
-func (c *FakeNetworkAclRules) Create(networkAclRule *v1alpha1.NetworkAclRule) (result *v1alpha1.NetworkAclRule, err error) {
+// Create takes the representation of a networkACLRule and creates it.  Returns the server's representation of the networkACLRule, and an error, if there is any.
+func (c *FakeNetworkACLRules) Create(networkACLRule *v1alpha1.NetworkACLRule) (result *v1alpha1.NetworkACLRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(networkaclrulesResource, networkAclRule), &v1alpha1.NetworkAclRule{})
+		Invokes(testing.NewCreateAction(networkaclrulesResource, c.ns, networkACLRule), &v1alpha1.NetworkACLRule{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.NetworkAclRule), err
+	return obj.(*v1alpha1.NetworkACLRule), err
 }
 
-// Update takes the representation of a networkAclRule and updates it. Returns the server's representation of the networkAclRule, and an error, if there is any.
-func (c *FakeNetworkAclRules) Update(networkAclRule *v1alpha1.NetworkAclRule) (result *v1alpha1.NetworkAclRule, err error) {
+// Update takes the representation of a networkACLRule and updates it. Returns the server's representation of the networkACLRule, and an error, if there is any.
+func (c *FakeNetworkACLRules) Update(networkACLRule *v1alpha1.NetworkACLRule) (result *v1alpha1.NetworkACLRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(networkaclrulesResource, networkAclRule), &v1alpha1.NetworkAclRule{})
+		Invokes(testing.NewUpdateAction(networkaclrulesResource, c.ns, networkACLRule), &v1alpha1.NetworkACLRule{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.NetworkAclRule), err
+	return obj.(*v1alpha1.NetworkACLRule), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeNetworkAclRules) UpdateStatus(networkAclRule *v1alpha1.NetworkAclRule) (*v1alpha1.NetworkAclRule, error) {
+func (c *FakeNetworkACLRules) UpdateStatus(networkACLRule *v1alpha1.NetworkACLRule) (*v1alpha1.NetworkACLRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(networkaclrulesResource, "status", networkAclRule), &v1alpha1.NetworkAclRule{})
+		Invokes(testing.NewUpdateSubresourceAction(networkaclrulesResource, "status", c.ns, networkACLRule), &v1alpha1.NetworkACLRule{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.NetworkAclRule), err
+	return obj.(*v1alpha1.NetworkACLRule), err
 }
 
-// Delete takes name of the networkAclRule and deletes it. Returns an error if one occurs.
-func (c *FakeNetworkAclRules) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the networkACLRule and deletes it. Returns an error if one occurs.
+func (c *FakeNetworkACLRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(networkaclrulesResource, name), &v1alpha1.NetworkAclRule{})
+		Invokes(testing.NewDeleteAction(networkaclrulesResource, c.ns, name), &v1alpha1.NetworkACLRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeNetworkAclRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(networkaclrulesResource, listOptions)
+func (c *FakeNetworkACLRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(networkaclrulesResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.NetworkAclRuleList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.NetworkACLRuleList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched networkAclRule.
-func (c *FakeNetworkAclRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkAclRule, err error) {
+// Patch applies the patch and returns the patched networkACLRule.
+func (c *FakeNetworkACLRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkACLRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(networkaclrulesResource, name, pt, data, subresources...), &v1alpha1.NetworkAclRule{})
+		Invokes(testing.NewPatchSubresourceAction(networkaclrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.NetworkACLRule{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.NetworkAclRule), err
+	return obj.(*v1alpha1.NetworkACLRule), err
 }

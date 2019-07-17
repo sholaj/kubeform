@@ -32,7 +32,7 @@ import (
 // GuarddutyMembersGetter has a method to return a GuarddutyMemberInterface.
 // A group's client should implement this interface.
 type GuarddutyMembersGetter interface {
-	GuarddutyMembers() GuarddutyMemberInterface
+	GuarddutyMembers(namespace string) GuarddutyMemberInterface
 }
 
 // GuarddutyMemberInterface has methods to work with GuarddutyMember resources.
@@ -52,12 +52,14 @@ type GuarddutyMemberInterface interface {
 // guarddutyMembers implements GuarddutyMemberInterface
 type guarddutyMembers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newGuarddutyMembers returns a GuarddutyMembers
-func newGuarddutyMembers(c *AwsV1alpha1Client) *guarddutyMembers {
+func newGuarddutyMembers(c *AwsV1alpha1Client, namespace string) *guarddutyMembers {
 	return &guarddutyMembers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newGuarddutyMembers(c *AwsV1alpha1Client) *guarddutyMembers {
 func (c *guarddutyMembers) Get(name string, options v1.GetOptions) (result *v1alpha1.GuarddutyMember, err error) {
 	result = &v1alpha1.GuarddutyMember{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("guarddutymembers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *guarddutyMembers) List(opts v1.ListOptions) (result *v1alpha1.Guardduty
 	}
 	result = &v1alpha1.GuarddutyMemberList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("guarddutymembers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *guarddutyMembers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("guarddutymembers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *guarddutyMembers) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *guarddutyMembers) Create(guarddutyMember *v1alpha1.GuarddutyMember) (result *v1alpha1.GuarddutyMember, err error) {
 	result = &v1alpha1.GuarddutyMember{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("guarddutymembers").
 		Body(guarddutyMember).
 		Do().
@@ -118,6 +124,7 @@ func (c *guarddutyMembers) Create(guarddutyMember *v1alpha1.GuarddutyMember) (re
 func (c *guarddutyMembers) Update(guarddutyMember *v1alpha1.GuarddutyMember) (result *v1alpha1.GuarddutyMember, err error) {
 	result = &v1alpha1.GuarddutyMember{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("guarddutymembers").
 		Name(guarddutyMember.Name).
 		Body(guarddutyMember).
@@ -132,6 +139,7 @@ func (c *guarddutyMembers) Update(guarddutyMember *v1alpha1.GuarddutyMember) (re
 func (c *guarddutyMembers) UpdateStatus(guarddutyMember *v1alpha1.GuarddutyMember) (result *v1alpha1.GuarddutyMember, err error) {
 	result = &v1alpha1.GuarddutyMember{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("guarddutymembers").
 		Name(guarddutyMember.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *guarddutyMembers) UpdateStatus(guarddutyMember *v1alpha1.GuarddutyMembe
 // Delete takes name of the guarddutyMember and deletes it. Returns an error if one occurs.
 func (c *guarddutyMembers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("guarddutymembers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *guarddutyMembers) DeleteCollection(options *v1.DeleteOptions, listOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("guarddutymembers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *guarddutyMembers) DeleteCollection(options *v1.DeleteOptions, listOptio
 func (c *guarddutyMembers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.GuarddutyMember, err error) {
 	result = &v1alpha1.GuarddutyMember{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("guarddutymembers").
 		SubResource(subresources...).
 		Name(name).

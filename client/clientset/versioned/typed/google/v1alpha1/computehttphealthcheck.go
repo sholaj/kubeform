@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// ComputeHttpHealthChecksGetter has a method to return a ComputeHttpHealthCheckInterface.
+// ComputeHTTPHealthChecksGetter has a method to return a ComputeHTTPHealthCheckInterface.
 // A group's client should implement this interface.
-type ComputeHttpHealthChecksGetter interface {
-	ComputeHttpHealthChecks() ComputeHttpHealthCheckInterface
+type ComputeHTTPHealthChecksGetter interface {
+	ComputeHTTPHealthChecks(namespace string) ComputeHTTPHealthCheckInterface
 }
 
-// ComputeHttpHealthCheckInterface has methods to work with ComputeHttpHealthCheck resources.
-type ComputeHttpHealthCheckInterface interface {
-	Create(*v1alpha1.ComputeHttpHealthCheck) (*v1alpha1.ComputeHttpHealthCheck, error)
-	Update(*v1alpha1.ComputeHttpHealthCheck) (*v1alpha1.ComputeHttpHealthCheck, error)
-	UpdateStatus(*v1alpha1.ComputeHttpHealthCheck) (*v1alpha1.ComputeHttpHealthCheck, error)
+// ComputeHTTPHealthCheckInterface has methods to work with ComputeHTTPHealthCheck resources.
+type ComputeHTTPHealthCheckInterface interface {
+	Create(*v1alpha1.ComputeHTTPHealthCheck) (*v1alpha1.ComputeHTTPHealthCheck, error)
+	Update(*v1alpha1.ComputeHTTPHealthCheck) (*v1alpha1.ComputeHTTPHealthCheck, error)
+	UpdateStatus(*v1alpha1.ComputeHTTPHealthCheck) (*v1alpha1.ComputeHTTPHealthCheck, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.ComputeHttpHealthCheck, error)
-	List(opts v1.ListOptions) (*v1alpha1.ComputeHttpHealthCheckList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.ComputeHTTPHealthCheck, error)
+	List(opts v1.ListOptions) (*v1alpha1.ComputeHTTPHealthCheckList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeHttpHealthCheck, err error)
-	ComputeHttpHealthCheckExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeHTTPHealthCheck, err error)
+	ComputeHTTPHealthCheckExpansion
 }
 
-// computeHttpHealthChecks implements ComputeHttpHealthCheckInterface
-type computeHttpHealthChecks struct {
+// computeHTTPHealthChecks implements ComputeHTTPHealthCheckInterface
+type computeHTTPHealthChecks struct {
 	client rest.Interface
+	ns     string
 }
 
-// newComputeHttpHealthChecks returns a ComputeHttpHealthChecks
-func newComputeHttpHealthChecks(c *GoogleV1alpha1Client) *computeHttpHealthChecks {
-	return &computeHttpHealthChecks{
+// newComputeHTTPHealthChecks returns a ComputeHTTPHealthChecks
+func newComputeHTTPHealthChecks(c *GoogleV1alpha1Client, namespace string) *computeHTTPHealthChecks {
+	return &computeHTTPHealthChecks{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the computeHttpHealthCheck, and returns the corresponding computeHttpHealthCheck object, and an error if there is any.
-func (c *computeHttpHealthChecks) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeHttpHealthCheck, err error) {
-	result = &v1alpha1.ComputeHttpHealthCheck{}
+// Get takes name of the computeHTTPHealthCheck, and returns the corresponding computeHTTPHealthCheck object, and an error if there is any.
+func (c *computeHTTPHealthChecks) Get(name string, options v1.GetOptions) (result *v1alpha1.ComputeHTTPHealthCheck, err error) {
+	result = &v1alpha1.ComputeHTTPHealthCheck{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computehttphealthchecks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *computeHttpHealthChecks) Get(name string, options v1.GetOptions) (resul
 	return
 }
 
-// List takes label and field selectors, and returns the list of ComputeHttpHealthChecks that match those selectors.
-func (c *computeHttpHealthChecks) List(opts v1.ListOptions) (result *v1alpha1.ComputeHttpHealthCheckList, err error) {
+// List takes label and field selectors, and returns the list of ComputeHTTPHealthChecks that match those selectors.
+func (c *computeHTTPHealthChecks) List(opts v1.ListOptions) (result *v1alpha1.ComputeHTTPHealthCheckList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.ComputeHttpHealthCheckList{}
+	result = &v1alpha1.ComputeHTTPHealthCheckList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("computehttphealthchecks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *computeHttpHealthChecks) List(opts v1.ListOptions) (result *v1alpha1.Co
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested computeHttpHealthChecks.
-func (c *computeHttpHealthChecks) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested computeHTTPHealthChecks.
+func (c *computeHTTPHealthChecks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("computehttphealthchecks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a computeHttpHealthCheck and creates it.  Returns the server's representation of the computeHttpHealthCheck, and an error, if there is any.
-func (c *computeHttpHealthChecks) Create(computeHttpHealthCheck *v1alpha1.ComputeHttpHealthCheck) (result *v1alpha1.ComputeHttpHealthCheck, err error) {
-	result = &v1alpha1.ComputeHttpHealthCheck{}
+// Create takes the representation of a computeHTTPHealthCheck and creates it.  Returns the server's representation of the computeHTTPHealthCheck, and an error, if there is any.
+func (c *computeHTTPHealthChecks) Create(computeHTTPHealthCheck *v1alpha1.ComputeHTTPHealthCheck) (result *v1alpha1.ComputeHTTPHealthCheck, err error) {
+	result = &v1alpha1.ComputeHTTPHealthCheck{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("computehttphealthchecks").
-		Body(computeHttpHealthCheck).
+		Body(computeHTTPHealthCheck).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a computeHttpHealthCheck and updates it. Returns the server's representation of the computeHttpHealthCheck, and an error, if there is any.
-func (c *computeHttpHealthChecks) Update(computeHttpHealthCheck *v1alpha1.ComputeHttpHealthCheck) (result *v1alpha1.ComputeHttpHealthCheck, err error) {
-	result = &v1alpha1.ComputeHttpHealthCheck{}
+// Update takes the representation of a computeHTTPHealthCheck and updates it. Returns the server's representation of the computeHTTPHealthCheck, and an error, if there is any.
+func (c *computeHTTPHealthChecks) Update(computeHTTPHealthCheck *v1alpha1.ComputeHTTPHealthCheck) (result *v1alpha1.ComputeHTTPHealthCheck, err error) {
+	result = &v1alpha1.ComputeHTTPHealthCheck{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computehttphealthchecks").
-		Name(computeHttpHealthCheck.Name).
-		Body(computeHttpHealthCheck).
+		Name(computeHTTPHealthCheck.Name).
+		Body(computeHTTPHealthCheck).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *computeHttpHealthChecks) Update(computeHttpHealthCheck *v1alpha1.Comput
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *computeHttpHealthChecks) UpdateStatus(computeHttpHealthCheck *v1alpha1.ComputeHttpHealthCheck) (result *v1alpha1.ComputeHttpHealthCheck, err error) {
-	result = &v1alpha1.ComputeHttpHealthCheck{}
+func (c *computeHTTPHealthChecks) UpdateStatus(computeHTTPHealthCheck *v1alpha1.ComputeHTTPHealthCheck) (result *v1alpha1.ComputeHTTPHealthCheck, err error) {
+	result = &v1alpha1.ComputeHTTPHealthCheck{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("computehttphealthchecks").
-		Name(computeHttpHealthCheck.Name).
+		Name(computeHTTPHealthCheck.Name).
 		SubResource("status").
-		Body(computeHttpHealthCheck).
+		Body(computeHTTPHealthCheck).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the computeHttpHealthCheck and deletes it. Returns an error if one occurs.
-func (c *computeHttpHealthChecks) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the computeHTTPHealthCheck and deletes it. Returns an error if one occurs.
+func (c *computeHTTPHealthChecks) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computehttphealthchecks").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *computeHttpHealthChecks) Delete(name string, options *v1.DeleteOptions)
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *computeHttpHealthChecks) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *computeHTTPHealthChecks) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("computehttphealthchecks").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *computeHttpHealthChecks) DeleteCollection(options *v1.DeleteOptions, li
 		Error()
 }
 
-// Patch applies the patch and returns the patched computeHttpHealthCheck.
-func (c *computeHttpHealthChecks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeHttpHealthCheck, err error) {
-	result = &v1alpha1.ComputeHttpHealthCheck{}
+// Patch applies the patch and returns the patched computeHTTPHealthCheck.
+func (c *computeHTTPHealthChecks) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ComputeHTTPHealthCheck, err error) {
+	result = &v1alpha1.ComputeHTTPHealthCheck{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("computehttphealthchecks").
 		SubResource(subresources...).
 		Name(name).

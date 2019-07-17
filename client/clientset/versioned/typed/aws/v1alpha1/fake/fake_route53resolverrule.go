@@ -31,6 +31,7 @@ import (
 // FakeRoute53ResolverRules implements Route53ResolverRuleInterface
 type FakeRoute53ResolverRules struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var route53resolverrulesResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "route53resolverrules"}
@@ -40,7 +41,8 @@ var route53resolverrulesKind = schema.GroupVersionKind{Group: "aws.kubeform.com"
 // Get takes name of the route53ResolverRule, and returns the corresponding route53ResolverRule object, and an error if there is any.
 func (c *FakeRoute53ResolverRules) Get(name string, options v1.GetOptions) (result *v1alpha1.Route53ResolverRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(route53resolverrulesResource, name), &v1alpha1.Route53ResolverRule{})
+		Invokes(testing.NewGetAction(route53resolverrulesResource, c.ns, name), &v1alpha1.Route53ResolverRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRoute53ResolverRules) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of Route53ResolverRules that match those selectors.
 func (c *FakeRoute53ResolverRules) List(opts v1.ListOptions) (result *v1alpha1.Route53ResolverRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(route53resolverrulesResource, route53resolverrulesKind, opts), &v1alpha1.Route53ResolverRuleList{})
+		Invokes(testing.NewListAction(route53resolverrulesResource, route53resolverrulesKind, c.ns, opts), &v1alpha1.Route53ResolverRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRoute53ResolverRules) List(opts v1.ListOptions) (result *v1alpha1.R
 // Watch returns a watch.Interface that watches the requested route53ResolverRules.
 func (c *FakeRoute53ResolverRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(route53resolverrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(route53resolverrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a route53ResolverRule and creates it.  Returns the server's representation of the route53ResolverRule, and an error, if there is any.
 func (c *FakeRoute53ResolverRules) Create(route53ResolverRule *v1alpha1.Route53ResolverRule) (result *v1alpha1.Route53ResolverRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(route53resolverrulesResource, route53ResolverRule), &v1alpha1.Route53ResolverRule{})
+		Invokes(testing.NewCreateAction(route53resolverrulesResource, c.ns, route53ResolverRule), &v1alpha1.Route53ResolverRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRoute53ResolverRules) Create(route53ResolverRule *v1alpha1.Route53R
 // Update takes the representation of a route53ResolverRule and updates it. Returns the server's representation of the route53ResolverRule, and an error, if there is any.
 func (c *FakeRoute53ResolverRules) Update(route53ResolverRule *v1alpha1.Route53ResolverRule) (result *v1alpha1.Route53ResolverRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(route53resolverrulesResource, route53ResolverRule), &v1alpha1.Route53ResolverRule{})
+		Invokes(testing.NewUpdateAction(route53resolverrulesResource, c.ns, route53ResolverRule), &v1alpha1.Route53ResolverRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRoute53ResolverRules) Update(route53ResolverRule *v1alpha1.Route53R
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRoute53ResolverRules) UpdateStatus(route53ResolverRule *v1alpha1.Route53ResolverRule) (*v1alpha1.Route53ResolverRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(route53resolverrulesResource, "status", route53ResolverRule), &v1alpha1.Route53ResolverRule{})
+		Invokes(testing.NewUpdateSubresourceAction(route53resolverrulesResource, "status", c.ns, route53ResolverRule), &v1alpha1.Route53ResolverRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRoute53ResolverRules) UpdateStatus(route53ResolverRule *v1alpha1.Ro
 // Delete takes name of the route53ResolverRule and deletes it. Returns an error if one occurs.
 func (c *FakeRoute53ResolverRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(route53resolverrulesResource, name), &v1alpha1.Route53ResolverRule{})
+		Invokes(testing.NewDeleteAction(route53resolverrulesResource, c.ns, name), &v1alpha1.Route53ResolverRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRoute53ResolverRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(route53resolverrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(route53resolverrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.Route53ResolverRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRoute53ResolverRules) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched route53ResolverRule.
 func (c *FakeRoute53ResolverRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Route53ResolverRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(route53resolverrulesResource, name, pt, data, subresources...), &v1alpha1.Route53ResolverRule{})
+		Invokes(testing.NewPatchSubresourceAction(route53resolverrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.Route53ResolverRule{})
+
 	if obj == nil {
 		return nil, err
 	}

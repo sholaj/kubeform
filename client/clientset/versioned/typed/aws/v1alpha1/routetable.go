@@ -32,7 +32,7 @@ import (
 // RouteTablesGetter has a method to return a RouteTableInterface.
 // A group's client should implement this interface.
 type RouteTablesGetter interface {
-	RouteTables() RouteTableInterface
+	RouteTables(namespace string) RouteTableInterface
 }
 
 // RouteTableInterface has methods to work with RouteTable resources.
@@ -52,12 +52,14 @@ type RouteTableInterface interface {
 // routeTables implements RouteTableInterface
 type routeTables struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRouteTables returns a RouteTables
-func newRouteTables(c *AwsV1alpha1Client) *routeTables {
+func newRouteTables(c *AwsV1alpha1Client, namespace string) *routeTables {
 	return &routeTables{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRouteTables(c *AwsV1alpha1Client) *routeTables {
 func (c *routeTables) Get(name string, options v1.GetOptions) (result *v1alpha1.RouteTable, err error) {
 	result = &v1alpha1.RouteTable{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("routetables").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *routeTables) List(opts v1.ListOptions) (result *v1alpha1.RouteTableList
 	}
 	result = &v1alpha1.RouteTableList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("routetables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *routeTables) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("routetables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *routeTables) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *routeTables) Create(routeTable *v1alpha1.RouteTable) (result *v1alpha1.RouteTable, err error) {
 	result = &v1alpha1.RouteTable{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("routetables").
 		Body(routeTable).
 		Do().
@@ -118,6 +124,7 @@ func (c *routeTables) Create(routeTable *v1alpha1.RouteTable) (result *v1alpha1.
 func (c *routeTables) Update(routeTable *v1alpha1.RouteTable) (result *v1alpha1.RouteTable, err error) {
 	result = &v1alpha1.RouteTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("routetables").
 		Name(routeTable.Name).
 		Body(routeTable).
@@ -132,6 +139,7 @@ func (c *routeTables) Update(routeTable *v1alpha1.RouteTable) (result *v1alpha1.
 func (c *routeTables) UpdateStatus(routeTable *v1alpha1.RouteTable) (result *v1alpha1.RouteTable, err error) {
 	result = &v1alpha1.RouteTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("routetables").
 		Name(routeTable.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *routeTables) UpdateStatus(routeTable *v1alpha1.RouteTable) (result *v1a
 // Delete takes name of the routeTable and deletes it. Returns an error if one occurs.
 func (c *routeTables) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("routetables").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *routeTables) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("routetables").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *routeTables) DeleteCollection(options *v1.DeleteOptions, listOptions v1
 func (c *routeTables) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RouteTable, err error) {
 	result = &v1alpha1.RouteTable{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("routetables").
 		SubResource(subresources...).
 		Name(name).

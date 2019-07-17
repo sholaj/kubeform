@@ -32,7 +32,7 @@ import (
 // CosmosdbTablesGetter has a method to return a CosmosdbTableInterface.
 // A group's client should implement this interface.
 type CosmosdbTablesGetter interface {
-	CosmosdbTables() CosmosdbTableInterface
+	CosmosdbTables(namespace string) CosmosdbTableInterface
 }
 
 // CosmosdbTableInterface has methods to work with CosmosdbTable resources.
@@ -52,12 +52,14 @@ type CosmosdbTableInterface interface {
 // cosmosdbTables implements CosmosdbTableInterface
 type cosmosdbTables struct {
 	client rest.Interface
+	ns     string
 }
 
 // newCosmosdbTables returns a CosmosdbTables
-func newCosmosdbTables(c *AzurermV1alpha1Client) *cosmosdbTables {
+func newCosmosdbTables(c *AzurermV1alpha1Client, namespace string) *cosmosdbTables {
 	return &cosmosdbTables{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newCosmosdbTables(c *AzurermV1alpha1Client) *cosmosdbTables {
 func (c *cosmosdbTables) Get(name string, options v1.GetOptions) (result *v1alpha1.CosmosdbTable, err error) {
 	result = &v1alpha1.CosmosdbTable{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cosmosdbtables").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *cosmosdbTables) List(opts v1.ListOptions) (result *v1alpha1.CosmosdbTab
 	}
 	result = &v1alpha1.CosmosdbTableList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("cosmosdbtables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *cosmosdbTables) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("cosmosdbtables").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *cosmosdbTables) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *cosmosdbTables) Create(cosmosdbTable *v1alpha1.CosmosdbTable) (result *v1alpha1.CosmosdbTable, err error) {
 	result = &v1alpha1.CosmosdbTable{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("cosmosdbtables").
 		Body(cosmosdbTable).
 		Do().
@@ -118,6 +124,7 @@ func (c *cosmosdbTables) Create(cosmosdbTable *v1alpha1.CosmosdbTable) (result *
 func (c *cosmosdbTables) Update(cosmosdbTable *v1alpha1.CosmosdbTable) (result *v1alpha1.CosmosdbTable, err error) {
 	result = &v1alpha1.CosmosdbTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cosmosdbtables").
 		Name(cosmosdbTable.Name).
 		Body(cosmosdbTable).
@@ -132,6 +139,7 @@ func (c *cosmosdbTables) Update(cosmosdbTable *v1alpha1.CosmosdbTable) (result *
 func (c *cosmosdbTables) UpdateStatus(cosmosdbTable *v1alpha1.CosmosdbTable) (result *v1alpha1.CosmosdbTable, err error) {
 	result = &v1alpha1.CosmosdbTable{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("cosmosdbtables").
 		Name(cosmosdbTable.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *cosmosdbTables) UpdateStatus(cosmosdbTable *v1alpha1.CosmosdbTable) (re
 // Delete takes name of the cosmosdbTable and deletes it. Returns an error if one occurs.
 func (c *cosmosdbTables) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cosmosdbtables").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *cosmosdbTables) DeleteCollection(options *v1.DeleteOptions, listOptions
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("cosmosdbtables").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *cosmosdbTables) DeleteCollection(options *v1.DeleteOptions, listOptions
 func (c *cosmosdbTables) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CosmosdbTable, err error) {
 	result = &v1alpha1.CosmosdbTable{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("cosmosdbtables").
 		SubResource(subresources...).
 		Name(name).

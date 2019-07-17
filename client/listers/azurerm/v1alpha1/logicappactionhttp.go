@@ -25,41 +25,70 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
 )
 
-// LogicAppActionHttpLister helps list LogicAppActionHttps.
-type LogicAppActionHttpLister interface {
-	// List lists all LogicAppActionHttps in the indexer.
-	List(selector labels.Selector) (ret []*v1alpha1.LogicAppActionHttp, err error)
-	// Get retrieves the LogicAppActionHttp from the index for a given name.
-	Get(name string) (*v1alpha1.LogicAppActionHttp, error)
-	LogicAppActionHttpListerExpansion
+// LogicAppActionHTTPLister helps list LogicAppActionHTTPs.
+type LogicAppActionHTTPLister interface {
+	// List lists all LogicAppActionHTTPs in the indexer.
+	List(selector labels.Selector) (ret []*v1alpha1.LogicAppActionHTTP, err error)
+	// LogicAppActionHTTPs returns an object that can list and get LogicAppActionHTTPs.
+	LogicAppActionHTTPs(namespace string) LogicAppActionHTTPNamespaceLister
+	LogicAppActionHTTPListerExpansion
 }
 
-// logicAppActionHttpLister implements the LogicAppActionHttpLister interface.
-type logicAppActionHttpLister struct {
+// logicAppActionHTTPLister implements the LogicAppActionHTTPLister interface.
+type logicAppActionHTTPLister struct {
 	indexer cache.Indexer
 }
 
-// NewLogicAppActionHttpLister returns a new LogicAppActionHttpLister.
-func NewLogicAppActionHttpLister(indexer cache.Indexer) LogicAppActionHttpLister {
-	return &logicAppActionHttpLister{indexer: indexer}
+// NewLogicAppActionHTTPLister returns a new LogicAppActionHTTPLister.
+func NewLogicAppActionHTTPLister(indexer cache.Indexer) LogicAppActionHTTPLister {
+	return &logicAppActionHTTPLister{indexer: indexer}
 }
 
-// List lists all LogicAppActionHttps in the indexer.
-func (s *logicAppActionHttpLister) List(selector labels.Selector) (ret []*v1alpha1.LogicAppActionHttp, err error) {
+// List lists all LogicAppActionHTTPs in the indexer.
+func (s *logicAppActionHTTPLister) List(selector labels.Selector) (ret []*v1alpha1.LogicAppActionHTTP, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.LogicAppActionHttp))
+		ret = append(ret, m.(*v1alpha1.LogicAppActionHTTP))
 	})
 	return ret, err
 }
 
-// Get retrieves the LogicAppActionHttp from the index for a given name.
-func (s *logicAppActionHttpLister) Get(name string) (*v1alpha1.LogicAppActionHttp, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// LogicAppActionHTTPs returns an object that can list and get LogicAppActionHTTPs.
+func (s *logicAppActionHTTPLister) LogicAppActionHTTPs(namespace string) LogicAppActionHTTPNamespaceLister {
+	return logicAppActionHTTPNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// LogicAppActionHTTPNamespaceLister helps list and get LogicAppActionHTTPs.
+type LogicAppActionHTTPNamespaceLister interface {
+	// List lists all LogicAppActionHTTPs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.LogicAppActionHTTP, err error)
+	// Get retrieves the LogicAppActionHTTP from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.LogicAppActionHTTP, error)
+	LogicAppActionHTTPNamespaceListerExpansion
+}
+
+// logicAppActionHTTPNamespaceLister implements the LogicAppActionHTTPNamespaceLister
+// interface.
+type logicAppActionHTTPNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all LogicAppActionHTTPs in the indexer for a given namespace.
+func (s logicAppActionHTTPNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.LogicAppActionHTTP, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.LogicAppActionHTTP))
+	})
+	return ret, err
+}
+
+// Get retrieves the LogicAppActionHTTP from the indexer for a given namespace and name.
+func (s logicAppActionHTTPNamespaceLister) Get(name string) (*v1alpha1.LogicAppActionHTTP, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, errors.NewNotFound(v1alpha1.Resource("logicappactionhttp"), name)
 	}
-	return obj.(*v1alpha1.LogicAppActionHttp), nil
+	return obj.(*v1alpha1.LogicAppActionHTTP), nil
 }

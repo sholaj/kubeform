@@ -31,6 +31,7 @@ import (
 // FakeIothubSharedAccessPolicies implements IothubSharedAccessPolicyInterface
 type FakeIothubSharedAccessPolicies struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var iothubsharedaccesspoliciesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "iothubsharedaccesspolicies"}
@@ -40,7 +41,8 @@ var iothubsharedaccesspoliciesKind = schema.GroupVersionKind{Group: "azurerm.kub
 // Get takes name of the iothubSharedAccessPolicy, and returns the corresponding iothubSharedAccessPolicy object, and an error if there is any.
 func (c *FakeIothubSharedAccessPolicies) Get(name string, options v1.GetOptions) (result *v1alpha1.IothubSharedAccessPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iothubsharedaccesspoliciesResource, name), &v1alpha1.IothubSharedAccessPolicy{})
+		Invokes(testing.NewGetAction(iothubsharedaccesspoliciesResource, c.ns, name), &v1alpha1.IothubSharedAccessPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIothubSharedAccessPolicies) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of IothubSharedAccessPolicies that match those selectors.
 func (c *FakeIothubSharedAccessPolicies) List(opts v1.ListOptions) (result *v1alpha1.IothubSharedAccessPolicyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iothubsharedaccesspoliciesResource, iothubsharedaccesspoliciesKind, opts), &v1alpha1.IothubSharedAccessPolicyList{})
+		Invokes(testing.NewListAction(iothubsharedaccesspoliciesResource, iothubsharedaccesspoliciesKind, c.ns, opts), &v1alpha1.IothubSharedAccessPolicyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIothubSharedAccessPolicies) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested iothubSharedAccessPolicies.
 func (c *FakeIothubSharedAccessPolicies) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iothubsharedaccesspoliciesResource, opts))
+		InvokesWatch(testing.NewWatchAction(iothubsharedaccesspoliciesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iothubSharedAccessPolicy and creates it.  Returns the server's representation of the iothubSharedAccessPolicy, and an error, if there is any.
 func (c *FakeIothubSharedAccessPolicies) Create(iothubSharedAccessPolicy *v1alpha1.IothubSharedAccessPolicy) (result *v1alpha1.IothubSharedAccessPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iothubsharedaccesspoliciesResource, iothubSharedAccessPolicy), &v1alpha1.IothubSharedAccessPolicy{})
+		Invokes(testing.NewCreateAction(iothubsharedaccesspoliciesResource, c.ns, iothubSharedAccessPolicy), &v1alpha1.IothubSharedAccessPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIothubSharedAccessPolicies) Create(iothubSharedAccessPolicy *v1alph
 // Update takes the representation of a iothubSharedAccessPolicy and updates it. Returns the server's representation of the iothubSharedAccessPolicy, and an error, if there is any.
 func (c *FakeIothubSharedAccessPolicies) Update(iothubSharedAccessPolicy *v1alpha1.IothubSharedAccessPolicy) (result *v1alpha1.IothubSharedAccessPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iothubsharedaccesspoliciesResource, iothubSharedAccessPolicy), &v1alpha1.IothubSharedAccessPolicy{})
+		Invokes(testing.NewUpdateAction(iothubsharedaccesspoliciesResource, c.ns, iothubSharedAccessPolicy), &v1alpha1.IothubSharedAccessPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIothubSharedAccessPolicies) Update(iothubSharedAccessPolicy *v1alph
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIothubSharedAccessPolicies) UpdateStatus(iothubSharedAccessPolicy *v1alpha1.IothubSharedAccessPolicy) (*v1alpha1.IothubSharedAccessPolicy, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iothubsharedaccesspoliciesResource, "status", iothubSharedAccessPolicy), &v1alpha1.IothubSharedAccessPolicy{})
+		Invokes(testing.NewUpdateSubresourceAction(iothubsharedaccesspoliciesResource, "status", c.ns, iothubSharedAccessPolicy), &v1alpha1.IothubSharedAccessPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIothubSharedAccessPolicies) UpdateStatus(iothubSharedAccessPolicy *
 // Delete takes name of the iothubSharedAccessPolicy and deletes it. Returns an error if one occurs.
 func (c *FakeIothubSharedAccessPolicies) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iothubsharedaccesspoliciesResource, name), &v1alpha1.IothubSharedAccessPolicy{})
+		Invokes(testing.NewDeleteAction(iothubsharedaccesspoliciesResource, c.ns, name), &v1alpha1.IothubSharedAccessPolicy{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIothubSharedAccessPolicies) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iothubsharedaccesspoliciesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iothubsharedaccesspoliciesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IothubSharedAccessPolicyList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIothubSharedAccessPolicies) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched iothubSharedAccessPolicy.
 func (c *FakeIothubSharedAccessPolicies) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IothubSharedAccessPolicy, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iothubsharedaccesspoliciesResource, name, pt, data, subresources...), &v1alpha1.IothubSharedAccessPolicy{})
+		Invokes(testing.NewPatchSubresourceAction(iothubsharedaccesspoliciesResource, c.ns, name, pt, data, subresources...), &v1alpha1.IothubSharedAccessPolicy{})
+
 	if obj == nil {
 		return nil, err
 	}

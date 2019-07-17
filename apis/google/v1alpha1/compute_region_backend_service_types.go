@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,24 +20,25 @@ type ComputeRegionBackendService struct {
 
 type ComputeRegionBackendServiceSpecBackend struct {
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	Group string `json:"group,omitempty"`
+	Group string `json:"group,omitempty" tf:"group,omitempty"`
 }
 
 type ComputeRegionBackendServiceSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Backend *[]ComputeRegionBackendServiceSpec `json:"backend,omitempty"`
+	Backend []ComputeRegionBackendServiceSpecBackend `json:"backend,omitempty" tf:"backend,omitempty"`
 	// +optional
-	ConnectionDrainingTimeoutSec int `json:"connection_draining_timeout_sec,omitempty"`
+	ConnectionDrainingTimeoutSec int `json:"connectionDrainingTimeoutSec,omitempty" tf:"connection_draining_timeout_sec,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	HealthChecks []string `json:"health_checks"`
-	Name         string   `json:"name"`
+	HealthChecks []string                  `json:"healthChecks" tf:"health_checks"`
+	Name         string                    `json:"name" tf:"name"`
+	ProviderRef  core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ComputeRegionBackendServiceStatus struct {
@@ -45,7 +46,9 @@ type ComputeRegionBackendServiceStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

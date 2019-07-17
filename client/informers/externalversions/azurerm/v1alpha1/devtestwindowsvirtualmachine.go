@@ -41,32 +41,33 @@ type DevTestWindowsVirtualMachineInformer interface {
 type devTestWindowsVirtualMachineInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDevTestWindowsVirtualMachineInformer constructs a new informer for DevTestWindowsVirtualMachine type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDevTestWindowsVirtualMachineInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDevTestWindowsVirtualMachineInformer(client, resyncPeriod, indexers, nil)
+func NewDevTestWindowsVirtualMachineInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDevTestWindowsVirtualMachineInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDevTestWindowsVirtualMachineInformer constructs a new informer for DevTestWindowsVirtualMachine type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDevTestWindowsVirtualMachineInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDevTestWindowsVirtualMachineInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DevTestWindowsVirtualMachines().List(options)
+				return client.AzurermV1alpha1().DevTestWindowsVirtualMachines(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().DevTestWindowsVirtualMachines().Watch(options)
+				return client.AzurermV1alpha1().DevTestWindowsVirtualMachines(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.DevTestWindowsVirtualMachine{},
@@ -76,7 +77,7 @@ func NewFilteredDevTestWindowsVirtualMachineInformer(client versioned.Interface,
 }
 
 func (f *devTestWindowsVirtualMachineInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDevTestWindowsVirtualMachineInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDevTestWindowsVirtualMachineInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *devTestWindowsVirtualMachineInformer) Informer() cache.SharedIndexInformer {

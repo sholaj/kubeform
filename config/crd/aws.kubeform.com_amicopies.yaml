@@ -403,9 +403,18 @@ spec:
               type: boolean
             name:
               type: string
-            source_ami_id:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            sourceAmiID:
               type: string
-            source_ami_region:
+            sourceAmiRegion:
               type: string
             tags:
               additionalProperties:
@@ -413,8 +422,9 @@ spec:
               type: object
           required:
           - name
-          - source_ami_id
-          - source_ami_region
+          - providerRef
+          - sourceAmiID
+          - sourceAmiRegion
           type: object
         status:
           properties:
@@ -425,6 +435,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

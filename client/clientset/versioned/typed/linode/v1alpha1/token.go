@@ -32,7 +32,7 @@ import (
 // TokensGetter has a method to return a TokenInterface.
 // A group's client should implement this interface.
 type TokensGetter interface {
-	Tokens() TokenInterface
+	Tokens(namespace string) TokenInterface
 }
 
 // TokenInterface has methods to work with Token resources.
@@ -52,12 +52,14 @@ type TokenInterface interface {
 // tokens implements TokenInterface
 type tokens struct {
 	client rest.Interface
+	ns     string
 }
 
 // newTokens returns a Tokens
-func newTokens(c *LinodeV1alpha1Client) *tokens {
+func newTokens(c *LinodeV1alpha1Client, namespace string) *tokens {
 	return &tokens{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newTokens(c *LinodeV1alpha1Client) *tokens {
 func (c *tokens) Get(name string, options v1.GetOptions) (result *v1alpha1.Token, err error) {
 	result = &v1alpha1.Token{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("tokens").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *tokens) List(opts v1.ListOptions) (result *v1alpha1.TokenList, err erro
 	}
 	result = &v1alpha1.TokenList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("tokens").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *tokens) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("tokens").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *tokens) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *tokens) Create(token *v1alpha1.Token) (result *v1alpha1.Token, err error) {
 	result = &v1alpha1.Token{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("tokens").
 		Body(token).
 		Do().
@@ -118,6 +124,7 @@ func (c *tokens) Create(token *v1alpha1.Token) (result *v1alpha1.Token, err erro
 func (c *tokens) Update(token *v1alpha1.Token) (result *v1alpha1.Token, err error) {
 	result = &v1alpha1.Token{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("tokens").
 		Name(token.Name).
 		Body(token).
@@ -132,6 +139,7 @@ func (c *tokens) Update(token *v1alpha1.Token) (result *v1alpha1.Token, err erro
 func (c *tokens) UpdateStatus(token *v1alpha1.Token) (result *v1alpha1.Token, err error) {
 	result = &v1alpha1.Token{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("tokens").
 		Name(token.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *tokens) UpdateStatus(token *v1alpha1.Token) (result *v1alpha1.Token, er
 // Delete takes name of the token and deletes it. Returns an error if one occurs.
 func (c *tokens) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("tokens").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *tokens) DeleteCollection(options *v1.DeleteOptions, listOptions v1.List
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("tokens").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *tokens) DeleteCollection(options *v1.DeleteOptions, listOptions v1.List
 func (c *tokens) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Token, err error) {
 	result = &v1alpha1.Token{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("tokens").
 		SubResource(subresources...).
 		Name(name).

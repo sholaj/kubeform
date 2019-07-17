@@ -32,7 +32,7 @@ import (
 // DevTestWindowsVirtualMachinesGetter has a method to return a DevTestWindowsVirtualMachineInterface.
 // A group's client should implement this interface.
 type DevTestWindowsVirtualMachinesGetter interface {
-	DevTestWindowsVirtualMachines() DevTestWindowsVirtualMachineInterface
+	DevTestWindowsVirtualMachines(namespace string) DevTestWindowsVirtualMachineInterface
 }
 
 // DevTestWindowsVirtualMachineInterface has methods to work with DevTestWindowsVirtualMachine resources.
@@ -52,12 +52,14 @@ type DevTestWindowsVirtualMachineInterface interface {
 // devTestWindowsVirtualMachines implements DevTestWindowsVirtualMachineInterface
 type devTestWindowsVirtualMachines struct {
 	client rest.Interface
+	ns     string
 }
 
 // newDevTestWindowsVirtualMachines returns a DevTestWindowsVirtualMachines
-func newDevTestWindowsVirtualMachines(c *AzurermV1alpha1Client) *devTestWindowsVirtualMachines {
+func newDevTestWindowsVirtualMachines(c *AzurermV1alpha1Client, namespace string) *devTestWindowsVirtualMachines {
 	return &devTestWindowsVirtualMachines{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newDevTestWindowsVirtualMachines(c *AzurermV1alpha1Client) *devTestWindowsV
 func (c *devTestWindowsVirtualMachines) Get(name string, options v1.GetOptions) (result *v1alpha1.DevTestWindowsVirtualMachine, err error) {
 	result = &v1alpha1.DevTestWindowsVirtualMachine{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("devtestwindowsvirtualmachines").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *devTestWindowsVirtualMachines) List(opts v1.ListOptions) (result *v1alp
 	}
 	result = &v1alpha1.DevTestWindowsVirtualMachineList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("devtestwindowsvirtualmachines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *devTestWindowsVirtualMachines) Watch(opts v1.ListOptions) (watch.Interf
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("devtestwindowsvirtualmachines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *devTestWindowsVirtualMachines) Watch(opts v1.ListOptions) (watch.Interf
 func (c *devTestWindowsVirtualMachines) Create(devTestWindowsVirtualMachine *v1alpha1.DevTestWindowsVirtualMachine) (result *v1alpha1.DevTestWindowsVirtualMachine, err error) {
 	result = &v1alpha1.DevTestWindowsVirtualMachine{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("devtestwindowsvirtualmachines").
 		Body(devTestWindowsVirtualMachine).
 		Do().
@@ -118,6 +124,7 @@ func (c *devTestWindowsVirtualMachines) Create(devTestWindowsVirtualMachine *v1a
 func (c *devTestWindowsVirtualMachines) Update(devTestWindowsVirtualMachine *v1alpha1.DevTestWindowsVirtualMachine) (result *v1alpha1.DevTestWindowsVirtualMachine, err error) {
 	result = &v1alpha1.DevTestWindowsVirtualMachine{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("devtestwindowsvirtualmachines").
 		Name(devTestWindowsVirtualMachine.Name).
 		Body(devTestWindowsVirtualMachine).
@@ -132,6 +139,7 @@ func (c *devTestWindowsVirtualMachines) Update(devTestWindowsVirtualMachine *v1a
 func (c *devTestWindowsVirtualMachines) UpdateStatus(devTestWindowsVirtualMachine *v1alpha1.DevTestWindowsVirtualMachine) (result *v1alpha1.DevTestWindowsVirtualMachine, err error) {
 	result = &v1alpha1.DevTestWindowsVirtualMachine{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("devtestwindowsvirtualmachines").
 		Name(devTestWindowsVirtualMachine.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *devTestWindowsVirtualMachines) UpdateStatus(devTestWindowsVirtualMachin
 // Delete takes name of the devTestWindowsVirtualMachine and deletes it. Returns an error if one occurs.
 func (c *devTestWindowsVirtualMachines) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("devtestwindowsvirtualmachines").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *devTestWindowsVirtualMachines) DeleteCollection(options *v1.DeleteOptio
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("devtestwindowsvirtualmachines").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *devTestWindowsVirtualMachines) DeleteCollection(options *v1.DeleteOptio
 func (c *devTestWindowsVirtualMachines) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DevTestWindowsVirtualMachine, err error) {
 	result = &v1alpha1.DevTestWindowsVirtualMachine{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("devtestwindowsvirtualmachines").
 		SubResource(subresources...).
 		Name(name).

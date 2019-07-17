@@ -29,8 +29,8 @@ import (
 type MariadbServerLister interface {
 	// List lists all MariadbServers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.MariadbServer, err error)
-	// Get retrieves the MariadbServer from the index for a given name.
-	Get(name string) (*v1alpha1.MariadbServer, error)
+	// MariadbServers returns an object that can list and get MariadbServers.
+	MariadbServers(namespace string) MariadbServerNamespaceLister
 	MariadbServerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *mariadbServerLister) List(selector labels.Selector) (ret []*v1alpha1.Ma
 	return ret, err
 }
 
-// Get retrieves the MariadbServer from the index for a given name.
-func (s *mariadbServerLister) Get(name string) (*v1alpha1.MariadbServer, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// MariadbServers returns an object that can list and get MariadbServers.
+func (s *mariadbServerLister) MariadbServers(namespace string) MariadbServerNamespaceLister {
+	return mariadbServerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// MariadbServerNamespaceLister helps list and get MariadbServers.
+type MariadbServerNamespaceLister interface {
+	// List lists all MariadbServers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.MariadbServer, err error)
+	// Get retrieves the MariadbServer from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.MariadbServer, error)
+	MariadbServerNamespaceListerExpansion
+}
+
+// mariadbServerNamespaceLister implements the MariadbServerNamespaceLister
+// interface.
+type mariadbServerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all MariadbServers in the indexer for a given namespace.
+func (s mariadbServerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.MariadbServer, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.MariadbServer))
+	})
+	return ret, err
+}
+
+// Get retrieves the MariadbServer from the indexer for a given namespace and name.
+func (s mariadbServerNamespaceLister) Get(name string) (*v1alpha1.MariadbServer, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

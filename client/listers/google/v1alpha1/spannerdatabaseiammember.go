@@ -29,8 +29,8 @@ import (
 type SpannerDatabaseIamMemberLister interface {
 	// List lists all SpannerDatabaseIamMembers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SpannerDatabaseIamMember, err error)
-	// Get retrieves the SpannerDatabaseIamMember from the index for a given name.
-	Get(name string) (*v1alpha1.SpannerDatabaseIamMember, error)
+	// SpannerDatabaseIamMembers returns an object that can list and get SpannerDatabaseIamMembers.
+	SpannerDatabaseIamMembers(namespace string) SpannerDatabaseIamMemberNamespaceLister
 	SpannerDatabaseIamMemberListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *spannerDatabaseIamMemberLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the SpannerDatabaseIamMember from the index for a given name.
-func (s *spannerDatabaseIamMemberLister) Get(name string) (*v1alpha1.SpannerDatabaseIamMember, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SpannerDatabaseIamMembers returns an object that can list and get SpannerDatabaseIamMembers.
+func (s *spannerDatabaseIamMemberLister) SpannerDatabaseIamMembers(namespace string) SpannerDatabaseIamMemberNamespaceLister {
+	return spannerDatabaseIamMemberNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SpannerDatabaseIamMemberNamespaceLister helps list and get SpannerDatabaseIamMembers.
+type SpannerDatabaseIamMemberNamespaceLister interface {
+	// List lists all SpannerDatabaseIamMembers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SpannerDatabaseIamMember, err error)
+	// Get retrieves the SpannerDatabaseIamMember from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SpannerDatabaseIamMember, error)
+	SpannerDatabaseIamMemberNamespaceListerExpansion
+}
+
+// spannerDatabaseIamMemberNamespaceLister implements the SpannerDatabaseIamMemberNamespaceLister
+// interface.
+type spannerDatabaseIamMemberNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SpannerDatabaseIamMembers in the indexer for a given namespace.
+func (s spannerDatabaseIamMemberNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SpannerDatabaseIamMember, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SpannerDatabaseIamMember))
+	})
+	return ret, err
+}
+
+// Get retrieves the SpannerDatabaseIamMember from the indexer for a given namespace and name.
+func (s spannerDatabaseIamMemberNamespaceLister) Get(name string) (*v1alpha1.SpannerDatabaseIamMember, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

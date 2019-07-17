@@ -29,8 +29,8 @@ import (
 type NotificationHubNamespaceLister interface {
 	// List lists all NotificationHubNamespaces in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.NotificationHubNamespace, err error)
-	// Get retrieves the NotificationHubNamespace from the index for a given name.
-	Get(name string) (*v1alpha1.NotificationHubNamespace, error)
+	// NotificationHubNamespaces returns an object that can list and get NotificationHubNamespaces.
+	NotificationHubNamespaces(namespace string) NotificationHubNamespaceNamespaceLister
 	NotificationHubNamespaceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *notificationHubNamespaceLister) List(selector labels.Selector) (ret []*
 	return ret, err
 }
 
-// Get retrieves the NotificationHubNamespace from the index for a given name.
-func (s *notificationHubNamespaceLister) Get(name string) (*v1alpha1.NotificationHubNamespace, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// NotificationHubNamespaces returns an object that can list and get NotificationHubNamespaces.
+func (s *notificationHubNamespaceLister) NotificationHubNamespaces(namespace string) NotificationHubNamespaceNamespaceLister {
+	return notificationHubNamespaceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// NotificationHubNamespaceNamespaceLister helps list and get NotificationHubNamespaces.
+type NotificationHubNamespaceNamespaceLister interface {
+	// List lists all NotificationHubNamespaces in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.NotificationHubNamespace, err error)
+	// Get retrieves the NotificationHubNamespace from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.NotificationHubNamespace, error)
+	NotificationHubNamespaceNamespaceListerExpansion
+}
+
+// notificationHubNamespaceNamespaceLister implements the NotificationHubNamespaceNamespaceLister
+// interface.
+type notificationHubNamespaceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all NotificationHubNamespaces in the indexer for a given namespace.
+func (s notificationHubNamespaceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.NotificationHubNamespace, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.NotificationHubNamespace))
+	})
+	return ret, err
+}
+
+// Get retrieves the NotificationHubNamespace from the indexer for a given namespace and name.
+func (s notificationHubNamespaceNamespaceLister) Get(name string) (*v1alpha1.NotificationHubNamespace, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

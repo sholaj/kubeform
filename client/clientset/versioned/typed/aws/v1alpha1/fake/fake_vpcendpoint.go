@@ -31,6 +31,7 @@ import (
 // FakeVpcEndpoints implements VpcEndpointInterface
 type FakeVpcEndpoints struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var vpcendpointsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "vpcendpoints"}
@@ -40,7 +41,8 @@ var vpcendpointsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Versio
 // Get takes name of the vpcEndpoint, and returns the corresponding vpcEndpoint object, and an error if there is any.
 func (c *FakeVpcEndpoints) Get(name string, options v1.GetOptions) (result *v1alpha1.VpcEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(vpcendpointsResource, name), &v1alpha1.VpcEndpoint{})
+		Invokes(testing.NewGetAction(vpcendpointsResource, c.ns, name), &v1alpha1.VpcEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeVpcEndpoints) Get(name string, options v1.GetOptions) (result *v1al
 // List takes label and field selectors, and returns the list of VpcEndpoints that match those selectors.
 func (c *FakeVpcEndpoints) List(opts v1.ListOptions) (result *v1alpha1.VpcEndpointList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(vpcendpointsResource, vpcendpointsKind, opts), &v1alpha1.VpcEndpointList{})
+		Invokes(testing.NewListAction(vpcendpointsResource, vpcendpointsKind, c.ns, opts), &v1alpha1.VpcEndpointList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeVpcEndpoints) List(opts v1.ListOptions) (result *v1alpha1.VpcEndpoi
 // Watch returns a watch.Interface that watches the requested vpcEndpoints.
 func (c *FakeVpcEndpoints) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(vpcendpointsResource, opts))
+		InvokesWatch(testing.NewWatchAction(vpcendpointsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a vpcEndpoint and creates it.  Returns the server's representation of the vpcEndpoint, and an error, if there is any.
 func (c *FakeVpcEndpoints) Create(vpcEndpoint *v1alpha1.VpcEndpoint) (result *v1alpha1.VpcEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(vpcendpointsResource, vpcEndpoint), &v1alpha1.VpcEndpoint{})
+		Invokes(testing.NewCreateAction(vpcendpointsResource, c.ns, vpcEndpoint), &v1alpha1.VpcEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeVpcEndpoints) Create(vpcEndpoint *v1alpha1.VpcEndpoint) (result *v1
 // Update takes the representation of a vpcEndpoint and updates it. Returns the server's representation of the vpcEndpoint, and an error, if there is any.
 func (c *FakeVpcEndpoints) Update(vpcEndpoint *v1alpha1.VpcEndpoint) (result *v1alpha1.VpcEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(vpcendpointsResource, vpcEndpoint), &v1alpha1.VpcEndpoint{})
+		Invokes(testing.NewUpdateAction(vpcendpointsResource, c.ns, vpcEndpoint), &v1alpha1.VpcEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeVpcEndpoints) Update(vpcEndpoint *v1alpha1.VpcEndpoint) (result *v1
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeVpcEndpoints) UpdateStatus(vpcEndpoint *v1alpha1.VpcEndpoint) (*v1alpha1.VpcEndpoint, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(vpcendpointsResource, "status", vpcEndpoint), &v1alpha1.VpcEndpoint{})
+		Invokes(testing.NewUpdateSubresourceAction(vpcendpointsResource, "status", c.ns, vpcEndpoint), &v1alpha1.VpcEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeVpcEndpoints) UpdateStatus(vpcEndpoint *v1alpha1.VpcEndpoint) (*v1a
 // Delete takes name of the vpcEndpoint and deletes it. Returns an error if one occurs.
 func (c *FakeVpcEndpoints) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(vpcendpointsResource, name), &v1alpha1.VpcEndpoint{})
+		Invokes(testing.NewDeleteAction(vpcendpointsResource, c.ns, name), &v1alpha1.VpcEndpoint{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeVpcEndpoints) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(vpcendpointsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(vpcendpointsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.VpcEndpointList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeVpcEndpoints) DeleteCollection(options *v1.DeleteOptions, listOptio
 // Patch applies the patch and returns the patched vpcEndpoint.
 func (c *FakeVpcEndpoints) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.VpcEndpoint, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(vpcendpointsResource, name, pt, data, subresources...), &v1alpha1.VpcEndpoint{})
+		Invokes(testing.NewPatchSubresourceAction(vpcendpointsResource, c.ns, name, pt, data, subresources...), &v1alpha1.VpcEndpoint{})
+
 	if obj == nil {
 		return nil, err
 	}

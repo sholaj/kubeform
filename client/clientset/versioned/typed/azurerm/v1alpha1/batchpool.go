@@ -32,7 +32,7 @@ import (
 // BatchPoolsGetter has a method to return a BatchPoolInterface.
 // A group's client should implement this interface.
 type BatchPoolsGetter interface {
-	BatchPools() BatchPoolInterface
+	BatchPools(namespace string) BatchPoolInterface
 }
 
 // BatchPoolInterface has methods to work with BatchPool resources.
@@ -52,12 +52,14 @@ type BatchPoolInterface interface {
 // batchPools implements BatchPoolInterface
 type batchPools struct {
 	client rest.Interface
+	ns     string
 }
 
 // newBatchPools returns a BatchPools
-func newBatchPools(c *AzurermV1alpha1Client) *batchPools {
+func newBatchPools(c *AzurermV1alpha1Client, namespace string) *batchPools {
 	return &batchPools{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newBatchPools(c *AzurermV1alpha1Client) *batchPools {
 func (c *batchPools) Get(name string, options v1.GetOptions) (result *v1alpha1.BatchPool, err error) {
 	result = &v1alpha1.BatchPool{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("batchpools").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *batchPools) List(opts v1.ListOptions) (result *v1alpha1.BatchPoolList, 
 	}
 	result = &v1alpha1.BatchPoolList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("batchpools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *batchPools) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("batchpools").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *batchPools) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *batchPools) Create(batchPool *v1alpha1.BatchPool) (result *v1alpha1.BatchPool, err error) {
 	result = &v1alpha1.BatchPool{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("batchpools").
 		Body(batchPool).
 		Do().
@@ -118,6 +124,7 @@ func (c *batchPools) Create(batchPool *v1alpha1.BatchPool) (result *v1alpha1.Bat
 func (c *batchPools) Update(batchPool *v1alpha1.BatchPool) (result *v1alpha1.BatchPool, err error) {
 	result = &v1alpha1.BatchPool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("batchpools").
 		Name(batchPool.Name).
 		Body(batchPool).
@@ -132,6 +139,7 @@ func (c *batchPools) Update(batchPool *v1alpha1.BatchPool) (result *v1alpha1.Bat
 func (c *batchPools) UpdateStatus(batchPool *v1alpha1.BatchPool) (result *v1alpha1.BatchPool, err error) {
 	result = &v1alpha1.BatchPool{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("batchpools").
 		Name(batchPool.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *batchPools) UpdateStatus(batchPool *v1alpha1.BatchPool) (result *v1alph
 // Delete takes name of the batchPool and deletes it. Returns an error if one occurs.
 func (c *batchPools) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("batchpools").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *batchPools) DeleteCollection(options *v1.DeleteOptions, listOptions v1.
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("batchpools").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *batchPools) DeleteCollection(options *v1.DeleteOptions, listOptions v1.
 func (c *batchPools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BatchPool, err error) {
 	result = &v1alpha1.BatchPool{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("batchpools").
 		SubResource(subresources...).
 		Name(name).

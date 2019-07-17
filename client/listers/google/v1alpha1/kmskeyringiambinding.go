@@ -29,8 +29,8 @@ import (
 type KmsKeyRingIamBindingLister interface {
 	// List lists all KmsKeyRingIamBindings in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KmsKeyRingIamBinding, err error)
-	// Get retrieves the KmsKeyRingIamBinding from the index for a given name.
-	Get(name string) (*v1alpha1.KmsKeyRingIamBinding, error)
+	// KmsKeyRingIamBindings returns an object that can list and get KmsKeyRingIamBindings.
+	KmsKeyRingIamBindings(namespace string) KmsKeyRingIamBindingNamespaceLister
 	KmsKeyRingIamBindingListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *kmsKeyRingIamBindingLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the KmsKeyRingIamBinding from the index for a given name.
-func (s *kmsKeyRingIamBindingLister) Get(name string) (*v1alpha1.KmsKeyRingIamBinding, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KmsKeyRingIamBindings returns an object that can list and get KmsKeyRingIamBindings.
+func (s *kmsKeyRingIamBindingLister) KmsKeyRingIamBindings(namespace string) KmsKeyRingIamBindingNamespaceLister {
+	return kmsKeyRingIamBindingNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KmsKeyRingIamBindingNamespaceLister helps list and get KmsKeyRingIamBindings.
+type KmsKeyRingIamBindingNamespaceLister interface {
+	// List lists all KmsKeyRingIamBindings in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KmsKeyRingIamBinding, err error)
+	// Get retrieves the KmsKeyRingIamBinding from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KmsKeyRingIamBinding, error)
+	KmsKeyRingIamBindingNamespaceListerExpansion
+}
+
+// kmsKeyRingIamBindingNamespaceLister implements the KmsKeyRingIamBindingNamespaceLister
+// interface.
+type kmsKeyRingIamBindingNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KmsKeyRingIamBindings in the indexer for a given namespace.
+func (s kmsKeyRingIamBindingNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KmsKeyRingIamBinding, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KmsKeyRingIamBinding))
+	})
+	return ret, err
+}
+
+// Get retrieves the KmsKeyRingIamBinding from the indexer for a given namespace and name.
+func (s kmsKeyRingIamBindingNamespaceLister) Get(name string) (*v1alpha1.KmsKeyRingIamBinding, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

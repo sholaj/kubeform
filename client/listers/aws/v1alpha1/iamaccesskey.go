@@ -29,8 +29,8 @@ import (
 type IamAccessKeyLister interface {
 	// List lists all IamAccessKeys in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.IamAccessKey, err error)
-	// Get retrieves the IamAccessKey from the index for a given name.
-	Get(name string) (*v1alpha1.IamAccessKey, error)
+	// IamAccessKeys returns an object that can list and get IamAccessKeys.
+	IamAccessKeys(namespace string) IamAccessKeyNamespaceLister
 	IamAccessKeyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *iamAccessKeyLister) List(selector labels.Selector) (ret []*v1alpha1.Iam
 	return ret, err
 }
 
-// Get retrieves the IamAccessKey from the index for a given name.
-func (s *iamAccessKeyLister) Get(name string) (*v1alpha1.IamAccessKey, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// IamAccessKeys returns an object that can list and get IamAccessKeys.
+func (s *iamAccessKeyLister) IamAccessKeys(namespace string) IamAccessKeyNamespaceLister {
+	return iamAccessKeyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// IamAccessKeyNamespaceLister helps list and get IamAccessKeys.
+type IamAccessKeyNamespaceLister interface {
+	// List lists all IamAccessKeys in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.IamAccessKey, err error)
+	// Get retrieves the IamAccessKey from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.IamAccessKey, error)
+	IamAccessKeyNamespaceListerExpansion
+}
+
+// iamAccessKeyNamespaceLister implements the IamAccessKeyNamespaceLister
+// interface.
+type iamAccessKeyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all IamAccessKeys in the indexer for a given namespace.
+func (s iamAccessKeyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.IamAccessKey, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.IamAccessKey))
+	})
+	return ret, err
+}
+
+// Get retrieves the IamAccessKey from the indexer for a given namespace and name.
+func (s iamAccessKeyNamespaceLister) Get(name string) (*v1alpha1.IamAccessKey, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

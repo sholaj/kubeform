@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// LightsailStaticIpsGetter has a method to return a LightsailStaticIpInterface.
+// LightsailStaticIPsGetter has a method to return a LightsailStaticIPInterface.
 // A group's client should implement this interface.
-type LightsailStaticIpsGetter interface {
-	LightsailStaticIps() LightsailStaticIpInterface
+type LightsailStaticIPsGetter interface {
+	LightsailStaticIPs(namespace string) LightsailStaticIPInterface
 }
 
-// LightsailStaticIpInterface has methods to work with LightsailStaticIp resources.
-type LightsailStaticIpInterface interface {
-	Create(*v1alpha1.LightsailStaticIp) (*v1alpha1.LightsailStaticIp, error)
-	Update(*v1alpha1.LightsailStaticIp) (*v1alpha1.LightsailStaticIp, error)
-	UpdateStatus(*v1alpha1.LightsailStaticIp) (*v1alpha1.LightsailStaticIp, error)
+// LightsailStaticIPInterface has methods to work with LightsailStaticIP resources.
+type LightsailStaticIPInterface interface {
+	Create(*v1alpha1.LightsailStaticIP) (*v1alpha1.LightsailStaticIP, error)
+	Update(*v1alpha1.LightsailStaticIP) (*v1alpha1.LightsailStaticIP, error)
+	UpdateStatus(*v1alpha1.LightsailStaticIP) (*v1alpha1.LightsailStaticIP, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.LightsailStaticIp, error)
-	List(opts v1.ListOptions) (*v1alpha1.LightsailStaticIpList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.LightsailStaticIP, error)
+	List(opts v1.ListOptions) (*v1alpha1.LightsailStaticIPList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LightsailStaticIp, err error)
-	LightsailStaticIpExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LightsailStaticIP, err error)
+	LightsailStaticIPExpansion
 }
 
-// lightsailStaticIps implements LightsailStaticIpInterface
-type lightsailStaticIps struct {
+// lightsailStaticIPs implements LightsailStaticIPInterface
+type lightsailStaticIPs struct {
 	client rest.Interface
+	ns     string
 }
 
-// newLightsailStaticIps returns a LightsailStaticIps
-func newLightsailStaticIps(c *AwsV1alpha1Client) *lightsailStaticIps {
-	return &lightsailStaticIps{
+// newLightsailStaticIPs returns a LightsailStaticIPs
+func newLightsailStaticIPs(c *AwsV1alpha1Client, namespace string) *lightsailStaticIPs {
+	return &lightsailStaticIPs{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the lightsailStaticIp, and returns the corresponding lightsailStaticIp object, and an error if there is any.
-func (c *lightsailStaticIps) Get(name string, options v1.GetOptions) (result *v1alpha1.LightsailStaticIp, err error) {
-	result = &v1alpha1.LightsailStaticIp{}
+// Get takes name of the lightsailStaticIP, and returns the corresponding lightsailStaticIP object, and an error if there is any.
+func (c *lightsailStaticIPs) Get(name string, options v1.GetOptions) (result *v1alpha1.LightsailStaticIP, err error) {
+	result = &v1alpha1.LightsailStaticIP{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lightsailstaticips").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *lightsailStaticIps) Get(name string, options v1.GetOptions) (result *v1
 	return
 }
 
-// List takes label and field selectors, and returns the list of LightsailStaticIps that match those selectors.
-func (c *lightsailStaticIps) List(opts v1.ListOptions) (result *v1alpha1.LightsailStaticIpList, err error) {
+// List takes label and field selectors, and returns the list of LightsailStaticIPs that match those selectors.
+func (c *lightsailStaticIPs) List(opts v1.ListOptions) (result *v1alpha1.LightsailStaticIPList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.LightsailStaticIpList{}
+	result = &v1alpha1.LightsailStaticIPList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("lightsailstaticips").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *lightsailStaticIps) List(opts v1.ListOptions) (result *v1alpha1.Lightsa
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested lightsailStaticIps.
-func (c *lightsailStaticIps) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested lightsailStaticIPs.
+func (c *lightsailStaticIPs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("lightsailstaticips").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a lightsailStaticIp and creates it.  Returns the server's representation of the lightsailStaticIp, and an error, if there is any.
-func (c *lightsailStaticIps) Create(lightsailStaticIp *v1alpha1.LightsailStaticIp) (result *v1alpha1.LightsailStaticIp, err error) {
-	result = &v1alpha1.LightsailStaticIp{}
+// Create takes the representation of a lightsailStaticIP and creates it.  Returns the server's representation of the lightsailStaticIP, and an error, if there is any.
+func (c *lightsailStaticIPs) Create(lightsailStaticIP *v1alpha1.LightsailStaticIP) (result *v1alpha1.LightsailStaticIP, err error) {
+	result = &v1alpha1.LightsailStaticIP{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("lightsailstaticips").
-		Body(lightsailStaticIp).
+		Body(lightsailStaticIP).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a lightsailStaticIp and updates it. Returns the server's representation of the lightsailStaticIp, and an error, if there is any.
-func (c *lightsailStaticIps) Update(lightsailStaticIp *v1alpha1.LightsailStaticIp) (result *v1alpha1.LightsailStaticIp, err error) {
-	result = &v1alpha1.LightsailStaticIp{}
+// Update takes the representation of a lightsailStaticIP and updates it. Returns the server's representation of the lightsailStaticIP, and an error, if there is any.
+func (c *lightsailStaticIPs) Update(lightsailStaticIP *v1alpha1.LightsailStaticIP) (result *v1alpha1.LightsailStaticIP, err error) {
+	result = &v1alpha1.LightsailStaticIP{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lightsailstaticips").
-		Name(lightsailStaticIp.Name).
-		Body(lightsailStaticIp).
+		Name(lightsailStaticIP.Name).
+		Body(lightsailStaticIP).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *lightsailStaticIps) Update(lightsailStaticIp *v1alpha1.LightsailStaticI
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *lightsailStaticIps) UpdateStatus(lightsailStaticIp *v1alpha1.LightsailStaticIp) (result *v1alpha1.LightsailStaticIp, err error) {
-	result = &v1alpha1.LightsailStaticIp{}
+func (c *lightsailStaticIPs) UpdateStatus(lightsailStaticIP *v1alpha1.LightsailStaticIP) (result *v1alpha1.LightsailStaticIP, err error) {
+	result = &v1alpha1.LightsailStaticIP{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("lightsailstaticips").
-		Name(lightsailStaticIp.Name).
+		Name(lightsailStaticIP.Name).
 		SubResource("status").
-		Body(lightsailStaticIp).
+		Body(lightsailStaticIP).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the lightsailStaticIp and deletes it. Returns an error if one occurs.
-func (c *lightsailStaticIps) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the lightsailStaticIP and deletes it. Returns an error if one occurs.
+func (c *lightsailStaticIPs) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lightsailstaticips").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *lightsailStaticIps) Delete(name string, options *v1.DeleteOptions) erro
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *lightsailStaticIps) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *lightsailStaticIPs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("lightsailstaticips").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *lightsailStaticIps) DeleteCollection(options *v1.DeleteOptions, listOpt
 		Error()
 }
 
-// Patch applies the patch and returns the patched lightsailStaticIp.
-func (c *lightsailStaticIps) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LightsailStaticIp, err error) {
-	result = &v1alpha1.LightsailStaticIp{}
+// Patch applies the patch and returns the patched lightsailStaticIP.
+func (c *lightsailStaticIPs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LightsailStaticIP, err error) {
+	result = &v1alpha1.LightsailStaticIP{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("lightsailstaticips").
 		SubResource(subresources...).
 		Name(name).

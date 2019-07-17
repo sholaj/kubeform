@@ -32,7 +32,7 @@ import (
 // EventhubNamespaceAuthorizationRulesGetter has a method to return a EventhubNamespaceAuthorizationRuleInterface.
 // A group's client should implement this interface.
 type EventhubNamespaceAuthorizationRulesGetter interface {
-	EventhubNamespaceAuthorizationRules() EventhubNamespaceAuthorizationRuleInterface
+	EventhubNamespaceAuthorizationRules(namespace string) EventhubNamespaceAuthorizationRuleInterface
 }
 
 // EventhubNamespaceAuthorizationRuleInterface has methods to work with EventhubNamespaceAuthorizationRule resources.
@@ -52,12 +52,14 @@ type EventhubNamespaceAuthorizationRuleInterface interface {
 // eventhubNamespaceAuthorizationRules implements EventhubNamespaceAuthorizationRuleInterface
 type eventhubNamespaceAuthorizationRules struct {
 	client rest.Interface
+	ns     string
 }
 
 // newEventhubNamespaceAuthorizationRules returns a EventhubNamespaceAuthorizationRules
-func newEventhubNamespaceAuthorizationRules(c *AzurermV1alpha1Client) *eventhubNamespaceAuthorizationRules {
+func newEventhubNamespaceAuthorizationRules(c *AzurermV1alpha1Client, namespace string) *eventhubNamespaceAuthorizationRules {
 	return &eventhubNamespaceAuthorizationRules{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newEventhubNamespaceAuthorizationRules(c *AzurermV1alpha1Client) *eventhubN
 func (c *eventhubNamespaceAuthorizationRules) Get(name string, options v1.GetOptions) (result *v1alpha1.EventhubNamespaceAuthorizationRule, err error) {
 	result = &v1alpha1.EventhubNamespaceAuthorizationRule{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eventhubnamespaceauthorizationrules").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *eventhubNamespaceAuthorizationRules) List(opts v1.ListOptions) (result 
 	}
 	result = &v1alpha1.EventhubNamespaceAuthorizationRuleList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("eventhubnamespaceauthorizationrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *eventhubNamespaceAuthorizationRules) Watch(opts v1.ListOptions) (watch.
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("eventhubnamespaceauthorizationrules").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *eventhubNamespaceAuthorizationRules) Watch(opts v1.ListOptions) (watch.
 func (c *eventhubNamespaceAuthorizationRules) Create(eventhubNamespaceAuthorizationRule *v1alpha1.EventhubNamespaceAuthorizationRule) (result *v1alpha1.EventhubNamespaceAuthorizationRule, err error) {
 	result = &v1alpha1.EventhubNamespaceAuthorizationRule{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("eventhubnamespaceauthorizationrules").
 		Body(eventhubNamespaceAuthorizationRule).
 		Do().
@@ -118,6 +124,7 @@ func (c *eventhubNamespaceAuthorizationRules) Create(eventhubNamespaceAuthorizat
 func (c *eventhubNamespaceAuthorizationRules) Update(eventhubNamespaceAuthorizationRule *v1alpha1.EventhubNamespaceAuthorizationRule) (result *v1alpha1.EventhubNamespaceAuthorizationRule, err error) {
 	result = &v1alpha1.EventhubNamespaceAuthorizationRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eventhubnamespaceauthorizationrules").
 		Name(eventhubNamespaceAuthorizationRule.Name).
 		Body(eventhubNamespaceAuthorizationRule).
@@ -132,6 +139,7 @@ func (c *eventhubNamespaceAuthorizationRules) Update(eventhubNamespaceAuthorizat
 func (c *eventhubNamespaceAuthorizationRules) UpdateStatus(eventhubNamespaceAuthorizationRule *v1alpha1.EventhubNamespaceAuthorizationRule) (result *v1alpha1.EventhubNamespaceAuthorizationRule, err error) {
 	result = &v1alpha1.EventhubNamespaceAuthorizationRule{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("eventhubnamespaceauthorizationrules").
 		Name(eventhubNamespaceAuthorizationRule.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *eventhubNamespaceAuthorizationRules) UpdateStatus(eventhubNamespaceAuth
 // Delete takes name of the eventhubNamespaceAuthorizationRule and deletes it. Returns an error if one occurs.
 func (c *eventhubNamespaceAuthorizationRules) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eventhubnamespaceauthorizationrules").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *eventhubNamespaceAuthorizationRules) DeleteCollection(options *v1.Delet
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("eventhubnamespaceauthorizationrules").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *eventhubNamespaceAuthorizationRules) DeleteCollection(options *v1.Delet
 func (c *eventhubNamespaceAuthorizationRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EventhubNamespaceAuthorizationRule, err error) {
 	result = &v1alpha1.EventhubNamespaceAuthorizationRule{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("eventhubnamespaceauthorizationrules").
 		SubResource(subresources...).
 		Name(name).

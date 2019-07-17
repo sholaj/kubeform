@@ -41,32 +41,33 @@ type CloudfrontDistributionInformer interface {
 type cloudfrontDistributionInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewCloudfrontDistributionInformer constructs a new informer for CloudfrontDistribution type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewCloudfrontDistributionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredCloudfrontDistributionInformer(client, resyncPeriod, indexers, nil)
+func NewCloudfrontDistributionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCloudfrontDistributionInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredCloudfrontDistributionInformer constructs a new informer for CloudfrontDistribution type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredCloudfrontDistributionInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCloudfrontDistributionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CloudfrontDistributions().List(options)
+				return client.AwsV1alpha1().CloudfrontDistributions(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().CloudfrontDistributions().Watch(options)
+				return client.AwsV1alpha1().CloudfrontDistributions(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.CloudfrontDistribution{},
@@ -76,7 +77,7 @@ func NewFilteredCloudfrontDistributionInformer(client versioned.Interface, resyn
 }
 
 func (f *cloudfrontDistributionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredCloudfrontDistributionInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredCloudfrontDistributionInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *cloudfrontDistributionInformer) Informer() cache.SharedIndexInformer {

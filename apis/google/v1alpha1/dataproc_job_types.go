@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,136 +20,137 @@ type DataprocJob struct {
 
 type DataprocJobSpecHadoopConfig struct {
 	// +optional
-	ArchiveUris []string `json:"archive_uris,omitempty"`
+	ArchiveUris []string `json:"archiveUris,omitempty" tf:"archive_uris,omitempty"`
 	// +optional
-	Args []string `json:"args,omitempty"`
+	Args []string `json:"args,omitempty" tf:"args,omitempty"`
 	// +optional
-	FileUris []string `json:"file_uris,omitempty"`
+	FileUris []string `json:"fileUris,omitempty" tf:"file_uris,omitempty"`
 	// +optional
-	JarFileUris []string `json:"jar_file_uris,omitempty"`
+	JarFileUris []string `json:"jarFileUris,omitempty" tf:"jar_file_uris,omitempty"`
 	// +optional
-	MainClass string `json:"main_class,omitempty"`
+	MainClass string `json:"mainClass,omitempty" tf:"main_class,omitempty"`
 	// +optional
-	MainJarFileUri string `json:"main_jar_file_uri,omitempty"`
+	MainJarFileURI string `json:"mainJarFileURI,omitempty" tf:"main_jar_file_uri,omitempty"`
 	// +optional
-	Properties map[string]string `json:"properties,omitempty"`
+	Properties map[string]string `json:"properties,omitempty" tf:"properties,omitempty"`
 }
 
 type DataprocJobSpecHiveConfig struct {
 	// +optional
-	ContinueOnFailure bool `json:"continue_on_failure,omitempty"`
+	ContinueOnFailure bool `json:"continueOnFailure,omitempty" tf:"continue_on_failure,omitempty"`
 	// +optional
-	JarFileUris []string `json:"jar_file_uris,omitempty"`
+	JarFileUris []string `json:"jarFileUris,omitempty" tf:"jar_file_uris,omitempty"`
 	// +optional
-	Properties map[string]string `json:"properties,omitempty"`
+	Properties map[string]string `json:"properties,omitempty" tf:"properties,omitempty"`
 	// +optional
-	QueryFileUri string `json:"query_file_uri,omitempty"`
+	QueryFileURI string `json:"queryFileURI,omitempty" tf:"query_file_uri,omitempty"`
 	// +optional
-	QueryList []string `json:"query_list,omitempty"`
+	QueryList []string `json:"queryList,omitempty" tf:"query_list,omitempty"`
 	// +optional
-	ScriptVariables map[string]string `json:"script_variables,omitempty"`
+	ScriptVariables map[string]string `json:"scriptVariables,omitempty" tf:"script_variables,omitempty"`
 }
 
 type DataprocJobSpecPigConfig struct {
 	// +optional
-	ContinueOnFailure bool `json:"continue_on_failure,omitempty"`
+	ContinueOnFailure bool `json:"continueOnFailure,omitempty" tf:"continue_on_failure,omitempty"`
 	// +optional
-	JarFileUris []string `json:"jar_file_uris,omitempty"`
+	JarFileUris []string `json:"jarFileUris,omitempty" tf:"jar_file_uris,omitempty"`
 	// +optional
-	Properties map[string]string `json:"properties,omitempty"`
+	Properties map[string]string `json:"properties,omitempty" tf:"properties,omitempty"`
 	// +optional
-	QueryFileUri string `json:"query_file_uri,omitempty"`
+	QueryFileURI string `json:"queryFileURI,omitempty" tf:"query_file_uri,omitempty"`
 	// +optional
-	QueryList []string `json:"query_list,omitempty"`
+	QueryList []string `json:"queryList,omitempty" tf:"query_list,omitempty"`
 	// +optional
-	ScriptVariables map[string]string `json:"script_variables,omitempty"`
+	ScriptVariables map[string]string `json:"scriptVariables,omitempty" tf:"script_variables,omitempty"`
 }
 
 type DataprocJobSpecPlacement struct {
-	ClusterName string `json:"cluster_name"`
+	ClusterName string `json:"clusterName" tf:"cluster_name"`
 }
 
 type DataprocJobSpecPysparkConfig struct {
 	// +optional
-	ArchiveUris []string `json:"archive_uris,omitempty"`
+	ArchiveUris []string `json:"archiveUris,omitempty" tf:"archive_uris,omitempty"`
 	// +optional
-	Args []string `json:"args,omitempty"`
+	Args []string `json:"args,omitempty" tf:"args,omitempty"`
 	// +optional
-	FileUris []string `json:"file_uris,omitempty"`
+	FileUris []string `json:"fileUris,omitempty" tf:"file_uris,omitempty"`
 	// +optional
-	JarFileUris       []string `json:"jar_file_uris,omitempty"`
-	MainPythonFileUri string   `json:"main_python_file_uri"`
+	JarFileUris       []string `json:"jarFileUris,omitempty" tf:"jar_file_uris,omitempty"`
+	MainPythonFileURI string   `json:"mainPythonFileURI" tf:"main_python_file_uri"`
 	// +optional
-	Properties map[string]string `json:"properties,omitempty"`
+	Properties map[string]string `json:"properties,omitempty" tf:"properties,omitempty"`
 	// +optional
-	PythonFileUris []string `json:"python_file_uris,omitempty"`
+	PythonFileUris []string `json:"pythonFileUris,omitempty" tf:"python_file_uris,omitempty"`
 }
 
 type DataprocJobSpecScheduling struct {
 	// +optional
-	MaxFailuresPerHour int `json:"max_failures_per_hour,omitempty"`
+	MaxFailuresPerHour int `json:"maxFailuresPerHour,omitempty" tf:"max_failures_per_hour,omitempty"`
 }
 
 type DataprocJobSpecSparkConfig struct {
 	// +optional
-	ArchiveUris []string `json:"archive_uris,omitempty"`
+	ArchiveUris []string `json:"archiveUris,omitempty" tf:"archive_uris,omitempty"`
 	// +optional
-	Args []string `json:"args,omitempty"`
+	Args []string `json:"args,omitempty" tf:"args,omitempty"`
 	// +optional
-	FileUris []string `json:"file_uris,omitempty"`
+	FileUris []string `json:"fileUris,omitempty" tf:"file_uris,omitempty"`
 	// +optional
-	JarFileUris []string `json:"jar_file_uris,omitempty"`
+	JarFileUris []string `json:"jarFileUris,omitempty" tf:"jar_file_uris,omitempty"`
 	// +optional
-	MainClass string `json:"main_class,omitempty"`
+	MainClass string `json:"mainClass,omitempty" tf:"main_class,omitempty"`
 	// +optional
-	MainJarFileUri string `json:"main_jar_file_uri,omitempty"`
+	MainJarFileURI string `json:"mainJarFileURI,omitempty" tf:"main_jar_file_uri,omitempty"`
 	// +optional
-	Properties map[string]string `json:"properties,omitempty"`
+	Properties map[string]string `json:"properties,omitempty" tf:"properties,omitempty"`
 }
 
 type DataprocJobSpecSparksqlConfig struct {
 	// +optional
-	JarFileUris []string `json:"jar_file_uris,omitempty"`
+	JarFileUris []string `json:"jarFileUris,omitempty" tf:"jar_file_uris,omitempty"`
 	// +optional
-	Properties map[string]string `json:"properties,omitempty"`
+	Properties map[string]string `json:"properties,omitempty" tf:"properties,omitempty"`
 	// +optional
-	QueryFileUri string `json:"query_file_uri,omitempty"`
+	QueryFileURI string `json:"queryFileURI,omitempty" tf:"query_file_uri,omitempty"`
 	// +optional
-	QueryList []string `json:"query_list,omitempty"`
+	QueryList []string `json:"queryList,omitempty" tf:"query_list,omitempty"`
 	// +optional
-	ScriptVariables map[string]string `json:"script_variables,omitempty"`
+	ScriptVariables map[string]string `json:"scriptVariables,omitempty" tf:"script_variables,omitempty"`
 }
 
 type DataprocJobSpec struct {
 	// +optional
-	ForceDelete bool `json:"force_delete,omitempty"`
+	ForceDelete bool `json:"forceDelete,omitempty" tf:"force_delete,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	HadoopConfig *[]DataprocJobSpec `json:"hadoop_config,omitempty"`
+	HadoopConfig []DataprocJobSpecHadoopConfig `json:"hadoopConfig,omitempty" tf:"hadoop_config,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	HiveConfig *[]DataprocJobSpec `json:"hive_config,omitempty"`
+	HiveConfig []DataprocJobSpecHiveConfig `json:"hiveConfig,omitempty" tf:"hive_config,omitempty"`
 	// +optional
-	Labels map[string]string `json:"labels,omitempty"`
-	// +optional
-	// +kubebuilder:validation:MaxItems=1
-	PigConfig *[]DataprocJobSpec `json:"pig_config,omitempty"`
-	// +kubebuilder:validation:MaxItems=1
-	Placement []DataprocJobSpec `json:"placement"`
+	Labels map[string]string `json:"labels,omitempty" tf:"labels,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	PysparkConfig *[]DataprocJobSpec `json:"pyspark_config,omitempty"`
-	// +optional
-	Region string `json:"region,omitempty"`
+	PigConfig []DataprocJobSpecPigConfig `json:"pigConfig,omitempty" tf:"pig_config,omitempty"`
+	// +kubebuilder:validation:MaxItems=1
+	Placement []DataprocJobSpecPlacement `json:"placement" tf:"placement"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Scheduling *[]DataprocJobSpec `json:"scheduling,omitempty"`
+	PysparkConfig []DataprocJobSpecPysparkConfig `json:"pysparkConfig,omitempty" tf:"pyspark_config,omitempty"`
+	// +optional
+	Region string `json:"region,omitempty" tf:"region,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	SparkConfig *[]DataprocJobSpec `json:"spark_config,omitempty"`
+	Scheduling []DataprocJobSpecScheduling `json:"scheduling,omitempty" tf:"scheduling,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	SparksqlConfig *[]DataprocJobSpec `json:"sparksql_config,omitempty"`
+	SparkConfig []DataprocJobSpecSparkConfig `json:"sparkConfig,omitempty" tf:"spark_config,omitempty"`
+	// +optional
+	// +kubebuilder:validation:MaxItems=1
+	SparksqlConfig []DataprocJobSpecSparksqlConfig `json:"sparksqlConfig,omitempty" tf:"sparksql_config,omitempty"`
+	ProviderRef    core.LocalObjectReference       `json:"providerRef" tf:"-"`
 }
 
 type DataprocJobStatus struct {
@@ -157,7 +158,9 @@ type DataprocJobStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

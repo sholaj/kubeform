@@ -29,8 +29,8 @@ import (
 type StreamAnalyticsStreamInputIothubLister interface {
 	// List lists all StreamAnalyticsStreamInputIothubs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.StreamAnalyticsStreamInputIothub, err error)
-	// Get retrieves the StreamAnalyticsStreamInputIothub from the index for a given name.
-	Get(name string) (*v1alpha1.StreamAnalyticsStreamInputIothub, error)
+	// StreamAnalyticsStreamInputIothubs returns an object that can list and get StreamAnalyticsStreamInputIothubs.
+	StreamAnalyticsStreamInputIothubs(namespace string) StreamAnalyticsStreamInputIothubNamespaceLister
 	StreamAnalyticsStreamInputIothubListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *streamAnalyticsStreamInputIothubLister) List(selector labels.Selector) 
 	return ret, err
 }
 
-// Get retrieves the StreamAnalyticsStreamInputIothub from the index for a given name.
-func (s *streamAnalyticsStreamInputIothubLister) Get(name string) (*v1alpha1.StreamAnalyticsStreamInputIothub, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// StreamAnalyticsStreamInputIothubs returns an object that can list and get StreamAnalyticsStreamInputIothubs.
+func (s *streamAnalyticsStreamInputIothubLister) StreamAnalyticsStreamInputIothubs(namespace string) StreamAnalyticsStreamInputIothubNamespaceLister {
+	return streamAnalyticsStreamInputIothubNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// StreamAnalyticsStreamInputIothubNamespaceLister helps list and get StreamAnalyticsStreamInputIothubs.
+type StreamAnalyticsStreamInputIothubNamespaceLister interface {
+	// List lists all StreamAnalyticsStreamInputIothubs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.StreamAnalyticsStreamInputIothub, err error)
+	// Get retrieves the StreamAnalyticsStreamInputIothub from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.StreamAnalyticsStreamInputIothub, error)
+	StreamAnalyticsStreamInputIothubNamespaceListerExpansion
+}
+
+// streamAnalyticsStreamInputIothubNamespaceLister implements the StreamAnalyticsStreamInputIothubNamespaceLister
+// interface.
+type streamAnalyticsStreamInputIothubNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all StreamAnalyticsStreamInputIothubs in the indexer for a given namespace.
+func (s streamAnalyticsStreamInputIothubNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.StreamAnalyticsStreamInputIothub, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.StreamAnalyticsStreamInputIothub))
+	})
+	return ret, err
+}
+
+// Get retrieves the StreamAnalyticsStreamInputIothub from the indexer for a given namespace and name.
+func (s streamAnalyticsStreamInputIothubNamespaceLister) Get(name string) (*v1alpha1.StreamAnalyticsStreamInputIothub, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

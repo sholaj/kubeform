@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// FakeNetworkAcls implements NetworkAclInterface
-type FakeNetworkAcls struct {
+// FakeNetworkACLs implements NetworkACLInterface
+type FakeNetworkACLs struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var networkaclsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "networkacls"}
 
-var networkaclsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "NetworkAcl"}
+var networkaclsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "NetworkACL"}
 
-// Get takes name of the networkAcl, and returns the corresponding networkAcl object, and an error if there is any.
-func (c *FakeNetworkAcls) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkAcl, err error) {
+// Get takes name of the networkACL, and returns the corresponding networkACL object, and an error if there is any.
+func (c *FakeNetworkACLs) Get(name string, options v1.GetOptions) (result *v1alpha1.NetworkACL, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(networkaclsResource, name), &v1alpha1.NetworkAcl{})
+		Invokes(testing.NewGetAction(networkaclsResource, c.ns, name), &v1alpha1.NetworkACL{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.NetworkAcl), err
+	return obj.(*v1alpha1.NetworkACL), err
 }
 
-// List takes label and field selectors, and returns the list of NetworkAcls that match those selectors.
-func (c *FakeNetworkAcls) List(opts v1.ListOptions) (result *v1alpha1.NetworkAclList, err error) {
+// List takes label and field selectors, and returns the list of NetworkACLs that match those selectors.
+func (c *FakeNetworkACLs) List(opts v1.ListOptions) (result *v1alpha1.NetworkACLList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(networkaclsResource, networkaclsKind, opts), &v1alpha1.NetworkAclList{})
+		Invokes(testing.NewListAction(networkaclsResource, networkaclsKind, c.ns, opts), &v1alpha1.NetworkACLList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeNetworkAcls) List(opts v1.ListOptions) (result *v1alpha1.NetworkAcl
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.NetworkAclList{ListMeta: obj.(*v1alpha1.NetworkAclList).ListMeta}
-	for _, item := range obj.(*v1alpha1.NetworkAclList).Items {
+	list := &v1alpha1.NetworkACLList{ListMeta: obj.(*v1alpha1.NetworkACLList).ListMeta}
+	for _, item := range obj.(*v1alpha1.NetworkACLList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeNetworkAcls) List(opts v1.ListOptions) (result *v1alpha1.NetworkAcl
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested networkAcls.
-func (c *FakeNetworkAcls) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested networkACLs.
+func (c *FakeNetworkACLs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(networkaclsResource, opts))
+		InvokesWatch(testing.NewWatchAction(networkaclsResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a networkAcl and creates it.  Returns the server's representation of the networkAcl, and an error, if there is any.
-func (c *FakeNetworkAcls) Create(networkAcl *v1alpha1.NetworkAcl) (result *v1alpha1.NetworkAcl, err error) {
+// Create takes the representation of a networkACL and creates it.  Returns the server's representation of the networkACL, and an error, if there is any.
+func (c *FakeNetworkACLs) Create(networkACL *v1alpha1.NetworkACL) (result *v1alpha1.NetworkACL, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(networkaclsResource, networkAcl), &v1alpha1.NetworkAcl{})
+		Invokes(testing.NewCreateAction(networkaclsResource, c.ns, networkACL), &v1alpha1.NetworkACL{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.NetworkAcl), err
+	return obj.(*v1alpha1.NetworkACL), err
 }
 
-// Update takes the representation of a networkAcl and updates it. Returns the server's representation of the networkAcl, and an error, if there is any.
-func (c *FakeNetworkAcls) Update(networkAcl *v1alpha1.NetworkAcl) (result *v1alpha1.NetworkAcl, err error) {
+// Update takes the representation of a networkACL and updates it. Returns the server's representation of the networkACL, and an error, if there is any.
+func (c *FakeNetworkACLs) Update(networkACL *v1alpha1.NetworkACL) (result *v1alpha1.NetworkACL, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(networkaclsResource, networkAcl), &v1alpha1.NetworkAcl{})
+		Invokes(testing.NewUpdateAction(networkaclsResource, c.ns, networkACL), &v1alpha1.NetworkACL{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.NetworkAcl), err
+	return obj.(*v1alpha1.NetworkACL), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeNetworkAcls) UpdateStatus(networkAcl *v1alpha1.NetworkAcl) (*v1alpha1.NetworkAcl, error) {
+func (c *FakeNetworkACLs) UpdateStatus(networkACL *v1alpha1.NetworkACL) (*v1alpha1.NetworkACL, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(networkaclsResource, "status", networkAcl), &v1alpha1.NetworkAcl{})
+		Invokes(testing.NewUpdateSubresourceAction(networkaclsResource, "status", c.ns, networkACL), &v1alpha1.NetworkACL{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.NetworkAcl), err
+	return obj.(*v1alpha1.NetworkACL), err
 }
 
-// Delete takes name of the networkAcl and deletes it. Returns an error if one occurs.
-func (c *FakeNetworkAcls) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the networkACL and deletes it. Returns an error if one occurs.
+func (c *FakeNetworkACLs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(networkaclsResource, name), &v1alpha1.NetworkAcl{})
+		Invokes(testing.NewDeleteAction(networkaclsResource, c.ns, name), &v1alpha1.NetworkACL{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeNetworkAcls) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(networkaclsResource, listOptions)
+func (c *FakeNetworkACLs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(networkaclsResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.NetworkAclList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.NetworkACLList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched networkAcl.
-func (c *FakeNetworkAcls) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkAcl, err error) {
+// Patch applies the patch and returns the patched networkACL.
+func (c *FakeNetworkACLs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NetworkACL, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(networkaclsResource, name, pt, data, subresources...), &v1alpha1.NetworkAcl{})
+		Invokes(testing.NewPatchSubresourceAction(networkaclsResource, c.ns, name, pt, data, subresources...), &v1alpha1.NetworkACL{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.NetworkAcl), err
+	return obj.(*v1alpha1.NetworkACL), err
 }

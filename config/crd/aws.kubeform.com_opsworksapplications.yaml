@@ -397,44 +397,76 @@ spec:
           type: object
         spec:
           properties:
-            auto_bundle_on_deploy:
+            autoBundleOnDeploy:
               type: string
-            aws_flow_ruby_settings:
+            awsFlowRubySettings:
               type: string
-            data_source_arn:
+            dataSourceArn:
               type: string
-            data_source_database_name:
+            dataSourceDatabaseName:
               type: string
-            data_source_type:
+            dataSourceType:
               type: string
             description:
               type: string
-            document_root:
+            documentRoot:
               type: string
             domains:
               items:
                 type: string
               type: array
-            enable_ssl:
+            enableSsl:
               type: boolean
             environment:
-              items: {}
+              items:
+                properties:
+                  key:
+                    type: string
+                  secure:
+                    type: boolean
+                  value:
+                    type: string
+                required:
+                - key
+                - value
+                type: object
               type: array
               uniqueItems: true
             name:
               type: string
-            rails_env:
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            railsEnv:
               type: string
-            ssl_configuration:
-              items: {}
+            sslConfiguration:
+              items:
+                properties:
+                  certificate:
+                    type: string
+                  chain:
+                    type: string
+                  privateKey:
+                    type: string
+                required:
+                - certificate
+                - privateKey
+                type: object
               type: array
-            stack_id:
+            stackID:
               type: string
             type:
               type: string
           required:
           - name
-          - stack_id
+          - providerRef
+          - stackID
           - type
           type: object
         status:
@@ -446,6 +478,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

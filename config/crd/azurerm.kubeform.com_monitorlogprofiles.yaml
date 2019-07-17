@@ -411,19 +411,37 @@ spec:
               uniqueItems: true
             name:
               type: string
-            retention_policy:
-              items: {}
+            providerRef:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
+            retentionPolicy:
+              items:
+                properties:
+                  days:
+                    type: integer
+                  enabled:
+                    type: boolean
+                required:
+                - enabled
+                type: object
               maxItems: 1
               type: array
-            servicebus_rule_id:
+            servicebusRuleID:
               type: string
-            storage_account_id:
+            storageAccountID:
               type: string
           required:
           - categories
           - locations
           - name
-          - retention_policy
+          - providerRef
+          - retentionPolicy
           type: object
         status:
           properties:
@@ -434,6 +452,11 @@ spec:
               type: integer
             output:
               type: object
+            tfState:
+              format: byte
+              type: string
+            tfStateHash:
+              type: string
           type: object
       type: object
   versions:

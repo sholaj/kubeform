@@ -29,8 +29,8 @@ import (
 type ProjectServiceLister interface {
 	// List lists all ProjectServices in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.ProjectService, err error)
-	// Get retrieves the ProjectService from the index for a given name.
-	Get(name string) (*v1alpha1.ProjectService, error)
+	// ProjectServices returns an object that can list and get ProjectServices.
+	ProjectServices(namespace string) ProjectServiceNamespaceLister
 	ProjectServiceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *projectServiceLister) List(selector labels.Selector) (ret []*v1alpha1.P
 	return ret, err
 }
 
-// Get retrieves the ProjectService from the index for a given name.
-func (s *projectServiceLister) Get(name string) (*v1alpha1.ProjectService, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// ProjectServices returns an object that can list and get ProjectServices.
+func (s *projectServiceLister) ProjectServices(namespace string) ProjectServiceNamespaceLister {
+	return projectServiceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// ProjectServiceNamespaceLister helps list and get ProjectServices.
+type ProjectServiceNamespaceLister interface {
+	// List lists all ProjectServices in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.ProjectService, err error)
+	// Get retrieves the ProjectService from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.ProjectService, error)
+	ProjectServiceNamespaceListerExpansion
+}
+
+// projectServiceNamespaceLister implements the ProjectServiceNamespaceLister
+// interface.
+type projectServiceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all ProjectServices in the indexer for a given namespace.
+func (s projectServiceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ProjectService, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.ProjectService))
+	})
+	return ret, err
+}
+
+// Get retrieves the ProjectService from the indexer for a given namespace and name.
+func (s projectServiceNamespaceLister) Get(name string) (*v1alpha1.ProjectService, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

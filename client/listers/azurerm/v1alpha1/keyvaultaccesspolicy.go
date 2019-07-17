@@ -29,8 +29,8 @@ import (
 type KeyVaultAccessPolicyLister interface {
 	// List lists all KeyVaultAccessPolicies in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KeyVaultAccessPolicy, err error)
-	// Get retrieves the KeyVaultAccessPolicy from the index for a given name.
-	Get(name string) (*v1alpha1.KeyVaultAccessPolicy, error)
+	// KeyVaultAccessPolicies returns an object that can list and get KeyVaultAccessPolicies.
+	KeyVaultAccessPolicies(namespace string) KeyVaultAccessPolicyNamespaceLister
 	KeyVaultAccessPolicyListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *keyVaultAccessPolicyLister) List(selector labels.Selector) (ret []*v1al
 	return ret, err
 }
 
-// Get retrieves the KeyVaultAccessPolicy from the index for a given name.
-func (s *keyVaultAccessPolicyLister) Get(name string) (*v1alpha1.KeyVaultAccessPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KeyVaultAccessPolicies returns an object that can list and get KeyVaultAccessPolicies.
+func (s *keyVaultAccessPolicyLister) KeyVaultAccessPolicies(namespace string) KeyVaultAccessPolicyNamespaceLister {
+	return keyVaultAccessPolicyNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KeyVaultAccessPolicyNamespaceLister helps list and get KeyVaultAccessPolicies.
+type KeyVaultAccessPolicyNamespaceLister interface {
+	// List lists all KeyVaultAccessPolicies in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KeyVaultAccessPolicy, err error)
+	// Get retrieves the KeyVaultAccessPolicy from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KeyVaultAccessPolicy, error)
+	KeyVaultAccessPolicyNamespaceListerExpansion
+}
+
+// keyVaultAccessPolicyNamespaceLister implements the KeyVaultAccessPolicyNamespaceLister
+// interface.
+type keyVaultAccessPolicyNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KeyVaultAccessPolicies in the indexer for a given namespace.
+func (s keyVaultAccessPolicyNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KeyVaultAccessPolicy, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KeyVaultAccessPolicy))
+	})
+	return ret, err
+}
+
+// Get retrieves the KeyVaultAccessPolicy from the indexer for a given namespace and name.
+func (s keyVaultAccessPolicyNamespaceLister) Get(name string) (*v1alpha1.KeyVaultAccessPolicy, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

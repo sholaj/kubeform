@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,18 +20,19 @@ type CloudwatchLogMetricFilter struct {
 
 type CloudwatchLogMetricFilterSpecMetricTransformation struct {
 	// +optional
-	DefaultValue string `json:"default_value,omitempty"`
-	Name         string `json:"name"`
-	Namespace    string `json:"namespace"`
-	Value        string `json:"value"`
+	DefaultValue string `json:"defaultValue,omitempty" tf:"default_value,omitempty"`
+	Name         string `json:"name" tf:"name"`
+	Namespace    string `json:"namespace" tf:"namespace"`
+	Value        string `json:"value" tf:"value"`
 }
 
 type CloudwatchLogMetricFilterSpec struct {
-	LogGroupName string `json:"log_group_name"`
+	LogGroupName string `json:"logGroupName" tf:"log_group_name"`
 	// +kubebuilder:validation:MaxItems=1
-	MetricTransformation []CloudwatchLogMetricFilterSpec `json:"metric_transformation"`
-	Name                 string                          `json:"name"`
-	Pattern              string                          `json:"pattern"`
+	MetricTransformation []CloudwatchLogMetricFilterSpecMetricTransformation `json:"metricTransformation" tf:"metric_transformation"`
+	Name                 string                                              `json:"name" tf:"name"`
+	Pattern              string                                              `json:"pattern" tf:"pattern"`
+	ProviderRef          core.LocalObjectReference                           `json:"providerRef" tf:"-"`
 }
 
 type CloudwatchLogMetricFilterStatus struct {
@@ -39,7 +40,9 @@ type CloudwatchLogMetricFilterStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

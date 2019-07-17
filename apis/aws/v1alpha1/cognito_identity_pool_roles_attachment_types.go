@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,35 +19,36 @@ type CognitoIdentityPoolRolesAttachment struct {
 }
 
 type CognitoIdentityPoolRolesAttachmentSpecRoleMappingMappingRule struct {
-	Claim     string `json:"claim"`
-	MatchType string `json:"match_type"`
-	RoleArn   string `json:"role_arn"`
-	Value     string `json:"value"`
+	Claim     string `json:"claim" tf:"claim"`
+	MatchType string `json:"matchType" tf:"match_type"`
+	RoleArn   string `json:"roleArn" tf:"role_arn"`
+	Value     string `json:"value" tf:"value"`
 }
 
 type CognitoIdentityPoolRolesAttachmentSpecRoleMapping struct {
 	// +optional
-	AmbiguousRoleResolution string `json:"ambiguous_role_resolution,omitempty"`
-	IdentityProvider        string `json:"identity_provider"`
+	AmbiguousRoleResolution string `json:"ambiguousRoleResolution,omitempty" tf:"ambiguous_role_resolution,omitempty"`
+	IdentityProvider        string `json:"identityProvider" tf:"identity_provider"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=25
-	MappingRule *[]CognitoIdentityPoolRolesAttachmentSpecRoleMapping `json:"mapping_rule,omitempty"`
-	Type        string                                               `json:"type"`
+	MappingRule []CognitoIdentityPoolRolesAttachmentSpecRoleMappingMappingRule `json:"mappingRule,omitempty" tf:"mapping_rule,omitempty"`
+	Type        string                                                         `json:"type" tf:"type"`
 }
 
 type CognitoIdentityPoolRolesAttachmentSpecRoles struct {
 	// +optional
-	Authenticated string `json:"authenticated,omitempty"`
+	Authenticated string `json:"authenticated,omitempty" tf:"authenticated,omitempty"`
 	// +optional
-	Unauthenticated string `json:"unauthenticated,omitempty"`
+	Unauthenticated string `json:"unauthenticated,omitempty" tf:"unauthenticated,omitempty"`
 }
 
 type CognitoIdentityPoolRolesAttachmentSpec struct {
-	IdentityPoolId string `json:"identity_pool_id"`
+	IdentityPoolID string `json:"identityPoolID" tf:"identity_pool_id"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	RoleMapping *[]CognitoIdentityPoolRolesAttachmentSpec              `json:"role_mapping,omitempty"`
-	Roles       map[string]CognitoIdentityPoolRolesAttachmentSpecRoles `json:"roles"`
+	RoleMapping []CognitoIdentityPoolRolesAttachmentSpecRoleMapping    `json:"roleMapping,omitempty" tf:"role_mapping,omitempty"`
+	Roles       map[string]CognitoIdentityPoolRolesAttachmentSpecRoles `json:"roles" tf:"roles"`
+	ProviderRef core.LocalObjectReference                              `json:"providerRef" tf:"-"`
 }
 
 type CognitoIdentityPoolRolesAttachmentStatus struct {
@@ -55,7 +56,9 @@ type CognitoIdentityPoolRolesAttachmentStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

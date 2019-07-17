@@ -32,7 +32,7 @@ import (
 // StorageNotificationsGetter has a method to return a StorageNotificationInterface.
 // A group's client should implement this interface.
 type StorageNotificationsGetter interface {
-	StorageNotifications() StorageNotificationInterface
+	StorageNotifications(namespace string) StorageNotificationInterface
 }
 
 // StorageNotificationInterface has methods to work with StorageNotification resources.
@@ -52,12 +52,14 @@ type StorageNotificationInterface interface {
 // storageNotifications implements StorageNotificationInterface
 type storageNotifications struct {
 	client rest.Interface
+	ns     string
 }
 
 // newStorageNotifications returns a StorageNotifications
-func newStorageNotifications(c *GoogleV1alpha1Client) *storageNotifications {
+func newStorageNotifications(c *GoogleV1alpha1Client, namespace string) *storageNotifications {
 	return &storageNotifications{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newStorageNotifications(c *GoogleV1alpha1Client) *storageNotifications {
 func (c *storageNotifications) Get(name string, options v1.GetOptions) (result *v1alpha1.StorageNotification, err error) {
 	result = &v1alpha1.StorageNotification{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagenotifications").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *storageNotifications) List(opts v1.ListOptions) (result *v1alpha1.Stora
 	}
 	result = &v1alpha1.StorageNotificationList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("storagenotifications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *storageNotifications) Watch(opts v1.ListOptions) (watch.Interface, erro
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("storagenotifications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *storageNotifications) Watch(opts v1.ListOptions) (watch.Interface, erro
 func (c *storageNotifications) Create(storageNotification *v1alpha1.StorageNotification) (result *v1alpha1.StorageNotification, err error) {
 	result = &v1alpha1.StorageNotification{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("storagenotifications").
 		Body(storageNotification).
 		Do().
@@ -118,6 +124,7 @@ func (c *storageNotifications) Create(storageNotification *v1alpha1.StorageNotif
 func (c *storageNotifications) Update(storageNotification *v1alpha1.StorageNotification) (result *v1alpha1.StorageNotification, err error) {
 	result = &v1alpha1.StorageNotification{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagenotifications").
 		Name(storageNotification.Name).
 		Body(storageNotification).
@@ -132,6 +139,7 @@ func (c *storageNotifications) Update(storageNotification *v1alpha1.StorageNotif
 func (c *storageNotifications) UpdateStatus(storageNotification *v1alpha1.StorageNotification) (result *v1alpha1.StorageNotification, err error) {
 	result = &v1alpha1.StorageNotification{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("storagenotifications").
 		Name(storageNotification.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *storageNotifications) UpdateStatus(storageNotification *v1alpha1.Storag
 // Delete takes name of the storageNotification and deletes it. Returns an error if one occurs.
 func (c *storageNotifications) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagenotifications").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *storageNotifications) DeleteCollection(options *v1.DeleteOptions, listO
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("storagenotifications").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *storageNotifications) DeleteCollection(options *v1.DeleteOptions, listO
 func (c *storageNotifications) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StorageNotification, err error) {
 	result = &v1alpha1.StorageNotification{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("storagenotifications").
 		SubResource(subresources...).
 		Name(name).

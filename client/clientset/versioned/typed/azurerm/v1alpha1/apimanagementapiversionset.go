@@ -29,42 +29,45 @@ import (
 	scheme "kubeform.dev/kubeform/client/clientset/versioned/scheme"
 )
 
-// ApiManagementApiVersionSetsGetter has a method to return a ApiManagementApiVersionSetInterface.
+// ApiManagementAPIVersionSetsGetter has a method to return a ApiManagementAPIVersionSetInterface.
 // A group's client should implement this interface.
-type ApiManagementApiVersionSetsGetter interface {
-	ApiManagementApiVersionSets() ApiManagementApiVersionSetInterface
+type ApiManagementAPIVersionSetsGetter interface {
+	ApiManagementAPIVersionSets(namespace string) ApiManagementAPIVersionSetInterface
 }
 
-// ApiManagementApiVersionSetInterface has methods to work with ApiManagementApiVersionSet resources.
-type ApiManagementApiVersionSetInterface interface {
-	Create(*v1alpha1.ApiManagementApiVersionSet) (*v1alpha1.ApiManagementApiVersionSet, error)
-	Update(*v1alpha1.ApiManagementApiVersionSet) (*v1alpha1.ApiManagementApiVersionSet, error)
-	UpdateStatus(*v1alpha1.ApiManagementApiVersionSet) (*v1alpha1.ApiManagementApiVersionSet, error)
+// ApiManagementAPIVersionSetInterface has methods to work with ApiManagementAPIVersionSet resources.
+type ApiManagementAPIVersionSetInterface interface {
+	Create(*v1alpha1.ApiManagementAPIVersionSet) (*v1alpha1.ApiManagementAPIVersionSet, error)
+	Update(*v1alpha1.ApiManagementAPIVersionSet) (*v1alpha1.ApiManagementAPIVersionSet, error)
+	UpdateStatus(*v1alpha1.ApiManagementAPIVersionSet) (*v1alpha1.ApiManagementAPIVersionSet, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.ApiManagementApiVersionSet, error)
-	List(opts v1.ListOptions) (*v1alpha1.ApiManagementApiVersionSetList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.ApiManagementAPIVersionSet, error)
+	List(opts v1.ListOptions) (*v1alpha1.ApiManagementAPIVersionSetList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementApiVersionSet, err error)
-	ApiManagementApiVersionSetExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementAPIVersionSet, err error)
+	ApiManagementAPIVersionSetExpansion
 }
 
-// apiManagementApiVersionSets implements ApiManagementApiVersionSetInterface
-type apiManagementApiVersionSets struct {
+// apiManagementAPIVersionSets implements ApiManagementAPIVersionSetInterface
+type apiManagementAPIVersionSets struct {
 	client rest.Interface
+	ns     string
 }
 
-// newApiManagementApiVersionSets returns a ApiManagementApiVersionSets
-func newApiManagementApiVersionSets(c *AzurermV1alpha1Client) *apiManagementApiVersionSets {
-	return &apiManagementApiVersionSets{
+// newApiManagementAPIVersionSets returns a ApiManagementAPIVersionSets
+func newApiManagementAPIVersionSets(c *AzurermV1alpha1Client, namespace string) *apiManagementAPIVersionSets {
+	return &apiManagementAPIVersionSets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
-// Get takes name of the apiManagementApiVersionSet, and returns the corresponding apiManagementApiVersionSet object, and an error if there is any.
-func (c *apiManagementApiVersionSets) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementApiVersionSet, err error) {
-	result = &v1alpha1.ApiManagementApiVersionSet{}
+// Get takes name of the apiManagementAPIVersionSet, and returns the corresponding apiManagementAPIVersionSet object, and an error if there is any.
+func (c *apiManagementAPIVersionSets) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiManagementAPIVersionSet, err error) {
+	result = &v1alpha1.ApiManagementAPIVersionSet{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementapiversionsets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -73,14 +76,15 @@ func (c *apiManagementApiVersionSets) Get(name string, options v1.GetOptions) (r
 	return
 }
 
-// List takes label and field selectors, and returns the list of ApiManagementApiVersionSets that match those selectors.
-func (c *apiManagementApiVersionSets) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementApiVersionSetList, err error) {
+// List takes label and field selectors, and returns the list of ApiManagementAPIVersionSets that match those selectors.
+func (c *apiManagementAPIVersionSets) List(opts v1.ListOptions) (result *v1alpha1.ApiManagementAPIVersionSetList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.ApiManagementApiVersionSetList{}
+	result = &v1alpha1.ApiManagementAPIVersionSetList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementapiversionsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -89,38 +93,41 @@ func (c *apiManagementApiVersionSets) List(opts v1.ListOptions) (result *v1alpha
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested apiManagementApiVersionSets.
-func (c *apiManagementApiVersionSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested apiManagementAPIVersionSets.
+func (c *apiManagementAPIVersionSets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apimanagementapiversionsets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a apiManagementApiVersionSet and creates it.  Returns the server's representation of the apiManagementApiVersionSet, and an error, if there is any.
-func (c *apiManagementApiVersionSets) Create(apiManagementApiVersionSet *v1alpha1.ApiManagementApiVersionSet) (result *v1alpha1.ApiManagementApiVersionSet, err error) {
-	result = &v1alpha1.ApiManagementApiVersionSet{}
+// Create takes the representation of a apiManagementAPIVersionSet and creates it.  Returns the server's representation of the apiManagementAPIVersionSet, and an error, if there is any.
+func (c *apiManagementAPIVersionSets) Create(apiManagementAPIVersionSet *v1alpha1.ApiManagementAPIVersionSet) (result *v1alpha1.ApiManagementAPIVersionSet, err error) {
+	result = &v1alpha1.ApiManagementAPIVersionSet{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apimanagementapiversionsets").
-		Body(apiManagementApiVersionSet).
+		Body(apiManagementAPIVersionSet).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a apiManagementApiVersionSet and updates it. Returns the server's representation of the apiManagementApiVersionSet, and an error, if there is any.
-func (c *apiManagementApiVersionSets) Update(apiManagementApiVersionSet *v1alpha1.ApiManagementApiVersionSet) (result *v1alpha1.ApiManagementApiVersionSet, err error) {
-	result = &v1alpha1.ApiManagementApiVersionSet{}
+// Update takes the representation of a apiManagementAPIVersionSet and updates it. Returns the server's representation of the apiManagementAPIVersionSet, and an error, if there is any.
+func (c *apiManagementAPIVersionSets) Update(apiManagementAPIVersionSet *v1alpha1.ApiManagementAPIVersionSet) (result *v1alpha1.ApiManagementAPIVersionSet, err error) {
+	result = &v1alpha1.ApiManagementAPIVersionSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementapiversionsets").
-		Name(apiManagementApiVersionSet.Name).
-		Body(apiManagementApiVersionSet).
+		Name(apiManagementAPIVersionSet.Name).
+		Body(apiManagementAPIVersionSet).
 		Do().
 		Into(result)
 	return
@@ -129,21 +136,23 @@ func (c *apiManagementApiVersionSets) Update(apiManagementApiVersionSet *v1alpha
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 
-func (c *apiManagementApiVersionSets) UpdateStatus(apiManagementApiVersionSet *v1alpha1.ApiManagementApiVersionSet) (result *v1alpha1.ApiManagementApiVersionSet, err error) {
-	result = &v1alpha1.ApiManagementApiVersionSet{}
+func (c *apiManagementAPIVersionSets) UpdateStatus(apiManagementAPIVersionSet *v1alpha1.ApiManagementAPIVersionSet) (result *v1alpha1.ApiManagementAPIVersionSet, err error) {
+	result = &v1alpha1.ApiManagementAPIVersionSet{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apimanagementapiversionsets").
-		Name(apiManagementApiVersionSet.Name).
+		Name(apiManagementAPIVersionSet.Name).
 		SubResource("status").
-		Body(apiManagementApiVersionSet).
+		Body(apiManagementAPIVersionSet).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the apiManagementApiVersionSet and deletes it. Returns an error if one occurs.
-func (c *apiManagementApiVersionSets) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the apiManagementAPIVersionSet and deletes it. Returns an error if one occurs.
+func (c *apiManagementAPIVersionSets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementapiversionsets").
 		Name(name).
 		Body(options).
@@ -152,12 +161,13 @@ func (c *apiManagementApiVersionSets) Delete(name string, options *v1.DeleteOpti
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *apiManagementApiVersionSets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *apiManagementAPIVersionSets) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apimanagementapiversionsets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -166,10 +176,11 @@ func (c *apiManagementApiVersionSets) DeleteCollection(options *v1.DeleteOptions
 		Error()
 }
 
-// Patch applies the patch and returns the patched apiManagementApiVersionSet.
-func (c *apiManagementApiVersionSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementApiVersionSet, err error) {
-	result = &v1alpha1.ApiManagementApiVersionSet{}
+// Patch applies the patch and returns the patched apiManagementAPIVersionSet.
+func (c *apiManagementAPIVersionSets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiManagementAPIVersionSet, err error) {
+	result = &v1alpha1.ApiManagementAPIVersionSet{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apimanagementapiversionsets").
 		SubResource(subresources...).
 		Name(name).

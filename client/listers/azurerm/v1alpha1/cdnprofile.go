@@ -29,8 +29,8 @@ import (
 type CdnProfileLister interface {
 	// List lists all CdnProfiles in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CdnProfile, err error)
-	// Get retrieves the CdnProfile from the index for a given name.
-	Get(name string) (*v1alpha1.CdnProfile, error)
+	// CdnProfiles returns an object that can list and get CdnProfiles.
+	CdnProfiles(namespace string) CdnProfileNamespaceLister
 	CdnProfileListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cdnProfileLister) List(selector labels.Selector) (ret []*v1alpha1.CdnPr
 	return ret, err
 }
 
-// Get retrieves the CdnProfile from the index for a given name.
-func (s *cdnProfileLister) Get(name string) (*v1alpha1.CdnProfile, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CdnProfiles returns an object that can list and get CdnProfiles.
+func (s *cdnProfileLister) CdnProfiles(namespace string) CdnProfileNamespaceLister {
+	return cdnProfileNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CdnProfileNamespaceLister helps list and get CdnProfiles.
+type CdnProfileNamespaceLister interface {
+	// List lists all CdnProfiles in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CdnProfile, err error)
+	// Get retrieves the CdnProfile from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CdnProfile, error)
+	CdnProfileNamespaceListerExpansion
+}
+
+// cdnProfileNamespaceLister implements the CdnProfileNamespaceLister
+// interface.
+type cdnProfileNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CdnProfiles in the indexer for a given namespace.
+func (s cdnProfileNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CdnProfile, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CdnProfile))
+	})
+	return ret, err
+}
+
+// Get retrieves the CdnProfile from the indexer for a given namespace and name.
+func (s cdnProfileNamespaceLister) Get(name string) (*v1alpha1.CdnProfile, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

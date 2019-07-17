@@ -29,8 +29,8 @@ import (
 type CloudwatchEventPermissionLister interface {
 	// List lists all CloudwatchEventPermissions in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CloudwatchEventPermission, err error)
-	// Get retrieves the CloudwatchEventPermission from the index for a given name.
-	Get(name string) (*v1alpha1.CloudwatchEventPermission, error)
+	// CloudwatchEventPermissions returns an object that can list and get CloudwatchEventPermissions.
+	CloudwatchEventPermissions(namespace string) CloudwatchEventPermissionNamespaceLister
 	CloudwatchEventPermissionListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cloudwatchEventPermissionLister) List(selector labels.Selector) (ret []
 	return ret, err
 }
 
-// Get retrieves the CloudwatchEventPermission from the index for a given name.
-func (s *cloudwatchEventPermissionLister) Get(name string) (*v1alpha1.CloudwatchEventPermission, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CloudwatchEventPermissions returns an object that can list and get CloudwatchEventPermissions.
+func (s *cloudwatchEventPermissionLister) CloudwatchEventPermissions(namespace string) CloudwatchEventPermissionNamespaceLister {
+	return cloudwatchEventPermissionNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CloudwatchEventPermissionNamespaceLister helps list and get CloudwatchEventPermissions.
+type CloudwatchEventPermissionNamespaceLister interface {
+	// List lists all CloudwatchEventPermissions in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CloudwatchEventPermission, err error)
+	// Get retrieves the CloudwatchEventPermission from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CloudwatchEventPermission, error)
+	CloudwatchEventPermissionNamespaceListerExpansion
+}
+
+// cloudwatchEventPermissionNamespaceLister implements the CloudwatchEventPermissionNamespaceLister
+// interface.
+type cloudwatchEventPermissionNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CloudwatchEventPermissions in the indexer for a given namespace.
+func (s cloudwatchEventPermissionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CloudwatchEventPermission, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CloudwatchEventPermission))
+	})
+	return ret, err
+}
+
+// Get retrieves the CloudwatchEventPermission from the indexer for a given namespace and name.
+func (s cloudwatchEventPermissionNamespaceLister) Get(name string) (*v1alpha1.CloudwatchEventPermission, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -41,32 +41,33 @@ type DocdbClusterParameterGroupInformer interface {
 type docdbClusterParameterGroupInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewDocdbClusterParameterGroupInformer constructs a new informer for DocdbClusterParameterGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDocdbClusterParameterGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDocdbClusterParameterGroupInformer(client, resyncPeriod, indexers, nil)
+func NewDocdbClusterParameterGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDocdbClusterParameterGroupInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredDocdbClusterParameterGroupInformer constructs a new informer for DocdbClusterParameterGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDocdbClusterParameterGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDocdbClusterParameterGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DocdbClusterParameterGroups().List(options)
+				return client.AwsV1alpha1().DocdbClusterParameterGroups(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DocdbClusterParameterGroups().Watch(options)
+				return client.AwsV1alpha1().DocdbClusterParameterGroups(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.DocdbClusterParameterGroup{},
@@ -76,7 +77,7 @@ func NewFilteredDocdbClusterParameterGroupInformer(client versioned.Interface, r
 }
 
 func (f *docdbClusterParameterGroupInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDocdbClusterParameterGroupInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredDocdbClusterParameterGroupInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *docdbClusterParameterGroupInformer) Informer() cache.SharedIndexInformer {

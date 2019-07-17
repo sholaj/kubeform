@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,25 +20,26 @@ type WafByteMatchSet struct {
 
 type WafByteMatchSetSpecByteMatchTuplesFieldToMatch struct {
 	// +optional
-	Data string `json:"data,omitempty"`
-	Type string `json:"type"`
+	Data string `json:"data,omitempty" tf:"data,omitempty"`
+	Type string `json:"type" tf:"type"`
 }
 
 type WafByteMatchSetSpecByteMatchTuples struct {
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	FieldToMatch         []WafByteMatchSetSpecByteMatchTuples `json:"field_to_match"`
-	PositionalConstraint string                               `json:"positional_constraint"`
+	FieldToMatch         []WafByteMatchSetSpecByteMatchTuplesFieldToMatch `json:"fieldToMatch" tf:"field_to_match"`
+	PositionalConstraint string                                           `json:"positionalConstraint" tf:"positional_constraint"`
 	// +optional
-	TargetString       string `json:"target_string,omitempty"`
-	TextTransformation string `json:"text_transformation"`
+	TargetString       string `json:"targetString,omitempty" tf:"target_string,omitempty"`
+	TextTransformation string `json:"textTransformation" tf:"text_transformation"`
 }
 
 type WafByteMatchSetSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	ByteMatchTuples *[]WafByteMatchSetSpec `json:"byte_match_tuples,omitempty"`
-	Name            string                 `json:"name"`
+	ByteMatchTuples []WafByteMatchSetSpecByteMatchTuples `json:"byteMatchTuples,omitempty" tf:"byte_match_tuples,omitempty"`
+	Name            string                               `json:"name" tf:"name"`
+	ProviderRef     core.LocalObjectReference            `json:"providerRef" tf:"-"`
 }
 
 type WafByteMatchSetStatus struct {
@@ -46,7 +47,9 @@ type WafByteMatchSetStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

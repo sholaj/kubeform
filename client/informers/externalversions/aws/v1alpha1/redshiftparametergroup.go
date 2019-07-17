@@ -41,32 +41,33 @@ type RedshiftParameterGroupInformer interface {
 type redshiftParameterGroupInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewRedshiftParameterGroupInformer constructs a new informer for RedshiftParameterGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewRedshiftParameterGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredRedshiftParameterGroupInformer(client, resyncPeriod, indexers, nil)
+func NewRedshiftParameterGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredRedshiftParameterGroupInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredRedshiftParameterGroupInformer constructs a new informer for RedshiftParameterGroup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredRedshiftParameterGroupInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredRedshiftParameterGroupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().RedshiftParameterGroups().List(options)
+				return client.AwsV1alpha1().RedshiftParameterGroups(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().RedshiftParameterGroups().Watch(options)
+				return client.AwsV1alpha1().RedshiftParameterGroups(namespace).Watch(options)
 			},
 		},
 		&awsv1alpha1.RedshiftParameterGroup{},
@@ -76,7 +77,7 @@ func NewFilteredRedshiftParameterGroupInformer(client versioned.Interface, resyn
 }
 
 func (f *redshiftParameterGroupInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredRedshiftParameterGroupInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredRedshiftParameterGroupInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *redshiftParameterGroupInformer) Informer() cache.SharedIndexInformer {

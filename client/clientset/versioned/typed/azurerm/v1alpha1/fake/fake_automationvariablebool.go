@@ -31,6 +31,7 @@ import (
 // FakeAutomationVariableBools implements AutomationVariableBoolInterface
 type FakeAutomationVariableBools struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var automationvariableboolsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "automationvariablebools"}
@@ -40,7 +41,8 @@ var automationvariableboolsKind = schema.GroupVersionKind{Group: "azurerm.kubefo
 // Get takes name of the automationVariableBool, and returns the corresponding automationVariableBool object, and an error if there is any.
 func (c *FakeAutomationVariableBools) Get(name string, options v1.GetOptions) (result *v1alpha1.AutomationVariableBool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(automationvariableboolsResource, name), &v1alpha1.AutomationVariableBool{})
+		Invokes(testing.NewGetAction(automationvariableboolsResource, c.ns, name), &v1alpha1.AutomationVariableBool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeAutomationVariableBools) Get(name string, options v1.GetOptions) (r
 // List takes label and field selectors, and returns the list of AutomationVariableBools that match those selectors.
 func (c *FakeAutomationVariableBools) List(opts v1.ListOptions) (result *v1alpha1.AutomationVariableBoolList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(automationvariableboolsResource, automationvariableboolsKind, opts), &v1alpha1.AutomationVariableBoolList{})
+		Invokes(testing.NewListAction(automationvariableboolsResource, automationvariableboolsKind, c.ns, opts), &v1alpha1.AutomationVariableBoolList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeAutomationVariableBools) List(opts v1.ListOptions) (result *v1alpha
 // Watch returns a watch.Interface that watches the requested automationVariableBools.
 func (c *FakeAutomationVariableBools) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(automationvariableboolsResource, opts))
+		InvokesWatch(testing.NewWatchAction(automationvariableboolsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a automationVariableBool and creates it.  Returns the server's representation of the automationVariableBool, and an error, if there is any.
 func (c *FakeAutomationVariableBools) Create(automationVariableBool *v1alpha1.AutomationVariableBool) (result *v1alpha1.AutomationVariableBool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(automationvariableboolsResource, automationVariableBool), &v1alpha1.AutomationVariableBool{})
+		Invokes(testing.NewCreateAction(automationvariableboolsResource, c.ns, automationVariableBool), &v1alpha1.AutomationVariableBool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeAutomationVariableBools) Create(automationVariableBool *v1alpha1.Au
 // Update takes the representation of a automationVariableBool and updates it. Returns the server's representation of the automationVariableBool, and an error, if there is any.
 func (c *FakeAutomationVariableBools) Update(automationVariableBool *v1alpha1.AutomationVariableBool) (result *v1alpha1.AutomationVariableBool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(automationvariableboolsResource, automationVariableBool), &v1alpha1.AutomationVariableBool{})
+		Invokes(testing.NewUpdateAction(automationvariableboolsResource, c.ns, automationVariableBool), &v1alpha1.AutomationVariableBool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeAutomationVariableBools) Update(automationVariableBool *v1alpha1.Au
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAutomationVariableBools) UpdateStatus(automationVariableBool *v1alpha1.AutomationVariableBool) (*v1alpha1.AutomationVariableBool, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(automationvariableboolsResource, "status", automationVariableBool), &v1alpha1.AutomationVariableBool{})
+		Invokes(testing.NewUpdateSubresourceAction(automationvariableboolsResource, "status", c.ns, automationVariableBool), &v1alpha1.AutomationVariableBool{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeAutomationVariableBools) UpdateStatus(automationVariableBool *v1alp
 // Delete takes name of the automationVariableBool and deletes it. Returns an error if one occurs.
 func (c *FakeAutomationVariableBools) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(automationvariableboolsResource, name), &v1alpha1.AutomationVariableBool{})
+		Invokes(testing.NewDeleteAction(automationvariableboolsResource, c.ns, name), &v1alpha1.AutomationVariableBool{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAutomationVariableBools) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(automationvariableboolsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(automationvariableboolsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.AutomationVariableBoolList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeAutomationVariableBools) DeleteCollection(options *v1.DeleteOptions
 // Patch applies the patch and returns the patched automationVariableBool.
 func (c *FakeAutomationVariableBools) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.AutomationVariableBool, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(automationvariableboolsResource, name, pt, data, subresources...), &v1alpha1.AutomationVariableBool{})
+		Invokes(testing.NewPatchSubresourceAction(automationvariableboolsResource, c.ns, name, pt, data, subresources...), &v1alpha1.AutomationVariableBool{})
+
 	if obj == nil {
 		return nil, err
 	}

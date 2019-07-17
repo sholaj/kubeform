@@ -31,6 +31,7 @@ import (
 // FakeMacieMemberAccountAssociations implements MacieMemberAccountAssociationInterface
 type FakeMacieMemberAccountAssociations struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var maciememberaccountassociationsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "maciememberaccountassociations"}
@@ -40,7 +41,8 @@ var maciememberaccountassociationsKind = schema.GroupVersionKind{Group: "aws.kub
 // Get takes name of the macieMemberAccountAssociation, and returns the corresponding macieMemberAccountAssociation object, and an error if there is any.
 func (c *FakeMacieMemberAccountAssociations) Get(name string, options v1.GetOptions) (result *v1alpha1.MacieMemberAccountAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(maciememberaccountassociationsResource, name), &v1alpha1.MacieMemberAccountAssociation{})
+		Invokes(testing.NewGetAction(maciememberaccountassociationsResource, c.ns, name), &v1alpha1.MacieMemberAccountAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeMacieMemberAccountAssociations) Get(name string, options v1.GetOpti
 // List takes label and field selectors, and returns the list of MacieMemberAccountAssociations that match those selectors.
 func (c *FakeMacieMemberAccountAssociations) List(opts v1.ListOptions) (result *v1alpha1.MacieMemberAccountAssociationList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(maciememberaccountassociationsResource, maciememberaccountassociationsKind, opts), &v1alpha1.MacieMemberAccountAssociationList{})
+		Invokes(testing.NewListAction(maciememberaccountassociationsResource, maciememberaccountassociationsKind, c.ns, opts), &v1alpha1.MacieMemberAccountAssociationList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeMacieMemberAccountAssociations) List(opts v1.ListOptions) (result *
 // Watch returns a watch.Interface that watches the requested macieMemberAccountAssociations.
 func (c *FakeMacieMemberAccountAssociations) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(maciememberaccountassociationsResource, opts))
+		InvokesWatch(testing.NewWatchAction(maciememberaccountassociationsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a macieMemberAccountAssociation and creates it.  Returns the server's representation of the macieMemberAccountAssociation, and an error, if there is any.
 func (c *FakeMacieMemberAccountAssociations) Create(macieMemberAccountAssociation *v1alpha1.MacieMemberAccountAssociation) (result *v1alpha1.MacieMemberAccountAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(maciememberaccountassociationsResource, macieMemberAccountAssociation), &v1alpha1.MacieMemberAccountAssociation{})
+		Invokes(testing.NewCreateAction(maciememberaccountassociationsResource, c.ns, macieMemberAccountAssociation), &v1alpha1.MacieMemberAccountAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeMacieMemberAccountAssociations) Create(macieMemberAccountAssociatio
 // Update takes the representation of a macieMemberAccountAssociation and updates it. Returns the server's representation of the macieMemberAccountAssociation, and an error, if there is any.
 func (c *FakeMacieMemberAccountAssociations) Update(macieMemberAccountAssociation *v1alpha1.MacieMemberAccountAssociation) (result *v1alpha1.MacieMemberAccountAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(maciememberaccountassociationsResource, macieMemberAccountAssociation), &v1alpha1.MacieMemberAccountAssociation{})
+		Invokes(testing.NewUpdateAction(maciememberaccountassociationsResource, c.ns, macieMemberAccountAssociation), &v1alpha1.MacieMemberAccountAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeMacieMemberAccountAssociations) Update(macieMemberAccountAssociatio
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeMacieMemberAccountAssociations) UpdateStatus(macieMemberAccountAssociation *v1alpha1.MacieMemberAccountAssociation) (*v1alpha1.MacieMemberAccountAssociation, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(maciememberaccountassociationsResource, "status", macieMemberAccountAssociation), &v1alpha1.MacieMemberAccountAssociation{})
+		Invokes(testing.NewUpdateSubresourceAction(maciememberaccountassociationsResource, "status", c.ns, macieMemberAccountAssociation), &v1alpha1.MacieMemberAccountAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeMacieMemberAccountAssociations) UpdateStatus(macieMemberAccountAsso
 // Delete takes name of the macieMemberAccountAssociation and deletes it. Returns an error if one occurs.
 func (c *FakeMacieMemberAccountAssociations) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(maciememberaccountassociationsResource, name), &v1alpha1.MacieMemberAccountAssociation{})
+		Invokes(testing.NewDeleteAction(maciememberaccountassociationsResource, c.ns, name), &v1alpha1.MacieMemberAccountAssociation{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeMacieMemberAccountAssociations) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(maciememberaccountassociationsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(maciememberaccountassociationsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.MacieMemberAccountAssociationList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeMacieMemberAccountAssociations) DeleteCollection(options *v1.Delete
 // Patch applies the patch and returns the patched macieMemberAccountAssociation.
 func (c *FakeMacieMemberAccountAssociations) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.MacieMemberAccountAssociation, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(maciememberaccountassociationsResource, name, pt, data, subresources...), &v1alpha1.MacieMemberAccountAssociation{})
+		Invokes(testing.NewPatchSubresourceAction(maciememberaccountassociationsResource, c.ns, name, pt, data, subresources...), &v1alpha1.MacieMemberAccountAssociation{})
+
 	if obj == nil {
 		return nil, err
 	}

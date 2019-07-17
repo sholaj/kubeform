@@ -28,29 +28,32 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 )
 
-// FakeApiGatewayApiKeys implements ApiGatewayApiKeyInterface
-type FakeApiGatewayApiKeys struct {
+// FakeApiGatewayAPIKeys implements ApiGatewayAPIKeyInterface
+type FakeApiGatewayAPIKeys struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var apigatewayapikeysResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "apigatewayapikeys"}
 
-var apigatewayapikeysKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "ApiGatewayApiKey"}
+var apigatewayapikeysKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Version: "v1alpha1", Kind: "ApiGatewayAPIKey"}
 
-// Get takes name of the apiGatewayApiKey, and returns the corresponding apiGatewayApiKey object, and an error if there is any.
-func (c *FakeApiGatewayApiKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayApiKey, err error) {
+// Get takes name of the apiGatewayAPIKey, and returns the corresponding apiGatewayAPIKey object, and an error if there is any.
+func (c *FakeApiGatewayAPIKeys) Get(name string, options v1.GetOptions) (result *v1alpha1.ApiGatewayAPIKey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apigatewayapikeysResource, name), &v1alpha1.ApiGatewayApiKey{})
+		Invokes(testing.NewGetAction(apigatewayapikeysResource, c.ns, name), &v1alpha1.ApiGatewayAPIKey{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiGatewayApiKey), err
+	return obj.(*v1alpha1.ApiGatewayAPIKey), err
 }
 
-// List takes label and field selectors, and returns the list of ApiGatewayApiKeys that match those selectors.
-func (c *FakeApiGatewayApiKeys) List(opts v1.ListOptions) (result *v1alpha1.ApiGatewayApiKeyList, err error) {
+// List takes label and field selectors, and returns the list of ApiGatewayAPIKeys that match those selectors.
+func (c *FakeApiGatewayAPIKeys) List(opts v1.ListOptions) (result *v1alpha1.ApiGatewayAPIKeyList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apigatewayapikeysResource, apigatewayapikeysKind, opts), &v1alpha1.ApiGatewayApiKeyList{})
+		Invokes(testing.NewListAction(apigatewayapikeysResource, apigatewayapikeysKind, c.ns, opts), &v1alpha1.ApiGatewayAPIKeyList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -59,8 +62,8 @@ func (c *FakeApiGatewayApiKeys) List(opts v1.ListOptions) (result *v1alpha1.ApiG
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.ApiGatewayApiKeyList{ListMeta: obj.(*v1alpha1.ApiGatewayApiKeyList).ListMeta}
-	for _, item := range obj.(*v1alpha1.ApiGatewayApiKeyList).Items {
+	list := &v1alpha1.ApiGatewayAPIKeyList{ListMeta: obj.(*v1alpha1.ApiGatewayAPIKeyList).ListMeta}
+	for _, item := range obj.(*v1alpha1.ApiGatewayAPIKeyList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
 		}
@@ -68,64 +71,70 @@ func (c *FakeApiGatewayApiKeys) List(opts v1.ListOptions) (result *v1alpha1.ApiG
 	return list, err
 }
 
-// Watch returns a watch.Interface that watches the requested apiGatewayApiKeys.
-func (c *FakeApiGatewayApiKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested apiGatewayAPIKeys.
+func (c *FakeApiGatewayAPIKeys) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apigatewayapikeysResource, opts))
+		InvokesWatch(testing.NewWatchAction(apigatewayapikeysResource, c.ns, opts))
+
 }
 
-// Create takes the representation of a apiGatewayApiKey and creates it.  Returns the server's representation of the apiGatewayApiKey, and an error, if there is any.
-func (c *FakeApiGatewayApiKeys) Create(apiGatewayApiKey *v1alpha1.ApiGatewayApiKey) (result *v1alpha1.ApiGatewayApiKey, err error) {
+// Create takes the representation of a apiGatewayAPIKey and creates it.  Returns the server's representation of the apiGatewayAPIKey, and an error, if there is any.
+func (c *FakeApiGatewayAPIKeys) Create(apiGatewayAPIKey *v1alpha1.ApiGatewayAPIKey) (result *v1alpha1.ApiGatewayAPIKey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apigatewayapikeysResource, apiGatewayApiKey), &v1alpha1.ApiGatewayApiKey{})
+		Invokes(testing.NewCreateAction(apigatewayapikeysResource, c.ns, apiGatewayAPIKey), &v1alpha1.ApiGatewayAPIKey{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiGatewayApiKey), err
+	return obj.(*v1alpha1.ApiGatewayAPIKey), err
 }
 
-// Update takes the representation of a apiGatewayApiKey and updates it. Returns the server's representation of the apiGatewayApiKey, and an error, if there is any.
-func (c *FakeApiGatewayApiKeys) Update(apiGatewayApiKey *v1alpha1.ApiGatewayApiKey) (result *v1alpha1.ApiGatewayApiKey, err error) {
+// Update takes the representation of a apiGatewayAPIKey and updates it. Returns the server's representation of the apiGatewayAPIKey, and an error, if there is any.
+func (c *FakeApiGatewayAPIKeys) Update(apiGatewayAPIKey *v1alpha1.ApiGatewayAPIKey) (result *v1alpha1.ApiGatewayAPIKey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apigatewayapikeysResource, apiGatewayApiKey), &v1alpha1.ApiGatewayApiKey{})
+		Invokes(testing.NewUpdateAction(apigatewayapikeysResource, c.ns, apiGatewayAPIKey), &v1alpha1.ApiGatewayAPIKey{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiGatewayApiKey), err
+	return obj.(*v1alpha1.ApiGatewayAPIKey), err
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeApiGatewayApiKeys) UpdateStatus(apiGatewayApiKey *v1alpha1.ApiGatewayApiKey) (*v1alpha1.ApiGatewayApiKey, error) {
+func (c *FakeApiGatewayAPIKeys) UpdateStatus(apiGatewayAPIKey *v1alpha1.ApiGatewayAPIKey) (*v1alpha1.ApiGatewayAPIKey, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apigatewayapikeysResource, "status", apiGatewayApiKey), &v1alpha1.ApiGatewayApiKey{})
+		Invokes(testing.NewUpdateSubresourceAction(apigatewayapikeysResource, "status", c.ns, apiGatewayAPIKey), &v1alpha1.ApiGatewayAPIKey{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiGatewayApiKey), err
+	return obj.(*v1alpha1.ApiGatewayAPIKey), err
 }
 
-// Delete takes name of the apiGatewayApiKey and deletes it. Returns an error if one occurs.
-func (c *FakeApiGatewayApiKeys) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the apiGatewayAPIKey and deletes it. Returns an error if one occurs.
+func (c *FakeApiGatewayAPIKeys) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(apigatewayapikeysResource, name), &v1alpha1.ApiGatewayApiKey{})
+		Invokes(testing.NewDeleteAction(apigatewayapikeysResource, c.ns, name), &v1alpha1.ApiGatewayAPIKey{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeApiGatewayApiKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apigatewayapikeysResource, listOptions)
+func (c *FakeApiGatewayAPIKeys) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(apigatewayapikeysResource, c.ns, listOptions)
 
-	_, err := c.Fake.Invokes(action, &v1alpha1.ApiGatewayApiKeyList{})
+	_, err := c.Fake.Invokes(action, &v1alpha1.ApiGatewayAPIKeyList{})
 	return err
 }
 
-// Patch applies the patch and returns the patched apiGatewayApiKey.
-func (c *FakeApiGatewayApiKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayApiKey, err error) {
+// Patch applies the patch and returns the patched apiGatewayAPIKey.
+func (c *FakeApiGatewayAPIKeys) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ApiGatewayAPIKey, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apigatewayapikeysResource, name, pt, data, subresources...), &v1alpha1.ApiGatewayApiKey{})
+		Invokes(testing.NewPatchSubresourceAction(apigatewayapikeysResource, c.ns, name, pt, data, subresources...), &v1alpha1.ApiGatewayAPIKey{})
+
 	if obj == nil {
 		return nil, err
 	}
-	return obj.(*v1alpha1.ApiGatewayApiKey), err
+	return obj.(*v1alpha1.ApiGatewayAPIKey), err
 }

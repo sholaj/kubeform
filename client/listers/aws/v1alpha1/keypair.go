@@ -29,8 +29,8 @@ import (
 type KeyPairLister interface {
 	// List lists all KeyPairs in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.KeyPair, err error)
-	// Get retrieves the KeyPair from the index for a given name.
-	Get(name string) (*v1alpha1.KeyPair, error)
+	// KeyPairs returns an object that can list and get KeyPairs.
+	KeyPairs(namespace string) KeyPairNamespaceLister
 	KeyPairListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *keyPairLister) List(selector labels.Selector) (ret []*v1alpha1.KeyPair,
 	return ret, err
 }
 
-// Get retrieves the KeyPair from the index for a given name.
-func (s *keyPairLister) Get(name string) (*v1alpha1.KeyPair, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// KeyPairs returns an object that can list and get KeyPairs.
+func (s *keyPairLister) KeyPairs(namespace string) KeyPairNamespaceLister {
+	return keyPairNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// KeyPairNamespaceLister helps list and get KeyPairs.
+type KeyPairNamespaceLister interface {
+	// List lists all KeyPairs in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.KeyPair, err error)
+	// Get retrieves the KeyPair from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.KeyPair, error)
+	KeyPairNamespaceListerExpansion
+}
+
+// keyPairNamespaceLister implements the KeyPairNamespaceLister
+// interface.
+type keyPairNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all KeyPairs in the indexer for a given namespace.
+func (s keyPairNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.KeyPair, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.KeyPair))
+	})
+	return ret, err
+}
+
+// Get retrieves the KeyPair from the indexer for a given namespace and name.
+func (s keyPairNamespaceLister) Get(name string) (*v1alpha1.KeyPair, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

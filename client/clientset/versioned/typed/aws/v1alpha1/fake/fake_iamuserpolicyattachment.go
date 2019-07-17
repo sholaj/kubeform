@@ -31,6 +31,7 @@ import (
 // FakeIamUserPolicyAttachments implements IamUserPolicyAttachmentInterface
 type FakeIamUserPolicyAttachments struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var iamuserpolicyattachmentsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "iamuserpolicyattachments"}
@@ -40,7 +41,8 @@ var iamuserpolicyattachmentsKind = schema.GroupVersionKind{Group: "aws.kubeform.
 // Get takes name of the iamUserPolicyAttachment, and returns the corresponding iamUserPolicyAttachment object, and an error if there is any.
 func (c *FakeIamUserPolicyAttachments) Get(name string, options v1.GetOptions) (result *v1alpha1.IamUserPolicyAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(iamuserpolicyattachmentsResource, name), &v1alpha1.IamUserPolicyAttachment{})
+		Invokes(testing.NewGetAction(iamuserpolicyattachmentsResource, c.ns, name), &v1alpha1.IamUserPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeIamUserPolicyAttachments) Get(name string, options v1.GetOptions) (
 // List takes label and field selectors, and returns the list of IamUserPolicyAttachments that match those selectors.
 func (c *FakeIamUserPolicyAttachments) List(opts v1.ListOptions) (result *v1alpha1.IamUserPolicyAttachmentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(iamuserpolicyattachmentsResource, iamuserpolicyattachmentsKind, opts), &v1alpha1.IamUserPolicyAttachmentList{})
+		Invokes(testing.NewListAction(iamuserpolicyattachmentsResource, iamuserpolicyattachmentsKind, c.ns, opts), &v1alpha1.IamUserPolicyAttachmentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeIamUserPolicyAttachments) List(opts v1.ListOptions) (result *v1alph
 // Watch returns a watch.Interface that watches the requested iamUserPolicyAttachments.
 func (c *FakeIamUserPolicyAttachments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(iamuserpolicyattachmentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(iamuserpolicyattachmentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a iamUserPolicyAttachment and creates it.  Returns the server's representation of the iamUserPolicyAttachment, and an error, if there is any.
 func (c *FakeIamUserPolicyAttachments) Create(iamUserPolicyAttachment *v1alpha1.IamUserPolicyAttachment) (result *v1alpha1.IamUserPolicyAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(iamuserpolicyattachmentsResource, iamUserPolicyAttachment), &v1alpha1.IamUserPolicyAttachment{})
+		Invokes(testing.NewCreateAction(iamuserpolicyattachmentsResource, c.ns, iamUserPolicyAttachment), &v1alpha1.IamUserPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeIamUserPolicyAttachments) Create(iamUserPolicyAttachment *v1alpha1.
 // Update takes the representation of a iamUserPolicyAttachment and updates it. Returns the server's representation of the iamUserPolicyAttachment, and an error, if there is any.
 func (c *FakeIamUserPolicyAttachments) Update(iamUserPolicyAttachment *v1alpha1.IamUserPolicyAttachment) (result *v1alpha1.IamUserPolicyAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(iamuserpolicyattachmentsResource, iamUserPolicyAttachment), &v1alpha1.IamUserPolicyAttachment{})
+		Invokes(testing.NewUpdateAction(iamuserpolicyattachmentsResource, c.ns, iamUserPolicyAttachment), &v1alpha1.IamUserPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeIamUserPolicyAttachments) Update(iamUserPolicyAttachment *v1alpha1.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeIamUserPolicyAttachments) UpdateStatus(iamUserPolicyAttachment *v1alpha1.IamUserPolicyAttachment) (*v1alpha1.IamUserPolicyAttachment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(iamuserpolicyattachmentsResource, "status", iamUserPolicyAttachment), &v1alpha1.IamUserPolicyAttachment{})
+		Invokes(testing.NewUpdateSubresourceAction(iamuserpolicyattachmentsResource, "status", c.ns, iamUserPolicyAttachment), &v1alpha1.IamUserPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeIamUserPolicyAttachments) UpdateStatus(iamUserPolicyAttachment *v1a
 // Delete takes name of the iamUserPolicyAttachment and deletes it. Returns an error if one occurs.
 func (c *FakeIamUserPolicyAttachments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(iamuserpolicyattachmentsResource, name), &v1alpha1.IamUserPolicyAttachment{})
+		Invokes(testing.NewDeleteAction(iamuserpolicyattachmentsResource, c.ns, name), &v1alpha1.IamUserPolicyAttachment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeIamUserPolicyAttachments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(iamuserpolicyattachmentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(iamuserpolicyattachmentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IamUserPolicyAttachmentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeIamUserPolicyAttachments) DeleteCollection(options *v1.DeleteOption
 // Patch applies the patch and returns the patched iamUserPolicyAttachment.
 func (c *FakeIamUserPolicyAttachments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.IamUserPolicyAttachment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(iamuserpolicyattachmentsResource, name, pt, data, subresources...), &v1alpha1.IamUserPolicyAttachment{})
+		Invokes(testing.NewPatchSubresourceAction(iamuserpolicyattachmentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.IamUserPolicyAttachment{})
+
 	if obj == nil {
 		return nil, err
 	}

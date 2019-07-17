@@ -29,8 +29,8 @@ import (
 type SpannerDatabaseLister interface {
 	// List lists all SpannerDatabases in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SpannerDatabase, err error)
-	// Get retrieves the SpannerDatabase from the index for a given name.
-	Get(name string) (*v1alpha1.SpannerDatabase, error)
+	// SpannerDatabases returns an object that can list and get SpannerDatabases.
+	SpannerDatabases(namespace string) SpannerDatabaseNamespaceLister
 	SpannerDatabaseListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *spannerDatabaseLister) List(selector labels.Selector) (ret []*v1alpha1.
 	return ret, err
 }
 
-// Get retrieves the SpannerDatabase from the index for a given name.
-func (s *spannerDatabaseLister) Get(name string) (*v1alpha1.SpannerDatabase, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// SpannerDatabases returns an object that can list and get SpannerDatabases.
+func (s *spannerDatabaseLister) SpannerDatabases(namespace string) SpannerDatabaseNamespaceLister {
+	return spannerDatabaseNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// SpannerDatabaseNamespaceLister helps list and get SpannerDatabases.
+type SpannerDatabaseNamespaceLister interface {
+	// List lists all SpannerDatabases in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.SpannerDatabase, err error)
+	// Get retrieves the SpannerDatabase from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.SpannerDatabase, error)
+	SpannerDatabaseNamespaceListerExpansion
+}
+
+// spannerDatabaseNamespaceLister implements the SpannerDatabaseNamespaceLister
+// interface.
+type spannerDatabaseNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all SpannerDatabases in the indexer for a given namespace.
+func (s spannerDatabaseNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SpannerDatabase, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.SpannerDatabase))
+	})
+	return ret, err
+}
+
+// Get retrieves the SpannerDatabase from the indexer for a given namespace and name.
+func (s spannerDatabaseNamespaceLister) Get(name string) (*v1alpha1.SpannerDatabase, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

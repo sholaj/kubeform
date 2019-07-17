@@ -29,8 +29,8 @@ import (
 type BinaryAuthorizationAttestorLister interface {
 	// List lists all BinaryAuthorizationAttestors in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.BinaryAuthorizationAttestor, err error)
-	// Get retrieves the BinaryAuthorizationAttestor from the index for a given name.
-	Get(name string) (*v1alpha1.BinaryAuthorizationAttestor, error)
+	// BinaryAuthorizationAttestors returns an object that can list and get BinaryAuthorizationAttestors.
+	BinaryAuthorizationAttestors(namespace string) BinaryAuthorizationAttestorNamespaceLister
 	BinaryAuthorizationAttestorListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *binaryAuthorizationAttestorLister) List(selector labels.Selector) (ret 
 	return ret, err
 }
 
-// Get retrieves the BinaryAuthorizationAttestor from the index for a given name.
-func (s *binaryAuthorizationAttestorLister) Get(name string) (*v1alpha1.BinaryAuthorizationAttestor, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// BinaryAuthorizationAttestors returns an object that can list and get BinaryAuthorizationAttestors.
+func (s *binaryAuthorizationAttestorLister) BinaryAuthorizationAttestors(namespace string) BinaryAuthorizationAttestorNamespaceLister {
+	return binaryAuthorizationAttestorNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// BinaryAuthorizationAttestorNamespaceLister helps list and get BinaryAuthorizationAttestors.
+type BinaryAuthorizationAttestorNamespaceLister interface {
+	// List lists all BinaryAuthorizationAttestors in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.BinaryAuthorizationAttestor, err error)
+	// Get retrieves the BinaryAuthorizationAttestor from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.BinaryAuthorizationAttestor, error)
+	BinaryAuthorizationAttestorNamespaceListerExpansion
+}
+
+// binaryAuthorizationAttestorNamespaceLister implements the BinaryAuthorizationAttestorNamespaceLister
+// interface.
+type binaryAuthorizationAttestorNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all BinaryAuthorizationAttestors in the indexer for a given namespace.
+func (s binaryAuthorizationAttestorNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.BinaryAuthorizationAttestor, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.BinaryAuthorizationAttestor))
+	})
+	return ret, err
+}
+
+// Get retrieves the BinaryAuthorizationAttestor from the indexer for a given namespace and name.
+func (s binaryAuthorizationAttestorNamespaceLister) Get(name string) (*v1alpha1.BinaryAuthorizationAttestor, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

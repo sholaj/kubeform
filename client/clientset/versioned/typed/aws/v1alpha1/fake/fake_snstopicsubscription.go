@@ -31,6 +31,7 @@ import (
 // FakeSnsTopicSubscriptions implements SnsTopicSubscriptionInterface
 type FakeSnsTopicSubscriptions struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var snstopicsubscriptionsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "snstopicsubscriptions"}
@@ -40,7 +41,8 @@ var snstopicsubscriptionsKind = schema.GroupVersionKind{Group: "aws.kubeform.com
 // Get takes name of the snsTopicSubscription, and returns the corresponding snsTopicSubscription object, and an error if there is any.
 func (c *FakeSnsTopicSubscriptions) Get(name string, options v1.GetOptions) (result *v1alpha1.SnsTopicSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(snstopicsubscriptionsResource, name), &v1alpha1.SnsTopicSubscription{})
+		Invokes(testing.NewGetAction(snstopicsubscriptionsResource, c.ns, name), &v1alpha1.SnsTopicSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSnsTopicSubscriptions) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of SnsTopicSubscriptions that match those selectors.
 func (c *FakeSnsTopicSubscriptions) List(opts v1.ListOptions) (result *v1alpha1.SnsTopicSubscriptionList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(snstopicsubscriptionsResource, snstopicsubscriptionsKind, opts), &v1alpha1.SnsTopicSubscriptionList{})
+		Invokes(testing.NewListAction(snstopicsubscriptionsResource, snstopicsubscriptionsKind, c.ns, opts), &v1alpha1.SnsTopicSubscriptionList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSnsTopicSubscriptions) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested snsTopicSubscriptions.
 func (c *FakeSnsTopicSubscriptions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(snstopicsubscriptionsResource, opts))
+		InvokesWatch(testing.NewWatchAction(snstopicsubscriptionsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a snsTopicSubscription and creates it.  Returns the server's representation of the snsTopicSubscription, and an error, if there is any.
 func (c *FakeSnsTopicSubscriptions) Create(snsTopicSubscription *v1alpha1.SnsTopicSubscription) (result *v1alpha1.SnsTopicSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(snstopicsubscriptionsResource, snsTopicSubscription), &v1alpha1.SnsTopicSubscription{})
+		Invokes(testing.NewCreateAction(snstopicsubscriptionsResource, c.ns, snsTopicSubscription), &v1alpha1.SnsTopicSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSnsTopicSubscriptions) Create(snsTopicSubscription *v1alpha1.SnsTop
 // Update takes the representation of a snsTopicSubscription and updates it. Returns the server's representation of the snsTopicSubscription, and an error, if there is any.
 func (c *FakeSnsTopicSubscriptions) Update(snsTopicSubscription *v1alpha1.SnsTopicSubscription) (result *v1alpha1.SnsTopicSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(snstopicsubscriptionsResource, snsTopicSubscription), &v1alpha1.SnsTopicSubscription{})
+		Invokes(testing.NewUpdateAction(snstopicsubscriptionsResource, c.ns, snsTopicSubscription), &v1alpha1.SnsTopicSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSnsTopicSubscriptions) Update(snsTopicSubscription *v1alpha1.SnsTop
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSnsTopicSubscriptions) UpdateStatus(snsTopicSubscription *v1alpha1.SnsTopicSubscription) (*v1alpha1.SnsTopicSubscription, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(snstopicsubscriptionsResource, "status", snsTopicSubscription), &v1alpha1.SnsTopicSubscription{})
+		Invokes(testing.NewUpdateSubresourceAction(snstopicsubscriptionsResource, "status", c.ns, snsTopicSubscription), &v1alpha1.SnsTopicSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSnsTopicSubscriptions) UpdateStatus(snsTopicSubscription *v1alpha1.
 // Delete takes name of the snsTopicSubscription and deletes it. Returns an error if one occurs.
 func (c *FakeSnsTopicSubscriptions) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(snstopicsubscriptionsResource, name), &v1alpha1.SnsTopicSubscription{})
+		Invokes(testing.NewDeleteAction(snstopicsubscriptionsResource, c.ns, name), &v1alpha1.SnsTopicSubscription{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSnsTopicSubscriptions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(snstopicsubscriptionsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(snstopicsubscriptionsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SnsTopicSubscriptionList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSnsTopicSubscriptions) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched snsTopicSubscription.
 func (c *FakeSnsTopicSubscriptions) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SnsTopicSubscription, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(snstopicsubscriptionsResource, name, pt, data, subresources...), &v1alpha1.SnsTopicSubscription{})
+		Invokes(testing.NewPatchSubresourceAction(snstopicsubscriptionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SnsTopicSubscription{})
+
 	if obj == nil {
 		return nil, err
 	}

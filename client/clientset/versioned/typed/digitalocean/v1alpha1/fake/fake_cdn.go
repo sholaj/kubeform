@@ -31,6 +31,7 @@ import (
 // FakeCdns implements CdnInterface
 type FakeCdns struct {
 	Fake *FakeDigitaloceanV1alpha1
+	ns   string
 }
 
 var cdnsResource = schema.GroupVersionResource{Group: "digitalocean.kubeform.com", Version: "v1alpha1", Resource: "cdns"}
@@ -40,7 +41,8 @@ var cdnsKind = schema.GroupVersionKind{Group: "digitalocean.kubeform.com", Versi
 // Get takes name of the cdn, and returns the corresponding cdn object, and an error if there is any.
 func (c *FakeCdns) Get(name string, options v1.GetOptions) (result *v1alpha1.Cdn, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(cdnsResource, name), &v1alpha1.Cdn{})
+		Invokes(testing.NewGetAction(cdnsResource, c.ns, name), &v1alpha1.Cdn{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeCdns) Get(name string, options v1.GetOptions) (result *v1alpha1.Cdn
 // List takes label and field selectors, and returns the list of Cdns that match those selectors.
 func (c *FakeCdns) List(opts v1.ListOptions) (result *v1alpha1.CdnList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(cdnsResource, cdnsKind, opts), &v1alpha1.CdnList{})
+		Invokes(testing.NewListAction(cdnsResource, cdnsKind, c.ns, opts), &v1alpha1.CdnList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeCdns) List(opts v1.ListOptions) (result *v1alpha1.CdnList, err erro
 // Watch returns a watch.Interface that watches the requested cdns.
 func (c *FakeCdns) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(cdnsResource, opts))
+		InvokesWatch(testing.NewWatchAction(cdnsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a cdn and creates it.  Returns the server's representation of the cdn, and an error, if there is any.
 func (c *FakeCdns) Create(cdn *v1alpha1.Cdn) (result *v1alpha1.Cdn, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(cdnsResource, cdn), &v1alpha1.Cdn{})
+		Invokes(testing.NewCreateAction(cdnsResource, c.ns, cdn), &v1alpha1.Cdn{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeCdns) Create(cdn *v1alpha1.Cdn) (result *v1alpha1.Cdn, err error) {
 // Update takes the representation of a cdn and updates it. Returns the server's representation of the cdn, and an error, if there is any.
 func (c *FakeCdns) Update(cdn *v1alpha1.Cdn) (result *v1alpha1.Cdn, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(cdnsResource, cdn), &v1alpha1.Cdn{})
+		Invokes(testing.NewUpdateAction(cdnsResource, c.ns, cdn), &v1alpha1.Cdn{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeCdns) Update(cdn *v1alpha1.Cdn) (result *v1alpha1.Cdn, err error) {
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeCdns) UpdateStatus(cdn *v1alpha1.Cdn) (*v1alpha1.Cdn, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(cdnsResource, "status", cdn), &v1alpha1.Cdn{})
+		Invokes(testing.NewUpdateSubresourceAction(cdnsResource, "status", c.ns, cdn), &v1alpha1.Cdn{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeCdns) UpdateStatus(cdn *v1alpha1.Cdn) (*v1alpha1.Cdn, error) {
 // Delete takes name of the cdn and deletes it. Returns an error if one occurs.
 func (c *FakeCdns) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(cdnsResource, name), &v1alpha1.Cdn{})
+		Invokes(testing.NewDeleteAction(cdnsResource, c.ns, name), &v1alpha1.Cdn{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeCdns) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(cdnsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(cdnsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CdnList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeCdns) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 // Patch applies the patch and returns the patched cdn.
 func (c *FakeCdns) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Cdn, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(cdnsResource, name, pt, data, subresources...), &v1alpha1.Cdn{})
+		Invokes(testing.NewPatchSubresourceAction(cdnsResource, c.ns, name, pt, data, subresources...), &v1alpha1.Cdn{})
+
 	if obj == nil {
 		return nil, err
 	}

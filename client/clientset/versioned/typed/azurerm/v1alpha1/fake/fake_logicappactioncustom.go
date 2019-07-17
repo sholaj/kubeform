@@ -31,6 +31,7 @@ import (
 // FakeLogicAppActionCustoms implements LogicAppActionCustomInterface
 type FakeLogicAppActionCustoms struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var logicappactioncustomsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "logicappactioncustoms"}
@@ -40,7 +41,8 @@ var logicappactioncustomsKind = schema.GroupVersionKind{Group: "azurerm.kubeform
 // Get takes name of the logicAppActionCustom, and returns the corresponding logicAppActionCustom object, and an error if there is any.
 func (c *FakeLogicAppActionCustoms) Get(name string, options v1.GetOptions) (result *v1alpha1.LogicAppActionCustom, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(logicappactioncustomsResource, name), &v1alpha1.LogicAppActionCustom{})
+		Invokes(testing.NewGetAction(logicappactioncustomsResource, c.ns, name), &v1alpha1.LogicAppActionCustom{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeLogicAppActionCustoms) Get(name string, options v1.GetOptions) (res
 // List takes label and field selectors, and returns the list of LogicAppActionCustoms that match those selectors.
 func (c *FakeLogicAppActionCustoms) List(opts v1.ListOptions) (result *v1alpha1.LogicAppActionCustomList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(logicappactioncustomsResource, logicappactioncustomsKind, opts), &v1alpha1.LogicAppActionCustomList{})
+		Invokes(testing.NewListAction(logicappactioncustomsResource, logicappactioncustomsKind, c.ns, opts), &v1alpha1.LogicAppActionCustomList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeLogicAppActionCustoms) List(opts v1.ListOptions) (result *v1alpha1.
 // Watch returns a watch.Interface that watches the requested logicAppActionCustoms.
 func (c *FakeLogicAppActionCustoms) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(logicappactioncustomsResource, opts))
+		InvokesWatch(testing.NewWatchAction(logicappactioncustomsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a logicAppActionCustom and creates it.  Returns the server's representation of the logicAppActionCustom, and an error, if there is any.
 func (c *FakeLogicAppActionCustoms) Create(logicAppActionCustom *v1alpha1.LogicAppActionCustom) (result *v1alpha1.LogicAppActionCustom, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(logicappactioncustomsResource, logicAppActionCustom), &v1alpha1.LogicAppActionCustom{})
+		Invokes(testing.NewCreateAction(logicappactioncustomsResource, c.ns, logicAppActionCustom), &v1alpha1.LogicAppActionCustom{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeLogicAppActionCustoms) Create(logicAppActionCustom *v1alpha1.LogicA
 // Update takes the representation of a logicAppActionCustom and updates it. Returns the server's representation of the logicAppActionCustom, and an error, if there is any.
 func (c *FakeLogicAppActionCustoms) Update(logicAppActionCustom *v1alpha1.LogicAppActionCustom) (result *v1alpha1.LogicAppActionCustom, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(logicappactioncustomsResource, logicAppActionCustom), &v1alpha1.LogicAppActionCustom{})
+		Invokes(testing.NewUpdateAction(logicappactioncustomsResource, c.ns, logicAppActionCustom), &v1alpha1.LogicAppActionCustom{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeLogicAppActionCustoms) Update(logicAppActionCustom *v1alpha1.LogicA
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeLogicAppActionCustoms) UpdateStatus(logicAppActionCustom *v1alpha1.LogicAppActionCustom) (*v1alpha1.LogicAppActionCustom, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(logicappactioncustomsResource, "status", logicAppActionCustom), &v1alpha1.LogicAppActionCustom{})
+		Invokes(testing.NewUpdateSubresourceAction(logicappactioncustomsResource, "status", c.ns, logicAppActionCustom), &v1alpha1.LogicAppActionCustom{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeLogicAppActionCustoms) UpdateStatus(logicAppActionCustom *v1alpha1.
 // Delete takes name of the logicAppActionCustom and deletes it. Returns an error if one occurs.
 func (c *FakeLogicAppActionCustoms) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(logicappactioncustomsResource, name), &v1alpha1.LogicAppActionCustom{})
+		Invokes(testing.NewDeleteAction(logicappactioncustomsResource, c.ns, name), &v1alpha1.LogicAppActionCustom{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeLogicAppActionCustoms) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(logicappactioncustomsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(logicappactioncustomsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.LogicAppActionCustomList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeLogicAppActionCustoms) DeleteCollection(options *v1.DeleteOptions, 
 // Patch applies the patch and returns the patched logicAppActionCustom.
 func (c *FakeLogicAppActionCustoms) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.LogicAppActionCustom, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(logicappactioncustomsResource, name, pt, data, subresources...), &v1alpha1.LogicAppActionCustom{})
+		Invokes(testing.NewPatchSubresourceAction(logicappactioncustomsResource, c.ns, name, pt, data, subresources...), &v1alpha1.LogicAppActionCustom{})
+
 	if obj == nil {
 		return nil, err
 	}

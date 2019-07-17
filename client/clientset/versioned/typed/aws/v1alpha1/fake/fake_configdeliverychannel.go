@@ -31,6 +31,7 @@ import (
 // FakeConfigDeliveryChannels implements ConfigDeliveryChannelInterface
 type FakeConfigDeliveryChannels struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var configdeliverychannelsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "configdeliverychannels"}
@@ -40,7 +41,8 @@ var configdeliverychannelsKind = schema.GroupVersionKind{Group: "aws.kubeform.co
 // Get takes name of the configDeliveryChannel, and returns the corresponding configDeliveryChannel object, and an error if there is any.
 func (c *FakeConfigDeliveryChannels) Get(name string, options v1.GetOptions) (result *v1alpha1.ConfigDeliveryChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(configdeliverychannelsResource, name), &v1alpha1.ConfigDeliveryChannel{})
+		Invokes(testing.NewGetAction(configdeliverychannelsResource, c.ns, name), &v1alpha1.ConfigDeliveryChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeConfigDeliveryChannels) Get(name string, options v1.GetOptions) (re
 // List takes label and field selectors, and returns the list of ConfigDeliveryChannels that match those selectors.
 func (c *FakeConfigDeliveryChannels) List(opts v1.ListOptions) (result *v1alpha1.ConfigDeliveryChannelList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(configdeliverychannelsResource, configdeliverychannelsKind, opts), &v1alpha1.ConfigDeliveryChannelList{})
+		Invokes(testing.NewListAction(configdeliverychannelsResource, configdeliverychannelsKind, c.ns, opts), &v1alpha1.ConfigDeliveryChannelList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeConfigDeliveryChannels) List(opts v1.ListOptions) (result *v1alpha1
 // Watch returns a watch.Interface that watches the requested configDeliveryChannels.
 func (c *FakeConfigDeliveryChannels) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(configdeliverychannelsResource, opts))
+		InvokesWatch(testing.NewWatchAction(configdeliverychannelsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a configDeliveryChannel and creates it.  Returns the server's representation of the configDeliveryChannel, and an error, if there is any.
 func (c *FakeConfigDeliveryChannels) Create(configDeliveryChannel *v1alpha1.ConfigDeliveryChannel) (result *v1alpha1.ConfigDeliveryChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(configdeliverychannelsResource, configDeliveryChannel), &v1alpha1.ConfigDeliveryChannel{})
+		Invokes(testing.NewCreateAction(configdeliverychannelsResource, c.ns, configDeliveryChannel), &v1alpha1.ConfigDeliveryChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeConfigDeliveryChannels) Create(configDeliveryChannel *v1alpha1.Conf
 // Update takes the representation of a configDeliveryChannel and updates it. Returns the server's representation of the configDeliveryChannel, and an error, if there is any.
 func (c *FakeConfigDeliveryChannels) Update(configDeliveryChannel *v1alpha1.ConfigDeliveryChannel) (result *v1alpha1.ConfigDeliveryChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(configdeliverychannelsResource, configDeliveryChannel), &v1alpha1.ConfigDeliveryChannel{})
+		Invokes(testing.NewUpdateAction(configdeliverychannelsResource, c.ns, configDeliveryChannel), &v1alpha1.ConfigDeliveryChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeConfigDeliveryChannels) Update(configDeliveryChannel *v1alpha1.Conf
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeConfigDeliveryChannels) UpdateStatus(configDeliveryChannel *v1alpha1.ConfigDeliveryChannel) (*v1alpha1.ConfigDeliveryChannel, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(configdeliverychannelsResource, "status", configDeliveryChannel), &v1alpha1.ConfigDeliveryChannel{})
+		Invokes(testing.NewUpdateSubresourceAction(configdeliverychannelsResource, "status", c.ns, configDeliveryChannel), &v1alpha1.ConfigDeliveryChannel{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeConfigDeliveryChannels) UpdateStatus(configDeliveryChannel *v1alpha
 // Delete takes name of the configDeliveryChannel and deletes it. Returns an error if one occurs.
 func (c *FakeConfigDeliveryChannels) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(configdeliverychannelsResource, name), &v1alpha1.ConfigDeliveryChannel{})
+		Invokes(testing.NewDeleteAction(configdeliverychannelsResource, c.ns, name), &v1alpha1.ConfigDeliveryChannel{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeConfigDeliveryChannels) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(configdeliverychannelsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(configdeliverychannelsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ConfigDeliveryChannelList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeConfigDeliveryChannels) DeleteCollection(options *v1.DeleteOptions,
 // Patch applies the patch and returns the patched configDeliveryChannel.
 func (c *FakeConfigDeliveryChannels) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ConfigDeliveryChannel, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(configdeliverychannelsResource, name, pt, data, subresources...), &v1alpha1.ConfigDeliveryChannel{})
+		Invokes(testing.NewPatchSubresourceAction(configdeliverychannelsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ConfigDeliveryChannel{})
+
 	if obj == nil {
 		return nil, err
 	}

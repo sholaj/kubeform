@@ -31,6 +31,7 @@ import (
 // FakeSqlDatabaseInstances implements SqlDatabaseInstanceInterface
 type FakeSqlDatabaseInstances struct {
 	Fake *FakeGoogleV1alpha1
+	ns   string
 }
 
 var sqldatabaseinstancesResource = schema.GroupVersionResource{Group: "google.kubeform.com", Version: "v1alpha1", Resource: "sqldatabaseinstances"}
@@ -40,7 +41,8 @@ var sqldatabaseinstancesKind = schema.GroupVersionKind{Group: "google.kubeform.c
 // Get takes name of the sqlDatabaseInstance, and returns the corresponding sqlDatabaseInstance object, and an error if there is any.
 func (c *FakeSqlDatabaseInstances) Get(name string, options v1.GetOptions) (result *v1alpha1.SqlDatabaseInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(sqldatabaseinstancesResource, name), &v1alpha1.SqlDatabaseInstance{})
+		Invokes(testing.NewGetAction(sqldatabaseinstancesResource, c.ns, name), &v1alpha1.SqlDatabaseInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSqlDatabaseInstances) Get(name string, options v1.GetOptions) (resu
 // List takes label and field selectors, and returns the list of SqlDatabaseInstances that match those selectors.
 func (c *FakeSqlDatabaseInstances) List(opts v1.ListOptions) (result *v1alpha1.SqlDatabaseInstanceList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(sqldatabaseinstancesResource, sqldatabaseinstancesKind, opts), &v1alpha1.SqlDatabaseInstanceList{})
+		Invokes(testing.NewListAction(sqldatabaseinstancesResource, sqldatabaseinstancesKind, c.ns, opts), &v1alpha1.SqlDatabaseInstanceList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSqlDatabaseInstances) List(opts v1.ListOptions) (result *v1alpha1.S
 // Watch returns a watch.Interface that watches the requested sqlDatabaseInstances.
 func (c *FakeSqlDatabaseInstances) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(sqldatabaseinstancesResource, opts))
+		InvokesWatch(testing.NewWatchAction(sqldatabaseinstancesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a sqlDatabaseInstance and creates it.  Returns the server's representation of the sqlDatabaseInstance, and an error, if there is any.
 func (c *FakeSqlDatabaseInstances) Create(sqlDatabaseInstance *v1alpha1.SqlDatabaseInstance) (result *v1alpha1.SqlDatabaseInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(sqldatabaseinstancesResource, sqlDatabaseInstance), &v1alpha1.SqlDatabaseInstance{})
+		Invokes(testing.NewCreateAction(sqldatabaseinstancesResource, c.ns, sqlDatabaseInstance), &v1alpha1.SqlDatabaseInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSqlDatabaseInstances) Create(sqlDatabaseInstance *v1alpha1.SqlDatab
 // Update takes the representation of a sqlDatabaseInstance and updates it. Returns the server's representation of the sqlDatabaseInstance, and an error, if there is any.
 func (c *FakeSqlDatabaseInstances) Update(sqlDatabaseInstance *v1alpha1.SqlDatabaseInstance) (result *v1alpha1.SqlDatabaseInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(sqldatabaseinstancesResource, sqlDatabaseInstance), &v1alpha1.SqlDatabaseInstance{})
+		Invokes(testing.NewUpdateAction(sqldatabaseinstancesResource, c.ns, sqlDatabaseInstance), &v1alpha1.SqlDatabaseInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSqlDatabaseInstances) Update(sqlDatabaseInstance *v1alpha1.SqlDatab
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSqlDatabaseInstances) UpdateStatus(sqlDatabaseInstance *v1alpha1.SqlDatabaseInstance) (*v1alpha1.SqlDatabaseInstance, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(sqldatabaseinstancesResource, "status", sqlDatabaseInstance), &v1alpha1.SqlDatabaseInstance{})
+		Invokes(testing.NewUpdateSubresourceAction(sqldatabaseinstancesResource, "status", c.ns, sqlDatabaseInstance), &v1alpha1.SqlDatabaseInstance{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSqlDatabaseInstances) UpdateStatus(sqlDatabaseInstance *v1alpha1.Sq
 // Delete takes name of the sqlDatabaseInstance and deletes it. Returns an error if one occurs.
 func (c *FakeSqlDatabaseInstances) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(sqldatabaseinstancesResource, name), &v1alpha1.SqlDatabaseInstance{})
+		Invokes(testing.NewDeleteAction(sqldatabaseinstancesResource, c.ns, name), &v1alpha1.SqlDatabaseInstance{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSqlDatabaseInstances) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(sqldatabaseinstancesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(sqldatabaseinstancesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SqlDatabaseInstanceList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSqlDatabaseInstances) DeleteCollection(options *v1.DeleteOptions, l
 // Patch applies the patch and returns the patched sqlDatabaseInstance.
 func (c *FakeSqlDatabaseInstances) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SqlDatabaseInstance, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(sqldatabaseinstancesResource, name, pt, data, subresources...), &v1alpha1.SqlDatabaseInstance{})
+		Invokes(testing.NewPatchSubresourceAction(sqldatabaseinstancesResource, c.ns, name, pt, data, subresources...), &v1alpha1.SqlDatabaseInstance{})
+
 	if obj == nil {
 		return nil, err
 	}

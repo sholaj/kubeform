@@ -32,7 +32,7 @@ import (
 // ConfigConfigurationRecordersGetter has a method to return a ConfigConfigurationRecorderInterface.
 // A group's client should implement this interface.
 type ConfigConfigurationRecordersGetter interface {
-	ConfigConfigurationRecorders() ConfigConfigurationRecorderInterface
+	ConfigConfigurationRecorders(namespace string) ConfigConfigurationRecorderInterface
 }
 
 // ConfigConfigurationRecorderInterface has methods to work with ConfigConfigurationRecorder resources.
@@ -52,12 +52,14 @@ type ConfigConfigurationRecorderInterface interface {
 // configConfigurationRecorders implements ConfigConfigurationRecorderInterface
 type configConfigurationRecorders struct {
 	client rest.Interface
+	ns     string
 }
 
 // newConfigConfigurationRecorders returns a ConfigConfigurationRecorders
-func newConfigConfigurationRecorders(c *AwsV1alpha1Client) *configConfigurationRecorders {
+func newConfigConfigurationRecorders(c *AwsV1alpha1Client, namespace string) *configConfigurationRecorders {
 	return &configConfigurationRecorders{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newConfigConfigurationRecorders(c *AwsV1alpha1Client) *configConfigurationR
 func (c *configConfigurationRecorders) Get(name string, options v1.GetOptions) (result *v1alpha1.ConfigConfigurationRecorder, err error) {
 	result = &v1alpha1.ConfigConfigurationRecorder{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("configconfigurationrecorders").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *configConfigurationRecorders) List(opts v1.ListOptions) (result *v1alph
 	}
 	result = &v1alpha1.ConfigConfigurationRecorderList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("configconfigurationrecorders").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *configConfigurationRecorders) Watch(opts v1.ListOptions) (watch.Interfa
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("configconfigurationrecorders").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *configConfigurationRecorders) Watch(opts v1.ListOptions) (watch.Interfa
 func (c *configConfigurationRecorders) Create(configConfigurationRecorder *v1alpha1.ConfigConfigurationRecorder) (result *v1alpha1.ConfigConfigurationRecorder, err error) {
 	result = &v1alpha1.ConfigConfigurationRecorder{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("configconfigurationrecorders").
 		Body(configConfigurationRecorder).
 		Do().
@@ -118,6 +124,7 @@ func (c *configConfigurationRecorders) Create(configConfigurationRecorder *v1alp
 func (c *configConfigurationRecorders) Update(configConfigurationRecorder *v1alpha1.ConfigConfigurationRecorder) (result *v1alpha1.ConfigConfigurationRecorder, err error) {
 	result = &v1alpha1.ConfigConfigurationRecorder{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("configconfigurationrecorders").
 		Name(configConfigurationRecorder.Name).
 		Body(configConfigurationRecorder).
@@ -132,6 +139,7 @@ func (c *configConfigurationRecorders) Update(configConfigurationRecorder *v1alp
 func (c *configConfigurationRecorders) UpdateStatus(configConfigurationRecorder *v1alpha1.ConfigConfigurationRecorder) (result *v1alpha1.ConfigConfigurationRecorder, err error) {
 	result = &v1alpha1.ConfigConfigurationRecorder{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("configconfigurationrecorders").
 		Name(configConfigurationRecorder.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *configConfigurationRecorders) UpdateStatus(configConfigurationRecorder 
 // Delete takes name of the configConfigurationRecorder and deletes it. Returns an error if one occurs.
 func (c *configConfigurationRecorders) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("configconfigurationrecorders").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *configConfigurationRecorders) DeleteCollection(options *v1.DeleteOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("configconfigurationrecorders").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *configConfigurationRecorders) DeleteCollection(options *v1.DeleteOption
 func (c *configConfigurationRecorders) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ConfigConfigurationRecorder, err error) {
 	result = &v1alpha1.ConfigConfigurationRecorder{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("configconfigurationrecorders").
 		SubResource(subresources...).
 		Name(name).

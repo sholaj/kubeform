@@ -29,8 +29,8 @@ import (
 type OpsworksRdsDbInstanceLister interface {
 	// List lists all OpsworksRdsDbInstances in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.OpsworksRdsDbInstance, err error)
-	// Get retrieves the OpsworksRdsDbInstance from the index for a given name.
-	Get(name string) (*v1alpha1.OpsworksRdsDbInstance, error)
+	// OpsworksRdsDbInstances returns an object that can list and get OpsworksRdsDbInstances.
+	OpsworksRdsDbInstances(namespace string) OpsworksRdsDbInstanceNamespaceLister
 	OpsworksRdsDbInstanceListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *opsworksRdsDbInstanceLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the OpsworksRdsDbInstance from the index for a given name.
-func (s *opsworksRdsDbInstanceLister) Get(name string) (*v1alpha1.OpsworksRdsDbInstance, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// OpsworksRdsDbInstances returns an object that can list and get OpsworksRdsDbInstances.
+func (s *opsworksRdsDbInstanceLister) OpsworksRdsDbInstances(namespace string) OpsworksRdsDbInstanceNamespaceLister {
+	return opsworksRdsDbInstanceNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// OpsworksRdsDbInstanceNamespaceLister helps list and get OpsworksRdsDbInstances.
+type OpsworksRdsDbInstanceNamespaceLister interface {
+	// List lists all OpsworksRdsDbInstances in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.OpsworksRdsDbInstance, err error)
+	// Get retrieves the OpsworksRdsDbInstance from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.OpsworksRdsDbInstance, error)
+	OpsworksRdsDbInstanceNamespaceListerExpansion
+}
+
+// opsworksRdsDbInstanceNamespaceLister implements the OpsworksRdsDbInstanceNamespaceLister
+// interface.
+type opsworksRdsDbInstanceNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all OpsworksRdsDbInstances in the indexer for a given namespace.
+func (s opsworksRdsDbInstanceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.OpsworksRdsDbInstance, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.OpsworksRdsDbInstance))
+	})
+	return ret, err
+}
+
+// Get retrieves the OpsworksRdsDbInstance from the indexer for a given namespace and name.
+func (s opsworksRdsDbInstanceNamespaceLister) Get(name string) (*v1alpha1.OpsworksRdsDbInstance, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

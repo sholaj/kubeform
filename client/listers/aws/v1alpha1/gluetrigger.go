@@ -29,8 +29,8 @@ import (
 type GlueTriggerLister interface {
 	// List lists all GlueTriggers in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.GlueTrigger, err error)
-	// Get retrieves the GlueTrigger from the index for a given name.
-	Get(name string) (*v1alpha1.GlueTrigger, error)
+	// GlueTriggers returns an object that can list and get GlueTriggers.
+	GlueTriggers(namespace string) GlueTriggerNamespaceLister
 	GlueTriggerListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *glueTriggerLister) List(selector labels.Selector) (ret []*v1alpha1.Glue
 	return ret, err
 }
 
-// Get retrieves the GlueTrigger from the index for a given name.
-func (s *glueTriggerLister) Get(name string) (*v1alpha1.GlueTrigger, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// GlueTriggers returns an object that can list and get GlueTriggers.
+func (s *glueTriggerLister) GlueTriggers(namespace string) GlueTriggerNamespaceLister {
+	return glueTriggerNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// GlueTriggerNamespaceLister helps list and get GlueTriggers.
+type GlueTriggerNamespaceLister interface {
+	// List lists all GlueTriggers in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.GlueTrigger, err error)
+	// Get retrieves the GlueTrigger from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.GlueTrigger, error)
+	GlueTriggerNamespaceListerExpansion
+}
+
+// glueTriggerNamespaceLister implements the GlueTriggerNamespaceLister
+// interface.
+type glueTriggerNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all GlueTriggers in the indexer for a given namespace.
+func (s glueTriggerNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.GlueTrigger, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.GlueTrigger))
+	})
+	return ret, err
+}
+
+// Get retrieves the GlueTrigger from the indexer for a given namespace and name.
+func (s glueTriggerNamespaceLister) Get(name string) (*v1alpha1.GlueTrigger, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

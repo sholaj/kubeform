@@ -41,32 +41,33 @@ type ServicebusNamespaceAuthorizationRuleInformer interface {
 type servicebusNamespaceAuthorizationRuleInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewServicebusNamespaceAuthorizationRuleInformer constructs a new informer for ServicebusNamespaceAuthorizationRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewServicebusNamespaceAuthorizationRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredServicebusNamespaceAuthorizationRuleInformer(client, resyncPeriod, indexers, nil)
+func NewServicebusNamespaceAuthorizationRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredServicebusNamespaceAuthorizationRuleInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredServicebusNamespaceAuthorizationRuleInformer constructs a new informer for ServicebusNamespaceAuthorizationRule type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredServicebusNamespaceAuthorizationRuleInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredServicebusNamespaceAuthorizationRuleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ServicebusNamespaceAuthorizationRules().List(options)
+				return client.AzurermV1alpha1().ServicebusNamespaceAuthorizationRules(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ServicebusNamespaceAuthorizationRules().Watch(options)
+				return client.AzurermV1alpha1().ServicebusNamespaceAuthorizationRules(namespace).Watch(options)
 			},
 		},
 		&azurermv1alpha1.ServicebusNamespaceAuthorizationRule{},
@@ -76,7 +77,7 @@ func NewFilteredServicebusNamespaceAuthorizationRuleInformer(client versioned.In
 }
 
 func (f *servicebusNamespaceAuthorizationRuleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredServicebusNamespaceAuthorizationRuleInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredServicebusNamespaceAuthorizationRuleInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *servicebusNamespaceAuthorizationRuleInformer) Informer() cache.SharedIndexInformer {

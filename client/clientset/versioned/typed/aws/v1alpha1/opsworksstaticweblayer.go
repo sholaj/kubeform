@@ -32,7 +32,7 @@ import (
 // OpsworksStaticWebLayersGetter has a method to return a OpsworksStaticWebLayerInterface.
 // A group's client should implement this interface.
 type OpsworksStaticWebLayersGetter interface {
-	OpsworksStaticWebLayers() OpsworksStaticWebLayerInterface
+	OpsworksStaticWebLayers(namespace string) OpsworksStaticWebLayerInterface
 }
 
 // OpsworksStaticWebLayerInterface has methods to work with OpsworksStaticWebLayer resources.
@@ -52,12 +52,14 @@ type OpsworksStaticWebLayerInterface interface {
 // opsworksStaticWebLayers implements OpsworksStaticWebLayerInterface
 type opsworksStaticWebLayers struct {
 	client rest.Interface
+	ns     string
 }
 
 // newOpsworksStaticWebLayers returns a OpsworksStaticWebLayers
-func newOpsworksStaticWebLayers(c *AwsV1alpha1Client) *opsworksStaticWebLayers {
+func newOpsworksStaticWebLayers(c *AwsV1alpha1Client, namespace string) *opsworksStaticWebLayers {
 	return &opsworksStaticWebLayers{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newOpsworksStaticWebLayers(c *AwsV1alpha1Client) *opsworksStaticWebLayers {
 func (c *opsworksStaticWebLayers) Get(name string, options v1.GetOptions) (result *v1alpha1.OpsworksStaticWebLayer, err error) {
 	result = &v1alpha1.OpsworksStaticWebLayer{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksstaticweblayers").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *opsworksStaticWebLayers) List(opts v1.ListOptions) (result *v1alpha1.Op
 	}
 	result = &v1alpha1.OpsworksStaticWebLayerList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksstaticweblayers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *opsworksStaticWebLayers) Watch(opts v1.ListOptions) (watch.Interface, e
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("opsworksstaticweblayers").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *opsworksStaticWebLayers) Watch(opts v1.ListOptions) (watch.Interface, e
 func (c *opsworksStaticWebLayers) Create(opsworksStaticWebLayer *v1alpha1.OpsworksStaticWebLayer) (result *v1alpha1.OpsworksStaticWebLayer, err error) {
 	result = &v1alpha1.OpsworksStaticWebLayer{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("opsworksstaticweblayers").
 		Body(opsworksStaticWebLayer).
 		Do().
@@ -118,6 +124,7 @@ func (c *opsworksStaticWebLayers) Create(opsworksStaticWebLayer *v1alpha1.Opswor
 func (c *opsworksStaticWebLayers) Update(opsworksStaticWebLayer *v1alpha1.OpsworksStaticWebLayer) (result *v1alpha1.OpsworksStaticWebLayer, err error) {
 	result = &v1alpha1.OpsworksStaticWebLayer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksstaticweblayers").
 		Name(opsworksStaticWebLayer.Name).
 		Body(opsworksStaticWebLayer).
@@ -132,6 +139,7 @@ func (c *opsworksStaticWebLayers) Update(opsworksStaticWebLayer *v1alpha1.Opswor
 func (c *opsworksStaticWebLayers) UpdateStatus(opsworksStaticWebLayer *v1alpha1.OpsworksStaticWebLayer) (result *v1alpha1.OpsworksStaticWebLayer, err error) {
 	result = &v1alpha1.OpsworksStaticWebLayer{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("opsworksstaticweblayers").
 		Name(opsworksStaticWebLayer.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *opsworksStaticWebLayers) UpdateStatus(opsworksStaticWebLayer *v1alpha1.
 // Delete takes name of the opsworksStaticWebLayer and deletes it. Returns an error if one occurs.
 func (c *opsworksStaticWebLayers) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksstaticweblayers").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *opsworksStaticWebLayers) DeleteCollection(options *v1.DeleteOptions, li
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("opsworksstaticweblayers").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *opsworksStaticWebLayers) DeleteCollection(options *v1.DeleteOptions, li
 func (c *opsworksStaticWebLayers) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.OpsworksStaticWebLayer, err error) {
 	result = &v1alpha1.OpsworksStaticWebLayer{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("opsworksstaticweblayers").
 		SubResource(subresources...).
 		Name(name).

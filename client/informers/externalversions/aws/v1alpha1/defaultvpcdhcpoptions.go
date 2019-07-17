@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/aws/v1alpha1"
 )
 
-// DefaultVpcDhcpOptionsInformer provides access to a shared informer and lister for
-// DefaultVpcDhcpOptionses.
-type DefaultVpcDhcpOptionsInformer interface {
+// DefaultVpcDHCPOptionsInformer provides access to a shared informer and lister for
+// DefaultVpcDHCPOptionses.
+type DefaultVpcDHCPOptionsInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.DefaultVpcDhcpOptionsLister
+	Lister() v1alpha1.DefaultVpcDHCPOptionsLister
 }
 
-type defaultVpcDhcpOptionsInformer struct {
+type defaultVpcDHCPOptionsInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewDefaultVpcDhcpOptionsInformer constructs a new informer for DefaultVpcDhcpOptions type.
+// NewDefaultVpcDHCPOptionsInformer constructs a new informer for DefaultVpcDHCPOptions type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDefaultVpcDhcpOptionsInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDefaultVpcDhcpOptionsInformer(client, resyncPeriod, indexers, nil)
+func NewDefaultVpcDHCPOptionsInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDefaultVpcDHCPOptionsInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredDefaultVpcDhcpOptionsInformer constructs a new informer for DefaultVpcDhcpOptions type.
+// NewFilteredDefaultVpcDHCPOptionsInformer constructs a new informer for DefaultVpcDHCPOptions type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDefaultVpcDhcpOptionsInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDefaultVpcDHCPOptionsInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DefaultVpcDhcpOptionses().List(options)
+				return client.AwsV1alpha1().DefaultVpcDHCPOptionses(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AwsV1alpha1().DefaultVpcDhcpOptionses().Watch(options)
+				return client.AwsV1alpha1().DefaultVpcDHCPOptionses(namespace).Watch(options)
 			},
 		},
-		&awsv1alpha1.DefaultVpcDhcpOptions{},
+		&awsv1alpha1.DefaultVpcDHCPOptions{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *defaultVpcDhcpOptionsInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDefaultVpcDhcpOptionsInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *defaultVpcDHCPOptionsInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredDefaultVpcDHCPOptionsInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *defaultVpcDhcpOptionsInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&awsv1alpha1.DefaultVpcDhcpOptions{}, f.defaultInformer)
+func (f *defaultVpcDHCPOptionsInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&awsv1alpha1.DefaultVpcDHCPOptions{}, f.defaultInformer)
 }
 
-func (f *defaultVpcDhcpOptionsInformer) Lister() v1alpha1.DefaultVpcDhcpOptionsLister {
-	return v1alpha1.NewDefaultVpcDhcpOptionsLister(f.Informer().GetIndexer())
+func (f *defaultVpcDHCPOptionsInformer) Lister() v1alpha1.DefaultVpcDHCPOptionsLister {
+	return v1alpha1.NewDefaultVpcDHCPOptionsLister(f.Informer().GetIndexer())
 }

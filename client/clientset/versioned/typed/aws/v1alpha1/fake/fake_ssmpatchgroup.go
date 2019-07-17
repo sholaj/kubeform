@@ -31,6 +31,7 @@ import (
 // FakeSsmPatchGroups implements SsmPatchGroupInterface
 type FakeSsmPatchGroups struct {
 	Fake *FakeAwsV1alpha1
+	ns   string
 }
 
 var ssmpatchgroupsResource = schema.GroupVersionResource{Group: "aws.kubeform.com", Version: "v1alpha1", Resource: "ssmpatchgroups"}
@@ -40,7 +41,8 @@ var ssmpatchgroupsKind = schema.GroupVersionKind{Group: "aws.kubeform.com", Vers
 // Get takes name of the ssmPatchGroup, and returns the corresponding ssmPatchGroup object, and an error if there is any.
 func (c *FakeSsmPatchGroups) Get(name string, options v1.GetOptions) (result *v1alpha1.SsmPatchGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(ssmpatchgroupsResource, name), &v1alpha1.SsmPatchGroup{})
+		Invokes(testing.NewGetAction(ssmpatchgroupsResource, c.ns, name), &v1alpha1.SsmPatchGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeSsmPatchGroups) Get(name string, options v1.GetOptions) (result *v1
 // List takes label and field selectors, and returns the list of SsmPatchGroups that match those selectors.
 func (c *FakeSsmPatchGroups) List(opts v1.ListOptions) (result *v1alpha1.SsmPatchGroupList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(ssmpatchgroupsResource, ssmpatchgroupsKind, opts), &v1alpha1.SsmPatchGroupList{})
+		Invokes(testing.NewListAction(ssmpatchgroupsResource, ssmpatchgroupsKind, c.ns, opts), &v1alpha1.SsmPatchGroupList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeSsmPatchGroups) List(opts v1.ListOptions) (result *v1alpha1.SsmPatc
 // Watch returns a watch.Interface that watches the requested ssmPatchGroups.
 func (c *FakeSsmPatchGroups) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(ssmpatchgroupsResource, opts))
+		InvokesWatch(testing.NewWatchAction(ssmpatchgroupsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a ssmPatchGroup and creates it.  Returns the server's representation of the ssmPatchGroup, and an error, if there is any.
 func (c *FakeSsmPatchGroups) Create(ssmPatchGroup *v1alpha1.SsmPatchGroup) (result *v1alpha1.SsmPatchGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(ssmpatchgroupsResource, ssmPatchGroup), &v1alpha1.SsmPatchGroup{})
+		Invokes(testing.NewCreateAction(ssmpatchgroupsResource, c.ns, ssmPatchGroup), &v1alpha1.SsmPatchGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeSsmPatchGroups) Create(ssmPatchGroup *v1alpha1.SsmPatchGroup) (resu
 // Update takes the representation of a ssmPatchGroup and updates it. Returns the server's representation of the ssmPatchGroup, and an error, if there is any.
 func (c *FakeSsmPatchGroups) Update(ssmPatchGroup *v1alpha1.SsmPatchGroup) (result *v1alpha1.SsmPatchGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(ssmpatchgroupsResource, ssmPatchGroup), &v1alpha1.SsmPatchGroup{})
+		Invokes(testing.NewUpdateAction(ssmpatchgroupsResource, c.ns, ssmPatchGroup), &v1alpha1.SsmPatchGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeSsmPatchGroups) Update(ssmPatchGroup *v1alpha1.SsmPatchGroup) (resu
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeSsmPatchGroups) UpdateStatus(ssmPatchGroup *v1alpha1.SsmPatchGroup) (*v1alpha1.SsmPatchGroup, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(ssmpatchgroupsResource, "status", ssmPatchGroup), &v1alpha1.SsmPatchGroup{})
+		Invokes(testing.NewUpdateSubresourceAction(ssmpatchgroupsResource, "status", c.ns, ssmPatchGroup), &v1alpha1.SsmPatchGroup{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeSsmPatchGroups) UpdateStatus(ssmPatchGroup *v1alpha1.SsmPatchGroup)
 // Delete takes name of the ssmPatchGroup and deletes it. Returns an error if one occurs.
 func (c *FakeSsmPatchGroups) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(ssmpatchgroupsResource, name), &v1alpha1.SsmPatchGroup{})
+		Invokes(testing.NewDeleteAction(ssmpatchgroupsResource, c.ns, name), &v1alpha1.SsmPatchGroup{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSsmPatchGroups) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(ssmpatchgroupsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(ssmpatchgroupsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SsmPatchGroupList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeSsmPatchGroups) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched ssmPatchGroup.
 func (c *FakeSsmPatchGroups) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SsmPatchGroup, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(ssmpatchgroupsResource, name, pt, data, subresources...), &v1alpha1.SsmPatchGroup{})
+		Invokes(testing.NewPatchSubresourceAction(ssmpatchgroupsResource, c.ns, name, pt, data, subresources...), &v1alpha1.SsmPatchGroup{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,28 +19,29 @@ type SsmAssociation struct {
 }
 
 type SsmAssociationSpecOutputLocation struct {
-	S3BucketName string `json:"s3_bucket_name"`
+	S3BucketName string `json:"s3BucketName" tf:"s3_bucket_name"`
 	// +optional
-	S3KeyPrefix string `json:"s3_key_prefix,omitempty"`
+	S3KeyPrefix string `json:"s3KeyPrefix,omitempty" tf:"s3_key_prefix,omitempty"`
 }
 
 type SsmAssociationSpec struct {
 	// +optional
-	AssociationName string `json:"association_name,omitempty"`
+	AssociationName string `json:"associationName,omitempty" tf:"association_name,omitempty"`
 	// +optional
-	ComplianceSeverity string `json:"compliance_severity,omitempty"`
+	ComplianceSeverity string `json:"complianceSeverity,omitempty" tf:"compliance_severity,omitempty"`
 	// +optional
-	InstanceId string `json:"instance_id,omitempty"`
+	InstanceID string `json:"instanceID,omitempty" tf:"instance_id,omitempty"`
 	// +optional
-	MaxConcurrency string `json:"max_concurrency,omitempty"`
+	MaxConcurrency string `json:"maxConcurrency,omitempty" tf:"max_concurrency,omitempty"`
 	// +optional
-	MaxErrors string `json:"max_errors,omitempty"`
-	Name      string `json:"name"`
+	MaxErrors string `json:"maxErrors,omitempty" tf:"max_errors,omitempty"`
+	Name      string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	OutputLocation *[]SsmAssociationSpec `json:"output_location,omitempty"`
+	OutputLocation []SsmAssociationSpecOutputLocation `json:"outputLocation,omitempty" tf:"output_location,omitempty"`
 	// +optional
-	ScheduleExpression string `json:"schedule_expression,omitempty"`
+	ScheduleExpression string                    `json:"scheduleExpression,omitempty" tf:"schedule_expression,omitempty"`
+	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SsmAssociationStatus struct {
@@ -48,7 +49,9 @@ type SsmAssociationStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

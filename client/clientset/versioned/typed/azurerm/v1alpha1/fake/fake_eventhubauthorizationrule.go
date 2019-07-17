@@ -31,6 +31,7 @@ import (
 // FakeEventhubAuthorizationRules implements EventhubAuthorizationRuleInterface
 type FakeEventhubAuthorizationRules struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var eventhubauthorizationrulesResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "eventhubauthorizationrules"}
@@ -40,7 +41,8 @@ var eventhubauthorizationrulesKind = schema.GroupVersionKind{Group: "azurerm.kub
 // Get takes name of the eventhubAuthorizationRule, and returns the corresponding eventhubAuthorizationRule object, and an error if there is any.
 func (c *FakeEventhubAuthorizationRules) Get(name string, options v1.GetOptions) (result *v1alpha1.EventhubAuthorizationRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(eventhubauthorizationrulesResource, name), &v1alpha1.EventhubAuthorizationRule{})
+		Invokes(testing.NewGetAction(eventhubauthorizationrulesResource, c.ns, name), &v1alpha1.EventhubAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeEventhubAuthorizationRules) Get(name string, options v1.GetOptions)
 // List takes label and field selectors, and returns the list of EventhubAuthorizationRules that match those selectors.
 func (c *FakeEventhubAuthorizationRules) List(opts v1.ListOptions) (result *v1alpha1.EventhubAuthorizationRuleList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(eventhubauthorizationrulesResource, eventhubauthorizationrulesKind, opts), &v1alpha1.EventhubAuthorizationRuleList{})
+		Invokes(testing.NewListAction(eventhubauthorizationrulesResource, eventhubauthorizationrulesKind, c.ns, opts), &v1alpha1.EventhubAuthorizationRuleList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeEventhubAuthorizationRules) List(opts v1.ListOptions) (result *v1al
 // Watch returns a watch.Interface that watches the requested eventhubAuthorizationRules.
 func (c *FakeEventhubAuthorizationRules) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(eventhubauthorizationrulesResource, opts))
+		InvokesWatch(testing.NewWatchAction(eventhubauthorizationrulesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a eventhubAuthorizationRule and creates it.  Returns the server's representation of the eventhubAuthorizationRule, and an error, if there is any.
 func (c *FakeEventhubAuthorizationRules) Create(eventhubAuthorizationRule *v1alpha1.EventhubAuthorizationRule) (result *v1alpha1.EventhubAuthorizationRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(eventhubauthorizationrulesResource, eventhubAuthorizationRule), &v1alpha1.EventhubAuthorizationRule{})
+		Invokes(testing.NewCreateAction(eventhubauthorizationrulesResource, c.ns, eventhubAuthorizationRule), &v1alpha1.EventhubAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeEventhubAuthorizationRules) Create(eventhubAuthorizationRule *v1alp
 // Update takes the representation of a eventhubAuthorizationRule and updates it. Returns the server's representation of the eventhubAuthorizationRule, and an error, if there is any.
 func (c *FakeEventhubAuthorizationRules) Update(eventhubAuthorizationRule *v1alpha1.EventhubAuthorizationRule) (result *v1alpha1.EventhubAuthorizationRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(eventhubauthorizationrulesResource, eventhubAuthorizationRule), &v1alpha1.EventhubAuthorizationRule{})
+		Invokes(testing.NewUpdateAction(eventhubauthorizationrulesResource, c.ns, eventhubAuthorizationRule), &v1alpha1.EventhubAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeEventhubAuthorizationRules) Update(eventhubAuthorizationRule *v1alp
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeEventhubAuthorizationRules) UpdateStatus(eventhubAuthorizationRule *v1alpha1.EventhubAuthorizationRule) (*v1alpha1.EventhubAuthorizationRule, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(eventhubauthorizationrulesResource, "status", eventhubAuthorizationRule), &v1alpha1.EventhubAuthorizationRule{})
+		Invokes(testing.NewUpdateSubresourceAction(eventhubauthorizationrulesResource, "status", c.ns, eventhubAuthorizationRule), &v1alpha1.EventhubAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeEventhubAuthorizationRules) UpdateStatus(eventhubAuthorizationRule 
 // Delete takes name of the eventhubAuthorizationRule and deletes it. Returns an error if one occurs.
 func (c *FakeEventhubAuthorizationRules) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(eventhubauthorizationrulesResource, name), &v1alpha1.EventhubAuthorizationRule{})
+		Invokes(testing.NewDeleteAction(eventhubauthorizationrulesResource, c.ns, name), &v1alpha1.EventhubAuthorizationRule{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeEventhubAuthorizationRules) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(eventhubauthorizationrulesResource, listOptions)
+	action := testing.NewDeleteCollectionAction(eventhubauthorizationrulesResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.EventhubAuthorizationRuleList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeEventhubAuthorizationRules) DeleteCollection(options *v1.DeleteOpti
 // Patch applies the patch and returns the patched eventhubAuthorizationRule.
 func (c *FakeEventhubAuthorizationRules) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.EventhubAuthorizationRule, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(eventhubauthorizationrulesResource, name, pt, data, subresources...), &v1alpha1.EventhubAuthorizationRule{})
+		Invokes(testing.NewPatchSubresourceAction(eventhubauthorizationrulesResource, c.ns, name, pt, data, subresources...), &v1alpha1.EventhubAuthorizationRule{})
+
 	if obj == nil {
 		return nil, err
 	}

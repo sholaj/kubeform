@@ -31,58 +31,59 @@ import (
 	v1alpha1 "kubeform.dev/kubeform/client/listers/azurerm/v1alpha1"
 )
 
-// ApiManagementApiPolicyInformer provides access to a shared informer and lister for
-// ApiManagementApiPolicies.
-type ApiManagementApiPolicyInformer interface {
+// ApiManagementAPIPolicyInformer provides access to a shared informer and lister for
+// ApiManagementAPIPolicies.
+type ApiManagementAPIPolicyInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.ApiManagementApiPolicyLister
+	Lister() v1alpha1.ApiManagementAPIPolicyLister
 }
 
-type apiManagementApiPolicyInformer struct {
+type apiManagementAPIPolicyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewApiManagementApiPolicyInformer constructs a new informer for ApiManagementApiPolicy type.
+// NewApiManagementAPIPolicyInformer constructs a new informer for ApiManagementAPIPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewApiManagementApiPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredApiManagementApiPolicyInformer(client, resyncPeriod, indexers, nil)
+func NewApiManagementAPIPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredApiManagementAPIPolicyInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredApiManagementApiPolicyInformer constructs a new informer for ApiManagementApiPolicy type.
+// NewFilteredApiManagementAPIPolicyInformer constructs a new informer for ApiManagementAPIPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredApiManagementApiPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredApiManagementAPIPolicyInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ApiManagementApiPolicies().List(options)
+				return client.AzurermV1alpha1().ApiManagementAPIPolicies(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AzurermV1alpha1().ApiManagementApiPolicies().Watch(options)
+				return client.AzurermV1alpha1().ApiManagementAPIPolicies(namespace).Watch(options)
 			},
 		},
-		&azurermv1alpha1.ApiManagementApiPolicy{},
+		&azurermv1alpha1.ApiManagementAPIPolicy{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *apiManagementApiPolicyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredApiManagementApiPolicyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *apiManagementAPIPolicyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredApiManagementAPIPolicyInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *apiManagementApiPolicyInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&azurermv1alpha1.ApiManagementApiPolicy{}, f.defaultInformer)
+func (f *apiManagementAPIPolicyInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&azurermv1alpha1.ApiManagementAPIPolicy{}, f.defaultInformer)
 }
 
-func (f *apiManagementApiPolicyInformer) Lister() v1alpha1.ApiManagementApiPolicyLister {
-	return v1alpha1.NewApiManagementApiPolicyLister(f.Informer().GetIndexer())
+func (f *apiManagementAPIPolicyInformer) Lister() v1alpha1.ApiManagementAPIPolicyLister {
+	return v1alpha1.NewApiManagementAPIPolicyLister(f.Informer().GetIndexer())
 }

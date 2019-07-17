@@ -32,7 +32,7 @@ import (
 // KeyVaultSecretsGetter has a method to return a KeyVaultSecretInterface.
 // A group's client should implement this interface.
 type KeyVaultSecretsGetter interface {
-	KeyVaultSecrets() KeyVaultSecretInterface
+	KeyVaultSecrets(namespace string) KeyVaultSecretInterface
 }
 
 // KeyVaultSecretInterface has methods to work with KeyVaultSecret resources.
@@ -52,12 +52,14 @@ type KeyVaultSecretInterface interface {
 // keyVaultSecrets implements KeyVaultSecretInterface
 type keyVaultSecrets struct {
 	client rest.Interface
+	ns     string
 }
 
 // newKeyVaultSecrets returns a KeyVaultSecrets
-func newKeyVaultSecrets(c *AzurermV1alpha1Client) *keyVaultSecrets {
+func newKeyVaultSecrets(c *AzurermV1alpha1Client, namespace string) *keyVaultSecrets {
 	return &keyVaultSecrets{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newKeyVaultSecrets(c *AzurermV1alpha1Client) *keyVaultSecrets {
 func (c *keyVaultSecrets) Get(name string, options v1.GetOptions) (result *v1alpha1.KeyVaultSecret, err error) {
 	result = &v1alpha1.KeyVaultSecret{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("keyvaultsecrets").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *keyVaultSecrets) List(opts v1.ListOptions) (result *v1alpha1.KeyVaultSe
 	}
 	result = &v1alpha1.KeyVaultSecretList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("keyvaultsecrets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *keyVaultSecrets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("keyvaultsecrets").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *keyVaultSecrets) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *keyVaultSecrets) Create(keyVaultSecret *v1alpha1.KeyVaultSecret) (result *v1alpha1.KeyVaultSecret, err error) {
 	result = &v1alpha1.KeyVaultSecret{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("keyvaultsecrets").
 		Body(keyVaultSecret).
 		Do().
@@ -118,6 +124,7 @@ func (c *keyVaultSecrets) Create(keyVaultSecret *v1alpha1.KeyVaultSecret) (resul
 func (c *keyVaultSecrets) Update(keyVaultSecret *v1alpha1.KeyVaultSecret) (result *v1alpha1.KeyVaultSecret, err error) {
 	result = &v1alpha1.KeyVaultSecret{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("keyvaultsecrets").
 		Name(keyVaultSecret.Name).
 		Body(keyVaultSecret).
@@ -132,6 +139,7 @@ func (c *keyVaultSecrets) Update(keyVaultSecret *v1alpha1.KeyVaultSecret) (resul
 func (c *keyVaultSecrets) UpdateStatus(keyVaultSecret *v1alpha1.KeyVaultSecret) (result *v1alpha1.KeyVaultSecret, err error) {
 	result = &v1alpha1.KeyVaultSecret{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("keyvaultsecrets").
 		Name(keyVaultSecret.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *keyVaultSecrets) UpdateStatus(keyVaultSecret *v1alpha1.KeyVaultSecret) 
 // Delete takes name of the keyVaultSecret and deletes it. Returns an error if one occurs.
 func (c *keyVaultSecrets) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("keyvaultsecrets").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *keyVaultSecrets) DeleteCollection(options *v1.DeleteOptions, listOption
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("keyvaultsecrets").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *keyVaultSecrets) DeleteCollection(options *v1.DeleteOptions, listOption
 func (c *keyVaultSecrets) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.KeyVaultSecret, err error) {
 	result = &v1alpha1.KeyVaultSecret{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("keyvaultsecrets").
 		SubResource(subresources...).
 		Name(name).

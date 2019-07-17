@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -19,57 +19,58 @@ type SpotFleetRequest struct {
 }
 
 type SpotFleetRequestSpecLaunchSpecification struct {
-	Ami string `json:"ami"`
+	Ami string `json:"ami" tf:"ami"`
 	// +optional
-	AssociatePublicIpAddress bool `json:"associate_public_ip_address,omitempty"`
+	AssociatePublicIPAddress bool `json:"associatePublicIPAddress,omitempty" tf:"associate_public_ip_address,omitempty"`
 	// +optional
-	EbsOptimized bool `json:"ebs_optimized,omitempty"`
+	EbsOptimized bool `json:"ebsOptimized,omitempty" tf:"ebs_optimized,omitempty"`
 	// +optional
-	IamInstanceProfile string `json:"iam_instance_profile,omitempty"`
+	IamInstanceProfile string `json:"iamInstanceProfile,omitempty" tf:"iam_instance_profile,omitempty"`
 	// +optional
-	IamInstanceProfileArn string `json:"iam_instance_profile_arn,omitempty"`
-	InstanceType          string `json:"instance_type"`
+	IamInstanceProfileArn string `json:"iamInstanceProfileArn,omitempty" tf:"iam_instance_profile_arn,omitempty"`
+	InstanceType          string `json:"instanceType" tf:"instance_type"`
 	// +optional
-	Monitoring bool `json:"monitoring,omitempty"`
+	Monitoring bool `json:"monitoring,omitempty" tf:"monitoring,omitempty"`
 	// +optional
-	PlacementTenancy string `json:"placement_tenancy,omitempty"`
+	PlacementTenancy string `json:"placementTenancy,omitempty" tf:"placement_tenancy,omitempty"`
 	// +optional
-	SpotPrice string `json:"spot_price,omitempty"`
+	SpotPrice string `json:"spotPrice,omitempty" tf:"spot_price,omitempty"`
 	// +optional
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	UserData string `json:"user_data,omitempty"`
+	UserData string `json:"userData,omitempty" tf:"user_data,omitempty"`
 	// +optional
-	WeightedCapacity string `json:"weighted_capacity,omitempty"`
+	WeightedCapacity string `json:"weightedCapacity,omitempty" tf:"weighted_capacity,omitempty"`
 }
 
 type SpotFleetRequestSpec struct {
 	// +optional
-	AllocationStrategy string `json:"allocation_strategy,omitempty"`
+	AllocationStrategy string `json:"allocationStrategy,omitempty" tf:"allocation_strategy,omitempty"`
 	// +optional
-	ExcessCapacityTerminationPolicy string `json:"excess_capacity_termination_policy,omitempty"`
+	ExcessCapacityTerminationPolicy string `json:"excessCapacityTerminationPolicy,omitempty" tf:"excess_capacity_termination_policy,omitempty"`
 	// +optional
-	FleetType    string `json:"fleet_type,omitempty"`
-	IamFleetRole string `json:"iam_fleet_role"`
+	FleetType    string `json:"fleetType,omitempty" tf:"fleet_type,omitempty"`
+	IamFleetRole string `json:"iamFleetRole" tf:"iam_fleet_role"`
 	// +optional
-	InstanceInterruptionBehaviour string `json:"instance_interruption_behaviour,omitempty"`
+	InstanceInterruptionBehaviour string `json:"instanceInterruptionBehaviour,omitempty" tf:"instance_interruption_behaviour,omitempty"`
 	// +optional
-	InstancePoolsToUseCount int `json:"instance_pools_to_use_count,omitempty"`
+	InstancePoolsToUseCount int `json:"instancePoolsToUseCount,omitempty" tf:"instance_pools_to_use_count,omitempty"`
 	// +kubebuilder:validation:UniqueItems=true
-	LaunchSpecification []SpotFleetRequestSpec `json:"launch_specification"`
+	LaunchSpecification []SpotFleetRequestSpecLaunchSpecification `json:"launchSpecification" tf:"launch_specification"`
 	// +optional
-	ReplaceUnhealthyInstances bool `json:"replace_unhealthy_instances,omitempty"`
+	ReplaceUnhealthyInstances bool `json:"replaceUnhealthyInstances,omitempty" tf:"replace_unhealthy_instances,omitempty"`
 	// +optional
-	SpotPrice      string `json:"spot_price,omitempty"`
-	TargetCapacity int    `json:"target_capacity"`
+	SpotPrice      string `json:"spotPrice,omitempty" tf:"spot_price,omitempty"`
+	TargetCapacity int    `json:"targetCapacity" tf:"target_capacity"`
 	// +optional
-	TerminateInstancesWithExpiration bool `json:"terminate_instances_with_expiration,omitempty"`
+	TerminateInstancesWithExpiration bool `json:"terminateInstancesWithExpiration,omitempty" tf:"terminate_instances_with_expiration,omitempty"`
 	// +optional
-	ValidFrom string `json:"valid_from,omitempty"`
+	ValidFrom string `json:"validFrom,omitempty" tf:"valid_from,omitempty"`
 	// +optional
-	ValidUntil string `json:"valid_until,omitempty"`
+	ValidUntil string `json:"validUntil,omitempty" tf:"valid_until,omitempty"`
 	// +optional
-	WaitForFulfillment bool `json:"wait_for_fulfillment,omitempty"`
+	WaitForFulfillment bool                      `json:"waitForFulfillment,omitempty" tf:"wait_for_fulfillment,omitempty"`
+	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SpotFleetRequestStatus struct {
@@ -77,7 +78,9 @@ type SpotFleetRequestStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

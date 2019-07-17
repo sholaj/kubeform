@@ -32,7 +32,7 @@ import (
 // RedshiftSnapshotCopyGrantsGetter has a method to return a RedshiftSnapshotCopyGrantInterface.
 // A group's client should implement this interface.
 type RedshiftSnapshotCopyGrantsGetter interface {
-	RedshiftSnapshotCopyGrants() RedshiftSnapshotCopyGrantInterface
+	RedshiftSnapshotCopyGrants(namespace string) RedshiftSnapshotCopyGrantInterface
 }
 
 // RedshiftSnapshotCopyGrantInterface has methods to work with RedshiftSnapshotCopyGrant resources.
@@ -52,12 +52,14 @@ type RedshiftSnapshotCopyGrantInterface interface {
 // redshiftSnapshotCopyGrants implements RedshiftSnapshotCopyGrantInterface
 type redshiftSnapshotCopyGrants struct {
 	client rest.Interface
+	ns     string
 }
 
 // newRedshiftSnapshotCopyGrants returns a RedshiftSnapshotCopyGrants
-func newRedshiftSnapshotCopyGrants(c *AwsV1alpha1Client) *redshiftSnapshotCopyGrants {
+func newRedshiftSnapshotCopyGrants(c *AwsV1alpha1Client, namespace string) *redshiftSnapshotCopyGrants {
 	return &redshiftSnapshotCopyGrants{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -65,6 +67,7 @@ func newRedshiftSnapshotCopyGrants(c *AwsV1alpha1Client) *redshiftSnapshotCopyGr
 func (c *redshiftSnapshotCopyGrants) Get(name string, options v1.GetOptions) (result *v1alpha1.RedshiftSnapshotCopyGrant, err error) {
 	result = &v1alpha1.RedshiftSnapshotCopyGrant{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("redshiftsnapshotcopygrants").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -81,6 +84,7 @@ func (c *redshiftSnapshotCopyGrants) List(opts v1.ListOptions) (result *v1alpha1
 	}
 	result = &v1alpha1.RedshiftSnapshotCopyGrantList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("redshiftsnapshotcopygrants").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -97,6 +101,7 @@ func (c *redshiftSnapshotCopyGrants) Watch(opts v1.ListOptions) (watch.Interface
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("redshiftsnapshotcopygrants").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -107,6 +112,7 @@ func (c *redshiftSnapshotCopyGrants) Watch(opts v1.ListOptions) (watch.Interface
 func (c *redshiftSnapshotCopyGrants) Create(redshiftSnapshotCopyGrant *v1alpha1.RedshiftSnapshotCopyGrant) (result *v1alpha1.RedshiftSnapshotCopyGrant, err error) {
 	result = &v1alpha1.RedshiftSnapshotCopyGrant{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("redshiftsnapshotcopygrants").
 		Body(redshiftSnapshotCopyGrant).
 		Do().
@@ -118,6 +124,7 @@ func (c *redshiftSnapshotCopyGrants) Create(redshiftSnapshotCopyGrant *v1alpha1.
 func (c *redshiftSnapshotCopyGrants) Update(redshiftSnapshotCopyGrant *v1alpha1.RedshiftSnapshotCopyGrant) (result *v1alpha1.RedshiftSnapshotCopyGrant, err error) {
 	result = &v1alpha1.RedshiftSnapshotCopyGrant{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("redshiftsnapshotcopygrants").
 		Name(redshiftSnapshotCopyGrant.Name).
 		Body(redshiftSnapshotCopyGrant).
@@ -132,6 +139,7 @@ func (c *redshiftSnapshotCopyGrants) Update(redshiftSnapshotCopyGrant *v1alpha1.
 func (c *redshiftSnapshotCopyGrants) UpdateStatus(redshiftSnapshotCopyGrant *v1alpha1.RedshiftSnapshotCopyGrant) (result *v1alpha1.RedshiftSnapshotCopyGrant, err error) {
 	result = &v1alpha1.RedshiftSnapshotCopyGrant{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("redshiftsnapshotcopygrants").
 		Name(redshiftSnapshotCopyGrant.Name).
 		SubResource("status").
@@ -144,6 +152,7 @@ func (c *redshiftSnapshotCopyGrants) UpdateStatus(redshiftSnapshotCopyGrant *v1a
 // Delete takes name of the redshiftSnapshotCopyGrant and deletes it. Returns an error if one occurs.
 func (c *redshiftSnapshotCopyGrants) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("redshiftsnapshotcopygrants").
 		Name(name).
 		Body(options).
@@ -158,6 +167,7 @@ func (c *redshiftSnapshotCopyGrants) DeleteCollection(options *v1.DeleteOptions,
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("redshiftsnapshotcopygrants").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -170,6 +180,7 @@ func (c *redshiftSnapshotCopyGrants) DeleteCollection(options *v1.DeleteOptions,
 func (c *redshiftSnapshotCopyGrants) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RedshiftSnapshotCopyGrant, err error) {
 	result = &v1alpha1.RedshiftSnapshotCopyGrant{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("redshiftsnapshotcopygrants").
 		SubResource(subresources...).
 		Name(name).

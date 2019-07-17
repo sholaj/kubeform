@@ -31,6 +31,7 @@ import (
 // FakeRoleAssignments implements RoleAssignmentInterface
 type FakeRoleAssignments struct {
 	Fake *FakeAzurermV1alpha1
+	ns   string
 }
 
 var roleassignmentsResource = schema.GroupVersionResource{Group: "azurerm.kubeform.com", Version: "v1alpha1", Resource: "roleassignments"}
@@ -40,7 +41,8 @@ var roleassignmentsKind = schema.GroupVersionKind{Group: "azurerm.kubeform.com",
 // Get takes name of the roleAssignment, and returns the corresponding roleAssignment object, and an error if there is any.
 func (c *FakeRoleAssignments) Get(name string, options v1.GetOptions) (result *v1alpha1.RoleAssignment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(roleassignmentsResource, name), &v1alpha1.RoleAssignment{})
+		Invokes(testing.NewGetAction(roleassignmentsResource, c.ns, name), &v1alpha1.RoleAssignment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func (c *FakeRoleAssignments) Get(name string, options v1.GetOptions) (result *v
 // List takes label and field selectors, and returns the list of RoleAssignments that match those selectors.
 func (c *FakeRoleAssignments) List(opts v1.ListOptions) (result *v1alpha1.RoleAssignmentList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(roleassignmentsResource, roleassignmentsKind, opts), &v1alpha1.RoleAssignmentList{})
+		Invokes(testing.NewListAction(roleassignmentsResource, roleassignmentsKind, c.ns, opts), &v1alpha1.RoleAssignmentList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -71,13 +74,15 @@ func (c *FakeRoleAssignments) List(opts v1.ListOptions) (result *v1alpha1.RoleAs
 // Watch returns a watch.Interface that watches the requested roleAssignments.
 func (c *FakeRoleAssignments) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(roleassignmentsResource, opts))
+		InvokesWatch(testing.NewWatchAction(roleassignmentsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a roleAssignment and creates it.  Returns the server's representation of the roleAssignment, and an error, if there is any.
 func (c *FakeRoleAssignments) Create(roleAssignment *v1alpha1.RoleAssignment) (result *v1alpha1.RoleAssignment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(roleassignmentsResource, roleAssignment), &v1alpha1.RoleAssignment{})
+		Invokes(testing.NewCreateAction(roleassignmentsResource, c.ns, roleAssignment), &v1alpha1.RoleAssignment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -87,7 +92,8 @@ func (c *FakeRoleAssignments) Create(roleAssignment *v1alpha1.RoleAssignment) (r
 // Update takes the representation of a roleAssignment and updates it. Returns the server's representation of the roleAssignment, and an error, if there is any.
 func (c *FakeRoleAssignments) Update(roleAssignment *v1alpha1.RoleAssignment) (result *v1alpha1.RoleAssignment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(roleassignmentsResource, roleAssignment), &v1alpha1.RoleAssignment{})
+		Invokes(testing.NewUpdateAction(roleassignmentsResource, c.ns, roleAssignment), &v1alpha1.RoleAssignment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -98,7 +104,8 @@ func (c *FakeRoleAssignments) Update(roleAssignment *v1alpha1.RoleAssignment) (r
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeRoleAssignments) UpdateStatus(roleAssignment *v1alpha1.RoleAssignment) (*v1alpha1.RoleAssignment, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(roleassignmentsResource, "status", roleAssignment), &v1alpha1.RoleAssignment{})
+		Invokes(testing.NewUpdateSubresourceAction(roleassignmentsResource, "status", c.ns, roleAssignment), &v1alpha1.RoleAssignment{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -108,13 +115,14 @@ func (c *FakeRoleAssignments) UpdateStatus(roleAssignment *v1alpha1.RoleAssignme
 // Delete takes name of the roleAssignment and deletes it. Returns an error if one occurs.
 func (c *FakeRoleAssignments) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteAction(roleassignmentsResource, name), &v1alpha1.RoleAssignment{})
+		Invokes(testing.NewDeleteAction(roleassignmentsResource, c.ns, name), &v1alpha1.RoleAssignment{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeRoleAssignments) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(roleassignmentsResource, listOptions)
+	action := testing.NewDeleteCollectionAction(roleassignmentsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.RoleAssignmentList{})
 	return err
@@ -123,7 +131,8 @@ func (c *FakeRoleAssignments) DeleteCollection(options *v1.DeleteOptions, listOp
 // Patch applies the patch and returns the patched roleAssignment.
 func (c *FakeRoleAssignments) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.RoleAssignment, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(roleassignmentsResource, name, pt, data, subresources...), &v1alpha1.RoleAssignment{})
+		Invokes(testing.NewPatchSubresourceAction(roleassignmentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.RoleAssignment{})
+
 	if obj == nil {
 		return nil, err
 	}

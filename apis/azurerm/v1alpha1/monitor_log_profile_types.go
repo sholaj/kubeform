@@ -1,12 +1,12 @@
 package v1alpha1
 
 import (
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
@@ -20,24 +20,25 @@ type MonitorLogProfile struct {
 
 type MonitorLogProfileSpecRetentionPolicy struct {
 	// +optional
-	Days    int  `json:"days,omitempty"`
-	Enabled bool `json:"enabled"`
+	Days    int  `json:"days,omitempty" tf:"days,omitempty"`
+	Enabled bool `json:"enabled" tf:"enabled"`
 }
 
 type MonitorLogProfileSpec struct {
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	Categories []string `json:"categories"`
+	Categories []string `json:"categories" tf:"categories"`
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	Locations []string `json:"locations"`
-	Name      string   `json:"name"`
+	Locations []string `json:"locations" tf:"locations"`
+	Name      string   `json:"name" tf:"name"`
 	// +kubebuilder:validation:MaxItems=1
-	RetentionPolicy []MonitorLogProfileSpec `json:"retention_policy"`
+	RetentionPolicy []MonitorLogProfileSpecRetentionPolicy `json:"retentionPolicy" tf:"retention_policy"`
 	// +optional
-	ServicebusRuleId string `json:"servicebus_rule_id,omitempty"`
+	ServicebusRuleID string `json:"servicebusRuleID,omitempty" tf:"servicebus_rule_id,omitempty"`
 	// +optional
-	StorageAccountId string `json:"storage_account_id,omitempty"`
+	StorageAccountID string                    `json:"storageAccountID,omitempty" tf:"storage_account_id,omitempty"`
+	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type MonitorLogProfileStatus struct {
@@ -45,7 +46,9 @@ type MonitorLogProfileStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	Output *runtime.RawExtension `json:"output,omitempty"`
+	TFState     []byte                `json:"tfState,omitempty"`
+	TFStateHash string                `json:"tfStateHash,omitempty"`
+	Output      *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

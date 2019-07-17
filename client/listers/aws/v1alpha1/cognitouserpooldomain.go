@@ -29,8 +29,8 @@ import (
 type CognitoUserPoolDomainLister interface {
 	// List lists all CognitoUserPoolDomains in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CognitoUserPoolDomain, err error)
-	// Get retrieves the CognitoUserPoolDomain from the index for a given name.
-	Get(name string) (*v1alpha1.CognitoUserPoolDomain, error)
+	// CognitoUserPoolDomains returns an object that can list and get CognitoUserPoolDomains.
+	CognitoUserPoolDomains(namespace string) CognitoUserPoolDomainNamespaceLister
 	CognitoUserPoolDomainListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cognitoUserPoolDomainLister) List(selector labels.Selector) (ret []*v1a
 	return ret, err
 }
 
-// Get retrieves the CognitoUserPoolDomain from the index for a given name.
-func (s *cognitoUserPoolDomainLister) Get(name string) (*v1alpha1.CognitoUserPoolDomain, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CognitoUserPoolDomains returns an object that can list and get CognitoUserPoolDomains.
+func (s *cognitoUserPoolDomainLister) CognitoUserPoolDomains(namespace string) CognitoUserPoolDomainNamespaceLister {
+	return cognitoUserPoolDomainNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CognitoUserPoolDomainNamespaceLister helps list and get CognitoUserPoolDomains.
+type CognitoUserPoolDomainNamespaceLister interface {
+	// List lists all CognitoUserPoolDomains in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CognitoUserPoolDomain, err error)
+	// Get retrieves the CognitoUserPoolDomain from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CognitoUserPoolDomain, error)
+	CognitoUserPoolDomainNamespaceListerExpansion
+}
+
+// cognitoUserPoolDomainNamespaceLister implements the CognitoUserPoolDomainNamespaceLister
+// interface.
+type cognitoUserPoolDomainNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CognitoUserPoolDomains in the indexer for a given namespace.
+func (s cognitoUserPoolDomainNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CognitoUserPoolDomain, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CognitoUserPoolDomain))
+	})
+	return ret, err
+}
+
+// Get retrieves the CognitoUserPoolDomain from the indexer for a given namespace and name.
+func (s cognitoUserPoolDomainNamespaceLister) Get(name string) (*v1alpha1.CognitoUserPoolDomain, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

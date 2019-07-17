@@ -29,8 +29,8 @@ import (
 type CloudwatchLogGroupLister interface {
 	// List lists all CloudwatchLogGroups in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.CloudwatchLogGroup, err error)
-	// Get retrieves the CloudwatchLogGroup from the index for a given name.
-	Get(name string) (*v1alpha1.CloudwatchLogGroup, error)
+	// CloudwatchLogGroups returns an object that can list and get CloudwatchLogGroups.
+	CloudwatchLogGroups(namespace string) CloudwatchLogGroupNamespaceLister
 	CloudwatchLogGroupListerExpansion
 }
 
@@ -52,9 +52,38 @@ func (s *cloudwatchLogGroupLister) List(selector labels.Selector) (ret []*v1alph
 	return ret, err
 }
 
-// Get retrieves the CloudwatchLogGroup from the index for a given name.
-func (s *cloudwatchLogGroupLister) Get(name string) (*v1alpha1.CloudwatchLogGroup, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// CloudwatchLogGroups returns an object that can list and get CloudwatchLogGroups.
+func (s *cloudwatchLogGroupLister) CloudwatchLogGroups(namespace string) CloudwatchLogGroupNamespaceLister {
+	return cloudwatchLogGroupNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// CloudwatchLogGroupNamespaceLister helps list and get CloudwatchLogGroups.
+type CloudwatchLogGroupNamespaceLister interface {
+	// List lists all CloudwatchLogGroups in the indexer for a given namespace.
+	List(selector labels.Selector) (ret []*v1alpha1.CloudwatchLogGroup, err error)
+	// Get retrieves the CloudwatchLogGroup from the indexer for a given namespace and name.
+	Get(name string) (*v1alpha1.CloudwatchLogGroup, error)
+	CloudwatchLogGroupNamespaceListerExpansion
+}
+
+// cloudwatchLogGroupNamespaceLister implements the CloudwatchLogGroupNamespaceLister
+// interface.
+type cloudwatchLogGroupNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all CloudwatchLogGroups in the indexer for a given namespace.
+func (s cloudwatchLogGroupNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.CloudwatchLogGroup, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.CloudwatchLogGroup))
+	})
+	return ret, err
+}
+
+// Get retrieves the CloudwatchLogGroup from the indexer for a given namespace and name.
+func (s cloudwatchLogGroupNamespaceLister) Get(name string) (*v1alpha1.CloudwatchLogGroup, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}
